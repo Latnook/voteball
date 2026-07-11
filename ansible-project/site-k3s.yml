@@ -1,0 +1,7 @@
+---
+- name: Deploy Voteball on k3s
+  hosts: app
+  become: true
+  roles:
+    - common
+    - k3s
