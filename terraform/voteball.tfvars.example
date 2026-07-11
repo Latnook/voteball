@@ -1,0 +1,3 @@
+ssh_allowed_cidr   = "YOUR_IP/32"
+db_password        = "changeme"
+notification_email = "8847444@proton.me"
