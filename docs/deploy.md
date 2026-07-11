@@ -91,6 +91,41 @@ Route 53 record, IAM role/policy, and SNS topic.
 you lose them, `terraform destroy` can't target the right resources and
 cleanup has to be done manually via the AWS console/CLI.
 
+## Redeploying after a destroy
+
+`terraform destroy` only deletes AWS resources — it does not touch anything
+on your local machine. **Skip "First-time setup" entirely on a redeploy**;
+none of it needs to be repeated:
+
+- The SSH key pair, `voteball.tfvars`, `.vault_pass`, and `secrets.yml` all
+  still exist on disk exactly as before and get reused as-is.
+- The only thing worth double-checking is `ssh_allowed_cidr` in
+  `voteball.tfvars` — if your IP changed since the last deploy
+  (`curl -s https://checkip.amazonaws.com`), update it before `apply`,
+  otherwise you'll provision an instance you can't SSH into.
+
+Just run the **Deploy** steps above again from `terraform apply` onward.
+Three things will legitimately be different from before, all handled
+automatically — no extra manual steps, just don't be surprised:
+
+- **New public IP.** The Elastic IP is destroyed and recreated, so you'll
+  get a different address. `dns.tf` updates the `voteball.latnook.com`
+  Route 53 record on `apply` automatically; allow a few minutes for DNS
+  propagation (record TTL is 300s).
+- **Empty database.** RDS is destroyed with no snapshot (by design — see
+  "Destroy" above). The backend recreates its schema automatically on
+  first pod start (`db.init_db()` in `app.py`'s `__main__`), so this needs
+  no manual step, but all votes and previously-synced party data from the
+  prior deploy are gone. Re-run the admin Knesset sync
+  (`POST /api/admin/sync-previous-parties`) after redeploying to repopulate
+  `previous_parties`.
+- **New TLS certificate.** A fresh instance has no `/etc/letsencrypt`, so
+  certbot does a full DNS-01 issuance again during the Ansible run (a few
+  minutes) rather than reusing/renewing anything.
+- **SNS subscription needs reconfirming again.** The SNS topic is
+  destroyed and recreated, so today's email confirmation doesn't carry
+  over — see "confirm the SNS subscription" below, you'll get a new email.
+
 ## After first deploy: confirm the SNS subscription
 
 `terraform apply` creates the milestone-alert email subscription in
