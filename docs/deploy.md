@@ -8,27 +8,46 @@ required locally. The `latnook.com` Route 53 zone must already exist.
 ## Setup (once per checkout)
 
 ```bash
+# 1. EC2 key pair
 ssh-keygen -t ed25519 -f Voteball-EC2-pem -N "" -C "voteball-ec2"
-mv Voteball-EC2-pem Voteball-EC2-pem.pem && chmod 400 Voteball-EC2-pem.pem
+mv Voteball-EC2-pem Voteball-EC2-pem.pem
+chmod 400 Voteball-EC2-pem.pem
 
+# 2. Terraform variables
 cd terraform
 cp voteball.tfvars.example voteball.tfvars
 # edit: ssh_allowed_cidr (curl -s https://checkip.amazonaws.com), db_password, notification_email
+cd ..
 
-cd ../ansible-project
+# 3. Ansible vault password + secrets
+cd ansible-project
 openssl rand -hex 32 > .vault_pass
 cp inventories/voteball/group_vars/all/secrets.yml.example inventories/voteball/group_vars/all/secrets.yml
-# edit: db_pass (must match voteball.tfvars' db_password), admin_secret (openssl rand -hex 32)
+# edit secrets.yml: db_pass (must match voteball.tfvars' db_password), admin_secret (openssl rand -hex 32)
 ansible-vault encrypt inventories/voteball/group_vars/all/secrets.yml --vault-password-file .vault_pass
+cd ..
 ```
 
 ## Deploy
 
 ```bash
-cd terraform && terraform init && terraform plan && terraform apply   # billed resources
-cd .. && ./scripts/generate-inventory.sh
-cd ansible-project && ansible-playbook site-k3s.yml
-curl -sf https://voteball.latnook.com/api/options   # verify
+# 1. Provision AWS infrastructure (billed resources — review the plan first)
+cd terraform
+terraform init
+terraform plan
+terraform apply
+cd ..
+
+# 2. Generate the Ansible inventory from live Terraform outputs
+./scripts/generate-inventory.sh
+
+# 3. Install Docker/k3s and deploy the Helm chart
+cd ansible-project
+ansible-playbook site-k3s.yml
+cd ..
+
+# 4. Verify
+curl -sf https://voteball.latnook.com/api/options
 ```
 
 Re-running `ansible-playbook site-k3s.yml` is also the normal update path
@@ -41,13 +60,18 @@ After the first `apply`, confirm the SNS email subscription (check
 `notification_email`'s inbox for a confirmation link) or milestone alerts
 won't be delivered:
 ```bash
-aws sns list-subscriptions-by-topic --topic-arn "$(cd terraform && terraform output -raw sns_topic_arn)" --region il-central-1
+cd terraform
+TOPIC_ARN=$(terraform output -raw sns_topic_arn)
+cd ..
+aws sns list-subscriptions-by-topic --topic-arn "$TOPIC_ARN" --region il-central-1
 ```
 
 ## Destroy
 
 ```bash
-cd terraform && terraform destroy
+cd terraform
+terraform destroy
+cd ..
 ```
 
 Deletes everything: EC2, RDS (no snapshot — intentional, low-stakes poll
