@@ -52,6 +52,39 @@ def test_vote_endpoint_invalid_previous_vote_status_returns_400(client, conn):
     assert 'psycopg2' not in str(body)
 
 
+def test_vote_endpoint_considering_with_no_parties_returns_400(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'considering', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 400
+    assert resp.get_json() == {'error': 'select at least one upcoming party when status is considering'}
+
+
+def test_vote_endpoint_considering_with_parties_succeeds(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Test Party') RETURNING id")
+    party_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'considering', 'upcoming_party_ids': [party_id],
+    })
+    assert resp.status_code == 201
+    assert 'vote_id' in resp.get_json()
+
+
 def test_results_by_club_endpoint(client, conn):
     import queries
     cur = conn.cursor()

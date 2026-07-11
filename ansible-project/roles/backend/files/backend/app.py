@@ -41,6 +41,10 @@ def vote():
         token = uuid.uuid4().hex
 
     body = request.get_json(force=True, silent=True) or {}
+
+    if body.get('upcoming_vote_status') == 'considering' and not body.get('upcoming_party_ids'):
+        return jsonify({'error': 'select at least one upcoming party when status is considering'}), 400
+
     conn = db.get_db()
     try:
         vote_id = queries.insert_vote(
