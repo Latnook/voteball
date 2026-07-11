@@ -176,3 +176,25 @@ def test_upsert_previous_parties_inserts_and_updates(conn):
     cur.execute("SELECT knesset_faction_id FROM previous_parties WHERE name = 'Likud'")
     assert cur.fetchone()[0] == '9999'
     cur.close()
+
+
+def test_create_rename_delete_upcoming_party(conn):
+    import queries
+
+    party_id = queries.create_upcoming_party(conn, 'New Party')
+    assert party_id > 0
+
+    assert queries.rename_upcoming_party(conn, party_id, 'Renamed Party') is True
+    cur = conn.cursor()
+    cur.execute('SELECT name FROM upcoming_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone()[0] == 'Renamed Party'
+    cur.close()
+
+    assert queries.delete_upcoming_party(conn, party_id) is True
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM upcoming_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone()[0] == 0
+    cur.close()
+
+    assert queries.rename_upcoming_party(conn, 999999, 'Nope') is False
+    assert queries.delete_upcoming_party(conn, 999999) is False

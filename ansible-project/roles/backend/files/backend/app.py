@@ -101,6 +101,45 @@ def sync_previous_parties():
     return jsonify({'synced': count})
 
 
+@app.route('/api/admin/upcoming-parties', methods=['POST'])
+@require_admin
+def create_upcoming_party_route():
+    body = request.get_json(force=True, silent=True) or {}
+    name = body.get('name', '').strip()
+    if not name:
+        return jsonify({'error': 'name is required'}), 400
+    conn = db.get_db()
+    party_id = queries.create_upcoming_party(conn, name)
+    conn.close()
+    return jsonify({'id': party_id, 'name': name}), 201
+
+
+@app.route('/api/admin/upcoming-parties/<int:party_id>', methods=['PATCH'])
+@require_admin
+def rename_upcoming_party_route(party_id):
+    body = request.get_json(force=True, silent=True) or {}
+    name = body.get('name', '').strip()
+    if not name:
+        return jsonify({'error': 'name is required'}), 400
+    conn = db.get_db()
+    updated = queries.rename_upcoming_party(conn, party_id, name)
+    conn.close()
+    if not updated:
+        return jsonify({'error': 'not found'}), 404
+    return jsonify({'id': party_id, 'name': name})
+
+
+@app.route('/api/admin/upcoming-parties/<int:party_id>', methods=['DELETE'])
+@require_admin
+def delete_upcoming_party_route(party_id):
+    conn = db.get_db()
+    deleted = queries.delete_upcoming_party(conn, party_id)
+    conn.close()
+    if not deleted:
+        return jsonify({'error': 'not found'}), 404
+    return '', 204
+
+
 if __name__ == '__main__':
     conn = db.get_db()
     db.init_db(conn)

@@ -80,3 +80,20 @@ def test_sync_previous_parties_with_valid_secret(client, monkeypatch):
     resp = client.post('/api/admin/sync-previous-parties', headers={'X-Admin-Secret': 'test-admin-secret'})
     assert resp.status_code == 200
     assert resp.get_json() == {'synced': 1}
+
+
+def test_upcoming_party_admin_crud(client):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Test Party'}, headers=headers)
+    assert resp.status_code == 201
+    party_id = resp.get_json()['id']
+
+    resp = client.patch(f'/api/admin/upcoming-parties/{party_id}', json={'name': 'Renamed'}, headers=headers)
+    assert resp.status_code == 200
+
+    resp = client.delete(f'/api/admin/upcoming-parties/{party_id}', headers=headers)
+    assert resp.status_code == 204
+
+    resp = client.delete(f'/api/admin/upcoming-parties/{party_id}', headers=headers)
+    assert resp.status_code == 404

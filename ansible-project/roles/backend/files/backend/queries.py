@@ -116,3 +116,30 @@ def upsert_previous_parties(conn, factions):
     conn.commit()
     cur.close()
     return count
+
+
+def create_upcoming_party(conn, name):
+    cur = conn.cursor()
+    cur.execute('INSERT INTO upcoming_parties (name) VALUES (%s) RETURNING id', (name,))
+    party_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+    return party_id
+
+
+def rename_upcoming_party(conn, party_id, new_name):
+    cur = conn.cursor()
+    cur.execute('UPDATE upcoming_parties SET name = %s, updated_at = NOW() WHERE id = %s', (new_name, party_id))
+    updated = cur.rowcount > 0
+    conn.commit()
+    cur.close()
+    return updated
+
+
+def delete_upcoming_party(conn, party_id):
+    cur = conn.cursor()
+    cur.execute('DELETE FROM upcoming_parties WHERE id = %s', (party_id,))
+    deleted = cur.rowcount > 0
+    conn.commit()
+    cur.close()
+    return deleted
