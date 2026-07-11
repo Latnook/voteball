@@ -25,6 +25,10 @@ resource "aws_instance" "app" {
     http_endpoint               = "enabled"
   }
 
+  root_block_device {
+    encrypted = true
+  }
+
   tags = {
     Name     = "${local.name_prefix}-app"
     Voteball = "app"
