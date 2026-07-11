@@ -4,4 +4,4 @@
 # doesn't consume app-config/app-secret via envFrom, so restarting it on a
 # DB-config change would just be unnecessary churn (and a brief LB blip).
 - name: restart app deployments
-  command: kubectl rollout restart deployment/backend deployment/worker -n devops-app
+  command: kubectl rollout restart deployment/backend deployment/worker -n voteball-app
