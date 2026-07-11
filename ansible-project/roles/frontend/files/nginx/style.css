@@ -1,0 +1,9 @@
+body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+h1 { font-size: 1.5rem; }
+fieldset { margin-bottom: 1.5rem; border: 1px solid #ccc; border-radius: 8px; padding: 1rem; }
+legend { font-weight: 600; padding: 0 0.5rem; }
+label { display: block; margin: 0.4rem 0; }
+select, button { font-size: 1rem; padding: 0.4rem; }
+button { cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 6px; padding: 0.6rem 1.2rem; }
+button:disabled { background: #999; }
+.error { color: #c00; }
