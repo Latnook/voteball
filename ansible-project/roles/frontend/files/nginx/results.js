@@ -10,11 +10,25 @@ function renderBars(containerId, rows, nameLookup) {
     const pct = Math.round((r.count / total) * 100);
     const row = document.createElement('div');
     row.className = 'bar-row';
-    row.innerHTML = `
-      <div class="bar-label">${label}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-      <div class="bar-count">${r.count}</div>
-    `;
+
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'bar-label';
+    labelDiv.textContent = label;
+
+    const trackDiv = document.createElement('div');
+    trackDiv.className = 'bar-track';
+    const fillDiv = document.createElement('div');
+    fillDiv.className = 'bar-fill';
+    fillDiv.style.width = `${pct}%`;
+    trackDiv.appendChild(fillDiv);
+
+    const countDiv = document.createElement('div');
+    countDiv.className = 'bar-count';
+    countDiv.textContent = r.count;
+
+    row.appendChild(labelDiv);
+    row.appendChild(trackDiv);
+    row.appendChild(countDiv);
     container.appendChild(row);
   });
 }

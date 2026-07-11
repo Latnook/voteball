@@ -27,14 +27,24 @@ async function loadOptions() {
   const prevDiv = document.getElementById('previous-party-options');
   data.previous_parties.forEach(p => {
     const label = document.createElement('label');
-    label.innerHTML = `<input type="radio" name="previous" value="${p.id}"> ${p.name}`;
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'previous';
+    input.value = p.id;
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(' ' + p.name));
     prevDiv.appendChild(label);
   });
 
   const upcomingDiv = document.getElementById('upcoming-party-options');
   data.upcoming_parties.forEach(p => {
     const label = document.createElement('label');
-    label.innerHTML = `<input type="checkbox" class="upcoming-checkbox" value="${p.id}"> ${p.name}`;
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.className = 'upcoming-checkbox';
+    input.value = p.id;
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(' ' + p.name));
     upcomingDiv.appendChild(label);
   });
 }
