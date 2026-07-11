@@ -49,5 +49,11 @@ def conn():
     cur.execute(SCHEMA)
     connection.commit()
     cur.close()
+
+    cur = connection.cursor()
+    cur.execute('INSERT INTO alert_state (id, last_seen_total) VALUES (1, 0)')
+    connection.commit()
+    cur.close()
+
     yield connection
     connection.close()
