@@ -1,0 +1,6 @@
+apiVersion: v2
+name: voteball
+description: Voteball backend/frontend/worker Deployments and Services for the k3s single-node cluster
+type: application
+version: 0.1.0
+appVersion: "1.0"

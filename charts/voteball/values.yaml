@@ -1,0 +1,35 @@
+image:
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+backend:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+frontend:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+worker:
+  # Singleton poller, not a request-serving tier — 2 replicas would just be
+  # 2 processes independently polling and computing identical rollups.
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
