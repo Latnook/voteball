@@ -58,14 +58,39 @@
     - nginx
 
 - name: Copy backend build context
+  # Explicit file list (not a whole-directory copy) -- the backend/ files
+  # directory is also where developers run pytest locally, which leaves
+  # .venv/__pycache__/.pytest_cache sitting alongside the source. A
+  # trailing-slash directory copy picks those up too (a .venv alone is
+  # thousands of files), needlessly slowing every deploy. Only the files
+  # the Dockerfile's COPY instructions actually reference are needed here.
   copy:
-    src: "{{ role_path }}/../backend/files/backend/"
-    dest: /home/ec2-user/voteball/backend/
+    src: "{{ role_path }}/../backend/files/backend/{{ item }}"
+    dest: "/home/ec2-user/voteball/backend/{{ item }}"
+  loop:
+    - Dockerfile
+    - .dockerignore
+    - requirements.txt
+    - app.py
+    - db.py
+    - queries.py
+    - knesset_sync.py
+    - schema.sql
+    - seed.sql
 
 - name: Copy worker build context
+  # Same rationale as the backend copy above.
   copy:
-    src: "{{ role_path }}/../worker/files/worker/"
-    dest: /home/ec2-user/voteball/worker/
+    src: "{{ role_path }}/../worker/files/worker/{{ item }}"
+    dest: "/home/ec2-user/voteball/worker/{{ item }}"
+  loop:
+    - Dockerfile
+    - .dockerignore
+    - requirements.txt
+    - worker.py
+    - db.py
+    - rollups.py
+    - alerts.py
 
 - name: Copy nginx build context (image, not the templated config yet)
   copy:

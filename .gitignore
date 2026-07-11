@@ -17,3 +17,4 @@ ansible-project/inventories/voteball/group_vars/all/main.yml
 __pycache__/
 *.pyc
 .pytest_cache/
+.venv/
