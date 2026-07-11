@@ -32,3 +32,21 @@ def test_vote_endpoint_sets_cookie_and_rejects_duplicate(client, conn):
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
     assert resp2.status_code == 409
+
+
+def test_vote_endpoint_invalid_previous_vote_status_returns_400(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'not_a_real_status', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 400
+    body = resp.get_json()
+    assert body == {'error': 'invalid vote data'}
+    assert 'CheckViolation' not in str(body)
+    assert 'psycopg2' not in str(body)

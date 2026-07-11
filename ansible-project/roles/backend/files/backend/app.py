@@ -40,9 +40,11 @@ def vote():
             cookie_token=token,
         )
     except ValueError:
-        conn.close()
         return jsonify({'error': 'You have already voted'}), 409
-    conn.close()
+    except Exception:
+        return jsonify({'error': 'invalid vote data'}), 400
+    finally:
+        conn.close()
 
     resp = make_response(jsonify({'vote_id': vote_id}), 201)
     if is_new_token:

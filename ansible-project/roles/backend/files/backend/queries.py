@@ -50,5 +50,8 @@ def insert_vote(conn, league_id, club_id, previous_vote_status, previous_party_i
     except psycopg2.errors.UniqueViolation:
         conn.rollback()
         raise ValueError(f'duplicate cookie_token: {cookie_token}')
+    except Exception:
+        conn.rollback()
+        raise
     finally:
         cur.close()

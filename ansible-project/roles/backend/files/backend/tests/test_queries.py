@@ -74,6 +74,27 @@ def test_insert_vote_with_club_and_multiple_upcoming_parties(conn):
     cur.close()
 
 
+def test_insert_vote_invalid_previous_vote_status_raises_and_rolls_back(conn):
+    league_id, _ = _epl_and_liverpool(conn)
+
+    with pytest.raises(Exception):
+        queries.insert_vote(
+            conn, league_id=league_id, club_id=None,
+            previous_vote_status='not_a_real_status', previous_party_id=None,
+            upcoming_vote_status='undecided', upcoming_party_ids=[],
+            cookie_token='bad-status-token',
+        )
+
+    # connection must be usable afterward - proves rollback happened
+    vote_id = queries.insert_vote(
+        conn, league_id=league_id, club_id=None,
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='good-token-after-bad',
+    )
+    assert vote_id > 0
+
+
 def test_insert_vote_duplicate_cookie_token_rejected(conn):
     league_id, _ = _epl_and_liverpool(conn)
 
