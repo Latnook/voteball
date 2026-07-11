@@ -98,3 +98,21 @@ def get_results_by_party(conn, party_type, party_id):
     breakdown = [{'league_id': r[0], 'club_id': r[1], 'count': r[2]} for r in cur.fetchall()]
     cur.close()
     return {'breakdown': breakdown}
+
+
+def upsert_previous_parties(conn, factions):
+    cur = conn.cursor()
+    count = 0
+    for faction in factions:
+        cur.execute(
+            '''INSERT INTO previous_parties (name, knesset_faction_id, updated_at)
+               VALUES (%s, %s, NOW())
+               ON CONFLICT (name) DO UPDATE SET
+                   knesset_faction_id = EXCLUDED.knesset_faction_id,
+                   updated_at = NOW()''',
+            (faction['name'], faction['knesset_faction_id'])
+        )
+        count += 1
+    conn.commit()
+    cur.close()
+    return count

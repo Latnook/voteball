@@ -151,3 +151,28 @@ def test_get_results_by_party_previous(conn):
 
     result = queries.get_results_by_party(conn, 'previous', party_x)
     assert result['breakdown'] == [{'league_id': league_id, 'club_id': club_id, 'count': 7}]
+
+
+def test_upsert_previous_parties_inserts_and_updates(conn):
+    import queries
+    n = queries.upsert_previous_parties(conn, [
+        {'knesset_faction_id': '1096', 'name': 'Likud'},
+        {'knesset_faction_id': '1101', 'name': 'Torah Judaism'},
+    ])
+    assert n == 2
+
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM previous_parties')
+    assert cur.fetchone()[0] == 2
+    cur.close()
+
+    # Re-sync with an updated faction id for the same name — should update, not duplicate
+    queries.upsert_previous_parties(conn, [
+        {'knesset_faction_id': '9999', 'name': 'Likud'},
+    ])
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM previous_parties')
+    assert cur.fetchone()[0] == 2
+    cur.execute("SELECT knesset_faction_id FROM previous_parties WHERE name = 'Likud'")
+    assert cur.fetchone()[0] == '9999'
+    cur.close()

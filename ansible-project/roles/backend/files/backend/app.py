@@ -1,9 +1,23 @@
 import uuid
+import os
+from functools import wraps
 from flask import Flask, jsonify, request, make_response
 import db
 import queries
+import knesset_sync
 
 app = Flask(__name__)
+
+ADMIN_SECRET = os.environ['ADMIN_SECRET']
+
+
+def require_admin(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if request.headers.get('X-Admin-Secret') != ADMIN_SECRET:
+            return jsonify({'error': 'unauthorized'}), 401
+        return f(*args, **kwargs)
+    return wrapper
 
 
 @app.route('/health', methods=['GET'])
@@ -75,6 +89,16 @@ def results():
         conn.close()
 
     return jsonify(result)
+
+
+@app.route('/api/admin/sync-previous-parties', methods=['POST'])
+@require_admin
+def sync_previous_parties():
+    factions = knesset_sync.fetch_current_factions()
+    conn = db.get_db()
+    count = queries.upsert_previous_parties(conn, factions)
+    conn.close()
+    return jsonify({'synced': count})
 
 
 if __name__ == '__main__':
