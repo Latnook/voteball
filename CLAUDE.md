@@ -54,6 +54,56 @@ Admin endpoints (`/api/admin/...`) are protected by the `require_admin` decorato
 checks the `X-Admin-Secret` header against the `ADMIN_SECRET` env var. Reuse this decorator for any
 new admin route — don't hand-roll the check.
 
+### API surface
+
+| Route | Method | Auth | Notes |
+|---|---|---|---|
+| `/health` | GET | none | liveness/readiness probe target |
+| `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties, consumed by both frontend pages |
+| `/api/vote` | POST | none, cookie-deduped | sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids` (client also validates this before submitting) |
+| `/api/results` | GET | none | `?by=club\|league\|id=N` or `?by=party&type=previous\|upcoming&id=N`; reads the worker-computed rollup tables |
+| `/api/admin/sync-previous-parties` | POST | `X-Admin-Secret` | pulls current Knesset factions, upserts `previous_parties` |
+| `/api/admin/upcoming-parties` | POST | `X-Admin-Secret` | create |
+| `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | `X-Admin-Secret` | rename/remove |
+
+Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
+(dashboard, reads `/api/results`). Both render backend-derived names via `createElement`/`textContent`,
+never `innerHTML` string interpolation — `previous_parties`/`upcoming_parties` names come from an
+external API and admin input respectively, neither is safe to trust as pre-escaped HTML.
+
+## Deployment
+
+Provisioning and deployment are two separate steps, run in this order:
+
+1. **Terraform** (`terraform/`) creates the AWS infra: EC2 (k3s node), RDS (Postgres), EIP, Route53
+   record for `voteball.latnook.com`, IAM role, SNS topic. Needs `terraform/voteball.tfvars` (gitignored
+   — copy from `voteball.tfvars.example`).
+2. **`scripts/generate-inventory.sh`** reads live Terraform outputs and writes the (gitignored,
+   generated) Ansible inventory: `ansible-project/inventories/voteball/hosts` and
+   `group_vars/all/main.yml`.
+3. **Ansible** (`ansible-project/site-k3s.yml`) installs Docker + k3s on the node, then `helm upgrade
+   --install`s the `charts/voteball` chart, which deploys the three containers as Kubernetes
+   Deployments/Services in the `voteball-app` namespace.
+
+### Secrets: ansible-vault
+
+`ansible-project/inventories/voteball/group_vars/all/secrets.yml` (holds `db_pass`, `admin_secret`) is
+encrypted with `ansible-vault` and **committed encrypted** — only the vault password itself
+(`ansible-project/.vault_pass`, gitignored, never committed) is kept out of git. `ansible.cfg` points
+`vault_password_file` at it, so `ansible-playbook`/`ansible-vault view|edit` work transparently once
+that file exists locally. To bootstrap a fresh checkout:
+
+```bash
+cd ansible-project
+openssl rand -hex 32 > .vault_pass
+ansible-vault edit inventories/voteball/group_vars/all/secrets.yml --vault-password-file .vault_pass
+```
+
+`db_pass` must match whatever `db_password` is set to in `terraform/voteball.tfvars` (Terraform is the
+source of truth for the RDS master password; Ansible only ever reads it, never sets it independently).
+
+See `docs/deploy.md` for the full deploy/destroy runbook.
+
 ## Common commands
 
 ### Terraform (`terraform/`)
@@ -92,6 +142,26 @@ Same real-Postgres TDD pattern as the backend; reuse the `voteball-test-db` cont
 tests need `schema.sql` (owned by the backend) loaded into that database, since the worker itself
 never creates schema.
 
+### Frontend (`ansible-project/roles/frontend/files/nginx/`)
+
+Plain HTML/CSS/vanilla JS, no build step, no automated test suite (matches the S3App precedent) —
+verify by driving the real page in a browser (or during Task 21-style end-to-end deploy verification).
+
+### Helm chart (`charts/voteball/`)
+
+```bash
+helm lint charts/voteball
+helm template voteball charts/voteball --namespace voteball-app   # renders without a live cluster
+```
+
+### Ansible
+
+```bash
+cd ansible-project
+ansible-playbook --syntax-check site-k3s.yml
+```
+Requires `.vault_pass` and a generated inventory (see Deployment) to actually run against a host.
+
 ## Key constraints (see `docs/plan.md` Global Constraints for the full list)
 
 - Region `il-central-1`; EC2 in AZ `il-central-1c`; RDS in AZ `il-central-1b`.
@@ -106,7 +176,9 @@ never creates schema.
 
 ## Gitignored / generated files
 
-`terraform/voteball.tfvars`, `terraform/terraform.tfstate*`, Ansible's generated
-`inventories/voteball/hosts` and `group_vars/all/{main,secrets}.yml`, and `*.pem` files are all
-gitignored — they're either real secrets or machine-specific generated output
-(`scripts/generate-inventory.sh` produces the Ansible inventory from live Terraform outputs).
+`terraform/voteball.tfvars`, `terraform/terraform.tfstate*`, `*.pem` files, Ansible's generated
+`inventories/voteball/hosts` and `group_vars/all/main.yml` (written by
+`scripts/generate-inventory.sh` from live Terraform outputs), and `ansible-project/.vault_pass` are all
+gitignored — either real secrets or machine-specific generated output. Note
+`group_vars/all/secrets.yml` is **not** gitignored: it's committed, but ansible-vault-encrypted (see
+Deployment section above).
