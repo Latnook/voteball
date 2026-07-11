@@ -1,3 +1,6 @@
+import psycopg2
+
+
 def get_options(conn):
     cur = conn.cursor()
 
@@ -20,3 +23,32 @@ def get_options(conn):
         'previous_parties': previous_parties,
         'upcoming_parties': upcoming_parties,
     }
+
+
+def insert_vote(conn, league_id, club_id, previous_vote_status, previous_party_id,
+                 upcoming_vote_status, upcoming_party_ids, cookie_token):
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            '''INSERT INTO votes
+               (league_id, club_id, previous_vote_status, previous_party_id,
+                upcoming_vote_status, cookie_token)
+               VALUES (%s, %s, %s, %s, %s, %s) RETURNING id''',
+            (league_id, club_id, previous_vote_status, previous_party_id,
+             upcoming_vote_status, cookie_token)
+        )
+        vote_id = cur.fetchone()[0]
+
+        for party_id in upcoming_party_ids:
+            cur.execute(
+                'INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)',
+                (vote_id, party_id)
+            )
+
+        conn.commit()
+        return vote_id
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        raise ValueError(f'duplicate cookie_token: {cookie_token}')
+    finally:
+        cur.close()
