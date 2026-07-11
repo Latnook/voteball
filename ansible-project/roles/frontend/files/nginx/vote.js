@@ -1,6 +1,13 @@
 async function loadOptions() {
-  const res = await fetch('/api/options');
-  const data = await res.json();
+  let data;
+  try {
+    const res = await fetch('/api/options');
+    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
+    data = await res.json();
+  } catch (err) {
+    document.getElementById('error-message').textContent = 'Couldn\'t load the form — try refreshing.';
+    return;
+  }
 
   const leagueSelect = document.getElementById('league-select');
   data.leagues.forEach(l => {

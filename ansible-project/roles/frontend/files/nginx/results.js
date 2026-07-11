@@ -54,13 +54,27 @@ function clubOrLeagueName(row) {
   return l ? `${l.name} (league-wide)` : `league #${row.league_id}`;
 }
 
+function showResultsError(containerIds) {
+  containerIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<p class="error">Couldn\'t load results — try refreshing.</p>';
+  });
+}
+
 async function loadResultsByClubOrLeague() {
   const clubId = document.getElementById('club-picker').value;
   const leagueId = document.getElementById('league-picker').value;
 
   const query = clubId ? `by=club&id=${clubId}` : `by=league&id=${leagueId}`;
-  const res = await fetch(`/api/results?${query}`);
-  const data = await res.json();
+  let data;
+  try {
+    const res = await fetch(`/api/results?${query}`);
+    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
+    data = await res.json();
+  } catch (err) {
+    showResultsError(['previous-results', 'upcoming-results']);
+    return;
+  }
 
   renderBars('previous-results', data.previous.map(r => ({ count: r.count, key: r.party_id })), r => previousPartyName(r.key));
   renderBars('upcoming-results', data.upcoming.map(r => ({ count: r.count, key: r.party_id })), r => upcomingPartyName(r.key));
@@ -71,11 +85,19 @@ async function loadResultsByParty() {
   const partyId = document.getElementById('party-picker').value;
   if (!partyId) return;
 
-  const res = await fetch(`/api/results?by=party&type=${partyType}&id=${partyId}`);
-  const data = await res.json();
-
   const targetId = partyType === 'previous' ? 'previous-results' : 'upcoming-results';
   const otherId = partyType === 'previous' ? 'upcoming-results' : 'previous-results';
+
+  let data;
+  try {
+    const res = await fetch(`/api/results?by=party&type=${partyType}&id=${partyId}`);
+    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
+    data = await res.json();
+  } catch (err) {
+    showResultsError([targetId]);
+    return;
+  }
+
   document.getElementById(otherId).innerHTML = '<p>Switch party type to see this breakdown.</p>';
   renderBars(targetId, data.breakdown.map(r => ({ count: r.count, club_id: r.club_id, league_id: r.league_id })), clubOrLeagueName);
 }
@@ -95,8 +117,14 @@ function renderPartyPicker() {
 }
 
 async function init() {
-  const res = await fetch('/api/options');
-  optionsData = await res.json();
+  try {
+    const res = await fetch('/api/options');
+    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
+    optionsData = await res.json();
+  } catch (err) {
+    showResultsError(['previous-results', 'upcoming-results']);
+    return;
+  }
 
   const leaguePicker = document.getElementById('league-picker');
   optionsData.leagues.forEach(l => {
