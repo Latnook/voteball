@@ -1,0 +1,67 @@
+---
+# Shared by app-compose and k3s (included via
+# "{{ role_path }}/../app-compose/tasks/certbot.yml" from the latter, the
+# same cross-role pattern already used for the Docker build contexts) so
+# there's one source of truth for how the TLS cert gets obtained and kept
+# renewing, regardless of which playbook stands the box up.
+- name: Install certbot
+  dnf:
+    name: certbot
+    state: present
+  become: true
+
+- name: Install certbot Route53 DNS plugin
+  # DNS-01, not HTTP-01: the frontend's k3s Service is a LoadBalancer whose
+  # ServiceLB proxy binds host port 80 directly and would conflict with
+  # certbot's --standalone authenticator on every renewal. DNS-01 needs no
+  # port at all -- just the Route53 permissions granted to this instance's
+  # role in terraform/modules/iam. This is also what makes it safe to run
+  # this file from the k3s role even after k3s/ServiceLB already owns
+  # port 80/443 -- the old --standalone flow could only ever run *before*
+  # k3s existed.
+  dnf:
+    name: python3-certbot-dns-route53
+    state: present
+  become: true
+
+- name: Check if SSL certificate exists
+  stat:
+    path: /etc/letsencrypt/live/{{ frontend_domain }}/fullchain.pem
+  register: cert_stat
+  become: true
+
+- name: Check whether the existing cert already renews via dns-route53
+  # Older certs may have been issued with --standalone; grep against a
+  # missing renewal conf (fresh install) also returns non-zero, which is
+  # exactly the "needs (re)issuing" case handled below.
+  command: grep -qx 'authenticator = dns-route53' /etc/letsencrypt/renewal/{{ frontend_domain }}.conf
+  register: dns_route53_active
+  changed_when: false
+  failed_when: false
+  become: true
+
+- name: Obtain/reissue SSL certificate (certbot dns-route53)
+  # --force-renewal: needed to transition a box whose cert was already
+  # issued via --standalone and isn't yet within its 30-day expiry window --
+  # certbot certonly silently no-ops ("not yet due for renewal") without it,
+  # which would leave the renewal conf's authenticator on standalone
+  # indefinitely. No-op-safe on a fresh install too.
+  # --dns-route53-propagation-seconds was dropped: current certbot-dns-route53
+  # polls Route53's GetChange for INSYNC instead of sleeping a fixed delay.
+  command: >
+    certbot certonly --dns-route53 --force-renewal
+    -d {{ frontend_domain }}
+    --non-interactive --agree-tos
+    -m {{ certbot_email }}
+  become: true
+  when: not cert_stat.stat.exists or dns_route53_active.rc != 0
+
+- name: Enable and start the certbot renewal timer
+  # Shipped disabled by the certbot RPM (certbot-renew.timer, runs twice
+  # daily via /usr/bin/certbot renew). Actually renewing is a no-op unless
+  # the cert is within its 30-day expiry window.
+  systemd:
+    name: certbot-renew.timer
+    state: started
+    enabled: true
+  become: true

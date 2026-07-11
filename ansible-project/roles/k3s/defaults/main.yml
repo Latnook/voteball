@@ -1,0 +1,5 @@
+app_version: "1.0"
+# Matches app-compose/frontend/frontend-docker's defaults -- certbot.yml
+# (borrowed from app-compose/tasks/) needs this and the k3s role has no
+# other source for it since its play doesn't include the app-compose role.
+certbot_email: "8847444@proton.me"

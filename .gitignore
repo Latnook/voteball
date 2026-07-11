@@ -1,0 +1,18 @@
+# SSH private keys
+*.pem
+
+# Terraform secrets and generated state
+terraform/voteball.tfvars
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform/
+
+# Ansible secrets and generated inventory
+ansible-project/inventories/voteball/group_vars/all/secrets.yml
+ansible-project/inventories/voteball/hosts
+ansible-project/inventories/voteball/group_vars/all/main.yml
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/

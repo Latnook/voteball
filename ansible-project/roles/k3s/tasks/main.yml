@@ -1,0 +1,260 @@
+---
+# k3s is installed with INSTALL_K3S_EXEC="--docker" below (reuses the host's
+# Docker daemon instead of containerd) and this role also runs `docker build`
+# directly for the app images, so Docker is a hard dependency of this role,
+# not just an assumption carried over from having run site-compose.yml first.
+# Mirrors the app-compose role's install steps exactly.
+- name: Install Docker
+  dnf:
+    name: docker
+    state: present
+
+- name: Enable and start Docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add ec2-user to docker group
+  user:
+    name: ec2-user
+    groups: docker
+    append: true
+
+- name: Install k3s (Docker-backed — reuses the host's existing Docker daemon, no image registry needed)
+  shell: |
+    curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--docker --disable=traefik" sh -
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Wait for k3s to be ready
+  command: k3s kubectl get nodes
+  register: k3s_nodes
+  until: "'Ready' in k3s_nodes.stdout"
+  retries: 12
+  delay: 5
+  changed_when: false
+
+- name: Symlink kubectl to k3s kubectl for convenience
+  file:
+    src: /usr/local/bin/k3s
+    dest: /usr/local/bin/kubectl
+    state: link
+  failed_when: false  # k3s installer may already create this symlink; ignore_errors would also swallow unrelated failures
+
+- name: Install Helm
+  shell: |
+    curl -sfL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  args:
+    creates: /usr/local/bin/helm
+
+- name: Obtain/renew the TLS cert and enable its renewal timer
+  # Must run before "Deploy the chart" -- nginx's Deployment mounts
+  # /etc/letsencrypt via hostPath (type: Directory) and needs a live cert on
+  # disk before that pod can even start. Previously this was a manual
+  # prerequisite ("run site-compose.yml once on a fresh box first, since
+  # only its certbot step provisions the cert"); that ordering constraint
+  # only existed because the old --standalone authenticator needed port 80
+  # free, which is impossible once k3s's ServiceLB owns it. DNS-01 has no
+  # such dependency, so site-k3s.yml can now provision its own cert on a
+  # genuinely fresh EC2 with no other playbook run first.
+  include_tasks: "{{ role_path }}/../app-compose/tasks/certbot.yml"
+
+- name: Create app directory structure
+  file:
+    path: "/home/ec2-user/s3app/{{ item }}"
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+  loop:
+    - backend
+    - worker
+    - nginx
+
+- name: Copy backend build context
+  copy:
+    src: "{{ role_path }}/../app-compose/files/backend/"
+    dest: /home/ec2-user/s3app/backend/
+
+- name: Copy worker build context
+  copy:
+    src: "{{ role_path }}/../app-compose/files/worker/"
+    dest: /home/ec2-user/s3app/worker/
+
+- name: Copy nginx build context (image, not the templated config yet)
+  copy:
+    src: "{{ role_path }}/../app-compose/files/nginx/"
+    dest: /home/ec2-user/s3app/nginx/
+
+- name: Render nginx.conf from the app-compose role's existing template
+  # frontend_domain is already an inventory variable (see group_vars) --
+  # redeclaring it here as "{{ frontend_domain }}" caused Ansible to try to
+  # resolve the key using the vars dict being defined at that exact moment,
+  # which includes itself: infinite self-reference ("Recursive loop
+  # detected in template: maximum recursion depth exceeded"). The
+  # app-compose role never redeclares it for the same template; neither
+  # should this one.
+  template:
+    src: "{{ role_path }}/../app-compose/templates/nginx.conf.j2"
+    dest: /home/ec2-user/s3app/nginx/nginx.conf.j2.rendered
+
+- name: Bake the rendered nginx.conf into the nginx build context
+  copy:
+    remote_src: true
+    src: /home/ec2-user/s3app/nginx/nginx.conf.j2.rendered
+    dest: /home/ec2-user/s3app/nginx/nginx.conf
+
+# Plain `docker build` via command, not community.docker.docker_image: the
+# latter requires the Python `docker`/`requests` SDK on the remote host,
+# which isn't installed there and isn't a dependency anywhere else in this
+# project. backend-docker and app-compose both already build images this
+# same way (shelling out to the docker CLI directly) — matching that
+# proven, dependency-free pattern instead of introducing a new one.
+- name: Build backend image
+  command: docker build -t s3app-backend:{{ app_version }} /home/ec2-user/s3app/backend
+
+- name: Build worker image
+  command: docker build -t s3app-worker:{{ app_version }} /home/ec2-user/s3app/worker
+
+- name: Build nginx image
+  command: docker build -t s3app-nginx:{{ app_version }} /home/ec2-user/s3app/nginx
+
+- name: Create k8s directory on the node
+  # copy does NOT auto-create a missing parent directory when dest is a
+  # single-file path (only when src is a directory or dest ends in "/") --
+  # confirmed live when this failed with "Destination directory
+  # /home/ec2-user/k8s does not exist" on a genuinely fresh EC2 that never
+  # inherited the directory from the pre-Helm plain-manifest deployment.
+  file:
+    path: /home/ec2-user/k8s
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+
+- name: Copy namespace.yaml to the node
+  # namespace.yaml is the one k8s/ manifest still applied directly with
+  # kubectl (everything else moved into the Helm chart in charts/s3app/).
+  # No remove/recreate-directory guard needed here -- that pattern existed
+  # only to protect a directory-wide `kubectl apply -f /home/ec2-user/k8s/`
+  # from picking up stray files (e.g. the .example.yaml docs), which doesn't
+  # apply since only this one file is ever copied.
+  copy:
+    src: "{{ playbook_dir }}/../k8s/namespace.yaml"
+    dest: /home/ec2-user/k8s/namespace.yaml
+
+- name: Apply namespace first (everything else depends on it existing)
+  command: kubectl apply -f /home/ec2-user/k8s/namespace.yaml
+
+- name: Render the app-config ConfigMap manifest in-memory
+  set_fact:
+    app_config_manifest: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: app-config
+        namespace: devops-app
+      data:
+        DB_HOST: "{{ db_host }}"
+        DB_NAME: "{{ db_name | default('postgres') }}"
+        DB_SSLMODE: "{{ db_sslmode | default('require') }}"
+        S3_BUCKET: "{{ s3_bucket }}"
+        SNS_TOPIC: "{{ sns_topic }}"
+        AWS_REGION: "{{ aws_region }}"
+
+# Pods that already read the old ConfigMap via envFrom don't pick up a new
+# value on their own -- Kubernetes only injects env vars at container
+# start. Task 8's first live deploy left one backend pod permanently
+# crash-looping on a stale value from an earlier attempt until it happened
+# to restart on its own. Notifying a rollout restart here (only when
+# `kubectl apply` actually reports a change, not "unchanged") makes that
+# automatic and immediate instead of relying on CrashLoopBackOff's own
+# retry timing.
+- name: Apply the app-config ConfigMap via stdin
+  command: kubectl apply -f -
+  args:
+    stdin: "{{ app_config_manifest }}"
+  register: configmap_apply_result
+  changed_when: "'unchanged' not in configmap_apply_result.stdout"
+  notify: restart app deployments
+
+- name: Render the app-secret Secret manifest in-memory
+  # data (base64), not stringData: the API server converts stringData into
+  # data and never persists the stringData field itself, but kubectl apply's
+  # three-way merge diffs the new manifest against the *live* object -- so a
+  # resubmitted stringData field always looks like a new field being added,
+  # and kubectl never reports 'unchanged' even when the decoded contents are
+  # identical (confirmed live: reapplying an identical stringData manifest
+  # always printed 'configured'; switching to pre-encoded data made a second,
+  # identical apply correctly print 'unchanged'). This is why the ConfigMap
+  # task above never had this problem -- it already used plain `data`.
+  set_fact:
+    app_secret_manifest: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: app-secret
+        namespace: devops-app
+      type: Opaque
+      data:
+        DB_USER: "{{ db_user | default('postgres') | b64encode }}"
+        DB_PASS: "{{ db_pass | b64encode }}"
+  no_log: true
+
+- name: Apply the app-secret Secret via stdin
+  command: kubectl apply -f -
+  args:
+    stdin: "{{ app_secret_manifest }}"
+  register: secret_apply_result
+  changed_when: "'unchanged' not in secret_apply_result.stdout"
+  notify: restart app deployments
+  no_log: true
+
+- name: Remove any previous Helm chart directory on the node (clean slate)
+  file:
+    path: /home/ec2-user/charts/
+    state: absent
+
+- name: Copy the Helm chart to the node
+  copy:
+    src: "{{ playbook_dir }}/../charts/s3app"
+    dest: /home/ec2-user/charts/
+
+- name: Deploy the chart
+  # KUBECONFIG must be set explicitly: k3s's own `kubectl` binary (symlinked
+  # above) has a built-in fallback to /etc/rancher/k3s/k3s.yaml, but Helm is
+  # a separate binary with no such fallback -- without this it defaults to
+  # http://localhost:8080 and fails with "connection refused" (found live
+  # on the first Helm-based prod deploy attempt).
+  command: >
+    helm upgrade --install s3app /home/ec2-user/charts/s3app
+    --namespace devops-app
+    --set image.tag={{ app_version }}
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+- name: Configure certbot to roll the frontend deployment after a real renewal
+  # /etc/sysconfig/certbot is read by the certbot-renew.timer/service shipped
+  # with the RPM (enabled in app-compose). nginx's pod mounts /etc/letsencrypt
+  # read-only via hostPath (see charts/s3app/templates/frontend-deployment.yaml)
+  # so new cert files land in the container automatically, but nginx itself
+  # never reloads on its own -- this hook only fires when certbot actually
+  # renews (not on every timer tick), and the rollout restart is zero-downtime
+  # since frontend runs 2 replicas.
+  lineinfile:
+    path: /etc/sysconfig/certbot
+    regexp: '^DEPLOY_HOOK='
+    line: >-
+      DEPLOY_HOOK="--deploy-hook 'KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      kubectl rollout restart deployment/frontend -n devops-app'"
+
+# Handlers only run at end-of-play by default -- without this, the rollout
+# restart notified above would fire *after* the wait-for-Available check
+# below, not before it, defeating the point.
+- name: Flush handlers now so a ConfigMap/Secret change restarts pods before we wait for Available
+  meta: flush_handlers
+
+- name: Wait for all deployments to report Available
+  command: >
+    kubectl wait --for=condition=Available deployment
+    --all -n devops-app --timeout=180s
+  changed_when: false
