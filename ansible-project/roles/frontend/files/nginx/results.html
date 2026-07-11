@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voteball — Results</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .bar-row { display: flex; align-items: center; margin: 0.3rem 0; }
+    .bar-label { width: 220px; font-size: 0.9rem; }
+    .bar-track { flex: 1; background: #eee; border-radius: 4px; height: 1.2rem; margin: 0 0.5rem; }
+    .bar-fill { background: #1a73e8; height: 100%; border-radius: 4px; }
+    .bar-count { width: 40px; text-align: right; font-size: 0.85rem; }
+    .toggle { margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Voteball — Results</h1>
+  <p id="total-votes"></p>
+
+  <div class="toggle">
+    <label><input type="radio" name="mode" value="club-league" checked> Start from a club/league</label>
+    <label><input type="radio" name="mode" value="party"> Start from a party</label>
+  </div>
+
+  <div id="club-league-mode">
+    <label>League: <select id="league-picker"></select></label>
+    <label>Club (optional): <select id="club-picker"><option value="">— whole league —</option></select></label>
+  </div>
+
+  <div id="party-mode" style="display:none">
+    <label>Party type:
+      <select id="party-type-picker">
+        <option value="previous">Previous (current Knesset)</option>
+        <option value="upcoming">Upcoming election</option>
+      </select>
+    </label>
+    <label>Party: <select id="party-picker"></select></label>
+  </div>
+
+  <h2>Previous Knesset vote breakdown</h2>
+  <div id="previous-results"></div>
+
+  <h2>Upcoming election breakdown</h2>
+  <div id="upcoming-results"></div>
+
+  <script src="results.js"></script>
+</body>
+</html>
