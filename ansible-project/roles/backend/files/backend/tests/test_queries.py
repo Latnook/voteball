@@ -111,3 +111,43 @@ def test_insert_vote_duplicate_cookie_token_rejected(conn):
             upcoming_vote_status='undecided', upcoming_party_ids=[],
             cookie_token='dup-token',
         )
+
+
+def _seed_rollup_rows(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    club_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Party X') RETURNING id")
+    party_x = cur.fetchone()[0]
+
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, club_id, party_x, 7)
+    )
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, %s, NULL, %s)',
+        (league_id, club_id, 3)
+    )
+    conn.commit()
+    cur.close()
+    return league_id, club_id, party_x
+
+
+def test_get_results_by_club_includes_did_not_vote(conn):
+    import queries
+    league_id, club_id, party_x = _seed_rollup_rows(conn)
+
+    result = queries.get_results_by_club(conn, club_id)
+    previous = {row['party_id']: row['count'] for row in result['previous']}
+    assert previous[party_x] == 7
+    assert previous[None] == 3
+
+
+def test_get_results_by_party_previous(conn):
+    import queries
+    league_id, club_id, party_x = _seed_rollup_rows(conn)
+
+    result = queries.get_results_by_party(conn, 'previous', party_x)
+    assert result['breakdown'] == [{'league_id': league_id, 'club_id': club_id, 'count': 7}]

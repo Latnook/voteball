@@ -52,6 +52,31 @@ def vote():
     return resp
 
 
+@app.route('/api/results', methods=['GET'])
+def results():
+    by = request.args.get('by')
+    conn = db.get_db()
+    try:
+        if by == 'club':
+            club_id = request.args.get('id', type=int)
+            result = queries.get_results_by_club(conn, club_id)
+        elif by == 'league':
+            league_id = request.args.get('id', type=int)
+            result = queries.get_results_by_league(conn, league_id)
+        elif by == 'party':
+            party_type = request.args.get('type')
+            party_id = request.args.get('id', type=int)
+            if party_type not in ('previous', 'upcoming'):
+                return jsonify({'error': "type must be 'previous' or 'upcoming'"}), 400
+            result = queries.get_results_by_party(conn, party_type, party_id)
+        else:
+            return jsonify({'error': "by must be 'club', 'league', or 'party'"}), 400
+    finally:
+        conn.close()
+
+    return jsonify(result)
+
+
 if __name__ == '__main__':
     conn = db.get_db()
     db.init_db(conn)

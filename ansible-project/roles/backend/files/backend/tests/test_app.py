@@ -50,3 +50,15 @@ def test_vote_endpoint_invalid_previous_vote_status_returns_400(client, conn):
     assert body == {'error': 'invalid vote data'}
     assert 'CheckViolation' not in str(body)
     assert 'psycopg2' not in str(body)
+
+
+def test_results_by_club_endpoint(client, conn):
+    import queries
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    club_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.get(f'/api/results?by=club&id={club_id}')
+    assert resp.status_code == 200
+    assert resp.get_json() == {'previous': [], 'upcoming': []}
