@@ -1,8 +1,11 @@
 # Deploy / destroy guide
 
-> **Status:** drafted from the implementation plan; not yet verified against a real
-> deploy. Once the first live deployment (Task 21) succeeds, this note is removed
-> and any step that turned out to need correction is fixed in place.
+> **Status:** verified end-to-end against a real deploy on 2026-07-12 —
+> infrastructure provisioned, site reachable over HTTPS with a valid cert,
+> vote submission → worker rollup → results all confirmed working, and the
+> admin Knesset sync pulled real data live. The steps below reflect what
+> actually worked, including two fixes discovered during that first deploy
+> (see "Known gotchas" at the end).
 
 ## Prerequisites
 
@@ -87,3 +90,35 @@ Route 53 record, IAM role/policy, and SNS topic.
 `terraform.tfstate` and `voteball.tfvars` are gitignored and local-only — if
 you lose them, `terraform destroy` can't target the right resources and
 cleanup has to be done manually via the AWS console/CLI.
+
+## After first deploy: confirm the SNS subscription
+
+`terraform apply` creates the milestone-alert email subscription in
+`Pending Confirmation` state — check the inbox for `notification_email`
+(set in `voteball.tfvars`) and click the confirmation link, or milestone
+alerts will silently never arrive. Verify with:
+
+```bash
+aws sns list-subscriptions-by-topic --topic-arn "$(cd terraform && terraform output -raw sns_topic_arn)" --region il-central-1
+```
+`SubscriptionArn` should be a real ARN, not `PendingConfirmation`.
+
+## Known gotchas (found during the first real deploy)
+
+- **Verify `ami_id` before trusting its description.** `terraform/variables.tf`'s
+  `ami_id` default was once a mislabeled golden image from an unrelated
+  project (its AWS description said "Amazon Linux 2023" but it was actually
+  a snapshot of a live app server, complete with that app's code and an
+  auto-starting service competing for resources). If you ever change this
+  value, verify what you're actually pointing at:
+  `aws ec2 describe-images --image-ids <ami> --query 'Images[0].Name'`.
+- **`t3.small` can CPU-throttle mid-deploy.** It's a burstable instance;
+  Docker+k3s install plus three image builds back-to-back can exhaust its
+  credit balance, throttling everything to baseline for the rest of the
+  run. The default is `t3.medium` for headroom — cheap insurance
+  (~$0.024/hr more) against a deploy that silently crawls for 20+ minutes.
+- **Don't run `pytest` inside a `files/<service>/` directory right before
+  deploying** without checking for leftover `.venv`/`__pycache__`/
+  `.pytest_cache`. The Ansible copy tasks now copy an explicit file list
+  (not a whole-directory copy), so stray local artifacts no longer get
+  shipped to the server — but it's worth knowing why that safeguard exists.
