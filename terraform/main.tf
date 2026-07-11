@@ -39,14 +39,14 @@ module "networking" {
 }
 
 module "notifications" {
-  source              = "./modules/notifications"
-  notification_email  = var.notification_email
+  source             = "./modules/notifications"
+  notification_email = var.notification_email
 }
 
 module "iam" {
-  source                   = "./modules/iam"
-  notifications_topic_arn  = module.notifications.topic_arn
-  hosted_zone_arn          = "arn:aws:route53:::hostedzone/${data.aws_route53_zone.primary.zone_id}"
+  source                  = "./modules/iam"
+  notifications_topic_arn = module.notifications.topic_arn
+  hosted_zone_arn         = "arn:aws:route53:::hostedzone/${data.aws_route53_zone.primary.zone_id}"
 }
 
 module "database" {
