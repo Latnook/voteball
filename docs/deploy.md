@@ -28,6 +28,16 @@ ansible-vault encrypt inventories/voteball/group_vars/all/secrets.yml --vault-pa
 cd ..
 ```
 
+**Back up these 4 files somewhere other than this disk** (a password manager entry
+is enough — they're all small text/key files): `Voteball-EC2-pem.pem`,
+`terraform/voteball.tfvars`, `ansible-project/.vault_pass`, and
+`terraform/terraform.tfstate` (once it exists, after your first `apply`).
+None of them are in git (by design — they're secrets or machine-specific
+state) and none of them are recoverable if this machine is lost. In
+particular: `.vault_pass` is the only thing that can decrypt `secrets.yml`
+— if it's gone, the encrypted file in the repo is permanently unreadable,
+no exceptions, and you'd be starting over with new secrets and new infra.
+
 ## Deploy
 
 ```bash
