@@ -62,3 +62,11 @@ CREATE TABLE IF NOT EXISTS rollup_upcoming (
 );
 CREATE INDEX IF NOT EXISTS idx_rollup_upcoming_league_club ON rollup_upcoming (league_id, club_id);
 CREATE INDEX IF NOT EXISTS idx_rollup_upcoming_party ON rollup_upcoming (upcoming_party_id);
+
+CREATE TABLE IF NOT EXISTS rollup_previous_upcoming (
+    previous_party_id INTEGER,
+    upcoming_party_id INTEGER,
+    vote_count INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rollup_previous_upcoming_previous ON rollup_previous_upcoming (previous_party_id);
+CREATE INDEX IF NOT EXISTS idx_rollup_previous_upcoming_upcoming ON rollup_previous_upcoming (upcoming_party_id);

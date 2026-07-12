@@ -36,8 +36,8 @@ standalone Ansible playbook + Helm chart:
   schema bootstrap (`init_db`, which loads `schema.sql` then `seed.sql` — the backend is the only
   container that ever creates schema).
 - **worker** (`ansible-project/roles/worker/files/worker/`) — Python batch/loop process that
-  recomputes the `rollup_previous`/`rollup_upcoming` tables from `votes`/`vote_upcoming_parties`, and
-  sends milestone SNS alerts.
+  recomputes the `rollup_previous`/`rollup_upcoming`/`rollup_previous_upcoming` tables from
+  `votes`/`vote_upcoming_parties`, and sends milestone SNS alerts.
 
 **Each container's `files/` directory is independently copied and built — there is no shared Python
 package between backend and worker.** The worker has its own near-duplicate `db.py` rather than
@@ -46,8 +46,8 @@ introducing a shared module unless the plan says to.
 
 Postgres (RDS) stores: static seed data (`leagues`, `clubs`, `previous_parties`, `upcoming_parties` —
 the two party tables are also admin-editable after seeding), raw votes (`votes`,
-`vote_upcoming_parties`), and worker-computed rollup tables (`rollup_previous`, `rollup_upcoming`) that
-the backend reads for fast `/api/results` responses.
+`vote_upcoming_parties`), and worker-computed rollup tables (`rollup_previous`, `rollup_upcoming`,
+`rollup_previous_upcoming`) that the backend reads for fast `/api/results` responses.
 
 ### Backend request-handling pattern
 

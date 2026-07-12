@@ -70,3 +70,22 @@ def test_recompute_is_idempotent(conn):
     cur.close()
 
     assert first_count == second_count
+
+
+def test_recompute_builds_previous_upcoming_crosstab(conn):
+    import rollups
+    league_id, club_id, party_x, party_a, party_b = _seed_votes(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT previous_party_id, upcoming_party_id, vote_count FROM rollup_previous_upcoming '
+        'ORDER BY previous_party_id NULLS LAST, upcoming_party_id NULLS LAST'
+    )
+    rows = cur.fetchall()
+    cur.close()
+
+    assert (party_x, party_a, 1) in rows
+    assert (party_x, party_b, 1) in rows
+    assert (None, None, 1) in rows  # did-not-vote AND undecided, from vote 2
