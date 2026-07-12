@@ -74,7 +74,6 @@
     - app.py
     - db.py
     - queries.py
-    - knesset_sync.py
     - schema.sql
     - seed.sql
 
