@@ -65,6 +65,8 @@ new admin route — don't hand-roll the check.
 | `/api/admin/sync-previous-parties` | POST | `X-Admin-Secret` | pulls current Knesset factions, upserts `previous_parties` |
 | `/api/admin/upcoming-parties` | POST | `X-Admin-Secret` | create |
 | `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | `X-Admin-Secret` | rename/remove |
+| `/api/admin/votes` | GET | `X-Admin-Secret` | list all votes (no `cookie_token` in the response) |
+| `/api/admin/votes/<id>` | DELETE | `X-Admin-Secret` | remove one vote; cascades to its `vote_upcoming_parties` rows |
 
 Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
 (dashboard, reads `/api/results`). Both render backend-derived names via `createElement`/`textContent`,
@@ -75,13 +77,20 @@ external API and admin input respectively, neither is safe to trust as pre-escap
 
 Provisioning and deployment are two separate steps, run in this order:
 
-1. **Terraform** (`terraform/`) creates the AWS infra: EC2 (k3s node), RDS (Postgres), EIP, Route53
-   record for `voteball.latnook.com`, IAM role, SNS topic. Needs `terraform/voteball.tfvars` (gitignored
-   — copy from `voteball.tfvars.example`).
-2. **`scripts/generate-inventory.sh`** reads live Terraform outputs and writes the (gitignored,
+1. **`scripts/find-latest-snapshot.sh`** checks AWS for an RDS snapshot from a prior `terraform destroy`
+   and writes (or removes) `terraform/snapshot.auto.tfvars` accordingly — Terraform auto-loads
+   `*.auto.tfvars`, so this needs no flag. Run this before `terraform apply` if you want vote data to
+   survive a destroy/redeploy cycle (it does by default; see docs/deploy.md).
+2. **Terraform** (`terraform/`) creates the AWS infra: EC2 (k3s node), RDS (Postgres, restored from the
+   snapshot above if one was found), EIP, Route53 record for `voteball.latnook.com`, IAM role, SNS
+   topic. Needs `terraform/voteball.tfvars` (gitignored — copy from `voteball.tfvars.example`) and
+   `-var-file=voteball.tfvars` on `plan`/`apply` (it isn't named `terraform.tfvars`, so Terraform won't
+   auto-load it). `terraform destroy` needs `-var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"` —
+   a fresh value each time, or repeated destroys collide on the final-snapshot name.
+3. **`scripts/generate-inventory.sh`** reads live Terraform outputs and writes the (gitignored,
    generated) Ansible inventory: `ansible-project/inventories/voteball/hosts` and
    `group_vars/all/main.yml`.
-3. **Ansible** (`ansible-project/site-k3s.yml`) installs Docker + k3s on the node, then `helm upgrade
+4. **Ansible** (`ansible-project/site-k3s.yml`) installs Docker + k3s on the node, then `helm upgrade
    --install`s the `charts/voteball` chart, which deploys the three containers as Kubernetes
    Deployments/Services in the `voteball-app` namespace.
 
