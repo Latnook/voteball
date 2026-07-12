@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS clubs (
 CREATE TABLE IF NOT EXISTS previous_parties (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
-    knesset_faction_id TEXT,
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

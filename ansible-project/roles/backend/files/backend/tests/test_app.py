@@ -97,24 +97,6 @@ def test_results_by_club_endpoint(client, conn):
     assert resp.get_json() == {'previous': [], 'upcoming': []}
 
 
-def test_sync_previous_parties_requires_admin_secret(client):
-    resp = client.post('/api/admin/sync-previous-parties')
-    assert resp.status_code == 401
-
-
-def test_sync_previous_parties_with_valid_secret(client, monkeypatch):
-    import knesset_sync
-
-    def fake_fetch():
-        return [{'knesset_faction_id': '1096', 'name': 'Likud'}]
-
-    monkeypatch.setattr(knesset_sync, 'fetch_current_factions', fake_fetch)
-
-    resp = client.post('/api/admin/sync-previous-parties', headers={'X-Admin-Secret': 'test-admin-secret'})
-    assert resp.status_code == 200
-    assert resp.get_json() == {'synced': 1}
-
-
 def test_upcoming_party_admin_crud(client):
     headers = {'X-Admin-Secret': 'test-admin-secret'}
 

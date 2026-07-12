@@ -100,24 +100,6 @@ def get_results_by_party(conn, party_type, party_id):
     return {'breakdown': breakdown}
 
 
-def upsert_previous_parties(conn, factions):
-    cur = conn.cursor()
-    count = 0
-    for faction in factions:
-        cur.execute(
-            '''INSERT INTO previous_parties (name, knesset_faction_id, updated_at)
-               VALUES (%s, %s, NOW())
-               ON CONFLICT (name) DO UPDATE SET
-                   knesset_faction_id = EXCLUDED.knesset_faction_id,
-                   updated_at = NOW()''',
-            (faction['name'], faction['knesset_faction_id'])
-        )
-        count += 1
-    conn.commit()
-    cur.close()
-    return count
-
-
 def create_upcoming_party(conn, name):
     cur = conn.cursor()
     cur.execute('INSERT INTO upcoming_parties (name) VALUES (%s) RETURNING id', (name,))

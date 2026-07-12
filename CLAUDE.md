@@ -34,8 +34,7 @@ standalone Ansible playbook + Helm chart:
 - **backend** (`ansible-project/roles/backend/files/backend/`) — Flask 3.1 app. `app.py` holds all
   routes; `queries.py` holds all SQL; `db.py` holds only connection setup (`get_db`) and one-time
   schema bootstrap (`init_db`, which loads `schema.sql` then `seed.sql` — the backend is the only
-  container that ever creates schema). `knesset_sync.py` is a pure-parsing + HTTP-fetch module for
-  syncing `previous_parties` from the Knesset OData API.
+  container that ever creates schema).
 - **worker** (`ansible-project/roles/worker/files/worker/`) — Python batch/loop process that
   recomputes the `rollup_previous`/`rollup_upcoming` tables from `votes`/`vote_upcoming_parties`, and
   sends milestone SNS alerts.
@@ -45,9 +44,10 @@ package between backend and worker.** The worker has its own near-duplicate `db.
 importing the backend's. This is a deliberate simplicity choice, not an oversight; don't "fix" it by
 introducing a shared module unless the plan says to.
 
-Postgres (RDS) stores: static seed data (`leagues`, `clubs`), synced party lists (`previous_parties`,
-`upcoming_parties`), raw votes (`votes`, `vote_upcoming_parties`), and worker-computed rollup tables
-(`rollup_previous`, `rollup_upcoming`) that the backend reads for fast `/api/results` responses.
+Postgres (RDS) stores: static seed data (`leagues`, `clubs`, `previous_parties`, `upcoming_parties` —
+the two party tables are also admin-editable after seeding), raw votes (`votes`,
+`vote_upcoming_parties`), and worker-computed rollup tables (`rollup_previous`, `rollup_upcoming`) that
+the backend reads for fast `/api/results` responses.
 
 ### Backend request-handling pattern
 
@@ -70,7 +70,6 @@ new admin route — don't hand-roll the check.
 | `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties, consumed by both frontend pages |
 | `/api/vote` | POST | none, cookie-deduped | sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids` (client also validates this before submitting) |
 | `/api/results` | GET | none | `?by=club\|league\|id=N` or `?by=party&type=previous\|upcoming&id=N`; reads the worker-computed rollup tables |
-| `/api/admin/sync-previous-parties` | POST | `X-Admin-Secret` | pulls current Knesset factions, upserts `previous_parties` |
 | `/api/admin/upcoming-parties` | POST | `X-Admin-Secret` | create |
 | `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | `X-Admin-Secret` | rename/remove |
 | `/api/admin/votes` | GET | `X-Admin-Secret` | list all votes (no `cookie_token` in the response) |
