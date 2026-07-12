@@ -1681,6 +1681,14 @@ git push
 
 ## Task 9: Admin auth and Knesset OData sync
 
+> **Superseded (2026-07-12):** the Knesset OData sync described in this task (`knesset_sync.py`,
+> `POST /api/admin/sync-previous-parties`, `queries.upsert_previous_parties`, the
+> `knesset_faction_id` column) was removed. `previous_parties` is now a plain admin-managed table
+> (create/rename/delete, mirroring `upcoming_parties`), seeded manually. See
+> `docs/superpowers/specs/2026-07-12-party-display-names-design.md` and
+> `docs/superpowers/plans/2026-07-12-party-display-names.md` for the change. The admin-auth
+> (`require_admin`) parts of this task are still accurate and current.
+
 **Files:**
 - Create: `ansible-project/roles/backend/files/backend/knesset_sync.py`
 - Modify: `ansible-project/roles/backend/files/backend/app.py`
