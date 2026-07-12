@@ -13,12 +13,23 @@ TF_DIR="$SCRIPT_DIR/../terraform"
 AUTO_TFVARS="$TF_DIR/snapshot.auto.tfvars"
 REGION="il-central-1"
 
-SNAPSHOT_ID=$(aws rds describe-db-snapshots \
+# Distinguish "the API call succeeded and found zero snapshots" (safe to
+# treat as no-prior-snapshot) from "the API call itself failed" (expired
+# SSO token, wrong profile, no network, throttling...) -- the latter must
+# abort loudly rather than silently falling through to "fresh empty DB",
+# which is exactly the accidental-data-loss outcome this script exists to
+# prevent. A failed call also leaves any existing snapshot.auto.tfvars
+# untouched, rather than deleting a possibly-still-correct one.
+if ! SNAPSHOT_ID=$(aws rds describe-db-snapshots \
   --db-instance-identifier voteball-db \
   --snapshot-type manual \
   --region "$REGION" \
   --query 'sort_by(DBSnapshots, &SnapshotCreateTime)[-1].DBSnapshotIdentifier' \
-  --output text 2>/dev/null || echo "None")
+  --output text); then
+  echo "ERROR: aws rds describe-db-snapshots failed -- check AWS credentials/network." >&2
+  echo "Refusing to guess whether a snapshot exists; $AUTO_TFVARS left untouched." >&2
+  exit 1
+fi
 
 if [ "$SNAPSHOT_ID" = "None" ] || [ -z "$SNAPSHOT_ID" ]; then
   rm -f "$AUTO_TFVARS"
