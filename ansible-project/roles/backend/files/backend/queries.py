@@ -88,6 +88,7 @@ def _results_for_filter(conn, where_clause, params):
 def get_results_by_party(conn, party_type, party_id):
     table = 'rollup_previous' if party_type == 'previous' else 'rollup_upcoming'
     column = 'previous_party_id' if party_type == 'previous' else 'upcoming_party_id'
+    other_column = 'upcoming_party_id' if party_type == 'previous' else 'previous_party_id'
 
     cur = conn.cursor()
     cur.execute(
@@ -96,8 +97,16 @@ def get_results_by_party(conn, party_type, party_id):
         (party_id,)
     )
     breakdown = [{'league_id': r[0], 'club_id': r[1], 'count': r[2]} for r in cur.fetchall()]
+
+    cur.execute(
+        f'SELECT {other_column}, SUM(vote_count) FROM rollup_previous_upcoming '
+        f'WHERE {column} = %s GROUP BY {other_column}',
+        (party_id,)
+    )
+    crosstab = [{other_column: r[0], 'count': r[1]} for r in cur.fetchall()]
+
     cur.close()
-    return {'breakdown': breakdown}
+    return {'breakdown': breakdown, 'crosstab': crosstab}
 
 
 def create_upcoming_party(conn, name):

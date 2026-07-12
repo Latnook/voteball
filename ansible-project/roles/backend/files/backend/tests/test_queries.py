@@ -164,6 +164,62 @@ def test_get_results_by_party_previous(conn):
     assert result['breakdown'] == [{'league_id': league_id, 'club_id': club_id, 'count': 7}]
 
 
+def test_get_results_by_party_previous_includes_crosstab(conn):
+    import queries
+    league_id, club_id, party_x = _seed_rollup_rows(conn)
+
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
+    party_a = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        (party_x, party_a, 5)
+    )
+    cur.execute(
+        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        (party_x, None, 2)
+    )
+    conn.commit()
+    cur.close()
+
+    result = queries.get_results_by_party(conn, 'previous', party_x)
+    crosstab = {row['upcoming_party_id']: row['count'] for row in result['crosstab']}
+    assert crosstab[party_a] == 5
+    assert crosstab[None] == 2
+
+
+def test_get_results_by_party_upcoming_includes_crosstab(conn):
+    import queries
+    league_id, club_id, party_x = _seed_rollup_rows(conn)
+
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
+    party_a = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        (party_x, party_a, 5)
+    )
+    cur.execute(
+        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        (None, party_a, 4)
+    )
+    conn.commit()
+    cur.close()
+
+    result = queries.get_results_by_party(conn, 'upcoming', party_a)
+    crosstab = {row['previous_party_id']: row['count'] for row in result['crosstab']}
+    assert crosstab[party_x] == 5
+    assert crosstab[None] == 4
+
+
+def test_get_results_by_party_crosstab_empty_when_no_data(conn):
+    import queries
+    league_id, club_id, party_x = _seed_rollup_rows(conn)
+
+    result = queries.get_results_by_party(conn, 'previous', party_x)
+    assert result['crosstab'] == []
+
+
 def test_create_rename_delete_upcoming_party(conn):
     import queries
 
