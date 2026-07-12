@@ -50,9 +50,18 @@ async function loadOptions() {
     input.type = 'checkbox';
     input.className = 'upcoming-checkbox';
     input.value = p.id;
+    input.addEventListener('change', enforceUpcomingPartyLimit);
     label.appendChild(input);
     label.appendChild(document.createTextNode(' ' + p.name));
     upcomingDiv.appendChild(label);
+  });
+}
+
+function enforceUpcomingPartyLimit() {
+  const checkboxes = document.querySelectorAll('.upcoming-checkbox');
+  const checkedCount = document.querySelectorAll('.upcoming-checkbox:checked').length;
+  checkboxes.forEach(cb => {
+    cb.disabled = !cb.checked && checkedCount >= 3;
   });
 }
 
