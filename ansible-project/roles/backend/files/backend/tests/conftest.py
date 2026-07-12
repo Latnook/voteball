@@ -23,8 +23,8 @@ def conn():
     cur = connection.cursor()
     cur.execute('''
         DROP TABLE IF EXISTS vote_upcoming_parties, votes, rollup_previous,
-            rollup_upcoming, clubs, leagues, previous_parties, upcoming_parties,
-            alert_state CASCADE
+            rollup_upcoming, rollup_previous_upcoming, clubs, leagues, previous_parties,
+            upcoming_parties, alert_state CASCADE
     ''')
     connection.commit()
     cur.close()
