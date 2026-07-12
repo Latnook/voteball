@@ -102,29 +102,86 @@ def get_results_by_party(conn, party_type, party_id):
 
 def create_upcoming_party(conn, name):
     cur = conn.cursor()
-    cur.execute('INSERT INTO upcoming_parties (name) VALUES (%s) RETURNING id', (name,))
-    party_id = cur.fetchone()[0]
-    conn.commit()
-    cur.close()
-    return party_id
+    try:
+        cur.execute('INSERT INTO upcoming_parties (name) VALUES (%s) RETURNING id', (name,))
+        party_id = cur.fetchone()[0]
+        conn.commit()
+        return party_id
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
 
 
 def rename_upcoming_party(conn, party_id, new_name):
     cur = conn.cursor()
-    cur.execute('UPDATE upcoming_parties SET name = %s, updated_at = NOW() WHERE id = %s', (new_name, party_id))
-    updated = cur.rowcount > 0
-    conn.commit()
-    cur.close()
-    return updated
+    try:
+        cur.execute('UPDATE upcoming_parties SET name = %s, updated_at = NOW() WHERE id = %s', (new_name, party_id))
+        updated = cur.rowcount > 0
+        conn.commit()
+        return updated
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
 
 
 def delete_upcoming_party(conn, party_id):
     cur = conn.cursor()
-    cur.execute('DELETE FROM upcoming_parties WHERE id = %s', (party_id,))
-    deleted = cur.rowcount > 0
-    conn.commit()
-    cur.close()
-    return deleted
+    try:
+        cur.execute('DELETE FROM upcoming_parties WHERE id = %s', (party_id,))
+        deleted = cur.rowcount > 0
+        conn.commit()
+        return deleted
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+
+
+def create_previous_party(conn, name):
+    cur = conn.cursor()
+    try:
+        cur.execute('INSERT INTO previous_parties (name) VALUES (%s) RETURNING id', (name,))
+        party_id = cur.fetchone()[0]
+        conn.commit()
+        return party_id
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+
+
+def rename_previous_party(conn, party_id, new_name):
+    cur = conn.cursor()
+    try:
+        cur.execute('UPDATE previous_parties SET name = %s, updated_at = NOW() WHERE id = %s', (new_name, party_id))
+        updated = cur.rowcount > 0
+        conn.commit()
+        return updated
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+
+
+def delete_previous_party(conn, party_id):
+    cur = conn.cursor()
+    try:
+        cur.execute('DELETE FROM previous_parties WHERE id = %s', (party_id,))
+        deleted = cur.rowcount > 0
+        conn.commit()
+        return deleted
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
 
 
 def get_votes(conn):

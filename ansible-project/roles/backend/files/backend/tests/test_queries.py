@@ -246,3 +246,51 @@ def test_delete_vote_removes_row_and_cascades_join_table(conn):
 
 def test_delete_vote_returns_false_for_nonexistent_id(conn):
     assert queries.delete_vote(conn, 999999) is False
+
+
+def test_create_rename_delete_previous_party(conn):
+    import queries
+
+    party_id = queries.create_previous_party(conn, 'New Party')
+    assert party_id > 0
+
+    assert queries.rename_previous_party(conn, party_id, 'Renamed Party') is True
+    cur = conn.cursor()
+    cur.execute('SELECT name FROM previous_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone()[0] == 'Renamed Party'
+    cur.close()
+
+    assert queries.delete_previous_party(conn, party_id) is True
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM previous_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone()[0] == 0
+    cur.close()
+
+    assert queries.rename_previous_party(conn, 999999, 'Nope') is False
+    assert queries.delete_previous_party(conn, 999999) is False
+
+
+def test_create_previous_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
+    import queries
+
+    queries.create_previous_party(conn, 'Dup Previous Party')
+
+    with pytest.raises(Exception):
+        queries.create_previous_party(conn, 'Dup Previous Party')
+
+    # connection must be usable afterward - proves rollback happened
+    party_id = queries.create_previous_party(conn, 'Another Previous Party')
+    assert party_id > 0
+
+
+def test_create_upcoming_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
+    import queries
+
+    queries.create_upcoming_party(conn, 'Dup Upcoming Party')
+
+    with pytest.raises(Exception):
+        queries.create_upcoming_party(conn, 'Dup Upcoming Party')
+
+    # connection must be usable afterward - proves rollback happened
+    party_id = queries.create_upcoming_party(conn, 'Another Upcoming Party')
+    assert party_id > 0

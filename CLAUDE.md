@@ -70,6 +70,8 @@ new admin route — don't hand-roll the check.
 | `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties, consumed by both frontend pages |
 | `/api/vote` | POST | none, cookie-deduped | sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids` (client also validates this before submitting) |
 | `/api/results` | GET | none | `?by=club\|league\|id=N` or `?by=party&type=previous\|upcoming&id=N`; reads the worker-computed rollup tables |
+| `/api/admin/previous-parties` | POST | `X-Admin-Secret` | create |
+| `/api/admin/previous-parties/<id>` | PATCH/DELETE | `X-Admin-Secret` | rename/remove |
 | `/api/admin/upcoming-parties` | POST | `X-Admin-Secret` | create |
 | `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | `X-Admin-Secret` | rename/remove |
 | `/api/admin/votes` | GET | `X-Admin-Secret` | list all votes (no `cookie_token` in the response) |

@@ -166,3 +166,31 @@ def test_admin_votes_delete_requires_admin_secret_and_handles_not_found(client, 
 
     resp = client.delete(f'/api/admin/votes/{vote_id}', headers=headers)
     assert resp.status_code == 404
+
+
+def test_previous_party_admin_crud(client):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+
+    resp = client.post('/api/admin/previous-parties', json={'name': 'Test Party'}, headers=headers)
+    assert resp.status_code == 201
+    party_id = resp.get_json()['id']
+
+    resp = client.patch(f'/api/admin/previous-parties/{party_id}', json={'name': 'Renamed'}, headers=headers)
+    assert resp.status_code == 200
+
+    resp = client.delete(f'/api/admin/previous-parties/{party_id}', headers=headers)
+    assert resp.status_code == 204
+
+    resp = client.delete(f'/api/admin/previous-parties/{party_id}', headers=headers)
+    assert resp.status_code == 404
+
+
+def test_previous_party_admin_routes_require_admin_secret(client):
+    resp = client.post('/api/admin/previous-parties', json={'name': 'X'})
+    assert resp.status_code == 401
+
+    resp = client.patch('/api/admin/previous-parties/1', json={'name': 'X'})
+    assert resp.status_code == 401
+
+    resp = client.delete('/api/admin/previous-parties/1')
+    assert resp.status_code == 401

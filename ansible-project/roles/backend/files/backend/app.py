@@ -102,8 +102,10 @@ def create_upcoming_party_route():
     if not name:
         return jsonify({'error': 'name is required'}), 400
     conn = db.get_db()
-    party_id = queries.create_upcoming_party(conn, name)
-    conn.close()
+    try:
+        party_id = queries.create_upcoming_party(conn, name)
+    finally:
+        conn.close()
     return jsonify({'id': party_id, 'name': name}), 201
 
 
@@ -115,8 +117,10 @@ def rename_upcoming_party_route(party_id):
     if not name:
         return jsonify({'error': 'name is required'}), 400
     conn = db.get_db()
-    updated = queries.rename_upcoming_party(conn, party_id, name)
-    conn.close()
+    try:
+        updated = queries.rename_upcoming_party(conn, party_id, name)
+    finally:
+        conn.close()
     if not updated:
         return jsonify({'error': 'not found'}), 404
     return jsonify({'id': party_id, 'name': name})
@@ -126,8 +130,55 @@ def rename_upcoming_party_route(party_id):
 @require_admin
 def delete_upcoming_party_route(party_id):
     conn = db.get_db()
-    deleted = queries.delete_upcoming_party(conn, party_id)
-    conn.close()
+    try:
+        deleted = queries.delete_upcoming_party(conn, party_id)
+    finally:
+        conn.close()
+    if not deleted:
+        return jsonify({'error': 'not found'}), 404
+    return '', 204
+
+
+@app.route('/api/admin/previous-parties', methods=['POST'])
+@require_admin
+def create_previous_party_route():
+    body = request.get_json(force=True, silent=True) or {}
+    name = body.get('name', '').strip()
+    if not name:
+        return jsonify({'error': 'name is required'}), 400
+    conn = db.get_db()
+    try:
+        party_id = queries.create_previous_party(conn, name)
+    finally:
+        conn.close()
+    return jsonify({'id': party_id, 'name': name}), 201
+
+
+@app.route('/api/admin/previous-parties/<int:party_id>', methods=['PATCH'])
+@require_admin
+def rename_previous_party_route(party_id):
+    body = request.get_json(force=True, silent=True) or {}
+    name = body.get('name', '').strip()
+    if not name:
+        return jsonify({'error': 'name is required'}), 400
+    conn = db.get_db()
+    try:
+        updated = queries.rename_previous_party(conn, party_id, name)
+    finally:
+        conn.close()
+    if not updated:
+        return jsonify({'error': 'not found'}), 404
+    return jsonify({'id': party_id, 'name': name})
+
+
+@app.route('/api/admin/previous-parties/<int:party_id>', methods=['DELETE'])
+@require_admin
+def delete_previous_party_route(party_id):
+    conn = db.get_db()
+    try:
+        deleted = queries.delete_previous_party(conn, party_id)
+    finally:
+        conn.close()
     if not deleted:
         return jsonify({'error': 'not found'}), 404
     return '', 204
