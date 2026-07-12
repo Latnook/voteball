@@ -69,3 +69,15 @@ JOIN (VALUES
     ('Israeli Premier League', 'Hapoel Petah Tikva'), ('Israeli Premier League', 'Hapoel Kfar Saba')
 ) AS c(league_name, name) ON l.name = c.league_name
 ON CONFLICT (league_id, name) DO NOTHING;
+
+INSERT INTO previous_parties (name) VALUES
+    ('הליכוד'), ('יש עתיד'), ('הציונות הדתית'), ('המחנה הממלכתי'),
+    ('ישראל ביתנו'), ('ש"ס'), ('יהדות התורה'), ('רע"ם'),
+    ('חד"ש-תע"ל'), ('העבודה'), ('מרצ'), ('בל"ד'), ('הבית היהודי'), ('אחר')
+ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO upcoming_parties (name) VALUES
+    ('הליכוד'), ('ישר'), ('ביחד'), ('הדמוקרטים'), ('כחול לבן'),
+    ('ישראל ביתנו'), ('הציונות הדתית'), ('עוצמה יהודית'), ('חד"ש-תע"ל'),
+    ('בל"ד'), ('המפלגה הכלכלית'), ('אל הדגל'), ('המילואימניקים')
+ON CONFLICT (name) DO NOTHING;

@@ -15,8 +15,19 @@ def test_get_options_returns_seeded_leagues(conn):
     epl_clubs = [c for c in options['clubs'] if c['league_id'] == epl['id']]
     assert len(epl_clubs) == 20
 
-    assert options['previous_parties'] == []
-    assert options['upcoming_parties'] == []
+    previous_names = {p['name'] for p in options['previous_parties']}
+    assert previous_names == {
+        'הליכוד', 'יש עתיד', 'הציונות הדתית', 'המחנה הממלכתי', 'ישראל ביתנו',
+        'ש"ס', 'יהדות התורה', 'רע"ם', 'חד"ש-תע"ל', 'העבודה', 'מרצ', 'בל"ד',
+        'הבית היהודי', 'אחר',
+    }
+
+    upcoming_names = {p['name'] for p in options['upcoming_parties']}
+    assert upcoming_names == {
+        'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
+        'הציונות הדתית', 'עוצמה יהודית', 'חד"ש-תע"ל', 'בל"ד',
+        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים',
+    }
 
 
 def _epl_and_liverpool(conn):
