@@ -87,6 +87,8 @@ async function loadResultsByParty() {
 
   const targetId = partyType === 'previous' ? 'previous-results' : 'upcoming-results';
   const otherId = partyType === 'previous' ? 'upcoming-results' : 'previous-results';
+  const otherNameLookup = partyType === 'previous' ? upcomingPartyName : previousPartyName;
+  const otherKey = partyType === 'previous' ? 'upcoming_party_id' : 'previous_party_id';
 
   let data;
   try {
@@ -94,12 +96,12 @@ async function loadResultsByParty() {
     if (!res.ok) throw new Error(`request failed with status ${res.status}`);
     data = await res.json();
   } catch (err) {
-    showResultsError([targetId]);
+    showResultsError([targetId, otherId]);
     return;
   }
 
-  document.getElementById(otherId).innerHTML = '<p>Switch party type to see this breakdown.</p>';
   renderBars(targetId, data.breakdown.map(r => ({ count: r.count, club_id: r.club_id, league_id: r.league_id })), clubOrLeagueName);
+  renderBars(otherId, data.crosstab.map(r => ({ count: r.count, key: r[otherKey] })), r => otherNameLookup(r.key));
 }
 
 function renderPartyPicker() {
