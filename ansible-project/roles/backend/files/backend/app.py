@@ -43,6 +43,8 @@ def vote():
 
     if body.get('upcoming_vote_status') == 'considering' and not body.get('upcoming_party_ids'):
         return jsonify({'error': 'select at least one upcoming party when status is considering'}), 400
+    if len(body.get('upcoming_party_ids') or []) > 3:
+        return jsonify({'error': 'select at most 3 upcoming parties'}), 400
 
     conn = db.get_db()
     try:

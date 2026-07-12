@@ -67,6 +67,23 @@ def test_vote_endpoint_considering_with_no_parties_returns_400(client, conn):
     assert resp.get_json() == {'error': 'select at least one upcoming party when status is considering'}
 
 
+def test_vote_endpoint_considering_with_more_than_three_parties_returns_400(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM upcoming_parties ORDER BY id LIMIT 4")
+    party_ids = [r[0] for r in cur.fetchall()]
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'considering', 'upcoming_party_ids': party_ids,
+    })
+    assert resp.status_code == 400
+    assert resp.get_json() == {'error': 'select at most 3 upcoming parties'}
+
+
 def test_vote_endpoint_considering_with_parties_succeeds(client, conn):
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
