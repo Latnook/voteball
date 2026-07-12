@@ -198,3 +198,76 @@ def test_create_rename_delete_upcoming_party(conn):
 
     assert queries.rename_upcoming_party(conn, 999999, 'Nope') is False
     assert queries.delete_upcoming_party(conn, 999999) is False
+
+
+def test_get_votes_includes_upcoming_party_ids_and_empty_list_when_none(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
+    party_a = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party B') RETURNING id")
+    party_b = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    considering_vote_id = queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='considering', upcoming_party_ids=[party_a, party_b],
+        cookie_token='votes-token-1',
+    )
+    undecided_vote_id = queries.insert_vote(
+        conn, league_id=league_id, club_id=None,
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='votes-token-2',
+    )
+
+    votes = queries.get_votes(conn)
+    assert [v['id'] for v in votes] == sorted(v['id'] for v in votes)
+
+    by_id = {v['id']: v for v in votes}
+
+    considering = by_id[considering_vote_id]
+    assert sorted(considering['upcoming_party_ids']) == sorted([party_a, party_b])
+    assert considering['league_id'] == league_id
+    assert considering['club_id'] == club_id
+    assert considering['previous_vote_status'] == 'did_not_vote'
+    assert considering['previous_party_id'] is None
+    assert considering['upcoming_vote_status'] == 'considering'
+    assert 'created_at' in considering
+    assert 'cookie_token' not in considering
+
+    undecided = by_id[undecided_vote_id]
+    assert undecided['upcoming_party_ids'] == []
+
+
+def test_delete_vote_removes_row_and_cascades_join_table(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party C') RETURNING id")
+    party_c = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    vote_id = queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='considering', upcoming_party_ids=[party_c],
+        cookie_token='delete-token-1',
+    )
+
+    assert queries.delete_vote(conn, vote_id) is True
+
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM votes WHERE id = %s', (vote_id,))
+    assert cur.fetchone()[0] == 0
+    cur.execute('SELECT COUNT(*) FROM vote_upcoming_parties WHERE vote_id = %s', (vote_id,))
+    assert cur.fetchone()[0] == 0
+    cur.close()
+
+
+def test_delete_vote_returns_false_for_nonexistent_id(conn):
+    assert queries.delete_vote(conn, 999999) is False

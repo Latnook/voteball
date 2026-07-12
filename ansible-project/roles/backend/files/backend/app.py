@@ -144,6 +144,30 @@ def delete_upcoming_party_route(party_id):
     return '', 204
 
 
+@app.route('/api/admin/votes', methods=['GET'])
+@require_admin
+def get_votes_route():
+    conn = db.get_db()
+    try:
+        votes = queries.get_votes(conn)
+    finally:
+        conn.close()
+    return jsonify({'votes': votes})
+
+
+@app.route('/api/admin/votes/<int:vote_id>', methods=['DELETE'])
+@require_admin
+def delete_vote_route(vote_id):
+    conn = db.get_db()
+    try:
+        deleted = queries.delete_vote(conn, vote_id)
+    finally:
+        conn.close()
+    if not deleted:
+        return jsonify({'error': 'not found'}), 404
+    return '', 204
+
+
 if __name__ == '__main__':
     conn = db.get_db()
     db.init_db(conn)

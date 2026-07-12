@@ -143,3 +143,43 @@ def delete_upcoming_party(conn, party_id):
     conn.commit()
     cur.close()
     return deleted
+
+
+def get_votes(conn):
+    cur = conn.cursor()
+    cur.execute(
+        '''SELECT v.id, v.league_id, v.club_id, v.previous_vote_status,
+                  v.previous_party_id, v.upcoming_vote_status, v.created_at,
+                  COALESCE(
+                      array_agg(vup.upcoming_party_id) FILTER (WHERE vup.upcoming_party_id IS NOT NULL),
+                      ARRAY[]::INTEGER[]
+                  ) AS upcoming_party_ids
+           FROM votes v
+           LEFT JOIN vote_upcoming_parties vup ON vup.vote_id = v.id
+           GROUP BY v.id
+           ORDER BY v.id'''
+    )
+    votes = [
+        {
+            'id': r[0],
+            'league_id': r[1],
+            'club_id': r[2],
+            'previous_vote_status': r[3],
+            'previous_party_id': r[4],
+            'upcoming_vote_status': r[5],
+            'created_at': r[6].isoformat(),
+            'upcoming_party_ids': list(r[7]),
+        }
+        for r in cur.fetchall()
+    ]
+    cur.close()
+    return votes
+
+
+def delete_vote(conn, vote_id):
+    cur = conn.cursor()
+    cur.execute('DELETE FROM votes WHERE id = %s', (vote_id,))
+    deleted = cur.rowcount > 0
+    conn.commit()
+    cur.close()
+    return deleted

@@ -130,3 +130,57 @@ def test_upcoming_party_admin_crud(client):
 
     resp = client.delete(f'/api/admin/upcoming-parties/{party_id}', headers=headers)
     assert resp.status_code == 404
+
+
+def test_admin_votes_list_requires_admin_secret(client):
+    resp = client.get('/api/admin/votes')
+    assert resp.status_code == 401
+
+
+def test_admin_votes_list_returns_votes_with_valid_secret(client, conn):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 201
+
+    resp = client.get('/api/admin/votes', headers=headers)
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert 'votes' in body
+    assert len(body['votes']) == 1
+    assert body['votes'][0]['league_id'] == league_id
+    assert 'cookie_token' not in body['votes'][0]
+
+
+def test_admin_votes_delete_requires_admin_secret_and_handles_not_found(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    vote_id = resp.get_json()['vote_id']
+
+    resp = client.delete(f'/api/admin/votes/{vote_id}')
+    assert resp.status_code == 401
+
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    resp = client.delete(f'/api/admin/votes/{vote_id}', headers=headers)
+    assert resp.status_code == 204
+
+    resp = client.delete(f'/api/admin/votes/{vote_id}', headers=headers)
+    assert resp.status_code == 404
