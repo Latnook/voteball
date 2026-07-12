@@ -47,3 +47,15 @@ variable "key_name" {
   type        = string
   default     = "Voteball-EC2-pem"
 }
+
+variable "db_final_snapshot_suffix" {
+  description = "Suffix for the RDS final snapshot name at destroy time -- pass a fresh value (e.g. $(date +%Y%m%d%H%M%S)) via -var on `terraform destroy` so repeated destroys don't collide on snapshot names."
+  type        = string
+  default     = "manual"
+}
+
+variable "db_snapshot_identifier" {
+  description = "RDS snapshot to restore from on apply. Leave unset for a fresh empty DB. Normally populated automatically via terraform/snapshot.auto.tfvars by scripts/find-latest-snapshot.sh -- see docs/deploy.md."
+  type        = string
+  default     = null
+}

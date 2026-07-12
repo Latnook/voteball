@@ -41,22 +41,25 @@ no exceptions, and you'd be starting over with new secrets and new infra.
 ## Deploy
 
 ```bash
-# 1. Provision AWS infrastructure (billed resources — review the plan first)
+# 1. Check for a snapshot from a prior destroy (restores it if found, see below)
+./scripts/find-latest-snapshot.sh
+
+# 2. Provision AWS infrastructure (billed resources — review the plan first)
 cd terraform
 terraform init
-terraform plan
-terraform apply
+terraform plan -var-file=voteball.tfvars
+terraform apply -var-file=voteball.tfvars
 cd ..
 
-# 2. Generate the Ansible inventory from live Terraform outputs
+# 3. Generate the Ansible inventory from live Terraform outputs
 ./scripts/generate-inventory.sh
 
-# 3. Install Docker/k3s and deploy the Helm chart
+# 4. Install Docker/k3s and deploy the Helm chart
 cd ansible-project
 ansible-playbook site-k3s.yml
 cd ..
 
-# 4. Verify
+# 5. Verify
 curl -sf https://voteball.latnook.com/api/options
 ```
 
@@ -80,26 +83,33 @@ aws sns list-subscriptions-by-topic --topic-arn "$TOPIC_ARN" --region il-central
 
 ```bash
 cd terraform
-terraform destroy
+terraform destroy -var-file=voteball.tfvars -var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"
 cd ..
 ```
 
-Deletes everything: EC2, RDS (no snapshot — intentional, low-stakes poll
-data), EIP, Route 53 record, IAM, SNS. Don't lose `terraform.tfstate` or
-`voteball.tfvars` (gitignored, local-only) or you'll be cleaning up by hand.
+Deletes everything: EC2, RDS, EIP, Route 53 record, IAM, SNS. RDS takes a
+**final snapshot before deleting** (the `-var` above gives it a unique
+name so repeated destroys don't collide — don't omit it). Don't lose
+`terraform.tfstate` or `voteball.tfvars` (gitignored, local-only) or
+you'll be cleaning up by hand.
 
 ## Redeploying after a destroy
 
-Just re-run **Deploy** from `terraform apply` — skip **Setup** entirely,
-none of it needs repeating (SSH key, tfvars, vault password, secrets.yml
-all still exist locally). Only check that `ssh_allowed_cidr` still matches
-your current IP.
+Just re-run **Deploy** from `find-latest-snapshot.sh` — skip **Setup**
+entirely, none of it needs repeating (SSH key, tfvars, vault password,
+secrets.yml all still exist locally). Only check that `ssh_allowed_cidr`
+still matches your current IP.
+
+`find-latest-snapshot.sh` finds the snapshot from the last destroy and
+restores from it automatically — **votes are not lost**. To manage
+individual votes instead of wiping the whole database, use the admin
+endpoints: `GET /api/admin/votes` to list, `DELETE /api/admin/votes/<id>`
+to remove one (both need `X-Admin-Secret`). To force a genuinely empty
+database on a specific redeploy instead, delete
+`terraform/snapshot.auto.tfvars` before running `terraform apply`.
 
 Expect, automatically, no action needed: a new public IP (DNS updates
-itself, allow a few minutes to propagate), an empty database (schema
-recreates itself on first pod start — re-run the admin Knesset sync
-afterward to repopulate parties), a fresh TLS cert issuance, and a new SNS
-confirmation email to click.
+itself, allow a few minutes to propagate) and a fresh TLS cert issuance.
 
 ## Gotchas
 
@@ -112,3 +122,11 @@ confirmation email to click.
 - Ansible copies an **explicit file list** for the backend/worker build
   contexts, not a whole directory — so a stray local `.venv` from running
   `pytest` won't get shipped to the server.
+- **The snapshot/restore mechanism (added 2026-07-12) hasn't been exercised
+  through a real destroy→apply cycle yet** — `terraform validate` passes and
+  the "no snapshot exists" path is confirmed against real AWS, but the
+  actual restore-from-snapshot path will get its first real test on your
+  next destroy/redeploy. If it doesn't work as expected, `snapshot_identifier`
+  is in `lifecycle.ignore_changes` on the RDS resource (`terraform/modules/database/main.tf`)
+  specifically so a bad restore doesn't force-replace the DB on a later
+  unrelated `apply` — worth knowing if you need to debug it.

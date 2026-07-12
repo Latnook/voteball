@@ -7,6 +7,7 @@ terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
 terraform/.terraform.tfstate.lock.info
 terraform/.terraform/
+terraform/snapshot.auto.tfvars
 
 # Ansible: secrets.yml is committed ENCRYPTED via ansible-vault — only the
 # vault password itself and the generated (non-secret) inventory stay out of git.

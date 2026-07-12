@@ -20,6 +20,10 @@ resource "aws_db_instance" "main" {
   username = "postgres"
   password = var.db_password
 
+  # Restore from the most recent final snapshot if scripts/find-latest-snapshot.sh
+  # found one (see terraform/snapshot.auto.tfvars); null means create empty.
+  snapshot_identifier = var.snapshot_identifier
+
   db_subnet_group_name   = data.aws_db_subnet_group.default.name
   vpc_security_group_ids = [var.sg_rds_id]
   availability_zone      = "il-central-1b"
@@ -34,11 +38,17 @@ resource "aws_db_instance" "main" {
   copy_tags_to_snapshot      = true
   deletion_protection        = false
 
-  # Low-stakes, time-boxed poll data — no final-snapshot ceremony needed.
-  skip_final_snapshot = true
+  # Take a final snapshot on destroy so vote data survives a destroy/apply
+  # cycle (see docs/deploy.md). The suffix must be unique per destroy --
+  # pass a fresh one via -var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)".
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "${local.name_prefix}-db-final-${var.final_snapshot_suffix}"
 
   lifecycle {
-    ignore_changes = [password]
+    # password: rotated out-of-band, not through this resource.
+    # snapshot_identifier: create-time-only (AWS ForceNew) -- ignore so a later
+    # apply without a fresh snapshot.auto.tfvars doesn't try to replace the DB.
+    ignore_changes = [password, snapshot_identifier]
   }
 
   tags = {

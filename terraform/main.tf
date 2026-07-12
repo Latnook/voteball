@@ -50,10 +50,12 @@ module "iam" {
 }
 
 module "database" {
-  source      = "./modules/database"
-  vpc_id      = module.networking.vpc_id
-  sg_rds_id   = module.networking.sg_rds_id
-  db_password = var.db_password
+  source                = "./modules/database"
+  vpc_id                = module.networking.vpc_id
+  sg_rds_id             = module.networking.sg_rds_id
+  db_password           = var.db_password
+  final_snapshot_suffix = var.db_final_snapshot_suffix
+  snapshot_identifier   = var.db_snapshot_identifier
 }
 
 module "compute" {
