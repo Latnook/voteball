@@ -16,6 +16,14 @@ to be executed by an agentic worker via `superpowers:subagent-driven-development
 `superpowers:executing-plans` — read it before making architectural changes, since most design
 decisions (why a table/module/route looks the way it does) are explained there, not in code comments.
 
+## Workflow
+
+**Commit and push changes as you make them in this repo** — this is standing,
+pre-authorized permission (per the user's explicit request); don't leave work
+committed-but-unpushed or uncommitted waiting to be asked. Still use judgment
+on grouping related changes into one coherent commit rather than pushing
+every single edit separately, and never force-push.
+
 ## Architecture
 
 Three containers on one k3s node, provisioned by a standalone Terraform stack and deployed by a
