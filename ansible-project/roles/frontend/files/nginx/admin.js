@@ -90,7 +90,7 @@ function renderPartyRow(type, party, allParties) {
   const reassignBtn = document.createElement('button');
   reassignBtn.type = 'button';
   reassignBtn.textContent = 'Reassign votes…';
-  reassignBtn.dataset.role = 'reassign-button';
+  reassignBtn.addEventListener('click', () => toggleReassignForm(type, party, allParties, row));
   row.appendChild(reassignBtn);
 
   const deleteBtn = document.createElement('button');
@@ -250,3 +250,80 @@ async function tryEnterWithStoredSecret() {
 }
 
 tryEnterWithStoredSecret();
+
+function toggleReassignForm(type, sourceParty, allParties, row) {
+  const existing = row.querySelector('.reassign-form');
+  if (existing) {
+    existing.remove();
+    return;
+  }
+
+  const form = document.createElement('div');
+  form.className = 'reassign-form';
+
+  const select = document.createElement('select');
+  allParties.filter(p => p.id !== sourceParty.id).forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    select.appendChild(opt);
+  });
+  form.appendChild(select);
+
+  const goBtn = document.createElement('button');
+  goBtn.type = 'button';
+  goBtn.textContent = 'Reassign';
+  form.appendChild(goBtn);
+
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'row-error';
+  form.appendChild(errorSpan);
+
+  goBtn.addEventListener('click', async () => {
+    if (!select.value) return;
+    const targetId = parseInt(select.value, 10);
+    errorSpan.textContent = '';
+
+    let countRes;
+    try {
+      countRes = await adminFetch(`${partyEndpoint(type)}/${sourceParty.id}/reassign-count?target_id=${targetId}`);
+    } catch (err) {
+      errorSpan.textContent = 'Something went wrong.';
+      return;
+    }
+    if (countRes === null) return;
+    if (!countRes.ok) {
+      errorSpan.textContent = 'Something went wrong.';
+      return;
+    }
+    const { count } = await countRes.json();
+    const targetParty = allParties.find(p => p.id === targetId);
+    if (!confirm(`Reassign ${count} votes from "${sourceParty.name}" to "${targetParty.name}"? This cannot be undone.`)) {
+      return;
+    }
+
+    let res;
+    try {
+      res = await adminFetch(`${partyEndpoint(type)}/${sourceParty.id}/reassign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_id: targetId }),
+      });
+    } catch (err) {
+      errorSpan.textContent = 'Something went wrong.';
+      return;
+    }
+    if (res === null) return;
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      errorSpan.textContent = body.error || 'Something went wrong.';
+      return;
+    }
+    optionsData = null;
+    loadedTabs.delete(type);
+    loadedTabs.delete('votes');
+    loadPartyTab(type);
+  });
+
+  row.appendChild(form);
+}
