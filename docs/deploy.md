@@ -113,7 +113,8 @@ still matches your current IP.
 restores from it automatically — **votes are not lost**. To manage
 individual votes instead of wiping the whole database, use the admin
 endpoints: `GET /api/admin/votes` to list, `DELETE /api/admin/votes/<id>`
-to remove one (both need `X-Admin-Secret`). To force a genuinely empty
+to remove one (both need a Bearer token from `POST /api/admin/login`). To
+force a genuinely empty
 database on a specific redeploy instead, delete
 `terraform/snapshot.auto.tfvars` before running `terraform apply`.
 

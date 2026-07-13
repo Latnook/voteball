@@ -17,7 +17,7 @@
 - All containers run as non-root (`uid 1000` for backend/worker Python images, matching S3App's Task 1 precedent); frontend nginx keeps the same `CHOWN`/`SETUID`/`SETGID` capability exception S3App's frontend needed.
 - Postgres connections use `sslmode=require` (`DB_SSLMODE` env var, matching S3App's backend).
 - Knesset OData API verified live during design: `GET https://knesset.gov.il/Odata/ParliamentInfo.svc/KNS_Faction?$format=json&$filter=IsCurrent%20eq%20true` returns JSON `{"value": [{"FactionID": int, "Name": str, "KnessetNum": int, "StartDate": str, "FinishDate": str|null, "IsCurrent": bool, "LastUpdatedDate": str}, ...]}`. A stray legacy row (`FactionID=911`, `KnessetNum=1`, `Name="אין נתונים"`) also has `IsCurrent=true` — filtered out by keeping only rows whose `KnessetNum` equals the max `KnessetNum` present in the response.
-- Admin endpoints authenticate via a static shared secret in the `X-Admin-Secret` header, compared against env var `ADMIN_SECRET`.
+- Admin endpoints authenticate via a static shared secret in the `X-Admin-Secret` header, compared against env var `ADMIN_SECRET`. **Superseded** — see Task 9's updated note below; admin auth is now username/password login issuing a Bearer token.
 
 ---
 
@@ -1687,7 +1687,13 @@ git push
 > (create/rename/delete, mirroring `upcoming_parties`), seeded manually. See
 > `docs/superpowers/specs/2026-07-12-party-display-names-design.md` and
 > `docs/superpowers/plans/2026-07-12-party-display-names.md` for the change. The admin-auth
-> (`require_admin`) parts of this task are still accurate and current.
+> (`require_admin`) parts of this task were accurate until 2026-07-13, when the static-secret model
+> was replaced by username/password login issuing a signed Bearer token — see
+> `docs/superpowers/specs/2026-07-13-admin-auth-design.md` and
+> `docs/superpowers/plans/2026-07-13-admin-auth.md`. The rest of this task's content (the
+> `require_admin` decorator's original shape, the deployment snippets in Task 20, etc.) is left
+> as-is as a historical record of what was originally built — it does not describe the current
+> state.
 
 **Files:**
 - Create: `ansible-project/roles/backend/files/backend/knesset_sync.py`
