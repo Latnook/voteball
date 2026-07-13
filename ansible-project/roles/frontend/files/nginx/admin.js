@@ -48,8 +48,156 @@ function activateTab(tab) {
 function loadTab(tab) {
   if (loadedTabs.has(tab)) return;
   loadedTabs.add(tab);
-  // Per-tab loaders are added here by Tasks 9 (party tabs) and 11 (votes tab).
+  if (tab === 'previous') loadPartyTab('previous');
+  else if (tab === 'upcoming') loadPartyTab('upcoming');
+  // votes case added by Task 11
 }
+
+function partyEndpoint(type) {
+  return type === 'previous' ? '/api/admin/previous-parties' : '/api/admin/upcoming-parties';
+}
+
+function partyListKey(type) {
+  return type === 'previous' ? 'previous_parties' : 'upcoming_parties';
+}
+
+async function loadPartyTab(type) {
+  const data = await getOptionsData();
+  renderPartyList(type, data[partyListKey(type)]);
+}
+
+function renderPartyList(type, parties) {
+  const container = document.getElementById(`${type}-party-list`);
+  container.innerHTML = '';
+  parties.forEach(party => container.appendChild(renderPartyRow(type, party, parties)));
+}
+
+function renderPartyRow(type, party, allParties) {
+  const row = document.createElement('div');
+  row.className = 'party-row';
+
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'party-name';
+  nameSpan.textContent = party.name;
+  row.appendChild(nameSpan);
+
+  const renameBtn = document.createElement('button');
+  renameBtn.type = 'button';
+  renameBtn.textContent = 'Rename';
+  renameBtn.addEventListener('click', () => startRename(type, party, row));
+  row.appendChild(renameBtn);
+
+  const reassignBtn = document.createElement('button');
+  reassignBtn.type = 'button';
+  reassignBtn.textContent = 'Reassign votes…';
+  reassignBtn.dataset.role = 'reassign-button';
+  row.appendChild(reassignBtn);
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.type = 'button';
+  deleteBtn.textContent = 'Delete';
+  deleteBtn.addEventListener('click', () => deleteParty(type, party));
+  row.appendChild(deleteBtn);
+
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'row-error';
+  row.appendChild(errorSpan);
+
+  return row;
+}
+
+function startRename(type, party, row) {
+  const nameSpan = row.querySelector('.party-name');
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = party.name;
+  nameSpan.replaceWith(input);
+
+  const saveBtn = document.createElement('button');
+  saveBtn.type = 'button';
+  saveBtn.textContent = 'Save';
+  input.after(saveBtn);
+  input.focus();
+
+  saveBtn.addEventListener('click', async () => {
+    const errorSpan = row.querySelector('.row-error');
+    errorSpan.textContent = '';
+
+    let res;
+    try {
+      res = await adminFetch(`${partyEndpoint(type)}/${party.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: input.value }),
+      });
+    } catch (err) {
+      errorSpan.textContent = 'Something went wrong.';
+      return;
+    }
+    if (res === null) return;
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      errorSpan.textContent = body.error || 'Something went wrong.';
+      return;
+    }
+    optionsData = null;
+    loadedTabs.delete(type);
+    loadPartyTab(type);
+  });
+}
+
+async function deleteParty(type, party) {
+  if (!confirm(`Delete "${party.name}"? This cannot be undone.`)) return;
+
+  let res;
+  try {
+    res = await adminFetch(`${partyEndpoint(type)}/${party.id}`, { method: 'DELETE' });
+  } catch (err) {
+    alert('Something went wrong.');
+    return;
+  }
+  if (res === null) return;
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    alert(body.error || 'Something went wrong.');
+    return;
+  }
+  optionsData = null;
+  loadedTabs.delete(type);
+  loadPartyTab(type);
+}
+
+async function addParty(e, type) {
+  e.preventDefault();
+  const input = document.getElementById(`${type}-party-add-input`);
+  const errorEl = document.getElementById(`${type}-party-form-error`);
+  errorEl.textContent = '';
+
+  let res;
+  try {
+    res = await adminFetch(partyEndpoint(type), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: input.value }),
+    });
+  } catch (err) {
+    errorEl.textContent = 'Something went wrong.';
+    return;
+  }
+  if (res === null) return;
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    errorEl.textContent = body.error || 'Something went wrong.';
+    return;
+  }
+  input.value = '';
+  optionsData = null;
+  loadedTabs.delete(type);
+  loadPartyTab(type);
+}
+
+document.getElementById('previous-party-add-form').addEventListener('submit', (e) => addParty(e, 'previous'));
+document.getElementById('upcoming-party-add-form').addEventListener('submit', (e) => addParty(e, 'upcoming'));
 
 document.querySelectorAll('.tab-button').forEach(btn => {
   btn.addEventListener('click', () => activateTab(btn.dataset.tab));
