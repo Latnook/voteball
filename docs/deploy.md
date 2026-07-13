@@ -23,10 +23,19 @@ cd ..
 cd ansible-project
 openssl rand -hex 32 > .vault_pass
 cp inventories/voteball/group_vars/all/secrets.yml.example inventories/voteball/group_vars/all/secrets.yml
-# edit secrets.yml: db_pass (must match voteball.tfvars' db_password), admin_secret (openssl rand -hex 32)
+# edit secrets.yml: db_pass (must match voteball.tfvars' db_password), admin_username,
+# admin_password_hash (generate via ansible-project/roles/backend/files/backend/scripts/hash_admin_password.py),
+# admin_session_secret (openssl rand -hex 32)
 ansible-vault encrypt inventories/voteball/group_vars/all/secrets.yml --vault-password-file .vault_pass
 cd ..
 ```
+
+**Redeploying an existing installation?** This admin-auth migration is a breaking change: the
+backend container now requires `ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`/`ADMIN_SESSION_SECRET` and no
+longer reads `ADMIN_SECRET` at all. Before the next `ansible-playbook` run, edit the real
+`secrets.yml` (`ansible-vault edit inventories/voteball/group_vars/all/secrets.yml
+--vault-password-file .vault_pass`) to replace `admin_secret` with the three new keys — otherwise the
+backend pod will crash-loop on missing env vars.
 
 **Back up these 4 files somewhere other than this disk** (a password manager entry
 is enough — they're all small text/key files): `Voteball-EC2-pem.pem`,

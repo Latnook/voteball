@@ -166,7 +166,9 @@
       data:
         DB_USER: "{{ db_user | default('postgres') | b64encode }}"
         DB_PASS: "{{ db_pass | b64encode }}"
-        ADMIN_SECRET: "{{ admin_secret | b64encode }}"
+        ADMIN_USERNAME: "{{ admin_username | b64encode }}"
+        ADMIN_PASSWORD_HASH: "{{ admin_password_hash | b64encode }}"
+        ADMIN_SESSION_SECRET: "{{ admin_session_secret | b64encode }}"
   no_log: true
 
 - name: Apply the app-secret Secret via stdin
