@@ -342,7 +342,7 @@ def test_create_previous_party_duplicate_name_rolls_back_and_conn_still_usable(c
 
     queries.create_previous_party(conn, 'Dup Previous Party')
 
-    with pytest.raises(Exception):
+    with pytest.raises(queries.DuplicatePartyNameError):
         queries.create_previous_party(conn, 'Dup Previous Party')
 
     # connection must be usable afterward - proves rollback happened
@@ -350,14 +350,40 @@ def test_create_previous_party_duplicate_name_rolls_back_and_conn_still_usable(c
     assert party_id > 0
 
 
+def test_rename_previous_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
+    import queries
+
+    queries.create_previous_party(conn, 'Party X')
+    party_id = queries.create_previous_party(conn, 'Party Y')
+
+    with pytest.raises(queries.DuplicatePartyNameError):
+        queries.rename_previous_party(conn, party_id, 'Party X')
+
+    # connection must be usable afterward - proves rollback happened
+    assert queries.rename_previous_party(conn, party_id, 'Party Z') is True
+
+
 def test_create_upcoming_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
     import queries
 
     queries.create_upcoming_party(conn, 'Dup Upcoming Party')
 
-    with pytest.raises(Exception):
+    with pytest.raises(queries.DuplicatePartyNameError):
         queries.create_upcoming_party(conn, 'Dup Upcoming Party')
 
     # connection must be usable afterward - proves rollback happened
     party_id = queries.create_upcoming_party(conn, 'Another Upcoming Party')
     assert party_id > 0
+
+
+def test_rename_upcoming_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
+    import queries
+
+    queries.create_upcoming_party(conn, 'Party X')
+    party_id = queries.create_upcoming_party(conn, 'Party Y')
+
+    with pytest.raises(queries.DuplicatePartyNameError):
+        queries.rename_upcoming_party(conn, party_id, 'Party X')
+
+    # connection must be usable afterward - proves rollback happened
+    assert queries.rename_upcoming_party(conn, party_id, 'Party Z') is True

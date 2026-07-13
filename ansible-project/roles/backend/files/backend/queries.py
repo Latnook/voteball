@@ -1,6 +1,10 @@
 import psycopg2
 
 
+class DuplicatePartyNameError(Exception):
+    pass
+
+
 def get_options(conn):
     cur = conn.cursor()
 
@@ -116,6 +120,9 @@ def create_upcoming_party(conn, name):
         party_id = cur.fetchone()[0]
         conn.commit()
         return party_id
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        raise DuplicatePartyNameError(f'a party named {name!r} already exists')
     except Exception:
         conn.rollback()
         raise
@@ -130,6 +137,9 @@ def rename_upcoming_party(conn, party_id, new_name):
         updated = cur.rowcount > 0
         conn.commit()
         return updated
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        raise DuplicatePartyNameError(f'a party named {new_name!r} already exists')
     except Exception:
         conn.rollback()
         raise
@@ -158,6 +168,9 @@ def create_previous_party(conn, name):
         party_id = cur.fetchone()[0]
         conn.commit()
         return party_id
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        raise DuplicatePartyNameError(f'a party named {name!r} already exists')
     except Exception:
         conn.rollback()
         raise
@@ -172,6 +185,9 @@ def rename_previous_party(conn, party_id, new_name):
         updated = cur.rowcount > 0
         conn.commit()
         return updated
+    except psycopg2.errors.UniqueViolation:
+        conn.rollback()
+        raise DuplicatePartyNameError(f'a party named {new_name!r} already exists')
     except Exception:
         conn.rollback()
         raise
