@@ -2,18 +2,33 @@ import uuid
 import os
 from functools import wraps
 from flask import Flask, jsonify, request, make_response
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from werkzeug.security import check_password_hash
 import db
 import queries
 
 app = Flask(__name__)
 
-ADMIN_SECRET = os.environ['ADMIN_SECRET']
+ADMIN_USERNAME = os.environ['ADMIN_USERNAME']
+ADMIN_PASSWORD_HASH = os.environ['ADMIN_PASSWORD_HASH']
+ADMIN_SESSION_SECRET = os.environ['ADMIN_SESSION_SECRET']
+
+_admin_token_serializer = URLSafeTimedSerializer(ADMIN_SESSION_SECRET, salt='admin-session')
+ADMIN_TOKEN_MAX_AGE = 12 * 60 * 60  # 12 hours, in seconds
 
 
 def require_admin(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if request.headers.get('X-Admin-Secret') != ADMIN_SECRET:
+        auth_header = request.headers.get('Authorization', '')
+        if not auth_header.startswith('Bearer '):
+            return jsonify({'error': 'unauthorized'}), 401
+        token = auth_header[len('Bearer '):]
+        try:
+            username = _admin_token_serializer.loads(token, max_age=ADMIN_TOKEN_MAX_AGE)
+        except (BadSignature, SignatureExpired):
+            return jsonify({'error': 'unauthorized'}), 401
+        if username != ADMIN_USERNAME:
             return jsonify({'error': 'unauthorized'}), 401
         return f(*args, **kwargs)
     return wrapper
@@ -94,6 +109,24 @@ def results():
         conn.close()
 
     return jsonify(result)
+
+
+@app.route('/api/admin/login', methods=['POST'])
+def admin_login():
+    body = request.get_json(force=True, silent=True) or {}
+    username = body.get('username', '')
+    password = body.get('password', '')
+
+    # Always run both checks - an early return on a bad username would make this endpoint
+    # measurably faster for wrong-username requests than wrong-password ones, leaking
+    # which was true via timing.
+    username_ok = username == ADMIN_USERNAME
+    password_ok = check_password_hash(ADMIN_PASSWORD_HASH, password)
+    if not (username_ok and password_ok):
+        return jsonify({'error': 'invalid username or password'}), 401
+
+    token = _admin_token_serializer.dumps(ADMIN_USERNAME)
+    return jsonify({'token': token})
 
 
 @app.route('/api/admin/upcoming-parties', methods=['POST'])

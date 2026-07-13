@@ -2,6 +2,7 @@ import os
 import sys
 import pytest
 import psycopg2
+from werkzeug.security import generate_password_hash
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -12,7 +13,9 @@ os.environ.setdefault('DB_PASS', 'test')
 os.environ.setdefault('DB_SSLMODE', 'disable')
 os.environ.setdefault('SNS_TOPIC', 'arn:aws:sns:il-central-1:000000000000:test')
 os.environ.setdefault('AWS_REGION', 'il-central-1')
-os.environ.setdefault('ADMIN_SECRET', 'test-admin-secret')
+os.environ.setdefault('ADMIN_USERNAME', 'testadmin')
+os.environ.setdefault('ADMIN_PASSWORD_HASH', generate_password_hash('test-admin-password'))
+os.environ.setdefault('ADMIN_SESSION_SECRET', 'test-session-secret-not-for-production')
 
 import db as db_module
 
@@ -39,3 +42,10 @@ def client(conn):
     app_module.app.config['TESTING'] = True
     with app_module.app.test_client() as c:
         yield c
+
+
+@pytest.fixture
+def admin_headers(client):
+    resp = client.post('/api/admin/login', json={'username': 'testadmin', 'password': 'test-admin-password'})
+    token = resp.get_json()['token']
+    return {'Authorization': f'Bearer {token}'}

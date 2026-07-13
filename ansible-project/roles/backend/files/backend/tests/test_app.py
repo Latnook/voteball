@@ -114,8 +114,8 @@ def test_results_by_club_endpoint(client, conn):
     assert resp.get_json() == {'previous': [], 'upcoming': []}
 
 
-def test_upcoming_party_admin_crud(client):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_upcoming_party_admin_crud(client, admin_headers):
+    headers = admin_headers
 
     resp = client.post('/api/admin/upcoming-parties', json={'name': 'Test Party'}, headers=headers)
     assert resp.status_code == 201
@@ -131,13 +131,13 @@ def test_upcoming_party_admin_crud(client):
     assert resp.status_code == 404
 
 
-def test_admin_votes_list_requires_admin_secret(client):
+def test_admin_votes_list_requires_authentication(client):
     resp = client.get('/api/admin/votes')
     assert resp.status_code == 401
 
 
-def test_admin_votes_list_returns_votes_with_valid_secret(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_admin_votes_list_returns_votes_with_valid_secret(client, conn, admin_headers):
+    headers = admin_headers
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
     league_id = cur.fetchone()[0]
@@ -160,7 +160,7 @@ def test_admin_votes_list_returns_votes_with_valid_secret(client, conn):
     assert 'cookie_token' not in body['votes'][0]
 
 
-def test_admin_votes_delete_requires_admin_secret_and_handles_not_found(client, conn):
+def test_admin_votes_delete_requires_authentication_and_handles_not_found(client, conn, admin_headers):
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
     league_id = cur.fetchone()[0]
@@ -177,7 +177,7 @@ def test_admin_votes_delete_requires_admin_secret_and_handles_not_found(client, 
     resp = client.delete(f'/api/admin/votes/{vote_id}')
     assert resp.status_code == 401
 
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    headers = admin_headers
     resp = client.delete(f'/api/admin/votes/{vote_id}', headers=headers)
     assert resp.status_code == 204
 
@@ -185,8 +185,8 @@ def test_admin_votes_delete_requires_admin_secret_and_handles_not_found(client, 
     assert resp.status_code == 404
 
 
-def test_previous_party_admin_crud(client):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_previous_party_admin_crud(client, admin_headers):
+    headers = admin_headers
 
     resp = client.post('/api/admin/previous-parties', json={'name': 'Test Party'}, headers=headers)
     assert resp.status_code == 201
@@ -202,7 +202,7 @@ def test_previous_party_admin_crud(client):
     assert resp.status_code == 404
 
 
-def test_previous_party_admin_routes_require_admin_secret(client):
+def test_previous_party_admin_routes_require_authentication(client):
     resp = client.post('/api/admin/previous-parties', json={'name': 'X'})
     assert resp.status_code == 401
 
@@ -213,8 +213,8 @@ def test_previous_party_admin_routes_require_admin_secret(client):
     assert resp.status_code == 401
 
 
-def test_create_upcoming_party_duplicate_name_returns_409(client):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_create_upcoming_party_duplicate_name_returns_409(client, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/upcoming-parties', json={'name': 'Dup Party'}, headers=headers)
     assert resp.status_code == 201
 
@@ -223,8 +223,8 @@ def test_create_upcoming_party_duplicate_name_returns_409(client):
     assert resp.get_json() == {'error': 'a party with this name already exists'}
 
 
-def test_rename_upcoming_party_duplicate_name_returns_409(client):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_rename_upcoming_party_duplicate_name_returns_409(client, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/upcoming-parties', json={'name': 'Party One'}, headers=headers)
     party_two_target = resp.get_json()['id']
     resp = client.post('/api/admin/upcoming-parties', json={'name': 'Party Two'}, headers=headers)
@@ -236,8 +236,8 @@ def test_rename_upcoming_party_duplicate_name_returns_409(client):
     assert party_two_target > 0
 
 
-def test_create_previous_party_duplicate_name_returns_409(client):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_create_previous_party_duplicate_name_returns_409(client, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/previous-parties', json={'name': 'Dup Party'}, headers=headers)
     assert resp.status_code == 201
 
@@ -246,8 +246,8 @@ def test_create_previous_party_duplicate_name_returns_409(client):
     assert resp.get_json() == {'error': 'a party with this name already exists'}
 
 
-def test_rename_previous_party_duplicate_name_returns_409(client):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_rename_previous_party_duplicate_name_returns_409(client, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/previous-parties', json={'name': 'Party One'}, headers=headers)
     party_one_id = resp.get_json()['id']
     resp = client.post('/api/admin/previous-parties', json={'name': 'Party Two'}, headers=headers)
@@ -259,8 +259,8 @@ def test_rename_previous_party_duplicate_name_returns_409(client):
     assert party_one_id > 0
 
 
-def test_delete_upcoming_party_blocked_when_referenced_by_votes(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_delete_upcoming_party_blocked_when_referenced_by_votes(client, conn, admin_headers):
+    headers = admin_headers
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
     league_id = cur.fetchone()[0]
@@ -282,8 +282,8 @@ def test_delete_upcoming_party_blocked_when_referenced_by_votes(client, conn):
     assert resp.get_json() == {'error': '1 vote(s) still reference this party'}
 
 
-def test_delete_previous_party_blocked_when_referenced_by_votes(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_delete_previous_party_blocked_when_referenced_by_votes(client, conn, admin_headers):
+    headers = admin_headers
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
     league_id = cur.fetchone()[0]
@@ -305,8 +305,8 @@ def test_delete_previous_party_blocked_when_referenced_by_votes(client, conn):
     assert resp.get_json() == {'error': '1 vote(s) still reference this party'}
 
 
-def test_previous_party_reassign_moves_votes_and_updates_count(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_previous_party_reassign_moves_votes_and_updates_count(client, conn, admin_headers):
+    headers = admin_headers
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
     league_id = cur.fetchone()[0]
@@ -341,8 +341,8 @@ def test_previous_party_reassign_moves_votes_and_updates_count(client, conn):
     assert resp.get_json() == {'count': 0}
 
 
-def test_previous_party_reassign_rejects_equal_source_and_target(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_previous_party_reassign_rejects_equal_source_and_target(client, conn, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/previous-parties', json={'name': 'Solo Party'}, headers=headers)
     party_id = resp.get_json()['id']
 
@@ -350,8 +350,8 @@ def test_previous_party_reassign_rejects_equal_source_and_target(client, conn):
     assert resp.status_code == 400
 
 
-def test_previous_party_reassign_rejects_nonexistent_target(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_previous_party_reassign_rejects_nonexistent_target(client, conn, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/previous-parties', json={'name': 'Solo Party 2'}, headers=headers)
     party_id = resp.get_json()['id']
 
@@ -359,7 +359,7 @@ def test_previous_party_reassign_rejects_nonexistent_target(client, conn):
     assert resp.status_code == 404
 
 
-def test_previous_party_reassign_requires_admin_secret(client):
+def test_previous_party_reassign_requires_authentication(client):
     resp = client.get('/api/admin/previous-parties/1/reassign-count?target_id=2')
     assert resp.status_code == 401
 
@@ -367,8 +367,8 @@ def test_previous_party_reassign_requires_admin_secret(client):
     assert resp.status_code == 401
 
 
-def test_upcoming_party_reassign_moves_votes_and_updates_count(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_upcoming_party_reassign_moves_votes_and_updates_count(client, conn, admin_headers):
+    headers = admin_headers
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
     league_id = cur.fetchone()[0]
@@ -399,8 +399,8 @@ def test_upcoming_party_reassign_moves_votes_and_updates_count(client, conn):
     assert vote['upcoming_party_ids'] == [target_id]
 
 
-def test_upcoming_party_reassign_rejects_equal_source_and_target(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_upcoming_party_reassign_rejects_equal_source_and_target(client, conn, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Solo'}, headers=headers)
     party_id = resp.get_json()['id']
 
@@ -408,8 +408,8 @@ def test_upcoming_party_reassign_rejects_equal_source_and_target(client, conn):
     assert resp.status_code == 400
 
 
-def test_upcoming_party_reassign_rejects_nonexistent_target(client, conn):
-    headers = {'X-Admin-Secret': 'test-admin-secret'}
+def test_upcoming_party_reassign_rejects_nonexistent_target(client, conn, admin_headers):
+    headers = admin_headers
     resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Solo 2'}, headers=headers)
     party_id = resp.get_json()['id']
 
@@ -417,9 +417,69 @@ def test_upcoming_party_reassign_rejects_nonexistent_target(client, conn):
     assert resp.status_code == 404
 
 
-def test_upcoming_party_reassign_requires_admin_secret(client):
+def test_upcoming_party_reassign_requires_authentication(client):
     resp = client.get('/api/admin/upcoming-parties/1/reassign-count?target_id=2')
     assert resp.status_code == 401
 
     resp = client.post('/api/admin/upcoming-parties/1/reassign', json={'target_id': 2})
+    assert resp.status_code == 401
+
+
+def test_admin_login_succeeds_with_correct_credentials(client):
+    resp = client.post('/api/admin/login', json={'username': 'testadmin', 'password': 'test-admin-password'})
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert 'token' in body
+    assert isinstance(body['token'], str)
+    assert len(body['token']) > 0
+
+
+def test_admin_login_rejects_wrong_password(client):
+    resp = client.post('/api/admin/login', json={'username': 'testadmin', 'password': 'wrong'})
+    assert resp.status_code == 401
+    assert resp.get_json() == {'error': 'invalid username or password'}
+
+
+def test_admin_login_rejects_wrong_username(client):
+    resp = client.post('/api/admin/login', json={'username': 'nobody', 'password': 'test-admin-password'})
+    assert resp.status_code == 401
+    assert resp.get_json() == {'error': 'invalid username or password'}
+
+
+def test_admin_login_rejects_missing_username(client):
+    resp = client.post('/api/admin/login', json={'password': 'test-admin-password'})
+    assert resp.status_code == 401
+    assert resp.get_json() == {'error': 'invalid username or password'}
+
+
+def test_admin_login_rejects_missing_password(client):
+    resp = client.post('/api/admin/login', json={'username': 'testadmin'})
+    assert resp.status_code == 401
+    assert resp.get_json() == {'error': 'invalid username or password'}
+
+
+def test_require_admin_rejects_missing_authorization_header(client):
+    resp = client.get('/api/admin/votes')
+    assert resp.status_code == 401
+
+
+def test_require_admin_rejects_non_bearer_header(client):
+    resp = client.get('/api/admin/votes', headers={'Authorization': 'Basic dGVzdA=='})
+    assert resp.status_code == 401
+
+
+def test_require_admin_rejects_token_with_bad_signature(client):
+    resp = client.get('/api/admin/votes', headers={'Authorization': 'Bearer not-a-real-token'})
+    assert resp.status_code == 401
+
+
+def test_require_admin_rejects_expired_token(client):
+    import app as app_module
+    from unittest.mock import patch
+    import time as time_module
+
+    with patch.object(time_module, 'time', return_value=time_module.time() - 100000):
+        old_token = app_module._admin_token_serializer.dumps(app_module.ADMIN_USERNAME)
+
+    resp = client.get('/api/admin/votes', headers={'Authorization': f'Bearer {old_token}'})
     assert resp.status_code == 401
