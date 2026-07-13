@@ -387,3 +387,33 @@ def test_rename_upcoming_party_duplicate_name_rolls_back_and_conn_still_usable(c
 
     # connection must be usable afterward - proves rollback happened
     assert queries.rename_upcoming_party(conn, party_id, 'Party Z') is True
+
+
+def test_count_votes_for_previous_party(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+    party_id = queries.create_previous_party(conn, 'Counted Party')
+
+    assert queries.count_votes_for_previous_party(conn, party_id) == 0
+
+    queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='voted', previous_party_id=party_id,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='count-prev-token-1',
+    )
+    assert queries.count_votes_for_previous_party(conn, party_id) == 1
+
+
+def test_count_votes_for_upcoming_party(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+    party_id = queries.create_upcoming_party(conn, 'Counted Upcoming Party')
+
+    assert queries.count_votes_for_upcoming_party(conn, party_id) == 0
+
+    queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='considering', upcoming_party_ids=[party_id],
+        cookie_token='count-up-token-1',
+    )
+    assert queries.count_votes_for_upcoming_party(conn, party_id) == 1

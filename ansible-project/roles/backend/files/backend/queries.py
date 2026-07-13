@@ -247,3 +247,22 @@ def delete_vote(conn, vote_id):
     conn.commit()
     cur.close()
     return deleted
+
+
+def count_votes_for_previous_party(conn, party_id):
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM votes WHERE previous_party_id = %s', (party_id,))
+    count = cur.fetchone()[0]
+    cur.close()
+    return count
+
+
+def count_votes_for_upcoming_party(conn, party_id):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT COUNT(DISTINCT vote_id) FROM vote_upcoming_parties WHERE upcoming_party_id = %s',
+        (party_id,)
+    )
+    count = cur.fetchone()[0]
+    cur.close()
+    return count
