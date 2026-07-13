@@ -14,6 +14,17 @@ previous-party CRUD, upcoming-party CRUD, and votes list/delete.
 Admin auth stays exactly as it is: a static shared secret compared against `ADMIN_SECRET`. This page
 is a client for that model, not a replacement for it — no backend auth changes.
 
+Parties are not static once seeded — real-world political parties merge and split, especially for
+`upcoming_parties` in the run-up to an election (e.g. a joint list splitting into two independent
+parties, or several small parties merging into one). `previous_parties`/`upcoming_parties` today are
+flat, independent rows with no lineage concept, and plain delete is actively dangerous against votes
+that reference them (see Decisions #10–11). This spec adds a **vote reassignment** action — an
+admin-judgment-driven way to move existing votes from one party ID to another — that covers both
+cases: a merge is reassignment applied once per losing party into the survivor; a split, where the
+admin judges which successor actually carried the original voters' intent (e.g. votes for a joint list
+led by a figure who took one faction independent), is reassignment applied once, redirecting history to
+that successor. This is a manual, per-case admin decision, not an automatic algorithm — see Non-goals.
+
 ## Decisions
 
 1. **New files, not an extension of an existing page**: `admin.html` + `admin.js`, reusing
@@ -51,8 +62,27 @@ is a client for that model, not a replacement for it — no backend auth changes
     pre-existing, but the admin UI is what makes a human likely to actually hit it (via the "Add
     new" / rename forms), so it's fixed as part of this work rather than left as a dead end behind a
     generic error message.
+11. **Backend fix, in scope**: deleting a party currently has two different, both-unsafe behaviors.
+    `votes.previous_party_id → previous_parties(id)` has no `ON DELETE` rule (defaults to
+    `RESTRICT`), so deleting a referenced previous party currently raises an unhandled foreign-key
+    violation (another uncaught 500). `vote_upcoming_parties.upcoming_party_id → upcoming_parties(id)`
+    is `ON DELETE CASCADE`, so deleting a referenced upcoming party currently succeeds but silently
+    drops that party from every affected vote's `upcoming_party_ids` with no trace. Both delete
+    routes are fixed to check for referencing votes first and return 409 with the count instead —
+    "N votes still reference this party; reassign or reassign-and-delete first." This is what makes
+    the reassign action (below) meaningful rather than optional: a party with real vote history is no
+    longer either un-deletable-with-a-crash or silently-emptied-of-history.
+12. **New action: "Reassign votes to another party"**, symmetric on both party tabs (Previous
+    Parties, Upcoming Parties — same CRUD symmetry the tabs already share). Not "merge" or "split" as
+    separate mechanics — a single primitive (move every vote's reference from a source party ID to a
+    target party ID) that covers both: repeated once per losing party into a survivor, it's a merge;
+    applied once to redirect a party's history toward whichever successor an admin judges actually
+    represents the original voters' intent, it approximates a split. See Backend for the mechanics
+    and Non-goals for what this deliberately does not attempt.
 
 ## Backend
+
+### Duplicate-name fix
 
 In `ansible-project/roles/backend/files/backend/queries.py`, `create_previous_party`,
 `rename_previous_party`, `create_upcoming_party`, and `rename_upcoming_party` each catch
@@ -62,6 +92,51 @@ rollback; raise`), roll back, and raise a distinct exception (e.g. a small
 `jsonify({'error': 'a party with this name already exists'}), 409`. All other exceptions keep
 propagating as before — this only adds a specific case ahead of the general one, it doesn't change
 the general rollback/re-raise behavior `CLAUDE.md` establishes for mutating query functions.
+
+### Delete guard
+
+New query functions `count_votes_for_previous_party(conn, party_id) -> int` (`SELECT COUNT(*) FROM
+votes WHERE previous_party_id = %s`) and `count_votes_for_upcoming_party(conn, party_id) -> int`
+(`SELECT COUNT(DISTINCT vote_id) FROM vote_upcoming_parties WHERE upcoming_party_id = %s`). Both
+delete routes call the matching count function before attempting the delete; if count > 0, return
+`jsonify({'error': f'{count} votes still reference this party'}), 409` without touching the row.
+Only when count is 0 does the route proceed to the existing `delete_previous_party`/
+`delete_upcoming_party` call. These same two count functions back the reassign-preview endpoints
+below — one implementation, two call sites.
+
+### Reassign
+
+New routes, mirroring the existing party CRUD shape:
+
+- `GET /api/admin/previous-parties/<source_id>/reassign-count?target_id=<id>` → `{"count": N}`,
+  read-only, using `count_votes_for_previous_party`.
+- `POST /api/admin/previous-parties/<source_id>/reassign` body `{"target_id": <id>}` → validates
+  `target_id != source_id` (400 if equal) and that `target_id` exists (404 if not), then in one
+  transaction: `UPDATE votes SET previous_party_id = %(target)s WHERE previous_party_id =
+  %(source)s`, returns `{"reassigned": <rowcount>}`.
+- `GET /api/admin/upcoming-parties/<source_id>/reassign-count?target_id=<id>` → `{"count": N}`,
+  using `count_votes_for_upcoming_party`.
+- `POST /api/admin/upcoming-parties/<source_id>/reassign` body `{"target_id": <id>}` → same
+  validation, then in one transaction:
+  1. Count affected votes first (for the response): `SELECT COUNT(DISTINCT vote_id) FROM
+     vote_upcoming_parties WHERE upcoming_party_id = %(source)s`.
+  2. Drop collision rows: `DELETE FROM vote_upcoming_parties WHERE upcoming_party_id = %(source)s
+     AND vote_id IN (SELECT vote_id FROM vote_upcoming_parties WHERE upcoming_party_id =
+     %(target)s)` — handles a vote that already has both source and target among its picks, which
+     would otherwise violate the `(vote_id, upcoming_party_id)` primary key on the next step.
+  3. Reassign the rest: `UPDATE vote_upcoming_parties SET upcoming_party_id = %(target)s WHERE
+     upcoming_party_id = %(source)s` — collision-free by construction after step 2.
+  4. Return `{"reassigned": <count from step 1>}`.
+
+All four new query functions follow the existing `try/except Exception: conn.rollback(); raise /
+finally: cur.close()` shape; routes follow the existing `try/finally: conn.close()` shape. No schema
+change — this operates entirely within the existing `votes`/`vote_upcoming_parties` tables and their
+existing constraints: `votes.previous_party_id` carries no unique constraint (many votes already
+share one party), so the plain `UPDATE` in the previous-parties case is safe on its own; the
+composite primary key on `vote_upcoming_parties` is exactly what the delete-then-update ordering in
+the upcoming-parties case exists to protect against. Neither table's rollup
+(`rollup_previous`/`rollup_upcoming`/`rollup_previous_upcoming`) is touched directly — the worker's
+normal recompute cycle picks up the change like any other vote-data mutation.
 
 ## Components
 
@@ -96,6 +171,15 @@ the general rollback/re-raise behavior `CLAUDE.md` establishes for mutating quer
 - **Add new**: a text input + "Add" button below the list. On submit,
   `POST /api/admin/{previous,upcoming}-parties`; on success, append the new row and clear the input;
   on failure (e.g. duplicate name / empty), inline error near the form.
+- **Reassign**: a third per-row button, "Reassign votes...", opens a small inline form: a dropdown
+  of the *other* parties in the same list, plus a "+ new party" option that reveals a name input
+  (submitting that creates the party via the existing POST endpoint first, then proceeds with its
+  returned id as the target). On choosing a target, fetch the `reassign-count` endpoint and show the
+  count in the confirm step: `confirm('Reassign N votes from "<source>" to "<target>"? This cannot
+  be undone.')`. On confirm, `POST .../reassign`; on success, show the returned count and refresh
+  the list (the row for a since-emptied source party still exists — reassign never deletes the
+  source — so the admin can follow up with Delete if desired, now safe since Delete's guard will see
+  zero referencing votes).
 
 ### Votes tab
 
@@ -128,28 +212,47 @@ gate submit ─> probe GET /api/admin/votes
                  ├─ 200 → store secret, show tabs, lazy-load active tab
                  └─ 401 → inline error, stay on gate
 
-any admin fetch (rename/delete/create/votes-list) ─> attach X-Admin-Secret from sessionStorage
+any admin fetch (rename/delete/create/reassign/votes-list) ─> attach X-Admin-Secret from sessionStorage
                  ├─ 401 → clear storage, show gate ("session expired")
                  ├─ 2xx → update UI (re-render row/list)
                  └─ other 4xx/5xx → inline error near the relevant control
+
+reassign flow (per party row) ─> pick target ─> GET reassign-count ─> confirm(N) ─> POST reassign
+                                                                          ├─ 2xx → refresh list, show count
+                                                                          └─ 4xx/5xx → inline error
+
+delete flow (per party row) ─> confirm() ─> DELETE
+                                  ├─ 204 → remove row
+                                  └─ 409 (still referenced) → inline error naming the count,
+                                                               suggesting Reassign first
 ```
 
 ## Error handling
 
 - Wrong/expired secret: handled uniformly by the gate/re-prompt flow above — no separate cases per
   endpoint.
-- Validation errors (empty name → 400, duplicate name → 409 per the backend fix above): the
-  backend's `{'error': '...'}` JSON message is shown inline near the form that triggered it.
+- Validation errors (empty name → 400, duplicate name → 409, delete blocked by referencing votes →
+  409, reassign with equal source/target → 400, reassign to a nonexistent target → 404): the
+  backend's `{'error': '...'}` JSON message is shown inline near the form/control that triggered it.
 - Network/unexpected errors: generic inline "Something went wrong" message, matching the existing
   style in `vote.js`.
 - No client-side retry/backoff logic — matches the rest of the frontend's simplicity level.
 
 ## Testing
 
-Backend: new tests in `tests/test_app.py` for the duplicate-name fix — POSTing/PATCHing a
-`previous-parties` or `upcoming-parties` name that already exists returns 409 with a JSON `error`
-body (four cases: create/rename × previous/upcoming), mirroring the existing pattern for the
-empty-name 400 case.
+Backend: new tests in `tests/test_app.py`, mirroring the existing empty-name-400 pattern:
+
+- Duplicate-name fix: create/rename × previous/upcoming (4 cases) returns 409 with a JSON `error`
+  body when the name already exists.
+- Delete guard: deleting a previous or upcoming party that a seeded vote references (2 cases)
+  returns 409 instead of crashing or silently cascading; deleting an unreferenced party still
+  succeeds (204), unchanged from today.
+- Reassign, previous parties: a vote with `previous_party_id = source` ends up with
+  `previous_party_id = target` after `POST .../reassign`; `reassign-count` reflects the right number
+  before and after; equal source/target → 400; nonexistent target → 404.
+- Reassign, upcoming parties: the same, plus the collision case specifically — a vote whose
+  `upcoming_party_ids` already contains both source and target ends up with target only (not a
+  duplicate row, not an error) after reassign, and a vote with only source ends up with only target.
 
 Frontend: no automated test suite exists for this project (per `CLAUDE.md` — matches the S3App
 precedent). Verified manually by running the stack locally and driving `admin.html` in a browser:
@@ -158,6 +261,10 @@ precedent). Verified manually by running the stack locally and driving `admin.ht
 - Correct secret reveals tabs; refreshing the tab within the same session skips the prompt.
 - Previous/upcoming party create, rename, and delete each round-trip correctly and update the list.
 - Duplicate-name rename/create surfaces the backend's 409 validation error inline.
+- Deleting a party with votes attached shows the 409 error instead of crashing; deleting an
+  unreferenced party (including one just emptied by a reassign) succeeds.
+- Reassign shows the correct vote count in the confirmation, and the target party's effective vote
+  count increases accordingly on the next results view (after a worker recompute).
 - Votes tab lists existing votes and delete removes the correct row.
 - Rotating `ADMIN_SECRET` (or corrupting the stored value) and retrying an action re-shows the gate
   with the "session expired" message instead of silently failing.
@@ -169,3 +276,15 @@ precedent). Verified manually by running the stack locally and driving `admin.ht
 - No admin UI for leagues/clubs — those are seed-only per `CLAUDE.md`, not admin-editable.
 - No link from public pages to `admin.html`.
 - No CSS/visual redesign — this reuses `style.css` as-is (visual redesign is a separate backlog item).
+- No automatic split/merge detection or proportional vote-splitting. Reassignment is entirely
+  admin-invoked and all-or-nothing per action (every vote referencing the source moves to the same
+  target) — there's no mechanism to send some fraction of a source party's votes to one target and
+  the rest elsewhere. A split into more than one meaningful successor requires the admin to make the
+  same judgment call the Otzma Yehudit example does: decide which single successor represents the
+  original voters' intent, or leave the history where it is.
+- No party lineage tracking (no "this party is the successor of that party" record kept after the
+  fact) and no retroactive relabeling in `/api/results` beyond what the reassignment itself produces
+  by moving the underlying vote rows. Once reassigned, a vote's history looks identical to a vote
+  that was always cast for the target party — there's no audit trail of "this vote used to point at
+  a different party ID." Add one later (e.g. a `party_reassignment_log` table) if that history turns
+  out to matter.
