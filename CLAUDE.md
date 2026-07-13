@@ -73,17 +73,24 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 | `/api/vote` | POST | none, cookie-deduped | sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids`, or if `upcoming_party_ids` has more than 3 entries (checked unconditionally, not just when `considering`) — client also validates both before submitting |
 | `/api/results` | GET | none | `?by=club\|league\|id=N` or `?by=party&type=previous\|upcoming&id=N` (the latter also returns a global `crosstab` of the other party type); reads the worker-computed rollup tables |
 | `/api/admin/login` | POST | none | body `{"username", "password"}`; returns `{"token"}` on success, `401` on any failure |
-| `/api/admin/previous-parties` | POST | Bearer token | create |
-| `/api/admin/previous-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove |
-| `/api/admin/upcoming-parties` | POST | Bearer token | create |
-| `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove |
+| `/api/admin/previous-parties` | POST | Bearer token | create; 409 if the name already exists |
+| `/api/admin/previous-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove; DELETE returns 409 if any votes still reference the party |
+| `/api/admin/previous-parties/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; returns `{"count": N}` of votes that would move |
+| `/api/admin/previous-parties/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves every vote's `previous_party_id` from `<id>` to `target_id`, returns `{"reassigned": N}` |
+| `/api/admin/upcoming-parties` | POST | Bearer token | create; 409 if the name already exists |
+| `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove; DELETE returns 409 if any votes still reference the party |
+| `/api/admin/upcoming-parties/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; returns `{"count": N}` of votes that would move |
+| `/api/admin/upcoming-parties/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; reassigns every vote's `<id>` pick to `target_id` (collision-safe against the ≤3-pick cap), returns `{"reassigned": N}` |
 | `/api/admin/votes` | GET | Bearer token | list all votes (no `cookie_token` in the response) |
 | `/api/admin/votes/<id>` | DELETE | Bearer token | remove one vote; cascades to its `vote_upcoming_parties` rows |
 
 Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
-(dashboard, reads `/api/results`). Both render backend-derived names via `createElement`/`textContent`,
-never `innerHTML` string interpolation — `previous_parties`/`upcoming_parties` names come from an
-external API and admin input respectively, neither is safe to trust as pre-escaped HTML.
+(dashboard, reads `/api/results`), `admin.html`/`admin.js` (unlinked from the public pages — party
+CRUD, vote reassignment for merges/splits, and votes list/delete, gated by username/password login
+issuing a session-stored Bearer token). All three render backend-derived names via
+`createElement`/`textContent`, never `innerHTML` string interpolation — `previous_parties`/
+`upcoming_parties` names come from an external API and admin input respectively, neither is safe to
+trust as pre-escaped HTML.
 
 ## Deployment
 
