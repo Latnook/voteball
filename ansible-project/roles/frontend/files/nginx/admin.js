@@ -50,7 +50,7 @@ function loadTab(tab) {
   loadedTabs.add(tab);
   if (tab === 'previous') loadPartyTab('previous');
   else if (tab === 'upcoming') loadPartyTab('upcoming');
-  // votes case added by Task 11
+  else if (tab === 'votes') loadVotesTab();
 }
 
 function partyEndpoint(type) {
@@ -337,4 +337,104 @@ function toggleReassignForm(type, sourceParty, allParties, row) {
   });
 
   row.appendChild(form);
+}
+
+function leagueName(data, id) {
+  const l = data.leagues.find(l => l.id === id);
+  return l ? l.name : `league #${id}`;
+}
+
+function clubName(data, id) {
+  if (id === null) return '—';
+  const c = data.clubs.find(c => c.id === id);
+  return c ? c.name : `club #${id}`;
+}
+
+function previousPartyName(data, id) {
+  if (id === null) return 'did not vote';
+  const p = data.previous_parties.find(p => p.id === id);
+  return p ? p.name : `#${id}`;
+}
+
+function upcomingPartyNames(data, ids) {
+  if (!ids.length) return 'undecided';
+  return ids.map(id => {
+    const p = data.upcoming_parties.find(p => p.id === id);
+    return p ? p.name : `#${id}`;
+  }).join(', ');
+}
+
+async function loadVotesTab() {
+  const data = await getOptionsData();
+  let res;
+  try {
+    res = await adminFetch('/api/admin/votes');
+  } catch (err) {
+    return;
+  }
+  if (res === null || !res.ok) return;
+  const { votes } = await res.json();
+  renderVotesTable(data, votes.slice().reverse());
+}
+
+function renderVotesTable(data, votes) {
+  const container = document.getElementById('votes-table-container');
+  container.innerHTML = '';
+
+  const table = document.createElement('table');
+  table.className = 'votes-table';
+
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  ['ID', 'Created', 'League', 'Club', 'Previous vote', 'Upcoming vote', ''].forEach(text => {
+    const th = document.createElement('th');
+    th.textContent = text;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  votes.forEach(v => {
+    const tr = document.createElement('tr');
+    [
+      v.id,
+      v.created_at,
+      leagueName(data, v.league_id),
+      clubName(data, v.club_id),
+      previousPartyName(data, v.previous_party_id),
+      upcomingPartyNames(data, v.upcoming_party_ids),
+    ].forEach(text => {
+      const td = document.createElement('td');
+      td.textContent = text;
+      tr.appendChild(td);
+    });
+
+    const actionTd = document.createElement('td');
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.addEventListener('click', async () => {
+      if (!confirm(`Delete vote #${v.id}? This cannot be undone.`)) return;
+      let res;
+      try {
+        res = await adminFetch(`/api/admin/votes/${v.id}`, { method: 'DELETE' });
+      } catch (err) {
+        alert('Something went wrong.');
+        return;
+      }
+      if (res === null) return;
+      if (!res.ok) {
+        alert('Something went wrong.');
+        return;
+      }
+      tr.remove();
+    });
+    actionTd.appendChild(deleteBtn);
+    tr.appendChild(actionTd);
+
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  container.appendChild(table);
 }
