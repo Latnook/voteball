@@ -24,8 +24,9 @@
 
   <div id="secret-gate">
     <form id="secret-form">
-      <label>Admin secret: <input type="password" id="secret-input" required></label>
-      <button type="submit">Enter</button>
+      <label>Username: <input type="text" id="username-input" required autocomplete="username"></label>
+      <label>Password: <input type="password" id="password-input" required autocomplete="current-password"></label>
+      <button type="submit">Log in</button>
       <p class="error" id="secret-error"></p>
     </form>
   </div>
@@ -35,6 +36,7 @@
       <button type="button" class="tab-button active" data-tab="previous">Previous Parties</button>
       <button type="button" class="tab-button" data-tab="upcoming">Upcoming Parties</button>
       <button type="button" class="tab-button" data-tab="votes">Votes</button>
+      <button type="button" id="logout-button">Log out</button>
     </div>
 
     <section id="tab-previous" class="tab-section active">
