@@ -137,6 +137,9 @@ def rename_upcoming_party_route(party_id):
 def delete_upcoming_party_route(party_id):
     conn = db.get_db()
     try:
+        referencing = queries.count_votes_for_upcoming_party(conn, party_id)
+        if referencing > 0:
+            return jsonify({'error': f'{referencing} vote(s) still reference this party'}), 409
         deleted = queries.delete_upcoming_party(conn, party_id)
     finally:
         conn.close()
@@ -186,6 +189,9 @@ def rename_previous_party_route(party_id):
 def delete_previous_party_route(party_id):
     conn = db.get_db()
     try:
+        referencing = queries.count_votes_for_previous_party(conn, party_id)
+        if referencing > 0:
+            return jsonify({'error': f'{referencing} vote(s) still reference this party'}), 409
         deleted = queries.delete_previous_party(conn, party_id)
     finally:
         conn.close()

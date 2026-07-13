@@ -257,3 +257,49 @@ def test_rename_previous_party_duplicate_name_returns_409(client):
     assert resp.status_code == 409
     assert resp.get_json() == {'error': 'a party with this name already exists'}
     assert party_one_id > 0
+
+
+def test_delete_upcoming_party_blocked_when_referenced_by_votes(client, conn):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Referenced Party'}, headers=headers)
+    party_id = resp.get_json()['id']
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'considering', 'upcoming_party_ids': [party_id],
+    })
+    assert resp.status_code == 201
+
+    resp = client.delete(f'/api/admin/upcoming-parties/{party_id}', headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': '1 vote(s) still reference this party'}
+
+
+def test_delete_previous_party_blocked_when_referenced_by_votes(client, conn):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/admin/previous-parties', json={'name': 'Referenced Previous Party'}, headers=headers)
+    party_id = resp.get_json()['id']
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'voted', 'previous_party_id': party_id,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 201
+
+    resp = client.delete(f'/api/admin/previous-parties/{party_id}', headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': '1 vote(s) still reference this party'}
