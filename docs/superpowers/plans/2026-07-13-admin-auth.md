@@ -231,6 +231,9 @@ def admin_login():
     username = body.get('username', '')
     password = body.get('password', '')
 
+    # Always run both checks - an early return on a bad username would make this endpoint
+    # measurably faster for wrong-username requests than wrong-password ones, leaking
+    # which was true via timing.
     username_ok = username == ADMIN_USERNAME
     password_ok = check_password_hash(ADMIN_PASSWORD_HASH, password)
     if not (username_ok and password_ok):
