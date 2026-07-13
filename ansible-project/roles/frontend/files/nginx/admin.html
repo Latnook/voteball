@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voteball — Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .tab-button { background: #eee; color: #333; }
+    .tab-button.active { background: #1a73e8; color: white; }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    .party-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.4rem 0; flex-wrap: wrap; }
+    .party-row .party-name { flex: 1; min-width: 120px; }
+    .party-row button, .reassign-form button { font-size: 0.85rem; padding: 0.3rem 0.6rem; }
+    .reassign-form { margin: 0.4rem 0 0.4rem 1rem; padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px; width: 100%; }
+    table.votes-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+    table.votes-table th, table.votes-table td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; }
+    .row-error { color: #c00; font-size: 0.85rem; width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Voteball — Admin</h1>
+
+  <div id="secret-gate">
+    <form id="secret-form">
+      <label>Admin secret: <input type="password" id="secret-input" required></label>
+      <button type="submit">Enter</button>
+      <p class="error" id="secret-error"></p>
+    </form>
+  </div>
+
+  <div id="admin-content" style="display:none">
+    <div class="tab-bar">
+      <button type="button" class="tab-button active" data-tab="previous">Previous Parties</button>
+      <button type="button" class="tab-button" data-tab="upcoming">Upcoming Parties</button>
+      <button type="button" class="tab-button" data-tab="votes">Votes</button>
+    </div>
+
+    <section id="tab-previous" class="tab-section active">
+      <h2>Previous Parties</h2>
+      <div id="previous-party-list"></div>
+      <form id="previous-party-add-form">
+        <input type="text" id="previous-party-add-input" placeholder="New party name" required>
+        <button type="submit">Add</button>
+      </form>
+      <p class="error" id="previous-party-form-error"></p>
+    </section>
+
+    <section id="tab-upcoming" class="tab-section">
+      <h2>Upcoming Parties</h2>
+      <div id="upcoming-party-list"></div>
+      <form id="upcoming-party-add-form">
+        <input type="text" id="upcoming-party-add-input" placeholder="New party name" required>
+        <button type="submit">Add</button>
+      </form>
+      <p class="error" id="upcoming-party-form-error"></p>
+    </section>
+
+    <section id="tab-votes" class="tab-section">
+      <h2>Votes</h2>
+      <div id="votes-table-container"></div>
+    </section>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
