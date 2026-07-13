@@ -211,3 +211,49 @@ def test_previous_party_admin_routes_require_admin_secret(client):
 
     resp = client.delete('/api/admin/previous-parties/1')
     assert resp.status_code == 401
+
+
+def test_create_upcoming_party_duplicate_name_returns_409(client):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Dup Party'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Dup Party'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this name already exists'}
+
+
+def test_rename_upcoming_party_duplicate_name_returns_409(client):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Party One'}, headers=headers)
+    party_two_target = resp.get_json()['id']
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Party Two'}, headers=headers)
+    party_two_id = resp.get_json()['id']
+
+    resp = client.patch(f'/api/admin/upcoming-parties/{party_two_id}', json={'name': 'Party One'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this name already exists'}
+    assert party_two_target > 0
+
+
+def test_create_previous_party_duplicate_name_returns_409(client):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    resp = client.post('/api/admin/previous-parties', json={'name': 'Dup Party'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/previous-parties', json={'name': 'Dup Party'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this name already exists'}
+
+
+def test_rename_previous_party_duplicate_name_returns_409(client):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    resp = client.post('/api/admin/previous-parties', json={'name': 'Party One'}, headers=headers)
+    party_one_id = resp.get_json()['id']
+    resp = client.post('/api/admin/previous-parties', json={'name': 'Party Two'}, headers=headers)
+    party_two_id = resp.get_json()['id']
+
+    resp = client.patch(f'/api/admin/previous-parties/{party_two_id}', json={'name': 'Party One'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this name already exists'}
+    assert party_one_id > 0

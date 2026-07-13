@@ -106,6 +106,8 @@ def create_upcoming_party_route():
     conn = db.get_db()
     try:
         party_id = queries.create_upcoming_party(conn, name)
+    except queries.DuplicatePartyNameError:
+        return jsonify({'error': 'a party with this name already exists'}), 409
     finally:
         conn.close()
     return jsonify({'id': party_id, 'name': name}), 201
@@ -121,6 +123,8 @@ def rename_upcoming_party_route(party_id):
     conn = db.get_db()
     try:
         updated = queries.rename_upcoming_party(conn, party_id, name)
+    except queries.DuplicatePartyNameError:
+        return jsonify({'error': 'a party with this name already exists'}), 409
     finally:
         conn.close()
     if not updated:
@@ -151,6 +155,8 @@ def create_previous_party_route():
     conn = db.get_db()
     try:
         party_id = queries.create_previous_party(conn, name)
+    except queries.DuplicatePartyNameError:
+        return jsonify({'error': 'a party with this name already exists'}), 409
     finally:
         conn.close()
     return jsonify({'id': party_id, 'name': name}), 201
@@ -166,6 +172,8 @@ def rename_previous_party_route(party_id):
     conn = db.get_db()
     try:
         updated = queries.rename_previous_party(conn, party_id, name)
+    except queries.DuplicatePartyNameError:
+        return jsonify({'error': 'a party with this name already exists'}), 409
     finally:
         conn.close()
     if not updated:
