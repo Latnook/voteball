@@ -148,6 +148,39 @@ def delete_upcoming_party_route(party_id):
     return '', 204
 
 
+@app.route('/api/admin/upcoming-parties/<int:source_id>/reassign-count', methods=['GET'])
+@require_admin
+def upcoming_party_reassign_count_route(source_id):
+    target_id = request.args.get('target_id', type=int)
+    if target_id is None:
+        return jsonify({'error': 'target_id is required'}), 400
+    conn = db.get_db()
+    try:
+        count = queries.count_votes_for_upcoming_party(conn, source_id)
+    finally:
+        conn.close()
+    return jsonify({'count': count})
+
+
+@app.route('/api/admin/upcoming-parties/<int:source_id>/reassign', methods=['POST'])
+@require_admin
+def reassign_upcoming_party_route(source_id):
+    body = request.get_json(force=True, silent=True) or {}
+    target_id = body.get('target_id')
+    if not isinstance(target_id, int):
+        return jsonify({'error': 'target_id is required'}), 400
+    if target_id == source_id:
+        return jsonify({'error': 'target_id must differ from source party'}), 400
+    conn = db.get_db()
+    try:
+        if not queries.upcoming_party_exists(conn, target_id):
+            return jsonify({'error': 'target party not found'}), 404
+        reassigned = queries.reassign_upcoming_party_votes(conn, source_id, target_id)
+    finally:
+        conn.close()
+    return jsonify({'reassigned': reassigned})
+
+
 @app.route('/api/admin/previous-parties', methods=['POST'])
 @require_admin
 def create_previous_party_route():

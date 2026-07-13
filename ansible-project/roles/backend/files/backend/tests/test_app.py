@@ -365,3 +365,61 @@ def test_previous_party_reassign_requires_admin_secret(client):
 
     resp = client.post('/api/admin/previous-parties/1/reassign', json={'target_id': 2})
     assert resp.status_code == 401
+
+
+def test_upcoming_party_reassign_moves_votes_and_updates_count(client, conn):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Source'}, headers=headers)
+    source_id = resp.get_json()['id']
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Target'}, headers=headers)
+    target_id = resp.get_json()['id']
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'considering', 'upcoming_party_ids': [source_id],
+    })
+    vote_id = resp.get_json()['vote_id']
+
+    resp = client.get(f'/api/admin/upcoming-parties/{source_id}/reassign-count?target_id={target_id}', headers=headers)
+    assert resp.get_json() == {'count': 1}
+
+    resp = client.post(f'/api/admin/upcoming-parties/{source_id}/reassign', json={'target_id': target_id}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.get_json() == {'reassigned': 1}
+
+    resp = client.get('/api/admin/votes', headers=headers)
+    vote = next(v for v in resp.get_json()['votes'] if v['id'] == vote_id)
+    assert vote['upcoming_party_ids'] == [target_id]
+
+
+def test_upcoming_party_reassign_rejects_equal_source_and_target(client, conn):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Solo'}, headers=headers)
+    party_id = resp.get_json()['id']
+
+    resp = client.post(f'/api/admin/upcoming-parties/{party_id}/reassign', json={'target_id': party_id}, headers=headers)
+    assert resp.status_code == 400
+
+
+def test_upcoming_party_reassign_rejects_nonexistent_target(client, conn):
+    headers = {'X-Admin-Secret': 'test-admin-secret'}
+    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Solo 2'}, headers=headers)
+    party_id = resp.get_json()['id']
+
+    resp = client.post(f'/api/admin/upcoming-parties/{party_id}/reassign', json={'target_id': 999999}, headers=headers)
+    assert resp.status_code == 404
+
+
+def test_upcoming_party_reassign_requires_admin_secret(client):
+    resp = client.get('/api/admin/upcoming-parties/1/reassign-count?target_id=2')
+    assert resp.status_code == 401
+
+    resp = client.post('/api/admin/upcoming-parties/1/reassign', json={'target_id': 2})
+    assert resp.status_code == 401

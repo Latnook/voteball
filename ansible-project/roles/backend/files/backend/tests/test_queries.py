@@ -450,3 +450,36 @@ def test_previous_party_exists(conn):
     party_id = queries.create_previous_party(conn, 'Exists Check')
     assert queries.previous_party_exists(conn, party_id) is True
     assert queries.previous_party_exists(conn, 999999) is False
+
+
+def test_reassign_upcoming_party_votes_handles_collision_and_simple_case(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+    source_id = queries.create_upcoming_party(conn, 'Reassign Up Source')
+    target_id = queries.create_upcoming_party(conn, 'Reassign Up Target')
+    other_id = queries.create_upcoming_party(conn, 'Reassign Up Other')
+
+    v_simple = queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='considering', upcoming_party_ids=[source_id, other_id],
+        cookie_token='reassign-up-1',
+    )
+    v_collision = queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='considering', upcoming_party_ids=[source_id, target_id],
+        cookie_token='reassign-up-2',
+    )
+
+    reassigned = queries.reassign_upcoming_party_votes(conn, source_id, target_id)
+    assert reassigned == 2
+
+    votes_by_id = {v['id']: v for v in queries.get_votes(conn)}
+    assert sorted(votes_by_id[v_simple]['upcoming_party_ids']) == sorted([target_id, other_id])
+    assert votes_by_id[v_collision]['upcoming_party_ids'] == [target_id]
+
+
+def test_upcoming_party_exists(conn):
+    party_id = queries.create_upcoming_party(conn, 'Exists Check Upcoming')
+    assert queries.upcoming_party_exists(conn, party_id) is True
+    assert queries.upcoming_party_exists(conn, 999999) is False

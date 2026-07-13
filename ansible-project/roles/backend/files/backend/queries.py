@@ -291,3 +291,43 @@ def reassign_previous_party_votes(conn, source_id, target_id):
         raise
     finally:
         cur.close()
+
+
+def upcoming_party_exists(conn, party_id):
+    cur = conn.cursor()
+    cur.execute('SELECT 1 FROM upcoming_parties WHERE id = %s', (party_id,))
+    exists = cur.fetchone() is not None
+    cur.close()
+    return exists
+
+
+def reassign_upcoming_party_votes(conn, source_id, target_id):
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            'SELECT COUNT(DISTINCT vote_id) FROM vote_upcoming_parties WHERE upcoming_party_id = %s',
+            (source_id,)
+        )
+        reassigned = cur.fetchone()[0]
+
+        # Drop rows where the vote already has target among its picks - avoids violating
+        # the (vote_id, upcoming_party_id) primary key on the UPDATE below.
+        cur.execute(
+            '''DELETE FROM vote_upcoming_parties
+               WHERE upcoming_party_id = %s
+                 AND vote_id IN (
+                     SELECT vote_id FROM vote_upcoming_parties WHERE upcoming_party_id = %s
+                 )''',
+            (source_id, target_id)
+        )
+        cur.execute(
+            'UPDATE vote_upcoming_parties SET upcoming_party_id = %s WHERE upcoming_party_id = %s',
+            (target_id, source_id)
+        )
+        conn.commit()
+        return reassigned
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
