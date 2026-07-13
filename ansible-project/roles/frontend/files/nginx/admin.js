@@ -1,16 +1,16 @@
-const ADMIN_SECRET_KEY = 'voteballAdminSecret';
+const ADMIN_TOKEN_KEY = 'voteballAdminToken';
 let optionsData = null;
 const loadedTabs = new Set();
 
 function adminHeaders() {
-  return { 'X-Admin-Secret': sessionStorage.getItem(ADMIN_SECRET_KEY) || '' };
+  return { 'Authorization': 'Bearer ' + (sessionStorage.getItem(ADMIN_TOKEN_KEY) || '') };
 }
 
 async function adminFetch(url, options = {}) {
   const headers = Object.assign({}, options.headers, adminHeaders());
   const res = await fetch(url, Object.assign({}, options, { headers }));
   if (res.status === 401) {
-    sessionStorage.removeItem(ADMIN_SECRET_KEY);
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
     showGate('Session expired — re-enter the secret.');
     return null;
   }
@@ -205,21 +205,26 @@ document.querySelectorAll('.tab-button').forEach(btn => {
 
 document.getElementById('secret-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const value = document.getElementById('secret-input').value;
+  const username = document.getElementById('username-input').value;
+  const password = document.getElementById('password-input').value;
   const errorEl = document.getElementById('secret-error');
   errorEl.textContent = '';
 
   let res;
   try {
-    res = await fetch('/api/admin/votes', { headers: { 'X-Admin-Secret': value } });
+    res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
   } catch (err) {
     errorEl.textContent = 'Something went wrong — try again.';
     return;
   }
 
   if (res.status === 401) {
-    errorEl.textContent = 'Incorrect secret.';
-    document.getElementById('secret-input').value = '';
+    errorEl.textContent = 'Incorrect username or password.';
+    document.getElementById('password-input').value = '';
     return;
   }
   if (!res.ok) {
@@ -227,17 +232,18 @@ document.getElementById('secret-form').addEventListener('submit', async (e) => {
     return;
   }
 
-  sessionStorage.setItem(ADMIN_SECRET_KEY, value);
+  const { token } = await res.json();
+  sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
   showContent();
   activateTab('previous');
 });
 
-async function tryEnterWithStoredSecret() {
-  const stored = sessionStorage.getItem(ADMIN_SECRET_KEY);
+async function tryEnterWithStoredToken() {
+  const stored = sessionStorage.getItem(ADMIN_TOKEN_KEY);
   if (!stored) return;
   let res;
   try {
-    res = await fetch('/api/admin/votes', { headers: { 'X-Admin-Secret': stored } });
+    res = await fetch('/api/admin/votes', { headers: { 'Authorization': `Bearer ${stored}` } });
   } catch (err) {
     return;
   }
@@ -245,11 +251,16 @@ async function tryEnterWithStoredSecret() {
     showContent();
     activateTab('previous');
   } else {
-    sessionStorage.removeItem(ADMIN_SECRET_KEY);
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
   }
 }
 
-tryEnterWithStoredSecret();
+document.getElementById('logout-button').addEventListener('click', () => {
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  showGate();
+});
+
+tryEnterWithStoredToken();
 
 function toggleReassignForm(type, sourceParty, allParties, row) {
   const existing = row.querySelector('.reassign-form');
