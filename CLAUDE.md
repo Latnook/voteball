@@ -59,8 +59,10 @@ re-raising, not just catch the one expected constraint-violation error, since th
 that leaks connections on a public endpoint (see `insert_vote`'s history in `queries.py`).
 
 Admin endpoints (`/api/admin/...`) are protected by the `require_admin` decorator in `app.py`, which
-checks the `X-Admin-Secret` header against the `ADMIN_SECRET` env var. Reuse this decorator for any
-new admin route — don't hand-roll the check.
+verifies an `Authorization: Bearer <token>` header — a signed, 12-hour-expiring token
+(`itsdangerous.URLSafeTimedSerializer`) issued by `POST /api/admin/login` after checking a username
+and `werkzeug`-hashed password (`ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`/`ADMIN_SESSION_SECRET` env
+vars). Reuse this decorator for any new admin route — don't hand-roll the check.
 
 ### API surface
 
@@ -70,12 +72,13 @@ new admin route — don't hand-roll the check.
 | `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties, consumed by both frontend pages |
 | `/api/vote` | POST | none, cookie-deduped | sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids`, or if `upcoming_party_ids` has more than 3 entries (checked unconditionally, not just when `considering`) — client also validates both before submitting |
 | `/api/results` | GET | none | `?by=club\|league\|id=N` or `?by=party&type=previous\|upcoming&id=N` (the latter also returns a global `crosstab` of the other party type); reads the worker-computed rollup tables |
-| `/api/admin/previous-parties` | POST | `X-Admin-Secret` | create |
-| `/api/admin/previous-parties/<id>` | PATCH/DELETE | `X-Admin-Secret` | rename/remove |
-| `/api/admin/upcoming-parties` | POST | `X-Admin-Secret` | create |
-| `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | `X-Admin-Secret` | rename/remove |
-| `/api/admin/votes` | GET | `X-Admin-Secret` | list all votes (no `cookie_token` in the response) |
-| `/api/admin/votes/<id>` | DELETE | `X-Admin-Secret` | remove one vote; cascades to its `vote_upcoming_parties` rows |
+| `/api/admin/login` | POST | none | body `{"username", "password"}`; returns `{"token"}` on success, `401` on any failure |
+| `/api/admin/previous-parties` | POST | Bearer token | create |
+| `/api/admin/previous-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove |
+| `/api/admin/upcoming-parties` | POST | Bearer token | create |
+| `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove |
+| `/api/admin/votes` | GET | Bearer token | list all votes (no `cookie_token` in the response) |
+| `/api/admin/votes/<id>` | DELETE | Bearer token | remove one vote; cascades to its `vote_upcoming_parties` rows |
 
 Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
 (dashboard, reads `/api/results`). Both render backend-derived names via `createElement`/`textContent`,
@@ -105,7 +108,8 @@ Provisioning and deployment are two separate steps, run in this order:
 
 ### Secrets: ansible-vault
 
-`ansible-project/inventories/voteball/group_vars/all/secrets.yml` (holds `db_pass`, `admin_secret`) is
+`ansible-project/inventories/voteball/group_vars/all/secrets.yml` (holds `db_pass`, `admin_username`,
+`admin_password_hash`, `admin_session_secret`) is
 encrypted with `ansible-vault` and **committed encrypted** — only the vault password itself
 (`ansible-project/.vault_pass`, gitignored, never committed) is kept out of git. `ansible.cfg` points
 `vault_password_file` at it, so `ansible-playbook`/`ansible-vault view|edit` work transparently once
@@ -150,7 +154,8 @@ python -m pytest tests/ -v                          # full suite
 python -m pytest tests/test_app.py::test_health -v   # single test
 ```
 
-`tests/conftest.py` sets required env vars (`DB_HOST`, `DB_PASS`, `ADMIN_SECRET`, etc.) via
+`tests/conftest.py` sets required env vars (`DB_HOST`, `DB_PASS`, `ADMIN_USERNAME`,
+`ADMIN_PASSWORD_HASH`, `ADMIN_SESSION_SECRET`, etc.) via
 `setdefault` and its `conn` fixture drops and recreates every table before each test (see the
 `DROP TABLE ... CASCADE` list — keep it in sync with `schema.sql` when adding tables).
 
@@ -189,8 +194,10 @@ Requires `.vault_pass` and a generated inventory (see Deployment) to actually ru
   `SETGID` capability exception.
 - Postgres connections use `sslmode=require` in production (`DB_SSLMODE` env var; tests override to
   `disable`).
-- Admin auth is a static shared secret in the `X-Admin-Secret` header vs. `ADMIN_SECRET` env var — not
-  per-user auth.
+- Admin auth is username/password login (`POST /api/admin/login`) issuing a signed, 12-hour token
+  verified via `Authorization: Bearer <token>` — single admin account, password hashed with
+  `werkzeug.security`, no server-side session store (rotating `ADMIN_SESSION_SECRET` invalidates all
+  outstanding tokens).
 
 ## Gitignored / generated files
 
