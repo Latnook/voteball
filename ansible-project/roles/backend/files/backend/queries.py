@@ -266,3 +266,28 @@ def count_votes_for_upcoming_party(conn, party_id):
     count = cur.fetchone()[0]
     cur.close()
     return count
+
+
+def previous_party_exists(conn, party_id):
+    cur = conn.cursor()
+    cur.execute('SELECT 1 FROM previous_parties WHERE id = %s', (party_id,))
+    exists = cur.fetchone() is not None
+    cur.close()
+    return exists
+
+
+def reassign_previous_party_votes(conn, source_id, target_id):
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            'UPDATE votes SET previous_party_id = %s WHERE previous_party_id = %s',
+            (target_id, source_id)
+        )
+        reassigned = cur.rowcount
+        conn.commit()
+        return reassigned
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()

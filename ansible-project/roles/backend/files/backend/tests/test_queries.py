@@ -417,3 +417,36 @@ def test_count_votes_for_upcoming_party(conn):
         cookie_token='count-up-token-1',
     )
     assert queries.count_votes_for_upcoming_party(conn, party_id) == 1
+
+
+def test_reassign_previous_party_votes_updates_matching_rows_only(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+    source_id = queries.create_previous_party(conn, 'Reassign Source')
+    target_id = queries.create_previous_party(conn, 'Reassign Target')
+    other_id = queries.create_previous_party(conn, 'Reassign Other')
+
+    v1 = queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='voted', previous_party_id=source_id,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='reassign-prev-1',
+    )
+    v2 = queries.insert_vote(
+        conn, league_id=league_id, club_id=club_id,
+        previous_vote_status='voted', previous_party_id=other_id,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='reassign-prev-2',
+    )
+
+    reassigned = queries.reassign_previous_party_votes(conn, source_id, target_id)
+    assert reassigned == 1
+
+    votes_by_id = {v['id']: v for v in queries.get_votes(conn)}
+    assert votes_by_id[v1]['previous_party_id'] == target_id
+    assert votes_by_id[v2]['previous_party_id'] == other_id
+
+
+def test_previous_party_exists(conn):
+    party_id = queries.create_previous_party(conn, 'Exists Check')
+    assert queries.previous_party_exists(conn, party_id) is True
+    assert queries.previous_party_exists(conn, 999999) is False
