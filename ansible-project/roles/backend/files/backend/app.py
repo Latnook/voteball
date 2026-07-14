@@ -34,6 +34,12 @@ def require_admin(f):
     return wrapper
 
 
+def _duplicate_party_error_response(err):
+    message = 'a party with this English name already exists' if err.language == 'en' \
+        else 'a party with this Hebrew name already exists'
+    return jsonify({'error': message}), 409
+
+
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'ok'})
@@ -133,36 +139,38 @@ def admin_login():
 @require_admin
 def create_upcoming_party_route():
     body = request.get_json(force=True, silent=True) or {}
-    name = body.get('name', '').strip()
-    if not name:
-        return jsonify({'error': 'name is required'}), 400
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        party_id = queries.create_upcoming_party(conn, name)
-    except queries.DuplicatePartyNameError:
-        return jsonify({'error': 'a party with this name already exists'}), 409
+        party_id = queries.create_upcoming_party(conn, name_en, name_he)
+    except queries.DuplicatePartyNameError as err:
+        return _duplicate_party_error_response(err)
     finally:
         conn.close()
-    return jsonify({'id': party_id, 'name': name}), 201
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he}), 201
 
 
 @app.route('/api/admin/upcoming-parties/<int:party_id>', methods=['PATCH'])
 @require_admin
 def rename_upcoming_party_route(party_id):
     body = request.get_json(force=True, silent=True) or {}
-    name = body.get('name', '').strip()
-    if not name:
-        return jsonify({'error': 'name is required'}), 400
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        updated = queries.rename_upcoming_party(conn, party_id, name)
-    except queries.DuplicatePartyNameError:
-        return jsonify({'error': 'a party with this name already exists'}), 409
+        updated = queries.rename_upcoming_party(conn, party_id, name_en, name_he)
+    except queries.DuplicatePartyNameError as err:
+        return _duplicate_party_error_response(err)
     finally:
         conn.close()
     if not updated:
         return jsonify({'error': 'not found'}), 404
-    return jsonify({'id': party_id, 'name': name})
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he})
 
 
 @app.route('/api/admin/upcoming-parties/<int:party_id>', methods=['DELETE'])
@@ -218,36 +226,38 @@ def reassign_upcoming_party_route(source_id):
 @require_admin
 def create_previous_party_route():
     body = request.get_json(force=True, silent=True) or {}
-    name = body.get('name', '').strip()
-    if not name:
-        return jsonify({'error': 'name is required'}), 400
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        party_id = queries.create_previous_party(conn, name)
-    except queries.DuplicatePartyNameError:
-        return jsonify({'error': 'a party with this name already exists'}), 409
+        party_id = queries.create_previous_party(conn, name_en, name_he)
+    except queries.DuplicatePartyNameError as err:
+        return _duplicate_party_error_response(err)
     finally:
         conn.close()
-    return jsonify({'id': party_id, 'name': name}), 201
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he}), 201
 
 
 @app.route('/api/admin/previous-parties/<int:party_id>', methods=['PATCH'])
 @require_admin
 def rename_previous_party_route(party_id):
     body = request.get_json(force=True, silent=True) or {}
-    name = body.get('name', '').strip()
-    if not name:
-        return jsonify({'error': 'name is required'}), 400
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        updated = queries.rename_previous_party(conn, party_id, name)
-    except queries.DuplicatePartyNameError:
-        return jsonify({'error': 'a party with this name already exists'}), 409
+        updated = queries.rename_previous_party(conn, party_id, name_en, name_he)
+    except queries.DuplicatePartyNameError as err:
+        return _duplicate_party_error_response(err)
     finally:
         conn.close()
     if not updated:
         return jsonify({'error': 'not found'}), 404
-    return jsonify({'id': party_id, 'name': name})
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he})
 
 
 @app.route('/api/admin/previous-parties/<int:party_id>', methods=['DELETE'])
