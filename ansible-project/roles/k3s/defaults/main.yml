@@ -1,4 +1,8 @@
-app_version: "1.0"
+# app_version has no default here -- it's always computed from the current git commit SHA by
+# the first tasks in tasks/main.yml, so every deploy gets a unique image tag and Kubernetes
+# actually detects the change and rolls out new pods (a static version string meant every
+# deploy silently reused the same tag, so no deployment -- not even one with real code changes
+# -- ever got restarted unless a ConfigMap/Secret value also happened to change).
 # Matches app-compose/frontend/frontend-docker's defaults -- certbot.yml
 # (borrowed from app-compose/tasks/) needs this and the k3s role has no
 # other source for it since its play doesn't include the app-compose role.

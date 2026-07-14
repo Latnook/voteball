@@ -1,4 +1,16 @@
 ---
+- name: Determine the deploy version from the current git commit
+  delegate_to: localhost
+  become: false
+  run_once: true
+  command: git -C "{{ playbook_dir }}/.." rev-parse --short HEAD
+  register: git_sha
+  changed_when: false
+
+- name: Set app_version to the git commit SHA (unique per deploy, unlike the old static default)
+  set_fact:
+    app_version: "{{ git_sha.stdout }}"
+
 - name: Install Docker
   dnf:
     name: docker
