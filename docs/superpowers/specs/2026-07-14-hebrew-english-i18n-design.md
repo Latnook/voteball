@@ -37,12 +37,26 @@ per-browser.
      `UPDATE ... SET name_he = name WHERE name_he IS NULL` (parties) / `SET name_en = name WHERE
      name_en IS NULL` (leagues/clubs) to seed the language the row was always in, then the
      translation `UPDATE`s that fill in the *other* language for every row, keyed by the value just
-     backfilled (no new rows, no ID churn). The legacy `name` column and its `UNIQUE` constraint are
-     left untouched.
+     backfilled (no new rows, no ID churn).
+
+     `schema.sql` also adds a **partial unique index** per language column on all four tables (e.g.
+     `CREATE UNIQUE INDEX IF NOT EXISTS previous_parties_name_en_uidx ON previous_parties (name_en)
+     WHERE name_en IS NOT NULL`, and the `(league_id, name_en/he)` equivalent for `clubs`) — this is
+     the mechanism Decision 8's language-specific duplicate detection actually runs against, so it
+     works starting with this commit rather than waiting on Commit B. A partial index only enforces
+     uniqueness among rows where the column is non-NULL, so it can't fail at deploy time even if the
+     live DB turns out to have a party added through the admin UI after this repo's `seed.sql` was
+     last updated (a real possibility — the admin party-CRUD UI shipped the day before this feature) —
+     that row simply sits outside the index's enforcement until someone backfills its other-language
+     name, rather than blocking the whole deploy. A full `NOT NULL` + non-partial `UNIQUE` constraint
+     would have exactly that failure mode (`ALTER TABLE ... SET NOT NULL` aborts the whole statement
+     if even one row is still NULL), which is why it's *not* attempted here. The legacy `name` column
+     and its original `UNIQUE` constraint are left untouched.
    - **Commit B (follow-up, after Commit A is deployed and the live DB verified fully backfilled)**:
-     add `NOT NULL` + `UNIQUE(name_en)`/`UNIQUE(name_he)` (and `UNIQUE(league_id, name_en/he)` for
-     `clubs`), drop `name`, and delete the now-dead backfill statements. Not part of this plan's
-     scope — tracked as a follow-up once Commit A is confirmed live.
+     add `NOT NULL` on `name_en`/`name_he`, replace the two partial unique indexes per table with
+     plain `UNIQUE` constraints, drop `name`, and delete the now-dead backfill statements. Not part of
+     this plan's scope — tracked as a follow-up once Commit A is confirmed live and a quick
+     `SELECT ... WHERE name_en IS NULL OR name_he IS NULL` across all four tables comes back empty.
 3. **Every league/club gets both names**, not just the Israeli Premier League. See the Translation
    content section — the full set (World Cup countries, UCL/EPL/La Liga/Serie A/Bundesliga clubs, the
    7 league/competition names, and all Israeli clubs) has been translated and user-reviewed.
@@ -76,6 +90,17 @@ ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS name_en TEXT;
 ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS name_he TEXT;
 ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS name_en TEXT;
 ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS name_he TEXT;
+
+-- Partial unique indexes: enforce uniqueness only among rows that already have a value,
+-- so this can't fail at deploy time on account of a not-yet-backfilled row (see Decision 2).
+CREATE UNIQUE INDEX IF NOT EXISTS previous_parties_name_en_uidx ON previous_parties (name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS previous_parties_name_he_uidx ON previous_parties (name_he) WHERE name_he IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS upcoming_parties_name_en_uidx ON upcoming_parties (name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS upcoming_parties_name_he_uidx ON upcoming_parties (name_he) WHERE name_he IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_en_uidx ON leagues (name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_he_uidx ON leagues (name_he) WHERE name_he IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_en_uidx ON clubs (league_id, name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_he_uidx ON clubs (league_id, name_he) WHERE name_he IS NOT NULL;
 ```
 
 `init_db` runs `schema.sql` then `seed.sql` in one call — on a fresh/restored-empty database there are
@@ -119,8 +144,8 @@ being merged into one pass.
   both fields, e.g. `{'id': 1, 'name_en': 'Likud', 'name_he': 'הליכוד'}`.
 - `create_previous_party`/`rename_previous_party`/`create_upcoming_party`/`rename_upcoming_party` take
   `name_en, name_he` instead of `name`. On `psycopg2.errors.UniqueViolation`, inspect
-  `err.diag.constraint_name` (`..._name_en_key` vs `..._name_he_key`) to raise a
-  `DuplicatePartyNameError` carrying which language collided.
+  `err.diag.constraint_name` (matches one of the `_name_en_uidx`/`_name_he_uidx` partial index names
+  from the Data model section) to raise a `DuplicatePartyNameError` carrying which language collided.
 - No change to `insert_vote`, `get_results_by_*`, `get_votes`, delete/reassign/count functions — all
   operate on IDs only.
 
