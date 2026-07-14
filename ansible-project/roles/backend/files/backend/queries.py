@@ -8,17 +8,17 @@ class DuplicatePartyNameError(Exception):
 def get_options(conn):
     cur = conn.cursor()
 
-    cur.execute('SELECT id, name FROM leagues ORDER BY name')
-    leagues = [{'id': r[0], 'name': r[1]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he FROM leagues ORDER BY name_en')
+    leagues = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, league_id, name FROM clubs ORDER BY name')
-    clubs = [{'id': r[0], 'league_id': r[1], 'name': r[2]} for r in cur.fetchall()]
+    cur.execute('SELECT id, league_id, name_en, name_he FROM clubs ORDER BY name_en')
+    clubs = [{'id': r[0], 'league_id': r[1], 'name_en': r[2], 'name_he': r[3]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, name FROM previous_parties ORDER BY name')
-    previous_parties = [{'id': r[0], 'name': r[1]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he FROM previous_parties ORDER BY name_en')
+    previous_parties = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, name FROM upcoming_parties ORDER BY name')
-    upcoming_parties = [{'id': r[0], 'name': r[1]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he FROM upcoming_parties ORDER BY name_en')
+    upcoming_parties = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
 
     cur.close()
     return {

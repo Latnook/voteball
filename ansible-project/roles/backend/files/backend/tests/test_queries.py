@@ -4,29 +4,45 @@ import queries
 
 def test_get_options_returns_seeded_leagues(conn):
     options = queries.get_options(conn)
-    league_names = {l['name'] for l in options['leagues']}
-    assert 'EPL' in league_names
-    assert 'Israeli Premier League' in league_names
+    league_names_en = {l['name_en'] for l in options['leagues']}
+    assert 'EPL' in league_names_en
+    assert 'Israeli Premier League' in league_names_en
 
-    club_names = {c['name'] for c in options['clubs']}
-    assert 'Liverpool' in club_names
+    epl = next(l for l in options['leagues'] if l['name_en'] == 'EPL')
+    assert epl['name_he'] == 'הפרמייר ליג'
 
-    epl = next(l for l in options['leagues'] if l['name'] == 'EPL')
+    club_names_en = {c['name_en'] for c in options['clubs']}
+    assert 'Liverpool' in club_names_en
+    liverpool = next(c for c in options['clubs'] if c['name_en'] == 'Liverpool')
+    assert liverpool['name_he'] == 'ליברפול'
+
     epl_clubs = [c for c in options['clubs'] if c['league_id'] == epl['id']]
     assert len(epl_clubs) == 20
 
-    previous_names = {p['name'] for p in options['previous_parties']}
-    assert previous_names == {
+    previous_names_en = {p['name_en'] for p in options['previous_parties']}
+    assert previous_names_en == {
+        'Likud', 'Yesh Atid', 'Religious Zionist Party', 'National Unity', 'Yisrael Beiteinu',
+        'Shas', 'United Torah Judaism', "Ra'am", "Hadash-Ta'al", 'Labor', 'Meretz', 'Balad',
+        'Jewish Home', 'Other',
+    }
+    previous_names_he = {p['name_he'] for p in options['previous_parties']}
+    assert previous_names_he == {
         'הליכוד', 'יש עתיד', 'הציונות הדתית', 'המחנה הממלכתי', 'ישראל ביתנו',
         'ש"ס', 'יהדות התורה', 'רע"ם', 'חד"ש-תע"ל', 'העבודה', 'מרצ', 'בל"ד',
         'הבית היהודי', 'אחר',
     }
 
-    upcoming_names = {p['name'] for p in options['upcoming_parties']}
-    assert upcoming_names == {
+    upcoming_names_en = {p['name_en'] for p in options['upcoming_parties']}
+    assert upcoming_names_en == {
+        'Likud', 'Yesh', 'Yachad', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
+        'Religious Zionist Party', 'Otzma Yehudit', "Hadash-Ta'al", 'Balad',
+        'The Economic Party', 'El HaDegel', 'The Reservists', 'The Joint List',
+    }
+    upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
+    assert upcoming_names_he == {
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
         'הציונות הדתית', 'עוצמה יהודית', 'חד"ש-תע"ל', 'בל"ד',
-        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים',
+        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים', 'הרשימה המשותפת',
     }
 
 

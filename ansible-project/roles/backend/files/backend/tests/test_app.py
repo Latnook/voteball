@@ -9,7 +9,8 @@ def test_options_endpoint(client):
     assert resp.status_code == 200
     body = resp.get_json()
     assert 'leagues' in body
-    assert any(l['name'] == 'EPL' for l in body['leagues'])
+    assert any(l['name_en'] == 'EPL' for l in body['leagues'])
+    assert any(l['name_he'] == 'הפרמייר ליג' for l in body['leagues'])
 
 
 def test_vote_endpoint_sets_cookie_and_rejects_duplicate(client, conn):
