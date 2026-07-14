@@ -1,5 +1,6 @@
-# SSH private keys
+# SSH keys
 *.pem
+*.pub
 
 # Terraform secrets and generated state
 terraform/voteball.tfvars
