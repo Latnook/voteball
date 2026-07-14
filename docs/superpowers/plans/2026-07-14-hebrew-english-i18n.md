@@ -1119,6 +1119,16 @@ def test_previous_party_admin_routes_require_authentication(client):
 
 Replace the four duplicate-name tests (lines 216-259) with:
 
+Both new party rows created by `queries.create_upcoming_party`/`create_previous_party` write the legacy
+`name` column as `name_he` (see Task 3) — so when a test reuses an identical string for *both*
+`name_en` and `name_he`, all three unique constraints (`name_key`, `name_en_uidx`, `name_he_uidx`) collide
+simultaneously, and Postgres reports the oldest one first: the legacy `name_key` constraint (created
+with the original table, before the two newer partial indexes existed). `_duplicate_party_language`
+doesn't recognize that constraint name, so it falls through to its `'he'` default — which is also the
+semantically correct answer, since `name == name_he` for every row. **The English-specific message
+only surfaces when `name_en` collides while `name_he` differs** — confirmed by direct reproduction
+against Postgres 17 during planning. The tests below reflect this.
+
 ```python
 def test_create_upcoming_party_duplicate_name_returns_409(client, admin_headers):
     headers = admin_headers
@@ -1127,7 +1137,7 @@ def test_create_upcoming_party_duplicate_name_returns_409(client, admin_headers)
 
     resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Dup Party', 'name_he': 'Dup Party'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this English name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
 
 
 def test_create_upcoming_party_duplicate_hebrew_name_returns_409(client, admin_headers):
@@ -1140,6 +1150,18 @@ def test_create_upcoming_party_duplicate_hebrew_name_returns_409(client, admin_h
     assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
 
 
+def test_create_upcoming_party_duplicate_english_name_returns_409(client, admin_headers):
+    # name_en collides while name_he differs, so only name_en_uidx fires (not the legacy `name`
+    # constraint) - this is the only way to reach the English-specific message.
+    headers = admin_headers
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית ראשונה'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית שנייה'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this English name already exists'}
+
+
 def test_rename_upcoming_party_duplicate_name_returns_409(client, admin_headers):
     headers = admin_headers
     resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
@@ -1149,7 +1171,7 @@ def test_rename_upcoming_party_duplicate_name_returns_409(client, admin_headers)
 
     resp = client.patch(f'/api/admin/upcoming-parties/{party_two_id}', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this English name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
     assert party_two_target > 0
 
 
@@ -1160,7 +1182,7 @@ def test_create_previous_party_duplicate_name_returns_409(client, admin_headers)
 
     resp = client.post('/api/admin/previous-parties', json={'name_en': 'Dup Party', 'name_he': 'Dup Party'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this English name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
 
 
 def test_create_previous_party_duplicate_hebrew_name_returns_409(client, admin_headers):
@@ -1173,6 +1195,18 @@ def test_create_previous_party_duplicate_hebrew_name_returns_409(client, admin_h
     assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
 
 
+def test_create_previous_party_duplicate_english_name_returns_409(client, admin_headers):
+    # name_en collides while name_he differs, so only name_en_uidx fires (not the legacy `name`
+    # constraint) - this is the only way to reach the English-specific message.
+    headers = admin_headers
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית ראשונה'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית שנייה'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this English name already exists'}
+
+
 def test_rename_previous_party_duplicate_name_returns_409(client, admin_headers):
     headers = admin_headers
     resp = client.post('/api/admin/previous-parties', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
@@ -1182,7 +1216,7 @@ def test_rename_previous_party_duplicate_name_returns_409(client, admin_headers)
 
     resp = client.patch(f'/api/admin/previous-parties/{party_two_id}', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this English name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
     assert party_one_id > 0
 ```
 
