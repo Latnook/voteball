@@ -1,60 +1,85 @@
-async function loadOptions() {
-  let data;
-  try {
-    const res = await fetch('/api/options');
-    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
-    data = await res.json();
-  } catch (err) {
-    document.getElementById('error-message').textContent = 'Couldn\'t load the form — try refreshing.';
-    return;
-  }
+let optionsData = null;
 
+function renderLeagueOptions() {
   const leagueSelect = document.getElementById('league-select');
-  data.leagues.forEach(l => {
+  const previousValue = leagueSelect.value;
+  leagueSelect.innerHTML = '';
+  optionsData.leagues.forEach(l => {
     const opt = document.createElement('option');
     opt.value = l.id;
-    opt.textContent = l.name;
+    opt.textContent = localizedName(l);
     leagueSelect.appendChild(opt);
   });
+  if (previousValue) leagueSelect.value = previousValue;
+}
 
+function renderClubs() {
+  const leagueSelect = document.getElementById('league-select');
   const clubSelect = document.getElementById('club-select');
-  function renderClubs() {
-    clubSelect.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
-    const leagueId = parseInt(leagueSelect.value, 10);
-    data.clubs.filter(c => c.league_id === leagueId).forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.name;
-      clubSelect.appendChild(opt);
-    });
-  }
-  leagueSelect.addEventListener('change', renderClubs);
-  renderClubs();
+  const previousValue = clubSelect.value;
+  clubSelect.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
+  const leagueId = parseInt(leagueSelect.value, 10);
+  optionsData.clubs.filter(c => c.league_id === leagueId).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = localizedName(c);
+    clubSelect.appendChild(opt);
+  });
+  if (previousValue) clubSelect.value = previousValue;
+}
 
+function renderPreviousPartyOptions() {
   const prevDiv = document.getElementById('previous-party-options');
-  data.previous_parties.forEach(p => {
+  const checkedInput = document.querySelector('input[name="previous"]:checked');
+  const checkedId = checkedInput ? checkedInput.value : null;
+  prevDiv.innerHTML = '';
+  optionsData.previous_parties.forEach(p => {
     const label = document.createElement('label');
     const input = document.createElement('input');
     input.type = 'radio';
     input.name = 'previous';
     input.value = p.id;
+    if (String(p.id) === checkedId) input.checked = true;
     label.appendChild(input);
-    label.appendChild(document.createTextNode(' ' + p.name));
+    label.appendChild(document.createTextNode(' ' + localizedName(p)));
     prevDiv.appendChild(label);
   });
+}
 
+function renderUpcomingPartyOptions() {
   const upcomingDiv = document.getElementById('upcoming-party-options');
-  data.upcoming_parties.forEach(p => {
+  const checkedIds = new Set(Array.from(document.querySelectorAll('.upcoming-checkbox:checked')).map(cb => cb.value));
+  upcomingDiv.innerHTML = '';
+  optionsData.upcoming_parties.forEach(p => {
     const label = document.createElement('label');
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.className = 'upcoming-checkbox';
     input.value = p.id;
+    if (checkedIds.has(String(p.id))) input.checked = true;
     input.addEventListener('change', enforceUpcomingPartyLimit);
     label.appendChild(input);
-    label.appendChild(document.createTextNode(' ' + p.name));
+    label.appendChild(document.createTextNode(' ' + localizedName(p)));
     upcomingDiv.appendChild(label);
   });
+  enforceUpcomingPartyLimit();
+}
+
+async function loadOptions() {
+  try {
+    const res = await fetch('/api/options');
+    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
+    optionsData = await res.json();
+  } catch (err) {
+    document.getElementById('error-message').textContent = t('voteErrorLoadForm');
+    return;
+  }
+
+  renderLeagueOptions();
+  document.getElementById('league-select').addEventListener('change', renderClubs);
+  renderClubs();
+  renderPreviousPartyOptions();
+  renderUpcomingPartyOptions();
 }
 
 function enforceUpcomingPartyLimit() {
@@ -88,11 +113,11 @@ document.getElementById('vote-form').addEventListener('submit', async (e) => {
   const upcomingIds = selectedUpcomingPartyIds();
 
   if (!leagueId || !previousChoice) {
-    errorEl.textContent = 'Please fill in all required fields.';
+    errorEl.textContent = t('voteErrorRequiredFields');
     return;
   }
   if (!undecided && upcomingIds.length === 0) {
-    errorEl.textContent = 'Pick at least one party you\'re considering, or mark yourself undecided.';
+    errorEl.textContent = t('voteErrorPickParty');
     return;
   }
 
@@ -116,10 +141,18 @@ document.getElementById('vote-form').addEventListener('submit', async (e) => {
     return;
   }
   if (!res.ok) {
-    errorEl.textContent = 'Something went wrong submitting your vote.';
+    errorEl.textContent = t('voteErrorSubmit');
     return;
   }
   window.location.href = 'results.html';
+});
+
+document.addEventListener('voteball:langchange', () => {
+  if (!optionsData) return;
+  renderLeagueOptions();
+  renderClubs();
+  renderPreviousPartyOptions();
+  renderUpcomingPartyOptions();
 });
 
 loadOptions();
