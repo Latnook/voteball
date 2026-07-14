@@ -28,11 +28,17 @@ per-browser.
 2. **Two-commit migration**, since the backend reruns `schema.sql`+`seed.sql` on every pod boot (the
    only schema-change mechanism this app has — see `db.py`'s `init_db`) against a live RDS that
    already holds real votes referencing party/club IDs by FK:
-   - **Commit A (this feature)**: `ALTER TABLE ... ADD COLUMN IF NOT EXISTS name_en/name_he` (nullable)
-     on all four tables, idempotent backfill `UPDATE`s that copy the existing `name` value into
-     whichever language column it already represents, and `seed.sql` `UPDATE`s that fill in the
-     *other* language for every currently-seeded row, keyed by the language already present (no new
-     rows, no ID churn). The legacy `name` column and its `UNIQUE` constraint are left untouched.
+   - **Commit A (this feature)**: `schema.sql` gets a purely structural
+     `ALTER TABLE ... ADD COLUMN IF NOT EXISTS name_en/name_he` (nullable) on all four tables — no data
+     manipulation there, since on a fresh/restored-empty database (this app supports restoring RDS from
+     a snapshot — see `docs/deploy.md`) there are no rows yet for a schema.sql-level backfill to touch.
+     All backfill lives in `seed.sql`, *after* its existing name-only `INSERT`s (so it runs against a
+     guaranteed-populated `name` column on both a fresh install and an existing one): first
+     `UPDATE ... SET name_he = name WHERE name_he IS NULL` (parties) / `SET name_en = name WHERE
+     name_en IS NULL` (leagues/clubs) to seed the language the row was always in, then the
+     translation `UPDATE`s that fill in the *other* language for every row, keyed by the value just
+     backfilled (no new rows, no ID churn). The legacy `name` column and its `UNIQUE` constraint are
+     left untouched.
    - **Commit B (follow-up, after Commit A is deployed and the live DB verified fully backfilled)**:
      add `NOT NULL` + `UNIQUE(name_en)`/`UNIQUE(name_he)` (and `UNIQUE(league_id, name_en/he)` for
      `clubs`), drop `name`, and delete the now-dead backfill statements. Not part of this plan's
@@ -60,7 +66,8 @@ per-browser.
 ## Data model
 
 ```sql
--- schema.sql, Commit A: additive only, all four tables get the same shape
+-- schema.sql, Commit A: purely structural, all four tables get the same shape.
+-- No data touched here — see seed.sql below for why.
 ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS name_en TEXT;
 ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS name_he TEXT;
 ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS name_en TEXT;
@@ -69,24 +76,40 @@ ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS name_en TEXT;
 ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS name_he TEXT;
 ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS name_en TEXT;
 ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS name_he TEXT;
-
--- Backfill: `leagues`/`clubs` were always seeded in English; `previous_parties`/`upcoming_parties`
--- were always seeded in Hebrew. No-ops once already backfilled or once `name` is eventually dropped
--- in Commit B (guarded so Commit A stays safe to rerun indefinitely, matching this file's existing
--- rerun-every-boot convention).
-UPDATE leagues           SET name_en = name WHERE name_en IS NULL;
-UPDATE clubs              SET name_en = name WHERE name_en IS NULL;
-UPDATE previous_parties  SET name_he = name WHERE name_he IS NULL;
-UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
 ```
 
-`seed.sql` then adds the *other* language for every existing row via `UPDATE ... SET name_he = 'X'
-WHERE name_en = 'Y' AND name_he IS NULL` (leagues/clubs) or `UPDATE ... SET name_en = 'X' WHERE
-name_he = 'Y' AND name_en IS NULL` (parties) for each row in the Translation content section below,
-and inserts any brand-new rows (e.g. the Joint List — see below) with both columns populated directly.
-`ON CONFLICT` targets on the `INSERT` statements move from `(name)`/`(league_id, name)` to
-`(name_en)`/`(league_id, name_en)` (arbitrary but consistent choice of which column anchors
-conflict detection, since both are unique-once-backfilled).
+`init_db` runs `schema.sql` then `seed.sql` in one call — on a fresh/restored-empty database there are
+zero league/club/party rows at the point `schema.sql` finishes, so any backfill placed in `schema.sql`
+would have nothing to touch. All backfill therefore lives in `seed.sql`, ordered *after* its existing
+name-only `INSERT`s (which guarantee `name` is populated, whether the row is brand new this run or
+already existed):
+
+```sql
+-- 1. Existing INSERT ... ON CONFLICT (name) DO NOTHING statements, unchanged — still populate
+--    the legacy `name` column exactly as today.
+
+-- 2. Backfill each row's own language from `name` (leagues/clubs were always English,
+--    previous_parties/upcoming_parties were always Hebrew). Runs against every row regardless of
+--    whether it pre-existed or was just inserted above.
+UPDATE leagues           SET name_en = name WHERE name_en IS NULL;
+UPDATE clubs             SET name_en = name WHERE name_en IS NULL;
+UPDATE previous_parties  SET name_he = name WHERE name_he IS NULL;
+UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
+
+-- 3. Fill in the *other* language for every row, keyed off the value step 2 just guaranteed,
+--    one UPDATE per row in the Translation content section below, e.g.:
+UPDATE previous_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;
+UPDATE clubs SET name_he = 'ריאל מדריד' WHERE name_en = 'Real Madrid' AND name_he IS NULL;
+
+-- 4. Brand-new rows not covered by steps 1-3 (e.g. the Joint List) — plain INSERT with both
+--    columns populated directly.
+```
+
+All four steps are safe to rerun indefinitely (matching this file's existing rerun-every-boot
+convention) — steps 2-3 are no-ops once a row already has both columns set. `ON CONFLICT` targets on
+the existing `INSERT` statements in step 1 are untouched (`(name)` / `(league_id, name)`) — they keep
+anchoring on the legacy column, which is exactly why step 2 must run afterward rather than the two
+being merged into one pass.
 
 ## Backend
 
