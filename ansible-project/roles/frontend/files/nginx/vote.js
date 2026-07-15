@@ -19,7 +19,7 @@ function renderClubs() {
   const previousValue = clubSelect.value;
   clubSelect.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
   const leagueId = parseInt(leagueSelect.value, 10);
-  optionsData.clubs.filter(c => c.league_id === leagueId).forEach(c => {
+  optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId).forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.id;
     opt.textContent = localizedName(c);
