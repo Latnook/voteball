@@ -409,6 +409,12 @@ function renderLeagueGroup(league, data) {
   renameBtn.addEventListener('click', () => startRenameLeague(league, header));
   header.appendChild(renameBtn);
 
+  const reassignBtn = document.createElement('button');
+  reassignBtn.type = 'button';
+  reassignBtn.textContent = t('adminReassign');
+  reassignBtn.addEventListener('click', () => toggleReassignLeagueForm(league, data.leagues, header));
+  header.appendChild(reassignBtn);
+
   const deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
   deleteBtn.textContent = t('adminDelete');
@@ -459,6 +465,14 @@ function renderClubRow(club, data, annotateLeagueId) {
   renameBtn.textContent = t('adminRename');
   renameBtn.addEventListener('click', () => startRenameClub(club, data, row));
   row.appendChild(renameBtn);
+
+  const reassignBtn = document.createElement('button');
+  reassignBtn.type = 'button';
+  reassignBtn.textContent = t('adminReassign');
+  reassignBtn.addEventListener('click', () => toggleReassignClubForm(club, data, row));
+  row.appendChild(reassignBtn);
+
+  row.appendChild(renderUclToggleButton(club, data));
 
   const deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
@@ -789,6 +803,232 @@ function renderVotesTable(data, votes) {
   container.appendChild(table);
 }
 
+function toggleReassignLeagueForm(sourceLeague, allLeagues, header) {
+  const existing = header.parentElement.querySelector(':scope > .reassign-form');
+  if (existing) { existing.remove(); return; }
+
+  const form = document.createElement('div');
+  form.className = 'reassign-form';
+
+  const select = document.createElement('select');
+  allLeagues.filter(l => l.id !== sourceLeague.id).forEach(l => {
+    const opt = document.createElement('option');
+    opt.value = l.id;
+    opt.textContent = localizedName(l);
+    select.appendChild(opt);
+  });
+  form.appendChild(select);
+
+  const goBtn = document.createElement('button');
+  goBtn.type = 'button';
+  goBtn.textContent = t('adminReassignGo');
+  form.appendChild(goBtn);
+
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'row-error';
+  form.appendChild(errorSpan);
+
+  goBtn.addEventListener('click', async () => {
+    if (!select.value) return;
+    const targetId = parseInt(select.value, 10);
+    errorSpan.textContent = '';
+
+    let countRes;
+    try {
+      countRes = await adminFetch(`/api/admin/leagues/${sourceLeague.id}/reassign-count?target_id=${targetId}`);
+    } catch (err) {
+      errorSpan.textContent = t('adminSomethingWrong');
+      return;
+    }
+    if (countRes === null) return;
+    if (!countRes.ok) {
+      errorSpan.textContent = t('adminSomethingWrong');
+      return;
+    }
+    const { count } = await countRes.json();
+    const targetLeague = allLeagues.find(l => l.id === targetId);
+    if (!confirm(t('adminConfirmReassign').replace('{count}', count).replace('{source}', localizedName(sourceLeague)).replace('{target}', localizedName(targetLeague)))) {
+      return;
+    }
+
+    let res;
+    try {
+      res = await adminFetch(`/api/admin/leagues/${sourceLeague.id}/reassign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_id: targetId }),
+      });
+    } catch (err) {
+      errorSpan.textContent = t('adminSomethingWrong');
+      return;
+    }
+    if (res === null) return;
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      errorSpan.textContent = body.error || t('adminSomethingWrong');
+      return;
+    }
+    optionsData = null;
+    loadedTabs.delete('teams');
+    loadedTabs.delete('votes');
+    loadTeamsTab();
+  });
+
+  header.after(form);
+}
+
+function clubLeagueSet(club) {
+  return new Set([club.league_id, club.domestic_league_id].filter(v => v !== null && v !== undefined));
+}
+
+function toggleReassignClubForm(sourceClub, data, row) {
+  const existing = row.parentElement.querySelector(':scope > .reassign-form');
+  if (existing) { existing.remove(); return; }
+
+  const sourceSet = clubLeagueSet(sourceClub);
+  const eligibleTargets = data.clubs.filter(c => {
+    if (c.id === sourceClub.id) return false;
+    const targetSet = clubLeagueSet(c);
+    return Array.from(sourceSet).every(leagueId => targetSet.has(leagueId));
+  });
+
+  const form = document.createElement('div');
+  form.className = 'reassign-form';
+
+  const select = document.createElement('select');
+  eligibleTargets.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = localizedName(c);
+    select.appendChild(opt);
+  });
+  form.appendChild(select);
+
+  const goBtn = document.createElement('button');
+  goBtn.type = 'button';
+  goBtn.textContent = t('adminReassignGo');
+  form.appendChild(goBtn);
+
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'row-error';
+  form.appendChild(errorSpan);
+
+  goBtn.addEventListener('click', async () => {
+    if (!select.value) return;
+    const targetId = parseInt(select.value, 10);
+    errorSpan.textContent = '';
+
+    let countRes;
+    try {
+      countRes = await adminFetch(`/api/admin/clubs/${sourceClub.id}/reassign-count?target_id=${targetId}`);
+    } catch (err) {
+      errorSpan.textContent = t('adminSomethingWrong');
+      return;
+    }
+    if (countRes === null) return;
+    if (!countRes.ok) {
+      errorSpan.textContent = t('adminSomethingWrong');
+      return;
+    }
+    const { count } = await countRes.json();
+    const targetClub = data.clubs.find(c => c.id === targetId);
+    if (!confirm(t('adminConfirmReassign').replace('{count}', count).replace('{source}', localizedName(sourceClub)).replace('{target}', localizedName(targetClub)))) {
+      return;
+    }
+
+    let res;
+    try {
+      res = await adminFetch(`/api/admin/clubs/${sourceClub.id}/reassign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_id: targetId }),
+      });
+    } catch (err) {
+      errorSpan.textContent = t('adminSomethingWrong');
+      return;
+    }
+    if (res === null) return;
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      errorSpan.textContent = body.error || t('adminSomethingWrong');
+      return;
+    }
+    optionsData = null;
+    loadedTabs.delete('teams');
+    loadedTabs.delete('votes');
+    loadTeamsTab();
+  });
+
+  row.after(form);
+}
+
+function findChampionsLeague(data) {
+  return data.leagues.find(l => l.name_en === 'UEFA Champions League') || null;
+}
+
+function renderUclToggleButton(club, data) {
+  const ucl = findChampionsLeague(data);
+  const btn = document.createElement('button');
+  btn.type = 'button';
+
+  if (!ucl) {
+    btn.style.display = 'none';
+    return btn;
+  }
+
+  const inUcl = club.league_id === ucl.id || club.domestic_league_id === ucl.id;
+
+  if (!inUcl) {
+    btn.textContent = t('adminAddToChampionsLeague');
+    if (club.domestic_league_id !== null && club.domestic_league_id !== undefined) {
+      btn.disabled = true;
+      btn.title = t('adminUclAddDisabled');
+    } else {
+      btn.addEventListener('click', () => patchClubLeagues(club, club.league_id, ucl.id));
+    }
+    return btn;
+  }
+
+  btn.textContent = t('adminRemoveFromChampionsLeague');
+  if (club.league_id === ucl.id) {
+    if (club.domestic_league_id === null || club.domestic_league_id === undefined) {
+      btn.disabled = true;
+      btn.title = t('adminUclRemoveDisabled');
+    } else {
+      btn.addEventListener('click', () => patchClubLeagues(club, club.domestic_league_id, null));
+    }
+  } else {
+    btn.addEventListener('click', () => patchClubLeagues(club, club.league_id, null));
+  }
+  return btn;
+}
+
+async function patchClubLeagues(club, newLeagueId, newDomesticLeagueId) {
+  let res;
+  try {
+    res = await adminFetch(`/api/admin/clubs/${club.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        league_id: newLeagueId, domestic_league_id: newDomesticLeagueId,
+        name_en: club.name_en, name_he: club.name_he,
+      }),
+    });
+  } catch (err) {
+    alert(t('adminSomethingWrong'));
+    return;
+  }
+  if (res === null) return;
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    alert(body.error || t('adminSomethingWrong'));
+    return;
+  }
+  optionsData = null;
+  loadedTabs.delete('teams');
+  loadTeamsTab();
+}
+
 document.addEventListener('voteball:langchange', () => {
   if (optionsData) {
     ['previous', 'upcoming'].forEach(type => {
@@ -801,6 +1041,9 @@ document.addEventListener('voteball:langchange', () => {
       if (hasOpenRename || hasOpenReassignForm) return; // leave in-progress edits/open forms alone
       renderPartyList(type, optionsData[partyListKey(type)]);
     });
+  }
+  if (optionsData && loadedTabs.has('teams') && !document.querySelector('#league-list input, #league-list .reassign-form')) {
+    renderLeagueGroups(optionsData);
   }
   if (optionsData && lastVotesData && loadedTabs.has('votes')) {
     renderVotesTable(optionsData, lastVotesData);

@@ -76,6 +76,10 @@ const DICTIONARY = {
     adminConfirmDeleteParty: 'Delete "{name}"? This cannot be undone.',
     adminConfirmReassign: 'Reassign {count} votes from "{source}" to "{target}"? This cannot be undone.',
     adminConfirmDeleteVote: 'Delete vote #{id}? This cannot be undone.',
+    adminAddToChampionsLeague: 'Add to UEFA Champions League',
+    adminRemoveFromChampionsLeague: 'Remove from UEFA Champions League',
+    adminUclAddDisabled: 'Already has a domestic league on file — edit via Rename instead.',
+    adminUclRemoveDisabled: 'No domestic league on file — give it one via Rename first.',
   },
   he: {
     voteIntro: 'אהדה לכדורגל מול הצבעה פוליטית — אנונימי, הצבעה אחת לדפדפן.',
@@ -152,6 +156,10 @@ const DICTIONARY = {
     adminConfirmDeleteParty: 'למחוק את "{name}"? לא ניתן לבטל פעולה זו.',
     adminConfirmReassign: 'להעביר {count} הצבעות מ"{source}" ל"{target}"? לא ניתן לבטל פעולה זו.',
     adminConfirmDeleteVote: 'למחוק הצבעה מס\' {id}? לא ניתן לבטל פעולה זו.',
+    adminAddToChampionsLeague: 'הוספה לליגת האלופות',
+    adminRemoveFromChampionsLeague: 'הסרה מליגת האלופות',
+    adminUclAddDisabled: 'כבר קיימת ליגה מקומית — לעריכה יש להשתמש בשינוי שם.',
+    adminUclRemoveDisabled: 'אין ליגה מקומית רשומה — יש להוסיף אחת דרך שינוי שם קודם.',
   },
 };
 
