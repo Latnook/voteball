@@ -120,8 +120,37 @@ needed.
     doesn't seed at all (Ligue 1, Primeira Liga, Eredivisie); they aren't actually duplicated today and
     stay as plain UCL-only rows, `domestic_league_id` left `NULL`. Since no votes exist yet (confirmed
     with the user), this is a direct seed-file edit — no vote reassignment needed. `EPL`'s `name_en` is
-    also corrected to `Premier League` (still `name_he = 'הפרמייר ליג'`, unchanged) as part of the same
-    seed pass, per the user's request — a plain data correction, not a design decision.
+    also corrected to `Premier League` (still `name_he = 'הפרמייר ליג'`, unchanged), and **`UCL`'s
+    `name_en` is corrected to `UEFA Champions League`** (`name_he` stays `'ליגת האלופות'`, already the
+    unabbreviated Hebrew form) — both part of the same seed pass, per the user's request. Plain data
+    corrections, not design decisions; confirmed via `grep` that nothing in the frontend hardcodes
+    `"UCL"` — every league name renders from `leagues.name_en`/`name_he`, so this rename needs no code
+    change beyond decision 13's lookup-by-name below.
+13. **Dedicated "Add to / Remove from UEFA Champions League" buttons per club row** (added after
+    spec review — the user wants to be able to change a club's UCL status season-to-season without
+    ever deleting the club). This is a client-side-only shortcut over the same `PATCH
+    /api/admin/clubs/<id>` route from decision 10/11 — no new backend route, no new schema. `admin.js`
+    finds "the UCL league" by matching `optionsData.leagues` on `name_en === 'UEFA Champions League'`
+    at render time (a name lookup, not a new `is_continental` flag — acceptable for a single
+    continental competition; documented limitation: renaming that league again breaks the lookup until
+    the constant here is updated to match).
+    - **Add** (shown when neither the club's `league_id` nor `domestic_league_id` is the UCL id):
+      one click sends `PATCH` with `domestic_league_id = <UCL id>`, `league_id`/`name_en`/`name_he`
+      unchanged. Disabled (with a tooltip) if `domestic_league_id` is already non-null and isn't UCL
+      — there's no third slot.
+    - **Remove** (shown when either field is the UCL id):
+      - If `domestic_league_id` is the UCL id: `PATCH` with `domestic_league_id = null`, `league_id`
+        unchanged — the simple case.
+      - If `league_id` is the UCL id (true for every one of today's 18 seeded UCL clubs, since
+        decision 12 always keeps `league_id = UCL` for them): `PATCH` swaps the fields —
+        `league_id = <the club's current domestic_league_id>`, `domestic_league_id = null`. **Disabled
+        (with a tooltip explaining why) if `domestic_league_id` is `null`** — this is exactly Paris
+        Saint-Germain/Porto/Benfica/Ajax (decision 12): they have no seeded domestic league to fall
+        back to, so removing UCL would leave `league_id` with nothing valid to hold (it's `NOT NULL`).
+        An admin who needs to remove one of those four from UCL first gives it a domestic league via
+        the regular rename form, then Remove becomes available.
+    - Either action re-fetches `/api/options` and re-renders the Teams tab, same as every other
+      mutation in this spec.
 
 ## Backend
 
@@ -218,6 +247,10 @@ admin route.
 - **Club Reassign target picker** is pre-filtered client-side to clubs whose `{league_id,
   domestic_league_id}` covers the source club's (defense in depth alongside the server-side 400 — the
   UI simply never offers an invalid choice).
+- **Club "Add to UEFA Champions League" / "Remove from UEFA Champions League" buttons**, per decision
+  13 — a third per-club control alongside Rename/Delete/Reassign, showing whichever of the two applies
+  to that club's current state, disabled with a tooltip in the two edge cases decision 13 describes
+  (no free slot to add into; no domestic league to fall back to when removing).
 - **League Delete/Reassign** on a league with clubs still under it: the 409/400 response's message
   (from decision 4/5) is shown inline, same as any other validation error — no special client-side
   precheck, since the count is already visible from the expanded club list.
@@ -303,7 +336,15 @@ browser:
   showing under both group; add/rename/delete round-trip for both levels including the Domestic
   League dropdown; deleting a league with clubs shows the club-count error before ever reaching the
   votes check; club reassign only offers targets covering the source's league(s); league reassign is
-  refused with clubs still present and succeeds once emptied.
+  refused with clubs still present and succeeds once emptied; "UEFA Champions League" (not "UCL")
+  renders everywhere as the league name.
+- Add/Remove UEFA Champions League buttons (decision 13): a club not in UCL shows "Add", clicking it
+  sets `domestic_league_id` and the club now appears under both its groups; a club in UCL shows
+  "Remove" (all 18 seeded UCL clubs, since `league_id = UCL` for each per decision 12); clicking it on
+  one of the 14 with a domestic league swaps `league_id` to that domestic league and clears
+  `domestic_league_id`, and the club now only appears under its domestic league; clicking it on one of
+  the 4 without a domestic league (PSG/Porto/Benfica/Ajax) is disabled with an explanatory tooltip;
+  giving one of those four a domestic league via the rename form first, then Remove becomes enabled.
 - Public `index.html`/`vote.js`: a club with a domestic league (e.g. Arsenal) appears in the club list
   both when "UCL" and when "Premier League" is picked as the league; the submitted vote records
   whichever league was actually selected; `/api/results` for that club (`by=club`) reflects votes cast
