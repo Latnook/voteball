@@ -586,3 +586,110 @@ def test_seed_data_dedupes_ucl_clubs_with_domestic_leagues(conn):
     assert len(rows) == 1
     assert rows[0] == (ucl_id, None)
     cur.close()
+
+
+def test_league_admin_crud(client, admin_headers):
+    headers = admin_headers
+
+    resp = client.post('/api/admin/leagues', json={'name_en': 'Test League', 'name_he': 'ליגת בדיקה'}, headers=headers)
+    assert resp.status_code == 201
+    league_id = resp.get_json()['id']
+
+    resp = client.patch(f'/api/admin/leagues/{league_id}', json={'name_en': 'Renamed League', 'name_he': 'שם חדש'}, headers=headers)
+    assert resp.status_code == 200
+
+    resp = client.delete(f'/api/admin/leagues/{league_id}', headers=headers)
+    assert resp.status_code == 204
+
+    resp = client.delete(f'/api/admin/leagues/{league_id}', headers=headers)
+    assert resp.status_code == 404
+
+
+def test_league_admin_routes_require_authentication(client):
+    resp = client.post('/api/admin/leagues', json={'name_en': 'X', 'name_he': 'א'})
+    assert resp.status_code == 401
+    resp = client.patch('/api/admin/leagues/1', json={'name_en': 'X', 'name_he': 'א'})
+    assert resp.status_code == 401
+    resp = client.delete('/api/admin/leagues/1')
+    assert resp.status_code == 401
+
+
+def test_create_league_duplicate_name_returns_409(client, admin_headers):
+    headers = admin_headers
+    resp = client.post('/api/admin/leagues', json={'name_en': 'Dup League', 'name_he': 'Dup League'}, headers=headers)
+    assert resp.status_code == 201
+    resp = client.post('/api/admin/leagues', json={'name_en': 'Dup League', 'name_he': 'Dup League'}, headers=headers)
+    assert resp.status_code == 409
+
+
+def test_delete_league_blocked_when_clubs_reference_it(client, conn, admin_headers):
+    headers = admin_headers
+    resp = client.post('/api/admin/leagues', json={'name_en': 'League With Club', 'name_he': 'ליגה עם קבוצה'}, headers=headers)
+    league_id = resp.get_json()['id']
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO clubs (league_id, name, name_en, name_he) VALUES (%s, 'Lone Club', 'Lone Club', 'קבוצה בודדה')",
+        (league_id,)
+    )
+    conn.commit()
+    cur.close()
+
+    resp = client.delete(f'/api/admin/leagues/{league_id}', headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': '1 club(s) still belong to this league'}
+
+
+def test_delete_league_blocked_when_votes_reference_it(client, conn, admin_headers):
+    headers = admin_headers
+    resp = client.post('/api/admin/leagues', json={'name_en': 'Voted League', 'name_he': 'ליגה עם הצבעה'}, headers=admin_headers)
+    league_id = resp.get_json()['id']
+
+    resp = client.post('/api/vote', json={
+        'league_id': league_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 201
+
+    resp = client.delete(f'/api/admin/leagues/{league_id}', headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': '1 vote(s) still reference this league'}
+
+
+def test_league_reassign_moves_votes_and_requires_zero_clubs(client, conn, admin_headers):
+    headers = admin_headers
+    resp = client.post('/api/admin/leagues', json={'name_en': 'Source League', 'name_he': 'ליגת מקור'}, headers=headers)
+    source_id = resp.get_json()['id']
+    resp = client.post('/api/admin/leagues', json={'name_en': 'Target League', 'name_he': 'ליגת יעד'}, headers=headers)
+    target_id = resp.get_json()['id']
+
+    resp = client.post('/api/vote', json={
+        'league_id': source_id, 'club_id': None,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    vote_id = resp.get_json()['vote_id']
+
+    resp = client.get(f'/api/admin/leagues/{source_id}/reassign-count?target_id={target_id}', headers=headers)
+    assert resp.get_json() == {'count': 1}
+
+    resp = client.post(f'/api/admin/leagues/{source_id}/reassign', json={'target_id': target_id}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.get_json() == {'reassigned': 1}
+
+    resp = client.get('/api/admin/votes', headers=headers)
+    vote = next(v for v in resp.get_json()['votes'] if v['id'] == vote_id)
+    assert vote['league_id'] == target_id
+
+    # Now block reassign on a league that still has a club.
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO clubs (league_id, name, name_en, name_he) VALUES (%s, 'Blocker Club', 'Blocker Club', 'קבוצה חוסמת')",
+        (target_id,)
+    )
+    conn.commit()
+    cur.close()
+    resp = client.post('/api/admin/leagues', json={'name_en': 'Third League', 'name_he': 'ליגה שלישית'}, headers=headers)
+    third_id = resp.get_json()['id']
+    resp = client.post(f'/api/admin/leagues/{target_id}/reassign', json={'target_id': third_id}, headers=headers)
+    assert resp.status_code == 400

@@ -352,3 +352,101 @@ def reassign_upcoming_party_votes(conn, source_id, target_id):
         raise
     finally:
         cur.close()
+
+
+def create_league(conn, name_en, name_he):
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            'INSERT INTO leagues (name, name_en, name_he) VALUES (%s, %s, %s) RETURNING id',
+            (name_he, name_en, name_he)
+        )
+        league_id = cur.fetchone()[0]
+        conn.commit()
+        return league_id
+    except psycopg2.errors.UniqueViolation as err:
+        conn.rollback()
+        raise DuplicatePartyNameError(_duplicate_party_language(err))
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+
+
+def rename_league(conn, league_id, name_en, name_he):
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            'UPDATE leagues SET name = %s, name_en = %s, name_he = %s WHERE id = %s',
+            (name_he, name_en, name_he, league_id)
+        )
+        updated = cur.rowcount > 0
+        conn.commit()
+        return updated
+    except psycopg2.errors.UniqueViolation as err:
+        conn.rollback()
+        raise DuplicatePartyNameError(_duplicate_party_language(err))
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+
+
+def delete_league(conn, league_id):
+    cur = conn.cursor()
+    try:
+        cur.execute('DELETE FROM leagues WHERE id = %s', (league_id,))
+        deleted = cur.rowcount > 0
+        conn.commit()
+        return deleted
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+
+
+def league_exists(conn, league_id):
+    cur = conn.cursor()
+    cur.execute('SELECT 1 FROM leagues WHERE id = %s', (league_id,))
+    exists = cur.fetchone() is not None
+    cur.close()
+    return exists
+
+
+def count_votes_for_league(conn, league_id):
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM votes WHERE league_id = %s', (league_id,))
+    count = cur.fetchone()[0]
+    cur.close()
+    return count
+
+
+def count_clubs_for_league(conn, league_id):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT COUNT(*) FROM clubs WHERE league_id = %s OR domestic_league_id = %s',
+        (league_id, league_id)
+    )
+    count = cur.fetchone()[0]
+    cur.close()
+    return count
+
+
+def reassign_league_votes(conn, source_id, target_id):
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            'UPDATE votes SET league_id = %s WHERE league_id = %s',
+            (target_id, source_id)
+        )
+        reassigned = cur.rowcount
+        conn.commit()
+        return reassigned
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()

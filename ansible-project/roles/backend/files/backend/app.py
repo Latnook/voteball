@@ -40,6 +40,12 @@ def _duplicate_party_error_response(err):
     return jsonify({'error': message}), 409
 
 
+def _duplicate_named_error_response(err, entity):
+    message = f'a {entity} with this English name already exists' if err.language == 'en' \
+        else f'a {entity} with this Hebrew name already exists'
+    return jsonify({'error': message}), 409
+
+
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status': 'ok'})
@@ -304,6 +310,98 @@ def reassign_previous_party_route(source_id):
         if not queries.previous_party_exists(conn, target_id):
             return jsonify({'error': 'target party not found'}), 404
         reassigned = queries.reassign_previous_party_votes(conn, source_id, target_id)
+    finally:
+        conn.close()
+    return jsonify({'reassigned': reassigned})
+
+
+@app.route('/api/admin/leagues', methods=['POST'])
+@require_admin
+def create_league_route():
+    body = request.get_json(force=True, silent=True) or {}
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
+    conn = db.get_db()
+    try:
+        league_id = queries.create_league(conn, name_en, name_he)
+    except queries.DuplicatePartyNameError as err:
+        return _duplicate_named_error_response(err, 'league')
+    finally:
+        conn.close()
+    return jsonify({'id': league_id, 'name_en': name_en, 'name_he': name_he}), 201
+
+
+@app.route('/api/admin/leagues/<int:league_id>', methods=['PATCH'])
+@require_admin
+def rename_league_route(league_id):
+    body = request.get_json(force=True, silent=True) or {}
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
+    conn = db.get_db()
+    try:
+        updated = queries.rename_league(conn, league_id, name_en, name_he)
+    except queries.DuplicatePartyNameError as err:
+        return _duplicate_named_error_response(err, 'league')
+    finally:
+        conn.close()
+    if not updated:
+        return jsonify({'error': 'not found'}), 404
+    return jsonify({'id': league_id, 'name_en': name_en, 'name_he': name_he})
+
+
+@app.route('/api/admin/leagues/<int:league_id>', methods=['DELETE'])
+@require_admin
+def delete_league_route(league_id):
+    conn = db.get_db()
+    try:
+        referencing_clubs = queries.count_clubs_for_league(conn, league_id)
+        if referencing_clubs > 0:
+            return jsonify({'error': f'{referencing_clubs} club(s) still belong to this league'}), 409
+        referencing_votes = queries.count_votes_for_league(conn, league_id)
+        if referencing_votes > 0:
+            return jsonify({'error': f'{referencing_votes} vote(s) still reference this league'}), 409
+        deleted = queries.delete_league(conn, league_id)
+    finally:
+        conn.close()
+    if not deleted:
+        return jsonify({'error': 'not found'}), 404
+    return '', 204
+
+
+@app.route('/api/admin/leagues/<int:source_id>/reassign-count', methods=['GET'])
+@require_admin
+def league_reassign_count_route(source_id):
+    target_id = request.args.get('target_id', type=int)
+    if target_id is None:
+        return jsonify({'error': 'target_id is required'}), 400
+    conn = db.get_db()
+    try:
+        count = queries.count_votes_for_league(conn, source_id)
+    finally:
+        conn.close()
+    return jsonify({'count': count})
+
+
+@app.route('/api/admin/leagues/<int:source_id>/reassign', methods=['POST'])
+@require_admin
+def reassign_league_route(source_id):
+    body = request.get_json(force=True, silent=True) or {}
+    target_id = body.get('target_id')
+    if not isinstance(target_id, int):
+        return jsonify({'error': 'target_id is required'}), 400
+    if target_id == source_id:
+        return jsonify({'error': 'target_id must differ from source league'}), 400
+    conn = db.get_db()
+    try:
+        if not queries.league_exists(conn, target_id):
+            return jsonify({'error': 'target league not found'}), 404
+        if queries.count_clubs_for_league(conn, source_id) > 0:
+            return jsonify({'error': 'source league still has clubs; move or delete them first'}), 400
+        reassigned = queries.reassign_league_votes(conn, source_id, target_id)
     finally:
         conn.close()
     return jsonify({'reassigned': reassigned})
