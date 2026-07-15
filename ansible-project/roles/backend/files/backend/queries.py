@@ -20,8 +20,11 @@ def get_options(conn):
     cur.execute('SELECT id, name_en, name_he FROM leagues ORDER BY name_en')
     leagues = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, league_id, name_en, name_he FROM clubs ORDER BY name_en')
-    clubs = [{'id': r[0], 'league_id': r[1], 'name_en': r[2], 'name_he': r[3]} for r in cur.fetchall()]
+    cur.execute('SELECT id, league_id, domestic_league_id, name_en, name_he FROM clubs ORDER BY name_en')
+    clubs = [
+        {'id': r[0], 'league_id': r[1], 'domestic_league_id': r[2], 'name_en': r[3], 'name_he': r[4]}
+        for r in cur.fetchall()
+    ]
 
     cur.execute('SELECT id, name_en, name_he FROM previous_parties ORDER BY name_en')
     previous_parties = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]

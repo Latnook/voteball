@@ -886,3 +886,18 @@ def test_club_reassign_rejects_nonexistent_target(client, conn, admin_headers):
     club_id = resp.get_json()['id']
     resp = client.post(f'/api/admin/clubs/{club_id}/reassign', json={'target_id': 999999}, headers=headers)
     assert resp.status_code == 404
+
+
+def test_options_endpoint_exposes_club_domestic_league_id(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.get('/api/options')
+    body = resp.get_json()
+    arsenal = next(c for c in body['clubs'] if c['name_en'] == 'Arsenal')
+    assert arsenal['domestic_league_id'] == epl_id
+
+    psg = next(c for c in body['clubs'] if c['name_en'] == 'Paris Saint-Germain')
+    assert psg['domestic_league_id'] is None
