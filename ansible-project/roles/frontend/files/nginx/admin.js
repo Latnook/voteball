@@ -1,6 +1,8 @@
 const ADMIN_TOKEN_KEY = 'voteballAdminToken';
 let optionsData = null;
+let lastVotesData = null;
 const loadedTabs = new Set();
+const openRenamePartyIds = new Set();
 
 function adminHeaders() {
   return { 'Authorization': 'Bearer ' + (sessionStorage.getItem(ADMIN_TOKEN_KEY) || '') };
@@ -11,7 +13,7 @@ async function adminFetch(url, options = {}) {
   const res = await fetch(url, Object.assign({}, options, { headers }));
   if (res.status === 401) {
     sessionStorage.removeItem(ADMIN_TOKEN_KEY);
-    showGate('Session expired — re-enter the secret.');
+    showGate(t('adminSessionExpired'));
     return null;
   }
   return res;
@@ -75,27 +77,28 @@ function renderPartyList(type, parties) {
 function renderPartyRow(type, party, allParties) {
   const row = document.createElement('div');
   row.className = 'party-row';
+  row.dataset.partyId = party.id;
 
   const nameSpan = document.createElement('span');
   nameSpan.className = 'party-name';
-  nameSpan.textContent = party.name;
+  nameSpan.textContent = localizedName(party);
   row.appendChild(nameSpan);
 
   const renameBtn = document.createElement('button');
   renameBtn.type = 'button';
-  renameBtn.textContent = 'Rename';
+  renameBtn.textContent = t('adminRename');
   renameBtn.addEventListener('click', () => startRename(type, party, row));
   row.appendChild(renameBtn);
 
   const reassignBtn = document.createElement('button');
   reassignBtn.type = 'button';
-  reassignBtn.textContent = 'Reassign votes…';
+  reassignBtn.textContent = t('adminReassign');
   reassignBtn.addEventListener('click', () => toggleReassignForm(type, party, allParties, row));
   row.appendChild(reassignBtn);
 
   const deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
-  deleteBtn.textContent = 'Delete';
+  deleteBtn.textContent = t('adminDelete');
   deleteBtn.addEventListener('click', () => deleteParty(type, party));
   row.appendChild(deleteBtn);
 
@@ -107,17 +110,23 @@ function renderPartyRow(type, party, allParties) {
 }
 
 function startRename(type, party, row) {
+  openRenamePartyIds.add(party.id);
   const nameSpan = row.querySelector('.party-name');
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.value = party.name;
-  nameSpan.replaceWith(input);
+  const inputEn = document.createElement('input');
+  inputEn.type = 'text';
+  inputEn.value = party.name_en;
+  const inputHe = document.createElement('input');
+  inputHe.type = 'text';
+  inputHe.value = party.name_he;
+  inputHe.dir = 'rtl';
+  nameSpan.replaceWith(inputEn);
+  inputEn.after(inputHe);
 
   const saveBtn = document.createElement('button');
   saveBtn.type = 'button';
-  saveBtn.textContent = 'Save';
-  input.after(saveBtn);
-  input.focus();
+  saveBtn.textContent = t('adminSave');
+  inputHe.after(saveBtn);
+  inputEn.focus();
 
   saveBtn.addEventListener('click', async () => {
     const errorSpan = row.querySelector('.row-error');
@@ -128,18 +137,19 @@ function startRename(type, party, row) {
       res = await adminFetch(`${partyEndpoint(type)}/${party.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: input.value }),
+        body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value }),
       });
     } catch (err) {
-      errorSpan.textContent = 'Something went wrong.';
+      errorSpan.textContent = t('adminSomethingWrong');
       return;
     }
     if (res === null) return;
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      errorSpan.textContent = body.error || 'Something went wrong.';
+      errorSpan.textContent = body.error || t('adminSomethingWrong');
       return;
     }
+    openRenamePartyIds.delete(party.id);
     optionsData = null;
     loadedTabs.delete(type);
     loadPartyTab(type);
@@ -147,19 +157,19 @@ function startRename(type, party, row) {
 }
 
 async function deleteParty(type, party) {
-  if (!confirm(`Delete "${party.name}"? This cannot be undone.`)) return;
+  if (!confirm(`Delete "${localizedName(party)}"? This cannot be undone.`)) return;
 
   let res;
   try {
     res = await adminFetch(`${partyEndpoint(type)}/${party.id}`, { method: 'DELETE' });
   } catch (err) {
-    alert('Something went wrong.');
+    alert(t('adminSomethingWrong'));
     return;
   }
   if (res === null) return;
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    alert(body.error || 'Something went wrong.');
+    alert(body.error || t('adminSomethingWrong'));
     return;
   }
   optionsData = null;
@@ -169,7 +179,8 @@ async function deleteParty(type, party) {
 
 async function addParty(e, type) {
   e.preventDefault();
-  const input = document.getElementById(`${type}-party-add-input`);
+  const inputEn = document.getElementById(`${type}-party-add-input-en`);
+  const inputHe = document.getElementById(`${type}-party-add-input-he`);
   const errorEl = document.getElementById(`${type}-party-form-error`);
   errorEl.textContent = '';
 
@@ -178,19 +189,20 @@ async function addParty(e, type) {
     res = await adminFetch(partyEndpoint(type), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: input.value }),
+      body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value }),
     });
   } catch (err) {
-    errorEl.textContent = 'Something went wrong.';
+    errorEl.textContent = t('adminSomethingWrong');
     return;
   }
   if (res === null) return;
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    errorEl.textContent = body.error || 'Something went wrong.';
+    errorEl.textContent = body.error || t('adminSomethingWrong');
     return;
   }
-  input.value = '';
+  inputEn.value = '';
+  inputHe.value = '';
   optionsData = null;
   loadedTabs.delete(type);
   loadPartyTab(type);
@@ -218,17 +230,17 @@ document.getElementById('secret-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ username, password }),
     });
   } catch (err) {
-    errorEl.textContent = 'Something went wrong — try again.';
+    errorEl.textContent = t('adminSomethingWrongRetry');
     return;
   }
 
   if (res.status === 401) {
-    errorEl.textContent = 'Incorrect username or password.';
+    errorEl.textContent = t('adminIncorrectCredentials');
     document.getElementById('password-input').value = '';
     return;
   }
   if (!res.ok) {
-    errorEl.textContent = 'Something went wrong — try again.';
+    errorEl.textContent = t('adminSomethingWrongRetry');
     return;
   }
 
@@ -276,14 +288,14 @@ function toggleReassignForm(type, sourceParty, allParties, row) {
   allParties.filter(p => p.id !== sourceParty.id).forEach(p => {
     const opt = document.createElement('option');
     opt.value = p.id;
-    opt.textContent = p.name;
+    opt.textContent = localizedName(p);
     select.appendChild(opt);
   });
   form.appendChild(select);
 
   const goBtn = document.createElement('button');
   goBtn.type = 'button';
-  goBtn.textContent = 'Reassign';
+  goBtn.textContent = t('adminReassignGo');
   form.appendChild(goBtn);
 
   const errorSpan = document.createElement('span');
@@ -299,17 +311,17 @@ function toggleReassignForm(type, sourceParty, allParties, row) {
     try {
       countRes = await adminFetch(`${partyEndpoint(type)}/${sourceParty.id}/reassign-count?target_id=${targetId}`);
     } catch (err) {
-      errorSpan.textContent = 'Something went wrong.';
+      errorSpan.textContent = t('adminSomethingWrong');
       return;
     }
     if (countRes === null) return;
     if (!countRes.ok) {
-      errorSpan.textContent = 'Something went wrong.';
+      errorSpan.textContent = t('adminSomethingWrong');
       return;
     }
     const { count } = await countRes.json();
     const targetParty = allParties.find(p => p.id === targetId);
-    if (!confirm(`Reassign ${count} votes from "${sourceParty.name}" to "${targetParty.name}"? This cannot be undone.`)) {
+    if (!confirm(`Reassign ${count} votes from "${localizedName(sourceParty)}" to "${localizedName(targetParty)}"? This cannot be undone.`)) {
       return;
     }
 
@@ -321,13 +333,13 @@ function toggleReassignForm(type, sourceParty, allParties, row) {
         body: JSON.stringify({ target_id: targetId }),
       });
     } catch (err) {
-      errorSpan.textContent = 'Something went wrong.';
+      errorSpan.textContent = t('adminSomethingWrong');
       return;
     }
     if (res === null) return;
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      errorSpan.textContent = body.error || 'Something went wrong.';
+      errorSpan.textContent = body.error || t('adminSomethingWrong');
       return;
     }
     optionsData = null;
@@ -341,26 +353,26 @@ function toggleReassignForm(type, sourceParty, allParties, row) {
 
 function leagueName(data, id) {
   const l = data.leagues.find(l => l.id === id);
-  return l ? l.name : `league #${id}`;
+  return l ? localizedName(l) : `league #${id}`;
 }
 
 function clubName(data, id) {
   if (id === null) return '—';
   const c = data.clubs.find(c => c.id === id);
-  return c ? c.name : `club #${id}`;
+  return c ? localizedName(c) : `club #${id}`;
 }
 
 function previousPartyName(data, id) {
-  if (id === null) return 'did not vote';
+  if (id === null) return t('adminDidNotVote');
   const p = data.previous_parties.find(p => p.id === id);
-  return p ? p.name : `#${id}`;
+  return p ? localizedName(p) : `#${id}`;
 }
 
 function upcomingPartyNames(data, ids) {
-  if (!ids.length) return 'undecided';
+  if (!ids.length) return t('adminUndecided');
   return ids.map(id => {
     const p = data.upcoming_parties.find(p => p.id === id);
-    return p ? p.name : `#${id}`;
+    return p ? localizedName(p) : `#${id}`;
   }).join(', ');
 }
 
@@ -374,7 +386,8 @@ async function loadVotesTab() {
   }
   if (res === null || !res.ok) return;
   const { votes } = await res.json();
-  renderVotesTable(data, votes.slice().reverse());
+  lastVotesData = votes.slice().reverse();
+  renderVotesTable(data, lastVotesData);
 }
 
 function renderVotesTable(data, votes) {
@@ -386,7 +399,7 @@ function renderVotesTable(data, votes) {
 
   const thead = document.createElement('thead');
   const headRow = document.createElement('tr');
-  ['ID', 'Created', 'League', 'Club', 'Previous vote', 'Upcoming vote', ''].forEach(text => {
+  [t('adminColId'), t('adminColCreated'), t('adminColLeague'), t('adminColClub'), t('adminColPrevious'), t('adminColUpcoming'), ''].forEach(text => {
     const th = document.createElement('th');
     th.textContent = text;
     headRow.appendChild(th);
@@ -413,19 +426,19 @@ function renderVotesTable(data, votes) {
     const actionTd = document.createElement('td');
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
-    deleteBtn.textContent = 'Delete';
+    deleteBtn.textContent = t('adminDelete');
     deleteBtn.addEventListener('click', async () => {
       if (!confirm(`Delete vote #${v.id}? This cannot be undone.`)) return;
       let res;
       try {
         res = await adminFetch(`/api/admin/votes/${v.id}`, { method: 'DELETE' });
       } catch (err) {
-        alert('Something went wrong.');
+        alert(t('adminSomethingWrong'));
         return;
       }
       if (res === null) return;
       if (!res.ok) {
-        alert('Something went wrong.');
+        alert(t('adminSomethingWrong'));
         return;
       }
       tr.remove();
@@ -438,3 +451,21 @@ function renderVotesTable(data, votes) {
   table.appendChild(tbody);
   container.appendChild(table);
 }
+
+document.addEventListener('voteball:langchange', () => {
+  if (optionsData) {
+    ['previous', 'upcoming'].forEach(type => {
+      if (!loadedTabs.has(type)) return;
+      const container = document.getElementById(`${type}-party-list`);
+      const hasOpenReassignForm = container.querySelector('.reassign-form') !== null;
+      const hasOpenRename = Array.from(container.querySelectorAll('.party-row')).some(
+        row => openRenamePartyIds.has(parseInt(row.dataset.partyId, 10))
+      );
+      if (hasOpenRename || hasOpenReassignForm) return; // leave in-progress edits/open forms alone
+      renderPartyList(type, optionsData[partyListKey(type)]);
+    });
+  }
+  if (optionsData && lastVotesData && loadedTabs.has('votes')) {
+    renderVotesTable(optionsData, lastVotesData);
+  }
+});
