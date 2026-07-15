@@ -29,15 +29,14 @@ JOIN (VALUES
     ('UCL', 'Atletico Madrid'), ('UCL', 'Borussia Dortmund'), ('UCL', 'Napoli'),
     ('UCL', 'Porto'), ('UCL', 'Benfica'), ('UCL', 'Ajax'),
 
-    ('EPL', 'Arsenal'), ('EPL', 'Aston Villa'), ('EPL', 'Bournemouth'),
-    ('EPL', 'Brentford'), ('EPL', 'Brighton & Hove Albion'), ('EPL', 'Chelsea'),
+    ('EPL', 'Aston Villa'), ('EPL', 'Bournemouth'),
+    ('EPL', 'Brentford'), ('EPL', 'Brighton & Hove Albion'),
     ('EPL', 'Crystal Palace'), ('EPL', 'Everton'), ('EPL', 'Fulham'),
-    ('EPL', 'Ipswich Town'), ('EPL', 'Leicester City'), ('EPL', 'Liverpool'),
-    ('EPL', 'Manchester City'), ('EPL', 'Manchester United'), ('EPL', 'Newcastle United'),
+    ('EPL', 'Ipswich Town'), ('EPL', 'Leicester City'),
+    ('EPL', 'Newcastle United'),
     ('EPL', 'Nottingham Forest'), ('EPL', 'Southampton'), ('EPL', 'Tottenham Hotspur'),
     ('EPL', 'West Ham United'), ('EPL', 'Wolverhampton Wanderers'),
 
-    ('La Liga', 'Real Madrid'), ('La Liga', 'Barcelona'), ('La Liga', 'Atletico Madrid'),
     ('La Liga', 'Athletic Bilbao'), ('La Liga', 'Real Sociedad'), ('La Liga', 'Real Betis'),
     ('La Liga', 'Villarreal'), ('La Liga', 'Valencia'), ('La Liga', 'Sevilla'),
     ('La Liga', 'Girona'), ('La Liga', 'Osasuna'), ('La Liga', 'Celta Vigo'),
@@ -45,15 +44,14 @@ JOIN (VALUES
     ('La Liga', 'Alaves'), ('La Liga', 'Espanyol'), ('La Liga', 'Leganes'),
     ('La Liga', 'Mallorca'), ('La Liga', 'Valladolid'),
 
-    ('Serie A', 'Inter Milan'), ('Serie A', 'AC Milan'), ('Serie A', 'Juventus'),
-    ('Serie A', 'Napoli'), ('Serie A', 'Roma'), ('Serie A', 'Lazio'),
+    ('Serie A', 'Roma'), ('Serie A', 'Lazio'),
     ('Serie A', 'Atalanta'), ('Serie A', 'Fiorentina'), ('Serie A', 'Bologna'),
     ('Serie A', 'Torino'), ('Serie A', 'Udinese'), ('Serie A', 'Genoa'),
     ('Serie A', 'Cagliari'), ('Serie A', 'Verona'), ('Serie A', 'Lecce'),
     ('Serie A', 'Parma'), ('Serie A', 'Como'), ('Serie A', 'Venezia'),
     ('Serie A', 'Empoli'), ('Serie A', 'Monza'),
 
-    ('Bundesliga', 'Bayern Munich'), ('Bundesliga', 'Borussia Dortmund'), ('Bundesliga', 'RB Leipzig'),
+    ('Bundesliga', 'RB Leipzig'),
     ('Bundesliga', 'Bayer Leverkusen'), ('Bundesliga', 'Eintracht Frankfurt'), ('Bundesliga', 'VfB Stuttgart'),
     ('Bundesliga', 'Borussia Monchengladbach'), ('Bundesliga', 'SC Freiburg'), ('Bundesliga', 'Werder Bremen'),
     ('Bundesliga', 'Union Berlin'), ('Bundesliga', 'Mainz 05'), ('Bundesliga', 'Wolfsburg'),
@@ -69,6 +67,25 @@ JOIN (VALUES
     ('Israeli Premier League', 'Hapoel Petah Tikva'), ('Israeli Premier League', 'Hapoel Kfar Saba')
 ) AS c(league_name, name) ON l.name = c.league_name
 ON CONFLICT (league_id, name) DO NOTHING;
+
+-- Link each UCL club that also plays in a domestic league this app seeds (decision 12).
+-- Paris Saint-Germain/Porto/Benfica/Ajax are intentionally excluded -- their domestic
+-- leagues (Ligue 1/Primeira Liga/Eredivisie) aren't seeded here, so they stay UCL-only.
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'EPL')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+  AND name IN ('Arsenal', 'Chelsea', 'Liverpool', 'Manchester City', 'Manchester United');
+
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'La Liga')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+  AND name IN ('Real Madrid', 'Barcelona', 'Atletico Madrid');
+
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'Serie A')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+  AND name IN ('Inter Milan', 'AC Milan', 'Juventus', 'Napoli');
+
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'Bundesliga')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+  AND name IN ('Bayern Munich', 'Borussia Dortmund');
 
 INSERT INTO previous_parties (name) VALUES
     ('הליכוד'), ('יש עתיד'), ('הציונות הדתית'), ('המחנה הממלכתי'),
@@ -96,6 +113,8 @@ UPDATE leagues SET name_he = 'לה ליגה' WHERE name_en = 'La Liga' AND name_
 UPDATE leagues SET name_he = 'סרייה A' WHERE name_en = 'Serie A' AND name_he IS NULL;
 UPDATE leagues SET name_he = 'הבונדסליגה' WHERE name_en = 'Bundesliga' AND name_he IS NULL;
 UPDATE leagues SET name_he = 'ליגת העל' WHERE name_en = 'Israeli Premier League' AND name_he IS NULL;
+UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
+UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
 
 -- World Cup 2026 countries
 UPDATE clubs SET name_he = 'ברזיל' WHERE name_en = 'Brazil' AND name_he IS NULL;

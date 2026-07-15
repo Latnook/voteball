@@ -47,6 +47,25 @@ CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_he_uidx ON leagues (name_he) WHER
 CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_en_uidx ON clubs (league_id, name_en) WHERE name_en IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_he_uidx ON clubs (league_id, name_he) WHERE name_he IS NOT NULL;
 
+-- One club can now be votable under two leagues (continental competition + domestic league) --
+-- see docs/superpowers/specs/2026-07-15-clubs-leagues-admin-crud-design.md decision 10.
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS domestic_league_id INTEGER REFERENCES leagues(id);
+
+DO $$
+BEGIN
+    ALTER TABLE clubs ADD CONSTRAINT clubs_domestic_league_differs
+        CHECK (domestic_league_id IS DISTINCT FROM league_id);
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
+
+-- Club name uniqueness moves from per-league to global (decision 7) -- per-league uniqueness
+-- is what let the same real club exist as two separate rows in two different leagues.
+DROP INDEX IF EXISTS clubs_league_name_en_uidx;
+DROP INDEX IF EXISTS clubs_league_name_he_uidx;
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_name_en_uidx ON clubs (name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_name_he_uidx ON clubs (name_he) WHERE name_he IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS votes (
     id SERIAL PRIMARY KEY,
     league_id INTEGER NOT NULL REFERENCES leagues(id),

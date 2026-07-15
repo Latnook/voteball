@@ -5,10 +5,10 @@ import queries
 def test_get_options_returns_seeded_leagues(conn):
     options = queries.get_options(conn)
     league_names_en = {l['name_en'] for l in options['leagues']}
-    assert 'EPL' in league_names_en
+    assert 'Premier League' in league_names_en
     assert 'Israeli Premier League' in league_names_en
 
-    epl = next(l for l in options['leagues'] if l['name_en'] == 'EPL')
+    epl = next(l for l in options['leagues'] if l['name_en'] == 'Premier League')
     assert epl['name_he'] == 'הפרמייר ליג'
 
     club_names_en = {c['name_en'] for c in options['clubs']}
@@ -17,7 +17,7 @@ def test_get_options_returns_seeded_leagues(conn):
     assert liverpool['name_he'] == 'ליברפול'
 
     epl_clubs = [c for c in options['clubs'] if c['league_id'] == epl['id']]
-    assert len(epl_clubs) == 20
+    assert len(epl_clubs) == 15
 
     previous_names_en = {p['name_en'] for p in options['previous_parties']}
     assert previous_names_en == {

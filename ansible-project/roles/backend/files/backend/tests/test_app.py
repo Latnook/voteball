@@ -9,7 +9,7 @@ def test_options_endpoint(client):
     assert resp.status_code == 200
     body = resp.get_json()
     assert 'leagues' in body
-    assert any(l['name_en'] == 'EPL' for l in body['leagues'])
+    assert any(l['name_en'] == 'Premier League' for l in body['leagues'])
     assert any(l['name_he'] == 'הפרמייר ליג' for l in body['leagues'])
 
 
@@ -528,3 +528,61 @@ def test_require_admin_rejects_expired_token(client):
 
     resp = client.get('/api/admin/votes', headers={'Authorization': f'Bearer {old_token}'})
     assert resp.status_code == 401
+
+
+def test_clubs_domestic_league_id_and_global_name_uniqueness(conn):
+    import pytest
+    import psycopg2
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'UCL'")
+    ucl_id = cur.fetchone()[0]
+
+    # A club can hold two distinct league slots.
+    cur.execute(
+        "INSERT INTO clubs (league_id, domestic_league_id, name, name_en, name_he) "
+        "VALUES (%s, %s, 'Test United', 'Test United', 'טסט יונייטד') RETURNING id",
+        (ucl_id, epl_id)
+    )
+    conn.commit()
+
+    # Global name uniqueness: the same name_en under a *different* league now collides
+    # (this is the exact bug that let Arsenal exist twice before this migration).
+    with pytest.raises(psycopg2.errors.UniqueViolation):
+        cur.execute(
+            "INSERT INTO clubs (league_id, name, name_en, name_he) "
+            "VALUES (%s, 'Test United', 'Test United', 'אחר')",
+            (epl_id,)
+        )
+    conn.rollback()
+
+    # A club's two league slots can't be the same league.
+    with pytest.raises(psycopg2.errors.CheckViolation):
+        cur.execute(
+            "INSERT INTO clubs (league_id, domestic_league_id, name, name_en, name_he) "
+            "VALUES (%s, %s, 'Same Slot FC', 'Same Slot FC', 'קבוצה')",
+            (epl_id, epl_id)
+        )
+    conn.rollback()
+    cur.close()
+
+
+def test_seed_data_dedupes_ucl_clubs_with_domestic_leagues(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'UCL'")
+    ucl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+
+    cur.execute("SELECT league_id, domestic_league_id FROM clubs WHERE name_en = 'Arsenal'")
+    rows = cur.fetchall()
+    assert len(rows) == 1, "Arsenal must be exactly one row after dedup"
+    assert rows[0] == (ucl_id, epl_id)
+
+    # PSG has no seeded domestic league and stays UCL-only.
+    cur.execute("SELECT league_id, domestic_league_id FROM clubs WHERE name_en = 'Paris Saint-Germain'")
+    rows = cur.fetchall()
+    assert len(rows) == 1
+    assert rows[0] == (ucl_id, None)
+    cur.close()

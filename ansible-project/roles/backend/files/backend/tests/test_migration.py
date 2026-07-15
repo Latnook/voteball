@@ -15,7 +15,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 7
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 150
+    assert cur.fetchone()[0] == 136
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 14
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -25,7 +25,7 @@ def test_seeded_row_counts(conn):
 
 def test_sample_translations(conn):
     cur = conn.cursor()
-    cur.execute("SELECT name_he FROM leagues WHERE name_en = 'EPL'")
+    cur.execute("SELECT name_he FROM leagues WHERE name_en = 'Premier League'")
     assert cur.fetchone()[0] == 'הפרמייר ליג'
     cur.execute("SELECT name_he FROM clubs WHERE name_en = 'Real Madrid' LIMIT 1")
     assert cur.fetchone()[0] == 'ריאל מדריד'
