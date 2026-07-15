@@ -177,3 +177,17 @@ itself, allow a few minutes to propagate) and a fresh TLS cert issuance.
   is in `lifecycle.ignore_changes` on the RDS resource (`terraform/modules/database/main.tf`)
   specifically so a bad restore doesn't force-replace the DB on a later
   unrelated `apply` — worth knowing if you need to debug it.
+- **A changing home IP mid-deploy silently kills SSH, and looks nothing like an auth
+  problem.** `ssh_allowed_cidr` in `voteball.tfvars` locks the EC2 security group's port 22
+  rule to whatever IP you had at `apply` time. If your ISP/router reassigns your public IP
+  partway through a long `ansible-playbook site-k3s.yml` run (this one takes 15-20+ minutes —
+  Docker+k3s install, three image builds, then Helm), every subsequent SSH attempt — Ansible's
+  and a manual `ssh` alike — hits `ssh: connect to host ... port 22: Connection timed out`.
+  That's a **security-group silent drop**, not a refused connection or a credentials issue, so
+  it's easy to misdiagnose as host-side trouble (CPU throttling, a hung sudo prompt, etc.) —
+  AWS's own instance/system status checks stay green throughout, since they don't depend on
+  your source IP at all. Symptom check: if `curl -s https://checkip.amazonaws.com` now returns
+  a different address than what's in `ssh_allowed_cidr`, that's the cause. Fix: update
+  `ssh_allowed_cidr` to the current IP and re-`apply` (or add a temporary wider rule), then
+  re-run `ansible-playbook site-k3s.yml` — it's idempotent, safe to resume from wherever it
+  stopped. Hit for real on 2026-07-16.
