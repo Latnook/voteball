@@ -2,7 +2,7 @@ const ADMIN_TOKEN_KEY = 'voteballAdminToken';
 let optionsData = null;
 let lastVotesData = null;
 const loadedTabs = new Set();
-const openRenamePartyIds = new Set();
+const openRenameKeys = new Set();
 
 function adminHeaders() {
   return { 'Authorization': 'Bearer ' + (sessionStorage.getItem(ADMIN_TOKEN_KEY) || '') };
@@ -110,7 +110,7 @@ function renderPartyRow(type, party, allParties) {
 }
 
 function startRename(type, party, row) {
-  openRenamePartyIds.add(party.id);
+  openRenameKeys.add(`${type}:${party.id}`);
   const nameSpan = row.querySelector('.party-name');
   const inputEn = document.createElement('input');
   inputEn.type = 'text';
@@ -149,7 +149,7 @@ function startRename(type, party, row) {
       errorSpan.textContent = body.error || t('adminSomethingWrong');
       return;
     }
-    openRenamePartyIds.delete(party.id);
+    openRenameKeys.delete(`${type}:${party.id}`);
     optionsData = null;
     loadedTabs.delete(type);
     loadPartyTab(type);
@@ -459,7 +459,7 @@ document.addEventListener('voteball:langchange', () => {
       const container = document.getElementById(`${type}-party-list`);
       const hasOpenReassignForm = container.querySelector('.reassign-form') !== null;
       const hasOpenRename = Array.from(container.querySelectorAll('.party-row')).some(
-        row => openRenamePartyIds.has(parseInt(row.dataset.partyId, 10))
+        row => openRenameKeys.has(`${type}:${row.dataset.partyId}`)
       );
       if (hasOpenRename || hasOpenReassignForm) return; // leave in-progress edits/open forms alone
       renderPartyList(type, optionsData[partyListKey(type)]);
