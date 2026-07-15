@@ -1042,7 +1042,7 @@ document.addEventListener('voteball:langchange', () => {
       renderPartyList(type, optionsData[partyListKey(type)]);
     });
   }
-  if (optionsData && loadedTabs.has('teams') && !document.querySelector('#league-list input, #league-list .reassign-form')) {
+  if (optionsData && loadedTabs.has('teams') && !document.querySelector('#league-list .league-header input, #league-list .club-row input, #league-list .reassign-form')) {
     renderLeagueGroups(optionsData);
   }
   if (optionsData && lastVotesData && loadedTabs.has('votes')) {

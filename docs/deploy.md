@@ -155,6 +155,20 @@ itself, allow a few minutes to propagate) and a fresh TLS cert issuance.
   with a fresh `-var` first (verified as a true no-op otherwise: `0 to add, 1 to change, 0 to
   destroy`, only `final_snapshot_identifier` moves) to write the new name into state, *then*
   destroy. Hit for real on 2026-07-15; the **Destroy** section above now does this by default.
+- **The next deploy must skip the current RDS snapshot — it predates the club-name
+  uniqueness migration and still has the duplicate rows that migration fixes.** This
+  branch's `clubs.domestic_league_id` work adds `CREATE UNIQUE INDEX ... clubs_name_en_uidx`
+  to `schema.sql`, which `db.py`'s `init_db` runs unconditionally on backend startup. The
+  most recent snapshot was taken before this branch existed, so it still has real duplicate
+  club rows (e.g. two "Arsenal" rows, one per league) — `seed.sql`'s `ON CONFLICT DO NOTHING`
+  only guards fresh inserts, it does nothing about rows already committed in a restored
+  snapshot. Restoring it will make `CREATE UNIQUE INDEX` hit a `UniqueViolation` during
+  schema init (before `app.run`), crash-looping the backend pod. Since no votes exist yet,
+  the fix is to not restore that snapshot: delete `terraform/snapshot.auto.tfvars` before
+  the next `terraform apply` (see "Redeploying after a destroy" above — same mechanism used
+  there to force a fresh empty database) so the database initializes from this branch's
+  already-deduplicated `seed.sql` instead. This is a one-time step for the deploy that first
+  picks up this migration, not a standing requirement.
 - **The snapshot/restore mechanism (added 2026-07-12) hasn't been exercised
   through a real destroy→apply cycle yet** — `terraform validate` passes and
   the "no snapshot exists" path is confirmed against real AWS, but the
