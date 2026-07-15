@@ -92,14 +92,18 @@ aws sns list-subscriptions-by-topic --topic-arn "$TOPIC_ARN" --region il-central
 
 ```bash
 cd terraform
-terraform destroy -var-file=voteball.tfvars -var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"
+# Refresh the final-snapshot name in state first -- see Gotchas below for why
+# a bare `terraform destroy -var=...` isn't enough on its own.
+terraform apply -auto-approve -target=module.database.aws_db_instance.main \
+  -var-file=voteball.tfvars -var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"
+terraform destroy -var-file=voteball.tfvars
 cd ..
 ```
 
 Deletes everything: EC2, RDS, EIP, Route 53 record, IAM, SNS. RDS takes a
-**final snapshot before deleting** (the `-var` above gives it a unique
-name so repeated destroys don't collide — don't omit it). Don't lose
-`terraform.tfstate` or `voteball.tfvars` (gitignored, local-only) or
+**final snapshot before deleting** (the `apply -target` step above gives it
+a unique name so repeated destroys don't collide — don't skip it). Don't
+lose `terraform.tfstate` or `voteball.tfvars` (gitignored, local-only) or
 you'll be cleaning up by hand.
 
 ## Redeploying after a destroy
@@ -139,6 +143,18 @@ itself, allow a few minutes to propagate) and a fresh TLS cert issuance.
   the node and then silently dropped at image-build time — no error, just a
   404 for that file once deployed. Shipped once for real (`i18n.js`, fixed
   in `d02e255`) before being caught by testing the live site after deploy.
+- **`terraform destroy -var="db_final_snapshot_suffix=..."` alone does not give you a fresh
+  snapshot name.** `final_snapshot_identifier` is a plain resource argument, and `destroy`
+  deletes using the value already recorded in **state from the last `apply`** — it does not
+  recompute the argument from a `-var` passed to `destroy` itself. Routine `apply` runs never
+  pass that var (only the old `destroy` docs did), so the suffix baked into state is almost
+  always still the `"manual"` default. If a snapshot named `voteball-db-final-manual` already
+  exists from an earlier destroy, every later destroy then fails with
+  `DBSnapshotAlreadyExists: Cannot create the snapshot ... already exists`, no matter what
+  `-var` you pass on that destroy call. Fix: `terraform apply -target=module.database.aws_db_instance.main`
+  with a fresh `-var` first (verified as a true no-op otherwise: `0 to add, 1 to change, 0 to
+  destroy`, only `final_snapshot_identifier` moves) to write the new name into state, *then*
+  destroy. Hit for real on 2026-07-15; the **Destroy** section above now does this by default.
 - **The snapshot/restore mechanism (added 2026-07-12) hasn't been exercised
   through a real destroy→apply cycle yet** — `terraform validate` passes and
   the "no snapshot exists" path is confirmed against real AWS, but the

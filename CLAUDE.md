@@ -104,8 +104,11 @@ Provisioning and deployment are two separate steps, run in this order:
    snapshot above if one was found), EIP, Route53 record for `voteball.latnook.com`, IAM role, SNS
    topic. Needs `terraform/voteball.tfvars` (gitignored — copy from `voteball.tfvars.example`) and
    `-var-file=voteball.tfvars` on `plan`/`apply` (it isn't named `terraform.tfvars`, so Terraform won't
-   auto-load it). `terraform destroy` needs `-var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"` —
-   a fresh value each time, or repeated destroys collide on the final-snapshot name.
+   auto-load it). Before `terraform destroy`, run `terraform apply -target=module.database.aws_db_instance.main
+   -var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"` to refresh the final-snapshot name — passing that
+   `-var` to `destroy` itself does nothing, since destroy deletes using whatever value is already in state
+   from the last apply, not a value recomputed from `-var`s on the destroy call (see docs/deploy.md
+   Gotchas). Skip this and repeated destroys collide on the same stale final-snapshot name.
 3. **`scripts/generate-inventory.sh`** reads live Terraform outputs and writes the (gitignored,
    generated) Ansible inventory: `ansible-project/inventories/voteball/hosts` and
    `group_vars/all/main.yml`.
