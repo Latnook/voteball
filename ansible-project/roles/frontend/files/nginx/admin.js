@@ -157,7 +157,7 @@ function startRename(type, party, row) {
 }
 
 async function deleteParty(type, party) {
-  if (!confirm(`Delete "${localizedName(party)}"? This cannot be undone.`)) return;
+  if (!confirm(t('adminConfirmDeleteParty').replace('{name}', localizedName(party)))) return;
 
   let res;
   try {
@@ -321,7 +321,7 @@ function toggleReassignForm(type, sourceParty, allParties, row) {
     }
     const { count } = await countRes.json();
     const targetParty = allParties.find(p => p.id === targetId);
-    if (!confirm(`Reassign ${count} votes from "${localizedName(sourceParty)}" to "${localizedName(targetParty)}"? This cannot be undone.`)) {
+    if (!confirm(t('adminConfirmReassign').replace('{count}', count).replace('{source}', localizedName(sourceParty)).replace('{target}', localizedName(targetParty)))) {
       return;
     }
 
@@ -428,7 +428,7 @@ function renderVotesTable(data, votes) {
     deleteBtn.type = 'button';
     deleteBtn.textContent = t('adminDelete');
     deleteBtn.addEventListener('click', async () => {
-      if (!confirm(`Delete vote #${v.id}? This cannot be undone.`)) return;
+      if (!confirm(t('adminConfirmDeleteVote').replace('{id}', v.id))) return;
       let res;
       try {
         res = await adminFetch(`/api/admin/votes/${v.id}`, { method: 'DELETE' });

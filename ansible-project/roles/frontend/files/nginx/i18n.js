@@ -67,6 +67,9 @@ const DICTIONARY = {
     adminSomethingWrongRetry: 'Something went wrong — try again.',
     adminSessionExpired: 'Session expired — re-enter the secret.',
     adminIncorrectCredentials: 'Incorrect username or password.',
+    adminConfirmDeleteParty: 'Delete "{name}"? This cannot be undone.',
+    adminConfirmReassign: 'Reassign {count} votes from "{source}" to "{target}"? This cannot be undone.',
+    adminConfirmDeleteVote: 'Delete vote #{id}? This cannot be undone.',
   },
   he: {
     voteIntro: 'אהדה לכדורגל מול הצבעה פוליטית — אנונימי, הצבעה אחת לדפדפן.',
@@ -134,6 +137,9 @@ const DICTIONARY = {
     adminSomethingWrongRetry: 'משהו השתבש — נסו שוב.',
     adminSessionExpired: 'ההתחברות פגה — יש להזין את הסיסמה מחדש.',
     adminIncorrectCredentials: 'שם משתמש או סיסמה שגויים.',
+    adminConfirmDeleteParty: 'למחוק את "{name}"? לא ניתן לבטל פעולה זו.',
+    adminConfirmReassign: 'להעביר {count} הצבעות מ"{source}" ל"{target}"? לא ניתן לבטל פעולה זו.',
+    adminConfirmDeleteVote: 'למחוק הצבעה מס\' {id}? לא ניתן לבטל פעולה זו.',
   },
 };
 
