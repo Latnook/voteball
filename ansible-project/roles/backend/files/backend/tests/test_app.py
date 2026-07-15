@@ -693,3 +693,196 @@ def test_league_reassign_moves_votes_and_requires_zero_clubs(client, conn, admin
     third_id = resp.get_json()['id']
     resp = client.post(f'/api/admin/leagues/{target_id}/reassign', json={'target_id': third_id}, headers=headers)
     assert resp.status_code == 400
+
+
+def test_club_admin_crud(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': epl_id, 'name_en': 'Test FC', 'name_he': 'טסט אף.סי',
+    }, headers=headers)
+    assert resp.status_code == 201
+    club_id = resp.get_json()['id']
+    assert resp.get_json()['domestic_league_id'] is None
+
+    resp = client.patch(f'/api/admin/clubs/{club_id}', json={
+        'league_id': epl_id, 'domestic_league_id': la_liga_id,
+        'name_en': 'Test FC Renamed', 'name_he': 'שם חדש',
+    }, headers=headers)
+    assert resp.status_code == 200
+    assert resp.get_json()['domestic_league_id'] == la_liga_id
+
+    resp = client.delete(f'/api/admin/clubs/{club_id}', headers=headers)
+    assert resp.status_code == 204
+    resp = client.delete(f'/api/admin/clubs/{club_id}', headers=headers)
+    assert resp.status_code == 404
+
+
+def test_club_admin_routes_require_authentication(client):
+    resp = client.post('/api/admin/clubs', json={'league_id': 1, 'name_en': 'X', 'name_he': 'א'})
+    assert resp.status_code == 401
+    resp = client.patch('/api/admin/clubs/1', json={'league_id': 1, 'name_en': 'X', 'name_he': 'א'})
+    assert resp.status_code == 401
+    resp = client.delete('/api/admin/clubs/1')
+    assert resp.status_code == 401
+
+
+def test_create_club_duplicate_name_is_global_not_per_league(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': epl_id, 'name_en': 'Global Dup', 'name_he': 'Global Dup',
+    }, headers=headers)
+    assert resp.status_code == 201
+
+    # Same name, a *different* league -- must still collide (decision 7's whole point).
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': la_liga_id, 'name_en': 'Global Dup', 'name_he': 'Global Dup',
+    }, headers=headers)
+    assert resp.status_code == 409
+
+
+def test_create_club_validates_league_ids(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/admin/clubs', json={'league_id': 999999, 'name_en': 'X', 'name_he': 'א'}, headers=headers)
+    assert resp.status_code == 404
+
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': epl_id, 'domestic_league_id': 999999, 'name_en': 'X', 'name_he': 'א',
+    }, headers=headers)
+    assert resp.status_code == 404
+
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': epl_id, 'domestic_league_id': epl_id, 'name_en': 'X', 'name_he': 'א',
+    }, headers=headers)
+    assert resp.status_code == 400
+
+
+def test_delete_club_blocked_when_referenced_by_votes(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/admin/clubs', json={'league_id': epl_id, 'name_en': 'Voted Club', 'name_he': 'קבוצה מוצבעת'}, headers=headers)
+    club_id = resp.get_json()['id']
+
+    resp = client.post('/api/vote', json={
+        'league_id': epl_id, 'club_id': club_id,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 201
+
+    resp = client.delete(f'/api/admin/clubs/{club_id}', headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': '1 vote(s) still reference this club'}
+
+
+def test_club_reassign_same_single_league_succeeds(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    resp = client.post('/api/admin/clubs', json={'league_id': epl_id, 'name_en': 'Source Club', 'name_he': 'קבוצת מקור'}, headers=headers)
+    source_id = resp.get_json()['id']
+    resp = client.post('/api/admin/clubs', json={'league_id': epl_id, 'name_en': 'Target Club', 'name_he': 'קבוצת יעד'}, headers=headers)
+    target_id = resp.get_json()['id']
+
+    resp = client.post('/api/vote', json={
+        'league_id': epl_id, 'club_id': source_id,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    vote_id = resp.get_json()['vote_id']
+
+    resp = client.get(f'/api/admin/clubs/{source_id}/reassign-count?target_id={target_id}', headers=headers)
+    assert resp.get_json() == {'count': 1}
+
+    resp = client.post(f'/api/admin/clubs/{source_id}/reassign', json={'target_id': target_id}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.get_json() == {'reassigned': 1}
+
+    resp = client.get('/api/admin/votes', headers=headers)
+    vote = next(v for v in resp.get_json()['votes'] if v['id'] == vote_id)
+    assert vote['club_id'] == target_id
+
+
+def test_club_reassign_rejects_target_not_covering_source_leagues(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'UCL'")
+    ucl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    # Source is votable under two leagues (UCL + EPL).
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': ucl_id, 'domestic_league_id': epl_id, 'name_en': 'Two League Club', 'name_he': 'קבוצת שתי ליגות',
+    }, headers=headers)
+    source_id = resp.get_json()['id']
+
+    # Target only covers La Liga -- doesn't cover either of the source's leagues.
+    resp = client.post('/api/admin/clubs', json={'league_id': la_liga_id, 'name_en': 'One League Club', 'name_he': 'קבוצת ליגה אחת'}, headers=headers)
+    target_id = resp.get_json()['id']
+
+    resp = client.post(f'/api/admin/clubs/{source_id}/reassign', json={'target_id': target_id}, headers=headers)
+    assert resp.status_code == 400
+
+    # A target covering *both* UCL and EPL is accepted.
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': ucl_id, 'domestic_league_id': epl_id, 'name_en': 'Covering Club', 'name_he': 'קבוצה מכסה',
+    }, headers=headers)
+    covering_target_id = resp.get_json()['id']
+    resp = client.post(f'/api/admin/clubs/{source_id}/reassign', json={'target_id': covering_target_id}, headers=headers)
+    assert resp.status_code == 200
+
+
+def test_club_reassign_rejects_equal_source_and_target(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.close()
+    resp = client.post('/api/admin/clubs', json={'league_id': epl_id, 'name_en': 'X', 'name_he': 'א'}, headers=headers)
+    club_id = resp.get_json()['id']
+    resp = client.post(f'/api/admin/clubs/{club_id}/reassign', json={'target_id': club_id}, headers=headers)
+    assert resp.status_code == 400
+
+
+def test_club_reassign_rejects_nonexistent_target(client, conn, admin_headers):
+    headers = admin_headers
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.close()
+    resp = client.post('/api/admin/clubs', json={'league_id': epl_id, 'name_en': 'Solo Club', 'name_he': 'קבוצה בודדה'}, headers=headers)
+    club_id = resp.get_json()['id']
+    resp = client.post(f'/api/admin/clubs/{club_id}/reassign', json={'target_id': 999999}, headers=headers)
+    assert resp.status_code == 404

@@ -407,6 +407,131 @@ def reassign_league_route(source_id):
     return jsonify({'reassigned': reassigned})
 
 
+@app.route('/api/admin/clubs', methods=['POST'])
+@require_admin
+def create_club_route():
+    body = request.get_json(force=True, silent=True) or {}
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
+    league_id = body.get('league_id')
+    if not isinstance(league_id, int):
+        return jsonify({'error': 'league_id is required'}), 400
+    domestic_league_id = body.get('domestic_league_id')
+    if domestic_league_id is not None and not isinstance(domestic_league_id, int):
+        return jsonify({'error': 'domestic_league_id must be an integer or null'}), 400
+    if domestic_league_id is not None and domestic_league_id == league_id:
+        return jsonify({'error': 'domestic_league_id must differ from league_id'}), 400
+    conn = db.get_db()
+    try:
+        if not queries.league_exists(conn, league_id):
+            return jsonify({'error': 'league not found'}), 404
+        if domestic_league_id is not None and not queries.league_exists(conn, domestic_league_id):
+            return jsonify({'error': 'domestic league not found'}), 404
+        club_id = queries.create_club(conn, league_id, domestic_league_id, name_en, name_he)
+    except queries.DuplicateClubNameError as err:
+        return _duplicate_named_error_response(err, 'club')
+    finally:
+        conn.close()
+    return jsonify({
+        'id': club_id, 'league_id': league_id, 'domestic_league_id': domestic_league_id,
+        'name_en': name_en, 'name_he': name_he,
+    }), 201
+
+
+@app.route('/api/admin/clubs/<int:club_id>', methods=['PATCH'])
+@require_admin
+def rename_club_route(club_id):
+    body = request.get_json(force=True, silent=True) or {}
+    name_en = body.get('name_en', '').strip()
+    name_he = body.get('name_he', '').strip()
+    if not name_en or not name_he:
+        return jsonify({'error': 'name_en and name_he are required'}), 400
+    league_id = body.get('league_id')
+    if not isinstance(league_id, int):
+        return jsonify({'error': 'league_id is required'}), 400
+    domestic_league_id = body.get('domestic_league_id')
+    if domestic_league_id is not None and not isinstance(domestic_league_id, int):
+        return jsonify({'error': 'domestic_league_id must be an integer or null'}), 400
+    if domestic_league_id is not None and domestic_league_id == league_id:
+        return jsonify({'error': 'domestic_league_id must differ from league_id'}), 400
+    conn = db.get_db()
+    try:
+        if not queries.league_exists(conn, league_id):
+            return jsonify({'error': 'league not found'}), 404
+        if domestic_league_id is not None and not queries.league_exists(conn, domestic_league_id):
+            return jsonify({'error': 'domestic league not found'}), 404
+        updated = queries.rename_club(conn, club_id, league_id, domestic_league_id, name_en, name_he)
+    except queries.DuplicateClubNameError as err:
+        return _duplicate_named_error_response(err, 'club')
+    finally:
+        conn.close()
+    if not updated:
+        return jsonify({'error': 'not found'}), 404
+    return jsonify({
+        'id': club_id, 'league_id': league_id, 'domestic_league_id': domestic_league_id,
+        'name_en': name_en, 'name_he': name_he,
+    })
+
+
+@app.route('/api/admin/clubs/<int:club_id>', methods=['DELETE'])
+@require_admin
+def delete_club_route(club_id):
+    conn = db.get_db()
+    try:
+        referencing = queries.count_votes_for_club(conn, club_id)
+        if referencing > 0:
+            return jsonify({'error': f'{referencing} vote(s) still reference this club'}), 409
+        deleted = queries.delete_club(conn, club_id)
+    finally:
+        conn.close()
+    if not deleted:
+        return jsonify({'error': 'not found'}), 404
+    return '', 204
+
+
+@app.route('/api/admin/clubs/<int:source_id>/reassign-count', methods=['GET'])
+@require_admin
+def club_reassign_count_route(source_id):
+    target_id = request.args.get('target_id', type=int)
+    if target_id is None:
+        return jsonify({'error': 'target_id is required'}), 400
+    conn = db.get_db()
+    try:
+        count = queries.count_votes_for_club(conn, source_id)
+    finally:
+        conn.close()
+    return jsonify({'count': count})
+
+
+@app.route('/api/admin/clubs/<int:source_id>/reassign', methods=['POST'])
+@require_admin
+def reassign_club_route(source_id):
+    body = request.get_json(force=True, silent=True) or {}
+    target_id = body.get('target_id')
+    if not isinstance(target_id, int):
+        return jsonify({'error': 'target_id is required'}), 400
+    if target_id == source_id:
+        return jsonify({'error': 'target_id must differ from source club'}), 400
+    conn = db.get_db()
+    try:
+        source_leagues = queries.get_club_leagues(conn, source_id)
+        if source_leagues is None:
+            return jsonify({'error': 'not found'}), 404
+        target_leagues = queries.get_club_leagues(conn, target_id)
+        if target_leagues is None:
+            return jsonify({'error': 'target club not found'}), 404
+        source_set = {v for v in (source_leagues['league_id'], source_leagues['domestic_league_id']) if v is not None}
+        target_set = {v for v in (target_leagues['league_id'], target_leagues['domestic_league_id']) if v is not None}
+        if not source_set.issubset(target_set):
+            return jsonify({'error': 'target club does not cover every league the source club is votable under'}), 400
+        reassigned = queries.reassign_club_votes(conn, source_id, target_id)
+    finally:
+        conn.close()
+    return jsonify({'reassigned': reassigned})
+
+
 @app.route('/api/admin/votes', methods=['GET'])
 @require_admin
 def get_votes_route():
