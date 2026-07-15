@@ -22,6 +22,31 @@ CREATE TABLE IF NOT EXISTS upcoming_parties (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- Hebrew/English bilingual names (docs/superpowers/specs/2026-07-14-hebrew-english-i18n-design.md).
+-- Purely structural here — no data touched. All backfill lives in seed.sql, ordered after its
+-- existing INSERTs, because on a fresh/restored-empty database there are zero rows at this point
+-- for a schema.sql-level backfill to touch.
+ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS name_en TEXT;
+ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS name_he TEXT;
+ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS name_en TEXT;
+ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS name_he TEXT;
+ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS name_en TEXT;
+ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS name_he TEXT;
+ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS name_en TEXT;
+ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS name_he TEXT;
+
+-- Partial unique indexes: enforce uniqueness only among rows that already have a value, so this
+-- can't fail at deploy time on account of a not-yet-backfilled row (e.g. a party added through the
+-- admin UI after seed.sql was last updated).
+CREATE UNIQUE INDEX IF NOT EXISTS previous_parties_name_en_uidx ON previous_parties (name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS previous_parties_name_he_uidx ON previous_parties (name_he) WHERE name_he IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS upcoming_parties_name_en_uidx ON upcoming_parties (name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS upcoming_parties_name_he_uidx ON upcoming_parties (name_he) WHERE name_he IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_en_uidx ON leagues (name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_he_uidx ON leagues (name_he) WHERE name_he IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_en_uidx ON clubs (league_id, name_en) WHERE name_en IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_he_uidx ON clubs (league_id, name_he) WHERE name_he IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS votes (
     id SERIAL PRIMARY KEY,
     league_id INTEGER NOT NULL REFERENCES leagues(id),

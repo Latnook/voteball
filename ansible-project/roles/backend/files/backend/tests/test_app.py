@@ -9,7 +9,8 @@ def test_options_endpoint(client):
     assert resp.status_code == 200
     body = resp.get_json()
     assert 'leagues' in body
-    assert any(l['name'] == 'EPL' for l in body['leagues'])
+    assert any(l['name_en'] == 'EPL' for l in body['leagues'])
+    assert any(l['name_he'] == 'הפרמייר ליג' for l in body['leagues'])
 
 
 def test_vote_endpoint_sets_cookie_and_rejects_duplicate(client, conn):
@@ -117,11 +118,11 @@ def test_results_by_club_endpoint(client, conn):
 def test_upcoming_party_admin_crud(client, admin_headers):
     headers = admin_headers
 
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Test Party'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Test Party', 'name_he': 'מפלגת בדיקה'}, headers=headers)
     assert resp.status_code == 201
     party_id = resp.get_json()['id']
 
-    resp = client.patch(f'/api/admin/upcoming-parties/{party_id}', json={'name': 'Renamed'}, headers=headers)
+    resp = client.patch(f'/api/admin/upcoming-parties/{party_id}', json={'name_en': 'Renamed', 'name_he': 'שם חדש'}, headers=headers)
     assert resp.status_code == 200
 
     resp = client.delete(f'/api/admin/upcoming-parties/{party_id}', headers=headers)
@@ -188,11 +189,11 @@ def test_admin_votes_delete_requires_authentication_and_handles_not_found(client
 def test_previous_party_admin_crud(client, admin_headers):
     headers = admin_headers
 
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Test Party'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Test Party', 'name_he': 'מפלגת בדיקה'}, headers=headers)
     assert resp.status_code == 201
     party_id = resp.get_json()['id']
 
-    resp = client.patch(f'/api/admin/previous-parties/{party_id}', json={'name': 'Renamed'}, headers=headers)
+    resp = client.patch(f'/api/admin/previous-parties/{party_id}', json={'name_en': 'Renamed', 'name_he': 'שם חדש'}, headers=headers)
     assert resp.status_code == 200
 
     resp = client.delete(f'/api/admin/previous-parties/{party_id}', headers=headers)
@@ -203,10 +204,10 @@ def test_previous_party_admin_crud(client, admin_headers):
 
 
 def test_previous_party_admin_routes_require_authentication(client):
-    resp = client.post('/api/admin/previous-parties', json={'name': 'X'})
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'X', 'name_he': 'א'})
     assert resp.status_code == 401
 
-    resp = client.patch('/api/admin/previous-parties/1', json={'name': 'X'})
+    resp = client.patch('/api/admin/previous-parties/1', json={'name_en': 'X', 'name_he': 'א'})
     assert resp.status_code == 401
 
     resp = client.delete('/api/admin/previous-parties/1')
@@ -215,47 +216,91 @@ def test_previous_party_admin_routes_require_authentication(client):
 
 def test_create_upcoming_party_duplicate_name_returns_409(client, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Dup Party'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Dup Party', 'name_he': 'Dup Party'}, headers=headers)
     assert resp.status_code == 201
 
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Dup Party'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Dup Party', 'name_he': 'Dup Party'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
+
+
+def test_create_upcoming_party_duplicate_hebrew_name_returns_409(client, admin_headers):
+    headers = admin_headers
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'First EN', 'name_he': 'שם משותף'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Second EN', 'name_he': 'שם משותף'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
+
+
+def test_create_upcoming_party_duplicate_english_name_returns_409(client, admin_headers):
+    # name_en collides while name_he differs, so only name_en_uidx fires (not the legacy `name`
+    # constraint) - this is the only way to reach the English-specific message.
+    headers = admin_headers
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית ראשונה'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית שנייה'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this English name already exists'}
 
 
 def test_rename_upcoming_party_duplicate_name_returns_409(client, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Party One'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
     party_two_target = resp.get_json()['id']
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Party Two'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Party Two', 'name_he': 'Party Two'}, headers=headers)
     party_two_id = resp.get_json()['id']
 
-    resp = client.patch(f'/api/admin/upcoming-parties/{party_two_id}', json={'name': 'Party One'}, headers=headers)
+    resp = client.patch(f'/api/admin/upcoming-parties/{party_two_id}', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
     assert party_two_target > 0
 
 
 def test_create_previous_party_duplicate_name_returns_409(client, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Dup Party'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Dup Party', 'name_he': 'Dup Party'}, headers=headers)
     assert resp.status_code == 201
 
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Dup Party'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Dup Party', 'name_he': 'Dup Party'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
+
+
+def test_create_previous_party_duplicate_hebrew_name_returns_409(client, admin_headers):
+    headers = admin_headers
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'First EN', 'name_he': 'שם משותף'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Second EN', 'name_he': 'שם משותף'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
+
+
+def test_create_previous_party_duplicate_english_name_returns_409(client, admin_headers):
+    # name_en collides while name_he differs, so only name_en_uidx fires (not the legacy `name`
+    # constraint) - this is the only way to reach the English-specific message.
+    headers = admin_headers
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית ראשונה'}, headers=headers)
+    assert resp.status_code == 201
+
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Shared EN', 'name_he': 'עברית שנייה'}, headers=headers)
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this English name already exists'}
 
 
 def test_rename_previous_party_duplicate_name_returns_409(client, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Party One'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
     party_one_id = resp.get_json()['id']
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Party Two'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Party Two', 'name_he': 'Party Two'}, headers=headers)
     party_two_id = resp.get_json()['id']
 
-    resp = client.patch(f'/api/admin/previous-parties/{party_two_id}', json={'name': 'Party One'}, headers=headers)
+    resp = client.patch(f'/api/admin/previous-parties/{party_two_id}', json={'name_en': 'Party One', 'name_he': 'Party One'}, headers=headers)
     assert resp.status_code == 409
-    assert resp.get_json() == {'error': 'a party with this name already exists'}
+    assert resp.get_json() == {'error': 'a party with this Hebrew name already exists'}
     assert party_one_id > 0
 
 
@@ -267,7 +312,7 @@ def test_delete_upcoming_party_blocked_when_referenced_by_votes(client, conn, ad
     conn.commit()
     cur.close()
 
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Referenced Party'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Referenced Party', 'name_he': 'Referenced Party'}, headers=headers)
     party_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
@@ -290,7 +335,7 @@ def test_delete_previous_party_blocked_when_referenced_by_votes(client, conn, ad
     conn.commit()
     cur.close()
 
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Referenced Previous Party'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Referenced Previous Party', 'name_he': 'Referenced Previous Party'}, headers=headers)
     party_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
@@ -313,9 +358,9 @@ def test_previous_party_reassign_moves_votes_and_updates_count(client, conn, adm
     conn.commit()
     cur.close()
 
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Source Party'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Source Party', 'name_he': 'Source Party'}, headers=headers)
     source_id = resp.get_json()['id']
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Target Party'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Target Party', 'name_he': 'Target Party'}, headers=headers)
     target_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
@@ -343,7 +388,7 @@ def test_previous_party_reassign_moves_votes_and_updates_count(client, conn, adm
 
 def test_previous_party_reassign_rejects_equal_source_and_target(client, conn, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Solo Party'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Solo Party', 'name_he': 'Solo Party'}, headers=headers)
     party_id = resp.get_json()['id']
 
     resp = client.post(f'/api/admin/previous-parties/{party_id}/reassign', json={'target_id': party_id}, headers=headers)
@@ -352,7 +397,7 @@ def test_previous_party_reassign_rejects_equal_source_and_target(client, conn, a
 
 def test_previous_party_reassign_rejects_nonexistent_target(client, conn, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/previous-parties', json={'name': 'Solo Party 2'}, headers=headers)
+    resp = client.post('/api/admin/previous-parties', json={'name_en': 'Solo Party 2', 'name_he': 'Solo Party 2'}, headers=headers)
     party_id = resp.get_json()['id']
 
     resp = client.post(f'/api/admin/previous-parties/{party_id}/reassign', json={'target_id': 999999}, headers=headers)
@@ -375,9 +420,9 @@ def test_upcoming_party_reassign_moves_votes_and_updates_count(client, conn, adm
     conn.commit()
     cur.close()
 
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Source'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Up Source', 'name_he': 'Up Source'}, headers=headers)
     source_id = resp.get_json()['id']
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Target'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Up Target', 'name_he': 'Up Target'}, headers=headers)
     target_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
@@ -401,7 +446,7 @@ def test_upcoming_party_reassign_moves_votes_and_updates_count(client, conn, adm
 
 def test_upcoming_party_reassign_rejects_equal_source_and_target(client, conn, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Solo'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Up Solo', 'name_he': 'Up Solo'}, headers=headers)
     party_id = resp.get_json()['id']
 
     resp = client.post(f'/api/admin/upcoming-parties/{party_id}/reassign', json={'target_id': party_id}, headers=headers)
@@ -410,7 +455,7 @@ def test_upcoming_party_reassign_rejects_equal_source_and_target(client, conn, a
 
 def test_upcoming_party_reassign_rejects_nonexistent_target(client, conn, admin_headers):
     headers = admin_headers
-    resp = client.post('/api/admin/upcoming-parties', json={'name': 'Up Solo 2'}, headers=headers)
+    resp = client.post('/api/admin/upcoming-parties', json={'name_en': 'Up Solo 2', 'name_he': 'Up Solo 2'}, headers=headers)
     party_id = resp.get_json()['id']
 
     resp = client.post(f'/api/admin/upcoming-parties/{party_id}/reassign', json={'target_id': 999999}, headers=headers)

@@ -2,35 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="i18n.js"></script>
   <title>Voteball</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="lang-toggle" class="lang-toggle">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="he" aria-pressed="false">עב</button>
+  </div>
+
   <h1>Voteball</h1>
-  <p>Football fandom vs. how you vote — anonymous, one vote per browser.</p>
+  <p data-i18n="voteIntro">Football fandom vs. how you vote — anonymous, one vote per browser.</p>
 
   <form id="vote-form">
     <fieldset>
-      <legend>1. League</legend>
-      <label>League: <select id="league-select" required></select></label>
-      <label>Club (optional, or leave blank if you just follow the league):
-        <select id="club-select"><option value="">— just the league —</option></select>
+      <legend data-i18n="voteLegendLeague">1. League</legend>
+      <label><span data-i18n="voteLabelLeague">League:</span> <select id="league-select" required></select></label>
+      <label><span data-i18n="voteLabelClub">Club (optional, or leave blank if you just follow the league):</span>
+        <select id="club-select"><option value="" data-i18n="voteClubPlaceholderOption">— just the league —</option></select>
       </label>
     </fieldset>
 
     <fieldset>
-      <legend>2. Current Knesset — who did you vote for?</legend>
+      <legend data-i18n="voteLegendPrevious">2. Current Knesset — who did you vote for?</legend>
       <div id="previous-party-options"></div>
-      <label><input type="radio" name="previous" value="did_not_vote" required> Didn't vote / not eligible</label>
+      <label><input type="radio" name="previous" value="did_not_vote" required> <span data-i18n="voteDidNotVote">Didn't vote / not eligible</span></label>
     </fieldset>
 
     <fieldset>
-      <legend>3. Upcoming election — who are you considering? (choose up to 3)</legend>
+      <legend data-i18n="voteLegendUpcoming">3. Upcoming election — who are you considering? (choose up to 3)</legend>
       <div id="upcoming-party-options"></div>
-      <label><input type="checkbox" id="undecided-checkbox"> Undecided / prefer not to say</label>
+      <label><input type="checkbox" id="undecided-checkbox"> <span data-i18n="voteUndecided">Undecided / prefer not to say</span></label>
     </fieldset>
 
-    <button type="submit">Submit vote</button>
+    <button type="submit" data-i18n="voteSubmit">Submit vote</button>
     <p class="error" id="error-message"></p>
   </form>
 

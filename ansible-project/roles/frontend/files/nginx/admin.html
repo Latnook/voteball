@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Voteball — Admin</title>
+  <script src="i18n.js"></script>
+  <title data-i18n="adminTitle">Voteball — Admin</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
@@ -17,50 +18,59 @@
     table.votes-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
     table.votes-table th, table.votes-table td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; }
     .row-error { color: #c00; font-size: 0.85rem; width: 100%; }
+    [dir="rtl"] table.votes-table th, [dir="rtl"] table.votes-table td { text-align: right; }
+    [dir="rtl"] .party-row .party-name { text-align: right; }
   </style>
 </head>
 <body>
-  <h1>Voteball — Admin</h1>
+  <div id="lang-toggle" class="lang-toggle">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="he" aria-pressed="false">עב</button>
+  </div>
+
+  <h1 data-i18n="adminHeading">Voteball — Admin</h1>
 
   <div id="secret-gate">
     <form id="secret-form">
-      <label>Username: <input type="text" id="username-input" required autocomplete="username"></label>
-      <label>Password: <input type="password" id="password-input" required autocomplete="current-password"></label>
-      <button type="submit">Log in</button>
+      <label><span data-i18n="adminLabelUsername">Username:</span> <input type="text" id="username-input" required autocomplete="username"></label>
+      <label><span data-i18n="adminLabelPassword">Password:</span> <input type="password" id="password-input" required autocomplete="current-password"></label>
+      <button type="submit" data-i18n="adminLogIn">Log in</button>
       <p class="error" id="secret-error"></p>
     </form>
   </div>
 
   <div id="admin-content" style="display:none">
     <div class="tab-bar">
-      <button type="button" class="tab-button active" data-tab="previous">Previous Parties</button>
-      <button type="button" class="tab-button" data-tab="upcoming">Upcoming Parties</button>
-      <button type="button" class="tab-button" data-tab="votes">Votes</button>
-      <button type="button" id="logout-button">Log out</button>
+      <button type="button" class="tab-button active" data-tab="previous" data-i18n="adminTabPrevious">Previous Parties</button>
+      <button type="button" class="tab-button" data-tab="upcoming" data-i18n="adminTabUpcoming">Upcoming Parties</button>
+      <button type="button" class="tab-button" data-tab="votes" data-i18n="adminTabVotes">Votes</button>
+      <button type="button" id="logout-button" data-i18n="adminLogOut">Log out</button>
     </div>
 
     <section id="tab-previous" class="tab-section active">
-      <h2>Previous Parties</h2>
+      <h2 data-i18n="adminHeadingPrevious">Previous Parties</h2>
       <div id="previous-party-list"></div>
       <form id="previous-party-add-form">
-        <input type="text" id="previous-party-add-input" placeholder="New party name" required>
-        <button type="submit">Add</button>
+        <input type="text" id="previous-party-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
+        <input type="text" id="previous-party-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
+        <button type="submit" data-i18n="adminAdd">Add</button>
       </form>
       <p class="error" id="previous-party-form-error"></p>
     </section>
 
     <section id="tab-upcoming" class="tab-section">
-      <h2>Upcoming Parties</h2>
+      <h2 data-i18n="adminHeadingUpcoming">Upcoming Parties</h2>
       <div id="upcoming-party-list"></div>
       <form id="upcoming-party-add-form">
-        <input type="text" id="upcoming-party-add-input" placeholder="New party name" required>
-        <button type="submit">Add</button>
+        <input type="text" id="upcoming-party-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
+        <input type="text" id="upcoming-party-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
+        <button type="submit" data-i18n="adminAdd">Add</button>
       </form>
       <p class="error" id="upcoming-party-form-error"></p>
     </section>
 
     <section id="tab-votes" class="tab-section">
-      <h2>Votes</h2>
+      <h2 data-i18n="adminHeadingVotes">Votes</h2>
       <div id="votes-table-container"></div>
     </section>
   </div>

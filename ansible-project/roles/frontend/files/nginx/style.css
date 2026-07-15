@@ -7,3 +7,6 @@ select, button { font-size: 1rem; padding: 0.4rem; }
 button { cursor: pointer; background: #1a73e8; color: white; border: none; border-radius: 6px; padding: 0.6rem 1.2rem; }
 button:disabled { background: #999; }
 .error { color: #c00; }
+.lang-toggle { display: flex; gap: 0.4rem; justify-content: flex-end; margin-bottom: 0.5rem; }
+.lang-toggle button { background: #eee; color: #333; padding: 0.3rem 0.7rem; font-size: 0.85rem; }
+.lang-toggle button[aria-pressed="true"] { background: #1a73e8; color: white; }

@@ -21,3 +21,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
+
+# subagent-driven-development scratch (progress ledger, review packages)
+.superpowers/

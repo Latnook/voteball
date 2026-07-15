@@ -2,23 +2,32 @@ import psycopg2
 
 
 class DuplicatePartyNameError(Exception):
-    pass
+    def __init__(self, language):
+        self.language = language  # 'en' or 'he'
+        super().__init__(f'a party with this {language} name already exists')
+
+
+def _duplicate_party_language(err):
+    constraint = err.diag.constraint_name or ''
+    if constraint.endswith('_name_en_uidx'):
+        return 'en'
+    return 'he'
 
 
 def get_options(conn):
     cur = conn.cursor()
 
-    cur.execute('SELECT id, name FROM leagues ORDER BY name')
-    leagues = [{'id': r[0], 'name': r[1]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he FROM leagues ORDER BY name_en')
+    leagues = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, league_id, name FROM clubs ORDER BY name')
-    clubs = [{'id': r[0], 'league_id': r[1], 'name': r[2]} for r in cur.fetchall()]
+    cur.execute('SELECT id, league_id, name_en, name_he FROM clubs ORDER BY name_en')
+    clubs = [{'id': r[0], 'league_id': r[1], 'name_en': r[2], 'name_he': r[3]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, name FROM previous_parties ORDER BY name')
-    previous_parties = [{'id': r[0], 'name': r[1]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he FROM previous_parties ORDER BY name_en')
+    previous_parties = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, name FROM upcoming_parties ORDER BY name')
-    upcoming_parties = [{'id': r[0], 'name': r[1]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he FROM upcoming_parties ORDER BY name_en')
+    upcoming_parties = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
 
     cur.close()
     return {
@@ -113,16 +122,19 @@ def get_results_by_party(conn, party_type, party_id):
     return {'breakdown': breakdown, 'crosstab': crosstab}
 
 
-def create_upcoming_party(conn, name):
+def create_upcoming_party(conn, name_en, name_he):
     cur = conn.cursor()
     try:
-        cur.execute('INSERT INTO upcoming_parties (name) VALUES (%s) RETURNING id', (name,))
+        cur.execute(
+            'INSERT INTO upcoming_parties (name, name_en, name_he) VALUES (%s, %s, %s) RETURNING id',
+            (name_he, name_en, name_he)
+        )
         party_id = cur.fetchone()[0]
         conn.commit()
         return party_id
-    except psycopg2.errors.UniqueViolation:
+    except psycopg2.errors.UniqueViolation as err:
         conn.rollback()
-        raise DuplicatePartyNameError(f'a party named {name!r} already exists')
+        raise DuplicatePartyNameError(_duplicate_party_language(err))
     except Exception:
         conn.rollback()
         raise
@@ -130,16 +142,19 @@ def create_upcoming_party(conn, name):
         cur.close()
 
 
-def rename_upcoming_party(conn, party_id, new_name):
+def rename_upcoming_party(conn, party_id, name_en, name_he):
     cur = conn.cursor()
     try:
-        cur.execute('UPDATE upcoming_parties SET name = %s, updated_at = NOW() WHERE id = %s', (new_name, party_id))
+        cur.execute(
+            'UPDATE upcoming_parties SET name = %s, name_en = %s, name_he = %s, updated_at = NOW() WHERE id = %s',
+            (name_he, name_en, name_he, party_id)
+        )
         updated = cur.rowcount > 0
         conn.commit()
         return updated
-    except psycopg2.errors.UniqueViolation:
+    except psycopg2.errors.UniqueViolation as err:
         conn.rollback()
-        raise DuplicatePartyNameError(f'a party named {new_name!r} already exists')
+        raise DuplicatePartyNameError(_duplicate_party_language(err))
     except Exception:
         conn.rollback()
         raise
@@ -161,16 +176,19 @@ def delete_upcoming_party(conn, party_id):
         cur.close()
 
 
-def create_previous_party(conn, name):
+def create_previous_party(conn, name_en, name_he):
     cur = conn.cursor()
     try:
-        cur.execute('INSERT INTO previous_parties (name) VALUES (%s) RETURNING id', (name,))
+        cur.execute(
+            'INSERT INTO previous_parties (name, name_en, name_he) VALUES (%s, %s, %s) RETURNING id',
+            (name_he, name_en, name_he)
+        )
         party_id = cur.fetchone()[0]
         conn.commit()
         return party_id
-    except psycopg2.errors.UniqueViolation:
+    except psycopg2.errors.UniqueViolation as err:
         conn.rollback()
-        raise DuplicatePartyNameError(f'a party named {name!r} already exists')
+        raise DuplicatePartyNameError(_duplicate_party_language(err))
     except Exception:
         conn.rollback()
         raise
@@ -178,16 +196,19 @@ def create_previous_party(conn, name):
         cur.close()
 
 
-def rename_previous_party(conn, party_id, new_name):
+def rename_previous_party(conn, party_id, name_en, name_he):
     cur = conn.cursor()
     try:
-        cur.execute('UPDATE previous_parties SET name = %s, updated_at = NOW() WHERE id = %s', (new_name, party_id))
+        cur.execute(
+            'UPDATE previous_parties SET name = %s, name_en = %s, name_he = %s, updated_at = NOW() WHERE id = %s',
+            (name_he, name_en, name_he, party_id)
+        )
         updated = cur.rowcount > 0
         conn.commit()
         return updated
-    except psycopg2.errors.UniqueViolation:
+    except psycopg2.errors.UniqueViolation as err:
         conn.rollback()
-        raise DuplicatePartyNameError(f'a party named {new_name!r} already exists')
+        raise DuplicatePartyNameError(_duplicate_party_language(err))
     except Exception:
         conn.rollback()
         raise

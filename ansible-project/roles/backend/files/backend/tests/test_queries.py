@@ -4,29 +4,45 @@ import queries
 
 def test_get_options_returns_seeded_leagues(conn):
     options = queries.get_options(conn)
-    league_names = {l['name'] for l in options['leagues']}
-    assert 'EPL' in league_names
-    assert 'Israeli Premier League' in league_names
+    league_names_en = {l['name_en'] for l in options['leagues']}
+    assert 'EPL' in league_names_en
+    assert 'Israeli Premier League' in league_names_en
 
-    club_names = {c['name'] for c in options['clubs']}
-    assert 'Liverpool' in club_names
+    epl = next(l for l in options['leagues'] if l['name_en'] == 'EPL')
+    assert epl['name_he'] == 'הפרמייר ליג'
 
-    epl = next(l for l in options['leagues'] if l['name'] == 'EPL')
+    club_names_en = {c['name_en'] for c in options['clubs']}
+    assert 'Liverpool' in club_names_en
+    liverpool = next(c for c in options['clubs'] if c['name_en'] == 'Liverpool')
+    assert liverpool['name_he'] == 'ליברפול'
+
     epl_clubs = [c for c in options['clubs'] if c['league_id'] == epl['id']]
     assert len(epl_clubs) == 20
 
-    previous_names = {p['name'] for p in options['previous_parties']}
-    assert previous_names == {
+    previous_names_en = {p['name_en'] for p in options['previous_parties']}
+    assert previous_names_en == {
+        'Likud', 'Yesh Atid', 'Religious Zionist Party', 'National Unity', 'Yisrael Beiteinu',
+        'Shas', 'United Torah Judaism', "Ra'am", "Hadash-Ta'al", 'Labor', 'Meretz', 'Balad',
+        'Jewish Home', 'Other',
+    }
+    previous_names_he = {p['name_he'] for p in options['previous_parties']}
+    assert previous_names_he == {
         'הליכוד', 'יש עתיד', 'הציונות הדתית', 'המחנה הממלכתי', 'ישראל ביתנו',
         'ש"ס', 'יהדות התורה', 'רע"ם', 'חד"ש-תע"ל', 'העבודה', 'מרצ', 'בל"ד',
         'הבית היהודי', 'אחר',
     }
 
-    upcoming_names = {p['name'] for p in options['upcoming_parties']}
-    assert upcoming_names == {
+    upcoming_names_en = {p['name_en'] for p in options['upcoming_parties']}
+    assert upcoming_names_en == {
+        'Likud', 'Yesh', 'Yachad', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
+        'Religious Zionist Party', 'Otzma Yehudit', "Hadash-Ta'al", 'Balad',
+        'The Economic Party', 'El HaDegel', 'The Reservists', 'The Joint List',
+    }
+    upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
+    assert upcoming_names_he == {
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
         'הציונות הדתית', 'עוצמה יהודית', 'חד"ש-תע"ל', 'בל"ד',
-        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים',
+        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים', 'הרשימה המשותפת',
     }
 
 
@@ -223,13 +239,13 @@ def test_get_results_by_party_crosstab_empty_when_no_data(conn):
 def test_create_rename_delete_upcoming_party(conn):
     import queries
 
-    party_id = queries.create_upcoming_party(conn, 'New Party')
+    party_id = queries.create_upcoming_party(conn, 'New Party', 'מפלגה חדשה')
     assert party_id > 0
 
-    assert queries.rename_upcoming_party(conn, party_id, 'Renamed Party') is True
+    assert queries.rename_upcoming_party(conn, party_id, 'Renamed Party', 'מפלגה משודרגת') is True
     cur = conn.cursor()
-    cur.execute('SELECT name FROM upcoming_parties WHERE id = %s', (party_id,))
-    assert cur.fetchone()[0] == 'Renamed Party'
+    cur.execute('SELECT name_en, name_he FROM upcoming_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone() == ('Renamed Party', 'מפלגה משודרגת')
     cur.close()
 
     assert queries.delete_upcoming_party(conn, party_id) is True
@@ -238,7 +254,7 @@ def test_create_rename_delete_upcoming_party(conn):
     assert cur.fetchone()[0] == 0
     cur.close()
 
-    assert queries.rename_upcoming_party(conn, 999999, 'Nope') is False
+    assert queries.rename_upcoming_party(conn, 999999, 'Nope', 'לא') is False
     assert queries.delete_upcoming_party(conn, 999999) is False
 
 
@@ -318,13 +334,13 @@ def test_delete_vote_returns_false_for_nonexistent_id(conn):
 def test_create_rename_delete_previous_party(conn):
     import queries
 
-    party_id = queries.create_previous_party(conn, 'New Party')
+    party_id = queries.create_previous_party(conn, 'New Party', 'מפלגה חדשה')
     assert party_id > 0
 
-    assert queries.rename_previous_party(conn, party_id, 'Renamed Party') is True
+    assert queries.rename_previous_party(conn, party_id, 'Renamed Party', 'מפלגה משודרגת') is True
     cur = conn.cursor()
-    cur.execute('SELECT name FROM previous_parties WHERE id = %s', (party_id,))
-    assert cur.fetchone()[0] == 'Renamed Party'
+    cur.execute('SELECT name_en, name_he FROM previous_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone() == ('Renamed Party', 'מפלגה משודרגת')
     cur.close()
 
     assert queries.delete_previous_party(conn, party_id) is True
@@ -333,65 +349,92 @@ def test_create_rename_delete_previous_party(conn):
     assert cur.fetchone()[0] == 0
     cur.close()
 
-    assert queries.rename_previous_party(conn, 999999, 'Nope') is False
+    assert queries.rename_previous_party(conn, 999999, 'Nope', 'לא') is False
     assert queries.delete_previous_party(conn, 999999) is False
 
 
-def test_create_previous_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
+def test_create_previous_party_duplicate_english_name_rolls_back_and_conn_still_usable(conn):
     import queries
 
-    queries.create_previous_party(conn, 'Dup Previous Party')
+    queries.create_previous_party(conn, 'Dup Previous Party', 'מפלגה כפולה')
 
-    with pytest.raises(queries.DuplicatePartyNameError):
-        queries.create_previous_party(conn, 'Dup Previous Party')
+    with pytest.raises(queries.DuplicatePartyNameError) as excinfo:
+        queries.create_previous_party(conn, 'Dup Previous Party', 'מפלגה אחרת')
+    assert excinfo.value.language == 'en'
 
     # connection must be usable afterward - proves rollback happened
-    party_id = queries.create_previous_party(conn, 'Another Previous Party')
+    party_id = queries.create_previous_party(conn, 'Another Previous Party', 'מפלגה נוספת')
+    assert party_id > 0
+
+
+def test_create_previous_party_duplicate_hebrew_name_rolls_back_and_conn_still_usable(conn):
+    import queries
+
+    queries.create_previous_party(conn, 'First Party', 'שם משותף')
+
+    with pytest.raises(queries.DuplicatePartyNameError) as excinfo:
+        queries.create_previous_party(conn, 'Second Party', 'שם משותף')
+    assert excinfo.value.language == 'he'
+
+    # connection must be usable afterward - proves rollback happened
+    party_id = queries.create_previous_party(conn, 'Third Party', 'שם ייחודי')
     assert party_id > 0
 
 
 def test_rename_previous_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
     import queries
 
-    queries.create_previous_party(conn, 'Party X')
-    party_id = queries.create_previous_party(conn, 'Party Y')
+    queries.create_previous_party(conn, 'Party X', 'מפלגה X')
+    party_id = queries.create_previous_party(conn, 'Party Y', 'מפלגה Y')
 
-    with pytest.raises(queries.DuplicatePartyNameError):
-        queries.rename_previous_party(conn, party_id, 'Party X')
+    with pytest.raises(queries.DuplicatePartyNameError) as excinfo:
+        queries.rename_previous_party(conn, party_id, 'Party X', 'שם חדש')
+    assert excinfo.value.language == 'en'
 
     # connection must be usable afterward - proves rollback happened
-    assert queries.rename_previous_party(conn, party_id, 'Party Z') is True
+    assert queries.rename_previous_party(conn, party_id, 'Party Z', 'שם חדש') is True
 
 
-def test_create_upcoming_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
+def test_create_upcoming_party_duplicate_english_name_rolls_back_and_conn_still_usable(conn):
     import queries
 
-    queries.create_upcoming_party(conn, 'Dup Upcoming Party')
+    queries.create_upcoming_party(conn, 'Dup Upcoming Party', 'מפלגה כפולה')
 
-    with pytest.raises(queries.DuplicatePartyNameError):
-        queries.create_upcoming_party(conn, 'Dup Upcoming Party')
+    with pytest.raises(queries.DuplicatePartyNameError) as excinfo:
+        queries.create_upcoming_party(conn, 'Dup Upcoming Party', 'מפלגה אחרת')
+    assert excinfo.value.language == 'en'
 
-    # connection must be usable afterward - proves rollback happened
-    party_id = queries.create_upcoming_party(conn, 'Another Upcoming Party')
+    party_id = queries.create_upcoming_party(conn, 'Another Upcoming Party', 'מפלגה נוספת')
     assert party_id > 0
+
+
+def test_create_upcoming_party_duplicate_hebrew_name_rolls_back_and_conn_still_usable(conn):
+    import queries
+
+    queries.create_upcoming_party(conn, 'First Up Party', 'שם משותף עתידי')
+
+    with pytest.raises(queries.DuplicatePartyNameError) as excinfo:
+        queries.create_upcoming_party(conn, 'Second Up Party', 'שם משותף עתידי')
+    assert excinfo.value.language == 'he'
 
 
 def test_rename_upcoming_party_duplicate_name_rolls_back_and_conn_still_usable(conn):
     import queries
 
-    queries.create_upcoming_party(conn, 'Party X')
-    party_id = queries.create_upcoming_party(conn, 'Party Y')
+    queries.create_upcoming_party(conn, 'Party X', 'מפלגה X')
+    party_id = queries.create_upcoming_party(conn, 'Party Y', 'מפלגה Y')
 
-    with pytest.raises(queries.DuplicatePartyNameError):
-        queries.rename_upcoming_party(conn, party_id, 'Party X')
+    with pytest.raises(queries.DuplicatePartyNameError) as excinfo:
+        queries.rename_upcoming_party(conn, party_id, 'Party X', 'שם חדש')
+    assert excinfo.value.language == 'en'
 
     # connection must be usable afterward - proves rollback happened
-    assert queries.rename_upcoming_party(conn, party_id, 'Party Z') is True
+    assert queries.rename_upcoming_party(conn, party_id, 'Party Z', 'שם חדש') is True
 
 
 def test_count_votes_for_previous_party(conn):
     league_id, club_id = _epl_and_liverpool(conn)
-    party_id = queries.create_previous_party(conn, 'Counted Party')
+    party_id = queries.create_previous_party(conn, 'Counted Party', 'Counted Party')
 
     assert queries.count_votes_for_previous_party(conn, party_id) == 0
 
@@ -406,7 +449,7 @@ def test_count_votes_for_previous_party(conn):
 
 def test_count_votes_for_upcoming_party(conn):
     league_id, club_id = _epl_and_liverpool(conn)
-    party_id = queries.create_upcoming_party(conn, 'Counted Upcoming Party')
+    party_id = queries.create_upcoming_party(conn, 'Counted Upcoming Party', 'Counted Upcoming Party')
 
     assert queries.count_votes_for_upcoming_party(conn, party_id) == 0
 
@@ -421,9 +464,9 @@ def test_count_votes_for_upcoming_party(conn):
 
 def test_reassign_previous_party_votes_updates_matching_rows_only(conn):
     league_id, club_id = _epl_and_liverpool(conn)
-    source_id = queries.create_previous_party(conn, 'Reassign Source')
-    target_id = queries.create_previous_party(conn, 'Reassign Target')
-    other_id = queries.create_previous_party(conn, 'Reassign Other')
+    source_id = queries.create_previous_party(conn, 'Reassign Source', 'Reassign Source')
+    target_id = queries.create_previous_party(conn, 'Reassign Target', 'Reassign Target')
+    other_id = queries.create_previous_party(conn, 'Reassign Other', 'Reassign Other')
 
     v1 = queries.insert_vote(
         conn, league_id=league_id, club_id=club_id,
@@ -447,16 +490,16 @@ def test_reassign_previous_party_votes_updates_matching_rows_only(conn):
 
 
 def test_previous_party_exists(conn):
-    party_id = queries.create_previous_party(conn, 'Exists Check')
+    party_id = queries.create_previous_party(conn, 'Exists Check', 'Exists Check')
     assert queries.previous_party_exists(conn, party_id) is True
     assert queries.previous_party_exists(conn, 999999) is False
 
 
 def test_reassign_upcoming_party_votes_handles_collision_and_simple_case(conn):
     league_id, club_id = _epl_and_liverpool(conn)
-    source_id = queries.create_upcoming_party(conn, 'Reassign Up Source')
-    target_id = queries.create_upcoming_party(conn, 'Reassign Up Target')
-    other_id = queries.create_upcoming_party(conn, 'Reassign Up Other')
+    source_id = queries.create_upcoming_party(conn, 'Reassign Up Source', 'Reassign Up Source')
+    target_id = queries.create_upcoming_party(conn, 'Reassign Up Target', 'Reassign Up Target')
+    other_id = queries.create_upcoming_party(conn, 'Reassign Up Other', 'Reassign Up Other')
 
     v_simple = queries.insert_vote(
         conn, league_id=league_id, club_id=club_id,
@@ -480,6 +523,6 @@ def test_reassign_upcoming_party_votes_handles_collision_and_simple_case(conn):
 
 
 def test_upcoming_party_exists(conn):
-    party_id = queries.create_upcoming_party(conn, 'Exists Check Upcoming')
+    party_id = queries.create_upcoming_party(conn, 'Exists Check Upcoming', 'Exists Check Upcoming')
     assert queries.upcoming_party_exists(conn, party_id) is True
     assert queries.upcoming_party_exists(conn, 999999) is False

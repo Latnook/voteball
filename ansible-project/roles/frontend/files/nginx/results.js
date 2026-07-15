@@ -1,4 +1,6 @@
 let optionsData = null;
+let lastClubLeagueData = null;
+let lastPartyData = null;
 
 function renderBars(containerId, rows, nameLookup) {
   const container = document.getElementById(containerId);
@@ -34,31 +36,37 @@ function renderBars(containerId, rows, nameLookup) {
 }
 
 function previousPartyName(id) {
-  if (id === null) return 'Did not vote';
+  if (id === null) return t('resultsDidNotVote');
   const p = optionsData.previous_parties.find(p => p.id === id);
-  return p ? p.name : `#${id}`;
+  return p ? localizedName(p) : `#${id}`;
 }
 
 function upcomingPartyName(id) {
-  if (id === null) return 'Undecided';
+  if (id === null) return t('resultsUndecided');
   const p = optionsData.upcoming_parties.find(p => p.id === id);
-  return p ? p.name : `#${id}`;
+  return p ? localizedName(p) : `#${id}`;
 }
 
 function clubOrLeagueName(row) {
   if (row.club_id) {
     const c = optionsData.clubs.find(c => c.id === row.club_id);
-    return c ? c.name : `club #${row.club_id}`;
+    return c ? localizedName(c) : `club #${row.club_id}`;
   }
   const l = optionsData.leagues.find(l => l.id === row.league_id);
-  return l ? `${l.name} (league-wide)` : `league #${row.league_id}`;
+  return l ? `${localizedName(l)}${t('resultsLeagueWideSuffix')}` : `league #${row.league_id}`;
 }
 
 function showResultsError(containerIds) {
   containerIds.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.innerHTML = '<p class="error">Couldn\'t load results — try refreshing.</p>';
+    if (el) el.innerHTML = `<p class="error">${t('resultsErrorLoad')}</p>`;
   });
+}
+
+function renderClubLeagueResults() {
+  if (!lastClubLeagueData) return;
+  renderBars('previous-results', lastClubLeagueData.previous.map(r => ({ count: r.count, key: r.party_id })), r => previousPartyName(r.key));
+  renderBars('upcoming-results', lastClubLeagueData.upcoming.map(r => ({ count: r.count, key: r.party_id })), r => upcomingPartyName(r.key));
 }
 
 async function loadResultsByClubOrLeague() {
@@ -76,8 +84,18 @@ async function loadResultsByClubOrLeague() {
     return;
   }
 
-  renderBars('previous-results', data.previous.map(r => ({ count: r.count, key: r.party_id })), r => previousPartyName(r.key));
-  renderBars('upcoming-results', data.upcoming.map(r => ({ count: r.count, key: r.party_id })), r => upcomingPartyName(r.key));
+  lastClubLeagueData = data;
+  renderClubLeagueResults();
+}
+
+function renderPartyResults() {
+  if (!lastPartyData) return;
+  const { partyType, targetId, otherId, breakdown, crosstab } = lastPartyData;
+  const otherNameLookup = partyType === 'previous' ? upcomingPartyName : previousPartyName;
+  const otherKey = partyType === 'previous' ? 'upcoming_party_id' : 'previous_party_id';
+
+  renderBars(targetId, breakdown.map(r => ({ count: r.count, club_id: r.club_id, league_id: r.league_id })), clubOrLeagueName);
+  renderBars(otherId, crosstab.map(r => ({ count: r.count, key: r[otherKey] })), r => otherNameLookup(r.key));
 }
 
 async function loadResultsByParty() {
@@ -87,8 +105,6 @@ async function loadResultsByParty() {
 
   const targetId = partyType === 'previous' ? 'previous-results' : 'upcoming-results';
   const otherId = partyType === 'previous' ? 'upcoming-results' : 'previous-results';
-  const otherNameLookup = partyType === 'previous' ? upcomingPartyName : previousPartyName;
-  const otherKey = partyType === 'previous' ? 'upcoming_party_id' : 'previous_party_id';
 
   let data;
   try {
@@ -100,21 +116,51 @@ async function loadResultsByParty() {
     return;
   }
 
-  renderBars(targetId, data.breakdown.map(r => ({ count: r.count, club_id: r.club_id, league_id: r.league_id })), clubOrLeagueName);
-  renderBars(otherId, data.crosstab.map(r => ({ count: r.count, key: r[otherKey] })), r => otherNameLookup(r.key));
+  lastPartyData = { partyType, targetId, otherId, breakdown: data.breakdown, crosstab: data.crosstab };
+  renderPartyResults();
+}
+
+function renderLeaguePickerOptions() {
+  const leaguePicker = document.getElementById('league-picker');
+  const previousValue = leaguePicker.value;
+  leaguePicker.innerHTML = '';
+  optionsData.leagues.forEach(l => {
+    const opt = document.createElement('option');
+    opt.value = l.id;
+    opt.textContent = localizedName(l);
+    leaguePicker.appendChild(opt);
+  });
+  if (previousValue) leaguePicker.value = previousValue;
+}
+
+function renderClubPickerOptions() {
+  const leaguePicker = document.getElementById('league-picker');
+  const clubPicker = document.getElementById('club-picker');
+  const previousValue = clubPicker.value;
+  clubPicker.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
+  const leagueId = parseInt(leaguePicker.value, 10);
+  optionsData.clubs.filter(c => c.league_id === leagueId).forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = localizedName(c);
+    clubPicker.appendChild(opt);
+  });
+  if (previousValue) clubPicker.value = previousValue;
 }
 
 function renderPartyPicker() {
   const partyType = document.getElementById('party-type-picker').value;
   const picker = document.getElementById('party-picker');
+  const previousValue = picker.value;
   picker.innerHTML = '';
   const list = partyType === 'previous' ? optionsData.previous_parties : optionsData.upcoming_parties;
   list.forEach(p => {
     const opt = document.createElement('option');
     opt.value = p.id;
-    opt.textContent = p.name;
+    opt.textContent = localizedName(p);
     picker.appendChild(opt);
   });
+  if (previousValue) picker.value = previousValue;
   loadResultsByParty();
 }
 
@@ -128,28 +174,12 @@ async function init() {
     return;
   }
 
+  renderLeaguePickerOptions();
   const leaguePicker = document.getElementById('league-picker');
-  optionsData.leagues.forEach(l => {
-    const opt = document.createElement('option');
-    opt.value = l.id;
-    opt.textContent = l.name;
-    leaguePicker.appendChild(opt);
-  });
-
   const clubPicker = document.getElementById('club-picker');
-  function renderClubs() {
-    clubPicker.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
-    const leagueId = parseInt(leaguePicker.value, 10);
-    optionsData.clubs.filter(c => c.league_id === leagueId).forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.name;
-      clubPicker.appendChild(opt);
-    });
-  }
-  leaguePicker.addEventListener('change', () => { renderClubs(); loadResultsByClubOrLeague(); });
+  renderClubPickerOptions();
+  leaguePicker.addEventListener('change', () => { renderClubPickerOptions(); loadResultsByClubOrLeague(); });
   clubPicker.addEventListener('change', loadResultsByClubOrLeague);
-  renderClubs();
 
   document.querySelectorAll('input[name="mode"]').forEach(radio => {
     radio.addEventListener('change', () => {
@@ -165,5 +195,17 @@ async function init() {
 
   loadResultsByClubOrLeague();
 }
+
+document.addEventListener('voteball:langchange', () => {
+  if (!optionsData) return;
+  renderLeaguePickerOptions();
+  renderClubPickerOptions();
+  const isPartyMode = document.querySelector('input[name="mode"]:checked').value === 'party';
+  if (isPartyMode) {
+    renderPartyPicker();
+  } else {
+    renderClubLeagueResults();
+  }
+});
 
 init();
