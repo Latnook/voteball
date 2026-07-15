@@ -132,6 +132,13 @@ itself, allow a few minutes to propagate) and a fresh TLS cert issuance.
 - Ansible copies an **explicit file list** for the backend/worker build
   contexts, not a whole directory — so a stray local `.venv` from running
   `pytest` won't get shipped to the server.
+- **The frontend has the mirror-image problem**: Ansible ships the *whole*
+  `files/nginx/` directory to the node, but `files/nginx/Dockerfile` itself
+  `COPY`s files by explicit name into the image. A new frontend file (new
+  `.js`/`.css`/`.html`) that isn't added to that `COPY` line gets shipped to
+  the node and then silently dropped at image-build time — no error, just a
+  404 for that file once deployed. Shipped once for real (`i18n.js`, fixed
+  in `d02e255`) before being caught by testing the live site after deploy.
 - **The snapshot/restore mechanism (added 2026-07-12) hasn't been exercised
   through a real destroy→apply cycle yet** — `terraform validate` passes and
   the "no snapshot exists" path is confirmed against real AWS, but the

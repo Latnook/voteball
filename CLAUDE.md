@@ -177,6 +177,14 @@ never creates schema.
 Plain HTML/CSS/vanilla JS, no build step, no automated test suite (matches the S3App precedent) —
 verify by driving the real page in a browser (or during Task 21-style end-to-end deploy verification).
 
+**Adding a new frontend file (JS/CSS/HTML) requires updating `files/nginx/Dockerfile`'s `COPY`
+line too** — Ansible ships the whole `files/nginx/` directory to the node as-is, but the
+`Dockerfile` itself lists every file it bakes into the image by name, not by directory. A file
+that exists on disk but is missing from that `COPY` line 404s at runtime with no build error and
+no obvious symptom beyond "the page is broken" (any script that calls a function the missing file
+was supposed to define throws and silently kills the rest of that script's execution) — this
+exact gap shipped once (i18n.js, fixed in commit `d02e255`) before being caught.
+
 ### Helm chart (`charts/voteball/`)
 
 ```bash
