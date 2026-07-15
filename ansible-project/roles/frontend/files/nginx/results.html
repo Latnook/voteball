@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Voteball — Results</title>
+  <script src="i18n.js"></script>
+  <title data-i18n="resultsTitle">Voteball — Results</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .bar-row { display: flex; align-items: center; margin: 0.3rem 0; }
@@ -11,36 +12,43 @@
     .bar-fill { background: #1a73e8; height: 100%; border-radius: 4px; }
     .bar-count { width: 40px; text-align: right; font-size: 0.85rem; }
     .toggle { margin-bottom: 1rem; }
+    [dir="rtl"] .bar-label { text-align: right; }
+    [dir="rtl"] .bar-count { text-align: left; }
   </style>
 </head>
 <body>
-  <h1>Voteball — Results</h1>
+  <div id="lang-toggle" class="lang-toggle">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="he" aria-pressed="false">עב</button>
+  </div>
+
+  <h1 data-i18n="resultsHeading">Voteball — Results</h1>
   <p id="total-votes"></p>
 
   <div class="toggle">
-    <label><input type="radio" name="mode" value="club-league" checked> Start from a club/league</label>
-    <label><input type="radio" name="mode" value="party"> Start from a party</label>
+    <label><input type="radio" name="mode" value="club-league" checked> <span data-i18n="resultsModeClubLeague">Start from a club/league</span></label>
+    <label><input type="radio" name="mode" value="party"> <span data-i18n="resultsModeParty">Start from a party</span></label>
   </div>
 
   <div id="club-league-mode">
-    <label>League: <select id="league-picker"></select></label>
-    <label>Club (optional): <select id="club-picker"><option value="">— whole league —</option></select></label>
+    <label><span data-i18n="resultsLabelLeague">League:</span> <select id="league-picker"></select></label>
+    <label><span data-i18n="resultsLabelClub">Club (optional):</span> <select id="club-picker"><option value="" data-i18n="resultsClubPlaceholderOption">— whole league —</option></select></label>
   </div>
 
   <div id="party-mode" style="display:none">
-    <label>Party type:
+    <label><span data-i18n="resultsLabelPartyType">Party type:</span>
       <select id="party-type-picker">
-        <option value="previous">Previous (current Knesset)</option>
-        <option value="upcoming">Upcoming election</option>
+        <option value="previous" data-i18n="resultsPartyTypePrevious">Previous (current Knesset)</option>
+        <option value="upcoming" data-i18n="resultsPartyTypeUpcoming">Upcoming election</option>
       </select>
     </label>
-    <label>Party: <select id="party-picker"></select></label>
+    <label><span data-i18n="resultsLabelParty">Party:</span> <select id="party-picker"></select></label>
   </div>
 
-  <h2>Previous Knesset vote breakdown</h2>
+  <h2 data-i18n="resultsHeadingPrevious">Previous Knesset vote breakdown</h2>
   <div id="previous-results"></div>
 
-  <h2>Upcoming election breakdown</h2>
+  <h2 data-i18n="resultsHeadingUpcoming">Upcoming election breakdown</h2>
   <div id="upcoming-results"></div>
 
   <script src="results.js"></script>
