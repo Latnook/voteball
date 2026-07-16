@@ -649,3 +649,45 @@ select, input[type="text"], input[type="url"], input[type="password"] {
 }
 .diversity-spotlight-heading.most-mixed { color: var(--accent); }
 .diversity-spotlight-heading.most-one-sided { color: #FFD23F; }
+
+.lean-strip {
+  position: relative;
+  height: 3.4rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #4a9, var(--surface-raised), #c66);
+  margin-bottom: 0.5rem;
+}
+.lean-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.lean-badge {
+  position: absolute;
+  top: 0.5rem;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.lean-badge[aria-pressed="true"] {
+  border-color: var(--accent);
+  border-width: 2px;
+  color: var(--accent);
+}
+.lean-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 0.3rem 0;
+  border-top: 1px solid var(--line);
+}
+.lean-detail-row:first-child { border-top: none; }

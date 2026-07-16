@@ -2,6 +2,7 @@ let analyticsOptionsData = null;
 let clubsBreakdown = null;
 
 const DIVERSITY_MIN_VOTES = 10;
+const LEAN_MIN_VOTES = 10;
 let diversityIncludeWorldCup = false;
 let diversityView = 'spotlight';
 
@@ -191,6 +192,168 @@ function renderDiversityTab() {
   tab.appendChild(diversityView === 'spotlight' ? renderDiversitySpotlight(rows) : renderDiversityFullRanking(rows));
 }
 
+function partyById(partyId, list) {
+  return analyticsOptionsData[list].find(p => p.id === partyId);
+}
+
+// Weighted average of a numeric axis (economic/security) over a club's previous-election votes,
+// skipping parties with a null value on that axis (both from the numerator and the denominator) --
+// see design spec Decision 8.
+function weightedAxisAverage(previousBreakdown, axis) {
+  let weightedSum = 0;
+  let weightTotal = 0;
+  previousBreakdown.forEach(r => {
+    const party = partyById(r.party_id, 'previous_parties');
+    if (!party || party[axis] === null || party[axis] === undefined) return;
+    weightedSum += party[axis] * r.count;
+    weightTotal += r.count;
+  });
+  return weightTotal > 0 ? weightedSum / weightTotal : null;
+}
+
+function compositionPercentages(previousBreakdown, field, categories) {
+  const totals = {};
+  categories.forEach(c => { totals[c] = 0; });
+  let total = 0;
+  previousBreakdown.forEach(r => {
+    const party = partyById(r.party_id, 'previous_parties');
+    if (!party || !party[field] || !(party[field] in totals)) return;
+    totals[party[field]] += r.count;
+    total += r.count;
+  });
+  if (total === 0) return null;
+  const pct = {};
+  categories.forEach(c => { pct[c] = Math.round((totals[c] / total) * 100); });
+  return pct;
+}
+
+function eligibleClubLeanRows() {
+  const wcLeagueId = worldCupLeagueId();
+  return clubsBreakdown
+    .map(entry => {
+      const club = clubById(entry.club_id);
+      if (!club) return null;
+      const total = entry.previous.reduce((sum, r) => sum + r.count, 0);
+      const economic = weightedAxisAverage(entry.previous, 'economic');
+      return { club, total, economic, previous: entry.previous };
+    })
+    .filter(row => row !== null && row.total >= LEAN_MIN_VOTES && row.economic !== null)
+    .filter(row => diversityIncludeWorldCup || row.club.league_id !== wcLeagueId);
+}
+
+function renderLeanDetail(container, label, previousBreakdown) {
+  container.innerHTML = '';
+  const heading = document.createElement('div');
+  heading.className = 'scoreboard-title';
+  heading.textContent = label;
+  container.appendChild(heading);
+
+  const security = weightedAxisAverage(previousBreakdown, 'security');
+  const securityRow = document.createElement('div');
+  securityRow.className = 'lean-detail-row';
+  const securityLabel = document.createElement('span');
+  securityLabel.textContent = t('analyticsSecurityLabel');
+  securityRow.appendChild(securityLabel);
+  const securityValue = document.createElement('span');
+  securityValue.textContent = security === null
+    ? t('analyticsNoStatedPosition')
+    : `${security.toFixed(1)} (${security < 0 ? t('analyticsSecurityDovish') : t('analyticsSecurityHawkish')})`;
+  securityRow.appendChild(securityValue);
+  container.appendChild(securityRow);
+
+  const blocPct = compositionPercentages(previousBreakdown, 'bloc', ['bibi', 'opposition', 'unaligned']);
+  const blocRow = document.createElement('div');
+  blocRow.className = 'lean-detail-row';
+  const blocLabel = document.createElement('span');
+  blocLabel.textContent = t('analyticsBlocLabel');
+  blocRow.appendChild(blocLabel);
+  const blocValue = document.createElement('span');
+  blocValue.textContent = blocPct
+    ? `${blocPct.bibi}% ${t('analyticsBlocBibi')} · ${blocPct.opposition}% ${t('analyticsBlocOpposition')} · ${blocPct.unaligned}% ${t('analyticsBlocUnaligned')}`
+    : t('analyticsNoStatedPosition');
+  blocRow.appendChild(blocValue);
+  container.appendChild(blocRow);
+
+  const sectorCategories = ['secular', 'traditional', 'religious_zionist', 'haredi', 'arab'];
+  const sectorPct = compositionPercentages(previousBreakdown, 'sector', sectorCategories);
+  const sectorRow = document.createElement('div');
+  sectorRow.className = 'lean-detail-row';
+  const sectorLabel = document.createElement('span');
+  sectorLabel.textContent = t('analyticsSectorLabel');
+  sectorRow.appendChild(sectorLabel);
+  const sectorValue = document.createElement('span');
+  const sectorKeyMap = {
+    secular: 'analyticsSectorSecular', traditional: 'analyticsSectorTraditional',
+    religious_zionist: 'analyticsSectorReligiousZionist', haredi: 'analyticsSectorHaredi', arab: 'analyticsSectorArab',
+  };
+  sectorValue.textContent = sectorPct
+    ? sectorCategories.filter(c => sectorPct[c] > 0).map(c => `${sectorPct[c]}% ${t(sectorKeyMap[c])}`).join(' · ')
+    : t('analyticsNoStatedPosition');
+  sectorRow.appendChild(sectorValue);
+  container.appendChild(sectorRow);
+}
+
+function nationalPreviousBreakdown() {
+  const totals = {};
+  clubsBreakdown.forEach(entry => {
+    entry.previous.forEach(r => {
+      totals[r.party_id] = (totals[r.party_id] || 0) + r.count;
+    });
+  });
+  return Object.entries(totals).map(([partyId, count]) => ({ party_id: Number(partyId), count }));
+}
+
+function renderLeanTab() {
+  const tab = document.getElementById('lean-tab');
+  tab.innerHTML = '';
+
+  const rows = eligibleClubLeanRows();
+  if (!rows.length) {
+    const empty = document.createElement('p');
+    empty.className = 'note';
+    empty.textContent = t('analyticsTooFewVotes');
+    tab.appendChild(empty);
+    return;
+  }
+
+  const strip = document.createElement('div');
+  strip.className = 'lean-strip';
+  const detail = document.createElement('div');
+  detail.className = 'card';
+
+  function selectClub(row, badge) {
+    strip.querySelectorAll('.lean-badge').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    if (badge) badge.setAttribute('aria-pressed', 'true');
+    renderLeanDetail(detail, row ? localizedName(row.club) : t('analyticsNational'), row ? row.previous : nationalPreviousBreakdown());
+  }
+
+  rows.forEach(row => {
+    const badge = document.createElement('button');
+    badge.type = 'button';
+    badge.className = 'lean-badge';
+    badge.setAttribute('aria-pressed', 'false');
+    badge.style.left = `${((row.economic + 3) / 6) * 100}%`;
+    badge.textContent = localizedName(row.club);
+    badge.addEventListener('click', () => selectClub(row, badge));
+    strip.appendChild(badge);
+  });
+
+  const axisLabels = document.createElement('div');
+  axisLabels.className = 'lean-axis-labels';
+  const leftLabel = document.createElement('span');
+  leftLabel.textContent = `← ${t('analyticsAxisLeft')}`;
+  const rightLabel = document.createElement('span');
+  rightLabel.textContent = `${t('analyticsAxisRight')} →`;
+  axisLabels.appendChild(leftLabel);
+  axisLabels.appendChild(rightLabel);
+
+  tab.appendChild(strip);
+  tab.appendChild(axisLabels);
+  tab.appendChild(detail);
+
+  selectClub(null, null);
+}
+
 async function initAnalytics() {
   try {
     analyticsOptionsData = await fetchJSON('/api/options');
@@ -200,11 +363,13 @@ async function initAnalytics() {
     return;
   }
   renderDiversityTab();
+  renderLeanTab();
 }
 
 document.addEventListener('voteball:langchange', () => {
   if (!analyticsOptionsData) return;
   renderDiversityTab();
+  renderLeanTab();
 });
 
 initAnalytics();
