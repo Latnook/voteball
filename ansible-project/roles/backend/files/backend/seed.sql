@@ -1,9 +1,20 @@
 INSERT INTO alert_state (id, last_seen_total) VALUES (1, 0) ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO leagues (name) VALUES
+-- Guarded by name_en (not just ON CONFLICT (name)) because the admin UI's rename/edit routes
+-- always set the legacy `name` column to name_he -- once an admin has touched a league/club at
+-- all (even just to add a logo_url), `name` no longer matches this literal English value on a
+-- later re-run of this file, so the ON CONFLICT target alone would silently re-insert a
+-- duplicate row instead of a no-op. name_en survives admin edits, so it's the stable identity
+-- check here.
+INSERT INTO leagues (name)
+SELECT v.name FROM (VALUES
     ('World Cup 2026'), ('UCL'), ('EPL'), ('La Liga'), ('Serie A'), ('Bundesliga'), ('Israeli Premier League')
+) AS v(name)
+WHERE NOT EXISTS (SELECT 1 FROM leagues existing WHERE existing.name_en = v.name)
 ON CONFLICT (name) DO NOTHING;
 
+-- Same name_en guard as leagues above -- see that comment for why ON CONFLICT (league_id, name)
+-- alone isn't enough once admin edits have flipped a club's legacy `name` to Hebrew.
 INSERT INTO clubs (league_id, name)
 SELECT l.id, c.name FROM leagues l
 JOIN (VALUES
@@ -74,6 +85,9 @@ JOIN (VALUES
     ('Israeli Premier League', 'Ironi Kiryat Shmona'), ('Israeli Premier League', 'Maccabi Petah Tikva'),
     ('Israeli Premier League', 'Hapoel Petah Tikva'), ('Israeli Premier League', 'Ironi Tiberias')
 ) AS c(league_name, name) ON l.name = c.league_name
+WHERE NOT EXISTS (
+    SELECT 1 FROM clubs existing WHERE existing.league_id = l.id AND existing.name_en = c.name
+)
 ON CONFLICT (league_id, name) DO NOTHING;
 
 -- Link each UCL club that also plays in a domestic league this app seeds (decision 12).
