@@ -3,6 +3,8 @@ let clubsBreakdown = null;
 
 const DIVERSITY_MIN_VOTES = 10;
 const LEAN_MIN_VOTES = 10;
+const SWITCH_TAKEAWAY_THRESHOLD_POINTS = 5;
+const SWITCH_STATUSES = ['stayed', 'hedging', 'switched', 'new_voter', 'undecided'];
 let diversityIncludeWorldCup = false;
 let diversityView = 'spotlight';
 
@@ -355,6 +357,140 @@ function renderLeanTab() {
   selectClub(null, null);
 }
 
+function switchStatusLabel(status) {
+  const keyMap = {
+    stayed: 'analyticsStatusStayed', hedging: 'analyticsStatusHedging', switched: 'analyticsStatusSwitched',
+    new_voter: 'analyticsStatusNewVoter', undecided: 'analyticsStatusUndecided',
+  };
+  return t(keyMap[status]);
+}
+
+function switchBreakdownToShares(breakdown) {
+  const total = breakdown.reduce((sum, r) => sum + r.count, 0);
+  const counts = {};
+  SWITCH_STATUSES.forEach(s => { counts[s] = 0; });
+  breakdown.forEach(r => { if (r.status in counts) counts[r.status] = r.count; });
+  const shares = {};
+  SWITCH_STATUSES.forEach(s => { shares[s] = total > 0 ? (counts[s] / total) * 100 : 0; });
+  return { shares, total };
+}
+
+function renderSwitchBar(container, label, breakdown, isBaseline) {
+  const labelEl = document.createElement('div');
+  labelEl.className = 'switch-bar-label';
+  labelEl.textContent = label;
+  container.appendChild(labelEl);
+
+  const { shares } = switchBreakdownToShares(breakdown);
+  const bar = document.createElement('div');
+  bar.className = isBaseline ? 'switch-bar is-baseline' : 'switch-bar';
+  SWITCH_STATUSES.forEach(status => {
+    if (shares[status] <= 0) return;
+    const segment = document.createElement('div');
+    segment.className = `switch-segment status-${status}`;
+    segment.style.width = `${shares[status]}%`;
+    segment.textContent = shares[status] >= 12 ? `${switchStatusLabel(status)} ${Math.round(shares[status])}%` : '';
+    bar.appendChild(segment);
+  });
+  container.appendChild(bar);
+  return shares;
+}
+
+function renderSwitchTakeaway(container, scopeLabel, scopeShares, nationalShares) {
+  const p = document.createElement('p');
+  p.className = 'note';
+  const delta = scopeShares.stayed - nationalShares.stayed;
+  let key = 'analyticsTakeawayAboutAverage';
+  if (delta > SWITCH_TAKEAWAY_THRESHOLD_POINTS) key = 'analyticsTakeawayMoreLoyal';
+  else if (delta < -SWITCH_TAKEAWAY_THRESHOLD_POINTS) key = 'analyticsTakeawayLessLoyal';
+  p.textContent = t(key).replace('{who}', scopeLabel);
+  container.appendChild(p);
+}
+
+async function loadSwitchingScope(leagueId, clubId, scopeLabel) {
+  const barsContainer = document.getElementById('switching-bars');
+  const takeawayContainer = document.getElementById('switching-takeaway');
+  barsContainer.innerHTML = '';
+  takeawayContainer.innerHTML = '';
+
+  try {
+    const query = clubId ? `club_id=${clubId}` : (leagueId ? `league_id=${leagueId}` : '');
+    const [scopeData, nationalData] = await Promise.all([
+      fetchJSON(`/api/results/switch${query ? '?' + query : ''}`),
+      fetchJSON('/api/results/switch'),
+    ]);
+    const scopeShares = renderSwitchBar(barsContainer, scopeLabel, scopeData.breakdown, false);
+    const nationalShares = renderSwitchBar(barsContainer, t('analyticsBaselineLabel'), nationalData.breakdown, true);
+    if (leagueId || clubId) {
+      renderSwitchTakeaway(takeawayContainer, scopeLabel, scopeShares, nationalShares);
+    }
+  } catch (err) {
+    analyticsShowError('switching-bars');
+  }
+}
+
+function renderSwitchingScopePicker() {
+  const picker = document.getElementById('switching-scope-picker');
+  picker.innerHTML = '';
+
+  const nationalOption = document.createElement('option');
+  nationalOption.value = '';
+  nationalOption.textContent = t('analyticsNational');
+  picker.appendChild(nationalOption);
+
+  analyticsOptionsData.leagues.forEach(league => {
+    const opt = document.createElement('option');
+    opt.value = `league:${league.id}`;
+    opt.textContent = localizedName(league);
+    picker.appendChild(opt);
+  });
+  analyticsOptionsData.clubs.forEach(club => {
+    const opt = document.createElement('option');
+    opt.value = `club:${club.id}`;
+    opt.textContent = localizedName(club);
+    picker.appendChild(opt);
+  });
+}
+
+function renderSwitchingTab() {
+  const tab = document.getElementById('switching-tab');
+  tab.innerHTML = '';
+
+  const field = document.createElement('label');
+  field.className = 'field';
+  const labelSpan = document.createElement('span');
+  labelSpan.textContent = t('analyticsScopeLabel');
+  field.appendChild(labelSpan);
+  const picker = document.createElement('select');
+  picker.id = 'switching-scope-picker';
+  field.appendChild(picker);
+  tab.appendChild(field);
+
+  const barsContainer = document.createElement('div');
+  barsContainer.id = 'switching-bars';
+  tab.appendChild(barsContainer);
+
+  const takeawayContainer = document.createElement('p');
+  takeawayContainer.id = 'switching-takeaway';
+  takeawayContainer.className = 'note';
+  tab.appendChild(takeawayContainer);
+
+  renderSwitchingScopePicker();
+  picker.addEventListener('change', () => {
+    const [kind, id] = (picker.value || '').split(':');
+    if (!kind) {
+      loadSwitchingScope(null, null, t('analyticsNational'));
+    } else if (kind === 'league') {
+      const league = analyticsOptionsData.leagues.find(l => l.id === Number(id));
+      loadSwitchingScope(Number(id), null, localizedName(league));
+    } else {
+      const club = analyticsOptionsData.clubs.find(c => c.id === Number(id));
+      loadSwitchingScope(null, Number(id), localizedName(club));
+    }
+  });
+  loadSwitchingScope(null, null, t('analyticsNational'));
+}
+
 async function initAnalytics() {
   try {
     analyticsOptionsData = await fetchJSON('/api/options');
@@ -365,12 +501,14 @@ async function initAnalytics() {
   }
   renderDiversityTab();
   renderLeanTab();
+  renderSwitchingTab();
 }
 
 document.addEventListener('voteball:langchange', () => {
   if (!analyticsOptionsData) return;
   renderDiversityTab();
   renderLeanTab();
+  renderSwitchingTab();
 });
 
 initAnalytics();
