@@ -54,6 +54,21 @@
 
     <hr class="chalk-rule">
 
+    <section id="fan-politics-section">
+      <h2 class="section-heading" data-i18n="analyticsHeading">Fan Politics</h2>
+      <div class="pill-group" id="analytics-tabs">
+        <button type="button" data-tab="diversity" aria-pressed="true" data-i18n="analyticsTabDiversity">Diversity</button>
+        <button type="button" data-tab="lean" aria-pressed="false" data-i18n="analyticsTabLean">Political Lean</button>
+        <button type="button" data-tab="switching" aria-pressed="false" data-i18n="analyticsTabSwitching">Switching</button>
+      </div>
+
+      <div id="diversity-tab" class="analytics-tab"></div>
+      <div id="lean-tab" class="analytics-tab" hidden></div>
+      <div id="switching-tab" class="analytics-tab" hidden></div>
+    </section>
+
+    <hr class="chalk-rule">
+
     <section id="explorer-section">
       <h2 class="section-heading" data-i18n="resultsExplorerHeading">Explore the results</h2>
       <div class="pill-group" id="mode-toggle">
@@ -86,5 +101,6 @@
 
   <script src="logos.js"></script>
   <script src="results.js"></script>
+  <script src="analytics.js"></script>
 </body>
 </html>

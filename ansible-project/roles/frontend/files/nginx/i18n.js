@@ -62,6 +62,12 @@ const DICTIONARY = {
     resultsMigrationNote: 'Among {scope} voters who picked {party} last time, here is what they are considering now.',
     resultsMigrationNoteDidNotVote: "You told us you didn't vote last time, so there's no migration to show.",
 
+    analyticsHeading: 'Fan Politics',
+    analyticsTabDiversity: 'Diversity',
+    analyticsTabLean: 'Political Lean',
+    analyticsTabSwitching: 'Switching',
+    analyticsErrorLoad: "Couldn't load this — try refreshing.",
+
     adminTitle: 'Voteball — Admin',
     adminHeading: 'Voteball — Admin',
     adminLabelUsername: 'Username:',
@@ -169,6 +175,12 @@ const DICTIONARY = {
     resultsMigrationHeading: 'לאן פונה המחנה שלכם',
     resultsMigrationNote: 'בקרב מצביעי {scope} שבחרו ב{party} בפעם הקודמת, כך הם שוקלים להצביע עכשיו.',
     resultsMigrationNoteDidNotVote: 'סימנתם שלא הצבעתם בפעם הקודמת, כך שאין נתוני מעבר להציג.',
+
+    analyticsHeading: 'פוליטיקת האוהדים',
+    analyticsTabDiversity: 'גיוון',
+    analyticsTabLean: 'נטייה פוליטית',
+    analyticsTabSwitching: 'מעבר הצבעה',
+    analyticsErrorLoad: 'לא הצלחנו לטעון — נסו לרענן.',
 
     adminTitle: 'ווטבול — ניהול',
     adminHeading: 'ווטבול — ניהול',
