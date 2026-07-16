@@ -62,6 +62,55 @@ ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
 -- so unranked leagues fall back to alphabetical (see get_options's ORDER BY sort_order NULLS LAST).
 ALTER TABLE leagues ADD COLUMN IF NOT EXISTS sort_order INTEGER;
 
+-- Party ideology categorization (docs/superpowers/specs/2026-07-16-party-categorization-analytics-design.md).
+-- Independent columns on both tables, not shared through party_lineage below -- a split/merged party
+-- can be ideologically distinct from its lineage predecessor (e.g. Otzma Yehudit vs. Religious
+-- Zionist). economic/security are nullable: several real parties genuinely have no stated position
+-- (rather than a fabricated "0" implying a confirmed centrist stance).
+ALTER TABLE previous_parties ADD COLUMN IF NOT EXISTS bloc TEXT
+    CHECK (bloc IN ('bibi', 'opposition', 'unaligned'));
+ALTER TABLE previous_parties ADD COLUMN IF NOT EXISTS economic INTEGER
+    CHECK (economic BETWEEN -3 AND 3);
+ALTER TABLE previous_parties ADD COLUMN IF NOT EXISTS security INTEGER
+    CHECK (security BETWEEN -3 AND 3);
+ALTER TABLE previous_parties ADD COLUMN IF NOT EXISTS sector TEXT
+    CHECK (sector IN ('secular', 'traditional', 'religious_zionist', 'haredi', 'arab'));
+ALTER TABLE previous_parties ADD COLUMN IF NOT EXISTS tags TEXT[];
+
+ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS bloc TEXT
+    CHECK (bloc IN ('bibi', 'opposition', 'unaligned'));
+ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS economic INTEGER
+    CHECK (economic BETWEEN -3 AND 3);
+ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS security INTEGER
+    CHECK (security BETWEEN -3 AND 3);
+ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS sector TEXT
+    CHECK (sector IN ('secular', 'traditional', 'religious_zionist', 'haredi', 'arab'));
+ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS tags TEXT[];
+
+-- Continuity, independent of ideology: which upcoming party continues which previous party. A split
+-- is multiple rows sharing one previous_party_id; a merge is multiple rows sharing one
+-- upcoming_party_id; a party with no row on either side is a genuine dead end or a fresh entrant.
+CREATE TABLE IF NOT EXISTS party_lineage (
+    previous_party_id INTEGER NOT NULL REFERENCES previous_parties(id),
+    upcoming_party_id INTEGER NOT NULL REFERENCES upcoming_parties(id),
+    PRIMARY KEY (previous_party_id, upcoming_party_id)
+);
+
+-- Per-voter vote-switch classification (worker-computed, same league/club/national scoping pattern
+-- as the existing rollup_previous/rollup_national_previous tables).
+CREATE TABLE IF NOT EXISTS rollup_vote_switch (
+    league_id INTEGER,
+    club_id INTEGER,
+    switch_status TEXT NOT NULL CHECK (switch_status IN
+        ('new_voter', 'undecided', 'stayed', 'hedging', 'switched')),
+    vote_count INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS rollup_national_vote_switch (
+    switch_status TEXT NOT NULL CHECK (switch_status IN
+        ('new_voter', 'undecided', 'stayed', 'hedging', 'switched')),
+    vote_count INTEGER NOT NULL
+);
+
 DO $$
 BEGIN
     ALTER TABLE clubs ADD CONSTRAINT clubs_domestic_league_differs

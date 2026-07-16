@@ -28,6 +28,7 @@ def conn():
         DROP TABLE IF EXISTS vote_upcoming_parties, vote_clubs, vote_leagues, votes,
             rollup_previous, rollup_upcoming, rollup_previous_upcoming,
             rollup_national_previous, rollup_national_upcoming, rollup_national_previous_upcoming,
+            rollup_vote_switch, rollup_national_vote_switch, party_lineage,
             clubs, leagues, previous_parties, upcoming_parties, alert_state CASCADE
     ''')
     connection.commit()
