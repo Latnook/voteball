@@ -307,7 +307,7 @@ button { font-family: inherit; }
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 0.6rem;
 }
 
@@ -355,8 +355,8 @@ button { font-family: inherit; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3.4rem;
+  height: 3.4rem;
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
@@ -374,12 +374,12 @@ button { font-family: inherit; }
   align-items: center;
   justify-content: center;
   font-family: var(--font-display-en);
-  font-size: 0.7rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #fff;
   background: hsl(var(--mono-hue), 55%, 38%);
 }
-.tab .logo { width: 1.4rem; height: 1.4rem; border-radius: 5px; }
+.tab .logo { width: 1.6rem; height: 1.6rem; border-radius: 5px; }
 
 /* ---------- Buttons ---------- */
 
@@ -443,7 +443,7 @@ button { font-family: inherit; }
   gap: 0.5rem;
   min-width: 0;
 }
-.standings-name .logo { width: 1.8rem; height: 1.8rem; }
+.standings-name .logo { width: 2.2rem; height: 2.2rem; }
 .standings-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .standings-track {
   height: 0.55rem;
@@ -499,8 +499,51 @@ button { font-family: inherit; }
   padding: 0.35rem 0;
   font-size: 0.95rem;
 }
-.scoreboard-line .logo { width: 2rem; height: 2rem; }
+.scoreboard-line .logo { width: 2.4rem; height: 2.4rem; }
 .scoreboard-label { color: var(--muted); min-width: 8ch; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ---------- Cross-league picks summary (vote page) ---------- */
+
+.picks-summary {
+  margin-top: 0.75rem;
+}
+.picks-summary-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.picks-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem 0.25rem 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+:lang(he) .picks-summary-chip { padding: 0.25rem 0.25rem 0.25rem 0.7rem; }
+.picks-summary-chip .logo { width: 1.8rem; height: 1.8rem; }
+
+/* ---------- Review panel (confirm-before-submit) ---------- */
+
+.review-subheading {
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 1rem 0 0.4rem;
+}
+.review-subheading:first-child { margin-top: 0; }
+.review-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.review-actions .btn-secondary { flex: 0 0 auto; }
+.review-actions .btn-block { flex: 1; }
 
 /* ---------- Explorer controls (results drill-down) ---------- */
 
@@ -564,5 +607,5 @@ select, input[type="text"], input[type="url"], input[type="password"] {
 
 @media (max-width: 480px) {
   .topbar { flex-direction: column; align-items: flex-start; }
-  .standings-name .logo { width: 1.5rem; height: 1.5rem; }
+  .standings-name .logo { width: 1.8rem; height: 1.8rem; }
 }

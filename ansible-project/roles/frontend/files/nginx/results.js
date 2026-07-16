@@ -135,6 +135,16 @@ function appendScoreboardLine(container, label, entity, name) {
   container.appendChild(line);
 }
 
+// pick: {league_id, club_id|null} from vote.team_picks. Resolves to the club if set, else the
+// league itself (a "just this league" pick).
+function pickInfo(pick) {
+  const club = pick.club_id ? optionsData.clubs.find(c => c.id === pick.club_id) : null;
+  const league = optionsData.leagues.find(l => l.id === pick.league_id);
+  const entity = club || league || null;
+  const name = club ? localizedName(club) : (league ? localizedName(league) : '');
+  return { entity, name, club, league };
+}
+
 function renderScoreboard(vote) {
   const el = document.getElementById('compare-scoreboard');
   el.innerHTML = '';
@@ -144,11 +154,10 @@ function renderScoreboard(vote) {
   title.textContent = t('resultsYourLineup');
   el.appendChild(title);
 
-  const club = vote.club_id ? optionsData.clubs.find(c => c.id === vote.club_id) : null;
-  const league = optionsData.leagues.find(l => l.id === vote.league_id);
-  const teamEntity = club || league || null;
-  const teamName = club ? localizedName(club) : (league ? localizedName(league) : '');
-  appendScoreboardLine(el, t('resultsScoreLabelTeam'), teamEntity, teamName);
+  vote.team_picks.forEach((pick, idx) => {
+    const info = pickInfo(pick);
+    appendScoreboardLine(el, idx === 0 ? t('resultsScoreLabelTeam') : '', info.entity, info.name);
+  });
 
   const prevInfo = previousPartyInfo(vote.previous_party_id);
   appendScoreboardLine(el, t('resultsScoreLabelPrevious'), prevInfo.entity, prevInfo.name);
@@ -163,15 +172,35 @@ function renderScoreboard(vote) {
   }
 }
 
-async function renderCompareSection(vote) {
-  document.getElementById('compare-section').hidden = false;
-  document.getElementById('compare-divider').hidden = false;
+let compareScopeIndex = 0;
 
-  renderScoreboard(vote);
+function renderScopePicker(vote) {
+  const container = document.getElementById('scope-picker');
+  container.innerHTML = '';
+  if (vote.team_picks.length <= 1) return; // nothing to choose between with a single pick
 
-  const club = vote.club_id ? optionsData.clubs.find(c => c.id === vote.club_id) : null;
-  const league = optionsData.leagues.find(l => l.id === vote.league_id);
-  const scopeName = club ? localizedName(club) : (league ? localizedName(league) : '');
+  vote.team_picks.forEach((pick, idx) => {
+    const info = pickInfo(pick);
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'tab';
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-selected', String(idx === compareScopeIndex));
+    tab.appendChild(logoEl(info.entity, info.name));
+    tab.appendChild(document.createTextNode(info.name));
+    tab.addEventListener('click', () => {
+      compareScopeIndex = idx;
+      renderScopePicker(vote);
+      renderFanLeanAndMigration(vote);
+    });
+    container.appendChild(tab);
+  });
+}
+
+async function renderFanLeanAndMigration(vote) {
+  const pick = vote.team_picks[compareScopeIndex];
+  if (!pick) return;
+  const { club, league, name: scopeName } = pickInfo(pick);
 
   document.getElementById('fan-lean-heading').textContent = t('resultsFanLeanHeading').replace('{who}', scopeName);
   document.getElementById('fan-lean-note').textContent = club
@@ -179,7 +208,7 @@ async function renderCompareSection(vote) {
     : t('resultsFanLeanNoteLeague').replace('{league}', scopeName);
 
   try {
-    const query = club ? `by=club&id=${club.id}` : `by=league&id=${vote.league_id}`;
+    const query = club ? `by=club&id=${club.id}` : `by=league&id=${pick.league_id}`;
     const data = await fetchJSON(`/api/results?${query}`);
     const highlighted = new Set(vote.upcoming_vote_status === 'considering' ? vote.upcoming_party_ids : [null]);
     renderStandings(
@@ -200,14 +229,13 @@ async function renderCompareSection(vote) {
 
   const previousInfo = previousPartyInfo(vote.previous_party_id);
   try {
-    let scopeLabel = club ? scopeName : t('resultsScopeNational');
-    let data = await fetchJSON(
-      club
-        ? `/api/results/segment?previous_party_id=${vote.previous_party_id}&club_id=${club.id}`
-        : `/api/results/segment?previous_party_id=${vote.previous_party_id}`
-    );
-    if (club && data.total < 5) {
-      // Sample too thin at club level to be meaningful -- fall back to the national migration.
+    let scopeLabel = scopeName;
+    let segmentQuery = club
+      ? `club_id=${club.id}`
+      : `league_id=${pick.league_id}`;
+    let data = await fetchJSON(`/api/results/segment?previous_party_id=${vote.previous_party_id}&${segmentQuery}`);
+    if (data.total < 5) {
+      // Sample too thin at this scope to be meaningful -- fall back to the national migration.
       data = await fetchJSON(`/api/results/segment?previous_party_id=${vote.previous_party_id}`);
       scopeLabel = t('resultsScopeNational');
     }
@@ -221,6 +249,17 @@ async function renderCompareSection(vote) {
   } catch (err) {
     showError(['migration-standings']);
   }
+}
+
+async function renderCompareSection(vote) {
+  if (!vote.team_picks || vote.team_picks.length === 0) return;
+  document.getElementById('compare-section').hidden = false;
+  document.getElementById('compare-divider').hidden = false;
+  compareScopeIndex = 0;
+
+  renderScoreboard(vote);
+  renderScopePicker(vote);
+  await renderFanLeanAndMigration(vote);
 }
 
 function renderClubLeagueResults() {

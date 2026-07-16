@@ -744,6 +744,14 @@ document.getElementById('league-add-form').addEventListener('submit', async (e) 
   loadTeamsTab();
 });
 
+function teamPicksNames(data, teamPicks) {
+  if (!teamPicks.length) return '—';
+  return teamPicks.map(pick => {
+    if (pick.club_id !== null) return clubName(data, pick.club_id);
+    return `${leagueName(data, pick.league_id)} (${t('adminJustLeagueSuffix')})`;
+  }).join(', ');
+}
+
 function previousPartyName(data, id) {
   if (id === null) return t('adminDidNotVote');
   const p = data.previous_parties.find(p => p.id === id);
@@ -781,7 +789,7 @@ function renderVotesTable(data, votes) {
 
   const thead = document.createElement('thead');
   const headRow = document.createElement('tr');
-  [t('adminColId'), t('adminColCreated'), t('adminColLeague'), t('adminColClub'), t('adminColPrevious'), t('adminColUpcoming'), ''].forEach(text => {
+  [t('adminColId'), t('adminColCreated'), t('adminColTeams'), t('adminColPrevious'), t('adminColUpcoming'), ''].forEach(text => {
     const th = document.createElement('th');
     th.textContent = text;
     headRow.appendChild(th);
@@ -795,8 +803,7 @@ function renderVotesTable(data, votes) {
     [
       v.id,
       v.created_at,
-      leagueName(data, v.league_id),
-      clubName(data, v.club_id),
+      teamPicksNames(data, v.team_picks),
       previousPartyName(data, v.previous_party_id),
       upcomingPartyNames(data, v.upcoming_party_ids),
     ].forEach(text => {

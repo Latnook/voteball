@@ -29,39 +29,52 @@
     </div>
 
     <form id="vote-form">
-      <section class="vote-section">
-        <div class="vote-section-head">
-          <span class="vote-section-num display">1</span>
-          <span class="vote-section-title" data-i18n="voteLegendLeague">League &amp; club</span>
+      <div id="form-view">
+        <section class="vote-section">
+          <div class="vote-section-head">
+            <span class="vote-section-num display">1</span>
+            <span class="vote-section-title" data-i18n="voteLegendLeague">League &amp; clubs</span>
+          </div>
+          <p class="vote-section-hint" data-i18n="voteLeagueHint">Pick up to 3 clubs per league — or just the league if you don't follow a specific club. Not limited to one league.</p>
+          <div id="league-tabs" class="tabs" role="tablist"></div>
+          <div id="team-grid" class="card-grid"></div>
+          <div id="picks-summary" class="picks-summary"></div>
+        </section>
+
+        <hr class="chalk-rule">
+
+        <section class="vote-section">
+          <div class="vote-section-head">
+            <span class="vote-section-num display">2</span>
+            <span class="vote-section-title" data-i18n="voteLegendPrevious">Current Knesset — who did you vote for?</span>
+          </div>
+          <div id="previous-grid" class="card-grid"></div>
+        </section>
+
+        <hr class="chalk-rule">
+
+        <section class="vote-section">
+          <div class="vote-section-head">
+            <span class="vote-section-num display">3</span>
+            <span class="vote-section-title" data-i18n="voteLegendUpcoming">Upcoming election — who are you considering?</span>
+          </div>
+          <p class="vote-section-hint" data-i18n="voteUpcomingHint">Choose up to 3.</p>
+          <div id="upcoming-grid" class="card-grid"></div>
+        </section>
+
+        <p class="error" id="error-message" role="alert"></p>
+        <button type="submit" class="btn btn-block" id="submit-btn" data-i18n="voteReview">Review your ballot</button>
+      </div>
+
+      <div id="review-view" hidden>
+        <h2 class="section-heading" data-i18n="voteReviewHeading">Review your ballot</h2>
+        <div id="review-summary" class="card"></div>
+        <p class="error" id="review-error-message" role="alert"></p>
+        <div class="review-actions">
+          <button type="button" class="btn btn-secondary" id="edit-btn" data-i18n="voteEdit">Edit</button>
+          <button type="button" class="btn btn-block" id="confirm-submit-btn" data-i18n="voteConfirmSubmit">Confirm &amp; submit</button>
         </div>
-        <p class="vote-section-hint" data-i18n="voteLeagueHint">Pick a league, then your club — or just the league if you don't follow one closely.</p>
-        <div id="league-tabs" class="tabs" role="tablist"></div>
-        <div id="team-grid" class="card-grid"></div>
-      </section>
-
-      <hr class="chalk-rule">
-
-      <section class="vote-section">
-        <div class="vote-section-head">
-          <span class="vote-section-num display">2</span>
-          <span class="vote-section-title" data-i18n="voteLegendPrevious">Current Knesset — who did you vote for?</span>
-        </div>
-        <div id="previous-grid" class="card-grid"></div>
-      </section>
-
-      <hr class="chalk-rule">
-
-      <section class="vote-section">
-        <div class="vote-section-head">
-          <span class="vote-section-num display">3</span>
-          <span class="vote-section-title" data-i18n="voteLegendUpcoming">Upcoming election — who are you considering?</span>
-        </div>
-        <p class="vote-section-hint" data-i18n="voteUpcomingHint">Choose up to 3.</p>
-        <div id="upcoming-grid" class="card-grid"></div>
-      </section>
-
-      <p class="error" id="error-message" role="alert"></p>
-      <button type="submit" class="btn btn-block" id="submit-btn" data-i18n="voteSubmit">Submit your line-up</button>
+      </div>
     </form>
   </main>
 
