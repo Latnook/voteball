@@ -68,13 +68,13 @@ function eligibleClubDiversityScores() {
     .sort((a, b) => b.score - a.score);
 }
 
-function renderDiversityBar(container, row, maxScore) {
+function renderDiversityBar(container, row, maxScore, rankNumber) {
   const wrap = document.createElement('div');
   wrap.className = 'standings-row';
 
   const rank = document.createElement('div');
   rank.className = 'standings-rank';
-  rank.textContent = '';
+  rank.textContent = String(rankNumber);
   wrap.appendChild(rank);
 
   const nameDiv = document.createElement('div');
@@ -101,31 +101,34 @@ function renderDiversityBar(container, row, maxScore) {
   container.appendChild(wrap);
 }
 
+// Builds one spotlight column: a heading plus a `.standings` list container.
+function buildDiversityColumn(headingClass, headingText) {
+  const column = document.createElement('div');
+  const heading = document.createElement('div');
+  heading.className = `diversity-spotlight-heading ${headingClass}`;
+  heading.textContent = headingText;
+  column.appendChild(heading);
+  const list = document.createElement('div');
+  list.className = 'standings';
+  column.appendChild(list);
+  return { column, list };
+}
+
 function renderDiversitySpotlight(rows) {
   const container = document.createElement('div');
   container.className = 'diversity-spotlight-split';
 
-  const mostMixed = document.createElement('div');
-  const mostMixedHeading = document.createElement('div');
-  mostMixedHeading.className = 'diversity-spotlight-heading most-mixed';
-  mostMixedHeading.textContent = t('analyticsMostMixed');
-  mostMixed.appendChild(mostMixedHeading);
-  const mostMixedList = document.createElement('div');
-  mostMixedList.className = 'standings';
-  mostMixed.appendChild(mostMixedList);
+  const { column: mostMixed, list: mostMixedList } = buildDiversityColumn('most-mixed', t('analyticsMostMixed'));
+  const { column: mostOneSided, list: mostOneSidedList } = buildDiversityColumn('most-one-sided', t('analyticsMostOneSided'));
 
-  const mostOneSided = document.createElement('div');
-  const mostOneSidedHeading = document.createElement('div');
-  mostOneSidedHeading.className = 'diversity-spotlight-heading most-one-sided';
-  mostOneSidedHeading.textContent = t('analyticsMostOneSided');
-  mostOneSided.appendChild(mostOneSidedHeading);
-  const mostOneSidedList = document.createElement('div');
-  mostOneSidedList.className = 'standings';
-  mostOneSided.appendChild(mostOneSidedList);
-
+  // Cap each column so they never overlap when fewer than 10 clubs are eligible.
+  // (spotlightCount can be 0 with <2 rows; guard the bottom slice since
+  // Array.prototype.slice(-0) is equivalent to slice(0), not an empty slice.)
+  const spotlightCount = Math.min(5, Math.floor(rows.length / 2));
   const maxScore = rows.length ? rows[0].score : 1;
-  rows.slice(0, 5).forEach(row => renderDiversityBar(mostMixedList, row, maxScore));
-  rows.slice(-5).reverse().forEach(row => renderDiversityBar(mostOneSidedList, row, maxScore));
+  rows.slice(0, spotlightCount).forEach((row, idx) => renderDiversityBar(mostMixedList, row, maxScore, idx + 1));
+  const bottomRows = spotlightCount > 0 ? rows.slice(-spotlightCount).reverse() : [];
+  bottomRows.forEach((row, idx) => renderDiversityBar(mostOneSidedList, row, maxScore, idx + 1));
 
   container.appendChild(mostMixed);
   container.appendChild(mostOneSided);
@@ -136,7 +139,7 @@ function renderDiversityFullRanking(rows) {
   const container = document.createElement('div');
   container.className = 'standings';
   const maxScore = rows.length ? rows[0].score : 1;
-  rows.forEach(row => renderDiversityBar(container, row, maxScore));
+  rows.forEach((row, idx) => renderDiversityBar(container, row, maxScore, idx + 1));
   return container;
 }
 
