@@ -803,3 +803,55 @@ def test_reassign_club_votes_dedups_collision(conn):
 
     vote = next(v for v in queries.get_votes(conn) if v['id'] == vote_id)
     assert vote['team_picks'] == [{'league_id': epl_id, 'club_id': arsenal_id}]
+
+
+def test_get_results_switch_scopes(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'INSERT INTO rollup_vote_switch (league_id, club_id, switch_status, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, club_id, 'stayed', 7)
+    )
+    cur.execute(
+        'INSERT INTO rollup_vote_switch (league_id, club_id, switch_status, vote_count) VALUES (%s, NULL, %s, %s)',
+        (league_id, 'switched', 3)
+    )
+    cur.execute(
+        'INSERT INTO rollup_national_vote_switch (switch_status, vote_count) VALUES (%s, %s)',
+        ('stayed', 100)
+    )
+    conn.commit()
+    cur.close()
+
+    club_result = queries.get_results_switch(conn, club_id=club_id)
+    assert {'status': 'stayed', 'count': 7} in club_result['breakdown']
+
+    league_result = queries.get_results_switch(conn, league_id=league_id)
+    assert {'status': 'switched', 'count': 3} in league_result['breakdown']
+
+    national_result = queries.get_results_switch(conn)
+    assert {'status': 'stayed', 'count': 100} in national_result['breakdown']
+
+
+def test_get_clubs_breakdown_shape(conn):
+    league_id, club_id = _epl_and_liverpool(conn)
+
+    cur = conn.cursor()
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Party X') RETURNING id")
+    party_id = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, club_id, party_id, 9)
+    )
+    # a league-scope row (club_id IS NULL) must NOT appear in the per-club breakdown
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, NULL, %s, %s)',
+        (league_id, party_id, 40)
+    )
+    conn.commit()
+    cur.close()
+
+    breakdown = queries.get_clubs_breakdown(conn)
+    entry = next(e for e in breakdown if e['club_id'] == club_id)
+    assert entry['previous'] == [{'party_id': party_id, 'count': 9}]

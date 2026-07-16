@@ -202,6 +202,45 @@ def get_results_segment(conn, previous_party_id, club_id=None, league_id=None):
     return {'upcoming': upcoming, 'total': total}
 
 
+def get_results_switch(conn, league_id=None, club_id=None):
+    cur = conn.cursor()
+
+    if club_id is not None:
+        cur.execute(
+            'SELECT switch_status, SUM(vote_count) FROM rollup_vote_switch '
+            'WHERE club_id = %s GROUP BY switch_status',
+            (club_id,)
+        )
+    elif league_id is not None:
+        cur.execute(
+            'SELECT switch_status, SUM(vote_count) FROM rollup_vote_switch '
+            'WHERE league_id = %s AND club_id IS NULL GROUP BY switch_status',
+            (league_id,)
+        )
+    else:
+        cur.execute(
+            'SELECT switch_status, SUM(vote_count) FROM rollup_national_vote_switch '
+            'GROUP BY switch_status'
+        )
+
+    breakdown = [{'status': r[0], 'count': r[1]} for r in cur.fetchall()]
+    cur.close()
+    return {'breakdown': breakdown}
+
+
+def get_clubs_breakdown(conn):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT club_id, previous_party_id, SUM(vote_count) FROM rollup_previous '
+        'WHERE club_id IS NOT NULL GROUP BY club_id, previous_party_id'
+    )
+    by_club = {}
+    for club_id, party_id, count in cur.fetchall():
+        by_club.setdefault(club_id, []).append({'party_id': party_id, 'count': count})
+    cur.close()
+    return [{'club_id': club_id, 'previous': rows} for club_id, rows in by_club.items()]
+
+
 def get_results_by_party(conn, party_type, party_id):
     table = 'rollup_previous' if party_type == 'previous' else 'rollup_upcoming'
     column = 'previous_party_id' if party_type == 'previous' else 'upcoming_party_id'
