@@ -48,6 +48,42 @@ def test_get_options_returns_seeded_leagues(conn):
     }
 
 
+def test_get_options_exposes_ideology_and_lineage(conn):
+    cur = conn.cursor()
+    cur.execute('''
+        UPDATE previous_parties SET bloc = 'bibi', economic = 1, security = 2,
+            sector = 'traditional', tags = ARRAY['a', 'b']
+        WHERE name_he = 'הליכוד'
+    ''')
+    cur.execute("SELECT id FROM previous_parties WHERE name_he = 'הליכוד'")
+    prev_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM upcoming_parties WHERE name_he = 'הליכוד'")
+    up_id = cur.fetchone()[0]
+    # Delete any existing lineage entry first to ensure we have a clean slate for this test
+    cur.execute(
+        'DELETE FROM party_lineage WHERE previous_party_id = %s AND upcoming_party_id = %s',
+        (prev_id, up_id)
+    )
+    cur.execute(
+        'INSERT INTO party_lineage (previous_party_id, upcoming_party_id) VALUES (%s, %s)',
+        (prev_id, up_id)
+    )
+    conn.commit()
+    cur.close()
+
+    options = queries.get_options(conn)
+
+    likud = next(p for p in options['previous_parties'] if p['id'] == prev_id)
+    assert likud['bloc'] == 'bibi'
+    assert likud['economic'] == 1
+    assert likud['security'] == 2
+    assert likud['sector'] == 'traditional'
+    assert likud['tags'] == ['a', 'b']
+
+    assert 'party_lineage' in options
+    assert {'previous_party_id': prev_id, 'upcoming_party_id': up_id} in options['party_lineage']
+
+
 def _epl_and_liverpool(conn):
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")

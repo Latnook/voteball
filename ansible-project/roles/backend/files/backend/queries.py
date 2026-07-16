@@ -31,14 +31,28 @@ def get_options(conn):
         for r in cur.fetchall()
     ]
 
-    cur.execute('SELECT id, name_en, name_he, logo_url FROM previous_parties ORDER BY name_en')
+    cur.execute(
+        'SELECT id, name_en, name_he, logo_url, bloc, economic, security, sector, tags '
+        'FROM previous_parties ORDER BY name_en'
+    )
     previous_parties = [
-        {'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3]} for r in cur.fetchall()
+        {
+            'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3],
+            'bloc': r[4], 'economic': r[5], 'security': r[6], 'sector': r[7], 'tags': r[8] or [],
+        }
+        for r in cur.fetchall()
     ]
 
-    cur.execute('SELECT id, name_en, name_he, logo_url FROM upcoming_parties ORDER BY name_en')
+    cur.execute(
+        'SELECT id, name_en, name_he, logo_url, bloc, economic, security, sector, tags '
+        'FROM upcoming_parties ORDER BY name_en'
+    )
     upcoming_parties = [
-        {'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3]} for r in cur.fetchall()
+        {
+            'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3],
+            'bloc': r[4], 'economic': r[5], 'security': r[6], 'sector': r[7], 'tags': r[8] or [],
+        }
+        for r in cur.fetchall()
     ]
 
     cur.close()
@@ -47,7 +61,16 @@ def get_options(conn):
         'clubs': clubs,
         'previous_parties': previous_parties,
         'upcoming_parties': upcoming_parties,
+        'party_lineage': get_party_lineage(conn),
     }
+
+
+def get_party_lineage(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT previous_party_id, upcoming_party_id FROM party_lineage')
+    rows = [{'previous_party_id': r[0], 'upcoming_party_id': r[1]} for r in cur.fetchall()]
+    cur.close()
+    return rows
 
 
 def insert_vote(conn, team_picks, previous_vote_status, previous_party_id,
