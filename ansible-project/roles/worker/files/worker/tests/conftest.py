@@ -34,7 +34,7 @@ CREATE TABLE vote_upcoming_parties (
 CREATE TABLE alert_state (id INTEGER PRIMARY KEY DEFAULT 1, last_seen_total INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE rollup_previous (league_id INTEGER NOT NULL, club_id INTEGER, previous_party_id INTEGER, vote_count INTEGER NOT NULL);
 CREATE TABLE rollup_upcoming (league_id INTEGER NOT NULL, club_id INTEGER, upcoming_party_id INTEGER, vote_count INTEGER NOT NULL);
-CREATE TABLE rollup_previous_upcoming (previous_party_id INTEGER, upcoming_party_id INTEGER, vote_count INTEGER NOT NULL);
+CREATE TABLE rollup_previous_upcoming (previous_party_id INTEGER, upcoming_party_id INTEGER, league_id INTEGER, club_id INTEGER, vote_count INTEGER NOT NULL);
 '''
 
 

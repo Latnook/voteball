@@ -51,6 +51,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_he_uidx ON clubs (league_id,
 -- see docs/superpowers/specs/2026-07-15-clubs-leagues-admin-crud-design.md decision 10.
 ALTER TABLE clubs ADD COLUMN IF NOT EXISTS domestic_league_id INTEGER REFERENCES leagues(id);
 
+-- Admin-curated logo/crest/flag URLs for the frontend redesign. Nullable by design: the frontend
+-- falls back to a generated monogram/flag when unset, so this never blocks seeding or admin CRUD.
+ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS logo_url TEXT;
+ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS logo_url TEXT;
+ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
+ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
+
 DO $$
 BEGIN
     ALTER TABLE clubs ADD CONSTRAINT clubs_domestic_league_differs
@@ -114,3 +121,10 @@ CREATE TABLE IF NOT EXISTS rollup_previous_upcoming (
 );
 CREATE INDEX IF NOT EXISTS idx_rollup_previous_upcoming_previous ON rollup_previous_upcoming (previous_party_id);
 CREATE INDEX IF NOT EXISTS idx_rollup_previous_upcoming_upcoming ON rollup_previous_upcoming (upcoming_party_id);
+
+-- Adds a league/club dimension to the previous<->upcoming migration rollup so results can answer
+-- "fans of MY club who voted like me last time -- where are they headed now", not just the global
+-- migration. Nullable like the rest of the rollup dimensions (a NULL club_id row is still league-wide).
+ALTER TABLE rollup_previous_upcoming ADD COLUMN IF NOT EXISTS league_id INTEGER;
+ALTER TABLE rollup_previous_upcoming ADD COLUMN IF NOT EXISTS club_id INTEGER;
+CREATE INDEX IF NOT EXISTS idx_rollup_previous_upcoming_league_club ON rollup_previous_upcoming (league_id, club_id);

@@ -17,20 +17,29 @@ def _duplicate_party_language(err):
 def get_options(conn):
     cur = conn.cursor()
 
-    cur.execute('SELECT id, name_en, name_he FROM leagues ORDER BY name_en')
-    leagues = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he, logo_url FROM leagues ORDER BY name_en')
+    leagues = [{'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3]} for r in cur.fetchall()]
 
-    cur.execute('SELECT id, league_id, domestic_league_id, name_en, name_he FROM clubs ORDER BY name_en')
+    cur.execute(
+        'SELECT id, league_id, domestic_league_id, name_en, name_he, logo_url FROM clubs ORDER BY name_en'
+    )
     clubs = [
-        {'id': r[0], 'league_id': r[1], 'domestic_league_id': r[2], 'name_en': r[3], 'name_he': r[4]}
+        {
+            'id': r[0], 'league_id': r[1], 'domestic_league_id': r[2],
+            'name_en': r[3], 'name_he': r[4], 'logo_url': r[5],
+        }
         for r in cur.fetchall()
     ]
 
-    cur.execute('SELECT id, name_en, name_he FROM previous_parties ORDER BY name_en')
-    previous_parties = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he, logo_url FROM previous_parties ORDER BY name_en')
+    previous_parties = [
+        {'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3]} for r in cur.fetchall()
+    ]
 
-    cur.execute('SELECT id, name_en, name_he FROM upcoming_parties ORDER BY name_en')
-    upcoming_parties = [{'id': r[0], 'name_en': r[1], 'name_he': r[2]} for r in cur.fetchall()]
+    cur.execute('SELECT id, name_en, name_he, logo_url FROM upcoming_parties ORDER BY name_en')
+    upcoming_parties = [
+        {'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3]} for r in cur.fetchall()
+    ]
 
     cur.close()
     return {
@@ -101,6 +110,47 @@ def _results_for_filter(conn, where_clause, params):
     return {'previous': previous, 'upcoming': upcoming}
 
 
+def get_results_all(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT previous_party_id, SUM(vote_count) FROM rollup_previous GROUP BY previous_party_id')
+    previous = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
+
+    cur.execute('SELECT upcoming_party_id, SUM(vote_count) FROM rollup_upcoming GROUP BY upcoming_party_id')
+    upcoming = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
+
+    cur.close()
+    return {'previous': previous, 'upcoming': upcoming}
+
+
+def get_results_segment(conn, previous_party_id, club_id=None, league_id=None):
+    where_clauses = ['previous_party_id = %s']
+    params = [previous_party_id]
+    if club_id is not None:
+        where_clauses.append('club_id = %s')
+        params.append(club_id)
+    elif league_id is not None:
+        where_clauses.append('league_id = %s')
+        params.append(league_id)
+    where_sql = ' AND '.join(where_clauses)
+
+    cur = conn.cursor()
+    cur.execute(
+        f'SELECT upcoming_party_id, SUM(vote_count) FROM rollup_previous_upcoming '
+        f'WHERE {where_sql} GROUP BY upcoming_party_id',
+        params
+    )
+    upcoming = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
+
+    cur.execute(
+        f'SELECT COALESCE(SUM(vote_count), 0) FROM rollup_previous WHERE {where_sql}',
+        params
+    )
+    total = cur.fetchone()[0]
+
+    cur.close()
+    return {'upcoming': upcoming, 'total': total}
+
+
 def get_results_by_party(conn, party_type, party_id):
     table = 'rollup_previous' if party_type == 'previous' else 'rollup_upcoming'
     column = 'previous_party_id' if party_type == 'previous' else 'upcoming_party_id'
@@ -125,12 +175,13 @@ def get_results_by_party(conn, party_type, party_id):
     return {'breakdown': breakdown, 'crosstab': crosstab}
 
 
-def create_upcoming_party(conn, name_en, name_he):
+def create_upcoming_party(conn, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'INSERT INTO upcoming_parties (name, name_en, name_he) VALUES (%s, %s, %s) RETURNING id',
-            (name_he, name_en, name_he)
+            'INSERT INTO upcoming_parties (name, name_en, name_he, logo_url) '
+            'VALUES (%s, %s, %s, %s) RETURNING id',
+            (name_he, name_en, name_he, logo_url)
         )
         party_id = cur.fetchone()[0]
         conn.commit()
@@ -145,12 +196,13 @@ def create_upcoming_party(conn, name_en, name_he):
         cur.close()
 
 
-def rename_upcoming_party(conn, party_id, name_en, name_he):
+def rename_upcoming_party(conn, party_id, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'UPDATE upcoming_parties SET name = %s, name_en = %s, name_he = %s, updated_at = NOW() WHERE id = %s',
-            (name_he, name_en, name_he, party_id)
+            'UPDATE upcoming_parties SET name = %s, name_en = %s, name_he = %s, logo_url = %s, '
+            'updated_at = NOW() WHERE id = %s',
+            (name_he, name_en, name_he, logo_url, party_id)
         )
         updated = cur.rowcount > 0
         conn.commit()
@@ -179,12 +231,13 @@ def delete_upcoming_party(conn, party_id):
         cur.close()
 
 
-def create_previous_party(conn, name_en, name_he):
+def create_previous_party(conn, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'INSERT INTO previous_parties (name, name_en, name_he) VALUES (%s, %s, %s) RETURNING id',
-            (name_he, name_en, name_he)
+            'INSERT INTO previous_parties (name, name_en, name_he, logo_url) '
+            'VALUES (%s, %s, %s, %s) RETURNING id',
+            (name_he, name_en, name_he, logo_url)
         )
         party_id = cur.fetchone()[0]
         conn.commit()
@@ -199,12 +252,13 @@ def create_previous_party(conn, name_en, name_he):
         cur.close()
 
 
-def rename_previous_party(conn, party_id, name_en, name_he):
+def rename_previous_party(conn, party_id, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'UPDATE previous_parties SET name = %s, name_en = %s, name_he = %s, updated_at = NOW() WHERE id = %s',
-            (name_he, name_en, name_he, party_id)
+            'UPDATE previous_parties SET name = %s, name_en = %s, name_he = %s, logo_url = %s, '
+            'updated_at = NOW() WHERE id = %s',
+            (name_he, name_en, name_he, logo_url, party_id)
         )
         updated = cur.rowcount > 0
         conn.commit()
@@ -357,12 +411,12 @@ def reassign_upcoming_party_votes(conn, source_id, target_id):
         cur.close()
 
 
-def create_league(conn, name_en, name_he):
+def create_league(conn, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'INSERT INTO leagues (name, name_en, name_he) VALUES (%s, %s, %s) RETURNING id',
-            (name_he, name_en, name_he)
+            'INSERT INTO leagues (name, name_en, name_he, logo_url) VALUES (%s, %s, %s, %s) RETURNING id',
+            (name_he, name_en, name_he, logo_url)
         )
         league_id = cur.fetchone()[0]
         conn.commit()
@@ -377,12 +431,12 @@ def create_league(conn, name_en, name_he):
         cur.close()
 
 
-def rename_league(conn, league_id, name_en, name_he):
+def rename_league(conn, league_id, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'UPDATE leagues SET name = %s, name_en = %s, name_he = %s WHERE id = %s',
-            (name_he, name_en, name_he, league_id)
+            'UPDATE leagues SET name = %s, name_en = %s, name_he = %s, logo_url = %s WHERE id = %s',
+            (name_he, name_en, name_he, logo_url, league_id)
         )
         updated = cur.rowcount > 0
         conn.commit()
@@ -461,13 +515,13 @@ class DuplicateClubNameError(Exception):
         super().__init__(f'a club with this {language} name already exists')
 
 
-def create_club(conn, league_id, domestic_league_id, name_en, name_he):
+def create_club(conn, league_id, domestic_league_id, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'INSERT INTO clubs (league_id, domestic_league_id, name, name_en, name_he) '
-            'VALUES (%s, %s, %s, %s, %s) RETURNING id',
-            (league_id, domestic_league_id, name_he, name_en, name_he)
+            'INSERT INTO clubs (league_id, domestic_league_id, name, name_en, name_he, logo_url) '
+            'VALUES (%s, %s, %s, %s, %s, %s) RETURNING id',
+            (league_id, domestic_league_id, name_he, name_en, name_he, logo_url)
         )
         club_id = cur.fetchone()[0]
         conn.commit()
@@ -482,13 +536,13 @@ def create_club(conn, league_id, domestic_league_id, name_en, name_he):
         cur.close()
 
 
-def rename_club(conn, club_id, league_id, domestic_league_id, name_en, name_he):
+def rename_club(conn, club_id, league_id, domestic_league_id, name_en, name_he, logo_url=None):
     cur = conn.cursor()
     try:
         cur.execute(
-            'UPDATE clubs SET league_id = %s, domestic_league_id = %s, name = %s, name_en = %s, name_he = %s '
-            'WHERE id = %s',
-            (league_id, domestic_league_id, name_he, name_en, name_he, club_id)
+            'UPDATE clubs SET league_id = %s, domestic_league_id = %s, name = %s, name_en = %s, '
+            'name_he = %s, logo_url = %s WHERE id = %s',
+            (league_id, domestic_league_id, name_he, name_en, name_he, logo_url, club_id)
         )
         updated = cur.rowcount > 0
         conn.commit()

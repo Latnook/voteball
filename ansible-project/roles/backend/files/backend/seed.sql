@@ -158,6 +158,50 @@ UPDATE clubs SET name_he = 'שוודיה' WHERE name_en = 'Sweden' AND name_he I
 UPDATE clubs SET name_he = 'סרביה' WHERE name_en = 'Serbia' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'ישראל' WHERE name_en = 'Israel' AND name_he IS NULL;
 
+-- World Cup 2026 national flags, via flagcdn.com's stable per-country-code SVG URLs. Unlike club
+-- crests, national flags carry no trademark/licensing ambiguity, so these are safe to seed directly
+-- (see CLAUDE.md/redesign plan -- club and party logo_url values are left NULL for admin curation).
+UPDATE clubs SET logo_url = 'https://flagcdn.com/br.svg' WHERE name_en = 'Brazil' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ar.svg' WHERE name_en = 'Argentina' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/fr.svg' WHERE name_en = 'France' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/gb-eng.svg' WHERE name_en = 'England' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/es.svg' WHERE name_en = 'Spain' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/de.svg' WHERE name_en = 'Germany' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/pt.svg' WHERE name_en = 'Portugal' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/nl.svg' WHERE name_en = 'Netherlands' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/it.svg' WHERE name_en = 'Italy' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/be.svg' WHERE name_en = 'Belgium' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/hr.svg' WHERE name_en = 'Croatia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/uy.svg' WHERE name_en = 'Uruguay' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/co.svg' WHERE name_en = 'Colombia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/mx.svg' WHERE name_en = 'Mexico' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/us.svg' WHERE name_en = 'USA' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ca.svg' WHERE name_en = 'Canada' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/jp.svg' WHERE name_en = 'Japan' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/kr.svg' WHERE name_en = 'South Korea' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ma.svg' WHERE name_en = 'Morocco' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/sn.svg' WHERE name_en = 'Senegal' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ng.svg' WHERE name_en = 'Nigeria' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/gh.svg' WHERE name_en = 'Ghana' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/eg.svg' WHERE name_en = 'Egypt' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/tn.svg' WHERE name_en = 'Tunisia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/dz.svg' WHERE name_en = 'Algeria' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ci.svg' WHERE name_en = 'Ivory Coast' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/cm.svg' WHERE name_en = 'Cameroon' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/au.svg' WHERE name_en = 'Australia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ir.svg' WHERE name_en = 'Iran' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/sa.svg' WHERE name_en = 'Saudi Arabia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/qa.svg' WHERE name_en = 'Qatar' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ec.svg' WHERE name_en = 'Ecuador' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/cl.svg' WHERE name_en = 'Chile' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/pe.svg' WHERE name_en = 'Peru' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/pl.svg' WHERE name_en = 'Poland' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ch.svg' WHERE name_en = 'Switzerland' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/dk.svg' WHERE name_en = 'Denmark' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/se.svg' WHERE name_en = 'Sweden' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/rs.svg' WHERE name_en = 'Serbia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/il.svg' WHERE name_en = 'Israel' AND logo_url IS NULL;
+
 -- UCL clubs
 UPDATE clubs SET name_he = 'ריאל מדריד' WHERE name_en = 'Real Madrid' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מנצ''סטר סיטי' WHERE name_en = 'Manchester City' AND name_he IS NULL;

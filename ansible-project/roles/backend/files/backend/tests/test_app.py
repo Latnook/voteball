@@ -901,3 +901,127 @@ def test_options_endpoint_exposes_club_domestic_league_id(client, conn):
 
     psg = next(c for c in body['clubs'] if c['name_en'] == 'Paris Saint-Germain')
     assert psg['domestic_league_id'] is None
+
+
+def test_options_endpoint_exposes_logo_url_seeded_for_world_cup_flags(client):
+    resp = client.get('/api/options')
+    body = resp.get_json()
+    brazil = next(c for c in body['clubs'] if c['name_en'] == 'Brazil')
+    assert brazil['logo_url'] == 'https://flagcdn.com/br.svg'
+
+    # Non-national clubs have no seeded logo -- frontend falls back to a generated monogram.
+    liverpool = next(c for c in body['clubs'] if c['name_en'] == 'Liverpool')
+    assert liverpool['logo_url'] is None
+
+
+def test_party_and_league_and_club_admin_crud_roundtrips_logo_url(client, conn, admin_headers):
+    headers = admin_headers
+
+    resp = client.post('/api/admin/previous-parties', json={
+        'name_en': 'Logo Party', 'name_he': 'מפלגת לוגו', 'logo_url': 'https://example.com/p.png',
+    }, headers=headers)
+    assert resp.status_code == 201
+    assert resp.get_json()['logo_url'] == 'https://example.com/p.png'
+    party_id = resp.get_json()['id']
+
+    resp = client.get('/api/options')
+    party = next(p for p in resp.get_json()['previous_parties'] if p['id'] == party_id)
+    assert party['logo_url'] == 'https://example.com/p.png'
+
+    resp = client.patch(f'/api/admin/previous-parties/{party_id}', json={
+        'name_en': 'Logo Party', 'name_he': 'מפלגת לוגו', 'logo_url': 'https://example.com/p2.png',
+    }, headers=headers)
+    assert resp.get_json()['logo_url'] == 'https://example.com/p2.png'
+
+    resp = client.post('/api/admin/upcoming-parties', json={
+        'name_en': 'Logo Up Party', 'name_he': 'מפלגת לוגו עתידית', 'logo_url': 'https://example.com/u.png',
+    }, headers=headers)
+    assert resp.get_json()['logo_url'] == 'https://example.com/u.png'
+
+    resp = client.post('/api/admin/leagues', json={
+        'name_en': 'Logo League', 'name_he': 'ליגת לוגו', 'logo_url': 'https://example.com/l.png',
+    }, headers=headers)
+    assert resp.get_json()['logo_url'] == 'https://example.com/l.png'
+    league_id = resp.get_json()['id']
+
+    resp = client.post('/api/admin/clubs', json={
+        'league_id': league_id, 'name_en': 'Logo Club', 'name_he': 'קבוצת לוגו',
+        'logo_url': 'https://example.com/c.png',
+    }, headers=headers)
+    assert resp.get_json()['logo_url'] == 'https://example.com/c.png'
+    club_id = resp.get_json()['id']
+
+    resp = client.patch(f'/api/admin/clubs/{club_id}', json={
+        'league_id': league_id, 'name_en': 'Logo Club', 'name_he': 'קבוצת לוגו', 'logo_url': None,
+    }, headers=headers)
+    assert resp.get_json()['logo_url'] is None
+
+
+def test_results_by_all_returns_national_totals(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    club_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM previous_parties WHERE name_en = 'Likud'")
+    likud_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM previous_parties WHERE name_en = 'Yesh Atid'")
+    yesh_atid_id = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) '
+        'VALUES (%s, %s, %s, %s), (%s, %s, %s, %s)',
+        (league_id, club_id, likud_id, 4, league_id, club_id, yesh_atid_id, 2)
+    )
+    conn.commit()
+    cur.close()
+
+    resp = client.get('/api/results?by=all')
+    assert resp.status_code == 200
+    body = resp.get_json()
+    previous = {row['party_id']: row['count'] for row in body['previous']}
+    assert previous[likud_id] == 4
+    assert previous[yesh_atid_id] == 2
+
+
+def test_results_segment_filters_migration_by_club(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    liverpool_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Real Madrid'")
+    real_madrid_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM previous_parties WHERE name_en = 'Likud'")
+    likud_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM upcoming_parties WHERE name_en = 'Likud'")
+    likud_upcoming_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM upcoming_parties WHERE name_en = 'Yesh'")
+    yesh_id = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO rollup_previous_upcoming '
+        '(previous_party_id, upcoming_party_id, league_id, club_id, vote_count) '
+        'VALUES (%s, %s, %s, %s, %s), (%s, %s, %s, %s, %s)',
+        (likud_id, likud_upcoming_id, epl_id, liverpool_id, 5,
+         likud_id, yesh_id, la_liga_id, real_madrid_id, 9)
+    )
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, %s, %s, %s)',
+        (epl_id, liverpool_id, likud_id, 5)
+    )
+    conn.commit()
+    cur.close()
+
+    resp = client.get(f'/api/results/segment?previous_party_id={likud_id}&club_id={liverpool_id}')
+    assert resp.status_code == 200
+    body = resp.get_json()
+    upcoming = {row['party_id']: row['count'] for row in body['upcoming']}
+    assert upcoming == {likud_upcoming_id: 5}
+    assert body['total'] == 5
+
+
+def test_results_segment_requires_previous_party_id(client):
+    resp = client.get('/api/results/segment')
+    assert resp.status_code == 400
+

@@ -115,11 +115,29 @@ def results():
             if party_type not in ('previous', 'upcoming'):
                 return jsonify({'error': "type must be 'previous' or 'upcoming'"}), 400
             result = queries.get_results_by_party(conn, party_type, party_id)
+        elif by == 'all':
+            result = queries.get_results_all(conn)
         else:
-            return jsonify({'error': "by must be 'club', 'league', or 'party'"}), 400
+            return jsonify({'error': "by must be 'club', 'league', 'party', or 'all'"}), 400
     finally:
         conn.close()
 
+    return jsonify(result)
+
+
+@app.route('/api/results/segment', methods=['GET'])
+def results_segment():
+    previous_party_id = request.args.get('previous_party_id', type=int)
+    if previous_party_id is None:
+        return jsonify({'error': 'previous_party_id is required'}), 400
+    club_id = request.args.get('club_id', type=int)
+    league_id = request.args.get('league_id', type=int)
+
+    conn = db.get_db()
+    try:
+        result = queries.get_results_segment(conn, previous_party_id, club_id=club_id, league_id=league_id)
+    finally:
+        conn.close()
     return jsonify(result)
 
 
@@ -147,16 +165,17 @@ def create_upcoming_party_route():
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        party_id = queries.create_upcoming_party(conn, name_en, name_he)
+        party_id = queries.create_upcoming_party(conn, name_en, name_he, logo_url)
     except queries.DuplicatePartyNameError as err:
         return _duplicate_party_error_response(err)
     finally:
         conn.close()
-    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he}), 201
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url}), 201
 
 
 @app.route('/api/admin/upcoming-parties/<int:party_id>', methods=['PATCH'])
@@ -165,18 +184,19 @@ def rename_upcoming_party_route(party_id):
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        updated = queries.rename_upcoming_party(conn, party_id, name_en, name_he)
+        updated = queries.rename_upcoming_party(conn, party_id, name_en, name_he, logo_url)
     except queries.DuplicatePartyNameError as err:
         return _duplicate_party_error_response(err)
     finally:
         conn.close()
     if not updated:
         return jsonify({'error': 'not found'}), 404
-    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he})
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url})
 
 
 @app.route('/api/admin/upcoming-parties/<int:party_id>', methods=['DELETE'])
@@ -234,16 +254,17 @@ def create_previous_party_route():
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        party_id = queries.create_previous_party(conn, name_en, name_he)
+        party_id = queries.create_previous_party(conn, name_en, name_he, logo_url)
     except queries.DuplicatePartyNameError as err:
         return _duplicate_party_error_response(err)
     finally:
         conn.close()
-    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he}), 201
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url}), 201
 
 
 @app.route('/api/admin/previous-parties/<int:party_id>', methods=['PATCH'])
@@ -252,18 +273,19 @@ def rename_previous_party_route(party_id):
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        updated = queries.rename_previous_party(conn, party_id, name_en, name_he)
+        updated = queries.rename_previous_party(conn, party_id, name_en, name_he, logo_url)
     except queries.DuplicatePartyNameError as err:
         return _duplicate_party_error_response(err)
     finally:
         conn.close()
     if not updated:
         return jsonify({'error': 'not found'}), 404
-    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he})
+    return jsonify({'id': party_id, 'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url})
 
 
 @app.route('/api/admin/previous-parties/<int:party_id>', methods=['DELETE'])
@@ -321,16 +343,17 @@ def create_league_route():
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        league_id = queries.create_league(conn, name_en, name_he)
+        league_id = queries.create_league(conn, name_en, name_he, logo_url)
     except queries.DuplicatePartyNameError as err:
         return _duplicate_named_error_response(err, 'league')
     finally:
         conn.close()
-    return jsonify({'id': league_id, 'name_en': name_en, 'name_he': name_he}), 201
+    return jsonify({'id': league_id, 'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url}), 201
 
 
 @app.route('/api/admin/leagues/<int:league_id>', methods=['PATCH'])
@@ -339,18 +362,19 @@ def rename_league_route(league_id):
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     conn = db.get_db()
     try:
-        updated = queries.rename_league(conn, league_id, name_en, name_he)
+        updated = queries.rename_league(conn, league_id, name_en, name_he, logo_url)
     except queries.DuplicatePartyNameError as err:
         return _duplicate_named_error_response(err, 'league')
     finally:
         conn.close()
     if not updated:
         return jsonify({'error': 'not found'}), 404
-    return jsonify({'id': league_id, 'name_en': name_en, 'name_he': name_he})
+    return jsonify({'id': league_id, 'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url})
 
 
 @app.route('/api/admin/leagues/<int:league_id>', methods=['DELETE'])
@@ -413,6 +437,7 @@ def create_club_route():
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     league_id = body.get('league_id')
@@ -429,14 +454,14 @@ def create_club_route():
             return jsonify({'error': 'league not found'}), 404
         if domestic_league_id is not None and not queries.league_exists(conn, domestic_league_id):
             return jsonify({'error': 'domestic league not found'}), 404
-        club_id = queries.create_club(conn, league_id, domestic_league_id, name_en, name_he)
+        club_id = queries.create_club(conn, league_id, domestic_league_id, name_en, name_he, logo_url)
     except queries.DuplicateClubNameError as err:
         return _duplicate_named_error_response(err, 'club')
     finally:
         conn.close()
     return jsonify({
         'id': club_id, 'league_id': league_id, 'domestic_league_id': domestic_league_id,
-        'name_en': name_en, 'name_he': name_he,
+        'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url,
     }), 201
 
 
@@ -446,6 +471,7 @@ def rename_club_route(club_id):
     body = request.get_json(force=True, silent=True) or {}
     name_en = body.get('name_en', '').strip()
     name_he = body.get('name_he', '').strip()
+    logo_url = (body.get('logo_url') or '').strip() or None
     if not name_en or not name_he:
         return jsonify({'error': 'name_en and name_he are required'}), 400
     league_id = body.get('league_id')
@@ -462,7 +488,7 @@ def rename_club_route(club_id):
             return jsonify({'error': 'league not found'}), 404
         if domestic_league_id is not None and not queries.league_exists(conn, domestic_league_id):
             return jsonify({'error': 'domestic league not found'}), 404
-        updated = queries.rename_club(conn, club_id, league_id, domestic_league_id, name_en, name_he)
+        updated = queries.rename_club(conn, club_id, league_id, domestic_league_id, name_en, name_he, logo_url)
     except queries.DuplicateClubNameError as err:
         return _duplicate_named_error_response(err, 'club')
     finally:
@@ -471,7 +497,7 @@ def rename_club_route(club_id):
         return jsonify({'error': 'not found'}), 404
     return jsonify({
         'id': club_id, 'league_id': league_id, 'domestic_league_id': domestic_league_id,
-        'name_en': name_en, 'name_he': name_he,
+        'name_en': name_en, 'name_he': name_he, 'logo_url': logo_url,
     })
 
 
