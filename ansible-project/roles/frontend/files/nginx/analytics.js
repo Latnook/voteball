@@ -171,6 +171,7 @@ function renderDiversityTab() {
   wcCheckbox.addEventListener('change', () => {
     diversityIncludeWorldCup = wcCheckbox.checked;
     renderDiversityTab();
+    renderLeanTab();
   });
   wcLabel.appendChild(wcCheckbox);
   const wcText = document.createElement('span');
