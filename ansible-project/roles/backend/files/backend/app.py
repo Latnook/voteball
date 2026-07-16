@@ -185,6 +185,31 @@ def results_segment():
     return jsonify(result)
 
 
+@app.route('/api/results/switch', methods=['GET'])
+def results_switch():
+    league_id = request.args.get('league_id', type=int)
+    club_id = request.args.get('club_id', type=int)
+
+    conn = db.get_db()
+    try:
+        result = queries.get_results_switch(conn, league_id=league_id, club_id=club_id)
+    finally:
+        conn.close()
+
+    return jsonify(result)
+
+
+@app.route('/api/results/clubs-breakdown', methods=['GET'])
+def results_clubs_breakdown():
+    conn = db.get_db()
+    try:
+        result = queries.get_clubs_breakdown(conn)
+    finally:
+        conn.close()
+
+    return jsonify(result)
+
+
 @app.route('/api/admin/login', methods=['POST'])
 def admin_login():
     body = request.get_json(force=True, silent=True) or {}

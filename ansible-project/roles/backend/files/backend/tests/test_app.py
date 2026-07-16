@@ -1141,3 +1141,33 @@ def test_results_segment_requires_previous_party_id(client):
     resp = client.get('/api/results/segment')
     assert resp.status_code == 400
 
+
+def test_results_switch_national_when_no_scope_given(client):
+    resp = client.get('/api/results/switch')
+    assert resp.status_code == 200
+    assert 'breakdown' in resp.get_json()
+
+
+def test_results_switch_scoped_by_club(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    club_id = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO rollup_vote_switch (league_id, club_id, switch_status, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, club_id, 'hedging', 4)
+    )
+    conn.commit()
+    cur.close()
+
+    resp = client.get(f'/api/results/switch?club_id={club_id}')
+    assert resp.status_code == 200
+    assert {'status': 'hedging', 'count': 4} in resp.get_json()['breakdown']
+
+
+def test_results_clubs_breakdown_returns_200(client):
+    resp = client.get('/api/results/clubs-breakdown')
+    assert resp.status_code == 200
+    assert isinstance(resp.get_json(), list)
+
