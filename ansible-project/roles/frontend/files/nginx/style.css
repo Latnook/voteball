@@ -615,3 +615,37 @@ select, input[type="text"], input[type="url"], input[type="password"] {
 .analytics-tab {
   margin-top: 1rem;
 }
+
+.diversity-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.diversity-worldcup-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+.diversity-spotlight-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 480px) {
+  .diversity-spotlight-split { grid-template-columns: 1fr; }
+}
+.diversity-spotlight-heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+}
+.diversity-spotlight-heading.most-mixed { color: var(--accent); }
+.diversity-spotlight-heading.most-one-sided { color: #FFD23F; }
