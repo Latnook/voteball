@@ -2,55 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
   <script src="i18n.js"></script>
+  <script src="theme.js"></script>
   <title data-i18n="resultsTitle">Voteball — Results</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .bar-row { display: flex; align-items: center; margin: 0.3rem 0; }
-    .bar-label { width: 220px; font-size: 0.9rem; }
-    .bar-track { flex: 1; background: #eee; border-radius: 4px; height: 1.2rem; margin: 0 0.5rem; }
-    .bar-fill { background: #1a73e8; height: 100%; border-radius: 4px; }
-    .bar-count { width: 40px; text-align: right; font-size: 0.85rem; }
-    .toggle { margin-bottom: 1rem; }
-    [dir="rtl"] .bar-label { text-align: right; }
-    [dir="rtl"] .bar-count { text-align: left; }
-  </style>
 </head>
 <body>
-  <div id="lang-toggle" class="lang-toggle">
-    <button type="button" data-lang="en" aria-pressed="true">EN</button>
-    <button type="button" data-lang="he" aria-pressed="false">עב</button>
+  <div class="topbar">
+    <a class="brand" href="index.html"><span class="brand-ball">⚽</span> Voteball</a>
+    <div class="toggles">
+      <div id="lang-toggle" class="pill-group">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="he" aria-pressed="false">עב</button>
+      </div>
+      <button type="button" id="theme-toggle" class="icon-toggle" aria-pressed="false" aria-label="Switch to light mode">☀️</button>
+    </div>
   </div>
 
-  <h1 data-i18n="resultsHeading">Voteball — Results</h1>
-  <p id="total-votes"></p>
+  <main class="page">
+    <div class="hero">
+      <span class="eyebrow" data-i18n="resultsEyebrow">LIVE RESULTS</span>
+      <h1 class="display" data-i18n="resultsHeading">Voteball — Results</h1>
+      <p data-i18n="resultsIntro">Anonymous, aggregate results from every Voteball ballot so far.</p>
+    </div>
 
-  <div class="toggle">
-    <label><input type="radio" name="mode" value="club-league" checked> <span data-i18n="resultsModeClubLeague">Start from a club/league</span></label>
-    <label><input type="radio" name="mode" value="party"> <span data-i18n="resultsModeParty">Start from a party</span></label>
-  </div>
+    <section id="compare-section" hidden>
+      <div id="compare-scoreboard" class="scoreboard"></div>
 
-  <div id="club-league-mode">
-    <label><span data-i18n="resultsLabelLeague">League:</span> <select id="league-picker"></select></label>
-    <label><span data-i18n="resultsLabelClub">Club (optional):</span> <select id="club-picker"><option value="" data-i18n="resultsClubPlaceholderOption">— whole league —</option></select></label>
-  </div>
+      <h2 class="section-heading" id="fan-lean-heading" data-i18n="resultsFanLeanHeading">How fans like you lean</h2>
+      <p class="note" id="fan-lean-note"></p>
+      <div id="fan-lean-standings" class="standings"></div>
 
-  <div id="party-mode" style="display:none">
-    <label><span data-i18n="resultsLabelPartyType">Party type:</span>
-      <select id="party-type-picker">
-        <option value="previous" data-i18n="resultsPartyTypePrevious">Previous (current Knesset)</option>
-        <option value="upcoming" data-i18n="resultsPartyTypeUpcoming">Upcoming election</option>
-      </select>
-    </label>
-    <label><span data-i18n="resultsLabelParty">Party:</span> <select id="party-picker"></select></label>
-  </div>
+      <h2 class="section-heading" data-i18n="resultsMigrationHeading">Where your camp is headed</h2>
+      <p class="note" id="migration-note"></p>
+      <div id="migration-standings" class="standings"></div>
+    </section>
 
-  <h2 data-i18n="resultsHeadingPrevious">Previous Knesset vote breakdown</h2>
-  <div id="previous-results"></div>
+    <hr class="chalk-rule" id="compare-divider" hidden>
 
-  <h2 data-i18n="resultsHeadingUpcoming">Upcoming election breakdown</h2>
-  <div id="upcoming-results"></div>
+    <section id="overall-section">
+      <h2 class="section-heading" data-i18n="resultsNationalHeading">National standings</h2>
+      <h3 data-i18n="resultsHeadingPrevious">Previous Knesset vote breakdown</h3>
+      <div id="national-previous" class="standings"></div>
+      <h3 data-i18n="resultsHeadingUpcoming">Upcoming election breakdown</h3>
+      <div id="national-upcoming" class="standings"></div>
+    </section>
 
+    <hr class="chalk-rule">
+
+    <section id="explorer-section">
+      <h2 class="section-heading" data-i18n="resultsExplorerHeading">Explore the results</h2>
+      <div class="pill-group" id="mode-toggle">
+        <button type="button" data-mode="club-league" aria-pressed="true" data-i18n="resultsModeClubLeague">Start from a club/league</button>
+        <button type="button" data-mode="party" aria-pressed="false" data-i18n="resultsModeParty">Start from a party</button>
+      </div>
+
+      <div id="club-league-mode" class="explorer-controls">
+        <label class="field"><span data-i18n="resultsLabelLeague">League:</span> <select id="league-picker"></select></label>
+        <label class="field"><span data-i18n="resultsLabelClub">Club (optional):</span> <select id="club-picker"><option value="" data-i18n="resultsClubPlaceholderOption">— whole league —</option></select></label>
+      </div>
+
+      <div id="party-mode" class="explorer-controls" hidden>
+        <label class="field"><span data-i18n="resultsLabelPartyType">Party type:</span>
+          <select id="party-type-picker">
+            <option value="previous" data-i18n="resultsPartyTypePrevious">Previous (current Knesset)</option>
+            <option value="upcoming" data-i18n="resultsPartyTypeUpcoming">Upcoming election</option>
+          </select>
+        </label>
+        <label class="field"><span data-i18n="resultsLabelParty">Party:</span> <select id="party-picker"></select></label>
+      </div>
+
+      <h3 data-i18n="resultsHeadingPrevious">Previous Knesset vote breakdown</h3>
+      <div id="previous-results" class="standings"></div>
+
+      <h3 data-i18n="resultsHeadingUpcoming">Upcoming election breakdown</h3>
+      <div id="upcoming-results" class="standings"></div>
+    </section>
+  </main>
+
+  <script src="logos.js"></script>
   <script src="results.js"></script>
 </body>
 </html>

@@ -2,97 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
   <script src="i18n.js"></script>
+  <script src="theme.js"></script>
   <title data-i18n="adminTitle">Voteball — Admin</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-    .tab-button { background: #eee; color: #333; }
-    .tab-button.active { background: #1a73e8; color: white; }
+    .tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tab-button { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    .tab-button.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    #logout-button { margin-inline-start: auto; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.85rem; cursor: pointer; }
     .tab-section { display: none; }
     .tab-section.active { display: block; }
-    .party-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.4rem 0; flex-wrap: wrap; }
-    .party-row .party-name { flex: 1; min-width: 120px; }
-    .party-row button, .reassign-form button { font-size: 0.85rem; padding: 0.3rem 0.6rem; }
-    .reassign-form { margin: 0.4rem 0 0.4rem 1rem; padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px; width: 100%; }
-    .league-group { border: 1px solid #ddd; border-radius: 6px; padding: 0.6rem; margin: 0.6rem 0; }
+    .party-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .party-row .logo { width: 1.8rem; height: 1.8rem; }
+    .party-row .party-name { flex: 1; min-width: 120px; font-weight: 600; }
+    .party-row button, .reassign-form button { font-size: 0.8rem; padding: 0.4rem 0.7rem; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+    .reassign-form { margin: 0.4rem 0 0.4rem 1.5rem; padding: 0.6rem; border: 1px solid var(--line); border-radius: var(--radius-sm); width: 100%; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+    .league-group { border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem; margin: 0.8rem 0; background: var(--surface); }
     .league-header { font-weight: bold; }
-    .club-list { margin: 0.3rem 0 0.3rem 1rem; }
+    .club-list { margin: 0.4rem 0 0.4rem 1.5rem; }
     .club-row { font-weight: normal; }
-    .row-note { color: #666; font-size: 0.85rem; }
-    .add-club-form { display: flex; gap: 0.4rem; align-items: center; margin: 0.4rem 0 0.4rem 1rem; flex-wrap: wrap; }
-    table.votes-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
-    table.votes-table th, table.votes-table td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; }
-    .row-error { color: #c00; font-size: 0.85rem; width: 100%; }
-    [dir="rtl"] table.votes-table th, [dir="rtl"] table.votes-table td { text-align: right; }
-    [dir="rtl"] .party-row .party-name { text-align: right; }
+    .row-note { color: var(--muted); font-size: 0.85rem; }
+    .add-form-row, .add-club-form { display: flex; gap: 0.5rem; align-items: center; margin: 0.6rem 0 0.4rem 0; flex-wrap: wrap; }
+    .add-club-form { margin-inline-start: 1.5rem; }
+    table.votes-table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+    table.votes-table th, table.votes-table td { border: 1px solid var(--line); padding: 0.5rem; text-align: start; }
+    table.votes-table th { background: var(--surface-raised); }
+    .row-error { color: var(--danger); font-size: 0.85rem; width: 100%; }
+    .logo-url-input { min-width: 220px; }
   </style>
 </head>
 <body>
-  <div id="lang-toggle" class="lang-toggle">
-    <button type="button" data-lang="en" aria-pressed="true">EN</button>
-    <button type="button" data-lang="he" aria-pressed="false">עב</button>
+  <div class="topbar">
+    <a class="brand" href="index.html"><span class="brand-ball">⚽</span> Voteball</a>
+    <div class="toggles">
+      <div id="lang-toggle" class="pill-group">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="he" aria-pressed="false">עב</button>
+      </div>
+      <button type="button" id="theme-toggle" class="icon-toggle" aria-pressed="false" aria-label="Switch to light mode">☀️</button>
+    </div>
   </div>
 
-  <h1 data-i18n="adminHeading">Voteball — Admin</h1>
+  <main class="page">
+    <h1 class="section-heading" data-i18n="adminHeading">Voteball — Admin</h1>
 
-  <div id="secret-gate">
-    <form id="secret-form">
-      <label><span data-i18n="adminLabelUsername">Username:</span> <input type="text" id="username-input" required autocomplete="username"></label>
-      <label><span data-i18n="adminLabelPassword">Password:</span> <input type="password" id="password-input" required autocomplete="current-password"></label>
-      <button type="submit" data-i18n="adminLogIn">Log in</button>
-      <p class="error" id="secret-error"></p>
-    </form>
-  </div>
-
-  <div id="admin-content" style="display:none">
-    <div class="tab-bar">
-      <button type="button" class="tab-button" data-tab="teams" data-i18n="adminTabTeams">Teams</button>
-      <button type="button" class="tab-button active" data-tab="previous" data-i18n="adminTabPrevious">Previous Parties</button>
-      <button type="button" class="tab-button" data-tab="upcoming" data-i18n="adminTabUpcoming">Upcoming Parties</button>
-      <button type="button" class="tab-button" data-tab="votes" data-i18n="adminTabVotes">Votes</button>
-      <button type="button" id="logout-button" data-i18n="adminLogOut">Log out</button>
+    <div id="secret-gate" class="card">
+      <form id="secret-form">
+        <label class="field"><span data-i18n="adminLabelUsername">Username:</span> <input type="text" id="username-input" required autocomplete="username"></label>
+        <label class="field"><span data-i18n="adminLabelPassword">Password:</span> <input type="password" id="password-input" required autocomplete="current-password"></label>
+        <button type="submit" class="btn" data-i18n="adminLogIn">Log in</button>
+        <p class="error" id="secret-error"></p>
+      </form>
     </div>
 
-    <section id="tab-teams" class="tab-section">
-      <h2 data-i18n="adminHeadingTeams">Teams</h2>
-      <div id="league-list"></div>
-      <form id="league-add-form">
-        <input type="text" id="league-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
-        <input type="text" id="league-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
-        <button type="submit" data-i18n="adminAddLeague">+ Add league</button>
-      </form>
-      <p class="error" id="league-form-error"></p>
-    </section>
+    <div id="admin-content" style="display:none">
+      <div class="tab-bar">
+        <button type="button" class="tab-button" data-tab="teams" data-i18n="adminTabTeams">Teams</button>
+        <button type="button" class="tab-button active" data-tab="previous" data-i18n="adminTabPrevious">Previous Parties</button>
+        <button type="button" class="tab-button" data-tab="upcoming" data-i18n="adminTabUpcoming">Upcoming Parties</button>
+        <button type="button" class="tab-button" data-tab="votes" data-i18n="adminTabVotes">Votes</button>
+        <button type="button" id="logout-button" data-i18n="adminLogOut">Log out</button>
+      </div>
 
-    <section id="tab-previous" class="tab-section active">
-      <h2 data-i18n="adminHeadingPrevious">Previous Parties</h2>
-      <div id="previous-party-list"></div>
-      <form id="previous-party-add-form">
-        <input type="text" id="previous-party-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
-        <input type="text" id="previous-party-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
-        <button type="submit" data-i18n="adminAdd">Add</button>
-      </form>
-      <p class="error" id="previous-party-form-error"></p>
-    </section>
+      <section id="tab-teams" class="tab-section">
+        <h2 class="section-heading" data-i18n="adminHeadingTeams">Teams</h2>
+        <div id="league-list"></div>
+        <form id="league-add-form" class="add-form-row">
+          <input type="text" id="league-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
+          <input type="text" id="league-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
+          <input type="url" id="league-add-input-logo" class="logo-url-input" data-i18n-placeholder="adminPlaceholderLogoUrl" placeholder="Logo URL (optional)">
+          <button type="submit" class="btn btn-secondary" data-i18n="adminAddLeague">+ Add league</button>
+        </form>
+        <p class="error" id="league-form-error"></p>
+      </section>
 
-    <section id="tab-upcoming" class="tab-section">
-      <h2 data-i18n="adminHeadingUpcoming">Upcoming Parties</h2>
-      <div id="upcoming-party-list"></div>
-      <form id="upcoming-party-add-form">
-        <input type="text" id="upcoming-party-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
-        <input type="text" id="upcoming-party-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
-        <button type="submit" data-i18n="adminAdd">Add</button>
-      </form>
-      <p class="error" id="upcoming-party-form-error"></p>
-    </section>
+      <section id="tab-previous" class="tab-section active">
+        <h2 class="section-heading" data-i18n="adminHeadingPrevious">Previous Parties</h2>
+        <div id="previous-party-list"></div>
+        <form id="previous-party-add-form" class="add-form-row">
+          <input type="text" id="previous-party-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
+          <input type="text" id="previous-party-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
+          <input type="url" id="previous-party-add-input-logo" class="logo-url-input" data-i18n-placeholder="adminPlaceholderLogoUrl" placeholder="Logo URL (optional)">
+          <button type="submit" class="btn btn-secondary" data-i18n="adminAdd">Add</button>
+        </form>
+        <p class="error" id="previous-party-form-error"></p>
+      </section>
 
-    <section id="tab-votes" class="tab-section">
-      <h2 data-i18n="adminHeadingVotes">Votes</h2>
-      <div id="votes-table-container"></div>
-    </section>
-  </div>
+      <section id="tab-upcoming" class="tab-section">
+        <h2 class="section-heading" data-i18n="adminHeadingUpcoming">Upcoming Parties</h2>
+        <div id="upcoming-party-list"></div>
+        <form id="upcoming-party-add-form" class="add-form-row">
+          <input type="text" id="upcoming-party-add-input-en" data-i18n-placeholder="adminPlaceholderNameEn" placeholder="English name" required>
+          <input type="text" id="upcoming-party-add-input-he" data-i18n-placeholder="adminPlaceholderNameHe" placeholder="Hebrew name" dir="rtl" required>
+          <input type="url" id="upcoming-party-add-input-logo" class="logo-url-input" data-i18n-placeholder="adminPlaceholderLogoUrl" placeholder="Logo URL (optional)">
+          <button type="submit" class="btn btn-secondary" data-i18n="adminAdd">Add</button>
+        </form>
+        <p class="error" id="upcoming-party-form-error"></p>
+      </section>
 
+      <section id="tab-votes" class="tab-section">
+        <h2 class="section-heading" data-i18n="adminHeadingVotes">Votes</h2>
+        <div id="votes-table-container"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="logos.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>

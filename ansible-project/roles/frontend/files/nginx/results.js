@@ -2,100 +2,254 @@ let optionsData = null;
 let lastClubLeagueData = null;
 let lastPartyData = null;
 
-function renderBars(containerId, rows, nameLookup) {
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`request failed with status ${res.status}`);
+  return res.json();
+}
+
+function showError(containerIds) {
+  containerIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'error';
+    p.textContent = t('resultsErrorLoad');
+    el.appendChild(p);
+  });
+}
+
+function previousPartyInfo(id) {
+  if (id === null) return { name: t('resultsDidNotVote'), entity: null };
+  const p = optionsData.previous_parties.find(p => p.id === id);
+  return p ? { name: localizedName(p), entity: p } : { name: `#${id}`, entity: null };
+}
+
+function upcomingPartyInfo(id) {
+  if (id === null) return { name: t('resultsUndecided'), entity: null };
+  const p = optionsData.upcoming_parties.find(p => p.id === id);
+  return p ? { name: localizedName(p), entity: p } : { name: `#${id}`, entity: null };
+}
+
+function clubOrLeagueInfo(row) {
+  if (row.club_id) {
+    const c = optionsData.clubs.find(c => c.id === row.club_id);
+    return c ? { name: localizedName(c), entity: c } : { name: `club #${row.club_id}`, entity: null };
+  }
+  const l = optionsData.leagues.find(l => l.id === row.league_id);
+  return l ? { name: `${localizedName(l)}${t('resultsLeagueWideSuffix')}`, entity: l } : { name: `league #${row.league_id}`, entity: null };
+}
+
+// rows: [{count, ...key fields}]. infoFn(row) -> {name, entity}. opts.highlightKey(row) -> bool.
+function renderStandings(containerId, rows, infoFn, opts) {
+  opts = opts || {};
   const container = document.getElementById(containerId);
   container.innerHTML = '';
+
+  if (!rows.length) {
+    const empty = document.createElement('p');
+    empty.className = 'note';
+    empty.textContent = opts.emptyText || t('resultsNoData');
+    container.appendChild(empty);
+    return;
+  }
+
   const total = rows.reduce((sum, r) => sum + r.count, 0) || 1;
-  rows.sort((a, b) => b.count - a.count);
-  rows.forEach(r => {
-    const label = nameLookup(r);
+  const sorted = rows.slice().sort((a, b) => b.count - a.count);
+
+  sorted.forEach((r, idx) => {
+    const { name, entity } = infoFn(r);
     const pct = Math.round((r.count / total) * 100);
+    const isYou = typeof opts.highlightKey === 'function' && opts.highlightKey(r);
+
     const row = document.createElement('div');
-    row.className = 'bar-row';
+    row.className = isYou ? 'standings-row is-you' : 'standings-row';
 
-    const labelDiv = document.createElement('div');
-    labelDiv.className = 'bar-label';
-    labelDiv.textContent = label;
+    const rank = document.createElement('div');
+    rank.className = 'standings-rank';
+    rank.textContent = String(idx + 1);
 
-    const trackDiv = document.createElement('div');
-    trackDiv.className = 'bar-track';
-    const fillDiv = document.createElement('div');
-    fillDiv.className = 'bar-fill';
-    fillDiv.style.width = `${pct}%`;
-    trackDiv.appendChild(fillDiv);
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'standings-name';
+    nameDiv.appendChild(logoEl(entity, name));
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = name;
+    nameDiv.appendChild(nameSpan);
+    if (isYou) {
+      const badge = document.createElement('span');
+      badge.className = 'standings-you-badge';
+      badge.textContent = opts.badgeText || t('resultsYouBadge');
+      nameDiv.appendChild(badge);
+    }
 
-    const countDiv = document.createElement('div');
-    countDiv.className = 'bar-count';
-    countDiv.textContent = r.count;
+    const track = document.createElement('div');
+    track.className = 'standings-track';
+    const fill = document.createElement('div');
+    fill.className = 'standings-fill';
+    fill.style.width = `${pct}%`;
+    track.appendChild(fill);
 
-    row.appendChild(labelDiv);
-    row.appendChild(trackDiv);
-    row.appendChild(countDiv);
+    const stat = document.createElement('div');
+    stat.className = 'standings-stat';
+    stat.textContent = `${r.count} · ${pct}%`;
+
+    row.appendChild(rank);
+    row.appendChild(nameDiv);
+    row.appendChild(track);
+    row.appendChild(stat);
     container.appendChild(row);
   });
 }
 
-function previousPartyName(id) {
-  if (id === null) return t('resultsDidNotVote');
-  const p = optionsData.previous_parties.find(p => p.id === id);
-  return p ? localizedName(p) : `#${id}`;
-}
-
-function upcomingPartyName(id) {
-  if (id === null) return t('resultsUndecided');
-  const p = optionsData.upcoming_parties.find(p => p.id === id);
-  return p ? localizedName(p) : `#${id}`;
-}
-
-function clubOrLeagueName(row) {
-  if (row.club_id) {
-    const c = optionsData.clubs.find(c => c.id === row.club_id);
-    return c ? localizedName(c) : `club #${row.club_id}`;
+async function loadNationalStandings() {
+  try {
+    const data = await fetchJSON('/api/results?by=all');
+    renderStandings('national-previous', data.previous.map(r => ({ count: r.count, party_id: r.party_id })), r => previousPartyInfo(r.party_id));
+    renderStandings('national-upcoming', data.upcoming.map(r => ({ count: r.count, party_id: r.party_id })), r => upcomingPartyInfo(r.party_id));
+  } catch (err) {
+    showError(['national-previous', 'national-upcoming']);
   }
-  const l = optionsData.leagues.find(l => l.id === row.league_id);
-  return l ? `${localizedName(l)}${t('resultsLeagueWideSuffix')}` : `league #${row.league_id}`;
 }
 
-function showResultsError(containerIds) {
-  containerIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = `<p class="error">${t('resultsErrorLoad')}</p>`;
-  });
+function loadLastVote() {
+  try {
+    const raw = sessionStorage.getItem('voteballLastVote');
+    return raw ? JSON.parse(raw) : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+function appendScoreboardLine(container, label, entity, name) {
+  const line = document.createElement('div');
+  line.className = 'scoreboard-line';
+  const labelSpan = document.createElement('span');
+  labelSpan.className = 'scoreboard-label';
+  labelSpan.textContent = label;
+  line.appendChild(labelSpan);
+  line.appendChild(logoEl(entity, name));
+  const nameSpan = document.createElement('span');
+  nameSpan.textContent = name;
+  line.appendChild(nameSpan);
+  container.appendChild(line);
+}
+
+function renderScoreboard(vote) {
+  const el = document.getElementById('compare-scoreboard');
+  el.innerHTML = '';
+
+  const title = document.createElement('div');
+  title.className = 'scoreboard-title';
+  title.textContent = t('resultsYourLineup');
+  el.appendChild(title);
+
+  const club = vote.club_id ? optionsData.clubs.find(c => c.id === vote.club_id) : null;
+  const league = optionsData.leagues.find(l => l.id === vote.league_id);
+  const teamEntity = club || league || null;
+  const teamName = club ? localizedName(club) : (league ? localizedName(league) : '');
+  appendScoreboardLine(el, t('resultsScoreLabelTeam'), teamEntity, teamName);
+
+  const prevInfo = previousPartyInfo(vote.previous_party_id);
+  appendScoreboardLine(el, t('resultsScoreLabelPrevious'), prevInfo.entity, prevInfo.name);
+
+  if (vote.upcoming_vote_status === 'considering' && vote.upcoming_party_ids.length) {
+    vote.upcoming_party_ids.forEach((id, idx) => {
+      const info = upcomingPartyInfo(id);
+      appendScoreboardLine(el, idx === 0 ? t('resultsScoreLabelUpcoming') : '', info.entity, info.name);
+    });
+  } else {
+    appendScoreboardLine(el, t('resultsScoreLabelUpcoming'), null, t('resultsUndecided'));
+  }
+}
+
+async function renderCompareSection(vote) {
+  document.getElementById('compare-section').hidden = false;
+  document.getElementById('compare-divider').hidden = false;
+
+  renderScoreboard(vote);
+
+  const club = vote.club_id ? optionsData.clubs.find(c => c.id === vote.club_id) : null;
+  const league = optionsData.leagues.find(l => l.id === vote.league_id);
+  const scopeName = club ? localizedName(club) : (league ? localizedName(league) : '');
+
+  document.getElementById('fan-lean-heading').textContent = t('resultsFanLeanHeading').replace('{who}', scopeName);
+  document.getElementById('fan-lean-note').textContent = club
+    ? t('resultsFanLeanNoteClub').replace('{club}', scopeName)
+    : t('resultsFanLeanNoteLeague').replace('{league}', scopeName);
+
+  try {
+    const query = club ? `by=club&id=${club.id}` : `by=league&id=${vote.league_id}`;
+    const data = await fetchJSON(`/api/results?${query}`);
+    const highlighted = new Set(vote.upcoming_vote_status === 'considering' ? vote.upcoming_party_ids : [null]);
+    renderStandings(
+      'fan-lean-standings',
+      data.upcoming.map(r => ({ count: r.count, party_id: r.party_id })),
+      r => upcomingPartyInfo(r.party_id),
+      { highlightKey: r => highlighted.has(r.party_id), badgeText: t('resultsYouBadge') }
+    );
+  } catch (err) {
+    showError(['fan-lean-standings']);
+  }
+
+  if (vote.previous_party_id == null) {
+    document.getElementById('migration-note').textContent = t('resultsMigrationNoteDidNotVote');
+    document.getElementById('migration-standings').innerHTML = '';
+    return;
+  }
+
+  const previousInfo = previousPartyInfo(vote.previous_party_id);
+  try {
+    let scopeLabel = club ? scopeName : t('resultsScopeNational');
+    let data = await fetchJSON(
+      club
+        ? `/api/results/segment?previous_party_id=${vote.previous_party_id}&club_id=${club.id}`
+        : `/api/results/segment?previous_party_id=${vote.previous_party_id}`
+    );
+    if (club && data.total < 5) {
+      // Sample too thin at club level to be meaningful -- fall back to the national migration.
+      data = await fetchJSON(`/api/results/segment?previous_party_id=${vote.previous_party_id}`);
+      scopeLabel = t('resultsScopeNational');
+    }
+    document.getElementById('migration-note').textContent = t('resultsMigrationNote')
+      .replace('{party}', previousInfo.name).replace('{scope}', scopeLabel);
+    renderStandings(
+      'migration-standings',
+      data.upcoming.map(r => ({ count: r.count, party_id: r.party_id })),
+      r => upcomingPartyInfo(r.party_id)
+    );
+  } catch (err) {
+    showError(['migration-standings']);
+  }
 }
 
 function renderClubLeagueResults() {
   if (!lastClubLeagueData) return;
-  renderBars('previous-results', lastClubLeagueData.previous.map(r => ({ count: r.count, key: r.party_id })), r => previousPartyName(r.key));
-  renderBars('upcoming-results', lastClubLeagueData.upcoming.map(r => ({ count: r.count, key: r.party_id })), r => upcomingPartyName(r.key));
+  renderStandings('previous-results', lastClubLeagueData.previous.map(r => ({ count: r.count, party_id: r.party_id })), r => previousPartyInfo(r.party_id));
+  renderStandings('upcoming-results', lastClubLeagueData.upcoming.map(r => ({ count: r.count, party_id: r.party_id })), r => upcomingPartyInfo(r.party_id));
 }
 
 async function loadResultsByClubOrLeague() {
   const clubId = document.getElementById('club-picker').value;
   const leagueId = document.getElementById('league-picker').value;
-
   const query = clubId ? `by=club&id=${clubId}` : `by=league&id=${leagueId}`;
-  let data;
   try {
-    const res = await fetch(`/api/results?${query}`);
-    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
-    data = await res.json();
+    lastClubLeagueData = await fetchJSON(`/api/results?${query}`);
   } catch (err) {
-    showResultsError(['previous-results', 'upcoming-results']);
+    showError(['previous-results', 'upcoming-results']);
     return;
   }
-
-  lastClubLeagueData = data;
   renderClubLeagueResults();
 }
 
 function renderPartyResults() {
   if (!lastPartyData) return;
   const { partyType, targetId, otherId, breakdown, crosstab } = lastPartyData;
-  const otherNameLookup = partyType === 'previous' ? upcomingPartyName : previousPartyName;
   const otherKey = partyType === 'previous' ? 'upcoming_party_id' : 'previous_party_id';
+  const otherInfoFn = partyType === 'previous' ? (r => upcomingPartyInfo(r.key)) : (r => previousPartyInfo(r.key));
 
-  renderBars(targetId, breakdown.map(r => ({ count: r.count, club_id: r.club_id, league_id: r.league_id })), clubOrLeagueName);
-  renderBars(otherId, crosstab.map(r => ({ count: r.count, key: r[otherKey] })), r => otherNameLookup(r.key));
+  renderStandings(targetId, breakdown.map(r => ({ count: r.count, club_id: r.club_id, league_id: r.league_id })), clubOrLeagueInfo);
+  renderStandings(otherId, crosstab.map(r => ({ count: r.count, key: r[otherKey] })), otherInfoFn);
 }
 
 async function loadResultsByParty() {
@@ -108,11 +262,9 @@ async function loadResultsByParty() {
 
   let data;
   try {
-    const res = await fetch(`/api/results?by=party&type=${partyType}&id=${partyId}`);
-    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
-    data = await res.json();
+    data = await fetchJSON(`/api/results?by=party&type=${partyType}&id=${partyId}`);
   } catch (err) {
-    showResultsError([targetId, otherId]);
+    showError([targetId, otherId]);
     return;
   }
 
@@ -139,7 +291,7 @@ function renderClubPickerOptions() {
   const previousValue = clubPicker.value;
   clubPicker.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
   const leagueId = parseInt(leaguePicker.value, 10);
-  optionsData.clubs.filter(c => c.league_id === leagueId).forEach(c => {
+  optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId).forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.id;
     opt.textContent = localizedName(c);
@@ -164,48 +316,52 @@ function renderPartyPicker() {
   loadResultsByParty();
 }
 
+function currentExplorerMode() {
+  const active = document.querySelector('#mode-toggle button[aria-pressed="true"]');
+  return active ? active.dataset.mode : 'club-league';
+}
+
+document.getElementById('mode-toggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-mode]');
+  if (!btn) return;
+  document.querySelectorAll('#mode-toggle button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  const isClubLeague = btn.dataset.mode === 'club-league';
+  document.getElementById('club-league-mode').hidden = !isClubLeague;
+  document.getElementById('party-mode').hidden = isClubLeague;
+  if (isClubLeague) loadResultsByClubOrLeague(); else renderPartyPicker();
+});
+
+document.getElementById('league-picker').addEventListener('change', () => { renderClubPickerOptions(); loadResultsByClubOrLeague(); });
+document.getElementById('club-picker').addEventListener('change', loadResultsByClubOrLeague);
+document.getElementById('party-type-picker').addEventListener('change', renderPartyPicker);
+document.getElementById('party-picker').addEventListener('change', loadResultsByParty);
+
 async function init() {
   try {
-    const res = await fetch('/api/options');
-    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
-    optionsData = await res.json();
+    optionsData = await fetchJSON('/api/options');
   } catch (err) {
-    showResultsError(['previous-results', 'upcoming-results']);
+    showError(['national-previous', 'national-upcoming', 'previous-results', 'upcoming-results']);
     return;
   }
 
+  loadNationalStandings();
+
+  const lastVote = loadLastVote();
+  if (lastVote) renderCompareSection(lastVote);
+
   renderLeaguePickerOptions();
-  const leaguePicker = document.getElementById('league-picker');
-  const clubPicker = document.getElementById('club-picker');
   renderClubPickerOptions();
-  leaguePicker.addEventListener('change', () => { renderClubPickerOptions(); loadResultsByClubOrLeague(); });
-  clubPicker.addEventListener('change', loadResultsByClubOrLeague);
-
-  document.querySelectorAll('input[name="mode"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      const isClubLeague = document.querySelector('input[name="mode"]:checked').value === 'club-league';
-      document.getElementById('club-league-mode').style.display = isClubLeague ? 'block' : 'none';
-      document.getElementById('party-mode').style.display = isClubLeague ? 'none' : 'block';
-      if (isClubLeague) loadResultsByClubOrLeague(); else renderPartyPicker();
-    });
-  });
-
-  document.getElementById('party-type-picker').addEventListener('change', renderPartyPicker);
-  document.getElementById('party-picker').addEventListener('change', loadResultsByParty);
-
   loadResultsByClubOrLeague();
 }
 
 document.addEventListener('voteball:langchange', () => {
   if (!optionsData) return;
+  loadNationalStandings();
+  const lastVote = loadLastVote();
+  if (lastVote) renderCompareSection(lastVote);
   renderLeaguePickerOptions();
   renderClubPickerOptions();
-  const isPartyMode = document.querySelector('input[name="mode"]:checked').value === 'party';
-  if (isPartyMode) {
-    renderPartyPicker();
-  } else {
-    renderClubLeagueResults();
-  }
+  if (currentExplorerMode() === 'party') renderPartyPicker(); else renderClubLeagueResults();
 });
 
 init();

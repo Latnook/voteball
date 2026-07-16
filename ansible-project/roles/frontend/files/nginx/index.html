@@ -2,44 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
   <script src="i18n.js"></script>
+  <script src="theme.js"></script>
   <title>Voteball</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="lang-toggle" class="lang-toggle">
-    <button type="button" data-lang="en" aria-pressed="true">EN</button>
-    <button type="button" data-lang="he" aria-pressed="false">עב</button>
+  <div class="topbar">
+    <a class="brand" href="index.html"><span class="brand-ball">⚽</span> Voteball</a>
+    <div class="toggles">
+      <div id="lang-toggle" class="pill-group">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="he" aria-pressed="false">עב</button>
+      </div>
+      <button type="button" id="theme-toggle" class="icon-toggle" aria-pressed="false" aria-label="Switch to light mode">☀️</button>
+    </div>
   </div>
 
-  <h1>Voteball</h1>
-  <p data-i18n="voteIntro">Football fandom vs. how you vote — anonymous, one vote per browser.</p>
+  <main class="page">
+    <div class="hero">
+      <span class="eyebrow" data-i18n="voteEyebrow">LIVE POLL</span>
+      <h1 class="display" data-i18n="voteHeroTitle">Pick your side</h1>
+      <p data-i18n="voteIntro">Football fandom vs. how you vote — anonymous, one vote per browser.</p>
+    </div>
 
-  <form id="vote-form">
-    <fieldset>
-      <legend data-i18n="voteLegendLeague">1. League</legend>
-      <label><span data-i18n="voteLabelLeague">League:</span> <select id="league-select" required></select></label>
-      <label><span data-i18n="voteLabelClub">Club (optional, or leave blank if you just follow the league):</span>
-        <select id="club-select"><option value="" data-i18n="voteClubPlaceholderOption">— just the league —</option></select>
-      </label>
-    </fieldset>
+    <form id="vote-form">
+      <section class="vote-section">
+        <div class="vote-section-head">
+          <span class="vote-section-num display">1</span>
+          <span class="vote-section-title" data-i18n="voteLegendLeague">League &amp; club</span>
+        </div>
+        <p class="vote-section-hint" data-i18n="voteLeagueHint">Pick a league, then your club — or just the league if you don't follow one closely.</p>
+        <div id="league-tabs" class="tabs" role="tablist"></div>
+        <div id="team-grid" class="card-grid"></div>
+      </section>
 
-    <fieldset>
-      <legend data-i18n="voteLegendPrevious">2. Current Knesset — who did you vote for?</legend>
-      <div id="previous-party-options"></div>
-      <label><input type="radio" name="previous" value="did_not_vote" required> <span data-i18n="voteDidNotVote">Didn't vote / not eligible</span></label>
-    </fieldset>
+      <hr class="chalk-rule">
 
-    <fieldset>
-      <legend data-i18n="voteLegendUpcoming">3. Upcoming election — who are you considering? (choose up to 3)</legend>
-      <div id="upcoming-party-options"></div>
-      <label><input type="checkbox" id="undecided-checkbox"> <span data-i18n="voteUndecided">Undecided / prefer not to say</span></label>
-    </fieldset>
+      <section class="vote-section">
+        <div class="vote-section-head">
+          <span class="vote-section-num display">2</span>
+          <span class="vote-section-title" data-i18n="voteLegendPrevious">Current Knesset — who did you vote for?</span>
+        </div>
+        <div id="previous-grid" class="card-grid"></div>
+      </section>
 
-    <button type="submit" data-i18n="voteSubmit">Submit vote</button>
-    <p class="error" id="error-message"></p>
-  </form>
+      <hr class="chalk-rule">
 
+      <section class="vote-section">
+        <div class="vote-section-head">
+          <span class="vote-section-num display">3</span>
+          <span class="vote-section-title" data-i18n="voteLegendUpcoming">Upcoming election — who are you considering?</span>
+        </div>
+        <p class="vote-section-hint" data-i18n="voteUpcomingHint">Choose up to 3.</p>
+        <div id="upcoming-grid" class="card-grid"></div>
+      </section>
+
+      <p class="error" id="error-message" role="alert"></p>
+      <button type="submit" class="btn btn-block" id="submit-btn" data-i18n="voteSubmit">Submit your line-up</button>
+    </form>
+  </main>
+
+  <script src="logos.js"></script>
   <script src="vote.js"></script>
 </body>
 </html>

@@ -80,6 +80,8 @@ function renderPartyRow(type, party, allParties) {
   row.className = 'party-row';
   row.dataset.partyId = party.id;
 
+  row.appendChild(logoEl(party, localizedName(party)));
+
   const nameSpan = document.createElement('span');
   nameSpan.className = 'party-name';
   nameSpan.textContent = localizedName(party);
@@ -120,13 +122,19 @@ function startRename(type, party, row) {
   inputHe.type = 'text';
   inputHe.value = party.name_he;
   inputHe.dir = 'rtl';
+  const inputLogo = document.createElement('input');
+  inputLogo.type = 'url';
+  inputLogo.className = 'logo-url-input';
+  inputLogo.placeholder = t('adminPlaceholderLogoUrl');
+  inputLogo.value = party.logo_url || '';
   nameSpan.replaceWith(inputEn);
   inputEn.after(inputHe);
+  inputHe.after(inputLogo);
 
   const saveBtn = document.createElement('button');
   saveBtn.type = 'button';
   saveBtn.textContent = t('adminSave');
-  inputHe.after(saveBtn);
+  inputLogo.after(saveBtn);
   inputEn.focus();
 
   saveBtn.addEventListener('click', async () => {
@@ -138,7 +146,7 @@ function startRename(type, party, row) {
       res = await adminFetch(`${partyEndpoint(type)}/${party.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value }),
+        body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
       });
     } catch (err) {
       errorSpan.textContent = t('adminSomethingWrong');
@@ -182,6 +190,7 @@ async function addParty(e, type) {
   e.preventDefault();
   const inputEn = document.getElementById(`${type}-party-add-input-en`);
   const inputHe = document.getElementById(`${type}-party-add-input-he`);
+  const inputLogo = document.getElementById(`${type}-party-add-input-logo`);
   const errorEl = document.getElementById(`${type}-party-form-error`);
   errorEl.textContent = '';
 
@@ -190,7 +199,7 @@ async function addParty(e, type) {
     res = await adminFetch(partyEndpoint(type), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value }),
+      body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
     });
   } catch (err) {
     errorEl.textContent = t('adminSomethingWrong');
@@ -204,6 +213,7 @@ async function addParty(e, type) {
   }
   inputEn.value = '';
   inputHe.value = '';
+  inputLogo.value = '';
   optionsData = null;
   loadedTabs.delete(type);
   loadPartyTab(type);
@@ -398,6 +408,7 @@ function renderLeagueGroup(league, data) {
 
   const header = document.createElement('div');
   header.className = 'party-row league-header';
+  header.appendChild(logoEl(league, localizedName(league)));
   const nameSpan = document.createElement('span');
   nameSpan.className = 'party-name';
   nameSpan.textContent = localizedName(league);
@@ -446,6 +457,8 @@ function renderClubRow(club, data, annotateLeagueId) {
   const row = document.createElement('div');
   row.className = 'party-row club-row';
   row.dataset.clubId = club.id;
+
+  row.appendChild(logoEl(club, localizedName(club)));
 
   const nameSpan = document.createElement('span');
   nameSpan.className = 'party-name';
@@ -500,13 +513,17 @@ function renderAddClubForm(league) {
   inputHe.dir = 'rtl';
   inputHe.required = true;
   const domesticSelect = buildLeagueSelect(optionsData.leagues, league.id, true);
+  const inputLogo = document.createElement('input');
+  inputLogo.type = 'url';
+  inputLogo.className = 'logo-url-input';
+  inputLogo.placeholder = t('adminPlaceholderLogoUrl');
   const addBtn = document.createElement('button');
   addBtn.type = 'submit';
   addBtn.textContent = t('adminAddClub');
   const errorSpan = document.createElement('span');
   errorSpan.className = 'row-error';
 
-  [inputEn, inputHe, domesticSelect, addBtn, errorSpan].forEach(el => form.appendChild(el));
+  [inputEn, inputHe, domesticSelect, inputLogo, addBtn, errorSpan].forEach(el => form.appendChild(el));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -519,7 +536,7 @@ function renderAddClubForm(league) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           league_id: league.id, domestic_league_id: domesticLeagueId,
-          name_en: inputEn.value, name_he: inputHe.value,
+          name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null,
         }),
       });
     } catch (err) {
@@ -561,13 +578,19 @@ function startRenameClub(club, data, row) {
     domesticSelect = rebuilt;
   });
 
+  const inputLogo = document.createElement('input');
+  inputLogo.type = 'url';
+  inputLogo.className = 'logo-url-input';
+  inputLogo.placeholder = t('adminPlaceholderLogoUrl');
+  inputLogo.value = club.logo_url || '';
+
   const saveBtn = document.createElement('button');
   saveBtn.type = 'button';
   saveBtn.textContent = t('adminSave');
   const errorSpan = document.createElement('span');
   errorSpan.className = 'row-error';
 
-  [inputEn, inputHe, leagueSelect, domesticSelect, saveBtn, errorSpan].forEach(el => row.appendChild(el));
+  [inputEn, inputHe, leagueSelect, domesticSelect, inputLogo, saveBtn, errorSpan].forEach(el => row.appendChild(el));
   inputEn.focus();
 
   saveBtn.addEventListener('click', async () => {
@@ -580,7 +603,7 @@ function startRenameClub(club, data, row) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           league_id: parseInt(leagueSelect.value, 10), domestic_league_id: domesticLeagueId,
-          name_en: inputEn.value, name_he: inputHe.value,
+          name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null,
         }),
       });
     } catch (err) {
@@ -628,13 +651,19 @@ function startRenameLeague(league, header) {
   inputHe.type = 'text';
   inputHe.value = league.name_he;
   inputHe.dir = 'rtl';
+  const inputLogo = document.createElement('input');
+  inputLogo.type = 'url';
+  inputLogo.className = 'logo-url-input';
+  inputLogo.placeholder = t('adminPlaceholderLogoUrl');
+  inputLogo.value = league.logo_url || '';
   nameSpan.replaceWith(inputEn);
   inputEn.after(inputHe);
+  inputHe.after(inputLogo);
 
   const saveBtn = document.createElement('button');
   saveBtn.type = 'button';
   saveBtn.textContent = t('adminSave');
-  inputHe.after(saveBtn);
+  inputLogo.after(saveBtn);
   inputEn.focus();
 
   saveBtn.addEventListener('click', async () => {
@@ -645,7 +674,7 @@ function startRenameLeague(league, header) {
       res = await adminFetch(`/api/admin/leagues/${league.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value }),
+        body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
       });
     } catch (err) {
       errorSpan.textContent = t('adminSomethingWrong');
@@ -687,6 +716,7 @@ document.getElementById('league-add-form').addEventListener('submit', async (e) 
   e.preventDefault();
   const inputEn = document.getElementById('league-add-input-en');
   const inputHe = document.getElementById('league-add-input-he');
+  const inputLogo = document.getElementById('league-add-input-logo');
   const errorEl = document.getElementById('league-form-error');
   errorEl.textContent = '';
   let res;
@@ -694,7 +724,7 @@ document.getElementById('league-add-form').addEventListener('submit', async (e) 
     res = await adminFetch('/api/admin/leagues', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value }),
+      body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
     });
   } catch (err) {
     errorEl.textContent = t('adminSomethingWrong');
@@ -708,6 +738,7 @@ document.getElementById('league-add-form').addEventListener('submit', async (e) 
   }
   inputEn.value = '';
   inputHe.value = '';
+  inputLogo.value = '';
   optionsData = null;
   loadedTabs.delete('teams');
   loadTeamsTab();
@@ -1011,7 +1042,7 @@ async function patchClubLeagues(club, newLeagueId, newDomesticLeagueId) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         league_id: newLeagueId, domestic_league_id: newDomesticLeagueId,
-        name_en: club.name_en, name_he: club.name_he,
+        name_en: club.name_en, name_he: club.name_he, logo_url: club.logo_url || null,
       }),
     });
   } catch (err) {

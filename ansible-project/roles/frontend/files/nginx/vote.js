@@ -1,68 +1,147 @@
 let optionsData = null;
+let selectedLeagueId = null;
+let selectedClubId = null; // null = "just the league"
+let selectedPreviousChoice = null; // 'did_not_vote' or a previous_party id (number)
+let selectedUpcomingIds = new Set();
+let undecided = false;
 
-function renderLeagueOptions() {
-  const leagueSelect = document.getElementById('league-select');
-  const previousValue = leagueSelect.value;
-  leagueSelect.innerHTML = '';
+function clubsForLeague(leagueId) {
+  return optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId);
+}
+
+function renderLeagueTabs() {
+  const tabs = document.getElementById('league-tabs');
+  tabs.innerHTML = '';
   optionsData.leagues.forEach(l => {
-    const opt = document.createElement('option');
-    opt.value = l.id;
-    opt.textContent = localizedName(l);
-    leagueSelect.appendChild(opt);
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'tab';
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-selected', String(l.id === selectedLeagueId));
+    tab.appendChild(logoEl(l, localizedName(l)));
+    tab.appendChild(document.createTextNode(localizedName(l)));
+    tab.addEventListener('click', () => selectLeague(l.id));
+    tabs.appendChild(tab);
   });
-  if (previousValue) leagueSelect.value = previousValue;
 }
 
-function renderClubs() {
-  const leagueSelect = document.getElementById('league-select');
-  const clubSelect = document.getElementById('club-select');
-  const previousValue = clubSelect.value;
-  clubSelect.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
-  const leagueId = parseInt(leagueSelect.value, 10);
-  optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId).forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = localizedName(c);
-    clubSelect.appendChild(opt);
-  });
-  if (previousValue) clubSelect.value = previousValue;
+function selectLeague(leagueId) {
+  selectedLeagueId = leagueId;
+  const stillValid = clubsForLeague(leagueId).some(c => c.id === selectedClubId);
+  if (!stillValid) selectedClubId = null;
+  renderLeagueTabs();
+  renderTeamGrid();
 }
 
-function renderPreviousPartyOptions() {
-  const prevDiv = document.getElementById('previous-party-options');
-  const checkedInput = document.querySelector('input[name="previous"]:checked');
-  const checkedId = checkedInput ? checkedInput.value : null;
-  prevDiv.innerHTML = '';
+function renderTeamGrid() {
+  const grid = document.getElementById('team-grid');
+  grid.innerHTML = '';
+  if (selectedLeagueId == null) return;
+
+  const justLeague = document.createElement('button');
+  justLeague.type = 'button';
+  justLeague.className = 'pick-card utility-card';
+  justLeague.setAttribute('aria-pressed', String(selectedClubId === null));
+  const justLeagueName = document.createElement('span');
+  justLeagueName.className = 'card-name';
+  justLeagueName.textContent = t('voteClubPlaceholderOption');
+  justLeague.appendChild(justLeagueName);
+  justLeague.addEventListener('click', () => { selectedClubId = null; renderTeamGrid(); });
+  grid.appendChild(justLeague);
+
+  clubsForLeague(selectedLeagueId).forEach(c => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'pick-card';
+    card.setAttribute('aria-pressed', String(c.id === selectedClubId));
+    card.appendChild(logoEl(c, localizedName(c)));
+    const name = document.createElement('span');
+    name.className = 'card-name';
+    name.textContent = localizedName(c);
+    card.appendChild(name);
+    card.addEventListener('click', () => { selectedClubId = c.id; renderTeamGrid(); });
+    grid.appendChild(card);
+  });
+}
+
+function renderPreviousGrid() {
+  const grid = document.getElementById('previous-grid');
+  grid.innerHTML = '';
+
   optionsData.previous_parties.forEach(p => {
-    const label = document.createElement('label');
-    const input = document.createElement('input');
-    input.type = 'radio';
-    input.name = 'previous';
-    input.value = p.id;
-    if (String(p.id) === checkedId) input.checked = true;
-    label.appendChild(input);
-    label.appendChild(document.createTextNode(' ' + localizedName(p)));
-    prevDiv.appendChild(label);
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'pick-card';
+    card.setAttribute('aria-pressed', String(selectedPreviousChoice === p.id));
+    card.appendChild(logoEl(p, localizedName(p)));
+    const name = document.createElement('span');
+    name.className = 'card-name';
+    name.textContent = localizedName(p);
+    card.appendChild(name);
+    card.addEventListener('click', () => { selectedPreviousChoice = p.id; renderPreviousGrid(); });
+    grid.appendChild(card);
   });
+
+  const didNotVote = document.createElement('button');
+  didNotVote.type = 'button';
+  didNotVote.className = 'pick-card utility-card';
+  didNotVote.setAttribute('aria-pressed', String(selectedPreviousChoice === 'did_not_vote'));
+  const didNotVoteName = document.createElement('span');
+  didNotVoteName.className = 'card-name';
+  didNotVoteName.textContent = t('voteDidNotVote');
+  didNotVote.appendChild(didNotVoteName);
+  didNotVote.addEventListener('click', () => { selectedPreviousChoice = 'did_not_vote'; renderPreviousGrid(); });
+  grid.appendChild(didNotVote);
 }
 
-function renderUpcomingPartyOptions() {
-  const upcomingDiv = document.getElementById('upcoming-party-options');
-  const checkedIds = new Set(Array.from(document.querySelectorAll('.upcoming-checkbox:checked')).map(cb => cb.value));
-  upcomingDiv.innerHTML = '';
+function toggleUpcoming(partyId) {
+  if (undecided) undecided = false;
+  if (selectedUpcomingIds.has(partyId)) {
+    selectedUpcomingIds.delete(partyId);
+  } else if (selectedUpcomingIds.size < 3) {
+    selectedUpcomingIds.add(partyId);
+  }
+  renderUpcomingGrid();
+}
+
+function renderUpcomingGrid() {
+  const grid = document.getElementById('upcoming-grid');
+  grid.innerHTML = '';
+  const atCap = selectedUpcomingIds.size >= 3;
+
   optionsData.upcoming_parties.forEach(p => {
-    const label = document.createElement('label');
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.className = 'upcoming-checkbox';
-    input.value = p.id;
-    if (checkedIds.has(String(p.id))) input.checked = true;
-    input.addEventListener('change', enforceUpcomingPartyLimit);
-    label.appendChild(input);
-    label.appendChild(document.createTextNode(' ' + localizedName(p)));
-    upcomingDiv.appendChild(label);
+    const isChecked = selectedUpcomingIds.has(p.id);
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'pick-card';
+    card.setAttribute('aria-pressed', String(isChecked));
+    if (!isChecked && atCap) {
+      card.disabled = true;
+      card.setAttribute('aria-disabled', 'true');
+    }
+    card.appendChild(logoEl(p, localizedName(p)));
+    const name = document.createElement('span');
+    name.className = 'card-name';
+    name.textContent = localizedName(p);
+    card.appendChild(name);
+    card.addEventListener('click', () => toggleUpcoming(p.id));
+    grid.appendChild(card);
   });
-  enforceUpcomingPartyLimit();
+
+  const undecidedCard = document.createElement('button');
+  undecidedCard.type = 'button';
+  undecidedCard.className = 'pick-card utility-card';
+  undecidedCard.setAttribute('aria-pressed', String(undecided));
+  const undecidedName = document.createElement('span');
+  undecidedName.className = 'card-name';
+  undecidedName.textContent = t('voteUndecided');
+  undecidedCard.appendChild(undecidedName);
+  undecidedCard.addEventListener('click', () => {
+    undecided = !undecided;
+    if (undecided) selectedUpcomingIds.clear();
+    renderUpcomingGrid();
+  });
+  grid.appendChild(undecidedCard);
 }
 
 async function loadOptions() {
@@ -75,57 +154,33 @@ async function loadOptions() {
     return;
   }
 
-  renderLeagueOptions();
-  document.getElementById('league-select').addEventListener('change', renderClubs);
-  renderClubs();
-  renderPreviousPartyOptions();
-  renderUpcomingPartyOptions();
+  if (optionsData.leagues.length > 0) selectedLeagueId = optionsData.leagues[0].id;
+  renderLeagueTabs();
+  renderTeamGrid();
+  renderPreviousGrid();
+  renderUpcomingGrid();
 }
-
-function enforceUpcomingPartyLimit() {
-  const checkboxes = document.querySelectorAll('.upcoming-checkbox');
-  const checkedCount = document.querySelectorAll('.upcoming-checkbox:checked').length;
-  checkboxes.forEach(cb => {
-    cb.disabled = !cb.checked && checkedCount >= 3;
-  });
-}
-
-function selectedUpcomingPartyIds() {
-  return Array.from(document.querySelectorAll('.upcoming-checkbox:checked')).map(cb => parseInt(cb.value, 10));
-}
-
-document.getElementById('undecided-checkbox').addEventListener('change', (e) => {
-  document.querySelectorAll('.upcoming-checkbox').forEach(cb => {
-    cb.disabled = e.target.checked;
-    if (e.target.checked) cb.checked = false;
-  });
-});
 
 document.getElementById('vote-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const errorEl = document.getElementById('error-message');
   errorEl.textContent = '';
 
-  const leagueId = parseInt(document.getElementById('league-select').value, 10);
-  const clubValue = document.getElementById('club-select').value;
-  const previousChoice = document.querySelector('input[name="previous"]:checked');
-  const undecided = document.getElementById('undecided-checkbox').checked;
-  const upcomingIds = selectedUpcomingPartyIds();
-
-  if (!leagueId || !previousChoice) {
+  if (!selectedLeagueId || !selectedPreviousChoice) {
     errorEl.textContent = t('voteErrorRequiredFields');
     return;
   }
-  if (!undecided && upcomingIds.length === 0) {
+  if (!undecided && selectedUpcomingIds.size === 0) {
     errorEl.textContent = t('voteErrorPickParty');
     return;
   }
 
+  const upcomingIds = Array.from(selectedUpcomingIds);
   const body = {
-    league_id: leagueId,
-    club_id: clubValue ? parseInt(clubValue, 10) : null,
-    previous_vote_status: previousChoice.value === 'did_not_vote' ? 'did_not_vote' : 'voted',
-    previous_party_id: previousChoice.value === 'did_not_vote' ? null : parseInt(previousChoice.value, 10),
+    league_id: selectedLeagueId,
+    club_id: selectedClubId,
+    previous_vote_status: selectedPreviousChoice === 'did_not_vote' ? 'did_not_vote' : 'voted',
+    previous_party_id: selectedPreviousChoice === 'did_not_vote' ? null : selectedPreviousChoice,
     upcoming_vote_status: undecided ? 'undecided' : 'considering',
     upcoming_party_ids: undecided ? [] : upcomingIds,
   };
@@ -136,23 +191,21 @@ document.getElementById('vote-form').addEventListener('submit', async (e) => {
     body: JSON.stringify(body),
   });
 
-  if (res.status === 409) {
-    window.location.href = 'results.html';
-    return;
-  }
-  if (!res.ok) {
+  if (res.status !== 409 && !res.ok) {
     errorEl.textContent = t('voteErrorSubmit');
     return;
   }
+
+  sessionStorage.setItem('voteballLastVote', JSON.stringify(body));
   window.location.href = 'results.html';
 });
 
 document.addEventListener('voteball:langchange', () => {
   if (!optionsData) return;
-  renderLeagueOptions();
-  renderClubs();
-  renderPreviousPartyOptions();
-  renderUpcomingPartyOptions();
+  renderLeagueTabs();
+  renderTeamGrid();
+  renderPreviousGrid();
+  renderUpcomingGrid();
 });
 
 loadOptions();
