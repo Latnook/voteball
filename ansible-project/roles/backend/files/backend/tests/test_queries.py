@@ -34,14 +34,16 @@ def test_get_options_returns_seeded_leagues(conn):
 
     upcoming_names_en = {p['name_en'] for p in options['upcoming_parties']}
     assert upcoming_names_en == {
-        'Likud', 'Yesh', 'Yachad', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
-        'Religious Zionist Party', 'Otzma Yehudit', "Hadash-Ta'al", 'Balad',
+        'Likud', 'Yashar', 'Together', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
+        'Religious Zionist Party', 'Otzma Yehudit', "Hadash-Ta'al", 'Balad', "Ra'am",
+        'Shas', 'United Torah Judaism',
         'The Economic Party', 'El HaDegel', 'The Reservists', 'The Joint List',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
-        'הציונות הדתית', 'עוצמה יהודית', 'חד"ש-תע"ל', 'בל"ד',
+        'הציונות הדתית', 'עוצמה יהודית', 'חד"ש-תע"ל', 'בל"ד', 'רע"ם',
+        'ש"ס', 'יהדות התורה',
         'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים', 'הרשימה המשותפת',
     }
 
@@ -56,12 +58,16 @@ def _epl_and_liverpool(conn):
     return league_id, club_id
 
 
+def _pick(league_id, club_id=None):
+    return {'league_id': league_id, 'club_id': club_id}
+
+
 def test_insert_vote_league_only_did_not_vote_undecided(conn):
     league_id, _ = _epl_and_liverpool(conn)
 
     vote_id = queries.insert_vote(
         conn,
-        league_id=league_id, club_id=None,
+        team_picks=[_pick(league_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='undecided', upcoming_party_ids=[],
         cookie_token='token-a',
@@ -70,6 +76,10 @@ def test_insert_vote_league_only_did_not_vote_undecided(conn):
 
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM vote_upcoming_parties WHERE vote_id = %s', (vote_id,))
+    assert cur.fetchone()[0] == 0
+    cur.execute('SELECT league_id FROM vote_leagues WHERE vote_id = %s', (vote_id,))
+    assert cur.fetchone()[0] == league_id
+    cur.execute('SELECT COUNT(*) FROM vote_clubs WHERE vote_id = %s', (vote_id,))
     assert cur.fetchone()[0] == 0
     cur.close()
 
@@ -89,7 +99,7 @@ def test_insert_vote_with_club_and_multiple_upcoming_parties(conn):
 
     vote_id = queries.insert_vote(
         conn,
-        league_id=league_id, club_id=club_id,
+        team_picks=[_pick(league_id, club_id)],
         previous_vote_status='voted', previous_party_id=previous_party_id,
         upcoming_vote_status='considering', upcoming_party_ids=[party_a, party_b],
         cookie_token='token-b',
@@ -101,12 +111,68 @@ def test_insert_vote_with_club_and_multiple_upcoming_parties(conn):
     cur.close()
 
 
+def test_insert_vote_multi_league_multi_club(conn):
+    epl_id, liverpool_id = _epl_and_liverpool(conn)
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Barcelona'")
+    barcelona_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Real Madrid'")
+    real_madrid_id = cur.fetchone()[0]
+    cur.close()
+
+    vote_id = queries.insert_vote(
+        conn,
+        team_picks=[
+            _pick(epl_id, liverpool_id),
+            _pick(la_liga_id, barcelona_id),
+            _pick(la_liga_id, real_madrid_id),
+        ],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='multi-league-token',
+    )
+
+    cur = conn.cursor()
+    cur.execute('SELECT club_id, league_id FROM vote_clubs WHERE vote_id = %s ORDER BY club_id', (vote_id,))
+    rows = cur.fetchall()
+    cur.close()
+    assert sorted(rows) == sorted([(liverpool_id, epl_id), (barcelona_id, la_liga_id), (real_madrid_id, la_liga_id)])
+
+
+def test_insert_vote_same_club_under_two_leagues_produces_two_rows(conn):
+    """A dual-league club (e.g. a UCL club with a domestic league too) picked once under each of
+    its two tabs must produce two independent vote_clubs rows, one per league context."""
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'UCL'")
+    ucl_id = cur.fetchone()[0]
+    cur.execute("SELECT id, domestic_league_id FROM clubs WHERE name = 'Real Madrid'")
+    real_madrid_id, la_liga_id = cur.fetchone()
+    cur.close()
+    assert la_liga_id is not None  # Real Madrid is seeded UCL-primary/La-Liga-domestic
+
+    vote_id = queries.insert_vote(
+        conn,
+        team_picks=[_pick(ucl_id, real_madrid_id), _pick(la_liga_id, real_madrid_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='dual-league-token',
+    )
+
+    cur = conn.cursor()
+    cur.execute('SELECT league_id FROM vote_clubs WHERE vote_id = %s AND club_id = %s ORDER BY league_id', (vote_id, real_madrid_id))
+    rows = [r[0] for r in cur.fetchall()]
+    cur.close()
+    assert sorted(rows) == sorted([ucl_id, la_liga_id])
+
+
 def test_insert_vote_invalid_previous_vote_status_raises_and_rolls_back(conn):
     league_id, _ = _epl_and_liverpool(conn)
 
     with pytest.raises(Exception):
         queries.insert_vote(
-            conn, league_id=league_id, club_id=None,
+            conn, team_picks=[_pick(league_id)],
             previous_vote_status='not_a_real_status', previous_party_id=None,
             upcoming_vote_status='undecided', upcoming_party_ids=[],
             cookie_token='bad-status-token',
@@ -114,7 +180,7 @@ def test_insert_vote_invalid_previous_vote_status_raises_and_rolls_back(conn):
 
     # connection must be usable afterward - proves rollback happened
     vote_id = queries.insert_vote(
-        conn, league_id=league_id, club_id=None,
+        conn, team_picks=[_pick(league_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='undecided', upcoming_party_ids=[],
         cookie_token='good-token-after-bad',
@@ -126,14 +192,14 @@ def test_insert_vote_duplicate_cookie_token_rejected(conn):
     league_id, _ = _epl_and_liverpool(conn)
 
     queries.insert_vote(
-        conn, league_id=league_id, club_id=None,
+        conn, team_picks=[_pick(league_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='undecided', upcoming_party_ids=[],
         cookie_token='dup-token',
     )
     with pytest.raises(ValueError):
         queries.insert_vote(
-            conn, league_id=league_id, club_id=None,
+            conn, team_picks=[_pick(league_id)],
             previous_vote_status='did_not_vote', previous_party_id=None,
             upcoming_vote_status='undecided', upcoming_party_ids=[],
             cookie_token='dup-token',
@@ -181,6 +247,8 @@ def test_get_results_by_party_previous(conn):
 
 
 def test_get_results_by_party_previous_includes_crosstab(conn):
+    # crosstab is a national (no league/club dimension) migration figure, so it's seeded via
+    # rollup_national_previous_upcoming, not the per-scope rollup_previous_upcoming.
     import queries
     league_id, club_id, party_x = _seed_rollup_rows(conn)
 
@@ -188,11 +256,11 @@ def test_get_results_by_party_previous_includes_crosstab(conn):
     cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
     party_a = cur.fetchone()[0]
     cur.execute(
-        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        'INSERT INTO rollup_national_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
         (party_x, party_a, 5)
     )
     cur.execute(
-        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        'INSERT INTO rollup_national_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
         (party_x, None, 2)
     )
     conn.commit()
@@ -212,11 +280,11 @@ def test_get_results_by_party_upcoming_includes_crosstab(conn):
     cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
     party_a = cur.fetchone()[0]
     cur.execute(
-        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        'INSERT INTO rollup_national_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
         (party_x, party_a, 5)
     )
     cur.execute(
-        'INSERT INTO rollup_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
+        'INSERT INTO rollup_national_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s)',
         (None, party_a, 4)
     )
     conn.commit()
@@ -270,13 +338,13 @@ def test_get_votes_includes_upcoming_party_ids_and_empty_list_when_none(conn):
     cur.close()
 
     considering_vote_id = queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='considering', upcoming_party_ids=[party_a, party_b],
         cookie_token='votes-token-1',
     )
     undecided_vote_id = queries.insert_vote(
-        conn, league_id=league_id, club_id=None,
+        conn, team_picks=[_pick(league_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='undecided', upcoming_party_ids=[],
         cookie_token='votes-token-2',
@@ -289,8 +357,7 @@ def test_get_votes_includes_upcoming_party_ids_and_empty_list_when_none(conn):
 
     considering = by_id[considering_vote_id]
     assert sorted(considering['upcoming_party_ids']) == sorted([party_a, party_b])
-    assert considering['league_id'] == league_id
-    assert considering['club_id'] == club_id
+    assert considering['team_picks'] == [{'league_id': league_id, 'club_id': club_id}]
     assert considering['previous_vote_status'] == 'did_not_vote'
     assert considering['previous_party_id'] is None
     assert considering['upcoming_vote_status'] == 'considering'
@@ -299,6 +366,40 @@ def test_get_votes_includes_upcoming_party_ids_and_empty_list_when_none(conn):
 
     undecided = by_id[undecided_vote_id]
     assert undecided['upcoming_party_ids'] == []
+    assert undecided['team_picks'] == [{'league_id': league_id, 'club_id': None}]
+
+
+def test_get_votes_no_cartesian_inflation_with_multiple_clubs_and_upcoming_parties(conn):
+    """Regression guard: a vote with 3 club picks AND 2 upcoming-party picks must show exactly
+    3 team_picks and exactly 2 upcoming_party_ids in get_votes -- not 6 of either (the cartesian
+    trap a naive multi-LEFT-JOIN + array_agg would fall into)."""
+    epl_id, liverpool_id = _epl_and_liverpool(conn)
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Barcelona'")
+    barcelona_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Real Madrid'")
+    real_madrid_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
+    party_a = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party B') RETURNING id")
+    party_b = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    vote_id = queries.insert_vote(
+        conn,
+        team_picks=[_pick(epl_id, liverpool_id), _pick(la_liga_id, barcelona_id), _pick(la_liga_id, real_madrid_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='considering', upcoming_party_ids=[party_a, party_b],
+        cookie_token='no-inflation-token',
+    )
+
+    vote = next(v for v in queries.get_votes(conn) if v['id'] == vote_id)
+    assert len(vote['team_picks']) == 3
+    assert len(vote['upcoming_party_ids']) == 2
+    assert sorted(vote['upcoming_party_ids']) == sorted([party_a, party_b])
 
 
 def test_delete_vote_removes_row_and_cascades_join_table(conn):
@@ -311,7 +412,7 @@ def test_delete_vote_removes_row_and_cascades_join_table(conn):
     cur.close()
 
     vote_id = queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='considering', upcoming_party_ids=[party_c],
         cookie_token='delete-token-1',
@@ -323,6 +424,8 @@ def test_delete_vote_removes_row_and_cascades_join_table(conn):
     cur.execute('SELECT COUNT(*) FROM votes WHERE id = %s', (vote_id,))
     assert cur.fetchone()[0] == 0
     cur.execute('SELECT COUNT(*) FROM vote_upcoming_parties WHERE vote_id = %s', (vote_id,))
+    assert cur.fetchone()[0] == 0
+    cur.execute('SELECT COUNT(*) FROM vote_clubs WHERE vote_id = %s', (vote_id,))
     assert cur.fetchone()[0] == 0
     cur.close()
 
@@ -439,7 +542,7 @@ def test_count_votes_for_previous_party(conn):
     assert queries.count_votes_for_previous_party(conn, party_id) == 0
 
     queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='voted', previous_party_id=party_id,
         upcoming_vote_status='undecided', upcoming_party_ids=[],
         cookie_token='count-prev-token-1',
@@ -454,7 +557,7 @@ def test_count_votes_for_upcoming_party(conn):
     assert queries.count_votes_for_upcoming_party(conn, party_id) == 0
 
     queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='considering', upcoming_party_ids=[party_id],
         cookie_token='count-up-token-1',
@@ -469,13 +572,13 @@ def test_reassign_previous_party_votes_updates_matching_rows_only(conn):
     other_id = queries.create_previous_party(conn, 'Reassign Other', 'Reassign Other')
 
     v1 = queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='voted', previous_party_id=source_id,
         upcoming_vote_status='undecided', upcoming_party_ids=[],
         cookie_token='reassign-prev-1',
     )
     v2 = queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='voted', previous_party_id=other_id,
         upcoming_vote_status='undecided', upcoming_party_ids=[],
         cookie_token='reassign-prev-2',
@@ -502,13 +605,13 @@ def test_reassign_upcoming_party_votes_handles_collision_and_simple_case(conn):
     other_id = queries.create_upcoming_party(conn, 'Reassign Up Other', 'Reassign Up Other')
 
     v_simple = queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='considering', upcoming_party_ids=[source_id, other_id],
         cookie_token='reassign-up-1',
     )
     v_collision = queries.insert_vote(
-        conn, league_id=league_id, club_id=club_id,
+        conn, team_picks=[_pick(league_id, club_id)],
         previous_vote_status='did_not_vote', previous_party_id=None,
         upcoming_vote_status='considering', upcoming_party_ids=[source_id, target_id],
         cookie_token='reassign-up-2',
@@ -526,3 +629,141 @@ def test_upcoming_party_exists(conn):
     party_id = queries.create_upcoming_party(conn, 'Exists Check Upcoming', 'Exists Check Upcoming')
     assert queries.upcoming_party_exists(conn, party_id) is True
     assert queries.upcoming_party_exists(conn, 999999) is False
+
+
+def test_count_votes_for_league_and_club_count_distinct_votes(conn):
+    epl_id, liverpool_id = _epl_and_liverpool(conn)
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM clubs WHERE name = 'Arsenal'")
+    arsenal_id = cur.fetchone()[0]
+    cur.close()
+
+    assert queries.count_votes_for_league(conn, epl_id) == 0
+    assert queries.count_votes_for_club(conn, liverpool_id) == 0
+
+    # One vote picks two clubs in the same league -- must count once at league scope, but
+    # count_votes_for_club is per-club so each club's own count is still 1.
+    queries.insert_vote(
+        conn, team_picks=[_pick(epl_id, liverpool_id), _pick(epl_id, arsenal_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='count-league-1',
+    )
+    assert queries.count_votes_for_league(conn, epl_id) == 1
+    assert queries.count_votes_for_club(conn, liverpool_id) == 1
+    assert queries.count_votes_for_club(conn, arsenal_id) == 1
+
+    # A "just this league" pick also counts at league scope.
+    queries.insert_vote(
+        conn, team_picks=[_pick(epl_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='count-league-2',
+    )
+    assert queries.count_votes_for_league(conn, epl_id) == 2
+
+
+def test_get_results_by_league_dedups_multi_club_ballot(conn):
+    """A voter with 3 club picks in one league counts once at league scope (club_id IS NULL),
+    even though the underlying rollup also carries 3 club-scope rows for the same vote."""
+    epl_id, liverpool_id = _epl_and_liverpool(conn)
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM clubs WHERE name = 'Arsenal'")
+    arsenal_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Party X') RETURNING id")
+    party_x = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES '
+        '(%s, NULL, %s, %s), (%s, %s, %s, %s), (%s, %s, %s, %s)',
+        (epl_id, party_x, 1, epl_id, liverpool_id, party_x, 1, epl_id, arsenal_id, party_x, 1)
+    )
+    conn.commit()
+    cur.close()
+
+    result = queries.get_results_by_league(conn, epl_id)
+    previous = {row['party_id']: row['count'] for row in result['previous']}
+    assert previous[party_x] == 1  # league scope: one vote, not summed across its 2 club rows
+
+
+def test_reassign_league_votes_rewrites_vote_leagues_and_vote_clubs(conn):
+    cur = conn.cursor()
+    cur.execute("INSERT INTO leagues (name) VALUES ('Source League') RETURNING id")
+    source_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO leagues (name) VALUES ('Target League') RETURNING id")
+    target_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, name) VALUES (%s, 'Source Club') RETURNING id", (source_id,))
+    club_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    # A club still nominally lives under source_id here -- reassign_league_votes must still
+    # rewrite vote_clubs rows referencing it (the "club moved off the league after votes were
+    # cast" case is simulated by NOT moving the club, since the app-level precondition that
+    # blocks league reassign while clubs remain is enforced in app.py, not this query function).
+    v_just_league = queries.insert_vote(
+        conn, team_picks=[_pick(source_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='reassign-league-1',
+    )
+    v_club = queries.insert_vote(
+        conn, team_picks=[_pick(source_id, club_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='reassign-league-2',
+    )
+
+    reassigned = queries.reassign_league_votes(conn, source_id, target_id)
+    assert reassigned == 2
+
+    votes_by_id = {v['id']: v for v in queries.get_votes(conn)}
+    assert votes_by_id[v_just_league]['team_picks'] == [{'league_id': target_id, 'club_id': None}]
+    assert votes_by_id[v_club]['team_picks'] == [{'league_id': target_id, 'club_id': club_id}]
+
+
+def test_reassign_league_votes_dedups_collision(conn):
+    cur = conn.cursor()
+    cur.execute("INSERT INTO leagues (name) VALUES ('Source League 2') RETURNING id")
+    source_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO leagues (name) VALUES ('Target League 2') RETURNING id")
+    target_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    # A vote that already has a "just this league" pick under BOTH source and target -- the
+    # reassign must dedup rather than violate the (vote_id, league_id) primary key.
+    vote_id = queries.insert_vote(
+        conn, team_picks=[_pick(source_id), _pick(target_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='reassign-league-collision',
+    )
+
+    reassigned = queries.reassign_league_votes(conn, source_id, target_id)
+    assert reassigned == 1
+
+    vote = next(v for v in queries.get_votes(conn) if v['id'] == vote_id)
+    assert vote['team_picks'] == [{'league_id': target_id, 'club_id': None}]
+
+
+def test_reassign_club_votes_dedups_collision(conn):
+    epl_id, liverpool_id = _epl_and_liverpool(conn)
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM clubs WHERE name = 'Arsenal'")
+    arsenal_id = cur.fetchone()[0]
+    cur.close()
+
+    # A vote that already has both the source and target club picked under the same league --
+    # reassign must dedup rather than violate the (vote_id, club_id, league_id) primary key.
+    vote_id = queries.insert_vote(
+        conn, team_picks=[_pick(epl_id, liverpool_id), _pick(epl_id, arsenal_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='undecided', upcoming_party_ids=[],
+        cookie_token='reassign-club-collision',
+    )
+
+    reassigned = queries.reassign_club_votes(conn, liverpool_id, arsenal_id)
+    assert reassigned == 1
+
+    vote = next(v for v in queries.get_votes(conn) if v['id'] == vote_id)
+    assert vote['team_picks'] == [{'league_id': epl_id, 'club_id': arsenal_id}]

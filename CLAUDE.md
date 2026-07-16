@@ -45,9 +45,17 @@ importing the backend's. This is a deliberate simplicity choice, not an oversigh
 introducing a shared module unless the plan says to.
 
 Postgres (RDS) stores: static seed data (`leagues`, `clubs`, `previous_parties`, `upcoming_parties` —
-the two party tables are also admin-editable after seeding), raw votes (`votes`,
-`vote_upcoming_parties`), and worker-computed rollup tables (`rollup_previous`, `rollup_upcoming`,
-`rollup_previous_upcoming`) that the backend reads for fast `/api/results` responses.
+the two party tables are also admin-editable after seeding), raw votes (`votes`, `vote_clubs`,
+`vote_leagues`, `vote_upcoming_parties` — a ballot can name up to 3 clubs per league across any
+number of leagues, so `votes` itself carries no league/club column; `vote_clubs` records each
+specific-club pick with the league tab it was picked under, `vote_leagues` records "just this
+league, no specific club" picks), and worker-computed rollup tables (`rollup_previous`,
+`rollup_upcoming`, `rollup_previous_upcoming` — each carries a league-scope row per distinct league
+a vote touched, `club_id IS NULL`, deduped per vote+league, plus a club-scope row per specific pick
+— and `rollup_national_previous`/`rollup_national_upcoming`/`rollup_national_previous_upcoming`,
+counted one row per vote with no league/club dimension, since summing the league/club-scoped
+rollups for national totals would over-count a multi-team ballot) that the backend reads for fast
+`/api/results` responses.
 
 ### Backend request-handling pattern
 
@@ -70,8 +78,9 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 |---|---|---|---|
 | `/health` | GET | none | liveness/readiness probe target |
 | `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties, consumed by both frontend pages |
-| `/api/vote` | POST | none, cookie-deduped | sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids`, or if `upcoming_party_ids` has more than 3 entries (checked unconditionally, not just when `considering`) — client also validates both before submitting |
-| `/api/results` | GET | none | `?by=club\|league\|id=N` or `?by=party&type=previous\|upcoming&id=N` (the latter also returns a global `crosstab` of the other party type); reads the worker-computed rollup tables |
+| `/api/vote` | POST | none, cookie-deduped | body `{"team_picks": [{"league_id", "club_id"}, ...], "previous_vote_status", "previous_party_id", "upcoming_vote_status", "upcoming_party_ids"}`; `team_picks` needs ≥1 entry, ≤3 non-null `club_id` picks per distinct `league_id`, and a `club_id: null` ("just this league") entry can't coexist with specific-club entries in the same league; each `club_id`/`league_id` pair is validated against that club's real `{league_id, domestic_league_id}`; sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids`, or if `upcoming_party_ids` has more than 3 entries — client also validates all of this before submitting |
+| `/api/results` | GET | none | `?by=club\|league&id=N`, `?by=party&type=previous\|upcoming&id=N` (also returns a national `crosstab` of the other party type), or `?by=all` (national totals); reads the worker-computed rollup tables — `by=league` and `by=all` read the dedup/national-scoped rows so a multi-team ballot isn't over-counted |
+| `/api/results/segment` | GET | none | `?previous_party_id=P[&club_id=C\|&league_id=L]`; the "voters like you" migration cut — club/league-scoped if given, else national; returns `{"upcoming": [...], "total": N}` |
 | `/api/admin/login` | POST | none | body `{"username", "password"}`; returns `{"token"}` on success, `401` on any failure |
 | `/api/admin/previous-parties` | POST | Bearer token | create; 409 if the name already exists |
 | `/api/admin/previous-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove; DELETE returns 409 if any votes still reference the party |
@@ -81,8 +90,8 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 | `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove; DELETE returns 409 if any votes still reference the party |
 | `/api/admin/upcoming-parties/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; returns `{"count": N}` of votes that would move |
 | `/api/admin/upcoming-parties/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; reassigns every vote's `<id>` pick to `target_id` (collision-safe against the ≤3-pick cap), returns `{"reassigned": N}` |
-| `/api/admin/votes` | GET | Bearer token | list all votes (no `cookie_token` in the response) |
-| `/api/admin/votes/<id>` | DELETE | Bearer token | remove one vote; cascades to its `vote_upcoming_parties` rows |
+| `/api/admin/votes` | GET | Bearer token | list all votes (no `cookie_token` in the response); each vote carries `team_picks: [{"league_id", "club_id"}, ...]` (assembled from separate queries against `vote_clubs`/`vote_leagues`, not a joined `array_agg`, to avoid cartesian-inflating `upcoming_party_ids` alongside it) |
+| `/api/admin/votes/<id>` | DELETE | Bearer token | remove one vote; cascades to its `vote_clubs`/`vote_leagues`/`vote_upcoming_parties` rows |
 
 Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
 (dashboard, reads `/api/results`), `admin.html`/`admin.js` (unlinked from the public pages — party

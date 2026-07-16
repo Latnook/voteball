@@ -28,13 +28,11 @@ class FakeSNSClient:
 def test_check_and_notify_publishes_and_updates_state(conn):
     import alerts
     cur = conn.cursor()
-    cur.execute("INSERT INTO leagues (name) VALUES ('EPL') RETURNING id")
-    league_id = cur.fetchone()[0]
     for i in range(100):
         cur.execute(
-            '''INSERT INTO votes (league_id, previous_vote_status, upcoming_vote_status, cookie_token)
-               VALUES (%s, 'did_not_vote', 'undecided', %s)''',
-            (league_id, f'token-{i}')
+            '''INSERT INTO votes (previous_vote_status, upcoming_vote_status, cookie_token)
+               VALUES ('did_not_vote', 'undecided', %s)''',
+            (f'token-{i}',)
         )
     conn.commit()
     cur.close()

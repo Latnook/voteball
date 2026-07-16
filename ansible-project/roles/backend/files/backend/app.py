@@ -59,6 +59,46 @@ def options():
     return jsonify(result)
 
 
+def _validate_team_picks(conn, team_picks):
+    """Returns an error message string if team_picks is invalid, else None. A ballot names 0-3
+    specific clubs per league (never mixed with a "just this league" pick in that same league),
+    across any number of leagues, with at least one pick required overall."""
+    if not isinstance(team_picks, list) or not team_picks:
+        return 'team_picks must be a non-empty list'
+
+    league_ids = queries.get_all_league_ids(conn)
+    clubs_map = queries.get_clubs_league_map(conn)
+
+    picks_by_league = {}
+    for pick in team_picks:
+        if not isinstance(pick, dict):
+            return 'each team pick must be an object with league_id and club_id'
+        league_id = pick.get('league_id')
+        club_id = pick.get('club_id')
+        if not isinstance(league_id, int) or league_id not in league_ids:
+            return 'each team pick needs a valid league_id'
+        if club_id is not None:
+            if not isinstance(club_id, int) or club_id not in clubs_map:
+                return 'club_id must be null or reference an existing club'
+            club_leagues = clubs_map[club_id]
+            if league_id not in (club_leagues['league_id'], club_leagues['domestic_league_id']):
+                return 'club_id is not votable under the given league_id'
+        picks_by_league.setdefault(league_id, []).append(club_id)
+
+    for club_ids in picks_by_league.values():
+        specific = [c for c in club_ids if c is not None]
+        if len(specific) < len(club_ids) and specific:
+            return 'a league cannot mix "just this league" with specific club picks'
+        if len(club_ids) - len(specific) > 1:
+            return 'a league can only have one "just this league" pick'
+        if len(specific) > 3:
+            return 'select at most 3 clubs per league'
+        if len(specific) != len(set(specific)):
+            return 'duplicate club pick in the same league'
+
+    return None
+
+
 @app.route('/api/vote', methods=['POST'])
 def vote():
     token = request.cookies.get('voteball_token')
@@ -75,10 +115,14 @@ def vote():
 
     conn = db.get_db()
     try:
+        team_picks = body.get('team_picks')
+        picks_error = _validate_team_picks(conn, team_picks)
+        if picks_error:
+            return jsonify({'error': picks_error}), 400
+
         vote_id = queries.insert_vote(
             conn,
-            league_id=body.get('league_id'),
-            club_id=body.get('club_id'),
+            team_picks=team_picks,
             previous_vote_status=body.get('previous_vote_status'),
             previous_party_id=body.get('previous_party_id'),
             upcoming_vote_status=body.get('upcoming_vote_status'),

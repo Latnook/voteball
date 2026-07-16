@@ -50,19 +50,32 @@ def get_options(conn):
     }
 
 
-def insert_vote(conn, league_id, club_id, previous_vote_status, previous_party_id,
+def insert_vote(conn, team_picks, previous_vote_status, previous_party_id,
                  upcoming_vote_status, upcoming_party_ids, cookie_token):
+    """team_picks: list of {'league_id': int, 'club_id': int|None}. club_id None means
+    "just this league, no specific club" and is stored in vote_leagues; a set club_id is
+    stored in vote_clubs alongside the league it was picked under."""
     cur = conn.cursor()
     try:
         cur.execute(
             '''INSERT INTO votes
-               (league_id, club_id, previous_vote_status, previous_party_id,
-                upcoming_vote_status, cookie_token)
-               VALUES (%s, %s, %s, %s, %s, %s) RETURNING id''',
-            (league_id, club_id, previous_vote_status, previous_party_id,
-             upcoming_vote_status, cookie_token)
+               (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+               VALUES (%s, %s, %s, %s) RETURNING id''',
+            (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
         )
         vote_id = cur.fetchone()[0]
+
+        for pick in team_picks:
+            if pick['club_id'] is None:
+                cur.execute(
+                    'INSERT INTO vote_leagues (vote_id, league_id) VALUES (%s, %s)',
+                    (vote_id, pick['league_id'])
+                )
+            else:
+                cur.execute(
+                    'INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)',
+                    (vote_id, pick['club_id'], pick['league_id'])
+                )
 
         for party_id in upcoming_party_ids:
             cur.execute(
@@ -87,7 +100,10 @@ def get_results_by_club(conn, club_id):
 
 
 def get_results_by_league(conn, league_id):
-    return _results_for_filter(conn, 'league_id = %s', (league_id,))
+    # club_id IS NULL selects the league-scope rows only (one per vote that touched this league),
+    # so a voter who picked 3 clubs in this league is counted once here, not three times -- the
+    # separate club_id-set rows are what ?by=club reads.
+    return _results_for_filter(conn, 'league_id = %s AND club_id IS NULL', (league_id,))
 
 
 def _results_for_filter(conn, where_clause, params):
@@ -111,11 +127,14 @@ def _results_for_filter(conn, where_clause, params):
 
 
 def get_results_all(conn):
+    # National totals read the national rollup tables (one row's worth of counting per vote, no
+    # league/club dimension) -- NOT a no-filter sum over rollup_previous/rollup_upcoming, since
+    # those now carry multiple rows per multi-team ballot and would over-count it nationally.
     cur = conn.cursor()
-    cur.execute('SELECT previous_party_id, SUM(vote_count) FROM rollup_previous GROUP BY previous_party_id')
+    cur.execute('SELECT previous_party_id, SUM(vote_count) FROM rollup_national_previous GROUP BY previous_party_id')
     previous = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
 
-    cur.execute('SELECT upcoming_party_id, SUM(vote_count) FROM rollup_upcoming GROUP BY upcoming_party_id')
+    cur.execute('SELECT upcoming_party_id, SUM(vote_count) FROM rollup_national_upcoming GROUP BY upcoming_party_id')
     upcoming = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
 
     cur.close()
@@ -123,26 +142,35 @@ def get_results_all(conn):
 
 
 def get_results_segment(conn, previous_party_id, club_id=None, league_id=None):
-    where_clauses = ['previous_party_id = %s']
-    params = [previous_party_id]
-    if club_id is not None:
-        where_clauses.append('club_id = %s')
-        params.append(club_id)
-    elif league_id is not None:
-        where_clauses.append('league_id = %s')
-        params.append(league_id)
-    where_sql = ' AND '.join(where_clauses)
-
     cur = conn.cursor()
+
+    if club_id is not None:
+        where_sql = 'previous_party_id = %s AND club_id = %s'
+        params = [previous_party_id, club_id]
+        upcoming_table = 'rollup_previous_upcoming'
+        total_table = 'rollup_previous'
+    elif league_id is not None:
+        where_sql = 'previous_party_id = %s AND league_id = %s AND club_id IS NULL'
+        params = [previous_party_id, league_id]
+        upcoming_table = 'rollup_previous_upcoming'
+        total_table = 'rollup_previous'
+    else:
+        # No scope given -- national segment. Read the national tables (one row's worth of
+        # counting per vote), not the per-scope tables with no filter (which would over-count).
+        where_sql = 'previous_party_id = %s'
+        params = [previous_party_id]
+        upcoming_table = 'rollup_national_previous_upcoming'
+        total_table = 'rollup_national_previous'
+
     cur.execute(
-        f'SELECT upcoming_party_id, SUM(vote_count) FROM rollup_previous_upcoming '
+        f'SELECT upcoming_party_id, SUM(vote_count) FROM {upcoming_table} '
         f'WHERE {where_sql} GROUP BY upcoming_party_id',
         params
     )
     upcoming = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
 
     cur.execute(
-        f'SELECT COALESCE(SUM(vote_count), 0) FROM rollup_previous WHERE {where_sql}',
+        f'SELECT COALESCE(SUM(vote_count), 0) FROM {total_table} WHERE {where_sql}',
         params
     )
     total = cur.fetchone()[0]
@@ -164,8 +192,10 @@ def get_results_by_party(conn, party_type, party_id):
     )
     breakdown = [{'league_id': r[0], 'club_id': r[1], 'count': r[2]} for r in cur.fetchall()]
 
+    # crosstab is a national migration figure (no league/club dimension), so it reads the
+    # national table -- rollup_previous_upcoming would over-count a multi-team voter here.
     cur.execute(
-        f'SELECT {other_column}, SUM(vote_count) FROM rollup_previous_upcoming '
+        f'SELECT {other_column}, SUM(vote_count) FROM rollup_national_previous_upcoming '
         f'WHERE {column} = %s GROUP BY {other_column}',
         (party_id,)
     )
@@ -288,32 +318,44 @@ def delete_previous_party(conn, party_id):
 
 
 def get_votes(conn):
+    # Assembled from separate queries rather than one multi-LEFT-JOIN + array_agg: a vote can now
+    # have several vote_clubs/vote_leagues rows AND several vote_upcoming_parties rows, and joining
+    # all of them in one query produces a cartesian product that inflates every aggregate. Fetching
+    # each child table separately and assembling in Python keeps each list correct independently.
     cur = conn.cursor()
     cur.execute(
-        '''SELECT v.id, v.league_id, v.club_id, v.previous_vote_status,
-                  v.previous_party_id, v.upcoming_vote_status, v.created_at,
-                  COALESCE(
-                      array_agg(vup.upcoming_party_id) FILTER (WHERE vup.upcoming_party_id IS NOT NULL),
-                      ARRAY[]::INTEGER[]
-                  ) AS upcoming_party_ids
-           FROM votes v
-           LEFT JOIN vote_upcoming_parties vup ON vup.vote_id = v.id
-           GROUP BY v.id
-           ORDER BY v.id'''
+        '''SELECT id, previous_vote_status, previous_party_id, upcoming_vote_status, created_at
+           FROM votes ORDER BY id'''
     )
     votes = [
         {
             'id': r[0],
-            'league_id': r[1],
-            'club_id': r[2],
-            'previous_vote_status': r[3],
-            'previous_party_id': r[4],
-            'upcoming_vote_status': r[5],
-            'created_at': r[6].isoformat(),
-            'upcoming_party_ids': list(r[7]),
+            'previous_vote_status': r[1],
+            'previous_party_id': r[2],
+            'upcoming_vote_status': r[3],
+            'created_at': r[4].isoformat(),
+            'team_picks': [],
+            'upcoming_party_ids': [],
         }
         for r in cur.fetchall()
     ]
+    votes_by_id = {v['id']: v for v in votes}
+
+    cur.execute('SELECT vote_id, club_id, league_id FROM vote_clubs ORDER BY vote_id')
+    for vote_id, club_id, league_id in cur.fetchall():
+        if vote_id in votes_by_id:
+            votes_by_id[vote_id]['team_picks'].append({'league_id': league_id, 'club_id': club_id})
+
+    cur.execute('SELECT vote_id, league_id FROM vote_leagues ORDER BY vote_id')
+    for vote_id, league_id in cur.fetchall():
+        if vote_id in votes_by_id:
+            votes_by_id[vote_id]['team_picks'].append({'league_id': league_id, 'club_id': None})
+
+    cur.execute('SELECT vote_id, upcoming_party_id FROM vote_upcoming_parties ORDER BY vote_id')
+    for vote_id, upcoming_party_id in cur.fetchall():
+        if vote_id in votes_by_id:
+            votes_by_id[vote_id]['upcoming_party_ids'].append(upcoming_party_id)
+
     cur.close()
     return votes
 
@@ -473,9 +515,34 @@ def league_exists(conn, league_id):
     return exists
 
 
+def get_all_league_ids(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT id FROM leagues')
+    ids = {r[0] for r in cur.fetchall()}
+    cur.close()
+    return ids
+
+
+def get_clubs_league_map(conn):
+    """{club_id: {'league_id': int, 'domestic_league_id': int|None}} -- used to validate that a
+    /api/vote team pick's (club_id, league_id) pair is one of that club's real two leagues."""
+    cur = conn.cursor()
+    cur.execute('SELECT id, league_id, domestic_league_id FROM clubs')
+    result = {r[0]: {'league_id': r[1], 'domestic_league_id': r[2]} for r in cur.fetchall()}
+    cur.close()
+    return result
+
+
 def count_votes_for_league(conn, league_id):
     cur = conn.cursor()
-    cur.execute('SELECT COUNT(*) FROM votes WHERE league_id = %s', (league_id,))
+    cur.execute(
+        '''SELECT COUNT(DISTINCT vote_id) FROM (
+               SELECT vote_id FROM vote_clubs WHERE league_id = %s
+               UNION
+               SELECT vote_id FROM vote_leagues WHERE league_id = %s
+           ) u''',
+        (league_id, league_id)
+    )
     count = cur.fetchone()[0]
     cur.close()
     return count
@@ -496,10 +563,49 @@ def reassign_league_votes(conn, source_id, target_id):
     cur = conn.cursor()
     try:
         cur.execute(
-            'UPDATE votes SET league_id = %s WHERE league_id = %s',
+            '''SELECT COUNT(DISTINCT vote_id) FROM (
+                   SELECT vote_id FROM vote_clubs WHERE league_id = %s
+                   UNION
+                   SELECT vote_id FROM vote_leagues WHERE league_id = %s
+               ) u''',
+            (source_id, source_id)
+        )
+        reassigned = cur.fetchone()[0]
+
+        # vote_leagues: drop rows where the vote already has the target league (avoids violating
+        # the (vote_id, league_id) primary key on the UPDATE), same pattern as
+        # reassign_upcoming_party_votes.
+        cur.execute(
+            '''DELETE FROM vote_leagues
+               WHERE league_id = %s
+                 AND vote_id IN (SELECT vote_id FROM vote_leagues WHERE league_id = %s)''',
+            (source_id, target_id)
+        )
+        cur.execute(
+            'UPDATE vote_leagues SET league_id = %s WHERE league_id = %s',
             (target_id, source_id)
         )
-        reassigned = cur.rowcount
+
+        # vote_clubs: a club pick's league_id records which tab it was picked under, and can
+        # still reference the source league even after the "source league has zero clubs"
+        # precondition is met (a club could've been moved off that league after votes were cast
+        # under it) -- so these rows must be rewritten too, not just vote_leagues. Dedup on
+        # (vote_id, club_id) collisions between source and target league.
+        cur.execute(
+            '''DELETE FROM vote_clubs vc1
+               WHERE vc1.league_id = %s
+                 AND EXISTS (
+                     SELECT 1 FROM vote_clubs vc2
+                     WHERE vc2.vote_id = vc1.vote_id AND vc2.club_id = vc1.club_id
+                       AND vc2.league_id = %s
+                 )''',
+            (source_id, target_id)
+        )
+        cur.execute(
+            'UPDATE vote_clubs SET league_id = %s WHERE league_id = %s',
+            (target_id, source_id)
+        )
+
         conn.commit()
         return reassigned
     except Exception:
@@ -591,7 +697,7 @@ def get_club_leagues(conn, club_id):
 
 def count_votes_for_club(conn, club_id):
     cur = conn.cursor()
-    cur.execute('SELECT COUNT(*) FROM votes WHERE club_id = %s', (club_id,))
+    cur.execute('SELECT COUNT(DISTINCT vote_id) FROM vote_clubs WHERE club_id = %s', (club_id,))
     count = cur.fetchone()[0]
     cur.close()
     return count
@@ -600,8 +706,23 @@ def count_votes_for_club(conn, club_id):
 def reassign_club_votes(conn, source_id, target_id):
     cur = conn.cursor()
     try:
-        cur.execute('UPDATE votes SET club_id = %s WHERE club_id = %s', (target_id, source_id))
-        reassigned = cur.rowcount
+        cur.execute('SELECT COUNT(DISTINCT vote_id) FROM vote_clubs WHERE club_id = %s', (source_id,))
+        reassigned = cur.fetchone()[0]
+
+        # Drop rows where the vote already has the target club under the same league (avoids
+        # violating the (vote_id, club_id, league_id) primary key on the UPDATE below), same
+        # delete-then-update dedup pattern as reassign_upcoming_party_votes.
+        cur.execute(
+            '''DELETE FROM vote_clubs vc1
+               WHERE vc1.club_id = %s
+                 AND EXISTS (
+                     SELECT 1 FROM vote_clubs vc2
+                     WHERE vc2.vote_id = vc1.vote_id AND vc2.club_id = %s
+                       AND vc2.league_id = vc1.league_id
+                 )''',
+            (source_id, target_id)
+        )
+        cur.execute('UPDATE vote_clubs SET club_id = %s WHERE club_id = %s', (target_id, source_id))
         conn.commit()
         return reassigned
     except Exception:

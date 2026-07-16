@@ -96,7 +96,8 @@ ON CONFLICT (name) DO NOTHING;
 INSERT INTO upcoming_parties (name) VALUES
     ('הליכוד'), ('ישר'), ('ביחד'), ('הדמוקרטים'), ('כחול לבן'),
     ('ישראל ביתנו'), ('הציונות הדתית'), ('עוצמה יהודית'), ('חד"ש-תע"ל'),
-    ('בל"ד'), ('המפלגה הכלכלית'), ('אל הדגל'), ('המילואימניקים')
+    ('בל"ד'), ('רע"ם'), ('ש"ס'), ('יהדות התורה'),
+    ('המפלגה הכלכלית'), ('אל הדגל'), ('המילואימניקים')
 ON CONFLICT (name) DO NOTHING;
 
 -- Backfill each row's own language from the legacy `name` column.
@@ -328,8 +329,8 @@ UPDATE previous_parties SET name_en = 'Other' WHERE name_he = 'אחר' AND name_
 
 -- Upcoming election parties
 UPDATE upcoming_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Yesh' WHERE name_he = 'ישר' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Yachad' WHERE name_he = 'ביחד' AND name_en IS NULL;
+UPDATE upcoming_parties SET name_en = 'Yashar' WHERE name_he = 'ישר' AND name_en IS NULL;
+UPDATE upcoming_parties SET name_en = 'Together' WHERE name_he = 'ביחד' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'The Democrats' WHERE name_he = 'הדמוקרטים' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'Blue and White' WHERE name_he = 'כחול לבן' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'Yisrael Beiteinu' WHERE name_he = 'ישראל ביתנו' AND name_en IS NULL;
@@ -337,6 +338,9 @@ UPDATE upcoming_parties SET name_en = 'Religious Zionist Party' WHERE name_he = 
 UPDATE upcoming_parties SET name_en = 'Otzma Yehudit' WHERE name_he = 'עוצמה יהודית' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'Hadash-Ta''al' WHERE name_he = 'חד"ש-תע"ל' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'Balad' WHERE name_he = 'בל"ד' AND name_en IS NULL;
+UPDATE upcoming_parties SET name_en = 'Ra''am' WHERE name_he = 'רע"ם' AND name_en IS NULL;
+UPDATE upcoming_parties SET name_en = 'Shas' WHERE name_he = 'ש"ס' AND name_en IS NULL;
+UPDATE upcoming_parties SET name_en = 'United Torah Judaism' WHERE name_he = 'יהדות התורה' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'The Economic Party' WHERE name_he = 'המפלגה הכלכלית' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'El HaDegel' WHERE name_he = 'אל הדגל' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'The Reservists' WHERE name_he = 'המילואימניקים' AND name_en IS NULL;

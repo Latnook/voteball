@@ -75,13 +75,34 @@ CREATE UNIQUE INDEX IF NOT EXISTS clubs_name_he_uidx ON clubs (name_he) WHERE na
 
 CREATE TABLE IF NOT EXISTS votes (
     id SERIAL PRIMARY KEY,
-    league_id INTEGER NOT NULL REFERENCES leagues(id),
-    club_id INTEGER REFERENCES clubs(id),
     previous_vote_status TEXT NOT NULL CHECK (previous_vote_status IN ('voted', 'did_not_vote')),
     previous_party_id INTEGER REFERENCES previous_parties(id),
     upcoming_vote_status TEXT NOT NULL CHECK (upcoming_vote_status IN ('considering', 'undecided')),
     cookie_token TEXT NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- A ballot can now name up to 3 clubs per league, across any number of leagues (multi-team
+-- ballots) -- so the old singular votes.league_id/club_id columns can no longer represent a
+-- ballot. Pre-launch, no real vote data exists, so this drop is safe with no migration; kept
+-- idempotent (IF EXISTS) since schema.sql re-runs on every backend boot, including redeploys
+-- after the columns are already gone.
+ALTER TABLE votes DROP COLUMN IF EXISTS league_id;
+ALTER TABLE votes DROP COLUMN IF EXISTS club_id;
+
+CREATE TABLE IF NOT EXISTS vote_clubs (
+    vote_id   INTEGER NOT NULL REFERENCES votes(id) ON DELETE CASCADE,
+    club_id   INTEGER NOT NULL REFERENCES clubs(id),
+    league_id INTEGER NOT NULL REFERENCES leagues(id),  -- which tab the club was picked under
+    PRIMARY KEY (vote_id, club_id, league_id)
+);
+CREATE INDEX IF NOT EXISTS idx_vote_clubs_club ON vote_clubs (club_id);
+CREATE INDEX IF NOT EXISTS idx_vote_clubs_league ON vote_clubs (league_id);
+
+CREATE TABLE IF NOT EXISTS vote_leagues (  -- "just this league, no specific club"
+    vote_id   INTEGER NOT NULL REFERENCES votes(id) ON DELETE CASCADE,
+    league_id INTEGER NOT NULL REFERENCES leagues(id),
+    PRIMARY KEY (vote_id, league_id)
 );
 
 CREATE TABLE IF NOT EXISTS vote_upcoming_parties (
@@ -128,3 +149,30 @@ CREATE INDEX IF NOT EXISTS idx_rollup_previous_upcoming_upcoming ON rollup_previ
 ALTER TABLE rollup_previous_upcoming ADD COLUMN IF NOT EXISTS league_id INTEGER;
 ALTER TABLE rollup_previous_upcoming ADD COLUMN IF NOT EXISTS club_id INTEGER;
 CREATE INDEX IF NOT EXISTS idx_rollup_previous_upcoming_league_club ON rollup_previous_upcoming (league_id, club_id);
+
+-- National totals need their own rollup tables, separate from rollup_previous/rollup_upcoming/
+-- rollup_previous_upcoming. Those three now carry TWO kinds of rows per multi-team ballot --
+-- one league-scope row per distinct league touched (club_id IS NULL) plus one club-scope row per
+-- club pick -- so summing them with no filter would count a multi-pick voter multiple times.
+-- These national tables hold exactly one row's worth of counting per vote, with no league/club
+-- dimension, and back only the national-scoped reads (GET /api/results?by=all, the no-filter
+-- branch of /api/results/segment, and the crosstab in get_results_by_party).
+CREATE TABLE IF NOT EXISTS rollup_national_previous (
+    previous_party_id INTEGER,
+    vote_count INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rollup_national_previous_party ON rollup_national_previous (previous_party_id);
+
+CREATE TABLE IF NOT EXISTS rollup_national_upcoming (
+    upcoming_party_id INTEGER,
+    vote_count INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rollup_national_upcoming_party ON rollup_national_upcoming (upcoming_party_id);
+
+CREATE TABLE IF NOT EXISTS rollup_national_previous_upcoming (
+    previous_party_id INTEGER,
+    upcoming_party_id INTEGER,
+    vote_count INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rollup_national_previous_upcoming_previous ON rollup_national_previous_upcoming (previous_party_id);
+CREATE INDEX IF NOT EXISTS idx_rollup_national_previous_upcoming_upcoming ON rollup_national_previous_upcoming (upcoming_party_id);

@@ -20,7 +20,7 @@ def test_vote_endpoint_sets_cookie_and_rejects_duplicate(client, conn):
     cur.close()
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -28,7 +28,7 @@ def test_vote_endpoint_sets_cookie_and_rejects_duplicate(client, conn):
     assert 'voteball_token' in resp.headers.get('Set-Cookie', '')
 
     resp2 = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -42,7 +42,7 @@ def test_vote_endpoint_invalid_previous_vote_status_returns_400(client, conn):
     cur.close()
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'not_a_real_status', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -60,7 +60,7 @@ def test_vote_endpoint_considering_with_no_parties_returns_400(client, conn):
     cur.close()
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'considering', 'upcoming_party_ids': [],
     })
@@ -77,7 +77,7 @@ def test_vote_endpoint_considering_with_more_than_three_parties_returns_400(clie
     cur.close()
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'considering', 'upcoming_party_ids': party_ids,
     })
@@ -95,12 +95,120 @@ def test_vote_endpoint_considering_with_parties_succeeds(client, conn):
     cur.close()
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'considering', 'upcoming_party_ids': [party_id],
     })
     assert resp.status_code == 201
     assert 'vote_id' in resp.get_json()
+
+
+def test_vote_endpoint_accepts_multi_league_multi_club_ballot(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    liverpool_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Arsenal'")
+    arsenal_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Barcelona'")
+    barcelona_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'team_picks': [
+            {'league_id': epl_id, 'club_id': liverpool_id},
+            {'league_id': epl_id, 'club_id': arsenal_id},
+            {'league_id': la_liga_id, 'club_id': barcelona_id},
+        ],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 201
+
+
+def test_vote_endpoint_rejects_more_than_three_clubs_in_one_league(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE league_id = %s LIMIT 4", (epl_id,))
+    club_ids = [r[0] for r in cur.fetchall()]
+    cur.close()
+    assert len(club_ids) == 4
+
+    resp = client.post('/api/vote', json={
+        'team_picks': [{'league_id': epl_id, 'club_id': c} for c in club_ids],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 400
+    assert resp.get_json() == {'error': 'select at most 3 clubs per league'}
+
+
+def test_vote_endpoint_rejects_just_league_mixed_with_specific_club(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    liverpool_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'team_picks': [{'league_id': epl_id, 'club_id': None}, {'league_id': epl_id, 'club_id': liverpool_id}],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 400
+    assert resp.get_json() == {'error': 'a league cannot mix "just this league" with specific club picks'}
+
+
+def test_vote_endpoint_rejects_invalid_club_league_pair(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'Serie A'")
+    serie_a_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
+    liverpool_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post('/api/vote', json={
+        'team_picks': [{'league_id': serie_a_id, 'club_id': liverpool_id}],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 400
+    assert resp.get_json() == {'error': 'club_id is not votable under the given league_id'}
+
+
+def test_vote_endpoint_rejects_empty_team_picks(client):
+    resp = client.post('/api/vote', json={
+        'team_picks': [],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 400
+    assert resp.get_json() == {'error': 'team_picks must be a non-empty list'}
+
+
+def test_vote_endpoint_accepts_dual_league_club_picked_under_both_tabs(client, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'UCL'")
+    ucl_id = cur.fetchone()[0]
+    cur.execute("SELECT id, domestic_league_id FROM clubs WHERE name = 'Real Madrid'")
+    real_madrid_id, la_liga_id = cur.fetchone()
+    cur.close()
+    assert la_liga_id is not None
+
+    resp = client.post('/api/vote', json={
+        'team_picks': [
+            {'league_id': ucl_id, 'club_id': real_madrid_id},
+            {'league_id': la_liga_id, 'club_id': real_madrid_id},
+        ],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert resp.status_code == 201
 
 
 def test_results_by_club_endpoint(client, conn):
@@ -146,7 +254,7 @@ def test_admin_votes_list_returns_votes_with_valid_secret(client, conn, admin_he
     cur.close()
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -157,7 +265,7 @@ def test_admin_votes_list_returns_votes_with_valid_secret(client, conn, admin_he
     body = resp.get_json()
     assert 'votes' in body
     assert len(body['votes']) == 1
-    assert body['votes'][0]['league_id'] == league_id
+    assert body['votes'][0]['team_picks'] == [{'league_id': league_id, 'club_id': None}]
     assert 'cookie_token' not in body['votes'][0]
 
 
@@ -169,7 +277,7 @@ def test_admin_votes_delete_requires_authentication_and_handles_not_found(client
     cur.close()
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -316,7 +424,7 @@ def test_delete_upcoming_party_blocked_when_referenced_by_votes(client, conn, ad
     party_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'considering', 'upcoming_party_ids': [party_id],
     })
@@ -339,7 +447,7 @@ def test_delete_previous_party_blocked_when_referenced_by_votes(client, conn, ad
     party_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'voted', 'previous_party_id': party_id,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -364,7 +472,7 @@ def test_previous_party_reassign_moves_votes_and_updates_count(client, conn, adm
     target_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'voted', 'previous_party_id': source_id,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -426,7 +534,7 @@ def test_upcoming_party_reassign_moves_votes_and_updates_count(client, conn, adm
     target_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'considering', 'upcoming_party_ids': [source_id],
     })
@@ -645,7 +753,7 @@ def test_delete_league_blocked_when_votes_reference_it(client, conn, admin_heade
     league_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': league_id, 'club_id': None,
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -664,7 +772,7 @@ def test_league_reassign_moves_votes_and_requires_zero_clubs(client, conn, admin
     target_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': source_id, 'club_id': None,
+        'team_picks': [{'league_id': source_id, 'club_id': None}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -679,7 +787,7 @@ def test_league_reassign_moves_votes_and_requires_zero_clubs(client, conn, admin
 
     resp = client.get('/api/admin/votes', headers=headers)
     vote = next(v for v in resp.get_json()['votes'] if v['id'] == vote_id)
-    assert vote['league_id'] == target_id
+    assert vote['team_picks'] == [{'league_id': target_id, 'club_id': None}]
 
     # Now block reassign on a league that still has a club.
     cur = conn.cursor()
@@ -787,7 +895,7 @@ def test_delete_club_blocked_when_referenced_by_votes(client, conn, admin_header
     club_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': epl_id, 'club_id': club_id,
+        'team_picks': [{'league_id': epl_id, 'club_id': club_id}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -812,7 +920,7 @@ def test_club_reassign_same_single_league_succeeds(client, conn, admin_headers):
     target_id = resp.get_json()['id']
 
     resp = client.post('/api/vote', json={
-        'league_id': epl_id, 'club_id': source_id,
+        'team_picks': [{'league_id': epl_id, 'club_id': source_id}],
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
@@ -827,7 +935,7 @@ def test_club_reassign_same_single_league_succeeds(client, conn, admin_headers):
 
     resp = client.get('/api/admin/votes', headers=headers)
     vote = next(v for v in resp.get_json()['votes'] if v['id'] == vote_id)
-    assert vote['club_id'] == target_id
+    assert vote['team_picks'] == [{'league_id': epl_id, 'club_id': target_id}]
 
 
 def test_club_reassign_rejects_target_not_covering_source_leagues(client, conn, admin_headers):
@@ -967,10 +1075,18 @@ def test_results_by_all_returns_national_totals(client, conn):
     likud_id = cur.fetchone()[0]
     cur.execute("SELECT id FROM previous_parties WHERE name_en = 'Yesh Atid'")
     yesh_atid_id = cur.fetchone()[0]
+
+    # National totals read rollup_national_previous, not rollup_previous. Seed a *different*
+    # count into rollup_previous (a multi-team ballot's club-scope row) to prove ?by=all doesn't
+    # accidentally sum it in -- if it did, this test would see 4+7=11, not 4.
     cur.execute(
-        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) '
-        'VALUES (%s, %s, %s, %s), (%s, %s, %s, %s)',
-        (league_id, club_id, likud_id, 4, league_id, club_id, yesh_atid_id, 2)
+        'INSERT INTO rollup_national_previous (previous_party_id, vote_count) '
+        'VALUES (%s, %s), (%s, %s)',
+        (likud_id, 4, yesh_atid_id, 2)
+    )
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, club_id, likud_id, 7)
     )
     conn.commit()
     cur.close()
@@ -997,14 +1113,14 @@ def test_results_segment_filters_migration_by_club(client, conn):
     likud_id = cur.fetchone()[0]
     cur.execute("SELECT id FROM upcoming_parties WHERE name_en = 'Likud'")
     likud_upcoming_id = cur.fetchone()[0]
-    cur.execute("SELECT id FROM upcoming_parties WHERE name_en = 'Yesh'")
-    yesh_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM upcoming_parties WHERE name_en = 'Yashar'")
+    yashar_id = cur.fetchone()[0]
     cur.execute(
         'INSERT INTO rollup_previous_upcoming '
         '(previous_party_id, upcoming_party_id, league_id, club_id, vote_count) '
         'VALUES (%s, %s, %s, %s, %s), (%s, %s, %s, %s, %s)',
         (likud_id, likud_upcoming_id, epl_id, liverpool_id, 5,
-         likud_id, yesh_id, la_liga_id, real_madrid_id, 9)
+         likud_id, yashar_id, la_liga_id, real_madrid_id, 9)
     )
     cur.execute(
         'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, %s, %s, %s)',
