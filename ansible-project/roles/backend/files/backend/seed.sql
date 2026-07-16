@@ -90,7 +90,7 @@ WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
 INSERT INTO previous_parties (name) VALUES
     ('הליכוד'), ('יש עתיד'), ('הציונות הדתית'), ('המחנה הממלכתי'),
     ('ישראל ביתנו'), ('ש"ס'), ('יהדות התורה'), ('רע"ם'),
-    ('חד"ש-תע"ל'), ('העבודה'), ('מרצ'), ('בל"ד'), ('הבית היהודי'), ('אחר')
+    ('חד"ש-תע"ל'), ('העבודה'), ('מרצ'), ('בל"ד'), ('אחר')
 ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO upcoming_parties (name) VALUES
@@ -116,6 +116,21 @@ UPDATE leagues SET name_he = 'הבונדסליגה' WHERE name_en = 'Bundesliga'
 UPDATE leagues SET name_he = 'ליגת העל' WHERE name_en = 'Israeli Premier League' AND name_he IS NULL;
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
 UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
+
+-- Pin the Israeli Premier League to the top of every league picker/list; all other leagues stay
+-- unranked (sort_order NULL) and fall back to alphabetical (see get_options in queries.py).
+UPDATE leagues SET sort_order = 0 WHERE name = 'Israeli Premier League';
+
+-- League logos/emblems. Competition emblems (unlike individual club crests) carry no per-club
+-- trademark ambiguity, so these are safe to seed directly (see the World Cup national-flags note
+-- above) -- admin can still override any of these via the leagues admin UI's Logo URL field.
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/17/2026_FIFA_World_Cup_emblem.svg' WHERE name = 'World Cup 2026' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/0a/UEFA_Champions_League_logo.svg' WHERE name = 'UCL' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Premier_League.svg' WHERE name = 'EPL' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg' WHERE name = 'La Liga' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg' WHERE name = 'Serie A' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/15/Bundesliga_logo.svg' WHERE name = 'Bundesliga' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Israeli Premier League' AND logo_url IS NULL;
 
 -- World Cup 2026 countries
 UPDATE clubs SET name_he = 'ברזיל' WHERE name_en = 'Brazil' AND name_he IS NULL;
@@ -324,7 +339,6 @@ UPDATE previous_parties SET name_en = 'Hadash-Ta''al' WHERE name_he = 'חד"ש-�
 UPDATE previous_parties SET name_en = 'Labor' WHERE name_he = 'העבודה' AND name_en IS NULL;
 UPDATE previous_parties SET name_en = 'Meretz' WHERE name_he = 'מרצ' AND name_en IS NULL;
 UPDATE previous_parties SET name_en = 'Balad' WHERE name_he = 'בל"ד' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Jewish Home' WHERE name_he = 'הבית היהודי' AND name_en IS NULL;
 UPDATE previous_parties SET name_en = 'Other' WHERE name_he = 'אחר' AND name_en IS NULL;
 
 -- Admin-curated party logos, synced from the live RDS instance (added via the admin UI's
@@ -341,7 +355,6 @@ UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/h
 UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f8/HaAvoda_Logo.svg' WHERE name_he = 'העבודה' AND logo_url IS NULL;
 UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'מרצ' AND logo_url IS NULL;
 UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/2/28/The-Jewish-Home-logo-New2019.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'הבית היהודי' AND logo_url IS NULL;
 
 -- Upcoming election parties
 UPDATE upcoming_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;

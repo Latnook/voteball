@@ -58,6 +58,10 @@ ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS logo_url TEXT;
 ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
 ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
 
+-- Explicit display ordering for leagues (e.g. pinning the Israeli Premier League first). Nullable
+-- so unranked leagues fall back to alphabetical (see get_options's ORDER BY sort_order NULLS LAST).
+ALTER TABLE leagues ADD COLUMN IF NOT EXISTS sort_order INTEGER;
+
 DO $$
 BEGIN
     ALTER TABLE clubs ADD CONSTRAINT clubs_domestic_league_differs

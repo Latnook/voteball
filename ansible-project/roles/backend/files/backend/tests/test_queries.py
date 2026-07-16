@@ -23,13 +23,13 @@ def test_get_options_returns_seeded_leagues(conn):
     assert previous_names_en == {
         'Likud', 'Yesh Atid', 'Religious Zionist Party', 'National Unity', 'Yisrael Beiteinu',
         'Shas', 'United Torah Judaism', "Ra'am", "Hadash-Ta'al", 'Labor', 'Meretz', 'Balad',
-        'Jewish Home', 'Other',
+        'Other',
     }
     previous_names_he = {p['name_he'] for p in options['previous_parties']}
     assert previous_names_he == {
         'הליכוד', 'יש עתיד', 'הציונות הדתית', 'המחנה הממלכתי', 'ישראל ביתנו',
         'ש"ס', 'יהדות התורה', 'רע"ם', 'חד"ש-תע"ל', 'העבודה', 'מרצ', 'בל"ד',
-        'הבית היהודי', 'אחר',
+        'אחר',
     }
 
     upcoming_names_en = {p['name_en'] for p in options['upcoming_parties']}

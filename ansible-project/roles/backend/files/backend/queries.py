@@ -17,7 +17,7 @@ def _duplicate_party_language(err):
 def get_options(conn):
     cur = conn.cursor()
 
-    cur.execute('SELECT id, name_en, name_he, logo_url FROM leagues ORDER BY name_en')
+    cur.execute('SELECT id, name_en, name_he, logo_url FROM leagues ORDER BY sort_order NULLS LAST, name_en')
     leagues = [{'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3]} for r in cur.fetchall()]
 
     cur.execute(
