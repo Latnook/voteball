@@ -141,13 +141,6 @@ In `ansible-project/roles/backend/files/backend/schema.sql`, find this block (ad
 quick-wins plan):
 
 ```sql
--- Pin the Israeli Premier League to the top of every league picker/list; all other leagues stay
--- unranked (sort_order NULL) and fall back to alphabetical (see get_options's ORDER BY sort_order NULLS LAST).
-```
-
-Wait — that comment is in `seed.sql`, not `schema.sql`. In `schema.sql`, find this block instead:
-
-```sql
 -- Explicit display ordering for leagues (e.g. pinning the Israeli Premier League first). Nullable
 -- so unranked leagues fall back to alphabetical (see get_options's ORDER BY sort_order NULLS LAST).
 ALTER TABLE leagues ADD COLUMN IF NOT EXISTS sort_order INTEGER;
