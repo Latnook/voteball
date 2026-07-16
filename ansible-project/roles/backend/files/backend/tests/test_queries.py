@@ -37,14 +37,14 @@ def test_get_options_returns_seeded_leagues(conn):
         'Likud', 'Yashar', 'Together', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
         'Religious Zionist Party', 'Otzma Yehudit', "Hadash-Ta'al", 'Balad', "Ra'am",
         'Shas', 'United Torah Judaism',
-        'The Economic Party', 'El HaDegel', 'The Reservists', 'The Joint List',
+        'The Economic Party', 'El HaDegel', 'The Reservists',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
         'הציונות הדתית', 'עוצמה יהודית', 'חד"ש-תע"ל', 'בל"ד', 'רע"ם',
         'ש"ס', 'יהדות התורה',
-        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים', 'הרשימה המשותפת',
+        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים',
     }
 
 

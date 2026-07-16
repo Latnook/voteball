@@ -19,7 +19,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 14
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
-    assert cur.fetchone()[0] == 17
+    assert cur.fetchone()[0] == 16
     cur.close()
 
 
@@ -31,8 +31,8 @@ def test_sample_translations(conn):
     assert cur.fetchone()[0] == 'ריאל מדריד'
     cur.execute("SELECT name_en FROM previous_parties WHERE name_he = 'הליכוד'")
     assert cur.fetchone()[0] == 'Likud'
-    cur.execute("SELECT name_he FROM upcoming_parties WHERE name_en = 'The Joint List'")
-    assert cur.fetchone()[0] == 'הרשימה המשותפת'
+    cur.execute("SELECT name_en FROM upcoming_parties WHERE name_he = 'ביחד'")
+    assert cur.fetchone()[0] == 'Together'
     cur.close()
 
 

@@ -327,6 +327,22 @@ UPDATE previous_parties SET name_en = 'Balad' WHERE name_he = 'בל"ד' AND name
 UPDATE previous_parties SET name_en = 'Jewish Home' WHERE name_he = 'הבית היהודי' AND name_en IS NULL;
 UPDATE previous_parties SET name_en = 'Other' WHERE name_he = 'אחר' AND name_en IS NULL;
 
+-- Admin-curated party logos, synced from the live RDS instance (added via the admin UI's
+-- Logo URL field, not originally seeded) so a fresh install matches current production data.
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg' WHERE name_he = 'הליכוד' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/12/%D7%99%D7%A9_%D7%A2%D7%AA%D7%99%D7%93_%D7%9C%D7%95%D7%92%D7%95.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'יש עתיד' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'הציונות הדתית' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/e0/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%9E%D7%97%D7%A0%D7%94_%D7%94%D7%9E%D7%9E%D7%9C%D7%9B%D7%AA%D7%99_%D7%90%D7%95%D7%92%D7%95%D7%A1%D7%98_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'המחנה הממלכתי' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ישראל ביתנו' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ש"ס' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'יהדות התורה' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'רע"ם' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f8/HaAvoda_Logo.svg' WHERE name_he = 'העבודה' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'מרצ' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
+UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/2/28/The-Jewish-Home-logo-New2019.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'הבית היהודי' AND logo_url IS NULL;
+
 -- Upcoming election parties
 UPDATE upcoming_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'Yashar' WHERE name_he = 'ישר' AND name_en IS NULL;
@@ -345,5 +361,17 @@ UPDATE upcoming_parties SET name_en = 'The Economic Party' WHERE name_he = 'המ
 UPDATE upcoming_parties SET name_en = 'El HaDegel' WHERE name_he = 'אל הדגל' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'The Reservists' WHERE name_he = 'המילואימניקים' AND name_en IS NULL;
 
--- New party: The Joint List (not a backfill target)
-INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;
+-- Admin-curated party logos, synced from the live RDS instance (see previous_parties above).
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg' WHERE name_he = 'הליכוד' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/b/b5/The_Democrats_led_by_Yair_Golan.svg' WHERE name_he = 'הדמוקרטים' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/a/a6/%D7%9C%D7%95%D7%92%D7%95_%D7%9B%D7%97%D7%95%D7%9C_%D7%9C%D7%91%D7%9F_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'כחול לבן' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ישראל ביתנו' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'הציונות הדתית' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'עוצמה יהודית' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrT42i2KdLQY3tvfo0CzpXXrNixL7m7b4xMpRCWJgjLa0pp_kPr8w-crQg&s=10' WHERE name_he = 'אל הדגל' AND logo_url IS NULL;
+
+-- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
+-- left commented rather than deleted so it's a one-line restore if/when it should come back.
+-- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;
