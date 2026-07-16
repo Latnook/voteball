@@ -47,6 +47,9 @@ CREATE TABLE rollup_previous_upcoming (previous_party_id INTEGER, upcoming_party
 CREATE TABLE rollup_national_previous (previous_party_id INTEGER, vote_count INTEGER NOT NULL);
 CREATE TABLE rollup_national_upcoming (upcoming_party_id INTEGER, vote_count INTEGER NOT NULL);
 CREATE TABLE rollup_national_previous_upcoming (previous_party_id INTEGER, upcoming_party_id INTEGER, vote_count INTEGER NOT NULL);
+CREATE TABLE party_lineage (previous_party_id INTEGER NOT NULL REFERENCES previous_parties(id), upcoming_party_id INTEGER NOT NULL REFERENCES upcoming_parties(id), PRIMARY KEY (previous_party_id, upcoming_party_id));
+CREATE TABLE rollup_vote_switch (league_id INTEGER, club_id INTEGER, switch_status TEXT NOT NULL, vote_count INTEGER NOT NULL);
+CREATE TABLE rollup_national_vote_switch (switch_status TEXT NOT NULL, vote_count INTEGER NOT NULL);
 '''
 
 
@@ -58,6 +61,7 @@ def conn():
         DROP TABLE IF EXISTS vote_upcoming_parties, vote_clubs, vote_leagues, votes,
             rollup_previous, rollup_upcoming, rollup_previous_upcoming,
             rollup_national_previous, rollup_national_upcoming, rollup_national_previous_upcoming,
+            rollup_vote_switch, rollup_national_vote_switch, party_lineage,
             clubs, leagues, previous_parties, upcoming_parties, alert_state CASCADE
     ''')
     cur.execute(SCHEMA)

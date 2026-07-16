@@ -25,6 +25,7 @@ def recompute(conn):
     _recompute_upcoming(cur)
     _recompute_previous_upcoming(cur)
     _recompute_national(cur)
+    _recompute_vote_switch(cur)
 
     conn.commit()
     cur.close()
@@ -167,4 +168,57 @@ def _recompute_national(cur):
         FROM votes
         WHERE upcoming_vote_status = 'undecided'
         GROUP BY previous_party_id
+    ''')
+
+
+# Per-voter classification of "did they really change their mind," using party_lineage to resolve
+# each vote's previous party's successor(s) rather than a raw previous<->upcoming crosstab (which
+# over-counts anyone who kept their old party and also added others -- a ballot can name up to 3
+# upcoming parties).
+_VOTE_SWITCH_STATUS_CTE = '''
+    WITH vote_pick_stats AS (
+        SELECT v.id AS vote_id, v.previous_vote_status, v.upcoming_vote_status,
+               COUNT(vup.upcoming_party_id) AS total_picks,
+               COUNT(vup.upcoming_party_id) FILTER (WHERE pl.upcoming_party_id IS NOT NULL) AS successor_picks
+        FROM votes v
+        LEFT JOIN vote_upcoming_parties vup ON vup.vote_id = v.id
+        LEFT JOIN party_lineage pl
+            ON pl.previous_party_id = v.previous_party_id AND pl.upcoming_party_id = vup.upcoming_party_id
+        GROUP BY v.id, v.previous_vote_status, v.upcoming_vote_status
+    )
+    SELECT vote_id,
+        CASE
+            WHEN previous_vote_status = 'did_not_vote' THEN 'new_voter'
+            WHEN upcoming_vote_status = 'undecided' THEN 'undecided'
+            WHEN successor_picks = 0 THEN 'switched'
+            WHEN successor_picks >= 1 AND total_picks = 1 THEN 'stayed'
+            ELSE 'hedging'
+        END AS switch_status
+    FROM vote_pick_stats
+'''
+
+
+def _recompute_vote_switch(cur):
+    cur.execute('TRUNCATE rollup_vote_switch')
+    cur.execute('TRUNCATE rollup_national_vote_switch')
+
+    cur.execute(f'''
+        INSERT INTO rollup_vote_switch (league_id, club_id, switch_status, vote_count)
+        SELECT vlt.league_id, NULL, vs.switch_status, COUNT(*)
+        FROM ({_VOTE_LEAGUES_TOUCHED_CTE}) vlt
+        JOIN ({_VOTE_SWITCH_STATUS_CTE}) vs ON vs.vote_id = vlt.vote_id
+        GROUP BY vlt.league_id, vs.switch_status
+    ''')
+    cur.execute(f'''
+        INSERT INTO rollup_vote_switch (league_id, club_id, switch_status, vote_count)
+        SELECT vc.league_id, vc.club_id, vs.switch_status, COUNT(*)
+        FROM vote_clubs vc
+        JOIN ({_VOTE_SWITCH_STATUS_CTE}) vs ON vs.vote_id = vc.vote_id
+        GROUP BY vc.league_id, vc.club_id, vs.switch_status
+    ''')
+
+    cur.execute(f'''
+        INSERT INTO rollup_national_vote_switch (switch_status, vote_count)
+        SELECT switch_status, COUNT(*) FROM ({_VOTE_SWITCH_STATUS_CTE}) vs
+        GROUP BY switch_status
     ''')

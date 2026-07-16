@@ -278,3 +278,153 @@ def test_recompute_just_league_pick_counts_at_league_scope_only(conn):
     cur.execute('SELECT COUNT(*) FROM rollup_previous WHERE league_id = %s AND club_id IS NOT NULL', (league_id,))
     assert cur.fetchone()[0] == 0
     cur.close()
+
+
+def _seed_switch_votes(conn):
+    cur = conn.cursor()
+    cur.execute("INSERT INTO leagues (name) VALUES ('EPL') RETURNING id")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, name) VALUES (%s, 'Liverpool') RETURNING id", (league_id,))
+    club_id = cur.fetchone()[0]
+
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Prev A') RETURNING id")
+    prev_a = cur.fetchone()[0]
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Prev B (no lineage)') RETURNING id")
+    prev_b = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Up A') RETURNING id")
+    up_a = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Up Other') RETURNING id")
+    up_other = cur.fetchone()[0]
+
+    # Prev A's only lineage successor is Up A
+    cur.execute(
+        'INSERT INTO party_lineage (previous_party_id, upcoming_party_id) VALUES (%s, %s)',
+        (prev_a, up_a)
+    )
+
+    def _vote(prev_status, prev_party, up_status, up_picks, token):
+        cur.execute(
+            '''INSERT INTO votes (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+               VALUES (%s, %s, %s, %s) RETURNING id''',
+            (prev_status, prev_party, up_status, token)
+        )
+        vote_id = cur.fetchone()[0]
+        cur.execute('INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)', (vote_id, club_id, league_id))
+        for pick in up_picks:
+            cur.execute('INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)', (vote_id, pick))
+        return vote_id
+
+    stayed_vote = _vote('voted', prev_a, 'considering', [up_a], 'switch-stayed')
+    hedging_vote = _vote('voted', prev_a, 'considering', [up_a, up_other], 'switch-hedging')
+    switched_vote = _vote('voted', prev_a, 'considering', [up_other], 'switch-switched')
+    no_lineage_vote = _vote('voted', prev_b, 'considering', [up_other], 'switch-no-lineage')
+    new_voter_vote = _vote('did_not_vote', None, 'considering', [up_other], 'switch-new-voter')
+    undecided_vote = _vote('voted', prev_a, 'undecided', [], 'switch-undecided')
+
+    conn.commit()
+    cur.close()
+    return {
+        'league_id': league_id, 'club_id': club_id,
+        'stayed': stayed_vote, 'hedging': hedging_vote, 'switched': switched_vote,
+        'no_lineage': no_lineage_vote, 'new_voter': new_voter_vote, 'undecided': undecided_vote,
+    }
+
+
+def test_recompute_vote_switch_classifies_each_status(conn):
+    import rollups
+    ids = _seed_switch_votes(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT switch_status, vote_count FROM rollup_vote_switch WHERE club_id = %s ORDER BY switch_status',
+        (ids['club_id'],)
+    )
+    rows = dict(cur.fetchall())
+    cur.close()
+
+    assert rows['stayed'] == 1
+    assert rows['hedging'] == 1
+    # 'switched' includes both the vote whose successor wasn't picked and the vote with no lineage at all
+    assert rows['switched'] == 2
+    assert rows['new_voter'] == 1
+    assert rows['undecided'] == 1
+
+
+def test_recompute_national_vote_switch_matches_club_scope(conn):
+    import rollups
+    _seed_switch_votes(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT switch_status, vote_count FROM rollup_national_vote_switch ORDER BY switch_status')
+    rows = dict(cur.fetchall())
+    cur.close()
+
+    assert rows['stayed'] == 1
+    assert rows['hedging'] == 1
+    assert rows['switched'] == 2
+    assert rows['new_voter'] == 1
+    assert rows['undecided'] == 1
+
+
+def test_recompute_vote_switch_stayed_via_merge(conn):
+    """A previous party that merged into an upcoming party (i.e. party_lineage has MULTIPLE
+    previous parties pointing at the same upcoming party) should still classify as 'stayed' for
+    a voter whose sole pick is that shared successor -- not just for a 1:1 identity mapping."""
+    import rollups
+    cur = conn.cursor()
+    cur.execute("INSERT INTO leagues (name) VALUES ('EPL') RETURNING id")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, name) VALUES (%s, 'Liverpool') RETURNING id", (league_id,))
+    club_id = cur.fetchone()[0]
+
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Prev Merge A') RETURNING id")
+    prev_merge_a = cur.fetchone()[0]
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Prev Merge B') RETURNING id")
+    prev_merge_b = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Merged Party') RETURNING id")
+    merged = cur.fetchone()[0]
+
+    # Both predecessors merged into the same upcoming party.
+    cur.execute(
+        'INSERT INTO party_lineage (previous_party_id, upcoming_party_id) VALUES (%s, %s)',
+        (prev_merge_a, merged)
+    )
+    cur.execute(
+        'INSERT INTO party_lineage (previous_party_id, upcoming_party_id) VALUES (%s, %s)',
+        (prev_merge_b, merged)
+    )
+
+    cur.execute(
+        '''INSERT INTO votes (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+           VALUES ('voted', %s, 'considering', 'merge-stayed-a') RETURNING id''',
+        (prev_merge_a,)
+    )
+    vote_a = cur.fetchone()[0]
+    cur.execute('INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)', (vote_a, club_id, league_id))
+    cur.execute('INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)', (vote_a, merged))
+
+    cur.execute(
+        '''INSERT INTO votes (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+           VALUES ('voted', %s, 'considering', 'merge-stayed-b') RETURNING id''',
+        (prev_merge_b,)
+    )
+    vote_b = cur.fetchone()[0]
+    cur.execute('INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)', (vote_b, club_id, league_id))
+    cur.execute('INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)', (vote_b, merged))
+
+    conn.commit()
+    cur.close()
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT vote_count FROM rollup_national_vote_switch WHERE switch_status = 'stayed'"
+    )
+    row = cur.fetchone()
+    cur.close()
+    assert row[0] == 2
