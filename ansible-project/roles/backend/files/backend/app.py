@@ -70,6 +70,7 @@ def _validate_team_picks(conn, team_picks):
     clubs_map = queries.get_clubs_league_map(conn)
 
     picks_by_league = {}
+    club_id_first_league = {}
     for pick in team_picks:
         if not isinstance(pick, dict):
             return 'each team pick must be an object with league_id and club_id'
@@ -83,6 +84,15 @@ def _validate_team_picks(conn, team_picks):
             club_leagues = clubs_map[club_id]
             if league_id not in (club_leagues['league_id'], club_leagues['domestic_league_id']):
                 return 'club_id is not votable under the given league_id'
+            # A dual-league club (league_id + domestic_league_id both set) is only ever meant to be
+            # picked once per ballot -- the frontend now mirrors its checkbox across both league
+            # tabs and submits a single canonical pick, so seeing it under two *different* leagues
+            # here means a stale/non-standard client, not two distinct real picks. A same-league
+            # repeat is a different, pre-existing case, left to the per-league dedup check below so
+            # its more specific error message still applies.
+            first_league = club_id_first_league.setdefault(club_id, league_id)
+            if first_league != league_id:
+                return 'club_id picked under more than one league'
         picks_by_league.setdefault(league_id, []).append(club_id)
 
     for club_ids in picks_by_league.values():

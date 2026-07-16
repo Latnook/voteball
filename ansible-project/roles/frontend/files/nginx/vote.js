@@ -28,14 +28,27 @@ function hasAnyTeamPick() {
   return false;
 }
 
-function flattenTeamPicks() {
+// Single source of truth for "what did the voter actually pick" -- a dual-league club mirrored
+// into two leagues' clubIds sets (see toggleClub) must only produce one pick here, attributed to
+// its domestic league (the club's "home" league) regardless of which tab it was toggled from.
+// Iterates optionsData.leagues (display order) so chip/review ordering matches the league tabs.
+function dedupedTeamPicks() {
   const picks = [];
-  picksByLeague.forEach((entry, leagueId) => {
+  const emittedClubIds = new Set();
+  optionsData.leagues.forEach(l => {
+    const entry = picksByLeague.get(l.id);
+    if (!entry) return;
     if (entry.justLeague) {
-      picks.push({ league_id: leagueId, club_id: null });
-    } else {
-      entry.clubIds.forEach(clubId => picks.push({ league_id: leagueId, club_id: clubId }));
+      picks.push({ league_id: l.id, club_id: null });
+      return;
     }
+    entry.clubIds.forEach(clubId => {
+      if (emittedClubIds.has(clubId)) return;
+      emittedClubIds.add(clubId);
+      const club = optionsData.clubs.find(c => c.id === clubId);
+      const canonicalLeagueId = (club && club.domestic_league_id) ? club.domestic_league_id : l.id;
+      picks.push({ league_id: canonicalLeagueId, club_id: clubId });
+    });
   });
   return picks;
 }
@@ -75,13 +88,35 @@ function toggleJustLeague(leagueId) {
   renderPicksSummary();
 }
 
+// A dual-league club (has both league_id and domestic_league_id) is votable under two league
+// tabs at once. Returns the OTHER league's id if club is dual-league and leagueId is one of its
+// two real leagues, else null (no linking for a single-league club).
+function linkedLeagueId(club, leagueId) {
+  if (!club || !club.domestic_league_id) return null;
+  return leagueId === club.league_id ? club.domestic_league_id : club.league_id;
+}
+
 function toggleClub(leagueId, clubId) {
+  const club = optionsData.clubs.find(c => c.id === clubId);
+  const linkedId = linkedLeagueId(club, leagueId);
+
   const entry = getOrCreateLeagueEntry(leagueId);
   entry.justLeague = false;
+
   if (entry.clubIds.has(clubId)) {
+    // Deselecting -- mirror the removal to the linked league too, so it's picked under both or
+    // neither, never split.
     entry.clubIds.delete(clubId);
-  } else if (entry.clubIds.size < 3) {
-    entry.clubIds.add(clubId);
+    if (linkedId !== null) getOrCreateLeagueEntry(linkedId).clubIds.delete(clubId);
+  } else {
+    // Selecting -- only allow if this league AND (for a dual-league club) its linked league both
+    // have room; a dual-league club counts against both leagues' independent 3-pick caps.
+    const linkedEntry = linkedId !== null ? getOrCreateLeagueEntry(linkedId) : null;
+    const hasRoom = entry.clubIds.size < 3 && (!linkedEntry || linkedEntry.clubIds.size < 3);
+    if (hasRoom) {
+      entry.clubIds.add(clubId);
+      if (linkedEntry) linkedEntry.clubIds.add(clubId);
+    }
   }
   renderTeamGrid();
   renderPicksSummary();
@@ -130,19 +165,14 @@ function renderPicksSummary() {
   const container = document.getElementById('picks-summary');
   container.innerHTML = '';
 
-  const chips = [];
-  optionsData.leagues.forEach(l => {
-    const entry = picksByLeague.get(l.id);
-    if (!entry) return;
-    if (entry.justLeague) {
-      chips.push({ entity: l, name: localizedName(l) });
-    } else {
-      entry.clubIds.forEach(clubId => {
-        const club = optionsData.clubs.find(c => c.id === clubId);
-        if (club) chips.push({ entity: club, name: localizedName(club) });
-      });
+  const chips = dedupedTeamPicks().map(pick => {
+    if (pick.club_id === null) {
+      const league = optionsData.leagues.find(l => l.id === pick.league_id);
+      return league ? { entity: league, name: localizedName(league) } : null;
     }
-  });
+    const club = optionsData.clubs.find(c => c.id === pick.club_id);
+    return club ? { entity: club, name: localizedName(club) } : null;
+  }).filter(Boolean);
 
   if (chips.length === 0) {
     const empty = document.createElement('p');
@@ -277,16 +307,14 @@ function renderReviewSummary() {
   container.innerHTML = '';
 
   appendReviewSubheading(container, t('voteReviewTeams'));
-  optionsData.leagues.forEach(l => {
-    const entry = picksByLeague.get(l.id);
-    if (!entry) return;
-    if (entry.justLeague) {
-      appendReviewLine(container, localizedName(l), l, t('voteClubPlaceholderOption'));
+  dedupedTeamPicks().forEach(pick => {
+    const league = optionsData.leagues.find(l => l.id === pick.league_id);
+    if (!league) return;
+    if (pick.club_id === null) {
+      appendReviewLine(container, localizedName(league), league, t('voteClubPlaceholderOption'));
     } else {
-      entry.clubIds.forEach(clubId => {
-        const club = optionsData.clubs.find(c => c.id === clubId);
-        if (club) appendReviewLine(container, localizedName(l), club, localizedName(club));
-      });
+      const club = optionsData.clubs.find(c => c.id === pick.club_id);
+      if (club) appendReviewLine(container, localizedName(league), club, localizedName(club));
     }
   });
 
@@ -365,7 +393,7 @@ document.getElementById('confirm-submit-btn').addEventListener('click', async ()
   errorEl.textContent = '';
 
   const body = {
-    team_picks: flattenTeamPicks(),
+    team_picks: dedupedTeamPicks(),
     previous_vote_status: selectedPreviousChoice === 'did_not_vote' ? 'did_not_vote' : 'voted',
     previous_party_id: selectedPreviousChoice === 'did_not_vote' ? null : selectedPreviousChoice,
     upcoming_vote_status: undecided ? 'undecided' : 'considering',

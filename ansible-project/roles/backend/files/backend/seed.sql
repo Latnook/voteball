@@ -7,20 +7,28 @@ ON CONFLICT (name) DO NOTHING;
 INSERT INTO clubs (league_id, name)
 SELECT l.id, c.name FROM leagues l
 JOIN (VALUES
+    -- Exactly the real 48 qualified teams (verified against 2026 FIFA World Cup qualification,
+    -- inter-confederation play-offs resolved March 31 2026) -- not every "big name" nation
+    -- qualified (e.g. Italy and Israel are correctly absent).
     ('World Cup 2026', 'Brazil'), ('World Cup 2026', 'Argentina'), ('World Cup 2026', 'France'),
     ('World Cup 2026', 'England'), ('World Cup 2026', 'Spain'), ('World Cup 2026', 'Germany'),
-    ('World Cup 2026', 'Portugal'), ('World Cup 2026', 'Netherlands'), ('World Cup 2026', 'Italy'),
+    ('World Cup 2026', 'Portugal'), ('World Cup 2026', 'Netherlands'),
     ('World Cup 2026', 'Belgium'), ('World Cup 2026', 'Croatia'), ('World Cup 2026', 'Uruguay'),
     ('World Cup 2026', 'Colombia'), ('World Cup 2026', 'Mexico'), ('World Cup 2026', 'USA'),
     ('World Cup 2026', 'Canada'), ('World Cup 2026', 'Japan'), ('World Cup 2026', 'South Korea'),
-    ('World Cup 2026', 'Morocco'), ('World Cup 2026', 'Senegal'), ('World Cup 2026', 'Nigeria'),
+    ('World Cup 2026', 'Morocco'), ('World Cup 2026', 'Senegal'),
     ('World Cup 2026', 'Ghana'), ('World Cup 2026', 'Egypt'), ('World Cup 2026', 'Tunisia'),
-    ('World Cup 2026', 'Algeria'), ('World Cup 2026', 'Ivory Coast'), ('World Cup 2026', 'Cameroon'),
+    ('World Cup 2026', 'Algeria'), ('World Cup 2026', 'Ivory Coast'),
     ('World Cup 2026', 'Australia'), ('World Cup 2026', 'Iran'), ('World Cup 2026', 'Saudi Arabia'),
-    ('World Cup 2026', 'Qatar'), ('World Cup 2026', 'Ecuador'), ('World Cup 2026', 'Chile'),
-    ('World Cup 2026', 'Peru'), ('World Cup 2026', 'Poland'), ('World Cup 2026', 'Switzerland'),
-    ('World Cup 2026', 'Denmark'), ('World Cup 2026', 'Sweden'), ('World Cup 2026', 'Serbia'),
-    ('World Cup 2026', 'Israel'),
+    ('World Cup 2026', 'Qatar'), ('World Cup 2026', 'Ecuador'),
+    ('World Cup 2026', 'Switzerland'),
+    ('World Cup 2026', 'Sweden'),
+    ('World Cup 2026', 'Uzbekistan'), ('World Cup 2026', 'Jordan'), ('World Cup 2026', 'Iraq'),
+    ('World Cup 2026', 'Cape Verde'), ('World Cup 2026', 'South Africa'), ('World Cup 2026', 'DR Congo'),
+    ('World Cup 2026', 'Panama'), ('World Cup 2026', 'Curacao'), ('World Cup 2026', 'Haiti'),
+    ('World Cup 2026', 'Paraguay'), ('World Cup 2026', 'New Zealand'), ('World Cup 2026', 'Norway'),
+    ('World Cup 2026', 'Scotland'), ('World Cup 2026', 'Austria'),
+    ('World Cup 2026', 'Bosnia and Herzegovina'), ('World Cup 2026', 'Turkey'), ('World Cup 2026', 'Czech Republic'),
 
     ('UCL', 'Real Madrid'), ('UCL', 'Manchester City'), ('UCL', 'Bayern Munich'),
     ('UCL', 'Barcelona'), ('UCL', 'Liverpool'), ('UCL', 'Paris Saint-Germain'),
@@ -141,7 +149,6 @@ UPDATE clubs SET name_he = 'ספרד' WHERE name_en = 'Spain' AND name_he IS NUL
 UPDATE clubs SET name_he = 'גרמניה' WHERE name_en = 'Germany' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'פורטוגל' WHERE name_en = 'Portugal' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'הולנד' WHERE name_en = 'Netherlands' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'איטליה' WHERE name_en = 'Italy' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'בלגיה' WHERE name_en = 'Belgium' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'קרואטיה' WHERE name_en = 'Croatia' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אורוגוואי' WHERE name_en = 'Uruguay' AND name_he IS NULL;
@@ -153,26 +160,35 @@ UPDATE clubs SET name_he = 'יפן' WHERE name_en = 'Japan' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'דרום קוריאה' WHERE name_en = 'South Korea' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מרוקו' WHERE name_en = 'Morocco' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'סנגל' WHERE name_en = 'Senegal' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ניגריה' WHERE name_en = 'Nigeria' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'גאנה' WHERE name_en = 'Ghana' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מצרים' WHERE name_en = 'Egypt' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'תוניסיה' WHERE name_en = 'Tunisia' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אלג''יריה' WHERE name_en = 'Algeria' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'חוף השנהב' WHERE name_en = 'Ivory Coast' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קמרון' WHERE name_en = 'Cameroon' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אוסטרליה' WHERE name_en = 'Australia' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'איראן' WHERE name_en = 'Iran' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'ערב הסעודית' WHERE name_en = 'Saudi Arabia' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'קטאר' WHERE name_en = 'Qatar' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אקוודור' WHERE name_en = 'Ecuador' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'צ''ילה' WHERE name_en = 'Chile' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פרו' WHERE name_en = 'Peru' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פולין' WHERE name_en = 'Poland' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'שווייץ' WHERE name_en = 'Switzerland' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'דנמרק' WHERE name_en = 'Denmark' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'שוודיה' WHERE name_en = 'Sweden' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סרביה' WHERE name_en = 'Serbia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ישראל' WHERE name_en = 'Israel' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'אוזבקיסטן' WHERE name_en = 'Uzbekistan' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ירדן' WHERE name_en = 'Jordan' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'עיראק' WHERE name_en = 'Iraq' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'קייפ ורדה' WHERE name_en = 'Cape Verde' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'דרום אפריקה' WHERE name_en = 'South Africa' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'קונגו הדמוקרטית' WHERE name_en = 'DR Congo' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'פנמה' WHERE name_en = 'Panama' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'קוראסאו' WHERE name_en = 'Curacao' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'האיטי' WHERE name_en = 'Haiti' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'פרגוואי' WHERE name_en = 'Paraguay' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ניו זילנד' WHERE name_en = 'New Zealand' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'נורווגיה' WHERE name_en = 'Norway' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'סקוטלנד' WHERE name_en = 'Scotland' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'אוסטריה' WHERE name_en = 'Austria' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'בוסניה והרצגובינה' WHERE name_en = 'Bosnia and Herzegovina' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'טורקיה' WHERE name_en = 'Turkey' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'צ''כיה' WHERE name_en = 'Czech Republic' AND name_he IS NULL;
 
 -- World Cup 2026 national flags, via flagcdn.com's stable per-country-code SVG URLs. Unlike club
 -- crests, national flags carry no trademark/licensing ambiguity, so these are safe to seed directly
@@ -185,7 +201,6 @@ UPDATE clubs SET logo_url = 'https://flagcdn.com/es.svg' WHERE name_en = 'Spain'
 UPDATE clubs SET logo_url = 'https://flagcdn.com/de.svg' WHERE name_en = 'Germany' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/pt.svg' WHERE name_en = 'Portugal' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/nl.svg' WHERE name_en = 'Netherlands' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/it.svg' WHERE name_en = 'Italy' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/be.svg' WHERE name_en = 'Belgium' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/hr.svg' WHERE name_en = 'Croatia' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/uy.svg' WHERE name_en = 'Uruguay' AND logo_url IS NULL;
@@ -197,26 +212,35 @@ UPDATE clubs SET logo_url = 'https://flagcdn.com/jp.svg' WHERE name_en = 'Japan'
 UPDATE clubs SET logo_url = 'https://flagcdn.com/kr.svg' WHERE name_en = 'South Korea' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/ma.svg' WHERE name_en = 'Morocco' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/sn.svg' WHERE name_en = 'Senegal' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ng.svg' WHERE name_en = 'Nigeria' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/gh.svg' WHERE name_en = 'Ghana' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/eg.svg' WHERE name_en = 'Egypt' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/tn.svg' WHERE name_en = 'Tunisia' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/dz.svg' WHERE name_en = 'Algeria' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/ci.svg' WHERE name_en = 'Ivory Coast' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/cm.svg' WHERE name_en = 'Cameroon' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/au.svg' WHERE name_en = 'Australia' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/ir.svg' WHERE name_en = 'Iran' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/sa.svg' WHERE name_en = 'Saudi Arabia' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/qa.svg' WHERE name_en = 'Qatar' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/ec.svg' WHERE name_en = 'Ecuador' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/cl.svg' WHERE name_en = 'Chile' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/pe.svg' WHERE name_en = 'Peru' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/pl.svg' WHERE name_en = 'Poland' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/ch.svg' WHERE name_en = 'Switzerland' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/dk.svg' WHERE name_en = 'Denmark' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/se.svg' WHERE name_en = 'Sweden' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/rs.svg' WHERE name_en = 'Serbia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/il.svg' WHERE name_en = 'Israel' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/uz.svg' WHERE name_en = 'Uzbekistan' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/jo.svg' WHERE name_en = 'Jordan' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/iq.svg' WHERE name_en = 'Iraq' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/cv.svg' WHERE name_en = 'Cape Verde' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/za.svg' WHERE name_en = 'South Africa' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/cd.svg' WHERE name_en = 'DR Congo' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/pa.svg' WHERE name_en = 'Panama' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/cw.svg' WHERE name_en = 'Curacao' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ht.svg' WHERE name_en = 'Haiti' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/py.svg' WHERE name_en = 'Paraguay' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/nz.svg' WHERE name_en = 'New Zealand' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/no.svg' WHERE name_en = 'Norway' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/gb-sct.svg' WHERE name_en = 'Scotland' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/at.svg' WHERE name_en = 'Austria' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/ba.svg' WHERE name_en = 'Bosnia and Herzegovina' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/tr.svg' WHERE name_en = 'Turkey' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://flagcdn.com/cz.svg' WHERE name_en = 'Czech Republic' AND logo_url IS NULL;
 
 -- UCL clubs
 UPDATE clubs SET name_he = 'ריאל מדריד' WHERE name_en = 'Real Madrid' AND name_he IS NULL;

@@ -15,7 +15,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 7
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 136
+    assert cur.fetchone()[0] == 144
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')

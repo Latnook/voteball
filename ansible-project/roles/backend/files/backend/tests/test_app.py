@@ -191,7 +191,11 @@ def test_vote_endpoint_rejects_empty_team_picks(client):
     assert resp.get_json() == {'error': 'team_picks must be a non-empty list'}
 
 
-def test_vote_endpoint_accepts_dual_league_club_picked_under_both_tabs(client, conn):
+def test_vote_endpoint_rejects_dual_league_club_picked_under_both_tabs(client, conn):
+    # A dual-league club (e.g. Real Madrid: UCL + domestic La Liga) must be picked under exactly
+    # one of its two leagues per ballot -- the fixed vote.js mirrors its checkbox state across both
+    # tabs and submits a single pick, so a client sending it under both leagues is either a stale
+    # client or a bypass attempt, and the API is the source of truth here.
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'UCL'")
     ucl_id = cur.fetchone()[0]
@@ -208,7 +212,8 @@ def test_vote_endpoint_accepts_dual_league_club_picked_under_both_tabs(client, c
         'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
         'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
     })
-    assert resp.status_code == 201
+    assert resp.status_code == 400
+    assert resp.get_json()['error'] == 'club_id picked under more than one league'
 
 
 def test_results_by_club_endpoint(client, conn):
