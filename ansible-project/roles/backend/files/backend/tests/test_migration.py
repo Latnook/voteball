@@ -67,17 +67,17 @@ def test_party_ideology_columns_and_lineage_table_exist(conn):
         cur.execute("UPDATE previous_parties SET bloc = 'not-a-real-bloc' WHERE name = 'הליכוד'")
     conn.rollback()
 
-    cur.execute("SELECT id FROM previous_parties WHERE name = 'הליכוד'")
+    cur.execute("SELECT id FROM previous_parties WHERE name = 'יש עתיד'")
     prev_id = cur.fetchone()[0]
-    cur.execute("SELECT id FROM upcoming_parties WHERE name = 'הליכוד'")
+    cur.execute("SELECT id FROM upcoming_parties WHERE name = 'עוצמה יהודית'")
     up_id = cur.fetchone()[0]
     cur.execute(
         'INSERT INTO party_lineage (previous_party_id, upcoming_party_id) VALUES (%s, %s)',
         (prev_id, up_id)
     )
     cur.execute(
-        'SELECT previous_party_id, upcoming_party_id FROM party_lineage WHERE previous_party_id = %s',
-        (prev_id,)
+        'SELECT previous_party_id, upcoming_party_id FROM party_lineage WHERE previous_party_id = %s AND upcoming_party_id = %s',
+        (prev_id, up_id)
     )
     assert cur.fetchone() == (prev_id, up_id)
     conn.commit()
@@ -101,4 +101,54 @@ def test_vote_switch_rollup_tables_exist(conn):
     with pytest.raises(psycopg2.errors.CheckViolation):
         cur.execute("INSERT INTO rollup_vote_switch (league_id, club_id, switch_status, vote_count) VALUES (NULL, NULL, 'not-a-real-status', 1)")
     conn.rollback()
+    cur.close()
+
+
+def test_seeded_parties_have_ideology_classification(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT name_en, bloc, sector FROM previous_parties WHERE name_he != 'אחר'")
+    for name_en, bloc, sector in cur.fetchall():
+        assert bloc is not None, f'{name_en} (previous) missing bloc'
+        assert sector is not None, f'{name_en} (previous) missing sector'
+
+    cur.execute("SELECT bloc, economic, security, sector FROM previous_parties WHERE name_he = 'אחר'")
+    assert cur.fetchone() == (None, None, None, None)
+
+    cur.execute('SELECT name_en, bloc, sector FROM upcoming_parties')
+    for name_en, bloc, sector in cur.fetchall():
+        assert bloc is not None, f'{name_en} (upcoming) missing bloc'
+        assert sector is not None, f'{name_en} (upcoming) missing sector'
+
+    cur.execute("SELECT economic, security, tags FROM previous_parties WHERE name_he = 'המחנה הממלכתי'")
+    economic, security, tags = cur.fetchone()
+    assert economic == 1
+    assert security is None
+    assert 'avoids-security-topic' in tags
+    cur.close()
+
+
+def test_seeded_party_lineage(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM party_lineage')
+    assert cur.fetchone()[0] == 13
+
+    cur.execute('''
+        SELECT u.name_en FROM party_lineage pl
+        JOIN previous_parties p ON p.id = pl.previous_party_id
+        JOIN upcoming_parties u ON u.id = pl.upcoming_party_id
+        WHERE p.name_he = 'הציונות הדתית'
+        ORDER BY u.name_en
+    ''')
+    successors = {r[0] for r in cur.fetchall()}
+    assert successors == {'Otzma Yehudit', 'Religious Zionist Party'}
+
+    cur.execute('''
+        SELECT p.name_en FROM party_lineage pl
+        JOIN previous_parties p ON p.id = pl.previous_party_id
+        JOIN upcoming_parties u ON u.id = pl.upcoming_party_id
+        WHERE u.name_he = 'הדמוקרטים'
+        ORDER BY p.name_en
+    ''')
+    predecessors = {r[0] for r in cur.fetchall()}
+    assert predecessors == {'Labor', 'Meretz'}
     cur.close()

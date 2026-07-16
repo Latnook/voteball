@@ -356,6 +356,103 @@ UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/c
 UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'מרצ' AND logo_url IS NULL;
 UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
 
+-- Party ideology classification (docs/superpowers/specs/2026-07-16-party-categorization-analytics-design.md
+-- Appendix). Provisional: platforms aren't fully released and more splits/merges may happen before
+-- candidate lists lock -- revise via this file + scripts/sync-seed-from-rds.sh as needed.
+UPDATE previous_parties SET bloc = 'bibi', economic = 1, security = 2, sector = 'traditional',
+    tags = ARRAY['claims-economically-liberal', 'populist', 'nationalist']
+    WHERE name_he = 'הליכוד' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'opposition', economic = 0, security = 0, sector = 'secular',
+    tags = ARRAY['liberal-zionist', 'centrist']
+    WHERE name_he = 'יש עתיד' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'bibi', economic = 0, security = 3, sector = 'religious_zionist',
+    tags = ARRAY['claims-economically-liberal', 'not-economy-focused', 'ultranationalist', 'far-right']
+    WHERE name_he = 'הציונות הדתית' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'unaligned', economic = 1, security = NULL, sector = 'secular',
+    tags = ARRAY['centrist', 'avoids-security-topic', 'leans-traditional']
+    WHERE name_he = 'המחנה הממלכתי' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'opposition', economic = 2, security = 2, sector = 'secular',
+    tags = ARRAY['anti-clerical', 'revisionist-zionist']
+    WHERE name_he = 'ישראל ביתנו' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'bibi', economic = -2, security = 1, sector = 'haredi',
+    tags = ARRAY['ultra-orthodox', 'religious-conservative']
+    WHERE name_he = 'ש"ס' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'bibi', economic = -2, security = 1, sector = 'haredi',
+    tags = ARRAY['ultra-orthodox', 'religious-conservative']
+    WHERE name_he = 'יהדות התורה' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'opposition', economic = 0, security = NULL, sector = 'arab',
+    tags = ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues']
+    WHERE name_he = 'רע"ם' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'opposition', economic = -3, security = -2, sector = 'arab',
+    tags = ARRAY['communist', 'arab-nationalist', 'pro-two-state']
+    WHERE name_he = 'חד"ש-תע"ל' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'opposition', economic = -2, security = -1, sector = 'secular',
+    tags = ARRAY['social-democrat']
+    WHERE name_he = 'העבודה' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'opposition', economic = -2, security = -1, sector = 'secular',
+    tags = ARRAY['social-democrat']
+    WHERE name_he = 'מרצ' AND bloc IS NULL;
+UPDATE previous_parties SET bloc = 'opposition', economic = -2, security = -3, sector = 'arab',
+    tags = ARRAY['palestinian-nationalist', 'non-zionist']
+    WHERE name_he = 'בל"ד' AND bloc IS NULL;
+-- 'אחר' (Other) intentionally left fully NULL -- it is a catch-all, not a real party with ideology.
+
+-- Party lineage: continuity between previous and upcoming parties (identity, splits, merges).
+-- See design spec Appendix -- Yashar, The Economic Party, El HaDegel, The Reservists, and Blue and
+-- White (as an independent brand) have no seeded predecessor; 'אחר' has no successor.
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'הליכוד' AND u.name_he = 'הליכוד'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'יש עתיד' AND u.name_he = 'ביחד'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'הציונות הדתית' AND u.name_he = 'הציונות הדתית'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'הציונות הדתית' AND u.name_he = 'עוצמה יהודית'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'המחנה הממלכתי' AND u.name_he = 'כחול לבן'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'ישראל ביתנו' AND u.name_he = 'ישראל ביתנו'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'ש"ס' AND u.name_he = 'ש"ס'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'יהדות התורה' AND u.name_he = 'יהדות התורה'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'רע"ם' AND u.name_he = 'רע"ם'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'חד"ש-תע"ל' AND u.name_he = 'חד"ש-תע"ל'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'העבודה' AND u.name_he = 'הדמוקרטים'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'מרצ' AND u.name_he = 'הדמוקרטים'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'בל"ד' AND u.name_he = 'בל"ד'
+ON CONFLICT DO NOTHING;
+
 -- Upcoming election parties
 UPDATE upcoming_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'Yashar' WHERE name_he = 'ישר' AND name_en IS NULL;
@@ -384,6 +481,57 @@ UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/h
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrT42i2KdLQY3tvfo0CzpXXrNixL7m7b4xMpRCWJgjLa0pp_kPr8w-crQg&s=10' WHERE name_he = 'אל הדגל' AND logo_url IS NULL;
+
+-- Party ideology classification for upcoming_parties -- independent from previous_parties even where
+-- a lineage link exists (see party_lineage below and design spec Decision 1).
+UPDATE upcoming_parties SET bloc = 'bibi', economic = 1, security = 2, sector = 'traditional',
+    tags = ARRAY['claims-economically-liberal', 'populist', 'nationalist']
+    WHERE name_he = 'הליכוד' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 0, security = 0, sector = 'secular',
+    tags = ARRAY['new-party', 'undefined-ideology']
+    WHERE name_he = 'ישר' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 1, security = NULL, sector = 'secular',
+    tags = ARRAY['liberal-zionist', 'constitutionalist', 'avoids-security-topic']
+    WHERE name_he = 'ביחד' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'opposition', economic = -2, security = -1, sector = 'secular',
+    tags = ARRAY['progressive', 'social-democrat', 'liberal-zionist']
+    WHERE name_he = 'הדמוקרטים' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 0, security = 0, sector = 'secular',
+    tags = ARRAY['centrist', 'hard-to-classify-bloc']
+    WHERE name_he = 'כחול לבן' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 2, security = 2, sector = 'secular',
+    tags = ARRAY['anti-clerical', 'revisionist-zionist']
+    WHERE name_he = 'ישראל ביתנו' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'bibi', economic = 0, security = 3, sector = 'religious_zionist',
+    tags = ARRAY['claims-economically-liberal', 'not-economy-focused', 'ultranationalist', 'far-right']
+    WHERE name_he = 'הציונות הדתית' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'bibi', economic = 0, security = 3, sector = 'religious_zionist',
+    tags = ARRAY['claims-economically-liberal', 'not-economy-focused', 'kahanist', 'jewish-supremacist', 'far-right']
+    WHERE name_he = 'עוצמה יהודית' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'opposition', economic = -3, security = -2, sector = 'arab',
+    tags = ARRAY['communist', 'arab-nationalist', 'pro-two-state']
+    WHERE name_he = 'חד"ש-תע"ל' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'opposition', economic = -2, security = -3, sector = 'arab',
+    tags = ARRAY['palestinian-nationalist', 'non-zionist']
+    WHERE name_he = 'בל"ד' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 0, security = NULL, sector = 'arab',
+    tags = ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues']
+    WHERE name_he = 'רע"ם' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'bibi', economic = -2, security = 1, sector = 'haredi',
+    tags = ARRAY['ultra-orthodox', 'religious-conservative']
+    WHERE name_he = 'ש"ס' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'bibi', economic = -2, security = 1, sector = 'haredi',
+    tags = ARRAY['ultra-orthodox', 'religious-conservative']
+    WHERE name_he = 'יהדות התורה' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 0, sector = 'secular',
+    tags = ARRAY['populist', 'anti-corruption', 'anti-clerical']
+    WHERE name_he = 'המפלגה הכלכלית' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 0, sector = 'secular',
+    tags = ARRAY['reservist-focused', 'anti-conscription-exemption']
+    WHERE name_he = 'אל הדגל' AND bloc IS NULL;
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 0, sector = 'secular',
+    tags = ARRAY['reservist-focused', 'anti-conscription-exemption']
+    WHERE name_he = 'המילואימניקים' AND bloc IS NULL;
 
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
