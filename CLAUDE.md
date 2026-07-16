@@ -125,6 +125,21 @@ Provisioning and deployment are two separate steps, run in this order:
    --install`s the `charts/voteball` chart, which deploys the three containers as Kubernetes
    Deployments/Services in the `voteball-app` namespace.
 
+### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
+
+Admin-curated data (party/club/league logo URLs, renames, etc.) lives only in the live RDS instance
+until someone backfills it into `seed.sql` — a fresh install or `terraform destroy`+restore-from-
+empty-DB would otherwise miss it. **`scripts/sync-seed-from-rds.sh`** automates this: it opens an SSH
+tunnel through the EC2 node to RDS (private subnet, not directly reachable), diffs the live data
+against what the current working tree's `schema.sql`/`seed.sql` would produce in a fresh
+`voteball-test-db` container, and reports every difference in three categories — safe NULL-backfills
+(a field the admin set that `seed.sql` still has as NULL; pass `--apply` to write these in), value
+conflicts (both sides set but different — e.g. a rename; always needs a human fix, since a guarded
+`WHERE col IS NULL` statement can't touch an already-populated field), and rows that exist on only one
+side (added or deleted on purpose — also always needs a human call). Needs the same `.vault_pass`,
+`Voteball-EC2-pem.pem`, and Terraform state as the rest of this section, plus a running
+`voteball-test-db` container (see the Backend common-commands section below).
+
 ### Secrets: ansible-vault
 
 `ansible-project/inventories/voteball/group_vars/all/secrets.yml` (holds `db_pass`, `admin_username`,
