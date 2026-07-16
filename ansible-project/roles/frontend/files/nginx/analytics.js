@@ -1,5 +1,6 @@
 let analyticsOptionsData = null;
 let clubsBreakdown = null;
+let nationalPreviousData = null;
 
 const DIVERSITY_MIN_VOTES = 10;
 const LEAN_MIN_VOTES = 10;
@@ -296,14 +297,18 @@ function renderLeanDetail(container, label, previousBreakdown) {
   container.appendChild(sectorRow);
 }
 
-function nationalPreviousBreakdown() {
-  const totals = {};
-  clubsBreakdown.forEach(entry => {
-    entry.previous.forEach(r => {
-      totals[r.party_id] = (totals[r.party_id] || 0) + r.count;
-    });
-  });
-  return Object.entries(totals).map(([partyId, count]) => ({ party_id: Number(partyId), count }));
+// National previous-party breakdown for the Lean tab's default view. Deliberately NOT a sum over
+// clubsBreakdown (rollup_previous WHERE club_id IS NOT NULL): that would double-count multi-club
+// ballots (two club-scope rows sharing one previous_party_id) and silently drop league-only voters
+// (club_id IS NULL rows excluded by that filter). /api/results?by=all reads the worker-computed,
+// deduped rollup_national_previous table instead -- see queries.py's get_results_all. Cached at
+// module level since repeated visits to National shouldn't re-fetch.
+async function nationalPreviousBreakdown() {
+  if (!nationalPreviousData) {
+    const data = await fetchJSON('/api/results?by=all');
+    nationalPreviousData = data.previous;
+  }
+  return nationalPreviousData;
 }
 
 function renderLeanTab() {
@@ -324,10 +329,19 @@ function renderLeanTab() {
   const detail = document.createElement('div');
   detail.className = 'card';
 
-  function selectClub(row, badge) {
+  async function selectClub(row, badge) {
     strip.querySelectorAll('.lean-badge').forEach(b => b.setAttribute('aria-pressed', 'false'));
     if (badge) badge.setAttribute('aria-pressed', 'true');
-    renderLeanDetail(detail, row ? localizedName(row.club) : t('analyticsNational'), row ? row.previous : nationalPreviousBreakdown());
+    if (row) {
+      renderLeanDetail(detail, localizedName(row.club), row.previous);
+      return;
+    }
+    try {
+      const national = await nationalPreviousBreakdown();
+      renderLeanDetail(detail, t('analyticsNational'), national);
+    } catch (err) {
+      analyticsShowError('lean-tab');
+    }
   }
 
   rows.forEach(row => {
@@ -497,6 +511,8 @@ async function initAnalytics() {
     clubsBreakdown = await fetchJSON('/api/results/clubs-breakdown');
   } catch (err) {
     analyticsShowError('diversity-tab');
+    analyticsShowError('lean-tab');
+    analyticsShowError('switching-tab');
     return;
   }
   renderDiversityTab();
