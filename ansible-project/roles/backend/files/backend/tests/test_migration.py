@@ -1,6 +1,8 @@
 import psycopg2
 import pytest
 
+import db as db_module
+
 
 def test_all_seeded_rows_have_both_languages(conn):
     cur = conn.cursor()
@@ -124,6 +126,30 @@ def test_seeded_parties_have_ideology_classification(conn):
     assert economic == 1
     assert security is None
     assert 'avoids-security-topic' in tags
+    cur.close()
+
+
+def test_seed_rerun_survives_league_name_drift(conn):
+    # Mirrors what an admin rename does in production (queries.py's rename_league/rename_club
+    # always set the legacy `name` column to the Hebrew value) -- reproduces the 2026-07-17
+    # incident where this left seed.sql unable to recognize UCL/EPL already exist, so it
+    # inserted phantom duplicate leagues, duplicated every club under them, and crashed with a
+    # clubs_name_en_uidx UniqueViolation on the very next backend pod boot.
+    cur = conn.cursor()
+    cur.execute("UPDATE leagues SET name = name_he WHERE name_en = 'UEFA Champions League'")
+    cur.execute("UPDATE leagues SET name = name_he WHERE name_en = 'Premier League'")
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)  # must not raise
+
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM leagues')
+    assert cur.fetchone()[0] == 7, 'league name drift must not create a phantom duplicate league'
+    cur.execute('SELECT COUNT(*) FROM clubs')
+    assert cur.fetchone()[0] == 144, 'league name drift must not duplicate that league\'s clubs'
+    cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
+    assert cur.fetchone()[0] == 1
     cur.close()
 
 

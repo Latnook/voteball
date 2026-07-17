@@ -6,11 +6,26 @@ INSERT INTO alert_state (id, last_seen_total) VALUES (1, 0) ON CONFLICT (id) DO 
 -- later re-run of this file, so the ON CONFLICT target alone would silently re-insert a
 -- duplicate row instead of a no-op. name_en survives admin edits, so it's the stable identity
 -- check here.
+-- UCL/EPL get a three-way identity check (legacy name, raw name_en, post-rename canonical
+-- name_en) because they're the only leagues whose name_en this file itself overwrites below
+-- (to 'UEFA Champions League'/'Premier League') -- once that's happened on a prior run, neither
+-- the literal 'UCL'/'EPL' token nor an admin-drifted `name` column can match the row anymore,
+-- so without the canonical fallback this INSERT can't recognize the row already exists and
+-- creates a duplicate league (see incident 2026-07-17: phantom 'UCL' row -> duplicate clubs ->
+-- clubs_name_en_uidx crash on every backend pod boot).
 INSERT INTO leagues (name)
 SELECT v.name FROM (VALUES
     ('World Cup 2026'), ('UCL'), ('EPL'), ('La Liga'), ('Serie A'), ('Bundesliga'), ('Israeli Premier League')
 ) AS v(name)
-WHERE NOT EXISTS (SELECT 1 FROM leagues existing WHERE existing.name_en = v.name)
+WHERE NOT EXISTS (
+    SELECT 1 FROM leagues existing
+    WHERE existing.name = v.name
+       OR existing.name_en = v.name
+       OR existing.name_en = (CASE v.name
+            WHEN 'UCL' THEN 'UEFA Champions League'
+            WHEN 'EPL' THEN 'Premier League'
+            ELSE v.name END)
+)
 ON CONFLICT (name) DO NOTHING;
 
 -- Same name_en guard as leagues above -- see that comment for why ON CONFLICT (league_id, name)
@@ -84,7 +99,13 @@ JOIN (VALUES
     ('Israeli Premier League', 'Hapoel Ramat Gan Givatayim'), ('Israeli Premier League', 'Hapoel Jerusalem'),
     ('Israeli Premier League', 'Ironi Kiryat Shmona'), ('Israeli Premier League', 'Maccabi Petah Tikva'),
     ('Israeli Premier League', 'Hapoel Petah Tikva'), ('Israeli Premier League', 'Ironi Tiberias')
-) AS c(league_name, name) ON l.name = c.league_name
+) AS c(league_name, name)
+    ON l.name = c.league_name
+    OR l.name_en = c.league_name
+    OR l.name_en = (CASE c.league_name
+        WHEN 'UCL' THEN 'UEFA Champions League'
+        WHEN 'EPL' THEN 'Premier League'
+        ELSE c.league_name END)
 WHERE NOT EXISTS (
     SELECT 1 FROM clubs existing WHERE existing.league_id = l.id AND existing.name_en = c.name
 )
@@ -93,20 +114,23 @@ ON CONFLICT (league_id, name) DO NOTHING;
 -- Link each UCL club that also plays in a domestic league this app seeds (decision 12).
 -- Paris Saint-Germain/Porto/Benfica/Ajax are intentionally excluded -- their domestic
 -- leagues (Ligue 1/Primeira Liga/Eredivisie) aren't seeded here, so they stay UCL-only.
-UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'EPL')
-WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+-- The UCL lookup also matches on name_en (raw or post-rename canonical) -- see the comment on
+-- the leagues INSERT above for why 'UCL' alone isn't a reliable match once that row's name_en
+-- has been renamed to 'UEFA Champions League'.
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'EPL' OR name_en IN ('EPL', 'Premier League'))
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
   AND name IN ('Arsenal', 'Chelsea', 'Liverpool', 'Manchester City', 'Manchester United');
 
 UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'La Liga')
-WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
   AND name IN ('Real Madrid', 'Barcelona', 'Atletico Madrid');
 
 UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'Serie A')
-WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
   AND name IN ('Inter Milan', 'AC Milan', 'Juventus', 'Napoli');
 
 UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'Bundesliga')
-WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
   AND name IN ('Bayern Munich', 'Borussia Dortmund');
 
 INSERT INTO previous_parties (name) VALUES
