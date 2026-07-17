@@ -56,12 +56,6 @@
   --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
   --radius: 14px;
   --radius-sm: 8px;
-  /* Logo chip: a soft off-white plate behind every logo so dark/transparent artwork
-     (dark crests, thin Hebrew wordmarks) stays legible on the dark "floodlit" cards.
-     Theme-independent by design (same value in both themes), so it lives only here and
-     the light/dark override blocks inherit it. */
-  --logo-chip: #F4F6F8;
-  --logo-border: rgba(0, 0, 0, 0.10);
   --font-body: 'Heebo', system-ui, sans-serif;
   --font-display-en: 'Anton', var(--font-body);
   --font-display-he: 'Secular One', var(--font-body);
@@ -363,16 +357,27 @@ button { font-family: inherit; }
   justify-content: center;
   width: 3.4rem;
   height: 3.4rem;
-  border-radius: 8px;
-  overflow: hidden;
   flex-shrink: 0;
-  background: var(--logo-chip);
-  border: 1px solid var(--logo-border);
 }
 .logo img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  /* Dark theme (default): a soft white halo so dark/transparent logo artwork (dark crests, thin
+     Hebrew wordmarks) stays legible directly on the dark cards -- no filled background plate.
+     Removed in light mode below, where dark logos already read on the light cards. Applied to the
+     <img> only, so the generated .logo-mono fallback (its own coloured tile) is untouched. */
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .logo img { filter: none; }
+}
+:root[data-theme="light"] .logo img { filter: none; }
+/* Party pick-cards (vote.js passes extraClass 'logo-wide'): a full-width, taller box so wide
+   Hebrew wordmark logos render much larger. Square party emblems stay ~the same size. */
+.logo.logo-wide {
+  width: 100%;
+  height: 3.9rem;
 }
 .logo-mono {
   width: 100%;
