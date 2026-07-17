@@ -214,7 +214,7 @@ function renderPreviousGrid() {
     card.type = 'button';
     card.className = 'pick-card';
     card.setAttribute('aria-pressed', String(selectedPreviousChoice === p.id));
-    card.appendChild(logoEl(p, localizedName(p), { extraClass: 'logo-wide' }));
+    card.appendChild(logoEl(p, localizedName(p), { extraClass: 'logo-wide', recolor: true }));
     const name = document.createElement('span');
     name.className = 'card-name';
     name.textContent = localizedName(p);
@@ -273,7 +273,7 @@ function renderUpcomingGrid() {
       card.disabled = true;
       card.setAttribute('aria-disabled', 'true');
     }
-    card.appendChild(logoEl(p, localizedName(p), { extraClass: 'logo-wide' }));
+    card.appendChild(logoEl(p, localizedName(p), { extraClass: 'logo-wide', recolor: true }));
     const name = document.createElement('span');
     name.className = 'card-name';
     name.textContent = localizedName(p);

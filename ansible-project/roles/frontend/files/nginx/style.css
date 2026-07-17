@@ -363,21 +363,48 @@ button { font-family: inherit; }
   width: 100%;
   height: 100%;
   object-fit: contain;
-  /* Dark theme (default): a soft white halo so dark/transparent logo artwork (dark crests, thin
-     Hebrew wordmarks) stays legible directly on the dark cards -- no filled background plate.
-     Removed in light mode below, where dark logos already read on the light cards. Applied to the
-     <img> only, so the generated .logo-mono fallback (its own coloured tile) is untouched. */
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
+}
+/* Dark logos only: logos.js samples each logo's luminance at load (via a CORS canvas) and adds
+   .logo-dark to dark ones. In the dark theme (default) they get a thin crisp white outline so
+   black/navy artwork (Juventus, dark Hebrew wordmarks) stays legible directly on the dark cards --
+   no background plate, and colourful crests/wordmarks get nothing. Off in light mode, where dark
+   logos already read on the light cards. On the <img> only, so the .logo-mono fallback is untouched. */
+.logo-dark img {
+  filter: drop-shadow(1px 0 0 rgba(255, 255, 255, 0.9))
+          drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.9))
+          drop-shadow(0 1px 0 rgba(255, 255, 255, 0.9))
+          drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.9));
 }
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .logo img { filter: none; }
+  :root:not([data-theme="dark"]) .logo-dark img { filter: none; }
 }
-:root[data-theme="light"] .logo img { filter: none; }
-/* Party pick-cards (vote.js passes extraClass 'logo-wide'): a full-width, taller box so wide
-   Hebrew wordmark logos render much larger. Square party emblems stay ~the same size. */
+:root[data-theme="light"] .logo-dark img { filter: none; }
+
+/* Party logos (opts.recolor in logos.js) are recoloured for dark backgrounds on a <canvas>: dark
+   parts lifted to light, hue preserved, bright colours kept. The dark theme (default) shows that
+   canvas and hides the untouched original <img class="logo-orig">; light mode shows the original.
+   Only parties whose logo actually changed get a .logo-recolored canvas -- everything else (clubs,
+   flags, unchanged/solid-tile party logos) just keeps its <img>, which has no .logo-orig class and
+   so is never hidden. */
+.logo .logo-recolored {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.logo img.logo-orig { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .logo img.logo-orig { display: block; }
+  :root:not([data-theme="dark"]) .logo .logo-recolored { display: none; }
+}
+:root[data-theme="light"] .logo img.logo-orig { display: block; }
+:root[data-theme="light"] .logo .logo-recolored { display: none; }
+
+/* Party pick-cards (vote.js passes extraClass 'logo-wide'): full-width box at the SAME height as the
+   square club logos, so wide Hebrew wordmark logos fill the card width while staying consistent in
+   height/rhythm with the club crests. */
 .logo.logo-wide {
   width: 100%;
-  height: 3.9rem;
+  height: 3.4rem;
 }
 .logo-mono {
   width: 100%;
