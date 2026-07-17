@@ -174,9 +174,11 @@ UPDATE leagues SET name_he = 'ליגה לאומית' WHERE name_en = 'Liga Leumi
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
 UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
 
--- Pin the Israeli Premier League to the top of every league picker/list; all other leagues stay
--- unranked (sort_order NULL) and fall back to alphabetical (see get_options in queries.py).
+-- Pin the Israeli Premier League to the top of every league picker/list, with Liga Leumit (the
+-- Israeli second tier) directly after it; all other leagues stay unranked (sort_order NULL) and
+-- fall back to alphabetical (see get_options in queries.py).
 UPDATE leagues SET sort_order = 0 WHERE name = 'Israeli Premier League';
+UPDATE leagues SET sort_order = 1 WHERE name_en = 'Liga Leumit';
 
 -- League logos/emblems. Competition emblems (unlike individual club crests) carry no per-club
 -- trademark ambiguity, so these are safe to seed directly (see the World Cup national-flags note
