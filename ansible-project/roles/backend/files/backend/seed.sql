@@ -59,39 +59,44 @@ JOIN (VALUES
 
     ('UCL', 'Real Madrid'), ('UCL', 'Manchester City'), ('UCL', 'Bayern Munich'),
     ('UCL', 'Barcelona'), ('UCL', 'Liverpool'), ('UCL', 'Paris Saint-Germain'),
-    ('UCL', 'Inter Milan'), ('UCL', 'Juventus'), ('UCL', 'Manchester United'),
-    ('UCL', 'Chelsea'), ('UCL', 'Arsenal'), ('UCL', 'AC Milan'),
-    ('UCL', 'Atletico Madrid'), ('UCL', 'Borussia Dortmund'), ('UCL', 'Napoli'),
-    ('UCL', 'Porto'), ('UCL', 'Benfica'), ('UCL', 'Ajax'),
+    ('UCL', 'Inter Milan'), ('UCL', 'Manchester United'),
+    ('UCL', 'Arsenal'), ('UCL', 'Atlético Madrid'), ('UCL', 'Borussia Dortmund'),
+    ('UCL', 'Napoli'), ('UCL', 'Porto'),
+    ('UCL', 'Club Brugge'), ('UCL', 'Feyenoord'), ('UCL', 'Galatasaray'),
+    ('UCL', 'Lens'), ('UCL', 'Lille'), ('UCL', 'PSV Eindhoven'),
+    ('UCL', 'Shakhtar Donetsk'), ('UCL', 'Slavia Prague'), ('UCL', 'Sporting CP'),
 
     ('EPL', 'Aston Villa'), ('EPL', 'Bournemouth'),
     ('EPL', 'Brentford'), ('EPL', 'Brighton & Hove Albion'),
+    ('EPL', 'Chelsea'), ('EPL', 'Coventry City'),
     ('EPL', 'Crystal Palace'), ('EPL', 'Everton'), ('EPL', 'Fulham'),
-    ('EPL', 'Ipswich Town'), ('EPL', 'Leicester City'),
+    ('EPL', 'Hull City'), ('EPL', 'Ipswich Town'), ('EPL', 'Leeds United'),
     ('EPL', 'Newcastle United'),
-    ('EPL', 'Nottingham Forest'), ('EPL', 'Southampton'), ('EPL', 'Tottenham Hotspur'),
-    ('EPL', 'West Ham United'), ('EPL', 'Wolverhampton Wanderers'),
+    ('EPL', 'Nottingham Forest'), ('EPL', 'Tottenham Hotspur'),
 
     ('La Liga', 'Athletic Bilbao'), ('La Liga', 'Real Sociedad'), ('La Liga', 'Real Betis'),
     ('La Liga', 'Villarreal'), ('La Liga', 'Valencia'), ('La Liga', 'Sevilla'),
-    ('La Liga', 'Girona'), ('La Liga', 'Osasuna'), ('La Liga', 'Celta Vigo'),
-    ('La Liga', 'Rayo Vallecano'), ('La Liga', 'Getafe'), ('La Liga', 'Las Palmas'),
-    ('La Liga', 'Alaves'), ('La Liga', 'Espanyol'), ('La Liga', 'Leganes'),
-    ('La Liga', 'Mallorca'), ('La Liga', 'Valladolid'),
+    ('La Liga', 'Osasuna'), ('La Liga', 'Celta Vigo'),
+    ('La Liga', 'Rayo Vallecano'), ('La Liga', 'Getafe'), ('La Liga', 'Alavés'),
+    ('La Liga', 'Espanyol'), ('La Liga', 'Deportivo de A Coruña'),
+    ('La Liga', 'Elche'), ('La Liga', 'Levante'), ('La Liga', 'Málaga'),
+    ('La Liga', 'Racing Santander'),
 
     ('Serie A', 'Roma'), ('Serie A', 'Lazio'),
     ('Serie A', 'Atalanta'), ('Serie A', 'Fiorentina'), ('Serie A', 'Bologna'),
     ('Serie A', 'Torino'), ('Serie A', 'Udinese'), ('Serie A', 'Genoa'),
-    ('Serie A', 'Cagliari'), ('Serie A', 'Verona'), ('Serie A', 'Lecce'),
+    ('Serie A', 'Cagliari'), ('Serie A', 'Lecce'),
     ('Serie A', 'Parma'), ('Serie A', 'Como'), ('Serie A', 'Venezia'),
-    ('Serie A', 'Empoli'), ('Serie A', 'Monza'),
+    ('Serie A', 'Monza'), ('Serie A', 'AC Milan'), ('Serie A', 'Juventus'),
+    ('Serie A', 'Frosinone'),
 
     ('Bundesliga', 'RB Leipzig'),
     ('Bundesliga', 'Bayer Leverkusen'), ('Bundesliga', 'Eintracht Frankfurt'), ('Bundesliga', 'VfB Stuttgart'),
-    ('Bundesliga', 'Borussia Monchengladbach'), ('Bundesliga', 'SC Freiburg'), ('Bundesliga', 'Werder Bremen'),
-    ('Bundesliga', 'Union Berlin'), ('Bundesliga', 'Mainz 05'), ('Bundesliga', 'Wolfsburg'),
-    ('Bundesliga', 'Hoffenheim'), ('Bundesliga', 'FC Augsburg'), ('Bundesliga', 'VfL Bochum'),
-    ('Bundesliga', 'FC Heidenheim'), ('Bundesliga', 'Holstein Kiel'), ('Bundesliga', 'St. Pauli'),
+    ('Bundesliga', 'Borussia Mönchengladbach'), ('Bundesliga', 'SC Freiburg'), ('Bundesliga', 'Werder Bremen'),
+    ('Bundesliga', 'Union Berlin'), ('Bundesliga', 'Mainz 05'),
+    ('Bundesliga', 'TSG Hoffenheim'), ('Bundesliga', 'FC Augsburg'),
+    ('Bundesliga', '1. FC Köln'), ('Bundesliga', 'FC Schalke 04'), ('Bundesliga', 'Hamburger SV'),
+    ('Bundesliga', 'SC Paderborn 07'), ('Bundesliga', 'SV Elversberg'),
 
     ('Israeli Premier League', 'Maccabi Haifa'), ('Israeli Premier League', 'Maccabi Tel Aviv'),
     ('Israeli Premier League', 'Hapoel Be''er Sheva'), ('Israeli Premier League', 'Hapoel Tel Aviv'),
@@ -122,26 +127,49 @@ WHERE NOT EXISTS (
 ON CONFLICT (league_id, name) DO NOTHING;
 
 -- Link each UCL club that also plays in a domestic league this app seeds (decision 12).
--- Paris Saint-Germain/Porto/Benfica/Ajax are intentionally excluded -- their domestic
--- leagues (Ligue 1/Primeira Liga/Eredivisie) aren't seeded here, so they stay UCL-only.
+-- Paris Saint-Germain/Porto are intentionally excluded -- their domestic leagues (Ligue 1/
+-- Primeira Liga) aren't seeded here, so they stay UCL-only, as do the newly-added
+-- non-"big 5 league" UCL clubs (Club Brugge, Feyenoord, Galatasaray, Lens, Lille, PSV
+-- Eindhoven, Shakhtar Donetsk, Slavia Prague, Sporting CP) for the same reason.
 -- The UCL lookup also matches on name_en (raw or post-rename canonical) -- see the comment on
 -- the leagues INSERT above for why 'UCL' alone isn't a reliable match once that row's name_en
 -- has been renamed to 'UEFA Champions League'.
 UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'EPL' OR name_en IN ('EPL', 'Premier League'))
 WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
-  AND name IN ('Arsenal', 'Chelsea', 'Liverpool', 'Manchester City', 'Manchester United');
+  AND name IN ('Arsenal', 'Liverpool', 'Manchester City', 'Manchester United');
 
 UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'La Liga')
 WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
-  AND name IN ('Real Madrid', 'Barcelona', 'Atletico Madrid');
+  AND name IN ('Real Madrid', 'Barcelona', 'Atlético Madrid');
 
 UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'Serie A')
 WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
-  AND name IN ('Inter Milan', 'AC Milan', 'Juventus', 'Napoli');
+  AND name IN ('Inter Milan', 'Napoli');
 
 UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'Bundesliga')
 WHERE league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
   AND name IN ('Bayern Munich', 'Borussia Dortmund');
+
+-- Reverse-direction dual-league links: clubs whose primary league_id is their own domestic
+-- league (not UCL) but that also play in the Champions League -- Chelsea, AC Milan, and
+-- Juventus moved the other way (out of UCL, into their domestic league only, no link back)
+-- since they didn't qualify for this UCL cycle. Functionally symmetric with the blocks above --
+-- get_club_leagues/insert_vote in queries.py check both league_id and domestic_league_id.
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'La Liga')
+  AND name IN ('Real Betis', 'Villarreal');
+
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'EPL' OR name_en IN ('EPL', 'Premier League'))
+  AND name IN ('Aston Villa');
+
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'Serie A')
+  AND name IN ('Como', 'Roma');
+
+UPDATE clubs SET domestic_league_id = (SELECT id FROM leagues WHERE name = 'UCL' OR name_en IN ('UCL', 'UEFA Champions League'))
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'Bundesliga')
+  AND name IN ('RB Leipzig', 'VfB Stuttgart');
 
 INSERT INTO previous_parties (name) VALUES
     ('הליכוד'), ('יש עתיד'), ('הציונות הדתית'), ('המחנה הממלכתי'),
@@ -174,21 +202,27 @@ UPDATE leagues SET name_he = 'ליגה לאומית' WHERE name_en = 'Liga Leumi
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
 UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
 
--- Pin the Israeli Premier League to the top of every league picker/list, with Liga Leumit (the
--- Israeli second tier) directly after it; all other leagues stay unranked (sort_order NULL) and
--- fall back to alphabetical (see get_options in queries.py).
+-- Explicit league display order (see get_options in queries.py, ORDER BY sort_order NULLS LAST):
+-- Israeli Premier League and Liga Leumit first (domestic leagues), then the "big 5" European
+-- leagues, then UCL, then the World Cup last.
 UPDATE leagues SET sort_order = 0 WHERE name = 'Israeli Premier League';
 UPDATE leagues SET sort_order = 1 WHERE name_en = 'Liga Leumit';
+UPDATE leagues SET sort_order = 2 WHERE name_en = 'Premier League';
+UPDATE leagues SET sort_order = 3 WHERE name_en = 'La Liga';
+UPDATE leagues SET sort_order = 4 WHERE name_en = 'Bundesliga';
+UPDATE leagues SET sort_order = 5 WHERE name_en = 'Serie A';
+UPDATE leagues SET sort_order = 6 WHERE name_en = 'UEFA Champions League';
+UPDATE leagues SET sort_order = 7 WHERE name_en = 'World Cup 2026';
 
 -- League logos/emblems. Competition emblems (unlike individual club crests) carry no per-club
 -- trademark ambiguity, so these are safe to seed directly (see the World Cup national-flags note
 -- above) -- admin can still override any of these via the leagues admin UI's Logo URL field.
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/17/2026_FIFA_World_Cup_emblem.svg' WHERE name = 'World Cup 2026' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/0a/UEFA_Champions_League_logo.svg' WHERE name = 'UCL' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Premier_League.svg' WHERE name = 'EPL' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d1/UEFA_Champions_League_logo_no_text.svg' WHERE name = 'UCL' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://b.fssta.com/uploads/application/soccer/competition-logos/EnglishPremierLeague.png' WHERE name = 'EPL' AND logo_url IS NULL;
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg' WHERE name = 'La Liga' AND logo_url IS NULL;
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg' WHERE name = 'Serie A' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/15/Bundesliga_logo.svg' WHERE name = 'Bundesliga' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name = 'Bundesliga' AND logo_url IS NULL;
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Israeli Premier League' AND logo_url IS NULL;
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Liga Leumit' AND logo_url IS NULL;
 
@@ -307,7 +341,7 @@ UPDATE clubs SET name_he = 'מנצ''סטר יונייטד' WHERE name_en = 'Manc
 UPDATE clubs SET name_he = 'צ''לסי' WHERE name_en = 'Chelsea' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'ארסנל' WHERE name_en = 'Arsenal' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מילאן' WHERE name_en = 'AC Milan' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אתלטיקו מדריד' WHERE name_en = 'Atletico Madrid' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'אתלטיקו מדריד' WHERE name_en = 'Atlético Madrid' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'בורוסיה דורטמונד' WHERE name_en = 'Borussia Dortmund' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'נאפולי' WHERE name_en = 'Napoli' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'פורטו' WHERE name_en = 'Porto' AND name_he IS NULL;
@@ -318,7 +352,7 @@ UPDATE clubs SET name_he = 'אייאקס' WHERE name_en = 'Ajax' AND name_he IS 
 UPDATE clubs SET name_he = 'אסטון וילה' WHERE name_en = 'Aston Villa' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'בורנמות''' WHERE name_en = 'Bournemouth' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'ברנטפורד' WHERE name_en = 'Brentford' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ברייטון והוב אלביון' WHERE name_en = 'Brighton & Hove Albion' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ברייטון אנד הוב אלביון' WHERE name_en = 'Brighton & Hove Albion' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'קריסטל פאלאס' WHERE name_en = 'Crystal Palace' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אברטון' WHERE name_en = 'Everton' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'פולהאם' WHERE name_en = 'Fulham' AND name_he IS NULL;
@@ -344,7 +378,7 @@ UPDATE clubs SET name_he = 'סלטה ויגו' WHERE name_en = 'Celta Vigo' AND 
 UPDATE clubs SET name_he = 'ראיו ואייקאנו' WHERE name_en = 'Rayo Vallecano' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'חטאפה' WHERE name_en = 'Getafe' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'לאס פלמאס' WHERE name_en = 'Las Palmas' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אלאבס' WHERE name_en = 'Alaves' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'אלאבס' WHERE name_en = 'Alavés' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אספניול' WHERE name_en = 'Espanyol' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'לגאנס' WHERE name_en = 'Leganes' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מיורקה' WHERE name_en = 'Mallorca' AND name_he IS NULL;
@@ -369,17 +403,17 @@ UPDATE clubs SET name_he = 'אמפולי' WHERE name_en = 'Empoli' AND name_he I
 UPDATE clubs SET name_he = 'מונצה' WHERE name_en = 'Monza' AND name_he IS NULL;
 
 -- Bundesliga clubs not already covered by UCL
-UPDATE clubs SET name_he = 'לייפציג' WHERE name_en = 'RB Leipzig' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ר. ב. לייפציג' WHERE name_en = 'RB Leipzig' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'באייר לברקוזן' WHERE name_en = 'Bayer Leverkusen' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'איינטרכט פרנקפורט' WHERE name_en = 'Eintracht Frankfurt' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'שטוטגרט' WHERE name_en = 'VfB Stuttgart' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בורוסיה מנשנגלדבך' WHERE name_en = 'Borussia Monchengladbach' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'בורוסיה מנשנגלדבך' WHERE name_en = 'Borussia Mönchengladbach' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'פרייבורג' WHERE name_en = 'SC Freiburg' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'וורדר ברמן' WHERE name_en = 'Werder Bremen' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אוניון ברלין' WHERE name_en = 'Union Berlin' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מיינץ 05' WHERE name_en = 'Mainz 05' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'וולפסבורג' WHERE name_en = 'Wolfsburg' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הופנהיים' WHERE name_en = 'Hoffenheim' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הופנהיים' WHERE name_en = 'TSG Hoffenheim' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'אוגסבורג' WHERE name_en = 'FC Augsburg' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'בוכום' WHERE name_en = 'VfL Bochum' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'היידנהיים' WHERE name_en = 'FC Heidenheim' AND name_he IS NULL;
@@ -419,6 +453,32 @@ UPDATE clubs SET name_he = 'מ.ס. קריית ים' WHERE name_en = 'F.C. Kiryat
 UPDATE clubs SET name_he = 'מכבי הרצליה' WHERE name_en = 'Maccabi Herzliya' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מכבי קביליו יפו' WHERE name_en = 'Maccabi Kavilio Jaffa' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'עירוני מודיעין' WHERE name_en = 'Ironi Modi''in' AND name_he IS NULL;
+
+-- Clubs added via admin UI roster edits (real-world 2025-26 season roster/UCL qualification
+-- changes -- see scripts/sync-seed-from-rds.sh)
+UPDATE clubs SET name_he = 'פ. צ. קלן' WHERE name_en = '1. FC Köln' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'שאלקה 04' WHERE name_en = 'FC Schalke 04' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'המבורג' WHERE name_en = 'Hamburger SV' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'פאדרבורן 07' WHERE name_en = 'SC Paderborn 07' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'אלוורסברג' WHERE name_en = 'SV Elversberg' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'דפורטיבו דה א-קורוניה' WHERE name_en = 'Deportivo de A Coruña' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'אלצ''ה' WHERE name_en = 'Elche' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'לבאנטה' WHERE name_en = 'Levante' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'מאלגה' WHERE name_en = 'Málaga' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ראסינג סנטנדר' WHERE name_en = 'Racing Santander' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'קובנטרי סיטי' WHERE name_en = 'Coventry City' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'האל סיטי' WHERE name_en = 'Hull City' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'לידס יונייטד' WHERE name_en = 'Leeds United' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'פרוזינונה' WHERE name_en = 'Frosinone' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'קלאב ברוז''' WHERE name_en = 'Club Brugge' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'פיינורד' WHERE name_en = 'Feyenoord' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'גלאטסראיי' WHERE name_en = 'Galatasaray' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'לאנס' WHERE name_en = 'Lens' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ליל' WHERE name_en = 'Lille' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'פ.ס.וו. איינדהובן' WHERE name_en = 'PSV Eindhoven' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'שחטאר דונצק' WHERE name_en = 'Shakhtar Donetsk' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'סלביה פראג' WHERE name_en = 'Slavia Prague' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ספורטינג ליסבון' WHERE name_en = 'Sporting CP' AND name_he IS NULL;
 
 -- Admin-curated club logos, synced from the live RDS instance (added via the admin UI's Logo
 -- URL field for the full Israeli Premier League roster) so a fresh install matches current
@@ -460,6 +520,95 @@ UPDATE clubs SET logo_url = 'https://instagram.fsdv1-2.fna.fbcdn.net/v/t51.82787
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f5/Maccabi_Herzliya.png' WHERE name_en = 'Maccabi Herzliya' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/88/MaccabiJaffaCrestNew2018.png' WHERE name_en = 'Maccabi Kavilio Jaffa' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d6/IroniModiinFC.png' WHERE name_en = 'Ironi Modi''in' AND logo_url IS NULL;
+
+-- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg' WHERE name_en = '1. FC Köln' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg' WHERE name_en = 'AC Milan' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f8/Deportivo_Alaves_logo_%282020%29.svg' WHERE name_en = 'Alavés' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg' WHERE name_en = 'Arsenal' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/9a/Aston_Villa_FC_new_crest.svg' WHERE name_en = 'Aston Villa' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f2/Atalanta_BC_new_logo.svg' WHERE name_en = 'Atalanta' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/98/Club_Athletic_Bilbao_logo.svg' WHERE name_en = 'Athletic Bilbao' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f9/Atletico_Madrid_Logo_2024.svg' WHERE name_en = 'Atlético Madrid' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg' WHERE name_en = 'Barcelona' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg' WHERE name_en = 'Bayer Leverkusen' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/8/8d/FC_Bayern_M%C3%BCnchen_logo_%282024%29.svg' WHERE name_en = 'Bayern Munich' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/5b/Bologna_F.C._1909_logo.svg' WHERE name_en = 'Bologna' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg' WHERE name_en = 'Borussia Dortmund' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/8/81/Borussia_M%C3%B6nchengladbach_logo.svg' WHERE name_en = 'Borussia Mönchengladbach' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/e5/AFC_Bournemouth_%282013%29.svg' WHERE name_en = 'Bournemouth' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2a/Brentford_FC_crest.svg' WHERE name_en = 'Brentford' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d0/Brighton_and_Hove_Albion_FC_crest.svg' WHERE name_en = 'Brighton & Hove Albion' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/61/Cagliari_Calcio_1920.svg' WHERE name_en = 'Cagliari' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/12/RC_Celta_de_Vigo_logo.svg' WHERE name_en = 'Celta Vigo' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg' WHERE name_en = 'Chelsea' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d0/Club_Brugge_KV_logo.svg' WHERE name_en = 'Club Brugge' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Calcio_Como_-_logo_%28Italy%2C_2019-%29.svg' WHERE name_en = 'Como' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7b/Coventry_City_FC_crest.svg' WHERE name_en = 'Coventry City' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a2/Crystal_Palace_FC_logo_%282022%29.svg' WHERE name_en = 'Crystal Palace' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/56/RC_Deportivo_A_Coru%C3%B1a_logo_2026.svg' WHERE name_en = 'Deportivo de A Coruña' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7e/Eintracht_Frankfurt_crest.svg' WHERE name_en = 'Eintracht Frankfurt' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a7/Elche_CF_logo.svg' WHERE name_en = 'Elche' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/92/RCD_Espanyol_crest.svg' WHERE name_en = 'Espanyol' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7c/Everton_FC_logo.svg' WHERE name_en = 'Everton' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/c5/FC_Augsburg_logo.svg' WHERE name_en = 'FC Augsburg' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/6d/FC_Schalke_04_Logo.svg' WHERE name_en = 'FC Schalke 04' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Feyenoord_logo_since_2024.svg' WHERE name_en = 'Feyenoord' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/8/8c/ACF_Fiorentina_-_logo_%28Italy%2C_2022%29.svg' WHERE name_en = 'Fiorentina' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/0b/Frosinone_Calcio_logo.svg' WHERE name_en = 'Frosinone' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/eb/Fulham_FC_%28shield%29.svg' WHERE name_en = 'Fulham' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/07/Galatasaray_S.K._Logo_2026_5-stars.svg' WHERE name_en = 'Galatasaray' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2c/Genoa_CFC_crest.svg' WHERE name_en = 'Genoa' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/4/46/Getafe_logo.svg' WHERE name_en = 'Getafe' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Hamburger_SV_logo.svg' WHERE name_en = 'Hamburger SV' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/54/Hull_City_A.F.C._logo.svg' WHERE name_en = 'Hull City' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg' WHERE name_en = 'Inter Milan' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/4/43/Ipswich_Town.svg' WHERE name_en = 'Ipswich Town' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Juventus_FC_-_logo_black_%28Italy%2C_2020%29.svg' WHERE name_en = 'Juventus' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/ce/S.S._Lazio_badge.svg' WHERE name_en = 'Lazio' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/23/US_Lecce_crest.svg' WHERE name_en = 'Lecce' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/54/Leeds_United_F.C._logo.svg' WHERE name_en = 'Leeds United' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/cc/RC_Lens_logo.svg' WHERE name_en = 'Lens' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7b/Levante_Uni%C3%B3n_Deportiva%2C_S.A.D._logo.svg' WHERE name_en = 'Levante' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/3f/Lille_OSC_2018_logo.svg' WHERE name_en = 'Lille' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg' WHERE name_en = 'Liverpool' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/1b/1._FSV_Mainz_05_logo.svg' WHERE name_en = 'Mainz 05' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg' WHERE name_en = 'Manchester City' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg' WHERE name_en = 'Manchester United' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a7/AC_Monza_logo_%282021%29.svg' WHERE name_en = 'Monza' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/6d/M%C3%A1laga_CF.svg' WHERE name_en = 'Málaga' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/4/4d/SSC_Napoli_2025_%28white_and_azure%29.svg' WHERE name_en = 'Napoli' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg' WHERE name_en = 'Newcastle United' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/e5/Nottingham_Forest_F.C._logo.svg' WHERE name_en = 'Nottingham Forest' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/38/CA_Osasuna_2024_crest.svg' WHERE name_en = 'Osasuna' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg' WHERE name_en = 'PSV Eindhoven' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg' WHERE name_en = 'Paris Saint-Germain' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_Parma_Calcio_1913_%28adozione_2016%29.svg' WHERE name_en = 'Parma' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg' WHERE name_en = 'Porto' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg' WHERE name_en = 'RB Leipzig' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f5/Racing_de_Santander_logo.svg' WHERE name_en = 'Racing Santander' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d8/Rayo_Vallecano_logo.svg' WHERE name_en = 'Rayo Vallecano' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2f/Real_Betis_2022_logo.svg' WHERE name_en = 'Real Betis' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg' WHERE name_en = 'Real Madrid' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg' WHERE name_en = 'Real Sociedad' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f7/AS_Roma_logo_%282017%29.svg' WHERE name_en = 'Roma' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/6d/SC_Freiburg_logo.svg' WHERE name_en = 'SC Freiburg' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/67/SC_Paderborn_07_Logo_new.svg' WHERE name_en = 'SC Paderborn 07' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d4/SV_Elversberg_Logo_2021.svg' WHERE name_en = 'SV Elversberg' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg' WHERE name_en = 'Sevilla' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a1/FC_Shakhtar_Donetsk.svg' WHERE name_en = 'Shakhtar Donetsk' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/2/2b/SK_Slavia_Praha_full_logo.svg' WHERE name_en = 'Slavia Prague' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Sporting_Clube_de_Portugal_2026.svg' WHERE name_en = 'Sporting CP' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Logo_TSG_Hoffenheim.svg' WHERE name_en = 'TSG Hoffenheim' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2e/Torino_FC_Logo.svg' WHERE name_en = 'Torino' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg' WHERE name_en = 'Tottenham Hotspur' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/ce/Udinese_Calcio_logo.svg' WHERE name_en = 'Udinese' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/4/44/1._FC_Union_Berlin_Logo.svg' WHERE name_en = 'Union Berlin' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg' WHERE name_en = 'Valencia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/39/Venezia_FC_crest.svg' WHERE name_en = 'Venezia' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/eb/VfB_Stuttgart_1893_Logo.svg' WHERE name_en = 'VfB Stuttgart' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/b/b9/Villarreal_CF_logo-en.svg' WHERE name_en = 'Villarreal' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg' WHERE name_en = 'Werder Bremen' AND logo_url IS NULL;
 
 -- Previous Knesset parties
 UPDATE previous_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;
@@ -605,6 +754,15 @@ UPDATE upcoming_parties SET name_en = 'United Torah Judaism' WHERE name_he = 'י
 UPDATE upcoming_parties SET name_en = 'The Economic Party' WHERE name_he = 'המפלגה הכלכלית' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'El HaDegel' WHERE name_he = 'אל הדגל' AND name_en IS NULL;
 UPDATE upcoming_parties SET name_en = 'The Reservists' WHERE name_he = 'המילואימניקים' AND name_en IS NULL;
+
+-- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg' WHERE name_he = 'ביחד' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/cd/Logo_%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%99%D7%A0%D7%99%D7%A7%D7%99%D7%9D_-_%D7%93%D7%95%D7%A8_%D7%94%D7%A0%D7%99%D7%A6%D7%97%D7%95%D7%9F.png' WHERE name_he = 'המילואימניקים' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/c9/%D7%94%D7%9E%D7%A4%D7%9C%D7%92%D7%94_%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%99%D7%AA_%D7%94%D7%97%D7%93%D7%A9%D7%94_%D7%9C%D7%95%D7%92%D7%95.svg' WHERE name_he = 'המפלגה הכלכלית' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'יהדות התורה' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/61/Yashar_party_logo.png' WHERE name_he = 'ישר' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'רע"ם' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ש"ס' AND logo_url IS NULL;
 
 -- Admin-curated party logos, synced from the live RDS instance (see previous_parties above).
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg' WHERE name_he = 'הליכוד' AND logo_url IS NULL;

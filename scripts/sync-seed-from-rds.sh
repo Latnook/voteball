@@ -28,7 +28,9 @@ APPLY_FLAG=()
 for arg in "$@"; do
   case "$arg" in
     --apply) APPLY_FLAG=(--apply) ;;
-    *) echo "Unknown argument: $arg (only --apply is supported)" >&2; exit 1 ;;
+    --dump-rds-clubs) APPLY_FLAG=(--dump-rds-clubs) ;;
+    --dump-rds-leagues) APPLY_FLAG=(--dump-rds-leagues) ;;
+    *) echo "Unknown argument: $arg (only --apply / --dump-rds-clubs / --dump-rds-leagues are supported)" >&2; exit 1 ;;
   esac
 done
 

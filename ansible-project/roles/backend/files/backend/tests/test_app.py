@@ -1022,9 +1022,11 @@ def test_options_endpoint_exposes_logo_url_seeded_for_world_cup_flags(client):
     brazil = next(c for c in body['clubs'] if c['name_en'] == 'Brazil')
     assert brazil['logo_url'] == 'https://flagcdn.com/br.svg'
 
-    # Non-national clubs have no seeded logo -- frontend falls back to a generated monogram.
+    # Non-national clubs are also admin-curated with a seeded logo, synced from the live RDS
+    # instance via scripts/sync-seed-from-rds.sh -- clubs without any curated logo still fall
+    # back to a frontend-generated monogram.
     liverpool = next(c for c in body['clubs'] if c['name_en'] == 'Liverpool')
-    assert liverpool['logo_url'] is None
+    assert liverpool['logo_url'] == 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg'
 
 
 def test_party_and_league_and_club_admin_crud_roundtrips_logo_url(client, conn, admin_headers):

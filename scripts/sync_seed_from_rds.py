@@ -57,20 +57,23 @@ def sql_escape(value):
     return value.replace("'", "''")
 
 
-def dump_simple_table(conn, table, columns):
-    """Returns {legacy_name: {col: value}}, keyed by the stable `name` column."""
+def dump_simple_table(conn, table, columns, key_column):
+    """Returns {identity_key: {col: value}}, keyed by key_column (name_en/name_he -- see
+    TABLE_KEY_COLUMN -- not the legacy `name` column, which admin renames flip to the other
+    language and so can't be trusted as a stable identity once a row has been edited)."""
     cur = conn.cursor()
-    cur.execute(f"SELECT name, {', '.join(columns)} FROM {table}")
+    select_cols = [c for c in columns if c != key_column]
+    cur.execute(f"SELECT {key_column}, {', '.join(select_cols)} FROM {table}")
     rows = cur.fetchall()
     cur.close()
-    return {r[0]: dict(zip(columns, r[1:])) for r in rows}
+    return {r[0]: dict(zip(select_cols, r[1:])) for r in rows}
 
 
-def dump_clubs(conn):
+def dump_clubs(conn, key_column):
     cur = conn.cursor()
-    cur.execute('''
-        SELECT c.name, c.name_en, c.name_he, c.logo_url,
-               l1.name AS league_name, l2.name AS domestic_league_name
+    cur.execute(f'''
+        SELECT c.{key_column}, c.name_en, c.name_he, c.logo_url,
+               l1.name_en AS league_name, l2.name_en AS domestic_league_name
         FROM clubs c
         JOIN leagues l1 ON l1.id = c.league_id
         LEFT JOIN leagues l2 ON l2.id = c.domestic_league_id
@@ -179,6 +182,8 @@ SEED_ANCHORS = {
                "UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';\n",
     'previous_parties': "UPDATE previous_parties SET name_en = 'Other' WHERE name_he = 'אחר' AND name_en IS NULL;\n",
     'upcoming_parties': "UPDATE upcoming_parties SET name_en = 'The Reservists' WHERE name_he = 'המילואימניקים' AND name_en IS NULL;\n",
+    'clubs': "UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d6/IroniModiinFC.png' "
+             "WHERE name_en = 'Ironi Modi''in' AND logo_url IS NULL;\n",
 }
 
 
@@ -196,7 +201,48 @@ def main():
                               'CLAUDE.md\'s documented test setup)')
     parser.add_argument('--apply', action='store_true',
                          help='Write the NULL-backfill category into seed.sql (default: report only)')
+    parser.add_argument('--dump-rds-clubs', action='store_true',
+                         help='Print every live-RDS club (id, league, name_en, name_he, logo_url), '
+                              'grouped by league and sorted by name_en, then exit -- for reconstructing '
+                              'a seed.sql roster block by hand after a large admin-side roster edit.')
+    parser.add_argument('--dump-rds-leagues', action='store_true',
+                         help='Print every live-RDS league row (id, name, name_en, name_he, '
+                              'sort_order), then exit -- for debugging league ordering/name drift.')
     args = parser.parse_args()
+
+    if args.dump_rds_leagues:
+        rds = psycopg2.connect(host=args.host, port=args.port, dbname=args.dbname,
+                                user=args.user, password=args.password, sslmode='require')
+        cur = rds.cursor()
+        cur.execute('SELECT id, name, name_en, name_he, sort_order FROM leagues ORDER BY sort_order NULLS LAST, name_en')
+        for row in cur.fetchall():
+            print(row)
+        cur.close()
+        rds.close()
+        return
+
+    if args.dump_rds_clubs:
+        rds = psycopg2.connect(host=args.host, port=args.port, dbname=args.dbname,
+                                user=args.user, password=args.password, sslmode='require')
+        cur = rds.cursor()
+        cur.execute('''
+            SELECT l1.name_en, c.name_en, c.name_he, c.logo_url, l2.name_en
+            FROM clubs c
+            JOIN leagues l1 ON l1.id = c.league_id
+            LEFT JOIN leagues l2 ON l2.id = c.domestic_league_id
+            ORDER BY l1.name_en, c.name_en
+        ''')
+        rows = cur.fetchall()
+        cur.close()
+        rds.close()
+        current_league = None
+        for league, name_en, name_he, logo_url, domestic_league in rows:
+            if league != current_league:
+                print(f"\n-- {league} --")
+                current_league = league
+            extra = f" (domestic: {domestic_league})" if domestic_league else ""
+            print(f"  {name_en!r}\tname_he={name_he!r}\tlogo_url={logo_url!r}{extra}")
+        return
 
     try:
         rds = psycopg2.connect(host=args.host, port=args.port, dbname=args.dbname,
@@ -246,20 +292,32 @@ def main():
     pending_writes = []  # (table, key_column, null_backfill) for --apply
 
     for table, columns in TABLES.items():
-        rds_data = dump_simple_table(rds, table, columns)
-        ref_data = dump_simple_table(ref, table, columns)
-        null_backfill, value_conflict, only_in_rds, only_in_ref = classify(rds_data, ref_data, columns)
+        key_column = TABLE_KEY_COLUMN[table]
+        diff_columns = [c for c in columns if c != key_column]
+        rds_data = dump_simple_table(rds, table, columns, key_column)
+        ref_data = dump_simple_table(ref, table, columns, key_column)
+        null_backfill, value_conflict, only_in_rds, only_in_ref = classify(rds_data, ref_data, diff_columns)
         print_report(table, null_backfill, value_conflict, only_in_rds, only_in_ref)
         if null_backfill:
             any_backfill = True
-            pending_writes.append((table, TABLE_KEY_COLUMN[table], null_backfill))
+            pending_writes.append((table, key_column, null_backfill))
         if value_conflict or only_in_rds or only_in_ref:
             any_conflict_or_existence = True
 
-    rds_clubs = dump_clubs(rds)
-    ref_clubs = dump_clubs(ref)
-    null_backfill, value_conflict, only_in_rds, only_in_ref = classify(rds_clubs, ref_clubs, CLUB_COLUMNS)
+    clubs_key_column = TABLE_KEY_COLUMN['clubs']
+    clubs_diff_columns = [c for c in CLUB_COLUMNS if c != clubs_key_column]
+    rds_clubs = dump_clubs(rds, clubs_key_column)
+    ref_clubs = dump_clubs(ref, clubs_key_column)
+    null_backfill, value_conflict, only_in_rds, only_in_ref = classify(rds_clubs, ref_clubs, clubs_diff_columns)
     print_report('clubs', null_backfill, value_conflict, only_in_rds, only_in_ref)
+    if only_in_rds or only_in_ref:
+        print("    -- grouped by league, to help spot renames vs. real roster swaps:")
+        for name in sorted(only_in_rds):
+            row = rds_clubs[name]
+            print(f"      RDS-only   [{row['league']}] {name!r}")
+        for name in sorted(only_in_ref):
+            row = ref_clubs[name]
+            print(f"      seed-only  [{row['league']}] {name!r}")
     if null_backfill:
         any_backfill = True
         pending_writes.append(('clubs', TABLE_KEY_COLUMN['clubs'], null_backfill))
@@ -305,9 +363,11 @@ def main():
                                  user=args.user, password=args.password, sslmode='require')
         remaining = False
         for table, columns in TABLES.items():
-            rds_data = dump_simple_table(rds2, table, columns)
-            ref_data = dump_simple_table(ref, table, columns)
-            nb, _, _, _ = classify(rds_data, ref_data, columns)
+            key_column = TABLE_KEY_COLUMN[table]
+            diff_columns = [c for c in columns if c != key_column]
+            rds_data = dump_simple_table(rds2, table, columns, key_column)
+            ref_data = dump_simple_table(ref, table, columns, key_column)
+            nb, _, _, _ = classify(rds_data, ref_data, diff_columns)
             if nb:
                 remaining = True
         rds2.close()
