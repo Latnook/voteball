@@ -72,7 +72,7 @@ JOIN (VALUES
     ('EPL', 'Crystal Palace'), ('EPL', 'Everton'), ('EPL', 'Fulham'),
     ('EPL', 'Hull City'), ('EPL', 'Ipswich Town'), ('EPL', 'Leeds United'),
     ('EPL', 'Newcastle United'),
-    ('EPL', 'Nottingham Forest'), ('EPL', 'Tottenham Hotspur'),
+    ('EPL', 'Nottingham Forest'), ('EPL', 'Sunderland'), ('EPL', 'Tottenham Hotspur'),
 
     ('La Liga', 'Athletic Bilbao'), ('La Liga', 'Real Sociedad'), ('La Liga', 'Real Betis'),
     ('La Liga', 'Villarreal'), ('La Liga', 'Valencia'), ('La Liga', 'Sevilla'),
@@ -88,7 +88,7 @@ JOIN (VALUES
     ('Serie A', 'Cagliari'), ('Serie A', 'Lecce'),
     ('Serie A', 'Parma'), ('Serie A', 'Como'), ('Serie A', 'Venezia'),
     ('Serie A', 'Monza'), ('Serie A', 'AC Milan'), ('Serie A', 'Juventus'),
-    ('Serie A', 'Frosinone'),
+    ('Serie A', 'Frosinone'), ('Serie A', 'Sassuolo'),
 
     ('Bundesliga', 'RB Leipzig'),
     ('Bundesliga', 'Bayer Leverkusen'), ('Bundesliga', 'Eintracht Frankfurt'), ('Bundesliga', 'VfB Stuttgart'),
@@ -479,6 +479,8 @@ UPDATE clubs SET name_he = 'פ.ס.וו. איינדהובן' WHERE name_en = 'PSV
 UPDATE clubs SET name_he = 'שחטאר דונצק' WHERE name_en = 'Shakhtar Donetsk' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'סלביה פראג' WHERE name_en = 'Slavia Prague' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'ספורטינג ליסבון' WHERE name_en = 'Sporting CP' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'סנדרלנד' WHERE name_en = 'Sunderland' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'ססואולו' WHERE name_en = 'Sassuolo' AND name_he IS NULL;
 
 -- Admin-curated club logos, synced from the live RDS instance (added via the admin UI's Logo
 -- URL field for the full Israeli Premier League roster) so a fresh install matches current
@@ -497,7 +499,7 @@ UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/91/Hapo
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/5d/FC_Hapoel_Jerusalem_2021.png' WHERE name_en = 'Hapoel Jerusalem' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d1/Hapoel_Ironi_Kiryat_Shmona_badge.png' WHERE name_en = 'Ironi Kiryat Shmona' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/93/MPT_FC_2024.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Maccabi Petah Tikva' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/1f/Hapoelpt.svg' WHERE name_en = 'Hapoel Petah Tikva' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/6/63/Hapoel_Petach_Tikva_logo.png' WHERE name_en = 'Hapoel Petah Tikva' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/84/Ironi_logo_new.gif?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Ironi Tiberias' AND logo_url IS NULL;
 
 -- Liga Leumit club logos. F.C. Kiryat Yam has no Wikimedia crest, so it's sourced from the club's
@@ -520,6 +522,10 @@ UPDATE clubs SET logo_url = 'https://instagram.fsdv1-2.fna.fbcdn.net/v/t51.82787
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f5/Maccabi_Herzliya.png' WHERE name_en = 'Maccabi Herzliya' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/88/MaccabiJaffaCrestNew2018.png' WHERE name_en = 'Maccabi Kavilio Jaffa' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d6/IroniModiinFC.png' WHERE name_en = 'Ironi Modi''in' AND logo_url IS NULL;
+
+-- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/1c/US_Sassuolo_Calcio_logo.svg' WHERE name_en = 'Sassuolo' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/77/Logo_Sunderland.svg' WHERE name_en = 'Sunderland' AND logo_url IS NULL;
 
 -- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg' WHERE name_en = '1. FC Köln' AND logo_url IS NULL;

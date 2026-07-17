@@ -17,7 +17,7 @@ def test_get_options_returns_seeded_leagues(conn):
     assert liverpool['name_he'] == 'ליברפול'
 
     epl_clubs = [c for c in options['clubs'] if c['league_id'] == epl['id']]
-    assert len(epl_clubs) == 15
+    assert len(epl_clubs) == 16
 
     previous_names_en = {p['name_en'] for p in options['previous_parties']}
     assert previous_names_en == {
