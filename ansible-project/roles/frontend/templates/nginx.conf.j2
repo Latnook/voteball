@@ -12,6 +12,12 @@ server {
     ssl_certificate /etc/letsencrypt/live/{{ frontend_domain }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ frontend_domain }}/privkey.pem;
 
+    # Bounce the legacy .html URLs to clean paths (the try_files below still resolves
+    # /results -> results.html etc., so the pages keep working at their clean URL).
+    location = /index.html { return 301 /; }
+    location = /results.html { return 301 /results; }
+    location = /admin.html { return 301 /admin; }
+
     location / {
         root /usr/share/nginx/html;
         index index.html;

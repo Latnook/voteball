@@ -25,34 +25,17 @@ function buildMonogram(entityId, displayName) {
   return mono;
 }
 
-// Alpha-weighted mean luminance (0=black .. 1=white) of a loaded image's opaque pixels, sampled on
-// a small offscreen canvas. Requires the image to be CORS-clean (crossOrigin set + host sends an
-// Access-Control-Allow-Origin header), otherwise getImageData throws on the tainted canvas.
-function logoLuminance(img) {
-  const S = 40;
-  const canvas = document.createElement('canvas');
-  canvas.width = S;
-  canvas.height = S;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  const r = Math.min(S / img.naturalWidth, S / img.naturalHeight);
-  const w = img.naturalWidth * r, h = img.naturalHeight * r;
-  ctx.drawImage(img, (S - w) / 2, (S - h) / 2, w, h);
-  const d = ctx.getImageData(0, 0, S, S).data;
-  let lumSum = 0, alphaSum = 0;
-  for (let i = 0; i < d.length; i += 4) {
-    const a = d[i + 3] / 255;
-    if (a < 0.1) continue;
-    lumSum += (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255 * a;
-    alphaSum += a;
-  }
-  return alphaSum ? lumSum / alphaSum : 1;
-}
-
-// Below this mean luminance a logo is "dark" and gets a white outline (see .logo-dark in style.css)
-// so it stays legible on the dark theme's dark cards. Calibrated 2026-07-17 against the real logos:
-// genuinely dark marks land ~0.0-0.37 (Juventus/Shas black, dark Hebrew wordmarks), colourful ones
-// ~0.48+ (Balad, Yashar, club crests) -- 0.43 sits in the clean gap between the two clusters.
-const DARK_LOGO_THRESHOLD = 0.43;
+// Clubs/leagues (by name_en) that get a thin white outline in dark mode (see .logo-dark in
+// style.css) so they read on the dark cards. This is a hand-picked list, not a luminance rule --
+// the user's choices don't follow brightness (Paderborn is bright yet wants one; Nott'm Forest is
+// darker yet doesn't), so which crests get an outline is a per-club visual call. Parties are handled
+// separately by the recolour below and are never in here. Add clubs here as they're requested.
+const OUTLINE_CLUBS = new Set([
+  'Juventus',
+  'Tottenham Hotspur',
+  'Maccabi Petah Tikva',
+  'SC Paderborn 07',
+]);
 
 // --- HSL conversion (used by the party-logo dark-mode recolour below) ---
 function rgbToHsl(r, g, b) {
@@ -97,13 +80,15 @@ function hslToRgb(h, s, l) {
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
-// Recolour a loaded (CORS-clean) party logo for dark backgrounds: lift only the pixels darker than
-// mid-lightness to their lightness-inverse, preserving hue+saturation -- so dark artwork and Hebrew
-// wordmarks (black -> white, dark navy -> light blue, dark green -> lighter green) read on the dark
-// cards, while already-bright colours (Otzma's red star, Balad's orange) are left untouched. Logos
-// that are a solid opaque tile (e.g. Hadash-Ta'al's yellow block) carry their own contrast, so they
-// are skipped. Returns a <canvas> if anything changed, else null. Scoped to parties only (club
-// crests and national flags must keep their real colours -- they use the .logo-dark outline instead).
+// Recolour a loaded (CORS-clean) party logo for dark backgrounds: lift every perceptually dark pixel
+// to a light version of the same hue+saturation, so dark artwork and Hebrew wordmarks read on the
+// dark cards (black -> white, dark navy -> light blue, dark green -> lighter green). The decision
+// uses perceptual luminance, not HSL lightness, so it also catches saturated-but-dark colours like
+// The Democrats' vivid blue (#2639e0), whose HSL lightness sits just above the midpoint. Warm vivid
+// colours (saturated red/orange/yellow) read fine on the dark cards even when dark and are left
+// alone (Otzma's red star, Balad's orange, Labor's red flag). Solid opaque-tile logos (Hadash-Ta'al's
+// yellow block) carry their own contrast and are skipped. Returns a <canvas> if anything changed,
+// else null. Parties only -- club crests/flags keep their real colours (they use the outline).
 function recolorLogoForDark(img) {
   const MAX = 400;
   const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
@@ -127,9 +112,12 @@ function recolorLogoForDark(img) {
   let changed = false;
   for (let i = 0; i < d.length; i += 4) {
     if (d[i + 3] < 20) continue;
-    const hsl = rgbToHsl(d[i], d[i + 1], d[i + 2]);
-    if (hsl[2] < 0.5) {
-      const rgb = hslToRgb(hsl[0], hsl[1], 1 - hsl[2]);
+    const r = d[i], g = d[i + 1], b = d[i + 2];
+    const hsl = rgbToHsl(r, g, b);
+    const y = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    const warmVivid = hsl[1] > 0.45 && (hsl[0] <= 0.15 || hsl[0] >= 0.95);
+    if (y < 0.5 && !warmVivid) {
+      const rgb = hslToRgb(hsl[0], hsl[1], Math.max(1 - y, 0.6));
       d[i] = rgb[0]; d[i + 1] = rgb[1]; d[i + 2] = rgb[2];
       changed = true;
     }
@@ -152,44 +140,58 @@ function logoEl(entity, displayName, opts) {
     return wrap;
   }
 
-  // First attempt loads with crossOrigin so we can sample the logo's luminance once it's decoded and
-  // flag dark ones for the outline. A host without CORS headers makes this attempt error (it does
-  // not taint), so on error we retry once without crossOrigin -- keeping the logo (no luminance
-  // check possible) and only falling back to a monogram if that plain load also fails.
-  const img = document.createElement('img');
-  img.alt = '';
-  img.loading = 'lazy';
-  img.crossOrigin = 'anonymous';
-  img.addEventListener('load', () => {
-    try {
-      if (opts.recolor) {
-        // Party logos: build a dark-mode-recoloured canvas. CSS shows the canvas in the dark theme
-        // and the untouched original <img> in light (see .logo-recolored / .logo-orig in style.css).
+  // Clubs/leagues in the hand-picked outline set get their thin white outline immediately (no pixel
+  // work, no CORS needed) -- see OUTLINE_CLUBS / .logo-dark.
+  if (!opts.recolor && entity && OUTLINE_CLUBS.has(entity.name_en)) {
+    wrap.classList.add('logo-dark');
+  }
+
+  if (opts.recolor) {
+    // Party logos: load with crossOrigin so we can read the pixels and build a dark-mode-recoloured
+    // canvas. CSS shows that canvas in the dark theme and the untouched original <img> in light (see
+    // .logo-recolored / .logo-orig). A host without CORS headers makes this attempt error (it does
+    // not taint), so on error we retry once without crossOrigin -- keeping the logo (no recolour
+    // possible) and only falling back to a monogram if that plain load also fails.
+    const img = document.createElement('img');
+    img.alt = '';
+    img.loading = 'lazy';
+    img.crossOrigin = 'anonymous';
+    img.addEventListener('load', () => {
+      try {
         const canvas = recolorLogoForDark(img);
         if (canvas) {
           canvas.className = 'logo-recolored';
           img.classList.add('logo-orig');
           wrap.appendChild(canvas);
         }
-      } else if (logoLuminance(img) < DARK_LOGO_THRESHOLD) {
-        // Clubs/leagues/flags: a thin white outline for dark ones (keeps their real colours).
-        wrap.classList.add('logo-dark');
+      } catch (e) {
+        /* tainted canvas / read error -- leave the original logo untouched */
       }
-    } catch (e) {
-      /* tainted canvas / read error -- leave the original logo untouched */
-    }
-  }, { once: true });
-  img.addEventListener('error', () => {
-    const plain = document.createElement('img');
-    plain.alt = '';
-    plain.loading = 'lazy';
-    plain.addEventListener('error', () => {
-      wrap.innerHTML = '';
-      wrap.appendChild(buildMonogram(entity.id, displayName));
     }, { once: true });
-    plain.src = url;
+    img.addEventListener('error', () => {
+      const plain = document.createElement('img');
+      plain.alt = '';
+      plain.loading = 'lazy';
+      plain.addEventListener('error', () => {
+        wrap.innerHTML = '';
+        wrap.appendChild(buildMonogram(entity.id, displayName));
+      }, { once: true });
+      plain.src = url;
+      wrap.innerHTML = '';
+      wrap.appendChild(plain);
+    }, { once: true });
+    img.src = url;
+    wrap.appendChild(img);
+    return wrap;
+  }
+
+  // Clubs/leagues/flags: a plain image load (no CORS needed), monogram fallback on failure.
+  const img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.addEventListener('error', () => {
     wrap.innerHTML = '';
-    wrap.appendChild(plain);
+    wrap.appendChild(buildMonogram(entity.id, displayName));
   }, { once: true });
   img.src = url;
   wrap.appendChild(img);

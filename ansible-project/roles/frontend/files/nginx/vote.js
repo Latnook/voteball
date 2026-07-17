@@ -429,7 +429,7 @@ document.getElementById('confirm-submit-btn').addEventListener('click', async ()
   }
 
   sessionStorage.setItem('voteballLastVote', JSON.stringify(body));
-  window.location.href = 'results.html';
+  window.location.href = '/results';
 });
 
 document.addEventListener('voteball:langchange', () => {
