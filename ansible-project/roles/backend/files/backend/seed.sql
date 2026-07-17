@@ -15,7 +15,8 @@ INSERT INTO alert_state (id, last_seen_total) VALUES (1, 0) ON CONFLICT (id) DO 
 -- clubs_name_en_uidx crash on every backend pod boot).
 INSERT INTO leagues (name)
 SELECT v.name FROM (VALUES
-    ('World Cup 2026'), ('UCL'), ('EPL'), ('La Liga'), ('Serie A'), ('Bundesliga'), ('Israeli Premier League')
+    ('World Cup 2026'), ('UCL'), ('EPL'), ('La Liga'), ('Serie A'), ('Bundesliga'), ('Israeli Premier League'),
+    ('Liga Leumit')
 ) AS v(name)
 WHERE NOT EXISTS (
     SELECT 1 FROM leagues existing
@@ -98,7 +99,16 @@ JOIN (VALUES
     ('Israeli Premier League', 'Hapoel Haifa'), ('Israeli Premier League', 'Bnei Sakhnin'),
     ('Israeli Premier League', 'Hapoel Ramat Gan Givatayim'), ('Israeli Premier League', 'Hapoel Jerusalem'),
     ('Israeli Premier League', 'Ironi Kiryat Shmona'), ('Israeli Premier League', 'Maccabi Petah Tikva'),
-    ('Israeli Premier League', 'Hapoel Petah Tikva'), ('Israeli Premier League', 'Ironi Tiberias')
+    ('Israeli Premier League', 'Hapoel Petah Tikva'), ('Israeli Premier League', 'Ironi Tiberias'),
+
+    ('Liga Leumit', 'F.C. Ashdod'), ('Liga Leumit', 'Maccabi Bnei Reineh'),
+    ('Liga Leumit', 'Bnei Yehuda'), ('Liga Leumit', 'Hapoel Hadera'),
+    ('Liga Leumit', 'Hapoel Kfar Saba'), ('Liga Leumit', 'Hapoel Kfar Shalem'),
+    ('Liga Leumit', 'Hapoel Nof HaGalil'), ('Liga Leumit', 'Hapoel Akko'),
+    ('Liga Leumit', 'Hapoel Afula'), ('Liga Leumit', 'Hapoel Rishon LeZion'),
+    ('Liga Leumit', 'Hapoel Ra''anana'), ('Liga Leumit', 'F.C. Kafr Qasim'),
+    ('Liga Leumit', 'F.C. Kiryat Yam'), ('Liga Leumit', 'Maccabi Herzliya'),
+    ('Liga Leumit', 'Maccabi Kavilio Jaffa'), ('Liga Leumit', 'Ironi Modi''in')
 ) AS c(league_name, name)
     ON l.name = c.league_name
     OR l.name_en = c.league_name
@@ -160,6 +170,7 @@ UPDATE leagues SET name_he = 'לה ליגה' WHERE name_en = 'La Liga' AND name_
 UPDATE leagues SET name_he = 'סרייה A' WHERE name_en = 'Serie A' AND name_he IS NULL;
 UPDATE leagues SET name_he = 'הבונדסליגה' WHERE name_en = 'Bundesliga' AND name_he IS NULL;
 UPDATE leagues SET name_he = 'ליגת העל' WHERE name_en = 'Israeli Premier League' AND name_he IS NULL;
+UPDATE leagues SET name_he = 'ליגה לאומית' WHERE name_en = 'Liga Leumit' AND name_he IS NULL;
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
 UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
 
@@ -177,6 +188,7 @@ UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg' WHERE name = 'Serie A' AND logo_url IS NULL;
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/15/Bundesliga_logo.svg' WHERE name = 'Bundesliga' AND logo_url IS NULL;
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Israeli Premier League' AND logo_url IS NULL;
+UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Liga Leumit' AND logo_url IS NULL;
 
 -- World Cup 2026 countries
 UPDATE clubs SET name_he = 'ברזיל' WHERE name_en = 'Brazil' AND name_he IS NULL;
@@ -388,6 +400,24 @@ UPDATE clubs SET name_he = 'מכבי פתח תקווה' WHERE name_en = 'Maccabi
 UPDATE clubs SET name_he = 'הפועל פתח תקווה' WHERE name_en = 'Hapoel Petah Tikva' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'עירוני טבריה' WHERE name_en = 'Ironi Tiberias' AND name_he IS NULL;
 
+-- Liga Leumit clubs
+UPDATE clubs SET name_he = 'מ.ס. אשדוד' WHERE name_en = 'F.C. Ashdod' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'מכבי בני ריינה' WHERE name_en = 'Maccabi Bnei Reineh' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'בני יהודה' WHERE name_en = 'Bnei Yehuda' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל חדרה' WHERE name_en = 'Hapoel Hadera' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל כפר סבא' WHERE name_en = 'Hapoel Kfar Saba' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל כפר שלם' WHERE name_en = 'Hapoel Kfar Shalem' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל נוף הגליל' WHERE name_en = 'Hapoel Nof HaGalil' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל עכו' WHERE name_en = 'Hapoel Akko' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל עפולה' WHERE name_en = 'Hapoel Afula' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל ראשון לציון' WHERE name_en = 'Hapoel Rishon LeZion' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'הפועל רעננה' WHERE name_en = 'Hapoel Ra''anana' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'מ.ס. כפר קאסם' WHERE name_en = 'F.C. Kafr Qasim' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'מ.ס. קריית ים' WHERE name_en = 'F.C. Kiryat Yam' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'מכבי הרצליה' WHERE name_en = 'Maccabi Herzliya' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'מכבי קביליו יפו' WHERE name_en = 'Maccabi Kavilio Jaffa' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'עירוני מודיעין' WHERE name_en = 'Ironi Modi''in' AND name_he IS NULL;
+
 -- Admin-curated club logos, synced from the live RDS instance (added via the admin UI's Logo
 -- URL field for the full Israeli Premier League roster) so a fresh install matches current
 -- production data. Also folds in the Hapoel Ramat Gan Givatayim / Maccabi Petah Tikva / Ironi
@@ -407,6 +437,27 @@ UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d1/Hapo
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/93/MPT_FC_2024.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Maccabi Petah Tikva' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/1f/Hapoelpt.svg' WHERE name_en = 'Hapoel Petah Tikva' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/84/Ironi_logo_new.gif?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Ironi Tiberias' AND logo_url IS NULL;
+
+-- Liga Leumit club logos. F.C. Kiryat Yam has no Wikimedia crest, so it's sourced from the club's
+-- Instagram profile picture CDN instead -- unlike every other logo_url in this file, that URL is
+-- signed and will expire (see its `oe=` param), so it will need re-curating via the admin UI's
+-- Logo URL field once it 404s.
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/5/5b/Ashdod.png' WHERE name_en = 'F.C. Ashdod' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f7/MaccabiBneiReine2022.png' WHERE name_en = 'Maccabi Bnei Reineh' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f5/Bnei_Jehuda_Tel_Aviv_FC.svg' WHERE name_en = 'Bnei Yehuda' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/81/HapoelHaderaFC.svg' WHERE name_en = 'Hapoel Hadera' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/87/Hapoel_Kfar_Saba_FC_Logo.png' WHERE name_en = 'Hapoel Kfar Saba' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/90/Hapoel_Kfar_Shalem_Logo.png' WHERE name_en = 'Hapoel Kfar Shalem' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/95/%D7%A0%D7%95%D7%A4%D7%94%D7%92%D7%9C%D7%99%D7%9C.png' WHERE name_en = 'Hapoel Nof HaGalil' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/7/75/Hapoelakko.png' WHERE name_en = 'Hapoel Akko' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/01/Hapoel_Afula_F.C.png' WHERE name_en = 'Hapoel Afula' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/ce/Hap-rish.png' WHERE name_en = 'Hapoel Rishon LeZion' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/3f/HapoelRaanana.png' WHERE name_en = 'Hapoel Ra''anana' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/6/6f/FC_Kafr_Qasim_Logo.png' WHERE name_en = 'F.C. Kafr Qasim' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://instagram.fsdv1-2.fna.fbcdn.net/v/t51.82787-19/745085692_18062626448718349_7428636575878684979_n.jpg?stp=dst-jpg_s320x320_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby44MjcuYzIifQ&_nc_ht=instagram.fsdv1-2.fna.fbcdn.net&_nc_cat=101&_nc_oc=Q6cZ2gGp0RPXFSBEWYw2ZWOJeid-IUzscegUnhnsLtSLiEbAPdSFgrgN7IXs9gk8Zsi5qxI&_nc_ohc=XVfcZqTLKDQQ7kNvwE2EpJw&_nc_gid=TS4fn4O4HwGRhBzlcpN9nA&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AQCyFraDI6bTjeoPtEVHdai-cVbQ22J2QDUt6mFKXflFSQ&oe=6A602339&_nc_sid=8b3546' WHERE name_en = 'F.C. Kiryat Yam' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f5/Maccabi_Herzliya.png' WHERE name_en = 'Maccabi Herzliya' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/88/MaccabiJaffaCrestNew2018.png' WHERE name_en = 'Maccabi Kavilio Jaffa' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d6/IroniModiinFC.png' WHERE name_en = 'Ironi Modi''in' AND logo_url IS NULL;
 
 -- Previous Knesset parties
 UPDATE previous_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;

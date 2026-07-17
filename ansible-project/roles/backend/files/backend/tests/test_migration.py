@@ -15,9 +15,9 @@ def test_all_seeded_rows_have_both_languages(conn):
 def test_seeded_row_counts(conn):
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 7
+    assert cur.fetchone()[0] == 8
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 144
+    assert cur.fetchone()[0] == 160
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -145,9 +145,9 @@ def test_seed_rerun_survives_league_name_drift(conn):
 
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 7, 'league name drift must not create a phantom duplicate league'
+    assert cur.fetchone()[0] == 8, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 144, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 160, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
