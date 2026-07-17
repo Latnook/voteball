@@ -205,7 +205,11 @@ function renderPreviousGrid() {
   const grid = document.getElementById('previous-grid');
   grid.innerHTML = '';
 
-  optionsData.previous_parties.forEach(p => {
+  // 'Other' is a catch-all with no real logo (see seed.sql), and reads better as a plain text
+  // option grouped with the didn't-vote utility card than as a big logo square among real parties.
+  const otherParty = optionsData.previous_parties.find(p => p.name_en === 'Other');
+
+  optionsData.previous_parties.filter(p => p !== otherParty).forEach(p => {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'pick-card';
@@ -218,6 +222,19 @@ function renderPreviousGrid() {
     card.addEventListener('click', () => { selectedPreviousChoice = p.id; renderPreviousGrid(); });
     grid.appendChild(card);
   });
+
+  if (otherParty) {
+    const otherCard = document.createElement('button');
+    otherCard.type = 'button';
+    otherCard.className = 'pick-card utility-card';
+    otherCard.setAttribute('aria-pressed', String(selectedPreviousChoice === otherParty.id));
+    const otherName = document.createElement('span');
+    otherName.className = 'card-name';
+    otherName.textContent = localizedName(otherParty);
+    otherCard.appendChild(otherName);
+    otherCard.addEventListener('click', () => { selectedPreviousChoice = otherParty.id; renderPreviousGrid(); });
+    grid.appendChild(otherCard);
+  }
 
   const didNotVote = document.createElement('button');
   didNotVote.type = 'button';
