@@ -35,6 +35,9 @@ const OUTLINE_CLUBS = new Set([
   'Tottenham Hotspur',
   'Maccabi Petah Tikva',
   'SC Paderborn 07',
+  'Hapoel Akko',
+  "Ironi Modi'in",
+  'UEFA Champions League',
 ]);
 
 // --- HSL conversion (used by the party-logo dark-mode recolour below) ---
