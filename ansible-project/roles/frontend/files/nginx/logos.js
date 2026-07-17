@@ -38,6 +38,7 @@ const OUTLINE_CLUBS = new Set([
   'Hapoel Akko',
   "Ironi Modi'in",
   'Hapoel Petah Tikva',
+  'Maccabi Bnei Reineh',
   'UEFA Champions League',
 ]);
 

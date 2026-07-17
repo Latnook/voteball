@@ -6,8 +6,25 @@ let selectedUpcomingIds = new Set();
 let undecided = false;
 let mode = 'form'; // 'form' | 'review'
 
+// Israeli leagues -- their clubs sort by Hebrew name; all other (foreign) clubs sort by English name.
+const ISRAELI_LEAGUE_NAMES = new Set(['Israeli Premier League', 'Liga Leumit']);
+
+// A copy of `arr` sorted alphabetically by Hebrew or English name (locale-aware). Drives the pick
+// grids: parties and Israeli clubs by Hebrew name, foreign clubs by English name.
+function sortByLocalName(arr, useHebrew) {
+  const key = useHebrew ? 'name_he' : 'name_en';
+  const locale = useHebrew ? 'he' : 'en';
+  return arr.slice().sort((a, b) => (a[key] || '').localeCompare(b[key] || '', locale));
+}
+
+function isIsraeliLeague(leagueId) {
+  const league = optionsData.leagues.find(l => l.id === leagueId);
+  return !!league && ISRAELI_LEAGUE_NAMES.has(league.name_en);
+}
+
 function clubsForLeague(leagueId) {
-  return optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId);
+  const clubs = optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId);
+  return sortByLocalName(clubs, isIsraeliLeague(leagueId));
 }
 
 function readLeagueEntry(leagueId) {
@@ -209,7 +226,7 @@ function renderPreviousGrid() {
   // option grouped with the didn't-vote utility card than as a big logo square among real parties.
   const otherParty = optionsData.previous_parties.find(p => p.name_en === 'Other');
 
-  optionsData.previous_parties.filter(p => p !== otherParty).forEach(p => {
+  sortByLocalName(optionsData.previous_parties.filter(p => p !== otherParty), true).forEach(p => {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'pick-card';
@@ -263,7 +280,7 @@ function renderUpcomingGrid() {
   grid.innerHTML = '';
   const atCap = selectedUpcomingIds.size >= 3;
 
-  optionsData.upcoming_parties.forEach(p => {
+  sortByLocalName(optionsData.upcoming_parties, true).forEach(p => {
     const isChecked = selectedUpcomingIds.has(p.id);
     const card = document.createElement('button');
     card.type = 'button';
