@@ -779,7 +779,11 @@ UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/h
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'עוצמה יהודית' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrT42i2KdLQY3tvfo0CzpXXrNixL7m7b4xMpRCWJgjLa0pp_kPr8w-crQg&s=10' WHERE name_he = 'אל הדגל' AND logo_url IS NULL;
+-- El HaDegel is a new movement with no Wikimedia logo; this is the square Star-of-David emblem
+-- (transparent, from the party's own Webflow CDN "webclip" app-icon) rather than the old low-res
+-- Google thumbnail, which had a dark navy background baked in and rendered as a dark box on the
+-- logo chip. Non-Wikimedia host, so if it ever 404s the frontend falls back to a generated monogram.
+UPDATE upcoming_parties SET logo_url = 'https://cdn.prod.website-files.com/674ed46d57366b6a64400c3c/67501afebb4a91b0d0b7c6b9_el-hadegel-webclip.svg' WHERE name_he = 'אל הדגל' AND logo_url IS NULL;
 
 -- Party ideology classification for upcoming_parties -- independent from previous_parties even where
 -- a lineage link exists (see party_lineage below and design spec Decision 1).

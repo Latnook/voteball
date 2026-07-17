@@ -56,6 +56,12 @@
   --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
   --radius: 14px;
   --radius-sm: 8px;
+  /* Logo chip: a soft off-white plate behind every logo so dark/transparent artwork
+     (dark crests, thin Hebrew wordmarks) stays legible on the dark "floodlit" cards.
+     Theme-independent by design (same value in both themes), so it lives only here and
+     the light/dark override blocks inherit it. */
+  --logo-chip: #F4F6F8;
+  --logo-border: rgba(0, 0, 0, 0.10);
   --font-body: 'Heebo', system-ui, sans-serif;
   --font-display-en: 'Anton', var(--font-body);
   --font-display-he: 'Secular One', var(--font-body);
@@ -360,7 +366,8 @@ button { font-family: inherit; }
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--surface-raised);
+  background: var(--logo-chip);
+  border: 1px solid var(--logo-border);
 }
 .logo img {
   width: 100%;
