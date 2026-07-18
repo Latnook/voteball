@@ -86,6 +86,7 @@
     - app.py
     - db.py
     - queries.py
+    - gunicorn.conf.py
     - schema.sql
     - seed.sql
 
