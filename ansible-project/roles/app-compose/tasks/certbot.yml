@@ -41,15 +41,19 @@
   become: true
 
 - name: Obtain/reissue SSL certificate (certbot dns-route53)
-  # --force-renewal: needed to transition a box whose cert was already
-  # issued via --standalone and isn't yet within its 30-day expiry window --
-  # certbot certonly silently no-ops ("not yet due for renewal") without it,
-  # which would leave the renewal conf's authenticator on standalone
-  # indefinitely. No-op-safe on a fresh install too.
+  # --force-renewal was removed: it existed only to migrate a still-valid
+  # --standalone cert onto dns-route53 (plain certonly no-ops on a not-yet-due
+  # cert, so the authenticator would never flip). That migration is long done,
+  # and this task's `when` only runs on a fresh box (no cert) or one not yet on
+  # dns-route53 -- so in practice it always hits the fresh-box path, where
+  # certonly issues normally with no cert to force past. Forcing a reissue there
+  # bought nothing and just burned Let's Encrypt's "5 certs per exact domain set
+  # per 168h" budget on every destroy/redeploy. Without the flag, a re-run on a
+  # box that already has a valid cert no-ops instead of needlessly reissuing.
   # --dns-route53-propagation-seconds was dropped: current certbot-dns-route53
   # polls Route53's GetChange for INSYNC instead of sleeping a fixed delay.
   command: >
-    certbot certonly --dns-route53 --force-renewal
+    certbot certonly --dns-route53
     -d {{ frontend_domain }}
     --non-interactive --agree-tos
     -m {{ certbot_email }}
