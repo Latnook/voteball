@@ -1,0 +1,72 @@
+name: build-scan-push-deploy
+on:
+  push:
+    branches: [master]
+    paths:
+      - "ansible-project/roles/backend/files/backend/**"
+      - "ansible-project/roles/worker/files/worker/**"
+      - "ansible-project/roles/frontend/files/nginx/**"
+      - "docker/backup/**"
+      - ".github/workflows/ci.yml"
+
+permissions:
+  id-token: write # OIDC federation to AWS
+  contents: write # commit the image-tag bump back to the repo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      REGION: il-central-1
+      REGISTRY: 590183895228.dkr.ecr.il-central-1.amazonaws.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image tag (short SHA)
+        run: echo "TAG=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }} # repo variable = terraform output github_actions_role_arn
+          aws-region: ${{ env.REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build images
+        run: |
+          set -euo pipefail
+          declare -A CTX=(
+            [voteball-backend]=ansible-project/roles/backend/files/backend
+            [voteball-worker]=ansible-project/roles/worker/files/worker
+            [voteball-nginx]=ansible-project/roles/frontend/files/nginx
+            [voteball-backup]=docker/backup
+          )
+          for repo in "${!CTX[@]}"; do
+            docker build -t "${REGISTRY}/${repo}:${TAG}" "${CTX[$repo]}"
+          done
+
+      - name: Trivy scan (fail on CRITICAL/HIGH)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: image
+          image-ref: ${{ env.REGISTRY }}/voteball-backend:${{ env.TAG }}
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+          ignore-unfixed: true
+
+      - name: Push images
+        run: |
+          set -euo pipefail
+          for repo in voteball-backend voteball-worker voteball-nginx voteball-backup; do
+            docker push "${REGISTRY}/${repo}:${TAG}"
+          done
+
+      - name: Bump image tag in the chart and commit (ArgoCD auto-syncs)
+        run: |
+          set -euo pipefail
+          sed -i -E "s/^  tag: \".*\"/  tag: \"${TAG}\"/" charts/voteball/values.yaml
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add charts/voteball/values.yaml
+          git commit -m "ci: image tag ${TAG} [skip ci]" || { echo "no tag change"; exit 0; }
+          git push
