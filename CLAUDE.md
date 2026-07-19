@@ -197,15 +197,15 @@ verify with `helm search repo <chart> --versions` before pinning.
 
 ### Backend (`ansible-project/roles/backend/files/backend/`)
 
-**Adding a new backend or worker source file requires updating TWO lists, not one:** the
-service's `Dockerfile` `COPY` line **and** the explicit per-file `loop:` in
-`ansible-project/roles/k3s/tasks/main.yml` ("Copy backend build context" / "Copy worker build
-context"). The k3s role deliberately ships an explicit file list (not a directory copy, to avoid
-dragging local `.venv`/`__pycache__` into the build context), so a file the Dockerfile references
-but Ansible didn't copy is **absent on the node** and `docker build` fails there with
-`"/<file>": not found` — even though a local `docker build` succeeds (every file is present
-locally). This is the backend/worker analogue of the frontend Dockerfile-`COPY` gap noted below;
-it shipped once (`migrate.py`, fixed in `4c56d04`).
+**Adding a new backend or worker source file: update that service's `Dockerfile` `COPY` line.** On EKS
+the build context *is* the source directory (`scripts/build-push-ecr.sh` / the CI workflow run
+`docker build` against it), so the Dockerfile's explicit `COPY` list is the only place that can drop a
+file — and a file missing there is simply absent from the image (no build error for the *app* files,
+just an `ImportError`/404 at runtime). Same class of gap as the frontend note below.
+
+*(Historical: under the retired k3s deploy this needed a **second** list too — the per-file `loop:` in
+`ansible-project/roles/k3s/tasks/main.yml` — because Ansible shipped an explicit file list to the node.
+That bit once, `migrate.py`, fixed in `4c56d04`. Irrelevant on EKS, but that's why the role looks that way.)*
 
 Tests run TDD-style against a **real** Postgres, not mocks:
 
