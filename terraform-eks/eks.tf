@@ -19,6 +19,16 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
   enable_irsa                              = true
 
+  # Turn on the VPC CNI network-policy agent so Kubernetes NetworkPolicies (Plan 3b) are ENFORCED,
+  # not just accepted-and-ignored. OVERWRITE adopts the EKS-default vpc-cni addon already running.
+  cluster_addons = {
+    vpc-cni = {
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts_on_update = "OVERWRITE"
+      configuration_values        = jsonencode({ enableNetworkPolicy = "true" })
+    }
+  }
+
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
