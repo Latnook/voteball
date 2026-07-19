@@ -1,6 +1,6 @@
 image:
   registry: 590183895228.dkr.ecr.il-central-1.amazonaws.com
-  tag: "f1bdd17" # git-SHA tag pushed by scripts/build-push-ecr.sh
+  tag: "aa0445b" # git-SHA tag pushed by scripts/build-push-ecr.sh
   pullPolicy: IfNotPresent
 
 # Non-secret config -> ConfigMap app-config. DB_HOST is the Plan-3a RDS endpoint (set in Task 1/7).
