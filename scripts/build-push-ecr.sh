@@ -21,6 +21,7 @@ build_push() {
 build_push voteball-backend ansible-project/roles/backend/files/backend
 build_push voteball-worker  ansible-project/roles/worker/files/worker
 build_push voteball-nginx   ansible-project/roles/frontend/files/nginx
+build_push voteball-backup  docker/backup
 
 echo
 echo "Pushed all three at tag: ${TAG}"

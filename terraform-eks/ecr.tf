@@ -1,7 +1,7 @@
 # One repo per own-image. scan_on_push turns on ECR's built-in vulnerability scan (the rubric's
 # "is the image scanned?" line). Untagged images expire after 14 days to bound storage cost.
 locals {
-  ecr_repos = ["backend", "worker", "nginx"]
+  ecr_repos = ["backend", "worker", "nginx", "backup"]
 }
 
 resource "aws_ecr_repository" "app" {
