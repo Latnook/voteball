@@ -68,8 +68,11 @@ spec:
   policyTypes: [Egress]
   egress:
     - to:
-        - ipBlock: { cidr: 10.0.0.0/16 }   # RDS + in-cluster (backend<-frontend, OTel collector)
+        - ipBlock: { cidr: 10.0.0.0/16 }     # VPC: RDS + pod IPs (backend<-frontend, OTel collector)
+        - ipBlock: { cidr: 172.20.0.0/16 }   # EKS Service CIDR: reaching a Service by ClusterIP
+          # ^ REQUIRED: frontend->backend goes via the backend Service ClusterIP (172.20.x), which the
+          #   VPC CNI policy agent evaluates before DNAT-to-pod-IP -- without this, the proxy is denied.
     - to:
         - ipBlock: { cidr: 0.0.0.0/0 }
       ports:
-        - { protocol: TCP, port: 443 }     # SNS / S3 / Secrets Manager via NAT
+        - { protocol: TCP, port: 443 }       # SNS / S3 / Secrets Manager via NAT
