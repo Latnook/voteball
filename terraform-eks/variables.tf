@@ -59,6 +59,16 @@ variable "node_desired_size" {
   default     = 2
 }
 
+variable "cluster_endpoint_public_access_cidrs" {
+  # The EKS API endpoint is public so kubectl works from a laptop/CI, but it is IAM-authenticated:
+  # a caller still needs valid AWS creds + an EKS access entry to do anything. Defaulting to
+  # 0.0.0.0/0 for demo convenience; SET THIS to your operator/CI CIDR(s) to lock the endpoint down.
+  # Private (in-VPC) access stays enabled regardless, so in-cluster components use the private path.
+  description = "CIDRs allowed to reach the public EKS API endpoint. Restrict for production."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "app_domain" {
   description = "Public FQDN the ACM cert is issued for (and later the ALB alias)."
   type        = string

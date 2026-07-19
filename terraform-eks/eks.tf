@@ -9,7 +9,13 @@ module "eks" {
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
+  # Public endpoint for kubectl access, but scoped to an allow-list (default 0.0.0.0/0 for demo;
+  # set var.cluster_endpoint_public_access_cidrs to lock it down). Private in-VPC access stays on by
+  # module default, so in-cluster components never traverse the public path. Secrets are KMS
+  # envelope-encrypted and control-plane audit logging (api/audit/authenticator) is on, both by
+  # module default -- see docs/security.md.
   cluster_endpoint_public_access           = true
+  cluster_endpoint_public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
   enable_cluster_creator_admin_permissions = true
   enable_irsa                              = true
 
