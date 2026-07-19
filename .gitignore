@@ -2,18 +2,22 @@
 *.pem
 *.pub
 
-# Terraform secrets and generated state
+# Reference PDFs (course material etc.) — not part of the codebase
+*.pdf
+
+# Terraform secrets and generated state.
+# NOTE: terraform.tfstate* (glob) also covers the timestamped backups Terraform writes
+# (terraform.tfstate.1784477786.backup), which a bare ".backup" pattern misses.
 terraform/voteball.tfvars
-terraform/terraform.tfstate
-terraform/terraform.tfstate.backup
+terraform/terraform.tfstate*
 terraform/.terraform.tfstate.lock.info
 terraform/.terraform/
 terraform/snapshot.auto.tfvars
+terraform/tfplan
 
-# EKS stack (Plan 2) — same posture as the k3s terraform/ stack above.
+# EKS stack — same posture as the k3s terraform/ stack above.
 terraform-eks/voteball-eks.tfvars
-terraform-eks/terraform.tfstate
-terraform-eks/terraform.tfstate.backup
+terraform-eks/terraform.tfstate*
 terraform-eks/.terraform.tfstate.lock.info
 terraform-eks/tfplan
 terraform-eks/.terraform/

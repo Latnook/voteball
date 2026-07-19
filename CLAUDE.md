@@ -4,17 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Voteball is a public poll correlating football fandom with Israeli political-party voting, deployed
-on a single-EC2 k3s cluster at `voteball.latnook.com`. It was bootstrapped from infra patterns proven
-in a separate `Rolling AWS Project files` (S3App) repo but is fully independent from this initial
-commit onward — no shared code, Terraform state, or Ansible roles with that repo.
+Voteball is a public poll correlating football fandom with Israeli political-party voting, deployed on
+**Amazon EKS** at `voteball.latnook.com`. It was bootstrapped from infra patterns proven in a separate
+`Rolling AWS Project files` (S3App) repo but is fully independent — no shared code or state.
 
-**`docs/plan.md` is the master implementation plan** and the source of truth for build order, exact
-file contents, and the "Global Constraints" that bind every task (region/AZ, resource naming, non-root
-containers, `sslmode=require`, admin auth shape, etc.). It is written as a task-by-task spec intended
-to be executed by an agentic worker via `superpowers:subagent-driven-development` or
-`superpowers:executing-plans` — read it before making architectural changes, since most design
-decisions (why a table/module/route looks the way it does) are explained there, not in code comments.
+> **The single-node k3s deployment is RETIRED.** `terraform/` (k3s stack) and `ansible-project/`'s
+> playbook/roles remain in the repo for history, but the live deployment is the EKS stack in
+> `terraform-eks/` + `charts/voteball/`. The app *source* still lives under
+> `ansible-project/roles/{backend,worker,frontend}/files/` (that's just where the Dockerfiles/code sit;
+> Ansible itself is no longer used to deploy).
+
+**Plans live in `docs/superpowers/plans/`** — the EKS migration was built as a sequence of task-by-task
+specs (app-code foundation → EKS infra → add-ons → app deploy → expose/harden → GitOps/observability →
+docs). `docs/plan.md` is the *original k3s-era* plan and is now historical. Read the relevant plan
+before making architectural changes: most design decisions (and the bugs they avoid) are explained
+there, not in code comments.
+
+Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
+`docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`.
 
 ## Workflow
 
@@ -26,8 +33,8 @@ every single edit separately, and never force-push.
 
 ## Architecture
 
-Three containers on one k3s node, provisioned by a standalone Terraform stack and deployed by a
-standalone Ansible playbook + Helm chart:
+Three containers in the `devops-app` namespace on EKS, provisioned by the `terraform-eks/` stack and
+delivered by the `charts/voteball` Helm chart (synced by ArgoCD):
 
 - **frontend** — nginx serving plain HTML/CSS/vanilla JS (no build step), reverse-proxying `/api/*` to
   the backend.
@@ -103,27 +110,26 @@ trust as pre-escaped HTML.
 
 ## Deployment
 
-Provisioning and deployment are two separate steps, run in this order:
+**`docs/deploy.md` is the plain-language runbook** — follow it for real deploys. Summary of the split:
 
-1. **`scripts/find-latest-snapshot.sh`** checks AWS for an RDS snapshot from a prior `terraform destroy`
-   and writes (or removes) `terraform/snapshot.auto.tfvars` accordingly — Terraform auto-loads
-   `*.auto.tfvars`, so this needs no flag. Run this before `terraform apply` if you want vote data to
-   survive a destroy/redeploy cycle (it does by default; see docs/deploy.md).
-2. **Terraform** (`terraform/`) creates the AWS infra: EC2 (k3s node), RDS (Postgres, restored from the
-   snapshot above if one was found), EIP, Route53 record for `voteball.latnook.com`, IAM role, SNS
-   topic. Needs `terraform/voteball.tfvars` (gitignored — copy from `voteball.tfvars.example`) and
-   `-var-file=voteball.tfvars` on `plan`/`apply` (it isn't named `terraform.tfvars`, so Terraform won't
-   auto-load it). Before `terraform destroy`, run `terraform apply -target=module.database.aws_db_instance.main
-   -var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"` to refresh the final-snapshot name — passing that
-   `-var` to `destroy` itself does nothing, since destroy deletes using whatever value is already in state
-   from the last apply, not a value recomputed from `-var`s on the destroy call (see docs/deploy.md
-   Gotchas). Skip this and repeated destroys collide on the same stale final-snapshot name.
-3. **`scripts/generate-inventory.sh`** reads live Terraform outputs and writes the (gitignored,
-   generated) Ansible inventory: `ansible-project/inventories/voteball/hosts` and
-   `group_vars/all/main.yml`.
-4. **Ansible** (`ansible-project/site-k3s.yml`) installs Docker + k3s on the node, then `helm upgrade
-   --install`s the `charts/voteball` chart, which deploys the three containers as Kubernetes
-   Deployments/Services in the `voteball-app` namespace.
+- **Terraform (`terraform-eks/`)** builds everything AWS: dedicated VPC, EKS cluster + Spot node group,
+  OIDC/IRSA roles, ECR, ACM, S3, SNS, Secrets Manager (container only), RDS (restored from a pinned
+  snapshot), **and every platform add-on** via `helm_release`/`aws_eks_addon` (AWS Load Balancer
+  Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
+  Container Insights, metrics-server, external-dns, ArgoCD, kube-prometheus-stack). Needs
+  `terraform-eks/voteball-eks.tfvars` (gitignored) and `-var-file=voteball-eks.tfvars`.
+- **Helm (`charts/voteball`)** is the app itself (namespace `devops-app`): 3 Deployments, Services,
+  Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
+  **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
+- **Two manual ops:** `./scripts/seed-eks-secret.sh` (copies app passwords into Secrets Manager; nothing
+  secret ever enters git or tfstate) and pinning `image.tag` + `config.DB_HOST` in `values.yaml`.
+- **CI/CD:** pushing app code to `master` runs `.github/workflows/ci.yml` (OIDC → build → Trivy → ECR →
+  bump `image.tag` `[skip ci]` → ArgoCD auto-syncs). `./scripts/build-push-ecr.sh` does it by hand.
+
+**Teardown order matters:** delete the ArgoCD Application, then the Ingress (so the ALB de-provisions —
+a leftover ALB's ENIs block VPC deletion), *then* `terraform destroy`. If destroy hangs uninstalling a
+`helm_release` ("context deadline exceeded" — Helm can't cleanly uninstall while the cluster is being
+deleted), `terraform state rm` that release and re-run destroy; it dies with the cluster anyway.
 
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 
@@ -140,13 +146,21 @@ side (added or deleted on purpose — also always needs a human call). Needs the
 `Voteball-EC2-pem.pem`, and Terraform state as the rest of this section, plus a running
 `voteball-test-db` container (see the Backend common-commands section below).
 
-### Secrets: ansible-vault
+### Secrets
+
+**On EKS, secrets live in AWS Secrets Manager** (`voteball/app-secret`) and are synced into the
+`app-secret` Kubernetes Secret by External Secrets Operator via IRSA. Terraform creates only the empty
+container (`ignore_changes = [secret_string]`), so **no secret value ever enters git or tfstate**. Seed
+real values with `./scripts/seed-eks-secret.sh`. See `docs/security.md`.
+
+The ansible-vault file below is the **retired k3s** mechanism — still the origin of the credential
+values (the seed script reads it), so keep `.vault_pass` around, but it is no longer in the deploy path.
 
 `ansible-project/inventories/voteball/group_vars/all/secrets.yml` (holds `db_pass`, `admin_username`,
 `admin_password_hash`, `admin_session_secret`) is
 encrypted with `ansible-vault` and **committed encrypted** — only the vault password itself
 (`ansible-project/.vault_pass`, gitignored, never committed) is kept out of git. `ansible.cfg` points
-`vault_password_file` at it, so `ansible-playbook`/`ansible-vault view|edit` work transparently once
+`vault_password_file` at it, so `ansible-vault view|edit` works transparently once
 that file exists locally. To bootstrap a fresh checkout:
 
 ```bash
@@ -162,18 +176,24 @@ See `docs/deploy.md` for the full deploy/destroy runbook.
 
 ## Common commands
 
-### Terraform (`terraform/`)
+### Terraform (`terraform-eks/` — the live stack)
 
 ```bash
-cd terraform
-terraform init
+cd terraform-eks
+terraform init             # use `init -upgrade` after adding a module (pulls its provider deps)
 terraform validate
 terraform fmt -recursive   # run before committing any .tf change
-terraform plan             # requires voteball.tfvars (copy from voteball.tfvars.example)
+terraform plan  -var-file=voteball-eks.tfvars
 ```
 
-`terraform apply` creates real, billed AWS resources (EC2, RDS, EIP, Route53) — treat it as a
-confirm-before-running step, not something to run automatically.
+`terraform apply` creates real, billed AWS resources (EKS control plane, NAT, nodes, RDS, ALB ≈
+$200/mo) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
+(the EKS module v20 caps the provider at `< 6.0`, unlike the k3s stack's `~> 6.0`) and
+**`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
+(`aws eks describe-cluster-versions --region il-central-1`). Community chart/add-on versions drift fast;
+verify with `helm search repo <chart> --versions` before pinning.
+
+`terraform/` is the retired k3s stack — left for history, not deployed.
 
 ### Backend (`ansible-project/roles/backend/files/backend/`)
 
@@ -226,24 +246,31 @@ exact gap shipped once (i18n.js, fixed in commit `d02e255`) before being caught.
 
 ```bash
 helm lint charts/voteball
-helm template voteball charts/voteball --namespace voteball-app   # renders without a live cluster
+helm template voteball charts/voteball --namespace devops-app   # renders without a live cluster
 ```
 
-### Ansible
+ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml`), so **changes reach the
+cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
+note ArgoCD's `selfHeal` will fight you.
 
-```bash
-cd ansible-project
-ansible-playbook --syntax-check site-k3s.yml
-```
-Requires `.vault_pass` and a generated inventory (see Deployment) to actually run against a host.
+### Ansible (retired)
+
+Only used to *deploy* the old k3s stack; not part of the EKS path. The app source under
+`ansible-project/roles/*/files/` is still live — that's just where the code and Dockerfiles live.
 
 ## Key constraints (see `docs/plan.md` Global Constraints for the full list)
 
-- Region `il-central-1`; EC2 in AZ `il-central-1c`; RDS in AZ `il-central-1b`.
+- Region `il-central-1`; EKS VPC `10.0.0.0/16` across AZs `il-central-1a`/`1b` (public / private /
+  isolated-DB subnets, single NAT). Kubernetes namespace **`devops-app`** (never `default`).
 - Resource name prefix `voteball`; single environment only — no dev/prod split, no multi-instance mode
   (this is deliberately simpler than the S3App precedent it was bootstrapped from).
-- All backend/worker containers run as non-root, `uid 1000`; frontend nginx keeps a `CHOWN`/`SETUID`/
-  `SETGID` capability exception.
+- **All** app containers run non-root with `allowPrivilegeEscalation:false`, `capabilities.drop:[ALL]`,
+  and `readOnlyRootFilesystem:true` (+ an `emptyDir` only where a write is truly needed): backend/worker
+  at `uid 1000`, frontend at `uid 101` via `nginxinc/nginx-unprivileged` on **:8080** (the old
+  `CHOWN`/`SETUID`/`SETGID` exception is gone — the ALB terminates TLS, so nginx needs no privileges).
+- **IRSA least privilege:** only the `worker` and `backup` ServiceAccounts carry an AWS role (SNS-publish
+  + S3 `snapshots/`, and S3 `backups/` respectively); `frontend`/`backend` carry **none**. Nothing gets
+  `cluster-admin`.
 - Postgres connections use `sslmode=require` in production (`DB_SSLMODE` env var; tests override to
   `disable`).
 - Admin auth is username/password login (`POST /api/admin/login`) issuing a signed, 12-hour token
@@ -253,9 +280,12 @@ Requires `.vault_pass` and a generated inventory (see Deployment) to actually ru
 
 ## Gitignored / generated files
 
-`terraform/voteball.tfvars`, `terraform/terraform.tfstate*`, `*.pem` files, Ansible's generated
-`inventories/voteball/hosts` and `group_vars/all/main.yml` (written by
-`scripts/generate-inventory.sh` from live Terraform outputs), and `ansible-project/.vault_pass` are all
-gitignored — either real secrets or machine-specific generated output. Note
-`group_vars/all/secrets.yml` is **not** gitignored: it's committed, but ansible-vault-encrypted (see
-Deployment section above).
+Gitignored — either real secrets or machine-specific/generated output:
+`terraform-eks/voteball-eks.tfvars`, `terraform-eks/terraform.tfstate*` and `terraform/terraform.tfstate*`
+(the `*` glob matters — Terraform writes *timestamped* backups like `terraform.tfstate.1784477786.backup`
+that a bare `.backup` pattern misses), `*.tfplan`/`tfplan`, `*.pem`, `*.pdf` (course reference material),
+`ansible-project/.vault_pass`, the generated Ansible inventory, and `EXPLAINER.md` (personal
+presentation notes, not part of the submission).
+
+Note `group_vars/all/secrets.yml` is **not** gitignored: it's committed, but ansible-vault-encrypted
+(see Secrets above).
