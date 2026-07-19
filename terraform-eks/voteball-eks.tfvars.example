@@ -1,0 +1,5 @@
+# Copy to voteball-eks.tfvars (gitignored) and fill in. Apply/plan with -var-file=voteball-eks.tfvars.
+notification_email = "you@example.com"
+
+# Optional overrides (defaults are in variables.tf):
+# cluster_version = "1.34"

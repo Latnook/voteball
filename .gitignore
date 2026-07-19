@@ -10,6 +10,13 @@ terraform/.terraform.tfstate.lock.info
 terraform/.terraform/
 terraform/snapshot.auto.tfvars
 
+# EKS stack (Plan 2) — same posture as the k3s terraform/ stack above.
+terraform-eks/voteball-eks.tfvars
+terraform-eks/terraform.tfstate
+terraform-eks/terraform.tfstate.backup
+terraform-eks/.terraform.tfstate.lock.info
+terraform-eks/.terraform/
+
 # Ansible: secrets.yml is committed ENCRYPTED via ansible-vault — only the
 # vault password itself and the generated (non-secret) inventory stay out of git.
 ansible-project/.vault_pass
