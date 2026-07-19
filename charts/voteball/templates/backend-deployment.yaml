@@ -13,6 +13,14 @@ spec:
       labels: { app: backend }
     spec:
       serviceAccountName: backend
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels: { app: backend }
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: backend
           image: "{{ .Values.image.registry }}/voteball-backend:{{ .Values.image.tag }}"

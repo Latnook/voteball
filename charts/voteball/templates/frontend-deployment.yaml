@@ -13,6 +13,14 @@ spec:
       labels: { app: frontend }
     spec:
       serviceAccountName: frontend
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels: { app: frontend }
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: frontend
           image: "{{ .Values.image.registry }}/voteball-nginx:{{ .Values.image.tag }}"
