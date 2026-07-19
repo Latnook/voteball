@@ -1,0 +1,38 @@
+# Pre-install/pre-upgrade hook: runs migrate.py (Plan 1) ONCE per release to bootstrap schema+seed,
+# before the backend pods roll. Uses the backend SA (RDS is network-reachable; no AWS perms needed).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: voteball-migrate
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels: { app: voteball-migrate }
+    spec:
+      serviceAccountName: backend
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: "{{ .Values.image.registry }}/voteball-backend:{{ .Values.image.tag }}"
+          command: ["python", "migrate.py"]
+          envFrom:
+            - configMapRef: { name: app-config }
+            - secretRef: { name: app-secret }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: tmp
+          emptyDir: {}

@@ -4,13 +4,10 @@ metadata:
   name: frontend
   namespace: {{ .Release.Namespace }}
 spec:
-  type: LoadBalancer
+  type: ClusterIP # the ALB Ingress (Plan 3b) fronts this; no direct LoadBalancer
   selector:
     app: frontend
   ports:
     - name: http
       port: 80
-      targetPort: 80
-    - name: https
-      port: 443
-      targetPort: 443
+      targetPort: 8080

@@ -3,38 +3,40 @@ kind: Deployment
 metadata:
   name: worker
   namespace: {{ .Release.Namespace }}
-  labels:
-    app: worker
+  labels: { app: worker }
 spec:
   replicas: {{ .Values.worker.replicas }}
   selector:
-    matchLabels:
-      app: worker
+    matchLabels: { app: worker }
   template:
     metadata:
-      labels:
-        app: worker
+      labels: { app: worker }
     spec:
       serviceAccountName: worker
       containers:
         - name: worker
-          image: "voteball-worker:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.registry }}/voteball-worker:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
-            - configMapRef:
-                name: app-config
-            - secretRef:
-                name: app-secret
+            - configMapRef: { name: app-config } # includes S3_BUCKET -> enables S3 snapshots
+            - secretRef: { name: app-secret }
           resources:
-            requests:
-              cpu: {{ .Values.worker.resources.requests.cpu }}
-              memory: {{ .Values.worker.resources.requests.memory }}
-            limits:
-              cpu: {{ .Values.worker.resources.limits.cpu }}
-              memory: {{ .Values.worker.resources.limits.memory }}
+            requests: { cpu: {{ .Values.worker.resources.requests.cpu }}, memory: {{ .Values.worker.resources.requests.memory }} }
+            limits: { cpu: {{ .Values.worker.resources.limits.cpu }}, memory: {{ .Values.worker.resources.limits.memory }} }
+          livenessProbe:
+            # "alive if loop spins": /tmp/heartbeat touched every iteration (Plan 1). Fail if stale >120s.
+            exec:
+              command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
+            initialDelaySeconds: 40
+            periodSeconds: 30
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
             allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp } # heartbeat file
+      volumes:
+        - name: tmp
+          emptyDir: {}

@@ -3,51 +3,44 @@ kind: Deployment
 metadata:
   name: backend
   namespace: {{ .Release.Namespace }}
-  labels:
-    app: backend
+  labels: { app: backend }
 spec:
   replicas: {{ .Values.backend.replicas }}
   selector:
-    matchLabels:
-      app: backend
+    matchLabels: { app: backend }
   template:
     metadata:
-      labels:
-        app: backend
+      labels: { app: backend }
     spec:
       serviceAccountName: backend
       containers:
         - name: backend
-          image: "voteball-backend:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.registry }}/voteball-backend:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5000
           envFrom:
-            - configMapRef:
-                name: app-config
-            - secretRef:
-                name: app-secret
+            - configMapRef: { name: app-config }
+            - secretRef: { name: app-secret }
           resources:
-            requests:
-              cpu: {{ .Values.backend.resources.requests.cpu }}
-              memory: {{ .Values.backend.resources.requests.memory }}
-            limits:
-              cpu: {{ .Values.backend.resources.limits.cpu }}
-              memory: {{ .Values.backend.resources.limits.memory }}
+            requests: { cpu: {{ .Values.backend.resources.requests.cpu }}, memory: {{ .Values.backend.resources.requests.memory }} }
+            limits: { cpu: {{ .Values.backend.resources.limits.cpu }}, memory: {{ .Values.backend.resources.limits.memory }} }
           readinessProbe:
-            httpGet:
-              path: /health
-              port: 5000
+            httpGet: { path: /health, port: 5000 }
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
-            tcpSocket:
-              port: 5000
+            tcpSocket: { port: 5000 }
             initialDelaySeconds: 10
             periodSeconds: 20
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
             allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp } # gunicorn worker_tmp_dir
+      volumes:
+        - name: tmp
+          emptyDir: {}
