@@ -32,3 +32,6 @@ __pycache__/
 
 # subagent-driven-development scratch (progress ledger, review packages)
 .superpowers/
+
+# Personal plain-language explainer (not part of the submission)
+EXPLAINER.md

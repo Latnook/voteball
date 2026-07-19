@@ -1,31 +1,41 @@
 # Voteball
 
-A public poll correlating football fandom with Israeli political-party voting,
-timed to the runup to the next Knesset election. Deployed on a single-EC2 k3s
-cluster at https://voteball.latnook.com.
+A public poll correlating **football fandom** with **Israeli political-party voting**, timed to the
+run-up to the next Knesset election. Live at **https://voteball.latnook.com** (when deployed), running on
+**Amazon EKS**.
 
-Bootstrapped from infra patterns proven in the `Rolling AWS Project files`
-(S3App) repo — see that repo's `docs/superpowers/specs/2026-07-11-voteball-design.md`
-for the full design rationale. From this initial commit onward, this repo is
-fully independent: no shared code, no shared Terraform state, no shared
-Ansible roles.
+## How the poll works
 
-## Architecture
+A visitor casts one ballot with three parts:
 
-Three containers on one k3s node:
+1. **Your teams** — pick the football club(s) you support: up to 3 specific clubs per league, across any
+   number of leagues (or just "this league, no specific club").
+2. **Last election** — did you vote, and for which party?
+3. **Next election** — who are you considering (up to 3 parties), or undecided?
 
-- **frontend** — nginx serving a static voting form and results dashboard
-  (plain HTML/CSS/vanilla JS, no build step), reverse-proxying `/api/*` to the backend.
-- **backend** — Flask app exposing the voting/results/admin API, backed by Postgres (RDS).
-- **worker** — periodically recomputes results rollups and sends milestone
-  notifications (SNS) as vote totals cross thresholds.
+The **results dashboard** then correlates the two: which parties a club's fans lean toward, how support
+splits by league, national totals, and analytics tabs (fan-base **diversity**, **political-lean**, and
+**vote-switch** between the last and next election). One vote per visitor (cookie-deduped).
 
-Provisioned by a standalone Terraform stack (`terraform/`) and deployed with a
-standalone Ansible playbook (`ansible-project/`) + Helm chart (`charts/voteball/`).
+## How it's built
+
+Three containers, plus managed AWS services:
+
+- **frontend** — nginx serving a static voting form + results dashboard (plain HTML/CSS/vanilla JS, no
+  build step), proxying `/api/*` to the backend.
+- **backend** — Flask/gunicorn API for voting, results, and admin, backed by **RDS** Postgres.
+- **worker** — recomputes results rollups on a loop and sends **SNS** milestone alerts as totals cross
+  thresholds; snapshots results to **S3**.
+
+It runs on **EKS** in a dedicated VPC: an **ALB Ingress** (HTTPS via **ACM**) fronts the app; secrets
+come from **Secrets Manager** via External Secrets Operator; images live in **ECR**; delivery is **GitOps**
+(ArgoCD) fed by a **GitHub Actions** pipeline (build → Trivy scan → ECR → auto-sync); monitoring is
+Prometheus/Grafana + CloudWatch.
 
 ## Documentation
 
-- `docs/plan.md` — the implementation plan this repo was built from, task by task.
-- `docs/deploy.md` — deploy/destroy runbook (provisioning, secrets, teardown).
-- `CLAUDE.md` — architecture notes, conventions, and commands for anyone (human or
-  agentic) working in this codebase.
+- **[`README.submission.md`](README.submission.md)** — the turn-in doc: architecture, run/verify/delete, security, trade-offs.
+- **[`docs/deploy.md`](docs/deploy.md)** — plain-language deploy/verify/teardown guide.
+- **[`docs/security.md`](docs/security.md)** — security design (IRSA, secrets, network, images, trade-offs).
+- **[`docs/eks/architecture.md`](docs/eks/architecture.md)** — architecture diagram.
+- **`CLAUDE.md`** — conventions and commands for anyone (human or agentic) working in this codebase.
