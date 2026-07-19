@@ -87,6 +87,7 @@
     - db.py
     - queries.py
     - gunicorn.conf.py
+    - migrate.py
     - schema.sql
     - seed.sql
 
@@ -103,6 +104,8 @@
     - db.py
     - rollups.py
     - alerts.py
+    - snapshots.py
+    - heartbeat.py
 
 - name: Copy nginx build context (image, not the templated config yet)
   copy:
