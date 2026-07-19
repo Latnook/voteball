@@ -22,6 +22,10 @@ spec:
           containers:
             - name: backup
               image: "{{ .Values.image.registry }}/voteball-backup:{{ .Values.image.tag }}"
+              env:
+                # aws-cli writes ~/.aws (config/cache); under readOnlyRootFilesystem, point HOME at
+                # the writable /tmp emptyDir or it fails with "Read-only file system: '/.aws'".
+                - { name: HOME, value: /tmp }
               envFrom:
                 - configMapRef: { name: app-config }   # DB_HOST/NAME/USER, S3_BUCKET
                 - secretRef: { name: app-secret }      # DB_PASS
