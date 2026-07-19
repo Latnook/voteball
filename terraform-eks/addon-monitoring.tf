@@ -22,9 +22,9 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "prometheus.prometheusSpec.resources.limits.memory"
     value = "900Mi"
   }
-  # Grafana admin password lives only in-cluster (a Secret); rotate for real use. Demo default below.
-  set {
-    name  = "grafana.adminPassword"
-    value = "voteball-admin" # demo only -- change / use a Secret for anything real
-  }
+  # NOTE: Grafana's admin password is deliberately NOT set here -- hardcoding it would put a credential
+  # in git and terraform.tfstate. The chart auto-generates a random password stored only in the
+  # in-cluster Secret. Retrieve it (Grafana UI is port-forward-only, never public) with:
+  #   kubectl get secret kube-prometheus-stack-grafana -n monitoring \
+  #     -o jsonpath='{.data.admin-password}' | base64 -d
 }
