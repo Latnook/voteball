@@ -1,0 +1,38 @@
+# Nightly pg_dump -> S3 backups/. Uses the backup SA (IRSA -> S3 backups/* only, no SNS). Per the
+# PDF's CronJob best practices: Forbid overlap, bounded history, restartPolicy Never.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: voteball-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels: { app: voteball-backup }
+        spec:
+          serviceAccountName: backup
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: "{{ .Values.image.registry }}/voteball-backup:{{ .Values.image.tag }}"
+              envFrom:
+                - configMapRef: { name: app-config }   # DB_HOST/NAME/USER, S3_BUCKET
+                - secretRef: { name: app-secret }      # DB_PASS
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: ["ALL"] }
+              volumeMounts:
+                - { name: tmp, mountPath: /tmp }
+          volumes:
+            - name: tmp
+              emptyDir: {}

@@ -24,5 +24,5 @@ build_push voteball-nginx   ansible-project/roles/frontend/files/nginx
 build_push voteball-backup  docker/backup
 
 echo
-echo "Pushed all three at tag: ${TAG}"
+echo "Pushed all images at tag: ${TAG}"
 echo "Set image.tag=\"${TAG}\" in charts/voteball/values.yaml"
