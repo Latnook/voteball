@@ -54,13 +54,11 @@ cd ..
 **2. Put the app's passwords into AWS's secret vault** (nothing secret ever goes in the code):
 
 ```bash
-aws secretsmanager put-secret-value --secret-id voteball/app-secret --region il-central-1 \
-  --secret-string '{"DB_USER":"postgres","DB_PASS":"<database password>","ADMIN_USERNAME":"admin",
-    "ADMIN_PASSWORD_HASH":"<admin password hash>","ADMIN_SESSION_SECRET":"<random text>"}'
+./scripts/seed-eks-secret.sh
 ```
-- `DB_PASS` must be the database password (the same one from the old `terraform/voteball.tfvars`).
-- Make an `ADMIN_PASSWORD_HASH` by running `python ansible-project/roles/backend/files/backend/scripts/hash_admin_password.py`.
-- `ADMIN_SESSION_SECRET` can be any long random text: `openssl rand -hex 32`.
+
+That's it — the script copies the app's passwords (database + admin login) from the project's encrypted
+secrets file straight into AWS, without ever showing them. You don't type any passwords.
 
 **3. Connect your computer to the cluster:**
 
