@@ -1,193 +1,178 @@
-# Deploy / destroy guide
+# Deploy / destroy guide (EKS)
 
-Verified end-to-end against a real deploy (2026-07-12): infra provisioned,
-site live over HTTPS, vote → rollup → results confirmed, admin sync
-confirmed. `terraform`, `ansible`/`ansible-vault`, `helm`, `ssh-keygen`
-required locally. The `latnook.com` Route 53 zone must already exist.
+How to deploy Voteball to Amazon EKS, verify it, and tear it down. Verified end-to-end against a real
+deploy (2026-07-19): cluster provisioned, app live over HTTPS at `voteball.latnook.com`, vote → rollup
+→ results confirmed, NetworkPolicy isolation + backup CronJob + pod-restart-stays-up all confirmed.
+
+**Required locally:** `terraform` (≥ 1.5), `aws` CLI (creds for account `590183895228`, region
+`il-central-1`), `kubectl`, `helm` (3.x), `docker`, `python3`. The `latnook.com` Route 53 zone must
+already exist. **This creates real, billed AWS resources** (~$200/mo while up: EKS control plane, NAT,
+2 Spot nodes, RDS, ALB) — treat every `apply`/deploy as a confirm-before-running step.
+
+> The old single-node **k3s** deployment (`terraform/` + `ansible-project/`) is **retired**. Its runbook
+> is this file's pre-EKS version in git history. This guide covers the EKS stack in `terraform-eks/` +
+> `charts/voteball/`.
+
+## What owns what (Terraform vs Helm — the boundary)
+
+- **Terraform (`terraform-eks/`)** creates all AWS infra + the cluster + platform add-ons:
+  dedicated VPC (public/private/DB subnets, single NAT), EKS cluster + managed Spot node group,
+  OIDC provider + hand-rolled **IRSA** roles (worker, backup) + community-helper IRSA roles (ALB
+  controller, ESO, Cluster Autoscaler, CloudWatch, external-dns), ECR repos, ACM cert (DNS-validated),
+  S3 bucket, Secrets Manager secret **container** (placeholder only), SNS topic, RDS (restored from
+  snapshot), the VPC CNI **network-policy** enablement, and every platform add-on installed via
+  `helm_release`/`aws_eks_addon` (AWS Load Balancer Controller, External Secrets Operator, Cluster
+  Autoscaler, Node Termination Handler, CloudWatch Container Insights, metrics-server, external-dns).
+- **Helm (`charts/voteball`)** creates the **app** in namespace `devops-app`: the 3 Deployments,
+  Services, Ingress (→ ALB), ConfigMap, ExternalSecret (ESO source), 4 ServiceAccounts (worker/backup
+  IRSA-annotated), NetworkPolicies, HPA, PDBs, and the nightly backup CronJob.
+- **Manual, out-of-band:** seeding the real secret values into Secrets Manager (below) and pinning the
+  image tag / RDS endpoint in `values.yaml`. These are deliberate manual ops — see each step.
 
 ## Setup (once per checkout)
 
 ```bash
-# 1. EC2 key pair
-ssh-keygen -t ed25519 -f Voteball-EC2-pem -N "" -C "voteball-ec2"
-mv Voteball-EC2-pem Voteball-EC2-pem.pem
-chmod 400 Voteball-EC2-pem.pem
-
-# 2. Terraform variables
-cd terraform
-cp voteball.tfvars.example voteball.tfvars
-# edit: ssh_allowed_cidr (curl -s https://checkip.amazonaws.com), db_password, notification_email
-cd ..
-
-# 3. Ansible vault password + secrets
-cd ansible-project
-openssl rand -hex 32 > .vault_pass
-cp inventories/voteball/group_vars/all/secrets.yml.example inventories/voteball/group_vars/all/secrets.yml
-# edit secrets.yml: db_pass (must match voteball.tfvars' db_password), admin_username,
-# admin_password_hash (generate via ansible-project/roles/backend/files/backend/scripts/hash_admin_password.py),
-# admin_session_secret (openssl rand -hex 32)
-ansible-vault encrypt inventories/voteball/group_vars/all/secrets.yml --vault-password-file .vault_pass
+# terraform-eks variables (only notification_email is required)
+cd terraform-eks
+cp voteball-eks.tfvars.example voteball-eks.tfvars
+# edit voteball-eks.tfvars: notification_email = "you@example.com"
+# (optional, recommended for prod) set cluster_endpoint_public_access_cidrs to your operator/CI CIDR
 cd ..
 ```
 
-**Redeploying an existing installation?** This admin-auth migration is a breaking change: the
-backend container now requires `ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`/`ADMIN_SESSION_SECRET` and no
-longer reads `ADMIN_SECRET` at all. Before the next `ansible-playbook` run, edit the real
-`secrets.yml` (`ansible-vault edit inventories/voteball/group_vars/all/secrets.yml
---vault-password-file .vault_pass`) to replace `admin_secret` with the three new keys — otherwise the
-backend pod will crash-loop on missing env vars.
-
-**Back up these 4 files somewhere other than this disk** (a password manager entry
-is enough — they're all small text/key files): `Voteball-EC2-pem.pem`,
-`terraform/voteball.tfvars`, `ansible-project/.vault_pass`, and
-`terraform/terraform.tfstate` (once it exists, after your first `apply`).
-None of them are in git (by design — they're secrets or machine-specific
-state) and none of them are recoverable if this machine is lost. In
-particular: `.vault_pass` is the only thing that can decrypt `secrets.yml`
-— if it's gone, the encrypted file in the repo is permanently unreadable,
-no exceptions, and you'd be starting over with new secrets and new infra.
+The EKS stack uses **local Terraform state** (`terraform-eks/terraform.tfstate`, gitignored) — back it
+up (a copy in a password manager is enough) along with `voteball-eks.tfvars`. Losing the state means
+cleaning up billed resources by hand.
 
 ## Deploy
 
 ```bash
-# 1. Check for a snapshot from a prior destroy (restores it if found, see below)
-./scripts/find-latest-snapshot.sh
-
-# 2. Provision AWS infrastructure (billed resources — review the plan first)
-cd terraform
+# 1. Provision everything (VPC, EKS, node group, IRSA, ECR, ACM, S3, Secrets Manager, SNS, RDS,
+#    + all platform add-ons + VPC CNI network policy). RDS restores from the snapshot pinned in
+#    var.db_snapshot_identifier so votes survive; set it to null for a fresh empty DB. Update the
+#    pin to the newest snapshot after a prior destroy (aws rds describe-db-snapshots ...).
+cd terraform-eks
 terraform init
-terraform plan -var-file=voteball.tfvars
-terraform apply -var-file=voteball.tfvars
+terraform plan  -var-file=voteball-eks.tfvars    # review the billed resources
+terraform apply -var-file=voteball-eks.tfvars     # ~15-20 min (EKS control plane + node group + RDS)
 cd ..
-
-# 3. Generate the Ansible inventory from live Terraform outputs
-./scripts/generate-inventory.sh
-
-# 4. Install Docker/k3s and deploy the Helm chart
-cd ansible-project
-ansible-playbook site-k3s.yml
-cd ..
-
-# 5. Verify
-curl -sf https://voteball.latnook.com/api/options
 ```
 
-Re-running `ansible-playbook site-k3s.yml` is also the normal update path
-after a code change.
+On a **cold** apply the in-stack `helm`/`kubernetes` providers authenticate to a cluster that doesn't
+exist yet; if the first `apply` errors initializing them (or on an add-on `helm_release`), simply
+**re-run `terraform apply`** — the cluster now exists and the add-ons install on the second pass.
 
-Use `/api/options` to verify, not `/api/health` — `/health` is the
-in-cluster k8s probe route only, not exposed through nginx.
+The `apply` can hit a first-run ordering race where the CloudWatch add-on is created before the ALB
+controller's webhook is ready (`AdmissionRequestDenied ... aws-load-balancer-webhook-service`); a
+`depends_on` in `addon-cloudwatch.tf` prevents it on a clean apply. If a stale apply left the add-on
+`CREATE_FAILED`, `aws eks delete-addon --cluster-name voteball --addon-name
+amazon-cloudwatch-observability`, `terraform state rm aws_eks_addon.cloudwatch`, then re-apply.
 
-After the first `apply`, confirm the SNS email subscription (check
-`notification_email`'s inbox for a confirmation link) or milestone alerts
-won't be delivered:
 ```bash
-cd terraform
-TOPIC_ARN=$(terraform output -raw sns_topic_arn)
-cd ..
-aws sns list-subscriptions-by-topic --topic-arn "$TOPIC_ARN" --region il-central-1
+# 2. MANUAL OP — seed the real app secret into Secrets Manager (no secret values ever go in git or
+#    terraform state; Terraform only made the empty container). DB_PASS must match the RDS master
+#    password (= the k3s db_password baked into the restored snapshot). Generate an admin hash with
+#    ansible-project/roles/backend/files/backend/scripts/hash_admin_password.py.
+aws secretsmanager put-secret-value --secret-id voteball/app-secret --region il-central-1 \
+  --secret-string '{"DB_USER":"postgres","DB_PASS":"<restored-rds-master-pw>","ADMIN_USERNAME":"admin",
+    "ADMIN_PASSWORD_HASH":"<werkzeug hash>","ADMIN_SESSION_SECRET":"<openssl rand -hex 32>"}'
+
+# 3. Point kubectl at the cluster
+aws eks update-kubeconfig --name voteball --region il-central-1
+
+# 4. Build + push the container images to ECR (git-SHA tagged), then pin that tag in the chart
+./scripts/build-push-ecr.sh            # builds+pushes backend/worker/nginx/backup at $(git rev-parse --short HEAD)
+# edit charts/voteball/values.yaml: image.tag = the printed SHA
+
+# 5. Pin the RDS endpoint in the chart
+terraform -chdir=terraform-eks output -raw rds_endpoint    # -> voteball-eks-db.<...>.rds.amazonaws.com
+# edit charts/voteball/values.yaml: config.DB_HOST = that endpoint
+
+# 6. Deploy the app
+helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
+
+# 7. Confirm the SNS email subscription (check notification_email's inbox for the confirmation link)
+aws sns list-subscriptions-by-topic --region il-central-1 \
+  --topic-arn "$(terraform -chdir=terraform-eks output -raw sns_topic_arn)"
+```
+
+**Re-deploying after a code change:** rebuild+push (step 4), bump `image.tag`, `helm upgrade`. The
+backend bootstraps its own schema idempotently on pod start (gunicorn `on_starting`) — there is no
+migration Job (a pre-install hook can't read the ESO-synced secret; see Gotchas).
+
+## Verify
+
+```bash
+# Cluster + app
+kubectl get nodes                                   # 2 Ready
+kubectl get pods -n devops-app                      # backend x2, frontend x2, worker, all Running
+kubectl get ingress,hpa,pdb,cronjob,networkpolicy -n devops-app
+
+# Public HTTPS (external-dns creates the Route53 alias to the ALB; allow a few min to propagate)
+curl -sf https://voteball.latnook.com/                       # 200
+curl -sf https://voteball.latnook.com/api/options | head -c 200   # leagues/clubs/parties
+curl -sf "https://voteball.latnook.com/api/results?by=all"        # national totals
+
+# Secret sync (ESO -> K8s Secret)
+kubectl get externalsecret -n devops-app            # STATUS SecretSynced, READY True
+
+# NetworkPolicy isolation: worker MUST NOT reach backend (only frontend may)
+kubectl exec -n devops-app deploy/worker -- sh -c 'wget -qO- --timeout=5 http://backend:5000/health || echo BLOCKED'
+
+# Backup CronJob: trigger once, confirm a .sql.gz lands under backups/
+kubectl create job --from=cronjob/voteball-backup backup-test -n devops-app
+kubectl wait --for=condition=complete job/backup-test -n devops-app --timeout=120s
+aws s3 ls s3://voteball-rollups-590183895228/backups/ --region il-central-1
+
+# Pod-restart-stays-up: delete ONE frontend pod (by name), the other keeps serving
+kubectl delete pod -n devops-app "$(kubectl get pod -n devops-app -l app=frontend -o jsonpath='{.items[0].metadata.name}')"
 ```
 
 ## Destroy
 
 ```bash
-cd terraform
-# Refresh the final-snapshot name in state first -- see Gotchas below for why
-# a bare `terraform destroy -var=...` isn't enough on its own.
-terraform apply -auto-approve -target=module.database.aws_db_instance.main \
-  -var-file=voteball.tfvars -var="db_final_snapshot_suffix=$(date +%Y%m%d%H%M%S)"
-terraform destroy -var-file=voteball.tfvars
+# 1. Remove the app first (this deletes the Ingress -> the ALB controller de-provisions the ALB).
+helm uninstall voteball -n devops-app
+
+# 2. Destroy the infra. The helm/kubernetes providers authenticate to the cluster, so the cluster
+#    must still exist while their helm_releases are destroyed — Terraform orders this correctly.
+cd terraform-eks
+terraform destroy -var-file=voteball-eks.tfvars
 cd ..
 ```
 
-Deletes everything: EC2, RDS, EIP, Route 53 record, IAM, SNS. RDS takes a
-**final snapshot before deleting** (the `apply -target` step above gives it
-a unique name so repeated destroys don't collide — don't skip it). Don't
-lose `terraform.tfstate` or `voteball.tfvars` (gitignored, local-only) or
-you'll be cleaning up by hand.
+Deletes the cluster, node group, add-ons, VPC/NAT, ECR, ACM, S3, SNS, and RDS. The EKS RDS uses
+`skip_final_snapshot = true` (it's a throwaway copy — the k3s snapshot restored in step 1 of Deploy is
+the source of truth), so **votes cast on EKS are not preserved on destroy** unless you snapshot first.
+Back up `terraform-eks/terraform.tfstate` and `voteball-eks.tfvars` (gitignored, local-only).
 
-## Redeploying after a destroy
+## Gotchas (all hit for real during the EKS build, 2026-07-19)
 
-Just re-run **Deploy** from `find-latest-snapshot.sh` — skip **Setup**
-entirely, none of it needs repeating (SSH key, tfvars, vault password,
-secrets.yml all still exist locally). Only check that `ssh_allowed_cidr`
-still matches your current IP.
-
-`find-latest-snapshot.sh` finds the snapshot from the last destroy and
-restores from it automatically — **votes are not lost**. To manage
-individual votes instead of wiping the whole database, use the admin
-endpoints: `GET /api/admin/votes` to list, `DELETE /api/admin/votes/<id>`
-to remove one (both need a Bearer token from `POST /api/admin/login`). To
-force a genuinely empty
-database on a specific redeploy instead, delete
-`terraform/snapshot.auto.tfvars` before running `terraform apply`.
-
-Expect, automatically, no action needed: a new public IP (DNS updates
-itself, allow a few minutes to propagate) and a fresh TLS cert issuance.
-
-## Gotchas
-
-- **Check `ami_id` is actually what its description claims** before trusting
-  it (`aws ec2 describe-images --image-ids <ami> --query 'Images[0].Name'`) —
-  we once inherited a mislabeled AMI that was secretly a different project's
-  server image.
-- **`t3.small` can CPU-throttle mid-deploy** (burstable instance, credits
-  exhausted by Docker+k3s install + 3 image builds). Default is `t3.medium`.
-- Ansible copies an **explicit file list** for the backend/worker build
-  contexts, not a whole directory — so a stray local `.venv` from running
-  `pytest` won't get shipped to the server.
-- **The frontend has the mirror-image problem**: Ansible ships the *whole*
-  `files/nginx/` directory to the node, but `files/nginx/Dockerfile` itself
-  `COPY`s files by explicit name into the image. A new frontend file (new
-  `.js`/`.css`/`.html`) that isn't added to that `COPY` line gets shipped to
-  the node and then silently dropped at image-build time — no error, just a
-  404 for that file once deployed. Shipped once for real (`i18n.js`, fixed
-  in `d02e255`) before being caught by testing the live site after deploy.
-- **`terraform destroy -var="db_final_snapshot_suffix=..."` alone does not give you a fresh
-  snapshot name.** `final_snapshot_identifier` is a plain resource argument, and `destroy`
-  deletes using the value already recorded in **state from the last `apply`** — it does not
-  recompute the argument from a `-var` passed to `destroy` itself. Routine `apply` runs never
-  pass that var (only the old `destroy` docs did), so the suffix baked into state is almost
-  always still the `"manual"` default. If a snapshot named `voteball-db-final-manual` already
-  exists from an earlier destroy, every later destroy then fails with
-  `DBSnapshotAlreadyExists: Cannot create the snapshot ... already exists`, no matter what
-  `-var` you pass on that destroy call. Fix: `terraform apply -target=module.database.aws_db_instance.main`
-  with a fresh `-var` first (verified as a true no-op otherwise: `0 to add, 1 to change, 0 to
-  destroy`, only `final_snapshot_identifier` moves) to write the new name into state, *then*
-  destroy. Hit for real on 2026-07-15; the **Destroy** section above now does this by default.
-- **The next deploy must skip the current RDS snapshot — it predates the club-name
-  uniqueness migration and still has the duplicate rows that migration fixes.** This
-  branch's `clubs.domestic_league_id` work adds `CREATE UNIQUE INDEX ... clubs_name_en_uidx`
-  to `schema.sql`, which `db.py`'s `init_db` runs unconditionally on backend startup. The
-  most recent snapshot was taken before this branch existed, so it still has real duplicate
-  club rows (e.g. two "Arsenal" rows, one per league) — `seed.sql`'s `ON CONFLICT DO NOTHING`
-  only guards fresh inserts, it does nothing about rows already committed in a restored
-  snapshot. Restoring it will make `CREATE UNIQUE INDEX` hit a `UniqueViolation` during
-  schema init (before `app.run`), crash-looping the backend pod. Since no votes exist yet,
-  the fix is to not restore that snapshot: delete `terraform/snapshot.auto.tfvars` before
-  the next `terraform apply` (see "Redeploying after a destroy" above — same mechanism used
-  there to force a fresh empty database) so the database initializes from this branch's
-  already-deduplicated `seed.sql` instead. This is a one-time step for the deploy that first
-  picks up this migration, not a standing requirement.
-- **The snapshot/restore mechanism (added 2026-07-12) hasn't been exercised
-  through a real destroy→apply cycle yet** — `terraform validate` passes and
-  the "no snapshot exists" path is confirmed against real AWS, but the
-  actual restore-from-snapshot path will get its first real test on your
-  next destroy/redeploy. If it doesn't work as expected, `snapshot_identifier`
-  is in `lifecycle.ignore_changes` on the RDS resource (`terraform/modules/database/main.tf`)
-  specifically so a bad restore doesn't force-replace the DB on a later
-  unrelated `apply` — worth knowing if you need to debug it.
-- **A changing home IP mid-deploy silently kills SSH, and looks nothing like an auth
-  problem.** `ssh_allowed_cidr` in `voteball.tfvars` locks the EC2 security group's port 22
-  rule to whatever IP you had at `apply` time. If your ISP/router reassigns your public IP
-  partway through a long `ansible-playbook site-k3s.yml` run (this one takes 15-20+ minutes —
-  Docker+k3s install, three image builds, then Helm), every subsequent SSH attempt — Ansible's
-  and a manual `ssh` alike — hits `ssh: connect to host ... port 22: Connection timed out`.
-  That's a **security-group silent drop**, not a refused connection or a credentials issue, so
-  it's easy to misdiagnose as host-side trouble (CPU throttling, a hung sudo prompt, etc.) —
-  AWS's own instance/system status checks stay green throughout, since they don't depend on
-  your source IP at all. Symptom check: if `curl -s https://checkip.amazonaws.com` now returns
-  a different address than what's in `ssh_allowed_cidr`, that's the cause. Fix: update
-  `ssh_allowed_cidr` to the current IP and re-`apply` (or add a temporary wider rule), then
-  re-run `ansible-playbook site-k3s.yml` — it's idempotent, safe to resume from wherever it
-  stopped. Hit for real on 2026-07-16.
+- **Pin the EKS version to a *standard-support* release.** Extended support costs 5× ($0.50 vs
+  $0.10/hr). Verify with `aws eks describe-cluster-versions --region il-central-1`; `var.cluster_version`
+  is `1.34`. (1.30–1.32 had already aged into extended support.)
+- **This stack pins `aws ~> 5.0`, not the k3s stack's `~> 6.0`.** The `terraform-aws-modules/eks` v20
+  module caps the AWS provider at `< 6.0.0`. Independent stack = independent lock, so the skew is
+  harmless. Adding the EKS module also needs `terraform init -upgrade` (it pulls `cloudinit/null/time/tls`).
+- **Community chart/add-on versions drift fast** — verify each against the cluster version at deploy
+  time (`helm search repo <chart> --versions`, `aws eks describe-addon-versions`). The pins in
+  `terraform-eks/*.tf` and `charts/voteball/values.yaml` were correct on 2026-07-19; newer may exist.
+- **NetworkPolicy egress must allow the *Service CIDR* (`172.20.0.0/16`), not just the VPC
+  (`10.0.0.0/16`).** The frontend reaches `backend` via its Service ClusterIP (172.20.x), which the VPC
+  CNI policy agent evaluates before DNAT-to-pod-IP. Without it the site loads but `/api/*` hangs (nginx
+  `499`) and shows no data. (RDS works on the VPC allow because that's a direct pod→RDS-IP connection.)
+  The VPC CNI network-policy engine must also be *enabled* (`enableNetworkPolicy=true` on the vpc-cni
+  addon) or policies are silently ignored. Kubelet health probes are exempt (pods stay Ready).
+- **The backup CronJob needs `HOME=/tmp`.** Under `readOnlyRootFilesystem`, the AWS CLI can't write its
+  `~/.aws` config/cache (`[Errno 30] Read-only file system: '/.aws'`). `HOME=/tmp` (the writable
+  emptyDir) fixes it.
+- **ALB `target-type: ip` throws a transient 502 on pod delete** as it deregisters the dead pod's IP.
+  The frontend has a `preStop: sleep 15` + `terminationGracePeriodSeconds: 30` so it keeps serving
+  while the ALB deregisters it.
+- **No migration Job — schema bootstrap is the backend's `on_starting` hook.** A Helm pre-install hook
+  Job can't get the DB password: it comes from the ESO ExternalSecret, populated asynchronously as a
+  normal (post-hook) resource, so `app-secret` doesn't exist at pre-install time. `on_starting` is
+  idempotent and runs after the pod (and the synced secret) are up; on a restored DB it's a near no-op.
+- **`terraform apply` writes secret placeholders, never real values.** The Secrets Manager container is
+  created with `lifecycle { ignore_changes = [secret_string] }`; the real values are seeded by hand
+  (Deploy step 2) so nothing sensitive lands in `terraform.tfstate`.
