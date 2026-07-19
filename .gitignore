@@ -15,6 +15,7 @@ terraform-eks/voteball-eks.tfvars
 terraform-eks/terraform.tfstate
 terraform-eks/terraform.tfstate.backup
 terraform-eks/.terraform.tfstate.lock.info
+terraform-eks/tfplan
 terraform-eks/.terraform/
 
 # Ansible: secrets.yml is committed ENCRYPTED via ansible-vault — only the
