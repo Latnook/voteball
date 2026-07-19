@@ -27,4 +27,11 @@ resource "aws_eks_addon" "cloudwatch" {
   addon_name               = "amazon-cloudwatch-observability"
   addon_version            = "v6.3.0-eksbuild.1" # verified for K8s 1.34 via aws eks describe-addon-versions (2026-07-19)
   service_account_role_arn = module.cloudwatch_irsa.iam_role_arn
+
+  # The ALB controller installs a cluster-wide mutating webhook on Services. Without this dependency,
+  # Terraform creates this add-on in PARALLEL with the ALB release, and the add-on's Service can hit
+  # the webhook before its backend pods are Ready -> AdmissionRequestDenied (hit once on first apply,
+  # 2026-07-19). Depending on the ALB release (helm waits for its Deployment to be available) forces
+  # the webhook backend to exist before this add-on creates any Service.
+  depends_on = [helm_release.aws_load_balancer_controller]
 }
