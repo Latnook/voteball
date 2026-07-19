@@ -9,5 +9,13 @@ terraform {
       # with the k3s stack is harmless. v5 covers everything this stack + Plan 2b/3 use.
       version = "~> 5.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.17" # 2.x keeps the nested `kubernetes {}` block used in providers-k8s.tf (v3 changed syntax)
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.31"
+    }
   }
 }
