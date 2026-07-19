@@ -47,3 +47,8 @@ output "backup_role_arn" {
   description = "IRSA role ARN to annotate onto the devops-app:backup service account (Plan 3)."
   value       = aws_iam_role.backup.arn
 }
+
+output "rds_endpoint" {
+  description = "EKS RDS endpoint host (for the app ConfigMap DB_HOST)."
+  value       = aws_db_instance.app.address
+}

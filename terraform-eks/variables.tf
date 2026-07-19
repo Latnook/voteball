@@ -79,3 +79,10 @@ variable "notification_email" {
   description = "Email subscribed to the SNS milestone-alert topic."
   type        = string
 }
+
+variable "db_snapshot_identifier" {
+  # Restore votes from the k3s final snapshot. Set to null for a fresh empty DB instead.
+  description = "RDS snapshot to restore the EKS database from (null = fresh empty DB)."
+  type        = string
+  default     = "voteball-db-final-20260719175321"
+}
