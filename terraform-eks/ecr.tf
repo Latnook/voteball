@@ -8,6 +8,7 @@ resource "aws_ecr_repository" "app" {
   for_each             = toset(local.ecr_repos)
   name                 = "${var.cluster_name}-${each.key}"
   image_tag_mutability = "IMMUTABLE" # git-SHA tags are unique; immutability prevents silent overwrite
+  force_delete         = true        # let `terraform destroy` remove repos that still hold images (images rebuild from git)
 
   image_scanning_configuration {
     scan_on_push = true
