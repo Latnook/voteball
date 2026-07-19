@@ -137,7 +137,7 @@ resource "helm_release" "metrics_server" {
   name       = "metrics-server"
   repository = "https://kubernetes-sigs.github.io/metrics-server/"
   chart      = "metrics-server"
-  version    = "3.12.2" # verify via `helm search repo metrics-server/metrics-server --versions`
+  version    = "3.13.1" # verified for K8s 1.34 via `helm search repo` on 2026-07-19
   namespace  = "kube-system"
 }
 
@@ -148,7 +148,7 @@ resource "helm_release" "node_termination_handler" {
   name       = "aws-node-termination-handler"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-node-termination-handler"
-  version    = "0.27.1" # verify via `helm search repo eks/aws-node-termination-handler --versions`
+  version    = "0.21.0" # verified latest via `helm search repo` on 2026-07-19 (app v1.19.0)
   namespace  = "kube-system"
 
   set {
@@ -210,7 +210,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   name       = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  version    = "1.8.1" # verify via `helm search repo eks/aws-load-balancer-controller --versions`
+  version    = "3.4.2" # verified latest via `helm search repo` on 2026-07-19 (app v3.4.2)
   namespace  = "kube-system"
 
   set {
@@ -294,7 +294,7 @@ resource "helm_release" "external_secrets" {
   name             = "external-secrets"
   repository       = "https://charts.external-secrets.io"
   chart            = "external-secrets"
-  version          = "0.10.4" # verify via `helm search repo external-secrets/external-secrets --versions`
+  version          = "2.8.0" # verified latest via `helm search repo` on 2026-07-19 (app v2.8.0)
   namespace        = "external-secrets"
   create_namespace = true
 
@@ -358,7 +358,7 @@ resource "helm_release" "cluster_autoscaler" {
   name       = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "9.37.0" # verify via `helm search repo autoscaler/cluster-autoscaler --versions`
+  version    = "9.58.0" # verified latest via `helm search repo` on 2026-07-19 (app v1.35.0)
   namespace  = "kube-system"
 
   set {
