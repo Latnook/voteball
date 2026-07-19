@@ -5,7 +5,7 @@ image:
 
 # Non-secret config -> ConfigMap app-config. DB_HOST is the Plan-3a RDS endpoint (set in Task 1/7).
 config:
-  DB_HOST: "REPLACE_WITH_terraform_output_rds_endpoint"
+  DB_HOST: "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com"
   DB_NAME: "postgres"
   DB_USER: "postgres"
   DB_SSLMODE: "require"

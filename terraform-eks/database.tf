@@ -33,6 +33,12 @@ resource "aws_db_instance" "app" {
   db_subnet_group_name   = aws_db_subnet_group.app.name
   vpc_security_group_ids = [aws_security_group.rds.id]
   publicly_accessible    = false
-  skip_final_snapshot    = true # throwaway demo DB (the k3s snapshot is the source of truth)
-  apply_immediately      = true
+  storage_encrypted      = true # inherited from the encrypted snapshot; stated explicitly for clarity
+
+  # Demo-DB trade-offs (documented in docs/security.md; a production cutover would flip these):
+  #   skip_final_snapshot=true    -> this is a throwaway copy; the k3s snapshot is the source of truth
+  #   deletion_protection off      -> stack is torn down between sessions
+  #   single-AZ, credentials reused -> cost + parallel-demo simplicity (user chose credential reuse)
+  skip_final_snapshot = true
+  apply_immediately   = true
 }
