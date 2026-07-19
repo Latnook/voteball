@@ -45,14 +45,16 @@ jobs:
             docker build -t "${REGISTRY}/${repo}:${TAG}" "${CTX[$repo]}"
           done
 
-      - name: Trivy scan (fail on CRITICAL/HIGH)
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: image
-          image-ref: ${{ env.REGISTRY }}/voteball-backend:${{ env.TAG }}
-          severity: CRITICAL,HIGH
-          exit-code: "1"
-          ignore-unfixed: true
+      - name: Trivy scan ALL images (fail on CRITICAL/HIGH)
+        run: |
+          set -euo pipefail
+          for repo in voteball-backend voteball-worker voteball-nginx voteball-backup; do
+            echo "::group::trivy ${repo}"
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:0.58.1 image --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed \
+              "${REGISTRY}/${repo}:${TAG}"
+            echo "::endgroup::"
+          done
 
       - name: Push images
         run: |

@@ -24,9 +24,11 @@ data "aws_iam_policy_document" "github_actions_trust" {
       values   = ["sts.amazonaws.com"]
     }
     condition {
-      test     = "StringLike"
+      # Scoped to the master branch only (the CI workflow's sole trigger) -- not a bare :* that would
+      # let any branch/tag/PR in the repo assume this ECR-push role.
+      test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:Latnook/voteball:*"] # this repo only (any branch/tag)
+      values   = ["repo:Latnook/voteball:ref:refs/heads/master"]
     }
   }
 }
