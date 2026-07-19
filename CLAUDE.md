@@ -177,6 +177,16 @@ confirm-before-running step, not something to run automatically.
 
 ### Backend (`ansible-project/roles/backend/files/backend/`)
 
+**Adding a new backend or worker source file requires updating TWO lists, not one:** the
+service's `Dockerfile` `COPY` line **and** the explicit per-file `loop:` in
+`ansible-project/roles/k3s/tasks/main.yml` ("Copy backend build context" / "Copy worker build
+context"). The k3s role deliberately ships an explicit file list (not a directory copy, to avoid
+dragging local `.venv`/`__pycache__` into the build context), so a file the Dockerfile references
+but Ansible didn't copy is **absent on the node** and `docker build` fails there with
+`"/<file>": not found` — even though a local `docker build` succeeds (every file is present
+locally). This is the backend/worker analogue of the frontend Dockerfile-`COPY` gap noted below;
+it shipped once (`migrate.py`, fixed in `4c56d04`).
+
 Tests run TDD-style against a **real** Postgres, not mocks:
 
 ```bash
