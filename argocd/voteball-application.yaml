@@ -1,0 +1,24 @@
+# ArgoCD watches the public repo's charts/voteball on master and keeps devops-app in sync.
+# ServerSideApply adopts the resources helm already created (no delete/redeploy, so the ALB is not
+# re-provisioned). prune+selfHeal make git the source of truth going forward.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: voteball
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Latnook/voteball
+    targetRevision: master
+    path: charts/voteball
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: devops-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true   # adopt existing helm-created resources in place
+      - CreateNamespace=false  # devops-app already exists
