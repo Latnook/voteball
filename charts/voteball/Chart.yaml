@@ -1,6 +1,6 @@
 apiVersion: v2
 name: voteball
-description: Voteball backend/frontend/worker Deployments and Services for the k3s single-node cluster
+description: Voteball frontend/backend/worker on EKS (Ingress/ALB, ESO secrets, IRSA)
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "1.0"
