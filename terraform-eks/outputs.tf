@@ -52,3 +52,8 @@ output "rds_endpoint" {
   description = "EKS RDS endpoint host (for the app ConfigMap DB_HOST)."
   value       = aws_db_instance.app.address
 }
+
+output "github_actions_role_arn" {
+  description = "IAM role ARN GitHub Actions assumes via OIDC (set as the repo variable AWS_ROLE_ARN)."
+  value       = aws_iam_role.github_actions.arn
+}
