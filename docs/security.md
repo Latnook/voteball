@@ -47,8 +47,10 @@ Autoscaler to this cluster's ASG only; ESO to the one app secret only.
   `ConfigMap`; only the passwords are a `Secret`. No secret is ever in a ConfigMap.
 - **Grafana / ArgoCD:** neither admin password is hardcoded; both are chart-auto-generated and live only
   in in-cluster Secrets, retrieved on demand.
-- **CI:** GitHub Actions uses **OIDC federation** to a repo-scoped IAM role — **no long-lived AWS keys**
-  are stored in GitHub. The role ARN (not a secret) is a repo *variable*.
+- **CI:** the Jenkins build host authenticates through an **IAM instance profile** — see below. **No AWS
+  key material exists anywhere**: not in Jenkins' credentials store, not in git, not on the host's disk.
+  Jenkins holds exactly two credentials of its own, a GitHub deploy key and the webhook shared secret,
+  both entered through the UI and stored in Jenkins' encrypted credentials store.
 
 **The honest caveat (documented, not hidden):** the repo is public, and until 2026-07-20 it carried the
 retired k3s Ansible vault (`secrets.yml`) as `AES256` ciphertext. Its 256-bit password (`.vault_pass`)
@@ -125,6 +127,74 @@ cache, and the backup job's aws-cli config).
   third-party `backup` image is scanned in report-only mode (its CVEs are upstream Go-tooling issues
   outside our control — see Trade-offs).
 
+## CI build host (Jenkins)
+
+CI runs on a dedicated EC2 host built by `terraform/jenkins/` — a separate Terraform stack, in the
+region's **default VPC**, not the application VPC. Design rationale:
+[`docs/design/2026-07-20-jenkins-migration-design.md`](design/2026-07-20-jenkins-migration-design.md).
+
+### Identity: instance profile, not federation
+
+The host carries an IAM role attached to the instance itself, so the AWS CLI picks up **temporary**
+credentials from the instance metadata service. There is no OIDC provider, no `configure-aws-credentials`
+step, and **no stored key material** — which is the same property the previous CI federation gave, reached
+a simpler way, because the compute is ours.
+
+The role allows `ecr:GetAuthorizationToken` plus the ECR layer-upload set on `repository/voteball-*`, and
+**nothing else — no EKS, RDS, S3, SNS or Secrets Manager**. Verified on the live host:
+`aws ecr get-login-password` succeeds and `aws eks list-clusters` returns `AccessDeniedException`.
+
+**IMDSv2 is required** (`http_tokens = "required"`), so a server-side request forgery against something
+running on the host cannot trivially read those credentials.
+
+**Jenkins holds no cluster access at all.** It stops at "push images and commit the new tag"; ArgoCD does
+the deploying. This is the same boundary the GitOps model already gave us, and it means replacing or
+compromising CI never reaches the cluster.
+
+### Network posture
+
+| Direction | Port | Source / destination | Purpose |
+|---|---|---|---|
+| inbound | 8080 | GitHub's hook CIDRs only, fetched from `api.github.com/meta` at apply time | receive push webhooks |
+| inbound | 22 | the maintainer's IP as a `/32` | SSH tunnel to the UI |
+| outbound | all | anywhere | ECR, GitHub, Docker Hub, ghcr.io, OS packages |
+
+**The Jenkins UI is never publicly reachable.** Access is `ssh -L 8080:localhost:8080`; tunnelled traffic
+arrives from `localhost` and so is never evaluated against the security group. Verified: `curl` to port
+8080 from the maintainer's own IP times out.
+
+The property that makes this defensible is that exactly **one** thing in the world can initiate a
+connection to this host, and it is GitHub.
+
+### Two accepted positions, stated rather than left implicit
+
+- **Egress is unrestricted.** Docker Hub, ghcr.io and GitHub publish wide and frequently changing IP
+  ranges. An egress allowlist against them would break builds regularly without meaningfully constraining
+  an attacker who already has code execution on a build host. Standard practice, and a deliberate choice.
+- **The webhook is plain HTTP, authenticated by a shared secret rather than by TLS.** Jenkins verifies the
+  HMAC signature GitHub attaches to every delivery, so an unsigned or wrongly signed request is rejected
+  (verified: signed → 200, unsigned → 400). The payload contains no secrets, and the signature is what
+  actually establishes authenticity — TLS would add confidentiality for a public commit notification, at
+  the price of a certificate lifecycle on a host with no DNS name.
+
+### Accepted risk: `docker` group membership is effectively root
+
+The `jenkins` user is in the `docker` group so it can build images. Anyone who can define or edit a
+Jenkins job can therefore run a privileged container and take the host. This is **inherent** to building
+container images on a Jenkins agent, not something this setup got wrong.
+
+It is mitigated by there being **no inbound access to the host except GitHub's webhook** — no public UI,
+no other open port — and by Jenkins requiring authentication. It is also bounded by the previous section:
+the worst an attacker on this host gains is ECR push on four repositories and a deploy key for one
+repository. No cluster, no database, no secrets.
+
+### Blast radius of the credentials Jenkins does hold
+
+- **GitHub deploy key** — repository-scoped, chosen over a personal access token precisely because a PAT
+  covers the whole account. Compromise loses exactly this repository.
+- **Webhook shared secret** — lets an attacker trigger builds. It cannot make Jenkins build code that is
+  not on `master`.
+
 ## RBAC
 
 The app uses namespace-scoped ServiceAccounts with no bound Roles beyond Kubernetes defaults (the app
@@ -145,5 +215,8 @@ change them:
 | NAT gateway | Single (one AZ) | One per AZ |
 | Trivy on backup image | Report-only (upstream third-party CVEs) | Pin/patch a controlled base or waive CVEs explicitly |
 | Grafana/ArgoCD UIs | port-forward only, chart-default passwords | SSO, private ingress, rotated secrets |
+| Jenkins webhook | Plain HTTP, authenticated by HMAC shared secret | TLS in front of Jenkins (ALB/reverse proxy + ACM) |
+| Jenkins host access | SSH tunnel on port 22 from one IP | SSM Session Manager, port 22 closed entirely |
+| Jenkins configuration | Configured through the UI once, recorded as a runbook | JCasC (`jenkins.yaml` + `plugins.txt`), self-configuring on boot |
 
 All are documented rather than hidden — the point is that each was a decision, not an oversight.

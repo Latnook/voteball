@@ -3,6 +3,11 @@
 **Date:** 2026-07-20
 **Status:** approved, pending implementation
 
+> **Historical record.** CI moved from GitHub Actions to Jenkins on 2026-07-20; every
+> `.github/workflows/ci.yml` reference below describes the pipeline as it was at the time. See
+> [`2026-07-20-jenkins-migration-design.md`](2026-07-20-jenkins-migration-design.md) and
+> [`../cicd.md`](../cicd.md) for the current pipeline.
+
 ## Problem
 
 The EKS deploy/destroy cycle is not repeatable. Two failures on the 2026-07-20 rebuild

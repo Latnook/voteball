@@ -16,11 +16,13 @@ Worth stating, because these are the parts that are painful to retrofit and are 
 - **Identity:** IRSA per workload, least privilege, nothing `cluster-admin`. `frontend`/`backend`
   carry no AWS role at all; `worker` and `backup` have separate roles scoped to one topic/prefix each.
 - **Secrets:** AWS Secrets Manager + External Secrets Operator. No secret in git or Terraform state.
-  CI authenticates by OIDC with no stored AWS keys.
+  The Jenkins build host authenticates by IAM **instance profile** — no stored AWS keys — and its role
+  is scoped to ECR push only; it holds no cluster access.
 - **Supply chain:** git-SHA image tags (never `latest`), ECR scan-on-push, Trivy blocking CI on
   CRITICAL/HIGH.
 - **Containers:** non-root, read-only rootfs, all capabilities dropped, no privilege escalation.
-- **Delivery:** GitOps via ArgoCD; `git push` to live in ~4 minutes, verified end to end.
+- **Delivery:** GitOps via ArgoCD, fed by Jenkins; `git push` to live in a few minutes, verified end to
+  end (see `docs/cicd.md`).
 - **Teardown/rebuild:** verified across three full destroy→deploy cycles with data preserved.
 
 ---
@@ -113,7 +115,37 @@ stale, RDS connections/storage, ALB 5xx rate, certificate expiry — routed to S
 
 ---
 
-## 7. Operational housekeeping
+## 7. The CI server is a single instance with no backup, and it fails silently
+
+**Current:** Jenkins runs on one EC2 instance (`terraform/jenkins/`). Its configuration, credentials and
+build history live only on that instance's EBS volume. There is no snapshot schedule, no second instance,
+and the server is configured by hand through the UI rather than from a file. It also sends **no
+notifications** — Jenkins emails nothing without SMTP, and this Jenkins has no public UI to show a red
+banner to anyone.
+
+**Why it matters:** two distinct problems.
+
+- *Losing the host* means re-doing the whole first-time setup runbook by hand: plugins, global
+  properties, credentials, job definition, webhook secret. The `terraform apply` part is a minute; the
+  clicking is not. The volume is protected against the obvious accident
+  (`delete_on_termination = false`), so this is a real but low-probability risk — accepted for now.
+- *Silent failures are the worse one.* Because the pipeline auto-deploys, a failed build looks exactly
+  like a successful one from the outside: the site keeps working, showing the previous version. You can
+  believe a change shipped when it did not. This is **G7** in the migration design, and it is an accepted
+  trade-off, not an oversight — provisioning mail credentials on a build host is its own surface.
+
+**Fix:** **JCasC** (`jenkins.yaml` + `plugins.txt`) so the host self-configures on boot and the
+configuration is reviewable in git — this is the deferred pass that also solves the backup problem, since
+a rebuildable server needs no backup. Then either SMTP/SNS notifications on `post { failure }`, or a
+scheduled check that the ArgoCD Application's deployed tag matches `master`. **SSM Session Manager**
+access, replacing the SSH tunnel and closing port 22, is deferred alongside it.
+
+Until then the compensating practice is explicit: **verification means opening the Jenkins UI or running
+`kubectl get application voteball -n argocd`** — never inferring success from the live site still working.
+
+---
+
+## 8. Operational housekeeping
 
 - **Snapshot retention.** Every teardown leaves a final snapshot; six had accumulated by the end of
   2026-07-20. Harmless at this size but unbounded. `find-latest-snapshot.sh` only ever needs the

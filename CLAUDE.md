@@ -21,7 +21,9 @@ that is a bug.**
 > `services/{backend,worker,frontend,backup}/`, one Docker build context each.
 
 **Design docs live in `docs/design/`**, one per feature or infrastructure pass — the balloting and
-admin features, then the EKS migration, then the deployment-hardening and repo-forkability passes.
+admin features, then the EKS migration, then the deployment-hardening and repo-forkability passes, then
+the 2026-07-20 CI migration from GitHub Actions to Jenkins (`2026-07-20-jenkins-migration-design.md`,
+whose G1–G7 labels the `Jenkinsfile` and `docs/cicd.md` both cite).
 **Read the relevant one before making architectural changes:** most decisions (and the bugs they
 avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
 justify its shape. Several also carry a "Verification outcome" section recording what actually broke
@@ -151,10 +153,28 @@ trust as pre-escaped HTML.
 - **Secrets:** `./scripts/seed-eks-secret.sh` takes `DB_PASS`/`ADMIN_USERNAME`/`ADMIN_PASSWORD` from the
   environment or a silent prompt and writes them to Secrets Manager; nothing secret enters git or
   tfstate. `DB_PASS` **must** match `db_password` in `terraform/voteball.tfvars`.
-- **CI/CD:** pushing app code to `master` runs `.github/workflows/ci.yml` (OIDC → build → Trivy → ECR →
-  bump `image.tag` `[skip ci]` → ArgoCD auto-syncs, ~4 min end to end). `./scripts/build-push-ecr.sh`
-  does it by hand. **See `docs/cicd.md`** for the full flow, the four required GitHub repo variables,
-  and failure modes — notably that CI cannot assume its IAM role while the stack is destroyed.
+- **CI/CD is Jenkins**, defined by the root `Jenkinsfile` and running on a dedicated EC2 host built by
+  the **separate** `terraform/jenkins/` stack. Pushing app code to `master` fires a GitHub webhook →
+  guard → build → Trivy → ECR → bump `image.tag` `[skip ci]` → ArgoCD auto-syncs.
+  `./scripts/build-push-ecr.sh` does the same by hand. Jenkins authenticates to AWS via an **instance
+  profile** (ECR push only — no keys stored anywhere, no EKS/RDS/S3/SNS/Secrets Manager access) and
+  **never deploys**; ArgoCD does. Region and cluster name come from Jenkins **global environment
+  variables** (`AWS_REGION`, `CLUSTER_NAME`) — the equivalent of the retired repo variables, and the
+  reason a hardcoded region or prefix in the `Jenkinsfile` would be a bug. **See `docs/cicd.md`** for
+  the full flow, the first-time setup runbook, and failure modes.
+
+**Do not remove the Guard stage from the `Jenkinsfile`, or `scripts/ci/should-skip-build.sh`.** Jenkins
+has no native `[skip ci]` — that is a GitHub Actions feature. The Guard stage is the *only* thing
+stopping the pipeline's own tag-bump commit from retriggering the pipeline, forever: an unbounded,
+billable build loop that also rolls production pods continuously. It looks like dead weight next to the
+`[skip ci]` marker in the commit message; it is not. This is proven, not theoretical — build 5 in
+`docs/cicd.md` is the webhook firing on Jenkins' own commit and being stopped by exactly this stage.
+
+**`terraform/jenkins/` is a separate stack with its own state and is deliberately outside
+`scripts/destroy.sh`'s scope.** Never add it there. A CI server owned by the stack it builds for would be
+destroyed — with its credentials, job configuration and build history — on every rebuild cycle. It also
+holds no reference to the main stack (its ECR permission is an ARN *pattern*), so it applies cleanly
+while the cluster is destroyed. Stop the instance to save money; do not destroy it.
 
 **Teardown order matters** and `./scripts/destroy.sh` encodes it: delete the ArgoCD Application (else
 `selfHeal` recreates what you remove), then the Ingress (so the ALB de-provisions and external-dns
@@ -302,7 +322,10 @@ note ArgoCD's `selfHeal` will fight you.
 ## Gitignored / generated files
 
 Gitignored — either real secrets or machine-specific/generated output:
-`terraform/voteball.tfvars`, `terraform/terraform.tfstate*`
+`terraform/voteball.tfvars`, `terraform/terraform.tfstate*`, and the Jenkins stack's equivalents
+(`terraform/jenkins/jenkins.tfvars`, `terraform/jenkins/terraform.tfstate*`, `terraform/jenkins/.terraform/`
+— the existing rules are anchored to the stack root and do **not** match the subdirectory, so they had to
+be listed separately)
 (the `*` glob matters — Terraform writes *timestamped* backups like `terraform.tfstate.1784477786.backup`
 that a bare `.backup` pattern misses), `*.tfplan`/`tfplan`, `*.pem`, `*.pdf` (course reference material),
 `.remember/`, `.claude/settings.local.json`, and `EXPLAINER.md`/`PROJECT-QA.md` (personal notes).

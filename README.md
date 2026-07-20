@@ -62,7 +62,8 @@ Three containers, plus managed AWS services:
 
 It runs on **EKS** in a dedicated VPC: an **ALB Ingress** (HTTPS via **ACM**) fronts the app; secrets
 come from **Secrets Manager** via External Secrets Operator; images live in **ECR**; delivery is **GitOps**
-(ArgoCD) fed by a **GitHub Actions** pipeline (build → Trivy scan → ECR → auto-sync); monitoring is
+(ArgoCD) fed by a **Jenkins** pipeline on its own EC2 host (build → Trivy scan → ECR → tag bump →
+auto-sync); monitoring is
 Prometheus/Grafana + CloudWatch.
 
 ## Quickstart
@@ -108,9 +109,11 @@ ArgoCD. Then confirm the SNS subscription email AWS sends you, and open `https:/
 - **Secrets never enter git.** Terraform creates an empty Secrets Manager container and ignores its
   contents; `./scripts/seed-eks-secret.sh` populates it from your environment or a silent prompt, and
   External Secrets Operator syncs it into the cluster.
-- **For CI** (optional), set three GitHub repo variables: `AWS_ROLE_ARN` (from
-  `terraform output github_actions_role_arn`), `AWS_REGION`, and `ECR_REGISTRY` (from
-  `terraform output ecr_registry`). Add `CLUSTER_NAME` too if you changed it from `voteball`.
+- **For CI** (optional), apply the separate `terraform/jenkins/` stack to build the Jenkins host, then
+  follow the first-time setup runbook in [`docs/cicd.md`](docs/cicd.md). Jenkins gets its AWS access from
+  an **instance profile** — there are no keys to store. The only two values you supply are the Jenkins
+  global environment variables `AWS_REGION` and `CLUSTER_NAME`, which keep your identity out of the
+  repository exactly like the other forkability rules here.
 - **Costs.** The EKS control plane, NAT gateway, ALB and RDS dominate the bill. Node capacity is Spot.
 - **Empty results page?** A fresh deploy has no votes. `./scripts/seed-demo-votes.py 500 https://<your
   app_domain>` posts demo ballots through the public API so the dashboard has something to show (the

@@ -43,10 +43,50 @@ regenerated on every rebuild, so `charts/voteball/values.yaml` is **generated, n
 what you delete), then the Ingress (releasing the ALB and its DNS records), then Terraform — and takes a
 final DB snapshot, so a destroy/rebuild cycle preserves the votes.
 
-**CI/CD:** pushing app-code to `master` runs GitHub Actions (OIDC → build → **Trivy** → ECR → bump image
-tag → **ArgoCD** auto-syncs). No stored AWS keys. Verified end-to-end on 2026-07-20: a UI change went
-from `git push` to live in ~4 minutes with no manual step — see
-[`docs/cicd.md`](docs/cicd.md) for the measured run.
+## CI/CD — Jenkins → ECR → ArgoCD
+
+```
+git push (services/**) → GitHub webhook → Jenkins on EC2 → ECR → values.yaml tag bump → ArgoCD → pods roll
+```
+
+CI is **Jenkins**, running on a dedicated EC2 host built by its own Terraform stack (`terraform/jenkins/`).
+The pipeline is a declarative [`Jenkinsfile`](Jenkinsfile) in this repo — the job is *Pipeline script from
+SCM*, so the build definition is reviewable here rather than hidden in Jenkins' database. Its five real
+steps: guard against its own commit → build four images tagged with the git SHA → **Trivy** scan
+(blocking on the app images) → push to **ECR** → commit the new tag to `charts/voteball/values.yaml`.
+
+Three decisions worth calling out:
+
+- **Jenkins never deploys and holds no cluster credentials.** It stops at "push images, commit the tag";
+  **ArgoCD** observes that commit and rolls the Deployments. A compromised build host cannot touch EKS.
+- **No stored AWS keys anywhere.** The host authenticates through an **IAM instance profile** scoped to
+  ECR push on `voteball-*` and nothing else — verified live: `aws ecr get-login-password` works,
+  `aws eks list-clusters` returns `AccessDeniedException`. IMDSv2 is required.
+- **Jenkins is a separate Terraform stack in a separate VPC.** `./scripts/destroy.sh` rebuilds the
+  application stack constantly; a CI server owned by that stack would lose its history every cycle.
+
+**Evidence of a green run (2026-07-20).** Build 4 was triggered by a real GitHub webhook on `09827ca`:
+four images built and pushed, Trivy clean on `backend`/`worker`/`nginx` (0 HIGH, 0 CRITICAL), tag bumped
+as `3c4cd93 ci: image tag 09827ca [skip ci]`. ArgoCD then synced unprompted and rolled all three
+Deployments to `09827ca` with zero downtime; the site and `/api/options` both returned 200.
+
+The most important check is the one that runs unattended: **Jenkins has no native `[skip ci]`** — that is
+a GitHub Actions feature — so without an explicit guard, the pipeline's own tag-bump commit retriggers it
+in an unbounded, billable loop. Build 5 was the webhook firing on Jenkins' own commit `3c4cd93`: the
+Guard stage fired and the build finished `NOT_BUILT`, with no human involved. Build 6 confirmed it
+manually. **Exactly one bump commit exists; there was no loop.**
+
+Full pipeline walkthrough, the first-time setup runbook, and a failure-modes table (including the three
+problems actually hit during the migration) are in **[`docs/cicd.md`](docs/cicd.md)**; the design
+rationale is in
+[`docs/design/2026-07-20-jenkins-migration-design.md`](docs/design/2026-07-20-jenkins-migration-design.md).
+
+Honest notes: four empty commits (`9bed4f1`, `1b16a45`, `a76fbb3`, `09827ca`) sit on `master` from
+debugging the webhook — history was not rewritten, because this repo never force-pushes. And three things
+are **deliberately deferred**: Jenkins Configuration as Code (the server is configured by the documented
+runbook, not a file), SSM Session Manager access, and build-failure notifications — Jenkins sends no
+email without SMTP, so verification means checking the Jenkins UI or ArgoCD's state rather than assuming
+success.
 
 ## How to verify
 
@@ -89,8 +129,9 @@ deploy restores the votes. Each of those steps was added after a real teardown f
 - **Least privilege / IRSA:** no workload is `cluster-admin`; each component has its own ServiceAccount;
   only `worker` and `backup` carry an AWS role (scoped to one SNS topic + one S3 prefix each);
   backend/frontend carry **none**.
-- **Secrets:** in AWS Secrets Manager, synced by ESO; never in git or Terraform state; CI uses OIDC (no
-  stored keys). Grafana/ArgoCD passwords auto-generated.
+- **Secrets:** in AWS Secrets Manager, synced by ESO; never in git or Terraform state; the Jenkins build
+  host uses an IAM **instance profile** (no stored keys anywhere) and holds no cluster access.
+  Grafana/ArgoCD passwords auto-generated.
 - **Network:** only frontend is internet-facing; default-deny NetworkPolicies; RDS private, node-SG-only,
   `sslmode=require`, encrypted.
 - **Ingress:** ALB + ACM HTTPS, HTTP→HTTPS redirect.

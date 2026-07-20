@@ -81,22 +81,37 @@ There is no Dependabot or Renovate config. Python dependencies are exact-pinned
 (`flask==3.1.3`, `gunicorn==23.0.0`, `boto3==1.42.85`, …) which is right for reproducibility, but
 means they only move when someone moves them.
 
-**Suggested:** add `.github/dependabot.yml` covering `pip` (both services), `docker`, and
-`github-actions`. Grouped weekly PRs are enough at this scale — and CI already builds, scans and
-tests every PR, so a bad bump fails loudly before it reaches the cluster.
+**Suggested:** add `.github/dependabot.yml` covering `pip` (both services) and `docker`. Grouped weekly
+PRs are enough at this scale — and CI already builds and scans, so a bad bump fails loudly before it
+reaches the cluster.
 
 ---
 
-## GitHub Actions deprecation, already warning
+## The Jenkins build host needs its own upkeep
 
-Every CI run currently prints:
+CI is Jenkins on a dedicated EC2 host (`terraform/jenkins/`, see `docs/cicd.md`). Unlike GitHub's hosted
+runners, **this is a server you own**, so it ages like one. Nothing here is urgent; all of it is silent.
 
-> Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on
-> Node.js 24: `actions/checkout@v4`, `aws-actions/configure-aws-credentials@v4`
-
-It is a warning today and will become a failure. Bump those actions when v5 equivalents are
-available. `aquasec/trivy` is pinned at `0.58.1` — its vulnerability database updates on every run,
-but the scanner binary itself ages.
+- **Jenkins core.** Jenkins publishes security advisories regularly and its own UI shows an update
+  banner. Bump it with `sudo dnf update jenkins && sudo systemctl restart jenkins` over the SSH tunnel.
+  There is no automation for this, and no alert — the host has no public UI, so nobody sees the banner
+  unless they open the tunnel. Fold it into the quarterly pass.
+- **Jenkins plugins.** Five are installed (Git, Pipeline, GitHub, Credentials Binding, SSH Agent); update
+  them from *Manage Jenkins → Plugins → Updates*. Plugin updates are the more common source of
+  advisories, and also of behaviour changes — the webhook-secret bug documented in `docs/cicd.md` was a
+  quirk of github plugin **1.47.0** specifically, so read the changelog before and re-test the webhook
+  after (a push should produce a delivery with HTTP 200, not 400).
+- **`aquasec/trivy:0.58.1` is pinned in the `Jenkinsfile`.** The vulnerability *database* refreshes on
+  every run, so scanning stays current, but the scanner *binary* ages and stops learning new detection
+  formats. Pinning is deliberate — an unpinned scanner can turn a green pipeline red overnight with no
+  change from you — but a pin is a promise to revisit it. Bump the tag, run one build with `FORCE_BUILD`,
+  and confirm the app images still scan clean before relying on it.
+- **The host's OS.** Amazon Linux 2023 does not patch itself. `sudo dnf update` when you are on the box
+  anyway; Docker and Java updates want a `systemctl restart jenkins` afterwards.
+- **Cheapest maintenance posture: stop the instance.** ~$37/month running, ~$6/month stopped, and all
+  state persists on the EBS volume (see `docs/cicd.md`). Webhooks are discarded while it is stopped.
+- **`buildDiscarder` keeps the last 20 builds** and `docker image prune -f` runs after every build, so the
+  30 GB volume is bounded — but check `df -h` if builds ever start failing oddly.
 
 ---
 
@@ -118,10 +133,17 @@ but the scanner binary itself ages.
 |---|---|
 | Each deploy | Watch for the Trivy gate failing on new CVEs |
 | Monthly | Skim Dependabot PRs; prune old RDS snapshots |
-| Quarterly | Bump add-on chart versions; check the EKS support window |
+| Quarterly | Bump add-on chart versions; check the EKS support window; update Jenkins core + plugins and the pinned `aquasec/trivy` tag |
 | **Before 2026-12-02** | **Upgrade EKS off 1.34 or start paying 5×** |
 | When torn down | Nothing rots — the cheapest maintenance posture is not running it |
 
 That last row is worth stating plainly: this stack is designed to be destroyed and rebuilt on demand,
 and `./scripts/destroy.sh` preserves the data in a snapshot. If it is not being demoed, the correct
 maintenance action is to tear it down.
+
+One caveat to it: **`./scripts/destroy.sh` does not touch `terraform/jenkins/`**, deliberately — a CI
+server owned by the stack it builds for would lose its history on every rebuild cycle. So while the
+application stack is down, the Jenkins host keeps running and keeps billing unless you stop it
+separately. Stopping it is the right move; destroying it is not, and would also leave an orphaned 30 GB
+volume behind (its root volume is `delete_on_termination = false` on purpose, because Jenkins'
+credentials and job configuration live only there).

@@ -1,7 +1,9 @@
 # CI migration: GitHub Actions → Jenkins on EC2
 
 **Date:** 2026-07-20
-**Status:** approved, pending implementation
+**Status:** implemented and verified 2026-07-20 — see [`../cicd.md`](../cicd.md) for the resulting
+pipeline, runbook and evidence. This document is the rationale; where the two differ, `cicd.md` is what
+was actually built.
 
 ## Problem
 

@@ -40,8 +40,8 @@ flowchart LR
       cw[CloudWatch<br/>logs + metrics]
     end
 
-    gh[GitHub Actions<br/>OIDC → build/Trivy/ECR] --> ecr
-    gh -. tag bump .-> argocdsync[ArgoCD watches repo] -. syncs .-> NS
+    jenkins["Jenkins on EC2 (own VPC/stack)<br/>instance profile → build/Trivy/ECR"] --> ecr
+    jenkins -. tag bump commit .-> argocdsync[ArgoCD watches repo] -. syncs .-> NS
 
     user -->|HTTPS| dns --> alb
     acm -. cert .- alb
@@ -68,4 +68,9 @@ flowchart LR
 - **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS, ECR, ACM, S3, SNS, Secrets
   Manager (container only), IRSA roles, and every platform add-on.
 - **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box.
-- **GitHub Actions:** builds/scans/pushes images and bumps the chart's image tag; ArgoCD syncs it.
+- **Jenkins (`terraform/jenkins/`):** builds, scans (Trivy) and pushes the four images to ECR, then
+  commits the new image tag to `charts/voteball/values.yaml`; ArgoCD sees that commit and syncs. Jenkins
+  runs on its own EC2 host, in its **own Terraform stack and the default VPC** — so tearing the
+  application stack down does not delete the CI server — and authenticates to AWS via an **instance
+  profile** scoped to ECR push only. It holds **no cluster credentials**: it never deploys, ArgoCD does.
+  See [`docs/cicd.md`](../cicd.md).
