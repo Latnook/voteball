@@ -142,6 +142,18 @@ re-run destroy; it dies with the cluster anyway.
 RDS takes a **final snapshot on destroy** (since 2026-07-20), so destroy→rebuild preserves votes;
 `find-latest-snapshot.sh` picks the newest one up automatically before the next apply.
 
+Two teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
+- **`./scripts/cleanup-stale-dns.sh`** removes this cluster's Route53 records if external-dns didn't get
+  to it first (it only reconciles on a timer and can be destroyed before noticing the deleted Ingress).
+  Gated on the ownership TXT (`external-dns/owner=voteball`), so apex/MX/DKIM records are never eligible.
+- **An orphaned-ENI reaper** runs in the background during destroy. The VPC CNI leaves detached
+  `aws-K8S-*` interfaces when nodes terminate, and they make Terraform retry `DeleteSubnet` against a
+  `DependencyViolation` for 10–20 minutes. See `docs/deploy.md` troubleshooting for the manual command.
+
+**Do not add `ignore_changes` to `final_snapshot_identifier`** in `database.tf` — the provider reads it
+from state at destroy time, so that silently disables the final snapshot *and* wedges the VPC teardown.
+There's a comment there explaining why; keep it.
+
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 
 Admin-curated data (party/club/league logo URLs, renames, etc.) lives only in the live RDS instance

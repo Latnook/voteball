@@ -25,12 +25,23 @@ Architecture diagram: [`docs/eks/architecture.md`](docs/eks/architecture.md).
 
 Full step-by-step (with what each step does) is in **[`docs/deploy.md`](docs/deploy.md)**. In short:
 
-1. `cd terraform-eks && terraform apply -var-file=voteball-eks.tfvars` — build the AWS infra + cluster + add-ons.
-2. `./scripts/seed-eks-secret.sh` — copy the app passwords into Secrets Manager (nothing typed, nothing shown).
-3. `aws eks update-kubeconfig --name voteball --region il-central-1` — connect kubectl.
-4. `./scripts/build-push-ecr.sh` — build + push the 4 images to ECR (git-SHA tags); pin the tag in `values.yaml`.
-5. Set `config.DB_HOST` in `values.yaml` from `terraform output rds_endpoint`.
-6. `helm upgrade --install voteball charts/voteball -n devops-app --create-namespace` (or let **ArgoCD** sync it).
+```bash
+./scripts/deploy.sh     # build everything and install the app
+./scripts/destroy.sh    # tear it all down again
+```
+
+Both stop and ask for confirmation before Terraform touches billed resources. `deploy.sh` runs, in order:
+resolve the newest DB snapshot → `terraform apply` → seed Secrets Manager → connect kubectl → build/push
+the 4 images to ECR (git-SHA tags) → **sync `values.yaml` from Terraform outputs** → `helm upgrade
+--install` → bootstrap **ArgoCD**, which owns the release from then on.
+
+That sync step matters: the RDS endpoint, ACM certificate ARN, S3 bucket and IRSA role ARNs are all
+regenerated on every rebuild, so `charts/voteball/values.yaml` is **generated, never hand-edited**
+(`./scripts/sync-values-from-tf.sh --check` fails on drift and verifies the image tag exists in ECR).
+
+`destroy.sh` encodes the order that actually works — ArgoCD Application first (or `selfHeal` recreates
+what you delete), then the Ingress (releasing the ALB and its DNS records), then Terraform — and takes a
+final DB snapshot, so a destroy/rebuild cycle preserves the votes.
 
 **CI/CD:** pushing app-code to `master` runs GitHub Actions (OIDC → build → **Trivy** → ECR → bump image
 tag → **ArgoCD** auto-syncs). No stored AWS keys.
