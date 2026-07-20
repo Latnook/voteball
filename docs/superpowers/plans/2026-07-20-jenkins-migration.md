@@ -1071,7 +1071,9 @@ Through the tunnel at `http://localhost:8080`:
 ssh -i ~/.ssh/voteball-jenkins ec2-user@<ip> 'sudo cat /var/lib/jenkins/secrets/initialAdminPassword'
 ```
 
-Choose **Select plugins to install** and install exactly: **Git, Pipeline, GitHub, Credentials Binding, Docker Pipeline, SSH Agent**. Create the admin user.
+Choose **Select plugins to install** and install exactly: **Git, Pipeline, GitHub, Credentials Binding, SSH Agent**. Create the admin user.
+
+> **Not** Docker Pipeline (`docker-workflow`) — it provides the `docker.build()` DSL, which this `Jenkinsfile` does not use; it shells out to the `docker` CLI. Verified against the real install on 2026-07-20.
 
 Then set the two global environment variables — **Manage Jenkins → System → Global properties → Environment variables**:
 

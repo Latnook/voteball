@@ -267,7 +267,9 @@ Jenkins UI and stored in the credentials store; it never enters git.
 **First-time configuration**, performed once through the UI and recorded as a numbered runbook in
 `docs/cicd.md`:
 
-- **Plugins:** Git, Pipeline, GitHub, Credentials Binding, Docker Pipeline. (This list is also the
+- **Plugins:** Git, Pipeline, GitHub, Credentials Binding, SSH Agent. Deliberately **not** Docker
+  Pipeline: that plugin exists for the `docker.build()` DSL, and the `Jenkinsfile` shells out to the
+  `docker` CLI instead, so installing it would add an unused component to patch. (This list is also the
   input to the deferred JCasC pass's `plugins.txt`, which is why it is fixed here rather than left to
   whatever the setup wizard's "recommended" set happens to contain.)
 - **Job type:** a **Pipeline** job configured as *Pipeline script from SCM* — not Freestyle (which
