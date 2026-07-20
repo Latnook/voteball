@@ -10,9 +10,6 @@
 set -euo pipefail
 
 msg="${1-}"
-if [ -z "$msg" ] && [ $# -eq 0 ]; then
-  msg="$(git log -1 --pretty=%B)"
-fi
 
 case "$msg" in
   *"[skip ci]"*) echo "skip" ;;

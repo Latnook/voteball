@@ -38,9 +38,13 @@ resource "aws_security_group" "jenkins" {
   description = "Jenkins build host: webhook from GitHub, SSH from the maintainer"
   vpc_id      = data.aws_vpc.default.id
 
-  # The ONLY thing in the world that may initiate a connection to this host besides the maintainer.
-  # The Jenkins UI is not reachable this way -- it is reached through the SSH tunnel, whose traffic
-  # arrives from localhost and is never evaluated against this group.
+  # This rule exposes the ENTIRE Jenkins UI -- not just a webhook endpoint -- to GitHub's published
+  # hook CIDR ranges over plaintext HTTP. That residual risk is accepted because those ranges are
+  # narrow and GitHub-owned (refreshed at apply time, see the data.http.github_meta comment above),
+  # and because the endpoint additionally requires a webhook shared secret configured in both GitHub
+  # and the Jenkins job -- so reachability alone does not grant access. The maintainer's own UI access
+  # never uses this rule; it goes through the SSH tunnel below, whose traffic arrives from localhost
+  # and is never evaluated against this security group.
   ingress {
     description = "GitHub push webhooks"
     from_port   = 8080
@@ -72,9 +76,14 @@ resource "aws_security_group" "jenkins" {
 }
 
 resource "aws_instance" "jenkins" {
-  ami                    = data.aws_ssm_parameter.al2023.value
-  instance_type          = var.instance_type
-  subnet_id              = data.aws_subnets.default.ids[0]
+  ami           = data.aws_ssm_parameter.al2023.value
+  instance_type = var.instance_type
+  # sort() makes the choice of subnet deterministic. data.aws_subnets.default.ids is returned in
+  # whatever order AWS feels like, and a reorder between applies would otherwise change subnet_id
+  # and force a replacement -- which, now that the root volume survives termination (below) but the
+  # instance itself does not, would mean a working Jenkins host on one subnet getting destroyed and
+  # recreated on another for no operator-visible reason.
+  subnet_id              = sort(data.aws_subnets.default.ids)[0]
   key_name               = aws_key_pair.jenkins.key_name
   vpc_security_group_ids = [aws_security_group.jenkins.id]
   iam_instance_profile   = aws_iam_instance_profile.jenkins.name
@@ -91,6 +100,21 @@ resource "aws_instance" "jenkins" {
     volume_size = 30
     volume_type = "gp3"
     encrypted   = true
+    # Jenkins' job configuration, credentials (including voteball-deploy-key, used to push to
+    # master) and build history live ONLY on this root volume. Default delete_on_termination=true
+    # would destroy all of it the moment the instance is terminated. If this stack is ever torn
+    # down for good, the volume must be deleted manually -- it will NOT go away on its own.
+    delete_on_termination = false
+  }
+
+  # user_data executes only on first boot. Editing user_data.sh later would never take effect on
+  # the already-running instance anyway -- Terraform's default behavior of treating a user_data
+  # change as replacement-triggering would only destroy Jenkins' state (credentials, jobs, build
+  # history) to re-run a script whose output is already present. ignore_changes here is therefore
+  # correct, not a workaround. Deliberately rebuilding the host from scratch is a manual
+  # `terraform taint` / `terraform apply -replace`, which is the intended workflow for that case.
+  lifecycle {
+    ignore_changes = [user_data]
   }
 
   tags = { Name = "${var.cluster_name}-jenkins" }
