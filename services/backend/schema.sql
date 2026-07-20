@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS upcoming_parties (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Hebrew/English bilingual names (docs/superpowers/specs/2026-07-14-hebrew-english-i18n-design.md).
+-- Hebrew/English bilingual names (docs/design/2026-07-14-hebrew-english-i18n-design.md).
 -- Purely structural here — no data touched. All backfill lives in seed.sql, ordered after its
 -- existing INSERTs, because on a fresh/restored-empty database there are zero rows at this point
 -- for a schema.sql-level backfill to touch.
@@ -48,7 +48,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_en_uidx ON clubs (league_id,
 CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_he_uidx ON clubs (league_id, name_he) WHERE name_he IS NOT NULL;
 
 -- One club can now be votable under two leagues (continental competition + domestic league) --
--- see docs/superpowers/specs/2026-07-15-clubs-leagues-admin-crud-design.md decision 10.
+-- see docs/design/2026-07-15-clubs-leagues-admin-crud-design.md decision 10.
 ALTER TABLE clubs ADD COLUMN IF NOT EXISTS domestic_league_id INTEGER REFERENCES leagues(id);
 
 -- Admin-curated logo/crest/flag URLs for the frontend redesign. Nullable by design: the frontend
@@ -62,7 +62,7 @@ ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
 -- so unranked leagues fall back to alphabetical (see get_options's ORDER BY sort_order NULLS LAST).
 ALTER TABLE leagues ADD COLUMN IF NOT EXISTS sort_order INTEGER;
 
--- Party ideology categorization (docs/superpowers/specs/2026-07-16-party-categorization-analytics-design.md).
+-- Party ideology categorization (docs/design/2026-07-16-party-categorization-analytics-design.md).
 -- Independent columns on both tables, not shared through party_lineage below -- a split/merged party
 -- can be ideologically distinct from its lineage predecessor (e.g. Otzma Yehudit vs. Religious
 -- Zionist). economic/security are nullable: several real parties genuinely have no stated position

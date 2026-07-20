@@ -646,7 +646,7 @@ UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/c
 UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'מרצ' AND logo_url IS NULL;
 UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
 
--- Party ideology classification (docs/superpowers/specs/2026-07-16-party-categorization-analytics-design.md
+-- Party ideology classification (docs/design/2026-07-16-party-categorization-analytics-design.md
 -- Appendix). Provisional: platforms aren't fully released and more splits/merges may happen before
 -- candidate lists lock -- revise via this file + scripts/sync-seed-from-rds.sh as needed.
 UPDATE previous_parties SET bloc = 'bibi', economic = 1, security = 2, sector = 'traditional',

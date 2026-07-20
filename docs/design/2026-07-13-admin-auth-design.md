@@ -5,7 +5,7 @@ Date: 2026-07-13
 
 ## Context
 
-The admin UI (spec: `docs/superpowers/specs/2026-07-13-admin-ui-design.md`) is midway through
+The admin UI (spec: `docs/design/2026-07-13-admin-ui-design.md`) is midway through
 implementation — 10 of 13 plan tasks done (backend party-CRUD/reassign endpoints complete; frontend
 secret-gate, tab switching, party CRUD, and reassign-votes wiring complete) — all built against the
 project's existing admin auth model: a single static secret compared against `ADMIN_SECRET`, sent as

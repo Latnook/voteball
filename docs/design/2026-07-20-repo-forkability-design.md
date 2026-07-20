@@ -47,7 +47,7 @@ under a tool the project no longer uses — while the backup image sits separate
 
 - No application behaviour changes. This is packaging, layout and configuration only.
 - No multi-environment support; single environment remains a deliberate project constraint.
-- The engineering history in `docs/superpowers/plans` and `specs` is kept — it is the design rationale
+- The engineering history in `docs/design/plans` and `specs` is kept — it is the design rationale
   CLAUDE.md points readers to.
 
 ## Design
@@ -143,3 +143,28 @@ AWS is torn down, so acceptance is local:
 - **§5 is unproven until an apply.** Accepted and flagged above.
 - **Deleting the retired Ansible tree loses k3s history.** Accepted: it remains in git history, and
   CLAUDE.md already documents the k3s deployment as retired.
+
+---
+
+## Verification outcome (2026-07-20)
+
+Implemented and verified locally (AWS was torn down at the time), then confirmed against real AWS:
+
+- All four `services/*` images build from the new contexts; 123 backend + 28 worker tests pass.
+- `helm lint`/`template` render with **zero** occurrences of any account number or domain.
+- `git grep` for the maintainer's account and domain across `scripts`, `charts`, `.github`,
+  `terraform`, `services` and `argocd` returns nothing.
+- `terraform plan` against real AWS: **112 to add, 0 to change, 0 to destroy**, with
+  `aws_db_instance.app` resolving `username`, `password` and the latest snapshot — so the
+  from-snapshot path is plan-verified. The from-scratch path (`db_snapshot_identifier = null`) remains
+  the one untested variant; it is the same code path minus the snapshot.
+
+**Two traps worth remembering:**
+
+1. **Virtualenvs are not relocatable.** Moving `services/*` broke `.venv` (absolute paths are baked
+   into every shebang and `pyvenv.cfg`), which surfaced as a confusing `ModuleNotFoundError` citing the
+   *old* directory. Recreate them after any move.
+2. **A blanket `.gitignore` entry nearly hid the whole stack.** While `terraform/` was a dead leftover
+   it was ignored wholesale; renaming `terraform-eks/` into that name would have silently untracked all
+   23 `.tf` files. A `git add -A` had already once swept an 830MB provider binary into a commit that
+   GitHub rejected. Ignore generated files individually, never a source directory.

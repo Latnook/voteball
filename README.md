@@ -89,4 +89,6 @@ ArgoCD. Then confirm the SNS subscription email AWS sends you, and open `https:/
 - **[`docs/deploy.md`](docs/deploy.md)** — plain-language deploy/verify/teardown guide.
 - **[`docs/security.md`](docs/security.md)** — security design (IRSA, secrets, network, images, trade-offs).
 - **[`docs/eks/architecture.md`](docs/eks/architecture.md)** — architecture diagram.
+- **[`docs/design/`](docs/design/)** — one design doc per feature/infrastructure pass: the reasoning
+  behind the schema, the balloting rules, and the deploy/teardown ordering.
 - **`CLAUDE.md`** — conventions and commands for anyone (human or agentic) working in this codebase.

@@ -20,11 +20,16 @@ that is a bug.**
 > history). The live deployment is `terraform/` + `charts/voteball/`, and the app source is in
 > `services/{backend,worker,frontend,backup}/`, one Docker build context each.
 
-**Plans live in `docs/superpowers/plans/`** — the EKS migration was built as a sequence of task-by-task
-specs (app-code foundation → EKS infra → add-ons → app deploy → expose/harden → GitOps/observability →
-docs), followed by the deployment-hardening and repo-forkability passes. Read the relevant plan before
-making architectural changes: most design decisions (and the bugs they avoid) are explained there, not
-in code comments.
+**Design docs live in `docs/design/`**, one per feature or infrastructure pass — the balloting and
+admin features, then the EKS migration, then the deployment-hardening and repo-forkability passes.
+**Read the relevant one before making architectural changes:** most decisions (and the bugs they
+avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
+justify its shape. Several also carry a "Verification outcome" section recording what actually broke
+when the design met reality.
+
+*(Write new design docs here as `YYYY-MM-DD-<topic>-design.md`. The step-by-step implementation plans
+that accompanied them were process artifacts and were deleted on 2026-07-20 once executed; they are in
+git history if you need them.)*
 
 Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
 `docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`.

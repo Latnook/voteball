@@ -149,5 +149,6 @@ votes. (This changed on 2026-07-20 — teardown used to discard them.)
   stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and
   `./scripts/sync-values-from-tf.sh` to fix it. Never edit those fields by hand.
 
-For the deeper technical details behind these, see the git history of this file and the plan documents in
-`docs/superpowers/plans/`.
+For the deeper technical details behind these, see the git history of this file and the design documents
+in `docs/design/` — in particular `2026-07-20-deployment-hardening-design.md`, which explains why the
+deploy and destroy scripts are ordered the way they are and what went wrong before they were.

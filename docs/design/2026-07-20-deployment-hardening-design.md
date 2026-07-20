@@ -225,3 +225,38 @@ Static checks before the cycle: `terraform fmt -recursive`, `terraform validate`
   `LoadBalancer`; it uses Ingress exclusively, and doing so would be an architectural change.
 - **`sed`-based rewriting of `values.yaml`** — brittle if the file's formatting changes. Mitigated by
   anchored patterns and `--check` mode failing loudly rather than silently mis-writing.
+
+---
+
+## Verification outcome (2026-07-20)
+
+Task 7 was executed in full: `terraform apply` → `destroy.sh` → `deploy.sh` against live AWS. All nine
+hazards verified. Final state: ArgoCD Synced/Healthy, 5/5 pods Running, site HTTP 200, no values drift.
+
+**Four defects that only the end-to-end run could have caught — three introduced by this plan:**
+
+1. **`ignore_changes = [final_snapshot_identifier]` (Task 3, Step 5) silently disabled the feature it
+   accompanied.** The provider reads that field *from state* at destroy time, and `ignore_changes` kept
+   it out of state, so destroy failed with "final_snapshot_identifier is required when
+   skip_final_snapshot is false". RDS survived and its ENIs blocked the subnet for 20 minutes. The
+   suppression was never needed — `time_static` already makes the value stable. Removed, with a comment
+   so it does not come back. Fixed in `37ff708`.
+
+2. **`destroy.sh` could not be re-run after a partial teardown.** With the cluster already gone `kubectl`
+   fails `Unauthorized`, which `--ignore-not-found` does not cover, so `set -e` aborted before Terraform
+   ran — disabling the recovery path exactly when it was needed. Steps 1/2/4 are now gated on cluster
+   reachability. Fixed in `37ff708`.
+
+3. **H9: ArgoCD bootstrapped before `values.yaml` was committed** — see the spec. Fixed in `3c90a9f`.
+
+4. **H8: orphaned CNI ENIs** (pre-existing, not introduced here) — see the spec. Fixed in `559de3a`.
+
+**Two process failures worth recording:** piping `terraform destroy` through `tail` buffered the output,
+hiding the real error for ~30 minutes and forcing diagnosis from AWS state instead. The same pipe made
+the run report **exit code 0 when Terraform had failed**, which was briefly reported as success. Long
+infra commands must be logged unbuffered to a file, never through a pipe that masks exit status.
+
+**Deviations from the plan as written:** `sync-values-from-tf.sh` gained an ECR-existence check for
+`image.tag` and stopped comparing the tag to git HEAD in `--check` mode (HEAD moves on every docs commit,
+so the preflight would have cried wolf and been ignored). `deploy.sh`/`destroy.sh` gained
+`VOTEBALL_AUTO_APPROVE` for unattended runs; interactive confirmation remains the default.

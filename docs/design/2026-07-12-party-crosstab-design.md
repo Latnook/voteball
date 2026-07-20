@@ -10,7 +10,7 @@ Voteball lets someone record which party they voted for in the last Knesset elec
 (`upcoming_party_ids`), on the same vote row. Several previous-election parties have since
 merged or split (e.g. יש עתיד merging with Bennett's party into ביחד; העבודה and מרצ merging into
 הדמוקרטים; the joint הציונות הדתית list splitting into separate הציונות הדתית and עוצמה יהודית
-lines for the next election — see `docs/superpowers/specs/2026-07-12-party-display-names-design.md`
+lines for the next election — see `docs/design/2026-07-12-party-display-names-design.md`
 for the full seeded lists). Viewing the previous-election results and the upcoming-election results
 as two independent breakdowns hides this continuity — a reader has to already know Israeli politics
 to connect "יש עתיד voters disappeared from the previous breakdown" with "a new ביחד bloc appeared
@@ -24,7 +24,7 @@ way it would for any two parties, without Voteball ever having to declare "these
 movement."
 
 This is the second of several planned improvements to Voteball (see
-`docs/superpowers/specs/2026-07-12-party-display-names-design.md`'s "Non-goals" for the full list —
+`docs/design/2026-07-12-party-display-names-design.md`'s "Non-goals" for the full list —
 i18n, the max-3 selection limit, an admin UI, and a visual redesign are separate, later efforts).
 
 ## Decisions
@@ -148,4 +148,4 @@ Real-Postgres TDD per `CLAUDE.md`, in both the worker and backend suites:
 - A dedicated full-matrix (all-previous × all-upcoming) view — the per-party crosstab covers the
   stated need; a grid/heatmap view is a separate, bigger UI project if ever wanted.
 - i18n, the max-3 selection limit, the admin UI, and the visual redesign — tracked separately per
-  `docs/superpowers/specs/2026-07-12-party-display-names-design.md`.
+  `docs/design/2026-07-12-party-display-names-design.md`.
