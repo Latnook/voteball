@@ -51,6 +51,17 @@ resource "helm_release" "external_dns" {
     name  = "policy"
     value = "sync"
   }
+
+  # React to Ingress add/delete events immediately instead of only on the 1-minute poll (the chart
+  # default is triggerLoopOnEvent=false). Without this, teardown deletes the Ingress and then destroys
+  # external-dns before its next tick, so the records are never cleaned up -- observed on the
+  # 2026-07-20 teardown, where voteball.latnook.com survived pointing at a dead ALB.
+  # This narrows the race but does not close it; scripts/cleanup-stale-dns.sh is the deterministic
+  # backstop that destroy.sh runs regardless.
+  set {
+    name  = "triggerLoopOnEvent"
+    value = "true"
+  }
   set {
     name  = "txtOwnerId"
     value = var.cluster_name
