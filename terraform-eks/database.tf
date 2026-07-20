@@ -32,8 +32,16 @@ resource "aws_security_group" "rds" {
 resource "time_static" "deploy" {}
 
 resource "aws_db_instance" "app" {
-  identifier             = "${var.cluster_name}-eks-db"
-  snapshot_identifier    = var.db_snapshot_identifier # restores votes; master password comes FROM the snapshot
+  identifier          = "${var.cluster_name}-eks-db"
+  snapshot_identifier = var.db_snapshot_identifier # null = fresh empty DB; otherwise restores votes
+
+  # Both are required to create a database from scratch (snapshot_identifier = null), which is the
+  # only path available to a fresh install with no prior snapshot. Setting password ALSO resets the
+  # master password when restoring from a snapshot -- deliberate: it keeps the DB in sync with the
+  # DB_PASS seeded into Secrets Manager, instead of silently keeping the snapshot's old password.
+  username = var.db_username
+  password = var.db_password
+
   instance_class         = "db.t4g.micro"
   db_subnet_group_name   = aws_db_subnet_group.app.name
   vpc_security_group_ids = [aws_security_group.rds.id]
@@ -57,4 +65,12 @@ resource "aws_db_instance" "app" {
   # "final_snapshot_identifier is required when skip_final_snapshot is false", the DB survives, and
   # its ENIs then block subnet/VPC deletion. Hit on the 2026-07-20 teardown. time_static.deploy
   # already keeps this value stable across plans, so there is no diff to suppress.
+
+  lifecycle {
+    # username is the ONE safe ignore here: RDS cannot change a master username on a snapshot
+    # restore, so without this Terraform proposes replacing the whole instance whenever the restored
+    # snapshot's username differs from var.db_username. Unlike final_snapshot_identifier above, this
+    # attribute is not read at destroy time, so ignoring it changes nothing about teardown.
+    ignore_changes = [username]
+  }
 }

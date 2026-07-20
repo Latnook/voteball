@@ -17,8 +17,9 @@ provider "aws" {
 # Account + partition lookups reused by ARN construction (S3 bucket name, IRSA policies).
 data "aws_caller_identity" "current" {}
 
-# The existing public hosted zone (created outside this stack) -- used for ACM DNS validation
-# and, later, the ALB alias record. Matches the pattern in the k3s stack's main.tf.
+# The existing public hosted zone (created outside this stack) -- used for ACM DNS validation and the
+# ALB alias record. You must already own this zone in Route53; this stack never creates it.
 data "aws_route53_zone" "primary" {
-  name = "latnook.com"
+  name         = var.route53_zone_name
+  private_zone = false
 }

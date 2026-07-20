@@ -70,14 +70,39 @@ variable "cluster_endpoint_public_access_cidrs" {
 }
 
 variable "app_domain" {
-  description = "Public FQDN the ACM cert is issued for (and later the ALB alias)."
+  # No default: this is your domain, not the project's. Set it in voteball-eks.tfvars.
+  description = "Public FQDN the ACM cert is issued for and the ALB serves (e.g. voteball.example.com)."
   type        = string
-  default     = "voteball.latnook.com"
+}
+
+variable "route53_zone_name" {
+  # Must be a hosted zone you already own; this stack looks it up, never creates it.
+  # app_domain has to sit inside it -- e.g. app_domain=voteball.example.com, zone=example.com.
+  description = "Existing Route53 public hosted zone containing app_domain, with trailing dot (e.g. example.com.)."
+  type        = string
 }
 
 variable "notification_email" {
   description = "Email subscribed to the SNS milestone-alert topic."
   type        = string
+}
+
+variable "db_username" {
+  # Only applied when creating a fresh database. RDS does not allow changing the master username on a
+  # snapshot restore, so aws_db_instance.app ignores changes to it (see database.tf).
+  description = "RDS master username (fresh databases only; ignored when restoring from a snapshot)."
+  type        = string
+  default     = "postgres"
+}
+
+variable "db_password" {
+  # No default, deliberately. This also RESETS the master password when restoring from a snapshot,
+  # which is what keeps it in sync with the DB_PASS seeded into Secrets Manager by
+  # scripts/seed-eks-secret.sh -- otherwise a restored DB keeps the old snapshot's password and the
+  # app cannot connect.
+  description = "RDS master password. Must match the DB_PASS you seed into Secrets Manager."
+  type        = string
+  sensitive   = true
 }
 
 variable "db_snapshot_identifier" {

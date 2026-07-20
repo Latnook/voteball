@@ -57,3 +57,13 @@ output "github_actions_role_arn" {
   description = "IAM role ARN GitHub Actions assumes via OIDC (set as the repo variable AWS_ROLE_ARN)."
   value       = aws_iam_role.github_actions.arn
 }
+
+output "ecr_registry" {
+  description = "ECR registry host for this account/region (becomes image.registry in the Helm chart)."
+  value       = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
+}
+
+output "app_domain" {
+  description = "Public FQDN the app is served on (becomes ingress.host in the Helm chart)."
+  value       = var.app_domain
+}
