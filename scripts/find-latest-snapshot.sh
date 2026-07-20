@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 # Usage: ./scripts/find-latest-snapshot.sh
-# Run before `terraform apply` if you want the DB restored from the most
-# recent final snapshot taken by a prior `terraform destroy` (see
-# docs/deploy.md). Writes terraform/snapshot.auto.tfvars (Terraform loads
-# *.auto.tfvars automatically, no -var-file needed) when a snapshot is
-# found; leaves no file (or removes a stale one) when none exists, so a
-# first-ever deploy just creates an empty DB as normal.
+# Picks the newest manual RDS snapshot from EITHER voteball lineage (the retired k3s `voteball-db`
+# or the current `voteball-eks-db`) and writes it to terraform-eks/snapshot.auto.tfvars, which
+# Terraform auto-loads. Run before `terraform apply`; scripts/deploy.sh does this for you.
+#
+# Writes `db_snapshot_identifier = null` when no snapshot exists, so a first-ever deploy creates an
+# empty DB instead of hard-failing on a pinned identifier that is no longer there.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TF_DIR="$SCRIPT_DIR/../terraform"
+TF_DIR="$SCRIPT_DIR/../terraform-eks"
 AUTO_TFVARS="$TF_DIR/snapshot.auto.tfvars"
 REGION="il-central-1"
 
-# Distinguish "the API call succeeded and found zero snapshots" (safe to
-# treat as no-prior-snapshot) from "the API call itself failed" (expired
-# SSO token, wrong profile, no network, throttling...) -- the latter must
-# abort loudly rather than silently falling through to "fresh empty DB",
-# which is exactly the accidental-data-loss outcome this script exists to
-# prevent. A failed call also leaves any existing snapshot.auto.tfvars
-# untouched, rather than deleting a possibly-still-correct one.
+# Distinguish "the API call succeeded and found zero snapshots" (safe: no prior snapshot) from "the
+# API call itself failed" (expired SSO token, wrong profile, no network, throttling). The latter must
+# abort loudly rather than silently falling through to "fresh empty DB" -- that is exactly the
+# accidental-data-loss outcome this script exists to prevent. A failed call also leaves any existing
+# snapshot.auto.tfvars untouched rather than deleting a possibly-still-correct one.
+#
+# Both lineages are searched: the k3s-era `voteball-db` holds the original vote history, and
+# `voteball-eks-db` holds every final snapshot taken since. Newest SnapshotCreateTime wins.
 if ! SNAPSHOT_ID=$(aws rds describe-db-snapshots \
-  --db-instance-identifier voteball-db \
   --snapshot-type manual \
   --region "$REGION" \
-  --query 'sort_by(DBSnapshots, &SnapshotCreateTime)[-1].DBSnapshotIdentifier' \
+  --query 'sort_by(DBSnapshots[?starts_with(DBInstanceIdentifier, `voteball`)], &SnapshotCreateTime)[-1].DBSnapshotIdentifier' \
   --output text); then
   echo "ERROR: aws rds describe-db-snapshots failed -- check AWS credentials/network." >&2
   echo "Refusing to guess whether a snapshot exists; $AUTO_TFVARS left untouched." >&2
@@ -32,10 +32,10 @@ if ! SNAPSHOT_ID=$(aws rds describe-db-snapshots \
 fi
 
 if [ "$SNAPSHOT_ID" = "None" ] || [ -z "$SNAPSHOT_ID" ]; then
-  rm -f "$AUTO_TFVARS"
+  echo "db_snapshot_identifier = null" > "$AUTO_TFVARS"
   echo "No prior snapshot found — next apply creates a fresh, empty database."
 else
   echo "db_snapshot_identifier = \"$SNAPSHOT_ID\"" > "$AUTO_TFVARS"
   echo "Found $SNAPSHOT_ID — next apply will restore from it."
-  echo "(To force a fresh empty DB instead, delete $AUTO_TFVARS before applying.)"
+  echo "(To force a fresh empty DB instead, put 'db_snapshot_identifier = null' in $AUTO_TFVARS.)"
 fi

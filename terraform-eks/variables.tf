@@ -84,5 +84,8 @@ variable "db_snapshot_identifier" {
   # Restore votes from the k3s final snapshot. Set to null for a fresh empty DB instead.
   description = "RDS snapshot to restore the EKS database from (null = fresh empty DB)."
   type        = string
-  default     = "voteball-db-final-20260719175321"
+  # null, NOT a pinned identifier: scripts/find-latest-snapshot.sh writes the real value into
+  # terraform-eks/snapshot.auto.tfvars before every apply. A hardcoded default silently hard-fails
+  # ("DBSnapshot not found") the moment that one snapshot is pruned.
+  default = null
 }

@@ -21,6 +21,8 @@ terraform-eks/terraform.tfstate*
 terraform-eks/.terraform.tfstate.lock.info
 terraform-eks/tfplan
 terraform-eks/.terraform/
+# Written by scripts/find-latest-snapshot.sh before each apply; machine-specific, never committed.
+terraform-eks/snapshot.auto.tfvars
 
 # Ansible: secrets.yml is committed ENCRYPTED via ansible-vault — only the
 # vault password itself and the generated (non-secret) inventory stay out of git.

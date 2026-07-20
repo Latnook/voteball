@@ -17,5 +17,9 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.31"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.12" # time_static: stable timestamp for the RDS final-snapshot name
+    }
   }
 }

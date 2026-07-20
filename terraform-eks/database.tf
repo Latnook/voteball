@@ -26,6 +26,11 @@ resource "aws_security_group" "rds" {
   }
 }
 
+# Fixed at apply time so the final-snapshot name below is stable across plans (a bare timestamp()
+# would re-evaluate every plan and show a perpetual diff). A destroy+apply cycle recreates this
+# resource, so each cycle gets a distinct snapshot name and they never collide.
+resource "time_static" "deploy" {}
+
 resource "aws_db_instance" "app" {
   identifier             = "${var.cluster_name}-eks-db"
   snapshot_identifier    = var.db_snapshot_identifier # restores votes; master password comes FROM the snapshot
@@ -36,9 +41,18 @@ resource "aws_db_instance" "app" {
   storage_encrypted      = true # inherited from the encrypted snapshot; stated explicitly for clarity
 
   # Demo-DB trade-offs (documented in docs/security.md; a production cutover would flip these):
-  #   skip_final_snapshot=true    -> this is a throwaway copy; the k3s snapshot is the source of truth
+  #   final snapshot on destroy   -> votes survive a destroy/rebuild cycle (see skip_final_snapshot below)
   #   deletion_protection off      -> stack is torn down between sessions
   #   single-AZ, credentials reused -> cost + parallel-demo simplicity (user chose credential reuse)
-  skip_final_snapshot = true
-  apply_immediately   = true
+  #
+  # Every destroy leaves a restore point, so destroy->apply preserves votes and the stack no longer
+  # depends on one hand-pinned snapshot surviving. find-latest-snapshot.sh picks the newest one up.
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "${var.cluster_name}-eks-db-final-${formatdate("YYYYMMDDhhmmss", time_static.deploy.rfc3339)}"
+  apply_immediately         = true
+
+  lifecycle {
+    # The name embeds a creation-time timestamp; without this, replacing time_static would show a diff.
+    ignore_changes = [final_snapshot_identifier]
+  }
 }
