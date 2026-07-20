@@ -53,7 +53,9 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   # after every app-code build, so the local branch is routinely behind and a plain push is rejected
   # non-fast-forward -- which then skipped the ArgoCD bootstrap below. This bites on essentially
   # every deploy that follows a code push (hit on the 2026-07-20 rebuild). Rebase, never force.
-  if ! git pull --rebase; then
+  # --autostash because the rebase aborts on ANY unrelated unstaged change, and a working tree
+  # mid-session usually has some. Without it this "fix" would fail for a different reason.
+  if ! git pull --rebase --autostash; then
     echo "ERROR: could not rebase onto origin/master (conflict?)." >&2
     echo "Resolve it, push, then run: kubectl apply -f argocd/voteball-application.yaml" >&2
     SKIP_ARGOCD=1
