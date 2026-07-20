@@ -5,17 +5,14 @@
 # Reference PDFs (course material etc.) — not part of the codebase
 *.pdf
 
-# Terraform secrets and generated state.
+# Leftovers from the retired k3s stack: the directory is gone from the repo, but a local
+# terraform/ may still hold .terraform provider binaries (~800MB) and an empty state file.
+# Ignored so `git add -A` can never sweep them back in.
+terraform/
+
+# Terraform: your own settings and all generated state.
 # NOTE: terraform.tfstate* (glob) also covers the timestamped backups Terraform writes
 # (terraform.tfstate.1784477786.backup), which a bare ".backup" pattern misses.
-terraform/voteball.tfvars
-terraform/terraform.tfstate*
-terraform/.terraform.tfstate.lock.info
-terraform/.terraform/
-terraform/snapshot.auto.tfvars
-terraform/tfplan
-
-# EKS stack — same posture as the k3s terraform/ stack above.
 terraform-eks/voteball-eks.tfvars
 terraform-eks/terraform.tfstate*
 terraform-eks/.terraform.tfstate.lock.info
@@ -24,21 +21,17 @@ terraform-eks/.terraform/
 # Written by scripts/find-latest-snapshot.sh before each apply; machine-specific, never committed.
 terraform-eks/snapshot.auto.tfvars
 
-# Ansible: secrets.yml is committed ENCRYPTED via ansible-vault — only the
-# vault password itself and the generated (non-secret) inventory stay out of git.
-ansible-project/.vault_pass
-ansible-project/inventories/voteball/hosts
-ansible-project/inventories/voteball/group_vars/all/main.yml
-
 # Python
 __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
 
-# subagent-driven-development scratch (progress ledger, review packages)
+# Local agent/session state — never belongs in the repo.
 .superpowers/
+.remember/
+.claude/settings.local.json
 
-# Personal plain-language explainer (not part of the submission)
+# Personal notes (not part of the submission)
 EXPLAINER.md
 PROJECT-QA.md
