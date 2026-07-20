@@ -3,10 +3,7 @@ on:
   push:
     branches: [master]
     paths:
-      - "ansible-project/roles/backend/files/backend/**"
-      - "ansible-project/roles/worker/files/worker/**"
-      - "ansible-project/roles/frontend/files/nginx/**"
-      - "docker/backup/**"
+      - "services/**"
       - ".github/workflows/ci.yml"
 
 permissions:
@@ -36,10 +33,10 @@ jobs:
         run: |
           set -euo pipefail
           declare -A CTX=(
-            [voteball-backend]=ansible-project/roles/backend/files/backend
-            [voteball-worker]=ansible-project/roles/worker/files/worker
-            [voteball-nginx]=ansible-project/roles/frontend/files/nginx
-            [voteball-backup]=docker/backup
+            [voteball-backend]=services/backend
+            [voteball-worker]=services/worker
+            [voteball-nginx]=services/frontend
+            [voteball-backup]=services/backup
           )
           for repo in "${!CTX[@]}"; do
             docker build -t "${REGISTRY}/${repo}:${TAG}" "${CTX[$repo]}"

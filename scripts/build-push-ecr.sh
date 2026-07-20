@@ -18,10 +18,10 @@ build_push() {
   docker push "${REGISTRY}/${repo}:${TAG}"
 }
 
-build_push voteball-backend ansible-project/roles/backend/files/backend
-build_push voteball-worker  ansible-project/roles/worker/files/worker
-build_push voteball-nginx   ansible-project/roles/frontend/files/nginx
-build_push voteball-backup  docker/backup
+build_push voteball-backend services/backend
+build_push voteball-worker  services/worker
+build_push voteball-nginx   services/frontend
+build_push voteball-backup  services/backup
 
 echo
 echo "Pushed all images at tag: ${TAG}"
