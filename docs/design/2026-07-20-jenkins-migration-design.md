@@ -513,9 +513,25 @@ table, and summarised in `README.submission.md`.
 | Architecture diagram still shows GitHub Actions at submission | Medium — graded artifact | Listed as a deliverable in §9, not folded into the general docs sweep; verification step 10 |
 | Jenkins security advisories | Low | Reminder added to `docs/maintenance.md` alongside the EKS support-window tracking |
 
-## Assumption
+## Scope confirmation (2026-07-20)
 
-The requirement is understood to be "use Jenkins for CI/CD", with no further Jenkins-specific
-constraints. If it in fact mandates a multibranch pipeline, a shared library, Kubernetes-hosted agents,
-or deployment performed by Jenkins rather than ArgoCD, §7 and the non-goals must be revisited before
-implementation.
+This design was written against the assumption that the requirement means "use Jenkins for CI", with no
+further Jenkins-specific constraints. **That was checked with the course lecturer before any
+infrastructure was applied, and the choice of approach was left to the implementer.** The design
+therefore stands as written, and the following were considered and deliberately declined:
+
+- **Jenkins performing the deployment.** Declined: it would require EKS credentials on the build host,
+  widening blast radius, and would fight ArgoCD's `selfHeal`. ArgoCD remains the deployer, and Jenkins
+  holds no cluster access at all (§3).
+- **Kubernetes-hosted ephemeral agents.** Declined: ephemeral agents solve build contention and
+  cross-build contamination between many teams, neither of which this single-maintainer project has.
+  Adopting them would require cluster credentials for Jenkins — weakening the property in §3 that it
+  has none — plus Kaniko or rootless BuildKit to build images under the cluster's non-root,
+  `readOnlyRootFilesystem` pod security posture, and would put heavyweight builds on the same Spot
+  nodes that serve live traffic.
+- **A multibranch pipeline.** Declined: this repository is developed as direct commits to `master`,
+  with no feature branches or pull requests, so a multibranch job would discover exactly one branch and
+  behave identically to a single Pipeline job with more indirection. It would also introduce a real
+  hazard — a build on a non-`master` branch must never run the tag-bump stage, since ArgoCD deploys
+  whatever `values.yaml` names on `master`. Should multibranch ever be adopted, the bump stage requires
+  `when { branch 'master' }`.
