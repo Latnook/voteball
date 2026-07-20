@@ -123,6 +123,13 @@ votes. (This changed on 2026-07-20 — teardown used to discard them.)
   computer may have cached the old answer. Check it works publicly first:
   `dig +short voteball.latnook.com @8.8.8.8` — if that returns addresses, flush your local cache
   (`sudo resolvectl flush-caches`) or try a private browser window.
+- **`terraform destroy` sits on "Still destroying... subnet" for many minutes** → a leftover network
+  interface from a terminated node is pinning the subnet. `destroy.sh` now cleans these up
+  automatically while it runs; if you hit it in a manual destroy, find and delete the detached one:
+  `aws ec2 describe-network-interfaces --region il-central-1 --filters Name=status,Values=available
+  --query "NetworkInterfaces[?starts_with(Description,'aws-K8S-')].NetworkInterfaceId"` then
+  `aws ec2 delete-network-interface --region il-central-1 --network-interface-id <id>`. The subnet
+  deletes within seconds afterwards.
 - **`terraform destroy` hangs on a `helm_release`** ("context deadline exceeded") → Helm can't cleanly
   uninstall while the cluster is being deleted. Drop it from state and re-run; it dies with the
   cluster anyway: `terraform -chdir=terraform-eks state rm helm_release.<name>`, then

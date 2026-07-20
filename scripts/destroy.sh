@@ -12,6 +12,7 @@ cd "$(dirname "$0")/.."   # repo root
 
 REGION="il-central-1"
 TFVARS="voteball-eks.tfvars"
+CLUSTER_TAG="voteball*"   # VPC Name tag, used to scope the orphaned-ENI reaper below
 
 # Terraform prompts for confirmation by default -- that is the intended behaviour for a human at a
 # terminal. Set VOTEBALL_AUTO_APPROVE=1 only for unattended/automated runs.
@@ -62,7 +63,42 @@ step "5/6  Removing this cluster's DNS records"
 ./scripts/cleanup-stale-dns.sh || echo "WARNING: DNS cleanup failed; check the zone by hand."
 
 step "6/6  Destroying AWS infrastructure (Terraform will ask you to confirm)"
+
+# When nodes terminate, the AWS VPC CNI can leave DETACHED (status=available) aws-K8S-* interfaces
+# behind. Terraform then retries DeleteSubnet against a DependencyViolation until it times out --
+# this stalled the 2026-07-20 teardown for ~10 minutes, and deleting the one orphan by hand let the
+# subnet drop immediately. Reap them in the background while destroy runs, rather than waiting for
+# Terraform to fail and retrying.
+#
+# Safety: only interfaces that are BOTH detached (status=available) and CNI-created
+# (Description starts with aws-K8S-) inside this stack's VPC. A detached CNI interface is garbage by
+# definition -- anything still in use reports status=in-use and is never considered.
+reap_orphaned_enis() {
+  while true; do
+    sleep 30
+    vpc="$(aws ec2 describe-vpcs --region "$REGION" \
+      --filters "Name=tag:Name,Values=${CLUSTER_TAG}" \
+      --query 'Vpcs[0].VpcId' --output text 2>/dev/null || echo None)"
+    [ "$vpc" = "None" ] && continue
+    [ -z "$vpc" ] && continue
+    for eni in $(aws ec2 describe-network-interfaces --region "$REGION" \
+        --filters "Name=vpc-id,Values=$vpc" Name=status,Values=available \
+        --query "NetworkInterfaces[?starts_with(Description,'aws-K8S-')].NetworkInterfaceId" \
+        --output text 2>/dev/null); do
+      echo "  reaping orphaned CNI interface $eni (detached; was blocking subnet deletion)"
+      aws ec2 delete-network-interface --region "$REGION" --network-interface-id "$eni" 2>/dev/null || true
+    done
+  done
+}
+
+reap_orphaned_enis &
+REAPER_PID=$!
+trap 'kill "$REAPER_PID" 2>/dev/null || true' EXIT
+
 terraform -chdir=terraform-eks destroy -var-file="$TFVARS" "${APPROVE[@]}"
+
+kill "$REAPER_PID" 2>/dev/null || true
+trap - EXIT
 
 cat <<'EOF'
 
