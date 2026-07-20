@@ -147,6 +147,7 @@ Then open <http://localhost:8080>. The backend creates its own schema and seed d
 - **[`docs/deploy.md`](docs/deploy.md)** — plain-language deploy/verify/teardown guide.
 - **[`docs/cicd.md`](docs/cicd.md)** — the CI/CD pipeline: push → build → Trivy → ECR → ArgoCD, the repo variables it needs, and its failure modes.
 - **[`docs/security.md`](docs/security.md)** — security design (IRSA, secrets, network, images, trade-offs).
+- **[`docs/production-readiness.md`](docs/production-readiness.md)** — the honest gap between this demo-grade deployment and one you could run for real, ordered by risk.
 - **[`docs/eks/architecture.md`](docs/eks/architecture.md)** — architecture diagram.
 - **[`docs/design/`](docs/design/)** — one design doc per feature/infrastructure pass: the reasoning
   behind the schema, the balloting rules, and the deploy/teardown ordering.
