@@ -121,15 +121,26 @@ trust as pre-escaped HTML.
 - **Helm (`charts/voteball`)** is the app itself (namespace `devops-app`): 3 Deployments, Services,
   Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
   **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
-- **Two manual ops:** `./scripts/seed-eks-secret.sh` (copies app passwords into Secrets Manager; nothing
-  secret ever enters git or tfstate) and pinning `image.tag` + `config.DB_HOST` in `values.yaml`.
+- **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
+  confirmation before Terraform touches billed resources). The env-specific fields of `values.yaml`
+  (`image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `ingress.certificateArn`, `backup.roleArn`,
+  `worker.roleArn`) are written by **`./scripts/sync-values-from-tf.sh`** from Terraform outputs —
+  **never hand-edit them**; they change on every rebuild. `--check` mode fails on drift, and also
+  verifies `image.tag` names an image that actually exists in ECR.
+- **Secrets:** `./scripts/seed-eks-secret.sh` copies app passwords into Secrets Manager; nothing
+  secret ever enters git or tfstate.
 - **CI/CD:** pushing app code to `master` runs `.github/workflows/ci.yml` (OIDC → build → Trivy → ECR →
   bump `image.tag` `[skip ci]` → ArgoCD auto-syncs). `./scripts/build-push-ecr.sh` does it by hand.
 
-**Teardown order matters:** delete the ArgoCD Application, then the Ingress (so the ALB de-provisions —
-a leftover ALB's ENIs block VPC deletion), *then* `terraform destroy`. If destroy hangs uninstalling a
-`helm_release` ("context deadline exceeded" — Helm can't cleanly uninstall while the cluster is being
-deleted), `terraform state rm` that release and re-run destroy; it dies with the cluster anyway.
+**Teardown order matters** and `./scripts/destroy.sh` encodes it: delete the ArgoCD Application (else
+`selfHeal` recreates what you remove), then the Ingress (so the ALB de-provisions and external-dns
+removes its records — a leftover ALB's ENIs block VPC deletion), wait for the ALB to disappear, *then*
+`terraform destroy`. If destroy hangs uninstalling a `helm_release` ("context deadline exceeded" — Helm
+can't cleanly uninstall while the cluster is being deleted), `terraform state rm` that release and
+re-run destroy; it dies with the cluster anyway.
+
+RDS takes a **final snapshot on destroy** (since 2026-07-20), so destroy→rebuild preserves votes;
+`find-latest-snapshot.sh` picks the newest one up automatically before the next apply.
 
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 

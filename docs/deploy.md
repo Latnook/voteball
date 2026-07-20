@@ -40,59 +40,39 @@ Keep a backup copy of `voteball-eks.tfvars` and, after your first run, `terrafor
 
 ## Put the site online
 
-Do these in order. Each block says what it does.
-
-**1. Build the AWS infrastructure** (~15–20 min — it makes the cluster, database, registry, etc.):
+**Everything, in order:**
 
 ```bash
-cd terraform-eks
-terraform init
-terraform apply -var-file=voteball-eks.tfvars     # it shows a list and asks you to type "yes"
-cd ..
+./scripts/deploy.sh
 ```
 
-**2. Put the app's passwords into AWS's secret vault** (nothing secret ever goes in the code):
+It runs the whole sequence and **stops to ask you to confirm** before Terraform creates billed
+resources. The steps it performs:
+
+1. Find the newest database snapshot to restore from.
+2. Build the AWS infrastructure (**asks you to type `yes`**).
+3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git).
+4. Point `kubectl` at the new cluster.
+5. Build the four container images and upload them.
+6. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
+   certificate, the bucket, and the IAM roles all change on every rebuild, so **never edit these by
+   hand**.
+7. Install the app and wait for it to come up.
+8. Hand ongoing control to ArgoCD.
+
+If step 6 changed `values.yaml`, commit it — ArgoCD deploys from `master`:
 
 ```bash
-./scripts/seed-eks-secret.sh
+git add charts/voteball/values.yaml && git commit -m "Deploy: sync values" && git push
 ```
 
-That's it — the script copies the app's passwords (database + admin login) from the project's encrypted
-secrets file straight into AWS, without ever showing them. You don't type any passwords.
+**Confirm the alert email:** check your inbox for an AWS confirmation link and click it, or the
+milestone-alert emails won't arrive.
 
-**3. Connect your computer to the cluster:**
+Give it a few minutes, then open **https://voteball.latnook.com**.
 
-```bash
-aws eks update-kubeconfig --name voteball --region il-central-1
-```
-
-**4. Build the app's containers and upload them, then point the app at them:**
-
-```bash
-./scripts/build-push-ecr.sh        # builds the 4 images and prints a code like "a1b2c3d"
-# open charts/voteball/values.yaml and set:  image.tag: "a1b2c3d"   (the printed code)
-```
-
-**5. Tell the app where the database is:**
-
-```bash
-terraform -chdir=terraform-eks output -raw rds_endpoint    # prints an address ending in rds.amazonaws.com
-# open charts/voteball/values.yaml and set:  config.DB_HOST: "<that address>"
-```
-
-**6. Install the app:**
-
-```bash
-helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
-```
-
-**7. Confirm the alert email:** check your inbox for an AWS confirmation link and click it (otherwise the
-milestone-alert emails won't arrive).
-
-Give it a few minutes, then open **https://voteball.latnook.com** — the site should be live.
-
-**Later, after changing app code:** repeat step 4 (rebuild + set the new code in `values.yaml`), then run
-step 6 again.
+**Later, after changing app code:** just `git push` — CI rebuilds the images and ArgoCD deploys them.
+To do it by hand instead, run `./scripts/deploy.sh` again.
 
 ---
 
@@ -110,15 +90,20 @@ Open the site in a browser and cast a vote — it should land and show on the re
 ## Take it down (stop paying)
 
 ```bash
-helm uninstall voteball -n devops-app             # removes the app (and its load balancer)
-cd terraform-eks
-terraform destroy -var-file=voteball-eks.tfvars   # removes the cluster, database, everything
-cd ..
+./scripts/destroy.sh
 ```
 
-Note: the EKS database is a throwaway copy, so votes cast while on EKS are **not** saved when you
-destroy. (The original vote data lives in an AWS snapshot and is restored automatically next time you
-build.)
+It removes things in the order that actually works, and **asks you to confirm** before deleting the
+infrastructure. Order matters:
+
+1. **The ArgoCD app first** — otherwise ArgoCD notices the app disappearing and puts it straight back.
+2. **The Ingress next** — this releases the load balancer and cleans up the DNS record. A leftover
+   load balancer keeps network interfaces alive that block the network from being deleted.
+3. **Wait** for the load balancer to actually disappear.
+4. **Then** delete everything else.
+
+A final database snapshot is taken automatically, so the next `./scripts/deploy.sh` restores your
+votes. (This changed on 2026-07-20 — teardown used to discard them.)
 
 ---
 
@@ -134,6 +119,17 @@ build.)
   site stays up. Real visitors' browsers just retry.
 - **"version not supported" style errors on the cluster** → the Kubernetes version pin (`1.34`) may have
   aged out; check `aws eks describe-cluster-versions --region il-central-1` and bump it if needed.
+- **The site can't be found right after a rebuild** → DNS. The record is recreated on deploy, but your
+  computer may have cached the old answer. Check it works publicly first:
+  `dig +short voteball.latnook.com @8.8.8.8` — if that returns addresses, flush your local cache
+  (`sudo resolvectl flush-caches`) or try a private browser window.
+- **`terraform destroy` hangs on a `helm_release`** ("context deadline exceeded") → Helm can't cleanly
+  uninstall while the cluster is being deleted. Drop it from state and re-run; it dies with the
+  cluster anyway: `terraform -chdir=terraform-eks state rm helm_release.<name>`, then
+  `./scripts/destroy.sh`.
+- **`values.yaml` looks wrong / the ALB says `CertificateNotFound`** → the file drifted from the live
+  stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and
+  `./scripts/sync-values-from-tf.sh` to fix it. Never edit those fields by hand.
 
 For the deeper technical details behind these, see the git history of this file and the plan documents in
 `docs/superpowers/plans/`.
