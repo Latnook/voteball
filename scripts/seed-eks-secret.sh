@@ -5,7 +5,7 @@
 # Values come from the environment, or are prompted for. Nothing is echoed, and nothing is written to
 # disk -- the plaintext admin password never leaves this process (only its hash is stored).
 #
-#   DB_PASS         must match db_password in your terraform-eks/voteball-eks.tfvars
+#   DB_PASS         must match db_password in your terraform/voteball.tfvars
 #   ADMIN_USERNAME  admin login for admin.html            (default: admin)
 #   ADMIN_PASSWORD  admin password; hashed here with werkzeug
 #   DB_USER         database user                          (default: postgres)

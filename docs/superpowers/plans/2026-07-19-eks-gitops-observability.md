@@ -4,13 +4,13 @@
 
 **Goal:** Layer continuous delivery and monitoring onto the live EKS app — ArgoCD adopting `charts/voteball` as a GitOps `Application`, a GitHub Actions pipeline (OIDC → build → Trivy scan → ECR → tag-bump → ArgoCD auto-sync), and kube-prometheus-stack (Prometheus + Grafana, metrics).
 
-**Architecture:** ArgoCD + kube-prometheus-stack install as `terraform-eks` add-ons (`helm_release`). A GitHub OIDC provider + a repo-scoped IAM role (Terraform) let GitHub Actions push to ECR with **no stored keys**. An ArgoCD `Application` (committed at `argocd/voteball-application.yaml`) watches `github.com/Latnook/voteball` (public — no deploy key) `master` `charts/voteball` and auto-syncs `devops-app`, *adopting* the currently helm-installed resources in place. The chart stays the single source of truth; ArgoCD is the delivery mechanism, CI just builds/scans/pushes and bumps the image tag.
+**Architecture:** ArgoCD + kube-prometheus-stack install as `terraform` add-ons (`helm_release`). A GitHub OIDC provider + a repo-scoped IAM role (Terraform) let GitHub Actions push to ECR with **no stored keys**. An ArgoCD `Application` (committed at `argocd/voteball-application.yaml`) watches `github.com/Latnook/voteball` (public — no deploy key) `master` `charts/voteball` and auto-syncs `devops-app`, *adopting* the currently helm-installed resources in place. The chart stays the single source of truth; ArgoCD is the delivery mechanism, CI just builds/scans/pushes and bumps the image tag.
 
 **Tech Stack:** EKS 1.34, ArgoCD (argo/argo-cd chart), kube-prometheus-stack (prometheus-community), GitHub Actions + `aws-actions/configure-aws-credentials` OIDC + `aquasecurity/trivy-action`, `helm`, region `il-central-1`, account `590183895228`, repo `Latnook/voteball`.
 
 ## Global Constraints
 
-- Extends `terraform-eks/` (add-ons) + `charts/voteball` (unchanged; ArgoCD manages it) + new `argocd/` and `.github/workflows/`.
+- Extends `terraform/` (add-ons) + `charts/voteball` (unchanged; ArgoCD manages it) + new `argocd/` and `.github/workflows/`.
 - **No long-lived AWS keys** — CI uses OIDC federation to a repo-scoped role.
 - **No secrets in git** — ArgoCD needs none (public repo); the CI role ARN is a GitHub **repo variable** (not a secret), set manually.
 - **UIs are not public** — ArgoCD + Grafana via `kubectl port-forward` only (no Ingress/ALB).
@@ -24,11 +24,11 @@
 
 ### Task 1: kube-prometheus-stack (Prometheus + Grafana)
 
-**Files:** Create `terraform-eks/addon-monitoring.tf`
+**Files:** Create `terraform/addon-monitoring.tf`
 
 - [ ] **Step 1: Verify chart version** — `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts 2>/dev/null; helm repo update >/dev/null; helm search repo prometheus-community/kube-prometheus-stack --versions | head -3`
 
-- [ ] **Step 2: Create `terraform-eks/addon-monitoring.tf`**
+- [ ] **Step 2: Create `terraform/addon-monitoring.tf`**
 
 ```hcl
 # kube-prometheus-stack: Prometheus + Grafana + node-exporter + kube-state-metrics. Metrics only
@@ -65,24 +65,24 @@ resource "helm_release" "kube_prometheus_stack" {
 - [ ] **Step 3: Init + apply + verify**
 
 ```bash
-cd terraform-eks && terraform init -input=false && terraform apply -var-file=voteball-eks.tfvars && cd ..
+cd terraform && terraform init -input=false && terraform apply -var-file=voteball.tfvars && cd ..
 kubectl get pods -n monitoring                 # prometheus, grafana, operator, node-exporter, kube-state-metrics Running
 kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana 3000:80 &
 # browse http://localhost:3000  (admin / voteball-admin) -> Dashboards -> "Kubernetes / Compute Resources / Namespace (Pods)"
 ```
 Expected: monitoring pods Running; Grafana loads with cluster/pod dashboards populated (metrics-server + node-exporter feeding).
 
-- [ ] **Step 4: Commit** — `git add terraform-eks/addon-monitoring.tf && git commit -m "Add kube-prometheus-stack (Prometheus + Grafana, metrics)" && git push`
+- [ ] **Step 4: Commit** — `git add terraform/addon-monitoring.tf && git commit -m "Add kube-prometheus-stack (Prometheus + Grafana, metrics)" && git push`
 
 ---
 
 ### Task 2: ArgoCD (install)
 
-**Files:** Create `terraform-eks/addon-argocd.tf`
+**Files:** Create `terraform/addon-argocd.tf`
 
 - [ ] **Step 1: Verify chart version** — `helm repo add argo https://argoproj.github.io/argo-helm 2>/dev/null; helm repo update >/dev/null; helm search repo argo/argo-cd --versions | head -3`
 
-- [ ] **Step 2: Create `terraform-eks/addon-argocd.tf`**
+- [ ] **Step 2: Create `terraform/addon-argocd.tf`**
 
 ```hcl
 # ArgoCD: GitOps delivery. UI is ClusterIP (port-forward, not public). No repo credentials needed --
@@ -100,14 +100,14 @@ resource "helm_release" "argocd" {
 - [ ] **Step 3: Apply + get the initial admin password**
 
 ```bash
-cd terraform-eks && terraform apply -var-file=voteball-eks.tfvars && cd ..
+cd terraform && terraform apply -var-file=voteball.tfvars && cd ..
 kubectl get pods -n argocd    # argocd-server, repo-server, application-controller, redis, dex Running
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
 kubectl port-forward -n argocd svc/argocd-server 8080:443 &   # browse https://localhost:8080 (user admin)
 ```
 Expected: ArgoCD pods Running; UI reachable with the printed admin password.
 
-- [ ] **Step 4: Commit** — `git add terraform-eks/addon-argocd.tf && git commit -m "Add ArgoCD (GitOps delivery)" && git push`
+- [ ] **Step 4: Commit** — `git add terraform/addon-argocd.tf && git commit -m "Add ArgoCD (GitOps delivery)" && git push`
 
 ---
 
@@ -168,9 +168,9 @@ helm list -n devops-app    # voteball no longer listed; app still Running
 
 ### Task 4: GitHub OIDC provider + CI IAM role (Terraform)
 
-**Files:** Create `terraform-eks/github-oidc.tf`; Modify `terraform-eks/outputs.tf`
+**Files:** Create `terraform/github-oidc.tf`; Modify `terraform/outputs.tf`
 
-- [ ] **Step 1: Create `terraform-eks/github-oidc.tf`**
+- [ ] **Step 1: Create `terraform/github-oidc.tf`**
 
 ```hcl
 # Lets GitHub Actions assume a scoped role via OIDC -- no long-lived AWS keys. The trust is limited to
@@ -236,7 +236,7 @@ resource "aws_iam_role_policy" "github_actions_ecr" {
 }
 ```
 
-- [ ] **Step 2: Add the role ARN output to `terraform-eks/outputs.tf`**
+- [ ] **Step 2: Add the role ARN output to `terraform/outputs.tf`**
 
 ```hcl
 output "github_actions_role_arn" {
@@ -248,12 +248,12 @@ output "github_actions_role_arn" {
 - [ ] **Step 3: Init + apply + capture the ARN**
 
 ```bash
-cd terraform-eks && terraform init -input=false && terraform apply -var-file=voteball-eks.tfvars
+cd terraform && terraform init -input=false && terraform apply -var-file=voteball.tfvars
 terraform output -raw github_actions_role_arn ; echo ; cd ..
 ```
 Expected: `Apply complete!`; the role ARN printed.
 
-- [ ] **Step 4: Commit** — `git add terraform-eks/github-oidc.tf terraform-eks/outputs.tf terraform-eks/.terraform.lock.hcl && git commit -m "Add GitHub OIDC provider + repo-scoped ECR-push role for CI" && git push`
+- [ ] **Step 4: Commit** — `git add terraform/github-oidc.tf terraform/outputs.tf terraform/.terraform.lock.hcl && git commit -m "Add GitHub OIDC provider + repo-scoped ECR-push role for CI" && git push`
 
 ---
 
@@ -360,7 +360,7 @@ git push
 # needs gh CLI authenticated with repo admin (or set it in GitHub UI: Settings > Secrets and variables
 # > Actions > Variables > New repository variable, name AWS_ROLE_ARN):
 gh variable set AWS_ROLE_ARN --repo Latnook/voteball \
-  --body "$(terraform -chdir=terraform-eks output -raw github_actions_role_arn)"
+  --body "$(terraform -chdir=terraform output -raw github_actions_role_arn)"
 ```
 
 - [ ] **Step 2: Trigger + watch the pipeline**

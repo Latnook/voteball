@@ -2,14 +2,14 @@
 # Single source of truth for this deployment's identity. Sourced by every script in scripts/.
 #
 # Nothing here is specific to one AWS account, region or domain: fork the repo, edit
-# terraform-eks/voteball-eks.tfvars, and every script follows.
+# terraform/voteball.tfvars, and every script follows.
 #
 # Two phases, because find-latest-snapshot.sh runs BEFORE `terraform apply` exists:
-#   pre-apply  -> parsed from voteball-eks.tfvars (falling back to the defaults in variables.tf)
+#   pre-apply  -> parsed from voteball.tfvars (falling back to the defaults in variables.tf)
 #   post-apply -> read from `terraform output` (account id, ECR registry)
 
-TF_DIR="${TF_DIR:-terraform-eks}"
-TFVARS="${TFVARS:-$TF_DIR/voteball-eks.tfvars}"
+TF_DIR="${TF_DIR:-terraform}"
+TFVARS="${TFVARS:-$TF_DIR/voteball.tfvars}"
 
 # Read `name = "value"` out of the tfvars file. $2 is the fallback when the key is absent.
 # Deliberately tolerant of spacing and of unquoted values.
@@ -21,7 +21,7 @@ tfvar() {
   printf '%s' "${val:-$fallback}"
 }
 
-# Defaults here MUST match the defaults in terraform-eks/variables.tf.
+# Defaults here MUST match the defaults in terraform/variables.tf.
 REGION="$(tfvar aws_region il-central-1)"
 CLUSTER="$(tfvar cluster_name voteball)"
 APP_DOMAIN="$(tfvar app_domain)"       # no default -- required variable
@@ -44,7 +44,7 @@ require_config() {
   [ -n "$APP_DOMAIN" ] || { echo "ERROR: app_domain is not set in $TFVARS" >&2; missing=1; }
   [ -n "$ZONE_NAME" ] || { echo "ERROR: route53_zone_name is not set in $TFVARS" >&2; missing=1; }
   if [ "$missing" != "0" ]; then
-    echo "       Copy terraform-eks/voteball-eks.tfvars.example and fill it in." >&2
+    echo "       Copy terraform/voteball.tfvars.example and fill it in." >&2
     exit 1
   fi
 }

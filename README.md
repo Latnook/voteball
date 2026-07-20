@@ -46,8 +46,8 @@ done — `./scripts/destroy.sh` takes a final database snapshot, so nothing is l
 **1. Configure — this is the only file with your identity in it:**
 
 ```bash
-cd terraform-eks
-cp voteball-eks.tfvars.example voteball-eks.tfvars
+cd terraform
+cp voteball.tfvars.example voteball.tfvars
 ```
 
 Set four values in it: `app_domain`, `route53_zone_name`, `db_password`, `notification_email`.

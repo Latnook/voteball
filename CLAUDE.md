@@ -9,7 +9,7 @@ Voteball is a public poll correlating football fandom with Israeli political-par
 (S3App) repo but is fully independent — no shared code or state.
 
 **The repo is designed to be forkable**: no AWS account, region or domain is hardcoded anywhere in
-code. Identity lives in exactly two places — `terraform-eks/voteball-eks.tfvars` (pre-apply) and
+code. Identity lives in exactly two places — `terraform/voteball.tfvars` (pre-apply) and
 `terraform output` (post-apply) — both read through `scripts/lib/config.sh`. The env-specific fields of
 `charts/voteball/values.yaml` are marked `FILLED-BY-SYNC` and written by
 `scripts/sync-values-from-tf.sh`. **If you add a hardcoded ARN, bucket, registry or domain anywhere,
@@ -17,7 +17,7 @@ that is a bug.**
 
 > **The single-node k3s deployment is RETIRED and its code was removed on 2026-07-20** (the `terraform/`
 > stack, the Ansible playbook/roles, and the SSH-based reverse-seed script — all recoverable from git
-> history). The live deployment is `terraform-eks/` + `charts/voteball/`, and the app source is in
+> history). The live deployment is `terraform/` + `charts/voteball/`, and the app source is in
 > `services/{backend,worker,frontend,backup}/`, one Docker build context each.
 
 **Plans live in `docs/superpowers/plans/`** — the EKS migration was built as a sequence of task-by-task
@@ -39,7 +39,7 @@ every single edit separately, and never force-push.
 
 ## Architecture
 
-Three containers in the `devops-app` namespace on EKS, provisioned by the `terraform-eks/` stack and
+Three containers in the `devops-app` namespace on EKS, provisioned by the `terraform/` stack and
 delivered by the `charts/voteball` Helm chart (synced by ArgoCD):
 
 - **frontend** — nginx serving plain HTML/CSS/vanilla JS (no build step), reverse-proxying `/api/*` to
@@ -118,12 +118,12 @@ trust as pre-escaped HTML.
 
 **`docs/deploy.md` is the plain-language runbook** — follow it for real deploys. Summary of the split:
 
-- **Terraform (`terraform-eks/`)** builds everything AWS: dedicated VPC, EKS cluster + Spot node group,
+- **Terraform (`terraform/`)** builds everything AWS: dedicated VPC, EKS cluster + Spot node group,
   OIDC/IRSA roles, ECR, ACM, S3, SNS, Secrets Manager (container only), RDS (restored from a pinned
   snapshot), **and every platform add-on** via `helm_release`/`aws_eks_addon` (AWS Load Balancer
   Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
   Container Insights, metrics-server, external-dns, ArgoCD, kube-prometheus-stack). Needs
-  `terraform-eks/voteball-eks.tfvars` (gitignored) and `-var-file=voteball-eks.tfvars`.
+  `terraform/voteball.tfvars` (gitignored) and `-var-file=voteball.tfvars`.
 - **Helm (`charts/voteball`)** is the app itself (namespace `devops-app`): 3 Deployments, Services,
   Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
   **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
@@ -178,7 +178,7 @@ See `docs/security.md`.
 Seed the values with `./scripts/seed-eks-secret.sh`, which takes `DB_PASS`, `ADMIN_USERNAME` and
 `ADMIN_PASSWORD` from the environment or a silent prompt, hashes the password with `werkzeug` and
 generates `ADMIN_SESSION_SECRET` itself. Nothing is echoed or written to disk. **`DB_PASS` must match
-`db_password` in `terraform-eks/voteball-eks.tfvars`** — Terraform sets the RDS master password from
+`db_password` in `terraform/voteball.tfvars`** — Terraform sets the RDS master password from
 that variable (including on a snapshot restore, which is what keeps the two in sync).
 
 *(The old ansible-vault mechanism was removed with the k3s stack on 2026-07-20.)*
@@ -187,14 +187,14 @@ See `docs/deploy.md` for the full deploy/destroy runbook.
 
 ## Common commands
 
-### Terraform (`terraform-eks/` — the live stack)
+### Terraform (`terraform/` — the live stack)
 
 ```bash
-cd terraform-eks
+cd terraform
 terraform init             # use `init -upgrade` after adding a module (pulls its provider deps)
 terraform validate
 terraform fmt -recursive   # run before committing any .tf change
-terraform plan  -var-file=voteball-eks.tfvars
+terraform plan  -var-file=voteball.tfvars
 ```
 
 `terraform apply` creates real, billed AWS resources (EKS control plane, NAT, nodes, RDS, ALB ≈
@@ -259,7 +259,7 @@ note ArgoCD's `selfHeal` will fight you.
 
 ## Key constraints
 
-- Region and domain come from `terraform-eks/voteball-eks.tfvars` (defaults: `il-central-1`, 2 AZs);
+- Region and domain come from `terraform/voteball.tfvars` (defaults: `il-central-1`, 2 AZs);
   EKS VPC `10.0.0.0/16` (public / private / isolated-DB subnets, single NAT). Kubernetes namespace **`devops-app`** (never `default`).
 - Resource name prefix = `cluster_name` (default `voteball`); single environment only — no dev/prod split, no multi-instance mode
   (this is deliberately simpler than the S3App precedent it was bootstrapped from).
@@ -280,7 +280,7 @@ note ArgoCD's `selfHeal` will fight you.
 ## Gitignored / generated files
 
 Gitignored — either real secrets or machine-specific/generated output:
-`terraform-eks/voteball-eks.tfvars`, `terraform-eks/terraform.tfstate*`
+`terraform/voteball.tfvars`, `terraform/terraform.tfstate*`
 (the `*` glob matters — Terraform writes *timestamped* backups like `terraform.tfstate.1784477786.backup`
 that a bare `.backup` pattern misses), `*.tfplan`/`tfplan`, `*.pem`, `*.pdf` (course reference material),
 `.remember/`, `.claude/settings.local.json`, and `EXPLAINER.md`/`PROJECT-QA.md` (personal notes).

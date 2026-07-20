@@ -65,7 +65,7 @@ flowchart LR
   directly in-VPC.
 
 ## What builds what
-- **Terraform (`terraform-eks/`):** the VPC, EKS cluster + node group, RDS, ECR, ACM, S3, SNS, Secrets
+- **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS, ECR, ACM, S3, SNS, Secrets
   Manager (container only), IRSA roles, and every platform add-on.
 - **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box.
 - **GitHub Actions:** builds/scans/pushes images and bumps the chart's image tag; ArgoCD syncs it.

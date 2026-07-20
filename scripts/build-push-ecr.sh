@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the four app images and push them to ECR with a git-SHA tag.
-# Requires: docker, aws CLI credentials for your account, and an applied terraform-eks stack.
+# Requires: docker, aws CLI credentials for your account, and an applied terraform stack.
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 

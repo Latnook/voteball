@@ -11,7 +11,7 @@ the full security design see [`docs/security.md`](docs/security.md).)
   (nginx, static site + `/api` proxy), **backend** (Flask/gunicorn API), **worker** (batch rollup poller)
   — plus their Services, an **Ingress→ALB**, ConfigMap, an ESO **ExternalSecret**, 4 ServiceAccounts,
   NetworkPolicies, HPA, PDBs, and a nightly **backup CronJob**.
-- **Outside Kubernetes (AWS, via `terraform-eks/`):** the EKS cluster + Spot node group, a dedicated VPC
+- **Outside Kubernetes (AWS, via `terraform/`):** the EKS cluster + Spot node group, a dedicated VPC
   (public/private/DB subnets, NAT), **RDS** Postgres, **ECR**, **ACM** cert, **S3**, **SNS**, **Secrets
   Manager**, and the platform add-ons (AWS Load Balancer Controller, External Secrets Operator, Cluster
   Autoscaler, Node Termination Handler, CloudWatch Container Insights, metrics-server, external-dns,
@@ -70,7 +70,7 @@ milestone email), and **pod-restart-stays-up** (`kubectl delete pod` a frontend 
 ```bash
 kubectl delete application voteball -n argocd     # stop GitOps self-heal
 kubectl delete ingress voteball -n devops-app     # de-provision the ALB first
-cd terraform-eks && terraform destroy -var-file=voteball-eks.tfvars
+cd terraform && terraform destroy -var-file=voteball.tfvars
 ```
 
 Removes the cluster, add-ons, VPC, RDS, ECR, S3, SNS, Secrets Manager, IAM. (S3/ECR have

@@ -13,7 +13,7 @@ Spec: `docs/superpowers/specs/2026-07-20-deployment-hardening-design.md`
 ## Global Constraints
 
 - Region `il-central-1`; account `590183895228`; cluster/prefix `voteball`; namespace `devops-app`.
-- Terraform commands always take `-var-file=voteball-eks.tfvars` (gitignored).
+- Terraform commands always take `-var-file=voteball.tfvars` (gitignored).
 - `terraform fmt -recursive` before committing any `.tf` change.
 - Never run `terraform apply`/`destroy` unattended — orchestrators must stop for confirmation.
 - No new tool dependencies beyond what `docs/deploy.md` already requires (terraform, aws, kubectl, helm, docker, python3, ansible-vault).
@@ -29,12 +29,12 @@ Spec: `docs/superpowers/specs/2026-07-20-deployment-hardening-design.md`
 | `scripts/sync-values-from-tf.sh` | Sole writer of env-specific fields in `values.yaml`; `--check` preflight | Create |
 | `scripts/deploy.sh` | Ordered deploy sequence, stops before `terraform apply` | Create |
 | `scripts/destroy.sh` | Ordered teardown, stops before `terraform destroy` | Create |
-| `scripts/find-latest-snapshot.sh` | Resolve newest snapshot → `terraform-eks/snapshot.auto.tfvars` | Rewrite |
-| `terraform-eks/addon-alb.tf` | Disable service-mutator webhook | Modify |
-| `terraform-eks/addon-external-dns.tf` | `policy=sync` | Modify |
-| `terraform-eks/database.tf` | Final snapshot on destroy | Modify |
-| `terraform-eks/variables.tf` | `db_snapshot_identifier` default → `null` | Modify |
-| `terraform-eks/versions.tf` | Add `hashicorp/time` provider | Modify |
+| `scripts/find-latest-snapshot.sh` | Resolve newest snapshot → `terraform/snapshot.auto.tfvars` | Rewrite |
+| `terraform/addon-alb.tf` | Disable service-mutator webhook | Modify |
+| `terraform/addon-external-dns.tf` | `policy=sync` | Modify |
+| `terraform/database.tf` | Final snapshot on destroy | Modify |
+| `terraform/variables.tf` | `db_snapshot_identifier` default → `null` | Modify |
+| `terraform/versions.tf` | Add `hashicorp/time` provider | Modify |
 | `docs/deploy.md` | Runbook rewritten around the two orchestrators | Rewrite |
 | `CLAUDE.md` | Deployment section reflects new scripts | Modify |
 
@@ -167,7 +167,7 @@ Create `scripts/sync-values-from-tf.sh`:
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
-TF_DIR="terraform-eks"
+TF_DIR="terraform"
 VALUES="charts/voteball/values.yaml"
 CHECK_ONLY=0
 TAG=""
@@ -276,7 +276,7 @@ if check_only:
         print("\n".join(changed))
         print("\nRun: ./scripts/sync-values-from-tf.sh")
         sys.exit(1)
-    print(f"values.yaml is in sync with {os.environ.get('TF_DIR', 'terraform-eks')}.")
+    print(f"values.yaml is in sync with {os.environ.get('TF_DIR', 'terraform')}.")
     sys.exit(0)
 
 if not changed:
@@ -322,7 +322,7 @@ git push
 ### Task 2: Disable the ALB service-mutator webhook
 
 **Files:**
-- Modify: `terraform-eks/addon-alb.tf`
+- Modify: `terraform/addon-alb.tf`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -338,7 +338,7 @@ Expected: empty output. If anything is listed, STOP — disabling the webhook wo
 
 - [ ] **Step 2: Add the chart value**
 
-In `terraform-eks/addon-alb.tf`, append inside `resource "helm_release" "aws_load_balancer_controller"`, after the existing `serviceAccount.annotations...` block:
+In `terraform/addon-alb.tf`, append inside `resource "helm_release" "aws_load_balancer_controller"`, after the existing `serviceAccount.annotations...` block:
 
 ```hcl
   # The service mutator webhook exists ONLY to make this controller the default for new Services of
@@ -358,8 +358,8 @@ In `terraform-eks/addon-alb.tf`, append inside `resource "helm_release" "aws_loa
 - [ ] **Step 3: Validate**
 
 ```bash
-terraform -chdir=terraform-eks fmt -recursive
-terraform -chdir=terraform-eks validate
+terraform -chdir=terraform fmt -recursive
+terraform -chdir=terraform validate
 ```
 
 Expected: `Success! The configuration is valid.`
@@ -367,8 +367,8 @@ Expected: `Success! The configuration is valid.`
 - [ ] **Step 4: Commit**
 
 ```bash
-git add terraform-eks/addon-alb.tf
-git commit -m "terraform-eks: disable ALB service-mutator webhook (root fix for add-on race)"
+git add terraform/addon-alb.tf
+git commit -m "terraform: disable ALB service-mutator webhook (root fix for add-on race)"
 git push
 ```
 
@@ -378,11 +378,11 @@ git push
 
 **Files:**
 - Rewrite: `scripts/find-latest-snapshot.sh`
-- Modify: `terraform-eks/database.tf`, `terraform-eks/variables.tf`, `terraform-eks/versions.tf`
+- Modify: `terraform/database.tf`, `terraform/variables.tf`, `terraform/versions.tf`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
-- Produces: `terraform-eks/snapshot.auto.tfvars` containing `db_snapshot_identifier = "<id>"` or `db_snapshot_identifier = null`. Terraform auto-loads `*.auto.tfvars`.
+- Produces: `terraform/snapshot.auto.tfvars` containing `db_snapshot_identifier = "<id>"` or `db_snapshot_identifier = null`. Terraform auto-loads `*.auto.tfvars`.
 
 - [ ] **Step 1: Confirm the gitignore covers the new auto.tfvars path**
 
@@ -393,7 +393,7 @@ grep -n "auto.tfvars" .gitignore || echo "NOT IGNORED"
 If it prints `NOT IGNORED` or only matches `terraform/`, add this line to `.gitignore`:
 
 ```
-terraform-eks/snapshot.auto.tfvars
+terraform/snapshot.auto.tfvars
 ```
 
 - [ ] **Step 2: Rewrite the snapshot finder**
@@ -404,7 +404,7 @@ Replace the entire contents of `scripts/find-latest-snapshot.sh`:
 #!/usr/bin/env bash
 # Usage: ./scripts/find-latest-snapshot.sh
 # Picks the newest manual RDS snapshot from EITHER voteball lineage (the retired k3s `voteball-db`
-# or the current `voteball-eks-db`) and writes it to terraform-eks/snapshot.auto.tfvars, which
+# or the current `voteball-eks-db`) and writes it to terraform/snapshot.auto.tfvars, which
 # Terraform auto-loads. Run before `terraform apply`; scripts/deploy.sh does this for you.
 #
 # Writes `db_snapshot_identifier = null` when no snapshot exists, so a first-ever deploy creates an
@@ -412,7 +412,7 @@ Replace the entire contents of `scripts/find-latest-snapshot.sh`:
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TF_DIR="$SCRIPT_DIR/../terraform-eks"
+TF_DIR="$SCRIPT_DIR/../terraform"
 AUTO_TFVARS="$TF_DIR/snapshot.auto.tfvars"
 REGION="il-central-1"
 
@@ -449,14 +449,14 @@ fi
 ```bash
 bash -n scripts/find-latest-snapshot.sh
 ./scripts/find-latest-snapshot.sh
-cat terraform-eks/snapshot.auto.tfvars
+cat terraform/snapshot.auto.tfvars
 ```
 
 Expected: `Found voteball-db-final-20260719175321 — next apply will restore from it.` and the file contains that identifier. (That is currently the only manual snapshot in the account.)
 
 - [ ] **Step 4: Add the `time` provider**
 
-In `terraform-eks/versions.tf`, add inside `required_providers`:
+In `terraform/versions.tf`, add inside `required_providers`:
 
 ```hcl
     time = {
@@ -467,7 +467,7 @@ In `terraform-eks/versions.tf`, add inside `required_providers`:
 
 - [ ] **Step 5: Take a final snapshot on destroy**
 
-In `terraform-eks/database.tf`, add above `resource "aws_db_instance" "app"`:
+In `terraform/database.tf`, add above `resource "aws_db_instance" "app"`:
 
 ```hcl
 # Fixed at apply time so the final-snapshot name below is stable across plans (a bare timestamp()
@@ -514,7 +514,7 @@ with:
 
 - [ ] **Step 6: Default the snapshot variable to null**
 
-In `terraform-eks/variables.tf`, in `variable "db_snapshot_identifier"`, replace:
+In `terraform/variables.tf`, in `variable "db_snapshot_identifier"`, replace:
 
 ```hcl
   default     = "voteball-db-final-20260719175321"
@@ -524,7 +524,7 @@ with:
 
 ```hcl
   # null, NOT a pinned identifier: scripts/find-latest-snapshot.sh writes the real value into
-  # terraform-eks/snapshot.auto.tfvars before every apply. A hardcoded default silently hard-fails
+  # terraform/snapshot.auto.tfvars before every apply. A hardcoded default silently hard-fails
   # ("DBSnapshot not found") the moment that one snapshot is pruned.
   default = null
 ```
@@ -532,9 +532,9 @@ with:
 - [ ] **Step 7: Validate**
 
 ```bash
-terraform -chdir=terraform-eks init -upgrade
-terraform -chdir=terraform-eks fmt -recursive
-terraform -chdir=terraform-eks validate
+terraform -chdir=terraform init -upgrade
+terraform -chdir=terraform fmt -recursive
+terraform -chdir=terraform validate
 ```
 
 Expected: provider `hashicorp/time` installed, then `Success! The configuration is valid.`
@@ -542,7 +542,7 @@ Expected: provider `hashicorp/time` installed, then `Success! The configuration 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add scripts/find-latest-snapshot.sh terraform-eks/database.tf terraform-eks/variables.tf terraform-eks/versions.tf terraform-eks/.terraform.lock.hcl .gitignore
+git add scripts/find-latest-snapshot.sh terraform/database.tf terraform/variables.tf terraform/versions.tf terraform/.terraform.lock.hcl .gitignore
 git commit -m "Make DB snapshot lifecycle self-sustaining (final snapshot on destroy, both lineages)"
 git push
 ```
@@ -552,7 +552,7 @@ git push
 ### Task 4: external-dns clean teardown
 
 **Files:**
-- Modify: `terraform-eks/addon-external-dns.tf`
+- Modify: `terraform/addon-external-dns.tf`
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
@@ -570,7 +570,7 @@ Expected: a record count printed. Keep this file — Task 7 diffs against it to 
 
 - [ ] **Step 2: Switch the policy**
 
-In `terraform-eks/addon-external-dns.tf`, replace:
+In `terraform/addon-external-dns.tf`, replace:
 
 ```hcl
   set {
@@ -598,8 +598,8 @@ Also update the header comment on the `helm_release` — replace `policy=upsert-
 - [ ] **Step 3: Validate**
 
 ```bash
-terraform -chdir=terraform-eks fmt -recursive
-terraform -chdir=terraform-eks validate
+terraform -chdir=terraform fmt -recursive
+terraform -chdir=terraform validate
 ```
 
 Expected: `Success! The configuration is valid.`
@@ -607,8 +607,8 @@ Expected: `Success! The configuration is valid.`
 - [ ] **Step 4: Commit**
 
 ```bash
-git add terraform-eks/addon-external-dns.tf
-git commit -m "terraform-eks: external-dns policy=sync so teardown removes its own DNS records"
+git add terraform/addon-external-dns.tf
+git commit -m "terraform: external-dns policy=sync so teardown removes its own DNS records"
 git push
 ```
 
@@ -634,12 +634,12 @@ cd "$(dirname "$0")/.."   # repo root
 
 REGION="il-central-1"
 CLUSTER="voteball"
-TFVARS="voteball-eks.tfvars"
+TFVARS="voteball.tfvars"
 
 step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 
-if [ ! -f "terraform-eks/$TFVARS" ]; then
-  echo "ERROR: terraform-eks/$TFVARS is missing (see docs/deploy.md, One-time setup)." >&2
+if [ ! -f "terraform/$TFVARS" ]; then
+  echo "ERROR: terraform/$TFVARS is missing (see docs/deploy.md, One-time setup)." >&2
   exit 1
 fi
 
@@ -648,8 +648,8 @@ step "1/8  Resolving the newest DB snapshot"
 
 step "2/8  Building AWS infrastructure (Terraform will ask you to confirm)"
 echo "This creates real, billed resources (~\$200/month while up)."
-terraform -chdir=terraform-eks init -upgrade
-terraform -chdir=terraform-eks apply -var-file="$TFVARS"
+terraform -chdir=terraform init -upgrade
+terraform -chdir=terraform apply -var-file="$TFVARS"
 
 step "3/8  Seeding app credentials into Secrets Manager"
 ./scripts/seed-eks-secret.sh
@@ -703,7 +703,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
 REGION="il-central-1"
-TFVARS="voteball-eks.tfvars"
+TFVARS="voteball.tfvars"
 
 step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 
@@ -730,7 +730,7 @@ step "4/5  Uninstalling the Helm release"
 helm uninstall voteball -n devops-app --ignore-not-found || true
 
 step "5/5  Destroying AWS infrastructure (Terraform will ask you to confirm)"
-terraform -chdir=terraform-eks destroy -var-file="$TFVARS"
+terraform -chdir=terraform destroy -var-file="$TFVARS"
 
 cat <<'EOF'
 
@@ -739,7 +739,7 @@ Teardown complete. A final DB snapshot was taken -- the next deploy restores fro
   If destroy hung uninstalling a helm_release ("context deadline exceeded"), Helm cannot cleanly
   uninstall while the cluster is being deleted. Drop that release from state and re-run; it dies
   with the cluster anyway:
-      terraform -chdir=terraform-eks state rm helm_release.<name>
+      terraform -chdir=terraform state rm helm_release.<name>
       ./scripts/destroy.sh
 EOF
 ```
@@ -846,7 +846,7 @@ Under "If something breaks", add:
   (`sudo resolvectl flush-caches`) or try a private browser window.
 - **`terraform destroy` hangs on a `helm_release`** ("context deadline exceeded") → Helm can't cleanly
   uninstall while the cluster is being deleted. Drop it from state and re-run; it dies with the
-  cluster anyway: `terraform -chdir=terraform-eks state rm helm_release.<name>`, then
+  cluster anyway: `terraform -chdir=terraform state rm helm_release.<name>`, then
   `./scripts/destroy.sh`.
 - **`values.yaml` looks wrong / the ALB says `CertificateNotFound`** → the file drifted from the live
   stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and
@@ -899,8 +899,8 @@ git push
 - [ ] **Step 1: Static checks**
 
 ```bash
-terraform -chdir=terraform-eks fmt -check -recursive
-terraform -chdir=terraform-eks validate
+terraform -chdir=terraform fmt -check -recursive
+terraform -chdir=terraform validate
 helm lint charts/voteball
 helm template voteball charts/voteball --namespace devops-app >/dev/null && echo "template OK"
 ./scripts/tests/test-sync-values.sh

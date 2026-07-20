@@ -4,7 +4,7 @@
 
 **Goal:** Make the repo a clean, forkable project: delete the retired stack, move app source to `services/`, and remove every hardcoded AWS account, domain and region from code.
 
-**Architecture:** Identity resolves from exactly two places — `terraform-eks/voteball-eks.tfvars` before Terraform exists, and `terraform output` after. `scripts/lib/config.sh` is the only thing that reads them; every other script sources it.
+**Architecture:** Identity resolves from exactly two places — `terraform/voteball.tfvars` before Terraform exists, and `terraform output` after. `scripts/lib/config.sh` is the only thing that reads them; every other script sources it.
 
 **Tech Stack:** Terraform (AWS ~> 5.0), Helm 3, bash, python3, Docker, GitHub Actions.
 
@@ -26,7 +26,7 @@ Spec: `docs/superpowers/specs/2026-07-20-repo-forkability-design.md`
 ```
 services/{backend,worker,frontend,backup}/   app source, one Docker build context each
 charts/voteball/                             Helm chart (unchanged location)
-terraform-eks/                               the only Terraform stack
+terraform/                               the only Terraform stack
 scripts/                                     deploy.sh, destroy.sh, + lib/config.sh
 argocd/, docs/, .github/workflows/ci.yml
 README.md, README.submission.md, CLAUDE.md, LICENSE
@@ -157,13 +157,13 @@ git add -A && git commit -q -m "Move app source to services/ (out of the retired
 
 ### Task 3: Central config + Terraform outputs
 
-**Files:** create `scripts/lib/config.sh`; modify `terraform-eks/outputs.tf`, `terraform-eks/variables.tf`.
+**Files:** create `scripts/lib/config.sh`; modify `terraform/outputs.tf`, `terraform/variables.tf`.
 
 **Interfaces:** `config.sh` exports `REGION`, `CLUSTER`, `APP_DOMAIN`, `ZONE_NAME`, and provides `tf_out <name>`.
 
 - [ ] **Step 1: Make the maintainer-specific variables required**
 
-In `terraform-eks/variables.tf`, remove the default from `app_domain`:
+In `terraform/variables.tf`, remove the default from `app_domain`:
 
 ```hcl
 variable "app_domain" {
@@ -192,7 +192,7 @@ data "aws_route53_zone" "primary" {
 
 - [ ] **Step 2: Add the outputs a forker's scripts need**
 
-Append to `terraform-eks/outputs.tf`:
+Append to `terraform/outputs.tf`:
 
 ```hcl
 output "ecr_registry" {
@@ -215,13 +215,13 @@ If `data "aws_caller_identity" "current"` is not already declared in the stack, 
 # Single source of truth for this deployment's identity. Sourced by every script in scripts/.
 #
 # Two phases, because find-latest-snapshot.sh runs BEFORE `terraform apply` exists:
-#   pre-apply  -> parsed from terraform-eks/voteball-eks.tfvars (falling back to variables.tf defaults)
+#   pre-apply  -> parsed from terraform/voteball.tfvars (falling back to variables.tf defaults)
 #   post-apply -> read from `terraform output` (account id, ECR registry)
 #
 # Nothing here is specific to one AWS account or domain: fork the repo, edit your tfvars, done.
 
-TF_DIR="${TF_DIR:-terraform-eks}"
-TFVARS="${TFVARS:-$TF_DIR/voteball-eks.tfvars}"
+TF_DIR="${TF_DIR:-terraform}"
+TFVARS="${TFVARS:-$TF_DIR/voteball.tfvars}"
 
 # Read `name = "value"` from the tfvars file; $2 is the fallback when unset.
 tfvar() {
@@ -251,14 +251,14 @@ require_config() {
   local missing=0
   [ -n "$APP_DOMAIN" ] || { echo "ERROR: app_domain not set in $TFVARS" >&2; missing=1; }
   [ -n "$ZONE_NAME" ]  || { echo "ERROR: route53_zone_name not set in $TFVARS" >&2; missing=1; }
-  [ "$missing" = "0" ] || { echo "See terraform-eks/voteball-eks.tfvars.example" >&2; exit 1; }
+  [ "$missing" = "0" ] || { echo "See terraform/voteball.tfvars.example" >&2; exit 1; }
 }
 ```
 
 - [ ] **Step 4: Validate**
 
 ```bash
-terraform -chdir=terraform-eks fmt -recursive && terraform -chdir=terraform-eks validate
+terraform -chdir=terraform fmt -recursive && terraform -chdir=terraform validate
 bash -n scripts/lib/config.sh && echo "config.sh parses"
 ```
 
@@ -329,7 +329,7 @@ In `.github/workflows/ci.yml`:
 
 ```bash
 ./scripts/tests/test-sync-values.sh
-git grep -n "590183895228\|latnook\.com" -- scripts charts .github terraform-eks | grep -v example
+git grep -n "590183895228\|latnook\.com" -- scripts charts .github terraform | grep -v example
 ```
 
 Expected: test passes; the grep returns **nothing**.
@@ -420,7 +420,7 @@ git add -A && git commit -q -m "seed-eks-secret.sh: take credentials from env/pr
 
 ### Task 6: Make the from-zero database path work
 
-**Files:** modify `terraform-eks/database.tf`, `terraform-eks/variables.tf`.
+**Files:** modify `terraform/database.tf`, `terraform/variables.tf`.
 
 - [ ] **Step 1: Add the variables**
 
@@ -459,7 +459,7 @@ and extend the existing `lifecycle` block (created in the deployment-hardening p
 - [ ] **Step 3: Validate**
 
 ```bash
-terraform -chdir=terraform-eks fmt -recursive && terraform -chdir=terraform-eks validate
+terraform -chdir=terraform fmt -recursive && terraform -chdir=terraform validate
 ```
 
 Expected: valid. (A real plan needs credentials; correctness here is confirmed on the next deploy.)
@@ -474,12 +474,12 @@ git add -A && git commit -q -m "Support creating the database from scratch (db_u
 
 ### Task 7: README, LICENSE, tfvars example
 
-**Files:** modify `README.md`, `terraform-eks/voteball-eks.tfvars.example`, `docs/deploy.md`, `CLAUDE.md`; create `LICENSE`.
+**Files:** modify `README.md`, `terraform/voteball.tfvars.example`, `docs/deploy.md`, `CLAUDE.md`; create `LICENSE`.
 
-- [ ] **Step 1: Rewrite `voteball-eks.tfvars.example`** with every required variable, commented:
+- [ ] **Step 1: Rewrite `voteball.tfvars.example`** with every required variable, commented:
 
 ```hcl
-# Copy to voteball-eks.tfvars and fill in. This file is the only place your identity lives.
+# Copy to voteball.tfvars and fill in. This file is the only place your identity lives.
 aws_region         = "il-central-1"           # any region you have quota in
 cluster_name       = "voteball"               # name prefix for every AWS resource
 app_domain         = "voteball.example.com"   # REQUIRED: the public FQDN
@@ -514,7 +514,7 @@ for s in backend worker frontend backup; do docker build -q -t voteball-$s:test 
 (cd services/backend && python -m pytest tests/ -q | tail -1)
 (cd services/worker  && python -m pytest tests/ -q | tail -1)
 helm lint charts/voteball && helm template voteball charts/voteball -n devops-app >/dev/null && echo "  helm OK"
-terraform -chdir=terraform-eks fmt -check -recursive && terraform -chdir=terraform-eks validate
+terraform -chdir=terraform fmt -check -recursive && terraform -chdir=terraform validate
 ./scripts/tests/test-sync-values.sh | tail -1
 for f in scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh; do bash -n "$f" || echo "SYNTAX FAIL $f"; done
 ```
@@ -523,7 +523,7 @@ for f in scripts/*.sh scripts/lib/*.sh scripts/tests/*.sh; do bash -n "$f" || ec
 
 ```bash
 helm template voteball charts/voteball -n devops-app | grep -c "590183895228\|latnook" # expect 0
-git grep -n "590183895228\|latnook\.com" -- scripts charts .github terraform-eks services | grep -v example
+git grep -n "590183895228\|latnook\.com" -- scripts charts .github terraform services | grep -v example
 ```
 
 Expected: `0`, and the grep silent.

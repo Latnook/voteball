@@ -28,19 +28,19 @@ need a **Route53 hosted zone you already own** — the deploy looks it up, it ne
 Then create one settings file — the only place your own details live:
 
 ```bash
-cd terraform-eks
-cp voteball-eks.tfvars.example voteball-eks.tfvars
+cd terraform
+cp voteball.tfvars.example voteball.tfvars
 cd ..
 ```
 
-Open `terraform-eks/voteball-eks.tfvars` and set four things: `app_domain` (the web address you want),
+Open `terraform/voteball.tfvars` and set four things: `app_domain` (the web address you want),
 `route53_zone_name` (a domain you already manage in AWS Route53, with a trailing dot), `db_password`,
 and `notification_email`. Everything else already has a sensible default.
 
 During the deploy you'll also be asked for an admin username and password — those go straight into
 AWS's secret vault and are never written to a file.
 
-Keep a backup copy of `voteball-eks.tfvars` and, after your first run, `terraform-eks/terraform.tfstate`
+Keep a backup copy of `voteball.tfvars` and, after your first run, `terraform/terraform.tfstate`
 (a copy in a password manager is fine). They aren't in git, and losing them means cleaning up AWS by hand.
 
 ---
@@ -143,7 +143,7 @@ votes. (This changed on 2026-07-20 — teardown used to discard them.)
   deletes within seconds afterwards.
 - **`terraform destroy` hangs on a `helm_release`** ("context deadline exceeded") → Helm can't cleanly
   uninstall while the cluster is being deleted. Drop it from state and re-run; it dies with the
-  cluster anyway: `terraform -chdir=terraform-eks state rm helm_release.<name>`, then
+  cluster anyway: `terraform -chdir=terraform state rm helm_release.<name>`, then
   `./scripts/destroy.sh`.
 - **`values.yaml` looks wrong / the ALB says `CertificateNotFound`** → the file drifted from the live
   stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and

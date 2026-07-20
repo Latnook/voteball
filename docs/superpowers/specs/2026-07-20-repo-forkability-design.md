@@ -76,7 +76,7 @@ unaffected. Consumers to update: `.github/workflows/ci.yml` (path filters + buil
 `scripts/lib/config.sh`, sourced by every script, is the single place identity is resolved:
 
 - **Before Terraform exists** — `region`, `cluster_name`, `app_domain`, `route53_zone_name` are parsed
-  from `terraform-eks/voteball-eks.tfvars`, falling back to the variable defaults in `variables.tf`.
+  from `terraform/voteball.tfvars`, falling back to the variable defaults in `variables.tf`.
   This indirection is required because `find-latest-snapshot.sh` runs *before* `terraform apply`, so
   `terraform output` is not yet available.
 - **After apply** — account ID and ECR registry come from `terraform output`.
@@ -114,9 +114,9 @@ a restore, so it carries `ignore_changes` to avoid a spurious replacement diff.
 
 ### 6. Repo hygiene
 
-- `README.md` gains a Quickstart: fork → set four values in `voteball-eks.tfvars` → export three
+- `README.md` gains a Quickstart: fork → set four values in `voteball.tfvars` → export three
   secrets → `./scripts/deploy.sh`.
-- `terraform-eks/voteball-eks.tfvars.example` updated with every required variable and comments.
+- `terraform/voteball.tfvars.example` updated with every required variable and comments.
 - Add a `LICENSE` (MIT).
 - `.gitignore` gains `.remember/` and `.claude/settings.local.json` — currently untracked but one
   `git add -A` away from being committed.

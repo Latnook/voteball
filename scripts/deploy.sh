@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."   # repo root
 
 . scripts/lib/config.sh
 require_config
-TFVARS="voteball-eks.tfvars"
+TFVARS="voteball.tfvars"
 
 # Terraform prompts for confirmation by default -- that is the intended behaviour for a human at a
 # terminal. Set VOTEBALL_AUTO_APPROVE=1 only for unattended/automated runs.
@@ -15,8 +15,8 @@ APPROVE=()
 
 step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 
-if [ ! -f "terraform-eks/$TFVARS" ]; then
-  echo "ERROR: terraform-eks/$TFVARS is missing (see docs/deploy.md, One-time setup)." >&2
+if [ ! -f "terraform/$TFVARS" ]; then
+  echo "ERROR: terraform/$TFVARS is missing (see docs/deploy.md, One-time setup)." >&2
   exit 1
 fi
 
@@ -25,8 +25,8 @@ step "1/8  Resolving the newest DB snapshot"
 
 step "2/8  Building AWS infrastructure (Terraform will ask you to confirm)"
 echo "This creates real, billed resources (~\$200/month while up)."
-terraform -chdir=terraform-eks init -upgrade
-terraform -chdir=terraform-eks apply -var-file="$TFVARS" "${APPROVE[@]}"
+terraform -chdir=terraform init -upgrade
+terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
 
 step "3/8  Seeding app credentials into Secrets Manager"
 ./scripts/seed-eks-secret.sh

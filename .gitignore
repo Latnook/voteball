@@ -5,21 +5,19 @@
 # Reference PDFs (course material etc.) — not part of the codebase
 *.pdf
 
-# Leftovers from the retired k3s stack: the directory is gone from the repo, but a local
-# terraform/ may still hold .terraform provider binaries (~800MB) and an empty state file.
-# Ignored so `git add -A` can never sweep them back in.
-terraform/
-
 # Terraform: your own settings and all generated state.
+# Do NOT add a blanket `terraform/` here — that is the live stack and must stay tracked. Only the
+# generated/secret files below are ignored. (.terraform/ holds ~800MB of provider binaries; a blanket
+# rule was briefly in place while terraform/ was a dead leftover, and it hid the whole stack.)
 # NOTE: terraform.tfstate* (glob) also covers the timestamped backups Terraform writes
 # (terraform.tfstate.1784477786.backup), which a bare ".backup" pattern misses.
-terraform-eks/voteball-eks.tfvars
-terraform-eks/terraform.tfstate*
-terraform-eks/.terraform.tfstate.lock.info
-terraform-eks/tfplan
-terraform-eks/.terraform/
+terraform/voteball.tfvars
+terraform/terraform.tfstate*
+terraform/.terraform.tfstate.lock.info
+terraform/tfplan
+terraform/.terraform/
 # Written by scripts/find-latest-snapshot.sh before each apply; machine-specific, never committed.
-terraform-eks/snapshot.auto.tfvars
+terraform/snapshot.auto.tfvars
 
 # Python
 __pycache__/

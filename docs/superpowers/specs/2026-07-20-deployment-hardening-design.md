@@ -91,7 +91,7 @@ Reads Terraform outputs and rewrites the env-specific fields of `charts/voteball
 
 | Field | Source |
 |---|---|
-| `config.DB_HOST` | `terraform -chdir=terraform-eks output -raw rds_endpoint` |
+| `config.DB_HOST` | `terraform -chdir=terraform output -raw rds_endpoint` |
 | `ingress.certificateArn` | `... output -raw acm_certificate_arn` |
 | `config.S3_BUCKET` | `... output -raw s3_bucket` |
 | `backup.roleArn` | `... output -raw backup_role_arn` |
@@ -127,7 +127,7 @@ shape of fix.
 ### 3. Snapshot lifecycle becomes self-sustaining (H3, H4)
 
 **`find-latest-snapshot.sh`:**
-- `TF_DIR` → `terraform-eks/`, writing `terraform-eks/snapshot.auto.tfvars`.
+- `TF_DIR` → `terraform/`, writing `terraform/snapshot.auto.tfvars`.
 - Search **both** the `voteball-eks-db` and legacy `voteball-db` lineages; newest `SnapshotCreateTime` wins.
 - When no snapshot exists, write `db_snapshot_identifier = null` (fresh empty DB) instead of leaving the
   pinned literal to hard-fail.

@@ -11,7 +11,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
 . scripts/lib/config.sh
-TFVARS="voteball-eks.tfvars"
+TFVARS="voteball.tfvars"
 CLUSTER_TAG="${CLUSTER}*" # VPC Name tag, used to scope the orphaned-ENI reaper below
 
 # Terraform prompts for confirmation by default -- that is the intended behaviour for a human at a
@@ -95,7 +95,7 @@ reap_orphaned_enis &
 REAPER_PID=$!
 trap 'kill "$REAPER_PID" 2>/dev/null || true' EXIT
 
-terraform -chdir=terraform-eks destroy -var-file="$TFVARS" "${APPROVE[@]}"
+terraform -chdir=terraform destroy -var-file="$TFVARS" "${APPROVE[@]}"
 
 kill "$REAPER_PID" 2>/dev/null || true
 trap - EXIT
@@ -107,6 +107,6 @@ Teardown complete. A final DB snapshot was taken -- the next deploy restores fro
   If destroy hung uninstalling a helm_release ("context deadline exceeded"), Helm cannot cleanly
   uninstall while the cluster is being deleted. Drop that release from state and re-run; it dies
   with the cluster anyway:
-      terraform -chdir=terraform-eks state rm helm_release.<name>
+      terraform -chdir=terraform state rm helm_release.<name>
       ./scripts/destroy.sh
 EOF

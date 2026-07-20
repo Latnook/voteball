@@ -1,7 +1,7 @@
 # Security design
 
 How Voteball on EKS handles identity, secrets, network isolation, and images — and the trade-offs made
-deliberately for a course/demo deployment. Everything here is enforced by code in `terraform-eks/` and
+deliberately for a course/demo deployment. Everything here is enforced by code in `terraform/` and
 `charts/voteball/`; nothing is aspirational.
 
 ## Guiding principle: least privilege, everywhere
@@ -25,7 +25,7 @@ cluster's OIDC provider. Each role's trust policy is federated to **one specific
 That backend/frontend carry **no role at all** is the concrete least-privilege proof. And the worker and
 backup jobs touch the *same bucket under different prefixes with different roles* — a much stronger
 answer to "are all services on the same permissions?" than one shared bucket-wide role. The IAM policy
-JSON is hand-written (not a module default) in `terraform-eks/irsa.tf` precisely so it's auditable.
+JSON is hand-written (not a module default) in `terraform/irsa.tf` precisely so it's auditable.
 
 Add-on controllers (ALB Controller, External Secrets Operator, Cluster Autoscaler, CloudWatch,
 external-dns) each get their own scoped IRSA role via the community `iam-role-for-service-accounts-eks`

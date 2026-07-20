@@ -2,15 +2,15 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Install the six platform add-ons the app deployment (Plan 3) and the cluster's reliability/observability story depend on — AWS Load Balancer Controller, External Secrets Operator, Cluster Autoscaler, AWS Node Termination Handler, CloudWatch Container Insights, and metrics-server — into the live `terraform-eks` cluster, each with a scoped IRSA role where it needs one.
+**Goal:** Install the six platform add-ons the app deployment (Plan 3) and the cluster's reliability/observability story depend on — AWS Load Balancer Controller, External Secrets Operator, Cluster Autoscaler, AWS Node Termination Handler, CloudWatch Container Insights, and metrics-server — into the live `terraform` cluster, each with a scoped IRSA role where it needs one.
 
-**Architecture:** Extends the **same `terraform-eks/` stack** (the cluster is already live from Plan 2). Adds the `helm` + `kubernetes` providers authenticated to the cluster via `aws eks get-token` exec auth, then installs add-ons as `helm_release` resources (plus one `aws_eks_addon` for CloudWatch). Add-on **controller** IRSA roles use the community `terraform-aws-modules/iam//modules/iam-role-for-service-accounts-eks` helper with its pre-vetted, AWS-authored policies (the app's worker/backup IRSA stays hand-rolled — that's the graded security centerpiece; controller roles are matched to AWS's own published policies via the helper).
+**Architecture:** Extends the **same `terraform/` stack** (the cluster is already live from Plan 2). Adds the `helm` + `kubernetes` providers authenticated to the cluster via `aws eks get-token` exec auth, then installs add-ons as `helm_release` resources (plus one `aws_eks_addon` for CloudWatch). Add-on **controller** IRSA roles use the community `terraform-aws-modules/iam//modules/iam-role-for-service-accounts-eks` helper with its pre-vetted, AWS-authored policies (the app's worker/backup IRSA stays hand-rolled — that's the graded security centerpiece; controller roles are matched to AWS's own published policies via the helper).
 
 **Tech Stack:** Terraform ≥ 1.5, `hashicorp/aws ~> 5.0`, `hashicorp/helm ~> 2.17`, `hashicorp/kubernetes ~> 2.31`, `terraform-aws-modules/iam/aws ~> 5.0`, live EKS cluster `voteball` (K8s 1.34), region `il-central-1`, account `590183895228`.
 
 ## Global Constraints
 
-- Extends the existing `terraform-eks/` stack (Plan 2). Run all `terraform` from `terraform-eks/` in the main working tree, never a worktree.
+- Extends the existing `terraform/` stack (Plan 2). Run all `terraform` from `terraform/` in the main working tree, never a worktree.
 - **App namespace is `devops-app`** (created later by the Plan 3 chart). Add-ons live in their own namespaces: `kube-system` (ALB controller, Cluster Autoscaler, NTH, metrics-server), `external-secrets` (ESO), `amazon-cloudwatch` (CloudWatch agent).
 - **IRSA split:** add-on controller roles = community helper (pre-vetted AWS policies); the app's `worker`/`backup` roles stay hand-rolled (Plan 2, `irsa.tf`). No workload gets cluster-admin.
 - **Pin chart versions** for reproducibility, but **verify each against K8s 1.34 at build time** with `helm search repo <chart> --versions` (chart versions drift; the pins below are starting points to confirm/bump — treated like the EKS-version check in Plan 2, an environment check, not a placeholder).
@@ -18,7 +18,7 @@
 - **Cost:** these add-ons run as pods on the **already-billing** Plan 2 nodes, so marginal cost is small (a few controller pods + CloudWatch log ingest ~$3–8/mo). No new always-on infra until Plan 3 creates the ALB.
 - **Commit and push to `master` as each task completes.** Plain imperative messages. Never force-push.
 
-**Pre-flight:** the Plan 2 cluster must be live — `kubectl get nodes` shows 2 Ready. `terraform-eks/` already `init`-ed.
+**Pre-flight:** the Plan 2 cluster must be live — `kubectl get nodes` shows 2 Ready. `terraform/` already `init`-ed.
 
 ---
 
@@ -27,14 +27,14 @@
 Add the two providers, authenticated to the live cluster via exec auth, plus their version pins.
 
 **Files:**
-- Modify: `terraform-eks/versions.tf` (add helm + kubernetes required_providers)
-- Create: `terraform-eks/providers-k8s.tf`
+- Modify: `terraform/versions.tf` (add helm + kubernetes required_providers)
+- Create: `terraform/providers-k8s.tf`
 
 **Interfaces:**
 - Consumes: `module.eks.cluster_name`, `module.eks.cluster_endpoint`, `module.eks.cluster_certificate_authority_data`.
 - Produces: configured `helm` + `kubernetes` providers used by every later task.
 
-- [ ] **Step 1: Add provider pins to `terraform-eks/versions.tf`**
+- [ ] **Step 1: Add provider pins to `terraform/versions.tf`**
 
 Add inside `required_providers` (after the `aws` block):
 
@@ -49,7 +49,7 @@ Add inside `required_providers` (after the `aws` block):
     }
 ```
 
-- [ ] **Step 2: Create `terraform-eks/providers-k8s.tf`**
+- [ ] **Step 2: Create `terraform/providers-k8s.tf`**
 
 ```hcl
 # Authenticate the helm + kubernetes providers to the live cluster using short-lived exec tokens
@@ -92,14 +92,14 @@ provider "helm" {
 
 - [ ] **Step 3: Init + validate**
 
-Run: `cd terraform-eks && terraform init -input=false && terraform validate`
+Run: `cd terraform && terraform init -input=false && terraform validate`
 Expected: helm + kubernetes providers installed; `Success! The configuration is valid.`
 
 - [ ] **Step 4: Commit**
 
 ```bash
 cd /home/latnook/Documents/Voteball
-git add terraform-eks/versions.tf terraform-eks/providers-k8s.tf terraform-eks/.terraform.lock.hcl
+git add terraform/versions.tf terraform/providers-k8s.tf terraform/.terraform.lock.hcl
 git commit -m "Add helm + kubernetes providers (exec auth to the EKS cluster)"
 git push
 ```
@@ -111,7 +111,7 @@ git push
 The two add-ons that need no AWS permissions. metrics-server feeds the HPA; NTH (IMDS mode) gracefully drains a Spot node on reclamation using only in-cluster RBAC.
 
 **Files:**
-- Create: `terraform-eks/addons-basic.tf`
+- Create: `terraform/addons-basic.tf`
 
 **Interfaces:**
 - Consumes: the `helm` provider (Task 1).
@@ -128,7 +128,7 @@ helm search repo eks/aws-node-termination-handler --versions | head -3
 ```
 Expected: note the latest chart versions; use them (or confirm the pins below) in Step 2.
 
-- [ ] **Step 2: Create `terraform-eks/addons-basic.tf`**
+- [ ] **Step 2: Create `terraform/addons-basic.tf`**
 
 ```hcl
 # metrics-server: supplies CPU/memory metrics to the Kubernetes metrics API, which the app's HPA
@@ -160,14 +160,14 @@ resource "helm_release" "node_termination_handler" {
 
 - [ ] **Step 3: Validate**
 
-Run: `cd terraform-eks && terraform validate`
+Run: `cd terraform && terraform validate`
 Expected: `Success! The configuration is valid.`
 
 - [ ] **Step 4: Commit**
 
 ```bash
 cd /home/latnook/Documents/Voteball
-git add terraform-eks/addons-basic.tf
+git add terraform/addons-basic.tf
 git commit -m "Add metrics-server + Node Termination Handler (no-IRSA add-ons)"
 git push
 ```
@@ -179,13 +179,13 @@ git push
 The controller that turns a Kubernetes Ingress into a real ALB (Plan 3 needs this). IRSA role from the community helper with AWS's official LB-controller policy.
 
 **Files:**
-- Create: `terraform-eks/addon-alb.tf`
+- Create: `terraform/addon-alb.tf`
 
 **Interfaces:**
 - Consumes: `module.eks.oidc_provider_arn`, `module.vpc.vpc_id`, the `helm` provider.
 - Produces: `module.alb_irsa.iam_role_arn`, `helm_release.aws_load_balancer_controller`.
 
-- [ ] **Step 1: Create `terraform-eks/addon-alb.tf`**
+- [ ] **Step 1: Create `terraform/addon-alb.tf`**
 
 ```hcl
 # IRSA role for the ALB controller. The community helper attaches AWS's OWN published
@@ -243,14 +243,14 @@ resource "helm_release" "aws_load_balancer_controller" {
 
 - [ ] **Step 2: Validate**
 
-Run: `cd terraform-eks && terraform validate`
+Run: `cd terraform && terraform validate`
 Expected: `Success! The configuration is valid.`
 
 - [ ] **Step 3: Commit**
 
 ```bash
 cd /home/latnook/Documents/Voteball
-git add terraform-eks/addon-alb.tf
+git add terraform/addon-alb.tf
 git commit -m "Add AWS Load Balancer Controller (community IRSA + helm release)"
 git push
 ```
@@ -262,13 +262,13 @@ git push
 ESO syncs the Secrets Manager `voteball/app-secret` into a Kubernetes Secret (Plan 3 wires the ExternalSecret). IRSA scoped to *read that one secret*.
 
 **Files:**
-- Create: `terraform-eks/addon-eso.tf`
+- Create: `terraform/addon-eso.tf`
 
 **Interfaces:**
 - Consumes: `module.eks.oidc_provider_arn`, `aws_secretsmanager_secret.app.arn` (Plan 2), the `helm` provider.
 - Produces: `module.eso_irsa.iam_role_arn`, `helm_release.external_secrets`.
 
-- [ ] **Step 1: Create `terraform-eks/addon-eso.tf`**
+- [ ] **Step 1: Create `terraform/addon-eso.tf`**
 
 ```hcl
 # IRSA role for ESO, scoped read-only to the ONE app secret (not all of Secrets Manager). The helper's
@@ -307,14 +307,14 @@ resource "helm_release" "external_secrets" {
 
 - [ ] **Step 2: Validate**
 
-Run: `cd terraform-eks && terraform validate`
+Run: `cd terraform && terraform validate`
 Expected: `Success! The configuration is valid.`
 
 - [ ] **Step 3: Commit**
 
 ```bash
 cd /home/latnook/Documents/Voteball
-git add terraform-eks/addon-eso.tf
+git add terraform/addon-eso.tf
 git commit -m "Add External Secrets Operator (IRSA scoped to app secret + helm release)"
 git push
 ```
@@ -326,13 +326,13 @@ git push
 Scales the node group 2→4 when pods can't schedule, and back down. IRSA scoped to this cluster's ASG via the helper's cluster-autoscaler policy.
 
 **Files:**
-- Create: `terraform-eks/addon-autoscaler.tf`
+- Create: `terraform/addon-autoscaler.tf`
 
 **Interfaces:**
 - Consumes: `module.eks.oidc_provider_arn`, `module.eks.cluster_name`, the `helm` provider.
 - Produces: `module.autoscaler_irsa.iam_role_arn`, `helm_release.cluster_autoscaler`.
 
-- [ ] **Step 1: Create `terraform-eks/addon-autoscaler.tf`**
+- [ ] **Step 1: Create `terraform/addon-autoscaler.tf`**
 
 ```hcl
 # IRSA for Cluster Autoscaler, scoped (via the helper's cluster_autoscaler policy) to autoscaling
@@ -382,14 +382,14 @@ resource "helm_release" "cluster_autoscaler" {
 
 - [ ] **Step 2: Validate**
 
-Run: `cd terraform-eks && terraform validate`
+Run: `cd terraform && terraform validate`
 Expected: `Success! The configuration is valid.`
 
 - [ ] **Step 3: Commit**
 
 ```bash
 cd /home/latnook/Documents/Voteball
-git add terraform-eks/addon-autoscaler.tf
+git add terraform/addon-autoscaler.tf
 git commit -m "Add Cluster Autoscaler (IRSA scoped to node-group ASG + helm release)"
 git push
 ```
@@ -401,13 +401,13 @@ git push
 Ships pod logs + metrics to CloudWatch via the managed `amazon-cloudwatch-observability` EKS add-on (cleaner than a hand-wired Fluent Bit). IRSA role carries AWS's `CloudWatchAgentServerPolicy`.
 
 **Files:**
-- Create: `terraform-eks/addon-cloudwatch.tf`
+- Create: `terraform/addon-cloudwatch.tf`
 
 **Interfaces:**
 - Consumes: `module.eks.oidc_provider_arn`, `module.eks.cluster_name`.
 - Produces: `module.cloudwatch_irsa.iam_role_arn`, `aws_eks_addon.cloudwatch`.
 
-- [ ] **Step 1: Create `terraform-eks/addon-cloudwatch.tf`**
+- [ ] **Step 1: Create `terraform/addon-cloudwatch.tf`**
 
 ```hcl
 # IRSA for the CloudWatch agent. No pre-baked helper toggle exists for CloudWatch, so attach AWS's
@@ -447,14 +447,14 @@ resource "aws_eks_addon" "cloudwatch" {
 
 - [ ] **Step 2: Validate**
 
-Run: `cd terraform-eks && terraform validate`
+Run: `cd terraform && terraform validate`
 Expected: `Success! The configuration is valid.`
 
 - [ ] **Step 3: Commit**
 
 ```bash
 cd /home/latnook/Documents/Voteball
-git add terraform-eks/addon-cloudwatch.tf
+git add terraform/addon-cloudwatch.tf
 git commit -m "Add CloudWatch Container Insights (managed add-on + IRSA)"
 git push
 ```
@@ -467,12 +467,12 @@ Apply the whole add-on layer against the live cluster and confirm every controll
 
 - [ ] **Step 1: Plan + review**
 
-Run: `cd terraform-eks && terraform plan -input=false -var-file=voteball-eks.tfvars -out=tfplan | tail -30`
+Run: `cd terraform && terraform plan -input=false -var-file=voteball.tfvars -out=tfplan | tail -30`
 Expected: plan adds the 6 IRSA-helper roles/policies + 5 helm_release + 1 eks_addon (no destroys). Review the summary.
 
 - [ ] **Step 2: Apply (low marginal cost — pods on existing nodes; stream)**
 
-Run: `cd terraform-eks && terraform apply -input=false tfplan` (background/stream; ~3–5 min — helm releases + add-on rollout).
+Run: `cd terraform && terraform apply -input=false tfplan` (background/stream; ~3–5 min — helm releases + add-on rollout).
 Expected: `Apply complete!`
 
 - [ ] **Step 3: Verify every controller is Running**
@@ -491,7 +491,7 @@ Expected: ALB controller (2 pods), cluster-autoscaler, NTH (2, DaemonSet), metri
 
 ```bash
 cd /home/latnook/Documents/Voteball
-git add -A terraform-eks/
+git add -A terraform/
 git commit -m "Apply EKS add-ons; all controllers verified Running"
 git push
 ```

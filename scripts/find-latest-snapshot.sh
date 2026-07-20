@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: ./scripts/find-latest-snapshot.sh
 # Picks the newest manual RDS snapshot from EITHER voteball lineage (the retired k3s `voteball-db`
-# or the current `voteball-eks-db`) and writes it to terraform-eks/snapshot.auto.tfvars, which
+# or the current `voteball-eks-db`) and writes it to terraform/snapshot.auto.tfvars, which
 # Terraform auto-loads. Run before `terraform apply`; scripts/deploy.sh does this for you.
 #
 # Writes `db_snapshot_identifier = null` when no snapshot exists, so a first-ever deploy creates an
@@ -9,7 +9,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TF_DIR="$SCRIPT_DIR/../terraform-eks"
+TF_DIR="$SCRIPT_DIR/../terraform"
 AUTO_TFVARS="$TF_DIR/snapshot.auto.tfvars"
 . "$SCRIPT_DIR/lib/config.sh"
 
