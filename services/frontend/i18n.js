@@ -20,12 +20,16 @@ const DICTIONARY = {
     voteErrorRequiredFields: 'Please fill in all required fields.',
     voteErrorPickParty: "Pick at least one party you're considering, or mark yourself undecided.",
     voteErrorSubmit: 'Something went wrong submitting your vote.',
+    voteAlreadyVoted: 'This browser has already voted — one ballot per visitor, so this one was not counted. Use the Results link above to see the standings.',
     voteReviewHeading: 'Review your ballot',
     voteReviewTeams: 'Teams',
     voteReviewPrevious: 'Previous vote',
     voteReviewUpcoming: 'Upcoming picks',
     voteEdit: 'Edit',
     voteConfirmSubmit: 'Confirm & submit',
+
+    navResults: 'Results',
+    navVote: 'Vote',
 
     resultsTitle: 'Voteball — Results',
     resultsHeading: 'Voteball — Results',
@@ -168,12 +172,16 @@ const DICTIONARY = {
     voteErrorRequiredFields: 'נא למלא את כל השדות הנדרשים.',
     voteErrorPickParty: 'בחרו לפחות מפלגה אחת שאתם שוקלים, או סמנו שעדיין לא החלטתם.',
     voteErrorSubmit: 'משהו השתבש בשליחת ההצבעה.',
+    voteAlreadyVoted: 'כבר הצבעת מהדפדפן הזה — הצבעה אחת לכל מבקר, ולכן ההצבעה הזו לא נספרה. אפשר לראות את התוצאות בקישור למעלה.',
     voteReviewHeading: 'סקירת ההרכב שלכם',
     voteReviewTeams: 'קבוצות',
     voteReviewPrevious: 'הצבעה קודמת',
     voteReviewUpcoming: 'בחירות עתידיות',
     voteEdit: 'עריכה',
     voteConfirmSubmit: 'אישור ושליחה',
+
+    navResults: 'תוצאות',
+    navVote: 'להצבעה',
 
     resultsTitle: 'ווטבול — תוצאות',
     resultsHeading: 'ווטבול — תוצאות',

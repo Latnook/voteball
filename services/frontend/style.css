@@ -210,6 +210,27 @@ button { font-family: inherit; }
   font-size: 1rem;
 }
 
+/* Top-bar navigation between the ballot and the results (there was previously no link either way --
+   you had to vote or type the URL). Sized to match .pill-group buttons so the toggles row reads as
+   one control group. Direction-agnostic: the topbar flips with dir=rtl in Hebrew. */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* ---------- Hero ---------- */
 
 .hero {

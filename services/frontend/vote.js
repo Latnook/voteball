@@ -440,7 +440,16 @@ document.getElementById('confirm-submit-btn').addEventListener('click', async ()
     body: JSON.stringify(body),
   });
 
-  if (res.status !== 409 && !res.ok) {
+  // 409 = this browser already has a ballot (voteball_token cookie). It used to fall through to the
+  // success path, which redirected to /results AND stored this ballot as "yours" -- so a rejected vote
+  // was indistinguishable from a counted one, and the "fans like you" panel personalised to a ballot
+  // that was never recorded. Tell the user instead, and don't store the discarded ballot.
+  if (res.status === 409) {
+    errorEl.textContent = t('voteAlreadyVoted');
+    return;
+  }
+
+  if (!res.ok) {
     errorEl.textContent = t('voteErrorSubmit');
     return;
   }
