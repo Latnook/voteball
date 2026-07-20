@@ -51,4 +51,17 @@ resource "helm_release" "aws_load_balancer_controller" {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.alb_irsa.iam_role_arn
   }
+
+  # The service mutator webhook exists ONLY to make this controller the default for new Services of
+  # type LoadBalancer (chart docs, values.yaml `enableServiceMutatorWebhook`). Voteball routes solely
+  # via Ingress->ALB and has zero type=LoadBalancer Services, so the webhook adds nothing -- but it
+  # intercepts EVERY Service creation cluster-wide with failurePolicy:Fail. That races add-ons that
+  # create Services before this controller's pods are Ready:
+  #   "no endpoints available for service aws-load-balancer-webhook-service"
+  # (hit by amazon-cloudwatch-observability 2026-07-19 and kube-prometheus-stack 2026-07-20).
+  # Disabling it removes the race for every current and future add-on.
+  set {
+    name  = "enableServiceMutatorWebhook"
+    value = "false"
+  }
 }
