@@ -19,6 +19,14 @@ terraform/.terraform/
 # Written by scripts/find-latest-snapshot.sh before each apply; machine-specific, never committed.
 terraform/snapshot.auto.tfvars
 
+# The Jenkins build host is a SEPARATE stack with its own state, applied and destroyed
+# independently of terraform/ so that destroy.sh cannot delete CI. The rules above are anchored to
+# terraform/ and do NOT match this subdirectory.
+terraform/jenkins/jenkins.tfvars
+terraform/jenkins/terraform.tfstate*
+terraform/jenkins/.terraform/
+terraform/jenkins/tfplan
+
 # Python
 __pycache__/
 *.pyc
