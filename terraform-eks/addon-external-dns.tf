@@ -17,8 +17,8 @@ module "external_dns_irsa" {
 }
 
 # external-dns (Kubernetes SIG): reads the Ingress hostname annotation and manages the Route53 alias
-# to the ALB. policy=upsert-only so it never deletes records it didn't create; txtOwnerId scopes
-# ownership so multiple clusters can't fight over the same records.
+# to the ALB. policy=sync so teardown removes the records it created (ownership TXT gates what it may
+# touch); txtOwnerId scopes ownership so multiple clusters can't fight over the same records.
 resource "helm_release" "external_dns" {
   name       = "external-dns"
   repository = "https://kubernetes-sigs.github.io/external-dns/"
@@ -38,9 +38,18 @@ resource "helm_release" "external_dns" {
     name  = "domainFilters[0]"
     value = "latnook.com"
   }
+  # sync (not upsert-only): on teardown the Ingress is deleted BEFORE terraform destroy, letting
+  # external-dns remove the A/AAAA/TXT records it created. With upsert-only they survived, leaving
+  # voteball.latnook.com resolving to a de-provisioned ALB until the next deploy.
+  #
+  # Deletion is bounded by the default txt registry + txtOwnerId below: external-dns only touches
+  # records carrying an ownership TXT that names this cluster
+  # ("heritage=external-dns,external-dns/owner=voteball,..."). The zone's apex MX/NS/SOA, the
+  # ProtonMail verification + DKIM records, and _dmarc carry no such TXT, so they are not eligible
+  # for deletion. Verified against the live zone on 2026-07-20 before this was enabled.
   set {
     name  = "policy"
-    value = "upsert-only"
+    value = "sync"
   }
   set {
     name  = "txtOwnerId"
