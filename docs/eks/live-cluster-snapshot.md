@@ -1,93 +1,93 @@
 # Live cluster snapshot (evidence for README.submission.md)
 
-_Captured 2026-07-19 from the running EKS cluster before teardown._
+_Captured 2026-07-20 from the running EKS cluster._
 
 ## `kubectl get nodes`
 ```
-NAME                                           STATUS   ROLES    AGE    VERSION
-ip-10-0-32-100.il-central-1.compute.internal   Ready    <none>   164m   v1.34.9-eks-8f14419
-ip-10-0-62-195.il-central-1.compute.internal   Ready    <none>   164m   v1.34.9-eks-8f14419
+NAME                                           STATUS   ROLES    AGE     VERSION
+ip-10-0-44-88.il-central-1.compute.internal    Ready    <none>   6m46s   v1.34.9-eks-8f14419
+ip-10-0-49-247.il-central-1.compute.internal   Ready    <none>   6m46s   v1.34.9-eks-8f14419
 ```
 
 ## `kubectl get namespaces`
 ```
 NAME                STATUS   AGE
-amazon-cloudwatch   Active   141m
-argocd              Active   36m
-default             Active   168m
-devops-app          Active   106m
-external-secrets    Active   142m
-kube-node-lease     Active   168m
-kube-public         Active   168m
-kube-system         Active   168m
-monitoring          Active   38m
+amazon-cloudwatch   Active   5m46s
+argocd              Active   8m13s
+default             Active   11m
+devops-app          Active   3m23s
+external-secrets    Active   8m11s
+kube-node-lease     Active   11m
+kube-public         Active   11m
+kube-system         Active   11m
+monitoring          Active   5m38s
 ```
 
 ## `kubectl get pods -n devops-app`
 ```
 NAME                        READY   STATUS    RESTARTS   AGE
-backend-5c784d7c87-l4bnj    1/1     Running   0          4m37s
-backend-5c784d7c87-q5wtl    1/1     Running   0          4m
-frontend-859cdbcbd5-fj9tr   1/1     Running   0          4m37s
-frontend-859cdbcbd5-vfdm4   1/1     Running   0          4m9s
-worker-5d959f8f6b-g2czr     1/1     Running   0          4m37s
+backend-5dc97c458d-nls96    1/1     Running   0          3m23s
+backend-5dc97c458d-zfzt5    1/1     Running   0          3m23s
+frontend-6866cb9ccb-5srlw   1/1     Running   0          3m24s
+frontend-6866cb9ccb-bchlc   1/1     Running   0          3m23s
+worker-9b677f49c-sq4dl      1/1     Running   0          3m24s
 ```
 
 ## `kubectl get deployments -n devops-app`
 ```
 NAME       READY   UP-TO-DATE   AVAILABLE   AGE
-backend    2/2     2            2           101m
-frontend   2/2     2            2           101m
-worker     1/1     1            1           101m
+backend    2/2     2            2           3m24s
+frontend   2/2     2            2           3m24s
+worker     1/1     1            1           3m24s
 ```
 
 ## `kubectl get services -n devops-app`
 ```
-NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-backend    ClusterIP   172.20.24.118    <none>        5000/TCP   101m
-frontend   ClusterIP   172.20.185.185   <none>        80/TCP     101m
+NAME       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+backend    ClusterIP   172.20.161.97   <none>        5000/TCP   3m25s
+frontend   ClusterIP   172.20.86.217   <none>        80/TCP     3m25s
 ```
 
 ## `kubectl get ingress -n devops-app`
 ```
-NAME       CLASS   HOSTS                  ADDRESS                                                                     PORTS   AGE
-voteball   alb     voteball.latnook.com   k8s-devopsap-voteball-6fb18c0744-331227380.il-central-1.elb.amazonaws.com   80      81m
+NAME       CLASS   HOSTS                  ADDRESS                                                                      PORTS   AGE
+voteball   alb     voteball.latnook.com   k8s-devopsap-voteball-6fb18c0744-1887088313.il-central-1.elb.amazonaws.com   80      3m25s
 ```
 
 ## `kubectl get hpa,pdb,cronjob,networkpolicy -n devops-app`
 ```
 NAME                                          REFERENCE            TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
-horizontalpodautoscaler.autoscaling/backend   Deployment/backend   cpu: 6%/70%   2         5         2          81m
+horizontalpodautoscaler.autoscaling/backend   Deployment/backend   cpu: 9%/70%   2         5         2          3m25s
 
 NAME                                  MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
-poddisruptionbudget.policy/backend    1               N/A               1                     81m
-poddisruptionbudget.policy/frontend   1               N/A               1                     81m
+poddisruptionbudget.policy/backend    1               N/A               1                     3m25s
+poddisruptionbudget.policy/frontend   1               N/A               1                     3m25s
 
 NAME                            SCHEDULE    TIMEZONE   SUSPEND   ACTIVE   LAST SCHEDULE   AGE
-cronjob.batch/voteball-backup   0 2 * * *   <none>     False     0        <none>          81m
+cronjob.batch/voteball-backup   0 2 * * *   <none>     False     0        <none>          3m25s
 
 NAME                                                        POD-SELECTOR                              AGE
-networkpolicy.networking.k8s.io/allow-alb-to-frontend       app=frontend                              81m
-networkpolicy.networking.k8s.io/allow-app-egress            app in (backend,backup,frontend,worker)   81m
-networkpolicy.networking.k8s.io/allow-dns-egress            <none>                                    81m
-networkpolicy.networking.k8s.io/allow-frontend-to-backend   app=backend                               81m
-networkpolicy.networking.k8s.io/default-deny                <none>                                    81m
+networkpolicy.networking.k8s.io/allow-alb-to-frontend       app=frontend                              3m25s
+networkpolicy.networking.k8s.io/allow-app-egress            app in (backend,backup,frontend,worker)   3m25s
+networkpolicy.networking.k8s.io/allow-dns-egress            <none>                                    3m25s
+networkpolicy.networking.k8s.io/allow-frontend-to-backend   app=backend                               3m25s
+networkpolicy.networking.k8s.io/default-deny                <none>                                    3m25s
 ```
 
 ## `kubectl get serviceaccounts -n devops-app -o custom-columns=NAME:.metadata.name,IRSA-ROLE:.metadata.annotations.eks\.amazonaws\.com/role-arn`
 ```
 NAME       IRSA-ROLE
 backend    <none>
-backup     <none>
+backup     arn:aws:iam::590183895228:role/voteball-backup-irsa
 default    <none>
 frontend   <none>
-worker     <none>
+worker     arn:aws:iam::590183895228:role/voteball-worker-irsa
 ```
 
 ## `kubectl get externalsecret -n devops-app`
 ```
 NAME         STORETYPE     STORE         REFRESH INTERVAL   STATUS         READY   LAST SYNC
-app-secret   SecretStore   aws-secrets   1h                 SecretSynced   True    34m
+app-secret   SecretStore   aws-secrets   1h                 SecretSynced   True    2m28s
 ```
 
 ## `kubectl get application voteball -n argocd -o custom-columns=NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status`
@@ -99,25 +99,25 @@ voteball   Synced   Healthy
 ## `kubectl get pods -n monitoring`
 ```
 NAME                                                        READY   STATUS    RESTARTS   AGE
-alertmanager-kube-prometheus-stack-alertmanager-0           2/2     Running   0          38m
-kube-prometheus-stack-grafana-8679649b9f-v58nh              3/3     Running   0          30m
-kube-prometheus-stack-kube-state-metrics-7db54989c4-rjfjv   1/1     Running   0          38m
-kube-prometheus-stack-operator-58d9c5976b-7xnw2             1/1     Running   0          38m
-kube-prometheus-stack-prometheus-node-exporter-5hjt5        1/1     Running   0          38m
-kube-prometheus-stack-prometheus-node-exporter-xgzdr        1/1     Running   0          38m
-prometheus-kube-prometheus-stack-prometheus-0               2/2     Running   0          38m
+alertmanager-kube-prometheus-stack-alertmanager-0           2/2     Running   0          5m13s
+kube-prometheus-stack-grafana-554774fdfb-7vn67              3/3     Running   0          5m24s
+kube-prometheus-stack-kube-state-metrics-7db54989c4-z5mfv   1/1     Running   0          5m24s
+kube-prometheus-stack-operator-58d9c5976b-rbrkx             1/1     Running   0          5m24s
+kube-prometheus-stack-prometheus-node-exporter-2pmjs        1/1     Running   0          5m24s
+kube-prometheus-stack-prometheus-node-exporter-b6ncp        1/1     Running   0          5m24s
+prometheus-kube-prometheus-stack-prometheus-0               2/2     Running   0          5m12s
 ```
 
-## `kubectl describe pod backend-5c784d7c87-l4bnj -n devops-app` (excerpt)
+## `kubectl describe pod backend-5dc97c458d-nls96 -n devops-app` (excerpt)
 ```
-Name:             backend-5c784d7c87-l4bnj
+Name:             backend-5dc97c458d-nls96
 Namespace:        devops-app
 Priority:         0
 Service Account:  backend
-Node:             ip-10-0-62-195.il-central-1.compute.internal/10.0.62.195
-Start Time:       Sun, 19 Jul 2026 21:31:52 +0300
+Node:             ip-10-0-49-247.il-central-1.compute.internal/10.0.49.247
+Start Time:       Mon, 20 Jul 2026 13:04:48 +0300
 Labels:           app=backend
-                  pod-template-hash=5c784d7c87
+                  pod-template-hash=5dc97c458d
 Annotations:      cloudwatch.aws.amazon.com/auto-annotate-dotnet: true
                   cloudwatch.aws.amazon.com/auto-annotate-java: true
                   cloudwatch.aws.amazon.com/auto-annotate-nodejs: true
@@ -127,13 +127,13 @@ Annotations:      cloudwatch.aws.amazon.com/auto-annotate-dotnet: true
                   instrumentation.opentelemetry.io/inject-nodejs: true
                   instrumentation.opentelemetry.io/inject-python: true
 Status:           Running
-IP:               10.0.56.110
+IP:               10.0.58.180
 IPs:
-  IP:           10.0.56.110
-Controlled By:  ReplicaSet/backend-5c784d7c87
+  IP:           10.0.58.180
+Controlled By:  ReplicaSet/backend-5dc97c458d
 Init Containers:
   opentelemetry-auto-instrumentation-java:
-    Container ID:  containerd://ac5f5cc653b0a600d742f256df6237d67b86cf8c96f9238a593914c5b7866641
+    Container ID:  containerd://c5229d606cb0747c49e45d7dce5cefe6fe540c2b2c229d47cf39af4e83e637a7
     Image:         066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-java:v2.28.2
     Image ID:      066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-java@sha256:515c8d4156bb800377ecdce87cd7ab5c6645c0d3cb025da60ac4132bce106128
     Port:          <none>
@@ -145,19 +145,39 @@ Init Containers:
     State:          Terminated
       Reason:       Completed
       Exit Code:    0
-      Started:      Sun, 19 Jul 2026 21:31:55 +0300
-      Finished:     Sun, 19 Jul 2026 21:31:55 +0300
+      Started:      Mon, 20 Jul 2026 13:04:53 +0300
+      Finished:     Mon, 20 Jul 2026 13:04:53 +0300
     Ready:          True
     Restart Count:  0
     Limits:
+      cpu:     500m
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     64Mi
+    Environment:  <none>
+    Mounts:
+      /otel-auto-instrumentation-java from opentelemetry-auto-instrumentation-java (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-lr2b8 (ro)
+  opentelemetry-auto-instrumentation-nodejs:
+    Container ID:  containerd://d90308faefc444fefed6755f91d4d1102fdb67db87e170772a7de18ae2749c35
+    Image:         066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-node:v0.12.0
+    Image ID:      066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-node@sha256:d28ba22730cbc406be6cce0455a1a48226fdd6ed174dac40b75c9ef15e82cc21
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      cp
+      -r
+      /autoinstrumentation/.
+      /otel-auto-instrumentation-nodejs
 ```
 
-## `kubectl logs backend-5c784d7c87-l4bnj -n devops-app` (last 15 lines)
+## `kubectl logs backend-5dc97c458d-nls96 -n devops-app` (last 15 lines)
 ```
 AwsEksResourceDetector failed: HTTP Error 403: Forbidden
-[2026-07-19 18:32:19 +0000] [1] [INFO] Starting gunicorn 23.0.0
-[2026-07-19 18:32:19 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
-[2026-07-19 18:32:19 +0000] [1] [INFO] Using worker: sync
-[2026-07-19 18:32:19 +0000] [21] [INFO] Booting worker with pid: 21
-[2026-07-19 18:32:19 +0000] [26] [INFO] Booting worker with pid: 26
+[2026-07-20 10:05:27 +0000] [1] [INFO] Starting gunicorn 23.0.0
+[2026-07-20 10:05:27 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+[2026-07-20 10:05:27 +0000] [1] [INFO] Using worker: sync
+[2026-07-20 10:05:27 +0000] [22] [INFO] Booting worker with pid: 22
+[2026-07-20 10:05:27 +0000] [27] [INFO] Booting worker with pid: 27
 ```
