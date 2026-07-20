@@ -10,7 +10,9 @@ output "jenkins_public_ip" {
 
 output "ssh_tunnel_command" {
   description = "Run this, then browse http://localhost:8080. The UI is not publicly reachable."
-  value       = "ssh -i ~/.ssh/${var.cluster_name}-jenkins.pem -L 8080:localhost:8080 ec2-user@${aws_eip.jenkins.public_ip}"
+  # No .pem suffix: the key pair is generated with `ssh-keygen -f ~/.ssh/<prefix>-jenkins`, which
+  # writes the private key with no extension. See README.md.
+  value = "ssh -i ~/.ssh/${var.cluster_name}-jenkins -L 8080:localhost:8080 ec2-user@${aws_eip.jenkins.public_ip}"
 }
 
 output "webhook_url" {
