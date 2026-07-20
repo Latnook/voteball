@@ -121,7 +121,7 @@ pipeline {
         anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }
       } }
       steps {
-        // The cache mount is load-bearing: without it the ~50MB vulnerability database is
+        // The cache mount is load-bearing: without it the ~100MB vulnerability database is
         // re-downloaded on each of the four scans, every build, risking ghcr.io rate limits.
         sh '''
           set -eu

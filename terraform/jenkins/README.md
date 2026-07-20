@@ -32,14 +32,15 @@ terraform output -raw ssh_tunnel_command   # then browse http://localhost:8080
 
 ## Cost
 
-About **$30/month** running. Stop it between sessions:
+About **$37/month** running (t3.medium in `il-central-1`). Stop it between sessions:
 
 ```bash
 aws ec2 stop-instances  --instance-ids "$(terraform output -raw instance_id)"
 aws ec2 start-instances --instance-ids "$(terraform output -raw instance_id)"
 ```
 
-Stopped costs ~$2.50/mo for storage. All Jenkins state persists on the EBS volume and the Elastic IP
+Stopped costs about **$6/month** — ~$2.40 for the 30 GB gp3 volume plus ~$3.60 for the Elastic IP,
+which AWS bills whether or not the instance is running. All Jenkins state persists on the volume and the Elastic IP
 keeps the address stable. **Webhooks are silently discarded while stopped** — expected, not a fault.
 
 ## If Jenkins is not running after apply
