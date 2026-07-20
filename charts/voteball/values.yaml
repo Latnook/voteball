@@ -1,6 +1,6 @@
 image:
   registry: 590183895228.dkr.ecr.il-central-1.amazonaws.com
-  tag: "aa0445b" # git-SHA tag pushed by scripts/build-push-ecr.sh
+  tag: "9d16bcf" # git-SHA tag pushed by scripts/build-push-ecr.sh
   pullPolicy: IfNotPresent
 
 # Non-secret config -> ConfigMap app-config. DB_HOST is the Plan-3a RDS endpoint (set in Task 1/7).
@@ -21,7 +21,7 @@ externalSecret:
 
 ingress:
   host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/3cf4a60f-5675-42eb-8cac-be80b4dd16b9"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/d37eb1ba-a577-4c2c-b91e-ae8948612181"
 
 backup:
   roleArn: "arn:aws:iam::590183895228:role/voteball-backup-irsa"
