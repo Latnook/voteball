@@ -44,16 +44,6 @@
 
     <hr class="chalk-rule" id="compare-divider" hidden>
 
-    <section id="overall-section">
-      <h2 class="section-heading" data-i18n="resultsNationalHeading">National standings</h2>
-      <h3 data-i18n="resultsHeadingPrevious">Previous Knesset vote breakdown</h3>
-      <div id="national-previous" class="standings"></div>
-      <h3 data-i18n="resultsHeadingUpcoming">Upcoming election breakdown</h3>
-      <div id="national-upcoming" class="standings"></div>
-    </section>
-
-    <hr class="chalk-rule">
-
     <section id="fan-politics-section">
       <h2 class="section-heading" data-i18n="analyticsHeading">Fan Politics</h2>
       <div class="pill-group" id="analytics-tabs">
@@ -96,6 +86,18 @@
 
       <h3 data-i18n="resultsHeadingUpcoming">Upcoming election breakdown</h3>
       <div id="upcoming-results" class="standings"></div>
+    </section>
+
+    <hr class="chalk-rule">
+
+    <!-- National standings sit last on purpose: the interesting part of this poll is the per-club
+         correlation above, not the overall totals, which are the least surprising thing on the page. -->
+    <section id="overall-section">
+      <h2 class="section-heading" data-i18n="resultsNationalHeading">National standings</h2>
+      <h3 data-i18n="resultsHeadingPrevious">Previous Knesset vote breakdown</h3>
+      <div id="national-previous" class="standings"></div>
+      <h3 data-i18n="resultsHeadingUpcoming">Upcoming election breakdown</h3>
+      <div id="national-upcoming" class="standings"></div>
     </section>
   </main>
 

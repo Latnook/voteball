@@ -108,6 +108,13 @@
 
 * { box-sizing: border-box; }
 
+/* The `hidden` attribute must beat any component's own `display`. The browser default is only
+   `[hidden] { display: none }` (specificity 0,0,1), so any class rule that sets `display` silently
+   wins and the element stays visible even though JS set element.hidden = true. That happened with
+   #party-mode: `.explorer-controls { display: flex }` kept both explorer panels on screen at once.
+   `!important` is deliberate here — "hidden means hidden" is exactly the case it exists for. */
+[hidden] { display: none !important; }
+
 html { color-scheme: light dark; }
 
 body {
