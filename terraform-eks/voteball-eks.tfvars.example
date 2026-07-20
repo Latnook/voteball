@@ -1,5 +1,57 @@
-# Copy to voteball-eks.tfvars (gitignored) and fill in. Apply/plan with -var-file=voteball-eks.tfvars.
+# Copy to voteball-eks.tfvars and fill in. This file is the ONLY place your identity lives —
+# everything else (scripts, Helm values, CI) derives from it or from Terraform outputs.
+#
+#   cp voteball-eks.tfvars.example voteball-eks.tfvars
+#
+# voteball-eks.tfvars is gitignored. Keep a backup somewhere safe: losing it (and terraform.tfstate)
+# means cleaning up AWS by hand.
+
+# ---- Required: no defaults, the deploy refuses to run without them -------------------------------
+
+# The public FQDN the app is served on. Must sit inside route53_zone_name below.
+app_domain = "voteball.example.com"
+
+# An existing Route53 PUBLIC hosted zone that you already own. Note the trailing dot.
+# This stack looks the zone up — it never creates it. ACM validates the certificate by writing a
+# record here, and external-dns manages the app's A/AAAA records inside it.
+route53_zone_name = "example.com."
+
+# RDS master password. Must match the DB_PASS you give ./scripts/seed-eks-secret.sh.
+# Also resets the master password when restoring from a snapshot, which is what keeps the two in sync.
+db_password = "change-me-to-something-strong"
+
+# Email subscribed to the SNS milestone-alert topic. AWS sends a confirmation link you must click.
 notification_email = "you@example.com"
 
-# Optional overrides (defaults are in variables.tf):
+# ---- Optional: sensible defaults, override if you like -------------------------------------------
+
+# Any region you have EKS + RDS quota in.
+# aws_region = "il-central-1"
+
+# Name prefix for every AWS resource (cluster, ECR repos, IAM roles, S3 bucket, secret).
+# If you change this, set the CLUSTER_NAME GitHub repo variable to match, or CI will push to
+# ECR repositories that do not exist.
+# cluster_name = "voteball"
+
+# Kubernetes minor version. Keep it on a STANDARD-support EKS release — extended support costs 5x.
+# Check with: aws eks describe-cluster-versions --region <your-region>
 # cluster_version = "1.34"
+
+# RDS master username. Only applied when creating a fresh database; RDS cannot change it on a
+# snapshot restore, so it is ignored there.
+# db_username = "postgres"
+
+# Restrict who can reach the public EKS API endpoint. Defaults to 0.0.0.0/0 for convenience; the
+# endpoint is IAM-authenticated regardless, but narrowing this is worthwhile.
+# cluster_endpoint_public_access_cidrs = ["203.0.113.4/32"]
+
+# Node group sizing. Spot instances; min 2 gives real HA and a drain destination for PDBs.
+# node_instance_types = ["t3.large", "t3a.large"]
+# node_min_size       = 2
+# node_max_size       = 4
+# node_desired_size   = 2
+
+# Restore the database from a specific snapshot. Normally leave this alone —
+# ./scripts/find-latest-snapshot.sh writes the newest one into snapshot.auto.tfvars before each
+# apply, and null means "create a fresh, empty database".
+# db_snapshot_identifier = null

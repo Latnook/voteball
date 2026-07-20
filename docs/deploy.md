@@ -2,8 +2,8 @@
 
 How to put the Voteball site online on AWS, check it works, and take it back down.
 
-**Heads-up:** running this costs real money (~$200/month while it's up). Always take it down when you're
-done. Last verified working end-to-end on 2026-07-19.
+**Heads-up:** running this costs real money (~$200/month while it's up). Always take it down when
+you're done. Last verified end-to-end on 2026-07-20 (full destroy + rebuild).
 
 ---
 
@@ -21,17 +21,24 @@ You run Terraform first, then Helm. Taking it down is the reverse.
 
 ## One-time setup
 
-You need these installed: `terraform`, the `aws` command, `kubectl`, `helm`, `docker`. You must be
-logged into AWS (`aws sts get-caller-identity` should show account `590183895228`).
+You need these installed: `terraform`, the `aws` command, `kubectl`, `helm`, `docker`, `python3` and
+`openssl`. You must be logged into AWS (`aws sts get-caller-identity` should show your account), and you
+need a **Route53 hosted zone you already own** — the deploy looks it up, it never creates one.
 
-Then create one settings file:
+Then create one settings file — the only place your own details live:
 
 ```bash
 cd terraform-eks
 cp voteball-eks.tfvars.example voteball-eks.tfvars
-# open voteball-eks.tfvars and set your email:  notification_email = "you@example.com"
 cd ..
 ```
+
+Open `terraform-eks/voteball-eks.tfvars` and set four things: `app_domain` (the web address you want),
+`route53_zone_name` (a domain you already manage in AWS Route53, with a trailing dot), `db_password`,
+and `notification_email`. Everything else already has a sensible default.
+
+During the deploy you'll also be asked for an admin username and password — those go straight into
+AWS's secret vault and are never written to a file.
 
 Keep a backup copy of `voteball-eks.tfvars` and, after your first run, `terraform-eks/terraform.tfstate`
 (a copy in a password manager is fine). They aren't in git, and losing them means cleaning up AWS by hand.
@@ -69,7 +76,7 @@ git add charts/voteball/values.yaml && git commit -m "Deploy: sync values" && gi
 **Confirm the alert email:** check your inbox for an AWS confirmation link and click it, or the
 milestone-alert emails won't arrive.
 
-Give it a few minutes, then open **https://voteball.latnook.com**.
+Give it a few minutes, then open **https://&lt;your app_domain&gt;**.
 
 **Later, after changing app code:** just `git push` — CI rebuilds the images and ArgoCD deploys them.
 To do it by hand instead, run `./scripts/deploy.sh` again.
@@ -80,7 +87,7 @@ To do it by hand instead, run `./scripts/deploy.sh` again.
 
 ```bash
 kubectl get pods -n devops-app          # everything should say "Running"
-curl -sf https://voteball.latnook.com/api/options | head -c 120   # should print leagues/clubs/parties
+curl -sf https://<your app_domain>/api/options | head -c 120   # should print leagues/clubs/parties
 ```
 
 Open the site in a browser and cast a vote — it should land and show on the results page.
@@ -115,20 +122,24 @@ votes. (This changed on 2026-07-20 — teardown used to discard them.)
   latest code (`git pull`). (Cause: the app's firewall rules needed to allow the internal "service"
   network, not just the machine network.)
 - **The nightly backup fails** → already fixed in the latest code (it needed a writable temp folder).
+- **Teardown prints "These resources were kept due to the resource policy: [CustomResourceDefinition]
+  applications.argoproj.io ..."** → harmless. ArgoCD marks those definitions "keep" so an uninstall
+  can't delete your app definitions by accident. The whole cluster is deleted moments later, so they
+  go with it. Nothing is left behind and nothing is billed.
 - **A brief error when a pod restarts** → normal for a second or two while the load balancer notices; the
   site stays up. Real visitors' browsers just retry.
 - **"version not supported" style errors on the cluster** → the Kubernetes version pin (`1.34`) may have
-  aged out; check `aws eks describe-cluster-versions --region il-central-1` and bump it if needed.
+  aged out; check `aws eks describe-cluster-versions --region <your region>` and bump it if needed.
 - **The site can't be found right after a rebuild** → DNS. The record is recreated on deploy, but your
   computer may have cached the old answer. Check it works publicly first:
-  `dig +short voteball.latnook.com @8.8.8.8` — if that returns addresses, flush your local cache
+  `dig +short <your app_domain> @8.8.8.8` — if that returns addresses, flush your local cache
   (`sudo resolvectl flush-caches`) or try a private browser window.
 - **`terraform destroy` sits on "Still destroying... subnet" for many minutes** → a leftover network
   interface from a terminated node is pinning the subnet. `destroy.sh` now cleans these up
   automatically while it runs; if you hit it in a manual destroy, find and delete the detached one:
-  `aws ec2 describe-network-interfaces --region il-central-1 --filters Name=status,Values=available
+  `aws ec2 describe-network-interfaces --region <your region> --filters Name=status,Values=available
   --query "NetworkInterfaces[?starts_with(Description,'aws-K8S-')].NetworkInterfaceId"` then
-  `aws ec2 delete-network-interface --region il-central-1 --network-interface-id <id>`. The subnet
+  `aws ec2 delete-network-interface --region <your region> --network-interface-id <id>`. The subnet
   deletes within seconds afterwards.
 - **`terraform destroy` hangs on a `helm_release`** ("context deadline exceeded") → Helm can't cleanly
   uninstall while the cluster is being deleted. Drop it from state and re-run; it dies with the

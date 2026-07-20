@@ -5,20 +5,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 Voteball is a public poll correlating football fandom with Israeli political-party voting, deployed on
-**Amazon EKS** at `voteball.latnook.com`. It was bootstrapped from infra patterns proven in a separate
-`Rolling AWS Project files` (S3App) repo but is fully independent — no shared code or state.
+**Amazon EKS**. It was bootstrapped from infra patterns proven in a separate `Rolling AWS Project files`
+(S3App) repo but is fully independent — no shared code or state.
 
-> **The single-node k3s deployment is RETIRED.** `terraform/` (k3s stack) and `ansible-project/`'s
-> playbook/roles remain in the repo for history, but the live deployment is the EKS stack in
-> `terraform-eks/` + `charts/voteball/`. The app *source* still lives under
-> `ansible-project/roles/{backend,worker,frontend}/files/` (that's just where the Dockerfiles/code sit;
-> Ansible itself is no longer used to deploy).
+**The repo is designed to be forkable**: no AWS account, region or domain is hardcoded anywhere in
+code. Identity lives in exactly two places — `terraform-eks/voteball-eks.tfvars` (pre-apply) and
+`terraform output` (post-apply) — both read through `scripts/lib/config.sh`. The env-specific fields of
+`charts/voteball/values.yaml` are marked `FILLED-BY-SYNC` and written by
+`scripts/sync-values-from-tf.sh`. **If you add a hardcoded ARN, bucket, registry or domain anywhere,
+that is a bug.**
+
+> **The single-node k3s deployment is RETIRED and its code was removed on 2026-07-20** (the `terraform/`
+> stack, the Ansible playbook/roles, and the SSH-based reverse-seed script — all recoverable from git
+> history). The live deployment is `terraform-eks/` + `charts/voteball/`, and the app source is in
+> `services/{backend,worker,frontend,backup}/`, one Docker build context each.
 
 **Plans live in `docs/superpowers/plans/`** — the EKS migration was built as a sequence of task-by-task
 specs (app-code foundation → EKS infra → add-ons → app deploy → expose/harden → GitOps/observability →
-docs). `docs/plan.md` is the *original k3s-era* plan and is now historical. Read the relevant plan
-before making architectural changes: most design decisions (and the bugs they avoid) are explained
-there, not in code comments.
+docs), followed by the deployment-hardening and repo-forkability passes. Read the relevant plan before
+making architectural changes: most design decisions (and the bugs they avoid) are explained there, not
+in code comments.
 
 Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
 `docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`.
@@ -38,16 +44,16 @@ delivered by the `charts/voteball` Helm chart (synced by ArgoCD):
 
 - **frontend** — nginx serving plain HTML/CSS/vanilla JS (no build step), reverse-proxying `/api/*` to
   the backend.
-- **backend** (`ansible-project/roles/backend/files/backend/`) — Flask 3.1 app. `app.py` holds all
+- **backend** (`services/backend/`) — Flask 3.1 app. `app.py` holds all
   routes; `queries.py` holds all SQL; `db.py` holds only connection setup (`get_db`) and one-time
   schema bootstrap (`init_db`, which loads `schema.sql` then `seed.sql` — the backend is the only
   container that ever creates schema).
-- **worker** (`ansible-project/roles/worker/files/worker/`) — Python batch/loop process that
+- **worker** (`services/worker/`) — Python batch/loop process that
   recomputes the `rollup_previous`/`rollup_upcoming`/`rollup_previous_upcoming` tables from
   `votes`/`vote_upcoming_parties`, and sends milestone SNS alerts.
 
-**Each container's `files/` directory is independently copied and built — there is no shared Python
-package between backend and worker.** The worker has its own near-duplicate `db.py` rather than
+**Each service directory is its own Docker build context — there is no shared Python package
+between backend and worker.** The worker has its own near-duplicate `db.py` rather than
 importing the backend's. This is a deliberate simplicity choice, not an oversight; don't "fix" it by
 introducing a shared module unless the plan says to.
 
@@ -156,44 +162,26 @@ There's a comment there explaining why; keep it.
 
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 
-Admin-curated data (party/club/league logo URLs, renames, etc.) lives only in the live RDS instance
-until someone backfills it into `seed.sql` — a fresh install or `terraform destroy`+restore-from-
-empty-DB would otherwise miss it. **`scripts/sync-seed-from-rds.sh`** automates this: it opens an SSH
-tunnel through the EC2 node to RDS (private subnet, not directly reachable), diffs the live data
-against what the current working tree's `schema.sql`/`seed.sql` would produce in a fresh
-`voteball-test-db` container, and reports every difference in three categories — safe NULL-backfills
-(a field the admin set that `seed.sql` still has as NULL; pass `--apply` to write these in), value
-conflicts (both sides set but different — e.g. a rename; always needs a human fix, since a guarded
-`WHERE col IS NULL` statement can't touch an already-populated field), and rows that exist on only one
-side (added or deleted on purpose — also always needs a human call). Needs the same `.vault_pass`,
-`Voteball-EC2-pem.pem`, and Terraform state as the rest of this section, plus a running
-`voteball-test-db` container (see the Backend common-commands section below).
+Admin-curated data (logo URLs, renames) lives only in the live RDS instance until someone backfills it
+into `seed.sql`. `scripts/sync-seed-from-rds.sh` used to automate this, but it tunnelled to RDS over
+SSH through the k3s EC2 node — which EKS does not have — so it was **removed on 2026-07-20**. Porting
+it would mean replacing the SSH tunnel with `kubectl port-forward` through a backend pod; the original
+is in git history.
 
 ### Secrets
 
 **On EKS, secrets live in AWS Secrets Manager** (`voteball/app-secret`) and are synced into the
 `app-secret` Kubernetes Secret by External Secrets Operator via IRSA. Terraform creates only the empty
-container (`ignore_changes = [secret_string]`), so **no secret value ever enters git or tfstate**. Seed
-real values with `./scripts/seed-eks-secret.sh`. See `docs/security.md`.
+container (`ignore_changes = [secret_string]`), so **no secret value ever enters git or tfstate**.
+See `docs/security.md`.
 
-The ansible-vault file below is the **retired k3s** mechanism — still the origin of the credential
-values (the seed script reads it), so keep `.vault_pass` around, but it is no longer in the deploy path.
+Seed the values with `./scripts/seed-eks-secret.sh`, which takes `DB_PASS`, `ADMIN_USERNAME` and
+`ADMIN_PASSWORD` from the environment or a silent prompt, hashes the password with `werkzeug` and
+generates `ADMIN_SESSION_SECRET` itself. Nothing is echoed or written to disk. **`DB_PASS` must match
+`db_password` in `terraform-eks/voteball-eks.tfvars`** — Terraform sets the RDS master password from
+that variable (including on a snapshot restore, which is what keeps the two in sync).
 
-`ansible-project/inventories/voteball/group_vars/all/secrets.yml` (holds `db_pass`, `admin_username`,
-`admin_password_hash`, `admin_session_secret`) is
-encrypted with `ansible-vault` and **committed encrypted** — only the vault password itself
-(`ansible-project/.vault_pass`, gitignored, never committed) is kept out of git. `ansible.cfg` points
-`vault_password_file` at it, so `ansible-vault view|edit` works transparently once
-that file exists locally. To bootstrap a fresh checkout:
-
-```bash
-cd ansible-project
-openssl rand -hex 32 > .vault_pass
-ansible-vault edit inventories/voteball/group_vars/all/secrets.yml --vault-password-file .vault_pass
-```
-
-`db_pass` must match whatever `db_password` is set to in `terraform/voteball.tfvars` (Terraform is the
-source of truth for the RDS master password; Ansible only ever reads it, never sets it independently).
+*(The old ansible-vault mechanism was removed with the k3s stack on 2026-07-20.)*
 
 See `docs/deploy.md` for the full deploy/destroy runbook.
 
@@ -211,14 +199,12 @@ terraform plan  -var-file=voteball-eks.tfvars
 
 `terraform apply` creates real, billed AWS resources (EKS control plane, NAT, nodes, RDS, ALB ≈
 $200/mo) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
-(the EKS module v20 caps the provider at `< 6.0`, unlike the k3s stack's `~> 6.0`) and
+(the EKS module v20 caps the provider at `< 6.0`) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
 (`aws eks describe-cluster-versions --region il-central-1`). Community chart/add-on versions drift fast;
 verify with `helm search repo <chart> --versions` before pinning.
 
-`terraform/` is the retired k3s stack — left for history, not deployed.
-
-### Backend (`ansible-project/roles/backend/files/backend/`)
+### Backend (`services/backend/`)
 
 **Adding a new backend or worker source file: update that service's `Dockerfile` `COPY` line.** On EKS
 the build context *is* the source directory (`scripts/build-push-ecr.sh` / the CI workflow run
@@ -226,15 +212,11 @@ the build context *is* the source directory (`scripts/build-push-ecr.sh` / the C
 file — and a file missing there is simply absent from the image (no build error for the *app* files,
 just an `ImportError`/404 at runtime). Same class of gap as the frontend note below.
 
-*(Historical: under the retired k3s deploy this needed a **second** list too — the per-file `loop:` in
-`ansible-project/roles/k3s/tasks/main.yml` — because Ansible shipped an explicit file list to the node.
-That bit once, `migrate.py`, fixed in `4c56d04`. Irrelevant on EKS, but that's why the role looks that way.)*
-
 Tests run TDD-style against a **real** Postgres, not mocks:
 
 ```bash
 docker run -d --name voteball-test-db -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:17
-cd ansible-project/roles/backend/files/backend
+cd services/backend
 python -m venv .venv && source .venv/bin/activate   # or use uv if pip is unavailable
 pip install -r requirements.txt
 python -m pytest tests/ -v                          # full suite
@@ -246,20 +228,19 @@ python -m pytest tests/test_app.py::test_health -v   # single test
 `setdefault` and its `conn` fixture drops and recreates every table before each test (see the
 `DROP TABLE ... CASCADE` list — keep it in sync with `schema.sql` when adding tables).
 
-### Worker (`ansible-project/roles/worker/files/worker/`)
+### Worker (`services/worker/`)
 
 Same real-Postgres TDD pattern as the backend; reuse the `voteball-test-db` container. The worker's
 tests need `schema.sql` (owned by the backend) loaded into that database, since the worker itself
 never creates schema.
 
-### Frontend (`ansible-project/roles/frontend/files/nginx/`)
+### Frontend (`services/frontend/`)
 
 Plain HTML/CSS/vanilla JS, no build step, no automated test suite (matches the S3App precedent) —
 verify by driving the real page in a browser (or during Task 21-style end-to-end deploy verification).
 
-**Adding a new frontend file (JS/CSS/HTML) requires updating `files/nginx/Dockerfile`'s `COPY`
-line too** — Ansible ships the whole `files/nginx/` directory to the node as-is, but the
-`Dockerfile` itself lists every file it bakes into the image by name, not by directory. A file
+**Adding a new frontend file (JS/CSS/HTML) requires updating `services/frontend/Dockerfile`'s `COPY`
+line too** — the `Dockerfile` lists every file it bakes into the image by name, not by directory. A file
 that exists on disk but is missing from that `COPY` line 404s at runtime with no build error and
 no obvious symptom beyond "the page is broken" (any script that calls a function the missing file
 was supposed to define throws and silently kills the rest of that script's execution) — this
@@ -276,16 +257,11 @@ ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml`), so
 cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
 note ArgoCD's `selfHeal` will fight you.
 
-### Ansible (retired)
+## Key constraints
 
-Only used to *deploy* the old k3s stack; not part of the EKS path. The app source under
-`ansible-project/roles/*/files/` is still live — that's just where the code and Dockerfiles live.
-
-## Key constraints (see `docs/plan.md` Global Constraints for the full list)
-
-- Region `il-central-1`; EKS VPC `10.0.0.0/16` across AZs `il-central-1a`/`1b` (public / private /
-  isolated-DB subnets, single NAT). Kubernetes namespace **`devops-app`** (never `default`).
-- Resource name prefix `voteball`; single environment only — no dev/prod split, no multi-instance mode
+- Region and domain come from `terraform-eks/voteball-eks.tfvars` (defaults: `il-central-1`, 2 AZs);
+  EKS VPC `10.0.0.0/16` (public / private / isolated-DB subnets, single NAT). Kubernetes namespace **`devops-app`** (never `default`).
+- Resource name prefix = `cluster_name` (default `voteball`); single environment only — no dev/prod split, no multi-instance mode
   (this is deliberately simpler than the S3App precedent it was bootstrapped from).
 - **All** app containers run non-root with `allowPrivilegeEscalation:false`, `capabilities.drop:[ALL]`,
   and `readOnlyRootFilesystem:true` (+ an `emptyDir` only where a write is truly needed): backend/worker
@@ -304,11 +280,8 @@ Only used to *deploy* the old k3s stack; not part of the EKS path. The app sourc
 ## Gitignored / generated files
 
 Gitignored — either real secrets or machine-specific/generated output:
-`terraform-eks/voteball-eks.tfvars`, `terraform-eks/terraform.tfstate*` and `terraform/terraform.tfstate*`
+`terraform-eks/voteball-eks.tfvars`, `terraform-eks/terraform.tfstate*`
 (the `*` glob matters — Terraform writes *timestamped* backups like `terraform.tfstate.1784477786.backup`
 that a bare `.backup` pattern misses), `*.tfplan`/`tfplan`, `*.pem`, `*.pdf` (course reference material),
-`ansible-project/.vault_pass`, the generated Ansible inventory, and `EXPLAINER.md` (personal
-presentation notes, not part of the submission).
+`.remember/`, `.claude/settings.local.json`, and `EXPLAINER.md`/`PROJECT-QA.md` (personal notes).
 
-Note `group_vars/all/secrets.yml` is **not** gitignored: it's committed, but ansible-vault-encrypted
-(see Secrets above).

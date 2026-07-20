@@ -1,8 +1,11 @@
 # Voteball
 
 A public poll correlating **football fandom** with **Israeli political-party voting**, timed to the
-run-up to the next Knesset election. Live at **https://voteball.latnook.com** (when deployed), running on
-**Amazon EKS**.
+run-up to the next Knesset election. Runs on **Amazon EKS**, deployed by two commands.
+
+The repo is self-contained: fork it, put your own domain and AWS account in one file, and
+`./scripts/deploy.sh` builds the whole stack — VPC, cluster, database, registry, certificate,
+add-ons and the app. See the [Quickstart](#quickstart).
 
 ## How the poll works
 
@@ -31,6 +34,54 @@ It runs on **EKS** in a dedicated VPC: an **ALB Ingress** (HTTPS via **ACM**) fr
 come from **Secrets Manager** via External Secrets Operator; images live in **ECR**; delivery is **GitOps**
 (ArgoCD) fed by a **GitHub Actions** pipeline (build → Trivy scan → ECR → auto-sync); monitoring is
 Prometheus/Grafana + CloudWatch.
+
+## Quickstart
+
+Running this creates real, billed AWS resources (**≈$200/month** while up). Tear it down when you're
+done — `./scripts/destroy.sh` takes a final database snapshot, so nothing is lost.
+
+**You need:** `terraform`, `aws` (logged in), `kubectl`, `helm`, `docker`, `python3`, `openssl`, and a
+**Route53 public hosted zone you already own** (the stack looks it up; it never creates one).
+
+**1. Configure — this is the only file with your identity in it:**
+
+```bash
+cd terraform-eks
+cp voteball-eks.tfvars.example voteball-eks.tfvars
+```
+
+Set four values in it: `app_domain`, `route53_zone_name`, `db_password`, `notification_email`.
+Everything else has a working default.
+
+**2. Deploy:**
+
+```bash
+./scripts/deploy.sh          # asks you to confirm before Terraform creates anything billed
+```
+
+It resolves the newest DB snapshot (or starts with an empty database), applies Terraform, prompts for
+your admin credentials and seeds them into Secrets Manager, builds and pushes the four images, fills in
+`charts/voteball/values.yaml` from Terraform outputs, installs the chart, and hands ongoing delivery to
+ArgoCD. Then confirm the SNS subscription email AWS sends you, and open `https://<your app_domain>`.
+
+**3. Tear down:**
+
+```bash
+./scripts/destroy.sh
+```
+
+### Notes for forkers
+
+- **Never hand-edit the `FILLED-BY-SYNC` values in `charts/voteball/values.yaml`.** The database
+  endpoint, certificate ARN, registry, bucket and IAM roles are all regenerated whenever the stack is
+  rebuilt; `./scripts/sync-values-from-tf.sh` writes them, and `--check` fails if they drift.
+- **Secrets never enter git.** Terraform creates an empty Secrets Manager container and ignores its
+  contents; `./scripts/seed-eks-secret.sh` populates it from your environment or a silent prompt, and
+  External Secrets Operator syncs it into the cluster.
+- **For CI** (optional), set three GitHub repo variables: `AWS_ROLE_ARN` (from
+  `terraform output github_actions_role_arn`), `AWS_REGION`, and `ECR_REGISTRY` (from
+  `terraform output ecr_registry`). Add `CLUSTER_NAME` too if you changed it from `voteball`.
+- **Costs.** The EKS control plane, NAT gateway, ALB and RDS dominate the bill. Node capacity is Spot.
 
 ## Documentation
 
