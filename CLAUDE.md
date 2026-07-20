@@ -219,6 +219,7 @@ terraform plan  -var-file=voteball.tfvars
 $200/mo) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
 (the EKS module v20 caps the provider at `< 6.0`) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
+(**1.34 leaves standard support 2026-12-02**; see `docs/maintenance.md`)
 (`aws eks describe-cluster-versions --region <your region>`). Community chart/add-on versions drift fast;
 verify with `helm search repo <chart> --versions` before pinning.
 
