@@ -20,13 +20,21 @@ APPROVE=()
 
 step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 
-step "1/5  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
-kubectl delete -f argocd/voteball-application.yaml --ignore-not-found
+# This script must be safe to re-run after a partial teardown, when the cluster may already be gone.
+# In that state kubectl fails with "Unauthorized"/"connection refused" rather than "not found", which
+# --ignore-not-found does NOT cover, so set -e would abort before reaching Terraform. Any leftover
+# Kubernetes object dies with the cluster anyway; these steps are best-effort by design.
+if kubectl cluster-info >/dev/null 2>&1; then
+  step "1/6  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
+  kubectl delete -f argocd/voteball-application.yaml --ignore-not-found || true
 
-step "2/5  Removing the Ingress (releases the ALB and the DNS records)"
-kubectl delete ingress voteball -n devops-app --ignore-not-found
+  step "2/6  Removing the Ingress (releases the ALB and the DNS records)"
+  kubectl delete ingress voteball -n devops-app --ignore-not-found || true
+else
+  step "1-2/6  Cluster unreachable — skipping ArgoCD/Ingress deletion (already gone)"
+fi
 
-step "3/5  Waiting for the ALB to de-provision (its ENIs block VPC deletion)"
+step "3/6  Waiting for the ALB to de-provision (its ENIs block VPC deletion)"
 for _ in $(seq 1 60); do
   remaining="$(aws elbv2 describe-load-balancers --region "$REGION" \
     --query "LoadBalancers[?starts_with(LoadBalancerName, 'k8s-devopsap-voteball')].LoadBalancerName" \
@@ -39,10 +47,21 @@ for _ in $(seq 1 60); do
   sleep 10
 done
 
-step "4/5  Uninstalling the Helm release"
-helm uninstall voteball -n devops-app --ignore-not-found || true
+step "4/6  Uninstalling the Helm release"
+if kubectl cluster-info >/dev/null 2>&1; then
+  helm uninstall voteball -n devops-app --ignore-not-found || true
+else
+  echo "Cluster unreachable — skipping (the release dies with the cluster)."
+fi
 
-step "5/5  Destroying AWS infrastructure (Terraform will ask you to confirm)"
+step "5/6  Removing this cluster's DNS records"
+# Deterministic backstop: external-dns only reconciles on a timer, so teardown can destroy it before
+# it notices the deleted Ingress, stranding voteball.latnook.com on a dead ALB (2026-07-20). This
+# waits for external-dns to do its own job, then removes whatever it left behind. Only touches
+# records whose ownership TXT names this cluster.
+./scripts/cleanup-stale-dns.sh || echo "WARNING: DNS cleanup failed; check the zone by hand."
+
+step "6/6  Destroying AWS infrastructure (Terraform will ask you to confirm)"
 terraform -chdir=terraform-eks destroy -var-file="$TFVARS" "${APPROVE[@]}"
 
 cat <<'EOF'

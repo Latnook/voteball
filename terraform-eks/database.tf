@@ -51,8 +51,10 @@ resource "aws_db_instance" "app" {
   final_snapshot_identifier = "${var.cluster_name}-eks-db-final-${formatdate("YYYYMMDDhhmmss", time_static.deploy.rfc3339)}"
   apply_immediately         = true
 
-  lifecycle {
-    # The name embeds a creation-time timestamp; without this, replacing time_static would show a diff.
-    ignore_changes = [final_snapshot_identifier]
-  }
+  # NOTE: do NOT add `lifecycle { ignore_changes = [final_snapshot_identifier] }` here. It looks like
+  # harmless diff-suppression but it stops the value ever reaching state, and the provider reads
+  # final_snapshot_identifier FROM STATE at destroy time -- so destroy fails with
+  # "final_snapshot_identifier is required when skip_final_snapshot is false", the DB survives, and
+  # its ENIs then block subnet/VPC deletion. Hit on the 2026-07-20 teardown. time_static.deploy
+  # already keeps this value stable across plans, so there is no diff to suppress.
 }
