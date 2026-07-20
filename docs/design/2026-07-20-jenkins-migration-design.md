@@ -26,8 +26,9 @@ does not touch the security boundary around the cluster.
 
 ### What does not carry over
 
-Five behaviours are provided by GitHub Actions and have no Jenkins equivalent. Each is a real defect if
-translated naively, and each is labelled here and referenced from the design and the implementation
+Seven behaviours differ. Most are things GitHub Actions provides that Jenkins does not (G1–G5, G7);
+G6 is a Jenkins quirk with no GitHub Actions counterpart. Each is a real defect if translated naively,
+and each is labelled here and referenced from the design, the verification list and the implementation
 plan.
 
 #### G1 — re-running a build fails against immutable ECR tags
@@ -64,6 +65,20 @@ secret that did not previously exist.
 
 GitHub's runners are destroyed after every job. A long-lived EC2 agent accumulates four image builds
 per run plus Trivy's cache on a fixed-size volume until builds fail on a full disk.
+
+#### G6 — Jenkins job parameters do not exist until the job has run once
+
+Jenkins registers a pipeline's `parameters` block only after it has read the `Jenkinsfile` during a
+build. The `FORCE_BUILD` checkbox (see G3) is therefore absent from the UI on the very first run, so
+the first attempt to trigger a manual build cannot set it. The pipeline is not broken, but it appears
+to be — an unnecessary obstacle during initial setup, when confidence in the new system is lowest.
+
+#### G7 — build failures are silent
+
+GitHub Actions emails the committer when a run fails. Jenkins sends nothing unless SMTP is configured,
+and this Jenkins has no publicly reachable UI, so a red build is invisible until the maintainer next
+opens the tunnel. Because the pipeline auto-deploys, an unnoticed failure means believing a change
+shipped when it did not.
 
 ## Non-goals
 
@@ -249,6 +264,19 @@ webhook and the Jenkins job, so Jenkins verifies the HMAC signature GitHub attac
 Without it, any host inside GitHub's IP ranges could trigger builds. The secret is entered through the
 Jenkins UI and stored in the credentials store; it never enters git.
 
+**First-time configuration**, performed once through the UI and recorded as a numbered runbook in
+`docs/cicd.md`:
+
+- **Plugins:** Git, Pipeline, GitHub, Credentials Binding, Docker Pipeline. (This list is also the
+  input to the deferred JCasC pass's `plugins.txt`, which is why it is fixed here rather than left to
+  whatever the setup wizard's "recommended" set happens to contain.)
+- **Job type:** a **Pipeline** job configured as *Pipeline script from SCM* — not Freestyle (which
+  would put the build definition in Jenkins' database instead of the repository, defeating the point)
+  and not Multibranch (the project works directly on `master`; see non-goals).
+- **Credentials:** the deploy key (G4) and the webhook shared secret.
+- **Webhook:** `http://<elastic-ip>:8080/github-webhook/` — the trailing slash is required.
+- Unlock, admin user, then the G6 first run.
+
 ### 7. The `Jenkinsfile`
 
 A declarative pipeline at the repository root, written plainly and commented, mirroring the current
@@ -316,6 +344,24 @@ two builds from contending for `values.yaml` in the first place.
 
 `docker image prune -f` in `post { always { … } }`, plus `buildDiscarder` retaining the last 20 builds.
 
+#### G6 — first run registers the parameters
+
+No code change resolves this; it is inherent to how Jenkins loads a pipeline. The runbook instead
+records the required sequence: **run the job once with no parameters** (which registers them and, on a
+commit that touches no app source, correctly does nothing), after which `FORCE_BUILD` appears for
+subsequent manual builds. Called out explicitly so that an empty first run reads as expected behaviour
+rather than a broken pipeline.
+
+#### G7 — accepted: no failure notifications
+
+Configuring SMTP would mean provisioning and storing mail credentials on the build host for a
+two-week-old project with a single maintainer, so this pass **accepts silent failures** rather than
+adding that surface. The compensating practice is that verification means checking the Jenkins UI, not
+inferring success from the site still working — and ArgoCD's own state (`kubectl get application
+voteball -n argocd`) independently reveals whether the deployed tag advanced.
+
+Recorded as a decision rather than an oversight; revisit if the project outlives the course.
+
 #### Trivy cache
 
 The current invocation uses `--rm` with no volume, so the ~50 MB vulnerability database is discarded
@@ -341,7 +387,7 @@ gains a reminder to bump it.
 
 ### 9. Repository changes
 
-**Delete**
+**Delete** — *ordering is constrained; see §10*
 
 - `.github/workflows/ci.yml`
 - `terraform/github-oidc.tf`
@@ -356,19 +402,70 @@ gains a reminder to bump it.
 **Rewrite**
 
 - `docs/cicd.md` — the four required GitHub repo variables and the OIDC failure modes are obsolete. The
-  structure is retained, including the failure-modes table (which gains the G1–G5 symptoms) and the
-  verified-run evidence table (which is re-recorded against the Jenkins run).
+  structure is retained, including the failure-modes table (which gains the G1–G7 symptoms) and the
+  verified-run evidence table (re-recorded against the Jenkins run). Gains the first-time-configuration
+  runbook (§6) and the instance start/stop commands (§5).
+
+**Graded deliverables** — these are read by the assessor, not just by maintainers, so they are called
+out separately rather than folded into the amendment list:
+
+- **`docs/eks/architecture.md:43`** — the architecture diagram is Mermaid, inline, and its CI node
+  currently reads `gh[GitHub Actions<br/>OIDC → build/Trivy/ECR]`. The rubric names the diagram as an
+  explicit deliverable, so this is a graded artifact describing a pipeline that will no longer exist.
+  The node and the accompanying prose at line 71 both change.
+- **`README.submission.md:46`** — the turn-in README describes the GitHub Actions flow. It must
+  describe the Jenkins flow *and* carry the green-build evidence; `docs/cicd.md` is too deep for the
+  assessor to be relied on to reach it.
 
 **Amend** — each references GitHub Actions and must be updated:
-`CLAUDE.md`, `README.md`, `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
-`docs/production-readiness.md`, `docs/maintenance.md`, and the two 2026-07-20 design docs (which are
-historical records and receive only a forward-reference note, not a rewrite).
+`CLAUDE.md`, `README.md`, `docs/security.md`, `docs/production-readiness.md`, `docs/maintenance.md`,
+and the two 2026-07-20 design docs (which are historical records and receive only a forward-reference
+note, not a rewrite).
+
+`docs/security.md` specifically gains: the instance-profile model replacing OIDC federation (§3), the
+inbound/outbound posture and its two accepted positions (§4), and the `docker`-group root-equivalence
+on the build host (§6).
 
 `CLAUDE.md` additionally gains a short standing warning about G2, in the same spirit as the existing
 `ignore_changes`/`final_snapshot_identifier` warning: a future tidy-up that removes the guard stage
 reintroduces an unbounded, billable build loop.
 
 **Unchanged:** `charts/`, `argocd/`, `scripts/`, `services/`.
+
+### 10. Cutover and rollback
+
+#### The two pipelines must never be armed simultaneously
+
+If `ci.yml` and the Jenkins webhook are both live — even briefly — a single push to `services/**`
+triggers both. They build the same commit (one fails on the immutable tag, per G1) and both attempt to
+bump `values.yaml` and push to `master`, which is exactly the collision that motivated choosing
+"replace" over "coexist" in the first place. Introducing it accidentally during the transition would
+be a self-inflicted version of the problem this design exists to avoid.
+
+The cutover is therefore ordered:
+
+1. Build and apply `terraform/jenkins/`; complete first-time configuration.
+2. Add the `Jenkinsfile`, but create the webhook **disabled** (or omit it) and drive builds manually
+   with `FORCE_BUILD` until the pipeline is green end to end.
+3. **Disarm GitHub Actions** — change `ci.yml`'s trigger to `workflow_dispatch` and push. From this
+   moment no push can start a GitHub Actions run.
+4. **Then** enable the GitHub webhook. Exactly one system is now trigger-driven.
+5. Run the full verification list below.
+6. Only after verification passes: delete `ci.yml`, then `terraform/github-oidc.tf` and its output.
+
+#### Rollback
+
+Steps 3 and 6 are deliberately separated so that a working pipeline is recoverable throughout.
+
+Between steps 3 and 6, `ci.yml` still exists and its IAM role still exists in AWS; reverting one commit
+restores the GitHub Actions pipeline in full. **This is the property that must be preserved** — it is
+what makes the migration safe to attempt under deadline pressure.
+
+After step 6 the rollback is materially more expensive: recovering GitHub Actions would require
+restoring `ci.yml`, re-applying the main Terraform stack to recreate the IAM role and OIDC provider,
+and re-adding the four GitHub repository variables. `terraform/github-oidc.tf` is therefore deleted
+**last, as its own commit**, after verification has passed — never bundled with the rest of the
+cleanup.
 
 ## Verification
 
@@ -386,10 +483,17 @@ The migration is complete when all of the following are demonstrated:
 6. A docs-only push does **not** trigger a build; a manual build with `FORCE_BUILD` does.
 7. Stopping and starting the instance leaves Jenkins, its job, and its history intact, and the Elastic
    IP unchanged.
-8. `git grep -i "github actions"` returns only intentional historical references.
+8. **At no point were both pipelines trigger-driven.** After §10 step 3, the GitHub Actions run history
+   shows no new runs; the webhook is enabled only afterwards.
+9. **Rollback is intact until the end.** Before §10 step 6, reverting the `ci.yml` trigger commit is
+   confirmed to restore a working GitHub Actions pipeline — verified by inspection of the role and
+   repository variables, not assumed.
+10. The architecture diagram (`docs/eks/architecture.md:43`) and `README.submission.md` describe
+    Jenkins and carry the evidence.
+11. `git grep -i "github actions"` returns only intentional historical references.
 
 Evidence is recorded in `docs/cicd.md` in the same format as the existing 2026-07-20 verified-run
-table.
+table, and summarised in `README.submission.md`.
 
 ## Risks
 
@@ -402,6 +506,11 @@ table.
 | Jenkins host lost → build history and configuration lost | Low — accepted | Rebuildable from Terraform; the deferred JCasC pass recovers configuration |
 | GitHub webhook CIDRs change | Low | Fetched at apply time from `api.github.com/meta`; re-apply refreshes them |
 | Webhooks discarded while the instance is stopped | Low — intended | Runbook documents it; `FORCE_BUILD` re-runs on demand |
+| Both pipelines armed during cutover → duplicate builds racing to push `values.yaml` | **High** — self-inflicted, and the exact failure this design avoids | §10 ordering: disarm GitHub Actions *before* enabling the webhook; verification step 8 |
+| `github-oidc.tf` deleted too early → expensive rollback under deadline pressure | Medium | §10: deleted last, as its own commit, after verification; verification step 9 |
+| Build failures unnoticed (G7) | Medium | Accepted, §7; compensated by checking the Jenkins UI and ArgoCD's Application state rather than inferring success from the live site |
+| `FORCE_BUILD` absent on first run (G6) reads as a broken pipeline | Low | Runbook records the required first run explicitly |
+| Architecture diagram still shows GitHub Actions at submission | Medium — graded artifact | Listed as a deliverable in §9, not folded into the general docs sweep; verification step 10 |
 | Jenkins security advisories | Low | Reminder added to `docs/maintenance.md` alongside the EKS support-window tracking |
 
 ## Assumption
