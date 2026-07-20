@@ -8,9 +8,21 @@ import rollups
 import alerts
 import snapshots
 import heartbeat
+import notifications
 
 SNS_TOPIC = os.environ['SNS_TOPIC']
 AWS_REGION = os.environ.get('AWS_REGION', 'il-central-1')
+
+# Upper bound between recomputes when nothing notifies us. The backend NOTIFYs on every committed
+# vote, so in practice the loop wakes in well under a second; this is the backstop for a missed
+# notification, not the normal path.
+POLL_INTERVAL = int(os.environ.get('WORKER_POLL_INTERVAL', '30'))
+
+# How long to keep draining notifications before recomputing, so a burst of votes causes one
+# recompute instead of one per vote. This is the dominant term in observed vote->results latency
+# (measured 2.07s with a 2s debounce), so it is the knob to turn for responsiveness. Raise it if
+# recomputes ever start overlapping under load -- rollups.recompute() rebuilds the tables wholesale.
+DEBOUNCE_SECONDS = float(os.environ.get('WORKER_DEBOUNCE_SECONDS', '1.0'))
 
 # Optional S3 export. When S3_BUCKET is unset (the current k3s deployment), the worker makes NO S3
 # calls at all -- this is what keeps the snapshot feature inert on the live site until EKS sets it.
@@ -60,10 +72,28 @@ if __name__ == '__main__':
     s3 = boto3.client('s3', region_name=AWS_REGION) if S3_BUCKET else None
     print('Voteball worker started...')
     snapshot_fingerprint = None
+    listener = None
     while True:
         snapshot_fingerprint = run_iteration(sns, s3, snapshot_fingerprint)
         # Touch the heartbeat every iteration, even after a caught error: liveness means "the loop
         # is spinning", not "the DB is up". A DB outage must not restart the worker; a wedged
         # process (which never reaches here) lets the file go stale and gets restarted.
         heartbeat.touch()
-        time.sleep(30)
+
+        # Wake as soon as a vote commits (backend NOTIFYs in the vote transaction), falling back to
+        # POLL_INTERVAL so a missed notification only costs latency. Any listener failure is caught
+        # and degrades to a plain sleep -- the worker must keep spinning through a DB blip exactly
+        # like run_iteration does, or a transient outage would crash it into a restart loop.
+        try:
+            if listener is None or listener.closed:
+                listener = notifications.open_listener(db.get_db)
+            notifications.wait_for_change(listener, POLL_INTERVAL, DEBOUNCE_SECONDS)
+        except Exception as e:
+            print(f'Listener unavailable, falling back to polling this cycle: {e}')
+            if listener is not None:
+                try:
+                    listener.close()
+                except Exception:
+                    pass
+            listener = None
+            time.sleep(POLL_INTERVAL)

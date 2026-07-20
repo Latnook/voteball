@@ -53,9 +53,14 @@ delivered by the `charts/voteball` Helm chart (synced by ArgoCD):
   routes; `queries.py` holds all SQL; `db.py` holds only connection setup (`get_db`) and one-time
   schema bootstrap (`init_db`, which loads `schema.sql` then `seed.sql` — the backend is the only
   container that ever creates schema).
-- **worker** (`services/worker/`) — Python batch/loop process that
-  recomputes the `rollup_previous`/`rollup_upcoming`/`rollup_previous_upcoming` tables from
-  `votes`/`vote_upcoming_parties`, and sends milestone SNS alerts.
+- **worker** (`services/worker/`) — Python loop that recomputes the
+  `rollup_previous`/`rollup_upcoming`/`rollup_previous_upcoming` tables from
+  `votes`/`vote_upcoming_parties`, and sends milestone SNS alerts. It is **notification-driven**, not
+  a fixed timer: the backend issues `NOTIFY votes_changed` inside the vote transaction and the worker
+  blocks on `LISTEN` (`notifications.py`), so results refresh ~1s after a vote instead of up to 30s.
+  `WORKER_POLL_INTERVAL` (30s) remains a backstop for missed notifications and
+  `WORKER_DEBOUNCE_SECONDS` (1.0) coalesces bursts — `rollups.recompute()` rebuilds the tables
+  wholesale, so one recompute per vote would not scale.
 
 **Each service directory is its own Docker build context — there is no shared Python package
 between backend and worker.** The worker has its own near-duplicate `db.py` rather than

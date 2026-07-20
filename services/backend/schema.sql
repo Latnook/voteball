@@ -135,6 +135,16 @@ CREATE TABLE IF NOT EXISTS votes (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- Salted hash of the voter's IP, used ONLY to rate-limit ballot stuffing (see app.py). Never the raw
+-- address: the hash is one-way and salted with VOTE_IP_SALT, so the table holds no address and the
+-- hashes are useless outside this deployment. Rotating the salt resets all limits.
+--
+-- ADD COLUMN IF NOT EXISTS rather than editing the CREATE above, because schema.sql is re-run on
+-- every backend start (db.init_db) and must stay idempotent -- CREATE TABLE IF NOT EXISTS would skip
+-- an existing votes table entirely, so a plain column edit would never reach a live database.
+ALTER TABLE votes ADD COLUMN IF NOT EXISTS ip_hash TEXT;
+CREATE INDEX IF NOT EXISTS votes_ip_hash_created_at_idx ON votes (ip_hash, created_at);
+
 -- A ballot can now name up to 3 clubs per league, across any number of leagues (multi-team
 -- ballots) -- so the old singular votes.league_id/club_id columns can no longer represent a
 -- ballot. Pre-launch, no real vote data exists, so this drop is safe with no migration; kept

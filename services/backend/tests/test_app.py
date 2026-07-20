@@ -1178,3 +1178,70 @@ def test_results_clubs_breakdown_returns_200(client):
     assert resp.status_code == 200
     assert isinstance(resp.get_json(), list)
 
+
+
+# --- ballot-stuffing limits -------------------------------------------------------------------
+
+def _ballot(league_id):
+    return {
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    }
+
+
+def _league(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.close()
+    return league_id
+
+
+def test_vote_cookie_is_httponly_secure_and_samesite(client, conn):
+    """The dedup cookie must not be readable or forgeable from the page, nor sent over plain HTTP."""
+    resp = client.post('/api/vote', json=_ballot(_league(conn)))
+    assert resp.status_code == 201
+    cookie = resp.headers.get('Set-Cookie', '')
+    assert 'HttpOnly' in cookie, cookie
+    assert 'Secure' in cookie, cookie
+    assert 'SameSite=Lax' in cookie, cookie
+
+
+def test_vote_rate_limited_per_ip_once_the_cap_is_reached(client, conn):
+    """Clearing the cookie buys another ballot, but only up to the per-address cap."""
+    import app as app_module
+    league_id = _league(conn)
+
+    # Each request carries a fresh cookie jar (no cookie) but the same forwarded address.
+    headers = {'X-Forwarded-For': '203.0.113.9, 10.0.0.1'}
+    accepted = 0
+    for _ in range(app_module.MAX_VOTES_PER_IP + 3):
+        client.set_cookie('voteball_token', '', expires=0)   # drop any dedup cookie
+        r = client.post('/api/vote', json=_ballot(league_id), headers=headers)
+        if r.status_code == 201:
+            accepted += 1
+        else:
+            assert r.status_code == 429, f'expected 429 once capped, got {r.status_code}'
+
+    assert accepted == app_module.MAX_VOTES_PER_IP, \
+        f'cap is {app_module.MAX_VOTES_PER_IP}, but {accepted} ballots were accepted'
+
+
+def test_spoofed_leftmost_forwarded_for_cannot_evade_the_cap(client, conn):
+    """The leftmost X-Forwarded-For entry is attacker-controlled; the cap must ignore it."""
+    import app as app_module
+    league_id = _league(conn)
+
+    # Same real client (second-from-right), different spoofed leftmost value each time.
+    for i in range(app_module.MAX_VOTES_PER_IP):
+        client.set_cookie('voteball_token', '', expires=0)
+        r = client.post('/api/vote', json=_ballot(league_id),
+                        headers={'X-Forwarded-For': f'9.9.9.{i}, 198.51.100.7, 10.0.0.1'})
+        assert r.status_code == 201, r.status_code
+
+    client.set_cookie('voteball_token', '', expires=0)
+    r = client.post('/api/vote', json=_ballot(league_id),
+                    headers={'X-Forwarded-For': '9.9.9.250, 198.51.100.7, 10.0.0.1'})
+    assert r.status_code == 429, \
+        'changing the spoofable leftmost entry must not reset the per-address cap'

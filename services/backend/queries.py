@@ -73,8 +73,29 @@ def get_party_lineage(conn):
     return rows
 
 
+def count_recent_votes_by_ip(conn, ip_hash, window_hours):
+    """How many ballots this salted IP hash has cast within the window.
+
+    Used to cap ballot stuffing from a single source. Returns 0 when ip_hash is None so a request we
+    cannot attribute (missing or garbled proxy headers) is never blocked -- the cookie check still
+    applies, and failing open beats locking real voters out over a header problem.
+    """
+    if not ip_hash:
+        return 0
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            'SELECT COUNT(*) FROM votes '
+            'WHERE ip_hash = %s AND created_at > NOW() - make_interval(hours => %s)',
+            (ip_hash, window_hours)
+        )
+        return cur.fetchone()[0]
+    finally:
+        cur.close()
+
+
 def insert_vote(conn, team_picks, previous_vote_status, previous_party_id,
-                 upcoming_vote_status, upcoming_party_ids, cookie_token):
+                 upcoming_vote_status, upcoming_party_ids, cookie_token, ip_hash=None):
     """team_picks: list of {'league_id': int, 'club_id': int|None}. club_id None means
     "just this league, no specific club" and is stored in vote_leagues; a set club_id is
     stored in vote_clubs alongside the league it was picked under."""
@@ -82,9 +103,9 @@ def insert_vote(conn, team_picks, previous_vote_status, previous_party_id,
     try:
         cur.execute(
             '''INSERT INTO votes
-               (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
-               VALUES (%s, %s, %s, %s) RETURNING id''',
-            (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+               (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token, ip_hash)
+               VALUES (%s, %s, %s, %s, %s) RETURNING id''',
+            (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token, ip_hash)
         )
         vote_id = cur.fetchone()[0]
 
@@ -105,6 +126,12 @@ def insert_vote(conn, team_picks, previous_vote_status, previous_party_id,
                 'INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)',
                 (vote_id, party_id)
             )
+
+        # Wake the worker so the rollups the results page reads are refreshed immediately instead of
+        # on its next poll. NOTIFY is transactional in Postgres: it is delivered only if this COMMIT
+        # succeeds, so a rolled-back vote never wakes anything. The worker still polls on a timeout as
+        # a backstop, so a missed notification (reconnect, worker restart) only costs latency.
+        cur.execute('NOTIFY votes_changed')
 
         conn.commit()
         return vote_id

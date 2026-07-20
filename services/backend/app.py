@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 import os
 from functools import wraps
@@ -12,6 +13,47 @@ app = Flask(__name__)
 ADMIN_USERNAME = os.environ['ADMIN_USERNAME']
 ADMIN_PASSWORD_HASH = os.environ['ADMIN_PASSWORD_HASH']
 ADMIN_SESSION_SECRET = os.environ['ADMIN_SESSION_SECRET']
+
+# Ballot-stuffing limits. The cookie is the primary one-vote-per-visitor mechanism, but a cookie is
+# client-side and clearing it buys another ballot -- so cap how many ballots one source can cast.
+# Not 1-per-IP: Israeli mobile carriers use CGNAT heavily and households share an address, so a hard
+# 1 would lock out large numbers of genuine voters. A small cap stops casual re-voting and scripted
+# flooding while leaving real shared connections usable.
+MAX_VOTES_PER_IP = int(os.environ.get('MAX_VOTES_PER_IP', '5'))
+VOTE_IP_WINDOW_HOURS = int(os.environ.get('VOTE_IP_WINDOW_HOURS', '24'))
+# Salt so the stored hashes are useless outside this deployment and cannot be reversed by hashing
+# the IPv4 space. Falls back to the admin secret when unset, which is already required and rotated.
+VOTE_IP_SALT = os.environ.get('VOTE_IP_SALT', ADMIN_SESSION_SECRET)
+# Set false only if the app is ever served over plain HTTP (it is not: the ALB redirects to HTTPS).
+COOKIE_SECURE = os.environ.get('COOKIE_SECURE', 'true').lower() != 'false'
+
+
+def _client_ip():
+    """The real client address, given this deployment's ALB -> nginx -> backend chain.
+
+    Each hop APPENDS to X-Forwarded-For, so the backend sees "<client>, <alb>": the ALB appends the
+    address it saw, then nginx appends the ALB's. The rightmost entry is therefore our own
+    infrastructure and the one before it is what the ALB actually observed.
+
+    We deliberately do NOT take the leftmost entry, which is the usual mistake: a client can send its
+    own X-Forwarded-For and the ALB appends after it, so the leftmost value is attacker-controlled and
+    would make the rate limit trivially bypassable.
+    """
+    forwarded = request.headers.get('X-Forwarded-For', '')
+    parts = [p.strip() for p in forwarded.split(',') if p.strip()]
+    if len(parts) >= 2:
+        return parts[-2]
+    if parts:
+        return parts[-1]
+    return request.remote_addr
+
+
+def _ip_hash():
+    """Salted one-way hash of the client address, or None if we cannot determine it."""
+    ip = _client_ip()
+    if not ip:
+        return None
+    return hashlib.sha256(f'{VOTE_IP_SALT}:{ip}'.encode()).hexdigest()
 
 _admin_token_serializer = URLSafeTimedSerializer(ADMIN_SESSION_SECRET, salt='admin-session')
 ADMIN_TOKEN_MAX_AGE = 12 * 60 * 60  # 12 hours, in seconds
@@ -123,12 +165,19 @@ def vote():
     if len(body.get('upcoming_party_ids') or []) > 3:
         return jsonify({'error': 'select at most 3 upcoming parties'}), 400
 
+    ip_hash = _ip_hash()
+
     conn = db.get_db()
     try:
         team_picks = body.get('team_picks')
         picks_error = _validate_team_picks(conn, team_picks)
         if picks_error:
             return jsonify({'error': picks_error}), 400
+
+        # Second line of defence behind the cookie: cap ballots per source address. Checked before
+        # the insert so a blocked attempt writes nothing.
+        if queries.count_recent_votes_by_ip(conn, ip_hash, VOTE_IP_WINDOW_HOURS) >= MAX_VOTES_PER_IP:
+            return jsonify({'error': 'Too many votes from this connection. Try again later.'}), 429
 
         vote_id = queries.insert_vote(
             conn,
@@ -138,6 +187,7 @@ def vote():
             upcoming_vote_status=body.get('upcoming_vote_status'),
             upcoming_party_ids=body.get('upcoming_party_ids', []),
             cookie_token=token,
+            ip_hash=ip_hash,
         )
     except ValueError:
         return jsonify({'error': 'You have already voted'}), 409
@@ -148,7 +198,11 @@ def vote():
 
     resp = make_response(jsonify({'vote_id': vote_id}), 201)
     if is_new_token:
-        resp.set_cookie('voteball_token', token, max_age=31536000, httponly=True, samesite='Lax')
+        # httponly: JS cannot read or forge it, so the dedup token can't be tampered with from the
+        # page. secure: never sent over plain HTTP. samesite=Lax: not sent on cross-site POSTs, so a
+        # third-party page cannot silently spend a visitor's ballot.
+        resp.set_cookie('voteball_token', token, max_age=31536000,
+                        httponly=True, secure=COOKIE_SECURE, samesite='Lax')
     return resp
 
 

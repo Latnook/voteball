@@ -59,6 +59,29 @@ commits. Any credential that was ever in it should be treated as compromised-on-
 **rotated** — which is exactly what a fresh deploy now does, since `db_password` is generated per
 install and the admin password is entered at seed time rather than read from a committed file.
 
+## Vote integrity
+
+One ballot per visitor is enforced in two layers, because neither is sufficient alone:
+
+- **Cookie (primary).** `voteball_token` is set `HttpOnly` (the page cannot read or forge it),
+  `Secure` (never sent over plain HTTP) and `SameSite=Lax` (a third-party page cannot spend a
+  visitor's ballot), with a `UNIQUE` constraint on `votes.cookie_token` enforcing it in the database
+  rather than in application logic. A repeat vote gets `409`.
+- **Per-address cap (secondary).** A cookie is client-side, so clearing it buys another ballot. Each
+  vote also stores a **salted SHA-256 of the client address** (`VOTE_IP_SALT`; never the raw address)
+  and `MAX_VOTES_PER_IP` (5) ballots per `VOTE_IP_WINDOW_HOURS` (24) are allowed per source, after
+  which the API returns `429`. Not 1-per-address: Israeli mobile carriers use CGNAT heavily and
+  households share an address, so a hard limit of 1 would lock out many genuine voters.
+
+The client address is taken as the **second-from-right** `X-Forwarded-For` entry, because each hop
+(ALB, then nginx) appends. The leftmost entry is attacker-supplied — using it, the common mistake,
+would make the cap trivially bypassable by sending a different fake value each request. There is a
+regression test for exactly that.
+
+**Honest limitation:** this raises the cost of ballot stuffing, it does not eliminate it. A
+determined attacker with many addresses can still vote repeatedly. Genuinely one-vote-per-person on
+an anonymous public poll requires authenticating people, which this deliberately does not do.
+
 ## Network security
 
 - **Only the frontend is internet-facing.** Traffic path: Internet → **ALB** (public subnets, TLS
