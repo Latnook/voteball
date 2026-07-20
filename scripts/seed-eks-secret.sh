@@ -38,11 +38,36 @@ ADMIN_PASSWORD="$(ask ADMIN_PASSWORD "Admin password for '${ADMIN_USERNAME}'")"
 
 SECRET_ID="${CLUSTER}/app-secret"
 
+# werkzeug hashes the admin password, but it is a backend dependency -- it is often NOT installed
+# system-wide (it isn't on the maintainer's machine). Fall back to the backend's virtualenv, which
+# has it from requirements.txt, before giving up. Override with PYTHON=/path/to/python.
+pick_python() {
+  local c
+  for c in "${PYTHON:-}" python3 python "services/backend/.venv/bin/python"; do
+    [ -n "$c" ] || continue
+    if "$c" -c 'import werkzeug' >/dev/null 2>&1; then
+      printf '%s' "$c"
+      return 0
+    fi
+  done
+  return 1
+}
+
+if ! PY="$(pick_python)"; then
+  echo "ERROR: no Python with werkzeug available." >&2
+  echo "  Install it:            pip install werkzeug" >&2
+  echo "  Or create the backend venv:" >&2
+  echo "      python -m venv services/backend/.venv" >&2
+  echo "      services/backend/.venv/bin/pip install -r services/backend/requirements.txt" >&2
+  echo "  Or point at your own:  PYTHON=/path/to/python ./scripts/seed-eks-secret.sh" >&2
+  exit 1
+fi
+
 DB_USER="${DB_USER:-postgres}" DB_PASS="$DB_PASS" \
 ADMIN_USERNAME="$ADMIN_USERNAME" ADMIN_PASSWORD="$ADMIN_PASSWORD" \
 ADMIN_SESSION_SECRET="$(openssl rand -hex 32)" \
 SECRET_ID="$SECRET_ID" AWS_REGION_ARG="$REGION" \
-python3 - <<'PY'
+"$PY" - <<'PY'
 import json, os, subprocess, sys
 
 try:
