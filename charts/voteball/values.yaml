@@ -23,7 +23,7 @@ externalSecret:
 
 ingress:
   host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/b6c69a98-3ec7-40e7-8abc-725850ff423f"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/d17d5e93-38ea-4c3c-85f5-de01d1f43cae"
 
 backup:
   roleArn: "arn:aws:iam::590183895228:role/voteball-backup-irsa"
