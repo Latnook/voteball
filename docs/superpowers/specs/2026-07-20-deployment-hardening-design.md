@@ -62,6 +62,21 @@ the runbook points at does not.
 external-dns runs `policy=upsert-only`, so `voteball.latnook.com` keeps resolving to a de-provisioned ALB
 between teardown and next deploy.
 
+### H8 — orphaned VPC CNI network interfaces block subnet deletion *(found during verification)*
+
+When nodes terminate, the AWS VPC CNI can leave **detached** (`status=available`) `aws-K8S-*` network
+interfaces behind. Terraform then retries `DeleteSubnet` against a `DependencyViolation` until it times
+out. On the 2026-07-20 teardown this stalled the destroy for ~10 minutes; deleting the single orphaned
+interface by hand let the subnet drop within seconds.
+
+### H9 — ArgoCD bootstrapped before `values.yaml` is committed *(found during verification)*
+
+ArgoCD deploys what is on `master`, not what is on disk. `deploy.sh` synced `values.yaml` (step 6) and
+then created the Application (step 8) while the file was still uncommitted — so ArgoCD immediately
+reverted the cluster to master's stale `image.tag`. After a rebuild that tag names an image absent from
+the freshly-created ECR, so every pod went to `ImagePullBackOff` while the correct deploy was undone
+underneath it. Observed on the 2026-07-20 rebuild.
+
 ## Non-goals
 
 - No dev/prod split or multi-instance support (deliberate project constraint).
@@ -139,6 +154,24 @@ external-dns removes its own A/AAAA/TXT records.
 Blast radius (explicitly approved by the user): `sync` permits record **deletion** in the live
 `latnook.com` zone. Bounded by `txtOwnerId=voteball` (ownership TXT) and `domainFilters=latnook.com`, so
 only records external-dns created are eligible; apex `latnook.com` records are never touched.
+
+### 6. Orphaned-ENI reaper (H8)
+
+`destroy.sh` runs a background loop during `terraform destroy` that deletes network interfaces which are
+**both** detached (`status=available`) **and** CNI-created (`Description` starts with `aws-K8S-`), scoped
+to this stack's VPC. A detached CNI interface is garbage by definition; anything still in use reports
+`status=in-use` and is never considered.
+
+Reaping concurrently rather than retrying after failure is deliberate: Terraform takes 10–20 minutes to
+give up on the subnet, so a retry-on-failure wrapper would still pay that stall every time. The
+interfaces also only appear *during* destroy (as nodes terminate), so a pre-flight cleanup would find
+nothing.
+
+### 7. Commit before ArgoCD bootstrap (H9)
+
+`deploy.sh` commits and pushes `values.yaml` immediately after syncing it, **before** creating the ArgoCD
+Application. If the push fails, the bootstrap is skipped rather than handing the cluster to a source of
+truth that would break it.
 
 ### 5. Ordered orchestrators (H5, H6)
 
