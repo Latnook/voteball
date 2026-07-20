@@ -413,9 +413,16 @@ output "webhook_url" {
 ```bash
 cd terraform/jenkins && terraform fmt -recursive && terraform validate
 ```
+Expected: `fmt` clean, and `validate` failing on **exactly one** error — the missing `user_data.sh`.
+
+`file()` is resolved at **validate** time, not plan time (an earlier draft of this plan wrongly claimed the opposite). The failure is expected and transient; Task 4 creates the file. Confirm the rest of the configuration is sound by validating against a throwaway placeholder:
+
+```bash
+cd terraform/jenkins && touch user_data.sh && terraform validate; rm user_data.sh
+```
 Expected: `Success! The configuration is valid.`
 
-> `user_data.sh` does not exist yet, so `validate` passes but `plan` would fail on `file()`. That is expected; Task 4 creates it.
+Task 4 runs `terraform validate` for real, once `user_data.sh` exists.
 
 - [ ] **Step 4: Commit**
 
