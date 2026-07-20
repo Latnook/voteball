@@ -40,6 +40,22 @@ step "5/8  Building and pushing container images"
 step "6/8  Syncing values.yaml from Terraform outputs"
 ./scripts/sync-values-from-tf.sh
 
+# ArgoCD deploys whatever is on master, NOT what is on this disk. Bootstrapping it (step 8) while
+# values.yaml is still uncommitted makes ArgoCD immediately revert the cluster to the OLD image tag
+# -- which, after a rebuild, points at an image that does not exist in the fresh ECR, so every pod
+# lands in ImagePullBackOff. Observed on the 2026-07-20 rebuild. Commit before ArgoCD exists.
+if ! git diff --quiet -- charts/voteball/values.yaml; then
+  echo "values.yaml changed — committing so ArgoCD deploys these values, not the stale ones."
+  git add charts/voteball/values.yaml
+  git commit -m "Deploy: sync values.yaml from Terraform outputs"
+  if ! git push; then
+    echo "ERROR: could not push values.yaml." >&2
+    echo "Refusing to bootstrap ArgoCD -- it would sync master's stale image tag over this deploy." >&2
+    echo "Push manually, then re-run: kubectl apply -f argocd/voteball-application.yaml" >&2
+    SKIP_ARGOCD=1
+  fi
+fi
+
 step "7/8  Installing the app"
 helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
 kubectl rollout status deployment/backend  -n devops-app --timeout=300s
@@ -47,14 +63,15 @@ kubectl rollout status deployment/frontend -n devops-app --timeout=300s
 kubectl rollout status deployment/worker   -n devops-app --timeout=300s
 
 step "8/8  Bootstrapping ArgoCD (GitOps takes over from here)"
-kubectl apply -f argocd/voteball-application.yaml
+if [ "${SKIP_ARGOCD:-0}" = "1" ]; then
+  echo "SKIPPED — values.yaml is not on master (see the error above)."
+else
+  kubectl apply -f argocd/voteball-application.yaml
+fi
 
 cat <<'EOF'
 
 Deploy complete.
-
-  If values.yaml changed in step 6, commit it -- ArgoCD syncs from master:
-      git add charts/voteball/values.yaml && git commit -m "Deploy: sync values" && git push
 
   Verify:
       kubectl get pods -n devops-app
