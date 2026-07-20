@@ -1,3 +1,5 @@
+# Routes live here; SQL lives in queries.py; db.py holds only connection setup and schema bootstrap.
+# Every route must guarantee conn.close() on all exit paths -- see results() and vote() for the shape.
 import hashlib
 import uuid
 import os
