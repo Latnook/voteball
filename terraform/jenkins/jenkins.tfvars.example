@@ -1,0 +1,5 @@
+# Copy to jenkins.tfvars (gitignored) and fill in.
+# admin_cidr      = "203.0.113.45/32"   # curl -s https://checkip.amazonaws.com
+# public_key_path = "~/.ssh/voteball-jenkins.pub"
+# region          = "il-central-1"
+# cluster_name    = "voteball"
