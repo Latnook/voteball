@@ -4,8 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
-REGION="il-central-1"
-CLUSTER="voteball"
+. scripts/lib/config.sh
+require_config
 TFVARS="voteball-eks.tfvars"
 
 # Terraform prompts for confirmation by default -- that is the intended behaviour for a human at a
@@ -69,13 +69,13 @@ else
   kubectl apply -f argocd/voteball-application.yaml
 fi
 
-cat <<'EOF'
+cat <<EOF
 
 Deploy complete.
 
   Verify:
       kubectl get pods -n devops-app
-      curl -sf https://voteball.latnook.com/api/options | head -c 120
+      curl -sf https://${APP_DOMAIN}/api/options | head -c 120
 
   DNS can take a minute to propagate after a rebuild.
 EOF

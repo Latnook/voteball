@@ -2,7 +2,7 @@
 # Remove the Route53 records external-dns created for this cluster, if it did not remove them itself.
 #
 # Why this exists: external-dns only reconciles on a timer, so a teardown can delete the Ingress and
-# then destroy external-dns before it ever notices -- leaving voteball.latnook.com pointing at a
+# then destroy external-dns before it ever notices -- leaving the app's DNS pointing at a
 # de-provisioned ALB (observed 2026-07-20). destroy.sh runs this as a deterministic backstop.
 #
 #   ./scripts/cleanup-stale-dns.sh           # delete owned records (waits for external-dns first)
@@ -14,10 +14,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
-REGION="il-central-1"
-ZONE_NAME="latnook.com."
-OWNER="voteball"
-HOST="voteball.latnook.com."
+. scripts/lib/config.sh
+require_config
+OWNER="$CLUSTER"
+HOST="${APP_DOMAIN}."
 WAIT_SECONDS="${CLEANUP_DNS_WAIT:-90}"
 DRY_RUN=0
 
@@ -36,7 +36,7 @@ records_json() {
 }
 
 # Records are only eligible when an ownership TXT names this cluster. external-dns stores that marker
-# in a sibling TXT whose name embeds the record type, e.g. cname-voteball.latnook.com for the A
+# in a sibling TXT whose name embeds the record type, e.g. cname-<host> for the A
 # record. We require at least one such TXT before deleting anything.
 owned_marker_present() {
   records_json | python3 -c "

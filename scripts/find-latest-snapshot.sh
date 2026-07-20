@@ -11,7 +11,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TF_DIR="$SCRIPT_DIR/../terraform-eks"
 AUTO_TFVARS="$TF_DIR/snapshot.auto.tfvars"
-REGION="il-central-1"
+. "$SCRIPT_DIR/lib/config.sh"
 
 # Distinguish "the API call succeeded and found zero snapshots" (safe: no prior snapshot) from "the
 # API call itself failed" (expired SSO token, wrong profile, no network, throttling). The latter must

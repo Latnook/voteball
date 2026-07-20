@@ -10,9 +10,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
-REGION="il-central-1"
+. scripts/lib/config.sh
 TFVARS="voteball-eks.tfvars"
-CLUSTER_TAG="voteball*"   # VPC Name tag, used to scope the orphaned-ENI reaper below
+CLUSTER_TAG="${CLUSTER}*" # VPC Name tag, used to scope the orphaned-ENI reaper below
 
 # Terraform prompts for confirmation by default -- that is the intended behaviour for a human at a
 # terminal. Set VOTEBALL_AUTO_APPROVE=1 only for unattended/automated runs.
@@ -57,7 +57,7 @@ fi
 
 step "5/6  Removing this cluster's DNS records"
 # Deterministic backstop: external-dns only reconciles on a timer, so teardown can destroy it before
-# it notices the deleted Ingress, stranding voteball.latnook.com on a dead ALB (2026-07-20). This
+# it notices the deleted Ingress, stranding the app's DNS on a dead ALB (2026-07-20). This
 # waits for external-dns to do its own job, then removes whatever it left behind. Only touches
 # records whose ownership TXT names this cluster.
 ./scripts/cleanup-stale-dns.sh || echo "WARNING: DNS cleanup failed; check the zone by hand."

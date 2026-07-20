@@ -1,17 +1,19 @@
 image:
-  registry: 590183895228.dkr.ecr.il-central-1.amazonaws.com
+  # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
+  # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
+  registry: "FILLED-BY-SYNC"
   tag: "abc3b4a" # git-SHA tag pushed by scripts/build-push-ecr.sh
   pullPolicy: IfNotPresent
 
 # Non-secret config -> ConfigMap app-config. DB_HOST is the Plan-3a RDS endpoint (set in Task 1/7).
 config:
-  DB_HOST: "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com"
+  DB_HOST: "FILLED-BY-SYNC"
   DB_NAME: "postgres"
   DB_USER: "postgres"
   DB_SSLMODE: "require"
-  AWS_REGION: "il-central-1"
-  SNS_TOPIC: "arn:aws:sns:il-central-1:590183895228:voteball-notifications"
-  S3_BUCKET: "voteball-rollups-590183895228"
+  AWS_REGION: "il-central-1" # matches aws_region in your tfvars
+  SNS_TOPIC: "FILLED-BY-SYNC"
+  S3_BUCKET: "FILLED-BY-SYNC"
   S3_SNAPSHOT_PREFIX: "snapshots"
 
 # ESO ExternalSecret: pulls voteball/app-secret from Secrets Manager into K8s Secret app-secret.
@@ -20,11 +22,11 @@ externalSecret:
   refreshInterval: "1h"
 
 ingress:
-  host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/9449f111-3800-41f9-a7a3-02dd2cc32bd6"
+  host: "FILLED-BY-SYNC"
+  certificateArn: "FILLED-BY-SYNC"
 
 backup:
-  roleArn: "arn:aws:iam::590183895228:role/voteball-backup-irsa"
+  roleArn: "FILLED-BY-SYNC"
   schedule: "0 2 * * *"
 
 backend:
@@ -51,7 +53,7 @@ worker:
   # Singleton poller, not a request-serving tier — 2 replicas would just be
   # 2 processes independently polling and computing identical rollups.
   replicas: 1
-  roleArn: "arn:aws:iam::590183895228:role/voteball-worker-irsa"
+  roleArn: "FILLED-BY-SYNC"
   resources:
     requests:
       cpu: 25m

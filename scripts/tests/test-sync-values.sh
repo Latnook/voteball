@@ -10,7 +10,7 @@ FIXTURE="$TMP/values.yaml"
 
 cat > "$FIXTURE" <<'EOF'
 image:
-  registry: 590183895228.dkr.ecr.il-central-1.amazonaws.com
+  registry: "old.dkr.ecr.example.com"
   tag: "OLDTAG" # git-SHA tag
   pullPolicy: IfNotPresent
 
@@ -18,6 +18,7 @@ config:
   DB_HOST: "old-db.example.com"
   DB_NAME: "postgres"
   S3_BUCKET: "old-bucket"
+  SNS_TOPIC: "arn:aws:sns:old"
 
 ingress:
   host: "voteball.latnook.com"
@@ -37,6 +38,9 @@ export SYNC_STUB_acm_certificate_arn="arn:aws:acm:il-central-1:590183895228:cert
 export SYNC_STUB_s3_bucket="new-bucket"
 export SYNC_STUB_backup_role_arn="arn:aws:iam::590183895228:role/NEW-backup"
 export SYNC_STUB_worker_role_arn="arn:aws:iam::590183895228:role/NEW-worker"
+export SYNC_STUB_ecr_registry="new.dkr.ecr.example.com"
+export SYNC_STUB_app_domain="new.example.com"
+export SYNC_STUB_sns_topic_arn="arn:aws:sns:NEWTOPIC"
 
 fail() { echo "FAIL: $1" >&2; exit 1; }
 
@@ -54,6 +58,9 @@ grep -q 'tag: "NEWTAG"'                  "$FIXTURE" || fail "image.tag not updat
 grep -q 'DB_HOST: "new-db.example.com"'  "$FIXTURE" || fail "config.DB_HOST not updated"
 grep -q 'S3_BUCKET: "new-bucket"'        "$FIXTURE" || fail "config.S3_BUCKET not updated"
 grep -q 'certificateArn: ".*NEW"'        "$FIXTURE" || fail "ingress.certificateArn not updated"
+grep -q 'registry: "new.dkr.ecr.example.com"' "$FIXTURE" || fail "image.registry not updated"
+grep -q 'host: "new.example.com"'       "$FIXTURE" || fail "ingress.host not updated"
+grep -q 'SNS_TOPIC: "arn:aws:sns:NEWTOPIC"' "$FIXTURE" || fail "config.SNS_TOPIC not updated"
 
 # --- 3. the two same-named roleArn keys must NOT be cross-assigned ---
 grep -q 'roleArn: "arn:aws:iam::590183895228:role/NEW-backup"' "$FIXTURE" || fail "backup.roleArn wrong"

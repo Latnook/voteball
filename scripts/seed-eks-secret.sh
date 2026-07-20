@@ -17,7 +17,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 # shellcheck source=lib/config.sh disable=SC1091
-. scripts/lib/config.sh 2>/dev/null || { REGION="${AWS_REGION:-il-central-1}"; CLUSTER="${CLUSTER_NAME:-voteball}"; }
+. scripts/lib/config.sh
 
 # Prompt only when the variable is unset/empty; -s so nothing appears on screen.
 ask() {

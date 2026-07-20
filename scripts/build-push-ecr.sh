@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Build the three app images and push to ECR with a git-SHA tag. Run from the repo root.
-# Requires: docker, aws CLI creds for account 590183895228, the Plan-2 ECR repos.
+# Build the four app images and push them to ECR with a git-SHA tag.
+# Requires: docker, aws CLI credentials for your account, and an applied terraform-eks stack.
 set -euo pipefail
+cd "$(dirname "$0")/.."   # repo root
 
-REGION=il-central-1
-ACCOUNT=590183895228
-REGISTRY="${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com"
+. scripts/lib/config.sh
+REGISTRY="$(tf_out ecr_registry)"
 TAG="$(git rev-parse --short HEAD)"
 
 echo "Logging in to ECR ${REGISTRY}"
@@ -18,11 +18,11 @@ build_push() {
   docker push "${REGISTRY}/${repo}:${TAG}"
 }
 
-build_push voteball-backend services/backend
-build_push voteball-worker  services/worker
-build_push voteball-nginx   services/frontend
-build_push voteball-backup  services/backup
+build_push "${CLUSTER}-backend" services/backend
+build_push "${CLUSTER}-worker"  services/worker
+build_push "${CLUSTER}-nginx"   services/frontend
+build_push "${CLUSTER}-backup"  services/backup
 
 echo
 echo "Pushed all images at tag: ${TAG}"
-echo "Set image.tag=\"${TAG}\" in charts/voteball/values.yaml"
+echo "Run ./scripts/sync-values-from-tf.sh to pin it in charts/voteball/values.yaml"

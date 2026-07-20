@@ -67,3 +67,8 @@ output "app_domain" {
   description = "Public FQDN the app is served on (becomes ingress.host in the Helm chart)."
   value       = var.app_domain
 }
+
+output "sns_topic_arn" {
+  description = "SNS topic the worker publishes milestone alerts to (config.SNS_TOPIC in the chart)."
+  value       = aws_sns_topic.notifications.arn
+}

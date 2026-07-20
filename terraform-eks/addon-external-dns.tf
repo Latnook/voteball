@@ -1,4 +1,4 @@
-# IRSA for external-dns, scoped to the latnook.com hosted zone only (the helper's external_dns policy
+# IRSA for external-dns, scoped to the configured hosted zone only (the helper's external_dns policy
 # grants route53:ChangeResourceRecordSets on the given zone ARNs + the read actions it needs).
 module "external_dns_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
@@ -34,13 +34,15 @@ resource "helm_release" "external_dns" {
     name  = "aws.region"
     value = var.aws_region
   }
+  # Scope external-dns to the configured zone. trimsuffix drops the trailing dot Route53
+  # requires on the zone name but external-dns does not accept in a domain filter.
   set {
     name  = "domainFilters[0]"
-    value = "latnook.com"
+    value = trimsuffix(var.route53_zone_name, ".")
   }
   # sync (not upsert-only): on teardown the Ingress is deleted BEFORE terraform destroy, letting
   # external-dns remove the A/AAAA/TXT records it created. With upsert-only they survived, leaving
-  # voteball.latnook.com resolving to a de-provisioned ALB until the next deploy.
+  # the app's FQDN resolving to a de-provisioned ALB until the next deploy.
   #
   # Deletion is bounded by the default txt registry + txtOwnerId below: external-dns only touches
   # records carrying an ownership TXT that names this cluster
@@ -55,7 +57,7 @@ resource "helm_release" "external_dns" {
   # React to Ingress add/delete events immediately instead of only on the 1-minute poll (the chart
   # default is triggerLoopOnEvent=false). Without this, teardown deletes the Ingress and then destroys
   # external-dns before its next tick, so the records are never cleaned up -- observed on the
-  # 2026-07-20 teardown, where voteball.latnook.com survived pointing at a dead ALB.
+  # 2026-07-20 teardown, where the app's record survived pointing at a dead ALB.
   # This narrows the race but does not close it; scripts/cleanup-stale-dns.sh is the deterministic
   # backstop that destroy.sh runs regardless.
   set {

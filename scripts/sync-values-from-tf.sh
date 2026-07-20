@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
-TF_DIR="terraform-eks"
+. scripts/lib/config.sh
 VALUES="charts/voteball/values.yaml"
 CHECK_ONLY=0
 TAG=""
@@ -48,6 +48,9 @@ CERT_ARN="$(tf_output acm_certificate_arn)"
 S3_BUCKET="$(tf_output s3_bucket)"
 BACKUP_ROLE="$(tf_output backup_role_arn)"
 WORKER_ROLE="$(tf_output worker_role_arn)"
+REGISTRY="$(tf_output ecr_registry)"
+APP_DOMAIN_V="$(tf_output app_domain)"
+SNS_TOPIC="$(tf_output sns_topic_arn)"
 
 # Section-aware rewrite. `roleArn` exists under BOTH `backup:` and `worker:` at the same indent, so a
 # plain anchored sed would assign the same ARN to both. Track the current top-level section instead.
@@ -65,6 +68,7 @@ fi
 CHECK_ONLY="$CHECK_ONLY" VALUES="$VALUES" TF_DIR="$TF_DIR" CHECK_SKIP_TAG="$CHECK_SKIP_TAG" \
 TAG="$TAG" DB_HOST="$DB_HOST" CERT_ARN="$CERT_ARN" S3_BUCKET="$S3_BUCKET" \
 BACKUP_ROLE="$BACKUP_ROLE" WORKER_ROLE="$WORKER_ROLE" \
+REGISTRY="$REGISTRY" APP_DOMAIN_V="$APP_DOMAIN_V" SNS_TOPIC="$SNS_TOPIC" \
 python3 <<'PY'
 import os, re, sys
 
@@ -82,6 +86,9 @@ managed.update({
     ("ingress", "certificateArn"): os.environ["CERT_ARN"],
     ("backup",  "roleArn"):        os.environ["BACKUP_ROLE"],
     ("worker",  "roleArn"):        os.environ["WORKER_ROLE"],
+    ("image",   "registry"):       os.environ["REGISTRY"],
+    ("ingress", "host"):           os.environ["APP_DOMAIN_V"],
+    ("config",  "SNS_TOPIC"):      os.environ["SNS_TOPIC"],
 })
 
 top_re = re.compile(r'^([A-Za-z_][\w-]*):\s*$')
@@ -153,9 +160,9 @@ PY
 # Skipped when stubbed (tests run without AWS).
 if [ "$CHECK_ONLY" = "1" ] && [ -z "${SYNC_STUB_rds_endpoint:-}" ]; then
   CURRENT_TAG="$(sed -n 's/^  tag: "\(.*\)".*/\1/p' "$VALUES" | head -1)"
-  if ! aws ecr describe-images --repository-name voteball-backend --region il-central-1 \
+  if ! aws ecr describe-images --repository-name "${CLUSTER}-backend" --region "$REGION" \
        --image-ids "imageTag=${CURRENT_TAG}" >/dev/null 2>&1; then
-    echo "ERROR: image.tag \"${CURRENT_TAG}\" does not exist in ECR (voteball-backend)." >&2
+    echo "ERROR: image.tag \"${CURRENT_TAG}\" does not exist in ECR (${CLUSTER}-backend)." >&2
     echo "Build and push it first:  ./scripts/build-push-ecr.sh" >&2
     exit 1
   fi
