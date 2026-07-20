@@ -48,7 +48,16 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   echo "values.yaml changed — committing so ArgoCD deploys these values, not the stale ones."
   git add charts/voteball/values.yaml
   git commit -m "Deploy: sync values.yaml from Terraform outputs"
-  if ! git push; then
+
+  # Rebase onto origin FIRST. CI pushes its own "ci: image tag <sha> [skip ci]" commit to master
+  # after every app-code build, so the local branch is routinely behind and a plain push is rejected
+  # non-fast-forward -- which then skipped the ArgoCD bootstrap below. This bites on essentially
+  # every deploy that follows a code push (hit on the 2026-07-20 rebuild). Rebase, never force.
+  if ! git pull --rebase; then
+    echo "ERROR: could not rebase onto origin/master (conflict?)." >&2
+    echo "Resolve it, push, then run: kubectl apply -f argocd/voteball-application.yaml" >&2
+    SKIP_ARGOCD=1
+  elif ! git push; then
     echo "ERROR: could not push values.yaml." >&2
     echo "Refusing to bootstrap ArgoCD -- it would sync master's stale image tag over this deploy." >&2
     echo "Push manually, then re-run: kubectl apply -f argocd/voteball-application.yaml" >&2
