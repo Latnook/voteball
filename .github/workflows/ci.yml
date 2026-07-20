@@ -1,10 +1,19 @@
 name: build-scan-push-deploy
+#
+# DISARMED 2026-07-20 — superseded by Jenkins.
+# See docs/design/2026-07-20-jenkins-migration-design.md §10.
+#
+# Manual-only from here. GitHub Actions MUST be disarmed before the Jenkins webhook is enabled:
+# with both armed, a single push starts both pipelines, and both race to rewrite
+# charts/voteball/values.yaml and push to master. That collision is the reason this migration
+# replaces the pipeline rather than running the two side by side.
+#
+# This file is kept, not deleted, so that reverting one commit restores a working pipeline while
+# the Jenkins cutover is being verified. It is deleted in a follow-up commit once Task 11's
+# verification passes — and terraform/github-oidc.tf last of all, since removing the IAM role is
+# what makes the rollback expensive.
 on:
-  push:
-    branches: [master]
-    paths:
-      - "services/**"
-      - ".github/workflows/ci.yml"
+  workflow_dispatch:
 
 permissions:
   id-token: write # OIDC federation to AWS
