@@ -243,6 +243,34 @@ $200/mo) — treat it as a confirm-before-running step, never automatic. Pins th
 (`aws eks describe-cluster-versions --region <your region>`). Community chart/add-on versions drift fast;
 verify with `helm search repo <chart> --versions` before pinning.
 
+### Jenkins build host (`terraform/jenkins/` — a SEPARATE stack)
+
+```bash
+cd terraform/jenkins
+terraform apply -var-file=jenkins.tfvars   # own state; never destroyed by scripts/destroy.sh
+terraform output -raw ssh_tunnel_command   # then browse http://localhost:8080
+```
+
+Normally left **stopped** (~$6/mo vs ~$37 running; the Elastic IP is billed either way):
+`aws ec2 stop-instances --instance-ids "$(terraform output -raw instance_id)"`. **Webhooks are
+silently discarded while it is stopped.** `admin_cidr` is your home IP — update and re-apply when
+your ISP reassigns it. See `terraform/jenkins/README.md`.
+
+### CI guard scripts (`scripts/ci/`)
+
+`should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the immutable-tag
+re-run check) hold the `Jenkinsfile`'s two decision points, extracted so they can be tested without
+triggering real builds:
+
+```bash
+scripts/tests/test-ci-guards.sh   # offline; stubs ECR via CI_STUB_DESCRIBE_CMD
+```
+
+Same offline-stub pattern as `scripts/tests/test-sync-values.sh`. **Extend it whenever you change
+either guard** — pipeline logic that can only be tested by running the pipeline is exactly what makes
+G2 dangerous. Note the two guards deliberately fail safe in *opposite* directions (skip vs rebuild);
+that asymmetry is intentional, don't "make them consistent".
+
 ### Backend (`services/backend/`)
 
 **Adding a new backend or worker source file: update that service's `Dockerfile` `COPY` line.** On EKS
