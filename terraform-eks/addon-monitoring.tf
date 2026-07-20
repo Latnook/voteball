@@ -27,4 +27,9 @@ resource "helm_release" "kube_prometheus_stack" {
   # in-cluster Secret. Retrieve it (Grafana UI is port-forward-only, never public) with:
   #   kubectl get secret kube-prometheus-stack-grafana -n monitoring \
   #     -o jsonpath='{.data.admin-password}' | base64 -d
+
+  # Same ALB-webhook race as addon-cloudwatch.tf's aws_eks_addon.cloudwatch: this chart's Services
+  # (Prometheus/Grafana/Alertmanager) can hit the aws-load-balancer-webhook-service before its backend
+  # pods are Ready if created in parallel with the ALB release. Hit on 2026-07-20 apply.
+  depends_on = [helm_release.aws_load_balancer_controller]
 }
