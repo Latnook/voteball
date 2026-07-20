@@ -68,13 +68,19 @@ milestone email), and **pod-restart-stays-up** (`kubectl delete pod` a frontend 
 ## How to delete everything
 
 ```bash
-kubectl delete application voteball -n argocd     # stop GitOps self-heal
-kubectl delete ingress voteball -n devops-app     # de-provision the ALB first
-cd terraform && terraform destroy -var-file=voteball.tfvars
+./scripts/destroy.sh
 ```
 
-Removes the cluster, add-ons, VPC, RDS, ECR, S3, SNS, Secrets Manager, IAM. (S3/ECR have
-`force_destroy`/`force_delete` so a non-empty bucket/repo doesn't block the destroy.)
+Removes the cluster, add-ons, VPC, RDS, ECR, S3, SNS, Secrets Manager and IAM. (S3/ECR have
+`force_destroy`/`force_delete` so a non-empty bucket/repo doesn't block it.)
+
+The script exists because the order is not obvious and getting it wrong wastes 20+ minutes: the ArgoCD
+Application must go **first** (or `selfHeal` recreates whatever you delete), then the Ingress (freeing
+the ALB and letting external-dns remove its records — a leftover ALB's ENIs block VPC deletion), then a
+poll until the ALB is actually gone, and only then `terraform destroy`. It also reaps the detached
+CNI network interfaces that otherwise stall subnet deletion, and takes a final RDS snapshot so the next
+deploy restores the votes. Each of those steps was added after a real teardown failed on it — see
+[`docs/design/2026-07-20-deployment-hardening-design.md`](docs/design/2026-07-20-deployment-hardening-design.md).
 
 ## Security (summary — full detail in `docs/security.md`)
 
