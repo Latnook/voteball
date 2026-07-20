@@ -601,7 +601,8 @@ got="$(scripts/ci/should-skip-build.sh 'feat: add a league filter')"
 got="$(scripts/ci/should-skip-build.sh 'fix: mention [skip ci] in the docs')"
 [ "$got" = "skip" ] || fail "substring anywhere must skip (fail safe), got '$got'"; pass=$((pass+1))
 
-got="$(printf 'subject line\n\nbody with [skip ci]\n' | xargs -0 scripts/ci/should-skip-build.sh)"
+multiline="$(printf 'subject line\n\nbody mentioning [skip ci]\n')"
+got="$(scripts/ci/should-skip-build.sh "$multiline")"
 [ "$got" = "skip" ] || fail "multi-line message body should skip, got '$got'"; pass=$((pass+1))
 
 got="$(scripts/ci/should-skip-build.sh '')"
@@ -1005,7 +1006,7 @@ Expected: a line naming `.gitignore` — **if this prints nothing, stop and fix 
 ```bash
 cd terraform/jenkins && terraform init && terraform plan -var-file=jenkins.tfvars
 ```
-Expected: `Plan: 6 to add, 0 to change, 0 to destroy.` (role, role policy, instance profile, key pair, security group, instance, EIP — 7 if counting the policy separately). Review the security group's ingress CIDRs before continuing.
+Expected: `Plan: 7 to add, 0 to change, 0 to destroy.` — `aws_iam_role`, `aws_iam_role_policy`, `aws_iam_instance_profile`, `aws_key_pair`, `aws_security_group`, `aws_instance`, `aws_eip`. Review the security group's ingress CIDRs before continuing.
 
 - [ ] **Step 6: Apply, streaming output**
 
