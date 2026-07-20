@@ -133,13 +133,19 @@ trust as pre-escaped HTML.
   Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
   **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
 - **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
-  confirmation before Terraform touches billed resources). The env-specific fields of `values.yaml`
-  (`image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `ingress.certificateArn`, `backup.roleArn`,
-  `worker.roleArn`) are written by **`./scripts/sync-values-from-tf.sh`** from Terraform outputs —
-  **never hand-edit them**; they change on every rebuild. `--check` mode fails on drift, and also
-  verifies `image.tag` names an image that actually exists in ECR.
-- **Secrets:** `./scripts/seed-eks-secret.sh` copies app passwords into Secrets Manager; nothing
-  secret ever enters git or tfstate.
+  confirmation before Terraform touches billed resources; `VOTEBALL_AUTO_APPROVE=1` skips the prompt
+  for unattended runs only).
+- **`./scripts/sync-values-from-tf.sh` owns nine fields in `values.yaml`** — `image.registry`,
+  `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
+  `ingress.certificateArn`, `backup.roleArn`, `worker.roleArn`. The committed file carries
+  `FILLED-BY-SYNC` placeholders. **Never hand-edit them** — they change on every rebuild. `--check`
+  fails on drift *and* verifies `image.tag` names an image that exists in ECR. Its only test is
+  `scripts/tests/test-sync-values.sh` (runs offline via `SYNC_STUB_*` env vars); **extend it whenever
+  you add a managed field** — it is what catches the `backup.roleArn`/`worker.roleArn` cross-assignment
+  that a naive `sed` would cause.
+- **Secrets:** `./scripts/seed-eks-secret.sh` takes `DB_PASS`/`ADMIN_USERNAME`/`ADMIN_PASSWORD` from the
+  environment or a silent prompt and writes them to Secrets Manager; nothing secret enters git or
+  tfstate. `DB_PASS` **must** match `db_password` in `terraform/voteball.tfvars`.
 - **CI/CD:** pushing app code to `master` runs `.github/workflows/ci.yml` (OIDC → build → Trivy → ECR →
   bump `image.tag` `[skip ci]` → ArgoCD auto-syncs). `./scripts/build-push-ecr.sh` does it by hand.
 
@@ -206,7 +212,7 @@ terraform plan  -var-file=voteball.tfvars
 $200/mo) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
 (the EKS module v20 caps the provider at `< 6.0`) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
-(`aws eks describe-cluster-versions --region il-central-1`). Community chart/add-on versions drift fast;
+(`aws eks describe-cluster-versions --region <your region>`). Community chart/add-on versions drift fast;
 verify with `helm search repo <chart> --versions` before pinning.
 
 ### Backend (`services/backend/`)
@@ -217,7 +223,10 @@ the build context *is* the source directory (`scripts/build-push-ecr.sh` / the C
 file — and a file missing there is simply absent from the image (no build error for the *app* files,
 just an `ImportError`/404 at runtime). Same class of gap as the frontend note below.
 
-Tests run TDD-style against a **real** Postgres, not mocks:
+Tests run TDD-style against a **real** Postgres, not mocks. Note the `.venv`s are **not relocatable** —
+if a service directory is ever moved, delete and recreate them, or every command fails with a confusing
+`ModuleNotFoundError` naming the *old* path (absolute paths are baked into the shebangs and
+`pyvenv.cfg`):
 
 ```bash
 docker run -d --name voteball-test-db -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:17

@@ -49,12 +49,14 @@ Autoscaler to this cluster's ASG only; ESO to the one app secret only.
 - **CI:** GitHub Actions uses **OIDC federation** to a repo-scoped IAM role — **no long-lived AWS keys**
   are stored in GitHub. The role ARN (not a secret) is a repo *variable*.
 
-**The honest caveat (documented, not hidden):** the repo is public and
-`ansible-project/.../secrets.yml` (the retired k3s vault) is committed to it — but as `AES256`
-ciphertext whose 256-bit password (`.vault_pass`) was never committed, so nothing is exposed. The EKS
-design removes that file from the deploy path entirely (Secrets Manager + ESO). Because the ciphertext
-is in git history permanently, a real production cutover would **rotate** `DB_PASS` / admin creds when
-seeding Secrets Manager; this demo reused them by choice (see Trade-offs).
+**The honest caveat (documented, not hidden):** the repo is public, and until 2026-07-20 it carried the
+retired k3s Ansible vault (`secrets.yml`) as `AES256` ciphertext. Its 256-bit password (`.vault_pass`)
+was never committed, so no value was ever exposed, and the file has since been **deleted** — the EKS
+design has no vault in the deploy path at all (Secrets Manager + ESO, seeded from the environment by
+`scripts/seed-eks-secret.sh`). But **git history is permanent**: that ciphertext still exists in old
+commits. Any credential that was ever in it should be treated as compromised-on-disclosure and
+**rotated** — which is exactly what a fresh deploy now does, since `db_password` is generated per
+install and the admin password is entered at seed time rather than read from a committed file.
 
 ## Network security
 
