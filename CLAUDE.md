@@ -147,7 +147,9 @@ trust as pre-escaped HTML.
   environment or a silent prompt and writes them to Secrets Manager; nothing secret enters git or
   tfstate. `DB_PASS` **must** match `db_password` in `terraform/voteball.tfvars`.
 - **CI/CD:** pushing app code to `master` runs `.github/workflows/ci.yml` (OIDC → build → Trivy → ECR →
-  bump `image.tag` `[skip ci]` → ArgoCD auto-syncs). `./scripts/build-push-ecr.sh` does it by hand.
+  bump `image.tag` `[skip ci]` → ArgoCD auto-syncs, ~4 min end to end). `./scripts/build-push-ecr.sh`
+  does it by hand. **See `docs/cicd.md`** for the full flow, the four required GitHub repo variables,
+  and failure modes — notably that CI cannot assume its IAM role while the stack is destroyed.
 
 **Teardown order matters** and `./scripts/destroy.sh` encodes it: delete the ArgoCD Application (else
 `selfHeal` recreates what you remove), then the Ingress (so the ALB de-provisions and external-dns

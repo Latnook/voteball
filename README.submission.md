@@ -44,7 +44,9 @@ what you delete), then the Ingress (releasing the ALB and its DNS records), then
 final DB snapshot, so a destroy/rebuild cycle preserves the votes.
 
 **CI/CD:** pushing app-code to `master` runs GitHub Actions (OIDC → build → **Trivy** → ECR → bump image
-tag → **ArgoCD** auto-syncs). No stored AWS keys.
+tag → **ArgoCD** auto-syncs). No stored AWS keys. Verified end-to-end on 2026-07-20: a UI change went
+from `git push` to live in ~4 minutes with no manual step — see
+[`docs/cicd.md`](docs/cicd.md) for the measured run.
 
 ## How to verify
 
@@ -98,6 +100,6 @@ deploy restores the votes. Each of those steps was added after a real teardown f
 ## Trade-offs & compromises
 
 Documented in full in [`docs/security.md`](docs/security.md#deliberate-trade-offs-demo-vs-production) —
-notably: reused (not rotated) credentials, a throwaway single-AZ RDS with `skip_final_snapshot`, a public
+notably: reused (not rotated) credentials, a single-AZ RDS without deletion protection, a public
 (IAM-authed) API endpoint, a single NAT gateway, Spot nodes without On-Demand fallback, and report-only
 Trivy on the third-party backup image. Each is a deliberate demo decision, not an oversight.

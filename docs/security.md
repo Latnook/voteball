@@ -30,7 +30,8 @@ JSON is hand-written (not a module default) in `terraform/irsa.tf` precisely so 
 Add-on controllers (ALB Controller, External Secrets Operator, Cluster Autoscaler, CloudWatch,
 external-dns) each get their own scoped IRSA role via the community `iam-role-for-service-accounts-eks`
 helper, which attaches **AWS's own published policies** for each controller (the authoritative
-least-privilege definition). external-dns is scoped to the `latnook.com` hosted zone only; the
+least-privilege definition). external-dns is scoped to the configured hosted zone only
+(`route53_zone_name`); the
 Autoscaler to this cluster's ASG only; ESO to the one app secret only.
 
 ## Secrets
@@ -114,8 +115,8 @@ change them:
 
 | Choice | Demo (here) | Production would |
 |---|---|---|
-| App credentials | **Reused** the existing k3s creds | Rotate all on cutover (repo history) |
-| EKS RDS | Throwaway copy, `skip_final_snapshot`, single-AZ, no deletion protection | Final snapshots, Multi-AZ, deletion protection |
+| App credentials | Generated per install (`db_password` in tfvars, admin password entered at seed time) | Managed rotation (Secrets Manager rotation lambda) |
+| EKS RDS | Single-AZ, no deletion protection (a final snapshot IS taken on destroy, so destroy/rebuild preserves data) | Multi-AZ, deletion protection, PITR |
 | EKS API endpoint | Public (IAM-authed), CIDR = `0.0.0.0/0` | Lock CIDR to operator/CI, or private-only + bastion |
 | Node group | Spot, diversified types (no On-Demand fallback) | Add On-Demand fallback for guaranteed capacity |
 | NAT gateway | Single (one AZ) | One per AZ |

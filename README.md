@@ -16,19 +16,20 @@ add-ons and the app. See the [Quickstart](#quickstart).
 
 ![Voting form with Israeli Premier League clubs](docs/images/vote-form-clubs.png)
 
-**National standings** — live aggregate across every ballot:
+**The results dashboard** opens on fan-base analytics — which clubs draw politically mixed crowds and
+which are one-sided, measured in "effective parties":
 
-![Results dashboard showing national party standings](docs/images/results-overview.png)
+![Results dashboard: most mixed vs most one-sided fanbases](docs/images/results-overview.png)
 
-**The actual point of the poll** — pick a club, see how its fans voted. Beitar Jerusalem's fanbase
-leans heavily Likud; picking Bnei Sakhnin instead flips the board to Balad, Hadash-Ta'al and Ra'am:
+**The actual point of the poll** — start from a club and see how its fans voted. Beitar Jerusalem's
+fanbase leans heavily Likud:
 
 ![Party breakdown for Beitar Jerusalem fans](docs/images/results-club-breakdown.png)
 
-**Fan-base analytics** — which clubs draw politically mixed crowds, and which are one-sided
-(measured in "effective parties"):
+**Or run it backwards** — start from a party and see which clubs its voters follow. Balad's voters
+are concentrated in Bnei Sakhnin, the mirror image of the Beitar result:
 
-![Most mixed vs most one-sided fanbases](docs/images/results-diversity.png)
+![Club breakdown for Balad voters](docs/images/results-party-mode.png)
 
 **Dark mode and mobile** — party logos are recoloured for dark backgrounds:
 
@@ -144,6 +145,7 @@ Then open <http://localhost:8080>. The backend creates its own schema and seed d
 
 - **[`README.submission.md`](README.submission.md)** — the turn-in doc: architecture, run/verify/delete, security, trade-offs.
 - **[`docs/deploy.md`](docs/deploy.md)** — plain-language deploy/verify/teardown guide.
+- **[`docs/cicd.md`](docs/cicd.md)** — the CI/CD pipeline: push → build → Trivy → ECR → ArgoCD, the repo variables it needs, and its failure modes.
 - **[`docs/security.md`](docs/security.md)** — security design (IRSA, secrets, network, images, trade-offs).
 - **[`docs/eks/architecture.md`](docs/eks/architecture.md)** — architecture diagram.
 - **[`docs/design/`](docs/design/)** — one design doc per feature/infrastructure pass: the reasoning
