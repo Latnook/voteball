@@ -8,6 +8,11 @@ REGION="il-central-1"
 CLUSTER="voteball"
 TFVARS="voteball-eks.tfvars"
 
+# Terraform prompts for confirmation by default -- that is the intended behaviour for a human at a
+# terminal. Set VOTEBALL_AUTO_APPROVE=1 only for unattended/automated runs.
+APPROVE=()
+[ "${VOTEBALL_AUTO_APPROVE:-0}" = "1" ] && APPROVE=(-auto-approve)
+
 step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 
 if [ ! -f "terraform-eks/$TFVARS" ]; then
@@ -21,7 +26,7 @@ step "1/8  Resolving the newest DB snapshot"
 step "2/8  Building AWS infrastructure (Terraform will ask you to confirm)"
 echo "This creates real, billed resources (~\$200/month while up)."
 terraform -chdir=terraform-eks init -upgrade
-terraform -chdir=terraform-eks apply -var-file="$TFVARS"
+terraform -chdir=terraform-eks apply -var-file="$TFVARS" "${APPROVE[@]}"
 
 step "3/8  Seeding app credentials into Secrets Manager"
 ./scripts/seed-eks-secret.sh

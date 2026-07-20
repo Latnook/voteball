@@ -13,6 +13,11 @@ cd "$(dirname "$0")/.."   # repo root
 REGION="il-central-1"
 TFVARS="voteball-eks.tfvars"
 
+# Terraform prompts for confirmation by default -- that is the intended behaviour for a human at a
+# terminal. Set VOTEBALL_AUTO_APPROVE=1 only for unattended/automated runs.
+APPROVE=()
+[ "${VOTEBALL_AUTO_APPROVE:-0}" = "1" ] && APPROVE=(-auto-approve)
+
 step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 
 step "1/5  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
@@ -38,7 +43,7 @@ step "4/5  Uninstalling the Helm release"
 helm uninstall voteball -n devops-app --ignore-not-found || true
 
 step "5/5  Destroying AWS infrastructure (Terraform will ask you to confirm)"
-terraform -chdir=terraform-eks destroy -var-file="$TFVARS"
+terraform -chdir=terraform-eks destroy -var-file="$TFVARS" "${APPROVE[@]}"
 
 cat <<'EOF'
 
