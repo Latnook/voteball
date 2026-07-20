@@ -43,13 +43,22 @@ pipeline {
     stage('Guard: is this our own commit?') {
       steps {
         script {
+          // This guard runs unconditionally and first: a commit whose message contains [skip ci]
+          // can never be built here, even manually with FORCE_BUILD.
           def msg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-          def verdict = sh(script: "scripts/ci/should-skip-build.sh '${msg.replace("'", "'\\''")}'",
-                           returnStdout: true).trim()
+          def verdict
+          withEnv(["COMMIT_MSG=${msg}"]) {
+            verdict = sh(script: 'scripts/ci/should-skip-build.sh "$COMMIT_MSG"',
+                         returnStdout: true).trim()
+          }
           if (verdict == 'skip') {
+            // currentBuild.result is set before the error() below because Jenkins only ever
+            // worsens a build result, never improves it -- so NOT_BUILT survives even though the
+            // exception raised next is uncaught. That uncaught exception is what actually skips
+            // every later stage; nothing here catches it.
             currentBuild.result = 'NOT_BUILT'
             currentBuild.description = 'Skipped: tag-bump commit ([skip ci])'
-            error('SKIP_CI')   // caught below; aborts without running anything else
+            error('SKIP_CI')
           }
         }
       }
@@ -156,6 +165,13 @@ pipeline {
     stage('Bump image tag') {
       when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } } }
       steps {
+        // JOB CONFIGURATION REQUIREMENT: sshagent() below only takes effect if this workspace's
+        // `origin` remote is an SSH URL. This repo's own GitHub remote is HTTPS
+        // (https://github.com/Latnook/voteball.git); if the Jenkins job's SCM URL is left as
+        // HTTPS, this credential is silently ignored and the push at the bottom of this stage
+        // will fail (or hang on a credential prompt). The job MUST be configured with SCM URL
+        // git@github.com:Latnook/voteball.git, and github.com must already be in the Jenkins
+        // agent's known_hosts.
         sshagent(credentials: ['voteball-deploy-key']) {     // G4
           sh '''
             set -eu
@@ -175,8 +191,13 @@ pipeline {
             git commit -m "ci: image tag $TAG [skip ci]"
 
             # Same race scripts/deploy.sh hit (commits ed39db2, 1269ba8): origin/master may have
-            # moved while this build ran.
-            git pull --rebase --autostash origin master
+            # moved while this build ran. On a conflict, abort the rebase explicitly instead of
+            # leaving the workspace mid-rebase, which would wedge the next build's checkout.
+            git pull --rebase --autostash origin master || {
+              echo "Rebase onto origin/master failed; aborting cleanly so the next build is not wedged."
+              git rebase --abort || true
+              exit 1
+            }
             git push origin HEAD:master
           '''
         }
