@@ -44,6 +44,22 @@ committed-but-unpushed or uncommitted waiting to be asked. Still use judgment
 on grouping related changes into one coherent commit rather than pushing
 every single edit separately, and never force-push.
 
+**Explain the technical calls, and keep the explanation simple** (per the user's explicit request).
+The repo owner describes themselves as a vibe coder, not an infrastructure expert — an honest
+statement about reviewing design detail, not about capability. So:
+
+- **Make the engineering decisions yourself.** Don't present a menu of implementation options
+  (`use_lockfile` vs DynamoDB, module layout, library choice) and ask which one they want — they
+  have no basis to choose, and asking manufactures fake consent.
+- **But always explain what you chose and why, in plain language**, including the downside of the
+  choice. Explain *consequences*, not mechanisms: "if this file is lost, AWS keeps billing you for
+  servers Terraform can no longer see" beats "state drift". Jargon needs a one-line translation the
+  first time it appears.
+- **Reserve approval gates for what is genuinely theirs to decide:** money (does this spend?),
+  irreversibility (can this be undone?), and scope (is this what you asked for?).
+- **Treat a hedge as a stop sign.** "I guess so", "sure", "if you think so" means *"I can't
+  evaluate this"* — re-explain, don't proceed on it as approval.
+
 ## Architecture
 
 Three containers in the `devops-app` namespace on EKS, provisioned by the `terraform/` stack and
