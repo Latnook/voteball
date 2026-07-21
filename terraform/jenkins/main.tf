@@ -113,8 +113,22 @@ resource "aws_instance" "jenkins" {
   # history) to re-run a script whose output is already present. ignore_changes here is therefore
   # correct, not a workaround. Deliberately rebuilding the host from scratch is a manual
   # `terraform taint` / `terraform apply -replace`, which is the intended workflow for that case.
+  #
+  # `ami` is ignored for the same reason, and it is not hypothetical: on 2026-07-21 a plan showed
+  # this instance "must be replaced" because data.aws_ssm_parameter.al2023 had moved on to a newer
+  # Amazon Linux 2023 image. An instance's AMI id is fixed at launch and never changes, so patching
+  # the OS in place does NOT settle that diff -- it would recur on every Amazon image release,
+  # making a routine `terraform apply` destroy the CI host on Amazon's schedule rather than ours.
+  # The root volume survives (delete_on_termination = false) but the replacement does not attach
+  # it, so the credentials, jobs and build history are lost regardless.
+  #
+  # Ignoring rather than pinning to a literal AMI id is deliberate: a *new* host still builds from
+  # the latest image, while an *existing* one is never churned. Patch the running host in place
+  # (`sudo dnf update --releasever=latest`); move it to a new image only by deliberately removing
+  # this entry or using `-replace`, which is safe once JCasC can rebuild the configuration
+  # (docs/production-readiness.md section 7).
   lifecycle {
-    ignore_changes = [user_data]
+    ignore_changes = [user_data, ami]
   }
 
   tags = { Name = "${var.cluster_name}-jenkins" }
