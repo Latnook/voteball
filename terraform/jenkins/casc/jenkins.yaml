@@ -41,9 +41,11 @@ jenkins:
       # anything that reaches port 8080 -- which GitHub's webhook CIDRs do.
       allowAnonymousRead: false
 
-  crumbIssuer:
-    standard:
-      excludeClientIPFromCrumb: false
+  # crumbIssuer is deliberately ABSENT. Jenkins installs DefaultCrumbIssuer itself, which is what the
+  # hand-built config.xml had (`<crumbIssuer class="...DefaultCrumbIssuer"/>`, no children). An
+  # earlier draft set `standard: { excludeClientIPFromCrumb: false }` and Jenkins 2.568.1 refused to
+  # boot: that attribute does not exist on this version. Configuring a default to its own default is
+  # how you acquire a version-coupled field for nothing.
 
   globalNodeProperties:
     - envVars:
