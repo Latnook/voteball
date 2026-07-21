@@ -1,8 +1,16 @@
 # Live cluster snapshot (evidence for README.submission.md)
 
 _Captured 2026-07-20 from the running EKS cluster._
-_Sections below the "Additions captured 2026-07-21" heading are from the current build; everything above
-it was captured from the 2026-07-20 build and is kept as the original evidence._
+_Sections below the "Additions captured 2026-07-21" heading were captured from the build running on
+2026-07-21; everything above them is from the 2026-07-20 build and is kept as the original evidence._
+
+> **This is dated evidence, not a description of the cluster as it stands now.** Every value here
+> was true when captured and is deliberately left frozen. The cluster was destroyed and rebuilt
+> again later on 2026-07-21, which regenerates the ACM certificate, the WAF ACL, the cluster
+> endpoint, the ALB name and every pod name — so the identifiers below (e.g. the WAF id
+> `bf57cc07-…`) no longer resolve. That is expected. For current values run
+> `terraform -chdir=terraform output`; do not "correct" this file to match, or it stops being a
+> record of anything.
 
 ## `kubectl get nodes`
 ```
