@@ -161,7 +161,8 @@ deliberately deferred; see "Deferred" below.)
 ssh-keygen -t ed25519 -f ~/.ssh/voteball-jenkins -C voteball-jenkins   # once
 cd terraform/jenkins
 cp jenkins.tfvars.example jenkins.tfvars      # set admin_cidr to your IP as a /32
-terraform init
+../../scripts/bootstrap-tf-backend.sh         # once per account: state bucket + backend.hcl
+terraform init -backend-config=backend.hcl
 terraform apply -var-file=jenkins.tfvars
 ```
 

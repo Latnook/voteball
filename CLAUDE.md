@@ -245,7 +245,10 @@ See `docs/deploy.md` for the full deploy/destroy runbook.
 
 ```bash
 cd terraform
-terraform init             # use `init -upgrade` after adding a module (pulls its provider deps)
+# State lives in S3, and the backend block is PARTIAL by design (a backend block cannot interpolate
+# variables, and the bucket name embeds the AWS account id). backend.hcl is generated + gitignored:
+../scripts/bootstrap-tf-backend.sh          # idempotent; creates the bucket, writes backend.hcl
+terraform init -backend-config=backend.hcl  # add -upgrade after adding a module; -migrate-state once
 terraform validate
 terraform fmt -recursive   # run before committing any .tf change
 terraform plan  -var-file=voteball.tfvars

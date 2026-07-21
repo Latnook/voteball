@@ -25,7 +25,11 @@ step "1/8  Resolving the newest DB snapshot"
 
 step "2/8  Building AWS infrastructure (Terraform will ask you to confirm)"
 echo "This creates real, billed resources (~\$200/month while up)."
-terraform -chdir=terraform init -upgrade
+# State lives in S3 (see docs/design/2026-07-21-terraform-remote-state-design.md). This is
+# idempotent and costs nothing on a re-run; it exists here so a fresh clone never hits the
+# "incomplete backend configuration" error -- backend.hcl is generated, not committed.
+./scripts/bootstrap-tf-backend.sh
+terraform -chdir=terraform init -upgrade -backend-config=backend.hcl
 terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
 
 step "3/8  Seeding app credentials into Secrets Manager"

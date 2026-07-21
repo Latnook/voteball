@@ -15,9 +15,16 @@ while the cluster is destroyed.
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/voteball-jenkins -C voteball-jenkins   # once
 cp jenkins.tfvars.example jenkins.tfvars                               # fill in admin_cidr
-terraform init
+../../scripts/bootstrap-tf-backend.sh                                  # once per account
+terraform init -backend-config=backend.hcl
 terraform apply -var-file=jenkins.tfvars
 ```
+
+State lives in S3 under the key `voteball/jenkins.tfstate` — the same bucket as the main stack, a
+different key, so the two states and their locks stay independent. `backend.hcl` is **generated and
+gitignored** (it names a bucket containing the AWS account id); a `terraform init` without
+`-backend-config=backend.hcl` fails on incomplete backend configuration rather than quietly using
+local state.
 
 `admin_cidr` is your home IP as a `/32` (`curl -s https://checkip.amazonaws.com`). Update it and
 re-apply when your ISP reassigns you.

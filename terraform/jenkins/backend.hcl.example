@@ -1,0 +1,8 @@
+# Template only. The real backend.hcl is GENERATED and gitignored:
+#
+#     ./scripts/bootstrap-tf-backend.sh
+#
+# Same bucket as the main stack, different key -- the two states and their locks stay independent.
+bucket = "<cluster_name>-tfstate-<aws_account_id>"
+key    = "voteball/jenkins.tfstate"
+region = "<aws_region>"

@@ -1,5 +1,6 @@
 terraform {
-  required_version = ">= 1.5"
+  # 1.11 floor: backend.tf uses S3-native locking (use_lockfile), not the deprecated dynamodb_table.
+  required_version = ">= 1.11.0"
 
   required_providers {
     aws  = { source = "hashicorp/aws", version = "~> 5.0" }

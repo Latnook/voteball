@@ -18,6 +18,10 @@ terraform/tfplan
 terraform/.terraform/
 # Written by scripts/find-latest-snapshot.sh before each apply; machine-specific, never committed.
 terraform/snapshot.auto.tfvars
+# Written by scripts/bootstrap-tf-backend.sh. Carries the state bucket name, which embeds the AWS
+# account id -- a backend block cannot interpolate variables, so this is the only way to keep
+# account identity out of a committed file. backend.hcl.example is the committed template.
+terraform/backend.hcl
 
 # The Jenkins build host is a SEPARATE stack with its own state, applied and destroyed
 # independently of terraform/ so that destroy.sh cannot delete CI. The rules above are anchored to
@@ -26,6 +30,7 @@ terraform/jenkins/jenkins.tfvars
 terraform/jenkins/terraform.tfstate*
 terraform/jenkins/.terraform/
 terraform/jenkins/tfplan
+terraform/jenkins/backend.hcl
 
 # Python
 __pycache__/

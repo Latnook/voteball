@@ -1,0 +1,9 @@
+# Template only. The real backend.hcl is GENERATED and gitignored -- do not fill this in by hand:
+#
+#     ./scripts/bootstrap-tf-backend.sh
+#
+# It carries the AWS account id (S3 bucket names are globally unique, so the account id has to be
+# part of the name), which is why it is not committed.
+bucket = "<cluster_name>-tfstate-<aws_account_id>"
+key    = "voteball/main.tfstate"
+region = "<aws_region>"

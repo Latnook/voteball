@@ -1,5 +1,8 @@
 terraform {
-  required_version = ">= 1.5.0"
+  # 1.11 is the floor because backend.tf uses S3-native locking (use_lockfile), which replaced the
+  # deprecated dynamodb_table argument. Adopting the deprecated path instead would only mean doing
+  # this migration again later.
+  required_version = ">= 1.11.0"
 
   required_providers {
     aws = {
