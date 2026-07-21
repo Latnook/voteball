@@ -21,6 +21,12 @@ ADMIN_SESSION_SECRET = os.environ['ADMIN_SESSION_SECRET']
 # Not 1-per-IP: Israeli mobile carriers use CGNAT heavily and households share an address, so a hard
 # 1 would lock out large numbers of genuine voters. A small cap stops casual re-voting and scripted
 # flooding while leaving real shared connections usable.
+#
+# Since 2026-07-21 this is the SECOND layer, not the only one: AWS WAF on the ALB blocks any address
+# exceeding 100 requests per 5 minutes to /api/vote (terraform/waf.tf), so a flood is dropped before
+# it reaches a pod. The two are deliberately different in kind -- WAF counts requests and forgets,
+# this counts *successful ballots* over 24h and persists. Keep both: WAF alone would let a patient
+# script vote steadily under the rate limit, and this alone leaves the pods absorbing the flood.
 MAX_VOTES_PER_IP = int(os.environ.get('MAX_VOTES_PER_IP', '5'))
 VOTE_IP_WINDOW_HOURS = int(os.environ.get('VOTE_IP_WINDOW_HOURS', '24'))
 # Salt so the stored hashes are useless outside this deployment and cannot be reversed by hashing
