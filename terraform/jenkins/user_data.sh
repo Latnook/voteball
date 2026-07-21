@@ -145,23 +145,48 @@ systemctl daemon-reload
 # hooks would register a webhook GitHub cannot deliver to. The real hook is created once, by hand,
 # against the Elastic IP.
 #
-# hookSecretConfig is the LEGACY SINGULAR form ON PURPOSE. getHookSecretConfigs() prefers the plural
-# list whenever it is present, so an empty-but-present <hookSecretConfigs/> once beat this value and
-# left zero secrets configured -- every push then returned 400 "No valid signature found", signed and
-# unsigned identically. Do not "modernise" this to the plural form without re-testing a real signed
-# delivery.
+# TWO FILES, and the split is not arbitrary -- this cost a fresh-boot test to establish:
+#
+#   github-plugin-configuration.xml  <- the file the plugin actually reads the hook secret from
+#   org.jenkinsci...GitHubPluginConfig.xml  <- where manageHooks is honoured
+#
+# Writing only the class-named file produces a host that loads manageHooks correctly and reports
+# getHookSecretConfigs().size() == 0, i.e. NO webhook signature enforcement at all: unsigned
+# deliveries are accepted with 200. That is a security hole, and it is invisible on an
+# already-configured host because the working value is already in github-plugin-configuration.xml.
+#
+# Note the PLURAL, POPULATED list here. The legacy singular <hookSecretConfig> is NOT read on a
+# fresh boot. The bug recorded in docs/cicd.md was an EMPTY-but-present plural list beating the
+# singular fallback -- an empty list, not a populated one, and the fix is to populate it, not to
+# avoid it. signatureAlgorithm=SHA256 matches what GitHub sends (X-Hub-Signature-256); a SHA-1-only
+# test will fail against this config even when the config is right.
+cat > /var/lib/jenkins/github-plugin-configuration.xml <<'GHCFG'
+<?xml version="1.1" encoding="UTF-8"?>
+<github-plugin-configuration>
+  <configs class="empty-list"/>
+  <hookSecretConfigs>
+    <org.jenkinsci.plugins.github.config.HookSecretConfig>
+      <credentialsId>github-webhook-secret</credentialsId>
+      <signatureAlgorithm>SHA256</signatureAlgorithm>
+    </org.jenkinsci.plugins.github.config.HookSecretConfig>
+  </hookSecretConfigs>
+</github-plugin-configuration>
+GHCFG
+chown jenkins:jenkins /var/lib/jenkins/github-plugin-configuration.xml
+
 cat > /var/lib/jenkins/org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml <<'GHCFG'
 <?xml version="1.1" encoding="UTF-8"?>
 <org.jenkinsci.plugins.github.config.GitHubPluginConfig>
   <configs/>
-  <hookSecretConfig>
-    <credentialsId>github-webhook-secret</credentialsId>
-  </hookSecretConfig>
   <manageHooks>false</manageHooks>
   <clientCacheSize>20</clientCacheSize>
 </org.jenkinsci.plugins.github.config.GitHubPluginConfig>
 GHCFG
 chown jenkins:jenkins /var/lib/jenkins/org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml
+
+# init.groovy.d is created by the setup wizard, which runSetupWizard=false skips. Create it so the
+# standard locked-out-of-Jenkins recovery path (and any diagnostic script) works on a fresh host.
+install -d -o jenkins -g jenkins -m 0755 /var/lib/jenkins/init.groovy.d
 
 # github.com's host keys must be known before the first SSH checkout, or it fails outright.
 install -d -o jenkins -g jenkins -m 0700 /var/lib/jenkins/.ssh
