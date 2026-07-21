@@ -20,6 +20,33 @@ if [ ! -f "terraform/$TFVARS" ]; then
   exit 1
 fi
 
+# Step 3 (seed-eks-secret.sh) prompts on /dev/tty. With no terminal attached -- a background task, a
+# cron job, CI -- that open fails and the script correctly refuses to seed an empty password. The
+# problem is WHEN: step 2 has already spent ~15 minutes creating billed infrastructure by then. Fail
+# here instead, where it costs nothing. Hit for real on the 2026-07-21 rebuild.
+#
+# Test by actually opening /dev/tty, not with `[ -r /dev/tty ]` -- the latter consults permissions
+# and returns TRUE in exactly the detached case we need to catch (verified 2026-07-21), so it would
+# make this guard silently useless.
+has_tty() { (exec </dev/tty) 2>/dev/null; }
+if ! has_tty && { [ -z "${DB_PASS:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ]; }; then
+  cat >&2 <<'MSG'
+ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD are not set.
+
+Step 3 seeds Secrets Manager and asks for those two passwords on screen. Without a terminal it
+cannot ask, so this run would fail -- but only after Terraform had already built (and started
+billing for) the infrastructure. Stopping now instead.
+
+Either run this from a real terminal, or supply the answers up front:
+
+  DB_PASS='...' ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
+
+(VOTEBALL_AUTO_APPROVE=1 only skips Terraform's "type yes" prompt -- on its own it does NOT make
+this script unattended.)
+MSG
+  exit 1
+fi
+
 step "1/8  Resolving the newest DB snapshot"
 ./scripts/find-latest-snapshot.sh
 
@@ -51,7 +78,10 @@ step "6/8  Syncing values.yaml from Terraform outputs"
 if ! git diff --quiet -- charts/voteball/values.yaml; then
   echo "values.yaml changed — committing so ArgoCD deploys these values, not the stale ones."
   git add charts/voteball/values.yaml
-  git commit -m "Deploy: sync values.yaml from Terraform outputs"
+  # [skip ci] because step 5 just built and pushed these exact images itself. Without the marker the
+  # Guard stage lets this commit through and Jenkins rebuilds identical source under a new tag, then
+  # pushes its own tag bump -- rolling every pod a second time for no change, on every rebuild.
+  git commit -m "Deploy: sync values.yaml from Terraform outputs [skip ci]"
 
   # Rebase onto origin FIRST. CI pushes its own "ci: image tag <sha> [skip ci]" commit to master
   # after every app-code build, so the local branch is routinely behind and a plain push is rejected

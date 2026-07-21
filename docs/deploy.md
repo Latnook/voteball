@@ -69,6 +69,7 @@ resources. The steps it performs:
 2. Create the Terraform state bucket if it does not exist, then build the AWS infrastructure
    (**asks you to type `yes`**). This now also creates the WAF that rate-limits `/api/vote`.
 3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git).
+   **This step asks you questions, so run `deploy.sh` in a real terminal** — see the note below.
 4. Point `kubectl` at the new cluster.
 5. Build the four container images and upload them.
 6. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
@@ -78,11 +79,33 @@ resources. The steps it performs:
    schema **once** before the app pods start, rather than every replica racing to do it.
 8. Hand ongoing control to ArgoCD.
 
-If step 6 changed `values.yaml`, commit it — ArgoCD deploys from `master`:
+Step 6 commits and pushes `values.yaml` for you, because ArgoCD deploys from `master` and not from
+this laptop. You don't need to do anything.
+
+### Run it in a real terminal
+
+Step 3 asks for your database password and admin password on screen (nothing is echoed). That means
+**`deploy.sh` cannot run in a window that has no keyboard attached** — a script, a cron job, or a
+tool running it in the background. There it stops with:
+
+```
+/dev/tty: No such device or address
+ERROR: DB_PASS must not be empty.
+```
+
+That is the script refusing to continue rather than saving a blank password. To run it without a
+keyboard, supply the three answers up front instead:
 
 ```bash
-git add charts/voteball/values.yaml && git commit -m "Deploy: sync values" && git push
+DB_PASS='...' ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
 ```
+
+`VOTEBALL_AUTO_APPROVE=1` skips Terraform's "type yes" prompt. On its own it is **not** enough to
+make the deploy unattended — without the three passwords it still stops at step 3.
+
+**Re-running `deploy.sh` after a failure is safe, with one catch:** step 3 runs again every time and
+issues a new admin session key, which signs out anyone logged into the admin page. Nothing breaks and
+your password still works — you just log in again.
 
 **⚠️ Confirm the alert email — every single rebuild.** Check your inbox for an AWS confirmation link
 and click it. Teardown deletes the notification topic, so each deploy recreates the subscription in a
@@ -116,6 +139,33 @@ curl -sf https://<your app_domain>/api/options | head -c 120   # should print le
 ```
 
 Open the site in a browser and cast a vote — it should land and show on the results page.
+
+---
+
+## Look at the dashboards (Grafana, Prometheus)
+
+Grafana and Prometheus are installed, but **on purpose they are not on the internet** — there is no
+web address for them. You open a private tunnel from your own machine instead. Run one of these and
+leave it running, then open the link:
+
+```bash
+kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana      3000:80    # http://localhost:3000
+kubectl port-forward -n monitoring svc/kube-prometheus-stack-prometheus   9090:9090  # http://localhost:9090
+kubectl port-forward -n monitoring svc/kube-prometheus-stack-alertmanager 9093:9093  # http://localhost:9093
+```
+
+Grafana's username is `admin`. Its password is generated fresh at install time (deliberately — a
+fixed one would have to be written down in the repo), so **it is different after every rebuild**.
+Print the current one with:
+
+```bash
+kubectl get secret kube-prometheus-stack-grafana -n monitoring \
+  -o jsonpath='{.data.admin-password}' | base64 -d; echo
+```
+
+In Prometheus, **Status → Rule Health** lists the alert rules. If your rules are missing there, they
+are not being checked at all — see `charts/voteball/prometheusrule.yaml` for the label that causes
+this.
 
 ---
 

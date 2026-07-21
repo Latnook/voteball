@@ -161,7 +161,12 @@ trust as pre-escaped HTML.
   **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
 - **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
   confirmation before Terraform touches billed resources; `VOTEBALL_AUTO_APPROVE=1` skips the prompt
-  for unattended runs only).
+  for unattended runs only). **`VOTEBALL_AUTO_APPROVE=1` alone does NOT make `deploy.sh`
+  unattended** — step 3 (`seed-eks-secret.sh`) prompts on `/dev/tty`, so a detached run also needs
+  `DB_PASS` and `ADMIN_PASSWORD` in the environment. A preflight check at the top of the script
+  enforces this, because the failure otherwise lands *after* a ~15-minute billed `terraform apply`
+  (hit for real on the 2026-07-21 rebuild). Note `deploy.sh` is only re-runnable at a cost: step 3
+  runs unconditionally and reissues `ADMIN_SESSION_SECRET`, invalidating live admin sessions.
 - **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
   `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file carries
