@@ -58,15 +58,23 @@ def test_party_ideology_columns_and_lineage_table_exist(conn):
     cur = conn.cursor()
     cur.execute('''
         UPDATE previous_parties SET bloc = 'bibi', economic = 2, security = 2,
-            sector = 'traditional', tags = ARRAY['test-tag']
+            sector = 'traditional', religiosity = 2, tags = ARRAY['test-tag']
         WHERE name = 'הליכוד'
     ''')
-    cur.execute("SELECT bloc, economic, security, sector, tags FROM previous_parties WHERE name = 'הליכוד'")
+    cur.execute("SELECT bloc, economic, security, sector, religiosity, tags FROM previous_parties WHERE name = 'הליכוד'")
     row = cur.fetchone()
-    assert row == ('bibi', 2, 2, 'traditional', ['test-tag'])
+    assert row == ('bibi', 2, 2, 'traditional', 2, ['test-tag'])
 
     with pytest.raises(psycopg2.errors.CheckViolation):
         cur.execute("UPDATE previous_parties SET bloc = 'not-a-real-bloc' WHERE name = 'הליכוד'")
+    conn.rollback()
+
+    with pytest.raises(psycopg2.errors.CheckViolation):
+        cur.execute("UPDATE previous_parties SET religiosity = -4 WHERE name = 'הליכוד'")
+    conn.rollback()
+
+    with pytest.raises(psycopg2.errors.CheckViolation):
+        cur.execute("UPDATE previous_parties SET religiosity = 4 WHERE name = 'הליכוד'")
     conn.rollback()
 
     cur.execute("SELECT id FROM previous_parties WHERE name = 'יש עתיד'")
@@ -113,8 +121,8 @@ def test_seeded_parties_have_ideology_classification(conn):
         assert bloc is not None, f'{name_en} (previous) missing bloc'
         assert sector is not None, f'{name_en} (previous) missing sector'
 
-    cur.execute("SELECT bloc, economic, security, sector FROM previous_parties WHERE name_he = 'אחר'")
-    assert cur.fetchone() == (None, None, None, None)
+    cur.execute("SELECT bloc, economic, security, sector, religiosity FROM previous_parties WHERE name_he = 'אחר'")
+    assert cur.fetchone() == (None, None, None, None, None)
 
     cur.execute('SELECT name_en, bloc, sector FROM upcoming_parties')
     for name_en, bloc, sector in cur.fetchall():

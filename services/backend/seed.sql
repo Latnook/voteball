@@ -933,6 +933,9 @@ UPDATE upcoming_parties SET bloc = 'bibi', economic = 0, security = 3, sector = 
 -- kashrut monopoly, but the motive stated is competition (it is listed under cost-of-living, not
 -- religion-and-state) and their haredi section is warm -- integration into the workforce, framed as
 -- something the economy needs. That is not anti-clericalism in the Yisrael Beiteinu sense.
+-- REVISED below (see the "CORRECTION to revision 2" block in the religion-and-state pass, ~line
+-- 1086): this conclusion was reversed and `anti-clerical` was restored alongside
+-- `kashrut-liberalization`. Kept here for the reasoning trail, not as the current state.
 UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 0, sector = 'secular',
     tags = ARRAY['populist', 'anti-corruption', 'anti-monopoly', 'tax-cutting', 'free-trade',
                  'consumer-protection', 'kashrut-liberalization', 'single-issue-economy']

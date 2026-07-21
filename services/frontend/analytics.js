@@ -200,7 +200,7 @@ function partyById(partyId, list) {
   return analyticsOptionsData[list].find(p => p.id === partyId);
 }
 
-// Weighted average of a numeric axis (economic/security) over a club's previous-election votes,
+// Weighted average of a numeric axis (economic/security/religiosity) over a club's previous-election votes,
 // skipping parties with a null value on that axis (both from the numerator and the denominator) --
 // see design spec Decision 8.
 function weightedAxisAverage(previousBreakdown, axis) {

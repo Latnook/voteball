@@ -860,8 +860,11 @@ def test_get_clubs_breakdown_shape(conn):
 
 # Parties deliberately left NULL on the religiosity axis: the Arab parties are scoped out
 # (design Decision 3 -- "how religiously Jewish should the state be" is not a question they
-# answer), Yashar has no declared ideology, and "Other" is a catch-all, not a party.
-RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'בל"ד', 'ישר', 'אחר'}
+# answer), and Yashar has no declared ideology. "Other" ('אחר') is NOT listed here -- the loop
+# below `continue`s past it before any religiosity assertion runs, so it would never be checked;
+# its NULL religiosity (along with bloc/economic/security/sector) is asserted instead in
+# test_migration.py::test_seeded_parties_have_ideology_classification.
+RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'בל"ד', 'ישר'}
 
 
 def test_every_seeded_party_is_classified(conn):
