@@ -502,10 +502,12 @@ UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/93/MPT_
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/6/63/Hapoel_Petach_Tikva_logo.png' WHERE name_en = 'Hapoel Petah Tikva' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/84/Ironi_logo_new.gif?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Ironi Tiberias' AND logo_url IS NULL;
 
--- Liga Leumit club logos. F.C. Kiryat Yam has no Wikimedia crest, so it's sourced from the club's
--- Instagram profile picture CDN instead -- unlike every other logo_url in this file, that URL is
--- signed and will expire (see its `oe=` param), so it will need re-curating via the admin UI's
--- Logo URL field once it 404s.
+-- Liga Leumit club logos. F.C. Kiryat Yam has no Wikimedia crest. It used to hotlink the club's
+-- Instagram profile picture, which was wrong for three independent reasons: the URL is signed and
+-- expires (`oe=`), the CDN may refuse hotlinks, and -- the one that actually bit -- browsers with
+-- tracker blocking (uBlock, Firefox ETP, Brave, Safari ITP) drop *.fbcdn.net requests outright.
+-- The crest was therefore invisible to many visitors while `curl` fetched it happily, which is a
+-- failure no server-side check can detect. It is now served from our own origin instead.
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/5/5b/Ashdod.png' WHERE name_en = 'F.C. Ashdod' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f7/MaccabiBneiReine2022.png' WHERE name_en = 'Maccabi Bnei Reineh' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f5/Bnei_Jehuda_Tel_Aviv_FC.svg' WHERE name_en = 'Bnei Yehuda' AND logo_url IS NULL;
@@ -518,7 +520,11 @@ UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/01/Hapo
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/ce/Hap-rish.png' WHERE name_en = 'Hapoel Rishon LeZion' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/3f/HapoelRaanana.png' WHERE name_en = 'Hapoel Ra''anana' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/6/6f/FC_Kafr_Qasim_Logo.png' WHERE name_en = 'F.C. Kafr Qasim' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://instagram.fsdv1-2.fna.fbcdn.net/v/t51.82787-19/745085692_18062626448718349_7428636575878684979_n.jpg?stp=dst-jpg_s320x320_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby44MjcuYzIifQ&_nc_ht=instagram.fsdv1-2.fna.fbcdn.net&_nc_cat=101&_nc_oc=Q6cZ2gGp0RPXFSBEWYw2ZWOJeid-IUzscegUnhnsLtSLiEbAPdSFgrgN7IXs9gk8Zsi5qxI&_nc_ohc=XVfcZqTLKDQQ7kNvwE2EpJw&_nc_gid=TS4fn4O4HwGRhBzlcpN9nA&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AQCyFraDI6bTjeoPtEVHdai-cVbQ22J2QDUt6mFKXflFSQ&oe=6A602339&_nc_sid=8b3546' WHERE name_en = 'F.C. Kiryat Yam' AND logo_url IS NULL;
+-- Served from our own origin (services/frontend/logos/kiryat-yam.png), cropped from the club's
+-- square artwork to a transparent circle. The IS NULL guard is deliberately widened here: every
+-- other row must not clobber admin edits, but this one has to CORRECT a known-bad value that is
+-- already in the database, which a plain `IS NULL` guard would silently skip forever.
+UPDATE clubs SET logo_url = '/logos/kiryat-yam.png' WHERE name_en = 'F.C. Kiryat Yam' AND (logo_url IS NULL OR logo_url LIKE '%fbcdn.net%');
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f5/Maccabi_Herzliya.png' WHERE name_en = 'Maccabi Herzliya' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/88/MaccabiJaffaCrestNew2018.png' WHERE name_en = 'Maccabi Kavilio Jaffa' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d6/IroniModiinFC.png' WHERE name_en = 'Ironi Modi''in' AND logo_url IS NULL;
