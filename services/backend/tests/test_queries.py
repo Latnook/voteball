@@ -856,3 +856,28 @@ def test_get_clubs_breakdown_shape(conn):
     breakdown = queries.get_clubs_breakdown(conn)
     entry = next(e for e in breakdown if e['club_id'] == club_id)
     assert entry['previous'] == [{'party_id': party_id, 'count': 9}]
+
+
+# Parties deliberately left NULL on the religiosity axis: the Arab parties are scoped out
+# (design Decision 3 -- "how religiously Jewish should the state be" is not a question they
+# answer), Yashar has no declared ideology, and "Other" is a catch-all, not a party.
+RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'בל"ד', 'ישר', 'אחר'}
+
+
+def test_every_seeded_party_is_classified(conn):
+    options = queries.get_options(conn)
+
+    for key in ('previous_parties', 'upcoming_parties'):
+        for party in options[key]:
+            name = party['name_he']
+            if name == 'אחר':
+                continue
+            assert party['bloc'] is not None, f'{key}/{name} has no bloc'
+            assert party['sector'] is not None, f'{key}/{name} has no sector'
+            if name in RELIGIOSITY_NULL_BY_DESIGN:
+                assert party['religiosity'] is None, \
+                    f'{key}/{name} is NULL by design but has a religiosity value'
+            else:
+                assert party['religiosity'] is not None, \
+                    f'{key}/{name} is missing a religiosity value'
+                assert -3 <= party['religiosity'] <= 3

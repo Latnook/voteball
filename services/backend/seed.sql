@@ -1001,6 +1001,96 @@ UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 2, sect
     WHERE name_he = 'המילואימניקים';
 -- ---------------------------------------------------------------------------------------------
 
+-- =============================================================================================
+-- Religion-and-state axis, 2026-07-21 (docs/design/2026-07-21-religiosity-axis-design.md).
+--
+-- Unguarded, like the revision blocks above: nothing in the app writes these columns, so
+-- re-running seed.sql just rewrites identical values, and a guard would stop the axis ever
+-- reaching an already-seeded database.
+--
+-- UNLIKE those blocks, this one writes previous_parties TOO. That is not a contradiction of their
+-- "previous_parties stays frozen" rule: those blocks refused to back-date 2026 platforms onto
+-- previous-election rows, whereas a NEW AXIS is scored for each row as that party stood AT THE
+-- TIME. It is also mandatory -- the Political Lean tab computes from previous-election votes, so
+-- without these values the feature renders nothing at all.
+--
+-- Scale: -3 disestablishment / -2 strong separationist / -1 pluralist / 0 status quo /
+--        +1 preserve Jewish character / +2 expand religious authority / +3 halakhic state.
+--
+-- Left NULL deliberately (Decision 3), so they are simply absent below: רע"ם, חד"ש-תע"ל, בל"ד
+-- (the axis is scoped to JEWISH religion-and-state), ישר (undefined ideology) and אחר (catch-all).
+
+-- Yisrael Beiteinu: the -3 anchor. Abolish the religious councils, mandatory civil-marriage
+-- option, end yeshiva stipends, one chief rabbi per municipality, rabbinical courts moved to the
+-- Justice Ministry.
+UPDATE previous_parties SET religiosity = -3 WHERE name_he = 'ישראל ביתנו';
+UPDATE upcoming_parties SET religiosity = -3 WHERE name_he = 'ישראל ביתנו';
+
+-- The Democrats: also -3, from the opposite motive -- religious pluralism rather than punitive
+-- secularism (Decision 5, which is why the tags carry `religious-pluralism` and Beiteinu carries
+-- `anti-clerical`). Kariv (#3) is a Reform rabbi campaigning for civil marriage and divorce, for
+-- turning the religious councils into municipal departments, for full recognition of the
+-- non-Orthodox movements, and against the Rabbinate's conversion monopoly; Fink (#5) is an
+-- observant Shabbat-keeper who explicitly supports separation of religion and state; Dabush (#13)
+-- runs the cross-denominational Rabbis for Human Rights. The religious figures on this list push
+-- the score DOWN, not up.
+UPDATE upcoming_parties SET religiosity = -3 WHERE name_he = 'הדמוקרטים';
+
+-- -2: strong separationists.
+UPDATE previous_parties SET religiosity = -2 WHERE name_he IN ('יש עתיד', 'העבודה', 'מרצ');
+-- Together: "not state-funded -- not on our dime", 60% core curriculum as a funding condition,
+-- full state supervision of haredi education, automatic recognition of international kashrut.
+UPDATE upcoming_parties SET religiosity = -2 WHERE name_he = 'ביחד';
+-- The Economic Party: "kashrut is too important for us to allow a monopoly in it... take the
+-- government, with its political interests, out of granting kashrut" -- that is disestablishment,
+-- not price policy. Their haredi section is about ending the subsidy-for-study model, i.e. the
+-- same fight from the fiscal side. See the tag correction below.
+UPDATE upcoming_parties SET religiosity = -2 WHERE name_he = 'המפלגה הכלכלית';
+
+-- -1: pluralist without disestablishing. "Judaism in the spirit of Beit Hillel", local authorities
+-- shape Shabbat in their own area -- but the public space should still express the state's Jewish
+-- identity.
+UPDATE previous_parties SET religiosity = -1 WHERE name_he = 'המחנה הממלכתי';
+UPDATE upcoming_parties SET religiosity = -1 WHERE name_he = 'כחול לבן';
+
+-- 0: no religion-and-state agenda. BOTH of these are built on the haredi conscription exemption,
+-- and that is deliberately NOT scored here (Decision 6) -- a party can demand universal service
+-- while wanting the Rabbinate left exactly as it is. Neither says anything about marriage,
+-- Shabbat, kashrut or the Rabbinate's powers. El HaDegel's mandatory core curriculum pulls
+-- negative but is offset by a Values Pillar grounded in Jewish heritage plus community autonomy
+-- above the core. Their conscription stance lives in the `anti-conscription-exemption` and
+-- `universal-conscription` tags.
+UPDATE upcoming_parties SET religiosity = 0 WHERE name_he IN ('אל הדגל', 'המילואימניקים');
+
+-- Likud: +1 is the REVEALED position (Decision 4). They do not want a halakhic state, but they
+-- reliably fund and defend religious authority to hold a coalition. Rather than adding a
+-- claimed/actual column pair -- explicitly rejected for the economic axis by Decision 3 of the
+-- parent design doc -- the gap is carried by the new `instrumentally-clerical` tag.
+UPDATE previous_parties SET religiosity = 1 WHERE name_he = 'הליכוד';
+UPDATE upcoming_parties SET religiosity = 1 WHERE name_he = 'הליכוד';
+UPDATE previous_parties SET tags = tags || ARRAY['instrumentally-clerical']
+    WHERE name_he = 'הליכוד' AND NOT ('instrumentally-clerical' = ANY(tags));
+UPDATE upcoming_parties SET tags = tags || ARRAY['instrumentally-clerical']
+    WHERE name_he = 'הליכוד' AND NOT ('instrumentally-clerical' = ANY(tags));
+
+-- +2: the haredi parties. Communal autonomy and state funding, plus defence of the marriage,
+-- kashrut and Shabbat monopolies -- but NOT a programme to derive state law from halakha, which is
+-- what separates them from +3.
+UPDATE previous_parties SET religiosity = 2 WHERE name_he IN ('ש"ס', 'יהדות התורה');
+UPDATE upcoming_parties SET religiosity = 2 WHERE name_he IN ('ש"ס', 'יהדות התורה');
+
+-- +3: explicit halakhic-state vision.
+UPDATE previous_parties SET religiosity = 3 WHERE name_he = 'הציונות הדתית';
+UPDATE upcoming_parties SET religiosity = 3 WHERE name_he IN ('הציונות הדתית', 'עוצמה יהודית');
+
+-- CORRECTION to revision 2 above. That block replaced the Economic Party's `anti-clerical` tag
+-- with `kashrut-liberalization`, reading their kashrut position as competition policy. That was
+-- wrong -- their own text asks to remove the government from the granting of kashrut, and their
+-- haredi section is about ending payment for non-participation. Restore it; both tags are true.
+UPDATE upcoming_parties SET tags = tags || ARRAY['anti-clerical']
+    WHERE name_he = 'המפלגה הכלכלית' AND NOT ('anti-clerical' = ANY(tags));
+-- =============================================================================================
+
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
 -- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;
