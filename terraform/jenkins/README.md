@@ -50,6 +50,36 @@ Stopped costs about **$6/month** — ~$2.40 for the 30 GB gp3 volume plus ~$3.60
 which AWS bills whether or not the instance is running. All Jenkins state persists on the volume and the Elastic IP
 keeps the address stable. **Webhooks are silently discarded while stopped** — expected, not a fault.
 
+## Patching the OS
+
+Patch **in place**. Do not rebuild the host to get a newer image — its plugins, credentials,
+webhook secret, job configuration and build history exist only on its volume, and a replacement
+instance does not attach it.
+
+```bash
+aws ec2 start-instances --instance-ids "$(terraform output -raw instance_id)"
+aws ec2 wait instance-status-ok --instance-ids "$(terraform output -raw instance_id)"
+
+# Optional but cheap insurance before an upgrade:
+aws ec2 create-snapshot --volume-id <root volume> --description "jenkins pre-upgrade $(date +%F)"
+
+ssh -i ~/.ssh/voteball-jenkins ec2-user@<elastic ip>
+sudo dnf update --releasever=latest -y
+sudo systemctl reboot            # required when the kernel is in the update set
+```
+
+After the reboot, `systemctl is-active jenkins` and `curl -sI http://localhost:8080/login` are the
+check. Jenkins itself comes from the jenkins.io repo and is **not** moved by `dnf update
+--releasever=latest`; upgrading Jenkins is a separate decision with its own plugin-compatibility
+risk.
+
+**Why the instance never plans a replacement:** `lifecycle.ignore_changes` covers `ami` for exactly
+this reason — see the comment in `main.tf`. An instance's AMI id is fixed at launch, so patching in
+place does not change it, and without that entry every new Amazon Linux release would make
+`terraform apply` destroy this host. Verified 2026-07-21: after upgrading
+`2023.12.20260710 → 2023.12.20260720` and rebooting onto kernel `6.1.176`, `terraform plan` still
+reports *No changes*.
+
 ## If Jenkins is not running after apply
 
 `user_data` runs once and Terraform does not verify it. Check:
