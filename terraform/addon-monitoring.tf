@@ -28,6 +28,61 @@ resource "helm_release" "kube_prometheus_stack" {
   #   kubectl get secret kube-prometheus-stack-grafana -n monitoring \
   #     -o jsonpath='{.data.admin-password}' | base64 -d
 
+  # Alertmanager -> SNS. Closes docs/production-readiness.md section 6: alerts existed nowhere and
+  # Alertmanager routed nowhere, which makes collected metrics archaeology rather than monitoring.
+  #
+  # A `values` block rather than more `set` entries: the routing tree is nested and set-strings for
+  # it are unreadable and easy to get subtly wrong. yamlencode also keeps the ARNs as references
+  # instead of hand-copied strings.
+  #
+  # The alert RULES live in the app chart (charts/voteball/templates/prometheusrule.yaml), not here:
+  # they describe the application, so they belong with it and ship through ArgoCD on a normal commit
+  # rather than requiring a Terraform apply to change a threshold.
+  values = [yamlencode({
+    alertmanager = {
+      serviceAccount = {
+        annotations = {
+          "eks.amazonaws.com/role-arn" = aws_iam_role.alertmanager.arn
+        }
+      }
+      config = {
+        route = {
+          receiver = "sns"
+          # Batch related alerts: a node going away fires several at once, and one message about
+          # five problems is read where five messages about one problem are filtered out.
+          group_by       = ["alertname", "namespace"]
+          group_wait     = "30s"
+          group_interval = "5m"
+          # Deliberately long. This topic emails a human, and a 4-hourly reminder about a known
+          # problem is how an alert channel becomes background noise.
+          repeat_interval = "12h"
+          routes = [
+            {
+              # Prometheus' own always-firing heartbeat. It exists to prove the pipeline is alive
+              # when scraped by a dead-man's-switch; delivered to a mailbox it is pure noise.
+              matchers = ["alertname = Watchdog"]
+              receiver = "null"
+            }
+          ]
+        }
+        receivers = [
+          { name = "null" },
+          {
+            name = "sns"
+            sns_configs = [
+              {
+                topic_arn = aws_sns_topic.notifications.arn
+                sigv4     = { region = var.aws_region }
+                subject   = "[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}"
+                message   = "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n\n{{ end }}"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  })]
+
   # Same ALB-webhook race as addon-cloudwatch.tf's aws_eks_addon.cloudwatch: this chart's Services
   # (Prometheus/Grafana/Alertmanager) can hit the aws-load-balancer-webhook-service before its backend
   # pods are Ready if created in parallel with the ALB release. Hit on 2026-07-20 apply.

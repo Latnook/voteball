@@ -26,6 +26,13 @@ ingress:
   certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/d17d5e93-38ea-4c3c-85f5-de01d1f43cae"
   wafAclArn: "FILLED-BY-SYNC"
 
+# Alert rules (charts/voteball/templates/prometheusrule.yaml). Requires kube-prometheus-stack's
+# PrometheusRule CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart
+# against a cluster without it -- `helm template` succeeds either way, but `helm install` fails on
+# an unknown kind.
+alerts:
+  enabled: true
+
 backup:
   roleArn: "arn:aws:iam::590183895228:role/voteball-backup-irsa"
   schedule: "0 2 * * *"

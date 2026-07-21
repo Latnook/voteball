@@ -1,0 +1,116 @@
+# Alert rules for the Voteball workloads. Closes the other half of
+# docs/production-readiness.md section 6 -- Alertmanager's SNS route is configured in
+# terraform/addon-monitoring.tf; these are the things worth waking up for.
+#
+# They live in the app chart rather than in Terraform on purpose: they describe the application, so
+# a threshold change ships with a normal commit through ArgoCD instead of needing a Terraform apply
+# against billed infrastructure.
+#
+# EVERY RULE BELOW USES A METRIC THIS CLUSTER ACTUALLY EXPOSES (kube-state-metrics, shipped with
+# kube-prometheus-stack). That constraint is the point: RDS connection counts, RDS free storage, ALB
+# 5xx rates and ACM certificate expiry are all CloudWatch metrics, and nothing scrapes CloudWatch
+# into Prometheus here. Writing those rules anyway would produce alerts that can never fire -- worse
+# than no alert, because the dashboard looks covered. Add the CloudWatch exporter first, then them.
+{{- if .Values.alerts.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: voteball-alerts
+  namespace: {{ .Release.Namespace }}
+  labels:
+    # REQUIRED. kube-prometheus-stack sets ruleSelectorNilUsesHelmValues=true by default, so
+    # Prometheus only picks up PrometheusRules carrying its release label. Without this the object
+    # is created, looks correct in `kubectl get prometheusrules`, and is silently never evaluated.
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: voteball.availability
+      rules:
+        - alert: VoteballPodCrashLooping
+          expr: |
+            kube_pod_container_status_waiting_reason{
+              namespace="{{ .Release.Namespace }}", reason="CrashLoopBackOff"
+            } == 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ `{{ $labels.pod }}` }} is crash looping"
+            description: "Container {{ `{{ $labels.container }}` }} in {{ `{{ $labels.pod }}` }} has been in CrashLoopBackOff for 5 minutes."
+
+        - alert: VoteballDeploymentDegraded
+          # Fewer ready replicas than the spec asks for. Catches the failure the site hides well:
+          # with an HPA and multiple replicas, one dead backend still serves traffic from the others.
+          expr: |
+            kube_deployment_status_replicas_ready{namespace="{{ .Release.Namespace }}"}
+              < kube_deployment_spec_replicas{namespace="{{ .Release.Namespace }}"}
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Deployment {{ `{{ $labels.deployment }}` }} is short of replicas"
+            description: "Ready replicas have been below desired for 10 minutes. A rollout that never completed looks exactly like this."
+
+        - alert: VoteballNoBackendAvailable
+          expr: |
+            kube_deployment_status_replicas_available{
+              namespace="{{ .Release.Namespace }}", deployment="backend"
+            } == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "No backend replicas available -- voting and results are down"
+            description: "The frontend still serves HTML, so the site looks up while every API call fails."
+
+    - name: voteball.jobs
+      rules:
+        - alert: VoteballMigrationJobFailed
+          # The pre-upgrade schema Job. If it fails the release is blocked, and under ArgoCD that is
+          # quiet: the site keeps serving the previous version, which is indistinguishable from a
+          # successful deploy from outside. Same class of silent failure as G7 in the CI pipeline.
+          expr: kube_job_failed{namespace="{{ .Release.Namespace }}", job_name=~"voteball-migrate.*"} > 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Schema migration Job failed -- the release did not deploy"
+            description: "The site is still running the PREVIOUS version. kubectl logs job/voteball-migrate -n {{ .Release.Namespace }}"
+
+        - alert: VoteballBackupJobFailed
+          # A backup you believe in and never verified is the worst kind.
+          expr: kube_job_failed{namespace="{{ .Release.Namespace }}", job_name=~"voteball-backup.*"} > 0
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Nightly database backup failed"
+            description: "The pg_dump CronJob did not complete. RDS point-in-time recovery still covers the last 7 days."
+
+        - alert: VoteballBackupMissing
+          # Absence of success, not presence of failure -- a CronJob that never runs emits no failure
+          # at all, so nothing above would catch a suspended or mis-scheduled backup.
+          expr: |
+            time() - max(kube_job_status_completion_time{
+              namespace="{{ .Release.Namespace }}", job_name=~"voteball-backup.*"
+            }) > 172800
+          labels:
+            severity: warning
+          annotations:
+            summary: "No successful database backup in 48 hours"
+            description: "The backup CronJob has not completed successfully for two days. It is scheduled daily at 02:00 UTC."
+
+    - name: voteball.saturation
+      rules:
+        - alert: VoteballContainerOOMKilled
+          # Memory limits on backend/worker are tight by design; this is how you learn they are too
+          # tight, rather than by noticing restarts weeks later.
+          expr: |
+            increase(kube_pod_container_status_restarts_total{namespace="{{ .Release.Namespace }}"}[1h]) > 3
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ `{{ $labels.pod }}` }} restarted more than 3 times in an hour"
+            description: "Repeated restarts without a CrashLoopBackOff usually means OOMKilled or a failing liveness probe."
+{{- end }}

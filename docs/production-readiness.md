@@ -72,6 +72,14 @@ about two minutes; that is the attack, written down.
 on submit. Genuine one-vote-per-person needs authenticating people, which this project deliberately
 does not do — so the honest goal is "expensive enough not to be worth it", not "impossible".
 
+**Done 2026-07-21** (`terraform/waf.tf`, ~$10/mo): 100 requests/5min/IP blocked on `/api/vote`, a
+looser site-wide ceiling, AWS KnownBadInputs blocking, and the AWS Common Rule Set in **COUNT** mode.
+Counting rather than blocking that last group is deliberate — it can trip on a large ballot POST, and
+a false positive silently discards a real vote. Promote it to blocking after reading its CloudWatch
+metric against real traffic. The ACL attaches via an Ingress annotation, not a Terraform association:
+the ALB is created by the load balancer controller and does not exist at apply time. **Untested
+against live traffic — the cluster has not been deployed since.**
+
 ---
 
 ## 3. Database durability
@@ -102,6 +110,18 @@ guarantees across replicas. There is also no way to know which schema version a 
 once per release rather than racing across replicas. `services/backend/migrate.py` already exists as
 the standalone entrypoint for that.
 
+**Half done 2026-07-21.** The *exactly-once* half is in:
+`charts/voteball/templates/migrate-job.yaml` is a `pre-install,pre-upgrade` hook Job running `python
+migrate.py`, so schema work happens once per release, before the Deployments roll, instead of every
+replica racing on startup. ArgoCD maps Helm hooks onto its PreSync phase, so it works under GitOps.
+
+**Still missing: Alembic itself** — versioning, ordering and down-steps. This Job is what will run
+it. Two things make that its own piece of work rather than an afterthought: an existing database has
+to be baselined (`alembic stamp`) so the first migration does not try to recreate live tables, and
+`gunicorn.conf.py`'s `on_starting` hook must stop calling `init_db` at the same moment, or replicas
+will still race the migrator. Until then the Job runs the same idempotent bootstrap as before, so it
+buys ordering, not versioning.
+
 ---
 
 ## 5. Single points of failure in the network
@@ -129,6 +149,18 @@ The SNS topic for milestone alerts already exists and could carry operational al
 
 **Fix:** alerts for the things that actually page — pods crashlooping, the worker heartbeat going
 stale, RDS connections/storage, ALB 5xx rate, certificate expiry — routed to SNS or email.
+
+**Done 2026-07-21.** Alertmanager publishes to the existing SNS topic via IRSA (`sns:Publish` on that
+one topic, nothing else) — native `sns_configs`, so no SMTP credentials on the build cluster. Seven
+rules ship in the app chart (`charts/voteball/templates/prometheusrule.yaml`), so a threshold changes
+with a commit rather than a Terraform apply: crashlooping, degraded/zero-replica Deployments, failed
+migration and backup Jobs, **absent** backups (48h without a success — a suspended CronJob emits no
+failure at all), and restart storms.
+
+**Deliberately NOT written: RDS connections/storage, ALB 5xx and certificate expiry.** Those are
+CloudWatch metrics and nothing scrapes CloudWatch into Prometheus here, so those rules could never
+fire — worse than no alert, because the coverage would look complete. They need a CloudWatch exporter
+first. The `Watchdog` heartbeat is routed to a null receiver; delivered to a mailbox it is pure noise.
 
 ---
 

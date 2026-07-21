@@ -158,9 +158,9 @@ trust as pre-escaped HTML.
 - **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
   confirmation before Terraform touches billed resources; `VOTEBALL_AUTO_APPROVE=1` skips the prompt
   for unattended runs only).
-- **`./scripts/sync-values-from-tf.sh` owns nine fields in `values.yaml`** — `image.registry`,
+- **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
-  `ingress.certificateArn`, `backup.roleArn`, `worker.roleArn`. The committed file carries
+  `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file carries
   `FILLED-BY-SYNC` placeholders. **Never hand-edit them** — they change on every rebuild. `--check`
   fails on drift *and* verifies `image.tag` names an image that exists in ECR. Its only test is
   `scripts/tests/test-sync-values.sh` (runs offline via `SYNC_STUB_*` env vars); **extend it whenever

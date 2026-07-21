@@ -1,0 +1,63 @@
+# Schema bootstrap, run ONCE per release instead of once per replica.
+#
+# Addresses docs/production-readiness.md section 4. Until now db.init_db() ran from every backend
+# container's gunicorn on_starting hook, so every replica raced to create the same tables on every
+# rollout. It survives that only because the SQL is idempotent (CREATE TABLE IF NOT EXISTS, seed
+# inserts with ON CONFLICT DO NOTHING) -- which is true of additive changes and of nothing else.
+# Anything with ordering requirements, a backfill, or a non-additive step needs exactly one runner.
+#
+# This is the "exactly one runner" half of that gap. The other half -- a real migration tool with
+# versioning and down-steps (Alembic) -- is a separate change; this Job is what will execute it, and
+# `python migrate.py` is already the entrypoint standing in for it.
+#
+# Helm hook, so it runs BEFORE the Deployments are updated. ArgoCD maps helm.sh/hook pre-install and
+# pre-upgrade onto its own PreSync phase, so this works under GitOps sync as well as `helm upgrade`.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: voteball-migrate
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    # before-hook-creation deletes the previous Job first: a Job's `spec` is immutable, so without
+    # this the second release fails outright with "field is immutable" rather than re-running.
+    # hook-succeeded keeps a FAILED job's pod around for inspection, which is the only record of why
+    # a release was blocked.
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  # A migration that cannot succeed should stop the release, not retry forever behind a hook that
+  # Helm is waiting on.
+  backoffLimit: 2
+  # Ceiling on how long a bad migration can hold up a sync.
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        # Deliberately NOT `app: backend`. The backend Service selects that label, so this pod would
+        # be registered as an endpoint and receive real HTTP traffic it cannot serve. `app: migrate`
+        # is listed in the allow-app-egress NetworkPolicy so it can still reach RDS.
+        app: migrate
+    spec:
+      restartPolicy: Never
+      serviceAccountName: backend
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: migrate
+          image: "{{ .Values.image.registry }}/voteball-backend:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "migrate.py"]
+          envFrom:
+            - configMapRef: { name: app-config }
+            - secretRef: { name: app-secret }
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]

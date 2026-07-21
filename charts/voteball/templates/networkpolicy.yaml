@@ -64,7 +64,10 @@ metadata:
 spec:
   podSelector:
     matchExpressions:
-      - { key: app, operator: In, values: [backend, worker, backup, frontend] }
+      # `migrate` is the pre-upgrade schema Job. It needs the same RDS egress as the backend but must
+      # NOT carry `app: backend`, which the backend Service selects -- that would route live HTTP to
+      # a pod running a one-shot script.
+      - { key: app, operator: In, values: [backend, worker, backup, frontend, migrate] }
   policyTypes: [Egress]
   egress:
     - to:
