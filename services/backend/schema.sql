@@ -87,6 +87,16 @@ ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS sector TEXT
     CHECK (sector IN ('secular', 'traditional', 'religious_zionist', 'haredi', 'arab'));
 ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS tags TEXT[];
 
+-- Religion-and-state policy axis (docs/design/2026-07-21-religiosity-axis-design.md).
+-- -3 separationist .. +3 theocratic. Measures what a party wants the STATE to do about religion,
+-- NOT how observant its base is -- that is `sector`, which is categorical and cannot be averaged.
+-- Nullable on the same terms as economic/security: the Arab parties are scoped out entirely
+-- (Decision 3), since "how religiously Jewish should Israel be" is not a question they answer.
+ALTER TABLE previous_parties ADD COLUMN IF NOT EXISTS religiosity INTEGER
+    CHECK (religiosity BETWEEN -3 AND 3);
+ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS religiosity INTEGER
+    CHECK (religiosity BETWEEN -3 AND 3);
+
 -- Continuity, independent of ideology: which upcoming party continues which previous party. A split
 -- is multiple rows sharing one previous_party_id; a merge is multiple rows sharing one
 -- upcoming_party_id; a party with no row on either side is a genuine dead end or a fresh entrant.

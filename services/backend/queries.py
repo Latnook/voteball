@@ -32,25 +32,27 @@ def get_options(conn):
     ]
 
     cur.execute(
-        'SELECT id, name_en, name_he, logo_url, bloc, economic, security, sector, tags '
+        'SELECT id, name_en, name_he, logo_url, bloc, economic, security, sector, religiosity, tags '
         'FROM previous_parties ORDER BY name_en'
     )
     previous_parties = [
         {
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3],
-            'bloc': r[4], 'economic': r[5], 'security': r[6], 'sector': r[7], 'tags': r[8] or [],
+            'bloc': r[4], 'economic': r[5], 'security': r[6], 'sector': r[7],
+            'religiosity': r[8], 'tags': r[9] or [],
         }
         for r in cur.fetchall()
     ]
 
     cur.execute(
-        'SELECT id, name_en, name_he, logo_url, bloc, economic, security, sector, tags '
+        'SELECT id, name_en, name_he, logo_url, bloc, economic, security, sector, religiosity, tags '
         'FROM upcoming_parties ORDER BY name_en'
     )
     upcoming_parties = [
         {
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'logo_url': r[3],
-            'bloc': r[4], 'economic': r[5], 'security': r[6], 'sector': r[7], 'tags': r[8] or [],
+            'bloc': r[4], 'economic': r[5], 'security': r[6], 'sector': r[7],
+            'religiosity': r[8], 'tags': r[9] or [],
         }
         for r in cur.fetchall()
     ]

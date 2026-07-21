@@ -52,7 +52,7 @@ def test_get_options_exposes_ideology_and_lineage(conn):
     cur = conn.cursor()
     cur.execute('''
         UPDATE previous_parties SET bloc = 'bibi', economic = 1, security = 2,
-            sector = 'traditional', tags = ARRAY['a', 'b']
+            sector = 'traditional', religiosity = 1, tags = ARRAY['a', 'b']
         WHERE name_he = 'הליכוד'
     ''')
     cur.execute("SELECT id FROM previous_parties WHERE name_he = 'הליכוד'")
@@ -78,6 +78,7 @@ def test_get_options_exposes_ideology_and_lineage(conn):
     assert likud['economic'] == 1
     assert likud['security'] == 2
     assert likud['sector'] == 'traditional'
+    assert likud['religiosity'] == 1
     assert likud['tags'] == ['a', 'b']
 
     assert 'party_lineage' in options

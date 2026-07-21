@@ -13,6 +13,13 @@ def test_options_endpoint(client):
     assert any(l['name_he'] == 'הפרמייר ליג' for l in body['leagues'])
 
 
+def test_options_includes_religiosity(client):
+    resp = client.get('/api/options')
+    assert resp.status_code == 200
+    for key in ('previous_parties', 'upcoming_parties'):
+        assert all('religiosity' in p for p in resp.get_json()[key])
+
+
 def test_vote_endpoint_sets_cookie_and_rejects_duplicate(client, conn):
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
