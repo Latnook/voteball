@@ -265,6 +265,19 @@ function renderLeanDetail(container, label, previousBreakdown) {
   securityRow.appendChild(securityValue);
   container.appendChild(securityRow);
 
+  const religiosity = weightedAxisAverage(previousBreakdown, 'religiosity');
+  const religiosityRow = document.createElement('div');
+  religiosityRow.className = 'lean-detail-row';
+  const religiosityLabel = document.createElement('span');
+  religiosityLabel.textContent = t('analyticsReligiosityLabel');
+  religiosityRow.appendChild(religiosityLabel);
+  const religiosityValue = document.createElement('span');
+  religiosityValue.textContent = religiosity === null
+    ? t('analyticsNoStatedPosition')
+    : `${religiosity.toFixed(1)} (${religiosity < 0 ? t('analyticsReligiositySeparationist') : t('analyticsReligiosityClerical')})`;
+  religiosityRow.appendChild(religiosityValue);
+  container.appendChild(religiosityRow);
+
   const blocPct = compositionPercentages(previousBreakdown, 'bloc', ['bibi', 'opposition', 'unaligned']);
   const blocRow = document.createElement('div');
   blocRow.className = 'lean-detail-row';
