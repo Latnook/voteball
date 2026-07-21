@@ -157,6 +157,24 @@ with a commit rather than a Terraform apply: crashlooping, degraded/zero-replica
 migration and backup Jobs, **absent** backups (48h without a success — a suspended CronJob emits no
 failure at all), and restart storms.
 
+**⚠️ Every rebuild requires confirming the SNS email subscription again.** `destroy.sh` deletes the
+topic; the next apply recreates it with a **`PendingConfirmation`** subscription, and AWS does not
+deliver to an unconfirmed endpoint. Alerting then silently publishes into the void — invisible,
+because it only matters when something else is already wrong. Verified on the 2026-07-21 rebuild:
+`NumberOfMessagesPublished: 2`, `NumberOfNotificationsDelivered: 0`. Check the inbox after every
+deploy, or verify with:
+
+```bash
+aws sns list-subscriptions-by-topic --topic-arn "$(terraform -chdir=terraform output -raw sns_topic_arn)" \
+  --region <region> --query 'Subscriptions[].[Protocol,SubscriptionArn]' --output text
+# SubscriptionArn == "PendingConfirmation" means no alert will ever arrive.
+```
+
+**A second limitation, stated rather than hidden:** `VoteballBackupMissing` alerts on a backup that
+*stopped*, not one that never started. It compares against `max(kube_job_status_completion_time...)`,
+and on a cluster with no successful backup that series does not exist, so the expression returns
+nothing and cannot fire.
+
 **Deliberately NOT written: RDS connections/storage, ALB 5xx and certificate expiry.** Those are
 CloudWatch metrics and nothing scrapes CloudWatch into Prometheus here, so those rules could never
 fire — worse than no alert, because the coverage would look complete. They need a CloudWatch exporter
