@@ -1,0 +1,44 @@
+# Top-level plugins only -- jenkins-plugin-cli resolves dependencies itself, so this file stays
+# readable and there is exactly one place to justify a plugin's existence.
+#
+# Comments are on their own lines, never trailing a plugin id: jenkins-plugin-cli parses each
+# non-comment line as `artifact-id[:version]`, and a trailing `# why` would be read as part of it.
+#
+# Versions are DELIBERATELY unpinned. This host is rebuilt rarely and always wants the versions
+# matching the Jenkins LTS it boots with; pinning here would mean a second, silently-stale list to
+# maintain alongside the Jenkins version itself. The trade-off is that two builds of the same commit
+# can install different plugin versions -- acceptable for a single-operator CI host, and the reason
+# `jenkins-plugin-cli --list` output belongs in any bug report.
+#
+# Replaces the 94 plugins the setup wizard's "install suggested" left behind. Every entry below is
+# traceable to something the Jenkinsfile or this host actually does.
+
+# --- JCasC itself ---
+# reads casc/jenkins.yaml; without it this whole directory is inert
+configuration-as-code
+# the `jobs:` block in jenkins.yaml is Job DSL
+job-dsl
+
+# --- what the Jenkinsfile uses ---
+# declarative pipeline (pipeline, stages, when, post)
+workflow-aggregator
+# SCM checkout
+git
+# triggers { githubPush() } + the webhook shared-secret config
+github
+# sshagent(credentials: ['voteball-deploy-key']) -- G4, the tag-bump push
+ssh-agent
+# options { timestamps() }
+timestamper
+# not used by the current Jenkinsfile; kept because the documented working set includes it and
+# withCredentials is the first thing any new pipeline step reaches for
+credentials-binding
+
+# Deliberately NOT included:
+#   docker-workflow  -- the Jenkinsfile shells out to the `docker` CLI; the docker.build() DSL is
+#                       unused, so installing it would add a component to patch that nothing calls.
+#   matrix-auth      -- authorization is loggedInUsersCanDoAnything; a single admin needs no matrix.
+#   email-ext/mailer -- no SMTP on this host (G7). Adding them would imply notifications that do not
+#                       exist. See docs/production-readiness.md section 7.
+#   github-branch-source / workflow-multibranch -- this project commits directly to master and uses
+#                       a single Pipeline job, not a multibranch one.

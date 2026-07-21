@@ -10,6 +10,11 @@ variable "cluster_name" {
   default     = "voteball"
 }
 
+variable "github_repo" {
+  description = "GitHub repository as owner/name. The host clones it (public, over HTTPS) at boot to fetch casc/, and JCasC builds both the job's SSH remote and its project URL from it. No default: a fork must supply its own, which is what keeps the repository identity out of the Jenkinsfile and jenkins.yaml."
+  type        = string
+}
+
 variable "admin_cidr" {
   description = "CIDR permitted to SSH (port 22). Your home IP as a /32. Update and re-apply when your ISP reassigns it."
   type        = string

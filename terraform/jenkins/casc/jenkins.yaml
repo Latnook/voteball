@@ -1,0 +1,147 @@
+# Jenkins Configuration as Code -- the whole of this host's configuration, in git.
+#
+# Applied at every Jenkins startup, so this file is the source of truth and the UI is a view of it.
+# Anything changed by clicking in the UI is lost on the next restart; change it here instead.
+#
+# WHY: before 2026-07-21 this configuration existed only on one EBS volume, built by hand through
+# the UI following a 12-step runbook in docs/cicd.md. Losing the host meant redoing all of it, and
+# the deploy key could not be redone at all -- its only copy was in Jenkins' own credential store.
+#
+# NOTHING SECRET IS IN THIS FILE. Every ${PLACEHOLDER} is resolved at boot from the environment,
+# which user_data.sh populates from AWS Secrets Manager (voteball/jenkins) via the instance profile.
+# A missing variable makes JCasC fail loudly at startup rather than silently configuring nothing.
+#
+# Identity (${GITHUB_REPO}, ${AWS_REGION}, ${CLUSTER_NAME}) is injected the same way, from Terraform
+# variables -- the repo's forkability rule applies here as everywhere: fork it, set your own tfvars,
+# and this file is unchanged.
+
+jenkins:
+  systemMessage: "Voteball CI. Configured by JCasC from terraform/jenkins/casc/jenkins.yaml -- UI edits do not survive a restart."
+  numExecutors: 2
+  mode: NORMAL
+  quietPeriod: 5
+
+  # No inbound agents: this is a single-node Jenkins that builds on its own host. -1 disables the
+  # agent listener entirely rather than leaving a port open that nothing connects to.
+  slaveAgentPort: -1
+
+  securityRealm:
+    local:
+      # No self-registration: the only account is the operator's, created below.
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_USER}"
+          # The BCRYPT HASH, not a password -- JCasC accepts a "#jbcrypt:$2a$..." value directly, so
+          # the plaintext admin password never has to exist in Secrets Manager, in git, or here.
+          password: "${JENKINS_ADMIN_HASH}"
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      # The UI is only reachable through an SSH tunnel, but anonymous read would also expose it to
+      # anything that reaches port 8080 -- which GitHub's webhook CIDRs do.
+      allowAnonymousRead: false
+
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+
+  globalNodeProperties:
+    - envVars:
+        env:
+          # The direct equivalent of the retired GitHub Actions repo variables. The Jenkinsfile fails
+          # fast if either is unset rather than building "null.dkr.ecr.null.amazonaws.com".
+          - key: "AWS_REGION"
+            value: "${AWS_REGION}"
+          - key: "CLUSTER_NAME"
+            value: "${CLUSTER_NAME}"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          # The repo deploy key (write access), used by sshagent() for the tag-bump push -- G4.
+          - basicSSHUserPrivateKey:
+              scope: GLOBAL
+              id: "voteball-deploy-key"
+              username: "${GITHUB_DEPLOY_USER}"
+              description: "Deploy key for ${GITHUB_REPO} (managed by JCasC)"
+              privateKeySource:
+                directEntry:
+                  # MUST retain its trailing newline. A key without one cannot be loaded by OpenSSH
+                  # at all, and the resulting error is "Permission denied (publickey)", which reads
+                  # like an authorisation problem and is not -- see docs/cicd.md failure modes.
+                  privateKey: "${GITHUB_DEPLOY_KEY}"
+
+          # Shared secret GitHub signs webhook deliveries with.
+          - string:
+              scope: GLOBAL
+              id: "github-webhook-secret"
+              description: "GitHub webhook shared secret (managed by JCasC)"
+              secret: "${GITHUB_WEBHOOK_SECRET}"
+
+unclassified:
+  location:
+    # Correct as-is: the only human reaches this through `ssh -L 8080:localhost:8080`. It must NOT
+    # be the public address -- with manageHooks below, a public URL would tempt the plugin into
+    # registering hooks pointing somewhere GitHub can reach but that we do not control.
+    url: "http://localhost:8080/"
+    # adminAddress is deliberately omitted: it only appears in outgoing mail, and this host has no
+    # SMTP (G7). Setting it would imply notifications that do not exist.
+
+  gitHubPluginConfig:
+    # Jenkins must NOT auto-manage GitHub hooks: its own URL is localhost, so it would register a
+    # webhook GitHub cannot deliver to. The hook is created by hand, once, against the Elastic IP.
+    manageHooks: false
+
+    # THE COSTLIEST BUG OF THIS MIGRATION LIVES HERE. GitHubPluginConfig has both a legacy singular
+    # `hookSecretConfig` and this plural list, and getHookSecretConfigs() prefers the list WHENEVER
+    # IT IS PRESENT -- so an empty-but-present list beat the working singular value and left zero
+    # secrets configured, rejecting every push with 400 "No valid signature found", signed or not.
+    # This list is populated, which is the safe side of that behaviour, but it is the one setting in
+    # this file that must be verified against a real signed delivery rather than assumed.
+    hookSecretConfigs:
+      - credentialsId: "github-webhook-secret"
+
+jobs:
+  # Job DSL. The job is deliberately thin: everything about HOW to build lives in the Jenkinsfile,
+  # in the repository. This block only says where to find it and when to run it.
+  - script: |
+      pipelineJob('voteball') {
+        description('Voteball CI. Definition lives in the Jenkinsfile; this job is managed by JCasC.')
+
+        properties {
+          githubProjectUrl('https://github.com/${GITHUB_REPO}/')
+        }
+
+        parameters {
+          booleanParam('FORCE_BUILD', false, 'Build even if this commit touches no files under services/')
+        }
+
+        // G5: four images per build on a persistent host fills the disk.
+        logRotator {
+          numToKeep(20)
+        }
+
+        triggers {
+          githubPush()
+        }
+
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  // MUST be the SSH remote. sshagent() only affects SSH remotes -- with an HTTPS
+                  // URL the deploy key is silently ignored and the final push fails after a
+                  // successful build. This is failure mode 1 in docs/cicd.md.
+                  url('git@github.com:${GITHUB_REPO}.git')
+                  credentials('voteball-deploy-key')
+                }
+                branch('*/master')
+              }
+            }
+            scriptPath('Jenkinsfile')
+            lightweight(true)
+          }
+        }
+      }

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# GENERATED HEADER -- Terraform renders this and prepends it to user_data.sh.
+#
+# It exists so user_data.sh itself can stay a plain file() with no templating: templatefile() would
+# try to interpolate every $${...} in the script, and escaping a few hundred bash expansions to pass
+# three values is a bug factory. Only this header is templated, and it contains no bash beyond three
+# assignments.
+#
+# The identity below is the whole reason the Jenkinsfile and casc/jenkins.yaml can stay free of
+# hardcoded account, region or repository names.
+export VOTEBALL_REGION="${region}"
+export VOTEBALL_CLUSTER="${cluster_name}"
+export VOTEBALL_GITHUB_REPO="${github_repo}"

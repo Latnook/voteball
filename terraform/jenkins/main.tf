@@ -87,7 +87,18 @@ resource "aws_instance" "jenkins" {
   key_name               = aws_key_pair.jenkins.key_name
   vpc_security_group_ids = [aws_security_group.jenkins.id]
   iam_instance_profile   = aws_iam_instance_profile.jenkins.name
-  user_data              = file("${path.module}/user_data.sh")
+  # A generated header carrying region/cluster/repo, then the static bootstrap script. Splitting it
+  # keeps user_data.sh free of templating: templatefile() over the whole script would interpolate
+  # every bash ${...} in it, and escaping those to pass three values invites exactly the kind of
+  # silent first-boot failure this script's header warns about.
+  user_data = join("\n", [
+    templatefile("${path.module}/user_data_env.sh.tftpl", {
+      region       = var.region
+      cluster_name = var.cluster_name
+      github_repo  = var.github_repo
+    }),
+    file("${path.module}/user_data.sh"),
+  ])
 
   # IMDSv2 required: without it a server-side request forgery on this host could read the
   # instance profile's credentials, which carry ECR push.
