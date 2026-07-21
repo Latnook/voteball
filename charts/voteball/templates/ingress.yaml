@@ -10,6 +10,12 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: "443"
     alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.certificateArn | quote }}
     alb.ingress.kubernetes.io/healthcheck-path: /
+    {{- if and .Values.ingress.wafAclArn (ne .Values.ingress.wafAclArn "FILLED-BY-SYNC") }}
+    # Rate limiting for /api/vote. The ALB is created by the load balancer controller, so this
+    # annotation is the only way to attach the ACL -- Terraform cannot associate a resource that
+    # does not exist at apply time. ARN written by scripts/sync-values-from-tf.sh.
+    alb.ingress.kubernetes.io/wafv2-acl-arn: {{ .Values.ingress.wafAclArn | quote }}
+    {{- end }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.ingress.host | quote }}
 spec:
   ingressClassName: alb

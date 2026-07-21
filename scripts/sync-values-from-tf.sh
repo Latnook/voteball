@@ -51,6 +51,7 @@ WORKER_ROLE="$(tf_output worker_role_arn)"
 REGISTRY="$(tf_output ecr_registry)"
 APP_DOMAIN_V="$(tf_output app_domain)"
 SNS_TOPIC="$(tf_output sns_topic_arn)"
+WAF_ARN="$(tf_output waf_web_acl_arn)"
 
 # Section-aware rewrite. `roleArn` exists under BOTH `backup:` and `worker:` at the same indent, so a
 # plain anchored sed would assign the same ARN to both. Track the current top-level section instead.
@@ -69,6 +70,7 @@ CHECK_ONLY="$CHECK_ONLY" VALUES="$VALUES" TF_DIR="$TF_DIR" CHECK_SKIP_TAG="$CHEC
 TAG="$TAG" DB_HOST="$DB_HOST" CERT_ARN="$CERT_ARN" S3_BUCKET="$S3_BUCKET" \
 BACKUP_ROLE="$BACKUP_ROLE" WORKER_ROLE="$WORKER_ROLE" \
 REGISTRY="$REGISTRY" APP_DOMAIN_V="$APP_DOMAIN_V" SNS_TOPIC="$SNS_TOPIC" \
+WAF_ARN="$WAF_ARN" \
 python3 <<'PY'
 import os, re, sys
 
@@ -89,6 +91,7 @@ managed.update({
     ("image",   "registry"):       os.environ["REGISTRY"],
     ("ingress", "host"):           os.environ["APP_DOMAIN_V"],
     ("config",  "SNS_TOPIC"):      os.environ["SNS_TOPIC"],
+    ("ingress", "wafAclArn"):      os.environ["WAF_ARN"],
 })
 
 top_re = re.compile(r'^([A-Za-z_][\w-]*):\s*$')

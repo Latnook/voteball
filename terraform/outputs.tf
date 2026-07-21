@@ -23,6 +23,11 @@ output "acm_certificate_arn" {
   value       = aws_acm_certificate.app.arn
 }
 
+output "waf_web_acl_arn" {
+  description = "WAF ACL ARN for the ALB. Attached via the Ingress annotation (the ALB is created by the load balancer controller, not Terraform), so scripts/sync-values-from-tf.sh writes this into values.yaml."
+  value       = aws_wafv2_web_acl.app.arn
+}
+
 output "s3_bucket" {
   description = "Rollups/backups bucket name."
   value       = aws_s3_bucket.rollups.id

@@ -23,6 +23,7 @@ config:
 ingress:
   host: "voteball.latnook.com"
   certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/OLD"
+  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/OLD/OLD"
 
 backup:
   roleArn: "arn:aws:iam::590183895228:role/OLD-backup"
@@ -41,6 +42,7 @@ export SYNC_STUB_worker_role_arn="arn:aws:iam::590183895228:role/NEW-worker"
 export SYNC_STUB_ecr_registry="new.dkr.ecr.example.com"
 export SYNC_STUB_app_domain="new.example.com"
 export SYNC_STUB_sns_topic_arn="arn:aws:sns:NEWTOPIC"
+export SYNC_STUB_waf_web_acl_arn="arn:aws:wafv2:il-central-1:590183895228:regional/webacl/NEWACL/abc"
 
 fail() { echo "FAIL: $1" >&2; exit 1; }
 
@@ -61,6 +63,13 @@ grep -q 'certificateArn: ".*NEW"'        "$FIXTURE" || fail "ingress.certificate
 grep -q 'registry: "new.dkr.ecr.example.com"' "$FIXTURE" || fail "image.registry not updated"
 grep -q 'host: "new.example.com"'       "$FIXTURE" || fail "ingress.host not updated"
 grep -q 'SNS_TOPIC: "arn:aws:sns:NEWTOPIC"' "$FIXTURE" || fail "config.SNS_TOPIC not updated"
+grep -q 'wafAclArn: ".*NEWACL.*"'        "$FIXTURE" || fail "ingress.wafAclArn not updated"
+
+# wafAclArn and certificateArn are both ARNs under `ingress:` -- a naive rewrite that matched on
+# value shape rather than key name would swap them, which fails at deploy time with an unhelpful
+# error from the load balancer controller rather than here.
+grep -q 'certificateArn: "arn:aws:acm:' "$FIXTURE" || fail "certificateArn overwritten with the wrong ARN"
+grep -q 'wafAclArn: "arn:aws:wafv2:'    "$FIXTURE" || fail "wafAclArn overwritten with the wrong ARN"
 
 # --- 3. the two same-named roleArn keys must NOT be cross-assigned ---
 grep -q 'roleArn: "arn:aws:iam::590183895228:role/NEW-backup"' "$FIXTURE" || fail "backup.roleArn wrong"
