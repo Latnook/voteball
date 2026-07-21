@@ -1094,6 +1094,21 @@ UPDATE upcoming_parties SET tags = tags || ARRAY['anti-clerical']
     WHERE name_he = 'המפלגה הכלכלית' AND NOT ('anti-clerical' = ANY(tags));
 -- =============================================================================================
 
+-- Logo revision, 2026-07-21. Unguarded for the same reason as the classification revisions above:
+-- the original league-logo UPDATEs end in `AND logo_url IS NULL`, so editing them in place would
+-- only ever affect a fresh database, never the live one.
+--
+-- La Liga swaps the Wikimedia wordmark SVG for LaLiga's own "LL" monogram PNG. The monogram suits
+-- the small square logo slot better than a wide wordmark, which renders tiny at this size. Checked
+-- against the hotlinking rule in CLAUDE.md before adopting it -- unlike the fbcdn.net crest that
+-- caught us before, this one is an official first-party asset host, returns 200 with a
+-- voteball.latnook.com Referer, sends `access-control-allow-origin: *` and `cache-control: public`,
+-- and actually decodes in a real browser loaded from the app's own origin (959x960 RGBA), not just
+-- under curl. That last check is the one that matters -- the fbcdn crest passed curl and failed
+-- in-browser.
+UPDATE leagues SET logo_url = 'https://assets.laliga.com/assets/logos/LL_RGB_h_color/LL_RGB_h_color.png'
+    WHERE name = 'La Liga';
+
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
 -- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;
