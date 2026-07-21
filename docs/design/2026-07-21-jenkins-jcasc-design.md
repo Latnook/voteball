@@ -133,23 +133,63 @@ The webhook result is the meaningful one. Signed and unsigned returning **differ
 exactly the discriminator `docs/cicd.md` records: when the secret was mis-wired, both failed
 identically.
 
-### What is NOT verified
+### The fresh-boot test, and the security hole it found
 
-**The rebuild path.** Everything above was applied to a host that was *already* configured, with 94
-plugins and a populated `JENKINS_HOME`. A genuinely fresh instance — empty home, no plugins, plugin
-manager installing the trimmed set from scratch — has **not** been booted from this configuration.
-"The server is now rebuildable" is therefore a well-supported expectation, not a demonstrated fact.
+Everything above was verified against a host that was *already* configured. That is not the same as
+verifying a rebuild, so a throwaway instance was launched from this configuration — new AMI, empty
+`JENKINS_HOME`, no plugins. **It found a real hole, and the hole was in reasoning this document had
+argued for at length.**
 
-Consequences, recorded rather than glossed:
+The fresh host accepted **unsigned webhook deliveries with 200**. No signature enforcement at all.
+Anything that could reach port 8080 could trigger builds.
 
-- The running host still carries **95 plugins**, not the 8+dependencies in `plugins.txt`; nothing
-  removes what is already installed. A rebuilt host would get the smaller, untested set.
-- Keep the EBS snapshots (`snap-0bf101529baf8fd23` pre-OS-upgrade, `snap-05745dc9bd1bb669e`
-  pre-JCasC) until a fresh boot is proven.
+Root cause: the hook secret is read from **`github-plugin-configuration.xml`**, not from
+`org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml`. The bootstrap wrote only the latter,
+which loads `manageHooks` correctly — so the file was plainly being read — while
+`getHookSecretConfigs()` returned an **empty list**. Confirmed directly via an `init.groovy.d`
+diagnostic: `manageHooks=false, size=0`.
 
-The test that closes this is cheap — launch a throwaway instance from the same Terraform config,
-let `user_data` run, confirm it configures itself, terminate it. Roughly ten minutes and a few cents.
-It is the obvious next step and was not done only because it belongs in its own session.
+**Why the earlier verification passed anyway, and why that is the lesson.** The already-configured
+host had the correct value sitting in `github-plugin-configuration.xml` from its original UI setup,
+months earlier. Identical XML in the file under test, identical plugin version, identical Jenkins
+version — and the test passed for a reason that existed **nowhere in the configuration being
+shipped**. A verification whose subject has prior state is not a verification of the artifact.
+
+Two further corrections fall out of it:
+
+- The design's argument for the **legacy singular** `hookSecretConfig` was wrong. It is not read on
+  a fresh boot. `docs/cicd.md` failure mode 3 concerns an **empty-but-present** plural list beating
+  the singular fallback — an *empty* list. The fix is to **populate** the plural list, not to avoid
+  it. (The guessed element class, `org.jenkinsci.plugins.github.config.HookSecretConfig`, was right.)
+- The working config specifies **`signatureAlgorithm SHA256`**, matching GitHub's
+  `X-Hub-Signature-256`. A SHA-1-only probe returns 400 against a *correct* config, so an
+  under-specified test can also produce a false failure.
+
+Fixed in `user_data.sh`, which now writes both files, and creates `init.groovy.d` — normally created
+by the setup wizard, which `runSetupWizard=false` skips, so diagnostics and the standard
+locked-out-of-Jenkins recovery path silently did nothing on a fresh host.
+
+### Rebuild verified (2026-07-21)
+
+A second throwaway instance was launched from the corrected bootstrap and touched by no human:
+
+| Check | Result |
+|---|---|
+| `BOOTSTRAP COMPLETE`, Jenkins active | yes |
+| Plugins installed | **70** (trimmed list + dependencies) vs 95 on the wizard-built host |
+| Job `voteball` created, JCasC markers on job and both credentials | yes |
+| `init.groovy.d` present | yes |
+| Signed / unsigned / bad-signature webhook | **200 / 400 / 400** |
+
+The same bootstrap was then re-run on the real host, which now writes both files rather than relying
+on its historical state; enforcement re-confirmed there (200/400).
+
+**"The server is rebuildable" is now a demonstrated fact rather than an expectation.** The EBS
+snapshots (`snap-0bf101529baf8fd23`, `snap-05745dc9bd1bb669e`) can be pruned at will.
+
+One asymmetry remains, harmless but worth knowing: the **running host still carries 95 plugins**,
+because nothing removes what is already installed. A rebuilt host gets 70. The larger set is the
+tested-in-production one; the smaller set is now also tested.
 
 ---
 

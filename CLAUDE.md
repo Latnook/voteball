@@ -205,11 +205,20 @@ is applied at every Jenkins start (plugins, admin user, authorization, global en
 credentials, the `voteball` job), so **UI changes are lost on the next restart** — edit the YAML,
 commit, and re-run the bootstrap on the host. Secrets come from Secrets Manager (`voteball/jenkins`,
 seeded by `./scripts/seed-jenkins-secret.sh`) and are written as one file per value, because the
-deploy key is multi-line and its trailing newline is load-bearing. **Two settings are deliberately
-NOT in the YAML**: `GitHubPluginConfig` is not data-bound on github plugin 1.47.0, so JCasC aborts
-the whole boot on `manageHooks`; `user_data.sh` writes that plugin's XML directly, using the legacy
-**singular** `hookSecretConfig` — do not "modernise" it to the plural form without re-testing a real
-signed delivery (see `docs/cicd.md` failure mode 3). Likewise don't add `crumbIssuer` back.
+deploy key is multi-line and its trailing newline is load-bearing. **The GitHub plugin is configured
+by XML, not JCasC** (`GitHubPluginConfig` is not data-bound on github 1.47.0 — JCasC aborts the whole
+boot on `manageHooks`), and `user_data.sh` writes **two files**, which is not optional:
+
+- **`github-plugin-configuration.xml`** — where the hook secret is actually read from. Uses the
+  **plural, populated** `hookSecretConfigs` list with `signatureAlgorithm SHA256`.
+- `org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml` — where `manageHooks: false` is read.
+
+Writing only the second produces a host that looks configured and **enforces no webhook signature at
+all** (unsigned deliveries accepted with 200). The legacy *singular* `hookSecretConfig` is **not read
+on a fresh boot** — it appeared to work only because an already-configured host had the right value
+in the other file. `docs/cicd.md` failure mode 3 concerns an *empty* plural list; the fix is to
+populate that list, not to avoid it. Test with **SHA-256** — a SHA-1-only probe fails against a
+correct config. Likewise don't add `crumbIssuer` back.
 
 **Terraform state lives in S3** (`<cluster_name>-tfstate-<account_id>`), one bucket, one key per
 stack (`voteball/main.tfstate`, `voteball/jenkins.tfstate`), with versioning and S3-native locking

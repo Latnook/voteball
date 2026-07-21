@@ -173,13 +173,17 @@ host, verified byte-for-byte including the trailing newline that OpenSSH require
 
 Three things remain open, and the first is the one that matters:
 
-- **The rebuild path is unverified.** JCasC has only been applied to a host that was *already*
-  configured. Booting a genuinely empty instance from this config has not been tested, so "the server
-  is rebuildable" is a strong expectation, not a demonstrated fact. Until that test runs, keep the EBS
-  snapshots (`snap-0bf101529baf8fd23`, `snap-05745dc9bd1bb669e`).
-- **The plugin set was not trimmed.** `plugins.txt` names 8 top-level plugins; the running host still
-  carries the 95 the setup wizard installed, because nothing removes what is already there. A rebuilt
-  host would get the smaller set — which is the same untested path as above.
+- ~~**The rebuild path is unverified.**~~ **Verified 2026-07-21** by booting a throwaway instance
+  from this configuration. It found a real security hole first: the fresh host enforced **no webhook
+  signature at all** (unsigned deliveries accepted with 200), because the hook secret is read from
+  `github-plugin-configuration.xml` and the bootstrap wrote only
+  `org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml`. It passed on the already-configured
+  host because that host had the right value from its original UI setup — a test that passed for a
+  reason present nowhere in the shipped config. Fixed, then re-verified on a clean instance
+  (signed/unsigned/bad-signature → 200/400/400) and re-applied to the real host.
+- **The plugin set is trimmed on a rebuild, not in place.** `plugins.txt` yields **70** plugins on a
+  fresh host (8 top-level + dependencies); the running host still carries the 95 the setup wizard
+  installed, because nothing removes what is already there. Both sets are now tested.
 - **Notifications (G7) are still absent**, and **SSM Session Manager** is still deferred.
 
 Until then the compensating practice is explicit: **verification means opening the Jenkins UI or running
