@@ -48,10 +48,32 @@ resource "aws_db_instance" "app" {
   publicly_accessible    = false
   storage_encrypted      = true # inherited from the encrypted snapshot; stated explicitly for clarity
 
+  # Point-in-time recovery. Without this, recovery granularity is "the last nightly pg_dump or the
+  # last teardown snapshot" -- up to a day of votes. With it, RDS can restore to any second in the
+  # window, which is the difference between losing a day and losing nothing.
+  #
+  # Free at this size: AWS charges for backup storage only beyond the allocated storage of the
+  # instance, and 7 days of a db.t4g.micro's changes does not approach 20 GB.
+  #
+  # Both windows deliberately avoid the pg_dump CronJob, which runs at 02:00 UTC
+  # (charts/voteball/values.yaml, backup.schedule "0 2 * * *"). Two backups contending on a
+  # single-AZ db.t4g.micro is avoidable for free -- and the maintenance window matters more than it
+  # looks, since that is when RDS may reboot the instance.
+  backup_retention_period  = 7
+  backup_window            = "01:00-01:30"         # before the CronJob
+  maintenance_window       = "sun:03:30-sun:04:00" # well after it
+  copy_tags_to_snapshot    = true
+  delete_automated_backups = false # keep the PITR history after a destroy, not just the final snapshot
+
   # Demo-DB trade-offs (documented in docs/security.md; a production cutover would flip these):
   #   final snapshot on destroy   -> votes survive a destroy/rebuild cycle (see skip_final_snapshot below)
   #   deletion_protection off      -> stack is torn down between sessions
   #   single-AZ, credentials reused -> cost + parallel-demo simplicity (user chose credential reuse)
+  #
+  # deletion_protection STAYS OFF, against the advice in docs/production-readiness.md section 3. It is
+  # free and correct for a server that stays up, and actively wrong here: this stack is destroyed and
+  # rebuilt between sessions, and deletion protection makes `terraform destroy` fail outright, wedging
+  # scripts/destroy.sh every time. Turn it on only alongside retiring the destroy/rebuild workflow.
   #
   # Every destroy leaves a restore point, so destroy->apply preserves votes and the stack no longer
   # depends on one hand-pinned snapshot surviving. find-latest-snapshot.sh picks the newest one up.
