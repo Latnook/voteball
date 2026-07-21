@@ -78,10 +78,14 @@ step "6/8  Syncing values.yaml from Terraform outputs"
 if ! git diff --quiet -- charts/voteball/values.yaml; then
   echo "values.yaml changed — committing so ArgoCD deploys these values, not the stale ones."
   git add charts/voteball/values.yaml
-  # [skip ci] because step 5 just built and pushed these exact images itself. Without the marker the
-  # Guard stage lets this commit through and Jenkins rebuilds identical source under a new tag, then
-  # pushes its own tag bump -- rolling every pod a second time for no change, on every rebuild.
-  git commit -m "Deploy: sync values.yaml from Terraform outputs [skip ci]"
+  # Deliberately NO [skip ci] here, though it looks like it belongs. This commit touches only
+  # charts/voteball/values.yaml, and the Jenkinsfile already gates every build stage on
+  # `changeset 'services/**'` (G3), so it triggers no rebuild anyway -- the marker would buy
+  # nothing. It would also actively break things: the Guard stage reads HEAD's message alone and
+  # aborts the WHOLE build, while `changeset` spans every commit since the last build. If an app-code
+  # commit and this one land in the same build window, the marker would abort the build that was
+  # supposed to build the app-code commit, and nothing would retry it.
+  git commit -m "Deploy: sync values.yaml from Terraform outputs"
 
   # Rebase onto origin FIRST. CI pushes its own "ci: image tag <sha> [skip ci]" commit to master
   # after every app-code build, so the local branch is routinely behind and a plain push is rejected
