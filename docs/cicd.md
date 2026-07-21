@@ -152,8 +152,39 @@ plus `buildDiscarder` (last 20 builds) keeps the 30 GB volume from filling with 
 
 ## First-time setup runbook
 
-Done once, through the Jenkins UI. (Converting this to **JCasC** — Jenkins Configuration as Code — is
-deliberately deferred; see "Deferred" below.)
+> ### ⚠️ Superseded 2026-07-21 — JCasC now does steps 3–11 automatically
+>
+> The host configures itself at boot from **`terraform/jenkins/casc/jenkins.yaml`**, reading its
+> credentials from AWS Secrets Manager. Plugins, the admin user, authorization, global environment
+> variables, both credentials, the GitHub plugin config and the `voteball` job are all applied on
+> every Jenkins start.
+>
+> **Do not configure those through the UI. Changes made by clicking are lost on the next restart.**
+>
+> The current procedure is:
+>
+> 1. **`./scripts/seed-jenkins-secret.sh`** — once per account, before the host first boots. Prints
+>    a deploy public key to add to GitHub (with write access) and the webhook secret.
+> 2. **`terraform apply -var-file=jenkins.tfvars`** — needs the new required `github_repo` variable.
+> 3. **Add the GitHub webhook** — step 12 below, still manual and still the only step that must be,
+>    because `manageHooks` is off (this Jenkins' own URL is `localhost`, so it cannot register a
+>    reachable hook itself).
+>
+> To change configuration afterwards: edit `casc/jenkins.yaml`, commit, then re-run the bootstrap on
+> the host (`sudo VOTEBALL_GITHUB_REPO=<owner/repo> bash /var/lib/cloud/instance/user-data.txt`) —
+> it re-fetches from `master` and restarts. A `terraform apply` will *not* push it, because
+> `user_data` is in `ignore_changes` so that applies never rebuild the host.
+>
+> **Two settings are NOT in `jenkins.yaml`, on purpose**, because `GitHubPluginConfig` is not
+> data-bound on github plugin 1.47.0 and JCasC aborts the entire boot with
+> `UnknownAttributesException` when asked to set them. `user_data.sh` writes that plugin's XML
+> directly, using the **legacy singular `hookSecretConfig`** — see failure mode 3 below, which this
+> sidesteps rather than merely avoids.
+>
+> Steps 3–11 are kept below as the record of what the configuration *is*, and as the fallback if
+> JCasC is ever removed.
+
+Originally done once, through the Jenkins UI.
 
 **1. Build the host.**
 
@@ -374,10 +405,14 @@ force-pushes.
 
 ## Deferred, on purpose
 
-- **JCasC (Jenkins Configuration as Code).** Jenkins is configured through its UI once and recorded as
-  the runbook above. A later pass converts that into `jenkins.yaml` + `plugins.txt` so the host
-  self-configures on boot. Banking a green build first was deliberate — the config file is much easier to
-  write having done the steps by hand.
+- ~~**JCasC (Jenkins Configuration as Code).**~~ **Done 2026-07-21** —
+  `terraform/jenkins/casc/{jenkins.yaml,plugins.txt}`. Banking a green build first turned out to be
+  the right order for a reason beyond convenience: the working configuration was the *specification*,
+  and two settings only revealed themselves as unsettable by JCasC (`crumbIssuer.excludeClientIP…`,
+  `gitHubPluginConfig.manageHooks`) by aborting a boot that had a known-good state to compare against.
+  **One verification gap remains: the rebuild path has only been exercised against a host that was
+  already configured.** A genuinely fresh instance — empty `JENKINS_HOME`, no plugins — has not been
+  booted from this config.
 - **SSM Session Manager** as the UI access path, which would let port 22 close entirely.
 - **Build-failure notifications (G7).** Jenkins sends nothing without SMTP, and provisioning mail
   credentials on the build host is a surface this project declined to add. The compensating practice:

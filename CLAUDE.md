@@ -200,6 +200,17 @@ false` preserves the volume but the replacement instance does not attach it. Con
 2026-07-21. Fix belongs with the JCasC pass (`docs/production-readiness.md` §7); pinning the AMI is
 the stopgap.
 
+**The Jenkins host is configured by JCasC, not by clicking.** `terraform/jenkins/casc/jenkins.yaml`
+is applied at every Jenkins start (plugins, admin user, authorization, global env vars, both
+credentials, the `voteball` job), so **UI changes are lost on the next restart** — edit the YAML,
+commit, and re-run the bootstrap on the host. Secrets come from Secrets Manager (`voteball/jenkins`,
+seeded by `./scripts/seed-jenkins-secret.sh`) and are written as one file per value, because the
+deploy key is multi-line and its trailing newline is load-bearing. **Two settings are deliberately
+NOT in the YAML**: `GitHubPluginConfig` is not data-bound on github plugin 1.47.0, so JCasC aborts
+the whole boot on `manageHooks`; `user_data.sh` writes that plugin's XML directly, using the legacy
+**singular** `hookSecretConfig` — do not "modernise" it to the plural form without re-testing a real
+signed delivery (see `docs/cicd.md` failure mode 3). Likewise don't add `crumbIssuer` back.
+
 **Terraform state lives in S3** (`<cluster_name>-tfstate-<account_id>`), one bucket, one key per
 stack (`voteball/main.tfstate`, `voteball/jenkins.tfstate`), with versioning and S3-native locking
 (`use_lockfile` — *not* a DynamoDB table; that argument is deprecated, and `required_version` is

@@ -165,6 +165,23 @@ a rebuildable server needs no backup. Then either SMTP/SNS notifications on `pos
 scheduled check that the ArgoCD Application's deployed tag matches `master`. **SSM Session Manager**
 access, replacing the SSH tunnel and closing port 22, is deferred alongside it.
 
+**Status 2026-07-21 — JCasC done, and the AMI foot-gun above is disarmed.** Configuration now lives in
+`terraform/jenkins/casc/jenkins.yaml`, applied at every start; credentials come from Secrets Manager
+(`voteball/jenkins`) via a single-ARN, read-only IAM grant. The deploy key — whose only copy was inside
+Jenkins' own credential store, recoverable from nowhere — was extracted and is now stored outside the
+host, verified byte-for-byte including the trailing newline that OpenSSH requires.
+
+Three things remain open, and the first is the one that matters:
+
+- **The rebuild path is unverified.** JCasC has only been applied to a host that was *already*
+  configured. Booting a genuinely empty instance from this config has not been tested, so "the server
+  is rebuildable" is a strong expectation, not a demonstrated fact. Until that test runs, keep the EBS
+  snapshots (`snap-0bf101529baf8fd23`, `snap-05745dc9bd1bb669e`).
+- **The plugin set was not trimmed.** `plugins.txt` names 8 top-level plugins; the running host still
+  carries the 95 the setup wizard installed, because nothing removes what is already there. A rebuilt
+  host would get the smaller set — which is the same untested path as above.
+- **Notifications (G7) are still absent**, and **SSM Session Manager** is still deferred.
+
 Until then the compensating practice is explicit: **verification means opening the Jenkins UI or running
 `kubectl get application voteball -n argocd`** — never inferring success from the live site still working.
 
