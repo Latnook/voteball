@@ -342,9 +342,19 @@ function renderLeanTab() {
   const detail = document.createElement('div');
   detail.className = 'card';
 
-  async function selectClub(row, badge) {
-    strip.querySelectorAll('.lean-badge').forEach(b => b.setAttribute('aria-pressed', 'false'));
-    if (badge) badge.setAttribute('aria-pressed', 'true');
+  // One shared tooltip rather than one per dot -- only ever one is visible.
+  const tip = document.createElement('span');
+  tip.className = 'lean-tip';
+  tip.hidden = true;
+  strip.appendChild(tip);
+
+  const picker = document.createElement('select');
+  picker.className = 'lean-picker';
+
+  async function selectClub(row, dot) {
+    strip.querySelectorAll('.lean-dot').forEach(d => d.setAttribute('aria-pressed', 'false'));
+    if (dot) dot.setAttribute('aria-pressed', 'true');
+    picker.value = row ? String(row.club.id) : '';
     if (row) {
       renderLeanDetail(detail, localizedName(row.club), row.previous);
       return;
@@ -357,16 +367,74 @@ function renderLeanTab() {
     }
   }
 
-  rows.forEach(row => {
-    const badge = document.createElement('button');
-    badge.type = 'button';
-    badge.className = 'lean-badge';
-    badge.setAttribute('aria-pressed', 'false');
-    badge.style.left = `${((row.economic + 3) / 6) * 100}%`;
-    badge.textContent = localizedName(row.club);
-    badge.addEventListener('click', () => selectClub(row, badge));
-    strip.appendChild(badge);
+  // Dots sitting on near-identical economic averages would overlap exactly, so spread them
+  // across stacked lanes: walk left to right and drop each dot in the first lane whose previous
+  // dot is far enough away, else the lane whose last dot is furthest left.
+  const LANES = 3;
+  const MIN_GAP_PCT = 7;
+  const laneLastX = new Array(LANES).fill(-Infinity);
+  const dotByClubId = new Map();
+
+  rows.slice().sort((a, b) => a.economic - b.economic).forEach(row => {
+    const x = ((row.economic + 3) / 6) * 100;
+    let lane = 0;
+    let fallback = 0;
+    for (let i = 0; i < LANES; i++) {
+      if (x - laneLastX[i] >= MIN_GAP_PCT) { lane = i; break; }
+      if (laneLastX[i] < laneLastX[fallback]) fallback = i;
+      if (i === LANES - 1) lane = fallback;
+    }
+    laneLastX[lane] = x;
+
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'lean-dot';
+    dot.setAttribute('aria-pressed', 'false');
+    dot.setAttribute('aria-label', localizedName(row.club));
+    dot.style.left = `${x}%`;
+    dot.style.top = `${0.55 + lane * 0.95}rem`;
+
+    // Hover for pointers, focus for keyboards -- the dropdown below is the touch-friendly path,
+    // since a tooltip that only appears on hover does not exist on a phone.
+    const showTip = () => {
+      tip.textContent = localizedName(row.club);
+      tip.style.left = `${Math.min(Math.max(x, 8), 92)}%`;
+      tip.hidden = false;
+    };
+    const hideTip = () => { tip.hidden = true; };
+    dot.addEventListener('mouseenter', showTip);
+    dot.addEventListener('mouseleave', hideTip);
+    dot.addEventListener('focus', showTip);
+    dot.addEventListener('blur', hideTip);
+    dot.addEventListener('click', () => { showTip(); selectClub(row, dot); });
+
+    dotByClubId.set(row.club.id, dot);
+    strip.appendChild(dot);
   });
+
+  const nationalOpt = document.createElement('option');
+  nationalOpt.value = '';
+  nationalOpt.textContent = t('analyticsNational');
+  picker.appendChild(nationalOpt);
+  rows.slice()
+    .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)))
+    .forEach(row => {
+      const opt = document.createElement('option');
+      opt.value = String(row.club.id);
+      opt.textContent = localizedName(row.club);
+      picker.appendChild(opt);
+    });
+  picker.addEventListener('change', () => {
+    const row = rows.find(r => String(r.club.id) === picker.value);
+    selectClub(row || null, row ? dotByClubId.get(row.club.id) : null);
+  });
+
+  const pickerRow = document.createElement('label');
+  pickerRow.className = 'lean-picker-row';
+  const pickerLabel = document.createElement('span');
+  pickerLabel.textContent = t('analyticsPickClub');
+  pickerRow.appendChild(pickerLabel);
+  pickerRow.appendChild(picker);
 
   const axisLabels = document.createElement('div');
   axisLabels.className = 'lean-axis-labels';
@@ -379,6 +447,7 @@ function renderLeanTab() {
 
   tab.appendChild(strip);
   tab.appendChild(axisLabels);
+  tab.appendChild(pickerRow);
   tab.appendChild(detail);
 
   selectClub(null, null);
