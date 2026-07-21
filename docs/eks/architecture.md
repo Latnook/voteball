@@ -12,6 +12,7 @@ flowchart LR
       acm[ACM cert]
 
       subgraph PUB["Public subnets (2 AZs)"]
+        waf[[AWS WAF<br/>rate-limit /api/vote]]
         alb[ALB<br/>HTTPS 443 · TLS via ACM]
         nat[NAT GW]
       end
@@ -22,6 +23,7 @@ flowchart LR
           be[Deployment: backend<br/>Flask/gunicorn :5000 ·x2·]
           wk[Deployment: worker<br/>rollup poller ·x1·]
           cron[[CronJob: backup<br/>nightly pg_dump]]
+          mig[[Job: migrate<br/>schema, once per release]]
           cfg[(ConfigMap<br/>app-config)]
           sec[(Secret app-secret<br/>via ExternalSecret)]
           sa["ServiceAccounts<br/>worker+backup = IRSA<br/>frontend+backend = none"]
@@ -35,12 +37,15 @@ flowchart LR
 
       sm[Secrets Manager<br/>voteball/app-secret]
       s3[(S3 rollups bucket<br/>snapshots/ + backups/)]
-      sns[SNS<br/>milestone alerts]
+      sns[SNS<br/>milestone + operational alerts]
       ecr[ECR<br/>4 image repos]
       cw[CloudWatch<br/>logs + metrics]
+      tfstate[(S3 tfstate bucket<br/>versioned · locked · owned by no stack)]
     end
 
-    jenkins["Jenkins on EC2 (own VPC/stack)<br/>instance profile → build/Trivy/ECR"] --> ecr
+    waf --> alb
+    addons -. Alertmanager (IRSA) .-> sns
+    jenkins["Jenkins on EC2 (own VPC/stack)<br/>JCasC-configured · instance profile → build/Trivy/ECR"] --> ecr
     jenkins -. tag bump commit .-> argocdsync[ArgoCD watches repo] -. syncs .-> NS
 
     user -->|HTTPS| dns --> alb
@@ -58,14 +63,16 @@ flowchart LR
 ```
 
 ## Zones & exposure
-- **Internet-facing:** only the ALB (public subnets) → frontend. HTTP is redirected to HTTPS.
+- **Internet-facing:** only the ALB (public subnets) → frontend, with **AWS WAF** attached in front of
+  it (rate-limits `/api/vote`; attached by Ingress annotation, since the ALB is created by the load
+  balancer controller and does not exist when Terraform runs). HTTP is redirected to HTTPS.
 - **Private:** all pods + RDS are in private/DB subnets. Backend/worker/DB have no public entry;
   NetworkPolicies further restrict pod-to-pod (backend reachable only from frontend).
 - **Egress:** pods reach AWS APIs (SNS/S3/Secrets Manager) and pull nothing untrusted; RDS is reached
   directly in-VPC.
 
 ## What builds what
-- **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS, ECR, ACM, S3, SNS, Secrets
+- **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS (7-day PITR), ECR, ACM, WAF, S3, SNS, Secrets
   Manager (container only), IRSA roles, and every platform add-on.
 - **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box.
 - **Jenkins (`terraform/jenkins/`):** builds, scans (Trivy) and pushes the four images to ECR, then

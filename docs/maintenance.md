@@ -47,6 +47,10 @@ so these need bumping *with* the EKS upgrade, not after it.
 
 **Check with:** `helm search repo <chart> --versions | head`.
 
+**Terraform floor** (`terraform/versions.tf` and `terraform/jenkins/versions.tf`):
+`required_version >= 1.11.0`, because the S3 backend uses native `use_lockfile` locking rather than the
+deprecated `dynamodb_table` argument. Downgrading below 1.11 breaks `init` in both stacks.
+
 **Provider pins** (`terraform/versions.tf`): `aws ~> 5.0` is capped by `terraform-aws-modules/eks`
 v20, which requires `< 6.0`. Moving to AWS provider v6 means upgrading that module first. `helm ~> 2.17`
 is deliberate — v3 changed the nested `kubernetes {}` block syntax used in `providers-k8s.tf`.
@@ -96,18 +100,33 @@ runners, **this is a server you own**, so it ages like one. Nothing here is urge
   banner. Bump it with `sudo dnf update jenkins && sudo systemctl restart jenkins` over the SSH tunnel.
   There is no automation for this, and no alert — the host has no public UI, so nobody sees the banner
   unless they open the tunnel. Fold it into the quarterly pass.
-- **Jenkins plugins.** Five are installed (Git, Pipeline, GitHub, Credentials Binding, SSH Agent); update
-  them from *Manage Jenkins → Plugins → Updates*. Plugin updates are the more common source of
-  advisories, and also of behaviour changes — the webhook-secret bug documented in `docs/cicd.md` was a
-  quirk of github plugin **1.47.0** specifically, so read the changelog before and re-test the webhook
-  after (a push should produce a delivery with HTTP 200, not 400).
+- **Jenkins plugins.** Since the JCasC pass the set is declared in `terraform/jenkins/casc/plugins.txt`
+  — 8 top-level entries, dependencies resolved automatically (70 on a freshly built host, against the 94
+  the setup wizard used to leave behind). **Versions are deliberately unpinned**, so a rebuilt host takes
+  whatever is current; that is the trade for not maintaining a second list that silently goes stale
+  beside the Jenkins version. It also means two builds of the same commit can install different plugin
+  versions, which is why `jenkins-plugin-cli --list` output belongs in any bug report.
+
+  Plugin updates are the most common source of advisories *and* of behaviour changes: the webhook-secret
+  bug in `docs/cicd.md` is a quirk of github plugin **1.47.0** specifically. After any plugin update,
+  **re-test the webhook with a SHA-256 signature** — signed should give `200`, unsigned `400`. A SHA-1
+  probe fails against a correct config, so an under-specified test can also mislead you.
+
+- **⚠️ Do not `terraform apply` the Jenkins stack without reading the plan.** `data.aws_ssm_parameter`
+  resolves to the *newest* Amazon Linux image, and `ami` forces replacement — so once Amazon ships a new
+  image the stack plans a destroy-and-rebuild of the CI host. `lifecycle.ignore_changes = [ami]` now
+  prevents that, and **patching happens in place** (`sudo dnf update --releasever=latest` + reboot); an
+  instance's AMI id is fixed at launch, so patching never settles that diff on its own. Moving to a new
+  image should be a deliberate `-replace`, which is safe now that JCasC can rebuild the configuration.
 - **`aquasec/trivy:0.58.1` is pinned in the `Jenkinsfile`.** The vulnerability *database* refreshes on
   every run, so scanning stays current, but the scanner *binary* ages and stops learning new detection
   formats. Pinning is deliberate — an unpinned scanner can turn a green pipeline red overnight with no
   change from you — but a pin is a promise to revisit it. Bump the tag, run one build with `FORCE_BUILD`,
   and confirm the app images still scan clean before relying on it.
-- **The host's OS.** Amazon Linux 2023 does not patch itself. `sudo dnf update` when you are on the box
-  anyway; Docker and Java updates want a `systemctl restart jenkins` afterwards.
+- **The host's OS.** Amazon Linux 2023 does not patch itself. `sudo dnf update --releasever=latest` when
+  you are on the box anyway; Docker and Java updates want a `systemctl restart jenkins` afterwards, and a
+  kernel update wants a reboot. Snapshot the root volume first if you want a way back — cheap insurance
+  on a host whose configuration used to exist nowhere else.
 - **Cheapest maintenance posture: stop the instance.** ~$37/month running, ~$6/month stopped, and all
   state persists on the EBS volume (see `docs/cicd.md`). Webhooks are discarded while it is stopped.
 - **`buildDiscarder` keeps the last 20 builds** and `docker image prune -f` runs after every build, so the

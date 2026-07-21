@@ -63,7 +63,9 @@ statement about reviewing design detail, not about capability. So:
 ## Architecture
 
 Three containers in the `devops-app` namespace on EKS, provisioned by the `terraform/` stack and
-delivered by the `charts/voteball` Helm chart (synced by ArgoCD):
+delivered by the `charts/voteball` Helm chart (synced by ArgoCD). Alongside the three Deployments the
+chart also ships a **schema-migration Job** (`migrate-job.yaml`) and the **alert rules**
+(`prometheusrule.yaml`):
 
 - **frontend** — nginx serving plain HTML/CSS/vanilla JS (no build step), reverse-proxying `/api/*` to
   the backend.
@@ -374,6 +376,13 @@ no obvious symptom beyond "the page is broken" (any script that calls a function
 was supposed to define throws and silently kills the rest of that script's execution) — this
 exact gap shipped once (i18n.js, fixed in commit `d02e255`) before being caught.
 
+**`services/frontend/logos/` is the exception: it is copied as a whole directory**, so adding a club
+crest is a data change, not a Dockerfile edit. Put crests there for clubs with no Wikimedia artwork and
+point `seed.sql`'s `logo_url` at `/logos/<file>.png`. **Do not hotlink social-media CDNs** — those URLs
+are signed and expire, the CDN may refuse hotlinks, and (the one that actually bit, on F.C. Kiryat Yam)
+tracker blockers drop `*.fbcdn.net` in the browser, so the crest is invisible to many visitors while
+`curl` fetches it happily. That class of bug is undetectable server-side.
+
 ### Helm chart (`charts/voteball/`)
 
 ```bash
@@ -381,9 +390,25 @@ helm lint charts/voteball
 helm template voteball charts/voteball --namespace devops-app   # renders without a live cluster
 ```
 
+**The migration Job is a `post-install,pre-upgrade` hook, and that split is deliberate.** As
+`pre-install` it cannot work at all: pre-install hooks run before every normal chart resource, so the
+ServiceAccount, ConfigMap and ExternalSecret it needs do not exist yet, and it fails with
+`serviceaccount "backend" not found` after burning `activeDeadlineSeconds`. A fresh install has nothing
+to order (the schema is built from nothing and `init_db` is idempotent); an upgrade does, and by then
+every dependency exists. Its pod is labelled **`app: migrate`, never `app: backend`** — the backend
+Service selects that label and would route live HTTP to a one-shot script — and `migrate` is listed in
+the `allow-app-egress` NetworkPolicy so it can still reach RDS through the default-deny.
+
+**Alert rules must carry `release: kube-prometheus-stack`.** Without that label the PrometheusRule is
+created, looks correct in `kubectl get prometheusrules`, and is silently never evaluated. Only write
+rules against metrics this cluster actually exposes (kube-state-metrics): RDS, ALB and ACM figures are
+CloudWatch-only and nothing scrapes them into Prometheus, so such rules could never fire — worse than no
+rule, because the coverage looks complete.
+
 ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml`), so **changes reach the
 cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
-note ArgoCD's `selfHeal` will fight you.
+note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` now fails with
+`conflict with "argocd-controller"` on server-side-apply field ownership. Upgrades go through git.
 
 ## Key constraints
 

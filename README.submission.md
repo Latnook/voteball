@@ -10,14 +10,21 @@ the full security design see [`docs/security.md`](docs/security.md).)
 - **In Kubernetes** (`devops-app` namespace, chart `charts/voteball`): 3 Deployments — **frontend**
   (nginx, static site + `/api` proxy), **backend** (Flask/gunicorn API), **worker** (batch rollup poller)
   — plus their Services, an **Ingress→ALB**, ConfigMap, an ESO **ExternalSecret**, 4 ServiceAccounts,
-  NetworkPolicies, HPA, PDBs, and a nightly **backup CronJob**.
+  NetworkPolicies, HPA, PDBs, a nightly **backup CronJob**, a **pre-upgrade schema-migration Job** (so
+  schema work runs once per release rather than every replica racing on startup), and a
+  **PrometheusRule** carrying the operational alerts.
 - **Outside Kubernetes (AWS, via `terraform/`):** the EKS cluster + Spot node group, a dedicated VPC
-  (public/private/DB subnets, NAT), **RDS** Postgres, **ECR**, **ACM** cert, **S3**, **SNS**, **Secrets
-  Manager**, and the platform add-ons (AWS Load Balancer Controller, External Secrets Operator, Cluster
+  (public/private/DB subnets, NAT), **RDS** Postgres (7-day PITR), **ECR**, **ACM** cert, **AWS WAF** in
+  front of the ALB, **S3**, **SNS**, **Secrets Manager**, and the platform add-ons (AWS Load Balancer Controller, External Secrets Operator, Cluster
   Autoscaler, Node Termination Handler, CloudWatch Container Insights, metrics-server, external-dns,
   ArgoCD, kube-prometheus-stack).
 - **Terraform vs Helm boundary:** Terraform builds the AWS infra + cluster + platform add-ons; the Helm
   chart is the app, delivered by **ArgoCD** (GitOps) from this repo's `master`. See `docs/deploy.md`.
+- **Terraform state lives in S3** (versioned, encrypted, S3-native locking), one bucket with a separate
+  key per stack. The bucket belongs to no stack and is never destroyed.
+- **CI host config is code too:** the Jenkins server configures itself at boot from
+  `terraform/jenkins/casc/` (JCasC), with its credentials read from Secrets Manager. Verified by booting
+  a throwaway instance from that config and checking it came up fully configured.
 
 Architecture diagram: [`docs/eks/architecture.md`](docs/eks/architecture.md).
 
@@ -130,17 +137,22 @@ deploy restores the votes. Each of those steps was added after a real teardown f
   only `worker` and `backup` carry an AWS role (scoped to one SNS topic + one S3 prefix each);
   backend/frontend carry **none**.
 - **Secrets:** in AWS Secrets Manager, synced by ESO; never in git or Terraform state; the Jenkins build
-  host uses an IAM **instance profile** (no stored keys anywhere) and holds no cluster access.
-  Grafana/ArgoCD passwords auto-generated.
+  host uses an IAM **instance profile** (no stored keys anywhere), holds no cluster access, and reads
+  exactly one secret ARN (its own credentials, for JCasC). Grafana/ArgoCD passwords auto-generated.
 - **Network:** only frontend is internet-facing; default-deny NetworkPolicies; RDS private, node-SG-only,
   `sslmode=require`, encrypted.
-- **Ingress:** ALB + ACM HTTPS, HTTP→HTTPS redirect.
+- **Ingress:** ALB + ACM HTTPS, HTTP→HTTPS redirect, **AWS WAF** rate-limiting `/api/vote` to 100
+  requests / 5 min per address (verified live: a 300-request burst returned `403` while the rest of the
+  site stayed `200` from the same address).
+- **Alerting:** Alertmanager → SNS via IRSA (`sns:Publish` on one topic, no SMTP credentials on the
+  cluster); seven rules covering crashloops, degraded Deployments, and failed or *absent* backups.
 - **Containers:** non-root, no-priv-esc, read-only rootfs, all capabilities dropped.
 - **Images:** git-SHA tags (never `latest`), ECR scan-on-push + Trivy in CI (app images 0 CRITICAL/HIGH).
 
 ## Trade-offs & compromises
 
 Documented in full in [`docs/security.md`](docs/security.md#deliberate-trade-offs-demo-vs-production) —
-notably: reused (not rotated) credentials, a single-AZ RDS without deletion protection, a public
+notably: reused (not rotated) credentials, a single-AZ RDS (now with 7-day point-in-time recovery;
+deletion protection stays off on purpose because it would break the destroy/rebuild workflow), a public
 (IAM-authed) API endpoint, a single NAT gateway, Spot nodes without On-Demand fallback, and report-only
 Trivy on the third-party backup image. Each is a deliberate demo decision, not an oversight.

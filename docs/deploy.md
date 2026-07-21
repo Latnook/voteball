@@ -40,8 +40,17 @@ and `notification_email`. Everything else already has a sensible default.
 During the deploy you'll also be asked for an admin username and password — those go straight into
 AWS's secret vault and are never written to a file.
 
-Keep a backup copy of `voteball.tfvars` and, after your first run, `terraform/terraform.tfstate`
-(a copy in a password manager is fine). They aren't in git, and losing them means cleaning up AWS by hand.
+Keep a backup copy of `voteball.tfvars` (a copy in a password manager is fine) — it isn't in git.
+
+**You no longer need to back up `terraform.tfstate`.** Since 2026-07-21 Terraform's record of what it
+built lives in an S3 bucket instead of on this laptop, with every past version kept and two runs
+prevented from colliding. `deploy.sh` creates that bucket on first run and writes the small
+`terraform/backend.hcl` file that points at it. On a new machine, run
+`./scripts/bootstrap-tf-backend.sh` once — it is safe to re-run and recreates nothing that exists.
+
+> **Never delete that bucket** (`<cluster_name>-tfstate-<account_id>`). It belongs to no stack, and
+> `destroy.sh` deliberately never touches it — deleting it would destroy the record of what your
+> AWS account contains, leaving resources running that Terraform can no longer see.
 
 ---
 
@@ -57,14 +66,16 @@ It runs the whole sequence and **stops to ask you to confirm** before Terraform 
 resources. The steps it performs:
 
 1. Find the newest database snapshot to restore from.
-2. Build the AWS infrastructure (**asks you to type `yes`**).
+2. Create the Terraform state bucket if it does not exist, then build the AWS infrastructure
+   (**asks you to type `yes`**). This now also creates the WAF that rate-limits `/api/vote`.
 3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git).
 4. Point `kubectl` at the new cluster.
 5. Build the four container images and upload them.
 6. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
-   certificate, the bucket, and the IAM roles all change on every rebuild, so **never edit these by
-   hand**.
-7. Install the app and wait for it to come up.
+   certificate, the WAF, the bucket, and the IAM roles all change on every rebuild, so **never edit
+   these ten fields by hand**.
+7. Install the app and wait for it to come up. A short-lived migration Job applies the database
+   schema **once** before the app pods start, rather than every replica racing to do it.
 8. Hand ongoing control to ArgoCD.
 
 If step 6 changed `values.yaml`, commit it — ArgoCD deploys from `master`:
@@ -73,8 +84,22 @@ If step 6 changed `values.yaml`, commit it — ArgoCD deploys from `master`:
 git add charts/voteball/values.yaml && git commit -m "Deploy: sync values" && git push
 ```
 
-**Confirm the alert email:** check your inbox for an AWS confirmation link and click it, or the
-milestone-alert emails won't arrive.
+**⚠️ Confirm the alert email — every single rebuild.** Check your inbox for an AWS confirmation link
+and click it. Teardown deletes the notification topic, so each deploy recreates the subscription in a
+*pending* state, and AWS will not deliver to an unconfirmed address.
+
+This now matters far more than it used to: as well as milestone emails, this address receives the
+**operational alerts** (crashlooping pods, failed migrations, missing backups). An unconfirmed
+subscription means alerts are published successfully and delivered to nobody — a failure that only
+shows up when something else is already wrong. Verify with:
+
+```bash
+aws sns list-subscriptions-by-topic \
+  --topic-arn "$(terraform -chdir=terraform output -raw sns_topic_arn)" \
+  --region <your region> --query 'Subscriptions[].[Protocol,SubscriptionArn]' --output text
+```
+
+If it prints `PendingConfirmation`, no alert will ever reach you.
 
 Give it a few minutes, then open **https://&lt;your app_domain&gt;**.
 
@@ -111,6 +136,14 @@ infrastructure. Order matters:
 
 A final database snapshot is taken automatically, so the next `./scripts/deploy.sh` restores your
 votes. (This changed on 2026-07-20 — teardown used to discard them.)
+
+**Three things `destroy.sh` deliberately does NOT delete**, and none should be added to it:
+
+| Kept | Why |
+|---|---|
+| The Terraform **state bucket** | It holds the record of what is being deleted. Removing it mid-teardown would orphan anything left behind. |
+| The **Jenkins stack** (`terraform/jenkins/`) | A CI server owned by the stack it builds for would lose its config and history on every rebuild. Stop the instance to save money; don't destroy it. |
+| **Database snapshots** | They are the restore point for the next deploy. Prune old ones by hand, keeping the newest. |
 
 ---
 

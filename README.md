@@ -60,11 +60,15 @@ Three containers, plus managed AWS services:
 - **worker** — recomputes results rollups on a loop and sends **SNS** milestone alerts as totals cross
   thresholds; snapshots results to **S3**.
 
-It runs on **EKS** in a dedicated VPC: an **ALB Ingress** (HTTPS via **ACM**) fronts the app; secrets
-come from **Secrets Manager** via External Secrets Operator; images live in **ECR**; delivery is **GitOps**
-(ArgoCD) fed by a **Jenkins** pipeline on its own EC2 host (build → Trivy scan → ECR → tag bump →
-auto-sync); monitoring is
-Prometheus/Grafana + CloudWatch.
+It runs on **EKS** in a dedicated VPC: an **ALB Ingress** (HTTPS via **ACM**, with **AWS WAF**
+rate-limiting the vote endpoint) fronts the app; secrets come from **Secrets Manager** via External
+Secrets Operator; images live in **ECR**; delivery is **GitOps** (ArgoCD) fed by a **Jenkins** pipeline
+on its own EC2 host (build → Trivy scan → ECR → tag bump → auto-sync); monitoring is Prometheus/Grafana
++ CloudWatch, with Alertmanager paging to **SNS**.
+
+Terraform's state lives in **S3** (versioned, encrypted, locked), and the Jenkins host configures itself
+at boot from **JCasC** in this repo — so both the infrastructure and the thing that builds it are
+described by files you can review, not by clicks someone once made.
 
 ## Quickstart
 
@@ -104,17 +108,29 @@ ArgoCD. Then confirm the SNS subscription email AWS sends you, and open `https:/
 ### Notes for forkers
 
 - **Never hand-edit the `FILLED-BY-SYNC` values in `charts/voteball/values.yaml`.** The database
-  endpoint, certificate ARN, registry, bucket and IAM roles are all regenerated whenever the stack is
-  rebuilt; `./scripts/sync-values-from-tf.sh` writes them, and `--check` fails if they drift.
+  endpoint, certificate ARN, WAF ACL ARN, registry, bucket and IAM roles — ten fields — are all
+  regenerated whenever the stack is rebuilt; `./scripts/sync-values-from-tf.sh` writes them, and
+  `--check` fails if they drift.
+- **Terraform state is in S3, not on your laptop.** `./scripts/bootstrap-tf-backend.sh` creates the
+  bucket and writes the gitignored `backend.hcl` that points at it, so `terraform init` needs
+  `-backend-config=backend.hcl` (`deploy.sh` does this for you). Never delete that bucket: it belongs to
+  no stack and holds the record of everything the stacks built.
 - **Secrets never enter git.** Terraform creates an empty Secrets Manager container and ignores its
   contents; `./scripts/seed-eks-secret.sh` populates it from your environment or a silent prompt, and
   External Secrets Operator syncs it into the cluster.
-- **For CI** (optional), apply the separate `terraform/jenkins/` stack to build the Jenkins host, then
-  follow the first-time setup runbook in [`docs/cicd.md`](docs/cicd.md). Jenkins gets its AWS access from
-  an **instance profile** — there are no keys to store. The only two values you supply are the Jenkins
-  global environment variables `AWS_REGION` and `CLUSTER_NAME`, which keep your identity out of the
-  repository exactly like the other forkability rules here.
+- **For CI** (optional), run `./scripts/seed-jenkins-secret.sh` once (it generates a deploy key and
+  webhook secret, and prints the public key to add to your repo), then apply the separate
+  `terraform/jenkins/` stack. The host **configures itself at boot** from `terraform/jenkins/casc/` —
+  plugins, the admin user, both credentials and the job — so the only manual step left is adding the
+  GitHub webhook. Jenkins gets its AWS access from an **instance profile**; there are no keys to store.
+  Set `github_repo` in `jenkins.tfvars`; region and cluster name flow through the same way, keeping your
+  identity out of the repository like every other forkability rule here. See
+  [`docs/cicd.md`](docs/cicd.md).
 - **Costs.** The EKS control plane, NAT gateway, ALB and RDS dominate the bill. Node capacity is Spot.
+- **Adding a club crest with no Wikimedia artwork?** Drop the image in `services/frontend/logos/` and
+  point `logo_url` at `/logos/<file>.png` in `seed.sql`. Don't hotlink social-media CDNs: those URLs
+  expire, and tracker blockers (uBlock, Firefox ETP, Brave, Safari ITP) drop `*.fbcdn.net` requests
+  outright, so the image is invisible to many visitors while `curl` fetches it happily.
 - **Empty results page?** A fresh deploy has no votes. `./scripts/seed-demo-votes.py 500 https://<your
   app_domain>` posts demo ballots through the public API so the dashboard has something to show (the
   screenshots above were made this way). The worker computes the rollups within ~30s.
@@ -148,7 +164,7 @@ Then open <http://localhost:8080>. The backend creates its own schema and seed d
 
 - **[`README.submission.md`](README.submission.md)** — the turn-in doc: architecture, run/verify/delete, security, trade-offs.
 - **[`docs/deploy.md`](docs/deploy.md)** — plain-language deploy/verify/teardown guide.
-- **[`docs/cicd.md`](docs/cicd.md)** — the CI/CD pipeline: push → build → Trivy → ECR → ArgoCD, the repo variables it needs, and its failure modes.
+- **[`docs/cicd.md`](docs/cicd.md)** — the CI/CD pipeline: push → build → Trivy → ECR → ArgoCD, how the Jenkins host configures itself (JCasC), and its failure modes.
 - **[`docs/security.md`](docs/security.md)** — security design (IRSA, secrets, network, images, trade-offs).
 - **[`docs/production-readiness.md`](docs/production-readiness.md)** — the honest gap between this demo-grade deployment and one you could run for real, ordered by risk.
 - **[`docs/maintenance.md`](docs/maintenance.md)** — what rots on its own: version pins, the EKS support deadline, and why CI can fail without you changing anything.

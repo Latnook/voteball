@@ -21,11 +21,16 @@ cluster's OIDC provider. Each role's trust policy is federated to **one specific
 | `backend` | **none** | talks only to RDS over the network; needs no AWS API access |
 | `worker` | `voteball-worker-irsa` | `sns:Publish` (the topic) + `s3:PutObject` on **`snapshots/`** only |
 | `backup` | `voteball-backup-irsa` | `s3:PutObject` on **`backups/`** only — *no SNS, separate role* |
+| `kube-prometheus-stack-alertmanager` (`monitoring`) | `voteball-alertmanager-irsa` | `sns:Publish` on the one topic — nothing else |
 
 That backend/frontend carry **no role at all** is the concrete least-privilege proof. And the worker and
 backup jobs touch the *same bucket under different prefixes with different roles* — a much stronger
 answer to "are all services on the same permissions?" than one shared bucket-wide role. The IAM policy
 JSON is hand-written (not a module default) in `terraform/irsa.tf` precisely so it's auditable.
+
+Alertmanager was added on 2026-07-21 so operational alerts can leave the cluster. It uses Alertmanager's
+native `sns_configs`, which signs with the AWS SDK credential chain — so IRSA is sufficient and **no SMTP
+credentials exist on the cluster**, which was the reason notifications had been deferred.
 
 Add-on controllers (ALB Controller, External Secrets Operator, Cluster Autoscaler, CloudWatch,
 external-dns) each get their own scoped IRSA role via the community `iam-role-for-service-accounts-eks`
@@ -49,8 +54,11 @@ Autoscaler to this cluster's ASG only; ESO to the one app secret only.
   in in-cluster Secrets, retrieved on demand.
 - **CI:** the Jenkins build host authenticates through an **IAM instance profile** — see below. **No AWS
   key material exists anywhere**: not in Jenkins' credentials store, not in git, not on the host's disk.
-  Jenkins holds exactly two credentials of its own, a GitHub deploy key and the webhook shared secret,
-  both entered through the UI and stored in Jenkins' encrypted credentials store.
+  Jenkins holds exactly two credentials of its own, a GitHub deploy key and the webhook shared secret.
+  Since 2026-07-21 these are **no longer typed into the UI**: they live in Secrets Manager
+  (`voteball/jenkins`) and are installed at boot by JCasC. That closed a real single point of failure —
+  the deploy key's only copy used to be inside Jenkins' own credential store, encrypted with a key on
+  the same volume, and was recoverable from nowhere if the host was lost.
 
 **The honest caveat (documented, not hidden):** the repo is public, and until 2026-07-20 it carried the
 retired k3s Ansible vault (`secrets.yml`) as `AES256` ciphertext. Its 256-bit password (`.vault_pass`)
@@ -74,6 +82,17 @@ One ballot per visitor is enforced in two layers, because neither is sufficient 
   and `MAX_VOTES_PER_IP` (5) ballots per `VOTE_IP_WINDOW_HOURS` (24) are allowed per source, after
   which the API returns `429`. Not 1-per-address: Israeli mobile carriers use CGNAT heavily and
   households share an address, so a hard limit of 1 would lock out many genuine voters.
+
+- **WAF rate limit (network).** Added 2026-07-21. AWS WAF on the ALB blocks any address exceeding
+  **100 requests / 5 minutes to `/api/vote`**, so a flood is dropped before it reaches a pod. It is
+  deliberately different in kind from the cap above: WAF counts *requests* and forgets, the cap counts
+  *successful ballots* over 24h and persists. WAF alone would let a patient script vote steadily under
+  the limit; the cap alone leaves pods absorbing the flood. Verified live: a 300-request burst returned
+  `403` for every request, while the homepage and results API stayed `200` from the same blocked
+  address — the block is scoped to the vote endpoint, not the site.
+
+None of this makes the poll un-stuffable; only authenticating people would, which this project
+deliberately declines. The honest goal is "expensive enough not to be worth it".
 
 The client address is taken as the **second-from-right** `X-Forwarded-For` entry, because each hop
 (ALB, then nginx) appends. The leftmost entry is attacker-supplied — using it, the common mistake,
@@ -104,7 +123,17 @@ an anonymous public poll requires authenticating people, which this deliberately
 The app is exposed via an **ALB Ingress** (`charts/voteball/templates/ingress.yaml`). HTTPS is provided
 by an **ACM** certificate (DNS-validated, auto-renewing — replacing the k3s certbot mechanism and its
 rate limits); HTTP is redirected to HTTPS at the ALB (`ssl-redirect`). external-dns manages the Route53
-alias to the ALB. The EKS API server endpoint is public but **IAM-authenticated** and scoped to a
+alias to the ALB.
+
+**AWS WAF sits in front of the ALB** (`terraform/waf.tf`), attached by the
+`alb.ingress.kubernetes.io/wafv2-acl-arn` annotation rather than a Terraform association — the ALB is
+created by the load balancer controller and does not exist at apply time. Four rules: the vote-endpoint
+rate limit, a looser site-wide ceiling, AWS *KnownBadInputs* blocking, and the AWS *Common Rule Set* in
+**count mode**. That last one is deliberately not blocking: it inspects request bodies and can trip on a
+large ballot POST, and a false positive there would silently discard a real vote. It counted a match on
+ordinary traffic within hours of going live, which is the argument for counting first.
+
+The EKS API server endpoint is public but **IAM-authenticated** and scoped to a
 tunable CIDR allow-list (`cluster_endpoint_public_access_cidrs`); private in-VPC access is always on.
 
 ## Container security
@@ -141,8 +170,13 @@ step, and **no stored key material** — which is the same property the previous
 a simpler way, because the compute is ours.
 
 The role allows `ecr:GetAuthorizationToken` plus the ECR layer-upload set on `repository/voteball-*`, and
-**nothing else — no EKS, RDS, S3, SNS or Secrets Manager**. Verified on the live host:
-`aws ecr get-login-password` succeeds and `aws eks list-clusters` returns `AccessDeniedException`.
+**nothing else — no EKS, RDS, S3 or SNS**, and exactly one Secrets Manager permission:
+`secretsmanager:GetSecretValue` on the single ARN `voteball/jenkins`, added 2026-07-21 so JCasC can
+install the host's own credentials at boot. No wildcard, no write. That grants the host nothing it did
+not already hold — the deploy key and webhook secret were already on its disk — it only means they also
+exist somewhere the host's death does not take with them. Verified on the live host: it reads its own
+secret and is denied both `voteball/app-secret` and `list-secrets`; `aws ecr get-login-password`
+succeeds and `aws eks list-clusters` returns `AccessDeniedException`.
 
 **IMDSv2 is required** (`http_tokens = "required"`), so a server-side request forgery against something
 running on the host cannot trivially read those credentials.
@@ -209,7 +243,7 @@ change them:
 | Choice | Demo (here) | Production would |
 |---|---|---|
 | App credentials | Generated per install (`db_password` in tfvars, admin password entered at seed time) | Managed rotation (Secrets Manager rotation lambda) |
-| EKS RDS | Single-AZ, no deletion protection (a final snapshot IS taken on destroy, so destroy/rebuild preserves data) | Multi-AZ, deletion protection, PITR |
+| EKS RDS | Single-AZ. **PITR is now on** (7-day retention, added 2026-07-21). Deletion protection stays **off** on purpose: it makes `terraform destroy` fail, and this stack is torn down between sessions | Multi-AZ; deletion protection only if the destroy/rebuild workflow is retired |
 | EKS API endpoint | Public (IAM-authed), CIDR = `0.0.0.0/0` | Lock CIDR to operator/CI, or private-only + bastion |
 | Node group | Spot, diversified types (no On-Demand fallback) | Add On-Demand fallback for guaranteed capacity |
 | NAT gateway | Single (one AZ) | One per AZ |
@@ -217,6 +251,6 @@ change them:
 | Grafana/ArgoCD UIs | port-forward only, chart-default passwords | SSO, private ingress, rotated secrets |
 | Jenkins webhook | Plain HTTP, authenticated by HMAC shared secret | TLS in front of Jenkins (ALB/reverse proxy + ACM) |
 | Jenkins host access | SSH tunnel on port 22 from one IP | SSM Session Manager, port 22 closed entirely |
-| Jenkins configuration | Configured through the UI once, recorded as a runbook | JCasC (`jenkins.yaml` + `plugins.txt`), self-configuring on boot |
+| Jenkins configuration | **JCasC** (`terraform/jenkins/casc/`), applied at every boot; credentials from Secrets Manager. Verified by booting a throwaway host from the config | Notifications on build failure (G7); SSM Session Manager |
 
 All are documented rather than hidden — the point is that each was a decision, not an oversight.

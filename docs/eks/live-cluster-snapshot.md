@@ -1,6 +1,8 @@
 # Live cluster snapshot (evidence for README.submission.md)
 
 _Captured 2026-07-20 from the running EKS cluster._
+_Sections below the "Additions captured 2026-07-21" heading are from the current build; everything above
+it was captured from the 2026-07-20 build and is kept as the original evidence._
 
 ## `kubectl get nodes`
 ```
@@ -180,4 +182,58 @@ AwsEksResourceDetector failed: HTTP Error 403: Forbidden
 [2026-07-20 10:05:27 +0000] [1] [INFO] Using worker: sync
 [2026-07-20 10:05:27 +0000] [22] [INFO] Booting worker with pid: 22
 [2026-07-20 10:05:27 +0000] [27] [INFO] Booting worker with pid: 27
+```
+## Additions captured 2026-07-21 (post WAF / alerting / migration-Job pass)
+
+_The sections above are from the 2026-07-20 build. The cluster was rebuilt on 2026-07-21; these
+are the parts that did not exist before._
+
+### WAF is attached to the ALB (`aws wafv2 get-web-acl-for-resource`)
+```
+voteball-alb	bf57cc07-6897-4896-b8fe-877a5db049d0
+```
+
+### Rate limit enforced, and scoped to the vote endpoint only
+```
+# 300-request burst against /api/vote from one address:
+    300 x HTTP 403
+# ...while, from that same blocked address:
+    /            -> 200
+    /api/options -> 200
+    /api/results -> 200
+```
+
+### RDS point-in-time recovery
+```
+-----------------------------------------------------------------
+|                      DescribeDBInstances                      |
++----------------------+----------------+----------+------------+
+|  BackupRetentionDays | BackupWindow   | MultiAZ  |  Status    |
++----------------------+----------------+----------+------------+
+|  7                   |  01:00-01:30   |  False   |  available |
++----------------------+----------------+----------+------------+
+```
+
+### Alert rules loaded by Prometheus (not merely created)
+```
+voteball-alerts   98m
+
+voteball rule groups: 3, rules: 7 - all state=inactive (healthy)
+  VoteballPodCrashLooping / VoteballDeploymentDegraded / VoteballNoBackendAvailable
+  VoteballMigrationJobFailed / VoteballBackupJobFailed / VoteballBackupMissing
+  VoteballContainerOOMKilled
+```
+
+### Alertmanager -> SNS via IRSA (no SMTP on the cluster)
+```
+serviceaccount annotation: arn:aws:iam::590183895228:role/voteball-alertmanager-irsa
+delivery verified end-to-end: NumberOfMessagesPublished=1, NumberOfNotificationsDelivered=1,
+NumberOfNotificationsFailed=0 (test alert received by email)
+```
+
+### Schema migration runs once per release, before the app rolls
+```
+# pre-upgrade hook, observed on a real upgrade:
+pod/voteball-migrate-2hqww   Scheduled -> Started -> Completed
+job/voteball-migrate         Job completed
 ```

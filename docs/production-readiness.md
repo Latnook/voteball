@@ -17,7 +17,8 @@ Worth stating, because these are the parts that are painful to retrofit and are 
   carry no AWS role at all; `worker` and `backup` have separate roles scoped to one topic/prefix each.
 - **Secrets:** AWS Secrets Manager + External Secrets Operator. No secret in git or Terraform state.
   The Jenkins build host authenticates by IAM **instance profile** — no stored AWS keys — and its role
-  is scoped to ECR push only; it holds no cluster access.
+  is scoped to ECR push plus read on one secret ARN (its own JCasC credentials); it holds no cluster
+  access.
 - **Supply chain:** git-SHA image tags (never `latest`), ECR scan-on-push, Trivy blocking CI on
   CRITICAL/HIGH.
 - **Containers:** non-root, read-only rootfs, all capabilities dropped, no privilege escalation.
@@ -58,7 +59,7 @@ in favour of S3-native `use_lockfile`, so there is no lock table. Bootstrap is
 
 ---
 
-## 2. The public vote endpoint is trivially abusable
+## 2. The public vote endpoint is trivially abusable — mitigated 2026-07-21
 
 **Current:** `/api/vote` is unauthenticated. Dedup is a cookie (`HttpOnly`, `Secure`, `SameSite=Lax`,
 DB-unique) plus a salted per-address cap of 5 per 24h, added 2026-07-20.
@@ -77,12 +78,17 @@ looser site-wide ceiling, AWS KnownBadInputs blocking, and the AWS Common Rule S
 Counting rather than blocking that last group is deliberate — it can trip on a large ballot POST, and
 a false positive silently discards a real vote. Promote it to blocking after reading its CloudWatch
 metric against real traffic. The ACL attaches via an Ingress annotation, not a Terraform association:
-the ALB is created by the load balancer controller and does not exist at apply time. **Untested
-against live traffic — the cluster has not been deployed since.**
+the ALB is created by the load balancer controller and does not exist at apply time.
+
+**Verified live on 2026-07-21:** the ACL is attached to the running ALB, a 300-request burst against
+`/api/vote` returned `403` for every request, and from that same blocked address the homepage,
+`/api/options` and `/api/results` all still returned `200` — the block is scoped to the endpoint, not
+the site. The Common Rule Set counted a match on ordinary traffic within hours, which is the argument
+for shipping it in count mode.
 
 ---
 
-## 3. Database durability
+## 3. Database durability — PITR added 2026-07-21
 
 **Current:** single-AZ, no `multi_az`, no `backup_retention_period` (so no automated backups or PITR),
 no deletion protection. A final snapshot is taken on destroy, and a nightly `pg_dump` CronJob writes
@@ -94,9 +100,24 @@ is "last nightly dump or last teardown snapshot" — potentially a day of votes.
 **Fix:** `multi_az = true`, `backup_retention_period = 7`, `deletion_protection = true`. Also
 **test a restore** — backups that have never been restored are a hypothesis, not a backup.
 
+**Done 2026-07-21: PITR.** `backup_retention_period = 7`, windows placed clear of the 02:00 pg_dump
+CronJob. Confirmed on the running instance (`BackupRetentionPeriod: 7`). Recovery granularity is now any
+second in the last week rather than "the last nightly dump".
+
+**Deliberately NOT done: `deletion_protection`.** It is free and correct for a server that stays up, and
+wrong here — it makes `terraform destroy` fail outright and would wedge `scripts/destroy.sh` on every
+rebuild cycle. Turn it on only alongside retiring the destroy/rebuild workflow. The reasoning is in
+`database.tf` next to the setting.
+
+**Multi-AZ remains open** — a deliberate cost decision (~+$12/mo), not an oversight.
+
+**The restore path is well tested**, if not by the mechanism this section imagined: every rebuild cycle
+restores from the previous teardown's final snapshot, and the 2026-07-21 rebuild brought the votes and
+seed data back intact.
+
 ---
 
-## 4. Schema changes have no migration path
+## 4. Schema changes have no migration path — half done 2026-07-21
 
 **Current:** `db.init_db()` re-runs `schema.sql` on every backend start. It is idempotent
 (`CREATE TABLE IF NOT EXISTS`), and column additions work via `ALTER TABLE ... ADD COLUMN IF NOT
@@ -111,9 +132,14 @@ once per release rather than racing across replicas. `services/backend/migrate.p
 the standalone entrypoint for that.
 
 **Half done 2026-07-21.** The *exactly-once* half is in:
-`charts/voteball/templates/migrate-job.yaml` is a `pre-install,pre-upgrade` hook Job running `python
-migrate.py`, so schema work happens once per release, before the Deployments roll, instead of every
-replica racing on startup. ArgoCD maps Helm hooks onto its PreSync phase, so it works under GitOps.
+`charts/voteball/templates/migrate-job.yaml` is a **`post-install,pre-upgrade`** hook Job running
+`python migrate.py`, so schema work happens once per release, before the Deployments roll, instead of
+every replica racing on startup. ArgoCD maps Helm hooks onto its PreSync phase, so it works under GitOps.
+
+The `post-install` half is not a typo: as a `pre-install` hook it failed outright with
+`serviceaccount "backend" not found`, because pre-install hooks run before every normal chart resource.
+A fresh install has nothing to order anyway; an upgrade does, and by then the dependencies exist.
+Verified on a real upgrade: `job/voteball-migrate  Job completed` before the pods rolled.
 
 **Still missing: Alembic itself** — versioning, ordering and down-steps. This Job is what will run
 it. Two things make that its own piece of work rather than an afterthought: an existing database has
@@ -139,10 +165,10 @@ narrow `cluster_endpoint_public_access_cidrs` to your operator/CI ranges.
 
 ---
 
-## 6. Monitoring without alerting
+## 6. Monitoring without alerting — ~~gap~~ RESOLVED 2026-07-21
 
-**Current:** kube-prometheus-stack and CloudWatch Container Insights both collect metrics. No
-`PrometheusRule` alerts are defined and Alertmanager routes nowhere.
+**Current (before the fix):** kube-prometheus-stack and CloudWatch Container Insights both collect
+metrics. No `PrometheusRule` alerts are defined and Alertmanager routes nowhere.
 
 **Why it matters:** metrics you only look at after someone complains are archaeology, not monitoring.
 The SNS topic for milestone alerts already exists and could carry operational alerts too.
@@ -182,7 +208,7 @@ first. The `Watchdog` heartbeat is routed to a null receiver; delivered to a mai
 
 ---
 
-## 7. The CI server is a single instance with no backup, and it fails silently
+## 7. The CI server is a single instance with no backup, and it fails silently — mostly RESOLVED 2026-07-21
 
 **Current:** Jenkins runs on one EC2 instance (`terraform/jenkins/`). Its configuration, credentials and
 build history live only on that instance's EBS volume. There is no snapshot schedule, no second instance,
