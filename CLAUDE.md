@@ -23,7 +23,9 @@ that is a bug.**
 **Design docs live in `docs/design/`**, one per feature or infrastructure pass — the balloting and
 admin features, then the EKS migration, then the deployment-hardening and repo-forkability passes, then
 the 2026-07-20 CI migration from GitHub Actions to Jenkins (`2026-07-20-jenkins-migration-design.md`,
-whose G1–G7 labels the `Jenkinsfile` and `docs/cicd.md` both cite).
+whose G1–G7 labels the `Jenkinsfile` and `docs/cicd.md` both cite), then the 2026-07-21
+religion-and-state axis (`2026-07-21-religiosity-axis-design.md`, which extends the party-
+categorization doc rather than replacing it).
 **Read the relevant one before making architectural changes:** most decisions (and the bugs they
 avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
 justify its shape. Several also carry a "Verification outcome" section recording what actually broke
@@ -254,6 +256,30 @@ Two teardown behaviours `destroy.sh` handles that a manual `terraform destroy` d
 **Do not add `ignore_changes` to `final_snapshot_identifier`** in `database.tf` — the provider reads it
 from state at destroy time, so that silently disables the final snapshot *and* wedges the VPC teardown.
 There's a comment there explaining why; keep it.
+
+### Party ideology axes, and how to revise them in `seed.sql`
+
+Both party tables carry three numeric axes — `economic`, `security` and `religiosity` (each −3..+3,
+**nullable**) — plus categorical `bloc`/`sector` and free-text `tags`. See
+`docs/design/2026-07-16-party-categorization-analytics-design.md` and
+`docs/design/2026-07-21-religiosity-axis-design.md`. Nullable is load-bearing: a `0` asserts a
+confirmed centrist position, so a party with no stated position must be `NULL` (every Arab party is
+NULL on `religiosity`, which is scoped to *Jewish* religion-and-state). Where a party's rhetoric and
+record diverge, the number records the **revealed** position and a tag carries the gap
+(`claims-economically-liberal`, `instrumentally-clerical`) — do not add claimed/actual column pairs.
+
+**Revising a classification means APPENDING a new unguarded block, never editing the old one.** The
+original classification `UPDATE`s end in `AND bloc IS NULL` so a fresh seed is idempotent — which
+also means editing them in place changes **nothing on an already-seeded database**, and production
+is always already seeded. Revisions therefore append a dated, unguarded block; the last one to
+touch a party wins, so the file reads as a revision log. Unguarded is safe because nothing in the
+app writes these columns (the admin party endpoints only rename). Verify a revision the way the
+existing ones were: seed a container with the *previous* file, apply the new one, confirm the value
+actually moves.
+
+**Adding a new axis? Update `services/backend/tests/test_migration.py` too.** It is the reference
+test that round-trips the ideology columns and asserts the `CHECK` bounds. The religiosity pass
+missed it entirely and shipped an untested constraint; only the final review caught it.
 
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 

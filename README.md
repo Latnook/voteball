@@ -9,8 +9,9 @@ add-ons and the app. See the [Quickstart](#quickstart).
 
 ## Screenshots
 
-> Captured from the app running locally against a seeded demo dataset (~660 ballots). The party
-> leanings shown are **illustrative demo data**, not real survey results.
+> Captured against a seeded demo dataset (~1,000 ballots). The party leanings shown are
+> **illustrative demo data**, not real survey results — the per-club party mixes were generated to
+> loosely track real fanbase reputations so the analytics have something to show.
 
 **Casting a ballot** — pick up to 3 clubs per league, across any number of leagues:
 
@@ -20,6 +21,14 @@ add-ons and the app. See the [Quickstart](#quickstart).
 which are one-sided, measured in "effective parties":
 
 ![Results dashboard: most mixed vs most one-sided fanbases](docs/images/results-overview.png)
+
+**Where a fanbase sits ideologically** — every eligible club as a dot on one of three axes (economic,
+security, religion-and-state), with the full profile below. The axes are kept separate rather than
+averaged into one score, because in Israeli politics they genuinely don't align: Shas is economically
+left but religiously right, Yisrael Beiteinu economically right but the most anti-clerical party on
+the board. Averaging would put them on the same spot.
+
+![Political Lean: clubs placed on the religion-and-state axis](docs/images/results-political-lean.png)
 
 **The actual point of the poll** — start from a club and see how its fans voted. Beitar Jerusalem's
 fanbase leans heavily Likud:

@@ -3,6 +3,14 @@
 Status: approved
 Date: 2026-07-16
 
+> **Superseded in part (2026-07-21):** a third numeric axis, `religiosity` (religion-and-state
+> policy, −3 separationist … +3 theocratic), was added alongside `economic` and `security` — see
+> `2026-07-21-religiosity-axis-design.md`. That doc follows this one's Decisions 2 and 3 (nullable
+> axes; no claimed/actual column pairs) rather than revisiting them. The Political Lean strip now
+> positions by a user-selected axis rather than by `economic` only, and the detail card lists all
+> three. The party classification table in the Appendix below predates that work and does not carry
+> religiosity values; `seed.sql` is authoritative.
+
 ## Context
 
 The Phase 1 quick-wins spec (league logos, Israeli-league-first ordering, Jewish Home removal —
