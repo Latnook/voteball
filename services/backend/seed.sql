@@ -842,6 +842,72 @@ UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 0, sect
     tags = ARRAY['reservist-focused', 'anti-conscription-exemption']
     WHERE name_he = 'המילואימניקים' AND bloc IS NULL;
 
+-- ---------------------------------------------------------------------------------------------
+-- Classification revision, 2026-07-21. The block above is guarded with `AND bloc IS NULL` so it
+-- only ever fires on a fresh database -- which means editing it in place would NOT reach an
+-- already-seeded instance. Revisions therefore append an UNGUARDED block like this one, and
+-- future revisions append another below it (so a party's current values are the LAST ones set).
+-- Unguarded is safe here: nothing in the app writes these five columns (the admin party endpoints
+-- only rename), so re-running seed.sql just rewrites identical values.
+--
+-- Only `upcoming_parties` is touched. The `previous_parties` rows describe each party as it stood
+-- at the PREVIOUS election and stay frozen -- back-dating a 2026 platform onto them would defeat
+-- the point of keeping the two tables independent (design doc Decision 1).
+--
+-- Sources: the Democrats' primary results (2026-07-20 -- list weighted by rank, so the top of the
+-- list drives the read); be-yahad.org.il/plans/{education,yoker,meshartim,negev,kiryat-shmona};
+-- kachollavan.org.il's principles booklet, "Israel Mitazemet" security doctrine and 8-point public
+-- service plan; beytenu.org.il/party-platform.
+
+-- The Democrats: the realized list confirms the dovish/social-democratic wings over the security
+-- wing -- and all three military figures on it point dovish (Golan #1, Ronen #7 who led the
+-- ceasefire protest movement, Sheffer #11 who signed the pilots' letter). Axes therefore unchanged;
+-- what the old tags missed is religious pluralism (Kariv #3, Fink #5, Dabush #13), Jewish-Arab
+-- partnership (Bashir #10) and the party's protest-movement intake (Ronen #7, Radman #9, Avital #15).
+UPDATE upcoming_parties SET bloc = 'opposition', economic = -2, security = -1, sector = 'secular',
+    tags = ARRAY['progressive', 'social-democrat', 'liberal-zionist', 'religious-pluralism',
+                 'jewish-arab-partnership', 'protest-movement-rooted', 'two-state']
+    WHERE name_he = 'הדמוקרטים';
+
+-- Together: still no stated conflict position, so `security` stays NULL -- but not because they
+-- dodge the topic. It is a LIST of two parties that stayed legally separate (Bennett 2026 +
+-- Yesh Atid): Bennett rules out a Palestinian state, Yesh Atid's platform supports one. That is a
+-- genuine internal split, which the replacement tag now says. The five published plans do sharpen
+-- the anti-clerical read (defund religious school networks, 60% core curriculum as a funding
+-- condition, break the kosher-certification monopoly, universal conscription with benefit cuts for
+-- non-servers) and the economic one (competition/import liberalization, offset by heavy targeted
+-- spending on servers and the periphery -- net still +1, right of Yesh Atid, left of Beiteinu).
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 1, security = NULL, sector = 'secular',
+    tags = ARRAY['liberal-zionist', 'constitutionalist', 'internally-split-on-conflict',
+                 'anti-clerical', 'universal-conscription', 'pro-competition', 'periphery-development']
+    WHERE name_he = 'ביחד';
+
+-- Blue & White: the substantive correction in this pass, security 0 -> +2. "Israel Mitazemet" is an
+-- explicit hawkish doctrine -- no Palestinian state, permanent Israeli security control over all
+-- territory, expansion of settlement, the Trump plan's voluntary-emigration track for Gaza,
+-- proactive targeted killings, and a declared shift from SOLVING the conflict to SHRINKING it.
+-- Not +3: they keep the peace treaties, Palestinian freedom of movement, a regional moderate
+-- alliance and an international civil administration in Gaza, so they sit below the annexationist
+-- pole. `unaligned` holds -- both documents campaign for a broad consensus government "not
+-- dependent on the extremes" -- and economic stays 0 ("free economy combined with social justice",
+-- imports and competition alongside strengthening public health and education).
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 0, security = 2, sector = 'secular',
+    tags = ARRAY['centrist', 'hard-to-classify-bloc', 'statist', 'security-hawk',
+                 'no-palestinian-state', 'pro-settlement', 'unity-government', 'public-service-reform']
+    WHERE name_he = 'כחול לבן';
+
+-- Yisrael Beiteinu: the platform confirms every existing axis rather than moving any -- privatizing
+-- Ashdod Port and Haifa Airport and ending child allowances from the fifth child (+2 economic);
+-- preemptive strikes, cutting Gaza's water/electricity/fuel, no Palestinian state (+2 security);
+-- abolishing the religious councils, civil marriage, ending yeshiva stipends (secular). The bloc is
+-- now pinned down rather than inferred: they want a statutory ban on an indicted person forming a
+-- government. Tags expanded to record what the platform actually commits to.
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 2, security = 2, sector = 'secular',
+    tags = ARRAY['anti-clerical', 'revisionist-zionist', 'civil-marriage', 'universal-conscription',
+                 'free-market', 'governance-reform', 'anti-indicted-pm', 'hardline-on-gaza']
+    WHERE name_he = 'ישראל ביתנו';
+-- ---------------------------------------------------------------------------------------------
+
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
 -- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;
