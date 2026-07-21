@@ -906,6 +906,54 @@ UPDATE upcoming_parties SET bloc = 'opposition', economic = 2, security = 2, sec
     tags = ARRAY['anti-clerical', 'revisionist-zionist', 'civil-marriage', 'universal-conscription',
                  'free-market', 'governance-reform', 'anti-indicted-pm', 'hardline-on-gaza']
     WHERE name_he = 'ישראל ביתנו';
+
+-- Classification revision 2, 2026-07-21. Same unguarded-append rule as the block above.
+-- Sources: hakalkalit.org's full platform; El HaDegel's English policy document
+-- (elhadegel.co.il); the Religious Zionism primary candidate field.
+
+-- Religious Zionism: TAGS ONLY, and deliberately so -- the primary has not been held, so the
+-- candidate field has no ORDER and cannot be rank-weighted the way the Democrats' list was. What
+-- the field does show is a party more concentrated in the settlement movement and the judicial
+-- overhaul than the old tags recorded (Strook, Sukkot, Rothman, and Rahamim as Yesha Council CEO;
+-- Sofer and Solomon are gone). No axis moves: security is already pinned at the +3 maximum, and
+-- economic 0 + `claims-economically-liberal` already captures the gap between Smotrich's rhetoric
+-- and his finance-ministry record. Recheck after the primary produces an actual order.
+UPDATE upcoming_parties SET bloc = 'bibi', economic = 0, security = 3, sector = 'religious_zionist',
+    tags = ARRAY['claims-economically-liberal', 'not-economy-focused', 'ultranationalist',
+                 'far-right', 'settler-movement', 'judicial-overhaul', 'annexationist']
+    WHERE name_he = 'הציונות הדתית';
+
+-- The Economic Party: all four axes held on review, tags rewritten. The platform is an unusual
+-- fusion -- a large tax cut (VAT 18->12, marginal income 50->40, corporate 50->40) and abolition of
+-- all tariffs and import quotas, fused with aggressive trust-busting (declare the exclusive
+-- importers monopolies, dissolve the production councils, stop approving mergers, a state-co-funded
+-- bank). Economic stays +1 rather than +2 precisely because that second half is real state
+-- expansion, not standard right-economics, and +1 keeps the fusion visible.
+-- `anti-clerical` is replaced by `kashrut-liberalization`: they do want to break the Rabbinate's
+-- kashrut monopoly, but the motive stated is competition (it is listed under cost-of-living, not
+-- religion-and-state) and their haredi section is warm -- integration into the workforce, framed as
+-- something the economy needs. That is not anti-clericalism in the Yisrael Beiteinu sense.
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 0, sector = 'secular',
+    tags = ARRAY['populist', 'anti-corruption', 'anti-monopoly', 'tax-cutting', 'free-trade',
+                 'consumer-protection', 'kashrut-liberalization', 'single-issue-economy']
+    WHERE name_he = 'המפלגה הכלכלית';
+
+-- El HaDegel: security 0 -> +2. The old two-tag row read them as a single-issue reservist party;
+-- their policy document is a full program. On security it commits to asserting sovereignty over
+-- "areas essential to its security", reserves "the right to take territorial action", promises
+-- preemptive strikes, and rejects BOTH Oslo and conflict management -- Palestinians get
+-- self-governance, never a state. Not +3: they are secular-nationalist rather than messianic, and
+-- neighbours who abandon terror are offered development and self-rule, so they sit below Religious
+-- Zionism's pole. Economic stays +1 for the same reason as Together -- eliminating ministries and a
+-- 30% budget cut, offset by massive periphery infrastructure and a strategic-industry program.
+-- The constitutional material (Basic Law supermajorities, a 16-minister cap, tiered judicial
+-- review, an 8-year PM term limit) and the "El HaDegel Service" Basic Law drafting every citizen,
+-- with refusal forfeiting economic and employment rights, were entirely unrecorded before.
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 2, sector = 'secular',
+    tags = ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription',
+                 'sovereignty-annexation', 'preemptive-security-doctrine', 'anti-two-state',
+                 'constitutionalist', 'governance-reform', 'core-curriculum']
+    WHERE name_he = 'אל הדגל';
 -- ---------------------------------------------------------------------------------------------
 
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
