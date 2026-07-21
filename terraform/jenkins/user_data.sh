@@ -134,6 +134,35 @@ Environment="GITHUB_REPO=${VOTEBALL_GITHUB_REPO}"
 CASC
 systemctl daemon-reload
 
+# 5. GitHub plugin configuration -- written as XML, NOT via JCasC.
+#
+# GitHubPluginConfig (github 1.47.0) is not data-bound: JCasC rejects both `manageHooks` and
+# `hookSecretConfigs` with UnknownAttributesException and aborts the entire boot. The same missing
+# setters are why `setHookSecretConfigs()` from the Groovy console reports success and then does not
+# persist (docs/cicd.md, failure mode 3).
+#
+# manageHooks=false: this Jenkins' own URL is http://localhost:8080/, so letting the plugin manage
+# hooks would register a webhook GitHub cannot deliver to. The real hook is created once, by hand,
+# against the Elastic IP.
+#
+# hookSecretConfig is the LEGACY SINGULAR form ON PURPOSE. getHookSecretConfigs() prefers the plural
+# list whenever it is present, so an empty-but-present <hookSecretConfigs/> once beat this value and
+# left zero secrets configured -- every push then returned 400 "No valid signature found", signed and
+# unsigned identically. Do not "modernise" this to the plural form without re-testing a real signed
+# delivery.
+cat > /var/lib/jenkins/org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml <<'GHCFG'
+<?xml version="1.1" encoding="UTF-8"?>
+<org.jenkinsci.plugins.github.config.GitHubPluginConfig>
+  <configs/>
+  <hookSecretConfig>
+    <credentialsId>github-webhook-secret</credentialsId>
+  </hookSecretConfig>
+  <manageHooks>false</manageHooks>
+  <clientCacheSize>20</clientCacheSize>
+</org.jenkinsci.plugins.github.config.GitHubPluginConfig>
+GHCFG
+chown jenkins:jenkins /var/lib/jenkins/org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml
+
 # github.com's host keys must be known before the first SSH checkout, or it fails outright.
 install -d -o jenkins -g jenkins -m 0700 /var/lib/jenkins/.ssh
 ssh-keyscan github.com > /var/lib/jenkins/.ssh/known_hosts 2>/dev/null

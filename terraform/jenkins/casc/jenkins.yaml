@@ -90,19 +90,21 @@ unclassified:
     # adminAddress is deliberately omitted: it only appears in outgoing mail, and this host has no
     # SMTP (G7). Setting it would imply notifications that do not exist.
 
-  gitHubPluginConfig:
-    # Jenkins must NOT auto-manage GitHub hooks: its own URL is localhost, so it would register a
-    # webhook GitHub cannot deliver to. The hook is created by hand, once, against the Elastic IP.
-    manageHooks: false
-
-    # THE COSTLIEST BUG OF THIS MIGRATION LIVES HERE. GitHubPluginConfig has both a legacy singular
-    # `hookSecretConfig` and this plural list, and getHookSecretConfigs() prefers the list WHENEVER
-    # IT IS PRESENT -- so an empty-but-present list beat the working singular value and left zero
-    # secrets configured, rejecting every push with 400 "No valid signature found", signed or not.
-    # This list is populated, which is the safe side of that behaviour, but it is the one setting in
-    # this file that must be verified against a real signed delivery rather than assumed.
-    hookSecretConfigs:
-      - credentialsId: "github-webhook-secret"
+  # gitHubPluginConfig is NOT configured here, deliberately. See user_data.sh, which writes
+  # org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml directly.
+  #
+  # Two attempts failed on github plugin 1.47.0, both with
+  # `UnknownAttributesException: gitHubPluginConfig: Invalid configuration elements`: neither
+  # `manageHooks` nor the surrounding block is data-bound on this version, so JCasC cannot set them
+  # and aborts the whole boot.
+  #
+  # That is the same missing-setter problem docs/cicd.md already records from the other direction:
+  # `setHookSecretConfigs()` via the Groovy console "reports success but does not persist". The fix
+  # recorded there -- write the XML -- is therefore the fix here too, and it has the additional
+  # merit of writing the LEGACY SINGULAR `hookSecretConfig`, sidestepping the trap entirely:
+  # getHookSecretConfigs() prefers the plural list whenever present, so an empty-but-present list
+  # once beat the working singular value and rejected every push with 400 "No valid signature
+  # found" -- signed and unsigned alike. The costliest bug of the migration.
 
 jobs:
   # Job DSL. The job is deliberately thin: everything about HOW to build lives in the Jenkinsfile,
