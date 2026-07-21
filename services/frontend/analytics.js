@@ -231,18 +231,68 @@ function compositionPercentages(previousBreakdown, field, categories) {
   return pct;
 }
 
-function eligibleClubLeanRows() {
+// The three numeric ideology axes, in card order. Each carries the i18n keys for its own label and
+// for the words at its negative and positive poles -- they are NOT the same words per axis
+// (left/right, dovish/hawkish, separationist/clerical), which is why this is a table and not a loop
+// over bare column names.
+const LEAN_AXES = [
+  { key: 'economic', labelKey: 'analyticsEconomicLabel', shortKey: 'analyticsAxisEconomicShort',
+    negKey: 'analyticsAxisLeft', posKey: 'analyticsAxisRight' },
+  { key: 'security', labelKey: 'analyticsSecurityLabel', shortKey: 'analyticsAxisSecurityShort',
+    negKey: 'analyticsSecurityDovish', posKey: 'analyticsSecurityHawkish' },
+  { key: 'religiosity', labelKey: 'analyticsReligiosityLabel', shortKey: 'analyticsAxisReligiosityShort',
+    negKey: 'analyticsReligiositySeparationist', posKey: 'analyticsReligiosityClerical' },
+];
+
+let leanAxis = 'economic';
+
+function leanAxisConfig(key) {
+  return LEAN_AXES.find(a => a.key === key) || LEAN_AXES[0];
+}
+
+// Every club clearing the vote threshold, carrying its average on all three axes. Not filtered by
+// axis: the strip needs the full set so a dot can persist (and slide) even across an axis where it
+// briefly has no value.
+function allLeanClubRows() {
   const wcLeagueId = worldCupLeagueId();
   return clubsBreakdown
     .map(entry => {
       const club = clubById(entry.club_id);
       if (!club) return null;
       const total = entry.previous.reduce((sum, r) => sum + r.count, 0);
-      const economic = weightedAxisAverage(entry.previous, 'economic');
-      return { club, total, economic, previous: entry.previous };
+      const values = {};
+      LEAN_AXES.forEach(a => { values[a.key] = weightedAxisAverage(entry.previous, a.key); });
+      return { club, total, values, previous: entry.previous };
     })
-    .filter(row => row !== null && row.total >= LEAN_MIN_VOTES && row.economic !== null)
+    .filter(row => row !== null && row.total >= LEAN_MIN_VOTES)
     .filter(row => diversityIncludeWorldCup || row.club.league_id !== wcLeagueId);
+}
+
+// Positions for one axis. Dots on near-identical averages would overlap exactly, so walk them left
+// to right and drop each into the first lane whose previous dot is far enough away, else the lane
+// whose last dot is furthest left. Clubs with no value on this axis are absent from the result --
+// a fanbase voting only for parties that are NULL on that axis has no position on it.
+function layoutLeanDots(rows, axisKey) {
+  const LANES = 3;
+  const MIN_GAP_PCT = 7;
+  const laneLastX = new Array(LANES).fill(-Infinity);
+  const placed = new Map();
+  rows
+    .filter(row => row.values[axisKey] !== null)
+    .sort((a, b) => a.values[axisKey] - b.values[axisKey])
+    .forEach(row => {
+      const x = ((row.values[axisKey] + 3) / 6) * 100;
+      let lane = 0;
+      let fallback = 0;
+      for (let i = 0; i < LANES; i++) {
+        if (x - laneLastX[i] >= MIN_GAP_PCT) { lane = i; break; }
+        if (laneLastX[i] < laneLastX[fallback]) fallback = i;
+        if (i === LANES - 1) lane = fallback;
+      }
+      laneLastX[lane] = x;
+      placed.set(row.club.id, { x, lane });
+    });
+  return placed;
 }
 
 function renderLeanDetail(container, label, previousBreakdown) {
@@ -252,31 +302,22 @@ function renderLeanDetail(container, label, previousBreakdown) {
   heading.textContent = label;
   container.appendChild(heading);
 
-  const security = weightedAxisAverage(previousBreakdown, 'security');
-  const securityRow = document.createElement('div');
-  securityRow.className = 'lean-detail-row';
-  const securityLabel = document.createElement('span');
-  securityLabel.textContent = t('analyticsSecurityLabel');
-  securityRow.appendChild(securityLabel);
-  const securityValue = document.createElement('span');
-  securityValue.textContent = security === null
-    ? t('analyticsNoStatedPosition')
-    : `${security.toFixed(1)} (${security < 0 ? t('analyticsSecurityDovish') : t('analyticsSecurityHawkish')})`;
-  securityRow.appendChild(securityValue);
-  container.appendChild(securityRow);
-
-  const religiosity = weightedAxisAverage(previousBreakdown, 'religiosity');
-  const religiosityRow = document.createElement('div');
-  religiosityRow.className = 'lean-detail-row';
-  const religiosityLabel = document.createElement('span');
-  religiosityLabel.textContent = t('analyticsReligiosityLabel');
-  religiosityRow.appendChild(religiosityLabel);
-  const religiosityValue = document.createElement('span');
-  religiosityValue.textContent = religiosity === null
-    ? t('analyticsNoStatedPosition')
-    : `${religiosity.toFixed(1)} (${religiosity < 0 ? t('analyticsReligiositySeparationist') : t('analyticsReligiosityClerical')})`;
-  religiosityRow.appendChild(religiosityValue);
-  container.appendChild(religiosityRow);
+  // All three numeric axes, including the one the strip is currently positioning by -- the strip
+  // shows only relative order, so the actual figure still belongs here.
+  LEAN_AXES.forEach(axis => {
+    const value = weightedAxisAverage(previousBreakdown, axis.key);
+    const row = document.createElement('div');
+    row.className = 'lean-detail-row';
+    const rowLabel = document.createElement('span');
+    rowLabel.textContent = t(axis.labelKey);
+    row.appendChild(rowLabel);
+    const rowValue = document.createElement('span');
+    rowValue.textContent = value === null
+      ? t('analyticsNoStatedPosition')
+      : `${value.toFixed(1)} (${value < 0 ? t(axis.negKey) : t(axis.posKey)})`;
+    row.appendChild(rowValue);
+    container.appendChild(row);
+  });
 
   const blocPct = compositionPercentages(previousBreakdown, 'bloc', ['bibi', 'opposition', 'unaligned']);
   const blocRow = document.createElement('div');
@@ -328,14 +369,20 @@ function renderLeanTab() {
   const tab = document.getElementById('lean-tab');
   tab.innerHTML = '';
 
-  const rows = eligibleClubLeanRows();
-  if (!rows.length) {
+  const allRows = allLeanClubRows();
+  if (!allRows.length) {
     const empty = document.createElement('p');
     empty.className = 'note';
     empty.textContent = t('analyticsTooFewVotes');
     tab.appendChild(empty);
     return;
   }
+
+  const axisToggle = document.createElement('div');
+  axisToggle.className = 'lean-axis-toggle';
+  const axisToggleLabel = document.createElement('span');
+  axisToggleLabel.textContent = t('analyticsPositionBy');
+  axisToggle.appendChild(axisToggleLabel);
 
   const strip = document.createElement('div');
   strip.className = 'lean-strip';
@@ -350,6 +397,15 @@ function renderLeanTab() {
 
   const picker = document.createElement('select');
   picker.className = 'lean-picker';
+
+  const axisLabels = document.createElement('div');
+  axisLabels.className = 'lean-axis-labels';
+  const leftLabel = document.createElement('span');
+  const rightLabel = document.createElement('span');
+  axisLabels.appendChild(leftLabel);
+  axisLabels.appendChild(rightLabel);
+
+  const dotByClubId = new Map();
 
   async function selectClub(row, dot) {
     strip.querySelectorAll('.lean-dot').forEach(d => d.setAttribute('aria-pressed', 'false'));
@@ -367,38 +423,20 @@ function renderLeanTab() {
     }
   }
 
-  // Dots sitting on near-identical economic averages would overlap exactly, so spread them
-  // across stacked lanes: walk left to right and drop each dot in the first lane whose previous
-  // dot is far enough away, else the lane whose last dot is furthest left.
-  const LANES = 3;
-  const MIN_GAP_PCT = 7;
-  const laneLastX = new Array(LANES).fill(-Infinity);
-  const dotByClubId = new Map();
-
-  rows.slice().sort((a, b) => a.economic - b.economic).forEach(row => {
-    const x = ((row.economic + 3) / 6) * 100;
-    let lane = 0;
-    let fallback = 0;
-    for (let i = 0; i < LANES; i++) {
-      if (x - laneLastX[i] >= MIN_GAP_PCT) { lane = i; break; }
-      if (laneLastX[i] < laneLastX[fallback]) fallback = i;
-      if (i === LANES - 1) lane = fallback;
-    }
-    laneLastX[lane] = x;
-
+  // Dots are created ONCE, for every club that clears the vote threshold on any axis, and are then
+  // only repositioned when the axis changes. That is what lets them slide: rebuilding the strip per
+  // axis would destroy and recreate the elements, and a brand-new element cannot transition from a
+  // position its predecessor held.
+  allRows.forEach(row => {
     const dot = document.createElement('button');
     dot.type = 'button';
     dot.className = 'lean-dot';
     dot.setAttribute('aria-pressed', 'false');
     dot.setAttribute('aria-label', localizedName(row.club));
-    dot.style.left = `${x}%`;
-    dot.style.top = `${0.55 + lane * 0.95}rem`;
 
-    // Hover for pointers, focus for keyboards -- the dropdown below is the touch-friendly path,
-    // since a tooltip that only appears on hover does not exist on a phone.
     const showTip = () => {
       tip.textContent = localizedName(row.club);
-      tip.style.left = `${Math.min(Math.max(x, 8), 92)}%`;
+      tip.style.left = dot.style.left;
       tip.hidden = false;
     };
     const hideTip = () => { tip.hidden = true; };
@@ -412,21 +450,62 @@ function renderLeanTab() {
     strip.appendChild(dot);
   });
 
-  const nationalOpt = document.createElement('option');
-  nationalOpt.value = '';
-  nationalOpt.textContent = t('analyticsNational');
-  picker.appendChild(nationalOpt);
-  rows.slice()
-    .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)))
-    .forEach(row => {
-      const opt = document.createElement('option');
-      opt.value = String(row.club.id);
-      opt.textContent = localizedName(row.club);
-      picker.appendChild(opt);
-    });
   picker.addEventListener('change', () => {
-    const row = rows.find(r => String(r.club.id) === picker.value);
+    const row = allRows.find(r => String(r.club.id) === picker.value);
     selectClub(row || null, row ? dotByClubId.get(row.club.id) : null);
+  });
+
+  function applyAxis() {
+    const axis = leanAxisConfig(leanAxis);
+    const layout = layoutLeanDots(allRows, leanAxis);
+
+    axisToggle.querySelectorAll('button').forEach(btn => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.axis === leanAxis));
+    });
+    leftLabel.textContent = `\u2190 ${t(axis.negKey)}`;
+    rightLabel.textContent = `${t(axis.posKey)} \u2192`;
+
+    allRows.forEach(row => {
+      const dot = dotByClubId.get(row.club.id);
+      const place = layout.get(row.club.id);
+      if (!place) {
+        // No value on this axis -- e.g. a fanbase voting only for parties that are NULL on
+        // religion-and-state. Hide rather than park it at a misleading 0.
+        dot.hidden = true;
+        return;
+      }
+      dot.hidden = false;
+      dot.style.left = `${place.x}%`;
+      dot.style.top = `${0.55 + place.lane * 0.95}rem`;
+    });
+
+    // Keep the picker to clubs that exist on the current axis.
+    const selected = picker.value;
+    picker.innerHTML = '';
+    const nationalOpt = document.createElement('option');
+    nationalOpt.value = '';
+    nationalOpt.textContent = t('analyticsNational');
+    picker.appendChild(nationalOpt);
+    allRows
+      .filter(row => layout.has(row.club.id))
+      .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)))
+      .forEach(row => {
+        const opt = document.createElement('option');
+        opt.value = String(row.club.id);
+        opt.textContent = localizedName(row.club);
+        picker.appendChild(opt);
+      });
+    picker.value = layout.has(Number(selected)) ? selected : picker.value;
+  }
+
+  LEAN_AXES.forEach(a => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.dataset.axis = a.key;
+    btn.textContent = t(a.shortKey);
+    btn.setAttribute('aria-pressed', String(a.key === leanAxis));
+    btn.addEventListener('click', () => { leanAxis = a.key; applyAxis(); });
+    axisToggle.appendChild(btn);
   });
 
   const pickerRow = document.createElement('label');
@@ -436,20 +515,13 @@ function renderLeanTab() {
   pickerRow.appendChild(pickerLabel);
   pickerRow.appendChild(picker);
 
-  const axisLabels = document.createElement('div');
-  axisLabels.className = 'lean-axis-labels';
-  const leftLabel = document.createElement('span');
-  leftLabel.textContent = `← ${t('analyticsAxisLeft')}`;
-  const rightLabel = document.createElement('span');
-  rightLabel.textContent = `${t('analyticsAxisRight')} →`;
-  axisLabels.appendChild(leftLabel);
-  axisLabels.appendChild(rightLabel);
-
+  tab.appendChild(axisToggle);
   tab.appendChild(strip);
   tab.appendChild(axisLabels);
   tab.appendChild(pickerRow);
   tab.appendChild(detail);
 
+  applyAxis();
   selectClub(null, null);
 }
 

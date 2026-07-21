@@ -748,7 +748,15 @@ select, input[type="text"], input[type="url"], input[type="password"] {
   background: var(--accent);
   border: 2px solid var(--surface);
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  /* left/top are what animate when the strip switches axis -- the dots are reused rather than
+     rebuilt precisely so this transition has a previous value to move from. */
+  transition: left 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+              top 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.12s ease,
+              box-shadow 0.12s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lean-dot { transition: transform 0.12s ease, box-shadow 0.12s ease; }
 }
 .lean-dot:hover,
 .lean-dot:focus-visible {
@@ -776,6 +784,30 @@ select, input[type="text"], input[type="url"], input[type="password"] {
   border-radius: var(--radius-sm);
   pointer-events: none;
   z-index: 4;
+}
+.lean-axis-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+.lean-axis-toggle button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lean-axis-toggle button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 .lean-picker-row {
   display: flex;
