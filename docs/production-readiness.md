@@ -27,9 +27,20 @@ Worth stating, because these are the parts that are painful to retrofit and are 
 
 ---
 
-## 1. Terraform state is a local file — highest risk
+## 1. Terraform state is a local file — ~~highest risk~~ RESOLVED 2026-07-21
 
-**Current:** no `backend` block in `terraform/`, so `terraform.tfstate` lives on one laptop.
+**Resolved.** Both stacks now use an S3 backend with versioning, encryption and S3-native locking;
+the Jenkins stack's 14 live resources were migrated and verified. See
+`docs/design/2026-07-21-terraform-remote-state-design.md`. The original text is kept below because
+the reasoning still explains why the bucket is protected the way it is.
+
+> **Correction to what this section assumed:** it named only `terraform/`. At the time of the fix
+> that was the *less* exposed of the two — the cluster was destroyed, so its state described nothing.
+> The file that actually held value was `terraform/jenkins/terraform.tfstate`, which this section did
+> not mention. Remote state covers both.
+
+**Current (before the fix):** no `backend` block in `terraform/`, so `terraform.tfstate` lives on one
+laptop.
 
 **Why it matters:** losing that file means every AWS resource is orphaned — running, billing, and
 unmanageable without importing each one by hand. It also means only one machine can ever run
@@ -38,6 +49,12 @@ Terraform, and two concurrent runs would corrupt state with no locking.
 **Fix:** S3 backend with DynamoDB locking (versioning + encryption on the bucket). Bootstrap is
 slightly chicken-and-egg: create the bucket/table in a small separate stack, or by hand, then
 `terraform init -migrate-state`.
+
+**What was actually built:** the same, minus DynamoDB — Terraform 1.11 deprecated `dynamodb_table`
+in favour of S3-native `use_lockfile`, so there is no lock table. Bootstrap is
+`scripts/bootstrap-tf-backend.sh` (idempotent, no state of its own). The bucket
+(`<cluster_name>-tfstate-<account_id>`) **belongs to no stack and must never be added to
+`scripts/destroy.sh`**, for the same reason `terraform/jenkins/` is not there.
 
 ---
 
@@ -129,6 +146,14 @@ banner to anyone.
   properties, credentials, job definition, webhook secret. The `terraform apply` part is a minute; the
   clicking is not. The volume is protected against the obvious accident
   (`delete_on_termination = false`), so this is a real but low-probability risk — accepted for now.
+  **Revised 2026-07-21: it is not low-probability.** A plan run during the state migration showed
+  `aws_instance.jenkins` *must be replaced*, because `data.aws_ssm_parameter.al2023` resolves to
+  whatever the newest Amazon Linux 2023 image is and `ami` forces replacement. Nothing was applied,
+  and the state was accurate — the live host still runs the recorded `ami-05471ba2d056f72c5` — but
+  **`terraform apply` in `terraform/jenkins/` would today destroy and rebuild the CI server**, on
+  Amazon's release schedule rather than yours. The preserved volume does not save you: the
+  replacement instance does not attach it. This makes the JCasC pass below the fix, not a nicety;
+  pinning the AMI is the narrower stopgap.
 - *Silent failures are the worse one.* Because the pipeline auto-deploys, a failed build looks exactly
   like a successful one from the outside: the site keeps working, showing the previous version. You can
   believe a change shipped when it did not. This is **G7** in the migration design, and it is an accepted
@@ -173,9 +198,12 @@ Until then the compensating practice is explicit: **verification means opening t
 
 ## Suggested order
 
-1. **Terraform remote state** — cheap, and the only item where the failure mode is unrecoverable.
-2. **WAF + rate limiting** — protects the data the project exists to collect.
-3. **RDS Multi-AZ + PITR + deletion protection** — one Terraform change, real durability.
-4. **Alerting** — so failures surface without someone watching.
-5. **Migrations** — before the schema next needs a non-additive change.
-6. **NAT/Spot redundancy** — the most expensive, and the least likely to bite at this scale.
+1. ~~**Terraform remote state**~~ — **done 2026-07-21.**
+2. **JCasC + pin the Jenkins AMI** (§7) — promoted from the bottom of the list. `terraform apply` on
+   the CI stack currently rebuilds the host and loses its configuration; that is a live foot-gun,
+   not a durability nicety.
+3. **WAF + rate limiting** — protects the data the project exists to collect.
+4. **RDS Multi-AZ + PITR + deletion protection** — one Terraform change, real durability.
+5. **Alerting** — so failures surface without someone watching.
+6. **Migrations** — before the schema next needs a non-additive change.
+7. **NAT/Spot redundancy** — the most expensive, and the least likely to bite at this scale.

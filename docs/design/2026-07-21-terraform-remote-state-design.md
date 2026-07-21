@@ -228,6 +228,61 @@ so there is nothing to roll back beyond the state's location.
 
 ---
 
+## Verification outcome (2026-07-21)
+
+Executed the same day. Bucket `voteball-tfstate-590183895228` created in `il-central-1`; versioning,
+SSE-S3 + bucket keys, all four public-access blocks, the TLS-only policy and the 90-day noncurrent
+expiry all confirmed present by reading them back from the API.
+
+- **Jenkins stack — Gate A passed.** All 14 addresses present after migration; the S3 object is
+  byte-identical in size (573,029) to the pre-migration local file.
+- **Jenkins stack — Gate B did NOT report "No changes", and the gate as written was wrong.** See
+  below; the migration is nonetheless proven clean.
+- **Gate C passed.** Two concurrent plans: the first succeeded, the second failed with `Error
+  acquiring the state lock`. Lock objects (`jenkins.tfstate.tflock`) are created and deleted per
+  operation — four acquisitions left four delete markers and no held lock. S3-native locking works.
+- **Main stack — Gate A passed** in the only form available to it. `terraform state list` reports
+  *"No state file was found"* rather than an empty list, because a zero-resource state gives
+  Terraform nothing to copy, so no object is written until the first apply. The backend itself is
+  correctly recorded in `.terraform/terraform.tfstate` (bucket, key `voteball/main.tfstate`, region,
+  `use_lockfile`, `encrypt`). Its object will appear during project C.
+
+### Gate B was the wrong test, and finding out why uncovered a live hazard
+
+The Jenkins plan reported **1 to add, 1 to change, 1 to destroy** — `aws_instance.jenkins` *must be
+replaced*, forced by a changed `ami`. That is not migration damage:
+
+| | |
+|---|---|
+| AMI in the pre-migration backup | `ami-05471ba2d056f72c5` |
+| AMI the live instance is running | `ami-05471ba2d056f72c5` |
+| AMI `data.aws_ssm_parameter.al2023` now returns | `ami-0f40fc95f49f5a6e5` |
+
+State matched reality exactly, before and after. The diff comes entirely from the data source
+resolving to a newer Amazon Linux 2023 image than the one built on 2026-07-20. So Gate B's *purpose*
+— proving every resource still maps to its live counterpart — was met, and met more strongly than
+"No changes" would have shown. **"No changes" is only a valid acceptance test for a stack with no
+`latest`-tracking data sources**; this stack has one, and the design should have anticipated that.
+
+The real finding is a pre-existing hazard the migration merely exposed:
+
+> **`terraform apply` in `terraform/jenkins/` currently destroys and rebuilds the CI host.** Because
+> `ami` forces replacement and the SSM parameter always resolves to the newest image, the stack
+> drifts into "apply means rebuild" on Amazon's release schedule rather than the operator's. The
+> `delete_on_termination = false` protection preserves the *volume* but the replacement instance
+> does not attach it, so the Jenkins configuration, credentials and build history are lost anyway.
+
+This is the §7 risk ("losing the host means re-doing the whole setup runbook by hand") arriving
+through a routine command instead of an accident, and it makes **project A (JCasC) more urgent than
+its position in the queue suggested** — a self-configuring host makes replacement a non-event.
+Pinning the AMI (or `ignore_changes = [ami]`) is the narrower fix and belongs in that project, where
+the trade-off between pinning and patching can be decided properly.
+
+Nothing was applied. No AWS resource was created, modified or destroyed by this migration other than
+the state bucket itself.
+
+---
+
 ## Relationship to the other pending work
 
 This is project **B** of four agreed on 2026-07-21, ordered so that the unrecoverable-failure-mode
