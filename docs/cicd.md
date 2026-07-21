@@ -403,6 +403,19 @@ force-pushes.
 
 ---
 
+## GitHub Actions is fully retired (2026-07-21)
+
+`terraform/github-oidc.tf` and the `github_actions_role_arn` output are **deleted**, and the IAM role
+and OIDC provider are destroyed in AWS. They had been kept as the rollback path; that path is now
+closed deliberately, after Jenkins ran green against the redeployed cluster (build 17: guard → build
+→ Trivy 0 HIGH/CRITICAL → ECR → tag bump `57ebfa3` → ArgoCD deployed `5844108`).
+
+**The EKS OIDC provider is a different provider and was NOT touched** — IRSA depends on it, and
+`oidc_provider_arn` still outputs it. Only `token.actions.githubusercontent.com` was removed.
+
+Restoring GitHub Actions now requires: the workflow file, a main-stack `terraform apply` to recreate
+the role and provider, and re-adding four repository variables.
+
 ## Deferred, on purpose
 
 - ~~**JCasC (Jenkins Configuration as Code).**~~ **Done 2026-07-21** —
