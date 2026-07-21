@@ -954,6 +954,51 @@ UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 2, sect
                  'sovereignty-annexation', 'preemptive-security-doctrine', 'anti-two-state',
                  'constitutionalist', 'governance-reform', 'core-curriculum']
     WHERE name_he = 'אל הדגל';
+
+-- Classification revision 3, 2026-07-21. Same unguarded-append rule as the blocks above.
+--
+-- NAME COLLISION -- READ THIS BEFORE UPDATING THIS ROW. Two different organisations use almost the
+-- same name, and conflating them is a serious error:
+--   * `המילואימניקים` (THIS row) -- Yoaz Hendel's PARTY, registered 2025-09, primary 2026-06-08,
+--     list: Hendel, Adomi, Frank, Peretz, Damri. This is the one on the ballot.
+--   * `המילואימניקים - דור הניצחון` -- a MOVEMENT chaired by Gilad Ach (ex-chairman of Ad Kan),
+--     founded 2023/24, whose site is miluimnikim.org.il. NOT this party, and no established link.
+-- Ach's movement publishes a far harder platform -- conquering and holding territory in Gaza, a
+-- permanent buffer zone to the Litani, and implementing the Trump emigration plan to remove the
+-- MAJORITY of Gaza's population -- which would score security +3. Scoring Hendel's party from
+-- miluimnikim.org.il would therefore attribute support for mass population transfer to a party that
+-- has never stated it. Classify this row from the party's OWN sources only.
+--
+-- Sources used: the party registry goals via IDI; the primary list composition; and -- the decisive
+-- evidence -- the candidates' own public statements, which are far more explicit than the registry
+-- text and are what this classification actually rests on.
+--
+-- security 0 -> +2. The registry goals alone would only justify +1; the statements do not leave it
+-- there. The platform promises to TAKE TERRITORY from Gaza; Hendel's stated plan for the remainder
+-- is to make it "Judea and Samaria" -- permanent control through raids, on the West Bank model --
+-- and he attacked the Rafah crossing opening as "establishing a Palestinian state on top of our
+-- heads". That is territorial control plus explicit opposition to Palestinian statehood, which is
+-- +2, level with Yisrael Beiteinu and Blue & White. Held below +3: unlike Ach's movement (see the
+-- warning above) they do not call for mass population transfer, and unlike Religious Zionism they
+-- do not call for sovereignty over Judea and Samaria.
+--
+-- economic stays +1: still no published economic platform, so this rests on Hendel's centre-right
+-- record. Note their service-conditioned sanctions are severe but sectoral, not a general economic
+-- doctrine -- Hendel's formulation is that whoever does not serve "will not be able to vote or be
+-- elected, and will not receive a shekel". Conditioning the FRANCHISE on service is a defining and
+-- unusual position, hence its own tag.
+--
+-- bloc stays `unaligned`, and the statements support it from both directions: Hendel has committed
+-- that he will "never complete Netanyahu to 61, even if it means more elections", which rules out
+-- the bibi bloc outright -- but he also rules out the Arab parties and wants a government of Jewish
+-- Zionist parties only, which denies the opposition bloc its arithmetic. The live merger talks are
+-- with Gantz, i.e. the other `unaligned` party. If that merger happens this row needs revisiting.
+UPDATE upcoming_parties SET bloc = 'unaligned', economic = 1, security = 2, sector = 'secular',
+    tags = ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription',
+                 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'anti-netanyahu',
+                 'territorial-control-gaza', 'anti-two-state', 'pro-settlement', 'constitutionalist',
+                 'governance-reform', 'statist', 'excludes-haredi-and-arab-parties']
+    WHERE name_he = 'המילואימניקים';
 -- ---------------------------------------------------------------------------------------------
 
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
