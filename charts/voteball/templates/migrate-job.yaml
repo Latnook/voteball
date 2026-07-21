@@ -18,7 +18,19 @@ metadata:
   name: voteball-migrate
   namespace: {{ .Release.Namespace }}
   annotations:
-    helm.sh/hook: pre-install,pre-upgrade
+    # post-install, NOT pre-install -- the two cases genuinely differ, and this was proven the hard
+    # way on the 2026-07-21 rebuild: as a pre-install hook the Job failed with
+    #   pods "voteball-migrate-" is forbidden: serviceaccount "backend" not found
+    # and blocked the whole install for 5 minutes until activeDeadlineSeconds fired. Pre-install
+    # hooks run before EVERY normal chart resource, so the ServiceAccount, ConfigMap and
+    # ExternalSecret this Job needs do not exist yet.
+    #
+    # On a fresh install there is nothing to order: the schema is built from nothing and init_db is
+    # idempotent, so running afterwards costs nothing. On an UPGRADE -- the case migrations exist
+    # for -- pre-upgrade still runs before the new pods roll, and every dependency is already there
+    # from the previous release. Making the ConfigMap and ExternalSecret into hooks instead would
+    # also drag External Secrets Operator's sync latency into the install's critical path.
+    helm.sh/hook: post-install,pre-upgrade
     helm.sh/hook-weight: "-5"
     # before-hook-creation deletes the previous Job first: a Job's `spec` is immutable, so without
     # this the second release fails outright with "field is immutable" rather than re-running.
