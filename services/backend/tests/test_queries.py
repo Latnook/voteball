@@ -858,13 +858,20 @@ def test_get_clubs_breakdown_shape(conn):
     assert entry['previous'] == [{'party_id': party_id, 'count': 9}]
 
 
-# Parties deliberately left NULL on the religiosity axis: the Arab parties are scoped out
-# (design Decision 3 -- "how religiously Jewish should the state be" is not a question they
-# answer), and Yashar has no declared ideology. "Other" ('אחר') is NOT listed here -- the loop
-# below `continue`s past it before any religiosity assertion runs, so it would never be checked;
-# its NULL religiosity (along with bloc/economic/security/sector) is asserted instead in
+# Parties deliberately left NULL on the religiosity axis: Ra'am and Hadash are scoped out (design
+# Decision 3 -- "how religiously Jewish should the state be" is not a question they answer), and
+# Yashar has no declared ideology. "Other" ('אחר') is NOT listed here -- the loop below `continue`s
+# past it before any religiosity assertion runs, so it would never be checked; its NULL religiosity
+# (along with bloc/economic/security/sector) is asserted instead in
 # test_migration.py::test_seeded_parties_have_ideology_classification.
-RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'בל"ד', 'ישר'}
+#
+# בל"ד was in this set until seed.sql revision 4 (2026-07-21), which amended Decision 3 for Balad
+# alone: their program demands "complete separation of religion from the state" in as many words,
+# so the premise that they answer no such question is false for them. It remains true for Ra'am
+# (whose conservatism is about Muslim religious life, which this axis does not measure) and for
+# Hadash (which published no program this cycle) -- so the exception is per-party evidence, not a
+# blanket "Arab parties now get scored". Do not remove those two without a published source.
+RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'ישר'}
 
 
 def test_every_seeded_party_is_classified(conn):

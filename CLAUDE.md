@@ -263,8 +263,11 @@ Both party tables carry three numeric axes — `economic`, `security` and `relig
 **nullable**) — plus categorical `bloc`/`sector` and free-text `tags`. See
 `docs/design/2026-07-16-party-categorization-analytics-design.md` and
 `docs/design/2026-07-21-religiosity-axis-design.md`. Nullable is load-bearing: a `0` asserts a
-confirmed centrist position, so a party with no stated position must be `NULL` (every Arab party is
-NULL on `religiosity`, which is scoped to *Jewish* religion-and-state). Where a party's rhetoric and
+confirmed centrist position, so a party with no stated position must be `NULL` — `religiosity` is
+scoped to *Jewish* religion-and-state, so Ra'am and Hadash are NULL on it. **Balad is not**: its
+program demands "complete separation of religion from the state" in as many words, so it scores −3
+(seed revision 4 amended the axis design doc's Decision 3 from a category exclusion to a per-party
+evidence test — "Arab party" is not itself a reason to leave the axis NULL). Where a party's rhetoric and
 record diverge, the number records the **revealed** position and a tag carries the gap
 (`claims-economically-liberal`, `instrumentally-clerical`) — do not add claimed/actual column pairs.
 

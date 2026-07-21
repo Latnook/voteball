@@ -1094,6 +1094,92 @@ UPDATE upcoming_parties SET tags = tags || ARRAY['anti-clerical']
     WHERE name_he = 'המפלגה הכלכלית' AND NOT ('anti-clerical' = ANY(tags));
 -- =============================================================================================
 
+-- ---------------------------------------------------------------------------------------------
+-- Classification revision 4, 2026-07-21 (the Arab-party pass). Same unguarded-append rule as
+-- revisions 1-3 above: the guarded block only fires on a fresh database, so a revision that must
+-- reach production has to be appended, and the LAST write to a party wins.
+--
+-- Trigger: both parties published their electoral lists, and Balad published (well, re-published)
+-- a program. This is the first pass where the Arab parties were classified from their own primary
+-- sources rather than from general knowledge.
+
+-- Balad. Sources: the party's own program at altajamoa.org (Hebrew edition, dated 2018-09-11 and
+-- UNCHANGED since -- hence the `program-unchanged-since-2018` tag, which is a note about the age
+-- of the evidence, not a policy position), plus the 2026 primary list: סאמי אבו שחאדה (chair),
+-- בכר עואודה, ד"ר מהא כרכבי סבאח, חסן נסאסרה, אורלי נוי.
+--
+-- economic STAYS -2. The program is unambiguously left -- raise the minimum wage, oppose the
+-- privatization of social services, tax capital over labour, strong labour protections, corrective
+-- discrimination, autonomous Arab economic planning bodies -- but that is social-democratic, not
+-- communist. -3 is held for חד"ש, whose self-definition is communist. Moving Balad to -3 would
+-- erase a real distinction between the two Arab lists that voters choosing between them can see.
+--
+-- security STAYS -3, and the program confirms rather than adjusts it: complete withdrawal from the
+-- post-1967 territories, a Palestinian state with East Jerusalem as its capital, right of return
+-- under UNGA 194, dismantling the settlements, and opposition to Druze conscription and to
+-- national service for Arab citizens. It is already the pole of the axis; there is nowhere further.
+--
+-- sector STAYS 'arab' despite אורלי נוי at #5 being the first Jewish woman ever elected in a Balad
+-- primary. `sector` describes the constituency a party organises, not the biography of every
+-- candidate on its list -- the same reason עופר כסיף does not make חד"ש 'secular'.
+--
+-- religiosity NULL -> -3. THIS AMENDS DECISION 3 of the religiosity design doc, which put all
+-- three Arab parties at NULL on the premise that they say nothing about how religiously Jewish the
+-- state should be. Balad's own text refutes the premise for Balad specifically: it demands
+-- "complete separation of religion from the state", freedom of worship for all religions, and
+-- state symbols and an anthem grounded in "constitutional egalitarian and democratic principles"
+-- rather than sectarian ones. That is the -3 disestablishment position as this scale defines it,
+-- and it is stated, not inferred. Landing level with ישראל ביתנו is not a defect -- Decision 5
+-- already accepts that the axis records DIRECTION while tags record MOTIVE, which is why ישראל
+-- ביתנו and הדמוקרטים already share -3 from opposite impulses. Balad's motive is neither
+-- anti-clerical animus nor religious pluralism but civic equality, so it gets its own motive tag,
+-- `secular-democratic-state`, alongside `state-of-all-its-citizens`.
+--
+-- רע"ם and חד"ש-תע"ל STAY NULL, and the amendment does not extend to them: Balad moved because it
+-- published a religion-and-state demand, not because it is an Arab party. Ra'am's conservatism is
+-- about MUSLIM religious life, which this axis does not measure, and Hadash has published no
+-- program at all this cycle (see below).
+UPDATE upcoming_parties SET bloc = 'opposition', economic = -2, security = -3, sector = 'arab',
+    religiosity = -3,
+    tags = ARRAY['palestinian-nationalist', 'non-zionist', 'state-of-all-its-citizens',
+                 'secular-democratic-state', 'pro-two-state', 'right-of-return',
+                 'anti-privatization', 'progressive-taxation', 'affirmative-action',
+                 'opposes-arab-conscription', 'program-unchanged-since-2018']
+    WHERE name_he = 'בל"ד';
+
+-- The previous_parties row gets the religiosity value TOO, which is a deliberate exception to the
+-- "revisions touch upcoming_parties only" rule stated in revision 1. That rule exists to stop a
+-- 2026 platform being back-dated onto a previous-election row. It does not apply here: this
+-- program is dated 2018 and has not changed since, so it was equally Balad's position at the
+-- previous election. Nothing is being back-dated -- the value was simply missing. Same reasoning
+-- as Decision 7 of the religiosity design doc, which populated previous_parties for the whole
+-- axis. Economic/security/tags on the previous row are NOT touched.
+UPDATE previous_parties SET religiosity = -3 WHERE name_he = 'בל"ד';
+
+-- Hadash. NO axis changes, and that is the finding, not an omission. The party published an
+-- electoral list and NO program this cycle, so there is no new policy evidence to move
+-- economic (-3), security (-2) or religiosity (NULL) -- inventing movement from a list of names
+-- would be exactly the fabrication the NULL convention exists to prevent.
+--
+-- The list is still evidence about EMPHASIS, and that is what the new tags record. יוסף ג'בארין
+-- replaced איימן עודה as chair with ~82% of the conference vote and has said his aim is to rebuild
+-- the Joint List (`pro-joint-list`); he is a law professor and former MK known for education and
+-- civil-rights work, and #2 ג'עפר פרח directs the Mossawa Center for Arab citizens' rights, so the
+-- top of the list is civil-rights professionals rather than party apparatus (`civil-rights-
+-- focused`). #3 עופר כסיף is the sitting Jewish MK, which is Hadash's founding Jewish-Arab
+-- principle made literal (`jewish-arab-partnership`). #4 יוסף עטאונה is a former MK and a Negev
+-- Bedouin (`negev-bedouin-representation`); #5 is ניהאיה וישאחי.
+--
+-- NOTE for a future pass: this row is named חד"ש-תע"ל, the 2022 joint list with Ta'al. The list
+-- above is Hadash's OWN, and the chair is campaigning to re-form the broader Joint List. If either
+-- the partnership with Ta'al lapses or the Joint List reforms, this row needs renaming, not just
+-- reclassifying. Left alone for now -- renaming a party mid-cycle would orphan existing votes.
+UPDATE upcoming_parties SET bloc = 'opposition', economic = -3, security = -2, sector = 'arab',
+    tags = ARRAY['communist', 'arab-nationalist', 'pro-two-state', 'jewish-arab-partnership',
+                 'civil-rights-focused', 'pro-joint-list', 'negev-bedouin-representation']
+    WHERE name_he = 'חד"ש-תע"ל';
+-- ---------------------------------------------------------------------------------------------
+
 -- Logo revision, 2026-07-21. Unguarded for the same reason as the classification revisions above:
 -- the original league-logo UPDATEs end in `AND logo_url IS NULL`, so editing them in place would
 -- only ever affect a fresh database, never the live one.
@@ -1108,6 +1194,21 @@ UPDATE upcoming_parties SET tags = tags || ARRAY['anti-clerical']
 -- in-browser.
 UPDATE leagues SET logo_url = 'https://assets.laliga.com/assets/logos/LL_RGB_h_color/LL_RGB_h_color.png'
     WHERE name = 'La Liga';
+
+-- The Reservists: this is a MISATTRIBUTION FIX, not a cosmetic swap. Read the name-collision
+-- warning on this party's classification block above before touching this line. The URL being
+-- replaced is `Logo_המילואימניקים_-_דור_הניצחון.png` -- the logo of Gilad Ach's MOVEMENT, which
+-- that warning identifies as a different organisation with a materially harder platform and no
+-- established link to Yoaz Hendel's party. We were showing one organisation's mark on another
+-- organisation's row, right next to a comment explaining why they must never be conflated.
+--
+-- The replacement is the party's own logo from Wikimedia Commons: CC-BY-SA-4.0, 1080x1080 JPEG,
+-- used on the "The Reservists (political party)" articles on the English, Arabic and Russian
+-- Wikipedias and registered in Wikidata. Checked against the hotlinking rule in CLAUDE.md --
+-- upload.wikimedia.org is the same host every other party crest here already uses, and it returns
+-- 200 with a voteball.latnook.com Referer.
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f1/%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D_%D7%9C%D7%95%D7%92%D7%95_%D7%95%D7%95%D7%99%D7%A7%D7%99%D7%A4%D7%93%D7%99%D7%94.jpg'
+    WHERE name_he = 'המילואימניקים';
 
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.

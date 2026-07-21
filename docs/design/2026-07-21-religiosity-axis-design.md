@@ -35,11 +35,31 @@ numerator and denominator.
    condition. It is deliberately near-orthogonal to `sector`, and the interesting rows are the ones
    where they diverge (see Decision 5).
 
-3. **Scoped to *Jewish* religion-and-state; the Arab parties are NULL.** Ra'am is Islamist and
-   socially conservative but wants nothing about how religiously *Jewish* Israel is; Hadash is the
-   mirror case. Scoring them on "religion in public life generally" would make a Ra'am +2 and a Shas
-   +2 mean unrelated things, which is worse than no value. NULL is the same convention Decision 2 of
-   the parent doc established, and the null-handling code already exists.
+3. **Scoped to *Jewish* religion-and-state; a party is NULL when it takes no position on it.**
+   Ra'am is Islamist and socially conservative but wants nothing about how religiously *Jewish*
+   Israel is. Scoring parties on "religion in public life generally" would make a Ra'am +2 and a
+   Shas +2 mean unrelated things, which is worse than no value. NULL is the same convention
+   Decision 2 of the parent doc established, and the null-handling code already exists.
+
+   > **Amended 2026-07-21 by `seed.sql` classification revision 4.** As originally written this
+   > decision said "the Arab parties are NULL" and named all three. That conflated a *finding*
+   > (these parties published nothing on the question) with a *rule* (Arab parties are out of
+   > scope), and the rule turned out to be false for Balad: their program demands "complete
+   > separation of religion from the state", freedom of worship for all religions, and state
+   > symbols grounded in "constitutional egalitarian and democratic principles" rather than
+   > sectarian ones. That is a stated −3 position, so **Balad is now −3 on both tables** and the
+   > decision is restated as a per-party evidence test rather than a category exclusion.
+   >
+   > Ra'am and Hadash remain NULL, for their own reasons: Ra'am's conservatism is about *Muslim*
+   > religious life, which this axis does not measure, and Hadash published no program at all this
+   > cycle. Balad landing level with Yisrael Beiteinu is not a defect — Decision 5 already accepts
+   > that the axis records direction while tags record motive, which is why Yisrael Beiteinu and
+   > the Democrats already share −3 from opposite impulses. Balad's motive (civic equality, not
+   > anti-clerical animus and not religious pluralism) is carried by `secular-democratic-state`
+   > and `state-of-all-its-citizens`.
+   >
+   > `RELIGIOSITY_NULL_BY_DESIGN` in `test_queries.py` is the executable form of this decision;
+   > it was updated in the same commit and is what will catch the next drift.
 
 4. **No claimed/actual pair for Likud.** Likud does not want a halakhic state but reliably funds and
    defends religious authority to hold its coalition. Rather than doubling the column, the numeric
@@ -141,8 +161,9 @@ three revision blocks of 2026-07-21. It differs from those in writing **both** t
 | יהדות התורה | **+2** | As Shas |
 | הציונות הדתית | **+3** | Explicit halakhic-state vision |
 | עוצמה יהודית | **+3** | As Religious Zionism |
+| בל"ד | **−3** | *Revision 4, 2026-07-21.* "Complete separation of religion from the state", freedom of worship for all religions, state symbols and anthem on "constitutional egalitarian and democratic principles" rather than sectarian ones. Motive carried by `secular-democratic-state` per Decision 5 |
 | ישר | **NULL** | New party, `undefined-ideology` |
-| רע"ם, חד"ש-תע"ל, בל"ד | **NULL** | Decision 3 |
+| רע"ם, חד"ש-תע"ל | **NULL** | Decision 3 as amended — no published position, per party, not per category |
 
 `previous_parties`, scored as each party stood at the previous election:
 
@@ -154,7 +175,14 @@ three revision blocks of 2026-07-21. It differs from those in writing **both** t
 | הליכוד | **+1** |
 | ש"ס, יהדות התורה | **+2** |
 | הציונות הדתית | **+3** |
-| רע"ם, חד"ש-תע"ל, בל"ד, אחר | **NULL** |
+| בל"ד | **−3** (*revision 4*) |
+| רע"ם, חד"ש-תע"ל, אחר | **NULL** |
+
+Balad is the one party whose `previous_parties` row was touched by a later revision block, which
+looks like a violation of revision 1's "upcoming only" rule and is not. That rule stops a *2026*
+platform being back-dated onto a previous-election row. Balad's program is dated 2018-09-11 and is
+unchanged since, so it was equally their position at the previous election — the value was missing,
+not superseded. Only `religiosity` was set; economic/security/tags on that row are untouched.
 
 ### Correction carried by the same block
 
