@@ -39,6 +39,17 @@ resource "helm_release" "kube_prometheus_stack" {
   # they describe the application, so they belong with it and ship through ArgoCD on a normal commit
   # rather than requiring a Terraform apply to change a threshold.
   values = [yamlencode({
+    # EKS runs the control plane (scheduler, controller-manager, etcd) and kube-proxy on AWS-managed
+    # infrastructure Prometheus cannot reach, so scraping them yields nothing but a permanently-firing
+    # KubeSchedulerDown / KubeControllerManagerDown / etcd / KubeProxyDown. Disabling each drops both
+    # its ServiceMonitor (the unreachable target) AND its *Down rule -- the chart gates the rule file
+    # on the same .enabled flag. kubeApiServer is deliberately LEFT enabled: its metrics ARE exposed
+    # on EKS, and its recording rules feed real dashboards.
+    kubeScheduler         = { enabled = false }
+    kubeControllerManager = { enabled = false }
+    kubeEtcd              = { enabled = false }
+    kubeProxy             = { enabled = false }
+
     alertmanager = {
       serviceAccount = {
         annotations = {
@@ -46,6 +57,33 @@ resource "helm_release" "kube_prometheus_stack" {
         }
       }
       config = {
+        # This `config` REPLACES the chart's default Alertmanager config wholesale -- which silently
+        # dropped its default inhibit_rules. Without them, info-severity alerts are never suppressed,
+        # and the InfoInhibitor meta-alert (label severity=none, so not caught by any severity route)
+        # falls straight through to SNS. Re-add the standard inhibition tree here, and null-route
+        # InfoInhibitor itself below so the machinery never emails a human.
+        inhibit_rules = [
+          # A firing critical mutes matching warning/info in the same namespace + alertname.
+          {
+            source_matchers = ["severity = critical"]
+            target_matchers = ["severity =~ \"warning|info\""]
+            equal           = ["namespace", "alertname"]
+          },
+          # A firing warning mutes the matching info.
+          {
+            source_matchers = ["severity = warning"]
+            target_matchers = ["severity = info"]
+            equal           = ["namespace", "alertname"]
+          },
+          # InfoInhibitor mutes info alerts that are alone in a namespace. It stops firing the instant
+          # a warning/critical appears there, so a correlated info alert resurfaces alongside the real
+          # one -- "noisy by themselves, relevant when combined", which is the whole point of it.
+          {
+            source_matchers = ["alertname = InfoInhibitor"]
+            target_matchers = ["severity = info"]
+            equal           = ["namespace"]
+          },
+        ]
         route = {
           receiver = "sns"
           # Batch related alerts: a node going away fires several at once, and one message about
@@ -62,7 +100,12 @@ resource "helm_release" "kube_prometheus_stack" {
               # when scraped by a dead-man's-switch; delivered to a mailbox it is pure noise.
               matchers = ["alertname = Watchdog"]
               receiver = "null"
-            }
+            },
+            {
+              # InfoInhibitor is machinery for the inhibit_rules above, never a human-facing alert.
+              matchers = ["alertname = InfoInhibitor"]
+              receiver = "null"
+            },
           ]
         }
         receivers = [
