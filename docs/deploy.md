@@ -108,9 +108,21 @@ ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/depl
 `VOTEBALL_AUTO_APPROVE=1` skips Terraform's "type yes" prompt. On its own it is **not** enough to
 make the deploy unattended — without `ADMIN_PASSWORD` it still stops before step 2.
 
-**Re-running `deploy.sh` after a failure is safe, with one catch:** step 3 runs again every time and
-issues a new admin session key, which signs out anyone logged into the admin page. Nothing breaks and
-your password still works — you just log in again.
+**Re-running `deploy.sh` is safe, but step 3 reseeds the admin secret every run — two things follow
+from that:**
+
+- It issues a **new admin session key**, signing out anyone currently logged into the admin page.
+  Nothing breaks — you just log in again.
+- It **resets the admin username back to `admin`** unless you pass `ADMIN_USERNAME`. `deploy.sh`
+  prompts for the *password* but never the *username*, so a custom username silently reverts. If you
+  have set one, carry it through the rebuild:
+
+  ```bash
+  ADMIN_USERNAME='yourname' ADMIN_PASSWORD='yoursecret' ./scripts/deploy.sh
+  ```
+
+  (The database password does *not* need passing — it is read from `voteball.tfvars`.) See
+  [Change the admin username or password](#change-the-admin-username-or-password) below.
 
 **⚠️ Confirm the alert email — every single rebuild.** Check your inbox for an AWS confirmation link
 and click it. Teardown deletes the notification topic, so each deploy recreates the subscription in a
@@ -144,6 +156,54 @@ curl -sf https://<your app_domain>/api/options | head -c 120   # should print le
 ```
 
 Open the site in a browser and cast a vote — it should land and show on the results page.
+
+---
+
+## Change the admin username or password
+
+The admin login lives in **one place** — the `voteball/app-secret` secret in AWS Secrets Manager,
+never in git or Terraform state. Change it with the same script the deploy uses:
+
+```bash
+ADMIN_USERNAME='newname' ADMIN_PASSWORD='newsecret' ./scripts/seed-eks-secret.sh
+```
+
+- **Always pass `ADMIN_USERNAME`.** Leave it out and it defaults to `admin` — so omitting it while
+  meaning to change only the password silently renames your account to `admin`.
+- You do **not** pass the database password; it is read from `voteball.tfvars`. The script rewrites
+  the whole secret each run — re-reading the DB password from there and re-hashing the admin one.
+- The admin password is stored **hashed** (one-way), never in the clear. If you forget it, no one can
+  recover it — you just run this again with a new one.
+- Changing the secret rotates the session key too, so any active admin login is signed out. That is
+  the intended behaviour when rotating a password.
+
+**The running app will not see the change immediately** — there are two delays:
+
+1. External Secrets Operator copies the AWS secret into the cluster on a timer (`refreshInterval:
+   1h`).
+2. The backend reads these values as environment variables, fixed when the pod starts — so even once
+   the in-cluster secret updates, the running pods keep the old values until restarted.
+
+To apply the change now instead of waiting up to an hour:
+
+```bash
+# 1. Force the operator to pull from Secrets Manager immediately:
+kubectl annotate externalsecret app-secret -n devops-app force-sync="$(date +%s)" --overwrite
+
+# 2. Confirm the in-cluster secret updated (should print your new username):
+kubectl get secret app-secret -n devops-app -o jsonpath='{.data.ADMIN_USERNAME}' | base64 -d; echo
+
+# 3. Only then restart the backend so it re-reads the values:
+kubectl rollout restart deployment/backend -n devops-app
+```
+
+Do step 2 **before** step 3 — restart the backend before the in-cluster secret has updated and the
+fresh pod just reloads the old value. Only `backend` needs restarting; the worker and jobs mount the
+same secret but use only the (unchanged) database credentials.
+
+> **On a full rebuild**, this same reseed happens as step 3 of `deploy.sh`, which is why a custom
+> username has to be passed on the `deploy.sh` command line — see the note under
+> [Put the site online](#run-it-in-a-real-terminal).
 
 ---
 
