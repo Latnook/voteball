@@ -335,7 +335,7 @@ UPDATE clubs SET name_he = 'באיירן מינכן' WHERE name_en = 'Bayern Mun
 UPDATE clubs SET name_he = 'ברצלונה' WHERE name_en = 'Barcelona' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'ליברפול' WHERE name_en = 'Liverpool' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'פריז סן ז''רמן' WHERE name_en = 'Paris Saint-Germain' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אינטר מילאן' WHERE name_en = 'Inter Milan' AND name_he IS NULL;
+UPDATE clubs SET name_he = 'אינטר מילאנו' WHERE name_en = 'Inter Milan' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'יובנטוס' WHERE name_en = 'Juventus' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'מנצ''סטר יונייטד' WHERE name_en = 'Manchester United' AND name_he IS NULL;
 UPDATE clubs SET name_he = 'צ''לסי' WHERE name_en = 'Chelsea' AND name_he IS NULL;
