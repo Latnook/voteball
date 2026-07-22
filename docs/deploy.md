@@ -69,8 +69,9 @@ resources. The steps it performs:
 2. Create the Terraform state bucket if it does not exist, then build the AWS infrastructure
    (**asks you to type `yes`**). This now also creates the WAF that rate-limits `/api/vote`.
 3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git).
-   It uses the two passwords the script **asked you for up front, before step 2** — so run
-   `deploy.sh` in a real terminal — see the note below.
+   The database password is read straight from `voteball.tfvars` (the same file Terraform used in
+   step 2, so the two can't disagree); only the **admin** password is asked for — up front, before
+   step 2. Run `deploy.sh` in a real terminal — see the note below.
 4. Point `kubectl` at the new cluster.
 5. Build the four container images and upload them.
 6. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
@@ -85,25 +86,27 @@ this laptop. You don't need to do anything.
 
 ### Run it in a real terminal
 
-Right at the start — **before Terraform builds anything billed** — the script asks for your database
-password and admin password on screen (nothing is echoed), then runs the rest unattended. Asking up
-front is deliberate: a mistyped or missing password fails in seconds, not after a ~15-minute billed
-`terraform apply`. That also means **`deploy.sh` cannot run in a window that has no keyboard
-attached** — a script, a cron job, or a tool running it in the background. There it stops with:
+Right at the start — **before Terraform builds anything billed** — the script asks for your admin
+password on screen (nothing is echoed), then runs the rest unattended. (The database password isn't
+asked for at all; it's read from `voteball.tfvars`.) Asking up front is deliberate: a missing
+password fails in seconds, not after a ~15-minute billed `terraform apply`. That also means
+**`deploy.sh` cannot run in a window that has no keyboard attached** — a script, a cron job, or a
+tool running it in the background. There it stops with:
 
 ```
 ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD are not set.
 ```
 
 That is the script refusing to continue rather than saving a blank password. To run it without a
-keyboard, supply the answers up front instead:
+keyboard, supply the admin password up front instead (the database password still comes from
+`voteball.tfvars`, but you can override it here too):
 
 ```bash
-DB_PASS='...' ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
+ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
 ```
 
 `VOTEBALL_AUTO_APPROVE=1` skips Terraform's "type yes" prompt. On its own it is **not** enough to
-make the deploy unattended — without the three passwords it still stops at step 3.
+make the deploy unattended — without `ADMIN_PASSWORD` it still stops before step 2.
 
 **Re-running `deploy.sh` after a failure is safe, with one catch:** step 3 runs again every time and
 issues a new admin session key, which signs out anyone logged into the admin page. Nothing breaks and

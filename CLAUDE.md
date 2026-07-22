@@ -162,11 +162,13 @@ trust as pre-escaped HTML.
 - **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
   confirmation before Terraform touches billed resources; `VOTEBALL_AUTO_APPROVE=1` skips the prompt
   for unattended runs only). **`VOTEBALL_AUTO_APPROVE=1` alone does NOT make `deploy.sh`
-  unattended** — step 3 (`seed-eks-secret.sh`) prompts on `/dev/tty`, so a detached run also needs
-  `DB_PASS` and `ADMIN_PASSWORD` in the environment. A preflight check at the top of the script
-  enforces this, because the failure otherwise lands *after* a ~15-minute billed `terraform apply`
-  (hit for real on the 2026-07-21 rebuild). Note `deploy.sh` is only re-runnable at a cost: step 3
-  runs unconditionally and reissues `ADMIN_SESSION_SECRET`, invalidating live admin sessions.
+  unattended** — the admin password is prompted on `/dev/tty`, so a detached run also needs
+  `ADMIN_PASSWORD` in the environment (the db password is read from `voteball.tfvars` and only needs
+  to be passed as `DB_PASS` if it isn't there). Both are collected in a preflight check at the top of
+  the script — *before* step 2 — because the failure otherwise lands *after* a ~15-minute billed
+  `terraform apply` (hit for real on the 2026-07-21 rebuild). Note `deploy.sh` is only re-runnable at
+  a cost: step 3 runs unconditionally and reissues `ADMIN_SESSION_SECRET`, invalidating live admin
+  sessions.
 - **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
   `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file carries
@@ -175,9 +177,11 @@ trust as pre-escaped HTML.
   `scripts/tests/test-sync-values.sh` (runs offline via `SYNC_STUB_*` env vars); **extend it whenever
   you add a managed field** — it is what catches the `backup.roleArn`/`worker.roleArn` cross-assignment
   that a naive `sed` would cause.
-- **Secrets:** `./scripts/seed-eks-secret.sh` takes `DB_PASS`/`ADMIN_USERNAME`/`ADMIN_PASSWORD` from the
+- **Secrets:** `./scripts/seed-eks-secret.sh` takes `ADMIN_USERNAME`/`ADMIN_PASSWORD` from the
   environment or a silent prompt and writes them to Secrets Manager; nothing secret enters git or
-  tfstate. `DB_PASS` **must** match `db_password` in `terraform/voteball.tfvars`.
+  tfstate. `DB_PASS` **must** match `db_password` in `terraform/voteball.tfvars` — so it now defaults
+  to reading it straight from there (`tf_db_password` in `scripts/lib/config.sh`), which makes the
+  match automatic; pass `DB_PASS` in the environment only to override.
 - **CI/CD is Jenkins**, defined by the root `Jenkinsfile` and running on a dedicated EC2 host built by
   the **separate** `terraform/jenkins/` stack. Pushing app code to `master` fires a GitHub webhook →
   guard → build → Trivy → ECR → bump `image.tag` `[skip ci]` → ArgoCD auto-syncs.

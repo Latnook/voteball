@@ -47,6 +47,14 @@ prompt_secret() {   # prompt_secret VARNAME "prompt text"
   export "${var?}"
 }
 
+# db_password already lives in voteball.tfvars, and step 2 applies that same -var-file, so read it
+# from there instead of asking -- the seeded DB_PASS then matches RDS by construction, with no way to
+# fat-finger a mismatch. Only ADMIN_PASSWORD (which is not in tfvars) is actually prompted below.
+if [ -z "${DB_PASS:-}" ] && DB_PASS="$(tf_db_password)" && [ -n "$DB_PASS" ]; then
+  export DB_PASS
+  echo "Using db_password from ${TFVARS} (not prompting for it)." >&2
+fi
+
 if has_tty; then
   prompt_secret DB_PASS        "Database password (db_password from terraform/voteball.tfvars)"
   prompt_secret ADMIN_PASSWORD "Admin password for '${ADMIN_USERNAME:-admin}'"

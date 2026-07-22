@@ -21,6 +21,15 @@ tfvar() {
   printf '%s' "${val:-$fallback}"
 }
 
+# Read db_password out of tfvars. Separate from tfvar() on purpose: a password is not an identifier,
+# so unlike tfvar() this keeps '#' and spaces and captures everything between the quotes -- it must be
+# byte-for-byte what Terraform sets on RDS (deploy.sh applies the same -var-file), or the seeded
+# DB_PASS won't match the database. Empty if the key is absent or the value isn't double-quoted.
+tf_db_password() {
+  [ -f "$TFVARS" ] || return 0
+  sed -nE 's/^[[:space:]]*db_password[[:space:]]*=[[:space:]]*"(.*)"[[:space:]]*(#.*)?$/\1/p' "$TFVARS" | head -1
+}
+
 # Defaults here MUST match the defaults in terraform/variables.tf.
 REGION="$(tfvar aws_region il-central-1)"
 CLUSTER="$(tfvar cluster_name voteball)"

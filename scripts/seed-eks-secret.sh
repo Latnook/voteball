@@ -32,6 +32,12 @@ ask() {
   printf '%s' "$val"
 }
 
+# db_password already lives in voteball.tfvars, and Terraform sets RDS's password from it -- so read
+# it from there by default rather than asking, which guarantees the seeded DB_PASS matches RDS. Only
+# falls through to a prompt if the key is absent (or DB_PASS was passed in the environment).
+if [ -z "${DB_PASS:-}" ] && DB_PASS="$(tf_db_password)" && [ -n "$DB_PASS" ]; then
+  echo "Using db_password from ${TFVARS}." >&2
+fi
 DB_PASS="$(ask DB_PASS "Database password (db_password from your tfvars)")"
 ADMIN_USERNAME="${ADMIN_USERNAME:-admin}"
 ADMIN_PASSWORD="$(ask ADMIN_PASSWORD "Admin password for '${ADMIN_USERNAME}'")"
