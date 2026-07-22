@@ -25,9 +25,13 @@ tfvar() {
 # so unlike tfvar() this keeps '#' and spaces and captures everything between the quotes -- it must be
 # byte-for-byte what Terraform sets on RDS (deploy.sh applies the same -var-file), or the seeded
 # DB_PASS won't match the database. Empty if the key is absent or the value isn't double-quoted.
-tf_db_password() {
-  [ -f "$TFVARS" ] || return 0
-  sed -nE 's/^[[:space:]]*db_password[[:space:]]*=[[:space:]]*"(.*)"[[:space:]]*(#.*)?$/\1/p' "$TFVARS" | head -1
+tf_db_password() {   # tf_db_password [tfvars-path]  (defaults to $TFVARS)
+  # Takes an explicit path because deploy.sh reassigns the global TFVARS to a bare filename (for
+  # `terraform -chdir=terraform -var-file=`), which does NOT resolve from the repo root -- reading
+  # the global here silently found no file and fell through to a prompt. Pass the path you mean.
+  local file="${1:-$TFVARS}"
+  [ -f "$file" ] || return 0
+  sed -nE 's/^[[:space:]]*db_password[[:space:]]*=[[:space:]]*"(.*)"[[:space:]]*(#.*)?$/\1/p' "$file" | head -1
 }
 
 # Defaults here MUST match the defaults in terraform/variables.tf.
