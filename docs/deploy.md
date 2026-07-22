@@ -69,7 +69,8 @@ resources. The steps it performs:
 2. Create the Terraform state bucket if it does not exist, then build the AWS infrastructure
    (**asks you to type `yes`**). This now also creates the WAF that rate-limits `/api/vote`.
 3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git).
-   **This step asks you questions, so run `deploy.sh` in a real terminal** — see the note below.
+   It uses the two passwords the script **asked you for up front, before step 2** — so run
+   `deploy.sh` in a real terminal — see the note below.
 4. Point `kubectl` at the new cluster.
 5. Build the four container images and upload them.
 6. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
@@ -84,17 +85,18 @@ this laptop. You don't need to do anything.
 
 ### Run it in a real terminal
 
-Step 3 asks for your database password and admin password on screen (nothing is echoed). That means
-**`deploy.sh` cannot run in a window that has no keyboard attached** — a script, a cron job, or a
-tool running it in the background. There it stops with:
+Right at the start — **before Terraform builds anything billed** — the script asks for your database
+password and admin password on screen (nothing is echoed), then runs the rest unattended. Asking up
+front is deliberate: a mistyped or missing password fails in seconds, not after a ~15-minute billed
+`terraform apply`. That also means **`deploy.sh` cannot run in a window that has no keyboard
+attached** — a script, a cron job, or a tool running it in the background. There it stops with:
 
 ```
-/dev/tty: No such device or address
-ERROR: DB_PASS must not be empty.
+ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD are not set.
 ```
 
 That is the script refusing to continue rather than saving a blank password. To run it without a
-keyboard, supply the three answers up front instead:
+keyboard, supply the answers up front instead:
 
 ```bash
 DB_PASS='...' ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh

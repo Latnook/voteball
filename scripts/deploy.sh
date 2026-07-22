@@ -20,24 +20,45 @@ if [ ! -f "terraform/$TFVARS" ]; then
   exit 1
 fi
 
-# Step 3 (seed-eks-secret.sh) prompts on /dev/tty. With no terminal attached -- a background task, a
-# cron job, CI -- that open fails and the script correctly refuses to seed an empty password. The
-# problem is WHEN: step 2 has already spent ~15 minutes creating billed infrastructure by then. Fail
-# here instead, where it costs nothing. Hit for real on the 2026-07-21 rebuild.
+# Step 3 (seed-eks-secret.sh) needs two passwords. They are only USED at step 3, but we collect them
+# HERE -- before the ~15-minute billed `terraform apply` in step 2 -- so a missing password fails
+# cheaply instead of after the bill has already started (hit for real on the 2026-07-21 rebuild).
+# Prompting up front also means an interactive deploy needs no env vars at all: you are asked once,
+# then the rest of the run is unattended. Anything already in the environment is left untouched, so
+# the detached/CI path (pass DB_PASS + ADMIN_PASSWORD in) still works. We `export` what we read so
+# seed-eks-secret.sh inherits it at step 3 and never re-prompts.
 #
-# Test by actually opening /dev/tty, not with `[ -r /dev/tty ]` -- the latter consults permissions
-# and returns TRUE in exactly the detached case we need to catch (verified 2026-07-21), so it would
-# make this guard silently useless.
+# Test the terminal by actually opening /dev/tty, not with `[ -r /dev/tty ]` -- the latter consults
+# permissions and returns TRUE in exactly the detached case we need to catch (verified 2026-07-21),
+# so it would make this guard silently useless.
 has_tty() { (exec </dev/tty) 2>/dev/null; }
-if ! has_tty && { [ -z "${DB_PASS:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ]; }; then
+
+# Prompt for a secret on /dev/tty and export it, unless it is already set in the environment.
+prompt_secret() {   # prompt_secret VARNAME "prompt text"
+  local var="$1" text="$2" val="${!1:-}"
+  if [ -z "$val" ]; then
+    read -rsp "$text: " val </dev/tty && echo >&2
+  fi
+  if [ -z "$val" ]; then
+    echo "ERROR: $var must not be empty." >&2
+    exit 1
+  fi
+  printf -v "$var" '%s' "$val"
+  export "${var?}"
+}
+
+if has_tty; then
+  prompt_secret DB_PASS        "Database password (db_password from terraform/voteball.tfvars)"
+  prompt_secret ADMIN_PASSWORD "Admin password for '${ADMIN_USERNAME:-admin}'"
+elif [ -z "${DB_PASS:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ]; then
   cat >&2 <<'MSG'
 ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD are not set.
 
-Step 3 seeds Secrets Manager and asks for those two passwords on screen. Without a terminal it
-cannot ask, so this run would fail -- but only after Terraform had already built (and started
-billing for) the infrastructure. Stopping now instead.
+Step 3 seeds Secrets Manager with those two passwords. Without a terminal this run cannot ask for
+them, and it would otherwise fail only after Terraform had already built (and started billing for)
+the infrastructure. Stopping now instead.
 
-Either run this from a real terminal, or supply the answers up front:
+Either run this from a real terminal (you will be prompted up front), or supply the answers:
 
   DB_PASS='...' ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
 
