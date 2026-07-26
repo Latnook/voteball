@@ -1210,6 +1210,68 @@ UPDATE leagues SET logo_url = 'https://assets.laliga.com/assets/logos/LL_RGB_h_c
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f1/%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D_%D7%9C%D7%95%D7%92%D7%95_%D7%95%D7%95%D7%99%D7%A7%D7%99%D7%A4%D7%93%D7%99%D7%94.jpg'
     WHERE name_he = 'המילואימניקים';
 
+-- ---------------------------------------------------------------------------------------------
+-- Classification revision 5, 2026-07-26 (the Religious Zionism primary pass). Same unguarded-append
+-- rule as revisions 1-4 above: the guarded block only fires on a fresh database, so a revision that
+-- must reach production has to be appended, and the LAST write to a party wins.
+--
+-- Trigger: this DISCHARGES the explicit "Recheck after the primary produces an actual order" note
+-- left on this party in revision 2 (~line 920). That block was tags-only on the stated grounds that
+-- the candidate field had no ORDER and so could not be rank-weighted the way the Democrats' list
+-- was. The primary has now been held, so the rank weighting is available.
+--
+-- Realized list: 1 בצלאל סמוטריץ', 2 אורית סטרוק, 3 צביקה מור, 4 שמחה רוטמן, 5 צבי סוכות,
+-- 6 אוהד טל, 7 עומר רחמים, 8 מיכל וולדיגר.
+--
+-- STILL TAGS ONLY -- but for a different reason than last time, and the reason matters. In
+-- revision 2 no axis moved because there was no ordered evidence. Now there is ordered evidence and
+-- still no axis moves, because the two axes the list speaks to are ALREADY AT THEIR POLES:
+-- security is +3 and religiosity is +3, and a scale has nowhere further to go. The list does not
+-- confirm the axes weakly; it confirms them at the maximum. Recording that in tags is the only
+-- resolution this schema has left for this party.
+--
+-- What the ORDER actually changes -- the one substantive finding of this pass:
+--   * צביקה מור enters at #3, above רוטמן. Mor is the founder of the Tikva Forum, the hostage
+--     families' body organised in explicit opposition to exchange deals ("victory, not deals"),
+--     and is himself the father of a hostage. A first-time candidate placed third by the
+--     membership, over sitting MKs, is the clearest statement this list makes about what the base
+--     prioritised in 2026. Hence the new `opposes-hostage-deals` tag -- there was no existing tag
+--     in the vocabulary for this position, and it is not the same thing as `hardline-on-gaza`
+--     (which is about what is done to Gaza) or `security-hawk` (a general disposition).
+--   * שמחה רוטמן slips to #4. `judicial-overhaul` STAYS -- he is still high on the list and it is
+--     still party policy -- but the architect of the overhaul being placed below a hostage-deal
+--     opponent is the relative de-emphasis this pass records. Ranked lists are evidence about
+--     PRIORITY, not only about presence.
+--   * אורית סטרוק at #2 is the direct evidence for the religiosity +3 already set in the
+--     religion-and-state pass, which was assigned from the party's programme rather than from any
+--     person. She is the party's most explicit voice on religious authority over state
+--     institutions, and the membership ranked her second. New motive tag `halakhic-state`: per
+--     Decision 5 of the religiosity design doc the AXIS records direction and the TAGS record
+--     motive, and this party had no motive tag for its +3 at all.
+--   * צבי סוכות #5 and עומר רחמים #7 (Yesha Council CEO) keep `settler-movement` and
+--     `annexationist` exactly where revision 2 put them; nothing here is new.
+--   * אוהד טל #6 leads the party's international advocacy and מיכל וולדיגר #8 is its welfare/
+--     social-affairs voice. Deliberately NOT tagged: one advocacy figure at #6 is not a foreign-
+--     policy orientation, and one welfare MK at #8 does not move `not-economy-focused` -- there is
+--     still no economic figure anywhere on this list. Tagging thin evidence is how a tag set stops
+--     meaning anything.
+--
+-- economic STAYS 0 with `claims-economically-liberal`. The list contains no finance or economy
+-- figure at all, so it offers no evidence either way, and the existing pairing already records the
+-- gap between Smotrich's rhetoric and his finance-ministry record (the revealed-position rule in
+-- CLAUDE.md). bloc STAYS `bibi` and sector STAYS `religious_zionist`; a primary among the party's
+-- own members is not evidence about either.
+--
+-- previous_parties is NOT touched, per the rule in revision 1: that row describes the party as it
+-- stood at the PREVIOUS election, and a 2026 primary result is exactly the kind of thing that must
+-- not be back-dated onto it.
+UPDATE upcoming_parties SET bloc = 'bibi', economic = 0, security = 3, sector = 'religious_zionist',
+    tags = ARRAY['claims-economically-liberal', 'not-economy-focused', 'ultranationalist',
+                 'far-right', 'settler-movement', 'judicial-overhaul', 'annexationist',
+                 'opposes-hostage-deals', 'halakhic-state']
+    WHERE name_he = 'הציונות הדתית';
+-- ---------------------------------------------------------------------------------------------
+
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
 -- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;
