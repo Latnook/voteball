@@ -1,5 +1,11 @@
 # readOnlyRootFilesystem: writable-path audit
 
+> **Dated working note (2026-07-19), kept as the reasoning behind the chart's `emptyDir` mounts —
+> not a to-do list.** Everything it describes as pending has shipped: the chart mounts exactly these
+> paths, the frontend row's "(deferred)" was resolved by the `nginxinc/nginx-unprivileged` swap (it
+> now mounts `emptyDir`s at `/tmp` and `/var/cache/nginx`), and the k3s deployment it refers to was
+> retired on 2026-07-20. Base images are still `python:3.12-slim`, as stated. Verified 2026-07-26.
+
 Input for the EKS Helm chart (a later plan). Under `securityContext.readOnlyRootFilesystem: true`,
 a container's root filesystem is read-only, so it can only write to paths backed by a writable
 volume (an `emptyDir`). This table records every path each container actually needs to write, so the

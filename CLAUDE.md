@@ -233,13 +233,18 @@ destroyed — with its credentials, job configuration and build history — on e
 holds no reference to the main stack (its ECR permission is an ARN *pattern*), so it applies cleanly
 while the cluster is destroyed. Stop the instance to save money; do not destroy it.
 
-**Do not run `terraform apply` in `terraform/jenkins/` without reading the plan first.**
-`data.aws_ssm_parameter.al2023` resolves to the *newest* Amazon Linux 2023 image and `ami` forces
-replacement, so once Amazon ships a new image the stack plans a **destroy-and-rebuild of the CI
-host** — losing its plugins, credentials, job config and build history. `delete_on_termination =
-false` preserves the volume but the replacement instance does not attach it. Confirmed live on
-2026-07-21. Fix belongs with the JCasC pass (`docs/production-readiness.md` §7); pinning the AMI is
-the stopgap.
+**The Jenkins host's AMI foot-gun is DISARMED — don't re-arm it.** `terraform/jenkins/main.tf` carries
+`lifecycle { ignore_changes = [user_data, ami] }`. Without it, `data.aws_ssm_parameter.al2023`
+resolves to the *newest* Amazon Linux 2023 image and `ami` forces replacement, so a routine
+`terraform apply` would **destroy and rebuild the CI host** on Amazon's release schedule — losing its
+plugins, credentials, job config and build history (`delete_on_termination = false` preserves the
+volume, but the replacement instance does not attach it). Confirmed live on 2026-07-21, fixed the
+same day. Ignoring rather than pinning is deliberate: a *new* host still builds from the latest
+image while an existing one is never churned. Patch the running host in place
+(`sudo dnf update --releasever=latest`); move it to a new image only via a deliberate
+`-replace`, which is safe now that JCasC can rebuild the configuration.
+*(This entry described the hazard as still live until the 2026-07-26 docs audit; the code, the
+Jenkins README, `docs/maintenance.md` and `docs/production-readiness.md` had all recorded the fix.)*
 
 **The Jenkins host is configured by JCasC, not by clicking.** `terraform/jenkins/casc/jenkins.yaml`
 is applied at every Jenkins start (plugins, admin user, authorization, global env vars, both

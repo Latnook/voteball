@@ -295,12 +295,28 @@ Until then the compensating practice is explicit: **verification means opening t
 
 ## Suggested order
 
+*Re-checked against the code on 2026-07-26. Four of the seven were done during the 2026-07-21 passes
+but the list had not caught up — item 2 in particular still called a disarmed foot-gun "live", which
+contradicted the §7 status note above it.*
+
 1. ~~**Terraform remote state**~~ — **done 2026-07-21.**
-2. **JCasC + pin the Jenkins AMI** (§7) — promoted from the bottom of the list. `terraform apply` on
-   the CI stack currently rebuilds the host and loses its configuration; that is a live foot-gun,
-   not a durability nicety.
-3. **WAF + rate limiting** — protects the data the project exists to collect.
-4. **RDS Multi-AZ + PITR + deletion protection** — one Terraform change, real durability.
-5. **Alerting** — so failures surface without someone watching.
-6. **Migrations** — before the schema next needs a non-additive change.
+2. ~~**JCasC + Jenkins AMI**~~ (§7) — **done 2026-07-21.** Configuration is in
+   `terraform/jenkins/casc/`, and `lifecycle.ignore_changes = [user_data, ami]` stops a routine
+   apply from churning the host. Ignored rather than pinned, so a *new* host still gets the latest
+   image.
+3. ~~**WAF + rate limiting**~~ — **done 2026-07-21.** `terraform/waf.tf`, four rules; see
+   `docs/security.md`.
+4. **RDS durability** — *partially done.* PITR is on (7-day retention). **Multi-AZ and deletion
+   protection remain open, and deletion protection is deliberately off** because it makes
+   `terraform destroy` fail on a stack that is torn down between sessions. Closing this one means
+   deciding to retire the destroy/rebuild workflow first — it is a workflow decision, not a
+   Terraform change.
+5. ~~**Alerting**~~ — **mechanism done 2026-07-21.** Alertmanager publishes to SNS via IRSA (no SMTP
+   on the cluster) and the chart ships 7 alert rules in `prometheusrule.yaml`. What remains is
+   narrower and is tracked as **G7** in `docs/cicd.md`: nothing notifies on a failed *build*.
+6. **Migrations** — **half done (§4), and now the top of the open list.** The *exactly-once* half
+   shipped 2026-07-21: the `post-install,pre-upgrade` hook Job runs schema work once per release
+   instead of every replica racing at startup. **Alembic itself is still missing** — versioning,
+   ordering and down-steps — and this Job is what will run it. Needed before the schema next takes a
+   non-additive change.
 7. **NAT/Spot redundancy** — the most expensive, and the least likely to bite at this scale.
