@@ -41,7 +41,10 @@ numerator and denominator.
    Shas +2 mean unrelated things, which is worse than no value. NULL is the same convention
    Decision 2 of the parent doc established, and the null-handling code already exists.
 
-   > **Amended 2026-07-21 by `seed.sql` classification revision 4.** As originally written this
+   > **Amended 2026-07-21 by the Arab-party classification pass** (reasoning under Balad in
+   > `docs/party-classifications.md`; the pass was `seed.sql` revision 4 before that file was
+   > flattened to a plain table on 2026-07-26).
+   > As originally written this
    > decision said "the Arab parties are NULL" and named all three. That conflated a *finding*
    > (these parties published nothing on the question) with a *rule* (Arab parties are out of
    > scope), and the rule turned out to be false for Balad: their program demands "complete
@@ -175,11 +178,11 @@ three revision blocks of 2026-07-21. It differs from those in writing **both** t
 | הליכוד | **+1** |
 | ש"ס, יהדות התורה | **+2** |
 | הציונות הדתית | **+3** |
-| בל"ד | **−3** (*revision 4*) |
+| בל"ד | **−3** (*Arab-party pass, 2026-07-21*) |
 | רע"ם, חד"ש-תע"ל, אחר | **NULL** |
 
-Balad is the one party whose `previous_parties` row was touched by a later revision block, which
-looks like a violation of revision 1's "upcoming only" rule and is not. That rule stops a *2026*
+Balad is the one party whose `previous_parties` row was touched by a later pass, which looks like a
+violation of the "upcoming only" rule and is not. That rule stops a *2026*
 platform being back-dated onto a previous-election row. Balad's program is dated 2018-09-11 and is
 unchanged since, so it was equally their position at the previous election — the value was missing,
 not superseded. Only `religiosity` was set; economic/security/tags on that row are untouched.
@@ -193,7 +196,7 @@ the granting of kashrut, and their haredi section is about ending payment for no
 This block **restores `anti-clerical`** alongside `kashrut-liberalization`.
 
 New tags introduced: `instrumentally-clerical` (Likud), `religious-pluralism` (already present on the
-Democrats from revision 1, now load-bearing for Decision 5).
+Democrats, now load-bearing for Decision 5).
 
 ## Data flow
 

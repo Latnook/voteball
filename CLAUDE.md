@@ -36,7 +36,9 @@ that accompanied them were process artifacts and were deleted on 2026-07-20 once
 git history if you need them.)*
 
 Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
-`docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`.
+`docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`,
+`docs/party-classifications.md` (why each party carries the ideology values it does — the reasoning
+that used to live in `seed.sql` comments).
 
 ## Workflow
 
@@ -275,19 +277,31 @@ Both party tables carry three numeric axes — `economic`, `security` and `relig
 confirmed centrist position, so a party with no stated position must be `NULL` — `religiosity` is
 scoped to *Jewish* religion-and-state, so Ra'am and Hadash are NULL on it. **Balad is not**: its
 program demands "complete separation of religion from the state" in as many words, so it scores −3
-(seed revision 4 amended the axis design doc's Decision 3 from a category exclusion to a per-party
-evidence test — "Arab party" is not itself a reason to leave the axis NULL). Where a party's rhetoric and
+(the 2026-07-21 Arab-party pass amended the axis design doc's Decision 3 from a category exclusion
+to a per-party evidence test — "Arab party" is not itself a reason to leave the axis NULL; the
+reasoning is under Balad in `docs/party-classifications.md`). Where a party's rhetoric and
 record diverge, the number records the **revealed** position and a tag carries the gap
 (`claims-economically-liberal`, `instrumentally-clerical`) — do not add claimed/actual column pairs.
 
-**Revising a classification means APPENDING a new unguarded block, never editing the old one.** The
-original classification `UPDATE`s end in `AND bloc IS NULL` so a fresh seed is idempotent — which
-also means editing them in place changes **nothing on an already-seeded database**, and production
-is always already seeded. Revisions therefore append a dated, unguarded block; the last one to
-touch a party wins, so the file reads as a revision log. Unguarded is safe because nothing in the
-app writes these columns (the admin party endpoints only rename). Verify a revision the way the
-existing ones were: seed a container with the *previous* file, apply the new one, confirm the value
-actually moves.
+**`seed.sql` holds the values; `docs/party-classifications.md` holds the reasoning. Keep them
+apart.** Each party has exactly one row in a plain `VALUES` block per table, and it is the current
+state — edit that row in place. Do **not** reintroduce reasoning as SQL comments, and do not add a
+second copy of the values to the doc; when the two disagree, `seed.sql` is right.
+
+*(This replaced an append-only revision-log pattern on 2026-07-26, at the repo owner's request. Half
+of `seed.sql` had become prose, and a party's current value could only be derived by reading every
+block in order.)*
+
+**The classification `UPDATE`s are deliberately UNGUARDED — do not add `AND bloc IS NULL`.**
+Production is always already seeded, so a guard makes every later edit unreachable there; that is
+precisely why the file used to grow by appending. Unguarded is safe for the six ideology columns
+because nothing in the app writes them (the admin party endpoints only rename). **The name and
+`logo_url` statements keep their `IS NULL` guards for the opposite reason — admins edit those live,
+and an unguarded write destroys their edits.** Don't "make them consistent."
+
+Verify a revision the way every existing one was: seed a container with the *previous* file, apply
+the new one, confirm the value actually moves on the already-seeded row — a fresh database proves
+nothing, since a guarded block would set the value there anyway.
 
 **Adding a new axis? Update `services/backend/tests/test_migration.py` too.** It is the reference
 test that round-trips the ideology columns and asserts the `CHECK` bounds. The religiosity pass
