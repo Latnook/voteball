@@ -1350,6 +1350,104 @@ UPDATE upcoming_parties SET bloc = 'opposition', economic = 1, security = NULL, 
     WHERE name_he = 'ביחד';
 -- ---------------------------------------------------------------------------------------------
 
+-- ---------------------------------------------------------------------------------------------
+-- Classification revision 7, 2026-07-26 (the NULL-axis sweep). Same unguarded-append rule as
+-- revisions 1-6 above.
+--
+-- Trigger: an audit of which parties still had NULL axes, rather than news about any one party.
+-- Four rows were carrying gaps. Two of them turn out to be CORRECTLY NULL and are documented here
+-- without an UPDATE -- confirming that a party still has no stated position is a finding under this
+-- schema's NULL convention, not a failed lookup, and writing it down stops the next audit
+-- re-investigating the same two rows.
+--
+-- Election date is 2026-10-27, so lists are not final and more revisions should be expected.
+
+-- ישר -- the substantive change in this pass, and it is a STALENESS fix, not new evidence. The
+-- guarded block classified this row as `new-party` + `undefined-ideology` with a default 0/0/NULL,
+-- which was honest when written: the party had no platform yet. It now has a full published one,
+-- and is polling ahead of הליכוד. A row reading `undefined-ideology` for the largest party in the
+-- polls is the worst kind of stale -- it looks like a classification rather than a placeholder.
+-- Sources: the party's own site yasharwitheisenkot.com (the 10-point agenda at /agenda_point/ and
+-- /principles/), plus Eisenkot's own statements for the one thing the platform omits.
+--
+-- security 0 -> +1. THE PUBLISHED AGENDA CONTAINS NO POSITION ON A PALESTINIAN STATE, THE
+-- TERRITORIES, OR SOVEREIGNTY -- the omission is deliberate and reported as such. So this rests on
+-- his statements, the same evidence route the המילואימניקים block above had to take when the
+-- registry text was too thin. What he has said: "you will not find one statement of mine in favour
+-- of a Palestinian state", AND opposition to sovereignty over Judea and Samaria on the grounds that
+-- it produces a bi-national state and forfeits the Jewish majority, AND a single military force
+-- between the river and the sea.
+-- NOT +2, which is the interesting call. Every party at +2 (ישראל ביתנו, כחול לבן, אל הדגל,
+-- המילואימניקים) pairs "no Palestinian state" with a TERRITORIAL claim -- sovereignty over
+-- security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza.
+-- Eisenkot has the first half and explicitly refuses the second: his objection to annexation is
+-- demographic, not dovish, but it is a real refusal and it is what distinguishes him from that
+-- group. +1 records a hawk who will not expand. `anti-annexation` is a NEW tag and had to be --
+-- the vocabulary only had `sovereignty-annexation`, its opposite, and leaving the position untagged
+-- would make this row indistinguishable from a soft +1.
+--
+-- religiosity NULL -> -2. "שירות לכולם" conscripting haredim and Arabs with no compromise (he has
+-- said he would prefer another election to a compromise on the haredi draft), a mandatory core
+-- curriculum for all, and state-run haredi education. NOT -3: -3 is disestablishment as this scale
+-- defines it (ישראל ביתנו's civil marriage and abolition of the religious councils; the Democrats'
+-- pluralism; Balad's separation demand). This platform demands none of that -- it promises citizens
+-- can keep their faith and lifestyle, promotes "inclusive Judaism", and מתן כהנא, whose kashrut and
+-- conversion reforms were fought from INSIDE religious Zionism, is a co-founder. That is reducing
+-- clerical privilege, not separating religion from state.
+--
+-- economic STAYS 0, and this is now an evidenced 0 rather than a default one -- worth the note,
+-- because the two look identical in the data. Rightward: free-market framing, "one of the world's
+-- leading economies", break monopolies, strengthen competition, adopt international standards.
+-- Leftward: state incentives (housing, tax credits, welfare) REDIRECTED to those bearing the
+-- burden, massive periphery infrastructure, and מנואל טרכטנברג -- who chaired the 2011 social-
+-- protest committee -- as a co-founder. Those genuinely cancel.
+--
+-- NOT RENAMED, deliberately. The registered name is "ישר! עם איזנקוט"; this row is `ישר`. Same
+-- reasoning as the note on חד"ש-תע"ל: renaming a party mid-cycle orphans the votes already cast
+-- against this row, and a display name is not worth that.
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 0, security = 1, religiosity = -2,
+    sector = 'secular',
+    tags = ARRAY['new-party', 'centrist', 'liberal-zionist', 'statist', 'security-hawk',
+                 'no-palestinian-state', 'anti-annexation', 'universal-conscription',
+                 'core-curriculum', 'constitutionalist', 'governance-reform', 'anti-monopoly',
+                 'periphery-development']
+    WHERE name_he = 'ישר';
+
+-- רע"ם -- security NULL -> -2, on Abbas's own statements: an immediate end to the war, and a
+-- peaceful settlement requiring an independent Palestinian state alongside Israel. That is the
+-- two-state position, which lands between the Democrats (-1, Zionist two-staters) and בל"ד (-3).
+--
+-- SCORED CONSERVATIVELY, ON PURPOSE. A secondary summary also attributes to רע"ם the ending of the
+-- occupation, evacuation of the settlements and the right of return -- which would be -3, level
+-- with בל"ד. That was NOT verified: idi.org.il returned 504 on two attempts and israelhayom.co.il
+-- returned 403, so the claim could not be traced to רע"ם's own material and may be inherited from
+-- old Joint List text. -2 is what the confirmed evidence carries. If the stronger platform is ever
+-- verified from the party's own source, this row moves to -3 -- but it should move on evidence,
+-- not on a summary nobody could open.
+--
+-- religiosity STAYS NULL, and revision 4 already settled why: this axis measures JEWISH
+-- religion-and-state, and רע"ם's conservatism is about Muslim religious life, which it does not
+-- measure. The Balad amendment does not extend here -- Balad moved because it published a
+-- religion-and-state demand, not because it is an Arab party.
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 0, security = -2, sector = 'arab',
+    tags = ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues', 'pro-two-state']
+    WHERE name_he = 'רע"ם';
+
+-- ביחד -- security STAYS NULL. NO UPDATE, and that is the finding. Revision 1 left this NULL
+-- because ביחד is a list of two legally separate parties that contradict each other on Palestinian
+-- statehood. That was checked again and it holds: the list was formed 2026-04-26 with Bennett as
+-- chair and Lapid at #2, the components remain separate and autonomous, and Lapid's position is
+-- that a Palestinian state is POSTPONED, NOT DROPPED, with the PA heading Gaza -- while Bennett
+-- rules it out. A single number cannot represent both, and `internally-split-on-conflict` already
+-- says so. Do not "fix" this NULL by averaging the two.
+-- WATCH: Bennett was reported in mid-June 2026 to be weighing dissolving the list over polling. If
+-- it dissolves, this row does not get reclassified -- it gets split back into two rows.
+
+-- חד"ש-תע"ל -- religiosity STAYS NULL. NO UPDATE. Revision 4 recorded that no programme was
+-- published this cycle; searched again for this pass and there is still none. The NULL is the
+-- absence of a published position, and five days of no new publication does not change it.
+-- ---------------------------------------------------------------------------------------------
+
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
 -- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;

@@ -859,8 +859,8 @@ def test_get_clubs_breakdown_shape(conn):
 
 
 # Parties deliberately left NULL on the religiosity axis: Ra'am and Hadash are scoped out (design
-# Decision 3 -- "how religiously Jewish should the state be" is not a question they answer), and
-# Yashar has no declared ideology. "Other" ('אחר') is NOT listed here -- the loop below `continue`s
+# Decision 3 -- "how religiously Jewish should the state be" is not a question they answer).
+# "Other" ('אחר') is NOT listed here -- the loop below `continue`s
 # past it before any religiosity assertion runs, so it would never be checked; its NULL religiosity
 # (along with bloc/economic/security/sector) is asserted instead in
 # test_migration.py::test_seeded_parties_have_ideology_classification.
@@ -871,7 +871,18 @@ def test_get_clubs_breakdown_shape(conn):
 # (whose conservatism is about Muslim religious life, which this axis does not measure) and for
 # Hadash (which published no program this cycle) -- so the exception is per-party evidence, not a
 # blanket "Arab parties now get scored". Do not remove those two without a published source.
-RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'ישר'}
+#
+# ישר was in this set until seed.sql revision 7 (2026-07-26), and was there for a DIFFERENT reason
+# than the other two: not "the axis does not apply" but "the party had not published a platform
+# yet", back when its row read `undefined-ideology`. It has one now (yasharwitheisenkot.com), and
+# it is squarely about religion and state -- conscripting haredim with no compromise, a mandatory
+# core curriculum, state-run haredi education -- so it scores -2. That is the same move revision 4
+# made for בל"ד: the party's own published text refuted the premise that put it here.
+# Note the two reasons age differently. A party scoped out by Decision 3 stays out permanently
+# unless it publishes a religion-and-state demand; a party parked here for having no platform is a
+# placeholder that MUST be revisited the moment one appears. Do not add a party to this set for the
+# second reason without leaving a note saying so.
+RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל'}
 
 
 def test_every_seeded_party_is_classified(conn):
