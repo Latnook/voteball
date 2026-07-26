@@ -10,10 +10,19 @@ Voteball is a public poll correlating football fandom with Israeli political-par
 
 **The repo is designed to be forkable**: no AWS account, region or domain is hardcoded anywhere in
 code. Identity lives in exactly two places — `terraform/voteball.tfvars` (pre-apply) and
-`terraform output` (post-apply) — both read through `scripts/lib/config.sh`. The env-specific fields of
-`charts/voteball/values.yaml` are marked `FILLED-BY-SYNC` and written by
-`scripts/sync-values-from-tf.sh`. **If you add a hardcoded ARN, bucket, registry or domain anywhere,
-that is a bug.**
+`terraform output` (post-apply) — both read through `scripts/lib/config.sh`. The ten env-specific
+fields of `charts/voteball/values.yaml` are written by `scripts/sync-values-from-tf.sh`. **If you add
+a hardcoded ARN, bucket, registry or domain anywhere, that is a bug.**
+
+**The one deliberate exception is `charts/voteball/values.yaml` itself, and it is not optional.**
+ArgoCD deploys what is on `master`, not what is on your disk, so those ten fields must be committed
+with **real** values — this account's ECR registry, RDS endpoint, ACM/WAF/IRSA ARNs and domain are
+in git right now. Bootstrapping ArgoCD while they are still placeholders reverts the cluster to a
+stale image tag and every pod lands in `ImagePullBackOff` (observed on the 2026-07-20 rebuild; see
+step 8 of `scripts/deploy.sh`). A forker replaces them by running the sync script, not by editing
+the file. Only the header comment says `FILLED-BY-SYNC`; the values themselves are live.
+*(Corrected in the 2026-07-26 docs audit — this file previously claimed the committed values.yaml
+carried `FILLED-BY-SYNC` placeholders, which stopped being true once GitOps took over.)*
 
 > **The single-node k3s deployment is RETIRED and its code was removed on 2026-07-20** (the `terraform/`
 > stack, the Ansible playbook/roles, and the SSH-based reverse-seed script — all recoverable from git
@@ -33,7 +42,9 @@ when the design met reality.
 
 *(Write new design docs here as `YYYY-MM-DD-<topic>-design.md`. The step-by-step implementation plans
 that accompanied them were process artifacts and were deleted on 2026-07-20 once executed; they are in
-git history if you need them.)*
+git history if you need them. **One survives**: `docs/superpowers/plans/2026-07-20-jenkins-migration.md`,
+still tracked. Treat it as a historical artifact of that migration, not as a plan to execute — the
+Jenkins design doc and `docs/cicd.md` are the current sources.)*
 
 Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
 `docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`,
@@ -139,6 +150,20 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 | `/api/admin/upcoming-parties/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; reassigns every vote's `<id>` pick to `target_id` (collision-safe against the ≤3-pick cap), returns `{"reassigned": N}` |
 | `/api/admin/votes` | GET | Bearer token | list all votes (no `cookie_token` in the response); each vote carries `team_picks: [{"league_id", "club_id"}, ...]` (assembled from separate queries against `vote_clubs`/`vote_leagues`, not a joined `array_agg`, to avoid cartesian-inflating `upcoming_party_ids` alongside it) |
 | `/api/admin/votes/<id>` | DELETE | Bearer token | remove one vote; cascades to its `vote_clubs`/`vote_leagues`/`vote_upcoming_parties` rows |
+| `/api/results/switch` | GET | none | `?league_id=N&club_id=N` (both optional); vote-switch view — how voters moved between previous and upcoming parties |
+| `/api/results/clubs-breakdown` | GET | none | no params; per-club totals across all leagues |
+| `/api/admin/leagues` | POST | Bearer token | create; body `{"name_en", "name_he", ...}` |
+| `/api/admin/leagues/<id>` | PATCH/DELETE | Bearer token | rename/remove |
+| `/api/admin/leagues/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; rows that would move |
+| `/api/admin/leagues/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves votes off `<id>` |
+| `/api/admin/clubs` | POST | Bearer token | create; body needs `name_en`, `name_he` and an integer `league_id` (`logo_url` optional) |
+| `/api/admin/clubs/<id>` | PATCH/DELETE | Bearer token | rename/remove; PATCH takes the same body as create |
+| `/api/admin/clubs/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; rows that would move |
+| `/api/admin/clubs/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves votes off `<id>` |
+
+*(The clubs/leagues admin CRUD block shipped with
+`docs/design/2026-07-15-clubs-leagues-admin-crud-design.md` and went undocumented in this table until
+the 2026-07-26 docs audit. `docs/admin-guide.md` still covers party reassignment only.)*
 
 Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
 (dashboard, reads `/api/results`), `admin.html`/`admin.js` (unlinked from the public pages — party
@@ -173,8 +198,9 @@ trust as pre-escaped HTML.
   sessions.
 - **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
-  `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file carries
-  `FILLED-BY-SYNC` placeholders. **Never hand-edit them** — they change on every rebuild. `--check`
+  `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file
+  carries the **real, current** values, not placeholders — ArgoCD deploys from `master`, so it has to
+  (see the forkability note at the top). **Never hand-edit them** — they change on every rebuild. `--check`
   fails on drift *and* verifies `image.tag` names an image that exists in ECR. Its only test is
   `scripts/tests/test-sync-values.sh` (runs offline via `SYNC_STUB_*` env vars); **extend it whenever
   you add a managed field** — it is what catches the `backup.roleArn`/`worker.roleArn` cross-assignment

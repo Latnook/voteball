@@ -178,6 +178,10 @@ Then open <http://localhost:8080>. The backend creates its own schema and seed d
 - **[`docs/production-readiness.md`](docs/production-readiness.md)** — the honest gap between this demo-grade deployment and one you could run for real, ordered by risk.
 - **[`docs/maintenance.md`](docs/maintenance.md)** — what rots on its own: version pins, the EKS support deadline, and why CI can fail without you changing anything.
 - **[`docs/eks/architecture.md`](docs/eks/architecture.md)** — architecture diagram.
+- **[`docs/admin-guide.md`](docs/admin-guide.md)** — using the admin UI to reassign votes through
+  party splits and mergers, and what each action does to the stored data.
+- **[`docs/party-classifications.md`](docs/party-classifications.md)** — why each party carries the
+  ideology values it does: the axes, the scoring conventions, and the evidence per party.
 - **[`docs/design/`](docs/design/)** — one design doc per feature/infrastructure pass: the reasoning
   behind the schema, the balloting rules, and the deploy/teardown ordering.
 - **`CLAUDE.md`** — conventions and commands for anyone (human or agentic) working in this codebase.

@@ -144,6 +144,13 @@ stereotype), and switching (is it more loyal or more volatile than average).
     Confirmed via the visual companion.
 18. **Categorization and lineage remain seed-only**, matching the earlier Phase 1 decision — no admin
     UI. Edits happen via `seed.sql` + the existing `sync-seed-from-rds.sh` reverse-seed workflow. This
+
+    > **Stale as written (noted 2026-07-26).** `sync-seed-from-rds.sh` was **removed on 2026-07-20**
+    > — it tunnelled to RDS over SSH through the k3s node, which EKS does not have. There is no
+    > reverse-seed workflow at present; admin-curated edits live only in RDS until someone backfills
+    > them by hand. The rest of this decision still holds. Current process for editing
+    > classifications: `docs/party-classifications.md`.
+
     is explicitly acknowledged as provisional: party platforms aren't fully released yet and further
     splits/merges may happen before candidate lists lock, so this data will need revision over time —
     that's a normal seed edit, not a design gap.
