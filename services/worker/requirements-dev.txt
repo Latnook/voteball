@@ -1,0 +1,4 @@
+# Test-only dependencies. NOT installed into the image -- the Dockerfile installs
+# requirements.txt only, which is what keeps pytest out of production.
+-r requirements.txt
+pytest==8.3.4

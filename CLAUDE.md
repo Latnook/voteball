@@ -448,10 +448,16 @@ docker run -d --name voteball-test-db -e POSTGRES_PASSWORD=test -p 5432:5432 pos
 # databases inside it (CREATE DATABASE revcheck; ...) rather than using the default one.
 cd services/backend
 python -m venv .venv && source .venv/bin/activate   # or use uv if pip is unavailable
-pip install -r requirements.txt
+pip install -r requirements-dev.txt                 # NOT requirements.txt — that has no pytest
 python -m pytest tests/ -v                          # full suite
 python -m pytest tests/test_app.py::test_health -v   # single test
 ```
+
+**`requirements.txt` is the production dependency list and the Dockerfiles install *only* it;
+`requirements-dev.txt` adds pytest on top.** Both services have this split. `tests/test_requirements.py`
+(in each service) fails if a declared package is never imported, or if an imported package is missing
+from the list — both mistakes were live until 2026-07-26, and neither is catchable by the normal
+suite, because the venv has everything installed either way while the built image does not.
 
 `tests/conftest.py` sets required env vars (`DB_HOST`, `DB_PASS`, `ADMIN_USERNAME`,
 `ADMIN_PASSWORD_HASH`, `ADMIN_SESSION_SECRET`, etc.) via
