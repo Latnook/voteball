@@ -338,6 +338,20 @@ nothing, since a guarded block would set the value there anyway.
 test that round-trips the ideology columns and asserts the `CHECK` bounds. The religiosity pass
 missed it entirely and shipped an untested constraint; only the final review caught it.
 
+**Scoring a party that `test_queries.py` lists in `RELIGIOSITY_NULL_BY_DESIGN` fails the suite** — it
+asserts those parties *stay* NULL. Two different reasons put a party there: "the axis doesn't apply
+to it" (permanent) vs "it hasn't published a platform yet" (a placeholder that must be revisited the
+moment one appears). Check which before removing an entry.
+
+**Restructuring `seed.sql` (as opposed to changing a value) must be proven data-neutral:** dump every
+party row from a DB seeded with the OLD file, then diff against both (a) a fresh DB seeded with the
+new file and (b) the old-seeded DB with the new file applied on top. Both diffs empty, or it isn't a
+refactor.
+
+Researching party positions: `idi.org.il` returns **504** and `israelhayom.co.il` returns **403** to
+WebFetch — party official sites and `he.wikipedia.org` work. When only a blocked source supports the
+stronger claim, score the weaker one and say so (see רע"ם in `docs/party-classifications.md`).
+
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 
 Admin-curated data (logo URLs, renames) lives only in the live RDS instance until someone backfills it
@@ -429,6 +443,9 @@ if a service directory is ever moved, delete and recreate them, or every command
 
 ```bash
 docker run -d --name voteball-test-db -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:17
+# ...or `docker start voteball-test-db` if it already exists — it persists between sessions, and
+# `docker run` then fails on the name conflict. For seed/schema verification create throwaway
+# databases inside it (CREATE DATABASE revcheck; ...) rather than using the default one.
 cd services/backend
 python -m venv .venv && source .venv/bin/activate   # or use uv if pip is unavailable
 pip install -r requirements.txt
@@ -492,6 +509,22 @@ ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml`), so
 cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
 note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` now fails with
 `conflict with "argocd-controller"` on server-side-apply field ownership. Upgrades go through git.
+
+### Doc claims that drift (check these before trusting them)
+
+Two audit passes on 2026-07-26 found seven stale claims; every one was mechanically checkable.
+
+- **The API surface table in this file** vs `grep -oE "@app\.route\('[^']+'" services/backend/app.py`
+  — 10 routes (the whole clubs/leagues admin block) were undocumented until that audit.
+- `docs/deploy.md`'s numbered steps vs `grep -E '^\s*step "' scripts/deploy.sh`.
+- The sync-managed field list vs the `managed` dict in `scripts/sync-values-from-tf.sh` — count it,
+  don't recall it (three different counts have been asserted; **ten** is correct).
+- Cost figures (~$200/mo stack, $37 vs $6 Jenkins) and EKS 1.34 / 2026-12-02 repeat across several
+  docs and must agree.
+- **A doc contradicting another doc — or itself — is the reliable tell.** Both 2026-07-26 findings
+  were *solved* problems still described as unsolved, which misdirects effort worse than an omission
+  does. `docs/eks/live-cluster-snapshot.md` is the model for dated material: it states up front that
+  it is frozen evidence and must not be "corrected".
 
 ## Key constraints
 
