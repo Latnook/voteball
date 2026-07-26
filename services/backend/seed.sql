@@ -1272,6 +1272,84 @@ UPDATE upcoming_parties SET bloc = 'bibi', economic = 0, security = 3, sector = 
     WHERE name_he = 'הציונות הדתית';
 -- ---------------------------------------------------------------------------------------------
 
+-- ---------------------------------------------------------------------------------------------
+-- Classification revision 6, 2026-07-26 (Together's economic programme). Same unguarded-append
+-- rule as revisions 1-5 above.
+--
+-- Trigger: Bennett presented Together's cost-of-living programme on 2026-06-30. Note that
+-- be-yahad.org.il/plans/yoker/ is ALREADY in revision 1's source list -- but revision 1 read the
+-- five published plans in AGGREGATE and compressed all of this into six words ("competition/import
+-- liberalization"), recording no instrument. The presented programme also contains material the
+-- plans page does not: the monopolies are named (תנובה, שטראוס, דיפלומט, שופרסל), and it adds a
+-- forced regional divestiture and a banking measure. So this is a genuine evidence upgrade on an
+-- already-cited URL, not a re-read of the same text.
+--
+-- Sources: be-yahad.org.il/plans/yoker/ (the party's own document -- authoritative here) plus the
+-- launch coverage at mako.co.il/news-money/2026_q2/Article-54fd6f938c81f91026 and
+-- finance.walla.co.il/item/3849842 for the measures not on the page.
+--
+-- economic STAYS +1 -- but the old +1 was an aggregate impression and this one is evidenced, which
+-- is worth the block on its own. The programme pulls in both directions and nets out where it was:
+--   * RIGHTWARD: eliminate produce tariffs outright (currently 212% on milk powder, 85% on some
+--     fruit and veg), open agricultural imports, adopt the European-standards principle ("what is
+--     permitted in Europe is permitted in Israel"), collapse three separate approval agencies into
+--     one Food Authority. That is real trade liberalization and real deregulation.
+--   * LEFTWARD/STATIST: the headline instruments are COERCIVE, not liberalizing -- mandatory
+--     dissolution of named monopolies, forcing שופרסל to sell stores where it holds a regional
+--     monopoly, mandated per-category financial reporting, a ban on exclusive importers carrying
+--     additional major brands, and US-style deposit insurance. Replacing farm tariffs with direct
+--     grants is a wash fiscally: it swaps one form of state support for another rather than
+--     withdrawing the state.
+-- This is the SAME fusion that holds המפלגה הכלכלית at +1 rather than +2 (see revision 2: "that
+-- second half is real state expansion, not standard right-economics"). Applying that yardstick
+-- consistently is the whole reason the axis means anything across parties.
+--
+-- WHY NOT +2: ישראל ביתנו is the only party at +2 and it gets there by SHRINKING the state --
+-- privatizing Ashdod Port and Haifa Airport, ending child allowances from the fifth child.
+-- Together's document proposes no privatization and no budget cut.
+-- WHY NOT 0: the 0 bucket is parties with no economic doctrine or a genuinely centrist one. A
+-- detailed published programme built on trade liberalization is not that.
+--
+-- ON THE TAX CUTS: the mako write-up lists "broad-based tax cuts" among the proposals; the walla
+-- write-up explicitly records none, and the party's OWN document contains none -- not one rate.
+-- Deliberately given NO weight. Classifying from the party's own sources is the rule the Reservists
+-- name-collision warning exists to enforce, and CLAUDE.md's revealed-vs-claimed convention says the
+-- number records what a party actually commits to. A tax cut present in one journalist's summary
+-- and absent from the document is not a commitment.
+--
+-- New tags, all three already in the vocabulary (no new coinages needed):
+--   * `anti-monopoly` -- forced dissolution and divestiture. `pro-competition` was already here but
+--     it is the GOAL; this is the instrument, and the two are not the same claim. המפלגה הכלכלית
+--     carries both for the same reason.
+--   * `free-trade` -- tariff elimination and the European-standards principle.
+--   * `kashrut-liberalization` -- "what is kosher in Europe is kosher in Israel", automatic
+--     recognition of approved foreign certifiers, and the end of the double-certification and
+--     separate-production-line requirements.
+--
+-- IMPORTANT -- the kashrut measure is NOT additional evidence for `anti-clerical`, and the tag is
+-- being added for a narrower reason than it was for המפלגה הכלכלית. Together's reform recognizes
+-- foreign certifying bodies that Israel's rabbinical authorities APPROVE, explicitly without
+-- changing the Chief Rabbinate's own procedures -- liberalization INSIDE the Rabbinate's framework.
+-- The Economic Party's text asks to remove the government from granting kashrut altogether, which
+-- is what the revision-2 correction restored `anti-clerical` for. Together keeps `anti-clerical`
+-- regardless, but on the education and civil-service plans (defunding religious school networks,
+-- the 60% core-curriculum funding condition, universal conscription) -- not on this.
+--
+-- security STAYS NULL. An economic programme is silent on the conflict, and the reason recorded in
+-- revision 1 is unchanged: Together is a LIST of two legally separate parties whose positions on
+-- Palestinian statehood contradict each other. bloc and sector unmoved.
+--
+-- NOTE for a future pass: this programme is presented as one component of a broader Bennett
+-- platform ("ההסכמה החדשה" / the New Agreement) spanning defence, education and haredi conscription.
+-- If that full platform is published it may finally settle `security`, which is the one axis this
+-- party still has NULL.
+UPDATE upcoming_parties SET bloc = 'opposition', economic = 1, security = NULL, sector = 'secular',
+    tags = ARRAY['liberal-zionist', 'constitutionalist', 'internally-split-on-conflict',
+                 'anti-clerical', 'universal-conscription', 'pro-competition', 'periphery-development',
+                 'anti-monopoly', 'free-trade', 'kashrut-liberalization']
+    WHERE name_he = 'ביחד';
+-- ---------------------------------------------------------------------------------------------
+
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
 -- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;
