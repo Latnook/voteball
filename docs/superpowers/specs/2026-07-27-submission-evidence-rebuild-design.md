@@ -33,11 +33,28 @@ the window to capture evidence rather than let a billed stack idle.
 The user's approval was conditional on a backup existing. Three independent layers were checked before
 this spec was written:
 
-| Layer | Verified state |
-|---|---|
-| RDS PITR | `LatestRestorableTime` = `2026-07-26T21:31Z` (≈ now), 7-day retention |
-| S3 nightly `pg_dump` | `backups/voteball-2026-07-26T02-00-02Z.sql.gz` downloaded and inspected: **5 `votes` rows, 17 `vote_clubs` rows** |
-| Final snapshot on destroy | `skip_final_snapshot = false` (`terraform/database.tf:80`); 5 prior snapshots available, newest `voteball-eks-db-final-20260721192838` |
+| Layer | Verified state | Survives teardown? |
+|---|---|---|
+| RDS PITR / automated backups | `LatestRestorableTime` = `2026-07-26T21:31Z` (≈ now), 7-day retention | **yes** — `delete_automated_backups = false` keeps them in `retained` state after the instance is deleted |
+| S3 nightly `pg_dump` | `backups/voteball-2026-07-26T02-00-02Z.sql.gz` downloaded and inspected: **5 `votes` rows, 17 `vote_clubs` rows** | **NO** — see the correction below |
+| Final snapshot on destroy | `skip_final_snapshot = false` (`terraform/database.tf:80`); 5 prior snapshots available, newest `voteball-eks-db-final-20260721192838` | yes — snapshots outlive the stack |
+
+> **Correction, verified during the 2026-07-27 teardown.** This spec originally called the S3 dump an
+> *independent* third layer and named it as the fallback if the final snapshot failed. It is not
+> independent of a teardown: `terraform/s3.tf:9` sets `force_destroy = true`, so `terraform destroy`
+> deletes the rollups bucket **and every backup object in it** in the same run that would have failed
+> to take the snapshot. Confirmed after the fact — `head-bucket` returned 404 and the backups prefix
+> went from 5 objects to 0.
+>
+> The S3 dump is a real safeguard against *application*-level data loss (a bad migration, an errant
+> DELETE) while the stack is up. It is worthless as insurance against the teardown itself. The layer
+> actually covering that case is **retained automated backups**, which this spec had not credited:
+> after the instance was deleted they persisted with a restore window ending `2026-07-27T06:01:00Z`,
+> twelve minutes before the final snapshot at `06:13:54Z`.
+>
+> If the S3 dumps are wanted as genuine off-stack insurance, the bucket has to stop being owned by the
+> stack that it insures — the same argument that already keeps `terraform/jenkins/` and the tfstate
+> bucket out of `scripts/destroy.sh`.
 
 The live API reports 5 votes; the S3 dump contains the same 5, with matching `previous_party_id`
 values (10 ×2, 5, 14, 4). The backup is therefore current **and** provably complete — the distinction
@@ -118,7 +135,7 @@ nothing. This failed silently once already — `NumberOfMessagesPublished: 2`,
 | Risk | Mitigation |
 |---|---|
 | Rebuild fails, leaving no cluster near a deadline | Phase 0 captures evidence first; three verified backup layers; the runbook has been executed successfully before |
-| Votes lost | Final snapshot + PITR + independent S3 dump; count verified before and after |
+| Votes lost | Final snapshot + **retained automated backups** (the S3 dump does *not* survive teardown — see the correction above); count verified before and after |
 | SNS alerting silently dead after rebuild | Explicit re-confirmation step in Phase 3 |
 | Live admin sessions invalidated | Expected — `deploy.sh` step 3 reissues `ADMIN_SESSION_SECRET`; no action needed |
 | New ACM cert / WAF / ALB identifiers | Expected and documented; the frozen snapshot already explains why old identifiers do not resolve |
