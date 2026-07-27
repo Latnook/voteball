@@ -277,9 +277,16 @@ own area, but the public space should still express the state's Jewish identity.
 
 The platform confirms every axis rather than moving any: privatizing Ashdod Port and Haifa Airport
 and ending child allowances from the fifth child (+2 economic); preemptive strikes, cutting Gaza's
-water/electricity/fuel, no Palestinian state (+2 security); abolishing the religious councils, a
+water/electricity/fuel, a defence budget raised ₪70B→₪95B, and no negotiation over Jerusalem
+(+2 security); abolishing the religious councils, a
 mandatory civil-marriage option, ending yeshiva stipends, one chief rabbi per municipality,
 rabbinical courts moved to the Justice Ministry (−3, the anchor of that axis).
+
+**It does not say "no Palestinian state" in those words** — unlike every other +2 party here. What
+it says is that there is no point reaching a settlement with the Palestinians alone, and that any
+arrangement must be a comprehensive regional package with the Arab states. The +2 rests on the
+territorial and doctrinal half of the test (preemptive doctrine, Gaza, Jerusalem), not on a
+statehood veto. Checked against the party's own platform, 2026-07-27.
 
 The bloc is pinned down rather than inferred: they want a statutory ban on an indicted person
 forming a government.
