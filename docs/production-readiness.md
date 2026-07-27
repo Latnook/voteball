@@ -113,7 +113,34 @@ rebuild cycle. Turn it on only alongside retiring the destroy/rebuild workflow. 
 
 **The restore path is well tested**, if not by the mechanism this section imagined: every rebuild cycle
 restores from the previous teardown's final snapshot, and the 2026-07-21 rebuild brought the votes and
-seed data back intact.
+seed data back intact. **Re-verified with counted evidence on 2026-07-27** — vote totals recorded
+before teardown (5, distributed across parties 10 ×2, 5, 4, 14), then re-queried on the rebuilt
+cluster and found byte-identical. Captured in `docs/eks/live-cluster-snapshot.md`. That closes the
+"backups that have never been restored are a hypothesis" item above with a number rather than a claim.
+
+### ⚠️ The nightly `pg_dump` is NOT teardown insurance
+
+The line above lists the S3 `pg_dump` alongside the final snapshot as if both protect the data. They
+do not protect against the same thing. `terraform/s3.tf:9` sets `force_destroy = true`, so
+`terraform destroy` deletes the rollups bucket **and every backup object in it** — in the same
+operation the dump would supposedly be insuring against. Verified on the 2026-07-27 teardown:
+`head-bucket` returned 404 and the `backups/` prefix went from 5 objects to 0.
+
+What each layer actually covers:
+
+| Layer | Protects against | Survives `destroy.sh`? |
+|---|---|---|
+| Final snapshot (`skip_final_snapshot = false`) | planned teardown | **yes** |
+| Automated backups / PITR (`delete_automated_backups = false`) | teardown **and** unplanned loss; stays in `retained` state after the instance is deleted | **yes** |
+| Nightly `pg_dump` → S3 | application-level loss while the stack is up (bad migration, errant DELETE) | **no** |
+
+Verify the final snapshot by **`SnapshotCreateTime`, never by its identifier** — the name embeds
+`time_static.deploy`, so a snapshot taken today is named after the day the stack was *deployed*. On
+2026-07-27 the fresh snapshot was called `voteball-eks-db-final-20260722065933`; reading the name
+alone would suggest the final snapshot had failed and the newest was five days old.
+
+Making the dumps genuine off-stack insurance means moving the bucket out of the stack it insures —
+the same argument that keeps `terraform/jenkins/` and the tfstate bucket out of `scripts/destroy.sh`.
 
 ---
 

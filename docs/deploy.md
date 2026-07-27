@@ -278,10 +278,34 @@ votes. (This changed on 2026-07-20 — teardown used to discard them.)
   site stays up. Real visitors' browsers just retry.
 - **"version not supported" style errors on the cluster** → the Kubernetes version pin (`1.34`) may have
   aged out; check `aws eks describe-cluster-versions --region <your region>` and bump it if needed.
-- **The site can't be found right after a rebuild** → DNS. The record is recreated on deploy, but your
-  computer may have cached the old answer. Check it works publicly first:
-  `dig +short <your app_domain> @8.8.8.8` — if that returns addresses, flush your local cache
-  (`sudo resolvectl flush-caches`) or try a private browser window.
+- **The site can't be found right after a rebuild** → DNS, and there are **two different causes** —
+  flushing your local cache only fixes one of them.
+  1. **The ALB is still `provisioning`.** external-dns recreates the record as an *ALIAS* to the load
+     balancer, and an alias to a load balancer that isn't `active` yet resolves to **nothing**. Check:
+     `aws elbv2 describe-load-balancers --region <your region> --query 'LoadBalancers[].State.Code'`
+     — it must say `active`. This clears itself in a few minutes.
+  2. **A resolver cached the "no address" answer** during the window in (1) or during teardown. This
+     is *upstream* caching, not local — `sudo resolvectl flush-caches` does **not** help if your
+     provider's resolver is the one holding it. It expires on its own after
+     `min(SOA MINIMUM, SOA record TTL)`, which for a Route53 zone is **15 minutes**.
+
+  Distinguish them by asking the authoritative nameserver directly, which no cache can affect:
+  ```bash
+  NS=$(aws route53 get-hosted-zone --id <zone-id> --query 'DelegationSet.NameServers[0]' --output text)
+  dig +short @"$NS" <your app_domain> A      # authoritative truth
+  dig +short @8.8.8.8 <your app_domain> A    # what the world currently sees
+  ```
+  Authoritative answers but a public resolver doesn't → cache, wait it out. Neither answers → the ALB
+  is still provisioning. The signature of a cached negative is `status: NOERROR` with `ANSWER: 0`
+  (**not** `NXDOMAIN`): the name exists, its alias target just has no address yet.
+
+  To verify the site itself while DNS is settling, bypass it entirely:
+  ```bash
+  curl -sI --resolve "<your app_domain>:443:$(dig +short @"$NS" <your app_domain> A | head -1)" \
+    https://<your app_domain> | head -1
+  ```
+  *(All of the above was observed on the 2026-07-27 rebuild: `1.1.1.1` served nothing for ~15 minutes
+  while `8.8.8.8`, `9.9.9.9` and `208.67.222.222` were already correct and the site returned 200.)*
 - **`terraform destroy` sits on "Still destroying... subnet" for many minutes** → a leftover network
   interface from a terminated node is pinning the subnet. `destroy.sh` now cleans these up
   automatically while it runs; if you hit it in a manual destroy, find and delete the detached one:

@@ -285,7 +285,18 @@ can't cleanly uninstall while the cluster is being deleted), `terraform state rm
 re-run destroy; it dies with the cluster anyway.
 
 RDS takes a **final snapshot on destroy** (since 2026-07-20), so destroy→rebuild preserves votes;
-`find-latest-snapshot.sh` picks the newest one up automatically before the next apply.
+`find-latest-snapshot.sh` picks the newest one up automatically before the next apply. Two traps
+around this, both hit for real on the 2026-07-27 rebuild (see `docs/production-readiness.md` §3):
+
+- **Verify the final snapshot by `SnapshotCreateTime`, never by its name.** The identifier embeds
+  `time_static.deploy`, so a snapshot created today is named after the day the stack was *deployed*.
+  A fresh snapshot called `voteball-eks-db-final-20260722065933` on 2026-07-27 looks five days stale;
+  concluding "the final snapshot failed" from the name is the natural — and wrong — reading.
+- **The nightly `pg_dump` in S3 is not teardown insurance.** `terraform/s3.tf:9` sets
+  `force_destroy = true`, so `terraform destroy` deletes the rollups bucket and every backup in it,
+  during the same run it would supposedly be insuring. The layers that do survive are the final
+  snapshot and **retained automated backups** (`delete_automated_backups = false`). Don't count the
+  dumps when deciding whether a teardown is safe.
 
 Two teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
 - **`./scripts/cleanup-stale-dns.sh`** removes this cluster's Route53 records if external-dns didn't get
