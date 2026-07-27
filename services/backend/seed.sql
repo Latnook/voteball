@@ -190,15 +190,27 @@ UPDATE clubs             SET name_en = name WHERE name_en IS NULL;
 UPDATE previous_parties  SET name_he = name WHERE name_he IS NULL;
 UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
 
--- Leagues
-UPDATE leagues SET name_he = 'מונדיאל 2026' WHERE name_en = 'World Cup 2026' AND name_he IS NULL;
-UPDATE leagues SET name_he = 'ליגת האלופות' WHERE name_en = 'UCL' AND name_he IS NULL;
-UPDATE leagues SET name_he = 'הפרמייר ליג' WHERE name_en = 'EPL' AND name_he IS NULL;
-UPDATE leagues SET name_he = 'לה ליגה' WHERE name_en = 'La Liga' AND name_he IS NULL;
-UPDATE leagues SET name_he = 'סרייה A' WHERE name_en = 'Serie A' AND name_he IS NULL;
-UPDATE leagues SET name_he = 'הבונדסליגה' WHERE name_en = 'Bundesliga' AND name_he IS NULL;
-UPDATE leagues SET name_he = 'ליגת העל' WHERE name_en = 'Israeli Premier League' AND name_he IS NULL;
-UPDATE leagues SET name_he = 'ליגה לאומית' WHERE name_en = 'Liga Leumit' AND name_he IS NULL;
+-- League display names.
+-- One row per entity, all display languages together. COALESCE is the per-column equivalent of
+-- the old "AND name_xx IS NULL" guard: it fills only what is still empty, so a name an admin has
+-- renamed through the live UI is never overwritten. Do not drop it.
+-- Keyed on the legacy `name` column, not name_en: the two UPDATEs below rewrite name_en for
+-- EPL/UCL unguarded on every run, so on an already-seeded database name_en is no longer 'EPL'
+-- and a name_en-keyed block would silently skip those two leagues.
+UPDATE leagues l SET
+    name_he = COALESCE(l.name_he, v.name_he),
+    name_ru = COALESCE(l.name_ru, v.name_ru)
+FROM (VALUES
+    ('World Cup 2026', 'מונדיאל 2026', 'Чемпионат мира 2026'),
+    ('UCL', 'ליגת האלופות', 'Лига чемпионов'),
+    ('EPL', 'הפרמייר ליג', 'Премьер-лига'),
+    ('La Liga', 'לה ליגה', 'Ла Лига'),
+    ('Serie A', 'סרייה A', 'Серия А'),
+    ('Bundesliga', 'הבונדסליגה', 'Бундеслига'),
+    ('Israeli Premier League', 'ליגת העל', 'Лига ха-Аль'),
+    ('Liga Leumit', 'ליגה לאומית', 'Лига Леумит')
+) AS v(name, name_he, name_ru)
+WHERE l.name = v.name;
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
 UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
 
@@ -226,55 +238,210 @@ UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/df/Bu
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Israeli Premier League' AND logo_url IS NULL;
 UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Liga Leumit' AND logo_url IS NULL;
 
--- World Cup 2026 countries
-UPDATE clubs SET name_he = 'ברזיל' WHERE name_en = 'Brazil' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ארגנטינה' WHERE name_en = 'Argentina' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'צרפת' WHERE name_en = 'France' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אנגליה' WHERE name_en = 'England' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ספרד' WHERE name_en = 'Spain' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'גרמניה' WHERE name_en = 'Germany' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פורטוגל' WHERE name_en = 'Portugal' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הולנד' WHERE name_en = 'Netherlands' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בלגיה' WHERE name_en = 'Belgium' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קרואטיה' WHERE name_en = 'Croatia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אורוגוואי' WHERE name_en = 'Uruguay' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קולומביה' WHERE name_en = 'Colombia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מקסיקו' WHERE name_en = 'Mexico' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ארה"ב' WHERE name_en = 'USA' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קנדה' WHERE name_en = 'Canada' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'יפן' WHERE name_en = 'Japan' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'דרום קוריאה' WHERE name_en = 'South Korea' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מרוקו' WHERE name_en = 'Morocco' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סנגל' WHERE name_en = 'Senegal' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'גאנה' WHERE name_en = 'Ghana' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מצרים' WHERE name_en = 'Egypt' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'תוניסיה' WHERE name_en = 'Tunisia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אלג''יריה' WHERE name_en = 'Algeria' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'חוף השנהב' WHERE name_en = 'Ivory Coast' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אוסטרליה' WHERE name_en = 'Australia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'איראן' WHERE name_en = 'Iran' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ערב הסעודית' WHERE name_en = 'Saudi Arabia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קטאר' WHERE name_en = 'Qatar' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אקוודור' WHERE name_en = 'Ecuador' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'שווייץ' WHERE name_en = 'Switzerland' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'שוודיה' WHERE name_en = 'Sweden' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אוזבקיסטן' WHERE name_en = 'Uzbekistan' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ירדן' WHERE name_en = 'Jordan' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'עיראק' WHERE name_en = 'Iraq' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קייפ ורדה' WHERE name_en = 'Cape Verde' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'דרום אפריקה' WHERE name_en = 'South Africa' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קונגו הדמוקרטית' WHERE name_en = 'DR Congo' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פנמה' WHERE name_en = 'Panama' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קוראסאו' WHERE name_en = 'Curacao' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'האיטי' WHERE name_en = 'Haiti' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פרגוואי' WHERE name_en = 'Paraguay' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ניו זילנד' WHERE name_en = 'New Zealand' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'נורווגיה' WHERE name_en = 'Norway' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סקוטלנד' WHERE name_en = 'Scotland' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אוסטריה' WHERE name_en = 'Austria' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בוסניה והרצגובינה' WHERE name_en = 'Bosnia and Herzegovina' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'טורקיה' WHERE name_en = 'Turkey' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'צ''כיה' WHERE name_en = 'Czech Republic' AND name_he IS NULL;
+-- Club display names.
+-- One row per entity, all display languages together. COALESCE is the per-column equivalent of
+-- the old "AND name_xx IS NULL" guard: it fills only what is still empty, so a name an admin has
+-- renamed through the live UI is never overwritten. Do not drop it.
+UPDATE clubs c SET
+    name_he = COALESCE(c.name_he, v.name_he),
+    name_ru = COALESCE(c.name_ru, v.name_ru)
+FROM (VALUES
+    -- World Cup 2026 countries
+    ('Brazil', 'ברזיל', 'Бразилия'),
+    ('Argentina', 'ארגנטינה', 'Аргентина'),
+    ('France', 'צרפת', 'Франция'),
+    ('England', 'אנגליה', 'Англия'),
+    ('Spain', 'ספרד', 'Испания'),
+    ('Germany', 'גרמניה', 'Германия'),
+    ('Portugal', 'פורטוגל', 'Португалия'),
+    ('Netherlands', 'הולנד', 'Нидерланды'),
+    ('Belgium', 'בלגיה', 'Бельгия'),
+    ('Croatia', 'קרואטיה', 'Хорватия'),
+    ('Uruguay', 'אורוגוואי', 'Уругвай'),
+    ('Colombia', 'קולומביה', 'Колумбия'),
+    ('Mexico', 'מקסיקו', 'Мексика'),
+    ('USA', 'ארה"ב', 'США'),
+    ('Canada', 'קנדה', 'Канада'),
+    ('Japan', 'יפן', 'Япония'),
+    ('South Korea', 'דרום קוריאה', 'Южная Корея'),
+    ('Morocco', 'מרוקו', 'Марокко'),
+    ('Senegal', 'סנגל', 'Сенегал'),
+    ('Ghana', 'גאנה', 'Гана'),
+    ('Egypt', 'מצרים', 'Египет'),
+    ('Tunisia', 'תוניסיה', 'Тунис'),
+    ('Algeria', 'אלג''יריה', 'Алжир'),
+    ('Ivory Coast', 'חוף השנהב', 'Кот-д''Ивуар'),
+    ('Australia', 'אוסטרליה', 'Австралия'),
+    ('Iran', 'איראן', 'Иран'),
+    ('Saudi Arabia', 'ערב הסעודית', 'Саудовская Аравия'),
+    ('Qatar', 'קטאר', 'Катар'),
+    ('Ecuador', 'אקוודור', 'Эквадор'),
+    ('Switzerland', 'שווייץ', 'Швейцария'),
+    ('Sweden', 'שוודיה', 'Швеция'),
+    ('Uzbekistan', 'אוזבקיסטן', 'Узбекистан'),
+    ('Jordan', 'ירדן', 'Иордания'),
+    ('Iraq', 'עיראק', 'Ирак'),
+    ('Cape Verde', 'קייפ ורדה', 'Кабо-Верде'),
+    ('South Africa', 'דרום אפריקה', 'ЮАР'),
+    ('DR Congo', 'קונגו הדמוקרטית', 'ДР Конго'),
+    ('Panama', 'פנמה', 'Панама'),
+    ('Curacao', 'קוראסאו', 'Кюрасао'),
+    ('Haiti', 'האיטי', 'Гаити'),
+    ('Paraguay', 'פרגוואי', 'Парагвай'),
+    ('New Zealand', 'ניו זילנד', 'Новая Зеландия'),
+    ('Norway', 'נורווגיה', 'Норвегия'),
+    ('Scotland', 'סקוטלנד', 'Шотландия'),
+    ('Austria', 'אוסטריה', 'Австрия'),
+    ('Bosnia and Herzegovina', 'בוסניה והרצגובינה', 'Босния и Герцеговина'),
+    ('Turkey', 'טורקיה', 'Турция'),
+    ('Czech Republic', 'צ''כיה', 'Чехия'),
+    -- UCL clubs
+    ('Real Madrid', 'ריאל מדריד', 'Реал Мадрид'),
+    ('Manchester City', 'מנצ''סטר סיטי', 'Манчестер Сити'),
+    ('Bayern Munich', 'באיירן מינכן', 'Бавария'),
+    ('Barcelona', 'ברצלונה', 'Барселона'),
+    ('Liverpool', 'ליברפול', 'Ливерпуль'),
+    ('Paris Saint-Germain', 'פריז סן ז''רמן', 'Пари Сен-Жермен'),
+    ('Inter Milan', 'אינטר מילאנו', 'Интернационале'),
+    ('Juventus', 'יובנטוס', 'Ювентус'),
+    ('Manchester United', 'מנצ''סטר יונייטד', 'Манчестер Юнайтед'),
+    ('Chelsea', 'צ''לסי', 'Челси'),
+    ('Arsenal', 'ארסנל', 'Арсенал'),
+    ('AC Milan', 'מילאן', 'Милан'),
+    ('Atlético Madrid', 'אתלטיקו מדריד', 'Атлетико Мадрид'),
+    ('Borussia Dortmund', 'בורוסיה דורטמונד', 'Боруссия Дортмунд'),
+    ('Napoli', 'נאפולי', 'Наполи'),
+    ('Porto', 'פורטו', 'Порту'),
+    ('Benfica', 'בנפיקה', 'Бенфика'),
+    ('Ajax', 'אייאקס', 'Аякс'),
+    -- EPL clubs not already covered by UCL
+    ('Aston Villa', 'אסטון וילה', 'Астон Вилла'),
+    ('Bournemouth', 'בורנמות''', 'Борнмут'),
+    ('Brentford', 'ברנטפורד', 'Брентфорд'),
+    ('Brighton & Hove Albion', 'ברייטון אנד הוב אלביון', 'Брайтон энд Хоув Альбион'),
+    ('Crystal Palace', 'קריסטל פאלאס', 'Кристал Пэлас'),
+    ('Everton', 'אברטון', 'Эвертон'),
+    ('Fulham', 'פולהאם', 'Фулхэм'),
+    ('Ipswich Town', 'איפסוויץ'' טאון', 'Ипсвич Таун'),
+    ('Leicester City', 'לסטר סיטי', 'Лестер Сити'),
+    ('Newcastle United', 'ניוקאסל יונייטד', 'Ньюкасл Юнайтед'),
+    ('Nottingham Forest', 'נוטינגהאם פורסט', 'Ноттингем Форест'),
+    ('Southampton', 'סאות''המפטון', 'Саутгемптон'),
+    ('Tottenham Hotspur', 'טוטנהאם הוטספר', 'Тоттенхэм Хотспур'),
+    ('West Ham United', 'ווסט האם יונייטד', 'Вест Хэм Юнайтед'),
+    ('Wolverhampton Wanderers', 'וולברהמפטון וונדררס', 'Вулверхэмптон Уондерерс'),
+    -- La Liga clubs not already covered by UCL
+    ('Athletic Bilbao', 'אתלטיק בילבאו', 'Атлетик Бильбао'),
+    ('Real Sociedad', 'ריאל סוסיאדד', 'Реал Сосьедад'),
+    ('Real Betis', 'ריאל בטיס', 'Реал Бетис'),
+    ('Villarreal', 'ויאריאל', 'Вильярреал'),
+    ('Valencia', 'ולנסיה', 'Валенсия'),
+    ('Sevilla', 'סביליה', 'Севилья'),
+    ('Girona', 'ז''ירונה', 'Жирона'),
+    ('Osasuna', 'אוססונה', 'Осасуна'),
+    ('Celta Vigo', 'סלטה ויגו', 'Сельта'),
+    ('Rayo Vallecano', 'ראיו ואייקאנו', 'Райо Вальекано'),
+    ('Getafe', 'חטאפה', 'Хетафе'),
+    ('Las Palmas', 'לאס פלמאס', 'Лас-Пальмас'),
+    ('Alavés', 'אלאבס', 'Алавес'),
+    ('Espanyol', 'אספניול', 'Эспаньол'),
+    ('Leganes', 'לגאנס', 'Леганес'),
+    ('Mallorca', 'מיורקה', 'Мальорка'),
+    ('Valladolid', 'ויאדוליד', 'Вальядолид'),
+    -- Serie A clubs not already covered by UCL
+    ('Roma', 'רומא', 'Рома'),
+    ('Lazio', 'לאציו', 'Лацио'),
+    ('Atalanta', 'אטלנטה', 'Аталанта'),
+    ('Fiorentina', 'פיורנטינה', 'Фиорентина'),
+    ('Bologna', 'בולוניה', 'Болонья'),
+    ('Torino', 'טורינו', 'Торино'),
+    ('Udinese', 'אודינזה', 'Удинезе'),
+    ('Genoa', 'ג''נואה', 'Дженоа'),
+    ('Cagliari', 'קליארי', 'Кальяри'),
+    ('Verona', 'ורונה', 'Верона'),
+    ('Lecce', 'לצ''ה', 'Лечче'),
+    ('Parma', 'פארמה', 'Парма'),
+    ('Como', 'קומו', 'Комо'),
+    ('Venezia', 'ונציה', 'Венеция'),
+    ('Empoli', 'אמפולי', 'Эмполи'),
+    ('Monza', 'מונצה', 'Монца'),
+    -- Bundesliga clubs not already covered by UCL
+    ('RB Leipzig', 'ר. ב. לייפציג', 'РБ Лейпциг'),
+    ('Bayer Leverkusen', 'באייר לברקוזן', 'Байер 04'),
+    ('Eintracht Frankfurt', 'איינטרכט פרנקפורט', 'Айнтрахт Франкфурт'),
+    ('VfB Stuttgart', 'שטוטגרט', 'Штутгарт'),
+    ('Borussia Mönchengladbach', 'בורוסיה מנשנגלדבך', 'Боруссия Мёнхенгладбах'),
+    ('SC Freiburg', 'פרייבורג', 'Фрайбург'),
+    ('Werder Bremen', 'וורדר ברמן', 'Вердер'),
+    ('Union Berlin', 'אוניון ברלין', 'Унион Берлин'),
+    ('Mainz 05', 'מיינץ 05', 'Майнц 05'),
+    ('Wolfsburg', 'וולפסבורג', 'Вольфсбург'),
+    ('TSG Hoffenheim', 'הופנהיים', 'Хоффенхайм'),
+    ('FC Augsburg', 'אוגסבורג', 'Аугсбург'),
+    ('VfL Bochum', 'בוכום', 'Бохум'),
+    ('FC Heidenheim', 'היידנהיים', 'Хайденхайм'),
+    ('Holstein Kiel', 'הולשטיין קיל', 'Хольштайн Киль'),
+    ('St. Pauli', 'זנקט פאולי', 'Санкт-Паули'),
+    -- Israeli Premier League clubs
+    ('Maccabi Haifa', 'מכבי חיפה', 'Маккаби Хайфа'),
+    ('Maccabi Tel Aviv', 'מכבי תל אביב', 'Маккаби Тель-Авив'),
+    ('Hapoel Be''er Sheva', 'הפועל באר שבע', 'Хапоэль Беэр-Шева'),
+    ('Hapoel Tel Aviv', 'הפועל תל אביב', 'Хапоэль Тель-Авив'),
+    ('Beitar Jerusalem', 'בית"ר ירושלים', 'Бейтар Иерусалим'),
+    ('Maccabi Netanya', 'מכבי נתניה', 'Маккаби Нетания'),
+    ('Hapoel Haifa', 'הפועל חיפה', 'Хапоэль Хайфа'),
+    ('Bnei Sakhnin', 'בני סכנין', 'Бней Сахнин'),
+    ('Hapoel Ramat Gan Givatayim', 'הפועל רמת-גן גבעתיים', 'Хапоэль Рамат-Ган Гиватаим'),
+    ('Hapoel Jerusalem', 'הפועל ירושלים', 'Хапоэль Иерусалим'),
+    ('Ironi Kiryat Shmona', 'עירוני קריית שמונה', 'Ирони Кирьят-Шмона'),
+    ('Maccabi Petah Tikva', 'מכבי פתח תקווה', 'Маккаби Петах-Тиква'),
+    ('Hapoel Petah Tikva', 'הפועל פתח תקווה', 'Хапоэль Петах-Тиква'),
+    ('Ironi Tiberias', 'עירוני טבריה', 'Ирони Тверия'),
+    -- Liga Leumit clubs
+    ('F.C. Ashdod', 'מ.ס. אשדוד', 'Ашдод'),
+    ('Maccabi Bnei Reineh', 'מכבי בני ריינה', 'Маккаби Бней Рейне'),
+    ('Bnei Yehuda', 'בני יהודה', 'Бней Иегуда'),
+    ('Hapoel Hadera', 'הפועל חדרה', 'Хапоэль Хадера'),
+    ('Hapoel Kfar Saba', 'הפועל כפר סבא', 'Хапоэль Кфар-Сава'),
+    ('Hapoel Kfar Shalem', 'הפועל כפר שלם', 'Хапоэль Кфар-Шалем'),
+    ('Hapoel Nof HaGalil', 'הפועל נוף הגליל', 'Хапоэль Ноф-ха-Галиль'),
+    ('Hapoel Akko', 'הפועל עכו', 'Хапоэль Акко'),
+    ('Hapoel Afula', 'הפועל עפולה', 'Хапоэль Афула'),
+    ('Hapoel Rishon LeZion', 'הפועל ראשון לציון', 'Хапоэль Ришон-ле-Цион'),
+    ('Hapoel Ra''anana', 'הפועל רעננה', 'Хапоэль Раанана'),
+    ('F.C. Kafr Qasim', 'מ.ס. כפר קאסם', 'ФК Кафр-Касем'),
+    ('F.C. Kiryat Yam', 'מ.ס. קריית ים', 'ФК Кирьят-Ям'),
+    ('Maccabi Herzliya', 'מכבי הרצליה', 'Маккаби Герцлия'),
+    ('Maccabi Kavilio Jaffa', 'מכבי קביליו יפו', 'Маккаби Кавильо Яффо'),
+    ('Ironi Modi''in', 'עירוני מודיעין', 'Ирони Модиин'),
+    -- changes -- see scripts/sync-seed-from-rds.sh)
+    ('1. FC Köln', 'פ. צ. קלן', 'Кёльн'),
+    ('FC Schalke 04', 'שאלקה 04', 'Шальке 04'),
+    ('Hamburger SV', 'המבורג', 'Гамбург'),
+    ('SC Paderborn 07', 'פאדרבורן 07', 'Падерборн 07'),
+    ('SV Elversberg', 'אלוורסברג', 'Эльферсберг'),
+    ('Deportivo de A Coruña', 'דפורטיבו דה א-קורוניה', 'Депортиво Ла-Корунья'),
+    ('Elche', 'אלצ''ה', 'Эльче'),
+    ('Levante', 'לבאנטה', 'Леванте'),
+    ('Málaga', 'מאלגה', 'Малага'),
+    ('Racing Santander', 'ראסינג סנטנדר', 'Расинг Сантандер'),
+    ('Coventry City', 'קובנטרי סיטי', 'Ковентри Сити'),
+    ('Hull City', 'האל סיטי', 'Халл Сити'),
+    ('Leeds United', 'לידס יונייטד', 'Лидс Юнайтед'),
+    ('Frosinone', 'פרוזינונה', 'Фрозиноне'),
+    ('Club Brugge', 'קלאב ברוז''', 'Брюгге'),
+    ('Feyenoord', 'פיינורד', 'Фейеноорд'),
+    ('Galatasaray', 'גלאטסראיי', 'Галатасарай'),
+    ('Lens', 'לאנס', 'Ланс'),
+    ('Lille', 'ליל', 'Лилль'),
+    ('PSV Eindhoven', 'פ.ס.וו. איינדהובן', 'ПСВ'),
+    ('Shakhtar Donetsk', 'שחטאר דונצק', 'Шахтёр Донецк'),
+    ('Slavia Prague', 'סלביה פראג', 'Славия Прага'),
+    ('Sporting CP', 'ספורטינג ליסבון', 'Спортинг Лиссабон'),
+    ('Sunderland', 'סנדרלנד', 'Сандерленд'),
+    ('Sassuolo', 'ססואולו', 'Сассуоло')
+) AS v(name_en, name_he, name_ru)
+WHERE c.name_en = v.name_en;
 
 -- World Cup 2026 national flags, via flagcdn.com's stable per-country-code SVG URLs. Unlike club
 -- crests, national flags carry no trademark/licensing ambiguity, so these are safe to seed directly
@@ -327,160 +494,6 @@ UPDATE clubs SET logo_url = 'https://flagcdn.com/at.svg' WHERE name_en = 'Austri
 UPDATE clubs SET logo_url = 'https://flagcdn.com/ba.svg' WHERE name_en = 'Bosnia and Herzegovina' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/tr.svg' WHERE name_en = 'Turkey' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://flagcdn.com/cz.svg' WHERE name_en = 'Czech Republic' AND logo_url IS NULL;
-
--- UCL clubs
-UPDATE clubs SET name_he = 'ריאל מדריד' WHERE name_en = 'Real Madrid' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מנצ''סטר סיטי' WHERE name_en = 'Manchester City' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'באיירן מינכן' WHERE name_en = 'Bayern Munich' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ברצלונה' WHERE name_en = 'Barcelona' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ליברפול' WHERE name_en = 'Liverpool' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פריז סן ז''רמן' WHERE name_en = 'Paris Saint-Germain' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אינטר מילאנו' WHERE name_en = 'Inter Milan' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'יובנטוס' WHERE name_en = 'Juventus' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מנצ''סטר יונייטד' WHERE name_en = 'Manchester United' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'צ''לסי' WHERE name_en = 'Chelsea' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ארסנל' WHERE name_en = 'Arsenal' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מילאן' WHERE name_en = 'AC Milan' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אתלטיקו מדריד' WHERE name_en = 'Atlético Madrid' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בורוסיה דורטמונד' WHERE name_en = 'Borussia Dortmund' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'נאפולי' WHERE name_en = 'Napoli' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פורטו' WHERE name_en = 'Porto' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בנפיקה' WHERE name_en = 'Benfica' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אייאקס' WHERE name_en = 'Ajax' AND name_he IS NULL;
-
--- EPL clubs not already covered by UCL
-UPDATE clubs SET name_he = 'אסטון וילה' WHERE name_en = 'Aston Villa' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בורנמות''' WHERE name_en = 'Bournemouth' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ברנטפורד' WHERE name_en = 'Brentford' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ברייטון אנד הוב אלביון' WHERE name_en = 'Brighton & Hove Albion' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קריסטל פאלאס' WHERE name_en = 'Crystal Palace' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אברטון' WHERE name_en = 'Everton' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פולהאם' WHERE name_en = 'Fulham' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'איפסוויץ'' טאון' WHERE name_en = 'Ipswich Town' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לסטר סיטי' WHERE name_en = 'Leicester City' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ניוקאסל יונייטד' WHERE name_en = 'Newcastle United' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'נוטינגהאם פורסט' WHERE name_en = 'Nottingham Forest' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סאות''המפטון' WHERE name_en = 'Southampton' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'טוטנהאם הוטספר' WHERE name_en = 'Tottenham Hotspur' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ווסט האם יונייטד' WHERE name_en = 'West Ham United' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'וולברהמפטון וונדררס' WHERE name_en = 'Wolverhampton Wanderers' AND name_he IS NULL;
-
--- La Liga clubs not already covered by UCL
-UPDATE clubs SET name_he = 'אתלטיק בילבאו' WHERE name_en = 'Athletic Bilbao' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ריאל סוסיאדד' WHERE name_en = 'Real Sociedad' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ריאל בטיס' WHERE name_en = 'Real Betis' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ויאריאל' WHERE name_en = 'Villarreal' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ולנסיה' WHERE name_en = 'Valencia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סביליה' WHERE name_en = 'Sevilla' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ז''ירונה' WHERE name_en = 'Girona' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אוססונה' WHERE name_en = 'Osasuna' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סלטה ויגו' WHERE name_en = 'Celta Vigo' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ראיו ואייקאנו' WHERE name_en = 'Rayo Vallecano' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'חטאפה' WHERE name_en = 'Getafe' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לאס פלמאס' WHERE name_en = 'Las Palmas' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אלאבס' WHERE name_en = 'Alavés' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אספניול' WHERE name_en = 'Espanyol' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לגאנס' WHERE name_en = 'Leganes' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מיורקה' WHERE name_en = 'Mallorca' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ויאדוליד' WHERE name_en = 'Valladolid' AND name_he IS NULL;
-
--- Serie A clubs not already covered by UCL
-UPDATE clubs SET name_he = 'רומא' WHERE name_en = 'Roma' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לאציו' WHERE name_en = 'Lazio' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אטלנטה' WHERE name_en = 'Atalanta' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פיורנטינה' WHERE name_en = 'Fiorentina' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בולוניה' WHERE name_en = 'Bologna' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'טורינו' WHERE name_en = 'Torino' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אודינזה' WHERE name_en = 'Udinese' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ג''נואה' WHERE name_en = 'Genoa' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קליארי' WHERE name_en = 'Cagliari' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ורונה' WHERE name_en = 'Verona' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לצ''ה' WHERE name_en = 'Lecce' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פארמה' WHERE name_en = 'Parma' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קומו' WHERE name_en = 'Como' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ונציה' WHERE name_en = 'Venezia' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אמפולי' WHERE name_en = 'Empoli' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מונצה' WHERE name_en = 'Monza' AND name_he IS NULL;
-
--- Bundesliga clubs not already covered by UCL
-UPDATE clubs SET name_he = 'ר. ב. לייפציג' WHERE name_en = 'RB Leipzig' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'באייר לברקוזן' WHERE name_en = 'Bayer Leverkusen' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'איינטרכט פרנקפורט' WHERE name_en = 'Eintracht Frankfurt' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'שטוטגרט' WHERE name_en = 'VfB Stuttgart' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בורוסיה מנשנגלדבך' WHERE name_en = 'Borussia Mönchengladbach' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פרייבורג' WHERE name_en = 'SC Freiburg' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'וורדר ברמן' WHERE name_en = 'Werder Bremen' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אוניון ברלין' WHERE name_en = 'Union Berlin' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מיינץ 05' WHERE name_en = 'Mainz 05' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'וולפסבורג' WHERE name_en = 'Wolfsburg' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הופנהיים' WHERE name_en = 'TSG Hoffenheim' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אוגסבורג' WHERE name_en = 'FC Augsburg' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בוכום' WHERE name_en = 'VfL Bochum' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'היידנהיים' WHERE name_en = 'FC Heidenheim' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הולשטיין קיל' WHERE name_en = 'Holstein Kiel' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'זנקט פאולי' WHERE name_en = 'St. Pauli' AND name_he IS NULL;
-
--- Israeli Premier League clubs
-UPDATE clubs SET name_he = 'מכבי חיפה' WHERE name_en = 'Maccabi Haifa' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מכבי תל אביב' WHERE name_en = 'Maccabi Tel Aviv' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל באר שבע' WHERE name_en = 'Hapoel Be''er Sheva' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל תל אביב' WHERE name_en = 'Hapoel Tel Aviv' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בית"ר ירושלים' WHERE name_en = 'Beitar Jerusalem' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מכבי נתניה' WHERE name_en = 'Maccabi Netanya' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל חיפה' WHERE name_en = 'Hapoel Haifa' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בני סכנין' WHERE name_en = 'Bnei Sakhnin' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל רמת-גן גבעתיים' WHERE name_en = 'Hapoel Ramat Gan Givatayim' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל ירושלים' WHERE name_en = 'Hapoel Jerusalem' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'עירוני קריית שמונה' WHERE name_en = 'Ironi Kiryat Shmona' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מכבי פתח תקווה' WHERE name_en = 'Maccabi Petah Tikva' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל פתח תקווה' WHERE name_en = 'Hapoel Petah Tikva' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'עירוני טבריה' WHERE name_en = 'Ironi Tiberias' AND name_he IS NULL;
-
--- Liga Leumit clubs
-UPDATE clubs SET name_he = 'מ.ס. אשדוד' WHERE name_en = 'F.C. Ashdod' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מכבי בני ריינה' WHERE name_en = 'Maccabi Bnei Reineh' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'בני יהודה' WHERE name_en = 'Bnei Yehuda' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל חדרה' WHERE name_en = 'Hapoel Hadera' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל כפר סבא' WHERE name_en = 'Hapoel Kfar Saba' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל כפר שלם' WHERE name_en = 'Hapoel Kfar Shalem' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל נוף הגליל' WHERE name_en = 'Hapoel Nof HaGalil' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל עכו' WHERE name_en = 'Hapoel Akko' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל עפולה' WHERE name_en = 'Hapoel Afula' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל ראשון לציון' WHERE name_en = 'Hapoel Rishon LeZion' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'הפועל רעננה' WHERE name_en = 'Hapoel Ra''anana' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מ.ס. כפר קאסם' WHERE name_en = 'F.C. Kafr Qasim' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מ.ס. קריית ים' WHERE name_en = 'F.C. Kiryat Yam' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מכבי הרצליה' WHERE name_en = 'Maccabi Herzliya' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מכבי קביליו יפו' WHERE name_en = 'Maccabi Kavilio Jaffa' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'עירוני מודיעין' WHERE name_en = 'Ironi Modi''in' AND name_he IS NULL;
-
--- Clubs added via admin UI roster edits (real-world 2025-26 season roster/UCL qualification
--- changes -- see scripts/sync-seed-from-rds.sh)
-UPDATE clubs SET name_he = 'פ. צ. קלן' WHERE name_en = '1. FC Köln' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'שאלקה 04' WHERE name_en = 'FC Schalke 04' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'המבורג' WHERE name_en = 'Hamburger SV' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פאדרבורן 07' WHERE name_en = 'SC Paderborn 07' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אלוורסברג' WHERE name_en = 'SV Elversberg' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'דפורטיבו דה א-קורוניה' WHERE name_en = 'Deportivo de A Coruña' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'אלצ''ה' WHERE name_en = 'Elche' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לבאנטה' WHERE name_en = 'Levante' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'מאלגה' WHERE name_en = 'Málaga' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ראסינג סנטנדר' WHERE name_en = 'Racing Santander' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קובנטרי סיטי' WHERE name_en = 'Coventry City' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'האל סיטי' WHERE name_en = 'Hull City' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לידס יונייטד' WHERE name_en = 'Leeds United' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פרוזינונה' WHERE name_en = 'Frosinone' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'קלאב ברוז''' WHERE name_en = 'Club Brugge' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פיינורד' WHERE name_en = 'Feyenoord' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'גלאטסראיי' WHERE name_en = 'Galatasaray' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'לאנס' WHERE name_en = 'Lens' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ליל' WHERE name_en = 'Lille' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'פ.ס.וו. איינדהובן' WHERE name_en = 'PSV Eindhoven' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'שחטאר דונצק' WHERE name_en = 'Shakhtar Donetsk' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סלביה פראג' WHERE name_en = 'Slavia Prague' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ספורטינג ליסבון' WHERE name_en = 'Sporting CP' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'סנדרלנד' WHERE name_en = 'Sunderland' AND name_he IS NULL;
-UPDATE clubs SET name_he = 'ססואולו' WHERE name_en = 'Sassuolo' AND name_he IS NULL;
 
 -- Admin-curated club logos, synced from the live RDS instance (added via the admin UI's Logo
 -- URL field for the full Israeli Premier League roster) so a fresh install matches current
@@ -622,20 +635,29 @@ UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/eb
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/b/b9/Villarreal_CF_logo-en.svg' WHERE name_en = 'Villarreal' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg' WHERE name_en = 'Werder Bremen' AND logo_url IS NULL;
 
--- Previous Knesset parties
-UPDATE previous_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Yesh Atid' WHERE name_he = 'יש עתיד' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Religious Zionist Party' WHERE name_he = 'הציונות הדתית' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'National Unity' WHERE name_he = 'המחנה הממלכתי' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Yisrael Beiteinu' WHERE name_he = 'ישראל ביתנו' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Shas' WHERE name_he = 'ש"ס' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'United Torah Judaism' WHERE name_he = 'יהדות התורה' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Ra''am' WHERE name_he = 'רע"ם' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Hadash-Ta''al' WHERE name_he = 'חד"ש-תע"ל' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Labor' WHERE name_he = 'העבודה' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Meretz' WHERE name_he = 'מרצ' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Balad' WHERE name_he = 'בל"ד' AND name_en IS NULL;
-UPDATE previous_parties SET name_en = 'Other' WHERE name_he = 'אחר' AND name_en IS NULL;
+-- Previous Knesset party display names.
+-- One row per entity, all display languages together. COALESCE is the per-column equivalent of
+-- the old "AND name_xx IS NULL" guard: it fills only what is still empty, so a name an admin has
+-- renamed through the live UI is never overwritten. Do not drop it.
+UPDATE previous_parties p SET
+    name_en = COALESCE(p.name_en, v.name_en),
+    name_ru = COALESCE(p.name_ru, v.name_ru)
+FROM (VALUES
+    ('הליכוד', 'Likud', 'Ликуд'),
+    ('יש עתיד', 'Yesh Atid', 'Еш Атид'),
+    ('הציונות הדתית', 'Religious Zionist Party', 'Ха-Цийонут ха-Датит'),
+    ('המחנה הממלכתי', 'National Unity', 'Ха-Махане ха-Мамлахти'),
+    ('ישראל ביתנו', 'Yisrael Beiteinu', 'Наш дом Израиль'),
+    ('ש"ס', 'Shas', 'ШАС'),
+    ('יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора'),
+    ('רע"ם', 'Ra''am', 'РААМ'),
+    ('חד"ש-תע"ל', 'Hadash-Ta''al', 'ХАДАШ-ТААЛ'),
+    ('העבודה', 'Labor', 'Авода'),
+    ('מרצ', 'Meretz', 'МЕРЕЦ'),
+    ('בל"ד', 'Balad', 'БАЛАД'),
+    ('אחר', 'Other', 'Другое')
+) AS v(name_he, name_en, name_ru)
+WHERE p.name_he = v.name_he;
 
 -- Admin-curated party logos, synced from the live RDS instance (added via the admin UI's
 -- Logo URL field, not originally seeded) so a fresh install matches current production data.
@@ -740,23 +762,32 @@ SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
 WHERE p.name_he = 'בל"ד' AND u.name_he = 'בל"ד'
 ON CONFLICT DO NOTHING;
 
--- Upcoming election parties
-UPDATE upcoming_parties SET name_en = 'Likud' WHERE name_he = 'הליכוד' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Yashar' WHERE name_he = 'ישר' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Together' WHERE name_he = 'ביחד' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'The Democrats' WHERE name_he = 'הדמוקרטים' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Blue and White' WHERE name_he = 'כחול לבן' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Yisrael Beiteinu' WHERE name_he = 'ישראל ביתנו' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Religious Zionist Party' WHERE name_he = 'הציונות הדתית' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Otzma Yehudit' WHERE name_he = 'עוצמה יהודית' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Hadash-Ta''al' WHERE name_he = 'חד"ש-תע"ל' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Balad' WHERE name_he = 'בל"ד' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Ra''am' WHERE name_he = 'רע"ם' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'Shas' WHERE name_he = 'ש"ס' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'United Torah Judaism' WHERE name_he = 'יהדות התורה' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'The Economic Party' WHERE name_he = 'המפלגה הכלכלית' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'El HaDegel' WHERE name_he = 'אל הדגל' AND name_en IS NULL;
-UPDATE upcoming_parties SET name_en = 'The Reservists' WHERE name_he = 'המילואימניקים' AND name_en IS NULL;
+-- Upcoming election party display names.
+-- One row per entity, all display languages together. COALESCE is the per-column equivalent of
+-- the old "AND name_xx IS NULL" guard: it fills only what is still empty, so a name an admin has
+-- renamed through the live UI is never overwritten. Do not drop it.
+UPDATE upcoming_parties p SET
+    name_en = COALESCE(p.name_en, v.name_en),
+    name_ru = COALESCE(p.name_ru, v.name_ru)
+FROM (VALUES
+    ('הליכוד', 'Likud', 'Ликуд'),
+    ('ישר', 'Yashar', 'Яшар'),
+    ('ביחד', 'Together', 'Бейахад'),
+    ('הדמוקרטים', 'The Democrats', 'Ха-Демократим'),
+    ('כחול לבן', 'Blue and White', 'Кахоль-лаван'),
+    ('ישראל ביתנו', 'Yisrael Beiteinu', 'Наш дом Израиль'),
+    ('הציונות הדתית', 'Religious Zionist Party', 'Ха-Цийонут ха-Датит'),
+    ('עוצמה יהודית', 'Otzma Yehudit', 'Оцма Йехудит'),
+    ('חד"ש-תע"ל', 'Hadash-Ta''al', 'ХАДАШ-ТААЛ'),
+    ('בל"ד', 'Balad', 'БАЛАД'),
+    ('רע"ם', 'Ra''am', 'РААМ'),
+    ('ש"ס', 'Shas', 'ШАС'),
+    ('יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора'),
+    ('המפלגה הכלכלית', 'The Economic Party', 'Экономическая партия'),
+    ('אל הדגל', 'El HaDegel', 'Эль ха-Дегель'),
+    ('המילואימניקים', 'The Reservists', 'Резервисты')
+) AS v(name_he, name_en, name_ru)
+WHERE p.name_he = v.name_he;
 
 -- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg' WHERE name_he = 'ביחד' AND logo_url IS NULL;

@@ -47,6 +47,22 @@ CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_he_uidx ON leagues (name_he) WHER
 CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_en_uidx ON clubs (league_id, name_en) WHERE name_en IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_he_uidx ON clubs (league_id, name_he) WHERE name_he IS NOT NULL;
 
+-- Russian as a third display language (docs/superpowers/specs/2026-07-27-russian-language-support-design.md).
+-- Same structural-only rule as the bilingual block above: backfill lives in seed.sql.
+-- Nullable like name_he, which is what lets this ship ahead of the translations and lets an
+-- untranslated row fall back to its English name instead of rendering blank.
+ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS name_ru TEXT;
+ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS name_ru TEXT;
+ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS name_ru TEXT;
+ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS name_ru TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS previous_parties_name_ru_uidx ON previous_parties (name_ru) WHERE name_ru IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS upcoming_parties_name_ru_uidx ON upcoming_parties (name_ru) WHERE name_ru IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_ru_uidx ON leagues (name_ru) WHERE name_ru IS NOT NULL;
+-- Global, not per-league: clubs_name_ru_uidx is created new, so it goes straight to the shape the
+-- en/he indexes only reach after the DROP/CREATE further down (decision 7).
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_name_ru_uidx ON clubs (name_ru) WHERE name_ru IS NOT NULL;
+
 -- One club can now be votable under two leagues (continental competition + domestic league) --
 -- see docs/design/2026-07-15-clubs-leagues-admin-crud-design.md decision 10.
 ALTER TABLE clubs ADD COLUMN IF NOT EXISTS domestic_league_id INTEGER REFERENCES leagues(id);
