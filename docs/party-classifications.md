@@ -478,6 +478,87 @@ out the Arab parties and wants a government of Jewish Zionist parties only, whic
 opposition bloc its arithmetic. **If the reported merger talks with Gantz complete, this row needs
 revisiting.**
 
+### זהות — Zehut · `unaligned` · 3 / 3 / 2 · religious_zionist
+
+Source: the party's own full platform, *מחזירים את המדינה לעם — מצע מפלגת זהות תשפ"ו – 2026*
+(188pp, `zehut.org.il/docs/zehut-platform-full-he.pdf`, first edition May 2026, written under Moshe
+Feiglin). Scored entirely from the primary text — no secondary sources were needed or used.
+
+economic **+3**, the only +3 on the axis and the clearest case in the table. This is not
+right-of-centre economics, it is a doctrinal libertarian programme: a **flat tax** at a single low
+rate on all income types, "no brackets, no credit points, no reliefs for cronies", with a one-page
+return; government ministries cut **31 → 11** and entrenched in a Basic Law so the count can no
+longer be set by coalition bargaining; the presidency abolished outright; a standing commitment to
+vote *against* any bill without demonstrated necessity and to repeal existing ones; broad
+deregulation; corporate-tax cuts; privatisation of state transport companies; budgetary pensions
+curtailed. Switzerland and Hong Kong are named as the models, alongside Argentina's eight-ministry
+reduction, with Reagan and PragerU quoted approvingly. Yisrael Beiteinu's +2 `free-market` is a
+different order of claim from this.
+
+security **+3**. Cancellation of the Oslo accords and sovereignty over Judea, Samaria **and Gaza**,
+which the platform states in its own words is to be reached "by conquest, expulsion and settlement"
+(`מביטול הסכמי אוסלו – להחלת ריבונות על חלקי ארצנו על ידי כיבוש, גירוש והתיישבות`). It budgets a
+funded emigration programme for the Arab population of Judea and Samaria — real-estate purchase plus
+a financial package, assistance locating receiving states and jobs — and devotes a section to
+precedents it considers analogous (the post-1945 German expulsions, Partition, Cyprus 1974, Kuwait
+1991, Kosovo 1999). Those who accept Israeli sovereignty receive **permanent residency, not
+citizenship**; full civil rights come only individually, to those who "truly bind their fate to the
+state and the Jewish people". A Palestinian state is rejected in principle ("the peace trap"), and
+the Defence Ministry is renamed the **Ministry of War**. `population-transfer` is recorded because
+the platform argues for it explicitly and at length; recording it is not endorsing it, and the
+convention here is that the number and tags track the party's stated position.
+
+religiosity **+2**, and this is the interesting row in the table — it is where the axis and `sector`
+diverge in an unusual direction, and where the naive reading from Zehut's 2019 libertarian
+reputation is simply wrong. The platform is explicitly **not** separationist. Its chapter *מוסדות
+מדינת העם היהודי* opens with "מחויבות ממלכתית להלכה" — a **state commitment to halakha**: every
+state institution and government body is to keep Shabbat, the festivals and kashrut, described as
+"a basic and simple national principle, not a compromise" made to accommodate religious employees.
+The Knesset cafeteria must be kosher; Israel Railways and the Electric Company must observe Shabbat
+for as long as they are state arms; in the IDF food is kosher-only, non-operational Shabbat activity
+is barred, and an order to desecrate Shabbat without operational need is "manifestly illegal",
+justifying refusal. The **Chief Rabbinate keeps** the who-is-a-Jew determination for the Law of
+Return, endorsed as rightly placed there. And Jewish civil law (*משפט עברי*) is to be recognised as
+a **parallel state jurisdiction** autonomous from Knesset legislation, whose rulings the authorities
+must enforce exactly as they enforce civil-court judgments.
+
+Held **below +3** by a genuinely different mechanism, not by moderation. Coercion of the individual
+is removed: the citizen's "Shabbat, marriage, food, culture, education and religion" are declared
+private and communal matters; public transport is to be privatised precisely so Shabbat operation
+becomes a community question rather than national law; the Ministry of Religious Services is
+abolished into the Interior Ministry; the Hebrew courts are **voluntary**, civil-only, and require
+both parties' consent; and direct state funding of yeshivas is to **end** — even-handedly with
+humanities funding, on the argument that the funding weapon buys ideological conformity. So the
+state *qua* state is thoroughly halakhic while the citizen is left alone. Religious Zionism and
+Otzma hold +3 for wanting halakha to reach the citizen; Zehut explicitly does not.
+
+This is exactly the direction-versus-motive split of Decision 5 in the religiosity design doc.
+`state-institutions-bound-to-halakha`, `ends-state-religious-funding`,
+`jewish-law-parallel-jurisdiction` and `communitarian-devolution` carry the shape of the position
+that the single number +2 cannot. **`instrumentally-clerical` deliberately does not apply** — unlike
+Likud there is no gap between claim and record to flag; Zehut is sincerely clerical about the state
+and sincerely libertarian about the person.
+
+`sector` **religious_zionist** describes the movement's identity and leadership — Feiglin, the
+Manhigut Yehudit lineage, Temple Mount centrality, and a text that reasons from Rambam and Rav Kook
+throughout — not its actual 2019 electorate, which skewed young and secular. That divergence is real
+and is what `libertarian` and `cannabis-legalization` are doing in the tag list. Worth noting for
+anyone revisiting: Feiglin states in the platform's own preface that he has **no operative plans
+regarding the Temple** and that the platform contains no chapter on building it, so
+`temple-mount-centred` records sovereignty and national symbolism, not a construction programme.
+
+`bloc` **unaligned**: extra-parliamentary (it has run before and holds no seats), committed to
+neither camp, and critical of Netanyahu on the security record — the magnetometer withdrawal from
+the Temple Mount in 2017 and the policy of transferring responsibility for Gaza are both attacked by
+name. Same reading as El HaDegel and the Reservists.
+
+Conscription is **not** scored here, per Decision 6. Zehut's model is its own: a short universal
+enlistment and training for everyone **including haredim** (adapted to their way of life and
+scheduled in *בין הזמנים*), feeding a well-paid professional volunteer army; women are not
+obligated to serve but may volunteer; Arabs may volunteer for civilian service only. That closes the
+haredi exemption by shrinking the obligation for everyone rather than extending it — which is why
+`professional-army`, not `universal-conscription`, is the accurate tag.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -591,6 +672,18 @@ That is a deliberate trade — each replaced a value that was actively wrong:
   `Logo_המילואימניקים_-_דור_הניצחון.png`, the logo of **Gilad Ach's movement** (see the name-collision
   warning). We were showing one organisation's mark on another organisation's row.
 
+**זהות's logo is dark artwork and needs no special handling — verified, not assumed.** The Wikimedia
+SVG is a `#163651` navy wordmark plus a `#6ac6de` cyan flag; 62% of its opaque pixels are
+perceptually dark, and the wordmark is close to invisible on the `#161B22` cards if shown untouched.
+`recolorLogoForDark()` in `logos.js` handles it with no code change: the navy lifts to `#b2d0ea`
+(luminance 0.80) with hue preserved and the cyan is left alone, because it is already above the
+threshold. Both halves of that were confirmed in a real browser — including a **cross-origin** load
+from `upload.wikimedia.org` with `crossOrigin="anonymous"`, which is the part that could have failed
+silently: a tainted canvas throws, `logoEl` swallows it, and the logo would render as the original
+dark navy with no error anywhere. `upload.wikimedia.org` sends `access-control-allow-origin: *`, so
+it does not taint. **Do not add it to `OUTLINE_CLUBS`** — that set is for clubs and leagues, and the
+recolour already covers parties.
+
 **Do not hotlink social-media CDNs.** Those URLs are signed and expire, the CDN may refuse hotlinks,
 and — the one that actually bit, on F.C. Kiryat Yam — tracker blockers drop `*.fbcdn.net` in the
 browser, so the crest is invisible to many visitors while `curl` fetches it happily. That class of
@@ -633,3 +726,4 @@ pass happened, for anyone reading git history.
 | 2026-07-27 | Yisrael Beiteinu's security basis corrected against the party platform |
 | 2026-07-27 | revision 8 — Yashar's eight principles documents; economic 0 → +1 |
 | 2026-07-27 | revision 9 — Religious Zionism's settlement pages; no axis moves, `anti-two-state` added |
+| 2026-07-27 | זהות — Zehut added to `upcoming_parties`, scored from its own 2026 platform |
