@@ -370,6 +370,47 @@ What the **order** changes:
 economic 0 with `claims-economically-liberal` already captures the gap between Smotrich's rhetoric
 and his finance-ministry record.
 
+**The thirteen `zionutdatit.org.il/hityashvut/` pages, read 2026-07-27: no axis moves either.** Same
+reason as the primary — security +3 and religiosity +3 are already at their poles. The pages confirm
+them at maximum: sovereignty defined as "החלת החוק הישראלי על יהודה, שומרון ובקעת הירדן" with the
+Oslo A/B/C division dismantled, E1 approved to "תקבור את רעיון המדינה הפלסטינית", 50 new recognised
+settlements in 2.5 years, ~50,000 housing units, 30,000 dunams declared state land.
+
+`anti-two-state` **was missing and is now added.** The row carried `annexationist` but never the
+plain veto, which is odd for the party that states it most explicitly — and Yashar carries
+`no-palestinian-state` on thinner evidence. Upcoming table only; the previous-election row keeps its
+four original tags, per the no-back-dating convention above.
+
+**Roughly ₪9B is itemised across these pages and none of it moves `economic`.** Roads ₪7B over five
+years, farms ₪100M+, antennas ₪50M, land-patrol units ₪40M/yr, Gaza-envelope alternative housing
+₪800M, northern rehabilitation ₪650M, the settlement division from ₪40M to ₪100M a year, plus
+₪250M/₪190M/₪170M/₪110M/₪95M for planning, traffic lights, safety, lighting and access roads. This
+is territorial policy denominated in shekels, not a position on how the economy should be organised,
+and reading it as state-expansionist economics would be a category error. What it *does* do is give
+`claims-economically-liberal` its best evidence so far: this is the finance minister's own party
+itemising what he directed to one sector.
+
+`not-economy-focused` survives, but it is now the strained tag on this row — the subject of every
+page is settlement and the budgets are instruments of it.
+
+**"מקסימום שטח תחת ריבונות ישראלית עם מינימום אוכלוסייה ערבית"** is the sovereignty page's own
+formulation, and it needs stating precisely: it is a plan to draw the sovereignty line *around*
+Palestinian population centres, not a transfer proposal. The party does not advocate moving anyone.
+The Reservists entry below is the standing warning about attributing population transfer to a party
+that has not stated it, and it applies here in the direction of restraint. No existing tag covers
+demography-driven border design; it is deliberately left untagged rather than approximated with
+`jewish-supremacist`, which means something else. If it is ever worth a tag it should be added
+across rows — Beiteinu's swap plan and Eisenkot's anti-annexation are *also* demographic arguments,
+pointing in three different directions — not to this row alone.
+
+**Two of the thirteen URLs mean something other than what they say**, and both would mislead a
+future reader working from the link list:
+
+- **`/tours/` is not tourism.** It is סיירי הקרקעות — land-patrol units, ₪40M a year, drones and
+  cameras, claiming "עלייה של כ-70% באכיפת הבנייה הערבית הבלתי חוקית". An enforcement document.
+- **`/settlement/` is inside the Green Line**, unlike the other twelve: five new communities between
+  Arad and Beersheba, five more between Dimona and Beersheba, four in the north.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -591,3 +632,4 @@ pass happened, for anyone reading git history.
 | 2026-07-26 | `seed.sql` flattened to a plain table; this document created |
 | 2026-07-27 | Yisrael Beiteinu's security basis corrected against the party platform |
 | 2026-07-27 | revision 8 — Yashar's eight principles documents; economic 0 → +1 |
+| 2026-07-27 | revision 9 — Religious Zionism's settlement pages; no axis moves, `anti-two-state` added |
