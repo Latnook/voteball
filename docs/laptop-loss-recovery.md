@@ -33,9 +33,21 @@ Partly, and it matters *how* the machine was taken.
   in RAM. Encryption is buying you nothing. Treat it as a full compromise.
 - **Unsure** → treat it as a full compromise.
 
-Two details that decide this for *this* setup: the root volume is LUKS-encrypted, and swap is on
-**zram** (RAM-backed), so no hibernation image with key material is ever written to disk. `/boot` is
-unencrypted, which is normal and holds nothing secret.
+Three details decide this for *this* setup, all verified on 2026-07-27:
+
+- The root volume is **LUKS-encrypted**, and both `/` and `/home` sit on it — so the AWS credentials,
+  the build-host SSH key and the working copy are all inside the encrypted volume, not beside it.
+- Swap is **zram** (RAM-backed), so no hibernation image containing the volume key is ever written to
+  disk. This is what makes "powered off" genuinely safe rather than merely probably safe.
+- `/boot` is unencrypted, which is normal and holds nothing secret.
+
+> **One assumption to check, once:** the reasoning above assumes the disk asks for a **passphrase** at
+> boot. If a TPM keyslot is enrolled with no PIN, the machine decrypts itself when powered on, and the
+> only thing between a thief and your files is the login password. That is a real difference, and this
+> machine has the hardware and tooling for it (`/dev/tpm0`, `sd-encrypt`, `systemd-cryptenroll`).
+> Confirm with `sudo cryptsetup luksDump <root partition> | grep -iA3 '^Tokens'` — a `systemd-tpm2`
+> token means TPM unlock; empty means passphrase-only. If it is TPM-only, either add a PIN
+> (`systemd-cryptenroll --tpm2-with-pin=yes`) or treat every loss as a full compromise.
 
 ---
 
