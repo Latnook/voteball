@@ -1,89 +1,159 @@
 # Architecture
 
-Voteball on EKS. Solid arrows = request/data flow; the AWS services on the right are reached from the
-cluster. Only the frontend is internet-facing; backend/worker/DB are private.
+Voteball on EKS, in four views. Each answers one question; together they cover the whole system.
+One large combined diagram was tried first and was unreadable — this is the same content, split.
+
+**Arrow conventions (all four diagrams):**
+
+| Arrow | Meaning |
+|---|---|
+| `──▶` solid | request / data flow, one direction |
+| `╌╌▶` dashed | configuration, identity or control — not request traffic |
+| `◀──▶` double | genuinely bidirectional |
+
+Only the ALB is internet-facing. Backend, worker and the database are private.
+
+---
+
+## 1. Network and exposure — where things sit, and what the internet can touch
 
 ```mermaid
 flowchart LR
-    user([User<br/>browser])
+    user([User browser])
+    r53[Route53<br/>voteball.latnook.com]
 
-    subgraph AWS["AWS — il-central-1 · VPC 10.0.0.0/16"]
-      dns[Route53<br/>voteball.latnook.com]
-      acm[ACM cert]
-
-      subgraph PUB["Public subnets (2 AZs)"]
-        waf[[AWS WAF<br/>rate-limit /api/vote]]
-        alb[ALB<br/>HTTPS 443 · TLS via ACM]
-        nat[NAT GW]
-      end
-
-      subgraph PRIV["Private subnets (2 AZs) — EKS managed node group · SPOT · autoscaled"]
-        subgraph NS["namespace: devops-app"]
-          ing[/"Ingress: voteball<br/>ALB + ACM + WAF via annotations"/]
-          fesvc(["Service: frontend<br/>ClusterIP :80"])
-          besvc(["Service: backend<br/>ClusterIP :5000"])
-          fe[Deployment: frontend<br/>nginx :8080 ·x2·]
-          be[Deployment: backend<br/>Flask/gunicorn :5000 ·x2·]
-          wk[Deployment: worker<br/>rollup poller ·x1·]
-          cron[[CronJob: backup<br/>nightly pg_dump]]
-          mig[[Job: migrate<br/>schema, once per release]]
-          cfg[(ConfigMap<br/>app-config)]
-          sec[(Secret app-secret<br/>via ExternalSecret)]
-          sa["ServiceAccounts<br/>worker+backup = IRSA<br/>frontend+backend = none"]
-          gov["NetworkPolicy: default-deny + allow-app-egress<br/>HPA: frontend + backend<br/>PDB: minAvailable"]
+    subgraph vpc["AWS il-central-1 · VPC 10.0.0.0/16"]
+        subgraph pub["Public subnets · 2 AZs"]
+            waf[[AWS WAF<br/>rate-limits /api/vote]]
+            alb[ALB · HTTPS 443<br/>TLS terminated here, cert from ACM]
+            nat[NAT gateway]
         end
-        addons["Platform add-ons (kube-system/argocd/monitoring):<br/>ALB Controller · ESO · Cluster Autoscaler · NTH<br/>CloudWatch · metrics-server · external-dns · ArgoCD · Prometheus/Grafana"]
-      end
 
-      subgraph DBSUB["DB subnets (isolated, no NAT/IGW)"]
-        rds[(RDS Postgres<br/>private · SG=node-SG only · sslmode=require · encrypted)]
-      end
+        subgraph priv["Private subnets · 2 AZs"]
+            nodes[EKS managed node group<br/>SPOT · autoscaled<br/>all application pods run here]
+        end
 
-      sm[Secrets Manager<br/>voteball/app-secret]
-      s3[(S3 rollups bucket<br/>snapshots/ + backups/)]
-      sns[SNS<br/>milestone + operational alerts]
-      ecr[ECR<br/>4 image repos]
-      cw[CloudWatch<br/>logs + metrics]
-      tfstate[(S3 tfstate bucket<br/>versioned · locked · owned by no stack)]
+        subgraph dbsub["DB subnets · isolated — no NAT, no internet gateway"]
+            rds[(RDS Postgres<br/>reachable only from the node SG<br/>sslmode=require · encrypted)]
+        end
     end
 
-    waf --> alb
-    addons -. Alertmanager (IRSA) .-> sns
-    jenkins["Jenkins on EC2 (own VPC/stack)<br/>JCasC-configured · instance profile → build/Trivy/ECR"] --> ecr
-    jenkins -. tag bump commit .-> argocdsync[ArgoCD watches repo] -. syncs .-> NS
-
-    user -->|HTTPS| dns --> alb
-    acm -. cert .- alb
-    alb --> ing --> fesvc --> fe
-    fe -->|/api/*| besvc --> be --> rds
-    wk --> rds
-    wk -->|IRSA| sns
-    wk -->|IRSA PutObject snapshots/| s3
-    cron -->|IRSA PutObject backups/| s3
-    be -. envFrom .- cfg
-    be -. envFrom .- sec
-    sec <-->|ESO sync| sm
-    fe & be & wk -. pull image .- ecr
-    NS -. logs/metrics .-> cw
+    user -->|HTTPS| r53 --> waf --> alb
+    alb -->|only inbound path| nodes
+    nodes --> rds
+    nodes -->|outbound 443 only| nat
 ```
 
-## Zones & exposure
-- **Internet-facing:** only the ALB (public subnets) → frontend, with **AWS WAF** attached in front of
-  it (rate-limits `/api/vote`; attached by Ingress annotation, since the ALB is created by the load
-  balancer controller and does not exist when Terraform runs). HTTP is redirected to HTTPS.
-- **Private:** all pods + RDS are in private/DB subnets. Backend/worker/DB have no public entry;
-  NetworkPolicies further restrict pod-to-pod (backend reachable only from frontend), and the
-  frontend/backend Services are ClusterIP — only the ALB, via the Ingress, reaches in from outside.
-- **Egress:** pods reach AWS APIs (SNS/S3/Secrets Manager) and pull nothing untrusted; RDS is reached
-  directly in-VPC.
+- **Internet-facing:** the ALB alone. HTTP is redirected to HTTPS; WAF sits in front of it.
+- **Private:** every pod. Reachable only via the ALB, and only the frontend is a target.
+- **Isolated:** RDS. No route in from the internet and no route out — not even through the NAT.
+
+---
+
+## 2. Inside the cluster — the Kubernetes objects
+
+```mermaid
+flowchart LR
+    alb([ALB])
+
+    subgraph eks["EKS cluster"]
+        subgraph ns["namespace: devops-app"]
+            ing[/Ingress: voteball<br/>ALB + ACM + WAF via annotations/]
+            fesvc([Service: frontend<br/>ClusterIP :80])
+            besvc([Service: backend<br/>ClusterIP :5000])
+            fe[Deployment: frontend<br/>nginx · 2 pods]
+            be[Deployment: backend<br/>Flask/gunicorn · 2 pods<br/>HPA scales to 5]
+            wk[Deployment: worker<br/>1 pod]
+            jobs[[Job: migrate — schema, per release<br/>CronJob: backup — nightly pg_dump]]
+        end
+    end
+
+    rds[(RDS Postgres)]
+
+    alb --> ing --> fesvc --> fe
+    fe -->|proxies /api/*| besvc --> be --> rds
+    wk --> rds
+    jobs --> rds
+```
+
+Governance objects applying across the namespace, not drawn as nodes because they constrain rather
+than carry traffic:
+
+- **NetworkPolicy** — default-deny ingress and egress; the backend accepts traffic from the frontend
+  only; only `backend`/`worker`/`backup`/`frontend`/`migrate` pods may reach RDS.
+- **HPA** on frontend and backend · **PDB** (`minAvailable`) on both.
+
+---
+
+## 3. Configuration, identity and the AWS services
+
+```mermaid
+flowchart LR
+    subgraph ns["namespace: devops-app"]
+        cfg[(ConfigMap: app-config<br/>DB_HOST · S3_BUCKET · SNS_TOPIC)]
+        sec[(Secret: app-secret<br/>DB_PASS · admin credentials)]
+        sas[ServiceAccounts ×4<br/>worker + backup: IRSA role<br/>frontend + backend: no AWS access]
+        be[backend]
+        wk[worker]
+        cron[backup CronJob]
+    end
+
+    sm[Secrets Manager<br/>voteball/app-secret]
+
+    subgraph aws["AWS services the pods call"]
+        sns[SNS topic<br/>milestones + alerts]
+        s3[(S3 rollups bucket)]
+        cw[CloudWatch<br/>logs + metrics]
+    end
+
+    sm -->|External Secrets Operator syncs in| sec
+    cfg -.->|envFrom| be
+    sec -.->|envFrom| be
+    sas -.->|grants identity to| wk
+    sas -.->|grants identity to| cron
+    wk -->|IRSA · Publish| sns
+    wk -->|IRSA · PutObject snapshots/| s3
+    cron -->|IRSA · PutObject backups/| s3
+    ns -.->|logs + metrics| cw
+```
+
+**The secret flow is one-way:** ESO reads Secrets Manager and writes the in-cluster Secret. Nothing in
+the cluster writes back. Terraform creates only the empty container in Secrets Manager, so no secret
+value ever enters git or the Terraform state.
+
+**Least privilege is visible here:** the two ServiceAccounts that carry an AWS role can do exactly one
+thing each. The frontend and backend carry no role at all. The worker's S3 permission is `PutObject`
+only — it cannot read back what it wrote, which is why it tracks "did the results change?" in memory.
+
+---
+
+## 4. How code reaches the cluster
+
+```mermaid
+flowchart LR
+    push[git push to master] --> jenkins[Jenkins on EC2<br/>own Terraform stack · own VPC<br/>instance profile, ECR push only]
+    jenkins --> trivy{{Trivy scan<br/>CRITICAL/HIGH fail the build}}
+    trivy -->|pass| ecr[ECR · 4 image repos]
+    jenkins -.->|commits new image tag, marked skip ci| master[(master branch)]
+    master --> argocd[ArgoCD] -.->|syncs| ns[namespace: devops-app]
+    ecr -.->|image pull| ns
+```
+
+**Jenkins never touches the cluster** and holds no cluster credentials. It pushes images and commits a
+tag; ArgoCD does every deployment. The only thing that can change production is a commit on `master`.
+
+---
 
 ## What builds what
-- **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS (7-day PITR), ECR, ACM, WAF, S3, SNS, Secrets
-  Manager (container only), IRSA roles, and every platform add-on.
-- **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box.
-- **Jenkins (`terraform/jenkins/`):** builds, scans (Trivy) and pushes the four images to ECR, then
-  commits the new image tag to `charts/voteball/values.yaml`; ArgoCD sees that commit and syncs. Jenkins
-  runs on its own EC2 host, in its **own Terraform stack and the default VPC** — so tearing the
-  application stack down does not delete the CI server — and authenticates to AWS via an **instance
-  profile** scoped to ECR push only. It holds **no cluster credentials**: it never deploys, ArgoCD does.
-  See [`docs/cicd.md`](../cicd.md).
+
+- **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS (7-day PITR), ECR, ACM, WAF, S3,
+  SNS, Secrets Manager (container only), IRSA roles, and every platform add-on — AWS Load Balancer
+  Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
+  Container Insights, metrics-server, external-dns, ArgoCD, kube-prometheus-stack. State lives in a
+  versioned, locked S3 bucket owned by no stack.
+- **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box —
+  diagrams 2 and 3.
+- **Jenkins (`terraform/jenkins/`):** builds, scans and pushes the four images, then commits the new
+  image tag to `charts/voteball/values.yaml`. It runs on its own EC2 host in its **own Terraform stack
+  and the default VPC**, so tearing the application stack down does not delete the CI server. See
+  [`docs/cicd.md`](../cicd.md).
