@@ -177,6 +177,9 @@ Then open <http://localhost:8080>. The backend creates its own schema and seed d
 - **[`docs/security.md`](docs/security.md)** — security design (IRSA, secrets, network, images, trade-offs).
 - **[`docs/production-readiness.md`](docs/production-readiness.md)** — the honest gap between this demo-grade deployment and one you could run for real, ordered by risk.
 - **[`docs/maintenance.md`](docs/maintenance.md)** — what rots on its own: version pins, the EKS support deadline, and why CI can fail without you changing anything.
+- **[`docs/laptop-loss-recovery.md`](docs/laptop-loss-recovery.md)** — what to do if the machine this is
+  run from is lost or stolen: what to rotate first, what is genuinely unrecoverable (very little), and
+  how to rebuild on a new machine from the state that has always lived in S3.
 - **[`docs/eks/architecture.md`](docs/eks/architecture.md)** — architecture diagram.
 - **[`docs/admin-guide.md`](docs/admin-guide.md)** — using the admin UI to reassign votes through
   party splits and mergers, and what each action does to the stored data.
