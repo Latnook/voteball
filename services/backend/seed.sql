@@ -578,7 +578,7 @@ UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d0/Brig
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/61/Cagliari_Calcio_1920.svg' WHERE name_en = 'Cagliari' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/12/RC_Celta_de_Vigo_logo.svg' WHERE name_en = 'Celta Vigo' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg' WHERE name_en = 'Chelsea' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d0/Club_Brugge_KV_logo.svg' WHERE name_en = 'Club Brugge' AND logo_url IS NULL;
+UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/9/97/Club_brugge.png' WHERE name_en = 'Club Brugge' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Calcio_Como_-_logo_%28Italy%2C_2019-%29.svg' WHERE name_en = 'Como' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7b/Coventry_City_FC_crest.svg' WHERE name_en = 'Coventry City' AND logo_url IS NULL;
 UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a2/Crystal_Palace_FC_logo_%282022%29.svg' WHERE name_en = 'Crystal Palace' AND logo_url IS NULL;
