@@ -1,0 +1,70 @@
+### Demo 1 — HTTPS with a valid ACM certificate
+HTTP/2 200 
+issuer=C=US, O=Amazon, CN=Amazon RSA 2048 M04
+subject=CN=voteball.latnook.com
+notBefore=Jul 22 00:00:00 2026 GMT
+notAfter=Feb  4 23:59:59 2027 GMT
+
+### Demo 1b — HTTP is redirected to HTTPS
+HTTP/1.1 301 Moved Permanently
+Server: awselb/2.0
+
+### Demo 2+3 — frontend -> backend -> RDS (/api/options returns seeded DB data)
+{"clubs":[{"domestic_league_id":null,"id":2858,"league_id":6,"logo_url":"https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg","name_en":"1. FC K\u00f6ln","name_he":"\u05e4. \u05e6. \u05
+
+### Demo 3b — vote totals read from worker-computed rollup tables
+{"previous":[{"count":2,"party_id":10},{"count":1,"party_id":5},{"count":1,"party_id":4},{"count":1,"party_id":14}],"upcoming":[{"count":3,"party_id":4},{"count":1,"party_id":11},{"count":1,"party_id":3}]}
+
+### Demo 4 — S3 via IRSA (backup CronJob writes to s3://.../backups/)
+-- objects before:
+2026-07-27 05:00:06      12578 voteball-2026-07-27T02-00-04Z.sql.gz
+job.batch/evidence-backup created
+job.batch/evidence-backup condition met
+-- objects after:
+2026-07-27 05:00:06      12578 voteball-2026-07-27T02-00-04Z.sql.gz
+2026-07-27 08:44:28      12578 voteball-2026-07-27T05-44-26Z.sql.gz
+
+### Demo 4b — the backup ServiceAccount's IRSA role (frontend/backend carry none)
+NAME       ROLE
+backend    <none>
+backup     arn:aws:iam::590183895228:role/voteball-backup-irsa
+default    <none>
+frontend   <none>
+worker     arn:aws:iam::590183895228:role/voteball-worker-irsa
+
+### Demo 5a — NetworkPolicy isolation: worker must NOT reach backend
+sh: 1: wget: not found
+BLOCKED
+### NetworkPolicies in force
+NAME                        POD-SELECTOR                                      AGE
+allow-alb-to-frontend       app=frontend                                      4d22h
+allow-app-egress            app in (backend,backup,frontend,migrate,worker)   4d22h
+allow-dns-egress            <none>                                            4d22h
+allow-frontend-to-backend   app=backend                                       4d22h
+default-deny                <none>                                            4d22h
+
+### Real probe: worker -> backend:5000 (must NOT connect)
+BLOCKED by NetworkPolicy: TimeoutError
+
+### Control: worker -> RDS:5432 (must connect — allow-app-egress permits it)
+REACHABLE (expected — worker needs RDS)
+### SNS topic and subscription state
+topic: arn:aws:sns:il-central-1:590183895228:voteball-notifications
+email	arn:aws:sns:il-central-1:590183895228:voteball-notifications:2f8a64b3-c835-41c8-82c0-33bcd73783d8
+
+### SNS delivery over the last 7 days (proves the topic is not a black hole)
+NumberOfMessagesPublished        42.0
+NumberOfNotificationsDelivered   45.0
+NumberOfNotificationsFailed      0.0
+
+### Alertmanager IRSA (publishes operational alerts without SMTP creds on the cluster)
+  kube-prometheus-stack-alertmanager -> arn:aws:iam::590183895228:role/voteball-alertmanager-irsa
+
+### PrometheusRule alert rules shipped by the app chart
+  - VoteballPodCrashLooping
+  - VoteballDeploymentDegraded
+  - VoteballNoBackendAvailable
+  - VoteballMigrationJobFailed
+  - VoteballBackupJobFailed
+  - VoteballBackupMissing
+  - VoteballContainerOOMKilled
