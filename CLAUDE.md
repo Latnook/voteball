@@ -41,10 +41,12 @@ justify its shape. Several also carry a "Verification outcome" section recording
 when the design met reality.
 
 *(Write new design docs here as `YYYY-MM-DD-<topic>-design.md`. The step-by-step implementation plans
-that accompanied them were process artifacts and were deleted on 2026-07-20 once executed; they are in
-git history if you need them. **One survives**: `docs/superpowers/plans/2026-07-20-jenkins-migration.md`,
-still tracked. Treat it as a historical artifact of that migration, not as a plan to execute — the
-Jenkins design doc and `docs/cicd.md` are the current sources.)*
+that accompanied them are process artifacts and are deleted once executed; they are in git history if
+you need them. `docs/superpowers/` held the last four and was removed on 2026-07-28 — nothing in the
+repo now carries an executed plan. **Don't reintroduce the folder**: a finished plan reads like
+pending work, and the Russian-language spec in there still said "implementation gated on the
+translation CSV" long after Russian shipped. The design docs and `docs/cicd.md` are the current
+sources for what the code does and why.)*
 
 Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
 `docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`,
