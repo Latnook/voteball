@@ -778,14 +778,6 @@ def delete_club(conn, club_id):
         cur.close()
 
 
-def club_exists(conn, club_id):
-    cur = conn.cursor()
-    cur.execute('SELECT 1 FROM clubs WHERE id = %s', (club_id,))
-    exists = cur.fetchone() is not None
-    cur.close()
-    return exists
-
-
 def get_club_leagues(conn, club_id):
     cur = conn.cursor()
     cur.execute('SELECT league_id, domestic_league_id FROM clubs WHERE id = %s', (club_id,))
