@@ -17,8 +17,11 @@ flowchart LR
         nat[NAT GW]
       end
 
-      subgraph PRIV["Private subnets (2 AZs) — EKS nodes/pods"]
+      subgraph PRIV["Private subnets (2 AZs) — EKS managed node group · SPOT · autoscaled"]
         subgraph NS["namespace: devops-app"]
+          ing[/"Ingress: voteball<br/>ALB + ACM + WAF via annotations"/]
+          fesvc(["Service: frontend<br/>ClusterIP :80"])
+          besvc(["Service: backend<br/>ClusterIP :5000"])
           fe[Deployment: frontend<br/>nginx :8080 ·x2·]
           be[Deployment: backend<br/>Flask/gunicorn :5000 ·x2·]
           wk[Deployment: worker<br/>rollup poller ·x1·]
@@ -27,6 +30,7 @@ flowchart LR
           cfg[(ConfigMap<br/>app-config)]
           sec[(Secret app-secret<br/>via ExternalSecret)]
           sa["ServiceAccounts<br/>worker+backup = IRSA<br/>frontend+backend = none"]
+          gov["NetworkPolicy: default-deny + allow-app-egress<br/>HPA: frontend + backend<br/>PDB: minAvailable"]
         end
         addons["Platform add-ons (kube-system/argocd/monitoring):<br/>ALB Controller · ESO · Cluster Autoscaler · NTH<br/>CloudWatch · metrics-server · external-dns · ArgoCD · Prometheus/Grafana"]
       end
@@ -50,7 +54,8 @@ flowchart LR
 
     user -->|HTTPS| dns --> alb
     acm -. cert .- alb
-    alb -->|/*| fe -->|/api/*| be --> rds
+    alb --> ing --> fesvc --> fe
+    fe -->|/api/*| besvc --> be --> rds
     wk --> rds
     wk -->|IRSA| sns
     wk -->|IRSA PutObject snapshots/| s3
@@ -67,7 +72,8 @@ flowchart LR
   it (rate-limits `/api/vote`; attached by Ingress annotation, since the ALB is created by the load
   balancer controller and does not exist when Terraform runs). HTTP is redirected to HTTPS.
 - **Private:** all pods + RDS are in private/DB subnets. Backend/worker/DB have no public entry;
-  NetworkPolicies further restrict pod-to-pod (backend reachable only from frontend).
+  NetworkPolicies further restrict pod-to-pod (backend reachable only from frontend), and the
+  frontend/backend Services are ClusterIP — only the ALB, via the Ingress, reaches in from outside.
 - **Egress:** pods reach AWS APIs (SNS/S3/Secrets Manager) and pull nothing untrusted; RDS is reached
   directly in-VPC.
 
