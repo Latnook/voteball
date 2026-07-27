@@ -41,12 +41,10 @@ justify its shape. Several also carry a "Verification outcome" section recording
 when the design met reality.
 
 *(Write new design docs here as `YYYY-MM-DD-<topic>-design.md`. The step-by-step implementation plans
-that accompanied them are process artifacts and are deleted once executed; they are in git history if
-you need them. `docs/superpowers/` held the last four and was removed on 2026-07-28 — nothing in the
-repo now carries an executed plan. **Don't reintroduce the folder**: a finished plan reads like
-pending work, and the Russian-language spec in there still said "implementation gated on the
-translation CSV" long after Russian shipped. The design docs and `docs/cicd.md` are the current
-sources for what the code does and why.)*
+that accompany them are process artifacts — **delete each one the moment it is executed**, see the
+rule in Workflow below; git history is the archive. `docs/superpowers/` held the last four and was
+removed on 2026-07-28. The cost of keeping them was not disk space: the Russian-language spec in
+there still read "implementation gated on the translation CSV" long after Russian shipped.)*
 
 Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
 `docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`,
@@ -60,6 +58,17 @@ pre-authorized permission (per the user's explicit request); don't leave work
 committed-but-unpushed or uncommitted waiting to be asked. Still use judgment
 on grouping related changes into one coherent commit rather than pushing
 every single edit separately, and never force-push.
+
+**Delete an implementation plan as soon as it is executed — same commit as the last task**
+(per the user's explicit request, 2026-07-28, after finding four stale ones). This is not optional
+cleanup to do later; a plan that outlives its execution reads like pending work to the next person
+who opens the repo. `docs/superpowers/` is the **default output path of the superpowers workflow** —
+`brainstorming` writes the spec to `specs/`, `writing-plans` writes the plan to `plans/` — so it
+regenerates on its own every time a feature goes through that workflow. **Deleting the folder is
+not a one-time fix; the deletion has to happen at the end of every plan.** Nothing in this repo
+tracks an executed plan, and nothing should. Git history is the archive. What *does* survive is the
+design doc in `docs/design/`, which records the decisions and the "Verification outcome" — that is
+the durable record, not the checkbox list of steps.
 
 **Explain the technical calls, and keep the explanation simple** (per the user's explicit request).
 The repo owner describes themselves as a vibe coder, not an infrastructure expert — an honest
