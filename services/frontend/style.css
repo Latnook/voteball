@@ -18,6 +18,18 @@
   src: url('fonts/heebo-hebrew-var.woff2') format('woff2');
   unicode-range: U+0590-05FF, U+20AA, U+FB1D-FB4F;
 }
+/* Cyrillic body text. Declared under the SAME 'Heebo' family as the Latin/Hebrew faces above,
+   because Heebo's Latin is derived from Roboto -- so this is the matching Cyrillic, not an
+   approximation, and the browser picks it purely by unicode-range. Body text therefore needs no
+   :lang(ru) rule at all. */
+@font-face {
+  font-family: 'Heebo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('fonts/roboto-cyrillic-var.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
 @font-face {
   font-family: 'Anton';
   font-style: normal;
@@ -25,6 +37,17 @@
   font-display: swap;
   src: url('fonts/anton-latin-400.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+20AC;
+}
+/* Anton has no Cyrillic, so display headings get Oswald -- the closest condensed heavy grotesque
+   with a Cyrillic subset. Used only via --font-display-ru, never as an Anton fallback, so English
+   headings are unaffected. */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/oswald-cyrillic-var.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 @font-face {
   font-family: 'Secular One';
@@ -59,6 +82,7 @@
   --font-body: 'Heebo', system-ui, sans-serif;
   --font-display-en: 'Anton', var(--font-body);
   --font-display-he: 'Secular One', var(--font-body);
+  --font-display-ru: 'Oswald', var(--font-body);
   color-scheme: dark;
 }
 
@@ -129,6 +153,7 @@ body {
 
 :lang(en) .display { font-family: var(--font-display-en); letter-spacing: 0.01em; }
 :lang(he) .display { font-family: var(--font-display-he); letter-spacing: 0; }
+:lang(ru) .display { font-family: var(--font-display-ru); letter-spacing: 0.01em; }
 
 main, .page {
   max-width: 960px;
@@ -167,6 +192,7 @@ button { font-family: inherit; }
   color: var(--ink);
 }
 :lang(he) .brand { font-family: var(--font-display-he); }
+:lang(ru) .brand { font-family: var(--font-display-ru); }
 .brand-ball { font-size: 1.1em; }
 
 .toggles {
@@ -262,6 +288,7 @@ button { font-family: inherit; }
   text-transform: uppercase;
 }
 :lang(he) .hero h1 { font-family: var(--font-display-he); text-transform: none; }
+:lang(ru) .hero h1 { font-family: var(--font-display-ru); }
 .hero p {
   color: var(--muted);
   max-width: 46ch;
@@ -294,6 +321,7 @@ button { font-family: inherit; }
   min-width: 1.6em;
 }
 :lang(he) .vote-section-num { font-family: var(--font-display-he); }
+:lang(ru) .vote-section-num { font-family: var(--font-display-ru); }
 .vote-section-title {
   font-weight: 700;
   font-size: 1.05rem;
@@ -504,6 +532,7 @@ button { font-family: inherit; }
   text-align: center;
 }
 :lang(he) .standings-rank { font-family: var(--font-display-he); }
+:lang(ru) .standings-rank { font-family: var(--font-display-ru); }
 .standings-name {
   font-weight: 600;
   font-size: 0.9rem;
@@ -561,6 +590,7 @@ button { font-family: inherit; }
   margin: 0 0 0.75rem;
 }
 :lang(he) .scoreboard-title { font-family: var(--font-display-he); text-transform: none; }
+:lang(ru) .scoreboard-title { font-family: var(--font-display-ru); }
 .scoreboard-line {
   display: flex;
   align-items: center;
@@ -647,6 +677,7 @@ select, input[type="text"], input[type="url"], input[type="password"] {
   margin: 1.75rem 0 0.75rem;
 }
 :lang(he) .section-heading { font-family: var(--font-display-he); text-transform: none; }
+:lang(ru) .section-heading { font-family: var(--font-display-ru); }
 
 .note {
   color: var(--muted);

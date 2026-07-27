@@ -1,4 +1,8 @@
 const LANG_STORAGE_KEY = 'voteballLang';
+const SUPPORTED_LANGS = ['en', 'he', 'ru'];
+const RTL_LANGS = ['he'];
+// Which column of a backend entity carries the name for each language.
+const NAME_FIELD_BY_LANG = { en: 'name_en', he: 'name_he', ru: 'name_ru' };
 
 const DICTIONARY = {
   en: {
@@ -129,6 +133,7 @@ const DICTIONARY = {
     adminHeadingVotes: 'Votes',
     adminPlaceholderNameEn: 'English name',
     adminPlaceholderNameHe: 'Hebrew name',
+    adminPlaceholderNameRu: 'Russian name',
     adminPlaceholderLogoUrl: 'Logo URL (optional)',
     adminAdd: 'Add',
     adminRename: 'Rename',
@@ -290,6 +295,7 @@ const DICTIONARY = {
     adminHeadingVotes: 'הצבעות',
     adminPlaceholderNameEn: 'שם באנגלית',
     adminPlaceholderNameHe: 'שם בעברית',
+    adminPlaceholderNameRu: 'שם ברוסית',
     adminPlaceholderLogoUrl: 'כתובת URL ללוגו (רשות)',
     adminAdd: 'הוספה',
     adminRename: 'שינוי שם',
@@ -323,12 +329,175 @@ const DICTIONARY = {
     adminUclAddDisabled: 'כבר קיימת ליגה מקומית — לעריכה יש להשתמש בשינוי שם.',
     adminUclRemoveDisabled: 'אין ליגה מקומית רשומה — יש להוסיף אחת דרך שינוי שם קודם.',
   },
+  ru: {
+    voteEyebrow: 'ЖИВОЙ ОПРОС',
+    voteHeroTitle: 'Выберите свою сторону',
+    voteIntro: 'Футбольные симпатии против политических — анонимно, один голос с браузера.',
+    voteLegendLeague: 'Лига и клубы',
+    voteLeagueHint: 'Выберите до 3 клубов в каждой лиге — или только лигу, если не следите за конкретным клубом. Количество лиг не ограничено.',
+    voteClubPlaceholderOption: '— только лига —',
+    votePicksSummaryLabel: 'Ваш выбор:',
+    votePicksSummaryEmpty: 'Команды пока не выбраны.',
+    voteLegendPrevious: '2. Нынешний Кнессет — за кого вы голосовали?',
+    voteDidNotVote: 'Не голосовал(а) / не имею права',
+    voteLegendUpcoming: 'Предстоящие выборы — кого вы рассматриваете?',
+    voteUpcomingHint: 'Не более 3.',
+    voteUndecided: 'Не определился(ась) / предпочитаю не отвечать',
+    voteReview: 'Проверьте свой бюллетень',
+    voteErrorLoadForm: 'Не удалось загрузить форму — попробуйте обновить страницу.',
+    voteErrorRequiredFields: 'Пожалуйста, заполните все обязательные поля.',
+    voteErrorPickParty: 'Выберите хотя бы одну партию, которую вы рассматриваете, или отметьте, что не определились.',
+    voteErrorSubmit: 'При отправке голоса что-то пошло не так.',
+    voteAlreadyVoted: 'С этого браузера уже голосовали — один бюллетень на посетителя, поэтому этот голос не засчитан. Результаты доступны по ссылке выше.',
+    voteReviewHeading: 'Проверьте свой бюллетень',
+    voteReviewTeams: 'Команды',
+    voteReviewPrevious: 'Прошлый голос',
+    voteReviewUpcoming: 'Предстоящий выбор',
+    voteEdit: 'Изменить',
+    voteConfirmSubmit: 'Подтвердить и отправить',
+
+    navResults: 'Результаты',
+    navVote: 'Голосовать',
+
+    resultsTitle: 'Вотбол — Результаты',
+    resultsHeading: 'Вотбол — Результаты',
+    resultsEyebrow: 'ЖИВЫЕ РЕЗУЛЬТАТЫ',
+    resultsIntro: 'Анонимные сводные результаты всех бюллетеней Вотбола.',
+    resultsModeClubLeague: 'Начать с клуба или лиги',
+    resultsModeParty: 'Начать с партии',
+    resultsLabelLeague: 'Лига:',
+    resultsLabelClub: 'Клуб (необязательно):',
+    resultsClubPlaceholderOption: '— вся лига —',
+    resultsLabelPartyType: 'Тип партии:',
+    resultsPartyTypePrevious: 'Прошлые (нынешний Кнессет)',
+    resultsPartyTypeUpcoming: 'Предстоящие выборы',
+    resultsLabelParty: 'Партия:',
+    resultsHeadingPrevious: 'Распределение голосов в нынешнем Кнессете',
+    resultsHeadingUpcoming: 'Распределение на предстоящих выборах',
+    resultsDidNotVote: 'Не голосовали',
+    resultsUndecided: 'Не определились',
+    resultsLeagueWideSuffix: ' (по всей лиге)',
+    resultsErrorLoad: 'Не удалось загрузить результаты — попробуйте обновить страницу.',
+    resultsNationalHeading: 'Общенациональные результаты',
+    resultsExplorerHeading: 'Исследуйте результаты',
+    resultsNoData: 'Пока нет голосов для этого выбора.',
+    resultsScopeNational: 'вся страна',
+    resultsYouBadge: 'ВЫ',
+    resultsYourLineup: 'Ваш состав',
+    resultsScoreLabelTeam: 'Команда',
+    resultsScoreLabelPrevious: 'В прошлый раз',
+    resultsScoreLabelUpcoming: 'Рассматривают',
+    resultsFanLeanHeading: 'Как голосуют болельщики {who}',
+    resultsFanLeanNoteClub: 'Выбор на предстоящих выборах среди болельщиков {club}.',
+    resultsFanLeanNoteLeague: 'Выбор на предстоящих выборах среди зрителей {league}.',
+    resultsMigrationHeading: 'Куда движется ваш лагерь',
+    resultsMigrationNote: 'Среди избирателей ({scope}), голосовавших за {party} в прошлый раз, вот что они рассматривают сейчас.',
+    resultsMigrationNoteDidNotVote: 'Вы указали, что не голосовали в прошлый раз, поэтому переходы показать не из чего.',
+
+    analyticsHeading: 'Политика болельщиков',
+    analyticsTabDiversity: 'Разнообразие',
+    analyticsTabLean: 'Политический уклон',
+    analyticsTabSwitching: 'Переходы',
+    analyticsErrorLoad: 'Не удалось загрузить — попробуйте обновить страницу.',
+    analyticsSpotlight: 'В центре внимания',
+    analyticsFullRanking: 'Полный рейтинг',
+    analyticsIncludeWorldCup: 'Включить сборные чемпионата мира',
+    analyticsMostMixed: 'Самые разнородные фанбазы',
+    analyticsMostOneSided: 'Самые однородные фанбазы',
+    analyticsEffectiveParties: 'эффективных партий: {n}',
+    analyticsTooFewVotes: 'Пока недостаточно голосов для осмысленной оценки разнообразия.',
+    analyticsAxisLeft: 'Левые',
+    analyticsAxisRight: 'Правые',
+    analyticsNoStatedPosition: 'Позиция не заявлена',
+    analyticsSecurityLabel: 'Безопасность:',
+    analyticsReligiosityLabel: 'Религия и государство:',
+    analyticsBlocLabel: 'Лагерь:',
+    analyticsSectorLabel: 'Сектор:',
+    analyticsBlocBibi: 'Лагерь Биби',
+    analyticsBlocOpposition: 'Оппозиция',
+    analyticsBlocUnaligned: 'Вне лагерей',
+    analyticsSectorSecular: 'Светский',
+    analyticsSectorTraditional: 'Традиционный',
+    analyticsSectorReligiousZionist: 'Религиозно-сионистский',
+    analyticsSectorHaredi: 'Харедимный',
+    analyticsSectorArab: 'Арабский',
+    analyticsSecurityDovish: 'Голуби',
+    analyticsSecurityHawkish: 'Ястребы',
+    analyticsReligiositySeparationist: 'За отделение',
+    analyticsReligiosityClerical: 'Клерикальные',
+    analyticsNational: 'Вся страна',
+    analyticsPickClub: 'Перейти к клубу:',
+    analyticsPositionBy: 'Позиция по оси:',
+    analyticsEconomicLabel: 'Экономика:',
+    analyticsAxisEconomicShort: 'Экономика',
+    analyticsAxisSecurityShort: 'Безопасность',
+    analyticsAxisReligiosityShort: 'Религия и государство',
+    analyticsScopeLabel: 'Охват:',
+    analyticsStatusStayed: 'Остались',
+    analyticsStatusHedging: 'Колеблются',
+    analyticsStatusSwitched: 'Перешли',
+    analyticsStatusNewVoter: 'Новый избиратель',
+    analyticsStatusUndecided: 'Не определились',
+    analyticsBaselineLabel: 'Среднее по стране',
+    analyticsTakeawayMoreLoyal: '{who} более верны своей прежней партии, чем в среднем.',
+    analyticsTakeawayLessLoyal: '{who} менее постоянны, чем в среднем.',
+    analyticsTakeawayAboutAverage: '{who} примерно так же верны, как в среднем.',
+
+    adminTitle: 'Вотбол — Администрирование',
+    adminHeading: 'Вотбол — Администрирование',
+    adminLabelUsername: 'Имя пользователя:',
+    adminLabelPassword: 'Пароль:',
+    adminLogIn: 'Войти',
+    adminTabPrevious: 'Прошлые партии',
+    adminTabUpcoming: 'Будущие партии',
+    adminTabVotes: 'Голоса',
+    adminLogOut: 'Выйти',
+    adminHeadingPrevious: 'Прошлые партии',
+    adminHeadingUpcoming: 'Будущие партии',
+    adminHeadingVotes: 'Голоса',
+    adminPlaceholderNameEn: 'Название по-английски',
+    adminPlaceholderNameHe: 'Название на иврите',
+    adminPlaceholderNameRu: 'Название по-русски',
+    adminPlaceholderLogoUrl: 'URL логотипа (необязательно)',
+    adminAdd: 'Добавить',
+    adminRename: 'Переименовать',
+    adminReassign: 'Перенести голоса…',
+    adminDelete: 'Удалить',
+    adminSave: 'Сохранить',
+    adminReassignGo: 'Перенести',
+    adminTabTeams: 'Команды',
+    adminHeadingTeams: 'Команды',
+    adminAddLeague: '+ Добавить лигу',
+    adminAddClub: '+ Добавить клуб',
+    adminDomesticLeagueNone: '— нет —',
+    adminAlsoInLeague: 'также в {league}',
+    adminColId: 'ID',
+    adminColCreated: 'Создано',
+    adminColTeams: 'Команды',
+    adminJustLeagueSuffix: 'только лига',
+    adminColPrevious: 'Прошлый голос',
+    adminColUpcoming: 'Будущий голос',
+    adminDidNotVote: 'не голосовал(а)',
+    adminUndecided: 'не определился(ась)',
+    adminSomethingWrong: 'Что-то пошло не так.',
+    adminSomethingWrongRetry: 'Что-то пошло не так — попробуйте ещё раз.',
+    adminSessionExpired: 'Сессия истекла — введите пароль заново.',
+    adminIncorrectCredentials: 'Неверное имя пользователя или пароль.',
+    adminConfirmDeleteParty: 'Удалить «{name}»? Это действие необратимо.',
+    adminConfirmReassign: 'Перенести {count} голосов из «{source}» в «{target}»? Это действие необратимо.',
+    adminConfirmDeleteVote: 'Удалить голос №{id}? Это действие необратимо.',
+    adminAddToChampionsLeague: 'Добавить в Лигу чемпионов УЕФА',
+    adminRemoveFromChampionsLeague: 'Убрать из Лиги чемпионов УЕФА',
+    adminUclAddDisabled: 'Домашняя лига уже указана — измените её через «Переименовать».',
+    adminUclRemoveDisabled: 'Домашняя лига не указана — сначала задайте её через «Переименовать».',
+  },
 };
 
 function detectInitialLang() {
   const stored = localStorage.getItem(LANG_STORAGE_KEY);
-  if (stored === 'en' || stored === 'he') return stored;
-  return (navigator.language || '').toLowerCase().startsWith('he') ? 'he' : 'en';
+  if (SUPPORTED_LANGS.includes(stored)) return stored;
+  const browser = (navigator.language || '').toLowerCase().slice(0, 2);
+  return SUPPORTED_LANGS.includes(browser) ? browser : 'en';
 }
 
 let currentLang = detectInitialLang();
@@ -339,15 +508,19 @@ function getLang() {
 
 function applyDocumentDirection() {
   document.documentElement.lang = currentLang;
-  document.documentElement.dir = currentLang === 'he' ? 'rtl' : 'ltr';
+  document.documentElement.dir = RTL_LANGS.includes(currentLang) ? 'rtl' : 'ltr';
 }
 
 function t(key) {
   return DICTIONARY[currentLang][key] || key;
 }
 
+// Falls back to the English name when the current language has none. name_ru is nullable and
+// nothing forces an admin to fill it in for a newly added club, so this is the normal path for
+// recent entities rather than an edge case.
 function localizedName(entity) {
-  return currentLang === 'he' ? entity.name_he : entity.name_en;
+  const field = NAME_FIELD_BY_LANG[currentLang] || 'name_en';
+  return entity[field] || entity.name_en;
 }
 
 function applyStaticText() {
@@ -360,7 +533,7 @@ function applyStaticText() {
 }
 
 function setLang(lang) {
-  if (lang !== 'en' && lang !== 'he') return;
+  if (!SUPPORTED_LANGS.includes(lang)) return;
   currentLang = lang;
   localStorage.setItem(LANG_STORAGE_KEY, lang);
   applyDocumentDirection();

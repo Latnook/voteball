@@ -122,6 +122,10 @@ function startRename(type, party, row) {
   inputHe.type = 'text';
   inputHe.value = party.name_he;
   inputHe.dir = 'rtl';
+  const inputRu = document.createElement('input');
+  inputRu.type = 'text';
+  inputRu.placeholder = t('adminPlaceholderNameRu');
+  inputRu.value = party.name_ru || '';
   const inputLogo = document.createElement('input');
   inputLogo.type = 'url';
   inputLogo.className = 'logo-url-input';
@@ -129,7 +133,8 @@ function startRename(type, party, row) {
   inputLogo.value = party.logo_url || '';
   nameSpan.replaceWith(inputEn);
   inputEn.after(inputHe);
-  inputHe.after(inputLogo);
+  inputHe.after(inputRu);
+  inputRu.after(inputLogo);
 
   const saveBtn = document.createElement('button');
   saveBtn.type = 'button';
@@ -146,7 +151,10 @@ function startRename(type, party, row) {
       res = await adminFetch(`${partyEndpoint(type)}/${party.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
+        body: JSON.stringify({
+          name_en: inputEn.value, name_he: inputHe.value, name_ru: inputRu.value || null,
+          logo_url: inputLogo.value || null,
+        }),
       });
     } catch (err) {
       errorSpan.textContent = t('adminSomethingWrong');
@@ -190,6 +198,7 @@ async function addParty(e, type) {
   e.preventDefault();
   const inputEn = document.getElementById(`${type}-party-add-input-en`);
   const inputHe = document.getElementById(`${type}-party-add-input-he`);
+  const inputRu = document.getElementById(`${type}-party-add-input-ru`);
   const inputLogo = document.getElementById(`${type}-party-add-input-logo`);
   const errorEl = document.getElementById(`${type}-party-form-error`);
   errorEl.textContent = '';
@@ -199,7 +208,10 @@ async function addParty(e, type) {
     res = await adminFetch(partyEndpoint(type), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
+      body: JSON.stringify({
+          name_en: inputEn.value, name_he: inputHe.value, name_ru: inputRu.value || null,
+          logo_url: inputLogo.value || null,
+        }),
     });
   } catch (err) {
     errorEl.textContent = t('adminSomethingWrong');
@@ -512,6 +524,9 @@ function renderAddClubForm(league) {
   inputHe.placeholder = t('adminPlaceholderNameHe');
   inputHe.dir = 'rtl';
   inputHe.required = true;
+  const inputRu = document.createElement('input');
+  inputRu.type = 'text';
+  inputRu.placeholder = t('adminPlaceholderNameRu');
   const domesticSelect = buildLeagueSelect(optionsData.leagues, league.id, true);
   const inputLogo = document.createElement('input');
   inputLogo.type = 'url';
@@ -523,7 +538,8 @@ function renderAddClubForm(league) {
   const errorSpan = document.createElement('span');
   errorSpan.className = 'row-error';
 
-  [inputEn, inputHe, domesticSelect, inputLogo, addBtn, errorSpan].forEach(el => form.appendChild(el));
+  [inputEn, inputHe, inputRu, domesticSelect, inputLogo, addBtn, errorSpan]
+    .forEach(el => form.appendChild(el));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -536,7 +552,8 @@ function renderAddClubForm(league) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           league_id: league.id, domestic_league_id: domesticLeagueId,
-          name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null,
+          name_en: inputEn.value, name_he: inputHe.value, name_ru: inputRu.value || null,
+          logo_url: inputLogo.value || null,
         }),
       });
     } catch (err) {
@@ -566,6 +583,10 @@ function startRenameClub(club, data, row) {
   inputHe.type = 'text';
   inputHe.value = club.name_he;
   inputHe.dir = 'rtl';
+  const inputRu = document.createElement('input');
+  inputRu.type = 'text';
+  inputRu.placeholder = t('adminPlaceholderNameRu');
+  inputRu.value = club.name_ru || '';
   const leagueSelect = buildLeagueSelect(data.leagues, null, false);
   leagueSelect.value = club.league_id;
   let domesticSelect = buildLeagueSelect(data.leagues, club.league_id, true);
@@ -590,7 +611,8 @@ function startRenameClub(club, data, row) {
   const errorSpan = document.createElement('span');
   errorSpan.className = 'row-error';
 
-  [inputEn, inputHe, leagueSelect, domesticSelect, inputLogo, saveBtn, errorSpan].forEach(el => row.appendChild(el));
+  [inputEn, inputHe, inputRu, leagueSelect, domesticSelect, inputLogo, saveBtn, errorSpan]
+    .forEach(el => row.appendChild(el));
   inputEn.focus();
 
   saveBtn.addEventListener('click', async () => {
@@ -603,7 +625,8 @@ function startRenameClub(club, data, row) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           league_id: parseInt(leagueSelect.value, 10), domestic_league_id: domesticLeagueId,
-          name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null,
+          name_en: inputEn.value, name_he: inputHe.value, name_ru: inputRu.value || null,
+          logo_url: inputLogo.value || null,
         }),
       });
     } catch (err) {
@@ -651,6 +674,10 @@ function startRenameLeague(league, header) {
   inputHe.type = 'text';
   inputHe.value = league.name_he;
   inputHe.dir = 'rtl';
+  const inputRu = document.createElement('input');
+  inputRu.type = 'text';
+  inputRu.placeholder = t('adminPlaceholderNameRu');
+  inputRu.value = league.name_ru || '';
   const inputLogo = document.createElement('input');
   inputLogo.type = 'url';
   inputLogo.className = 'logo-url-input';
@@ -658,7 +685,8 @@ function startRenameLeague(league, header) {
   inputLogo.value = league.logo_url || '';
   nameSpan.replaceWith(inputEn);
   inputEn.after(inputHe);
-  inputHe.after(inputLogo);
+  inputHe.after(inputRu);
+  inputRu.after(inputLogo);
 
   const saveBtn = document.createElement('button');
   saveBtn.type = 'button';
@@ -674,7 +702,10 @@ function startRenameLeague(league, header) {
       res = await adminFetch(`/api/admin/leagues/${league.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
+        body: JSON.stringify({
+          name_en: inputEn.value, name_he: inputHe.value, name_ru: inputRu.value || null,
+          logo_url: inputLogo.value || null,
+        }),
       });
     } catch (err) {
       errorSpan.textContent = t('adminSomethingWrong');
@@ -716,6 +747,7 @@ document.getElementById('league-add-form').addEventListener('submit', async (e) 
   e.preventDefault();
   const inputEn = document.getElementById('league-add-input-en');
   const inputHe = document.getElementById('league-add-input-he');
+  const inputRu = document.getElementById('league-add-input-ru');
   const inputLogo = document.getElementById('league-add-input-logo');
   const errorEl = document.getElementById('league-form-error');
   errorEl.textContent = '';
@@ -724,7 +756,10 @@ document.getElementById('league-add-form').addEventListener('submit', async (e) 
     res = await adminFetch('/api/admin/leagues', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name_en: inputEn.value, name_he: inputHe.value, logo_url: inputLogo.value || null }),
+      body: JSON.stringify({
+          name_en: inputEn.value, name_he: inputHe.value, name_ru: inputRu.value || null,
+          logo_url: inputLogo.value || null,
+        }),
     });
   } catch (err) {
     errorEl.textContent = t('adminSomethingWrong');
@@ -1049,7 +1084,10 @@ async function patchClubLeagues(club, newLeagueId, newDomesticLeagueId) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         league_id: newLeagueId, domestic_league_id: newDomesticLeagueId,
-        name_en: club.name_en, name_he: club.name_he, logo_url: club.logo_url || null,
+        // name_ru is forwarded for the same reason as the other names: this PATCH replaces
+        // every field, so omitting it would wipe the club's Russian name.
+        name_en: club.name_en, name_he: club.name_he, name_ru: club.name_ru || null,
+        logo_url: club.logo_url || null,
       }),
     });
   } catch (err) {
