@@ -182,7 +182,7 @@ find one statement of mine in favour of a Palestinian state"*, **plus** oppositi
 over Judea and Samaria on the grounds that it produces a bi-national state and forfeits the Jewish
 majority, **plus** a single military force between the river and the sea.
 
-Not +2, which is the interesting call. Every +2 party pairs "no Palestinian state" with a
+Not +2, which is the interesting call. Every +2 party *that vetoes statehood* pairs that veto with a
 territorial claim. Eisenkot has the first half and explicitly refuses the second — his objection to
 annexation is demographic rather than dovish, but it is a real refusal. `anti-annexation` had to be
 a new tag; the vocabulary only had its opposite, `sovereignty-annexation`, so the position would
@@ -284,9 +284,29 @@ rabbinical courts moved to the Justice Ministry (−3, the anchor of that axis).
 
 **It does not say "no Palestinian state" in those words** — unlike every other +2 party here. What
 it says is that there is no point reaching a settlement with the Palestinians alone, and that any
-arrangement must be a comprehensive regional package with the Arab states. The +2 rests on the
-territorial and doctrinal half of the test (preemptive doctrine, Gaza, Jerusalem), not on a
-statehood veto. Checked against the party's own platform, 2026-07-27.
+arrangement must be a comprehensive regional package with the Arab states. **And it makes no
+territorial claim at all:** no sovereignty plank, no settlement plank, Gaza handed to an
+international body rather than held, and Judea and Samaria appearing exactly once, as "ייצוב
+ביטחוני וכלכלי בשיתוף פעולה עם ירדן".
+
+So the +2 rests on doctrine, not territory — "אפס הכלה", preemptive strikes, carrying the war to
+enemy ground, cutting Gaza's water/electricity/fuel, ₪70B→₪95B, no negotiation over Jerusalem,
+loyalty demands on the Arab minority. The rubric's +2 parenthetical names preemptive doctrine as
+qualifying, so the row fits — but this is the party that shows "statehood veto **and** territorial
+claim" is over-specified as a definition. Checked against the party's own platform, 2026-07-27.
+
+**Lieberman is himself a settler, and that fact does not do what it looks like it does.** He has
+lived in נוקדים, over the Green Line, since 1988. Read quickly, that is the territorial claim the
+platform is missing. Followed through, it is closer to the opposite: his signature proposal is the
+land-and-population exchange — "סיפוח גושי התנחלויות לישראל, ובמקביל העברת שטחים ישראליים
+המאוכלסים בערבים" — which annexes the blocs, his own home among them, *by trading* Arab-populated
+Israeli land to a Palestinian state, and so presupposes a Palestinian state to trade with; he has
+said he would recognise one under conditions. The residence and the swap plan are one transactional
+position, not two contradictory ones, and they explain the platform's silence on sovereignty rather
+than filling it in. **This is sourced from he.wikipedia and from the leader's biography, not from a
+party document, so it moves no number** — see the "classify from the party's own sources" rule
+above. It is recorded here because without it this row reads as a party with no territorial
+position, which is not the same thing as a party that has one and declines to print it.
 
 The bloc is pinned down rather than inferred: they want a statutory ban on an indicted person
 forming a government.
