@@ -245,3 +245,203 @@ NumberOfNotificationsFailed=0 (test alert received by email)
 pod/voteball-migrate-2hqww   Scheduled -> Started -> Completed
 job/voteball-migrate         Job completed
 ```
+
+---
+
+## 2026-07-27 — pre-teardown capture
+
+_Captured from the cluster built on 2026-07-22 (nodes aged 4d22h), immediately before a deliberate
+`destroy.sh` → `deploy.sh` cycle. Frozen like every section above it — the pod names, ALB hostname and
+certificate below stop resolving the moment that cycle runs._
+
+### `kubectl get nodes`
+```
+NAME                                           STATUS   ROLES    AGE     VERSION
+ip-10-0-44-224.il-central-1.compute.internal   Ready    <none>   4d22h   v1.34.9-eks-8f14419
+ip-10-0-62-133.il-central-1.compute.internal   Ready    <none>   4d22h   v1.34.9-eks-8f14419
+```
+
+### `kubectl get namespaces`
+```
+NAME                STATUS   AGE
+amazon-cloudwatch   Active   4d22h
+argocd              Active   4d22h
+default             Active   4d22h
+devops-app          Active   4d22h
+external-secrets    Active   4d22h
+kube-node-lease     Active   4d22h
+kube-public         Active   4d22h
+kube-system         Active   4d22h
+monitoring          Active   4d22h
+```
+
+### `kubectl get pods -n devops-app`
+```
+NAME                             READY   STATUS      RESTARTS   AGE
+backend-6c9c6d4d7f-nbrfs         1/1     Running     0          9h
+backend-6c9c6d4d7f-ngrnl         1/1     Running     0          9h
+frontend-7dc9588999-nwq98        1/1     Running     0          9h
+frontend-7dc9588999-vqf2n        1/1     Running     0          9h
+voteball-backup-29749080-zvpwk   0/1     Completed   0          2d3h
+voteball-backup-29750520-9hsgv   0/1     Completed   0          27h
+voteball-backup-29751960-jzcdp   0/1     Completed   0          3h43m
+worker-5595dcd764-cwcpd          1/1     Running     0          9h
+```
+
+### `kubectl get deployments -n devops-app`
+```
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+backend    2/2     2            2           4d22h
+frontend   2/2     2            2           4d22h
+worker     1/1     1            1           4d22h
+```
+
+### `kubectl get services -n devops-app`
+```
+NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+backend    ClusterIP   172.20.149.143   <none>        5000/TCP   4d22h
+frontend   ClusterIP   172.20.170.39    <none>        80/TCP     4d22h
+```
+Both ClusterIP — neither Service is reachable from outside; only the ALB, via the Ingress, reaches in.
+
+### `kubectl get ingress -n devops-app`
+```
+NAME       CLASS   HOSTS                  ADDRESS                                                                      PORTS   AGE
+voteball   alb     voteball.latnook.com   k8s-devopsap-voteball-6fb18c0744-1149291850.il-central-1.elb.amazonaws.com   80      4d22h
+```
+
+### `kubectl describe pod backend-6c9c6d4d7f-nbrfs -n devops-app` (app container)
+```
+Containers:
+  backend:
+    Image:          590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:548241e
+    Image ID:       ...voteball-backend@sha256:4c39b94cb11a0bffa0178476c657f34c59e93deff9f23dfe6c5f05b635df0f0d
+    Port:           5000/TCP
+    State:          Running
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     250m
+      memory:  256Mi
+    Requests:
+      cpu:      50m
+      memory:   128Mi
+    Liveness:   tcp-socket :5000 delay=10s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  http-get http://:5000/health delay=5s timeout=1s period=10s #success=1 #failure=3
+    Environment Variables from:
+      app-config  ConfigMap  Optional: false
+      app-secret  Secret     Optional: false
+```
+Four mandated properties in one block: an immutable git-SHA image tag (never `latest`), resource
+requests **and** limits, both liveness and readiness probes, and configuration split across a
+ConfigMap (non-secret) and a Secret.
+
+### `kubectl logs backend-6c9c6d4d7f-nbrfs -n devops-app`
+```
+[2026-07-26 19:54:33 +0000] [1] [INFO] Starting gunicorn 23.0.0
+[2026-07-26 19:54:34 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+[2026-07-26 19:54:34 +0000] [1] [INFO] Using worker: sync
+[2026-07-26 19:54:34 +0000] [22] [INFO] Booting worker with pid: 22
+[2026-07-26 19:54:34 +0000] [27] [INFO] Booting worker with pid: 27
+```
+
+## Demos — 2026-07-27 pre-teardown
+
+### 1. HTTPS with a valid ACM certificate, HTTP redirected
+```
+$ curl -sI https://voteball.latnook.com | head -1
+HTTP/2 200
+
+$ openssl s_client -connect voteball.latnook.com:443 | openssl x509 -noout -issuer -subject -dates
+issuer=C=US, O=Amazon, CN=Amazon RSA 2048 M04
+subject=CN=voteball.latnook.com
+notBefore=Jul 22 00:00:00 2026 GMT
+notAfter=Feb  4 23:59:59 2027 GMT
+
+$ curl -sI http://voteball.latnook.com | head -2
+HTTP/1.1 301 Moved Permanently
+Server: awselb/2.0
+```
+
+### 2 & 3. frontend → backend → RDS
+```
+$ curl -sf https://voteball.latnook.com/api/options | head -c 200
+{"clubs":[{"domestic_league_id":null,"id":2858,"league_id":6,"logo_url":"https://upload.wikimedia.org/...","name_en":"1. FC Köln",...
+
+$ curl -sf "https://voteball.latnook.com/api/results?by=all"
+{"previous":[{"count":2,"party_id":10},{"count":1,"party_id":5},{"count":1,"party_id":4},{"count":1,"party_id":14}],
+ "upcoming":[{"count":3,"party_id":4},{"count":1,"party_id":11},{"count":1,"party_id":3}]}
+```
+A single unauthenticated request traverses ALB → Ingress → frontend Service → nginx → backend Service
+→ Flask → RDS and returns seeded data. **5 votes** — the figure the post-rebuild section must match.
+
+### 4. S3 and SNS via IRSA
+```
+$ kubectl create job --from=cronjob/voteball-backup evidence-backup -n devops-app
+job.batch/evidence-backup created
+$ kubectl wait --for=condition=complete job/evidence-backup -n devops-app --timeout=240s
+job.batch/evidence-backup condition met
+$ aws s3 ls s3://voteball-rollups-590183895228/backups/ | tail -2
+2026-07-27 05:00:06      12578 voteball-2026-07-27T02-00-04Z.sql.gz   <- nightly CronJob
+2026-07-27 08:44:28      12578 voteball-2026-07-27T05-44-26Z.sql.gz   <- this on-demand run
+```
+
+ServiceAccount roles — only `worker` and `backup` carry AWS credentials:
+```
+NAME       ROLE
+backend    <none>
+backup     arn:aws:iam::590183895228:role/voteball-backup-irsa
+default    <none>
+frontend   <none>
+worker     arn:aws:iam::590183895228:role/voteball-worker-irsa
+```
+
+SNS is a live delivery path, not a configured black hole (7-day totals):
+```
+subscription:                    email  ...:voteball-notifications:2f8a64b3-...  (Confirmed)
+NumberOfMessagesPublished        42.0
+NumberOfNotificationsDelivered   45.0
+NumberOfNotificationsFailed      0.0
+alertmanager SA -> arn:aws:iam::590183895228:role/voteball-alertmanager-irsa
+```
+
+### 5. NetworkPolicy isolation — with a control
+```
+$ kubectl get networkpolicy -n devops-app
+allow-alb-to-frontend       app=frontend
+allow-app-egress            app in (backend,backup,frontend,migrate,worker)
+allow-dns-egress            <none>
+allow-frontend-to-backend   app=backend
+default-deny                <none>
+
+$ # worker -> backend:5000 (must NOT connect)
+BLOCKED by NetworkPolicy: TimeoutError
+
+$ # control: worker -> RDS:5432 (must connect)
+REACHABLE (expected — worker needs RDS)
+```
+
+> **The control matters.** The probe previously documented in `README.submission.md`
+> (`wget ... || echo BLOCKED`) printed `BLOCKED` because **`wget` is not installed in the worker
+> image** — it would have reported success with the NetworkPolicy deleted entirely. The pair above
+> uses a Python socket connect and proves both directions: the denied path times out, the permitted
+> path connects.
+
+### 6. Pod restart while the site stays up
+```
+$ kubectl delete pod frontend-7dc9588999-nwq98 -n devops-app
+pod "frontend-7dc9588999-nwq98" deleted from devops-app namespace
+
+  frontend-7dc9588999-4sxjz   0/1   Running    <- replacement, readiness pending
+  frontend-7dc9588999-vqf2n   1/1   Running    <- survivor keeps serving
+  ...
+  frontend-7dc9588999-4sxjz   1/1   Running   102s
+  frontend-7dc9588999-vqf2n   1/1   Running   9h
+
+HTTP status codes observed, continuous polling across the delete and the full
+replacement cycle through to Ready:
+   1050 200
+   non-200: 0
+```
+1,050 consecutive HTTP 200s spanning the deletion and the replacement reaching `1/1 Ready`. Two
+replicas plus a PodDisruptionBudget mean losing one is invisible to users.

@@ -106,7 +106,14 @@ pods. Quick live checks:
 ```bash
 kubectl get pods -n devops-app                                  # all Running
 curl -sf https://voteball.latnook.com/api/options | head -c 120 # leagues/clubs/parties (backend↔RDS)
-kubectl exec -n devops-app deploy/worker -- sh -c 'wget -qO- --timeout=5 http://backend:5000/health || echo BLOCKED'  # NetworkPolicy: BLOCKED
+# NetworkPolicy: worker must NOT reach backend. Uses a python socket connect, NOT `wget` -- wget is
+# absent from the worker image, so `wget ... || echo BLOCKED` printed BLOCKED unconditionally and
+# would have "passed" with the NetworkPolicy deleted. Pair it with the RDS control below.
+kubectl exec -n devops-app deploy/worker -- python -c "import socket;s=socket.socket();s.settimeout(6);
+try: s.connect(('backend',5000)); print('REACHABLE <- policy NOT enforcing')
+except Exception as e: print('BLOCKED by NetworkPolicy:', type(e).__name__)"
+kubectl exec -n devops-app deploy/worker -- python -c "import os,socket;s=socket.socket();s.settimeout(6);
+s.connect((os.environ['DB_HOST'],5432)); print('RDS REACHABLE (control: the probe works)')"
 kubectl create job --from=cronjob/voteball-backup t -n devops-app && aws s3 ls s3://voteball-rollups-590183895228/backups/  # backup lands
 ```
 
