@@ -1252,3 +1252,90 @@ def test_spoofed_leftmost_forwarded_for_cannot_evade_the_cap(client, conn):
                     headers={'X-Forwarded-For': '9.9.9.250, 198.51.100.7, 10.0.0.1'})
     assert r.status_code == 429, \
         'changing the spoofable leftmost entry must not reset the per-address cap'
+
+
+def test_create_party_without_name_ru_succeeds(client, admin_headers):
+    # name_ru is optional by design: requiring it would 400 every existing admin client until it
+    # was updated in lockstep, and would block saving any party that has no Russian name yet.
+    resp = client.post(
+        '/api/admin/previous-parties',
+        json={'name_en': 'No Russian Party', 'name_he': 'מפלגה בלי רוסית'},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 201
+    assert resp.get_json()['name_ru'] is None
+
+
+def test_create_party_with_name_ru_round_trips(client, admin_headers, conn):
+    resp = client.post(
+        '/api/admin/previous-parties',
+        json={'name_en': 'Russian Party', 'name_he': 'מפלגה רוסית', 'name_ru': 'Русская партия'},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 201
+    body = resp.get_json()
+    assert body['name_ru'] == 'Русская партия'
+
+    cur = conn.cursor()
+    cur.execute('SELECT name_ru FROM previous_parties WHERE id = %s', (body['id'],))
+    assert cur.fetchone()[0] == 'Русская партия'
+    cur.close()
+
+
+def test_rename_party_can_add_name_ru_later(client, admin_headers):
+    created = client.post(
+        '/api/admin/previous-parties',
+        json={'name_en': 'Later Russian', 'name_he': 'רוסית אחר כך'},
+        headers=admin_headers,
+    ).get_json()
+    assert created['name_ru'] is None
+
+    resp = client.patch(
+        f'/api/admin/previous-parties/{created["id"]}',
+        json={'name_en': 'Later Russian', 'name_he': 'רוסית אחר כך', 'name_ru': 'Позже'},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 200
+    assert resp.get_json()['name_ru'] == 'Позже'
+
+
+def test_create_party_duplicate_name_ru_returns_409(client, admin_headers):
+    resp = client.post(
+        '/api/admin/previous-parties',
+        json={'name_en': 'Ru Dup One', 'name_he': 'כפול רוסית א', 'name_ru': 'Дубликат'},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 201
+
+    resp = client.post(
+        '/api/admin/previous-parties',
+        json={'name_en': 'Ru Dup Two', 'name_he': 'כפול רוסית ב', 'name_ru': 'Дубликат'},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 409
+    assert resp.get_json() == {'error': 'a party with this Russian name already exists'}
+
+
+def test_create_club_with_name_ru_round_trips(client, admin_headers, conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'Premier League'")
+    league_id = cur.fetchone()[0]
+    cur.close()
+
+    resp = client.post(
+        '/api/admin/clubs',
+        json={'name_en': 'Russian Club', 'name_he': 'מועדון רוסי', 'name_ru': 'Русский клуб',
+              'league_id': league_id},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 201
+    assert resp.get_json()['name_ru'] == 'Русский клуб'
+
+
+def test_options_exposes_name_ru(client):
+    body = client.get('/api/options').get_json()
+    for key in ('leagues', 'clubs', 'previous_parties', 'upcoming_parties'):
+        assert body[key], f'{key} is empty'
+        assert all('name_ru' in row for row in body[key]), f'{key} rows missing name_ru'
+    likud = next(p for p in body['previous_parties'] if p['name_en'] == 'Likud')
+    assert likud['name_ru'] == 'Ликуд'

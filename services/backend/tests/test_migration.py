@@ -38,6 +38,67 @@ def test_sample_translations(conn):
     cur.close()
 
 
+def test_all_seeded_rows_have_russian(conn):
+    cur = conn.cursor()
+    for table in ('leagues', 'clubs', 'previous_parties', 'upcoming_parties'):
+        cur.execute(f'SELECT COUNT(*) FROM {table} WHERE name_ru IS NULL')
+        assert cur.fetchone()[0] == 0, f'{table} has rows missing name_ru'
+    cur.close()
+
+
+def test_sample_russian_translations(conn):
+    cur = conn.cursor()
+    # Keyed on name_en = 'Premier League', i.e. AFTER seed.sql rewrites it from 'EPL'. The Russian
+    # block keys on the legacy `name` column precisely so this row still gets filled.
+    cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'Premier League'")
+    assert cur.fetchone()[0] == 'Премьер-лига'
+    cur.execute("SELECT name_ru FROM clubs WHERE name_en = 'Maccabi Haifa' LIMIT 1")
+    assert cur.fetchone()[0] == 'Маккаби Хайфа'
+    cur.execute("SELECT name_ru FROM previous_parties WHERE name_he = 'ישראל ביתנו'")
+    assert cur.fetchone()[0] == 'Наш дом Израиль'
+    cur.execute("SELECT name_ru FROM upcoming_parties WHERE name_he = 'הדמוקרטים'")
+    assert cur.fetchone()[0] == 'Ха-Демократим'
+    cur.close()
+
+
+def test_seeded_russian_names_are_cyrillic(conn):
+    # A Latin homoglyph (P/A/M for Cyrillic Р/А/М) is invisible on screen but breaks Russian text
+    # search and collation -- one reached the translation worksheet and was caught by codepoint
+    # inspection, not by reading. Assert the property rather than trusting review.
+    cur = conn.cursor()
+    for table in ('leagues', 'clubs', 'previous_parties', 'upcoming_parties'):
+        cur.execute(f"SELECT name_en, name_ru FROM {table} WHERE name_ru ~ '[A-Za-z]'")
+        offenders = cur.fetchall()
+        assert offenders == [], f'{table} has Latin characters in name_ru: {offenders}'
+    cur.close()
+
+
+def test_partial_unique_index_rejects_duplicate_name_ru(conn):
+    cur = conn.cursor()
+    with pytest.raises(psycopg2.errors.UniqueViolation):
+        cur.execute(
+            "INSERT INTO previous_parties (name, name_en, name_he, name_ru) "
+            "VALUES ('z', 'Unique English', 'ייחודי בעברית', 'Ликуд')"
+        )
+    conn.rollback()
+    cur.close()
+
+
+def test_partial_unique_index_allows_many_null_name_ru(conn):
+    # The index is partial (WHERE name_ru IS NOT NULL). A plain unique index would make every
+    # untranslated row collide with every other, which is what makes shipping the column ahead of
+    # a translation safe.
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO previous_parties (name, name_en, name_he) VALUES "
+        "('nr1', 'No Russian One', 'בלי רוסית א'), ('nr2', 'No Russian Two', 'בלי רוסית ב')"
+    )
+    conn.commit()
+    cur.execute('SELECT COUNT(*) FROM previous_parties WHERE name_ru IS NULL')
+    assert cur.fetchone()[0] == 2
+    cur.close()
+
+
 def test_partial_unique_index_rejects_duplicate_name_en(conn):
     cur = conn.cursor()
     with pytest.raises(psycopg2.errors.UniqueViolation):
