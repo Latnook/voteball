@@ -831,7 +831,7 @@ UPDATE upcoming_parties p SET
     religiosity = v.religiosity, sector = v.sector, tags = v.tags
 FROM (VALUES
     ('הליכוד', 'bibi', 1, 2, 1, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[]),
-    ('ישר', 'opposition', 0, 1, -2, 'secular', ARRAY['new-party', 'centrist', 'liberal-zionist', 'statist', 'security-hawk', 'no-palestinian-state', 'anti-annexation', 'universal-conscription', 'core-curriculum', 'constitutionalist', 'governance-reform', 'anti-monopoly', 'periphery-development']::text[]),
+    ('ישר', 'opposition', 1, 1, -2, 'secular', ARRAY['new-party', 'centrist', 'liberal-zionist', 'statist', 'security-hawk', 'no-palestinian-state', 'anti-annexation', 'universal-conscription', 'core-curriculum', 'constitutionalist', 'governance-reform', 'anti-monopoly', 'periphery-development', 'tax-cutting', 'public-service-reform', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'reservist-focused', 'agricultural-protectionism']::text[]),
     ('ביחד', 'opposition', 1, NULL, -2, 'secular', ARRAY['liberal-zionist', 'constitutionalist', 'internally-split-on-conflict', 'anti-clerical', 'universal-conscription', 'pro-competition', 'periphery-development', 'anti-monopoly', 'free-trade', 'kashrut-liberalization']::text[]),
     ('הדמוקרטים', 'opposition', -2, -1, -3, 'secular', ARRAY['progressive', 'social-democrat', 'liberal-zionist', 'religious-pluralism', 'jewish-arab-partnership', 'protest-movement-rooted', 'two-state']::text[]),
     ('כחול לבן', 'unaligned', 0, 2, -1, 'secular', ARRAY['centrist', 'hard-to-classify-bloc', 'statist', 'security-hawk', 'no-palestinian-state', 'pro-settlement', 'unity-government', 'public-service-reform']::text[]),

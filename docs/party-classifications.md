@@ -63,8 +63,8 @@ Negative is left, positive is right. Anchors as actually used:
 | | party | why it sits there |
 |---|---|---|
 | **+2** | ישראל ביתנו | shrinks the state — privatize Ashdod Port and Haifa Airport, end child allowances from the fifth child |
-| **+1** | ביחד, המפלגה הכלכלית, אל הדגל, המילואימניקים, הליכוד | liberalizing *fused with* real state expansion (trust-busting, subsidies, targeted spending) |
-| **0** | ישר, כחול לבן, הציונות הדתית, עוצמה יהודית, רע"ם | no economic doctrine, or a genuinely balanced one |
+| **+1** | ישר, ביחד, המפלגה הכלכלית, אל הדגל, המילואימניקים, הליכוד | liberalizing *fused with* real state expansion (trust-busting, subsidies, targeted spending) |
+| **0** | כחול לבן, הציונות הדתית, עוצמה יהודית, רע"ם | no economic doctrine, or a genuinely balanced one |
 | **−2** | הדמוקרטים, בל"ד, ש"ס, יהדות התורה | social-democratic |
 | **−3** | חד"ש-תע"ל | self-defined communist |
 
@@ -165,7 +165,7 @@ religiosity **+1 is the revealed position** (Decision 4): Likud does not want a 
 reliably funds and defends religious authority to hold a coalition. That gap is carried by
 `instrumentally-clerical` rather than by a second column.
 
-### ישר — Yashar · `opposition` · 0 / +1 / −2 · secular
+### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 Gadi Eisenkot's party, founded 2025-09-16. Co-founders include Matan Kahana (former Religious
 Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief), Nir Zohar (Wix).
@@ -195,11 +195,39 @@ the Rabbinate, promises citizens can keep their faith and lifestyle, promotes "i
 and Kahana — whose kashrut and conversion reforms were fought from *inside* religious Zionism — is a
 co-founder. Reducing clerical privilege is not separating religion from state.
 
-**economic 0, evidenced rather than defaulted** — the two look identical in the data, which is why
-it is worth writing down. Rightward: free-market framing, "one of the world's leading economies",
-break monopolies, adopt international standards. Leftward: state incentives (housing, tax credits,
-welfare) *redirected* to those bearing the burden, massive periphery infrastructure, and
-Trachtenberg — who chaired the 2011 social-protest committee — as a co-founder. They cancel.
+**economic +1, moved from 0 on 2026-07-27** when the party published eight costed principles
+documents. The old reasoning was that the rightward and leftward halves "cancel", and that was fair
+when the evidence was a 10-point agenda plus co-founder biography. Both halves are now large and
+specific, which is not the same thing as balanced — it is this band's literal definition.
+
+- Liberalizing: cut income tax (offset by levies on sugary drinks and single-use goods), open and
+  parallel imports, break food-and-retail concentration, close redundant ministries, end patronage
+  appointments, deregulate housing permits.
+- Expanding: ₪20B over three years for reservists, a 15% rise for every conscript, 100% degree
+  funding for combatants, dedicated land allocation, national post-trauma rehabilitation authorities
+  under a dedicated minister, direct farm subsidies, absorbing a million olim in a decade.
+
+The line that decides it against **0** is the welfare conditionality — "העבודה תשתלם תמיד יותר
+מקצבה", with aid redirected from stipends to "משרתי מילואים ולמשפחות עובדות ויצרניות". That is a
+directional doctrine about how welfare should work, and the 0 band requires *no* doctrine or a
+genuinely balanced one. `service-conditioned-citizenship` carries it.
+
+What decides it against **+2** is agriculture: "ייצור מזון מקומי הוא חלק בלתי נפרד מהחוסן הלאומי",
+direct support to farmers, legislated `ענף אסטרטגי חיוני` status, state management of water and
+reservoirs, production targets for essential goods. +2 requires withdrawing the state; this moves it
+in. `agricultural-protectionism` is a new tag — the vocabulary had `free-trade` and
+`anti-privatization` but nothing for sector-specific protection, so the position would have been
+invisible.
+
+**The `homeland-security` document is not evidence for the security axis.** It is *internal*
+security — organised crime, police budgets, digital crime, violence against women, municipal
+defence — and contains nothing on statehood, the territories, Gaza or borders. The URL invites
+exactly the wrong inference. The security score still rests on Eisenkot's own statements, as above.
+
+Nor does `inlocation-and-aliya` create a territorial claim, though it comes close enough to check:
+"תמריצים להתיישבות באיזורי עדיפות לאומית" names no region. In Israeli usage "national priority
+areas" often includes Judea and Samaria — but the document does not say so, and unstated is not
+stated.
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -561,3 +589,5 @@ pass happened, for anyone reading git history.
 | 2026-07-26 | revision 6 — Together's economic programme |
 | 2026-07-26 | revision 7 — NULL-axis sweep (Yashar reclassified, Ra'am scored) |
 | 2026-07-26 | `seed.sql` flattened to a plain table; this document created |
+| 2026-07-27 | Yisrael Beiteinu's security basis corrected against the party platform |
+| 2026-07-27 | revision 8 — Yashar's eight principles documents; economic 0 → +1 |
