@@ -20,16 +20,21 @@ function showError(containerIds) {
   });
 }
 
+// The party info helpers set recolor:true; clubOrLeagueInfo/pickInfo deliberately do not. This flag
+// is the single place that knows an entity is a party, and it rides through to logoEl() in every
+// render path below (standings rows, scoreboard lines), which is why party wordmarks -- mostly dark
+// navy artwork -- stay legible on the dark cards here as well as on the vote page. Clubs and leagues
+// keep the separate OUTLINE_CLUBS treatment instead; see logos.js.
 function previousPartyInfo(id) {
   if (id === null) return { name: t('resultsDidNotVote'), entity: null };
   const p = optionsData.previous_parties.find(p => p.id === id);
-  return p ? { name: localizedName(p), entity: p } : { name: `#${id}`, entity: null };
+  return p ? { name: localizedName(p), entity: p, recolor: true } : { name: `#${id}`, entity: null };
 }
 
 function upcomingPartyInfo(id) {
   if (id === null) return { name: t('resultsUndecided'), entity: null };
   const p = optionsData.upcoming_parties.find(p => p.id === id);
-  return p ? { name: localizedName(p), entity: p } : { name: `#${id}`, entity: null };
+  return p ? { name: localizedName(p), entity: p, recolor: true } : { name: `#${id}`, entity: null };
 }
 
 function clubOrLeagueInfo(row) {
@@ -41,7 +46,7 @@ function clubOrLeagueInfo(row) {
   return l ? { name: `${localizedName(l)}${t('resultsLeagueWideSuffix')}`, entity: l } : { name: `league #${row.league_id}`, entity: null };
 }
 
-// rows: [{count, ...key fields}]. infoFn(row) -> {name, entity}. opts.highlightKey(row) -> bool.
+// rows: [{count, ...key fields}]. infoFn(row) -> {name, entity, recolor?}. opts.highlightKey(row) -> bool.
 function renderStandings(containerId, rows, infoFn, opts) {
   opts = opts || {};
   const container = document.getElementById(containerId);
@@ -59,7 +64,7 @@ function renderStandings(containerId, rows, infoFn, opts) {
   const sorted = rows.slice().sort((a, b) => b.count - a.count);
 
   sorted.forEach((r, idx) => {
-    const { name, entity } = infoFn(r);
+    const { name, entity, recolor } = infoFn(r);
     const pct = Math.round((r.count / total) * 100);
     const isYou = typeof opts.highlightKey === 'function' && opts.highlightKey(r);
 
@@ -72,7 +77,7 @@ function renderStandings(containerId, rows, infoFn, opts) {
 
     const nameDiv = document.createElement('div');
     nameDiv.className = 'standings-name';
-    nameDiv.appendChild(logoEl(entity, name));
+    nameDiv.appendChild(logoEl(entity, name, { recolor: !!recolor }));
     const nameSpan = document.createElement('span');
     nameSpan.textContent = name;
     nameDiv.appendChild(nameSpan);
@@ -121,14 +126,14 @@ function loadLastVote() {
   }
 }
 
-function appendScoreboardLine(container, label, entity, name) {
+function appendScoreboardLine(container, label, entity, name, recolor) {
   const line = document.createElement('div');
   line.className = 'scoreboard-line';
   const labelSpan = document.createElement('span');
   labelSpan.className = 'scoreboard-label';
   labelSpan.textContent = label;
   line.appendChild(labelSpan);
-  line.appendChild(logoEl(entity, name));
+  line.appendChild(logoEl(entity, name, { recolor: !!recolor }));
   const nameSpan = document.createElement('span');
   nameSpan.textContent = name;
   line.appendChild(nameSpan);
@@ -160,12 +165,12 @@ function renderScoreboard(vote) {
   });
 
   const prevInfo = previousPartyInfo(vote.previous_party_id);
-  appendScoreboardLine(el, t('resultsScoreLabelPrevious'), prevInfo.entity, prevInfo.name);
+  appendScoreboardLine(el, t('resultsScoreLabelPrevious'), prevInfo.entity, prevInfo.name, prevInfo.recolor);
 
   if (vote.upcoming_vote_status === 'considering' && vote.upcoming_party_ids.length) {
     vote.upcoming_party_ids.forEach((id, idx) => {
       const info = upcomingPartyInfo(id);
-      appendScoreboardLine(el, idx === 0 ? t('resultsScoreLabelUpcoming') : '', info.entity, info.name);
+      appendScoreboardLine(el, idx === 0 ? t('resultsScoreLabelUpcoming') : '', info.entity, info.name, info.recolor);
     });
   } else {
     appendScoreboardLine(el, t('resultsScoreLabelUpcoming'), null, t('resultsUndecided'));

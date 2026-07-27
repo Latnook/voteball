@@ -80,7 +80,9 @@ function renderPartyRow(type, party, allParties) {
   row.className = 'party-row';
   row.dataset.partyId = party.id;
 
-  row.appendChild(logoEl(party, localizedName(party)));
+  // recolor: parties only -- their logos are mostly dark wordmarks and this admin page shares the
+  // dark theme. The club/league rows below deliberately don't pass it (see logos.js).
+  row.appendChild(logoEl(party, localizedName(party), { recolor: true }));
 
   const nameSpan = document.createElement('span');
   nameSpan.className = 'party-name';

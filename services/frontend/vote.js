@@ -315,14 +315,17 @@ function renderUpcomingGrid() {
   grid.appendChild(undecidedCard);
 }
 
-function appendReviewLine(container, label, entity, name) {
+// recolor is passed only for parties (see the party branches in renderReviewSummary): their logos are
+// mostly dark wordmarks and need the dark-mode recolour to stay legible, exactly as on the pick cards.
+// Clubs and leagues pass nothing and keep the OUTLINE_CLUBS treatment in logos.js.
+function appendReviewLine(container, label, entity, name, recolor) {
   const line = document.createElement('div');
   line.className = 'scoreboard-line';
   const labelSpan = document.createElement('span');
   labelSpan.className = 'scoreboard-label';
   labelSpan.textContent = label;
   line.appendChild(labelSpan);
-  line.appendChild(logoEl(entity, name));
+  line.appendChild(logoEl(entity, name, { recolor: !!recolor }));
   const nameSpan = document.createElement('span');
   nameSpan.textContent = name;
   line.appendChild(nameSpan);
@@ -357,7 +360,7 @@ function renderReviewSummary() {
     appendReviewLine(container, '', null, t('voteDidNotVote'));
   } else {
     const party = optionsData.previous_parties.find(p => p.id === selectedPreviousChoice);
-    if (party) appendReviewLine(container, '', party, localizedName(party));
+    if (party) appendReviewLine(container, '', party, localizedName(party), true);
   }
 
   appendReviewSubheading(container, t('voteReviewUpcoming'));
@@ -366,7 +369,7 @@ function renderReviewSummary() {
   } else {
     selectedUpcomingIds.forEach(id => {
       const party = optionsData.upcoming_parties.find(p => p.id === id);
-      if (party) appendReviewLine(container, '', party, localizedName(party));
+      if (party) appendReviewLine(container, '', party, localizedName(party), true);
     });
   }
 }

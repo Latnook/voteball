@@ -478,7 +478,7 @@ out the Arab parties and wants a government of Jewish Zionist parties only, whic
 opposition bloc its arithmetic. **If the reported merger talks with Gantz complete, this row needs
 revisiting.**
 
-### זהות — Zehut · `unaligned` · 3 / 3 / 2 · religious_zionist
+### זהות — Zehut · `bibi` · 3 / 3 / 2 · religious_zionist
 
 Source: the party's own full platform, *מחזירים את המדינה לעם — מצע מפלגת זהות תשפ"ו – 2026*
 (188pp, `zehut.org.il/docs/zehut-platform-full-he.pdf`, first edition May 2026, written under Moshe
@@ -547,10 +547,19 @@ anyone revisiting: Feiglin states in the platform's own preface that he has **no
 regarding the Temple** and that the platform contains no chapter on building it, so
 `temple-mount-centred` records sovereignty and national symbolism, not a construction programme.
 
-`bloc` **unaligned**: extra-parliamentary (it has run before and holds no seats), committed to
-neither camp, and critical of Netanyahu on the security record — the magnetometer withdrawal from
-the Temple Mount in 2017 and the policy of transferring responsibility for Gaza are both attacked by
-name. Same reading as El HaDegel and the Reservists.
+`bloc` **bibi**. Zehut sits in the Netanyahu-led right-wing camp: on sovereignty, the judiciary and
+the conflict there is no alternative bloc it could recommend, and Feiglin's own history runs through
+Likud (Manhigut Yehudit) and the 2019 withdrawal deal with Netanyahu.
+
+**This row was first committed as `unaligned` and corrected the same day — the mistaken reasoning is
+worth recording, because it is easy to repeat.** The platform criticises Netanyahu by name more than
+once (the 2017 magnetometer withdrawal from the Temple Mount, the policy of transferring
+responsibility for Gaza), and that was read as ruling out the bibi bloc. It does not. **`bloc` tracks
+which camp a party would sit with and recommend for PM, not whether it criticises the incumbent** —
+several bibi-bloc parties attack Netanyahu's record freely. The Reservists' `unaligned` looks similar
+but rests on something different in kind: Hendel's explicit commitment never to complete Netanyahu
+to 61. Absent a refusal of that sort, right-wing criticism is just criticism. Being
+extra-parliamentary is likewise not evidence of non-alignment.
 
 Conscription is **not** scored here, per Decision 6. Zehut's model is its own: a short universal
 enlistment and training for everyone **including haredim** (adapted to their way of life and
@@ -727,3 +736,4 @@ pass happened, for anyone reading git history.
 | 2026-07-27 | revision 8 — Yashar's eight principles documents; economic 0 → +1 |
 | 2026-07-27 | revision 9 — Religious Zionism's settlement pages; no axis moves, `anti-two-state` added |
 | 2026-07-27 | זהות — Zehut added to `upcoming_parties`, scored from its own 2026 platform |
+| 2026-07-27 | Zehut `bloc` corrected `unaligned` → `bibi` (criticising Netanyahu ≠ leaving his bloc) |
