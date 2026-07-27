@@ -73,6 +73,51 @@ def test_seeded_russian_names_are_cyrillic(conn):
     cur.close()
 
 
+def test_league_names_survive_name_drift(conn):
+    # rename_league sets the legacy `name` column to name_he -- even on a no-op rename -- so on any
+    # cluster where a league has ever been saved through the admin UI, `name` no longer holds 'UCL'.
+    # A seed block keyed on `name` alone then silently leaves those leagues untranslated, which is
+    # exactly how UCL, EPL and Bundesliga lost their Russian names. Keying on name_en alone fails
+    # differently (seed.sql rewrites it unguarded), so the block matches on `name OR name_he`.
+    cur = conn.cursor()
+    cur.execute('UPDATE leagues SET name = name_he')
+    cur.execute('UPDATE leagues SET name_ru = NULL')
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT name_en FROM leagues WHERE name_ru IS NULL')
+    assert cur.fetchall() == [], 'league name drift must not leave leagues without a Russian name'
+    cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'UEFA Champions League'")
+    assert cur.fetchone()[0] == 'Лига чемпионов'
+    cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'Bundesliga'")
+    assert cur.fetchone()[0] == 'Бундеслига'
+    cur.execute('SELECT COUNT(*) FROM leagues')
+    assert cur.fetchone()[0] == 8, 'the OR-match must not create or duplicate rows'
+    cur.close()
+
+
+def test_admin_renamed_league_is_not_overwritten(conn):
+    # The other half of the same guard: filling an empty name_ru must never revert a name a human
+    # typed. COALESCE per column is what allows both at once.
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE leagues SET name = 'ליגת האלופות שלי', name_he = 'ליגת האלופות שלי', "
+        "name_ru = 'МОЯ ЛИГА' WHERE name_en = 'UEFA Champions League'"
+    )
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT name_he, name_ru FROM leagues WHERE name_en = 'UEFA Champions League'")
+    assert cur.fetchone() == ('ליגת האלופות שלי', 'МОЯ ЛИГА')
+    cur.close()
+
+
 def test_partial_unique_index_rejects_duplicate_name_ru(conn):
     cur = conn.cursor()
     with pytest.raises(psycopg2.errors.UniqueViolation):

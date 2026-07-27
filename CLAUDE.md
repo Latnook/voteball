@@ -377,10 +377,15 @@ live in **one `VALUES` block carrying all three languages**, one row per entity
 stronger — it can fill an empty `name_ru` on a row whose `name_en` an admin has already renamed,
 which a single statement-level `IS NULL` guard cannot do. `logo_url` still uses `AND ... IS NULL`.
 
-**The leagues block keys on the legacy `name` column, not `name_en` — do not "fix" this.**
-`seed.sql` rewrites `name_en` for EPL/UCL *unguarded* on every run (`'EPL'` → `'Premier League'`),
-so on any already-seeded database a `name_en`-keyed block matches zero rows for those two leagues.
-It passes on a fresh database, which is exactly what makes it dangerous.
+**The leagues block matches on `name OR name_he`, and neither column alone is enough.** No single
+column identifies a league in all three states the table can be in: on a fresh install `name_he` is
+still NULL; once seeded, `name_en` has been rewritten *unguarded* for EPL/UCL (`'EPL'` →
+`'Premier League'`); and after any admin save `rename_league` has overwritten `name` with `name_he`
+— even on a no-op rename, the 2026-07-17 drift. Both single-column forms have shipped and both
+silently left leagues untranslated (`name_en`-keyed, then `name`-keyed, which is how UCL, EPL and
+Bundesliga lost their Russian names). Each column is unique-indexed, so the `OR` still matches at
+most one row. `test_league_names_survive_name_drift` and `test_admin_renamed_league_is_not_overwritten`
+pin both halves.
 
 Verify a revision the way every existing one was: seed a container with the *previous* file, apply
 the new one, confirm the value actually moves on the already-seeded row — a fresh database proves

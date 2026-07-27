@@ -194,9 +194,20 @@ UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
 -- One row per entity, all display languages together. COALESCE is the per-column equivalent of
 -- the old "AND name_xx IS NULL" guard: it fills only what is still empty, so a name an admin has
 -- renamed through the live UI is never overwritten. Do not drop it.
--- Keyed on the legacy `name` column, not name_en: the two UPDATEs below rewrite name_en for
--- EPL/UCL unguarded on every run, so on an already-seeded database name_en is no longer 'EPL'
--- and a name_en-keyed block would silently skip those two leagues.
+-- Matched on the legacy `name` OR `name_he`, and NEITHER alone is sufficient. No single column
+-- identifies a league in all three states this table can be in:
+--
+--   fresh install (before this block)  name='UCL'            name_en='UCL'                    name_he=NULL
+--   normally seeded                   name='UCL'            name_en='UEFA Champions League'  name_he='ליגת האלופות'
+--   after any admin rename            name='ליגת האלופות'   name_en='UEFA Champions League'  name_he='ליגת האלופות'
+--
+-- name_en is rewritten unguarded for EPL/UCL by the two UPDATEs just below, on every run.
+-- `name` is overwritten with name_he by queries.py's rename_league -- even on a no-op rename,
+-- which is the 2026-07-17 drift that test_seed_rerun_survives_league_name_drift covers.
+-- name_he is stable afterwards but NULL on a fresh install.
+-- Matching on `name OR name_he` covers every state; each is unique-indexed, so at most one row
+-- matches. Do not "simplify" this to one column -- both single-column forms have shipped and both
+-- silently left leagues untranslated.
 UPDATE leagues l SET
     name_he = COALESCE(l.name_he, v.name_he),
     name_ru = COALESCE(l.name_ru, v.name_ru)
@@ -210,7 +221,7 @@ FROM (VALUES
     ('Israeli Premier League', 'ליגת העל', 'Лига ха-Аль'),
     ('Liga Leumit', 'ליגה לאומית', 'Лига Леумит')
 ) AS v(name, name_he, name_ru)
-WHERE l.name = v.name;
+WHERE l.name = v.name OR l.name_he = v.name_he;
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
 UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
 
