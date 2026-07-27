@@ -61,7 +61,7 @@ Bayern Munich,באיירן מינכן,Бавария
 Barcelona,ברצלונה,Барселона
 Liverpool,ליברפול,Ливерпуль
 Paris Saint-Germain,פריז סן ז'רמן,Пари Сен-Жермен
-Inter Milan,אינטר מילאנו,Интер
+Inter Milan,אינטר מילאנו,Интернационале
 Juventus,יובנטוס,Ювентус
 Manchester United,מנצ'סטר יונייטד,Манчестер Юнайтед
 Chelsea,צ'לסי,Челси
@@ -96,7 +96,7 @@ Valencia,ולנסיה,Валенсия
 Sevilla,סביליה,Севилья
 Girona,ז'ירונה,Жирона
 Osasuna,אוססונה,Осасуна
-Celta Vigo,סלטה ויגו,Сельта Виго
+Celta Vigo,סלטה ויגו,Сельта
 Rayo Vallecano,ראיו ואייקאנו,Райо Вальекано
 Getafe,חטאפה,Хетафе
 Las Palmas,לאס פלמאס,Лас-Пальмас
@@ -122,12 +122,12 @@ Venezia,ונציה,Венеция
 Empoli,אמפולי,Эмполи
 Monza,מונצה,Монца
 RB Leipzig,ר. ב. לייפציג,РБ Лейпциг
-Bayer Leverkusen,באייר לברקוזן,Байер Леверкузен
+Bayer Leverkusen,באייר לברקוזן,Байер 04
 Eintracht Frankfurt,איינטרכט פרנקפורט,Айнтрахт Франкфурт
 VfB Stuttgart,שטוטגרט,Штутгарт
 Borussia Mönchengladbach,בורוסיה מנשנגלדבך,Боруссия Мёнхенгладбах
 SC Freiburg,פרייבורג,Фрайбург
-Werder Bremen,וורדר ברמן,Вердер Бремен
+Werder Bremen,וורדר ברמן,Вердер
 Union Berlin,אוניון ברלין,Унион Берлин
 Mainz 05,מיינץ 05,Майнц 05
 Wolfsburg,וולפסבורג,Вольфсбург
@@ -151,7 +151,7 @@ Ironi Kiryat Shmona,עירוני קריית שמונה,Ирони Кирьят-�
 Maccabi Petah Tikva,מכבי פתח תקווה,Маккаби Петах-Тиква
 Hapoel Petah Tikva,הפועל פתח תקווה,Хапоэль Петах-Тиква
 Ironi Tiberias,עירוני טבריה,Ирони Тверия
-F.C. Ashdod,מ.ס. אשדוד,ФК Ашдод
+F.C. Ashdod,מ.ס. אשדוד,Ашдод
 Maccabi Bnei Reineh,מכבי בני ריינה,Маккаби Бней Рейне
 Bnei Yehuda,בני יהודה,Бней Иегуда
 Hapoel Hadera,הפועל חדרה,Хапоэль Хадера
@@ -186,7 +186,7 @@ Feyenoord,פיינורד,Фейеноорд
 Galatasaray,גלאטסראיי,Галатасарай
 Lens,לאנס,Ланс
 Lille,ליל,Лилль
-PSV Eindhoven,פ.ס.וו. איינדהובן,ПСВ Эйндховен
+PSV Eindhoven,פ.ס.וו. איינדהובן,ПСВ
 Shakhtar Donetsk,שחטאר דונצק,Шахтёр Донецк
 Slavia Prague,סלביה פראג,Славия Прага
 Sporting CP,ספורטינג ליסבון,Спортинг Лиссабон
@@ -194,11 +194,11 @@ Sunderland,סנדרלנד,Сандерленд
 Sassuolo,ססואולו,Сассуоло
 Likud,הליכוד,Ликуд
 Yesh Atid,יש עתיד,Еш Атид
-Religious Zionist Party,הציונות הדתית,Религиозный сионизм
-National Unity,המחנה הממלכתי,Государственный лагерь
+Religious Zionist Party,הציונות הדתית,Ха-Цийонут ха-Датит
+National Unity,המחנה הממלכתי,Ха-Махане ха-Мамлахти
 Yisrael Beiteinu,ישראל ביתנו,Наш дом Израиль
 Shas,"ש""ס",ШАС
-United Torah Judaism,יהדות התורה,Яадут а-Тора
+United Torah Judaism,יהדות התורה,Яхадут ха-Тора
 Ra'am,"רע""ם",РААМ
 Hadash-Ta'al,"חד""ש-תע""ל",ХАДАШ-ТААЛ
 Labor,העבודה,Авода
@@ -207,9 +207,9 @@ Balad,"בל""ד",БАЛАД
 Other,אחר,Другое
 Yashar,ישר,Яшар
 Together,ביחד,Бейахад
-The Democrats,הדמוקרטים,Демократы
+The Democrats,הדמוקרטים,Ха-Демократим
 Blue and White,כחול לבן,Кахоль-лаван
-Otzma Yehudit,עוצמה יהודית,Оцма Иегудит
+Otzma Yehudit,עוצמה יהודית,Оцма Йехудит
 The Economic Party,המפלגה הכלכלית,Экономическая партия
 El HaDegel,אל הדגל,Эль ха-Дегель
 The Reservists,המילואימניקים,Резервисты
