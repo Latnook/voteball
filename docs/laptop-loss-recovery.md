@@ -25,29 +25,39 @@ an hour. Not rotating ones you did costs you the AWS account.
 
 ### Does full-disk encryption settle it?
 
-Partly, and it matters *how* the machine was taken.
+**On this machine: no. Assume compromise.**
 
-- **Powered off, or hibernated to an encrypted disk** → the disk is unreadable without the passphrase.
-  This is genuinely safe. Treat it as "it died", and rotate at your leisure.
-- **Taken while unlocked, or asleep/suspended** → the disk is already decrypted, or the key is sitting
-  in RAM. Encryption is buying you nothing. Treat it as a full compromise.
-- **Unsure** → treat it as a full compromise.
+The disk is LUKS-encrypted and **unlocks itself from the TPM when powered on** — no passphrase is
+typed at boot. That is convenient, and it is the detail that decides this whole document. It means:
 
-Three details decide this for *this* setup, all verified on 2026-07-27:
+- **Powered off is not "safe."** A thief presses the power button and the disk decrypts itself. The
+  only thing left between them and your files is the **login/lock-screen password**.
+- Worse, if the TPM enrollment is bound only to Secure Boot state (PCR 7), editing the kernel command
+  line at the bootloader — `init=/bin/bash` — often does *not* change that measurement, which is a
+  root shell on a decrypted disk without needing your password at all.
 
-- The root volume is **LUKS-encrypted**, and both `/` and `/home` sit on it — so the AWS credentials,
-  the build-host SSH key and the working copy are all inside the encrypted volume, not beside it.
-- Swap is **zram** (RAM-backed), so no hibernation image containing the volume key is ever written to
-  disk. This is what makes "powered off" genuinely safe rather than merely probably safe.
+So for this laptop, **every theft is the "someone has it" case.** Go straight to
+[the first hour](#if-someone-has-it-the-first-hour). Do not talk yourself into the calm path because
+the disk is "encrypted."
+
+**What the encryption still does buy you**, and it is not nothing: it defeats the *offline* attacks.
+Pull the SSD out and read it in another machine, or boot from a USB stick, and the TPM measurements
+change, so the key is never released. A casual thief who wipes and resells the machine gets nothing.
+The exposure is specifically "someone deliberately powers this laptop on and attacks it."
+
+Verified on 2026-07-27, for the record:
+
+- Both `/` and `/home` are btrfs subvolumes on the LUKS volume — the AWS credentials, the build-host
+  SSH key and the working copy are all inside it, not beside it.
+- Swap is **zram** (RAM-backed), so no hibernation image carrying the volume key is ever written to
+  disk. One thing that genuinely is closed.
 - `/boot` is unencrypted, which is normal and holds nothing secret.
 
-> **One assumption to check, once:** the reasoning above assumes the disk asks for a **passphrase** at
-> boot. If a TPM keyslot is enrolled with no PIN, the machine decrypts itself when powered on, and the
-> only thing between a thief and your files is the login password. That is a real difference, and this
-> machine has the hardware and tooling for it (`/dev/tpm0`, `sd-encrypt`, `systemd-cryptenroll`).
-> Confirm with `sudo cryptsetup luksDump <root partition> | grep -iA3 '^Tokens'` — a `systemd-tpm2`
-> token means TPM unlock; empty means passphrase-only. If it is TPM-only, either add a PIN
-> (`systemd-cryptenroll --tpm2-with-pin=yes`) or treat every loss as a full compromise.
+> **The fix, if you want "powered off = safe" back:** add a PIN to the TPM enrollment —
+> `sudo systemd-cryptenroll --tpm2-device=auto --tpm2-with-pin=yes <root partition>` — then remove the
+> PIN-less keyslot. Boot then asks for a short PIN, the key never unseals without it, and the offline
+> protections stay. A strong LUKS passphrase in a keyslot you keep as a fallback is the safety net;
+> do not remove your recovery key.
 
 ---
 
@@ -221,9 +231,11 @@ So if that key is gone, you cannot log in — even though the machine is running
 **The non-destructive fix** — do this rather than rebuilding the host, which would destroy its build
 history, job config and credentials:
 
-1. Attach `AmazonSSMManagedInstanceCore` to the `<cluster_name>-jenkins` IAM role. Amazon Linux 2023
-   ships the SSM agent already installed; it registers once the permission exists.
-2. Reboot the instance, then connect with Session Manager from the AWS console.
+1. Attach `AmazonSSMManagedInstanceCore` to the `<cluster_name>-jenkins` IAM role. The SSM agent is
+   already installed **and running** on the host (verified 2026-07-27) — it is only the permission
+   that is missing, so nothing has to be installed over a connection you don't have.
+2. Reboot the instance from the AWS console, so the agent retries registration with its new
+   permissions. Then connect with Session Manager.
 3. From that shell, append a new public key to `/home/ec2-user/.ssh/authorized_keys`.
 
 This is safe to apply: the instance has `ignore_changes` on its image and startup script precisely so
@@ -237,8 +249,11 @@ that routine Terraform runs never replace it.
 
 A short list, in descending order of what it would cost you not to have done.
 
-1. **Put the Jenkins SSH private key in your password manager.** The single unrecoverable item.
-2. **Add MFA to the admin IAM user**, and stop using a long-lived access key where you can. A key that
+1. **Add a PIN to the TPM unlock** (see above). Right now the disk decrypts itself on power-on, which
+   is what turns any theft into a credential emergency. This is the one change that would let you
+   treat a stolen-while-off laptop calmly.
+2. **Put the Jenkins SSH private key in your password manager.** The single unrecoverable item.
+3. **Add MFA to the admin IAM user**, and stop using a long-lived access key where you can. A key that
    has existed unrotated for months is exactly the one worth rotating on a schedule.
 3. **Back up `terraform/voteball.tfvars`** to the password manager. Reconstructible, but knowing the
    database password without a live cluster is the difference between a calm rebuild and a tense one.
