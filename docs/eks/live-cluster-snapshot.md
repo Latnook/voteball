@@ -445,3 +445,203 @@ replacement cycle through to Ready:
 ```
 1,050 consecutive HTTP 200s spanning the deletion and the replacement reaching `1/1 Ready`. Two
 replicas plus a PodDisruptionBudget mean losing one is invisible to users.
+
+---
+
+## 2026-07-27 — post-rebuild capture
+
+_Captured from a cluster built by `./scripts/deploy.sh` immediately after `./scripts/destroy.sh`,
+restoring RDS from the final snapshot that teardown produced. This section and the pre-teardown one
+above are the two halves of one destroy/rebuild cycle: **the vote count is identical across it.**_
+
+### Lifecycle summary
+
+```
+destroy.sh   6 ordered steps          Destroy complete! Resources: 112 destroyed.   exit 0
+             final snapshot           voteball-eks-db-final-20260722065933
+                                      created 2026-07-27T06:13:54Z  (NOT 07-22 -- the identifier
+                                      embeds time_static.deploy, so verify by SnapshotCreateTime)
+deploy.sh    8 ordered steps          Apply complete! Resources: 112 added, 0 changed, 0 destroyed.
+             restored from            voteball-eks-db-final-20260722065933
+                                      exit 0
+
+votes before: 5      votes after: 5      (party 10 x2, 5, 4, 14 -- identical distribution)
+```
+
+### `kubectl get nodes`
+```
+NAME                                          STATUS   ROLES    AGE   VERSION
+ip-10-0-40-9.il-central-1.compute.internal    Ready    <none>   11m   v1.34.9-eks-bca9cf6
+ip-10-0-54-67.il-central-1.compute.internal   Ready    <none>   11m   v1.34.9-eks-bca9cf6
+```
+
+### `kubectl get namespaces`
+```
+NAME                STATUS   AGE
+amazon-cloudwatch   Active   10m
+argocd              Active   12m
+default             Active   16m
+devops-app          Active   8m3s
+external-secrets    Active   13m
+kube-node-lease     Active   16m
+kube-public         Active   16m
+kube-system         Active   16m
+monitoring          Active   10m
+```
+
+### `kubectl get pods -n devops-app`
+```
+NAME                        READY   STATUS      RESTARTS   AGE
+backend-6945f9f7d8-cht9d    1/1     Running     0          8m3s
+backend-6945f9f7d8-d9njl    1/1     Running     0          8m3s
+evidence-backup-smc6m       0/1     Completed   0          2m29s
+frontend-65bd4d9fcb-bhh5d   1/1     Running     0          105s
+frontend-65bd4d9fcb-svrfz   1/1     Running     0          8m3s
+worker-7855fc557c-2rfgm     1/1     Running     0          8m4s
+```
+
+### `kubectl get deployments -n devops-app`
+```
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+backend    2/2     2            2           8m4s
+frontend   2/2     2            2           8m4s
+worker     1/1     1            1           8m4s
+```
+
+### `kubectl get services -n devops-app`
+```
+NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+backend    ClusterIP   172.20.173.163   <none>        5000/TCP   8m4s
+frontend   ClusterIP   172.20.23.51     <none>        80/TCP     8m4s
+```
+
+### `kubectl get ingress -n devops-app`
+```
+NAME       CLASS   HOSTS                  ADDRESS                                                                     PORTS   AGE
+voteball   alb     voteball.latnook.com   k8s-devopsap-voteball-6fb18c0744-433102010.il-central-1.elb.amazonaws.com   80      8m4s
+```
+
+### `kubectl describe pod backend-6945f9f7d8-cht9d -n devops-app` (app container)
+```
+  backend:
+    Image:          590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:0275cc6
+    Port:           5000/TCP
+    State:          Running
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     250m
+      memory:  256Mi
+    Requests:
+      cpu:      50m
+      memory:   128Mi
+    Liveness:   tcp-socket :5000 delay=10s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  http-get http://:5000/health delay=5s timeout=1s period=10s #success=1 #failure=3
+    Environment Variables from:
+      app-config  ConfigMap  Optional: false
+      app-secret  Secret     Optional: false
+```
+
+### `kubectl logs` — see `evidence/2026-07-27-post-rebuild-kubectl.txt`
+
+### ArgoCD owns the release
+```
+NAME       SYNC     HEALTH    REVISION
+voteball   Synced   Healthy   ea9feebad75b88ffb9eee06a5af9030aaa5c8ad4
+```
+`ea9feeb` is the `Deploy: sync values.yaml from Terraform outputs` commit that `deploy.sh` step 6
+pushed. The cluster and `master` agree — GitOps has taken over from the bootstrap install.
+
+## Demos — 2026-07-27 post-rebuild
+
+### 1. HTTPS with a newly issued ACM certificate
+```
+HTTP/2 200
+issuer=C=US, O=Amazon, CN=Amazon RSA 2048 M01
+subject=CN=voteball.latnook.com
+notBefore=Jul 27 00:00:00 2026 GMT
+notAfter=Feb  9 23:59:59 2027 GMT
+
+$ curl -sI http://voteball.latnook.com | head -2
+HTTP/1.1 301 Moved Permanently
+Server: awselb/2.0
+```
+Pre-teardown the certificate was `Amazon RSA 2048 M04`, `notBefore Jul 22`. A different issuer and a
+`notBefore` of today is independent proof the stack was genuinely rebuilt rather than left running.
+
+### 2 & 3. frontend → backend → RDS, with votes restored
+```
+$ curl -sf https://voteball.latnook.com/api/options | head -c 180
+{"clubs":[{"domestic_league_id":null,"id":2858,"league_id":6,"logo_url":"https://upload.wikimedia.org/...","name_en":"1. FC Köln",...
+
+$ curl -sf "https://voteball.latnook.com/api/results?by=all"
+{"previous":[{"count":2,"party_id":10},{"count":1,"party_id":5},{"count":1,"party_id":4},{"count":1,"party_id":14}],
+ "upcoming":[{"count":3,"party_id":4},{"count":1,"party_id":11},{"count":1,"party_id":3}]}
+```
+Byte-identical to the pre-teardown section. **The snapshot restore preserved every vote.**
+
+### 4. S3 and SNS via IRSA — on a bucket that did not exist ten minutes earlier
+```
+-- objects before: (empty -- the rollups bucket is created fresh each cycle, force_destroy = true)
+$ kubectl create job --from=cronjob/voteball-backup evidence-backup -n devops-app
+job.batch/evidence-backup condition met
+-- objects after:
+2026-07-27 09:37:31      12579 voteball-2026-07-27T06-37-29Z.sql.gz
+
+NAME       ROLE
+backend    <none>
+backup     arn:aws:iam::590183895228:role/voteball-backup-irsa
+default    <none>
+frontend   <none>
+worker     arn:aws:iam::590183895228:role/voteball-worker-irsa
+```
+
+SNS, verified end to end after the topic was destroyed and recreated:
+```
+subscription PendingConfirmation: false        (re-confirmed by the operator after the rebuild)
+NumberOfNotificationsDelivered:   1.0
+NumberOfNotificationsFailed:      0.0
+```
+
+### 5. NetworkPolicy isolation, with a control
+```
+allow-alb-to-frontend       app=frontend
+allow-app-egress            app
+allow-dns-egress            <none>
+allow-frontend-to-backend   app=backend
+default-deny                <none>
+
+worker -> backend:5000   BLOCKED by NetworkPolicy: TimeoutError
+worker -> RDS:5432       RDS REACHABLE (probe works)
+```
+
+### 6. Pod restart while the site stays up
+```
+$ kubectl delete pod frontend-65bd4d9fcb-nrbtk -n devops-app
+pod "frontend-65bd4d9fcb-nrbtk" deleted
+pod/frontend-65bd4d9fcb-bhh5d condition met
+
+   700 200
+   probes: 700   non-200: 0
+   window: 09:38:03 -> 09:38:56
+```
+
+## Known behaviour of this cycle: DNS negative caching
+
+For a few minutes after the rebuild the site was unreachable through some public resolvers while
+being perfectly healthy. Sequence: teardown removed the Route53 record → resolvers queried during the
+gap and cached the "no address" answer → external-dns recreated the record as an **ALIAS to an ALB
+still in `provisioning`**, which resolves to nothing until the ALB is `active`.
+
+Negative caching is bounded by RFC 2308 at `min(SOA MINIMUM, SOA record TTL)` = `min(86400, 900)` =
+**15 minutes**, so it self-heals. Observed: `8.8.8.8`, `9.9.9.9` and `208.67.222.222` all serving the
+correct address while `1.1.1.1` still held the negative answer.
+
+**Diagnosing it:** compare an authoritative query against a public resolver. If the authoritative
+nameserver answers and a public resolver does not, it is cache, not configuration —
+```bash
+dig +short @ns-2035.awsdns-62.co.uk voteball.latnook.com A   # authoritative truth
+aws elbv2 describe-load-balancers --query 'LoadBalancers[].State.Code'   # must be "active"
+```
+An `ANSWER: 0` with `status: NOERROR` (rather than `NXDOMAIN`) is the signature: the name exists, the
+alias target just has no address yet.

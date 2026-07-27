@@ -1,0 +1,42 @@
+### Demo 1 — HTTPS with a valid ACM certificate (newly issued this rebuild)
+HTTP/2 200 
+issuer=C=US, O=Amazon, CN=Amazon RSA 2048 M01
+subject=CN=voteball.latnook.com
+notBefore=Jul 27 00:00:00 2026 GMT
+notAfter=Feb  9 23:59:59 2027 GMT
+
+### Demo 1b — HTTP redirected to HTTPS
+HTTP/1.1 301 Moved Permanently
+Server: awselb/2.0
+
+### Demo 2+3 — frontend -> backend -> RDS (restored from snapshot)
+{"clubs":[{"domestic_league_id":null,"id":2858,"league_id":6,"logo_url":"https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg","name_en":"1. FC K\
+
+### Demo 3b — votes restored across the destroy/rebuild cycle
+{"previous":[{"count":2,"party_id":10},{"count":1,"party_id":5},{"count":1,"party_id":4},{"count":1,"party_id":14}],"upcoming":[{"count":3,"party_id":4},{"count":1,"party_id":11},{"count":1,"party_id":3}]}
+
+### Demo 4 — S3 via IRSA (bucket was destroyed and recreated this cycle)
+-- objects before:
+job.batch/evidence-backup created
+job.batch/evidence-backup condition met
+-- objects after:
+2026-07-27 09:37:31      12579 voteball-2026-07-27T06-37-29Z.sql.gz
+
+### Demo 4b — IRSA: only worker and backup carry an AWS role
+NAME       ROLE
+backend    <none>
+backup     arn:aws:iam::590183895228:role/voteball-backup-irsa
+default    <none>
+frontend   <none>
+worker     arn:aws:iam::590183895228:role/voteball-worker-irsa
+
+### Demo 5 — NetworkPolicy isolation, with a control
+  allow-alb-to-frontend app=frontend
+  allow-app-egress app
+  allow-dns-egress <none>
+  allow-frontend-to-backend app=backend
+  default-deny <none>
+-- worker -> backend:5000 (must NOT connect):
+   BLOCKED by NetworkPolicy: TimeoutError
+-- control: worker -> RDS:5432 (must connect):
+   RDS REACHABLE (probe works)

@@ -1,0 +1,7 @@
+==> 1/6  Removing the ArgoCD Application (stops selfHeal fighting the teardown)
+==> 2/6  Removing the Ingress (releases the ALB and the DNS records)
+==> 3/6  Waiting for the ALB to de-provision (its ENIs block VPC deletion)
+==> 4/6  Uninstalling the Helm release
+==> 5/6  Removing this cluster's DNS records
+==> 6/6  Destroying AWS infrastructure (Terraform will ask you to confirm)
+Destroy complete! Resources: 112 destroyed.

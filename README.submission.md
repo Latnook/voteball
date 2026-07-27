@@ -117,9 +117,23 @@ s.connect((os.environ['DB_HOST'],5432)); print('RDS REACHABLE (control: the prob
 kubectl create job --from=cronjob/voteball-backup t -n devops-app && aws s3 ls s3://voteball-rollups-590183895228/backups/  # backup lands
 ```
 
-**Demos shown:** HTTPS access (valid ACM cert), frontend→backend→RDS (`/api/options` with data),
-NetworkPolicy isolation (worker blocked from backend), S3/SNS via IRSA (snapshots + backup objects,
-milestone email), and **pod-restart-stays-up** (`kubectl delete pod` a frontend replica → site stays up).
+**Demos shown — captured output, not claims.** Every one below was run twice on 2026-07-27: once on
+the running cluster, then again on a cluster rebuilt from scratch. Both captures are in
+[`docs/eks/live-cluster-snapshot.md`](docs/eks/live-cluster-snapshot.md), with the raw command output
+under [`docs/eks/evidence/`](docs/eks/evidence/).
+
+| Demo | Evidence |
+|---|---|
+| HTTPS with a valid ACM certificate | `HTTP/2 200`; issuer `Amazon RSA 2048 M01`. HTTP → `301` at the ALB |
+| frontend → backend → RDS | `/api/options` returns seeded league/club/party data in one unauthenticated request |
+| NetworkPolicy isolation | worker → backend:5000 `BLOCKED (TimeoutError)`, **with a control**: worker → RDS:5432 `REACHABLE` |
+| S3 + SNS via IRSA | backup Job writes an object to a bucket created minutes earlier; SNS `Delivered: 1, Failed: 0`; only `worker`/`backup` hold an AWS role |
+| **Pod restart, site stays up** | **1,050** consecutive HTTP 200s (pre) and **700** (post) spanning `kubectl delete pod` of a frontend replica through to the replacement reaching `1/1 Ready` — `non-200: 0` |
+| **Full delete/rebuild lifecycle** | `destroy.sh` 112 destroyed → `deploy.sh` 112 added, RDS restored from the final snapshot, **5 votes before, 5 votes after** |
+
+The NetworkPolicy row carries a control deliberately. The check previously documented here was
+`wget ... || echo BLOCKED`, which printed `BLOCKED` because **`wget` is absent from the worker
+image** — it would have passed with the NetworkPolicy deleted. A test that cannot fail is not a test.
 
 ## How to delete everything
 

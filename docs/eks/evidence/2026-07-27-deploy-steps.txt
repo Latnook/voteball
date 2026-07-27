@@ -1,0 +1,16 @@
+==> 1/8  Resolving the newest DB snapshot
+==> 2/8  Building AWS infrastructure (Terraform will ask you to confirm)
+==> State bucket: s3://voteball-tfstate-590183895228 (il-central-1)
+==> Backend configuration
+==> Done
+Apply complete! Resources: 112 added, 0 changed, 0 destroyed.
+==> 3/8  Seeding app credentials into Secrets Manager
+==> 4/8  Pointing kubectl at the cluster
+==> 5/8  Building and pushing container images
+==> voteball-backend:0275cc6
+==> voteball-worker:0275cc6
+==> voteball-nginx:0275cc6
+==> voteball-backup:0275cc6
+==> 6/8  Syncing values.yaml from Terraform outputs
+==> 7/8  Installing the app
+==> 8/8  Bootstrapping ArgoCD (GitOps takes over from here)

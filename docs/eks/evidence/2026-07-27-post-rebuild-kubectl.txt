@@ -1,0 +1,350 @@
+### kubectl get nodes
+NAME                                          STATUS   ROLES    AGE   VERSION
+ip-10-0-40-9.il-central-1.compute.internal    Ready    <none>   11m   v1.34.9-eks-bca9cf6
+ip-10-0-54-67.il-central-1.compute.internal   Ready    <none>   11m   v1.34.9-eks-bca9cf6
+
+### kubectl get namespaces
+NAME                STATUS   AGE
+amazon-cloudwatch   Active   10m
+argocd              Active   12m
+default             Active   16m
+devops-app          Active   8m3s
+external-secrets    Active   13m
+kube-node-lease     Active   16m
+kube-public         Active   16m
+kube-system         Active   16m
+monitoring          Active   10m
+
+### kubectl get pods -n devops-app
+NAME                        READY   STATUS      RESTARTS   AGE
+backend-6945f9f7d8-cht9d    1/1     Running     0          8m3s
+backend-6945f9f7d8-d9njl    1/1     Running     0          8m3s
+evidence-backup-smc6m       0/1     Completed   0          2m29s
+frontend-65bd4d9fcb-bhh5d   1/1     Running     0          105s
+frontend-65bd4d9fcb-svrfz   1/1     Running     0          8m3s
+worker-7855fc557c-2rfgm     1/1     Running     0          8m4s
+
+### kubectl get deployments -n devops-app
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+backend    2/2     2            2           8m4s
+frontend   2/2     2            2           8m4s
+worker     1/1     1            1           8m4s
+
+### kubectl get services -n devops-app
+NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+backend    ClusterIP   172.20.173.163   <none>        5000/TCP   8m4s
+frontend   ClusterIP   172.20.23.51     <none>        80/TCP     8m4s
+
+### kubectl get ingress -n devops-app
+NAME       CLASS   HOSTS                  ADDRESS                                                                     PORTS   AGE
+voteball   alb     voteball.latnook.com   k8s-devopsap-voteball-6fb18c0744-433102010.il-central-1.elb.amazonaws.com   80      8m4s
+
+### kubectl describe pod backend-6945f9f7d8-cht9d -n devops-app
+Name:             backend-6945f9f7d8-cht9d
+Namespace:        devops-app
+Priority:         0
+Service Account:  backend
+Node:             ip-10-0-40-9.il-central-1.compute.internal/10.0.40.9
+Start Time:       Mon, 27 Jul 2026 09:31:45 +0300
+Labels:           app=backend
+                  pod-template-hash=6945f9f7d8
+Annotations:      cloudwatch.aws.amazon.com/auto-annotate-dotnet: true
+                  cloudwatch.aws.amazon.com/auto-annotate-java: true
+                  cloudwatch.aws.amazon.com/auto-annotate-nodejs: true
+                  cloudwatch.aws.amazon.com/auto-annotate-python: true
+                  instrumentation.opentelemetry.io/inject-dotnet: true
+                  instrumentation.opentelemetry.io/inject-java: true
+                  instrumentation.opentelemetry.io/inject-nodejs: true
+                  instrumentation.opentelemetry.io/inject-python: true
+Status:           Running
+IP:               10.0.42.93
+IPs:
+  IP:           10.0.42.93
+Controlled By:  ReplicaSet/backend-6945f9f7d8
+Init Containers:
+  opentelemetry-auto-instrumentation-java:
+    Container ID:  containerd://e5861b400c119a04efeab3a1209e3f9a2fda84c2d0e2aa29af2bd4fb02655a55
+    Image:         066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-java:v2.28.2
+    Image ID:      066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-java@sha256:515c8d4156bb800377ecdce87cd7ab5c6645c0d3cb025da60ac4132bce106128
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      cp
+      /javaagent.jar
+      /otel-auto-instrumentation-java/javaagent.jar
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Mon, 27 Jul 2026 09:31:52 +0300
+      Finished:     Mon, 27 Jul 2026 09:31:52 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     64Mi
+    Environment:  <none>
+    Mounts:
+      /otel-auto-instrumentation-java from opentelemetry-auto-instrumentation-java (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rpvhb (ro)
+  opentelemetry-auto-instrumentation-nodejs:
+    Container ID:  containerd://3948a2edb8c1d2c91195570f42fb9a9181d1068db03d081e8cd2cea29f302f88
+    Image:         066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-node:v0.12.0
+    Image ID:      066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-node@sha256:d28ba22730cbc406be6cce0455a1a48226fdd6ed174dac40b75c9ef15e82cc21
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      cp
+      -r
+      /autoinstrumentation/.
+      /otel-auto-instrumentation-nodejs
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Mon, 27 Jul 2026 09:32:00 +0300
+      Finished:     Mon, 27 Jul 2026 09:32:04 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  128Mi
+    Requests:
+      cpu:        50m
+      memory:     128Mi
+    Environment:  <none>
+    Mounts:
+      /otel-auto-instrumentation-nodejs from opentelemetry-auto-instrumentation-nodejs (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rpvhb (ro)
+  opentelemetry-auto-instrumentation-python:
+    Container ID:  containerd://4f73cab169f8854fdfbd32fe46f6c397f520b1fb4a54d6fe1f282f150f61088d
+    Image:         066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-python:v0.18.0
+    Image ID:      066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-python@sha256:c287abe89469c74d1a641d33048c6baa5372515dede452d95897c4b9a3faf51b
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      cp
+      -r
+      /autoinstrumentation/.
+      /otel-auto-instrumentation-python
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Mon, 27 Jul 2026 09:32:06 +0300
+      Finished:     Mon, 27 Jul 2026 09:32:07 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  32Mi
+    Requests:
+      cpu:        50m
+      memory:     32Mi
+    Environment:  <none>
+    Mounts:
+      /otel-auto-instrumentation-python from opentelemetry-auto-instrumentation-python (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rpvhb (ro)
+  opentelemetry-auto-instrumentation-dotnet:
+    Container ID:  containerd://6aa8bbeef71b660d7711137be418003e49b3aa1b3ac9c53063d766355eadc0fb
+    Image:         066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-dotnet:v1.13.0
+    Image ID:      066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-dotnet@sha256:b71326638e66e7c0643a9d1ec6905c387c9d2fb64d966980a309b45e7c5351fd
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      cp
+      -r
+      /autoinstrumentation/.
+      /otel-auto-instrumentation-dotnet
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Mon, 27 Jul 2026 09:32:10 +0300
+      Finished:     Mon, 27 Jul 2026 09:32:12 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  128Mi
+    Requests:
+      cpu:        50m
+      memory:     128Mi
+    Environment:  <none>
+    Mounts:
+      /otel-auto-instrumentation-dotnet from opentelemetry-auto-instrumentation-dotnet (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rpvhb (ro)
+Containers:
+  backend:
+    Container ID:   containerd://e3eb51d75926672a391786806af9ecea108873f2b4143c28cff4180992dd7b95
+    Image:          590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:0275cc6
+    Image ID:       590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:ad7df0ae4dbaa07f2dccb44ee652b4b8dcbb9e750161d2aeafc998b901388898
+    Port:           5000/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Mon, 27 Jul 2026 09:32:12 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     250m
+      memory:  256Mi
+    Requests:
+      cpu:      50m
+      memory:   128Mi
+    Liveness:   tcp-socket :5000 delay=10s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  http-get http://:5000/health delay=5s timeout=1s period=10s #success=1 #failure=3
+    Environment Variables from:
+      app-config  ConfigMap  Optional: false
+      app-secret  Secret     Optional: false
+    Environment:
+      OTEL_EXPORTER_OTLP_PROTOCOL:                     http/protobuf
+      OTEL_METRICS_EXPORTER:                           none
+      OTEL_LOGS_EXPORTER:                              none
+      OTEL_AWS_APP_SIGNALS_ENABLED:                    true
+      OTEL_AWS_APPLICATION_SIGNALS_ENABLED:            true
+      OTEL_TRACES_SAMPLER_ARG:                         endpoint=http://cloudwatch-agent.amazon-cloudwatch:2000
+      OTEL_TRACES_SAMPLER:                             xray
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:              http://cloudwatch-agent.amazon-cloudwatch:4316/v1/traces
+      OTEL_AWS_APP_SIGNALS_EXPORTER_ENDPOINT:          http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT:  http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_AWS_APPLICATION_SIGNALS_RUNTIME_ENABLED:    true
+      OTEL_AWS_OTLP_LOGS_ENDPOINT:                     http://cloudwatch-agent.amazon-cloudwatch:4316/v1/logs
+      OTEL_AWS_OTLP_METRICS_ENDPOINT:                  http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_AWS_SERVICE_EVENTS_ENABLED:                 false
+      OTEL_AWS_DYNAMIC_INSTRUMENTATION_API_URL:        http://cloudwatch-agent.amazon-cloudwatch:2000
+      JAVA_TOOL_OPTIONS:                                -javaagent:/otel-auto-instrumentation-java/javaagent.jar
+      OTEL_SERVICE_NAME:                               backend
+      OTEL_RESOURCE_ATTRIBUTES_POD_NAME:               backend-6945f9f7d8-cht9d (v1:metadata.name)
+      OTEL_RESOURCE_ATTRIBUTES_NODE_NAME:               (v1:spec.nodeName)
+      OTEL_PROPAGATORS:                                tracecontext,baggage,xray
+      OTEL_AWS_APPLICATION_SIGNALS_ENABLED:            true
+      OTEL_TRACES_SAMPLER_ARG:                         endpoint=http://cloudwatch-agent.amazon-cloudwatch:2000
+      OTEL_TRACES_SAMPLER:                             xray
+      OTEL_EXPORTER_OTLP_PROTOCOL:                     http/protobuf
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:              http://cloudwatch-agent.amazon-cloudwatch:4316/v1/traces
+      OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT:  http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_METRICS_EXPORTER:                           none
+      OTEL_LOGS_EXPORTER:                              none
+      OTEL_AWS_OTLP_LOGS_ENDPOINT:                     http://cloudwatch-agent.amazon-cloudwatch:4316/v1/logs
+      OTEL_AWS_OTLP_METRICS_ENDPOINT:                  http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_AWS_SERVICE_EVENTS_ENABLED:                 false
+      OTEL_AWS_DYNAMIC_INSTRUMENTATION_API_URL:        http://cloudwatch-agent.amazon-cloudwatch:2000
+      NODE_OPTIONS:                                     --require /otel-auto-instrumentation-nodejs/autoinstrumentation.js
+      OTEL_AWS_APP_SIGNALS_ENABLED:                    true
+      OTEL_AWS_APPLICATION_SIGNALS_ENABLED:            true
+      OTEL_TRACES_SAMPLER_ARG:                         endpoint=http://cloudwatch-agent.amazon-cloudwatch:2000
+      OTEL_TRACES_SAMPLER:                             xray
+      OTEL_EXPORTER_OTLP_PROTOCOL:                     http/protobuf
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:              http://cloudwatch-agent.amazon-cloudwatch:4316/v1/traces
+      OTEL_AWS_APP_SIGNALS_EXPORTER_ENDPOINT:          http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT:  http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_AWS_APPLICATION_SIGNALS_RUNTIME_ENABLED:    true
+      OTEL_METRICS_EXPORTER:                           none
+      OTEL_PYTHON_DISTRO:                              aws_distro
+      OTEL_PYTHON_CONFIGURATOR:                        aws_configurator
+      OTEL_LOGS_EXPORTER:                              none
+      OTEL_AWS_OTLP_LOGS_ENDPOINT:                     http://cloudwatch-agent.amazon-cloudwatch:4316/v1/logs
+      OTEL_AWS_OTLP_METRICS_ENDPOINT:                  http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_AWS_SERVICE_EVENTS_ENABLED:                 false
+      OTEL_AWS_DYNAMIC_INSTRUMENTATION_API_URL:        http://cloudwatch-agent.amazon-cloudwatch:2000
+      PYTHONPATH:                                      /otel-auto-instrumentation-python/opentelemetry/instrumentation/auto_instrumentation:/otel-auto-instrumentation-python
+      OTEL_TRACES_EXPORTER:                            otlp
+      OTEL_EXPORTER_OTLP_TRACES_PROTOCOL:              http/protobuf
+      OTEL_EXPORTER_OTLP_METRICS_PROTOCOL:             http/protobuf
+      OTEL_AWS_APPLICATION_SIGNALS_ENABLED:            true
+      OTEL_AWS_APPLICATION_SIGNALS_RUNTIME_ENABLED:    true
+      OTEL_TRACES_SAMPLER_ARG:                         endpoint=http://cloudwatch-agent.amazon-cloudwatch:2000
+      OTEL_TRACES_SAMPLER:                             xray
+      OTEL_EXPORTER_OTLP_PROTOCOL:                     http/protobuf
+      OTEL_EXPORTER_OTLP_ENDPOINT:                     http://cloudwatch-agent.amazon-cloudwatch:4316
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:              http://cloudwatch-agent.amazon-cloudwatch:4316/v1/traces
+      OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT:  http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
+      OTEL_METRICS_EXPORTER:                           none
+      OTEL_DOTNET_DISTRO:                              aws_distro
+      OTEL_DOTNET_CONFIGURATOR:                        aws_configurator
+      OTEL_LOGS_EXPORTER:                              none
+      OTEL_DOTNET_AUTO_PLUGINS:                        AWS.Distro.OpenTelemetry.AutoInstrumentation.Plugin, AWS.Distro.OpenTelemetry.AutoInstrumentation
+      CORECLR_ENABLE_PROFILING:                        1
+      CORECLR_PROFILER:                                {918728DD-259F-4A6A-AC2B-B85E1B658318}
+      CORECLR_PROFILER_PATH:                           /otel-auto-instrumentation-dotnet/linux-x64/OpenTelemetry.AutoInstrumentation.Native.so
+      DOTNET_STARTUP_HOOKS:                            /otel-auto-instrumentation-dotnet/net/OpenTelemetry.AutoInstrumentation.StartupHook.dll
+      DOTNET_ADDITIONAL_DEPS:                          /otel-auto-instrumentation-dotnet/AdditionalDeps
+      OTEL_DOTNET_AUTO_HOME:                           /otel-auto-instrumentation-dotnet
+      DOTNET_SHARED_STORE:                             /otel-auto-instrumentation-dotnet/store
+      OTEL_RESOURCE_ATTRIBUTES:                        com.amazonaws.cloudwatch.entity.internal.service.name.source=K8sWorkload,k8s.container.name=backend,k8s.deployment.name=backend,k8s.namespace.name=devops-app,k8s.node.name=$(OTEL_RESOURCE_ATTRIBUTES_NODE_NAME),k8s.pod.name=$(OTEL_RESOURCE_ATTRIBUTES_POD_NAME),k8s.replicaset.name=backend-6945f9f7d8,service.version=0275cc6
+    Mounts:
+      /otel-auto-instrumentation-dotnet from opentelemetry-auto-instrumentation-dotnet (rw)
+      /otel-auto-instrumentation-java from opentelemetry-auto-instrumentation-java (rw)
+      /otel-auto-instrumentation-nodejs from opentelemetry-auto-instrumentation-nodejs (rw)
+      /otel-auto-instrumentation-python from opentelemetry-auto-instrumentation-python (rw)
+      /tmp from tmp (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rpvhb (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  tmp:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     
+    SizeLimit:  <unset>
+  kube-api-access-rpvhb:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+  opentelemetry-auto-instrumentation-java:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     
+    SizeLimit:  200Mi
+  opentelemetry-auto-instrumentation-nodejs:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     
+    SizeLimit:  200Mi
+  opentelemetry-auto-instrumentation-python:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     
+    SizeLimit:  200Mi
+  opentelemetry-auto-instrumentation-dotnet:
+    Type:        EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:      
+    SizeLimit:   200Mi
+QoS Class:       Burstable
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  8m4s   default-scheduler  Successfully assigned devops-app/backend-6945f9f7d8-cht9d to ip-10-0-40-9.il-central-1.compute.internal
+  Normal  Pulling    7m59s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-java}: Pulling image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-java:v2.28.2"
+  Normal  Pulled     7m57s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-java}: Successfully pulled image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-java:v2.28.2" in 1.212s (1.212s including waiting). Image size: 41003795 bytes.
+  Normal  Created    7m57s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-java}: Created container: opentelemetry-auto-instrumentation-java
+  Normal  Started    7m57s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-java}: Started container opentelemetry-auto-instrumentation-java
+  Normal  Pulling    7m56s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-nodejs}: Pulling image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-node:v0.12.0"
+  Normal  Pulled     7m50s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-nodejs}: Successfully pulled image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-node:v0.12.0" in 6.834s (6.834s including waiting). Image size: 12898233 bytes.
+  Normal  Created    7m50s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-nodejs}: Created container: opentelemetry-auto-instrumentation-nodejs
+  Normal  Started    7m49s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-nodejs}: Started container opentelemetry-auto-instrumentation-nodejs
+  Normal  Pulling    7m44s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-python}: Pulling image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-python:v0.18.0"
+  Normal  Pulled     7m43s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-python}: Successfully pulled image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-python:v0.18.0" in 1.37s (1.37s including waiting). Image size: 7092183 bytes.
+  Normal  Created    7m43s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-python}: Created container: opentelemetry-auto-instrumentation-python
+  Normal  Started    7m43s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-python}: Started container opentelemetry-auto-instrumentation-python
+  Normal  Pulling    7m41s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-dotnet}: Pulling image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-dotnet:v1.13.0"
+  Normal  Pulled     7m40s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-dotnet}: Successfully pulled image "066635153087.dkr.ecr.il-central-1.amazonaws.com/eks/observability/adot-autoinstrumentation-dotnet:v1.13.0" in 1.594s (1.594s including waiting). Image size: 34008690 bytes.
+  Normal  Created    7m40s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-dotnet}: Created container: opentelemetry-auto-instrumentation-dotnet
+  Normal  Started    7m39s  kubelet            spec.initContainers{opentelemetry-auto-instrumentation-dotnet}: Started container opentelemetry-auto-instrumentation-dotnet
+  Normal  Pulled     7m37s  kubelet            spec.containers{backend}: Container image "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:0275cc6" already present on machine
+  Normal  Created    7m37s  kubelet            spec.containers{backend}: Created container: backend
+  Normal  Started    7m37s  kubelet            spec.containers{backend}: Started container backend
+
+### kubectl logs backend-6945f9f7d8-cht9d -n devops-app
+Defaulted container "backend" out of: backend, opentelemetry-auto-instrumentation-java (init), opentelemetry-auto-instrumentation-nodejs (init), opentelemetry-auto-instrumentation-python (init), opentelemetry-auto-instrumentation-dotnet (init)
+AwsEksResourceDetector failed: HTTP Error 403: Forbidden
+[2026-07-27 06:32:22 +0000] [1] [INFO] Starting gunicorn 23.0.0
+[2026-07-27 06:32:22 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+[2026-07-27 06:32:22 +0000] [1] [INFO] Using worker: sync
+[2026-07-27 06:32:22 +0000] [21] [INFO] Booting worker with pid: 21
+[2026-07-27 06:32:23 +0000] [26] [INFO] Booting worker with pid: 26
