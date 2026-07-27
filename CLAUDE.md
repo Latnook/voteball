@@ -135,7 +135,7 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 | Route | Method | Auth | Notes |
 |---|---|---|---|
 | `/health` | GET | none | liveness/readiness probe target |
-| `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties, consumed by both frontend pages |
+| `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties (each with `name_en`/`name_he`/`name_ru`), consumed by both frontend pages |
 | `/api/vote` | POST | none, cookie-deduped | body `{"team_picks": [{"league_id", "club_id"}, ...], "previous_vote_status", "previous_party_id", "upcoming_vote_status", "upcoming_party_ids"}`; `team_picks` needs ≥1 entry, ≤3 non-null `club_id` picks per distinct `league_id`, and a `club_id: null` ("just this league") entry can't coexist with specific-club entries in the same league; each `club_id`/`league_id` pair is validated against that club's real `{league_id, domestic_league_id}`; sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids`, or if `upcoming_party_ids` has more than 3 entries — client also validates all of this before submitting |
 | `/api/results` | GET | none | `?by=club\|league&id=N`, `?by=party&type=previous\|upcoming&id=N` (also returns a national `crosstab` of the other party type), or `?by=all` (national totals); reads the worker-computed rollup tables — `by=league` and `by=all` read the dedup/national-scoped rows so a multi-team ballot isn't over-counted |
 | `/api/results/segment` | GET | none | `?previous_party_id=P[&club_id=C\|&league_id=L]`; the "voters like you" migration cut — club/league-scoped if given, else national; returns `{"upcoming": [...], "total": N}` |
@@ -152,11 +152,11 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 | `/api/admin/votes/<id>` | DELETE | Bearer token | remove one vote; cascades to its `vote_clubs`/`vote_leagues`/`vote_upcoming_parties` rows |
 | `/api/results/switch` | GET | none | `?league_id=N&club_id=N` (both optional); vote-switch view — how voters moved between previous and upcoming parties |
 | `/api/results/clubs-breakdown` | GET | none | no params; per-club totals across all leagues |
-| `/api/admin/leagues` | POST | Bearer token | create; body `{"name_en", "name_he", ...}` |
+| `/api/admin/leagues` | POST | Bearer token | create; body `{"name_en", "name_he", ...}` (`name_ru` optional) |
 | `/api/admin/leagues/<id>` | PATCH/DELETE | Bearer token | rename/remove |
 | `/api/admin/leagues/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; rows that would move |
 | `/api/admin/leagues/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves votes off `<id>` |
-| `/api/admin/clubs` | POST | Bearer token | create; body needs `name_en`, `name_he` and an integer `league_id` (`logo_url` optional) |
+| `/api/admin/clubs` | POST | Bearer token | create; body needs `name_en`, `name_he` and an integer `league_id` (`name_ru`, `logo_url` optional) |
 | `/api/admin/clubs/<id>` | PATCH/DELETE | Bearer token | rename/remove; PATCH takes the same body as create |
 | `/api/admin/clubs/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; rows that would move |
 | `/api/admin/clubs/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves votes off `<id>` |
@@ -172,6 +172,36 @@ issuing a session-stored Bearer token). All three render backend-derived names v
 `createElement`/`textContent`, never `innerHTML` string interpolation — `previous_parties`/
 `upcoming_parties` names come from an external API and admin input respectively, neither is safe to
 trust as pre-escaped HTML.
+
+### Languages (English, Hebrew, Russian)
+
+Two independent layers, and adding a language means doing **both**:
+
+- **Interface strings** — the `DICTIONARY` in `services/frontend/i18n.js`, keyed language → string
+  id. All three language objects must carry **identical key sets and identical `{placeholder}`
+  tokens**; `t()` returns the key itself on a miss, so a gap renders `voteHeroTitle` on the page
+  rather than throwing. Language handling reads `SUPPORTED_LANGS`/`RTL_LANGS`/`NAME_FIELD_BY_LANG`
+  at the top of that file — add a language there, not by extending `en`/`he` conditionals.
+- **Entity names** — `name_en`/`name_he`/`name_ru` **columns** on `leagues`, `clubs`,
+  `previous_parties`, `upcoming_parties`, selected by `localizedName()`, which falls back to
+  `name_en`. `name_ru` is **nullable and optional in the admin API** — requiring it would 400 every
+  existing admin client and block saving any entity with no Russian name yet. The cost is that
+  coverage can rot silently as clubs are added.
+
+**Any admin PATCH that forwards a subset of fields must forward every name column.** Those endpoints
+replace all fields, so an omitted name is written as `NULL`. `patchClubLeagues` in `admin.js` (the
+"add to Champions League" button) is the one call site that does this, and it resends
+`name_en`/`name_he`/`name_ru`/`logo_url` for exactly this reason.
+
+**Russian names must be Cyrillic, and a homoglyph will pass review.** `РААМ` typed on a Latin
+keyboard layout is `PAAM` — visually identical, a different string, and it breaks Russian text
+search and collation. `test_migration.py::test_seeded_russian_names_are_cyrillic` asserts the
+property; don't rely on reading the file.
+
+Fonts: Heebo and Anton have no Cyrillic. Roboto's Cyrillic subset is declared under the **same
+`Heebo` family** (Heebo's Latin derives from Roboto, so it matches rather than approximates) and the
+browser picks it by `unicode-range`, so body text needs no `:lang(ru)` rule. Display headings use
+Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
 
 ## Deployment
 
@@ -338,8 +368,19 @@ block in order.)*
 Production is always already seeded, so a guard makes every later edit unreachable there; that is
 precisely why the file used to grow by appending. Unguarded is safe for the six ideology columns
 because nothing in the app writes them (the admin party endpoints only rename). **The name and
-`logo_url` statements keep their `IS NULL` guards for the opposite reason — admins edit those live,
-and an unguarded write destroys their edits.** Don't "make them consistent."
+`logo_url` statements stay guarded for the opposite reason — admins edit those live, and an
+unguarded write destroys their edits.** Don't "make them consistent."
+
+For names that guard is now `COALESCE`, not `AND ... IS NULL`: since 2026-07-27 each table's names
+live in **one `VALUES` block carrying all three languages**, one row per entity
+(`COALESCE(c.name_he, v.name_he)` etc.). It is the same guarantee applied per column, and strictly
+stronger — it can fill an empty `name_ru` on a row whose `name_en` an admin has already renamed,
+which a single statement-level `IS NULL` guard cannot do. `logo_url` still uses `AND ... IS NULL`.
+
+**The leagues block keys on the legacy `name` column, not `name_en` — do not "fix" this.**
+`seed.sql` rewrites `name_en` for EPL/UCL *unguarded* on every run (`'EPL'` → `'Premier League'`),
+so on any already-seeded database a `name_en`-keyed block matches zero rows for those two leagues.
+It passes on a fresh database, which is exactly what makes it dangerous.
 
 Verify a revision the way every existing one was: seed a container with the *previous* file, apply
 the new one, confirm the value actually moves on the already-seeded row — a fresh database proves
