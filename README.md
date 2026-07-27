@@ -15,12 +15,12 @@ add-ons and the app. See the [Quickstart](#quickstart).
 
 **Casting a ballot** — pick up to 3 clubs per league, across any number of leagues:
 
-![Voting form with Israeli Premier League clubs](docs/images/vote-form-clubs.png)
+![Voting form with Israeli Premier League clubs](docs/screenshots/vote-form-clubs.png)
 
 **The results dashboard** opens on fan-base analytics — which clubs draw politically mixed crowds and
 which are one-sided, measured in "effective parties":
 
-![Results dashboard: most mixed vs most one-sided fanbases](docs/images/results-overview.png)
+![Results dashboard: most mixed vs most one-sided fanbases](docs/screenshots/results-overview.png)
 
 **Where a fanbase sits ideologically** — every eligible club as a dot on one of three axes (economic,
 security, religion-and-state), with the full profile below. The axes are kept separate rather than
@@ -28,23 +28,23 @@ averaged into one score, because in Israeli politics they genuinely don't align:
 left but religiously right, Yisrael Beiteinu economically right but the most anti-clerical party on
 the board. Averaging would put them on the same spot.
 
-![Political Lean: clubs placed on the religion-and-state axis](docs/images/results-political-lean.png)
+![Political Lean: clubs placed on the religion-and-state axis](docs/screenshots/results-political-lean.png)
 
 **The actual point of the poll** — start from a club and see how its fans voted. Beitar Jerusalem's
 fanbase leans heavily Likud:
 
-![Party breakdown for Beitar Jerusalem fans](docs/images/results-club-breakdown.png)
+![Party breakdown for Beitar Jerusalem fans](docs/screenshots/results-club-breakdown.png)
 
 **Or run it backwards** — start from a party and see which clubs its voters follow. Balad's voters
 are concentrated in Bnei Sakhnin, the mirror image of the Beitar result:
 
-![Club breakdown for Balad voters](docs/images/results-party-mode.png)
+![Club breakdown for Balad voters](docs/screenshots/results-party-mode.png)
 
 **Dark mode and mobile** — party logos are recoloured for dark backgrounds:
 
 | Dark mode | Mobile |
 |---|---|
-| ![Results in dark mode](docs/images/results-dark.png) | ![Voting form on mobile](docs/images/mobile-vote.png) |
+| ![Results in dark mode](docs/screenshots/results-dark.png) | ![Voting form on mobile](docs/screenshots/mobile-vote.png) |
 
 ## How the poll works
 
