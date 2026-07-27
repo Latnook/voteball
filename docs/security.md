@@ -248,7 +248,7 @@ change them:
 | Node group | Spot, diversified types (no On-Demand fallback) | Add On-Demand fallback for guaranteed capacity |
 | NAT gateway | Single (one AZ) | One per AZ |
 | Trivy on backup image | Report-only (upstream third-party CVEs) | Pin/patch a controlled base or waive CVEs explicitly |
-| Grafana/ArgoCD UIs | port-forward only, chart-default passwords | SSO, private ingress, rotated secrets |
+| Grafana/ArgoCD UIs | port-forward only (ClusterIP, no Ingress); each chart generates its own admin password into a Secret at install — **not** a chart default, and different after every rebuild (verified 2026-07-27: 40 random alphanumerics, not `prom-operator`). Reaching either requires cluster access first, so the passwords are a second layer | SSO, private ingress, rotated secrets |
 | Jenkins webhook | Plain HTTP, authenticated by HMAC shared secret | TLS in front of Jenkins (ALB/reverse proxy + ACM) |
 | Jenkins host access | SSH tunnel on port 22 from one IP | SSM Session Manager, port 22 closed entirely |
 | Jenkins configuration | **JCasC** (`terraform/jenkins/casc/`), applied at every boot; credentials from Secrets Manager. Verified by booting a throwaway host from the config | Notifications on build failure (G7); SSM Session Manager |

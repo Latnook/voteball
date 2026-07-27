@@ -207,11 +207,56 @@ same secret but use only the (unchanged) database credentials.
 
 ---
 
-## Look at the dashboards (Grafana, Prometheus)
+## Connect to each part (dashboards, ArgoCD, Jenkins, the database)
 
-Grafana and Prometheus are installed, but **on purpose they are not on the internet** — there is no
-web address for them. You open a private tunnel from your own machine instead. Run one of these and
-leave it running, then open the link:
+**Only the website is on the internet.** Grafana, Prometheus, Alertmanager, ArgoCD, Jenkins and the
+database have no public web address at all — you open a private tunnel from your own machine each
+time. That means your AWS login *is* the front door; the passwords below are a second layer, not the
+only one.
+
+| Part | How you get in | What proves it's you |
+|---|---|---|
+| The website | `https://<your app_domain>` | nothing — it's public on purpose |
+| The admin page | `https://<your app_domain>/admin.html` | username + password → 12-hour token |
+| Kubernetes | `kubectl`, after `update-kubeconfig` | your AWS login |
+| Grafana | tunnel → `http://localhost:3000` | AWS login + a generated password |
+| Prometheus | tunnel → `http://localhost:9090` | AWS login (it has no password) |
+| Alertmanager | tunnel → `http://localhost:9093` | AWS login (it has no password) |
+| ArgoCD | tunnel → `https://localhost:8081` | AWS login + `admin` password |
+| Jenkins | **SSH** tunnel → `http://localhost:8080` | your SSH key + a Jenkins login |
+| The database | a throwaway pod inside the cluster | being inside the cluster + the DB password |
+| ECR, S3, secrets, SNS, logs | the `aws` command | your AWS login |
+
+### First: point kubectl at the cluster
+
+Needed on a new machine, and **again after every rebuild** — the cluster's address changes, and the
+old entry fails with a confusing certificate or connection error:
+
+```bash
+aws eks update-kubeconfig --region <your region> --name <your cluster_name>
+kubectl get nodes        # nodes "Ready" means you're in
+```
+
+This doesn't create a password. It tells `kubectl` to ask AWS for a short-lived pass on every
+command, so there is no cluster password to lose — and removing someone's AWS access removes their
+cluster access at the same moment.
+
+### The website and the admin page
+
+```
+https://<your app_domain>              the ballot
+https://<your app_domain>/results.html the results
+https://<your app_domain>/admin.html   the admin page
+```
+
+The admin page is deliberately **not linked** from the site, but that's not what protects it: every
+admin action needs a signed token that only a correct username and password can obtain, and it
+expires after 12 hours. To change those, see
+[Change the admin username or password](#change-the-admin-username-or-password) above.
+
+### Grafana, Prometheus and Alertmanager
+
+Run one of these and **leave it running** (it blocks — use a second terminal), then open the link:
 
 ```bash
 kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana      3000:80    # http://localhost:3000
@@ -228,9 +273,123 @@ kubectl get secret kube-prometheus-stack-grafana -n monitoring \
   -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
-In Prometheus, **Status → Rule Health** lists the alert rules. If your rules are missing there, they
-are not being checked at all — see `charts/voteball/prometheusrule.yaml` for the label that causes
-this.
+Prometheus and Alertmanager have **no login at all**. That is on purpose, not an oversight: the only
+way to reach them is to already hold cluster access, so a second password would protect nothing and
+would have to be stored somewhere.
+
+Where to look once you're in:
+
+- **Grafana** → Dashboards → the `kube-prometheus-stack` folder → *Kubernetes / Compute Resources /
+  Namespace (Pods)*, filtered to `devops-app`. That's the app's real CPU and memory use.
+- **Prometheus** → **Status → Rule Health** lists the alert rules. If your rules are missing there,
+  they are not being checked at all — see `charts/voteball/templates/prometheusrule.yaml` for the
+  label that causes this. `kubectl get prometheusrules` would still look perfectly fine.
+- **Alertmanager** → the front page shows what is firing *after* grouping, which is the real answer
+  to "would this have emailed me?"
+
+### ArgoCD
+
+Same idea, but it speaks HTTPS, so your browser will warn about the certificate — that's expected:
+
+```bash
+kubectl port-forward -n argocd svc/argocd-server 8081:443     # then https://localhost:8081
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d; echo
+```
+
+Username is `admin`. If you only want to know whether the cluster matches git, you don't need the UI:
+
+```bash
+kubectl get applications -n argocd      # "Synced / Healthy" is the answer
+```
+
+### Jenkins (the build server)
+
+Jenkins is **not in the cluster** — it's a separate machine, built by `terraform/jenkins/`, and it is
+normally **switched off** to save money. Webhooks are thrown away while it's off, so start it before
+pushing anything you expect to build:
+
+```bash
+cd terraform/jenkins
+aws ec2 start-instances --instance-ids "$(terraform output -raw instance_id)"
+aws ec2 wait instance-status-ok --instance-ids "$(terraform output -raw instance_id)"
+
+terraform output -raw ssh_tunnel_command   # prints an ssh command; run it, then browse http://localhost:8080
+
+aws ec2 stop-instances --instance-ids "$(terraform output -raw instance_id)"   # when you're done
+```
+
+Its web port is **not open to you** — only to GitHub's webhook addresses. The UI arrives through the
+SSH tunnel instead. Two things that catch people out:
+
+- **The login password can't be recovered.** Only a one-way hash of it is stored, so if you forget
+  it, re-set it: `JENKINS_ADMIN_USER=... JENKINS_ADMIN_PASSWORD='...' ./scripts/seed-jenkins-secret.sh`,
+  then restart Jenkins on the host.
+- **SSH suddenly times out** (rather than refusing) usually means your home IP address changed.
+  Update `admin_cidr` in `terraform/jenkins/jenkins.tfvars` and re-apply. See
+  `terraform/jenkins/README.md` and `docs/cicd.md`.
+
+### The database
+
+The database sits in a private part of the network with **no route to the internet**, and it only
+accepts connections from the cluster's own machines. There is no tunnel from your laptop to it. To
+get a database prompt, borrow a temporary pod inside the cluster:
+
+```bash
+kubectl run psql-shell -n devops-app --rm -it --restart=Never \
+  --image=postgres:17-alpine --labels=app=migrate \
+  --overrides='{"spec":{"containers":[{"name":"psql-shell","image":"postgres:17-alpine","stdin":true,"tty":true,
+    "command":["sh","-c","PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME"],
+    "envFrom":[{"configMapRef":{"name":"app-config"}},{"secretRef":{"name":"app-secret"}}]}]}}'
+```
+
+Three details there matter. It must be in the `devops-app` namespace (elsewhere the firewall rules
+block it); the label must be **`app=migrate`** and not `app=backend`, or live visitor traffic gets
+routed into your shell; and the password comes from the existing secret rather than being typed, so
+it never lands in your shell history.
+
+### The AWS side (images, backups, secrets, alerts, logs)
+
+No tunnels here — these are AWS services, so the `aws` command with your normal login is all you
+need. Every name is read from Terraform rather than written down:
+
+```bash
+cd terraform
+
+# Container images
+aws ecr get-login-password --region <your region> \
+  | docker login --username AWS --password-stdin "$(terraform output -raw ecr_registry)"
+
+# Nightly database dumps
+aws s3 ls "s3://$(terraform output -raw s3_bucket)/backups/" --human-readable
+
+# The app's secret (metadata only — see the warning below)
+aws secretsmanager describe-secret --secret-id voteball/app-secret --region <your region>
+
+# Alert emails: check the subscription says Confirmed, not PendingConfirmation
+aws sns list-subscriptions-by-topic \
+  --topic-arn "$(terraform output -raw sns_topic_arn)" --region <your region>
+
+# Logs that outlive the cluster
+aws logs tail "/aws/containerinsights/$(terraform output -raw cluster_name)/application" \
+  --since 30m --region <your region>
+```
+
+> **Avoid `aws secretsmanager get-secret-value`** unless you really need the value — it prints the
+> secret to your screen and into your shell history. `describe-secret` confirms it exists without
+> revealing anything. The whole design is that no person has to read it: the operator copies it into
+> the cluster automatically, and no secret value is ever in git or Terraform state.
+
+### If a connection won't work
+
+| What you see | Almost always |
+|---|---|
+| `kubectl` hangs or complains about certificates | The cluster was rebuilt — re-run `aws eks update-kubeconfig` |
+| Port-forward says the service doesn't exist | A chart upgrade renamed it — run `kubectl get svc -n monitoring` and use the real name |
+| Grafana rejects the password | It's regenerated on every rebuild — print it again |
+| `localhost:3000` shows nothing | The tunnel closed — it dies with its terminal, silently |
+| SSH to Jenkins times out | Your home IP changed — update `admin_cidr` and re-apply |
+| A push doesn't trigger a build | The Jenkins machine is switched off; webhooks are discarded, not queued |
+| Alerts never arrive | The email subscription is still `PendingConfirmation` |
 
 ---
 
