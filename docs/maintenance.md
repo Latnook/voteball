@@ -85,15 +85,17 @@ There is no Dependabot or Renovate config. Python dependencies are exact-pinned
 (`flask==3.1.3`, `gunicorn==23.0.0`, `boto3==1.42.85`, …) which is right for reproducibility, but
 means they only move when someone moves them.
 
-**Suggested:** add `.github/dependabot.yml` covering `pip` (both services) and `docker`. Grouped weekly
-PRs are enough at this scale. Dependabot is a GitHub feature independent of the CI system, so moving
-off GitHub Actions did not rule it out.
+**Dependabot is a poor fit for this repo, and that is a workflow fact rather than a gap.** It only ever
+proposes changes as **pull requests**, and this is a single-maintainer repo that commits directly to
+`master` and runs a single-branch Pipeline job (`triggers { githubPush() }`) — nothing builds a PR, so
+a Dependabot PR would sit unbuilt and unscanned, and a bad bump would still land on `master` before
+anything tested it. Adopting it would mean adopting a PR workflow first.
 
-**But note what would *not* happen automatically.** The Jenkins job is `triggers { githubPush() }` on a
-single-branch Pipeline — it builds `master`, not pull requests. So a Dependabot PR would sit unbuilt
-and unscanned until merged, and a bad bump would fail *after* reaching `master`, not before. Adopting
-Dependabot properly means adding PR builds (multibranch job or the GitHub Branch Source plugin) at the
-same time; otherwise the PRs are a suggestion box, not a gate.
+**What actually fits here:** a periodic manual sweep, which the cadence table below schedules. The
+useful commands are `pip list --outdated` inside each service's venv, and rebuilding the images —
+the base tags float, so `docker build --pull` alone picks up base-image security fixes, and the Trivy
+gate then blocks the push if anything CRITICAL/HIGH is still fixable. That gives most of Dependabot's
+protection on the container side without a PR queue.
 
 ---
 
