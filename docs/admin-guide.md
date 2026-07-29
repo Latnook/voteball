@@ -154,11 +154,21 @@ The knock-on effects show up everywhere on this tab:
 
 ### Adding a league or a club
 
-- **`+ Add league`** — English name, Hebrew name, and an optional logo URL. A duplicate name is
-  rejected with an error rather than silently creating a second league.
-- **`+ Add club`** (the button under each league) — English name, Hebrew name, an optional secondary
-  league from the dropdown (`— none —` by default), and an optional logo URL. **The league you added
-  it under becomes its primary league**, so add the club under the league you consider its home.
+- **`+ Add league`** — English name, Hebrew name, an **optional Russian name**, and an optional logo
+  URL. A duplicate name is rejected with an error rather than silently creating a second league.
+- **`+ Add club`** (the button under each league) — English name, Hebrew name, an **optional Russian
+  name**, an optional secondary league from the dropdown (`— none —` by default), and an optional
+  logo URL. **The league you added it under becomes its primary league**, so add the club under the
+  league you consider its home.
+
+> **Fill the Russian name in if you can.** English and Hebrew are required; Russian is not, because
+> requiring it would have blocked saving any entity that has no Russian name yet. The cost of that
+> choice is that Russian coverage rots silently — a club added without one simply falls back to its
+> English name for Russian-speaking visitors, with nothing flagging it. If you are adding a club and
+> know its Russian name, this is the cheapest moment to record it.
+>
+> It must be **actual Cyrillic**. `РААМ` typed on a Latin keyboard layout is `PAAM` — visually
+> identical, a different string, and it breaks Russian search and sorting.
 
 For logos, prefer a file committed to `services/frontend/logos/` pointed at as `/logos/<name>.png`.
 **Do not paste a Facebook/Instagram CDN link** — those URLs expire, and tracker blockers drop

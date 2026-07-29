@@ -218,7 +218,7 @@ only one.
 | Part | How you get in | What proves it's you |
 |---|---|---|
 | The website | `https://<your app_domain>` | nothing — it's public on purpose |
-| The admin page | `https://<your app_domain>/admin.html` | username + password → 12-hour token |
+| The admin page | `https://<your app_domain>/admin` | username + password → 12-hour token |
 | Kubernetes | `kubectl`, after `update-kubeconfig` | your AWS login |
 | Grafana | tunnel → `http://localhost:3000` | AWS login + a generated password |
 | Prometheus | tunnel → `http://localhost:9090` | AWS login (it has no password) |
@@ -245,10 +245,13 @@ cluster access at the same moment.
 ### The website and the admin page
 
 ```
-https://<your app_domain>              the ballot
-https://<your app_domain>/results.html the results
-https://<your app_domain>/admin.html   the admin page
+https://<your app_domain>          the ballot
+https://<your app_domain>/results the results
+https://<your app_domain>/admin   the admin page
 ```
+
+Those are the canonical URLs. nginx serves them directly and **301-redirects the `.html` forms onto
+them** (`/admin.html` → `/admin`), so an old bookmark still works but lands on the clean address.
 
 The admin page is deliberately **not linked** from the site, but that's not what protects it: every
 admin action needs a signed token that only a correct username and password can obtain, and it
