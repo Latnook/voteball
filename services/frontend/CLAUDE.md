@@ -4,7 +4,8 @@ Guidance for `services/frontend/`. The root `CLAUDE.md` carries the project-wide
 
 
 Plain HTML/CSS/vanilla JS, no build step, no automated test suite (matches the S3App precedent) —
-verify by driving the real page in a browser (or during Task 21-style end-to-end deploy verification).
+verify by driving the real page in a browser, or during an end-to-end deploy verification against the
+live site.
 
 **Adding a new frontend file (JS/CSS/HTML) requires updating `services/frontend/Dockerfile`'s `COPY`
 line too** — the `Dockerfile` lists every file it bakes into the image by name, not by directory. A file

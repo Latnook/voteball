@@ -75,7 +75,7 @@ stronger claim, score the weaker one and say so (see רע"ם in `docs/party-clas
 
 
 **Adding a new backend or worker source file: update that service's `Dockerfile` `COPY` line.** On EKS
-the build context *is* the source directory (`scripts/build-push-ecr.sh` / the CI workflow run
+the build context *is* the source directory (`scripts/build-push-ecr.sh` and the `Jenkinsfile` both run
 `docker build` against it), so the Dockerfile's explicit `COPY` list is the only place that can drop a
 file — and a file missing there is simply absent from the image (no build error for the *app* files,
 just an `ImportError`/404 at runtime). Same class of gap as the frontend note below.
