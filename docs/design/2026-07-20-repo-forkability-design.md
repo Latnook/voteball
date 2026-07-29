@@ -1,7 +1,10 @@
 # Repo cleanup and forkability
 
 **Date:** 2026-07-20
-**Status:** approved, pending implementation
+**Status:** **implemented 2026-07-20.** `ansible-project/` and the k3s stack are gone, identity reads
+through `scripts/lib/config.sh`, and `scripts/sync-values-from-tf.sh` owns the ten env-specific fields
+of `charts/voteball/values.yaml`. The one place an account id still appears is
+`scripts/tests/test-sync-values.sh`, deliberately — it is an offline stub fixture.
 
 > **Historical record.** CI moved from GitHub Actions to Jenkins on 2026-07-20; every
 > `.github/workflows/ci.yml` reference below describes the pipeline as it was at the time. See

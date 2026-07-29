@@ -423,9 +423,14 @@ the role and provider, and re-adding four repository variables.
   the right order for a reason beyond convenience: the working configuration was the *specification*,
   and two settings only revealed themselves as unsettable by JCasC (`crumbIssuer.excludeClientIP…`,
   `gitHubPluginConfig.manageHooks`) by aborting a boot that had a known-good state to compare against.
-  **One verification gap remains: the rebuild path has only been exercised against a host that was
-  already configured.** A genuinely fresh instance — empty `JENKINS_HOME`, no plugins — has not been
-  booted from this config.
+  **The rebuild path has since been verified on a genuinely fresh instance** (2026-07-21): a
+  throwaway host with an empty `JENKINS_HOME` and no plugins, booted from this config and touched by
+  no human. It found a real security hole first — the fresh host enforced **no webhook signature at
+  all**, accepting unsigned deliveries with `200`, because the hook secret is read from
+  `github-plugin-configuration.xml` and the bootstrap wrote only the other XML file. The
+  already-configured host had passed only because it still held the right value from its original UI
+  setup. Fixed, then re-verified on a clean instance (signed/unsigned/bad-signature → 200/400/400).
+  See [`design/2026-07-21-jenkins-jcasc-design.md`](design/2026-07-21-jenkins-jcasc-design.md).
 - **SSM Session Manager** as the UI access path, which would let port 22 close entirely.
 - **Build-failure notifications (G7).** Jenkins sends nothing without SMTP, and provisioning mail
   credentials on the build host is a surface this project declined to add. The compensating practice:

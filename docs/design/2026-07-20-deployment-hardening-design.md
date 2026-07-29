@@ -1,7 +1,10 @@
 # Deployment hardening: seamless apply/destroy cycles
 
 **Date:** 2026-07-20
-**Status:** approved, pending implementation
+**Status:** **implemented.** `scripts/deploy.sh` (8 steps) and `scripts/destroy.sh` (6 steps) encode
+the ordering described here, including the orphaned-ENI reaper and `scripts/cleanup-stale-dns.sh`.
+Exercised across the 2026-07-21 and 2026-07-27 destroy→rebuild cycles; the 2026-07-27 run is captured
+in [`../eks/evidence/`](../eks/evidence/) (112 destroyed → 112 added, votes intact).
 
 > **Historical record.** CI moved from GitHub Actions to Jenkins on 2026-07-20; every
 > `.github/workflows/ci.yml` reference below describes the pipeline as it was at the time. See
