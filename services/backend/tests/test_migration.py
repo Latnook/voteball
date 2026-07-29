@@ -21,7 +21,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
-    assert cur.fetchone()[0] == 17
+    assert cur.fetchone()[0] == 18
     cur.close()
 
 
@@ -270,7 +270,7 @@ def test_seed_rerun_survives_league_name_drift(conn):
 def test_seeded_party_lineage(conn):
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM party_lineage')
-    assert cur.fetchone()[0] == 13
+    assert cur.fetchone()[0] == 14
 
     cur.execute('''
         SELECT u.name_en FROM party_lineage pl
@@ -280,7 +280,7 @@ def test_seeded_party_lineage(conn):
         ORDER BY u.name_en
     ''')
     successors = {r[0] for r in cur.fetchall()}
-    assert successors == {'Otzma Yehudit', 'Religious Zionist Party'}
+    assert successors == {'Noam', 'Otzma Yehudit', 'Religious Zionist Party'}
 
     cur.execute('''
         SELECT p.name_en FROM party_lineage pl

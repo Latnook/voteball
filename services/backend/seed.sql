@@ -181,7 +181,7 @@ INSERT INTO upcoming_parties (name) VALUES
     ('הליכוד'), ('ישר'), ('ביחד'), ('הדמוקרטים'), ('כחול לבן'),
     ('ישראל ביתנו'), ('הציונות הדתית'), ('עוצמה יהודית'), ('חד"ש-תע"ל'),
     ('בל"ד'), ('רע"ם'), ('ש"ס'), ('יהדות התורה'),
-    ('המפלגה הכלכלית'), ('אל הדגל'), ('המילואימניקים'), ('זהות')
+    ('המפלגה הכלכלית'), ('אל הדגל'), ('המילואימניקים'), ('זהות'), ('נעם')
 ON CONFLICT (name) DO NOTHING;
 
 -- Backfill each row's own language from the legacy `name` column.
@@ -742,6 +742,10 @@ WHERE p.name_he = 'הציונות הדתית' AND u.name_he = 'עוצמה יהו
 ON CONFLICT DO NOTHING;
 INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
 SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
+WHERE p.name_he = 'הציונות הדתית' AND u.name_he = 'נעם'
+ON CONFLICT DO NOTHING;
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
 WHERE p.name_he = 'המחנה הממלכתי' AND u.name_he = 'כחול לבן'
 ON CONFLICT DO NOTHING;
 INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
@@ -801,7 +805,8 @@ FROM (VALUES
     ('המפלגה הכלכלית', 'The Economic Party', 'Экономическая партия'),
     ('אל הדגל', 'El HaDegel', 'Эль ха-Дегель'),
     ('המילואימניקים', 'The Reservists', 'Резервисты'),
-    ('זהות', 'Zehut', 'Зеут')
+    ('זהות', 'Zehut', 'Зеут'),
+    ('נעם', 'Noam', 'Ноам')
 ) AS v(name_he, name_en, name_ru)
 WHERE p.name_he = v.name_he;
 
@@ -824,6 +829,7 @@ UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/h
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d4/ZehutParty.svg' WHERE name_he = 'זהות' AND logo_url IS NULL;
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d3/Noamparty.svg' WHERE name_he = 'נעם' AND logo_url IS NULL;
 -- El HaDegel is a new movement with no Wikimedia logo; this is the square Star-of-David emblem
 -- (transparent, from the party's own Webflow CDN "webclip" app-icon) rather than the old low-res
 -- Google thumbnail, which had a dark navy background baked in and rendered as a dark box on the
@@ -852,7 +858,8 @@ FROM (VALUES
     ('המפלגה הכלכלית', 'unaligned', 1, 0, -2, 'secular', ARRAY['populist', 'anti-corruption', 'anti-monopoly', 'tax-cutting', 'free-trade', 'consumer-protection', 'kashrut-liberalization', 'single-issue-economy', 'anti-clerical']::text[]),
     ('אל הדגל', 'unaligned', 1, 2, 0, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'sovereignty-annexation', 'preemptive-security-doctrine', 'anti-two-state', 'constitutionalist', 'governance-reform', 'core-curriculum']::text[]),
     ('המילואימניקים', 'unaligned', 1, 2, 0, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'anti-netanyahu', 'territorial-control-gaza', 'anti-two-state', 'pro-settlement', 'constitutionalist', 'governance-reform', 'statist', 'excludes-haredi-and-arab-parties']::text[]),
-    ('זהות', 'bibi', 3, 3, 2, 'religious_zionist', ARRAY['libertarian', 'small-government', 'flat-tax', 'deregulation', 'privatization', 'anti-monopoly', 'cannabis-legalization', 'gun-rights', 'sovereignty-annexation', 'anti-two-state', 'population-transfer', 'permanent-residency-not-citizenship', 'state-institutions-bound-to-halakha', 'ends-state-religious-funding', 'jewish-law-parallel-jurisdiction', 'communitarian-devolution', 'temple-mount-centred', 'professional-army', 'extra-parliamentary']::text[])
+    ('זהות', 'bibi', 3, 3, 2, 'religious_zionist', ARRAY['libertarian', 'small-government', 'flat-tax', 'deregulation', 'privatization', 'anti-monopoly', 'cannabis-legalization', 'gun-rights', 'sovereignty-annexation', 'anti-two-state', 'population-transfer', 'permanent-residency-not-citizenship', 'state-institutions-bound-to-halakha', 'ends-state-religious-funding', 'jewish-law-parallel-jurisdiction', 'communitarian-devolution', 'temple-mount-centred', 'professional-army', 'extra-parliamentary']::text[]),
+    ('נעם', 'bibi', NULL, 3, 3, 'religious_zionist', ARRAY['hardal', 'religious-fundamentalist', 'single-issue-jewish-identity', 'not-economy-focused', 'halakhic-state', 'rabbinate-as-fourth-branch', 'rabbinic-authority-led', 'anti-lgbt', 'anti-progressive', 'family-values', 'opposes-western-wall-compromise', 'education-system-focused', 'anti-judicial-review', 'sovereignty-annexation', 'anti-two-state']::text[])
 ) AS v(name_he, bloc, economic, security, religiosity, sector, tags)
 WHERE p.name_he = v.name_he;
 

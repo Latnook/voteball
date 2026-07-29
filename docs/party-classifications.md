@@ -81,6 +81,7 @@ Negative is left (more state), positive is right (less state).
 | **−1** | *(none)* | — |
 | **−2** | Social-democratic | הדמוקרטים `[u]`, בל"ד, ש"ס, יהדות התורה, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Self-defined communist | חד"ש-תע"ל |
+| **NULL** | No stated position — see the NULL rule above | נעם `[u]` |
 
 **The +1 band is crowded on purpose.** A programme that liberalizes trade while *coercively*
 restructuring markets is not +2 — +2 requires actually withdrawing the state, and +3 requires doing
@@ -92,7 +93,7 @@ Negative is dovish, positive is hawkish.
 
 | | meaning | parties |
 |---|---|---|
-| **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]` |
+| **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]`, נעם `[u]` |
 | **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]`, המפלגה הכלכלית `[u]` |
@@ -112,7 +113,7 @@ Negative reduces religious authority.
 
 | | meaning | parties |
 |---|---|---|
-| **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]` |
+| **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
 | **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | ש"ס, יהדות התורה, זהות `[u]` |
 | **+1** | Preserve and modestly strengthen the state's Jewish character | הליכוד |
 | **0** | Status quo — no active religion-state agenda in either direction | אל הדגל `[u]`, המילואימניקים `[u]` |
@@ -604,6 +605,66 @@ obligated to serve but may volunteer; Arabs may volunteer for civilian service o
 haredi exemption by shrinking the obligation for everyone rather than extending it — which is why
 `professional-army`, not `universal-conscription`, is the accurate tag.
 
+### נעם — Noam · `bibi` · NULL / 3 / 3 · religious_zionist
+
+Sources: the party's own site (`noam.org.il`) — its self-description, its sovereignty statement of
+2 Tevet 5786 / 22 December 2025, and its education and religion-state material — plus he.wikipedia
+for the electoral history. Avi Maoz's party, founded 5779 / 2019, spiritually led by Rabbi Tzvi Tau's
+school; **hardal** (haredi-leumi) rather than mainstream religious-Zionist, which is why the tag
+carries what `sector` cannot: the enum has no hardal value and `religious_zionist` is the closest
+true one.
+
+religiosity **+3**, and it earns the halakhic-state band on a structural demand rather than on
+stringency. Their own text asks for the Chief Rabbinate to be established inside the government
+compound as a **`רשות שלטונית רביעית`** — a *fourth branch of government* — holding "all the state's
+Jewish-identity systems", per Rav Kook's vision. That is a claim about where state authority comes
+from, not about defending existing monopolies, which is exactly the line between this band and ש"ס /
+יהדות התורה at +2. The rest is consistent with it: the state must not become "a state of all its
+citizens", opposition to the Western Wall pluralistic-prayer compromise, and the demand that only the
+Chief Rabbinate rule on desecration of holy sites.
+
+security **+3**. The party is famously about one subject, so it would be easy to score this 0 by
+analogy with המפלגה הכלכלית — that would be wrong. Maoz opened a legislative process to apply
+Israeli sovereignty in Judea and Samaria and his bill passed a preliminary reading 25–24; his stated
+reasoning is that 7 October proved a Palestinian state is an existential danger. The party's own
+banner reads *"להיות עם חופשי בארצנו — זה להיות עם ריבוני בארצנו בכל מרחבי ארצנו"*. Sovereignty over
+Judea and Samaria **is** the +3 band, and a single-issue party that nonetheless authored the
+sovereignty bill has stated a position as clearly as anyone.
+
+economic **NULL — the first NULL on this axis, and it is a finding, not a gap.** Their site, their
+self-description and their Wikipedia entry contain no economic content at all: no tax position, no
+welfare position, no market position, and no governing record that would reveal one (Maoz's
+ministerial brief was Jewish identity and education units, nothing fiscal). Compare the three
+neighbouring cases, because the difference is the whole point of the axis:
+
+- הציונות הדתית and עוצמה יהודית are **0**, not NULL — they actively claim economic liberalism
+  (`claims-economically-liberal`) and Smotrich has a finance-ministry record to read.
+- המילואימניקים is **+1** with no published platform, resting on Hendel's centre-right record.
+- המפלגה הכלכלית is **0** on the *security* axis for the mirror-image reason: an economics party that
+  genuinely takes no conflict position.
+
+נעם has neither a claim nor a record, so `0` would assert a confirmed centrist economics that nobody
+has ever asserted. `not-economy-focused` carries the observation; the NULL carries the honesty.
+**Revisit the moment they publish anything fiscal** — this is the "no platform yet" kind of NULL,
+which ages, not the "axis does not apply" kind, which does not.
+
+`bloc` **bibi**, with no ambiguity worth arguing: Noam entered Netanyahu's 37th government under the
+December 2022 coalition agreement, Maoz served as deputy minister in the PM's office, and his stated
+2026 pitch is that Noam "will be the party that takes the right-wing bloc past 61". Maoz's February
+2023 resignation over broken promises does not touch this — the Zehut precedent above applies:
+criticising Netanyahu is not leaving his bloc, and Maoz was reappointed in June 2023.
+
+`anti-lgbt`, `anti-progressive` and `family-values` are descriptive, not editorial, and they are the
+party's own framing: an explicit platform against "destruction of the family", campaign material
+promoting heteronormativity, and opposition to gender content in education and the army.
+`anti-judicial-review` records their attack on High Court intervention in religious matters, which is
+a separate strand from the halakhic-state demand and would otherwise be invisible.
+
+**Lineage: הציונות הדתית → נעם**, on the same footing as עוצמה יהודית. Noam held its 25th-Knesset seat
+on the Religious Zionism joint slate (as it did in the 24th), and is running independently in 2026 —
+structurally the same split Otzma made, so a 2022 הציונות הדתית voter switching to נעם is a real
+transition the vote-switch rollups should be able to see.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -729,6 +790,18 @@ dark navy with no error anywhere. `upload.wikimedia.org` sends `access-control-a
 it does not taint. **Do not add it to `OUTLINE_CLUBS`** — that set is for clubs and leagues, and the
 recolour already covers parties.
 
+**נעם's logo is the same case as זהות's and likewise needs no code change — also verified, not
+assumed.** The Wikimedia SVG is a `#003369` navy wordmark between two `#00b2ef` cyan bars, and
+**45.3% of its opaque pixels are perceptually dark**, so the wordmark would be close to invisible on
+the `#161B22` cards if shown untouched. Measured in a real Chromium against the live URL:
+`recolorLogoForDark()` lifts the navy to `#a7d2ff` (luminance 0.17 → 0.80, hue preserved) and leaves
+the cyan alone (0.567, already above the threshold), taking the dark fraction to **0%**. The
+cross-origin load with `crossOrigin="anonymous"` did **not** taint the canvas — that is the half
+worth re-checking on any new host, because a tainted canvas throws, `logoEl` swallows it, and the
+logo renders dark with no error anywhere. Note this file lives under `/wikipedia/he/` rather than
+`/wikipedia/commons/`, like most of the party logos here — same host, same
+`access-control-allow-origin: *`. **Do not add it to `OUTLINE_CLUBS`**, for the reason given above.
+
 **Do not hotlink social-media CDNs.** Those URLs are signed and expire, the CDN may refuse hotlinks,
 and — the one that actually bit, on F.C. Kiryat Yam — tracker blockers drop `*.fbcdn.net` in the
 browser, so the crest is invisible to many visitors while `curl` fetches it happily. That class of
@@ -749,6 +822,12 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
 - **רע"ם's `security`** should move to −3 if the stronger platform is verified from the party's own
   source.
 - **המילואימניקים's `bloc`** needs revisiting if the reported merger talks with Gantz complete.
+- **נעם is campaigning as `נעם לישראל`** ("Noam for Israel") for the 26th Knesset. The row is seeded
+  under the plain `נעם` and it is deliberately *not* renamed yet: lists are not final, a rename
+  orphans votes (see the warning above), and an admin can do it in one edit if the longer name is
+  what appears on the ballot.
+- **נעם's `economic` is the only NULL on that axis** and is a "no platform yet" NULL, not a
+  scoped-out one. It must be revisited if they publish any fiscal position.
 - Election date is **2026-10-27**; lists are not final, so more revisions should be expected.
 
 ---
@@ -775,3 +854,4 @@ pass happened, for anyone reading git history.
 | 2026-07-27 | revision 9 — Religious Zionism's settlement pages; no axis moves, `anti-two-state` added |
 | 2026-07-27 | זהות — Zehut added to `upcoming_parties`, scored from its own 2026 platform |
 | 2026-07-27 | Zehut `bloc` corrected `unaligned` → `bibi` (criticising Netanyahu ≠ leaving his bloc) |
+| 2026-07-29 | נעם — Noam added to `upcoming_parties`; first NULL on the `economic` axis |
