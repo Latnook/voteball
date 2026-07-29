@@ -1,16 +1,29 @@
 # Live cluster snapshot (evidence for README.submission.md)
 
-_Captured 2026-07-20 from the running EKS cluster._
-_Sections below the "Additions captured 2026-07-21" heading were captured from the build running on
-2026-07-21; everything above them is from the 2026-07-20 build and is kept as the original evidence._
+**This file is four captures stacked in chronological order**, each from a different build of the
+cluster. Nothing is overwritten when a new one is added — the older layers are the record:
 
-> **This is dated evidence, not a description of the cluster as it stands now.** Every value here
-> was true when captured and is deliberately left frozen. The cluster was destroyed and rebuilt
-> again later on 2026-07-21, which regenerates the ACM certificate, the WAF ACL, the cluster
-> endpoint, the ALB name and every pod name — so the identifiers below (e.g. the WAF id
-> `bf57cc07-…`) no longer resolve. That is expected. For current values run
-> `terraform -chdir=terraform output`; do not "correct" this file to match, or it stops being a
-> record of anything.
+| Layer | Heading it starts at | Build captured |
+|---|---|---|
+| 1 | (top of file) | the 2026-07-20 build |
+| 2 | *Additions captured 2026-07-21* | the 2026-07-21 build, after the WAF / alerting / migration-Job pass |
+| 3 | *2026-07-27 — pre-teardown capture* | the build then running, immediately before a deliberate `destroy.sh` |
+| 4 | *2026-07-27 — post-rebuild capture* | the cluster `deploy.sh` rebuilt minutes later |
+
+Layers 3 and 4 are a **matched pair either side of one teardown/rebuild cycle**, and comparing them is
+the point: the vote count is identical across it. Their raw, untrimmed command output is in
+[`evidence/`](evidence/).
+
+> **This is dated evidence, not a description of the cluster as it stands now.** Every value here was
+> true when captured and is deliberately left frozen. The cluster has been destroyed and rebuilt
+> several times since layer 1, and each rebuild regenerates the ACM certificate, the WAF ACL, the
+> cluster endpoint, the ALB name and every pod name — so identifiers in the older layers (e.g. the WAF
+> id `bf57cc07-…`) no longer resolve. **That is the file working as intended, not rot.** For current
+> values run `terraform -chdir=terraform output`; do not "correct" the captures to match, or this
+> stops being a record of anything.
+>
+> *(Header last reconciled with the body on 2026-07-29, when it still described only layers 1–2. The
+> live cluster on that date was the layer-4 build, still running — node age 2d7h, EKS v1.34.9.)*
 
 ## `kubectl get nodes`
 ```
