@@ -200,7 +200,7 @@ const DICTIONARY = {
     navResults: 'תוצאות',
     navVote: 'להצבעה',
 
-    footerCredit: 'אריאל פלטניק יצר את זה',
+    footerCredit: 'אריאל פלטניק בנה את זה',
 
     resultsTitle: 'ווטבול — תוצאות',
     resultsHeading: 'ווטבול — תוצאות',
