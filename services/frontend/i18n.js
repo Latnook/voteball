@@ -35,6 +35,9 @@ const DICTIONARY = {
     navResults: 'Results',
     navVote: 'Vote',
 
+    // Hebrew and Russian wording supplied verbatim by the owner -- don't "improve" either.
+    footerCredit: 'Ariel Palatnik made this',
+
     resultsTitle: 'Voteball — Results',
     resultsHeading: 'Voteball — Results',
     resultsEyebrow: 'LIVE RESULTS',
@@ -197,6 +200,8 @@ const DICTIONARY = {
     navResults: 'תוצאות',
     navVote: 'להצבעה',
 
+    footerCredit: 'אריאל פלטניק יצר את זה',
+
     resultsTitle: 'ווטבול — תוצאות',
     resultsHeading: 'ווטבול — תוצאות',
     resultsEyebrow: 'תוצאות חיות',
@@ -358,6 +363,8 @@ const DICTIONARY = {
 
     navResults: 'Результаты',
     navVote: 'Голосовать',
+
+    footerCredit: 'Это сделал Ариэль Палатник',
 
     resultsTitle: 'Вотбол — Результаты',
     resultsHeading: 'Вотбол — Результаты',

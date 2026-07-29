@@ -286,6 +286,25 @@ button { font-family: inherit; }
   color: var(--accent);
 }
 
+/* ---------- Site footer ---------- */
+
+/* Deliberately quiet: --muted, small, and a hairline rule for anchoring. It sits outside <main>,
+   whose 4rem bottom padding already supplies the gap above the rule, so this only pads below.
+   Direction-agnostic -- centred text needs no RTL counterpart. */
+.site-footer {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 2rem;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.site-footer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+
 /* ---------- Hero ---------- */
 
 .hero {
