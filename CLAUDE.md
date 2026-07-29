@@ -121,8 +121,10 @@ league, no specific club" picks), and worker-computed rollup tables (`rollup_pre
 a vote touched, `club_id IS NULL`, deduped per vote+league, plus a club-scope row per specific pick
 — and `rollup_national_previous`/`rollup_national_upcoming`/`rollup_national_previous_upcoming`,
 counted one row per vote with no league/club dimension, since summing the league/club-scoped
-rollups for national totals would over-count a multi-team ballot) that the backend reads for fast
-`/api/results` responses.
+rollups for national totals would over-count a multi-team ballot, plus `rollup_vote_switch` and
+`rollup_national_vote_switch` backing `/api/results/switch`) that the backend reads for fast
+`/api/results` responses. **There are eight rollup tables** — count them in `schema.sql`, and keep
+`tests/conftest.py`'s `DROP TABLE ... CASCADE` list in step with them.
 
 ### Backend request-handling pattern
 
