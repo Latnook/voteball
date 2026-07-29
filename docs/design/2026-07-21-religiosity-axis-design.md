@@ -1,5 +1,10 @@
 # Religion-and-State Axis
 
+Status: **designed and implemented 2026-07-21, and live.** `religiosity` is a seeded, `CHECK`-bounded
+column on both party tables, the Political Lean strip positions by a user-selected axis, and
+`test_migration.py` round-trips it. Per-party scores and their evidence are in
+[`../party-classifications.md`](../party-classifications.md).
+
 Adds a third numeric ideology axis, `religiosity`, alongside `economic` and `security`.
 
 Extends `2026-07-16-party-categorization-analytics-design.md`; read that first. Its Decisions 2

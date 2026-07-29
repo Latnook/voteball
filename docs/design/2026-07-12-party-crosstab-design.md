@@ -1,6 +1,7 @@
 # Previous↔upcoming party crosstab
 
-Status: approved
+Status: approved — **implemented and live.** `/api/results?by=party` returns the national
+`crosstab` of the other party type.
 Date: 2026-07-12
 
 ## Context

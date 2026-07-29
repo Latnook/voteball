@@ -1,6 +1,7 @@
 # Max-3 upcoming-party selection limit
 
-Status: approved
+Status: approved — **implemented and live.** `/api/vote` returns 400 on more than 3
+`upcoming_party_ids`, and the client blocks it before submitting.
 Date: 2026-07-12
 
 ## Context

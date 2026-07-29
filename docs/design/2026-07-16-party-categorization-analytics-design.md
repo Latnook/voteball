@@ -1,6 +1,8 @@
 # Party Categorization, Lineage & Fan Politics Analytics
 
-Status: approved
+Status: approved — **implemented and live.** Both party tables carry `economic`/`security`/
+`religiosity` plus `bloc`/`sector`/`tags`; per-party reasoning is in
+[`../party-classifications.md`](../party-classifications.md).
 Date: 2026-07-16
 
 > **Superseded in part (2026-07-21):** a third numeric axis, `religiosity` (religion-and-state

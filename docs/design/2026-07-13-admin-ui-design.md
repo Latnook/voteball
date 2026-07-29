@@ -1,6 +1,7 @@
 # Admin UI
 
-Status: approved
+Status: approved — **implemented and live** as `services/frontend/admin.html`/`admin.js`.
+It has since grown a fourth tab (Teams) from the 2026-07-15 clubs/leagues CRUD pass.
 Date: 2026-07-13
 
 ## Context

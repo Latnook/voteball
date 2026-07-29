@@ -174,7 +174,9 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 
 *(The clubs/leagues admin CRUD block shipped with
 `docs/design/2026-07-15-clubs-leagues-admin-crud-design.md` and went undocumented in this table until
-the 2026-07-26 docs audit. `docs/admin-guide.md` still covers party reassignment only.)*
+the 2026-07-26 docs audit. `docs/admin-guide.md` covers it too, under "Managing leagues and clubs
+(the Teams tab)" — corrected in the 2026-07-29 docs audit, which found this note still claiming the
+guide was party-reassignment-only after that chapter had been written.)*
 
 Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
 (dashboard, reads `/api/results`), `admin.html`/`admin.js` (unlinked from the public pages — party

@@ -1,6 +1,7 @@
 # Admin authentication: username/password login replacing the shared secret
 
-Status: approved
+Status: approved — **implemented and live.** `POST /api/admin/login` issues a signed 12-hour
+token; the `X-Admin-Secret` shared secret described below is gone.
 Date: 2026-07-13
 
 ## Context

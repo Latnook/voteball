@@ -1,6 +1,9 @@
 # Hebrew/English site-wide language mode
 
-Status: approved
+Status: approved — **implemented and live, and since extended to Russian.** The dictionary in
+`services/frontend/i18n.js` now carries en/he/ru, and entity tables carry `name_ru` alongside
+`name_en`/`name_he`. Read this doc for the two-layer design; the language list itself lives in
+`SUPPORTED_LANGS`/`RTL_LANGS`/`NAME_FIELD_BY_LANG`.
 Date: 2026-07-14
 
 ## Context

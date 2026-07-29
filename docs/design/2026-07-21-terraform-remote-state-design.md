@@ -1,8 +1,12 @@
 # Terraform remote state: S3 backend for both stacks
 
-Status: designed 2026-07-21. Addresses gap **§1** of `docs/production-readiness.md` ("Terraform state
-is a local file — highest risk"), and partially **§7** (the Jenkins host's state has the same
-exposure, which §1 does not mention).
+Status: **designed and implemented 2026-07-21.** Closes gap **§1** of
+`docs/production-readiness.md` ("Terraform state is a local file — highest risk"), and partially
+**§7** (the Jenkins host's state has the same exposure, which §1 does not mention). Both stacks now
+use the S3 backend; `scripts/bootstrap-tf-backend.sh` creates the bucket and writes the gitignored
+`backend.hcl`, and `deploy.sh` runs it as part of step 2. Note the implementation drops the DynamoDB
+lock table described below in favour of S3-native `use_lockfile` — that argument is deprecated, which
+is why `required_version` is `>= 1.11.0`.
 
 ---
 

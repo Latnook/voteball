@@ -1,6 +1,7 @@
 # Clubs & Leagues Admin CRUD
 
-Status: approved
+Status: approved — **implemented and live.** Ten `/api/admin/{leagues,clubs}` routes ship, and
+the admin UI Teams tab is documented in [`../admin-guide.md`](../admin-guide.md).
 Date: 2026-07-15
 
 ## Context

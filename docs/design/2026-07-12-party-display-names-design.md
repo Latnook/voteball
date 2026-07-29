@@ -1,6 +1,7 @@
 # Party display names & manual party management
 
-Status: approved
+Status: approved — **implemented and live.** The Knesset OData sync was removed; both party
+tables are admin-managed with `name_en`/`name_he`/`name_ru` display columns.
 Date: 2026-07-12
 
 ## Context
