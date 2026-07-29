@@ -21,8 +21,6 @@ in git right now. Bootstrapping ArgoCD while they are still placeholders reverts
 stale image tag and every pod lands in `ImagePullBackOff` (observed on the 2026-07-20 rebuild; see
 step 8 of `scripts/deploy.sh`). A forker replaces them by running the sync script, not by editing
 the file. Only the header comment says `FILLED-BY-SYNC`; the values themselves are live.
-*(Corrected in the 2026-07-26 docs audit — this file previously claimed the committed values.yaml
-carried `FILLED-BY-SYNC` placeholders, which stopped being true once GitOps took over.)*
 
 > **The single-node k3s deployment is RETIRED and its code was removed on 2026-07-20** (the `terraform/`
 > stack, the Ansible playbook/roles, and the SSH-based reverse-seed script — all recoverable from git
@@ -143,40 +141,18 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 
 ### API surface
 
-| Route | Method | Auth | Notes |
-|---|---|---|---|
-| `/health` | GET | none | liveness/readiness probe target |
-| `/api/options` | GET | none | leagues/clubs/previous_parties/upcoming_parties (each with `name_en`/`name_he`/`name_ru`), consumed by both frontend pages |
-| `/api/vote` | POST | none, cookie-deduped | body `{"team_picks": [{"league_id", "club_id"}, ...], "previous_vote_status", "previous_party_id", "upcoming_vote_status", "upcoming_party_ids"}`; `team_picks` needs ≥1 entry, ≤3 non-null `club_id` picks per distinct `league_id`, and a `club_id: null` ("just this league") entry can't coexist with specific-club entries in the same league; each `club_id`/`league_id` pair is validated against that club's real `{league_id, domestic_league_id}`; sets `voteball_token` cookie (1yr); 409 on repeat vote; 400 if `upcoming_vote_status=considering` with no `upcoming_party_ids`, or if `upcoming_party_ids` has more than 3 entries — client also validates all of this before submitting |
-| `/api/results` | GET | none | `?by=club\|league&id=N`, `?by=party&type=previous\|upcoming&id=N` (also returns a national `crosstab` of the other party type), or `?by=all` (national totals); reads the worker-computed rollup tables — `by=league` and `by=all` read the dedup/national-scoped rows so a multi-team ballot isn't over-counted |
-| `/api/results/segment` | GET | none | `?previous_party_id=P[&club_id=C\|&league_id=L]`; the "voters like you" migration cut — club/league-scoped if given, else national; returns `{"upcoming": [...], "total": N}` |
-| `/api/admin/login` | POST | none | body `{"username", "password"}`; returns `{"token"}` on success, `401` on any failure |
-| `/api/admin/previous-parties` | POST | Bearer token | create; 409 if the name already exists |
-| `/api/admin/previous-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove; DELETE returns 409 if any votes still reference the party |
-| `/api/admin/previous-parties/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; returns `{"count": N}` of votes that would move |
-| `/api/admin/previous-parties/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves every vote's `previous_party_id` from `<id>` to `target_id`, returns `{"reassigned": N}` |
-| `/api/admin/upcoming-parties` | POST | Bearer token | create; 409 if the name already exists |
-| `/api/admin/upcoming-parties/<id>` | PATCH/DELETE | Bearer token | rename/remove; DELETE returns 409 if any votes still reference the party |
-| `/api/admin/upcoming-parties/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; returns `{"count": N}` of votes that would move |
-| `/api/admin/upcoming-parties/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; reassigns every vote's `<id>` pick to `target_id` (collision-safe against the ≤3-pick cap), returns `{"reassigned": N}` |
-| `/api/admin/votes` | GET | Bearer token | list all votes (no `cookie_token` in the response); each vote carries `team_picks: [{"league_id", "club_id"}, ...]` (assembled from separate queries against `vote_clubs`/`vote_leagues`, not a joined `array_agg`, to avoid cartesian-inflating `upcoming_party_ids` alongside it) |
-| `/api/admin/votes/<id>` | DELETE | Bearer token | remove one vote; cascades to its `vote_clubs`/`vote_leagues`/`vote_upcoming_parties` rows |
-| `/api/results/switch` | GET | none | `?league_id=N&club_id=N` (both optional); vote-switch view — how voters moved between previous and upcoming parties |
-| `/api/results/clubs-breakdown` | GET | none | no params; per-club totals across all leagues |
-| `/api/admin/leagues` | POST | Bearer token | create; body `{"name_en", "name_he", ...}` (`name_ru` optional) |
-| `/api/admin/leagues/<id>` | PATCH/DELETE | Bearer token | rename/remove |
-| `/api/admin/leagues/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; rows that would move |
-| `/api/admin/leagues/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves votes off `<id>` |
-| `/api/admin/clubs` | POST | Bearer token | create; body needs `name_en`, `name_he` and an integer `league_id` (`name_ru`, `logo_url` optional) |
-| `/api/admin/clubs/<id>` | PATCH/DELETE | Bearer token | rename/remove; PATCH takes the same body as create |
-| `/api/admin/clubs/<id>/reassign-count` | GET | Bearer token | `?target_id=N`; rows that would move |
-| `/api/admin/clubs/<id>/reassign` | POST | Bearer token | body `{"target_id": N}`; moves votes off `<id>` |
+The full route table — every endpoint with its method, auth, request body, validation rules and
+error codes — lives in the **`voteball-api` skill** (`.claude/skills/voteball-api/SKILL.md`).
+Invoke it before adding, changing or calling any endpoint.
 
-*(The clubs/leagues admin CRUD block shipped with
-`docs/design/2026-07-15-clubs-leagues-admin-crud-design.md` and went undocumented in this table until
-the 2026-07-26 docs audit. `docs/admin-guide.md` covers it too, under "Managing leagues and clubs
-(the Teams tab)" — corrected in the 2026-07-29 docs audit, which found this note still claiming the
-guide was party-reassignment-only after that chapter had been written.)*
+Two things about it that the route signatures do not show:
+
+- `/api/vote`'s validation rules are enforced **twice** — the client validates all of them before
+  submitting, so a client-side change without the matching server-side one silently loosens nothing,
+  but the reverse leaves the form accepting ballots the API rejects.
+- `/api/admin/votes` assembles `team_picks` from **separate queries** against `vote_clubs`/
+  `vote_leagues`, not a joined `array_agg` — a join would cartesian-inflate `upcoming_party_ids`
+  alongside it.
 
 Frontend pages: `index.html`/`vote.js` (voting form, posts to `/api/vote`), `results.html`/`results.js`
 (dashboard, reads `/api/results`), `admin.html`/`admin.js` (unlinked from the public pages — party
@@ -286,8 +262,6 @@ same day. Ignoring rather than pinning is deliberate: a *new* host still builds 
 image while an existing one is never churned. Patch the running host in place
 (`sudo dnf update --releasever=latest`); move it to a new image only via a deliberate
 `-replace`, which is safe now that JCasC can rebuild the configuration.
-*(This entry described the hazard as still live until the 2026-07-26 docs audit; the code, the
-Jenkins README, `docs/maintenance.md` and `docs/production-readiness.md` had all recorded the fix.)*
 
 **The Jenkins host is configured by JCasC, not by clicking.** `terraform/jenkins/casc/jenkins.yaml`
 is applied at every Jenkins start (plugins, admin user, authorization, global env vars, both
@@ -353,74 +327,23 @@ Two teardown behaviours `destroy.sh` handles that a manual `terraform destroy` d
 from state at destroy time, so that silently disables the final snapshot *and* wedges the VPC teardown.
 There's a comment there explaining why; keep it.
 
-### Party ideology axes, and how to revise them in `seed.sql`
+### Party ideology axes (`seed.sql`)
 
-Both party tables carry three numeric axes — `economic`, `security` and `religiosity` (each −3..+3,
-**nullable**) — plus categorical `bloc`/`sector` and free-text `tags`. See
-`docs/design/2026-07-16-party-categorization-analytics-design.md` and
-`docs/design/2026-07-21-religiosity-axis-design.md`. Nullable is load-bearing: a `0` asserts a
-confirmed centrist position, so a party with no stated position must be `NULL` — `religiosity` is
-scoped to *Jewish* religion-and-state, so Ra'am and Hadash are NULL on it. **Balad is not**: its
-program demands "complete separation of religion from the state" in as many words, so it scores −3
-(the 2026-07-21 Arab-party pass amended the axis design doc's Decision 3 from a category exclusion
-to a per-party evidence test — "Arab party" is not itself a reason to leave the axis NULL; the
-reasoning is under Balad in `docs/party-classifications.md`). Where a party's rhetoric and
-record diverge, the number records the **revealed** position and a tag carries the gap
-(`claims-economically-liberal`, `instrumentally-clerical`) — do not add claimed/actual column pairs.
+Both party tables carry three numeric axes — `economic`, `security`, `religiosity` (each −3..+3,
+**nullable**, where `NULL` means "no stated position" and `0` asserts a confirmed centrist one) —
+plus categorical `bloc`/`sector` and free-text `tags`. `seed.sql` holds the values;
+`docs/party-classifications.md` holds the reasoning; keep them apart.
 
-**`seed.sql` holds the values; `docs/party-classifications.md` holds the reasoning. Keep them
-apart.** Each party has exactly one row in a plain `VALUES` block per table, and it is the current
-state — edit that row in place. Do **not** reintroduce reasoning as SQL comments, and do not add a
-second copy of the values to the doc; when the two disagree, `seed.sql` is right.
+**The full revision procedure is in `services/backend/CLAUDE.md`**, which loads whenever you work
+under that directory — read it before touching `seed.sql`. Three rules from it are repeated here
+because getting them wrong destroys data rather than just being wrong:
 
-*(This replaced an append-only revision-log pattern on 2026-07-26, at the repo owner's request. Half
-of `seed.sql` had become prose, and a party's current value could only be derived by reading every
-block in order.)*
-
-**The classification `UPDATE`s are deliberately UNGUARDED — do not add `AND bloc IS NULL`.**
-Production is always already seeded, so a guard makes every later edit unreachable there; that is
-precisely why the file used to grow by appending. Unguarded is safe for the six ideology columns
-because nothing in the app writes them (the admin party endpoints only rename). **The name and
-`logo_url` statements stay guarded for the opposite reason — admins edit those live, and an
-unguarded write destroys their edits.** Don't "make them consistent."
-
-For names that guard is now `COALESCE`, not `AND ... IS NULL`: since 2026-07-27 each table's names
-live in **one `VALUES` block carrying all three languages**, one row per entity
-(`COALESCE(c.name_he, v.name_he)` etc.). It is the same guarantee applied per column, and strictly
-stronger — it can fill an empty `name_ru` on a row whose `name_en` an admin has already renamed,
-which a single statement-level `IS NULL` guard cannot do. `logo_url` still uses `AND ... IS NULL`.
-
-**The leagues block matches on `name OR name_he`, and neither column alone is enough.** No single
-column identifies a league in all three states the table can be in: on a fresh install `name_he` is
-still NULL; once seeded, `name_en` has been rewritten *unguarded* for EPL/UCL (`'EPL'` →
-`'Premier League'`); and after any admin save `rename_league` has overwritten `name` with `name_he`
-— even on a no-op rename, the 2026-07-17 drift. Both single-column forms have shipped and both
-silently left leagues untranslated (`name_en`-keyed, then `name`-keyed, which is how UCL, EPL and
-Bundesliga lost their Russian names). Each column is unique-indexed, so the `OR` still matches at
-most one row. `test_league_names_survive_name_drift` and `test_admin_renamed_league_is_not_overwritten`
-pin both halves.
-
-Verify a revision the way every existing one was: seed a container with the *previous* file, apply
-the new one, confirm the value actually moves on the already-seeded row — a fresh database proves
-nothing, since a guarded block would set the value there anyway.
-
-**Adding a new axis? Update `services/backend/tests/test_migration.py` too.** It is the reference
-test that round-trips the ideology columns and asserts the `CHECK` bounds. The religiosity pass
-missed it entirely and shipped an untested constraint; only the final review caught it.
-
-**Scoring a party that `test_queries.py` lists in `RELIGIOSITY_NULL_BY_DESIGN` fails the suite** — it
-asserts those parties *stay* NULL. Two different reasons put a party there: "the axis doesn't apply
-to it" (permanent) vs "it hasn't published a platform yet" (a placeholder that must be revisited the
-moment one appears). Check which before removing an entry.
-
-**Restructuring `seed.sql` (as opposed to changing a value) must be proven data-neutral:** dump every
-party row from a DB seeded with the OLD file, then diff against both (a) a fresh DB seeded with the
-new file and (b) the old-seeded DB with the new file applied on top. Both diffs empty, or it isn't a
-refactor.
-
-Researching party positions: `idi.org.il` returns **504** and `israelhayom.co.il` returns **403** to
-WebFetch — party official sites and `he.wikipedia.org` work. When only a blocked source supports the
-stronger claim, score the weaker one and say so (see רע"ם in `docs/party-classifications.md`).
+- **The six ideology `UPDATE`s are deliberately UNGUARDED — do not add `AND bloc IS NULL`.** A guard
+  makes every later edit unreachable on an already-seeded production database.
+- **The name and `logo_url` statements stay guarded, for the opposite reason** — admins edit those
+  live, and an unguarded write destroys their edits. Do not "make them consistent."
+- **Restructuring `seed.sql` must be proven data-neutral** (dump party rows from an old-seeded DB,
+  diff against both a fresh new-seeded DB and the old-seeded DB with the new file applied on top).
 
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 
@@ -498,100 +421,33 @@ either guard** — pipeline logic that can only be tested by running the pipelin
 G2 dangerous. Note the two guards deliberately fail safe in *opposite* directions (skip vs rebuild);
 that asymmetry is intentional, don't "make them consistent".
 
-### Backend (`services/backend/`)
+### Per-directory guidance (loads automatically when you work there)
 
-**Adding a new backend or worker source file: update that service's `Dockerfile` `COPY` line.** On EKS
-the build context *is* the source directory (`scripts/build-push-ecr.sh` / the CI workflow run
-`docker build` against it), so the Dockerfile's explicit `COPY` list is the only place that can drop a
-file — and a file missing there is simply absent from the image (no build error for the *app* files,
-just an `ImportError`/404 at runtime). Same class of gap as the frontend note below.
+The build, test and gotcha notes for each component now live next to the code, in a `CLAUDE.md` that
+loads only when Claude is working under that directory:
 
-Tests run TDD-style against a **real** Postgres, not mocks. Note the `.venv`s are **not relocatable** —
-if a service directory is ever moved, delete and recreate them, or every command fails with a confusing
-`ModuleNotFoundError` naming the *old* path (absolute paths are baked into the shebangs and
-`pyvenv.cfg`):
+| File | Covers |
+|---|---|
+| `services/backend/CLAUDE.md` | `seed.sql` ideology-axis revision, the real-Postgres test setup, `requirements.txt` vs `requirements-dev.txt`, the Dockerfile `COPY` rule |
+| `services/worker/CLAUDE.md` | why the worker duplicates `db.py`, its test setup, the Dockerfile `COPY` rule |
+| `services/frontend/CLAUDE.md` | the Dockerfile `COPY`-by-name rule, `logos/` as the directory exception, the no-hotlinking rule |
+| `charts/voteball/CLAUDE.md` | `helm lint`/`template`, the migration Job's `post-install,pre-upgrade` split, the `release: kube-prometheus-stack` alert-rule label |
 
-```bash
-docker run -d --name voteball-test-db -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:17
-# ...or `docker start voteball-test-db` if it already exists — it persists between sessions, and
-# `docker run` then fails on the name conflict. For seed/schema verification create throwaway
-# databases inside it (CREATE DATABASE revcheck; ...) rather than using the default one.
-cd services/backend
-python -m venv .venv && source .venv/bin/activate   # or use uv if pip is unavailable
-pip install -r requirements-dev.txt                 # NOT requirements.txt — that has no pytest
-python -m pytest tests/ -v                          # full suite
-python -m pytest tests/test_app.py::test_health -v   # single test
-```
+Two rules from those files are repeated here because they bite from outside the directory too:
 
-**`requirements.txt` is the production dependency list and the Dockerfiles install *only* it;
-`requirements-dev.txt` adds pytest on top.** Both services have this split. `tests/test_requirements.py`
-(in each service) fails if a declared package is never imported, or if an imported package is missing
-from the list — both mistakes were live until 2026-07-26, and neither is catchable by the normal
-suite, because the venv has everything installed either way while the built image does not.
-
-`tests/conftest.py` sets required env vars (`DB_HOST`, `DB_PASS`, `ADMIN_USERNAME`,
-`ADMIN_PASSWORD_HASH`, `ADMIN_SESSION_SECRET`, etc.) via
-`setdefault` and its `conn` fixture drops and recreates every table before each test (see the
-`DROP TABLE ... CASCADE` list — keep it in sync with `schema.sql` when adding tables).
-
-### Worker (`services/worker/`)
-
-Same real-Postgres TDD pattern as the backend; reuse the `voteball-test-db` container. The worker's
-tests need `schema.sql` (owned by the backend) loaded into that database, since the worker itself
-never creates schema.
-
-### Frontend (`services/frontend/`)
-
-Plain HTML/CSS/vanilla JS, no build step, no automated test suite (matches the S3App precedent) —
-verify by driving the real page in a browser (or during Task 21-style end-to-end deploy verification).
-
-**Adding a new frontend file (JS/CSS/HTML) requires updating `services/frontend/Dockerfile`'s `COPY`
-line too** — the `Dockerfile` lists every file it bakes into the image by name, not by directory. A file
-that exists on disk but is missing from that `COPY` line 404s at runtime with no build error and
-no obvious symptom beyond "the page is broken" (any script that calls a function the missing file
-was supposed to define throws and silently kills the rest of that script's execution) — this
-exact gap shipped once (i18n.js, fixed in commit `d02e255`) before being caught.
-
-**`services/frontend/logos/` is the exception: it is copied as a whole directory**, so adding a club
-crest is a data change, not a Dockerfile edit. Put crests there for clubs with no Wikimedia artwork and
-point `seed.sql`'s `logo_url` at `/logos/<file>.png`. **Do not hotlink social-media CDNs** — those URLs
-are signed and expire, the CDN may refuse hotlinks, and (the one that actually bit, on F.C. Kiryat Yam)
-tracker blockers drop `*.fbcdn.net` in the browser, so the crest is invisible to many visitors while
-`curl` fetches it happily. That class of bug is undetectable server-side.
-
-### Helm chart (`charts/voteball/`)
-
-```bash
-helm lint charts/voteball
-helm template voteball charts/voteball --namespace devops-app   # renders without a live cluster
-```
-
-**The migration Job is a `post-install,pre-upgrade` hook, and that split is deliberate.** As
-`pre-install` it cannot work at all: pre-install hooks run before every normal chart resource, so the
-ServiceAccount, ConfigMap and ExternalSecret it needs do not exist yet, and it fails with
-`serviceaccount "backend" not found` after burning `activeDeadlineSeconds`. A fresh install has nothing
-to order (the schema is built from nothing and `init_db` is idempotent); an upgrade does, and by then
-every dependency exists. Its pod is labelled **`app: migrate`, never `app: backend`** — the backend
-Service selects that label and would route live HTTP to a one-shot script — and `migrate` is listed in
-the `allow-app-egress` NetworkPolicy so it can still reach RDS through the default-deny.
-
-**Alert rules must carry `release: kube-prometheus-stack`.** Without that label the PrometheusRule is
-created, looks correct in `kubectl get prometheusrules`, and is silently never evaluated. Only write
-rules against metrics this cluster actually exposes (kube-state-metrics): RDS, ALB and ACM figures are
-CloudWatch-only and nothing scrapes them into Prometheus, so such rules could never fire — worse than no
-rule, because the coverage looks complete.
-
-ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml`), so **changes reach the
-cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
-note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` now fails with
-`conflict with "argocd-controller"` on server-side-apply field ownership. Upgrades go through git.
+- **Adding any new source file (backend, worker, or frontend) requires updating that service's
+  `Dockerfile` `COPY` line.** A file on disk but missing from `COPY` is absent from the image with
+  **no build error** — it surfaces as a runtime `ImportError` or a 404.
+- **ArgoCD owns the chart release**, so changes reach the cluster by committing to `master`, not by
+  running `helm upgrade` by hand — a manual upgrade now fails on server-side-apply field ownership.
 
 ### Doc claims that drift (check these before trusting them)
 
 Two audit passes on 2026-07-26 found seven stale claims; every one was mechanically checkable.
 
-- **The API surface table in this file** vs `grep -oE "@app\.route\('[^']+'" services/backend/app.py`
-  — 10 routes (the whole clubs/leagues admin block) were undocumented until that audit.
+- **The API surface table** (now `.claude/skills/voteball-api/SKILL.md`) vs
+  `grep -oE "@app\.route\('[^']+'" services/backend/app.py` — 10 routes (the whole clubs/leagues
+  admin block) were undocumented until that audit.
 - `docs/deploy.md`'s numbered steps vs `grep -E '^\s*step "' scripts/deploy.sh`.
 - The sync-managed field list vs the `managed` dict in `scripts/sync-values-from-tf.sh` — count it,
   don't recall it (three different counts have been asserted; **ten** is correct).
@@ -624,12 +480,7 @@ Two audit passes on 2026-07-26 found seven stale claims; every one was mechanica
 
 ## Gitignored / generated files
 
-Gitignored — either real secrets or machine-specific/generated output:
-`terraform/voteball.tfvars`, `terraform/terraform.tfstate*`, and the Jenkins stack's equivalents
-(`terraform/jenkins/jenkins.tfvars`, `terraform/jenkins/terraform.tfstate*`, `terraform/jenkins/.terraform/`
-— the existing rules are anchored to the stack root and do **not** match the subdirectory, so they had to
-be listed separately)
-(the `*` glob matters — Terraform writes *timestamped* backups like `terraform.tfstate.1784477786.backup`
-that a bare `.backup` pattern misses), `*.tfplan`/`tfplan`, `*.pem`, `*.pdf` (course reference material),
-`.remember/`, `.claude/settings.local.json`, and `EXPLAINER.md`/`PROJECT-QA.md` (personal notes).
+See `.gitignore` — it is the list, and each rule carries its own reason as a comment (why the
+`terraform/` blanket rule is forbidden, why `terraform.tfstate*` needs the glob, why the Jenkins
+stack's equivalents had to be listed separately). Read it there rather than duplicating it here.
 
