@@ -10,9 +10,11 @@ the full security design see [`docs/security.md`](docs/security.md).)
 - **In Kubernetes** (`devops-app` namespace, chart `charts/voteball`): 3 Deployments — **frontend**
   (nginx, static site + `/api` proxy), **backend** (Flask/gunicorn API), **worker** (batch rollup poller)
   — plus their Services, an **Ingress→ALB**, ConfigMap, an ESO **ExternalSecret**, 4 ServiceAccounts,
-  NetworkPolicies, HPA, PDBs, a nightly **backup CronJob**, a **pre-upgrade schema-migration Job** (so
-  schema work runs once per release rather than every replica racing on startup), and a
-  **PrometheusRule** carrying the operational alerts.
+  NetworkPolicies, an HPA on the backend, PDBs, a nightly **backup CronJob**, a
+  **`post-install,pre-upgrade` schema-migration Job** (so schema work runs once per release rather than
+  every replica racing on startup — `post-install` rather than `pre-install` because pre-install hooks
+  run before the ServiceAccount and ConfigMap it needs exist), and a **PrometheusRule** carrying the
+  operational alerts.
 - **Outside Kubernetes (AWS, via `terraform/`):** the EKS cluster + Spot node group, a dedicated VPC
   (public/private/DB subnets, NAT), **RDS** Postgres (7-day PITR), **ECR**, **ACM** cert, **AWS WAF** in
   front of the ALB, **S3**, **SNS**, **Secrets Manager**, and the platform add-ons (AWS Load Balancer Controller, External Secrets Operator, Cluster
@@ -89,11 +91,13 @@ rationale is in
 [`docs/design/2026-07-20-jenkins-migration-design.md`](docs/design/2026-07-20-jenkins-migration-design.md).
 
 Honest notes: four empty commits (`9bed4f1`, `1b16a45`, `a76fbb3`, `09827ca`) sit on `master` from
-debugging the webhook — history was not rewritten, because this repo never force-pushes. And three things
-are **deliberately deferred**: Jenkins Configuration as Code (the server is configured by the documented
-runbook, not a file), SSM Session Manager access, and build-failure notifications — Jenkins sends no
-email without SMTP, so verification means checking the Jenkins UI or ArgoCD's state rather than assuming
-success.
+debugging the webhook — history was not rewritten, because this repo never force-pushes. **Jenkins
+Configuration as Code was deferred at this point and shipped on 2026-07-21** — the server now
+configures itself at boot from `terraform/jenkins/casc/`, as described under Architecture above, and
+the hand-run setup runbook is no longer the source of truth. Two things remain **deliberately
+deferred**: SSM Session Manager access (SSH tunnel on port 22 instead), and build-failure
+notifications — Jenkins sends no email without SMTP, so verification means checking the Jenkins UI or
+ArgoCD's state rather than assuming success.
 
 ## How to verify
 
