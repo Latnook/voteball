@@ -224,8 +224,11 @@ button { font-family: inherit; }
   color: var(--accent);
 }
 
+/* wrap: the language pills and icon toggles are a fixed-width row that overflowed the viewport
+   (and forced a horizontal scroll on the whole page) once a phone's font-size setting grew them. */
 .toggles {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
@@ -747,6 +750,13 @@ select, input[type="text"], input[type="url"], input[type="password"] {
 @media (max-width: 480px) {
   .topbar { flex-direction: column; align-items: flex-start; }
   .standings-name .logo { width: 1.8rem; height: 1.8rem; }
+  /* Pin the card grid to two columns instead of leaving it to auto-fill. Two 150px tracks plus the
+     gap need ~350px of viewport, so a 320px phone -- or any phone whose browser font-size setting
+     inflates the rem-based page padding and gap -- silently drops to one card per row. minmax(0, 1fr)
+     rather than 1fr so a long club name can't push its column past half the row. */
+  .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .pick-card { padding: 0.7rem 0.4rem; font-size: 0.8rem; }
+  .pick-card .logo { width: 3rem; height: 3rem; }
 }
 
 /* ---------- Fan Politics ---------- */
