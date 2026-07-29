@@ -95,8 +95,11 @@ anyone who can push can change the live site without touching AWS at all.
 - GitHub → Settings → *Applications* → revoke the GitHub CLI's authorisation.
 - Repo → Settings → **Deploy keys** → the Jenkins key stays (it lives on the build host, not the
   laptop) — but check nothing unexpected is listed.
-- Turn on branch protection for `master` if it isn't already. This is the control that would have made
-  step 2 optional.
+- **If you reach for branch protection on `master`, configure it carefully.** It is a genuine
+  production control here, but this repo has no PR workflow and **Jenkins pushes straight to `master`**
+  (`git push origin HEAD:master`, the tag bump). A naive "require pull requests" rule breaks the
+  pipeline at its last stage *and* locks you out of your own direct pushes. If you want it, allow the
+  deploy key as an exception — or skip it and rely on step 1 plus the deploy-key audit above.
 
 ### 3. Assume the SSH key to the build host is compromised
 
@@ -255,14 +258,16 @@ A short list, in descending order of what it would cost you not to have done.
 2. **Put the Jenkins SSH private key in your password manager.** The single unrecoverable item.
 3. **Add MFA to the admin IAM user**, and stop using a long-lived access key where you can. A key that
    has existed unrotated for months is exactly the one worth rotating on a schedule.
-3. **Back up `terraform/voteball.tfvars`** to the password manager. Reconstructible, but knowing the
+4. **Back up `terraform/voteball.tfvars`** to the password manager. Reconstructible, but knowing the
    database password without a live cluster is the difference between a calm rebuild and a tense one.
-4. **Turn on branch protection for `master`.** ArgoCD deploys from it, so it is a production control,
-   not a code-review nicety.
 5. **Back up your personal notes** (`EXPLAINER.md`, `PROJECT-QA.md`) somewhere — they are the only
    truly single-copy documents in the project, and they are the ones you spent the most time on.
 6. **Keep `admin_cidr` current.** When your ISP changes your IP, SSH to the build host starts timing
    out; fixing that under pressure, on a new machine, is a bad time to discover it.
+
+*(Branch protection on `master` used to sit on this list. It is deliberately not here any more: with
+no PR workflow and Jenkins pushing the tag bump directly to `master`, the naive form of it breaks CI.
+See the note in the first hour above if you do want it.)*
 
 ---
 
