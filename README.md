@@ -116,10 +116,13 @@ ArgoCD. Then confirm the SNS subscription email AWS sends you, and open `https:/
 
 ### Notes for forkers
 
-- **Never hand-edit the `FILLED-BY-SYNC` values in `charts/voteball/values.yaml`.** The database
-  endpoint, certificate ARN, WAF ACL ARN, registry, bucket and IAM roles — ten fields — are all
+- **Never hand-edit the ten sync-managed values in `charts/voteball/values.yaml`.** The database
+  endpoint, certificate ARN, WAF ACL ARN, registry, image tag, bucket and IAM roles are all
   regenerated whenever the stack is rebuilt; `./scripts/sync-values-from-tf.sh` writes them, and
-  `--check` fails if they drift.
+  `--check` fails if they drift. Note the committed file holds **real, live values, not
+  placeholders** — only the header comment says `FILLED-BY-SYNC`. It has to: ArgoCD deploys what is
+  on `master`, not what is on your disk, so bootstrapping it against placeholders puts every pod in
+  `ImagePullBackOff`. A forker replaces them by running the sync script, not by editing the file.
 - **Terraform state is in S3, not on your laptop.** `./scripts/bootstrap-tf-backend.sh` creates the
   bucket and writes the gitignored `backend.hcl` that points at it, so `terraform init` needs
   `-backend-config=backend.hcl` (`deploy.sh` does this for you). Never delete that bucket: it belongs to
@@ -142,7 +145,12 @@ ArgoCD. Then confirm the SNS subscription email AWS sends you, and open `https:/
   outright, so the image is invisible to many visitors while `curl` fetches it happily.
 - **Empty results page?** A fresh deploy has no votes. `./scripts/seed-demo-votes.py 500 https://<your
   app_domain>` posts demo ballots through the public API so the dashboard has something to show (the
-  screenshots above were made this way). The worker computes the rollups within ~30s.
+  screenshots above were made this way). **It will stop after 5 ballots unless you raise the cap
+  first** — the backend allows `MAX_VOTES_PER_IP` (default 5) ballots per address per 24h and returns
+  `429` after that, and WAF separately rate-limits `/api/vote`. Raise `MAX_VOTES_PER_IP` in the
+  ConfigMap for the seeding run and put it back afterwards. Results then refresh in about a second:
+  the backend sends `NOTIFY votes_changed` inside the vote transaction and the worker is listening
+  (the 30s poll is only a backstop for missed notifications).
 
 ### Running it locally, without AWS
 
@@ -152,11 +160,14 @@ bootstrap a fresh RDS instance gets:
 ```bash
 docker network create vb-net
 docker run -d --name vb-db --network vb-net -e POSTGRES_PASSWORD=demo postgres:17
-docker build -t voteball-backend services/backend && docker build -t voteball-frontend services/frontend
+docker build -t voteball-backend  services/backend
+docker build -t voteball-frontend services/frontend
+docker build -t voteball-worker   services/worker     # needed by the rollup step below
 
 docker run -d --name vb-backend --network vb-net --network-alias backend \
   -e DB_HOST=vb-db -e DB_PASS=demo -e DB_SSLMODE=disable \
   -e ADMIN_USERNAME=admin -e ADMIN_SESSION_SECRET=dev \
+  -e MAX_VOTES_PER_IP=100000 \
   -e ADMIN_PASSWORD_HASH="$(python3 -c 'from werkzeug.security import generate_password_hash as g; print(g("demo123"))')" \
   voteball-backend
 docker run -d --name vb-web --network vb-net -p 8080:8080 voteball-frontend
@@ -168,6 +179,10 @@ docker run --rm --network vb-net -e DB_HOST=vb-db -e DB_PASS=demo \
 ```
 
 Then open <http://localhost:8080>. The backend creates its own schema and seed data on first start.
+
+`MAX_VOTES_PER_IP=100000` above is only there so the demo seeder can post 500 ballots — every request
+comes from one address, and the real default of 5 would stop it after five. Never set that in a
+deployment; it is the ballot-stuffing defence.
 
 ## Documentation
 
