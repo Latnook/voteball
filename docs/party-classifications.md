@@ -56,40 +56,76 @@ bounds; `test_migration.py` asserts it.
 party that has stated no position must be NULL. This is why proving that a party still hasn't
 published a platform is a real finding rather than a failed lookup.
 
-### `economic`
+Each table below lists **what the number means** and **every party that actually sits there**, across
+both tables. `[p]` marks a `previous_parties` row, `[u]` an `upcoming_parties` row; a party with no
+marker sits at that value in **both**. Bands with no party are shown as *(none)* — an empty band is
+information, not an omission.
 
-Negative is left, positive is right. Anchors as actually used:
+> **Verify this section rather than trusting it** — it is the part most likely to drift:
+> ```bash
+> grep -A40 'AS v(name_he, bloc, economic, security, religiosity, sector, tags)' \
+>   services/backend/seed.sql
+> ```
+> When the tables here and `seed.sql` disagree, **`seed.sql` is right.**
 
-| | party | why it sits there |
+### `economic` — how much the state should do
+
+Negative is left (more state), positive is right (less state).
+
+| | meaning | parties |
 |---|---|---|
-| **+2** | ישראל ביתנו | shrinks the state — privatize Ashdod Port and Haifa Airport, end child allowances from the fifth child |
-| **+1** | ישר, ביחד, המפלגה הכלכלית, אל הדגל, המילואימניקים, הליכוד | liberalizing *fused with* real state expansion (trust-busting, subsidies, targeted spending) |
-| **0** | כחול לבן, הציונות הדתית, עוצמה יהודית, רע"ם | no economic doctrine, or a genuinely balanced one |
-| **−2** | הדמוקרטים, בל"ד, ש"ס, יהדות התורה | social-democratic |
-| **−3** | חד"ש-תע"ל | self-defined communist |
+| **+3** | Libertarian: shrink the state as a matter of principle, not just policy | זהות `[u]` |
+| **+2** | Privatizing: actually withdraws the state — sell Ashdod Port and Haifa Airport, end child allowances from the fifth child | ישראל ביתנו |
+| **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים `[u]`, המחנה הממלכתי `[p]` |
+| **0** | No economic doctrine, or a genuinely balanced one | כחול לבן `[u]`, הציונות הדתית, עוצמה יהודית `[u]`, רע"ם, יש עתיד `[p]` |
+| **−1** | *(none)* | — |
+| **−2** | Social-democratic | הדמוקרטים `[u]`, בל"ד, ש"ס, יהדות התורה, העבודה `[p]`, מרצ `[p]` |
+| **−3** | Self-defined communist | חד"ש-תע"ל |
 
-The +1 band is crowded on purpose. A programme that liberalizes trade while *coercively*
-restructuring markets is not +2; +2 requires actually withdrawing the state.
+**The +1 band is crowded on purpose.** A programme that liberalizes trade while *coercively*
+restructuring markets is not +2 — +2 requires actually withdrawing the state, and +3 requires doing
+so as doctrine.
 
-### `security`
+### `security` — the conflict and the territory
 
 Negative is dovish, positive is hawkish.
 
-| | position |
-|---|---|
-| **+3** | annexation / sovereignty over Judea and Samaria |
-| **+2** | no Palestinian state **plus** a territorial claim (sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza) |
-| **+1** | no Palestinian state, but explicitly refusing territorial expansion |
-| **−1** | Zionist two-staters |
-| **−2** | two-state with an end to the occupation |
-| **−3** | full withdrawal, right of return, dismantling settlements |
+| | meaning | parties |
+|---|---|---|
+| **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים `[u]` |
+| **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
+| **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]`, המפלגה הכלכלית `[u]` |
+| **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Two-state with an end to the occupation | חד"ש-תע"ל, רע"ם `[u]` |
+| **−3** | Full withdrawal, right of return, dismantling settlements | בל"ד |
+| **NULL** | No stated position — see the NULL rule above | המחנה הממלכתי `[p]`, רע"ם `[p]`, ביחד `[u]` |
 
-### `religiosity`
+Note **0 and NULL are different claims** here, and this axis is where the distinction is easiest to
+see. המפלגה הכלכלית is `0` because it is an economics party that genuinely takes no conflict
+position; ביחד is `NULL` because its component parties have not published a joint one.
 
-Scoped to **Jewish** religion-and-state. Negative reduces religious authority.
+### `religiosity` — religion and the state
 
-−3 disestablishment / −2 strong separationist / −1 pluralist / 0 status quo / +1 preserve Jewish
-character / +2 expand religious authority / +3 halakhic state.
+Scoped to **Jewish** religion-and-state, so it is NULL for parties the question does not apply to.
+Negative reduces religious authority.
+
+| | meaning | parties |
+|---|---|---|
+| **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]` |
+| **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | ש"ס, יהדות התורה, זהות `[u]` |
+| **+1** | Preserve and modestly strengthen the state's Jewish character | הליכוד |
+| **0** | Status quo — no active religion-state agenda in either direction | אל הדגל `[u]`, המילואימניקים `[u]` |
+| **−1** | Pluralist: soften the monopolies without disestablishing | כחול לבן `[u]`, המחנה הממלכתי `[p]` |
+| **−2** | Strong separationist: civil marriage, break the monopolies, core curriculum as a funding condition | ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
+| **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
+
+**בל"ד is scored, and that is deliberate.** "Arab party" is not itself a reason to leave this axis
+NULL — Balad's own programme demands "complete separation of religion from the state" in as many
+words, so it earns −3 on evidence. רע"ם and חד"ש-תע"ל stay NULL because they have published nothing,
+not because of their sector. This is the per-party evidence test that replaced a blanket category
+exclusion.
 
 ---
 
@@ -706,8 +742,10 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
 - **The Arab bloc may restructure.** Talks about a Joint List are live and unresolved; nothing is
   confirmed. If one forms, the affected rows need **renaming, not reclassifying**, and `seed.sql`
   keeps a commented-out `הרשימה המשותפת` insert for that case.
-- **ביחד's `security`** is the only NULL axis on a Jewish party. It resolves only if the components
-  merge or publish a joint position — or splits into two rows if the list dissolves.
+- **ביחד's `security`** is the only NULL axis on a Jewish *upcoming* party (המחנה הממלכתי carries a
+  NULL security among the frozen previous rows, for the same "no stated position" reason). It
+  resolves only if the components merge or publish a joint position — or splits into two rows if the
+  list dissolves.
 - **רע"ם's `security`** should move to −3 if the stronger platform is verified from the party's own
   source.
 - **המילואימניקים's `bloc`** needs revisiting if the reported merger talks with Gantz complete.
