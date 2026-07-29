@@ -11,7 +11,10 @@ Date: 2026-07-16
 > axes; no claimed/actual column pairs) rather than revisiting them. The Political Lean strip now
 > positions by a user-selected axis rather than by `economic` only, and the detail card lists all
 > three. The party classification table in the Appendix below predates that work and does not carry
-> religiosity values; `seed.sql` is authoritative.
+> religiosity values; `seed.sql` is authoritative — and per-party reasoning now lives in
+> [`../party-classifications.md`](../party-classifications.md), which did not exist when this was
+> written. Decision 16's **"badge"** is also outdated terminology: the strip renders clubs as
+> **dots** (`layoutLeanDots` in `analytics.js`) after a later UI pass.
 
 ## Context
 

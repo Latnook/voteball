@@ -140,7 +140,9 @@ the security row already renders dovish/hawkish. Null renders the existing "no s
 string. No new machinery, no change to `weightedAxisAverage`.
 
 **`i18n.js`** — `analyticsReligiosityLabel`, `analyticsReligiositySeparationist`,
-`analyticsReligiosityClerical`, in both `en` and `he`.
+`analyticsReligiosityClerical`, in both `en` and `he`. *(Russian was added on 2026-07-27, so these
+keys now exist in all three language objects — `t()` returns the key itself on a miss, so a gap would
+render `analyticsReligiosityLabel` on the page rather than throwing.)*
 
 **No Dockerfile change** — both files already exist and are already listed in the frontend
 `COPY` line.
@@ -246,9 +248,10 @@ both languages, including a club with a NULL-axis result.
 
 ## Non-goals
 
-- **No religiosity ranking strip.** The main club ranking stays on `economic`. Adding a second
-  ranked axis needs a toggle, bar re-scaling and more i18n; deferred until there is enough real vote
-  data to know whether the distribution is interesting.
+- ~~**No religiosity ranking strip.**~~ **Superseded — the toggle shipped.** `analytics.js` now
+  defines `LEAN_AXES` (economic, security, religiosity) and the Political Lean strip positions clubs
+  by a **user-selected** axis, defaulting to `economic`, with the detail card listing all three. The
+  work this bullet deferred — the toggle, the re-scaling and the extra i18n keys — was simply done.
 - **No separate "secularist" vs "pluralist" axes** (Decision 5).
 - **No admin editing.** Like `bloc`/`economic`/`security`/`sector`/`tags`, this column is seed-owned;
   the admin party endpoints continue to rename only. This is what makes the unguarded revision block

@@ -375,11 +375,24 @@ on ghcr.io (`TOOMANYREQUESTS`), which would fail builds for reasons unrelated to
 invocation mounts `/var/lib/trivy-cache`, reducing database downloads from four per build to roughly
 one per six hours (Trivy refreshes when its copy is older than that).
 
+> *Measured, once it ran:* the database is **~100 MB**, not the ~50 MB estimated here — the first
+> build downloaded **100.80 MiB** and every later scan reused the cache. The argument is unchanged and
+> the saving is twice what was predicted. See `../cicd.md`.
+
 Scanner *version* updates remain manual by design — the pinned `aquasec/trivy:0.58.1` tag means a new
 upstream release cannot turn a green pipeline red without a deliberate edit. `docs/maintenance.md`
 gains a reminder to bump it.
 
 ### 8. Deferred to a later pass
+
+> **Outcome, for the record — the two items diverged.** **JCasC shipped on 2026-07-21**
+> ([`2026-07-21-jenkins-jcasc-design.md`](2026-07-21-jenkins-jcasc-design.md)): the host now
+> self-configures at every boot from `terraform/jenkins/casc/`, so the UI runbook below is the
+> *historical* procedure and **UI changes are lost on the next restart**. Sequencing it second paid
+> off in a way this bullet did not anticipate — the working configuration became the specification,
+> and a fresh-instance boot test then exposed a real security hole (no webhook signature enforcement)
+> that the already-configured host had masked. **SSM Session Manager is still deferred**; port 22 is
+> still the access path.
 
 - **JCasC (Jenkins Configuration as Code).** This pass configures Jenkins through its web UI once —
   unlock, plugins, admin user, job definition, credentials — and records those steps as a numbered
