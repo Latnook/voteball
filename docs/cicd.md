@@ -7,7 +7,9 @@ Actions pipeline on 2026-07-20; the reasoning for every choice below is in
 [`docs/design/2026-07-20-jenkins-migration-design.md`](design/2026-07-20-jenkins-migration-design.md),
 whose gotcha labels **G1–G7** are referenced throughout.
 
-Everything below was verified end-to-end on 2026-07-20 against the live cluster.
+The pipeline below was verified end-to-end on 2026-07-20 against the live cluster; the JCasC
+self-configuration described under "First-time setup" was added and verified on 2026-07-21, including
+a boot from a genuinely fresh instance.
 
 ---
 
@@ -178,8 +180,20 @@ plus `buildDiscarder` (last 20 builds) keeps the 30 GB volume from filling with 
 > **Two settings are NOT in `jenkins.yaml`, on purpose**, because `GitHubPluginConfig` is not
 > data-bound on github plugin 1.47.0 and JCasC aborts the entire boot with
 > `UnknownAttributesException` when asked to set them. `user_data.sh` writes that plugin's XML
-> directly, using the **legacy singular `hookSecretConfig`** — see failure mode 3 below, which this
-> sidesteps rather than merely avoids.
+> directly, and writes **two files** — which is not optional:
+>
+> - **`github-plugin-configuration.xml`** — the file the hook secret is actually read from. It uses
+>   the **plural, populated `hookSecretConfigs` list** with `signatureAlgorithm SHA256`.
+> - **`org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml`** — where `manageHooks: false` is
+>   honoured.
+>
+> ⚠️ **The legacy *singular* `hookSecretConfig` is NOT read on a fresh boot.** It appears to work only
+> on a host that already has the right value in the other file, which is exactly how this shipped
+> once: a throwaway instance built from the config enforced **no webhook signature at all**, accepting
+> unsigned deliveries with `200`. Writing only the second file produces a host that looks configured
+> and validates nothing. Failure mode 3 below concerns an *empty* plural list — the fix is to populate
+> that list, never to fall back to the singular form. Test with **SHA-256**; a SHA-1-only probe fails
+> against a correct config.
 >
 > Steps 3–11 are kept below as the record of what the configuration *is*, and as the fallback if
 > JCasC is ever removed.
@@ -223,6 +237,11 @@ times out — which was verified, and is the intended posture.
 Deliberately **not** Docker Pipeline: that plugin exists for the `docker.build()` DSL, and the
 `Jenkinsfile` shells out to the `docker` CLI instead. Installing it would add a component to patch that
 nothing uses.
+
+> *Superseded:* the authoritative list is now `terraform/jenkins/casc/plugins.txt` — **8 top-level
+> entries** (the five above plus `configuration-as-code`, `job-dsl` and `timestamper`), with
+> dependencies resolved by `jenkins-plugin-cli`. That file also records what is deliberately excluded
+> and why.
 
 **5. Set the global environment variables.** *Manage Jenkins → System → Global properties → Environment
 variables*:
@@ -308,9 +327,17 @@ records a failed delivery and nothing else happens. Start the instance and run a
 
 Two consequences of protecting Jenkins' state are worth knowing before you tear the stack down: the root
 volume is `delete_on_termination = false` and the instance carries
-`lifecycle { ignore_changes = [user_data] }`. Both exist because Jenkins' credentials and job
+`lifecycle { ignore_changes = [user_data, ami] }`. Both exist because Jenkins' credentials and job
 configuration live **only** on that volume. The cost is that destroying the stack leaves an **orphaned
 30 GB volume you must delete by hand**.
+
+**`ami` in that list is load-bearing — do not remove it.** `data.aws_ssm_parameter.al2023` resolves to
+the *newest* Amazon Linux 2023 image, and `ami` forces replacement, so without the ignore a routine
+`terraform apply` would **destroy and rebuild the CI host** on Amazon's release schedule. The preserved
+volume does not save you: the replacement instance does not attach it. Ignoring rather than pinning is
+deliberate — a *new* host still builds from the latest image while an existing one is never churned.
+Patch in place with `sudo dnf update --releasever=latest`; move to a new image only via a deliberate
+`-replace`, which is safe now that JCasC can rebuild the configuration.
 
 ---
 
@@ -323,7 +350,7 @@ the rest are the G1–G7 differences the design predicted.
 |---|---|---|
 | Build reaches the final stage, then the push fails or hangs on a credential prompt | The job's SCM URL is **HTTPS**. `sshagent` only affects SSH remotes, so the deploy key was never offered | Set the SCM URL to `git@github.com:<owner>/<repo>.git` |
 | `error in libcrypto` then `Permission denied (publickey)` | The private key pasted into the Jenkins credentials textarea **lost its trailing newline**, so OpenSSH could not *load* it and offered no key at all. The `Permission denied` line is misleading — GitHub was refusing an anonymous connection | Install the credential programmatically from a file rather than pasting |
-| Webhook "ping" returns 200 but every push returns **400 "No valid signature found"** | `GitHubPluginConfig` (github plugin 1.47.0) has both a legacy singular `hookSecretConfig` and a plural `hookSecretConfigs` list. `getHookSecretConfigs()` prefers the list when present and only falls back to the singular otherwise — so an **empty-but-present** `<hookSecretConfigs/>` beat the fallback, leaving zero secrets configured, and this version requires at least one, rejecting signed and unsigned requests identically | Write the **singular** form in `/var/lib/jenkins/org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml`: `<hookSecretConfig><credentialsId>github-webhook-secret</credentialsId></hookSecretConfig>`, then restart. `setHookSecretConfigs()` via Groovy reports success but does **not** persist |
+| Webhook "ping" returns 200 but every push returns **400 "No valid signature found"** | `GitHubPluginConfig` (github plugin 1.47.0) has both a legacy singular `hookSecretConfig` and a plural `hookSecretConfigs` list. `getHookSecretConfigs()` prefers the list when present and only falls back to the singular otherwise — so an **empty-but-present** `<hookSecretConfigs/>` beat the fallback, leaving zero secrets configured, and this version requires at least one, rejecting signed and unsigned requests identically **Populate the plural list** — do not fall back to the singular form. Write `/var/lib/jenkins/github-plugin-configuration.xml` with a non-empty `<hookSecretConfigs>` containing `<credentialsId>github-webhook-secret</credentialsId>` and `<signatureAlgorithm>SHA256</signatureAlgorithm>`, then restart. ⚠️ The singular `hookSecretConfig` is **not read on a fresh boot** — it only ever appeared to work on a host that already held the value in this file, and relying on it ships a host that enforces **no signature at all**. `setHookSecretConfigs()` via Groovy reports success but does **not** persist. Verify with a **SHA-256** probe: signed → 200, unsigned → 400 |
 | **G2** — Jenkins rebuilds its own tag-bump commit, forever | The Guard stage or `scripts/ci/should-skip-build.sh` was removed. `[skip ci]` does nothing in Jenkins on its own | Restore the Guard stage. See the standing warning in `CLAUDE.md` |
 | **G1** — re-running a build fails with `tag already exists` | ECR tags are `IMMUTABLE` and images are tagged by commit SHA | Already handled by the "Already built?" stage; if it fails, check the instance role still has `ecr:DescribeImages` |
 | A commit you expected to build finishes `NOT_BUILT` immediately, and the site does not change | The commit **message** contains the skip marker anywhere in it — including when merely *writing about* it, which is what a maintainer documenting this pipeline does. The Guard deliberately fails safe toward skipping: a wrong skip costs one manual rebuild, a wrong build costs an unbounded loop | Expected behaviour, not a fault. Re-run with **Build with Parameters → `FORCE_BUILD`**… except that a marker-bearing commit can *never* be built, even with `FORCE_BUILD`, because the Guard runs first and unconditionally. Amend the commit message (write "skip-ci" or "the skip marker" in prose instead) and push again |
