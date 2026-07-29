@@ -60,6 +60,24 @@ per-browser.
      plain `UNIQUE` constraints, drop `name`, and delete the now-dead backfill statements. Not part of
      this plan's scope — tracked as a follow-up once Commit A is confirmed live and a quick
      `SELECT ... WHERE name_en IS NULL OR name_he IS NULL` across all four tables comes back empty.
+
+     > ⚠️ **Commit B was never done, and that is load-bearing.** Verified against the live database on
+     > 2026-07-29: `leagues` still has `name` as `NOT NULL`, while `name_en`, `name_he` and `name_ru`
+     > are all **nullable** — the exact inverse of what this bullet planned. `schema.sql` still
+     > declares `name TEXT NOT NULL UNIQUE` on all four tables.
+     >
+     > Consequences worth understanding before anyone "finishes" it:
+     > - The legacy `name` column is still written by the admin rename routes, which set it to
+     >   `name_he`. That is why `seed.sql`'s leagues block must match on **`name OR name_he`** and
+     >   neither column alone is enough — see the note in `services/backend/CLAUDE.md`, and the
+     >   2026-07-17 drift incident that produced it.
+     > - `name_ru` (added 2026-07-27) is deliberately nullable and optional in the admin API, so the
+     >   "all four tables come back empty" precondition above is now *further* from being met, not
+     >   closer.
+     >
+     > Dropping `name` today would mean rewriting `rename_league`/`rename_club`, the seed matching
+     > logic and the tests that pin it (`test_league_names_survive_name_drift`,
+     > `test_admin_renamed_league_is_not_overwritten`). It is a real piece of work, not a cleanup.
 3. **Every league/club gets both names**, not just the Israeli Premier League. See the Translation
    content section — the full set (World Cup countries, UCL/EPL/La Liga/Serie A/Bundesliga clubs, the
    7 league/competition names, and all Israeli clubs) has been translated and user-reviewed.

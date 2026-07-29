@@ -20,6 +20,15 @@ previous-party CRUD, upcoming-party CRUD, and votes list/delete.
 Admin auth stays exactly as it is: a static shared secret compared against `ADMIN_SECRET`. This page
 is a client for that model, not a replacement for it — no backend auth changes.
 
+> **Superseded the next day.** The shared-secret model described throughout this document was replaced
+> by username/password login before this UI finished shipping — see
+> [`2026-07-13-admin-auth-design.md`](2026-07-13-admin-auth-design.md), written when 10 of this spec's
+> 13 tasks were already done. What actually shipped: `POST /api/admin/login` returns a signed,
+> 12-hour token, sent as `Authorization: Bearer <token>`; there is no `X-Admin-Secret` header and no
+> `ADMIN_SECRET` env var. Everything else here — the tabbed page, the reassignment action, the
+> lazy-loading and the `confirm()` bar — is what is live. Read the gate-related decisions (4, 9) as
+> describing a token rather than a secret.
+
 Parties are not static once seeded — real-world political parties merge and split, especially for
 `upcoming_parties` in the run-up to an election (e.g. a joint list splitting into two independent
 parties, or several small parties merging into one). `previous_parties`/`upcoming_parties` today are

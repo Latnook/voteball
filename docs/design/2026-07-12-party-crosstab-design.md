@@ -100,6 +100,12 @@ cur.execute('''
 
 Runs on the worker's existing ~30s loop alongside the other two rollups — no new scheduling.
 
+> *Since changed:* the worker is now **notification-driven**, not a fixed timer. The backend issues
+> `NOTIFY votes_changed` inside the vote transaction and the worker blocks on `LISTEN`, so rollups
+> refresh in about a second. `WORKER_POLL_INTERVAL` (30s) is now only a backstop for missed
+> notifications, and `WORKER_DEBOUNCE_SECONDS` coalesces bursts. The "no new scheduling" point still
+> holds — this rollup rides whatever triggers `recompute()`.
+
 ## Backend API
 
 No new endpoint. `queries.get_results_by_party(conn, party_type, party_id)` in
