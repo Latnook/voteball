@@ -3,7 +3,7 @@
 `docs/production-readiness.md` covers *"is this robust enough"*. This covers *"will it still work in
 six months"* — the things that rot on their own while nobody touches the code.
 
-Verified against the repo on 2026-07-20.
+Verified against the repo on 2026-07-29.
 
 ---
 
@@ -11,7 +11,7 @@ Verified against the repo on 2026-07-20.
 
 ```
 Standard support ends   2026-12-02
-Runway from 2026-07-20  ~134 days (about 4 months)
+Runway from 2026-07-29  ~126 days (about 4 months)
 ```
 
 After that date the cluster silently moves to **extended support at 5× the control-plane price**
@@ -28,7 +28,7 @@ support. Expect to bump some add-on chart versions with it.
 
 ## Version pins that drift
 
-Nine Helm charts and the EKS add-ons are pinned, all verified on 2026-07-19:
+Eight Helm charts and the EKS add-ons are pinned, all verified on 2026-07-19:
 
 | Chart | Pinned |
 |---|---|
@@ -86,8 +86,14 @@ There is no Dependabot or Renovate config. Python dependencies are exact-pinned
 means they only move when someone moves them.
 
 **Suggested:** add `.github/dependabot.yml` covering `pip` (both services) and `docker`. Grouped weekly
-PRs are enough at this scale — and CI already builds and scans, so a bad bump fails loudly before it
-reaches the cluster.
+PRs are enough at this scale. Dependabot is a GitHub feature independent of the CI system, so moving
+off GitHub Actions did not rule it out.
+
+**But note what would *not* happen automatically.** The Jenkins job is `triggers { githubPush() }` on a
+single-branch Pipeline — it builds `master`, not pull requests. So a Dependabot PR would sit unbuilt
+and unscanned until merged, and a bad bump would fail *after* reaching `master`, not before. Adopting
+Dependabot properly means adding PR builds (multibranch job or the GitHub Branch Source plugin) at the
+same time; otherwise the PRs are a suggestion box, not a gate.
 
 ---
 
@@ -136,8 +142,11 @@ runners, **this is a server you own**, so it ages like one. Nothing here is urge
 
 ## Routine housekeeping
 
-- **RDS snapshots accumulate** — one per teardown (six by the end of 2026-07-20). Only the newest is
-  ever used by `find-latest-snapshot.sh`. Prune to the most recent N.
+- **RDS snapshots accumulate** — one per teardown (**nine** in the account as of 2026-07-29). Only the
+  newest is ever used by `find-latest-snapshot.sh`. Prune to the most recent N. When you do, sort by
+  `SnapshotCreateTime` and **never by the identifier** — the name embeds the *deploy* date, so the
+  newest snapshot can carry the oldest-looking name (`voteball-eks-db-final-20260722065933` was
+  created 2026-07-27).
 - **CloudWatch log groups have no retention policy** — they grow and bill indefinitely. Set 14–30 days.
 - **`values.yaml` churn** — every deploy and every CI build commits to `master`. Harmless, but the
   history is noisy; that is the cost of the GitOps model.
@@ -151,7 +160,7 @@ runners, **this is a server you own**, so it ages like one. Nothing here is urge
 | When | Do |
 |---|---|
 | Each deploy | Watch for the Trivy gate failing on new CVEs |
-| Monthly | Skim Dependabot PRs; prune old RDS snapshots |
+| Monthly | Check for dependency updates **by hand** — nothing raises them for you (see above); prune old RDS snapshots |
 | Quarterly | Bump add-on chart versions; check the EKS support window; update Jenkins core + plugins and the pinned `aquasec/trivy` tag |
 | **Before 2026-12-02** | **Upgrade EKS off 1.34 or start paying 5×** |
 | When torn down | Nothing rots — the cheapest maintenance posture is not running it |

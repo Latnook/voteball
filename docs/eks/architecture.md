@@ -81,7 +81,8 @@ than carry traffic:
 
 - **NetworkPolicy** — default-deny ingress and egress; the backend accepts traffic from the frontend
   only; only `backend`/`worker`/`backup`/`frontend`/`migrate` pods may reach RDS.
-- **HPA** on frontend and backend · **PDB** (`minAvailable`) on both.
+- **HPA** on the backend only (CPU 70%, 2→5 pods). The frontend serves static files and is not
+  CPU-bound, so it stays at a fixed 2 replicas · **PDB** (`minAvailable: 1`) on both.
 
 ---
 

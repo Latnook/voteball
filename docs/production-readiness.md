@@ -1,7 +1,9 @@
 # Production readiness
 
 What separates this deployment from one you could responsibly run for real, ordered by what would
-hurt first. Every "current state" below was verified against the repo on 2026-07-20, not assumed.
+hurt first. Every "current state" below was verified against the repo, not assumed — originally on
+2026-07-20, re-checked 2026-07-26, and again on 2026-07-29 (§3's restore evidence and §8's snapshot
+count come from the 2026-07-27 teardown/rebuild cycle).
 
 This is a **hobby project deliberately built to demo-grade**, and most items here are conscious
 trade-offs rather than oversights — `docs/security.md` lists the security ones with their reasoning.
@@ -113,9 +115,10 @@ rebuild cycle. Turn it on only alongside retiring the destroy/rebuild workflow. 
 
 **The restore path is well tested**, if not by the mechanism this section imagined: every rebuild cycle
 restores from the previous teardown's final snapshot, and the 2026-07-21 rebuild brought the votes and
-seed data back intact. **Re-verified with counted evidence on 2026-07-27** — vote totals recorded
-before teardown (5, distributed across parties 10 ×2, 5, 4, 14), then re-queried on the rebuilt
-cluster and found byte-identical. Captured in `docs/eks/live-cluster-snapshot.md`. That closes the
+seed data back intact. **Re-verified with counted evidence on 2026-07-27** — 5 votes recorded before
+teardown (party 10 with two votes; parties 5, 4 and 14 with one each), then re-queried on the rebuilt
+cluster and found byte-identical. Captured in `docs/eks/live-cluster-snapshot.md`, with the raw
+before/after API responses in `docs/eks/evidence/`. That closes the
 "backups that have never been restored are a hypothesis" item above with a number rather than a claim.
 
 ### ⚠️ The nightly `pg_dump` is NOT teardown insurance
@@ -296,9 +299,10 @@ Until then the compensating practice is explicit: **verification means opening t
 
 ## 8. Operational housekeeping
 
-- **Snapshot retention.** Every teardown leaves a final snapshot; six had accumulated by the end of
-  2026-07-20. Harmless at this size but unbounded. `find-latest-snapshot.sh` only ever needs the
-  newest — prune the rest, keeping N.
+- **Snapshot retention.** Every teardown leaves a final snapshot; **nine** had accumulated by
+  2026-07-29 (six of them by the end of 2026-07-20). Harmless at this size but unbounded.
+  `find-latest-snapshot.sh` only ever needs the newest — prune the rest, keeping N, and sort by
+  `SnapshotCreateTime` rather than by name (see §3).
 - **`seed-demo-votes.py` now trips the rate limit.** It predates the per-address cap and stops after
   5 ballots. Either document raising `MAX_VOTES_PER_IP` temporarily, or have it seed the database
   directly rather than through the API.
