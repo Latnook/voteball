@@ -4,6 +4,11 @@ Status: approved — **implemented and live.** The Knesset OData sync was remove
 tables are admin-managed with `name_en`/`name_he`/`name_ru` display columns.
 Date: 2026-07-12
 
+> **Paths in this document are pre-2026-07-20.** The app source has since moved out of the retired
+> Ansible tree: `ansible-project/roles/backend/files/backend/` is now **`services/backend/`**, and
+> `ansible-project/roles/frontend/files/nginx/` is now **`services/frontend/`**. The filenames are
+> unchanged. Paths are left as written so this stays a record of the change as it was made.
+
 ## Context
 
 Voteball currently sources `previous_parties` from a live sync against the Knesset OData API

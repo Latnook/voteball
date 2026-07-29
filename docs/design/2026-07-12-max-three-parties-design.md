@@ -4,6 +4,11 @@ Status: approved — **implemented and live.** `/api/vote` returns 400 on more t
 `upcoming_party_ids`, and the client blocks it before submitting.
 Date: 2026-07-12
 
+> **Paths in this document are pre-2026-07-20.** The app source has since moved out of the retired
+> Ansible tree: `ansible-project/roles/backend/files/backend/` is now **`services/backend/`**, and
+> `ansible-project/roles/frontend/files/nginx/` is now **`services/frontend/`**. The filenames are
+> unchanged. Paths are left as written so this stays a record of the change as it was made.
+
 ## Context
 
 `/api/vote` accepts `upcoming_party_ids`, an unbounded array, when `upcoming_vote_status=considering`.

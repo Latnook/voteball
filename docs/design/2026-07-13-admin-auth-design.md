@@ -4,6 +4,11 @@ Status: approved — **implemented and live.** `POST /api/admin/login` issues a 
 token; the `X-Admin-Secret` shared secret described below is gone.
 Date: 2026-07-13
 
+> **Paths in this document are pre-2026-07-20.** The app source has since moved out of the retired
+> Ansible tree: `ansible-project/roles/backend/files/backend/` is now **`services/backend/`**, and
+> `ansible-project/roles/frontend/files/nginx/` is now **`services/frontend/`**. The filenames are
+> unchanged. Paths are left as written so this stays a record of the change as it was made.
+
 ## Context
 
 The admin UI (spec: `docs/design/2026-07-13-admin-ui-design.md`) is midway through
@@ -264,6 +269,15 @@ No server call — stateless tokens mean there's nothing server-side to invalida
 copy is the entire "log out" operation.
 
 ## Deployment
+
+> **This whole section describes the retired provisioning path.** The three env vars and the auth
+> design above are exactly what shipped and are still live — only *how they get into the container*
+> has changed. There is no ansible-vault and no `secrets.yml` any more (both removed 2026-07-20).
+> Today: `./scripts/seed-eks-secret.sh` writes `ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`/
+> `ADMIN_SESSION_SECRET` into AWS Secrets Manager (`voteball/app-secret`), hashing the password and
+> generating the session secret itself, and External Secrets Operator syncs that into the
+> `app-secret` Kubernetes Secret via IRSA. The helper script below was superseded by that and
+> deleted. See [`../security.md`](../security.md) and [`../deploy.md`](../deploy.md).
 
 ### `ansible-project/inventories/voteball/group_vars/all/secrets.yml.example`
 

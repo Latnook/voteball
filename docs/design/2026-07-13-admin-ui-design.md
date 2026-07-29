@@ -4,6 +4,11 @@ Status: approved — **implemented and live** as `services/frontend/admin.html`/
 It has since grown a fourth tab (Teams) from the 2026-07-15 clubs/leagues CRUD pass.
 Date: 2026-07-13
 
+> **Paths in this document are pre-2026-07-20.** The app source has since moved out of the retired
+> Ansible tree: `ansible-project/roles/backend/files/backend/` is now **`services/backend/`**, and
+> `ansible-project/roles/frontend/files/nginx/` is now **`services/frontend/`**. The filenames are
+> unchanged. Paths are left as written so this stays a record of the change as it was made.
+
 ## Context
 
 The `/api/admin/...` endpoints (previous/upcoming party CRUD, votes list/delete) currently have no UI
