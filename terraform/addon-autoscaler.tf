@@ -23,17 +23,28 @@ module "autoscaler_irsa" {
 # before any cluster_version bump -- and note it declares no `kubeVersion`, so the usual chart
 # compatibility check cannot catch a mismatch. Read the app column instead:
 #   helm search repo autoscaler/cluster-autoscaler --versions
-# KNOWN GAP (2026-07-30): chart 9.59.0 is the newest and still pins app v1.35.0, one minor behind the
-# 1.36 cluster. Note upstream HAS released CA 1.36 -- only the chart lags -- so an `image.tag`
-# override would close it today. Deliberately NOT done: it swaps a tested mismatch (CA N-1, which the
-# project supports and which runs clean here) for an untested one (a 1.36 binary in a chart whose
-# ClusterRole was generated for 1.35). Full reasoning in docs/maintenance.md. Bump the chart instead.
+# VERSION SKEW (2026-07-30): chart 9.59.0 is the newest and pins app v1.35.0, but the cluster is on
+# 1.36. Upstream HAS released CA 1.36 -- only the chart lags -- so image.tag below overrides the
+# chart's default to match the cluster exactly.
+#
+# The risk this carries: the chart's ClusterRole and container args are generated for 1.35, so if
+# 1.36 watches a resource the chart does not grant, CA fails `forbidden` at startup. That surfaces
+# immediately in `kubectl logs -n kube-system -l app.kubernetes.io/name=aws-cluster-autoscaler`.
+# REVERT = delete the image.tag set block below and re-apply; the chart default (v1.35.0) is a
+# supported N-1 configuration. DROP the override once a chart ships app 1.36 -- keeping it after that
+# pins the image against a chart that would otherwise manage it.
 resource "helm_release" "cluster_autoscaler" {
   name       = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "9.59.0" # verified latest via `helm search repo` on 2026-07-30 (app v1.35.0)
+  version    = "9.59.0" # verified latest via `helm search repo` on 2026-07-30 (chart default app v1.35.0)
   namespace  = "kube-system"
+
+  # Override the chart's v1.35.0 default to match the 1.36 cluster. See the VERSION SKEW note above.
+  set {
+    name  = "image.tag"
+    value = "v1.36.1"
+  }
 
   set {
     name  = "autoDiscovery.clusterName"

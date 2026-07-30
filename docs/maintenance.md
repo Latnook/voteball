@@ -28,17 +28,23 @@ Runway from 2026-07-30  ~368 days (about 12 months)
 > (`registry.k8s.io/autoscaling/cluster-autoscaler:v1.36.1` returns a manifest). What has not shipped
 > is a **chart** packaging them — 9.59.0 is the newest and still pins `tag: v1.35.0`.
 >
-> So bumping today is possible via an `image.tag` override, and it was **considered and rejected**:
-> CA 1.35 against a 1.36 API server is the ordinary N-1 configuration the project supports, and it
-> runs clean here (0 error-level log lines over 500). CA 1.36 inside a chart whose ClusterRole and
-> args were generated for 1.35 is validated by nobody — if 1.36 watches a resource the chart does not
-> grant, CA fails `forbidden`. That trades a tested mismatch for an untested one, to fix a gap with
-> no symptom. CA also only moves nodes across a 2–4 range, so the worst case is a `Pending` pod or an
-> idle node, never a request-path outage.
+> **Resolved on 2026-07-30 by an `image.tag` override** — `addon-autoscaler.tf` pins
+> `image.tag = v1.36.1` over the chart's v1.35.0 default, so the binary matches the cluster while the
+> chart catches up.
 >
-> **Bump when the chart catches up** — `helm search repo autoscaler/cluster-autoscaler --versions`
-> and read the *app* column, not the chart column. Chart and app versions are independent axes here:
-> 9.54.0 through 9.59.0 are six chart releases all shipping the same app v1.35.0.
+> The risk taken was that the chart's ClusterRole and args are generated for 1.35, so a 1.36 binary
+> could fail `forbidden` on any resource the chart does not grant. **It did not**: verified after
+> apply with 0 `forbidden`/RBAC matches, 0 error-level lines, caches populated, and normal
+> node evaluation (`Calculating unneeded nodes`, both nodes correctly skipped at min size).
+> `client-go` is now v0.36.2 against a 1.36 API server — an exact match.
+>
+> **Revert** = delete the `image.tag` set block and re-apply; the chart default v1.35.0 is a supported
+> N-1 configuration and ran clean here too. **Drop the override** once a chart ships app 1.36 —
+> keeping it past that point pins the image against a chart that would otherwise manage it.
+>
+> Check with `helm search repo autoscaler/cluster-autoscaler --versions` and read the *app* column,
+> not the chart column. They are independent axes: 9.54.0 through 9.59.0 are six chart releases all
+> shipping the same app v1.35.0.
 
 After that date the cluster silently moves to **extended support at 5× the control-plane price**
 (≈$0.10/hr → ≈$0.60/hr, roughly **+$360/month** for a cluster that otherwise costs ~$200/month total).
