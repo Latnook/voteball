@@ -80,8 +80,15 @@ pipeline {
                   '(Manage Jenkins > System > Global properties). See docs/cicd.md.')
           }
           env.TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-          env.AWS_ACCOUNT_ID = sh(script: 'aws sts get-caller-identity --query Account --output text',
-                                  returnStdout: true).trim()
+          // container('awscli') is REQUIRED, not decoration. Steps outside a container() block run
+          // in the `jnlp` container, which has git but no AWS CLI -- on the retired EC2 host `aws`
+          // was simply on PATH, so this line needed no wrapper there. Without it the build dies with
+          // "aws: not found" and exit code 127, which reads like a broken image rather than a step
+          // running in the wrong container. Same reason for 'Already built?' below.
+          container('awscli') {
+            env.AWS_ACCOUNT_ID = sh(script: 'aws sts get-caller-identity --query Account --output text',
+                                    returnStdout: true).trim()
+          }
           env.ECR_REGISTRY = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com"
           env.ECR_REPOS = "${env.CLUSTER_NAME}-backend ${env.CLUSTER_NAME}-worker " +
                           "${env.CLUSTER_NAME}-nginx ${env.CLUSTER_NAME}-backup"
@@ -95,7 +102,11 @@ pipeline {
     stage('Already built?') {
       steps {
         script {
-          env.ALREADY_BUILT = sh(script: 'scripts/ci/images-exist.sh', returnStdout: true).trim()
+          // container('awscli'): images-exist.sh shells out to `aws ecr describe-images`. The script
+          // itself is untouched -- only where it runs had to change. See 'Resolve tag and account'.
+          container('awscli') {
+            env.ALREADY_BUILT = sh(script: 'scripts/ci/images-exist.sh', returnStdout: true).trim()
+          }
           if (env.ALREADY_BUILT == 'present') {
             echo "All images for ${env.TAG} are already in ECR -- skipping build, scan and push."
           }
