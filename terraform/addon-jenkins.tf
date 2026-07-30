@@ -220,6 +220,25 @@ resource "helm_release" "jenkins" {
       ingress = { enabled = false }
 
       serviceType = "ClusterIP"
+
+      # Opt OUT of the CloudWatch observability addon's auto-instrumentation. That addon annotates
+      # every pod in the cluster for all four runtimes and injects an agent per language; on this pod
+      # it attached an OpenTelemetry JAVA agent to the JVM.
+      #
+      # It is pure cost here. Jenkins is a build controller, not a request/response service, so
+      # Application Signals has no latency or error rate worth tracing -- and the agent cannot reach
+      # its collector anyway: the collector is in-cluster on 10.0.0.0/16, which the NetworkPolicy in
+      # charts/jenkins-support deliberately excludes so CI cannot reach RDS or the app.
+      #
+      # What it DID cost: ~10s of extra JVM startup on a controller designed to restart in seconds,
+      # and a continuous stream of okhttp export stack traces that buried the real
+      # ConfiguratorConflictException while debugging the first deploy.
+      podAnnotations = {
+        "instrumentation.opentelemetry.io/inject-java"   = "false"
+        "instrumentation.opentelemetry.io/inject-python" = "false"
+        "instrumentation.opentelemetry.io/inject-nodejs" = "false"
+        "instrumentation.opentelemetry.io/inject-dotnet" = "false"
+      }
     }
 
     serviceAccount = {
