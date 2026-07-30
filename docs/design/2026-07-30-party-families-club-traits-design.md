@@ -68,9 +68,10 @@ is a claim about party fragmentation, not about fans.
    discipline are indistinguishable in the data and mean different things.
 
 5. **Every family assignment carries how it was established.** `[R]` — from the voting record;
-   `[P]` — from the platform only, because no usable record exists. Nine parties have a record; nine
-   do not (ישר founded 2025-09-16, זהות extra-parliamentary, נעם has only run inside another slate,
-   and so on). This is not bookkeeping: הליכוד's platform says free market and its record says VAT to
+   `[P]` — from the platform only, because no usable record exists. Ten parties have a record; eight
+   do not (ישר founded 2025-09-16, זהות extra-parliamentary, and so on). **נעם counts as `[R]`
+   despite never having run alone**: Avi Maoz sits as its sole MK, so the party has a voting record
+   even though it has no independent electoral one. This is not bookkeeping: הליכוד's platform says free market and its record says VAT to
    18%, brackets frozen, no ministry closed and NIS 5.4bn in coalition funds. Classifying from a
    platform alone gets Likud wrong, and that same error is currently uncatchable for ישר — the
    party polling first. The grade also gives new parties an automatic revisit trigger: their first
@@ -103,7 +104,7 @@ is a claim about party fragmentation, not about fans.
 
 ## The vocabulary
 
-Five dimensions, thirteen values. Counts are parties carrying the value, of 18.
+Five dimensions, fourteen values. Counts are parties carrying the value, of 18.
 
 ### 1. Conscription
 
@@ -113,8 +114,23 @@ here and disagree on nearly everything else.
 | value | n | parties |
 |---|---|---|
 | `universal-conscription` | 5 | ישר, ביחד, ישראל ביתנו, אל הדגל, המילואימניקים |
-| `conscription-exemption` | 3 | הליכוד, ש"ס, נעם |
+| `conscription-exemption` | 2 | הליכוד, ש"ס |
 | `conscription-split` | 2 | הציונות הדתית, יהדות התורה |
+| `conscription-by-incentive` | 2 | עוצמה יהודית, נעם |
+
+`conscription-by-incentive` — supports Haredi enlistment, rejects coercion and sanctions, favours
+benefits for those who serve — is a third position, not a soft version of either neighbour, and both
+holders are graded from the record. Ben Gvir: *"I believe in full military service. We are the most
+combat-oriented party in the Knesset but do not believe in coercion… there should be benefits given to
+service members"*, and he has pushed Haredi enlistment into the police. Avi Maoz: *"מי שלומד צריך
+להמשיך ללמוד, ומי שאינו לומד, צריך להתגייס"* — whoever studies continues, whoever does not must
+enlist. He voted **for** the law freezing deserters' arrests while calling it *"רק פלסטר לקראת
+הבחירות"*, a sticking plaster before the election.
+
+**הליכוד stays `conscription-exemption` despite real internal dissent** (Edelstein — removed from the
+chair of the Foreign Affairs and Defense Committee over it — and Illouz). That is individual dissent
+punished by the leadership, which is evidence *of* a party line; יהדות התורה's split is between two
+constituent parties voting opposite ways, which is the absence of one.
 
 ### 2. The judiciary
 
@@ -162,7 +178,7 @@ participation.
 
 ## Seed data (`seed.sql`)
 
-18 rows, 1–3 families each. `[R]` from voting record, `[P]` from platform only.
+18 rows, 1–3 families each, 10 graded `[R]` from the voting record and 8 `[P]` from platform only.
 
 | party | families | grade |
 |---|---|---|
@@ -173,7 +189,7 @@ participation.
 | כחול לבן | `constitutional-reform` | **[P]** |
 | ישראל ביתנו | `universal-conscription`, `constitutional-reform`, `market-liberal` | **[R]** |
 | הציונות הדתית | `judicial-restraint`, `conscription-split`, `sectoral-budgeting` | **[R]** |
-| עוצמה יהודית | `judicial-restraint`, `not-economy-focused` | **[R]** |
+| עוצמה יהודית | `judicial-restraint`, `not-economy-focused`, `conscription-by-incentive` | **[R]** |
 | חד"ש-תע"ל | `arab-representation`, `jewish-arab-partnership`, `welfare-state` | **[R]** |
 | בל"ד | `arab-representation`, `welfare-state` | **[R]** |
 | רע"ם | `arab-representation` | **[R]** |
@@ -183,7 +199,7 @@ participation.
 | אל הדגל | `universal-conscription`, `reservist-movement`, `constitutional-reform` | **[P]** |
 | המילואימניקים | `universal-conscription`, `reservist-movement`, `constitutional-reform` | **[P]** |
 | זהות | `judicial-restraint`, `market-liberal`, `cost-of-living` | **[P]** |
-| נעם | `judicial-restraint`, `conscription-exemption`, `not-economy-focused` | **[P]** |
+| נעם | `judicial-restraint`, `conscription-by-incentive`, `not-economy-focused` | **[R]** |
 
 Coverage is deliberately uneven (1–3, not a fixed 3–5). רע"ם, כחול לבן and המפלגה הכלכלית carry one
 family each because they genuinely hold no position on the other dimensions; forcing a value would
@@ -255,7 +271,7 @@ seed-owned and safe, but the surrounding party names are not, and the page rule 
 
 ## i18n (`i18n.js`)
 
-13 family values × 3 languages = 39 new `DICTIONARY` keys, plus tab and column labels. All three
+14 family values × 3 languages = 42 new `DICTIONARY` keys, plus tab and column labels. All three
 language objects must carry identical key sets and identical `{placeholder}` tokens; `t()` returns the
 key itself on a miss, so a gap renders `familyWelfareState` on the page rather than throwing.
 
@@ -292,15 +308,54 @@ Frontend has no automated suite (per `services/frontend/CLAUDE.md`); verify by d
   *checked*, not how it is produced.
 - **No change to `tags`, the three axes, `bloc`, or `sector`.**
 
+## Resolved during drafting
+
+All three questions this design opened were closed by research rather than left hanging.
+
+- **עוצמה יהודית and נעם both hold a conscription position**, and it is the same one — hence
+  `conscription-by-incentive`. Neither is indifferent to the issue; both reject *coercion* rather than
+  service. Otzma has also left coalition discipline and votes independently, which is why its
+  positions read from the record rather than from the coalition's.
+- **נעם is `[R]`, not `[P]`** — Avi Maoz's votes are the party's record.
+- **The "funding organisations opposed to the IDF and the State" claim is partly refuted**, and the
+  correction matters more than a confirmation would have. **העדה החרדית — the most stridently
+  anti-Zionist Haredi body — refuses state funding on principle**; its members are barred from
+  accepting government money or welfare benefits, so it is not a recipient. The defensible case is
+  **הפלג הירושלמי**, which organises militant anti-conscription protest while seeking Education
+  Ministry funding, and which *asserted support for the state and for Zionism in that appeal* in order
+  to qualify. So the sharp version of the claim — the state funds its declared enemies — does not
+  hold; the accurate version is narrower and stranger.
+
+The 2026 budget figures behind `sectoral-budgeting`: total **NIS 850.6bn**, Haredi allocations raised
+from **NIS 4.1bn to 5.17bn**, plus a late-night **NIS 800m** amendment for ultra-Orthodox programmes
+and institutions including yeshivas, with funding reaching schools that refuse to teach the core
+curriculum. Main budget **62–55**.
+
+**One caveat that must not be dropped:** the yeshiva-funding amendment itself passed **107–4**. Voting
+for yeshiva funding therefore does *not* distinguish these four parties — most of the opposition did
+too. `sectoral-budgeting` rests on the *mechanism* (coalition funds as the negotiated price of budget
+support, Smotrich's settlement transfers, the NIS 1bn+ increase) and not on that vote. Anyone
+revisiting this family should not cite the 107–4 amendment as evidence for it.
+
 ## Open questions
 
-- **עוצמה יהודית** carries only `judicial-restraint` and `not-economy-focused`. Its vote *against* the
-  2025 budget is suggestive but no clean conscription position was sourced.
-- **נעם**'s `conscription-exemption` is inferred from its religious-law programme, not from a vote —
-  it has never run alone. Flagged `[P]` accordingly.
-- **Whether some `sectoral-budgeting` recipients are organisations opposed to the IDF and the state**
-  is asserted in public debate but was not sourced to budget lines in this pass. Following the
-  convention used for רע"ם, the weaker well-evidenced claim is recorded and the stronger one is not.
+Two **existing axis values** look contradicted by the record surfaced while drafting this. Both are on
+הליכוד, both are outside this design's scope, and neither is changed here — rescoring an axis is a
+`seed.sql` data change with its own review, not a side effect of adding a column.
+
+- **`economic = +1`.** That band is defined as "liberalizing *fused with* real state expansion". The
+  record supplies the expansion (coalition funds, no ministry closed, deficit past 5%) but the
+  liberalizing half is what `claims-economically-liberal` exists to say is *rhetoric* — VAT 17→18%,
+  National Insurance and health taxes raised, income tax brackets frozen. If the liberalizing half is
+  only claimed, the revealed position may sit at `0` or below rather than `+1`.
+- **`religiosity = +1`** ("preserve and modestly strengthen the state's Jewish character") against a
+  record of restoring yeshiva funding the High Court had ruled unlawful, NIS 5.17bn to Haredi
+  institutions, and legislating to reset the status of students who ignored call-up orders. That
+  reads as the **`+2`** definition almost verbatim — "expand religious authority and state religious
+  funding … *without* a halakhic-state programme" — which is where ש"ס and יהדות התורה sit. The
+  religiosity design's own Decision 5 holds that the axis records **direction** while tags record
+  **motive**; `instrumentally-clerical` is a motive claim, so on that rule it should not be holding
+  the number down.
 
 ## Verification outcome
 
