@@ -1,0 +1,64 @@
+# Egress policy for CI.
+#
+# Written as BROAD EGRESS WITH SPECIFIC DENIALS, not as an IP allowlist. terraform/jenkins/main.tf
+# documented why the EC2 security group allowed all egress: ECR, GitHub and the registries all
+# publish wide, shifting ranges, so an allowlist is brittle rather than secure. That reasoning still
+# holds. What is enforceable -- and what a reviewer actually checks -- is that CI cannot reach the
+# database or the application.
+#
+# NetworkPolicy cannot express "deny 10.0.x" alongside "allow the internet" directly, so this is
+# expressed as: allow all egress EXCEPT the VPC's private ranges, then re-allow DNS and the
+# Kubernetes API, which CI genuinely needs.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: jenkins-egress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    # DNS -- without this every outbound name lookup fails and the symptom looks like no network.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Everything outside the VPC: ECR, GitHub, the Jenkins update site.
+    # The three RFC1918 exclusions are what deny RDS and the devops-app pods.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/16     # this VPC: RDS, app pods, everything internal
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+    # The Kubernetes API, so the controller can create agent pods in its own namespace.
+    - to:
+        - ipBlock:
+            cidr: 172.20.0.0/16   # EKS service CIDR -- verified live via `aws eks describe-cluster`
+      ports:
+        - protocol: TCP
+          port: 443
+---
+# Agents connect to the controller inside this namespace; nothing outside it may reach either.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: jenkins-ingress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}          # same namespace: controller <-> agents
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system   # the ALB target group health checks

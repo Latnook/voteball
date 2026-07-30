@@ -1,0 +1,6 @@
+# All values are supplied by terraform/addon-jenkins.tf. Defaults here exist so `helm template` runs
+# offline for scripts/tests/test-jenkins-chart.sh.
+awsRegion: il-central-1
+secretName: voteball/jenkins
+refreshInterval: 1h
+appNamespace: devops-app
