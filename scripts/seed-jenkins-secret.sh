@@ -38,11 +38,43 @@ SECRET_ID="${CLUSTER}/jenkins"
 # So: skip regenerating (and re-printing secrets) when the secret already holds a real deploy key.
 # Set FORCE_ROTATE=1 to rotate on purpose (e.g. a leaked key) -- that path must never be removed,
 # since re-running deploy.sh is not a substitute for it once this guard is in place.
+#
+# THE GUARD MUST FAIL CLOSED. There are three states, and only two of them are safe to act on:
+#   holds a deploy key  -> skip, leave credentials intact
+#   absent / placeholder -> seed
+#   CANNOT BE DETERMINED -> stop, and say why
+# An earlier version collapsed the third into the second by swallowing every error with `|| true`.
+# Expired credentials, throttling, a network blip or a missing jq all produced an empty result, the
+# guard fell through, and the script generated a fresh deploy key over a perfectly good one -- turning
+# a transient AWS hiccup into "CI stops building until a human re-pastes two secrets into GitHub".
+# Guessing is the one thing this guard must never do.
 if [ "${FORCE_ROTATE:-0}" != "1" ]; then
+  command -v jq >/dev/null 2>&1 || {
+    echo "ERROR: jq is required to check whether ${SECRET_ID} is already seeded." >&2
+    echo "Refusing to continue: without it this script cannot tell an unseeded secret from an" >&2
+    echo "unreadable one, and guessing wrong overwrites the live GitHub deploy key." >&2
+    exit 1
+  }
+
+  set +e
   EXISTING="$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$REGION" \
-              --query SecretString --output text 2>/dev/null || true)"
-  if [ -n "$EXISTING" ] && printf '%s' "$EXISTING" \
-       | jq -e '(.GITHUB_DEPLOY_KEY // "") | length > 0' >/dev/null 2>&1; then
+              --query SecretString --output text 2>&1)"
+  aws_rc=$?
+  set -e
+
+  if [ "$aws_rc" -ne 0 ]; then
+    # ResourceNotFoundException is a legitimate "not seeded yet" -- every other failure is unknown
+    # state, and unknown state must not fall through to the branch that rotates credentials.
+    if printf '%s' "$EXISTING" | grep -q 'ResourceNotFoundException'; then
+      echo "${SECRET_ID} does not exist yet -- seeding."
+    else
+      echo "ERROR: could not read ${SECRET_ID} to decide whether it is already seeded." >&2
+      printf '%s\n' "$EXISTING" >&2
+      echo "Refusing to continue: seeding now would overwrite the live deploy key if one exists." >&2
+      echo "Fix the access problem, or pass FORCE_ROTATE=1 if you genuinely intend to rotate." >&2
+      exit 1
+    fi
+  elif printf '%s' "$EXISTING" | jq -e '(.GITHUB_DEPLOY_KEY // "") | length > 0' >/dev/null 2>&1; then
     echo "${SECRET_ID} already holds a deploy key and webhook secret -- leaving credentials intact."
     echo "(Set FORCE_ROTATE=1 to rotate deliberately, e.g. after a leaked key.)"
     exit 0
