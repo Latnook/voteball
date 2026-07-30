@@ -128,9 +128,21 @@ resource "helm_release" "jenkins_support" {
     # This VPC's real CIDR, not the 10.0.0.0/16 default baked into the chart for offline `helm
     # template` runs -- see charts/jenkins-support/values.yaml.
     { name = "vpcCidr", value = module.vpc.vpc_cidr_block },
+    # charts/jenkins-support/values.yaml states every value comes from Terraform; its own default
+    # exists only so `helm template` runs offline. Passing this explicitly, rather than relying on
+    # that default, keeps it from drifting silently if the chart's default ever changes.
+    { name = "refreshInterval", value = "1h" },
   ]
 
   depends_on = [helm_release.external_secrets]
+}
+
+# Single source of truth for the Jenkins chart version. It MUST drive both the URL and the
+# `version` argument: while `chart` is a URL, Helm ignores `version` entirely, so two literals
+# could drift apart silently -- a maintainer bumping only `version` would get a successful apply
+# that installs nothing new.
+locals {
+  jenkins_chart_version = "5.9.45" # verified via `helm search repo jenkins/jenkins --versions` on 2026-07-30 (app v2.568.1)
 }
 
 # ---- Jenkins itself ----
@@ -144,8 +156,18 @@ resource "helm_release" "jenkins" {
   # silently resolves to that unrelated directory instead of the Helm repo, and fails trying to
   # parse a provider cache file inside it as a chart. Pointing straight at the release archive
   # sidesteps the stat call, because the string is never a valid local path.
-  chart     = "https://github.com/jenkinsci/helm-charts/releases/download/jenkins-5.9.45/jenkins-5.9.45.tgz"
-  version   = "5.9.45" # verified via `helm search repo jenkins/jenkins --versions` on 2026-07-30
+  #
+  # This URL form exists ONLY because of that collision. Task 10 of the migration plan deletes
+  # terraform/jenkins/ (the retired EC2 stack); once that lands, this should revert to
+  # repository = "https://charts.jenkins.io" + chart = "jenkins", which is the form every other
+  # helm_release in this stack uses.
+  #
+  # NOTE: `version` below does NOTHING here -- Helm's ResolveChartVersion short-circuits on an
+  # absolute chart URL and never looks at `version` at all. It is kept only so `terraform plan`
+  # shows the intended version in the resource diff; the URL itself is what actually pins the
+  # chart, which is why both interpolate the same local.
+  chart     = "https://github.com/jenkinsci/helm-charts/releases/download/jenkins-${local.jenkins_chart_version}/jenkins-${local.jenkins_chart_version}.tgz"
+  version   = local.jenkins_chart_version
   namespace = kubernetes_namespace.ci.metadata[0].name
 
   values = [yamlencode({
