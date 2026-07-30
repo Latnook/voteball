@@ -1647,15 +1647,35 @@ exactly what the JCasC decision avoids, and an inline block silently overrides t
         anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }
       } }
       steps {
+        // Two containers: quay.io/skopeo/stable carries no AWS CLI, so the ECR login password is
+        // obtained in `awscli` and handed over through the shared /images volume.
+        container('awscli') {
+          sh '''
+            set -eu
+            # umask BEFORE the redirect -- the file must never exist world-readable, even briefly.
+            umask 077
+            aws ecr get-login-password --region "$AWS_REGION" > /images/ecr-password
+          '''
+        }
         container('skopeo') {
           // skopeo copies the EXACT file Trivy scanned. Nothing is rebuilt between scan and push,
           // so the scanned artifact and the pushed artifact are provably the same bytes -- a
           // stronger guarantee than the docker build/scan/push flow this replaces.
           sh '''
             set -eu
-            PW="$(aws ecr get-login-password --region "$AWS_REGION")"
+            # A trap, NOT a cleanup line at the bottom of the block. Under `set -eu` a failed copy
+            # exits immediately and never reaches a trailing rm, leaving a live 12-hour registry
+            # credential in a volume four containers share -- on exactly the failure path where it
+            # matters most.
+            trap 'rm -f /images/ecr-password /images/auth.json' EXIT
+
+            # --authfile rather than --dest-creds: the latter puts the password in skopeo's argv,
+            # readable via ps inside this container. Same pattern as scripts/mirror-trivy-db.sh.
+            skopeo login --username AWS --password-stdin \
+              --authfile /images/auth.json "$ECR_REGISTRY" < /images/ecr-password
+
             for svc in backend worker nginx backup; do
-              skopeo copy --dest-creds "AWS:$PW" \
+              skopeo copy --dest-authfile /images/auth.json \
                 oci-archive:/images/$svc.tar \
                 docker://"$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG"
             done
@@ -1664,9 +1684,6 @@ exactly what the JCasC decision avoids, and an inline block silently overrides t
       }
     }
 ```
-
-> If the `skopeo` image lacks the AWS CLI, obtain the password in the `awscli` container and pass it
-> between stages via a file under `/images`, which both containers mount.
 
 - [ ] **Step 6: Delete the `post { always }` Docker prune**
 
