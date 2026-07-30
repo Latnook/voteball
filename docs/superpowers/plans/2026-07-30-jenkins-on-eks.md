@@ -41,6 +41,11 @@ references below (§2, §5a, §7…) point at it.
   point; never run one unattended.
 - **Chart versions drift.** Verify with `helm search repo <chart> --versions` before pinning, and
   record the verification date in a comment, matching the existing `addon-*.tf` style.
+- **Prefer JCasC and the Jenkins CLI over the UI and over Helm values** (operator instruction,
+  2026-07-30). Anything describing Jenkins' configuration or its build environment belongs in
+  `ci/jenkins/jenkins.yaml`; anything operational goes through `scripts/jenkins-cli.sh`. The UI is
+  not reachable from outside the cluster by design, and a UI change would not survive a restart of a
+  controller whose home directory is an `emptyDir`.
 - **Cluster is EKS 1.36** (`v1.36.2-eks`, two `t3.large` Spot nodes, `il-central-1a`/`1b`).
 
 ---
@@ -256,7 +261,9 @@ Replace the "Versions are DELIBERATELY unpinned" paragraph's trade-off sentence 
    configures the plugin properly. **Keep the `crumbIssuer` comment** — still accurate.
 5. Change `unclassified.location.url` to `https://jenkins.${APP_DOMAIN}/`. It must be the real
    external URL now, because the GitHub plugin builds the webhook URL from it.
-6. Add the Kubernetes cloud (the controller-side half; the pod template stays in the `Jenkinsfile`):
+6. Add the Kubernetes cloud **and the build pod template**. Per the operator's instruction
+   (2026-07-30), as much as possible is declared in JCasC rather than split across the `Jenkinsfile`:
+   the `Jenkinsfile` names a label, JCasC owns what that label provisions.
 
 ```yaml
   clouds:
@@ -272,7 +279,83 @@ Replace the "Versions are DELIBERATELY unpinned" paragraph's trade-off sentence 
         retentionTimeout: 5
         connectTimeout: 60
         readTimeout: 60
+        templates:
+          - name: "voteball-build"
+            label: "voteball-build"
+            # RAW POD YAML, NOT the typed `containers:` list. That list cannot express
+            # securityContext, so the typed form would silently drop
+            # allowPrivilegeEscalation:false and capabilities.drop:[ALL] from every container and
+            # still start successfully -- the failure mode being avoided is a green build on
+            # containers that quietly hold more privilege than the cluster's own rules allow.
+            yamlMergeStrategy: override
+            yaml: |
+              apiVersion: v1
+              kind: Pod
+              spec:
+                serviceAccountName: jenkins
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                containers:
+                  # Rootless BuildKit. NOT privileged, and not Docker-in-Docker: a privileged pod
+                  # would be the weakest point in a cluster whose every app container sets
+                  # allowPrivilegeEscalation:false. --oci-worker-no-process-sandbox is required
+                  # for rootless operation on Kubernetes.
+                  - name: buildkit
+                    image: moby/buildkit:v0.19.0-rootless
+                    args:
+                      - --addr=unix:///run/user/1000/buildkit/buildkitd.sock
+                      - --oci-worker-no-process-sandbox
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                      runAsUser: 1000
+                      seccompProfile: { type: Unconfined }
+                    resources:
+                      requests: { cpu: "500m", memory: "2Gi" }
+                      limits: { memory: "3Gi" }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                  - name: trivy
+                    image: aquasec/trivy:0.58.1
+                    command: ["cat"]
+                    tty: true
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                  - name: skopeo
+                    image: quay.io/skopeo/stable:v1.17.0
+                    command: ["cat"]
+                    tty: true
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                  - name: awscli
+                    image: amazon/aws-cli:2.22.0
+                    command: ["cat"]
+                    tty: true
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                volumes:
+                  # Tarballs only. There is deliberately NO cache volume -- both caches live in
+                  # ECR, because a pod volume dies with the build and would be a cache in name
+                  # only. See the design doc section 5a.
+                  - name: images
+                    emptyDir: { sizeLimit: 8Gi }
 ```
+
+> **Cost of putting this here rather than in the `Jenkinsfile`:** bumping a build tool's version (say
+> Trivy) is now a `terraform apply` rather than a git commit ArgoCD picks up, because the
+> `helm_release` reads this file with `file(...)`. That is a slower loop, accepted deliberately so
+> that everything describing the CI *environment* lives in one declarative place. The `Jenkinsfile`
+> still owns the build *steps*.
 
 - [ ] **Step 4: Write `ci/jenkins/Dockerfile`**
 
@@ -1164,6 +1247,78 @@ kubectl get secret jenkins-secret -n ci -o jsonpath='{.data}' | tr ',' '\n' | cu
 Expected: pod `Running`; JCasC applied without error; the Secret carries all five keys. An empty
 Secret means ESO cannot read Secrets Manager — re-check Task 4 Step 6.
 
+- [ ] **Step 8b: Add a Jenkins CLI wrapper**
+
+Per the operator's instruction (2026-07-30), operations go through the Jenkins CLI rather than the
+UI wherever possible — the UI is not reachable from outside the cluster by design, and CLI commands
+are scriptable and reviewable in a way clicking is not.
+
+`scripts/jenkins-cli.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Run a Jenkins CLI command against the in-cluster controller.
+#
+#   ./scripts/jenkins-cli.sh who-am-i
+#   ./scripts/jenkins-cli.sh list-jobs
+#   ./scripts/jenkins-cli.sh build voteball -f -v
+#   ./scripts/jenkins-cli.sh reload-jcasc-configuration
+#
+# Runs INSIDE the controller pod, so no port-forward and no ingress exposure is needed -- the UI is
+# deliberately unreachable from the internet (see the design doc section 8).
+#
+# Auth: the admin user and an API token. JENKINS_ADMIN_USER comes from the same Secret JCasC reads.
+# Export JENKINS_API_TOKEN first; mint one with:
+#   ./scripts/jenkins-cli.sh --mint-token
+set -euo pipefail
+
+NS=ci
+POD="$(kubectl get pod -n "$NS" -l app.kubernetes.io/component=jenkins-controller \
+        -o jsonpath='{.items[0].metadata.name}')"
+
+if [[ "${1:-}" == "--mint-token" ]]; then
+  echo "Open a shell and create a token in the UI via port-forward, or use the Groovy console:" >&2
+  echo "  kubectl port-forward -n $NS svc/jenkins 8080:8080" >&2
+  exit 0
+fi
+
+USER="$(kubectl get secret jenkins-secret -n "$NS" -o jsonpath='{.data.JENKINS_ADMIN_USER}' | base64 -d)"
+: "${JENKINS_API_TOKEN:?export JENKINS_API_TOKEN first (see --mint-token)}"
+
+kubectl exec -i -n "$NS" "$POD" -c jenkins -- \
+  java -jar /var/jenkins_home/war/WEB-INF/lib/cli-*.jar \
+    -s http://localhost:8080/ \
+    -auth "$USER:$JENKINS_API_TOKEN" \
+    "$@"
+```
+
+```bash
+chmod +x scripts/jenkins-cli.sh
+```
+
+- [ ] **Step 8c: Verify the CLI reaches the controller and JCasC loaded**
+
+```bash
+./scripts/jenkins-cli.sh who-am-i
+./scripts/jenkins-cli.sh list-jobs
+```
+Expected: the admin username with `Authenticated`, and `voteball` in the job list. If the CLI jar
+path does not match, find it with
+`kubectl exec -n ci "$POD" -c jenkins -- sh -c 'ls /var/jenkins_home/war/WEB-INF/lib/cli-*.jar'`
+and correct the script.
+
+- [ ] **Step 8d: Confirm the pod template arrived from JCasC**
+
+```bash
+./scripts/jenkins-cli.sh groovy = <<'EOF'
+def cloud = jenkins.model.Jenkins.instance.clouds.find { it.name == 'kubernetes' }
+cloud.templates.each { t -> println "${t.label}  containers=${t.containers*.name}" }
+EOF
+```
+Expected: one line naming label `voteball-build`. **An empty list means the `templates:` block did
+not parse** — builds would then hang forever waiting for an agent that is never provisioned, with no
+error in the controller log.
+
 - [ ] **Step 9: Prove the permission boundary**
 
 ```bash
@@ -1339,71 +1494,18 @@ Expected: root `404` (no ALB rule reaches it); webhook a Jenkins response (`200`
 - Produces: a pipeline whose four unchanged stages (Guard, Resolve, Already built?, Bump image tag)
   behave identically.
 
-- [ ] **Step 1: Replace `agent any` with the pod template**
+- [ ] **Step 1: Replace `agent any` with the JCasC-provided label**
 
 ```groovy
-  agent {
-    kubernetes {
-      yaml '''
-        apiVersion: v1
-        kind: Pod
-        spec:
-          serviceAccountName: jenkins
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
-          containers:
-            # Rootless BuildKit. NOT privileged, and not Docker-in-Docker: a privileged pod would be
-            # the weakest point in a cluster whose every app container sets
-            # allowPrivilegeEscalation:false. --oci-worker-no-process-sandbox is required for
-            # rootless operation on Kubernetes.
-            - name: buildkit
-              image: moby/buildkit:v0.19.0-rootless
-              args: ["--addr=unix:///run/user/1000/buildkit/buildkitd.sock", "--oci-worker-no-process-sandbox"]
-              securityContext:
-                allowPrivilegeEscalation: false
-                capabilities: { drop: ["ALL"] }
-                runAsUser: 1000
-                seccompProfile: { type: Unconfined }
-              resources:
-                requests: { cpu: "500m", memory: "2Gi" }
-                limits: { memory: "3Gi" }
-              volumeMounts:
-                - { name: images, mountPath: /images }
-            - name: trivy
-              image: aquasec/trivy:0.58.1
-              command: ["cat"]
-              tty: true
-              securityContext:
-                allowPrivilegeEscalation: false
-                capabilities: { drop: ["ALL"] }
-              volumeMounts:
-                - { name: images, mountPath: /images }
-            - name: skopeo
-              image: quay.io/skopeo/stable:v1.17.0
-              command: ["cat"]
-              tty: true
-              securityContext:
-                allowPrivilegeEscalation: false
-                capabilities: { drop: ["ALL"] }
-              volumeMounts:
-                - { name: images, mountPath: /images }
-            - name: awscli
-              image: amazon/aws-cli:2.22.0
-              command: ["cat"]
-              tty: true
-              securityContext:
-                allowPrivilegeEscalation: false
-                capabilities: { drop: ["ALL"] }
-          volumes:
-            # Tarballs only. There is deliberately NO cache volume -- both caches live in ECR,
-            # because a pod volume dies with the build and would be a cache in name only.
-            - name: images
-              emptyDir: { sizeLimit: 8Gi }
-        '''
-    }
-  }
+  // The pod that provides these containers is declared in ci/jenkins/jenkins.yaml, under the
+  // kubernetes cloud's `templates:` block -- NOT here. The CI environment is configuration and
+  // belongs in JCasC; the Jenkinsfile owns build steps. Changing which containers exist, or their
+  // versions, means editing that file and re-applying Terraform.
+  agent { label 'voteball-build' }
 ```
+
+**Do not** inline a `kubernetes { yaml ... }` block here. Two sources of truth for the agent pod is
+exactly what the JCasC decision avoids, and an inline block silently overrides the template.
 
 - [ ] **Step 2: Replace the `environment` block**
 
@@ -1584,10 +1686,11 @@ kubectl get pods -n ci -w
 ```
 Expected: an agent pod appears, runs, and is deleted.
 
-- [ ] **Step 3: Verify the full chain**
+- [ ] **Step 3: Verify the full chain — via the CLI, not the UI**
 
 ```bash
-kubectl logs -n ci -l jenkins=slave --tail=200 --prefix
+./scripts/jenkins-cli.sh console voteball          # last build's full log
+./scripts/jenkins-cli.sh list-builds voteball      # numbers, results, timings
 git log --oneline -3 origin/master
 ```
 Expected: guard → resolve → build → Trivy → push → tag bump, and a new
@@ -1601,9 +1704,14 @@ Expected: `Synced`, and pods running the new tag.
 
 - [ ] **Step 4: Prove the loop guard still works (G2)**
 
-The tag-bump commit in Step 3 fires the webhook. Confirm the resulting build is **`NOT_BUILT`** with
-description `Skipped: tag-bump commit ([skip ci])`. **If it builds, stop everything** — that is the
-unbounded billable loop the Guard exists to prevent.
+The tag-bump commit in Step 3 fires the webhook. Confirm via the CLI:
+
+```bash
+./scripts/jenkins-cli.sh list-builds voteball | head -3
+```
+Expected: the newest build is **`NOT_BUILT`**, and `console` shows description
+`Skipped: tag-bump commit ([skip ci])`. **If it built, stop everything** — that is the unbounded
+billable loop the Guard exists to prevent.
 
 - [ ] **Step 5: Prove the cache works**
 
