@@ -292,3 +292,25 @@ def test_seeded_party_lineage(conn):
     predecessors = {r[0] for r in cur.fetchall()}
     assert predecessors == {'Labor', 'Meretz'}
     cur.close()
+
+
+def test_family_columns_round_trip_and_constrain(conn):
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE upcoming_parties
+        SET families = ARRAY['welfare-state', 'cost-of-living'], family_evidence = 'record'
+        WHERE name_he = 'ש"ס'
+    """)
+    cur.execute("SELECT families, family_evidence FROM upcoming_parties WHERE name_he = 'ש\"ס'")
+    families, evidence = cur.fetchone()
+    assert families == ['welfare-state', 'cost-of-living']
+    assert evidence == 'record'
+
+    cur.execute("UPDATE upcoming_parties SET family_evidence = 'platform' WHERE name_he = 'ש\"ס'")
+    cur.execute("SELECT family_evidence FROM upcoming_parties WHERE name_he = 'ש\"ס'")
+    assert cur.fetchone()[0] == 'platform'
+
+    with pytest.raises(psycopg2.errors.CheckViolation):
+        cur.execute("UPDATE upcoming_parties SET family_evidence = 'vibes' WHERE name_he = 'ש\"ס'")
+    conn.rollback()
+    cur.close()
