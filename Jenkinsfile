@@ -270,6 +270,16 @@ pipeline {
         sshagent(credentials: ['voteball-deploy-key']) {     // G4
           sh '''
             set -eu
+            # The JCasC-pinned host key covers the git PLUGIN's checkout, not raw ssh. This stage
+            # shells out to git, which uses plain OpenSSH in the jnlp container -- and that has no
+            # known_hosts, so the push fails with "Host key verification failed" AFTER the image has
+            # been built, scanned and pushed. Same message as a plugin-side failure, different
+            # mechanism, different fix. The key is the one pinned in ci/jenkins/jenkins.yaml; its
+            # fingerprint matches GitHub's published SHA256_ED25519.
+            mkdir -p ~/.ssh && chmod 700 ~/.ssh
+            printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts
+
             sed -i -E "s/^  tag: \\".*\\"/  tag: \\"$TAG\\"/" charts/voteball/values.yaml
 
             git config user.name  "jenkins"
