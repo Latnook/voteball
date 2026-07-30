@@ -112,10 +112,19 @@ step "2/11  Creating ECR repositories (targeted apply)"
 # image does not exist yet and the full apply fails several minutes in, mid-bill. A targeted apply
 # of just the repositories first means step 4 has somewhere to push the Jenkins image into before
 # step 5 needs it there.
+#
+# data.aws_caller_identity.current is targeted too, and it is NOT optional. `-target` prunes the
+# graph to the targeted subgraph and writes ONLY the root outputs inside it. `ecr_registry` is built
+# from that data source rather than from any ECR resource (outputs.tf), so without this target it is
+# silently absent from state -- while `ecr_repository_urls` survives, making the step look like it
+# worked. Steps 3 and 4 both resolve the registry with `tf_out ecr_registry`, so the run then dies
+# on the NEXT step with "Terraform output 'ecr_registry' is unavailable" (hit on the 2026-07-31
+# rebuild, the first destroy/deploy cycle after this targeted apply was introduced).
 ./scripts/bootstrap-tf-backend.sh
 terraform -chdir=terraform init -upgrade -backend-config=backend.hcl
 terraform -chdir=terraform apply -var-file="$TFVARS" \
-  -target=aws_ecr_repository.app -target=aws_ecr_repository.cache "${APPROVE[@]}"
+  -target=aws_ecr_repository.app -target=aws_ecr_repository.cache \
+  -target=data.aws_caller_identity.current "${APPROVE[@]}"
 
 step "3/11  Mirroring the Trivy vulnerability database into ECR"
 # Must exist before any image is scanned. Not otherwise on any automated path (see
