@@ -66,6 +66,17 @@ Only app-source changes rebuild images: the build/scan/push stages carry
 `FORCE_BUILD` is a checkbox on "Build with Parameters". It exists because a **manually** triggered build
 has an empty changeset and would otherwise skip every stage, making "Build Now" a silent no-op.
 
+> **Do not trigger a build immediately after pushing, and then read the result as yours.** The push
+> fires the webhook, so a queue item already exists — and `disableConcurrentBuilds()` makes Jenkins
+> **coalesce queue items for the same job**. The webhook's item carries DEFAULT parameters, so it
+> absorbs your parameterised request and the build records `FORCE_BUILD=false`.
+>
+> Nothing is broken when this happens; you are looking at a different build than the one you asked
+> for. On 2026-07-31 this cost an hour of chasing a non-existent API bug. Check `build.xml`'s cause
+> before concluding anything: `GitHubPushCause` is the webhook's, `UserIdCause` is yours. If you want
+> a parameterised build, either wait for the webhook's build to finish or trigger on a commit you did
+> not just push.
+
 **Behaviour change from the EC2 host:** webhooks used to be silently discarded while the host was
 stopped, so a push only built if someone had started the machine first. In the cluster Jenkins is
 always running, so **every push to `master` touching `services/` now builds.** That is correct CI
