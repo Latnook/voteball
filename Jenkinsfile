@@ -163,12 +163,18 @@ pipeline {
                 nginx) ctx=services/frontend ;;
                 *)     ctx=services/$svc ;;
               esac
+              # image-manifest=true,oci-mediatypes=true on the cache export is REQUIRED for ECR.
+              # BuildKit's default cache manifest is an OCI image INDEX, which ECR rejects with a bare
+              # "400 Bad Request" on the manifest PUT -- after the whole image has already been built
+              # and every layer uploaded, so it reads like a transient registry fault rather than an
+              # unsupported media type. These two options make it export a plain image manifest, which
+              # ECR accepts.
               buildctl build \
                 --frontend dockerfile.v0 \
                 --local context="$ctx" --local dockerfile="$ctx" \
                 --output type=oci,dest=/images/$svc.tar,name="$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG" \
                 --import-cache type=registry,ref="$CACHE:$svc" \
-                --export-cache type=registry,ref="$CACHE:$svc",mode=max
+                --export-cache type=registry,ref="$CACHE:$svc",mode=max,image-manifest=true,oci-mediatypes=true
             done
           '''
         }
