@@ -1,5 +1,9 @@
 # Routes live here; SQL lives in queries.py; db.py holds only connection setup and schema bootstrap.
 # Every route must guarantee conn.close() on all exit paths -- see results() and vote() for the shape.
+#
+# This image is built by the in-cluster Jenkins (namespace `ci`) with rootless BuildKit, scanned as an
+# OCI tarball by Trivy, and pushed with skopeo -- there is no Docker daemon anywhere in the pipeline.
+# See docs/cicd.md and docs/design/2026-07-30-jenkins-on-eks-design.md.
 import hashlib
 import uuid
 import os
