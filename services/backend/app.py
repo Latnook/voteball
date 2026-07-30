@@ -4,6 +4,8 @@
 # This image is built by the in-cluster Jenkins (namespace `ci`) with rootless BuildKit, scanned as an
 # OCI tarball by Trivy, and pushed with skopeo -- there is no Docker daemon anywhere in the pipeline.
 # See docs/cicd.md and docs/design/2026-07-30-jenkins-on-eks-design.md.
+#
+# Verified end to end on 2026-07-31: webhook -> guard -> BuildKit -> Trivy -> skopeo -> tag bump.
 import hashlib
 import uuid
 import os
