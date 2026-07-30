@@ -163,6 +163,12 @@ pipeline {
                 nginx) ctx=services/frontend ;;
                 *)     ctx=services/$svc ;;
               esac
+              # type=docker, NOT type=oci. Both write a tar, but `type=oci` writes an OCI ARCHIVE
+              # (index.json + blobs/), and Trivy's --input reads a docker-archive or an OCI
+              # DIRECTORY -- not an OCI archive. With type=oci the whole build succeeds and Trivy
+              # then fails with "manifest.json not found in tar", which reads like a corrupt image.
+              # skopeo reads docker-archive: just as happily, so nothing downstream loses out.
+              #
               # image-manifest=true,oci-mediatypes=true on the cache export is REQUIRED for ECR.
               # BuildKit's default cache manifest is an OCI image INDEX, which ECR rejects with a bare
               # "400 Bad Request" on the manifest PUT -- after the whole image has already been built
@@ -172,7 +178,7 @@ pipeline {
               buildctl build \
                 --frontend dockerfile.v0 \
                 --local context="$ctx" --local dockerfile="$ctx" \
-                --output type=oci,dest=/images/$svc.tar,name="$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG" \
+                --output type=docker,dest=/images/$svc.tar,name="$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG" \
                 --import-cache type=registry,ref="$CACHE:$svc" \
                 --export-cache type=registry,ref="$CACHE:$svc",mode=max,image-manifest=true,oci-mediatypes=true
             done
@@ -242,7 +248,7 @@ pipeline {
 
             for svc in backend worker nginx backup; do
               skopeo copy --dest-authfile /images/auth.json \
-                oci-archive:/images/$svc.tar \
+                docker-archive:/images/$svc.tar \
                 docker://"$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG"
             done
           '''
