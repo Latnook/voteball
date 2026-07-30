@@ -5,7 +5,8 @@
 # OCI tarball by Trivy, and pushed with skopeo -- there is no Docker daemon anywhere in the pipeline.
 # See docs/cicd.md and docs/design/2026-07-30-jenkins-on-eks-design.md.
 #
-# Verified end to end on 2026-07-31: webhook -> guard -> BuildKit -> Trivy -> skopeo -> tag bump.
+# Verified end to end on 2026-07-31: webhook -> guard -> BuildKit -> Trivy -> skopeo -> tag
+# bump -> ArgoCD -> running pods.
 import hashlib
 import uuid
 import os
