@@ -48,12 +48,14 @@ def get_options(conn):
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4],
             'bloc': r[5], 'economic': r[6], 'security': r[7], 'sector': r[8],
             'religiosity': r[9], 'tags': r[10] or [],
+            'families': [], 'family_evidence': None,
         }
         for r in cur.fetchall()
     ]
 
     cur.execute(
-        'SELECT id, name_en, name_he, name_ru, logo_url, bloc, economic, security, sector, religiosity, tags '
+        'SELECT id, name_en, name_he, name_ru, logo_url, bloc, economic, security, sector, religiosity, tags, '
+        'families, family_evidence '
         'FROM upcoming_parties ORDER BY name_en'
     )
     upcoming_parties = [
@@ -61,6 +63,7 @@ def get_options(conn):
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4],
             'bloc': r[5], 'economic': r[6], 'security': r[7], 'sector': r[8],
             'religiosity': r[9], 'tags': r[10] or [],
+            'families': r[11] or [], 'family_evidence': r[12],
         }
         for r in cur.fetchall()
     ]
@@ -267,15 +270,29 @@ def get_results_switch(conn, league_id=None, club_id=None):
 
 def get_clubs_breakdown(conn):
     cur = conn.cursor()
+    by_club = {}
+
     cur.execute(
         'SELECT club_id, previous_party_id, SUM(vote_count) FROM rollup_previous '
         'WHERE club_id IS NOT NULL GROUP BY club_id, previous_party_id'
     )
-    by_club = {}
     for club_id, party_id, count in cur.fetchall():
-        by_club.setdefault(club_id, []).append({'party_id': party_id, 'count': count})
+        by_club.setdefault(club_id, {'previous': [], 'upcoming': []})
+        by_club[club_id]['previous'].append({'party_id': party_id, 'count': count})
+
+    cur.execute(
+        'SELECT club_id, upcoming_party_id, SUM(vote_count) FROM rollup_upcoming '
+        'WHERE club_id IS NOT NULL GROUP BY club_id, upcoming_party_id'
+    )
+    for club_id, party_id, count in cur.fetchall():
+        by_club.setdefault(club_id, {'previous': [], 'upcoming': []})
+        by_club[club_id]['upcoming'].append({'party_id': party_id, 'count': count})
+
     cur.close()
-    return [{'club_id': club_id, 'previous': rows} for club_id, rows in by_club.items()]
+    return [
+        {'club_id': club_id, 'previous': rows['previous'], 'upcoming': rows['upcoming']}
+        for club_id, rows in by_club.items()
+    ]
 
 
 def get_results_by_party(conn, party_type, party_id):
