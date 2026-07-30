@@ -4,6 +4,11 @@ locals {
   # jenkins is the CI controller image (plugins baked in, see ci/jenkins/Dockerfile). It belongs in
   # this immutable set like the others: its tag is a git SHA and must never be overwritten.
   ecr_repos = ["backend", "worker", "nginx", "backup", "jenkins"]
+
+  # Cache repositories, deliberately SEPARATE from ecr_repos above: these are MUTABLE, those are
+  # IMMUTABLE. Kept as its own local so the lifecycle policy below can key off a statically known
+  # list rather than off the repository resource -- see the comment on aws_ecr_lifecycle_policy.cache.
+  ecr_cache_repos = ["buildcache", "trivy-db"]
 }
 
 resource "aws_ecr_repository" "app" {
@@ -48,7 +53,7 @@ resource "aws_ecr_lifecycle_policy" "app" {
 #             build. Replaces the TRIVY_CACHE host mount the EC2 host used; a pod volume could not
 #             do this job because it dies with the build. See the design doc section 5a.
 resource "aws_ecr_repository" "cache" {
-  for_each             = toset(["buildcache", "trivy-db"])
+  for_each             = toset(local.ecr_cache_repos)
   name                 = "${var.cluster_name}-${each.key}"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
@@ -61,9 +66,16 @@ resource "aws_ecr_repository" "cache" {
 }
 
 # Cache grows without bound otherwise: every build writes new layer blobs and orphans the old ones.
+#
+# for_each iterates the STATIC local, not `aws_ecr_repository.cache`. Iterating the resource reads
+# naturally and plans fine once the repos exist -- but before they do, their map keys are unknown, and
+# `terraform import` of ANY resource in this stack then fails with "Invalid for_each argument" because
+# it must evaluate the whole config graph. Hit for real on 2026-07-30, mid-migration, blocking an
+# unrelated secret import. The `app` policy above still iterates its resource; it survives only
+# because those repositories are already in state.
 resource "aws_ecr_lifecycle_policy" "cache" {
-  for_each   = aws_ecr_repository.cache
-  repository = each.value.name
+  for_each   = toset(local.ecr_cache_repos)
+  repository = aws_ecr_repository.cache[each.key].name
 
   policy = jsonencode({
     rules = [{
