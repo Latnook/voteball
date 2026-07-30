@@ -26,6 +26,19 @@ keys = {l: set(re.findall(r"^\s*([A-Za-z0-9_]+):", '\n'.join(v), re.M)) for l, v
 print(f"languages: {sorted(keys)}  sizes: { {l: len(k) for l, k in keys.items()} }")
 
 fail = False
+
+expected_langs = {'en', 'he', 'ru'}
+if set(keys) != expected_langs:
+    print(f"  PARSER FAILURE: expected language blocks {sorted(expected_langs)}, found {sorted(keys)}")
+    sys.exit(1)
+
+for lang, k in keys.items():
+    if not k:
+        print(f"  PARSER FAILURE: {lang} block parsed but yielded zero keys")
+        fail = True
+if fail:
+    sys.exit(1)
+
 base = keys.get('en', set())
 for lang, k in sorted(keys.items()):
     missing, extra = sorted(base - k), sorted(k - base)
