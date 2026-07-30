@@ -200,7 +200,16 @@ resource "helm_release" "jenkins" {
       ]
 
       JCasC = {
-        defaultConfig = true
+        # FALSE, and it must stay false. The chart's default config emits its own `jenkins:` block --
+        # mode, numExecutors, and a whole kubernetes cloud -- and ci/jenkins/jenkins.yaml defines the
+        # same keys. JCasC treats a key defined in two files as a ConfiguratorConflictException and
+        # REFUSES TO BOOT: exit code 5, "Failed to initialize Jenkins", before any probe can help.
+        # Observed live on 2026-07-30 (voteball.yaml line 23 == numExecutors).
+        #
+        # Turning this on to "get the chart's sensible defaults" reintroduces the conflict. If the
+        # controller needs something the default config provided, add it to ci/jenkins/jenkins.yaml --
+        # that file is the single source of truth for this controller's configuration.
+        defaultConfig = false
         configScripts = {
           "voteball" = file("${path.module}/../ci/jenkins/jenkins.yaml")
         }
