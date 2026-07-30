@@ -8,22 +8,21 @@
 # the deploy key could not be redone at all -- its only copy was in Jenkins' own credential store.
 #
 # NOTHING SECRET IS IN THIS FILE. Every ${PLACEHOLDER} is resolved at boot from the environment,
-# which user_data.sh populates from AWS Secrets Manager (voteball/jenkins) via the instance profile.
-# A missing variable makes JCasC fail loudly at startup rather than silently configuring nothing.
+# which is projected from the `jenkins-secret` Kubernetes Secret -- synced from AWS Secrets Manager
+# (voteball/jenkins) by External Secrets Operator. A missing variable makes JCasC fail loudly at
+# startup rather than silently configuring nothing.
 #
 # Identity (${GITHUB_REPO}, ${AWS_REGION}, ${CLUSTER_NAME}) is injected the same way, from Terraform
 # variables -- the repo's forkability rule applies here as everywhere: fork it, set your own tfvars,
 # and this file is unchanged.
 
 jenkins:
-  systemMessage: "Voteball CI. Configured by JCasC from terraform/jenkins/casc/jenkins.yaml -- UI edits do not survive a restart."
-  numExecutors: 2
+  systemMessage: "Voteball CI. Configured by JCasC from ci/jenkins/jenkins.yaml -- UI edits do not survive a restart."
+  # The controller must not build; agents do. Builds run in ephemeral pod agents provisioned by the
+  # Kubernetes cloud below.
+  numExecutors: 0
   mode: NORMAL
   quietPeriod: 5
-
-  # No inbound agents: this is a single-node Jenkins that builds on its own host. -1 disables the
-  # agent listener entirely rather than leaving a port open that nothing connects to.
-  slaveAgentPort: -1
 
   securityRealm:
     local:
@@ -57,6 +56,90 @@ jenkins:
           - key: "CLUSTER_NAME"
             value: "${CLUSTER_NAME}"
 
+  clouds:
+    - kubernetes:
+        name: "kubernetes"
+        serverUrl: "https://kubernetes.default.svc"
+        namespace: "ci"
+        jenkinsUrl: "http://jenkins.ci.svc.cluster.local:8080"
+        jenkinsTunnel: "jenkins-agent.ci.svc.cluster.local:50000"
+        directConnection: false
+        # Bounded so a wedged agent cannot hold the queue forever.
+        containerCapStr: "3"
+        retentionTimeout: 5
+        connectTimeout: 60
+        readTimeout: 60
+        templates:
+          - name: "voteball-build"
+            label: "voteball-build"
+            # RAW POD YAML, NOT the typed `containers:` list. That list cannot express
+            # securityContext, so the typed form would silently drop
+            # allowPrivilegeEscalation:false and capabilities.drop:[ALL] from every container and
+            # still start successfully -- the failure mode being avoided is a green build on
+            # containers that quietly hold more privilege than the cluster's own rules allow.
+            yamlMergeStrategy: override
+            yaml: |
+              apiVersion: v1
+              kind: Pod
+              spec:
+                serviceAccountName: jenkins
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                containers:
+                  # Rootless BuildKit. NOT privileged, and not Docker-in-Docker: a privileged pod
+                  # would be the weakest point in a cluster whose every app container sets
+                  # allowPrivilegeEscalation:false. --oci-worker-no-process-sandbox is required
+                  # for rootless operation on Kubernetes.
+                  - name: buildkit
+                    image: moby/buildkit:v0.19.0-rootless
+                    args:
+                      - --addr=unix:///run/user/1000/buildkit/buildkitd.sock
+                      - --oci-worker-no-process-sandbox
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                      runAsUser: 1000
+                      seccompProfile: { type: Unconfined }
+                    resources:
+                      requests: { cpu: "500m", memory: "2Gi" }
+                      limits: { memory: "3Gi" }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                  - name: trivy
+                    image: aquasec/trivy:0.58.1
+                    command: ["cat"]
+                    tty: true
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                  - name: skopeo
+                    image: quay.io/skopeo/stable:v1.17.0
+                    command: ["cat"]
+                    tty: true
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                  - name: awscli
+                    image: amazon/aws-cli:2.22.0
+                    command: ["cat"]
+                    tty: true
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                volumes:
+                  # Tarballs only. There is deliberately NO cache volume -- both caches live in
+                  # ECR, because a pod volume dies with the build and would be a cache in name
+                  # only. See the design doc section 5a.
+                  - name: images
+                    emptyDir: { sizeLimit: 8Gi }
+
 credentials:
   system:
     domainCredentials:
@@ -83,28 +166,11 @@ credentials:
 
 unclassified:
   location:
-    # Correct as-is: the only human reaches this through `ssh -L 8080:localhost:8080`. It must NOT
-    # be the public address -- with manageHooks below, a public URL would tempt the plugin into
-    # registering hooks pointing somewhere GitHub can reach but that we do not control.
-    url: "http://localhost:8080/"
+    # Must be the real external URL now: the GitHub plugin builds the webhook URL from it, and the
+    # chart -- not an SSH tunnel -- is what makes this host reachable at all.
+    url: "https://jenkins.${APP_DOMAIN}/"
     # adminAddress is deliberately omitted: it only appears in outgoing mail, and this host has no
     # SMTP (G7). Setting it would imply notifications that do not exist.
-
-  # gitHubPluginConfig is NOT configured here, deliberately. See user_data.sh, which writes
-  # org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml directly.
-  #
-  # Two attempts failed on github plugin 1.47.0, both with
-  # `UnknownAttributesException: gitHubPluginConfig: Invalid configuration elements`: neither
-  # `manageHooks` nor the surrounding block is data-bound on this version, so JCasC cannot set them
-  # and aborts the whole boot.
-  #
-  # That is the same missing-setter problem docs/cicd.md already records from the other direction:
-  # `setHookSecretConfigs()` via the Groovy console "reports success but does not persist". The fix
-  # recorded there -- write the XML -- is therefore the fix here too, and it has the additional
-  # merit of writing the LEGACY SINGULAR `hookSecretConfig`, sidestepping the trap entirely:
-  # getHookSecretConfigs() prefers the plural list whenever present, so an empty-but-present list
-  # once beat the working singular value and rejected every push with 400 "No valid signature
-  # found" -- signed and unsigned alike. The costliest bug of the migration.
 
 jobs:
   # Job DSL. The job is deliberately thin: everything about HOW to build lives in the Jenkinsfile,

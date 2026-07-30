@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Build the four app images and push them to ECR with a git-SHA tag.
+# Pass "jenkins" as the sole argument to instead build the Jenkins controller image
+# (ci/jenkins) into ${CLUSTER}-jenkins -- not part of the per-commit pipeline, so it is a
+# separate, by-hand target rather than a fifth entry below.
 # Requires: docker, aws CLI credentials for your account, and an applied terraform stack.
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
@@ -17,6 +20,13 @@ build_push() {
   docker build -t "${REGISTRY}/${repo}:${TAG}" "$ctx"
   docker push "${REGISTRY}/${repo}:${TAG}"
 }
+
+if [ "${1:-}" = "jenkins" ]; then
+  build_push "${CLUSTER}-jenkins" ci/jenkins
+  echo
+  echo "Pushed jenkins image at tag: ${TAG}"
+  exit 0
+fi
 
 build_push "${CLUSTER}-backend" services/backend
 build_push "${CLUSTER}-worker"  services/worker

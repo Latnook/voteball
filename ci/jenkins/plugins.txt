@@ -6,15 +6,16 @@
 #
 # Versions are DELIBERATELY unpinned. This host is rebuilt rarely and always wants the versions
 # matching the Jenkins LTS it boots with; pinning here would mean a second, silently-stale list to
-# maintain alongside the Jenkins version itself. The trade-off is that two builds of the same commit
-# can install different plugin versions -- acceptable for a single-operator CI host, and the reason
-# `jenkins-plugin-cli --list` output belongs in any bug report.
+# maintain alongside the Jenkins version itself. The trade-off that used to apply here is gone: these
+# plugins are now baked into an immutable ECR image, so the IMAGE TAG is the pin. Two deploys of the
+# same image tag are byte-identical even though this file names no versions. `jenkins-plugin-cli
+# --list` output is captured at image build.
 #
 # Replaces the 94 plugins the setup wizard's "install suggested" left behind. Every entry below is
 # traceable to something the Jenkinsfile or this host actually does.
 
 # --- JCasC itself ---
-# reads casc/jenkins.yaml; without it this whole directory is inert
+# reads ci/jenkins/jenkins.yaml; without it this whole directory is inert
 configuration-as-code
 # the `jobs:` block in jenkins.yaml is Job DSL
 job-dsl
@@ -30,13 +31,12 @@ github
 ssh-agent
 # options { timestamps() }
 timestamper
-# not used by the current Jenkinsfile; kept because the documented working set includes it and
-# withCredentials is the first thing any new pipeline step reaches for
-credentials-binding
+# ephemeral pod agents -- the whole reason this host is now in the cluster
+kubernetes
 
 # Deliberately NOT included:
-#   docker-workflow  -- the Jenkinsfile shells out to the `docker` CLI; the docker.build() DSL is
-#                       unused, so installing it would add a component to patch that nothing calls.
+#   docker-workflow  -- there is no Docker daemon and no `docker` CLI in a pod agent at all. Builds
+#                       use rootless BuildKit via buildctl; see the Jenkinsfile.
 #   matrix-auth      -- authorization is loggedInUsersCanDoAnything; a single admin needs no matrix.
 #   email-ext/mailer -- no SMTP on this host (G7). Adding them would imply notifications that do not
 #                       exist. See docs/production-readiness.md section 7.
