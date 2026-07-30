@@ -120,6 +120,25 @@ pipeline {
         anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }   // G3
       } }
       steps {
+        // BuildKit needs ECR credentials of its own: --import-cache/--export-cache talk to the
+        // registry directly, and buildctl reads $DOCKER_CONFIG/config.json rather than inheriting
+        // anything from the agent. Without this the build runs, resolves the Dockerfile, and only
+        // fails when it reaches the registry -- "401 Unauthorized" against the buildcache repo,
+        // minutes in, looking like an IAM problem rather than a missing file.
+        //
+        // The AWS CLI lives in its own container, so the token is written to the shared /images
+        // volume for the buildkit container to pick up. Removed in the post block.
+        container('awscli') {
+          sh '''
+            set -eu
+            umask 077
+            mkdir -p /images/dockercfg
+            printf '{"auths":{"%s":{"auth":"%s"}}}' \
+              "$ECR_REGISTRY" \
+              "$(printf 'AWS:%s' "$(aws ecr get-login-password --region "$AWS_REGION")" | base64 -w0)" \
+              > /images/dockercfg/config.json
+          '''
+        }
         container('buildkit') {
           // NOTE: --export-cache pushes unscanned layer-cache blobs to the *-buildcache repo below,
           // ahead of the Trivy scan. That is fine -- buildcache is not a repo the app ever deploys
@@ -136,6 +155,8 @@ pipeline {
             # the sidecar's socket instead means the daemon that actually builds is the one that was
             # configured for it.
             export BUILDKIT_HOST=unix:///run/user/1000/buildkit/buildkitd.sock
+            # Written by the awscli container above; buildctl reads config.json from here.
+            export DOCKER_CONFIG=/images/dockercfg
             CACHE="$ECR_REGISTRY/$CLUSTER_NAME-buildcache"
             for svc in backend worker nginx backup; do
               case "$svc" in
@@ -268,6 +289,14 @@ pipeline {
   }
 
   post {
+    always {
+      // The ECR token written to the shared volume in 'Build images' is a live registry credential.
+      // The emptyDir dies with the pod, but a build that fails between writing it and finishing
+      // should not leave it sitting there for the rest of the pod's life.
+      container('awscli') {
+        sh 'rm -rf /images/dockercfg || true'
+      }
+    }
     // G5's `docker image prune` is DELETED, not ported: it existed because the EC2 host was
     // persistent. A pod agent is destroyed after every build, so the disk cleans itself.
     failure {
