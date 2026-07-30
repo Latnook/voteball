@@ -23,8 +23,11 @@ module "autoscaler_irsa" {
 # before any cluster_version bump -- and note it declares no `kubeVersion`, so the usual chart
 # compatibility check cannot catch a mismatch. Read the app column instead:
 #   helm search repo autoscaler/cluster-autoscaler --versions
-# KNOWN GAP (2026-07-30): chart 9.59.0 is the newest and still ships app v1.35.0, one minor behind
-# the 1.36 cluster. Deliberate and accepted -- see docs/maintenance.md. Bump when a 1.36 build ships.
+# KNOWN GAP (2026-07-30): chart 9.59.0 is the newest and still pins app v1.35.0, one minor behind the
+# 1.36 cluster. Note upstream HAS released CA 1.36 -- only the chart lags -- so an `image.tag`
+# override would close it today. Deliberately NOT done: it swaps a tested mismatch (CA N-1, which the
+# project supports and which runs clean here) for an untested one (a 1.36 binary in a chart whose
+# ClusterRole was generated for 1.35). Full reasoning in docs/maintenance.md. Bump the chart instead.
 resource "helm_release" "cluster_autoscaler" {
   name       = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"

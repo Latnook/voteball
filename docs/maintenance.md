@@ -23,11 +23,22 @@ Runway from 2026-07-30  ~368 days (about 12 months)
 > hiccup, not an outage (an outage fails both). Effective availability 99.8% of samples, no
 > consecutive failures.
 >
-> **`cluster-autoscaler` knowingly trails at app v1.35.0** — as of 2026-07-30 no chart ships a 1.36
-> build. This is a deliberate accepted state, not an oversight: CA only adds/removes nodes across a
-> 2–4 range, so the failure mode is a `Pending` pod or an idle node, never a request-path outage.
-> **Bump it as soon as a 1.36 chart exists** (`helm search repo autoscaler/cluster-autoscaler
-> --versions` → look at the app column).
+> **`cluster-autoscaler` knowingly trails at app v1.35.0**, and the reason is narrower than "no 1.36
+> exists". Upstream *has* released CA 1.36.0/1.36.1 and the images are live
+> (`registry.k8s.io/autoscaling/cluster-autoscaler:v1.36.1` returns a manifest). What has not shipped
+> is a **chart** packaging them — 9.59.0 is the newest and still pins `tag: v1.35.0`.
+>
+> So bumping today is possible via an `image.tag` override, and it was **considered and rejected**:
+> CA 1.35 against a 1.36 API server is the ordinary N-1 configuration the project supports, and it
+> runs clean here (0 error-level log lines over 500). CA 1.36 inside a chart whose ClusterRole and
+> args were generated for 1.35 is validated by nobody — if 1.36 watches a resource the chart does not
+> grant, CA fails `forbidden`. That trades a tested mismatch for an untested one, to fix a gap with
+> no symptom. CA also only moves nodes across a 2–4 range, so the worst case is a `Pending` pod or an
+> idle node, never a request-path outage.
+>
+> **Bump when the chart catches up** — `helm search repo autoscaler/cluster-autoscaler --versions`
+> and read the *app* column, not the chart column. Chart and app versions are independent axes here:
+> 9.54.0 through 9.59.0 are six chart releases all shipping the same app v1.35.0.
 
 After that date the cluster silently moves to **extended support at 5× the control-plane price**
 (≈$0.10/hr → ≈$0.60/hr, roughly **+$360/month** for a cluster that otherwise costs ~$200/month total).
