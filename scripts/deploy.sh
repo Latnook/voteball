@@ -20,9 +20,9 @@ if [ ! -f "terraform/$TFVARS" ]; then
   exit 1
 fi
 
-# Steps 6 and 6b (seed-eks-secret.sh, seed-jenkins-secret.sh) need four credentials between them.
+# Steps 3 and 3b (seed-eks-secret.sh, seed-jenkins-secret.sh) need four credentials between them.
 # They are only USED at those steps, but we collect them HERE -- before the ~15-minute billed
-# `terraform apply` in step 5 (and the smaller targeted apply in step 2) -- so a missing value fails
+# `terraform apply` in step 6 (and the smaller targeted apply in step 2) -- so a missing value fails
 # cheaply instead of after the bill has already started (hit for real on the 2026-07-21 rebuild, for
 # DB_PASS/ADMIN_PASSWORD; the same reasoning applies to the Jenkins pair added 2026-07-30). Prompting
 # up front also means an interactive deploy needs no env vars at all: you are asked once, then the
@@ -86,7 +86,7 @@ elif [ -z "${DB_PASS:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ] || \
 ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD / JENKINS_ADMIN_USER /
 JENKINS_ADMIN_PASSWORD are not all set.
 
-Steps 6 and 6b seed Secrets Manager with those four values. Without a terminal this run cannot ask
+Steps 3 and 3b seed Secrets Manager with those four values. Without a terminal this run cannot ask
 for them, and it would otherwise fail only after Terraform had already built (and started billing
 for) the infrastructure. Stopping now instead.
 
@@ -105,34 +105,58 @@ fi
 step "1/11  Resolving the newest DB snapshot"
 ./scripts/find-latest-snapshot.sh
 
-step "2/11  Creating ECR repositories (targeted apply)"
-# helm_release.jenkins in step 5's full apply pulls ${CLUSTER}-jenkins:<tag> immediately -- Helm
+step "2/11  Creating ECR repositories and secret containers (targeted apply)"
+# helm_release.jenkins in step 6's full apply pulls ${CLUSTER}-jenkins:<tag> immediately -- Helm
 # waits for that pull to succeed before the release is considered done. After a fresh
 # destroy/rebuild the ECR repos are gone (ecr.tf sets force_delete = true), so without this the
 # image does not exist yet and the full apply fails several minutes in, mid-bill. A targeted apply
-# of just the repositories first means step 4 has somewhere to push the Jenkins image into before
-# step 5 needs it there.
+# of just the repositories first means step 5 has somewhere to push the Jenkins image into before
+# step 6 needs it there.
 #
 # data.aws_caller_identity.current is targeted too, and it is NOT optional. `-target` prunes the
 # graph to the targeted subgraph and writes ONLY the root outputs inside it. `ecr_registry` is built
 # from that data source rather than from any ECR resource (outputs.tf), so without this target it is
 # silently absent from state -- while `ecr_repository_urls` survives, making the step look like it
-# worked. Steps 3 and 4 both resolve the registry with `tf_out ecr_registry`, so the run then dies
+# worked. Steps 4 and 5 both resolve the registry with `tf_out ecr_registry`, so the run then dies
 # on the NEXT step with "Terraform output 'ecr_registry' is unavailable" (hit on the 2026-07-31
 # rebuild, the first destroy/deploy cycle after this targeted apply was introduced).
+#
+# The two Secrets Manager containers (and their placeholder versions) are targeted for the same kind
+# of reason: steps 3 and 3b write the REAL credentials into them, and those have to be in place
+# before the full apply creates helm_release.jenkins. See the comment on step 3b.
 ./scripts/bootstrap-tf-backend.sh
 terraform -chdir=terraform init -upgrade -backend-config=backend.hcl
 terraform -chdir=terraform apply -var-file="$TFVARS" \
   -target=aws_ecr_repository.app -target=aws_ecr_repository.cache \
+  -target=aws_secretsmanager_secret_version.app_placeholder \
+  -target=aws_secretsmanager_secret_version.jenkins_placeholder \
   -target=data.aws_caller_identity.current "${APPROVE[@]}"
 
-step "3/11  Mirroring the Trivy vulnerability database into ECR"
+step "3/11  Seeding app credentials into Secrets Manager"
+./scripts/seed-eks-secret.sh
+
+step "3b/11 Seeding Jenkins credentials into Secrets Manager"
+# Idempotent: a no-op, printing nothing sensitive, whenever the secret already holds a real deploy
+# key -- i.e. on every run of deploy.sh except the one right after a fresh destroy/rebuild.
+#
+# BOTH seeding steps run BEFORE the full apply, and that ordering is load-bearing. The full apply
+# creates helm_release.jenkins and its ExternalSecret together, and External Secrets Operator copies
+# voteball/jenkins into the `jenkins-secret` Kubernetes Secret ONCE at creation, then only every
+# refreshInterval (1h). Seeding afterwards means that first sync copies Terraform's EMPTY placeholder:
+# the controller boots with JENKINS_ADMIN_USER, JENKINS_ADMIN_HASH and GITHUB_WEBHOOK_SECRET all
+# unset, JCasC builds the admin account from nothing, and every login 401s until the hourly refresh
+# happens to land. The rebuild reports complete success throughout -- Jenkins is simply locked out.
+# Observed on the 2026-07-31 rebuild, the first destroy/deploy cycle after Jenkins moved in-cluster.
+# docs/cicd.md step 1 has always said to seed "before first apply"; this makes the script agree.
+./scripts/seed-jenkins-secret.sh
+
+step "4/11  Mirroring the Trivy vulnerability database into ECR"
 # Must exist before any image is scanned. Not otherwise on any automated path (see
 # scripts/mirror-trivy-db.sh) -- skipping this after a fresh rebuild means every
 # `trivy --db-repository` lookup in the pipeline errors on the very first build.
 ./scripts/mirror-trivy-db.sh
 
-step "4/11  Building and pushing the Jenkins controller image"
+step "5/11  Building and pushing the Jenkins controller image"
 # Pushed under the TAG ALREADY PINNED in terraform/voteball.tfvars (jenkins_image_tag), not a fresh
 # git SHA -- ci/jenkins/ changes rarely, and this only needs to reproduce the image the full apply
 # below is about to ask ECR for. Bumping jenkins_image_tag to a new build is a separate, deliberate,
@@ -145,18 +169,9 @@ if [ -z "$JENKINS_TAG" ]; then
 fi
 ./scripts/build-push-ecr.sh jenkins "$JENKINS_TAG"
 
-step "5/11  Building AWS infrastructure (Terraform will ask you to confirm)"
+step "6/11  Building AWS infrastructure (Terraform will ask you to confirm)"
 echo "This creates real, billed resources (~\$200/month while up)."
 terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
-
-step "6/11  Seeding app credentials into Secrets Manager"
-./scripts/seed-eks-secret.sh
-
-step "6b/11 Seeding Jenkins credentials into Secrets Manager"
-# Idempotent: a no-op, printing nothing sensitive, whenever the secret already holds a real deploy
-# key -- i.e. on every run of deploy.sh except the one right after a fresh destroy/rebuild. Only
-# that run needs FORCE_ROTATE-free reseeding; see scripts/seed-jenkins-secret.sh.
-./scripts/seed-jenkins-secret.sh
 
 step "7/11  Pointing kubectl at the cluster"
 aws eks update-kubeconfig --name "$CLUSTER" --region "$REGION"

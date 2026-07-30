@@ -68,31 +68,38 @@ resources. The steps it performs (kept in step with the script's own numbering �
 `grep -nE '^\s*step "' scripts/deploy.sh` if these ever look out of date):
 
 1. Find the newest database snapshot to restore from.
-2. Create the ECR repositories with a small, targeted Terraform apply — before the main build below,
-   because the Jenkins install later in this sequence needs somewhere to pull its own image from.
-3. Mirror the Trivy vulnerability database into ECR, so the CI pipeline never has to pull it from the
+2. Create the ECR repositories and the two (still empty) secret containers with a small, targeted
+   Terraform apply — before the main build below, because the Jenkins install later in this sequence
+   needs somewhere to pull its own image from, and somewhere to read its credentials from.
+3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git). The
+   database password is read straight from `voteball.tfvars` (the same file Terraform uses in step 6,
+   so the two can't disagree); only the **admin** password is asked for — up front, before any billed
+   resource is created. Run `deploy.sh` in a real terminal — see the note below.
+3b. Copy Jenkins' own credentials (a GitHub deploy key, a webhook secret, an admin login) into AWS's
+    secret vault the same way. Also asked for up front, same reason.
+4. Mirror the Trivy vulnerability database into ECR, so the CI pipeline never has to pull it from the
    internet during a build.
-4. Build and push the Jenkins controller image (CI now runs inside the cluster; see
+5. Build and push the Jenkins controller image (CI now runs inside the cluster; see
    [Connect to each part](#connect-to-each-part-dashboards-argocd-jenkins-the-database) below).
-5. Build the rest of the AWS infrastructure (**asks you to type `yes`**) — the cluster, the database,
+6. Build the rest of the AWS infrastructure (**asks you to type `yes`**) — the cluster, the database,
    the WAF that rate-limits `/api/vote`, and Jenkins itself as a platform add-on alongside ArgoCD and
    the other controllers.
-6. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git). The
-   database password is read straight from `voteball.tfvars` (the same file Terraform used in step 5,
-   so the two can't disagree); only the **admin** password is asked for — up front, before step 5. Run
-   `deploy.sh` in a real terminal — see the note below.
-7. Copy Jenkins' own credentials (a GitHub deploy key, a webhook secret, an admin login) into AWS's
-   secret vault the same way. Also asked for up front, same reason.
-8. Point `kubectl` at the new cluster.
-9. Build the four app container images and upload them.
-10. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
-    certificate, the WAF, the bucket, and the IAM roles all change on every rebuild, so **never edit
-    these ten fields by hand**.
-11. Install the app and wait for it to come up, then hand ongoing control to ArgoCD. A short-lived
-    migration Job applies the database schema **once** before the app pods start, rather than every
-    replica racing to do it.
+7. Point `kubectl` at the new cluster.
+8. Build the four app container images and upload them.
+9. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
+   certificate, the WAF, the bucket, and the IAM roles all change on every rebuild, so **never edit
+   these ten fields by hand**.
+10. Install the app and wait for it to come up. A short-lived migration Job applies the database
+    schema **once** before the app pods start, rather than every replica racing to do it.
+11. Hand ongoing control to ArgoCD.
 
-Step 10 commits and pushes `values.yaml` for you, because ArgoCD deploys from `master` and not from
+**Both secrets are seeded at steps 3/3b, before the big apply at step 6, and that order matters.**
+Step 6 creates Jenkins and its ExternalSecret together, and External Secrets Operator copies the AWS
+secret into the cluster once at creation and then only once an hour. If the vault were still empty at
+that moment, Jenkins would boot with no admin account and reject every login for an hour — while the
+deploy reported complete success throughout. (Hit for real on the 2026-07-31 rebuild.)
+
+Step 9 commits and pushes `values.yaml` for you, because ArgoCD deploys from `master` and not from
 this laptop. You don't need to do anything.
 
 ### Run it in a real terminal
@@ -120,9 +127,10 @@ VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
 ```
 
 `VOTEBALL_AUTO_APPROVE=1` skips Terraform's "type yes" prompt. On its own it is **not** enough to
-make the deploy unattended — without the other four it still stops before step 5.
+make the deploy unattended — without the other four it still stops in the preflight check, before any
+billed resource is created.
 
-**Re-running `deploy.sh` is safe, but step 6 reseeds the admin secret every run — two things follow
+**Re-running `deploy.sh` is safe, but step 3 reseeds the admin secret every run — two things follow
 from that:**
 
 - It issues a **new admin session key**, signing out anyone currently logged into the admin page.
