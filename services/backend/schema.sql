@@ -104,9 +104,9 @@ ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS sector TEXT
 ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS tags TEXT[];
 
 -- Families: a closed, deliberately-shared vocabulary naming what parties have in common, as opposed
--- to `tags`, which is per-party evidence and 61% singletons. family_evidence records whether the
--- assignment came from the voting record or from the platform alone -- nine upcoming parties have no
--- usable record. See docs/design/2026-07-30-party-families-club-traits-design.md.
+-- to `tags`, which is per-party evidence and 71% singletons on this table. family_evidence records
+-- whether the assignment came from the voting record or from the platform alone -- eight upcoming
+-- parties have no usable record. See docs/design/2026-07-30-party-families-club-traits-design.md.
 ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS families TEXT[];
 ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS family_evidence TEXT
     CHECK (family_evidence IS NULL OR family_evidence IN ('record', 'platform'));
