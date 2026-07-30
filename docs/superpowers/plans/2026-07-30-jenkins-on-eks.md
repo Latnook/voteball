@@ -21,6 +21,25 @@ rootless BuildKit, Trivy, skopeo, AWS ECR / ACM / Secrets Manager / External Sec
 **Design doc:** `docs/design/2026-07-30-jenkins-on-eks-design.md`. Read it before Task 1. Section
 references below (§2, §5a, §7…) point at it.
 
+## Execution order (decided 2026-07-30)
+
+Work happens on branch **`feat/jenkins-on-eks`**, in the main working directory — **not a git
+worktree**. `terraform/backend.hcl`, `terraform/voteball.tfvars` and `terraform/jenkins/jenkins.tfvars`
+are gitignored and exist only here, so every `terraform init/plan/apply` below would fail in a
+worktree.
+
+Because ArgoCD syncs `charts/voteball` from `master` only, the tasks do not run in numerical order:
+
+| Phase | Tasks | Where |
+|---|---|---|
+| 1 | 1, 2, 3, 4, 5, 6, 8 | branch — all code and Terraform |
+| 2 | *merge to `master`* | — |
+| 3 | 7, 9 | master — the ALB swap needs ArgoCD, and cutover needs the webhook path |
+| 4 | 10 | master — irreversible; gated on a week of green builds |
+
+**Terraform applies in phase 1 change live infrastructure while `master` does not yet describe it.**
+That drift is accepted and ends at the merge; do not rebuild the stack from `master` mid-migration.
+
 ## Global Constraints
 
 - **No hardcoded account, region, domain, registry or ARN anywhere.** Identity comes from
@@ -200,7 +219,7 @@ The cache repos are deliberately outside local.ecr_repos: that set is
 IMMUTABLE because git-SHA tags must never be overwritten, while cache
 tags are rewritten every build by design. Adding them to it fails every
 build's cache export."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 ---
@@ -442,7 +461,7 @@ third-party dependency at startup.
 credentials-binding out (its own comment conceded the Jenkinsfile does
 not use it), kubernetes in. numExecutors 0: the controller stops
 building, agents do."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 ---
@@ -539,7 +558,7 @@ mount has no equivalent. An emptyDir would look like a cache and not be
 one, restoring the ghcr.io rate-limit exposure the mount prevented.
 Mirroring is in-region, unmetered and removes a third-party dependency
 from the build path."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 ---
@@ -716,7 +735,7 @@ inputs collected in preflight so the failure cannot land after a billed
 apply.
 
 ESO's ARN allowlist widened to both secrets."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 ---
@@ -899,7 +918,7 @@ have on a rebuild.
 NetworkPolicy is broad-egress-with-denials, not an IP allowlist, for the
 same reason the EC2 security group allowed all egress -- registry ranges
 shift. The enforceable part is that CI cannot reach RDS or devops-app."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 ---
@@ -1346,7 +1365,7 @@ scripts/tests/test-jenkins-chart.sh, so a chart bump cannot widen it
 unnoticed. pods/exec carries both create and get: SPDY upgrades are POST
 and WebSocket upgrades are GET, and 1.36 turns on
 ExtendWebSocketsToKubelet."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 ---
@@ -1456,7 +1475,7 @@ saves.
 The Jenkins Ingress routes ONLY /github-webhook. The UI is not exposed
 at all, replacing the EC2 host's accepted risk of serving the entire UI
 to GitHub's CIDRs over plaintext HTTP."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 - [ ] **Step 5: Watch the ALB swap and DNS settle**
@@ -1493,6 +1512,18 @@ Expected: root `404` (no ALB rule reaches it); webhook a Jenkins response (`200`
 - Consumes: everything above.
 - Produces: a pipeline whose four unchanged stages (Guard, Resolve, Already built?, Bump image tag)
   behave identically.
+
+- [ ] **Step 0: Stop the old EC2 Jenkins FIRST — operator action**
+
+```bash
+cd terraform/jenkins && aws ec2 stop-instances --instance-ids "$(terraform output -raw instance_id)"
+```
+
+The old host cannot run the rewritten pipeline: `agent { label 'voteball-build' }` names a pod
+template that exists only in the new controller, so a build there **hangs waiting for an executor
+that never appears** rather than failing. The `[skip ci]` marker on this task's commit protects that
+one commit; it does not protect any other push to `services/` landing in the same window. Stopping
+the host removes the window entirely. **Do not destroy it** — it is the rollback until Task 10.
 
 - [ ] **Step 1: Replace `agent any` with the JCasC-provided label**
 
@@ -1659,7 +1690,7 @@ assumed.
 
 Guard, Resolve, Already built? and Bump image tag are unchanged, and
 scripts/ci/ is untouched."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 > **The `[skip ci]` marker above is deliberate and required:** the old EC2 Jenkins is still live at
@@ -1737,13 +1768,17 @@ Expected: back `Running` within ~60s, JCasC reapplied, the `voteball` job presen
 downloads** in the log. Confirm with `kubectl logs -n ci deploy/jenkins | grep -ci "Downloading"` →
 `0`.
 
-- [ ] **Step 8: Stop the old EC2 host and leave it stopped as the rollback**
+- [ ] **Step 8: Confirm the old EC2 host is still stopped, not destroyed**
+
+It was stopped in Task 8 Step 0. Confirm it is intact and remains the rollback:
 
 ```bash
 cd terraform/jenkins
-aws ec2 stop-instances --instance-ids "$(terraform output -raw instance_id)"
+aws ec2 describe-instances --instance-ids "$(terraform output -raw instance_id)" \
+  --query 'Reservations[].Instances[].State.Name' --output text
 ```
-**Do not destroy it yet.** Leave it stopped for at least one working week of green builds.
+Expected: `stopped`. **Do not destroy it yet** — leave it for at least one working week of green
+builds before Task 10.
 
 ---
 
@@ -1885,7 +1920,7 @@ code. The Guard-stage rule is kept verbatim.
 
 Records the verification outcome in the design doc and deletes the
 implementation plan, per the workflow rule."
-git push origin master
+git push origin feat/jenkins-on-eks
 ```
 
 ---
