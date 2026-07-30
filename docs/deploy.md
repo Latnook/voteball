@@ -3,8 +3,34 @@
 How to put the Voteball site online on AWS, check it works, and take it back down.
 
 **Heads-up:** running this costs real money (~$200/month while it's up). Always take it down when
-you're done. Last verified end-to-end on 2026-07-27 (full destroy + rebuild, with the vote count
-unchanged either side — raw captures in [`docs/eks/evidence/`](eks/evidence/)).
+you're done. Last verified end-to-end on 2026-07-31 (full destroy + rebuild, with the vote count
+unchanged either side — 15 votes, identical ids; raw captures from the 2026-07-27 cycle in
+[`docs/eks/evidence/`](eks/evidence/)).
+
+## Contents
+
+**Logging in to something** — passwords are spread across three systems, so start here:
+
+| I want to get into… | Section |
+|---|---|
+| The **admin page** (`/admin`) | [The website and the admin page](#the-website-and-the-admin-page) |
+| **ArgoCD** — and where its password comes from | [ArgoCD](#argocd) |
+| **Jenkins** — the build server | [Jenkins (the build server)](#jenkins-the-build-server) |
+| **Grafana / Prometheus / Alertmanager** | [Grafana, Prometheus and Alertmanager](#grafana-prometheus-and-alertmanager) |
+| The **database** | [The database](#the-database) |
+| Changing an admin username or password | [Change the admin username or password](#change-the-admin-username-or-password) |
+
+**Everything else**
+
+- [The two halves of the system (in plain terms)](#the-two-halves-of-the-system-in-plain-terms)
+- [One-time setup](#one-time-setup)
+- [Put the site online](#put-the-site-online) · [Run it in a real terminal](#run-it-in-a-real-terminal)
+- [Check it worked](#check-it-worked)
+- [Connect to each part](#connect-to-each-part-dashboards-argocd-jenkins-the-database) ·
+  [First: point kubectl at the cluster](#first-point-kubectl-at-the-cluster) ·
+  [If a connection won't work](#if-a-connection-wont-work)
+- [Take it down (stop paying)](#take-it-down-stop-paying)
+- [If something breaks](#if-something-breaks)
 
 ---
 
