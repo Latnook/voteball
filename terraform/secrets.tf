@@ -24,3 +24,29 @@ resource "aws_secretsmanager_secret_version" "app_placeholder" {
     ignore_changes = [secret_string]
   }
 }
+
+# ---- Jenkins CI secret ----
+# Moved out of the retired terraform/jenkins/ stack on 2026-07-30 by `terraform state rm` there and
+# `terraform import` here, so the live secret was never destroyed and recreated. Recreating it was
+# not an option: Secrets Manager names are unique and a deleted secret blocks its own name for the
+# whole recovery window, and the GITHUB_DEPLOY_KEY inside cannot be recovered from anywhere else.
+#
+# recovery_window_in_days = 0, UNLIKE the 7 the old stack used. That stack was never destroyed; this
+# one is destroyed and rebuilt routinely, and a same-named secret pending deletion for 7 days blocks
+# the next apply outright. The cost of 0 is real and is handled by process, not by Terraform:
+# scripts/deploy.sh re-seeds this secret on every rebuild, and the operator must hold a copy of the
+# deploy key outside AWS. See docs/cicd.md.
+resource "aws_secretsmanager_secret" "jenkins" {
+  name                    = "${var.cluster_name}/jenkins"
+  description             = "Jenkins admin + GitHub deploy key + webhook secret. Seeded by scripts/seed-jenkins-secret.sh; read at boot by JCasC via ESO."
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "jenkins_placeholder" {
+  secret_id     = aws_secretsmanager_secret.jenkins.id
+  secret_string = jsonencode({ placeholder = "seed real values via scripts/seed-jenkins-secret.sh" })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}

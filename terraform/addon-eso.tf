@@ -1,13 +1,19 @@
-# IRSA role for ESO, scoped read-only to the ONE app secret (not all of Secrets Manager). The helper's
-# external_secrets policy grants secretsmanager:GetSecretValue/DescribeSecret on the given ARNs only.
+# IRSA role for ESO, scoped read-only to the app + jenkins secrets (not all of Secrets Manager). The
+# helper's external_secrets policy grants secretsmanager:GetSecretValue/DescribeSecret on the given
+# ARNs only.
 module "eso_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 5.0"
 
   role_name                      = "${var.cluster_name}-eso-irsa"
   attach_external_secrets_policy = true
-  # Scope to exactly the app secret (+ its 6-char random suffix) -- least privilege.
-  external_secrets_secrets_manager_arns = ["${aws_secretsmanager_secret.app.arn}*"]
+  # Scope to exactly the two secrets ESO syncs (+ their 6-char random suffixes) -- least privilege.
+  # The jenkins secret was added 2026-07-30 when CI moved into the cluster; without it the Jenkins
+  # ExternalSecret fails with an AccessDenied that reads like a misconfiguration.
+  external_secrets_secrets_manager_arns = [
+    "${aws_secretsmanager_secret.app.arn}*",
+    "${aws_secretsmanager_secret.jenkins.arn}*",
+  ]
 
   oidc_providers = {
     main = {

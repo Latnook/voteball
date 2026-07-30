@@ -20,13 +20,15 @@ if [ ! -f "terraform/$TFVARS" ]; then
   exit 1
 fi
 
-# Step 3 (seed-eks-secret.sh) needs two passwords. They are only USED at step 3, but we collect them
-# HERE -- before the ~15-minute billed `terraform apply` in step 2 -- so a missing password fails
-# cheaply instead of after the bill has already started (hit for real on the 2026-07-21 rebuild).
-# Prompting up front also means an interactive deploy needs no env vars at all: you are asked once,
-# then the rest of the run is unattended. Anything already in the environment is left untouched, so
-# the detached/CI path (pass DB_PASS + ADMIN_PASSWORD in) still works. We `export` what we read so
-# seed-eks-secret.sh inherits it at step 3 and never re-prompts.
+# Steps 3 and 3b (seed-eks-secret.sh, seed-jenkins-secret.sh) need four credentials between them.
+# They are only USED at those steps, but we collect them HERE -- before the ~15-minute billed
+# `terraform apply` in step 2 -- so a missing value fails cheaply instead of after the bill has
+# already started (hit for real on the 2026-07-21 rebuild, for DB_PASS/ADMIN_PASSWORD; the same
+# reasoning applies to the Jenkins pair added 2026-07-30). Prompting up front also means an
+# interactive deploy needs no env vars at all: you are asked once, then the rest of the run is
+# unattended. Anything already in the environment is left untouched, so the detached/CI path (pass
+# them all in) still works. We `export` what we read so the seed scripts inherit it and never
+# re-prompt.
 #
 # Test the terminal by actually opening /dev/tty, not with `[ -r /dev/tty ]` -- the latter consults
 # permissions and returns TRUE in exactly the detached case we need to catch (verified 2026-07-21),
@@ -55,20 +57,44 @@ if [ -z "${DB_PASS:-}" ] && DB_PASS="$(tf_db_password "terraform/$TFVARS")" && [
   echo "Using db_password from terraform/${TFVARS} (not prompting for it)." >&2
 fi
 
+# Prompt for a non-secret value on /dev/tty and export it, unless it is already set in the
+# environment. Same shape as prompt_secret, but visible (read, not read -s) -- for values like a
+# username that are fine to echo and are easier to double-check if you can see them typed.
+prompt_plain() {   # prompt_plain VARNAME "prompt text"
+  local var="$1" text="$2" val="${!1:-}"
+  if [ -z "$val" ]; then
+    read -rp "$text: " val </dev/tty
+  fi
+  if [ -z "$val" ]; then
+    echo "ERROR: $var must not be empty." >&2
+    exit 1
+  fi
+  printf -v "$var" '%s' "$val"
+  export "${var?}"
+}
+
 if has_tty; then
   prompt_secret DB_PASS        "Database password (db_password from terraform/voteball.tfvars)"
   prompt_secret ADMIN_PASSWORD "Admin password for '${ADMIN_USERNAME:-admin}'"
-elif [ -z "${DB_PASS:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ]; then
+  # Step 3b seeds the Jenkins secret the same way -- collected here, not inline, for the identical
+  # reason: seed-jenkins-secret.sh would otherwise prompt for these itself, after the billed apply.
+  prompt_plain  JENKINS_ADMIN_USER     "Jenkins admin username"
+  prompt_secret JENKINS_ADMIN_PASSWORD "Jenkins admin password"
+elif [ -z "${DB_PASS:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ] || \
+     [ -z "${JENKINS_ADMIN_USER:-}" ] || [ -z "${JENKINS_ADMIN_PASSWORD:-}" ]; then
   cat >&2 <<'MSG'
-ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD are not set.
+ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD / JENKINS_ADMIN_USER /
+JENKINS_ADMIN_PASSWORD are not all set.
 
-Step 3 seeds Secrets Manager with those two passwords. Without a terminal this run cannot ask for
-them, and it would otherwise fail only after Terraform had already built (and started billing for)
-the infrastructure. Stopping now instead.
+Steps 3 and 3b seed Secrets Manager with those four values. Without a terminal this run cannot ask
+for them, and it would otherwise fail only after Terraform had already built (and started billing
+for) the infrastructure. Stopping now instead.
 
 Either run this from a real terminal (you will be prompted up front), or supply the answers:
 
-  DB_PASS='...' ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
+  DB_PASS='...' ADMIN_USERNAME=admin ADMIN_PASSWORD='...' \
+  JENKINS_ADMIN_USER='...' JENKINS_ADMIN_PASSWORD='...' \
+  VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
 
 (VOTEBALL_AUTO_APPROVE=1 only skips Terraform's "type yes" prompt -- on its own it does NOT make
 this script unattended.)
@@ -90,6 +116,9 @@ terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
 
 step "3/8  Seeding app credentials into Secrets Manager"
 ./scripts/seed-eks-secret.sh
+
+step "3b/8 Seeding Jenkins credentials into Secrets Manager"
+./scripts/seed-jenkins-secret.sh
 
 step "4/8  Pointing kubectl at the cluster"
 aws eks update-kubeconfig --name "$CLUSTER" --region "$REGION"

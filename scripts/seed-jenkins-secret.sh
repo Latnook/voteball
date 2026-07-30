@@ -2,8 +2,8 @@
 # Seeds AWS Secrets Manager (<cluster_name>/jenkins) with everything JCasC needs to configure the
 # build host: the admin login, the GitHub deploy key, and the webhook shared secret.
 #
-# Run this ONCE per account, before the Jenkins host first boots. Terraform creates only the empty
-# container (terraform/jenkins/secrets.tf), so no credential ever enters git or tfstate.
+# Run this ONCE per account, before Jenkins first boots. Terraform creates only the empty container
+# (terraform/secrets.tf), so no credential ever enters git or tfstate.
 #
 # Nothing is echoed and nothing is written to disk outside a private temp dir that is removed on
 # exit. The generated deploy key's PUBLIC half is printed -- that is the one value you must copy,
@@ -16,6 +16,7 @@ cd "$(dirname "$0")/.."
 
 # shellcheck source=lib/config.sh disable=SC1091
 . scripts/lib/config.sh
+require_config   # needs APP_DOMAIN, printed in the webhook instructions below
 
 SECRET_ID="${CLUSTER}/jenkins"
 
@@ -95,7 +96,8 @@ echo
 cat "$TMP/deploy_key.pub"
 echo
 echo "2. Add the webhook (repo -> Settings -> Webhooks):"
-echo "     Payload URL:  http://<elastic-ip>:8080/github-webhook/"
+echo "     Payload URL:  https://jenkins.${APP_DOMAIN}/github-webhook/"
+echo "     SSL verify:   ENABLED (the endpoint is HTTPS via ACM now)"
 echo "     Content type: application/json"
 echo "     Secret:       printed once below -- copy it now, it is not stored anywhere else readable"
 echo
