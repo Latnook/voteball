@@ -38,13 +38,30 @@ spec:
               - {{ .Values.vpcCidr }}     # this VPC: RDS, app pods, everything internal
               - 172.16.0.0/12
               - 192.168.0.0/16
-    # The Kubernetes API, so the controller can create agent pods in its own namespace.
+    # Inside this namespace: agents MUST reach the controller, on 8080 (HTTP) and 50000 (the JNLP
+    # tunnel). Their pod IPs are in the VPC range the rule above excludes, so without this rule the
+    # agent has no permitted route to the controller at all.
+    #
+    # The symptom of omitting it is quiet and expensive: the agent pod goes 5/5 Running, every
+    # container healthy, and the build sits on "still waiting to schedule ... is offline" until the
+    # cloud's timeout reaps the pod and provisions another, forever. Nothing logs a denial.
+    # Observed live on 2026-07-30.
+    - to:
+        - podSelector: {}
+    # The Kubernetes API (443), so the controller can create agent pods. The agent ports are listed
+    # here too because a connection to a Service ClusterIP may be evaluated against that VIP rather
+    # than the post-DNAT pod IP, depending on the CNI -- covering both is cheaper than depending on
+    # which.
     - to:
         - ipBlock:
             cidr: {{ .Values.serviceCidr | quote }}   # EKS service CIDR, e.g. via `aws eks describe-cluster`
       ports:
         - protocol: TCP
           port: 443
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 50000
 ---
 # Agents connect to the controller inside this namespace. Ingress from elsewhere in the cluster is
 # denied -- but NOT from elsewhere on the network: the rule below admits the whole VPC CIDR on 8080,
