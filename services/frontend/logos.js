@@ -40,6 +40,13 @@ const OUTLINE_CLUBS = new Set([
   'Hapoel Petah Tikva',
   'Maccabi Bnei Reineh',
   'UEFA Champions League',
+  // World Cup 2026 national-team crests. The flags these replaced were uniformly bright; federation
+  // badges are not, and these three are dark artwork on transparency -- Cape Verde's navy shield,
+  // Mexico's dark green eagle, and South Korea's "KOREA" wordmark, which is a dark blue that
+  // disappears into the card entirely.
+  'Cape Verde',
+  'Mexico',
+  'South Korea',
 ]);
 
 // --- HSL conversion (used by the party-logo dark-mode recolour below) ---
