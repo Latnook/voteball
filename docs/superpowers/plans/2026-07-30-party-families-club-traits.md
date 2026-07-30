@@ -166,57 +166,12 @@ git commit -m "feat(schema): add families and family_evidence to upcoming_partie
 - Consumes: the columns from Task 1
 - Produces: all 18 upcoming parties carry 1–3 families and a non-NULL `family_evidence`
 
-- [ ] **Step 1: Write the failing tests**
+> **This task writes NO pytest tests.** The three vocabulary property tests read `get_options()`,
+> which does not expose `families` until Task 3 — committing them here would leave a red suite. They
+> live in Task 3. This task proves itself with direct SQL in Steps 4–5, which is stronger for data
+> anyway: it checks the real seeded rows rather than a serialisation of them.
 
-Append to `services/backend/tests/test_queries.py`:
-
-```python
-FAMILY_VOCABULARY = {
-    'universal-conscription', 'conscription-exemption', 'conscription-split',
-    'conscription-by-incentive', 'constitutional-reform', 'judicial-restraint',
-    'welfare-state', 'cost-of-living', 'sectoral-budgeting', 'market-liberal',
-    'not-economy-focused', 'arab-representation', 'jewish-arab-partnership',
-    'reservist-movement',
-}
-
-
-def test_every_upcoming_party_has_families_and_evidence(conn):
-    for party in queries.get_options(conn)['upcoming_parties']:
-        name = party['name_he']
-        assert party['families'], f'{name} has no families'
-        assert party['family_evidence'] in ('record', 'platform'), \
-            f'{name} has family_evidence {party["family_evidence"]!r}'
-
-
-def test_family_values_come_from_the_closed_vocabulary(conn):
-    for party in queries.get_options(conn)['upcoming_parties']:
-        unknown = set(party['families']) - FAMILY_VOCABULARY
-        assert not unknown, f'{party["name_he"]} carries unknown families {sorted(unknown)}'
-
-
-def test_every_family_value_is_shared_by_at_least_two_parties(conn):
-    counts = collections.Counter(
-        f for p in queries.get_options(conn)['upcoming_parties'] for f in p['families']
-    )
-    singletons = sorted(f for f, n in counts.items() if n < 2)
-    assert not singletons, f'families on only one party: {singletons}'
-    assert set(counts) == FAMILY_VOCABULARY, \
-        f'unused vocabulary: {sorted(FAMILY_VOCABULARY - set(counts))}'
-```
-
-Add `import collections` to the top of the file if it is not already imported.
-
-- [ ] **Step 2: Run them and confirm they fail**
-
-```bash
-DB_HOST=localhost DB_PASS=test DB_SSLMODE=disable \
-  python -m pytest tests/test_queries.py -k family -v
-```
-
-Expected: FAIL — `KeyError: 'families'` (Task 3 adds it to `get_options`). This is expected; these
-three tests go green in Task 3. Proceed anyway — the seed data must land first.
-
-- [ ] **Step 3: Extend the VALUES tuple**
+- [ ] **Step 1: Extend the VALUES tuple**
 
 In `services/backend/seed.sql`, in the `UPDATE upcoming_parties p SET` ideology block **only** (not the
 `previous_parties` one), add the two columns to the SET list:
@@ -260,7 +215,7 @@ Finally extend the column list at the bottom of the block:
 WHERE p.name_he = v.name_he;
 ```
 
-- [ ] **Step 4: Prove no axis value moved**
+- [ ] **Step 2: Prove no axis value moved**
 
 Editing 18 long lines risks a transcription error in the six ideology columns. Prove there isn't one:
 
@@ -288,7 +243,7 @@ diff "$SP/old.txt" "$SP/new.txt" && echo "PROVEN: no ideology value moved"
 
 Expected: `PROVEN: no ideology value moved`
 
-- [ ] **Step 5: Prove the block reaches an already-seeded database**
+- [ ] **Step 3: Prove the block reaches an already-seeded database**
 
 A fresh database proves nothing about production, which is always already seeded:
 
@@ -300,10 +255,34 @@ docker exec voteball-test-db psql -U postgres -d famold -tAc \
 
 Expected: `18`
 
+- [ ] **Step 4: Prove the vocabulary properties in SQL**
+
+```bash
+docker exec voteball-test-db psql -U postgres -d famnew -tAc \
+  "SELECT f, count(*) FROM upcoming_parties, unnest(families) AS f GROUP BY f HAVING count(*) < 2;"
+```
+
+Expected: **no rows** — every family value sits on ≥2 parties.
+
+```bash
+docker exec voteball-test-db psql -U postgres -d famnew -tAc \
+  "SELECT count(DISTINCT f) FROM upcoming_parties, unnest(families) AS f;"
+```
+
+Expected: `14`
+
+- [ ] **Step 5: Run the existing suite to confirm nothing regressed**
+
+```bash
+DB_HOST=localhost DB_PASS=test DB_SSLMODE=disable python -m pytest tests/ -q
+```
+
+Expected: 145 passed (unchanged from Task 1 — this task adds no tests)
+
 - [ ] **Step 6: Commit**
 
 ```bash
-git add services/backend/seed.sql services/backend/tests/test_queries.py
+git add services/backend/seed.sql
 git commit -m "data(parties): assign families to all 18 upcoming parties"
 ```
 
@@ -321,11 +300,46 @@ git commit -m "data(parties): assign families to all 18 upcoming parties"
   `'family_evidence': str | None`; `previous_parties` entries gain `'families': []` and
   `'family_evidence': None`
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Write the failing tests**
 
-Append to `services/backend/tests/test_queries.py`:
+Append to `services/backend/tests/test_queries.py`. Add `import collections` at the top of the file if
+it is not already imported. These four tests were deliberately deferred from Task 2, which seeds the
+data but cannot read it through `get_options()` yet:
 
 ```python
+FAMILY_VOCABULARY = {
+    'universal-conscription', 'conscription-exemption', 'conscription-split',
+    'conscription-by-incentive', 'constitutional-reform', 'judicial-restraint',
+    'welfare-state', 'cost-of-living', 'sectoral-budgeting', 'market-liberal',
+    'not-economy-focused', 'arab-representation', 'jewish-arab-partnership',
+    'reservist-movement',
+}
+
+
+def test_every_upcoming_party_has_families_and_evidence(conn):
+    for party in queries.get_options(conn)['upcoming_parties']:
+        name = party['name_he']
+        assert party['families'], f'{name} has no families'
+        assert party['family_evidence'] in ('record', 'platform'), \
+            f'{name} has family_evidence {party["family_evidence"]!r}'
+
+
+def test_family_values_come_from_the_closed_vocabulary(conn):
+    for party in queries.get_options(conn)['upcoming_parties']:
+        unknown = set(party['families']) - FAMILY_VOCABULARY
+        assert not unknown, f'{party["name_he"]} carries unknown families {sorted(unknown)}'
+
+
+def test_every_family_value_is_shared_by_at_least_two_parties(conn):
+    counts = collections.Counter(
+        f for p in queries.get_options(conn)['upcoming_parties'] for f in p['families']
+    )
+    singletons = sorted(f for f, n in counts.items() if n < 2)
+    assert not singletons, f'families on only one party: {singletons}'
+    assert set(counts) == FAMILY_VOCABULARY, \
+        f'unused vocabulary: {sorted(FAMILY_VOCABULARY - set(counts))}'
+
+
 def test_get_options_exposes_families(conn):
     options = queries.get_options(conn)
 
@@ -521,8 +535,13 @@ git commit -m "feat(api): return per-club upcoming breakdown from clubs-breakdow
 - Modify: `services/frontend/i18n.js` — all three language objects
 - Create: `scripts/tests/test-i18n-parity.sh`
 
+> **BLOCKED ON HUMAN REVIEW.** The exact en/he/ru strings come from `docs/i18n/family-strings.csv`,
+> which the repo owner reviews and corrects. **Do not dispatch this task until that file is approved,
+> and then use its contents verbatim** — the strings below are the pre-review draft and may differ.
+> Read the CSV, not this plan, for the final text.
+
 **Interfaces:**
-- Consumes: nothing
+- Consumes: the approved `docs/i18n/family-strings.csv`
 - Produces: keys `familyUniversalConscription`, `familyConscriptionExemption`,
   `familyConscriptionSplit`, `familyConscriptionByIncentive`, `familyConstitutionalReform`,
   `familyJudicialRestraint`, `familyWelfareState`, `familyCostOfLiving`, `familySectoralBudgeting`,
@@ -993,6 +1012,65 @@ Expected: 150 passed, `i18n parity OK`
 git add -A
 git commit -m "docs(families): record the verification outcome and remove the executed plan"
 git push origin master
+```
+
+---
+
+---
+
+### Task 9: Local demo with fake votes (BEFORE any merge to master)
+
+**Files:**
+- Create: `scripts/dev/seed-fake-votes.py` (dev-only, never referenced by the app or any image)
+
+**Interfaces:**
+- Consumes: everything from Tasks 1–7
+- Produces: a locally running stack with enough votes that the Traits tab has something to show
+
+**Why:** the repo owner asked to see this working locally before it reaches `master`. Production has
+single-digit votes, and `LEAN_MIN_VOTES = 10` means the tab renders an empty state until a club clears
+ten upcoming-election votes. Without fake data there is nothing to look at.
+
+- [ ] **Step 1: Write the generator**
+
+Create `scripts/dev/seed-fake-votes.py`. It must:
+- take `--votes N` (default 400) and `--db-url`, defaulting to the local test container
+- for each fake vote: insert into `votes`, attach 1–3 `vote_clubs` rows drawn from real seeded clubs,
+  and attach 1–3 `vote_upcoming_parties` rows
+- **deliberately skew** a handful of named clubs toward particular parties, so the Traits tab shows
+  real over-representation rather than noise — e.g. one club skewed toward `ש"ס`/`יהדות התורה`
+  (should surface `welfare-state` + `sectoral-budgeting`), one toward `ישר`/`ביחד` (should surface
+  `universal-conscription` + `constitutional-reform`), one toward `הציונות הדתית`/`עוצמה יהודית`
+  (should surface `judicial-restraint`)
+- print the skew map it used, so the rendered output can be checked against intent
+
+It must NOT be added to any `Dockerfile` `COPY` line — this is a local dev tool and must never ship
+in an image.
+
+- [ ] **Step 2: Run the whole stack locally against the test database**
+
+Seed schema + seed into a local database, run the generator, then start the backend and frontend
+locally. Follow `docs/deploy.md` / the backend README for the local run; do not touch AWS.
+
+- [ ] **Step 3: Check the rendered output against the skew map**
+
+For each skewed club, confirm the Traits tab surfaces the families predicted in Step 1. If a club
+skewed toward Shas and UTJ does **not** surface `welfare-state`, either the computation or a family
+assignment is wrong — investigate before merging.
+
+Also confirm: percentages do not sum to 100, the empty state appears for an unskewed club, and
+Hebrew/Russian relabel every row.
+
+- [ ] **Step 4: Screenshot and hand to the repo owner**
+
+Capture the Traits tab in all three languages and send them. **Stop here — merging to `master` is the
+owner's call, not the implementer's.** Jenkins is running, so a merge deploys to production.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add scripts/dev/seed-fake-votes.py
+git commit -m "chore(dev): fake-vote generator for local Traits verification"
 ```
 
 ---
