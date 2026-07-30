@@ -133,15 +133,15 @@ HCL
 }
 
 step "Backend configuration"
+# ONE key, one stack. The separate terraform/jenkins/ stack (voteball/jenkins.tfstate) was retired on
+# 2026-07-31 when CI moved into the cluster -- Jenkins is now part of the main stack.
 write_backend_hcl "$TF_DIR"           "voteball/main.tfstate"
-write_backend_hcl "$TF_DIR/jenkins"   "voteball/jenkins.tfstate"
 
 step "Done"
 cat <<NEXT
 The bucket is ready and belongs to NO Terraform stack -- scripts/destroy.sh must never touch it.
 
-Next, in each stack (add -migrate-state the first time, to move existing local state):
+Next (add -migrate-state the first time, to move existing local state):
 
-  terraform -chdir=${TF_DIR}/jenkins init -backend-config=backend.hcl -migrate-state
-  terraform -chdir=${TF_DIR}         init -backend-config=backend.hcl -migrate-state
+  terraform -chdir=${TF_DIR} init -backend-config=backend.hcl -migrate-state
 NEXT

@@ -164,27 +164,19 @@ locals {
 # ---- Jenkins itself ----
 resource "helm_release" "jenkins" {
   name = "jenkins"
-  # A direct chart archive URL, NOT repository = "https://charts.jenkins.io" + chart = "jenkins".
-  # The Helm Go SDK's chart resolver os.Stat()s the literal `chart` string against the local
-  # filesystem BEFORE ever consulting `repository`, and `terraform apply` runs from inside
-  # terraform/ -- which still contains terraform/jenkins/, the separate EC2 Jenkins stack this task
-  # does not touch (see the "SEPARATE stack" rule in CLAUDE.md). `chart = "jenkins"` therefore
-  # silently resolves to that unrelated directory instead of the Helm repo, and fails trying to
-  # parse a provider cache file inside it as a chart. Pointing straight at the release archive
-  # sidesteps the stat call, because the string is never a valid local path.
+  # The conventional form, matching every other helm_release in this stack.
   #
-  # This URL form exists ONLY because of that collision. Task 10 of the migration plan deletes
-  # terraform/jenkins/ (the retired EC2 stack); once that lands, this should revert to
-  # repository = "https://charts.jenkins.io" + chart = "jenkins", which is the form every other
-  # helm_release in this stack uses.
-  #
-  # NOTE: `version` below does NOTHING here -- Helm's ResolveChartVersion short-circuits on an
-  # absolute chart URL and never looks at `version` at all. It is kept only so `terraform plan`
-  # shows the intended version in the resource diff; the URL itself is what actually pins the
-  # chart, which is why both interpolate the same local.
-  chart     = "https://github.com/jenkinsci/helm-charts/releases/download/jenkins-${local.jenkins_chart_version}/jenkins-${local.jenkins_chart_version}.tgz"
-  version   = local.jenkins_chart_version
-  namespace = kubernetes_namespace.ci.metadata[0].name
+  # This used to be a direct .tgz URL, because the Helm Go SDK's chart resolver os.Stat()s the
+  # literal `chart` string against the local filesystem BEFORE consulting `repository` -- and
+  # `terraform apply` runs from inside terraform/, which then contained terraform/jenkins/ (the
+  # retired EC2 stack). `chart = "jenkins"` silently resolved to that directory instead of the Helm
+  # repo. That directory was deleted on 2026-07-31, so the collision is gone and `version` is
+  # load-bearing again: against a URL chart, Helm ignores `version` entirely, so bumping it alone
+  # would have applied cleanly and installed nothing new.
+  repository = "https://charts.jenkins.io"
+  chart      = "jenkins"
+  version    = local.jenkins_chart_version
+  namespace  = kubernetes_namespace.ci.metadata[0].name
 
   values = [yamlencode({
     controller = {
