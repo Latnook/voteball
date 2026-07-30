@@ -40,26 +40,27 @@ resource "helm_release" "cluster_autoscaler" {
   version    = "9.59.0" # verified latest via `helm search repo` on 2026-07-30 (chart default app v1.35.0)
   namespace  = "kube-system"
 
-  # Override the chart's v1.35.0 default to match the 1.36 cluster. See the VERSION SKEW note above.
-  set {
-    name  = "image.tag"
-    value = "v1.36.1"
-  }
-
-  set {
-    name  = "autoDiscovery.clusterName"
-    value = module.eks.cluster_name
-  }
-  set {
-    name  = "awsRegion"
-    value = var.aws_region
-  }
-  set {
-    name  = "rbac.serviceAccount.name"
-    value = "cluster-autoscaler"
-  }
-  set {
-    name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.autoscaler_irsa.iam_role_arn
-  }
+  set = [
+    # Override the chart's v1.35.0 default to match the 1.36 cluster. See the VERSION SKEW note above.
+    {
+      name  = "image.tag"
+      value = "v1.36.1"
+    },
+    {
+      name  = "autoDiscovery.clusterName"
+      value = module.eks.cluster_name
+    },
+    {
+      name  = "awsRegion"
+      value = var.aws_region
+    },
+    {
+      name  = "rbac.serviceAccount.name"
+      value = "cluster-autoscaler"
+    },
+    {
+      name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.autoscaler_irsa.iam_role_arn
+    },
+  ]
 }

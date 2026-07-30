@@ -18,8 +18,10 @@ resource "helm_release" "node_termination_handler" {
   version    = "0.21.0" # verified latest via `helm search repo` on 2026-07-19 (app v1.19.0)
   namespace  = "kube-system"
 
-  set {
-    name  = "enableSpotInterruptionDraining"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "enableSpotInterruptionDraining"
+      value = "true"
+    },
+  ]
 }

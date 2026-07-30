@@ -10,18 +10,20 @@ resource "helm_release" "kube_prometheus_stack" {
   namespace        = "monitoring"
   create_namespace = true
 
-  set {
-    name  = "prometheus.prometheusSpec.retention"
-    value = "6h"
-  }
-  set {
-    name  = "prometheus.prometheusSpec.resources.requests.memory"
-    value = "400Mi"
-  }
-  set {
-    name  = "prometheus.prometheusSpec.resources.limits.memory"
-    value = "900Mi"
-  }
+  set = [
+    {
+      name  = "prometheus.prometheusSpec.retention"
+      value = "6h"
+    },
+    {
+      name  = "prometheus.prometheusSpec.resources.requests.memory"
+      value = "400Mi"
+    },
+    {
+      name  = "prometheus.prometheusSpec.resources.limits.memory"
+      value = "900Mi"
+    },
+  ]
   # NOTE: Grafana's admin password is deliberately NOT set here -- hardcoding it would put a credential
   # in git and terraform.tfstate. The chart auto-generates a random password stored only in the
   # in-cluster Secret. Retrieve it (Grafana UI is port-forward-only, never public) with:

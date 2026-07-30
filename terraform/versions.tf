@@ -13,8 +13,12 @@ terraform {
       version = "~> 5.0"
     }
     helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.17" # 2.x keeps the nested `kubernetes {}` block used in providers-k8s.tf (v3 changed syntax)
+      source = "hashicorp/helm"
+      # v3 moved this provider from SDKv2 to the Plugin Framework, which turned BLOCKS into
+      # ATTRIBUTES: `kubernetes {}` -> `kubernetes = {}` in providers-k8s.tf, and every
+      # `set {}` -> a `set = [{...}]` list on each helm_release. Both were converted on 2026-07-30.
+      # Do not reintroduce block syntax; it fails validation against the v3 schema.
+      version = "~> 3.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"

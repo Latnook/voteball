@@ -23,11 +23,14 @@ provider "kubernetes" {
   }
 }
 
+# NOTE the `=` on kubernetes/exec below: the helm provider is v3 (Plugin Framework), where these are
+# object ATTRIBUTES, not blocks. The kubernetes provider above is still SDKv2 and keeps block syntax
+# -- the two look almost identical and are deliberately different. See versions.tf.
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    exec {
+    exec = {
       api_version = local.eks_exec.api_version
       command     = local.eks_exec.command
       args        = local.eks_exec.args

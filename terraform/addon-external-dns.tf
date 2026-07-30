@@ -26,54 +26,56 @@ resource "helm_release" "external_dns" {
   version    = "1.21.1" # verified latest via `helm search repo` on 2026-07-19 (app v0.21.0)
   namespace  = "kube-system"
 
-  set {
-    name  = "provider"
-    value = "aws"
-  }
-  set {
-    name  = "aws.region"
-    value = var.aws_region
-  }
-  # Scope external-dns to the configured zone. trimsuffix drops the trailing dot Route53
-  # requires on the zone name but external-dns does not accept in a domain filter.
-  set {
-    name  = "domainFilters[0]"
-    value = trimsuffix(var.route53_zone_name, ".")
-  }
-  # sync (not upsert-only): on teardown the Ingress is deleted BEFORE terraform destroy, letting
-  # external-dns remove the A/AAAA/TXT records it created. With upsert-only they survived, leaving
-  # the app's FQDN resolving to a de-provisioned ALB until the next deploy.
-  #
-  # Deletion is bounded by the default txt registry + txtOwnerId below: external-dns only touches
-  # records carrying an ownership TXT that names this cluster
-  # ("heritage=external-dns,external-dns/owner=voteball,..."). The zone's apex MX/NS/SOA, the
-  # ProtonMail verification + DKIM records, and _dmarc carry no such TXT, so they are not eligible
-  # for deletion. Verified against the live zone on 2026-07-20 before this was enabled.
-  set {
-    name  = "policy"
-    value = "sync"
-  }
+  set = [
+    {
+      name  = "provider"
+      value = "aws"
+    },
+    {
+      name  = "aws.region"
+      value = var.aws_region
+    },
+    # Scope external-dns to the configured zone. trimsuffix drops the trailing dot Route53
+    # requires on the zone name but external-dns does not accept in a domain filter.
+    {
+      name  = "domainFilters[0]"
+      value = trimsuffix(var.route53_zone_name, ".")
+    },
+    # sync (not upsert-only): on teardown the Ingress is deleted BEFORE terraform destroy, letting
+    # external-dns remove the A/AAAA/TXT records it created. With upsert-only they survived, leaving
+    # the app's FQDN resolving to a de-provisioned ALB until the next deploy.
+    #
+    # Deletion is bounded by the default txt registry + txtOwnerId below: external-dns only touches
+    # records carrying an ownership TXT that names this cluster
+    # ("heritage=external-dns,external-dns/owner=voteball,..."). The zone's apex MX/NS/SOA, the
+    # ProtonMail verification + DKIM records, and _dmarc carry no such TXT, so they are not eligible
+    # for deletion. Verified against the live zone on 2026-07-20 before this was enabled.
+    {
+      name  = "policy"
+      value = "sync"
+    },
 
-  # React to Ingress add/delete events immediately instead of only on the 1-minute poll (the chart
-  # default is triggerLoopOnEvent=false). Without this, teardown deletes the Ingress and then destroys
-  # external-dns before its next tick, so the records are never cleaned up -- observed on the
-  # 2026-07-20 teardown, where the app's record survived pointing at a dead ALB.
-  # This narrows the race but does not close it; scripts/cleanup-stale-dns.sh is the deterministic
-  # backstop that destroy.sh runs regardless.
-  set {
-    name  = "triggerLoopOnEvent"
-    value = "true"
-  }
-  set {
-    name  = "txtOwnerId"
-    value = var.cluster_name
-  }
-  set {
-    name  = "serviceAccount.name"
-    value = "external-dns"
-  }
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.external_dns_irsa.iam_role_arn
-  }
+    # React to Ingress add/delete events immediately instead of only on the 1-minute poll (the chart
+    # default is triggerLoopOnEvent=false). Without this, teardown deletes the Ingress and then destroys
+    # external-dns before its next tick, so the records are never cleaned up -- observed on the
+    # 2026-07-20 teardown, where the app's record survived pointing at a dead ALB.
+    # This narrows the race but does not close it; scripts/cleanup-stale-dns.sh is the deterministic
+    # backstop that destroy.sh runs regardless.
+    {
+      name  = "triggerLoopOnEvent"
+      value = "true"
+    },
+    {
+      name  = "txtOwnerId"
+      value = var.cluster_name
+    },
+    {
+      name  = "serviceAccount.name"
+      value = "external-dns"
+    },
+    {
+      name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.external_dns_irsa.iam_role_arn
+    },
+  ]
 }

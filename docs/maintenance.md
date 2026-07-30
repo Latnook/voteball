@@ -113,8 +113,27 @@ so these need bumping *with* the EKS upgrade, not after it.
 deprecated `dynamodb_table` argument. Downgrading below 1.11 breaks `init` in both stacks.
 
 **Provider pins** (`terraform/versions.tf`): `aws ~> 5.0` is capped by `terraform-aws-modules/eks`
-v20, which requires `< 6.0`. Moving to AWS provider v6 means upgrading that module first. `helm ~> 2.17`
-is deliberate — v3 changed the nested `kubernetes {}` block syntax used in `providers-k8s.tf`.
+v20, which requires `< 6.0`. Moving to AWS provider v6 means upgrading that module first — that pair
+is still outstanding, and it is also what would clear the `resolve_conflicts` deprecation warning
+that appears in every plan.
+
+`helm` was moved **2.17 → ~> 3.0 (3.2.0) on 2026-07-30**. v3 rebuilt the provider on the Plugin
+Framework, which turned blocks into attributes: `kubernetes {}` → `kubernetes = {}` in
+`providers-k8s.tf`, and all 25 `set {}` blocks → `set = [{...}]` lists across the six add-on files.
+**Do not reintroduce block syntax** — it fails `validate` against the v3 schema. Note the `kubernetes`
+provider is still SDKv2 (`~> 2.31`) and keeps block syntax, so the two provider blocks in
+`providers-k8s.tf` look nearly identical and are deliberately different.
+
+The migration was **in place**: plan and apply both reported `0 added, 8 changed, 0 destroyed`, the
+diff was purely state reshaping (`set`/`set_list`/`set_sensitive`/`postrender` emptied, a new
+`upgrade_install` default), and **no pod restarted** — verified by pod start times predating the
+apply by half an hour, while Helm revisions incremented. A Helm upgrade rendering identical manifests
+does not roll a workload; only a changed pod template does.
+
+**Known chart deprecation, not yet addressed:** the external-dns chart warns during plan that
+`set { name = "provider", value = "aws" }` is the legacy form and that newer chart versions want a
+structured `provider: {name: aws}` object. Harmless today; fix it *with* the next external-dns chart
+bump, not before, so the new syntax is validated against a chart that actually expects it.
 
 ---
 

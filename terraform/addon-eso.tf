@@ -27,8 +27,10 @@ resource "helm_release" "external_secrets" {
   namespace        = "external-secrets"
   create_namespace = true
 
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.eso_irsa.iam_role_arn
-  }
+  set = [
+    {
+      name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.eso_irsa.iam_role_arn
+    },
+  ]
 }
