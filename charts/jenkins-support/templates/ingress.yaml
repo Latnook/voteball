@@ -1,0 +1,36 @@
+# ONLY the webhook path is routed. The UI, script console and credential store are not reachable
+# from the internet at all -- the ALB has no rule that reaches them.
+#
+# This is a deliberate tightening over the EC2 host, whose security group exposed the ENTIRE Jenkins
+# UI to GitHub's CIDR ranges over plaintext HTTP (terraform/jenkins/main.tf:41-47 recorded that as
+# accepted residual risk). Operators reach the UI with:
+#   kubectl port-forward -n ci svc/jenkins 8080:8080
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-webhook
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.certificateArn | quote }}
+    alb.ingress.kubernetes.io/healthcheck-path: /login
+    # Must match charts/voteball/templates/ingress.yaml's group.name exactly -- a mismatch silently
+    # creates a SECOND ALB instead of joining the app's.
+    alb.ingress.kubernetes.io/group.name: voteball
+    alb.ingress.kubernetes.io/group.order: "20"
+spec:
+  ingressClassName: alb
+  rules:
+    - host: {{ .Values.host | quote }}
+      http:
+        paths:
+          - path: /github-webhook
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins
+                port:
+                  number: 8080

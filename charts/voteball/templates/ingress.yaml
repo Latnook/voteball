@@ -10,6 +10,14 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: "443"
     alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.certificateArn | quote }}
     alb.ingress.kubernetes.io/healthcheck-path: /
+    # Joins one ALB shared with the CI webhook Ingress in the `ci` namespace. A second ALB would be
+    # ~$18/mo and would make the Jenkins migration cost more than it saves.
+    #
+    # ADDING THIS REPLACES THE ALB: the controller moves this Ingress out of its implicit
+    # per-Ingress group into the named one, provisioning a new load balancer and repointing DNS.
+    # The site is unreachable for roughly 2-5 minutes. Do not apply this casually.
+    alb.ingress.kubernetes.io/group.name: voteball
+    alb.ingress.kubernetes.io/group.order: "10"
     {{- if and .Values.ingress.wafAclArn (ne .Values.ingress.wafAclArn "FILLED-BY-SYNC") }}
     # Rate limiting for /api/vote. The ALB is created by the load balancer controller, so this
     # annotation is the only way to attach the ACL -- Terraform cannot associate a resource that

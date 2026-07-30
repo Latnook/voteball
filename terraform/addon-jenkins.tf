@@ -144,6 +144,10 @@ resource "helm_release" "jenkins_support" {
     # exists only so `helm template` runs offline. Passing this explicitly, rather than relying on
     # that default, keeps it from drifting silently if the chart's default ever changes.
     { name = "refreshInterval", value = "1h" },
+    # The webhook Ingress's cert and host. Its own certificate, not a SAN on the app's -- see the
+    # comment on aws_acm_certificate.jenkins above.
+    { name = "certificateArn", value = aws_acm_certificate_validation.jenkins.certificate_arn },
+    { name = "host", value = "jenkins.${var.app_domain}" },
   ]
 
   depends_on = [helm_release.external_secrets]

@@ -15,3 +15,10 @@ vpcCidr: 10.0.0.0/16
 # hardcoded, so Terraform passes the real value (`aws eks describe-cluster`'s serviceIpv4Cidr); this
 # default exists only so `helm template` runs offline.
 serviceCidr: 172.20.0.0/16
+
+# The webhook Ingress's ACM cert and hostname. Terraform passes
+# aws_acm_certificate_validation.jenkins.certificate_arn and "jenkins.${var.app_domain}" -- account
+# and domain specific, so hardcoding either would break a fork. These defaults exist only so `helm
+# template` runs offline.
+certificateArn: ""
+host: ""
