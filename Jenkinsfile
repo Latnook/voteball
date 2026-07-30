@@ -29,12 +29,18 @@ pipeline {
 
   triggers { githubPush() }
 
-  environment {
-    // AWS_REGION and CLUSTER_NAME remain Jenkins global environment variables -- see JCasC.
-    // TRIVY_CACHE is GONE. Do not reintroduce it as an emptyDir: that converts a cross-build cache
-    // into a per-build one and re-downloads the ~100MB database on each of four scans, every build.
-    // The DB is mirrored into ECR instead; see scripts/mirror-trivy-db.sh.
-  }
+  // NO `environment` BLOCK. Declarative Groovy rejects an empty one outright -- "No variables
+  // specified for environment" -- and that is a PARSE error, so it fails the build before any stage
+  // runs and cannot be caught by anything short of actually building.
+  //
+  // Nothing belongs in it any more:
+  //   AWS_REGION / CLUSTER_NAME  come from Jenkins global environment variables (see JCasC).
+  //   ECR_REGISTRY               is derived at runtime in 'Resolve tag and account'.
+  //   TRIVY_IMAGE                is gone -- the trivy container's image is fixed by the pod template.
+  //   TRIVY_CACHE                is gone, and must NOT come back as an emptyDir: that turns a
+  //                              cross-build cache into a per-build one and re-downloads the ~100MB
+  //                              database on each of four scans, every build. The DB is mirrored into
+  //                              ECR instead; see scripts/mirror-trivy-db.sh.
 
   stages {
 
