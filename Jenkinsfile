@@ -31,7 +31,6 @@ pipeline {
 
   environment {
     // AWS_REGION and CLUSTER_NAME remain Jenkins global environment variables -- see JCasC.
-    TRIVY_IMAGE = 'aquasec/trivy:0.58.1'
     // TRIVY_CACHE is GONE. Do not reintroduce it as an emptyDir: that converts a cross-build cache
     // into a per-build one and re-downloads the ~100MB database on each of four scans, every build.
     // The DB is mirrored into ECR instead; see scripts/mirror-trivy-db.sh.
@@ -157,27 +156,38 @@ pipeline {
         anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }
       } }
       steps {
-        // The AWS CLI is not present in the skopeo image, so the ECR login password is obtained in
-        // the awscli container and handed to skopeo via a file under /images -- both containers
-        // mount that same emptyDir. skopeo copies the EXACT file Trivy scanned; nothing is rebuilt
-        // between scan and push, so the scanned artifact and the pushed artifact are provably the
-        // same bytes -- a stronger guarantee than the docker build/scan/push flow this replaces.
+        // Two containers: quay.io/skopeo/stable carries no AWS CLI, so the ECR login password is
+        // obtained in `awscli` and handed over through the shared /images volume.
         container('awscli') {
           sh '''
             set -eu
+            # umask BEFORE the redirect -- the file must never exist world-readable, even briefly.
+            umask 077
             aws ecr get-login-password --region "$AWS_REGION" > /images/ecr-password
           '''
         }
         container('skopeo') {
+          // skopeo copies the EXACT file Trivy scanned. Nothing is rebuilt between scan and push,
+          // so the scanned artifact and the pushed artifact are provably the same bytes -- a
+          // stronger guarantee than the docker build/scan/push flow this replaces.
           sh '''
             set -eu
-            PW="$(cat /images/ecr-password)"
+            # A trap, NOT a cleanup line at the bottom of the block. Under `set -eu` a failed copy
+            # exits immediately and never reaches a trailing rm, leaving a live 12-hour registry
+            # credential in a volume four containers share -- on exactly the failure path where it
+            # matters most.
+            trap 'rm -f /images/ecr-password /images/auth.json' EXIT
+
+            # --authfile rather than --dest-creds: the latter puts the password in skopeo's argv,
+            # readable via ps inside this container. Same pattern as scripts/mirror-trivy-db.sh.
+            skopeo login --username AWS --password-stdin \
+              --authfile /images/auth.json "$ECR_REGISTRY" < /images/ecr-password
+
             for svc in backend worker nginx backup; do
-              skopeo copy --dest-creds "AWS:$PW" \
+              skopeo copy --dest-authfile /images/auth.json \
                 oci-archive:/images/$svc.tar \
                 docker://"$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG"
             done
-            rm -f /images/ecr-password
           '''
         }
       }
