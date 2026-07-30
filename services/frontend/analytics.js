@@ -26,6 +26,7 @@ function switchAnalyticsTab(tabName) {
   document.getElementById('diversity-tab').hidden = tabName !== 'diversity';
   document.getElementById('lean-tab').hidden = tabName !== 'lean';
   document.getElementById('switching-tab').hidden = tabName !== 'switching';
+  document.getElementById('traits-tab').hidden = tabName !== 'traits';
 }
 
 document.getElementById('analytics-tabs').addEventListener('click', (e) => {
@@ -244,6 +245,43 @@ const LEAN_AXES = [
     negKey: 'analyticsReligiositySeparationist', posKey: 'analyticsReligiosityClerical' },
 ];
 
+// The closed family vocabulary, mapped to its i18n key. Values not in this map are ignored rather
+// than rendered raw -- seed data and frontend can drift, and a raw kebab-case string on the page is
+// worse than a missing row.
+const FAMILY_LABEL_KEYS = {
+  'universal-conscription': 'familyUniversalConscription',
+  'conscription-exemption': 'familyConscriptionExemption',
+  'conscription-split': 'familyConscriptionSplit',
+  'conscription-by-incentive': 'familyConscriptionByIncentive',
+  'constitutional-reform': 'familyConstitutionalReform',
+  'judicial-restraint': 'familyJudicialRestraint',
+  'welfare-state': 'familyWelfareState',
+  'cost-of-living': 'familyCostOfLiving',
+  'sectoral-budgeting': 'familySectoralBudgeting',
+  'market-liberal': 'familyMarketLiberal',
+  'not-economy-focused': 'familyNotEconomyFocused',
+  'arab-representation': 'familyArabRepresentation',
+  'jewish-arab-partnership': 'familyJewishArabPartnership',
+  'reservist-movement': 'familyReservistMovement',
+};
+
+// Share of votes backing parties carrying `family`, counted ONLY over votes for parties that have a
+// position on that family's dimension -- i.e. parties with a non-empty families array. A party with
+// no families was never asked the question, so counting its voters in the denominator would answer a
+// question they were not asked. Same rule as weightedAxisAverage's NULL-axis skip (Decision 8).
+// Returns null when no vote in this breakdown is positioned at all.
+function familyShare(upcomingBreakdown, family) {
+  let withFamily = 0;
+  let positioned = 0;
+  upcomingBreakdown.forEach(r => {
+    const party = partyById(r.party_id, 'upcoming_parties');
+    if (!party || !party.families || party.families.length === 0) return;
+    positioned += r.count;
+    if (party.families.includes(family)) withFamily += r.count;
+  });
+  return positioned > 0 ? { share: withFamily / positioned, positioned } : null;
+}
+
 let leanAxis = 'economic';
 
 function leanAxisConfig(key) {
@@ -363,6 +401,20 @@ async function nationalPreviousBreakdown() {
     nationalPreviousData = data.previous;
   }
   return nationalPreviousData;
+}
+
+let nationalUpcomingData = null;
+
+// National upcoming-party breakdown for the Traits baseline. Deliberately NOT a sum over
+// clubsBreakdown (rollup_upcoming WHERE club_id IS NOT NULL): that would double-count multi-club
+// ballots and silently drop league-only voters. /api/results?by=all reads the worker-computed,
+// deduped rollup_national_upcoming -- same reasoning as nationalPreviousBreakdown above.
+async function nationalUpcomingBreakdown() {
+  if (!nationalUpcomingData) {
+    const data = await fetchJSON('/api/results?by=all');
+    nationalUpcomingData = data.upcoming;
+  }
+  return nationalUpcomingData;
 }
 
 function renderLeanTab() {
@@ -659,6 +711,108 @@ function renderSwitchingTab() {
   loadSwitchingScope(null, null, t('analyticsNational'));
 }
 
+// Clubs with enough upcoming-election votes to say anything about. Mirrors allLeanClubRows()'s
+// threshold and World-Cup filter, but counts the UPCOMING breakdown rather than the previous one.
+function traitsEligibleClubs() {
+  const wcLeagueId = worldCupLeagueId();
+  return clubsBreakdown
+    .map(entry => {
+      const club = clubById(entry.club_id);
+      if (!club) return null;
+      const total = entry.upcoming.reduce((sum, r) => sum + r.count, 0);
+      return { club, total, upcoming: entry.upcoming };
+    })
+    .filter(row => row !== null && row.total >= LEAN_MIN_VOTES)
+    .filter(row => diversityIncludeWorldCup || row.club.league_id !== wcLeagueId)
+    .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)));
+}
+
+// Top 3 families by over-representation against the national baseline. Only positive gaps are shown:
+// a club whose fans are merely average on everything gets the empty-state line rather than filler.
+// Shares do NOT sum to 100 -- one vote feeds every family its party carries -- so this renders as a
+// list, never as a composition.
+function renderTraitsRows(container, row, national) {
+  container.innerHTML = '';
+  const rows = Object.keys(FAMILY_LABEL_KEYS)
+    .map(family => {
+      const here = familyShare(row.upcoming, family);
+      const base = familyShare(national, family);
+      if (!here || !base) return null;
+      return { family, share: here.share, base: base.share, gap: here.share - base.share };
+    })
+    .filter(r => r !== null && r.gap > 0)
+    .sort((a, b) => b.gap - a.gap)
+    .slice(0, 3);
+
+  if (rows.length === 0) {
+    const p = document.createElement('p');
+    p.className = 'note';
+    p.textContent = t('analyticsTraitsNone');
+    container.appendChild(p);
+    return;
+  }
+
+  rows.forEach(r => {
+    const line = document.createElement('div');
+    line.className = 'lean-detail-row';
+
+    const label = document.createElement('span');
+    label.textContent = t(FAMILY_LABEL_KEYS[r.family]);
+    line.appendChild(label);
+
+    const value = document.createElement('span');
+    value.textContent = `${Math.round(r.share * 100)}% · `
+      + t('analyticsTraitsNationalAvg').replace('{pct}', String(Math.round(r.base * 100)))
+      + ` · +${Math.round(r.gap * 100)}`;
+    line.appendChild(value);
+
+    container.appendChild(line);
+  });
+}
+
+async function renderTraitsTab() {
+  const tab = document.getElementById('traits-tab');
+  tab.innerHTML = '';
+
+  const eligible = traitsEligibleClubs();
+  if (!eligible.length) {
+    const empty = document.createElement('p');
+    empty.className = 'note';
+    empty.textContent = t('analyticsTooFewVotes');
+    tab.appendChild(empty);
+    return;
+  }
+
+  const field = document.createElement('label');
+  field.className = 'field';
+  const labelSpan = document.createElement('span');
+  labelSpan.textContent = t('analyticsPickClub');
+  field.appendChild(labelSpan);
+  const picker = document.createElement('select');
+  picker.id = 'traits-club-picker';
+  eligible.forEach((row, i) => {
+    const opt = document.createElement('option');
+    opt.value = String(row.club.id);
+    opt.textContent = localizedName(row.club);
+    if (i === 0) opt.selected = true;
+    picker.appendChild(opt);
+  });
+  field.appendChild(picker);
+  tab.appendChild(field);
+
+  const rowsContainer = document.createElement('div');
+  rowsContainer.className = 'card';
+  tab.appendChild(rowsContainer);
+
+  const national = await nationalUpcomingBreakdown();
+  const draw = () => {
+    const row = eligible.find(r => String(r.club.id) === picker.value) || eligible[0];
+    renderTraitsRows(rowsContainer, row, national);
+  };
+  picker.addEventListener('change', draw);
+  draw();
+}
+
 async function initAnalytics() {
   try {
     analyticsOptionsData = await fetchJSON('/api/options');
@@ -667,11 +821,13 @@ async function initAnalytics() {
     analyticsShowError('diversity-tab');
     analyticsShowError('lean-tab');
     analyticsShowError('switching-tab');
+    analyticsShowError('traits-tab');
     return;
   }
   renderDiversityTab();
   renderLeanTab();
   renderSwitchingTab();
+  renderTraitsTab();
 }
 
 document.addEventListener('voteball:langchange', () => {
@@ -679,6 +835,7 @@ document.addEventListener('voteball:langchange', () => {
   renderDiversityTab();
   renderLeanTab();
   renderSwitchingTab();
+  renderTraitsTab();
 });
 
 initAnalytics();
