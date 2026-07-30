@@ -337,25 +337,30 @@ too. `sectoral-budgeting` rests on the *mechanism* (coalition funds as the negot
 support, Smotrich's settlement transfers, the NIS 1bn+ increase) and not on that vote. Anyone
 revisiting this family should not cite the 107–4 amendment as evidence for it.
 
+## Axis audit carried out alongside this design
+
+Two existing הליכוד axis values were tested against the record this design surfaced. Handled as a
+separate pass (revision 10 in `docs/party-classifications.md`) rather than as a side effect of adding
+a column, and the two came out differently — which is the point of testing both.
+
+- **`religiosity +1 → +2`.** The record meets the +2 band on both limbs: the kashrut monopoly restored
+  by statute (49–34, then 46–41), and religious funding expanded (NIS 4.1bn → 5.17bn plus an NIS 800m
+  amendment, yeshiva funding restored after a unanimous High Court ruling against it). What moved is
+  the reading of the rule, not the evidence: the religiosity design's Decision 5 holds that the axis
+  records **direction** and tags record **motive**, so "for coalition reasons" belongs in
+  `instrumentally-clerical` and cannot also suppress the number.
+- **`economic +1` confirmed.** The hypothesis was that the band's "liberalizing" half is only the
+  rhetoric `claims-economically-liberal` flags. It is not: the "מה שטוב לאירופה טוב לישראל" import
+  reform has phased in since 2025-01-01 across 80% of consumer-goods import value, and the
+  personal-import VAT exemption rose $75 → $150 against the Manufacturers Association and the
+  Chambers of Commerce. Liberalizing against your own producer lobby is real. Fused with VAT 17→18%,
+  frozen brackets and a deficit past 5%, that is the +1 band as written.
+
+Both tags are retained and now do only their own jobs.
+
 ## Open questions
 
-Two **existing axis values** look contradicted by the record surfaced while drafting this. Both are on
-הליכוד, both are outside this design's scope, and neither is changed here — rescoring an axis is a
-`seed.sql` data change with its own review, not a side effect of adding a column.
-
-- **`economic = +1`.** That band is defined as "liberalizing *fused with* real state expansion". The
-  record supplies the expansion (coalition funds, no ministry closed, deficit past 5%) but the
-  liberalizing half is what `claims-economically-liberal` exists to say is *rhetoric* — VAT 17→18%,
-  National Insurance and health taxes raised, income tax brackets frozen. If the liberalizing half is
-  only claimed, the revealed position may sit at `0` or below rather than `+1`.
-- **`religiosity = +1`** ("preserve and modestly strengthen the state's Jewish character") against a
-  record of restoring yeshiva funding the High Court had ruled unlawful, NIS 5.17bn to Haredi
-  institutions, and legislating to reset the status of students who ignored call-up orders. That
-  reads as the **`+2`** definition almost verbatim — "expand religious authority and state religious
-  funding … *without* a halakhic-state programme" — which is where ש"ס and יהדות התורה sit. The
-  religiosity design's own Decision 5 holds that the axis records **direction** while tags record
-  **motive**; `instrumentally-clerical` is a motive claim, so on that rule it should not be holding
-  the number down.
+None outstanding.
 
 ## Verification outcome
 

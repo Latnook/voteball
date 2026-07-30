@@ -706,7 +706,7 @@ UPDATE previous_parties p SET
     bloc = v.bloc, economic = v.economic, security = v.security,
     religiosity = v.religiosity, sector = v.sector, tags = v.tags
 FROM (VALUES
-    ('הליכוד', 'bibi', 1, 2, 1, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[]),
+    ('הליכוד', 'bibi', 1, 2, 2, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[]),
     ('יש עתיד', 'opposition', 0, 0, -2, 'secular', ARRAY['liberal-zionist', 'centrist']::text[]),
     ('הציונות הדתית', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'not-economy-focused', 'ultranationalist', 'far-right']::text[]),
     ('המחנה הממלכתי', 'unaligned', 1, NULL, -1, 'secular', ARRAY['centrist', 'avoids-security-topic', 'leans-traditional']::text[]),
@@ -842,7 +842,7 @@ UPDATE upcoming_parties p SET
     bloc = v.bloc, economic = v.economic, security = v.security,
     religiosity = v.religiosity, sector = v.sector, tags = v.tags
 FROM (VALUES
-    ('הליכוד', 'bibi', 1, 2, 1, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[]),
+    ('הליכוד', 'bibi', 1, 2, 2, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[]),
     ('ישר', 'opposition', 1, 1, -2, 'secular', ARRAY['new-party', 'centrist', 'liberal-zionist', 'statist', 'security-hawk', 'no-palestinian-state', 'anti-annexation', 'universal-conscription', 'core-curriculum', 'constitutionalist', 'governance-reform', 'anti-monopoly', 'periphery-development', 'tax-cutting', 'public-service-reform', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'reservist-focused', 'agricultural-protectionism']::text[]),
     ('ביחד', 'opposition', 1, NULL, -2, 'secular', ARRAY['liberal-zionist', 'constitutionalist', 'internally-split-on-conflict', 'anti-clerical', 'universal-conscription', 'pro-competition', 'periphery-development', 'anti-monopoly', 'free-trade', 'kashrut-liberalization']::text[]),
     ('הדמוקרטים', 'opposition', -2, -1, -3, 'secular', ARRAY['progressive', 'social-democrat', 'liberal-zionist', 'religious-pluralism', 'jewish-arab-partnership', 'protest-movement-rooted', 'two-state']::text[]),

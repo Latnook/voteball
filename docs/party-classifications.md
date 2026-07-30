@@ -114,8 +114,8 @@ Negative reduces religious authority.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
-| **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | ש"ס, יהדות התורה, זהות `[u]` |
-| **+1** | Preserve and modestly strengthen the state's Jewish character | הליכוד |
+| **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה, זהות `[u]` |
+| **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
 | **0** | Status quo — no active religion-state agenda in either direction | אל הדגל `[u]`, המילואימניקים `[u]` |
 | **−1** | Pluralist: soften the monopolies without disestablishing | כחול לבן `[u]`, המחנה הממלכתי `[p]` |
 | **−2** | Strong separationist: civil marriage, break the monopolies, core curriculum as a funding condition | ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
@@ -195,12 +195,43 @@ these rows.
 
 ## Upcoming parties
 
-### הליכוד — Likud · `bibi` · 1 / 2 / 1 · traditional
+### הליכוד — Likud · `bibi` · 1 / 2 / 2 · traditional
 
-`claims-economically-liberal` records the gap between free-market rhetoric and the record.
-religiosity **+1 is the revealed position** (Decision 4): Likud does not want a halakhic state, but
-reliably funds and defends religious authority to hold a coalition. That gap is carried by
-`instrumentally-clerical` rather than by a second column.
+**religiosity +2, moved from +1 on 2026-07-30.** The old reading was that Likud "does not want a
+halakhic state, but reliably funds and defends religious authority to hold a coalition", scored +1
+with `instrumentally-clerical` carrying the gap. The first half is still right and is what keeps this
+row out of +3. The second half is the +2 band's definition, and the record meets it on both limbs:
+
+- **Defends the monopolies.** The Knesset repealed the 2021 kashrut reform and restored the Chief
+  Rabbinate's exclusive control over kosher certification — 49–34 in first reading, 46–41 final,
+  included in the coalition agreements, with implementation stalled by the Religious Services
+  Minister from December 2022. The Competition Authority warned the repeal removes competition that
+  "could have led to … lower food prices".
+- **Expands state religious funding.** Haredi allocations raised from NIS 4.1bn to **5.17bn** in the
+  2026 budget plus a late-night **NIS 800m** amendment; **>NIS 600m** to private schools that teach no
+  core curriculum; yeshiva funding restored after a unanimous nine-justice High Court ruling that
+  the state may neither defer eligible students nor fund the institutions holding them — with
+  legislation to reset the status of students who ignored call-up orders.
+
+What moved is the reading of the rule, not the evidence. The religiosity design's Decision 5 holds
+that **the axis records direction and tags record motive**; "for coalition reasons rather than from
+conviction" is a motive claim, so it belongs in `instrumentally-clerical` and cannot also justify
+suppressing the number. Scored on direction alone, defending the kashrut monopoly by statute and
+funding religious institutions at this scale is the +2 band as written. `instrumentally-clerical` is
+retained and now does only its own job.
+
+**economic +1 is confirmed, not merely inherited.** The same pass tested whether the "liberalizing"
+half of this band is real or is only what `claims-economically-liberal` flags as rhetoric. It is real:
+the "מה שטוב לאירופה טוב לישראל" import reform has phased in since 2025-01-01 and covers 80% of the
+value of consumer-goods imports, and the personal-import VAT exemption was raised from $75 to $150
+against the declared opposition of the Manufacturers Association and the Federation of Israeli
+Chambers of Commerce. Liberalizing against your own producer lobby is not a claim. It sits alongside
+VAT 17%→18%, frozen tax brackets, no ministry closed and a deficit past 5% — which is precisely this
+band's "liberalizing *fused with* real state expansion", so +1 stands.
+
+`claims-economically-liberal` is likewise retained: it records that the party brands itself
+free-market while presiding over record spending and tax rises on workers, which remains true even
+though the liberalizing half exists.
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
@@ -746,7 +777,7 @@ separates them from +3.
 These describe each party **as it stood at the previous election** and are frozen. Most carry the
 same reasoning as their upcoming counterpart at an earlier stage; only the differences are noted.
 
-- **הליכוד** `bibi` · 1 / 2 / 1 · traditional — as above, including `instrumentally-clerical`.
+- **הליכוד** `bibi` · 1 / 2 / 2 · traditional — as above, including `instrumentally-clerical`.
 - **יש עתיד** `opposition` · 0 / 0 / −2 · secular — strong separationist.
 - **הציונות הדתית** `bibi` · 0 / 3 / 3 · religious_zionist — the four original tags only; the 2026
   primary findings are **not** back-dated here.
@@ -855,3 +886,4 @@ pass happened, for anyone reading git history.
 | 2026-07-27 | זהות — Zehut added to `upcoming_parties`, scored from its own 2026 platform |
 | 2026-07-27 | Zehut `bloc` corrected `unaligned` → `bibi` (criticising Netanyahu ≠ leaving his bloc) |
 | 2026-07-29 | נעם — Noam added to `upcoming_parties`; first NULL on the `economic` axis |
+| 2026-07-30 | revision 10 — Likud audited against the voting record: religiosity +1 → **+2** (kashrut monopoly restored by statute, religious funding expanded); economic **+1 confirmed** (the import reform is real liberalizing, not rhetoric). Both tables |
