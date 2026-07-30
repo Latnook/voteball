@@ -2,41 +2,58 @@
 
 How a code change becomes a running pod, with no manual deploy step.
 
-CI is **Jenkins**, running on a dedicated EC2 host built by `terraform/jenkins/`. It replaced a GitHub
-Actions pipeline on 2026-07-20; the reasoning for every choice below is in
-[`docs/design/2026-07-20-jenkins-migration-design.md`](design/2026-07-20-jenkins-migration-design.md),
-whose gotcha labels **G1–G7** are referenced throughout.
+CI is **Jenkins, running inside the EKS cluster** (namespace `ci`), installed by Terraform
+(`terraform/addon-jenkins.tf`) as a `helm_release` of the official `jenkins/jenkins` chart, and
+configured entirely by JCasC (`ci/jenkins/jenkins.yaml`). It replaced a GitHub Actions pipeline on
+2026-07-20, then a dedicated EC2 host on 2026-07-30/31 — the reasoning for the pipeline's *logic* is in
+[`docs/design/2026-07-20-jenkins-migration-design.md`](design/2026-07-20-jenkins-migration-design.md)
+(gotcha labels **G1–G7**, referenced throughout below and still current); the reasoning for *running it
+in the cluster instead of on EC2* is in
+[`docs/design/2026-07-30-jenkins-on-eks-design.md`](design/2026-07-30-jenkins-on-eks-design.md), whose
+"Verification outcome" section records what the move actually broke versus what the design predicted.
 
-The pipeline below was verified end-to-end on 2026-07-20 against the live cluster; the JCasC
-self-configuration described under "First-time setup" was added and verified on 2026-07-21, including
-a boot from a genuinely fresh instance.
+The pipeline was verified end-to-end on 2026-07-20 against the live cluster, JCasC self-configuration
+was verified on 2026-07-21 (a genuinely fresh EC2 instance), and the in-cluster move was verified
+end-to-end on 2026-07-30/31: a push builds, scans, pushes four images and commits a tag bump, ArgoCD
+deploys it, and the tag-bump commit is correctly refused by the Guard stage.
 
 ---
 
 ## The short version
 
 ```
-git push (services/**)  →  webhook  →  Jenkins  →  ECR  →  values.yaml bump  →  ArgoCD  →  pods roll
-        you                            ~2 min                  commit                       rolling update
+git push (services/**)  →  webhook  →  Jenkins (pod agent)  →  ECR  →  values.yaml bump  →  ArgoCD  →  pods roll
+        you                            build → scan → push        commit                       rolling update
 ```
 
 Nobody runs `kubectl` or `helm`. **Jenkins does not deploy** — it stops at "push images, commit the new
 tag". ArgoCD notices the commit and rolls the Deployments. That split is deliberate: it means Jenkins
-holds **no cluster credentials at all**, so a compromised build host cannot touch the cluster.
+holds **no cluster-deploy credentials at all**, for a sharper reason than before it moved in-cluster —
+it is now physically *inside* the cluster it must still be unable to change.
+
+**Jenkins is a platform add-on, not the application.** Changes to the Jenkins release (the Helm values
+in `terraform/addon-jenkins.tf`, or JCasC in `ci/jenkins/jenkins.yaml`) reach the cluster by
+`terraform apply`, exactly like ArgoCD, External Secrets Operator or external-dns — **not** by
+committing to `master`. This is the opposite of `charts/voteball`, which ArgoCD syncs from git.
+Committing a JCasC change and walking away changes nothing until someone runs `terraform apply`.
 
 ---
 
 ## The pipeline, step by step
 
 The pipeline lives in [`Jenkinsfile`](../Jenkinsfile) at the repository root, and the Jenkins job is
-configured as *Pipeline script from SCM* — so the build definition is in the repository and reviewable,
-not hidden in Jenkins' database.
+defined by Job DSL inside `ci/jenkins/jenkins.yaml` as *Pipeline script from SCM* — so the build
+definition is in the repository and reviewable, not hidden in Jenkins' database. What changed in the
+move: **the pod agent template is now also in JCasC**, under the Kubernetes cloud's `templates:` block,
+not the `Jenkinsfile`. The `Jenkinsfile` says `agent { label 'voteball-build' }` and nothing about which
+containers exist — that split follows the 2026-07-20 design's own rule ("everything about HOW to build
+lives in the Jenkinsfile ... this block only says where to find it and when to run it"), applied to the
+one new thing JCasC now owns: *what a build agent is made of*.
 
 ### 1. Trigger — GitHub webhook
 
-A push to `master` sends a webhook to `http://<elastic-ip>:8080/github-webhook/`. Jenkins verifies the
-HMAC signature GitHub attaches using a shared secret, so a random host inside GitHub's IP ranges cannot
-start builds.
+A push to `master` sends a webhook to `https://jenkins.<app_domain>/github-webhook/`. Jenkins verifies
+the HMAC signature GitHub attaches using a shared secret, so a random request cannot start builds.
 
 Only app-source changes rebuild images: the build/scan/push stages carry
 `when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } } }` (**G3**). Editing
@@ -48,6 +65,11 @@ Only app-source changes rebuild images: the build/scan/push stages carry
 
 `FORCE_BUILD` is a checkbox on "Build with Parameters". It exists because a **manually** triggered build
 has an empty changeset and would otherwise skip every stage, making "Build Now" a silent no-op.
+
+**Behaviour change from the EC2 host:** webhooks used to be silently discarded while the host was
+stopped, so a push only built if someone had started the machine first. In the cluster Jenkins is
+always running, so **every push to `master` touching `services/` now builds.** That is correct CI
+behaviour, called out because it differs from the old status quo.
 
 ### 2. Guard — is this our own commit? (G2)
 
@@ -63,60 +85,91 @@ commit cannot be built even manually with `FORCE_BUILD` ticked.
 It is a visible stage rather than a plugin setting precisely so that removing it is an obvious edit in a
 reviewed file, not an invisible configuration change.
 
-### 3. Authenticate to AWS — instance profile, no stored keys
+### 3. Authenticate to AWS — IRSA on the agent, nothing on the controller
 
-An IAM role (`voteball-jenkins`) is attached to the EC2 instance itself. Any `aws` CLI call on that host
-picks up temporary credentials from the instance metadata service automatically. There is **no OIDC
-provider, no `configure-aws-credentials` step, and no key material stored anywhere** — not in Jenkins,
-not in git, not on disk. ECR login is just:
+There is no Docker daemon and no `docker` CLI in a pod agent at all — EKS nodes run `containerd`. Builds
+use rootless BuildKit instead (§5).
 
-```bash
-aws ecr get-login-password --region "$AWS_REGION" \
-  | docker login --username AWS --password-stdin "$ECR_REGISTRY"
-```
+AWS identity is **IRSA**, and it is split narrower than the single EC2 instance profile it replaces:
 
-The role can push to `repository/voteball-*` and call `ecr:GetAuthorizationToken`, and **nothing else** —
-no EKS, RDS, S3, SNS or Secrets Manager. Verified on the live host: `aws ecr get-login-password` works,
-`aws eks list-clusters` returns `AccessDeniedException`.
+| Component | AWS role |
+|---|---|
+| Jenkins controller | **none** |
+| Jenkins agent pods (`jenkins-agent` ServiceAccount) | ECR push/pull only, ARN pattern `repository/<cluster_name>-*` |
+| Secrets Manager read | ESO's own role, not Jenkins' — Jenkins never reads Secrets Manager directly |
 
-IMDSv2 is required (`http_tokens = "required"`), so a server-side request forgery on the host cannot
-trivially read the role's credentials.
+The role can push/pull `repository/<cluster_name>-*` and call `ecr:GetAuthorizationToken`, and
+**nothing else** — no EKS, RDS, S3, SNS. `GetDownloadUrlForLayer` is included (the EC2 profile never
+needed it, because that host only ever pushed) — the agent now also *imports* the BuildKit layer cache
+and *pulls* the mirrored Trivy database from ECR, both new in this design (§5a).
 
-The account ID and registry hostname are **derived at runtime** (`aws sts get-caller-identity`), never
-hardcoded — the repo's forkability rule applies to the `Jenkinsfile` too.
+Every `aws` CLI call must run inside `container('awscli')` — steps outside a `container()` block run in
+the `jnlp` container, which has git but no AWS CLI. Forgetting this is `aws: not found`, exit 127 (see
+Failure modes).
 
 ### 4. Already built? (G1)
 
 ECR repositories are created with `image_tag_mutability = "IMMUTABLE"`, and images are tagged with the
 short git SHA. Re-running a build for the same commit would therefore try to push a tag that already
-exists, and ECR rejects it — a red build caused by nothing being wrong. Under GitHub Actions that was
-rare; in Jenkins, "Build Now" and replaying a build to debug a later stage are routine.
+exists, and ECR rejects it — a red build caused by nothing being wrong. "Build Now" and replaying a
+build to debug a later stage are routine in Jenkins.
 
 `scripts/ci/images-exist.sh` asks ECR whether all four images for this SHA already exist. If they do,
 build/scan/push are skipped and the pipeline goes straight to the tag bump, saying why. The skip only
 happens on a **positive** answer — a lookup failure builds normally, so the worst case is a redundant
 build, never a green build that silently ships nothing.
 
-### 5. Build, scan, push
+### 5. Build, scan, push — rootless BuildKit, no Docker daemon
 
 Four images (`backend`, `worker`, `nginx`, `backup`) are built and tagged with the short git SHA — never
 `latest`, so every deployed pod maps to an exact commit.
 
-**Trivy blocks the pipeline** on fixable `CRITICAL`/`HIGH` findings in the three app images. The `backup`
-image is third-party (`postgres:17-alpine` + aws-cli) and is scanned **report-only**, since its CVEs are
-upstream Go-tooling issues outside this project's control.
+**Build.** The `buildkit` container in the agent pod runs `moby/buildkit:v0.19.0-rootless` as uid 1000.
+`buildctl build --output type=docker,dest=/images/<svc>.tar` writes a `docker-archive` tarball to a
+shared `emptyDir`. **`type=docker`, not `type=oci`** — both write a tar, but `type=oci` writes an OCI
+*archive* (`index.json` + `blobs/`), and Trivy's `--input` reads a `docker-archive` or an OCI
+*directory*, not an OCI archive; with `type=oci` the build succeeds and Trivy then fails with
+`manifest.json not found in tar`, which reads like a corrupt image rather than the wrong export type.
 
-Trivy runs as a **container**, pinned to `aquasec/trivy:0.58.1` in the `Jenkinsfile` rather than installed
-on the host — so the version a reader of the pipeline sees is the version that actually ran, and a new
-upstream release cannot turn the pipeline red without a deliberate edit.
+**Docker-in-Docker and Kaniko were both rejected** — DinD needs `privileged: true`, which contradicts
+every other container security setting in this project; Kaniko was archived upstream by Google on
+2025-06-03. Rootless BuildKit is uid 1000, not privileged, still maintained, and the documented Kaniko
+migration target. See the design doc §5 for the full comparison. **`buildkit` is the one container in
+the whole project that sets `allowPrivilegeEscalation: true` plus `capabilities.add: [SETUID, SETGID]`**
+— creating a user namespace for rootless building needs `newuidmap`, a SETUID binary; without the
+exception `rootlesskit` dies instantly and the build hangs on "still waiting to schedule" forever with
+nothing logged. It is still uid 1000, no host devices, no host paths — do not "make it consistent" with
+the rest of the project; the exception is scoped to one CI container in a namespace whose NetworkPolicy
+already denies it any route to RDS or `devops-app`.
 
-`/var/lib/trivy-cache` is mounted into every scan. Without it the ~100 MB vulnerability database is
-re-downloaded on each of four scans, every build, which risks anonymous-pull rate limits on ghcr.io
-failing builds for reasons unrelated to the code. The first build downloaded 100.80 MiB; every later scan
-reused the cache.
+**Scan.** `trivy image --db-repository <ECR>/<cluster_name>-trivy-db --input /images/<svc>.tar` runs in
+its own container. `backend`, `worker`, `nginx` **block** on fixable `CRITICAL`/`HIGH` findings; `backup`
+(third-party `postgres:17-alpine` + aws-cli, upstream CVEs outside this project's control) is
+report-only.
 
-ECR also has `scan_on_push = true`, so images are scanned again independently after the push — defence in
-depth that survives whatever happens to CI.
+**Push.** `skopeo copy docker-archive:/images/<svc>.tar docker://<ECR>/<cluster_name>-<svc>:<tag>` — the
+**exact same file** Trivy just scanned, so the scanned artifact and the pushed artifact are provably the
+same bytes. This is a strictly stronger guarantee than the old `docker build` → `docker run` (scan) →
+`docker push` flow, which quietly assumed the scanned and pushed images were identical without proving
+it. **No *deployable, tagged* image reaches ECR before the scan passes** — the Build stage's
+`--export-cache` does push unscanned layer-cache blobs to the `buildcache` repository ahead of the scan,
+but that repository is not one the app ever deploys from.
+
+**5a. Build caching — the one thing that would otherwise have regressed.** The EC2 host was persistent
+and kept a warm Docker layer cache and Trivy database between builds; a pod agent starts cold every
+time. Both caches now live in ECR instead of on any volume:
+
+- **Layer cache:** `--import-cache`/`--export-cache type=registry,ref=<ECR>/<cluster_name>-buildcache:<svc>`.
+  That repository **must stay `MUTABLE` and outside `local.ecr_repos`** in `terraform/ecr.tf` — cache
+  tags are rewritten on every build by design, and the app-image set is `IMMUTABLE` on purpose.
+  `image-manifest=true,oci-mediatypes=true` is required on the export: BuildKit's default cache manifest
+  is an OCI image *index*, which ECR rejects with a bare `400 Bad Request` on the manifest PUT — after
+  the whole image has already built and every layer uploaded, so it reads like a transient registry
+  fault.
+- **Trivy database:** `--db-repository <ECR>/<cluster_name>-trivy-db`, mirrored from upstream by
+  `scripts/mirror-trivy-db.sh`. A pod volume could not do this job — it dies with the build, so it would
+  re-download the ~100 MB database on each of four scans, every build, reintroducing the exact
+  ghcr.io rate-limit risk the original host-mount existed to avoid.
 
 ### 6. Bump the tag and commit back (G4)
 
@@ -127,15 +180,20 @@ git pull --rebase --autostash origin master
 git push origin HEAD:master
 ```
 
-Jenkins has no ambient git identity (GitHub Actions supplied a free `GITHUB_TOKEN`; Jenkins does not), so
-this uses a **GitHub deploy key with write access**, stored in Jenkins' credentials store and injected by
-`sshagent`. A deploy key is preferred over a personal access token because it is scoped to exactly one
-repository — if the build host were compromised, the blast radius is this repo, not the whole account.
+Jenkins has no ambient git identity, so this uses a **GitHub deploy key with write access**, held in
+Secrets Manager (`voteball/jenkins`) and injected via JCasC as an `sshagent`-usable credential. A deploy
+key is preferred over a personal access token because it is scoped to exactly one repository.
 
-The `git pull --rebase --autostash` is the same fix commits `ed39db2`/`1269ba8` applied to
-`scripts/deploy.sh` for the identical race: `origin/master` may have moved while the build ran. On a
-conflict the pipeline aborts the rebase explicitly rather than leaving the workspace mid-rebase, which
-would wedge the next build's checkout.
+**The job's SCM URL must be the SSH remote** (`git@github.com:<owner>/<repo>.git`), not HTTPS —
+`sshagent` only affects SSH remotes; with HTTPS the deploy key is silently ignored and this stage fails
+or hangs on a credential prompt. Still failure mode 1 below, unchanged by the move.
+
+**Raw `git` needs its own `known_hosts`, separately from the git *plugin*'s checkout.** The JCasC
+`security.gitHostKeyVerificationConfiguration` block pins GitHub's host key for the git **plugin**'s
+checkout at the start of the build; this stage shells out to plain `git push` in the `jnlp` container,
+which has no `known_hosts` of its own and fails late with `Host key verification failed` — after the
+image has already been built, scanned and pushed. The fix (already applied) writes the same pinned key
+into `~/.ssh/known_hosts` inside this stage before pushing.
 
 `[skip ci]` is still written into the message — for continuity, readability, and so the repository stays
 portable — but in Jenkins it is the **Guard stage**, not the marker, that does the work.
@@ -145,322 +203,159 @@ portable — but in Jenkins it is the **Guard stage**, not the marker, that does
 The `voteball` Application watches `charts/voteball` on `master` with `automated: {prune, selfHeal}`. It
 picks up the new tag unprompted and Kubernetes performs a rolling update across all three Deployments.
 
-### 8. Cleanup (G5)
+### 8. Cleanup
 
-GitHub's runners were destroyed after every job; this host is not. `post { always { docker image prune -f } }`
-plus `buildDiscarder` (last 20 builds) keeps the 30 GB volume from filling with four image builds per run.
+`buildDiscarder` (last 20 builds) is unchanged. **`docker image prune` is gone, not ported** — it existed
+because the EC2 host was persistent; a pod agent is destroyed after every build, so the disk cleans
+itself. `post { always }` now only removes a live ECR login token written to the shared `/images`
+volume during the Build stage, so a failed build does not leave it sitting there for the rest of the
+pod's life.
 
 ---
 
 ## First-time setup runbook
 
-> ### ⚠️ Superseded 2026-07-21 — JCasC now does steps 3–11 automatically
->
-> The host configures itself at boot from **`terraform/jenkins/casc/jenkins.yaml`**, reading its
-> credentials from AWS Secrets Manager. Plugins, the admin user, authorization, global environment
-> variables, both credentials, the GitHub plugin config and the `voteball` job are all applied on
-> every Jenkins start.
->
-> **Do not configure those through the UI. Changes made by clicking are lost on the next restart.**
->
-> The current procedure is:
->
-> 1. **`./scripts/seed-jenkins-secret.sh`** — once per account, before the host first boots. Prints
->    a deploy public key to add to GitHub (with write access) and the webhook secret.
-> 2. **`terraform apply -var-file=jenkins.tfvars`** — needs the new required `github_repo` variable.
-> 3. **Add the GitHub webhook** — step 12 below, still manual and still the only step that must be,
->    because `manageHooks` is off (this Jenkins' own URL is `localhost`, so it cannot register a
->    reachable hook itself).
->
-> To change configuration afterwards: edit `casc/jenkins.yaml`, commit, then re-run the bootstrap on
-> the host (`sudo VOTEBALL_GITHUB_REPO=<owner/repo> bash /var/lib/cloud/instance/user-data.txt`) —
-> it re-fetches from `master` and restarts. A `terraform apply` will *not* push it, because
-> `user_data` is in `ignore_changes` so that applies never rebuild the host.
->
-> **Two settings are NOT in `jenkins.yaml`, on purpose**, because `GitHubPluginConfig` is not
-> data-bound on github plugin 1.47.0 and JCasC aborts the entire boot with
-> `UnknownAttributesException` when asked to set them. `user_data.sh` writes that plugin's XML
-> directly, and writes **two files** — which is not optional:
->
-> - **`github-plugin-configuration.xml`** — the file the hook secret is actually read from. It uses
->   the **plural, populated `hookSecretConfigs` list** with `signatureAlgorithm SHA256`.
-> - **`org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml`** — where `manageHooks: false` is
->   honoured.
->
-> ⚠️ **The legacy *singular* `hookSecretConfig` is NOT read on a fresh boot.** It appears to work only
-> on a host that already has the right value in the other file, which is exactly how this shipped
-> once: a throwaway instance built from the config enforced **no webhook signature at all**, accepting
-> unsigned deliveries with `200`. Writing only the second file produces a host that looks configured
-> and validates nothing. Failure mode 3 below concerns an *empty* plural list — the fix is to populate
-> that list, never to fall back to the singular form. Test with **SHA-256**; a SHA-1-only probe fails
-> against a correct config.
->
-> Steps 3–11 are kept below as the record of what the configuration *is*, and as the fallback if
-> JCasC is ever removed.
+Originally done once, through Terraform and the Jenkins UI.
 
-Originally done once, through the Jenkins UI.
-
-**1. Build the host.**
+**1. Seed the Jenkins secret, once per account, before first apply.**
 
 ```bash
-ssh-keygen -t ed25519 -f ~/.ssh/voteball-jenkins -C voteball-jenkins   # once
-cd terraform/jenkins
-cp jenkins.tfvars.example jenkins.tfvars      # set admin_cidr to your IP as a /32
-../../scripts/bootstrap-tf-backend.sh         # once per account: state bucket + backend.hcl
-terraform init -backend-config=backend.hcl
-terraform apply -var-file=jenkins.tfvars
+./scripts/seed-jenkins-secret.sh
 ```
 
-`terraform/jenkins/` is a **separate stack with its own state**, applied and destroyed independently of
-`terraform/`. That is the whole point: `scripts/destroy.sh` tears the application stack down on every
-rebuild cycle, and a CI server owned by that stack would lose its build history and configuration each
-time.
+Prints a deploy public key to add to GitHub (with write access) and the webhook secret.
 
-**2. Open the UI.** It is not publicly reachable — only GitHub's webhook ranges can reach port 8080, and
-port 22 is open only to your own IP. Reach it through an SSH tunnel:
+**2. `terraform apply -var-file=voteball.tfvars`** from `terraform/`. This is the **main** stack now —
+there is no separate `jenkins.tfvars` or second `terraform init`. It creates the `ci` namespace, the
+agent's IRSA role, the webhook's ACM certificate, `charts/jenkins-support` (ExternalSecret +
+NetworkPolicies), and the `helm_release` itself.
+
+**3. Reach the UI to confirm it booted.**
 
 ```bash
-cd terraform/jenkins && terraform output -raw ssh_tunnel_command
-# ssh -i ~/.ssh/voteball-jenkins -L 8080:localhost:8080 ec2-user@<elastic-ip>
+kubectl port-forward -n ci svc/jenkins 8080:8080
 # then browse http://localhost:8080
 ```
 
-Tunnelled traffic arrives at Jenkins from `localhost`, so it is never evaluated against the security
-group. That is why the UI works for you while `curl http://<elastic-ip>:8080` from the same machine
-times out — which was verified, and is the intended posture.
+This replaces the old SSH tunnel entirely — there is no SSH key, no Elastic IP, no `admin_cidr` to keep
+in sync with your ISP. Login is the username/password seeded in step 1.
 
-**3. Unlock and create the admin user.** The initial password is
-`sudo cat /var/lib/jenkins/secrets/initialAdminPassword`.
+**4. Add the GitHub webhook.** Repo → Settings → Webhooks → Add:
 
-**4. Install exactly these plugins:** Git, Pipeline, GitHub, Credentials Binding, SSH Agent.
+- Payload URL `https://jenkins.<app_domain>/github-webhook/` — **the trailing slash is required**
+- Content type `application/json`, Secret = the same shared secret from step 1, event: just the push
+  event
 
-Deliberately **not** Docker Pipeline: that plugin exists for the `docker.build()` DSL, and the
-`Jenkinsfile` shells out to the `docker` CLI instead. Installing it would add a component to patch that
-nothing uses.
+This is the one step that stays manual for the same reason it always was: nothing in this design gives
+Jenkins its own ability to register a hook.
 
-> *Superseded:* the authoritative list is now `terraform/jenkins/casc/plugins.txt` — **8 top-level
-> entries** (the five above plus `configuration-as-code`, `job-dsl` and `timestamper`), with
-> dependencies resolved by `jenkins-plugin-cli`. That file also records what is deliberately excluded
-> and why.
-
-**5. Set the global environment variables.** *Manage Jenkins → System → Global properties → Environment
-variables*:
-
-| Name | Value |
-|---|---|
-| `AWS_REGION` | e.g. `il-central-1` |
-| `CLUSTER_NAME` | `voteball` |
-
-These are the direct equivalent of the old GitHub repo variables, and they exist for the same reason:
-**identity stays out of the repository**, so a fork supplies its own. The pipeline fails fast with a
-clear message if either is unset, rather than building image references like
-`null.dkr.ecr.null.amazonaws.com`.
-
-**6. Leave the Jenkins URL as `http://localhost:8080/`.** That is correct — the only human ever reaches
-it through the tunnel. The consequence is that the GitHub plugin must **not** auto-manage hooks
-(*Manage Jenkins → System → GitHub → Advanced → uncheck "Manage hooks"*), because it would otherwise
-register a `localhost` URL that GitHub cannot reach.
-
-**7. Add two credentials** (*Manage Jenkins → Credentials → System → Global*):
-
-| ID | Kind | What |
-|---|---|---|
-| `voteball-deploy-key` | SSH username with private key, username `git` | a **repository-scoped GitHub deploy key with write access** (GitHub → repo Settings → Deploy keys) |
-| `github-webhook-secret` | Secret text | a random shared secret, e.g. `openssl rand -hex 32` |
-
-> **Install the SSH key from a file, not by pasting it into the textarea.** Pasting drops the trailing
-> newline, and OpenSSH then cannot load the key at all — see failure modes below; this cost real time.
-
-**8. Seed known_hosts.** SSH checkout fails outright if github.com's host keys are unknown:
-
-```bash
-sudo -u jenkins ssh-keyscan github.com >> /var/lib/jenkins/.ssh/known_hosts
-```
-
-**9. Create the job.** New Item → name `voteball` → **Pipeline**.
-
-- Definition: **Pipeline script from SCM**, SCM: Git
-- **Repository URL: `git@github.com:<owner>/<repo>.git` — SSH, MANDATORY.** `sshagent` only affects SSH
-  remotes; with an HTTPS URL the deploy key is silently ignored and the final push fails.
-- Credentials: `voteball-deploy-key`
-- Branch: `*/master`, Script Path: `Jenkinsfile`
-- Build trigger: **GitHub hook trigger for GITScm polling**
-
-Not Freestyle (that would put the build definition in Jenkins' database instead of the repository,
-defeating the point) and not Multibranch (this project commits directly to `master`).
-
-**10. Run the job once with no parameters (G6).** Jenkins registers a pipeline's `parameters` block only
+**5. Run the job once with no parameters (G6).** Jenkins registers a pipeline's `parameters` block only
 after it has read the `Jenkinsfile` during a build, so `FORCE_BUILD` does not exist yet. **That first run
 doing nothing is expected, not a fault.** Afterwards the checkbox appears.
 
-**11. Configure the webhook secret on the Jenkins side.** *Manage Jenkins → System → GitHub → Shared
-secrets*, using the `github-webhook-secret` credential. Then verify it actually persisted — see failure
-mode 3, which is the single most time-consuming problem in this migration.
-
-**12. Add the GitHub webhook.** Repo → Settings → Webhooks → Add:
-
-- Payload URL `http://<elastic-ip>:8080/github-webhook/` — **the trailing slash is required**
-- Content type `application/json`, Secret = the same shared secret, event: just the push event
-
-**If you are migrating from another CI system rather than starting fresh, disarm it before enabling this
-webhook.** Two armed pipelines both build the same commit and then race to push `values.yaml` to
-`master` — which is exactly the collision this migration was ordered to avoid.
+To change configuration afterwards: edit `ci/jenkins/jenkins.yaml` (or the Helm values in
+`terraform/addon-jenkins.tf`), commit, then `terraform apply`. The chart's config-reload sidecar picks
+up the new JCasC without a manual restart in the common case; if it doesn't, delete the Jenkins pod and
+let it reschedule — see "Running the instance" below.
 
 ---
 
 ## Running the instance
 
+There is no instance to start or stop. Jenkins runs whenever the cluster runs, and is torn down with it
+by `terraform destroy` — there is no equivalent of "stop it to save money", because there is no separate
+bill for it: it is pods on nodes the cluster already has running for the app.
+
+**The controller is disposable by design.** `JENKINS_HOME` is an `emptyDir`, not a PersistentVolume. The
+node group is 100% Spot and gets reclaimed roughly once a day; an EBS volume is locked to one
+Availability Zone, so a PVC would need every reschedule to land back in the same AZ or the pod hangs
+`Pending` — the one failure mode this design needs a human for. At a daily reclaim rate a PVC would
+preserve almost nothing while adding exactly that risk. **Do not add one.**
+
+What is lost on a reclaim (and on every `terraform destroy`): build history and build numbers, reset to
+zero. This is capped at the last 20 builds anyway (`buildDiscarder`), and the durable record was never
+the build log — it is the `ci: image tag <sha> [skip ci]` commits on `master`, which never expire and
+survive every teardown. If a build fails and the pod is reclaimed before anyone reads the log, that log
+is gone; in practice a failure is read when it happens.
+
+To force a fresh controller (e.g. after a JCasC change that needs a full restart to pick up):
+
 ```bash
-cd terraform/jenkins
-aws ec2 stop-instances  --instance-ids "$(terraform output -raw instance_id)"
-aws ec2 start-instances --instance-ids "$(terraform output -raw instance_id)"
+kubectl delete pod -n ci -l app.kubernetes.io/component=jenkins-controller
 ```
 
-Cost is about **$37/month** running (t3.medium in `il-central-1`) and about **$6/month** stopped — EBS
-~$2.40 plus the Elastic IP ~$3.60, because AWS bills a public IPv4 address whether or not the instance is
-running. All Jenkins state lives on the EBS volume and the Elastic IP keeps the address stable, so
-stop/start is safe and the webhook URL never changes.
-
-**Webhooks are silently discarded while the instance is stopped.** That is expected, not a fault: GitHub
-records a failed delivery and nothing else happens. Start the instance and run a manual build with
-`FORCE_BUILD`, or push again.
-
-Two consequences of protecting Jenkins' state are worth knowing before you tear the stack down: the root
-volume is `delete_on_termination = false` and the instance carries
-`lifecycle { ignore_changes = [user_data, ami] }`. Both exist because Jenkins' credentials and job
-configuration live **only** on that volume. The cost is that destroying the stack leaves an **orphaned
-30 GB volume you must delete by hand**.
-
-**`ami` in that list is load-bearing — do not remove it.** `data.aws_ssm_parameter.al2023` resolves to
-the *newest* Amazon Linux 2023 image, and `ami` forces replacement, so without the ignore a routine
-`terraform apply` would **destroy and rebuild the CI host** on Amazon's release schedule. The preserved
-volume does not save you: the replacement instance does not attach it. Ignoring rather than pinning is
-deliberate — a *new* host still builds from the latest image while an existing one is never churned.
-Patch in place with `sudo dnf update --releasever=latest`; move to a new image only via a deliberate
-`-replace`, which is safe now that JCasC can rebuild the configuration.
+It comes back configured from JCasC within about a minute, with no plugin download — the plugin set is
+baked into the controller image (`ci/jenkins/Dockerfile`), rebuilt out-of-band with
+`scripts/build-push-ecr.sh jenkins <tag>` whenever `plugins.txt` changes, which is rare.
 
 ---
 
 ## Failure modes
 
-The first three actually happened during this migration and are recorded with their real root causes;
-the rest are the G1–G7 differences the design predicted.
+The first ten happened for real during the 2026-07-30/31 move to EKS and are recorded with their actual
+symptoms, because in every case the symptom pointed somewhere other than the cause. The rest are the
+G1–G7 differences the original design predicted and remain accurate.
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Build reaches the final stage, then the push fails or hangs on a credential prompt | The job's SCM URL is **HTTPS**. `sshagent` only affects SSH remotes, so the deploy key was never offered | Set the SCM URL to `git@github.com:<owner>/<repo>.git` |
-| `error in libcrypto` then `Permission denied (publickey)` | The private key pasted into the Jenkins credentials textarea **lost its trailing newline**, so OpenSSH could not *load* it and offered no key at all. The `Permission denied` line is misleading — GitHub was refusing an anonymous connection | Install the credential programmatically from a file rather than pasting |
-| Webhook "ping" returns 200 but every push returns **400 "No valid signature found"** | `GitHubPluginConfig` (github plugin 1.47.0) has both a legacy singular `hookSecretConfig` and a plural `hookSecretConfigs` list. `getHookSecretConfigs()` prefers the list when present and only falls back to the singular otherwise — so an **empty-but-present** `<hookSecretConfigs/>` beat the fallback, leaving zero secrets configured, and this version requires at least one, rejecting signed and unsigned requests identically **Populate the plural list** — do not fall back to the singular form. Write `/var/lib/jenkins/github-plugin-configuration.xml` with a non-empty `<hookSecretConfigs>` containing `<credentialsId>github-webhook-secret</credentialsId>` and `<signatureAlgorithm>SHA256</signatureAlgorithm>`, then restart. ⚠️ The singular `hookSecretConfig` is **not read on a fresh boot** — it only ever appeared to work on a host that already held the value in this file, and relying on it ships a host that enforces **no signature at all**. `setHookSecretConfigs()` via Groovy reports success but does **not** persist. Verify with a **SHA-256** probe: signed → 200, unsigned → 400 |
+| Declarative pipeline fails to parse; no stage ever runs | An empty `environment {}` block in the `Jenkinsfile` — declarative Groovy rejects it outright ("No variables specified for environment") | Remove the block entirely; nothing needs to live in it (see the comment at the top of the `Jenkinsfile`) |
+| Controller `CrashLoopBackOff`, nothing useful in `kubectl describe pod` or events | JCasC `defaultConfig: true` in the Helm values collides with `ci/jenkins/jenkins.yaml` defining the same keys (`numExecutors`, the `clouds:` block) — `ConfiguratorConflictException`, exit code 5, "Failed to initialize Jenkins" | Set `controller.JCasC.defaultConfig = false` in `terraform/addon-jenkins.tf`. If the controller needs something the default config provided, add it to `ci/jenkins/jenkins.yaml` instead — that file is the single source of truth |
+| Agent pod sits at "4/5 healthy", build hangs on "still waiting to schedule" forever, nothing logged | `allowPrivilegeEscalation: false` (or missing `SETUID`/`SETGID`) on the `buildkit` container — rootless BuildKit cannot create its user namespace and `rootlesskit` dies instantly | The `buildkit` container needs `allowPrivilegeEscalation: true` and `capabilities.add: [SETUID, SETGID]`, with `seccompProfile`/`appArmorProfile` set to `Unconfined`. It is still uid 1000, not privileged — see `ci/jenkins/jenkins.yaml`'s long comment on exactly what this does and does not grant |
+| Agent pod goes 5/5 Running, but the build never proceeds — no error, just silence until the cloud's `retentionTimeout` reaps the pod | The `ci` NetworkPolicy's egress allowlist excluded the VPC's own pod range, so the agent has no permitted route to the controller (`jenkins.ci.svc.cluster.local:8080`/`:50000`) | The egress policy must explicitly re-allow same-namespace pod-to-pod traffic (`- to: [{ podSelector: {} }]`) even though the broad "allow the internet, deny the VPC" rule looks like it should cover it — see `charts/jenkins-support/templates/networkpolicy.yaml` |
+| `aws: not found`, exit code 127 | A step ran outside `container('awscli')` — steps outside any `container()` block run in the `jnlp` container, which has git but no AWS CLI | Wrap every `aws` invocation in `container('awscli') { ... }` |
+| `[Errno 13] Permission denied: '/.aws'` (or Trivy failing to write `$HOME/.cache`) | The pod runs every container as uid 1000, but the `trivy`/`awscli`/`skopeo` base images assume root and leave `HOME=/`, which is not writable | Set `env: [{ name: HOME, value: /tmp }]` on those containers — already applied in `ci/jenkins/jenkins.yaml` |
+| `401 Unauthorized` against the `*-buildcache` repository, minutes into a build | `buildctl` reads `$DOCKER_CONFIG/config.json` for registry credentials and inherits nothing from the agent's IRSA identity automatically | The Build stage's `awscli` container writes an ECR login to a shared `/images/dockercfg/config.json`, and the `buildkit` container exports `DOCKER_CONFIG=/images/dockercfg` before calling `buildctl` |
+| ECR returns a bare `400 Bad Request` on the cache manifest PUT, after the whole image already built and every layer uploaded | BuildKit's default cache export is an OCI image *index*, which ECR's manifest API rejects | Add `image-manifest=true,oci-mediatypes=true` to `--export-cache` |
+| Trivy fails with `manifest.json not found in tar`, reads like a corrupt image | BuildKit exported `type=oci` (an OCI *archive*: `index.json` + `blobs/`) instead of `type=docker` (a `docker-archive` tar). Trivy's `--input` reads a docker-archive or an OCI *directory*, never an OCI archive | Export with `--output type=docker,dest=...`. `skopeo` reads `docker-archive:` just as happily, so nothing downstream loses out |
+| Tag-bump stage fails with `Host key verification failed`, after the image has already built, scanned and pushed | The JCasC-pinned host key (`security.gitHostKeyVerificationConfiguration`) only covers the git **plugin**'s checkout. This stage shells out to raw `git push` in the `jnlp` container, which has its own, separate `~/.ssh/known_hosts` | Write the same pinned GitHub host key into `~/.ssh/known_hosts` inside this stage before pushing — see the comment at the top of the `Bump image tag` stage in the `Jenkinsfile` |
 | **G2** — Jenkins rebuilds its own tag-bump commit, forever | The Guard stage or `scripts/ci/should-skip-build.sh` was removed. `[skip ci]` does nothing in Jenkins on its own | Restore the Guard stage. See the standing warning in `CLAUDE.md` |
-| **G1** — re-running a build fails with `tag already exists` | ECR tags are `IMMUTABLE` and images are tagged by commit SHA | Already handled by the "Already built?" stage; if it fails, check the instance role still has `ecr:DescribeImages` |
-| A commit you expected to build finishes `NOT_BUILT` immediately, and the site does not change | The commit **message** contains the skip marker anywhere in it — including when merely *writing about* it, which is what a maintainer documenting this pipeline does. The Guard deliberately fails safe toward skipping: a wrong skip costs one manual rebuild, a wrong build costs an unbounded loop | Expected behaviour, not a fault. Re-run with **Build with Parameters → `FORCE_BUILD`**… except that a marker-bearing commit can *never* be built, even with `FORCE_BUILD`, because the Guard runs first and unconditionally. Amend the commit message (write "skip-ci" or "the skip marker" in prose instead) and push again |
+| **G1** — re-running a build fails with `tag already exists` | ECR tags are `IMMUTABLE` and images are tagged by commit SHA | Already handled by the "Already built?" stage; if it fails, check the agent's IRSA role still has `ecr:DescribeImages` |
+| A commit you expected to build finishes `NOT_BUILT` immediately, and the site does not change | The commit **message** contains the skip marker anywhere in it — including when merely *writing about* it. The Guard deliberately fails safe toward skipping: a wrong skip costs one manual rebuild, a wrong build costs an unbounded loop | Expected behaviour, not a fault. A marker-bearing commit can never be built, even with `FORCE_BUILD`, because the Guard runs first and unconditionally. Amend the commit message and push again |
 | **G3** — "Build Now" does nothing | A manual build has an empty changeset, so the `services/**` condition is false | Use *Build with Parameters* and tick `FORCE_BUILD` |
-| **G4** — `git push` denied at the last stage | Deploy key missing, read-only, or (see row 1) an HTTPS remote | Deploy key with **write** access + SSH SCM URL |
-| **G5** — builds fail on a full disk | Persistent host, four images per build | `docker image prune -f` runs in `post { always }`; check it, and `buildDiscarder` keeps 20 builds |
+| **G4** — `git push` denied at the last stage | Deploy key missing, read-only, or (see above) an HTTPS SCM URL | Deploy key with **write** access + SSH SCM URL |
 | **G6** — `FORCE_BUILD` checkbox is missing | The job has never run, so Jenkins has not read the `parameters` block yet | Run the job once; it registers them |
-| **G7** — a build failed and nobody noticed | Jenkins sends no email without SMTP, and this Jenkins has no public UI | Accepted, see below. Check the Jenkins UI, or `kubectl get application voteball -n argocd` to see whether the deployed tag actually advanced |
-| Images pushed but the tag-bump push failed | Interrupted build. A re-run hits G1 and skips straight to the bump — but only if the commit still touches `services/**` | Re-run with `FORCE_BUILD` ticked |
-| `RepositoryNotFoundException` pushing to ECR | **The main stack is destroyed.** ECR repos have `force_delete = true` and go with it | Expected while torn down. Deploy first |
+| **G7** — a build failed and nobody noticed | Jenkins sends no email without SMTP | Accepted, see below. Check the Jenkins UI, or `kubectl get application voteball -n argocd` to see whether the deployed tag actually advanced |
+| `RepositoryNotFoundException` pushing to ECR | **The main stack is destroyed** — Jenkins goes with it, and so does ECR (`force_delete = true`) | Expected while torn down. `./scripts/build-push-ecr.sh` is the manual fallback when there is no cluster to run CI at all |
 | CI is green but the site doesn't change | No cluster, or no ArgoCD Application | `kubectl get application voteball -n argocd`; `./scripts/deploy.sh` bootstraps it |
 | Pods go to `ImagePullBackOff` after a sync | `values.yaml` on `master` names a tag/registry that doesn't exist in this account's ECR | `./scripts/sync-values-from-tf.sh --check` |
-| Jenkins is not running after `terraform apply` | `user_data` runs once and Terraform does not verify it succeeded | `sudo tail -50 /var/log/cloud-init-output.log`; the script is idempotent, so `sudo bash /var/lib/cloud/instance/user-data.txt` is safe to re-run |
-| Docker Hub pulls fail with `TOOMANYREQUESTS` | Anonymous pull limits are shared across the host's single Elastic IP | Wait, or authenticate the daemon to Docker Hub |
-
-**Diagnostic worth keeping:** when the webhook returned 400, signed and unsigned requests failed
-**identically**. That proved it was not a secret-value mismatch — a wrong value would reject the signed
-request differently from an unsigned one. Testing locally on the box with a computed HMAC (signed → 200,
-unsigned → 400) is far faster than guessing at the GitHub end.
 
 ---
 
 ## Doing it by hand
 
-`./scripts/deploy.sh` runs the same work locally (build → push → sync values → helm → bootstrap ArgoCD).
-Useful for the first deploy of a fresh cluster, when there is no ArgoCD yet for CI's commit to reach.
+`./scripts/build-push-ecr.sh` runs the build/scan/push part locally — the four app images, or (with the
+`jenkins` argument) the controller image itself. `./scripts/deploy.sh` runs the full sequence including
+this and the Terraform apply that installs Jenkins. **There is no CI while the cluster is destroyed** —
+ArgoCD is also gone during a teardown, so nothing could deploy anyway — which makes
+`./scripts/build-push-ecr.sh` load-bearing rather than a convenience during that window, and it must be
+kept working.
 
-Note the ordering constraint it encodes: **`values.yaml` must be committed and pushed before the ArgoCD
-Application is created.** Bootstrapping ArgoCD against a `master` that still holds stale values makes it
-immediately revert the deploy — after a rebuild, to an image tag that no longer exists, so every pod
-lands in `ImagePullBackOff`.
-
----
-
-## Verified run (2026-07-20)
-
-The live host: EC2 `i-08344c3d285db66df`, t3.medium, Amazon Linux 2023, 30 GB gp3 encrypted, Elastic IP
-`51.85.19.95`, in the region's **default VPC** — deliberately not the application VPC, so the two
-lifecycles never touch.
-
-| Build | Trigger | Result |
-|---|---|---|
-| 2 | manual, no parameters | Registered the `FORCE_BUILD` parameter (**G6**). Did nothing else — expected, not a fault |
-| 3 | manual, `FORCE_BUILD` | ✅ 2 minutes. Four images built + pushed as `0aa4d5d` |
-| 4 | **webhook**, `09827ca` | ✅ Full build, images pushed, tag bumped → commit `3c4cd93 ci: image tag 09827ca [skip ci]` |
-| 5 | **webhook**, `3c4cd93` — Jenkins' own commit | ✅ Guard fired. `Finished: NOT_BUILT`. **This is the G2 proof, and it happened with no human involved** |
-| 6 | manual, same commit | ✅ Guard fired again — confirmed twice |
-
-**Exactly one bump commit exists. There was no loop.**
-
-Trivy on build 3:
-
-| Image | Result |
-|---|---|
-| `backend`, `worker`, `nginx` | **0 HIGH, 0 CRITICAL** — blocking gate passed |
-| `backup` | 14 HIGH + 1 CRITICAL, **all** in `usr/local/bin/gosu` (a Go binary inside `postgres:17-alpine`) — report-only, did not block |
-
-The notable one is **CVE-2025-68121** (CRITICAL, certificate validation in Go's `crypto/tls`). It is
-upstream, in a third-party base image, reachable only from a daily CronJob running inside the VPC — which
-is why the backup image is scanned report-only rather than blocking. It is surfaced, not hidden.
-
-Delivery:
-
-| Stage | Result |
-|---|---|
-| ArgoCD synced `3c4cd93` unprompted | ✅ |
-| All three Deployments rolled to `09827ca` | ✅ zero downtime, no `ImagePullBackOff` |
-| Site returned 200; `/api/options` returned 200 | ✅ |
-
-Two behaviours the design assumed and the run confirmed empirically:
-`currentBuild.result = 'NOT_BUILT'` **survives** the `error()` that follows it (Jenkins only ever worsens
-a build result, never improves it), and `post { failure }` correctly did **not** fire on a skipped build.
-
-**Repo noise, acknowledged not hidden:** four empty commits sit on `master` from debugging the webhook —
-`9bed4f1`, `1b16a45`, `a76fbb3`, `09827ca`. History was not rewritten, because this repo never
-force-pushes.
+Note the ordering constraint `deploy.sh` encodes: **`values.yaml` must be committed and pushed before
+the ArgoCD Application is created.** Bootstrapping ArgoCD against a `master` that still holds stale
+values makes it immediately revert the deploy — after a rebuild, to an image tag that no longer exists,
+so every pod lands in `ImagePullBackOff`.
 
 ---
 
 ## GitHub Actions is fully retired (2026-07-21)
 
-`terraform/github-oidc.tf` and the `github_actions_role_arn` output are **deleted**, and the IAM role
-and OIDC provider are destroyed in AWS. They had been kept as the rollback path; that path is now
-closed deliberately, after Jenkins ran green against the redeployed cluster (build 17: guard → build
-→ Trivy 0 HIGH/CRITICAL → ECR → tag bump `57ebfa3` → ArgoCD deployed `5844108`).
+`terraform/github-oidc.tf` and the `github_actions_role_arn` output were deleted, and the IAM role and
+OIDC provider destroyed in AWS. Restoring it now requires the workflow file, a main-stack
+`terraform apply` to recreate the role and provider, and re-adding four repository variables.
 
-**The EKS OIDC provider is a different provider and was NOT touched** — IRSA depends on it, and
-`oidc_provider_arn` still outputs it. Only `token.actions.githubusercontent.com` was removed.
+## The EC2 host is fully retired (2026-07-31)
 
-Restoring GitHub Actions now requires: the workflow file, a main-stack `terraform apply` to recreate
-the role and provider, and re-adding four repository variables.
+The dedicated `t3.medium` and its whole separate Terraform stack — the Elastic IP, the separate
+Terraform state, the `admin_cidr` allowlist, the SSH key pair — are destroyed and deleted. See
+[`docs/design/2026-07-30-jenkins-on-eks-design.md`](design/2026-07-30-jenkins-on-eks-design.md) for the
+full design and its "Verification outcome" section for what the move actually broke.
 
 ## Deferred, on purpose
 
-- ~~**JCasC (Jenkins Configuration as Code).**~~ **Done 2026-07-21** —
-  `terraform/jenkins/casc/{jenkins.yaml,plugins.txt}`. Banking a green build first turned out to be
-  the right order for a reason beyond convenience: the working configuration was the *specification*,
-  and two settings only revealed themselves as unsettable by JCasC (`crumbIssuer.excludeClientIP…`,
-  `gitHubPluginConfig.manageHooks`) by aborting a boot that had a known-good state to compare against.
-  **The rebuild path has since been verified on a genuinely fresh instance** (2026-07-21): a
-  throwaway host with an empty `JENKINS_HOME` and no plugins, booted from this config and touched by
-  no human. It found a real security hole first — the fresh host enforced **no webhook signature at
-  all**, accepting unsigned deliveries with `200`, because the hook secret is read from
-  `github-plugin-configuration.xml` and the bootstrap wrote only the other XML file. The
-  already-configured host had passed only because it still held the right value from its original UI
-  setup. Fixed, then re-verified on a clean instance (signed/unsigned/bad-signature → 200/400/400).
-  See [`design/2026-07-21-jenkins-jcasc-design.md`](design/2026-07-21-jenkins-jcasc-design.md).
-- **SSM Session Manager** as the UI access path, which would let port 22 close entirely.
+- **SSM Session Manager** — moot now; there is no SSH access to anything Jenkins runs on.
 - **Build-failure notifications (G7).** Jenkins sends nothing without SMTP, and provisioning mail
-  credentials on the build host is a surface this project declined to add. The compensating practice:
-  verification means checking the Jenkins UI or ArgoCD's Application state, **not** inferring success from
-  the site still working. Recorded as a decision, not an oversight — revisit if the project outlives the
-  course.
+  credentials is a surface this project declined to add. The compensating practice: verification means
+  checking the Jenkins UI or ArgoCD's Application state, **not** inferring success from the site still
+  working. Recorded as a decision, not an oversight — revisit if the project outlives the course.
+- **Multibranch, notifications, or a shared cluster-wide BuildKit daemon.** All still out of scope for
+  the same reasons the 2026-07-20 design gave; the in-cluster move did not reopen any of them.

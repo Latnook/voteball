@@ -52,13 +52,14 @@ Autoscaler to this cluster's ASG only; ESO to the one app secret only.
   `ConfigMap`; only the passwords are a `Secret`. No secret is ever in a ConfigMap.
 - **Grafana / ArgoCD:** neither admin password is hardcoded; both are chart-auto-generated and live only
   in in-cluster Secrets, retrieved on demand.
-- **CI:** the Jenkins build host authenticates through an **IAM instance profile** — see below. **No AWS
-  key material exists anywhere**: not in Jenkins' credentials store, not in git, not on the host's disk.
-  Jenkins holds exactly two credentials of its own, a GitHub deploy key and the webhook shared secret.
-  Since 2026-07-21 these are **no longer typed into the UI**: they live in Secrets Manager
-  (`voteball/jenkins`) and are installed at boot by JCasC. That closed a real single point of failure —
-  the deploy key's only copy used to be inside Jenkins' own credential store, encrypted with a key on
-  the same volume, and was recoverable from nowhere if the host was lost.
+- **CI:** Jenkins runs in-cluster (namespace `ci`) and its agent pods authenticate via **IRSA** — see
+  below. **No AWS key material exists anywhere**: not in Jenkins' credentials store, not in git, not on
+  any node's disk. Jenkins holds exactly two credentials of its own, a GitHub deploy key and the webhook
+  shared secret, both in Secrets Manager (`voteball/jenkins`), synced into the cluster by External
+  Secrets Operator and installed by JCasC — never typed into the UI. Because the controller's
+  `JENKINS_HOME` is an `emptyDir` (build history is deliberately disposable — see `docs/cicd.md`), those
+  credentials living outside Jenkins' own credential store is not a nicety, it is the only reason the
+  deploy key survives a daily Spot reclaim at all.
 
 **The honest caveat (documented, not hidden):** the repo is public, and until 2026-07-20 it carried the
 retired k3s Ansible vault (`secrets.yml`) as `AES256` ciphertext. Its 256-bit password (`.vault_pass`)
@@ -144,6 +145,24 @@ false`, `capabilities.drop: ["ALL"]`, and `readOnlyRootFilesystem: true` with an
 where a write is genuinely needed (`/tmp` for gunicorn's worker dir, the worker heartbeat file, nginx's
 cache, and the backup job's aws-cli config).
 
+**One deliberate, documented exception: the `buildkit` container in a CI agent pod** (`ci` namespace,
+`ci/jenkins/jenkins.yaml`). It is the only container in the entire project that runs
+`allowPrivilegeEscalation: true` and adds capabilities (`SETUID`, `SETGID`) rather than dropping all of
+them. Rootless BuildKit builds each image inside its own Linux user namespace, and constructing that
+namespace requires `newuidmap`/`newgidmap` — SETUID binaries that `allowPrivilegeEscalation: false` and
+`capabilities.drop: [ALL]` together disable outright. Without the exception the container looks healthy
+(`rootlesskit` fails instantly, the pod still reports ready) and the build simply hangs forever with
+nothing logged, which is a worse failure mode than an honest, narrow grant.
+
+**What this is not:** it is not Docker-in-Docker, which was the alternative considered and rejected.
+DinD needs `privileged: true` — full access to the host's devices, kernel capabilities and namespaces,
+effectively root on the node. The `buildkit` container still runs as **uid 1000**, with no host devices,
+no host paths, and no `CAP_SYS_ADMIN` — it can only map UIDs inside a namespace that belongs to itself.
+The blast radius is bounded further by the `ci` NetworkPolicy, which denies this pod any route to RDS or
+the `devops-app` namespace regardless of what runs inside it. Every other container in the project,
+including the other three containers in the same CI agent pod (`trivy`, `skopeo`, `awscli`), keeps
+`allowPrivilegeEscalation: false` — this is a one-container exception, not a precedent.
+
 ## Image security
 
 - **Source & build:** three own images (`backend`, `worker`, `nginx`) each have their own `Dockerfile`,
@@ -156,71 +175,66 @@ cache, and the backup job's aws-cli config).
   third-party `backup` image is scanned in report-only mode (its CVEs are upstream Go-tooling issues
   outside our control — see Trade-offs).
 
-## CI build host (Jenkins)
+## CI (Jenkins, in-cluster)
 
-CI runs on a dedicated EC2 host built by `terraform/jenkins/` — a separate Terraform stack, in the
-region's **default VPC**, not the application VPC. Design rationale:
-[`docs/design/2026-07-20-jenkins-migration-design.md`](design/2026-07-20-jenkins-migration-design.md).
+CI runs **inside the EKS cluster**, namespace `ci`, installed by Terraform
+(`terraform/addon-jenkins.tf`) as a `helm_release`. It replaced a dedicated EC2 host on 2026-07-30/31.
+Design rationale:
+[`docs/design/2026-07-20-jenkins-migration-design.md`](design/2026-07-20-jenkins-migration-design.md)
+(pipeline logic) and
+[`docs/design/2026-07-30-jenkins-on-eks-design.md`](design/2026-07-30-jenkins-on-eks-design.md)
+(in-cluster move, including what its own security assumptions got wrong in practice — see that doc's
+"Verification outcome").
 
-### Identity: instance profile, not federation
+### Identity: IRSA, split narrower than the instance profile it replaces
 
-The host carries an IAM role attached to the instance itself, so the AWS CLI picks up **temporary**
-credentials from the instance metadata service. There is no OIDC provider, no `configure-aws-credentials`
-step, and **no stored key material** — which is the same property the previous CI federation gave, reached
-a simpler way, because the compute is ours.
+The old EC2 instance profile held both ECR push and one Secrets Manager permission on a single identity.
+In the cluster that is split across two ServiceAccounts:
 
-The role allows `ecr:GetAuthorizationToken` plus the ECR layer-upload set on `repository/voteball-*`, and
-**nothing else — no EKS, RDS, S3 or SNS**, and exactly one Secrets Manager permission:
-`secretsmanager:GetSecretValue` on the single ARN `voteball/jenkins`, added 2026-07-21 so JCasC can
-install the host's own credentials at boot. No wildcard, no write. That grants the host nothing it did
-not already hold — the deploy key and webhook secret were already on its disk — it only means they also
-exist somewhere the host's death does not take with them. Verified on the live host: it reads its own
-secret and is denied both `voteball/app-secret` and `list-secrets`; `aws ecr get-login-password`
-succeeds and `aws eks list-clusters` returns `AccessDeniedException`.
+| ServiceAccount | AWS role | Permissions |
+|---|---|---|
+| `jenkins` (the controller) | **none** | The controller never touches AWS at all |
+| `jenkins-agent` (build pods only) | IRSA | `ecr:GetAuthorizationToken` + push/pull on `repository/<cluster_name>-*`, nothing else — no EKS, RDS, S3, SNS |
 
-**IMDSv2 is required** (`http_tokens = "required"`), so a server-side request forgery against something
-running on the host cannot trivially read those credentials.
+Secrets Manager access belongs to **External Secrets Operator's** role, not Jenkins' — Jenkins never
+calls `secretsmanager:GetSecretValue` itself; ESO syncs `voteball/jenkins` into a Kubernetes Secret and
+JCasC reads it as pod environment variables. This is a narrower design than the EC2 host's single
+`GetSecretValue` grant, not a like-for-like port of it.
 
-**Jenkins holds no cluster access at all.** It stops at "push images and commit the new tag"; ArgoCD does
-the deploying. This is the same boundary the GitOps model already gave us, and it means replacing or
-compromising CI never reaches the cluster.
+**Jenkins holds no cluster-deploy access at all**, for a sharper reason than before it moved in-cluster:
+it stops at "push images and commit the new tag"; ArgoCD does the deploying, and Jenkins is now
+*physically inside* the cluster it must still be unable to change. The controller's own Role (namespace
+`ci`) only lets it create/watch/delete/exec into agent pods in that one namespace — verified
+(`kubectl auth can-i --as=system:serviceaccount:ci:jenkins get pods -n devops-app` → no).
 
-### Network posture
+### Network exposure — only the webhook path, not the UI
 
-| Direction | Port | Source / destination | Purpose |
-|---|---|---|---|
-| inbound | 8080 | GitHub's hook CIDRs only, fetched from `api.github.com/meta` at apply time | receive push webhooks |
-| inbound | 22 | the maintainer's IP as a `/32` | SSH tunnel to the UI |
-| outbound | all | anywhere | ECR, GitHub, Docker Hub, ghcr.io, OS packages |
+The EC2 host exposed the **entire Jenkins UI** — script console, credential store, everything — to
+GitHub's CIDR ranges over plaintext HTTP, an accepted risk documented at the time. **That risk is closed,
+not carried forward:**
 
-**The Jenkins UI is never publicly reachable.** Access is `ssh -L 8080:localhost:8080`; tunnelled traffic
-arrives from `localhost` and so is never evaluated against the security group. Verified: `curl` to port
-8080 from the maintainer's own IP times out.
+- **Only `/github-webhook` is routed.** The Ingress (`charts/jenkins-support/templates/ingress.yaml`)
+  matches exactly that path; the root path and `/script` both return `404` — there is no ALB rule that
+  reaches them. Verified: `curl https://jenkins.<app_domain>/` and `.../script` both 404, while
+  `.../github-webhook/` reaches Jenkins.
+- **HTTPS via ACM**, not plaintext HTTP — a dedicated certificate for `jenkins.<app_domain>`, separate
+  from the app's so it never touches `ingress.certificateArn` (keeps `sync-values-from-tf.sh` at ten
+  managed fields).
+- **The UI is reachable only via `kubectl port-forward -n ci svc/jenkins 8080:8080`** — there is no
+  Ingress rule for it at all, so "reach the UI" now requires cluster access (your AWS login) first,
+  where before it required only the SSH key and a `/32` allowlist entry.
+- **A NetworkPolicy denies CI any route to RDS or `devops-app`**
+  (`charts/jenkins-support/templates/networkpolicy.yaml`), written as broad-egress-with-specific-denials
+  rather than an IP allowlist — ECR, GitHub and the various registries publish wide, shifting ranges, so
+  an allowlist there would be brittle rather than secure (the same reasoning the EC2 security group used
+  for its own unrestricted egress). What actually matters and is enforceable: this namespace's three
+  RFC1918 ranges are excluded from the "allow the internet" rule, closing the specific routes to RDS and
+  the app namespace. Verified from an agent pod: the RDS endpoint times out, ECR and GitHub are
+  reachable.
 
-The property that makes this defensible is that exactly **one** thing in the world can initiate a
-connection to this host, and it is GitHub.
-
-### Two accepted positions, stated rather than left implicit
-
-- **Egress is unrestricted.** Docker Hub, ghcr.io and GitHub publish wide and frequently changing IP
-  ranges. An egress allowlist against them would break builds regularly without meaningfully constraining
-  an attacker who already has code execution on a build host. Standard practice, and a deliberate choice.
-- **The webhook is plain HTTP, authenticated by a shared secret rather than by TLS.** Jenkins verifies the
-  HMAC signature GitHub attaches to every delivery, so an unsigned or wrongly signed request is rejected
-  (verified: signed → 200, unsigned → 400). The payload contains no secrets, and the signature is what
-  actually establishes authenticity — TLS would add confidentiality for a public commit notification, at
-  the price of a certificate lifecycle on a host with no DNS name.
-
-### Accepted risk: `docker` group membership is effectively root
-
-The `jenkins` user is in the `docker` group so it can build images. Anyone who can define or edit a
-Jenkins job can therefore run a privileged container and take the host. This is **inherent** to building
-container images on a Jenkins agent, not something this setup got wrong.
-
-It is mitigated by there being **no inbound access to the host except GitHub's webhook** — no public UI,
-no other open port — and by Jenkins requiring authentication. It is also bounded by the previous section:
-the worst an attacker on this host gains is ECR push on four repositories and a deploy key for one
-repository. No cluster, no database, no secrets.
+The webhook itself is still authenticated the same way as on EC2: Jenkins verifies the HMAC signature
+GitHub attaches to every delivery (signed → 200, unsigned → 400), so a request without the shared secret
+is rejected regardless of what path it lands on.
 
 ### Blast radius of the credentials Jenkins does hold
 
@@ -228,6 +242,9 @@ repository. No cluster, no database, no secrets.
   covers the whole account. Compromise loses exactly this repository.
 - **Webhook shared secret** — lets an attacker trigger builds. It cannot make Jenkins build code that is
   not on `master`.
+- Both live only in Secrets Manager and the in-cluster Secret ESO writes from it — never in Jenkins' own
+  credential store, which is moot anyway now that `JENKINS_HOME` is an `emptyDir` that does not survive
+  a Spot reclaim.
 
 ## RBAC
 
@@ -249,8 +266,9 @@ change them:
 | NAT gateway | Single (one AZ) | One per AZ |
 | Trivy on backup image | Report-only (upstream third-party CVEs) | Pin/patch a controlled base or waive CVEs explicitly |
 | Grafana/ArgoCD UIs | port-forward only (ClusterIP, no Ingress); each chart generates its own admin password into a Secret at install — **not** a chart default, and different after every rebuild (verified 2026-07-27: 40 random alphanumerics, not `prom-operator`). Reaching either requires cluster access first, so the passwords are a second layer | SSO, private ingress, rotated secrets |
-| Jenkins webhook | Plain HTTP, authenticated by HMAC shared secret | TLS in front of Jenkins (ALB/reverse proxy + ACM) |
-| Jenkins host access | SSH tunnel on port 22 from one IP | SSM Session Manager, port 22 closed entirely |
-| Jenkins configuration | **JCasC** (`terraform/jenkins/casc/`), applied at every boot; credentials from Secrets Manager. Verified by booting a throwaway host from the config | Notifications on build failure (G7); SSM Session Manager |
+| Jenkins webhook | HTTPS (ACM) + HMAC shared secret; only `/github-webhook` routed | Already close to production shape here |
+| Jenkins UI access | `kubectl port-forward` only, no Ingress rule at all | Same in production — this is the stronger option, not a shortcut |
+| Jenkins build history | Disposable — `JENKINS_HOME` is an `emptyDir`, reset roughly daily by Spot reclaim and on every teardown | Accepted permanently, not just for the demo — see `docs/cicd.md` and the design doc's §2 for why a PVC would be worse, not better, at this reclaim rate |
+| Jenkins configuration | **JCasC** (`ci/jenkins/jenkins.yaml`), applied via `terraform apply`; credentials from Secrets Manager via ESO. Verified by booting a fresh controller and by a real end-to-end build | Notifications on build failure (G7) |
 
 All are documented rather than hidden — the point is that each was a decision, not an oversight.

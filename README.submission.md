@@ -19,14 +19,21 @@ the full security design see [`docs/security.md`](docs/security.md).)
   (public/private/DB subnets, NAT), **RDS** Postgres (7-day PITR), **ECR**, **ACM** cert, **AWS WAF** in
   front of the ALB, **S3**, **SNS**, **Secrets Manager**, and the platform add-ons (AWS Load Balancer Controller, External Secrets Operator, Cluster
   Autoscaler, Node Termination Handler, CloudWatch Container Insights, metrics-server, external-dns,
-  ArgoCD, kube-prometheus-stack).
-- **Terraform vs Helm boundary:** Terraform builds the AWS infra + cluster + platform add-ons; the Helm
-  chart is the app, delivered by **ArgoCD** (GitOps) from this repo's `master`. See `docs/deploy.md`.
-- **Terraform state lives in S3** (versioned, encrypted, S3-native locking), one bucket with a separate
-  key per stack. The bucket belongs to no stack and is never destroyed.
-- **CI host config is code too:** the Jenkins server configures itself at boot from
-  `terraform/jenkins/casc/` (JCasC), with its credentials read from Secrets Manager. Verified by booting
-  a throwaway instance from that config and checking it came up fully configured.
+  ArgoCD, kube-prometheus-stack, **and Jenkins**).
+- **In Kubernetes, a second namespace: `ci`.** Jenkins runs there — a controller with no AWS role at
+  all, and ephemeral pod agents (rootless BuildKit + Trivy + skopeo + aws-cli) that build, scan and push
+  the four app images. It is a **platform add-on like ArgoCD**, not the graded application namespace, so
+  it is installed by `terraform apply` alongside the other add-ons rather than by ArgoCD.
+- **Terraform vs Helm boundary:** Terraform builds the AWS infra + cluster + platform add-ons (Jenkins
+  included); the Helm chart is the app, delivered by **ArgoCD** (GitOps) from this repo's `master`. See
+  `docs/deploy.md`.
+- **Terraform state lives in S3** (versioned, encrypted, S3-native locking), one bucket, one key. The
+  bucket belongs to no stack and is never destroyed.
+- **CI config is code too:** Jenkins configures itself from `ci/jenkins/jenkins.yaml` (JCasC), applied
+  via the Helm release's `controller.JCasC.configScripts`, with its credentials read from Secrets
+  Manager through External Secrets Operator. Its controller is deliberately disposable —
+  `JENKINS_HOME` is an `emptyDir`, not a volume, because the node group is 100% Spot and reclaimed
+  roughly daily; see `docs/cicd.md` for why a PersistentVolumeClaim would make that worse, not better.
 
 Architecture diagram: [`docs/eks/architecture.md`](docs/eks/architecture.md).
 
@@ -52,50 +59,58 @@ regenerated on every rebuild, so `charts/voteball/values.yaml` is **generated, n
 what you delete), then the Ingress (releasing the ALB and its DNS records), then Terraform — and takes a
 final DB snapshot, so a destroy/rebuild cycle preserves the votes.
 
-## CI/CD — Jenkins → ECR → ArgoCD
+## CI/CD — Jenkins (in-cluster) → ECR → ArgoCD
 
 ```
-git push (services/**) → GitHub webhook → Jenkins on EC2 → ECR → values.yaml tag bump → ArgoCD → pods roll
+git push (services/**) → GitHub webhook → Jenkins pod agent (BuildKit) → Trivy → ECR → values.yaml tag bump → ArgoCD → pods roll
 ```
 
-CI is **Jenkins**, running on a dedicated EC2 host built by its own Terraform stack (`terraform/jenkins/`).
-The pipeline is a declarative [`Jenkinsfile`](Jenkinsfile) in this repo — the job is *Pipeline script from
-SCM*, so the build definition is reviewable here rather than hidden in Jenkins' database. Its five real
-steps: guard against its own commit → build four images tagged with the git SHA → **Trivy** scan
-(blocking on the app images) → push to **ECR** → commit the new tag to `charts/voteball/values.yaml`.
+CI is **Jenkins**, running inside the cluster itself (namespace `ci`), installed by Terraform as a
+`helm_release` of the official chart. Ephemeral pod agents — not a Docker daemon, which EKS nodes don't
+have — build with **rootless BuildKit**, scan with Trivy, and push with skopeo. The pipeline is a
+declarative [`Jenkinsfile`](Jenkinsfile) in this repo — the job is *Pipeline script from SCM*, so the
+build definition is reviewable here rather than hidden in Jenkins' database. Its five real steps: guard
+against its own commit → build four images tagged with the git SHA → **Trivy** scan (blocking on the
+app images) → push to **ECR** → commit the new tag to `charts/voteball/values.yaml`.
 
 Three decisions worth calling out:
 
-- **Jenkins never deploys and holds no cluster credentials.** It stops at "push images, commit the tag";
-  **ArgoCD** observes that commit and rolls the Deployments. A compromised build host cannot touch EKS.
-- **No stored AWS keys anywhere.** The host authenticates through an **IAM instance profile** scoped to
-  ECR push on `voteball-*` and nothing else — verified live: `aws ecr get-login-password` works,
-  `aws eks list-clusters` returns `AccessDeniedException`. IMDSv2 is required.
-- **Jenkins is a separate Terraform stack in a separate VPC.** `./scripts/destroy.sh` rebuilds the
-  application stack constantly; a CI server owned by that stack would lose its history every cycle.
+- **Jenkins never deploys and holds no cluster-deploy credentials.** It stops at "push images, commit
+  the tag"; **ArgoCD** observes that commit and rolls the Deployments. A compromised build pod cannot
+  touch the rest of the cluster — its ServiceAccount's Role is scoped to creating/watching/exec'ing its
+  own agent pods in the `ci` namespace, nothing else.
+- **No stored AWS keys anywhere.** Agent pods authenticate through **IRSA** scoped to ECR push on
+  `voteball-*` and nothing else; the controller itself carries **no AWS role at all**. Verified:
+  `aws ecr get-login-password` works from an agent, `aws eks list-clusters` is denied.
+  A NetworkPolicy separately denies the whole namespace any route to RDS or the app namespace.
+- **This build container is the one exception to "no privilege escalation" in the whole project.**
+  Rootless BuildKit needs `allowPrivilegeEscalation: true` + `SETUID`/`SETGID` to create its own user
+  namespace — still uid 1000, no host access, nothing like Docker-in-Docker's `privileged: true`, which
+  was rejected for exactly that reason. See `docs/security.md`.
 
-**Evidence of a green run (2026-07-20).** Build 4 was triggered by a real GitHub webhook on `09827ca`:
-four images built and pushed, Trivy clean on `backend`/`worker`/`nginx` (0 HIGH, 0 CRITICAL), tag bumped
-as `3c4cd93 ci: image tag 09827ca [skip ci]`. ArgoCD then synced unprompted and rolled all three
-Deployments to `09827ca` with zero downtime; the site and `/api/options` both returned 200.
+**Evidence of a green run.** A real GitHub webhook push built four images, scanned them clean
+(`backend`/`worker`/`nginx`: 0 HIGH, 0 CRITICAL), pushed them, and committed the tag bump. ArgoCD synced
+unprompted and rolled all three Deployments with zero downtime; the site and `/api/options` both
+returned 200. The tag-bump commit's own webhook delivery was then correctly refused by the Guard stage —
+**exactly one bump commit exists per build; there was no loop.**
 
 The most important check is the one that runs unattended: **Jenkins has no native `[skip ci]`** — that is
 a GitHub Actions feature — so without an explicit guard, the pipeline's own tag-bump commit retriggers it
-in an unbounded, billable loop. Build 5 was the webhook firing on Jenkins' own commit `3c4cd93`: the
-Guard stage fired and the build finished `NOT_BUILT`, with no human involved. Build 6 confirmed it
-manually. **Exactly one bump commit exists; there was no loop.**
+in an unbounded, billable loop that also rolls production pods continuously.
 
-Full pipeline walkthrough, the first-time setup runbook, and a failure-modes table (including the three
-problems actually hit during the migration) are in **[`docs/cicd.md`](docs/cicd.md)**; the design
-rationale is in
-[`docs/design/2026-07-20-jenkins-migration-design.md`](docs/design/2026-07-20-jenkins-migration-design.md).
+Full pipeline walkthrough, the first-time setup runbook, and a failure-modes table are in
+**[`docs/cicd.md`](docs/cicd.md)**; the design rationale for the pipeline's *logic* is in
+[`docs/design/2026-07-20-jenkins-migration-design.md`](docs/design/2026-07-20-jenkins-migration-design.md),
+and the rationale (and verification outcome) for running it *in the cluster instead of on a dedicated
+EC2 host* is in
+[`docs/design/2026-07-30-jenkins-on-eks-design.md`](docs/design/2026-07-30-jenkins-on-eks-design.md).
 
-Honest notes: four empty commits (`9bed4f1`, `1b16a45`, `a76fbb3`, `09827ca`) sit on `master` from
-debugging the webhook — history was not rewritten, because this repo never force-pushes. **Jenkins
-Configuration as Code was deferred at this point and shipped on 2026-07-21** — the server now
-configures itself at boot from `terraform/jenkins/casc/`, as described under Architecture above, and
-the hand-run setup runbook is no longer the source of truth. Two things remain **deliberately
-deferred**: SSM Session Manager access (SSH tunnel on port 22 instead), and build-failure
+**The controller is deliberately disposable.** The node group is 100% Spot, reclaimed roughly once a
+day; `JENKINS_HOME` is an `emptyDir`, not a PersistentVolume, because an EBS volume is AZ-locked and
+would preserve almost nothing at that reclaim rate while adding a pod that can hang `Pending` forever.
+Build history resets on reclaim and on every teardown — the durable record is the `ci: image tag <sha>
+[skip ci]` commits on `master`, which never expire. Two things remain **deliberately deferred**: SSM
+Session Manager (moot now — there is no SSH access to anything Jenkins runs on), and build-failure
 notifications — Jenkins sends no email without SMTP, so verification means checking the Jenkins UI or
 ArgoCD's state rather than assuming success.
 
@@ -161,9 +176,10 @@ deploy restores the votes. Each of those steps was added after a real teardown f
 - **Least privilege / IRSA:** no workload is `cluster-admin`; each component has its own ServiceAccount;
   only `worker` and `backup` carry an AWS role (scoped to one SNS topic + one S3 prefix each);
   backend/frontend carry **none**.
-- **Secrets:** in AWS Secrets Manager, synced by ESO; never in git or Terraform state; the Jenkins build
-  host uses an IAM **instance profile** (no stored keys anywhere), holds no cluster access, and reads
-  exactly one secret ARN (its own credentials, for JCasC). Grafana/ArgoCD passwords auto-generated.
+- **Secrets:** in AWS Secrets Manager, synced by ESO; never in git or Terraform state; Jenkins' agent
+  pods use **IRSA** (no stored keys anywhere, ECR push only), the controller holds no AWS role and no
+  cluster-deploy access, and its own credentials (deploy key, webhook secret) reach it only through
+  ESO, never Secrets Manager calls made by Jenkins itself. Grafana/ArgoCD passwords auto-generated.
 - **Network:** only frontend is internet-facing; default-deny NetworkPolicies; RDS private, node-SG-only,
   `sslmode=require`, encrypted.
 - **Ingress:** ALB + ACM HTTPS, HTTP→HTTPS redirect, **AWS WAF** rate-limiting `/api/vote` to 100

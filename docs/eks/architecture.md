@@ -132,16 +132,27 @@ only — it cannot read back what it wrote, which is why it tracks "did the resu
 
 ```mermaid
 flowchart LR
-    push[git push to master] --> jenkins[Jenkins on EC2<br/>own Terraform stack · own VPC<br/>instance profile, ECR push only]
-    jenkins --> trivy{{Trivy scan<br/>CRITICAL/HIGH fail the build}}
-    trivy -->|pass| ecr[ECR · 4 image repos]
-    jenkins -.->|commits new image tag, marked skip ci| master[(master branch)]
+    push[git push to master] -->|webhook, jenkins.voteball.latnook.com/github-webhook| jenkins
+
+    subgraph ci["namespace: ci"]
+        jenkins[Jenkins controller<br/>no AWS role at all]
+        agent[pod agent · buildkit + trivy + skopeo<br/>IRSA: ECR push only]
+        jenkins -.->|provisions| agent
+    end
+
+    agent --> trivy{{Trivy scan<br/>CRITICAL/HIGH fail the build}}
+    trivy -->|pass| ecr[ECR · 4 app repos + buildcache + trivy-db]
+    agent -.->|commits new image tag, marked skip ci| master[(master branch)]
     master --> argocd[ArgoCD] -.->|syncs| ns[namespace: devops-app]
     ecr -.->|image pull| ns
 ```
 
-**Jenkins never touches the cluster** and holds no cluster credentials. It pushes images and commits a
-tag; ArgoCD does every deployment. The only thing that can change production is a commit on `master`.
+**Jenkins never touches the rest of the cluster and holds no cluster-deploy credentials** — its
+controller carries no AWS role at all, and its namespace-scoped Role only lets it manage its own agent
+pods in `ci`. It pushes images and commits a tag; ArgoCD does every deployment. The only thing that can
+change production is a commit on `master`. **`ci` is a second namespace alongside `devops-app`**, kept
+separate so the graded application namespace contains only the application, and so a NetworkPolicy in
+`ci` can enforceably deny CI any route to RDS or `devops-app` rather than merely convention.
 
 ---
 
@@ -150,11 +161,13 @@ tag; ArgoCD does every deployment. The only thing that can change production is 
 - **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS (7-day PITR), ECR, ACM, WAF, S3,
   SNS, Secrets Manager (container only), IRSA roles, and every platform add-on — AWS Load Balancer
   Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
-  Container Insights, metrics-server, external-dns, ArgoCD, kube-prometheus-stack. State lives in a
-  versioned, locked S3 bucket owned by no stack.
+  Container Insights, metrics-server, external-dns, ArgoCD, kube-prometheus-stack, **and Jenkins**
+  (`terraform/addon-jenkins.tf`). State lives in a versioned, locked S3 bucket owned by no stack.
 - **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box —
   diagrams 2 and 3.
-- **Jenkins (`terraform/jenkins/`):** builds, scans and pushes the four images, then commits the new
-  image tag to `charts/voteball/values.yaml`. It runs on its own EC2 host in its **own Terraform stack
-  and the default VPC**, so tearing the application stack down does not delete the CI server. See
-  [`docs/cicd.md`](../cicd.md).
+- **Jenkins (namespace `ci`):** builds, scans and pushes the four images, then commits the new image tag
+  to `charts/voteball/values.yaml`. It is a **platform add-on, installed by `terraform apply` like the
+  rest of this list — not by ArgoCD, and not by committing to `master`.** Its controller is
+  deliberately disposable (`JENKINS_HOME` is an `emptyDir`; the node group is 100% Spot), so tearing the
+  cluster down and rebuilding it loses only build history, never credentials or job configuration — both
+  of those live in Secrets Manager and git (JCasC) respectively. See [`docs/cicd.md`](../cicd.md).

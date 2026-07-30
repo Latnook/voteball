@@ -64,52 +64,65 @@ prevented from colliding. `deploy.sh` creates that bucket on first run and write
 ```
 
 It runs the whole sequence and **stops to ask you to confirm** before Terraform creates billed
-resources. The steps it performs:
+resources. The steps it performs (kept in step with the script's own numbering — see
+`grep -nE '^\s*step "' scripts/deploy.sh` if these ever look out of date):
 
 1. Find the newest database snapshot to restore from.
-2. Create the Terraform state bucket if it does not exist, then build the AWS infrastructure
-   (**asks you to type `yes`**). This now also creates the WAF that rate-limits `/api/vote`.
-3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git).
-   The database password is read straight from `voteball.tfvars` (the same file Terraform used in
-   step 2, so the two can't disagree); only the **admin** password is asked for — up front, before
-   step 2. Run `deploy.sh` in a real terminal — see the note below.
-4. Point `kubectl` at the new cluster.
-5. Build the four container images and upload them.
-6. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
-   certificate, the WAF, the bucket, and the IAM roles all change on every rebuild, so **never edit
-   these ten fields by hand**.
-7. Install the app and wait for it to come up. A short-lived migration Job applies the database
-   schema **once** before the app pods start, rather than every replica racing to do it.
-8. Hand ongoing control to ArgoCD.
+2. Create the ECR repositories with a small, targeted Terraform apply — before the main build below,
+   because the Jenkins install later in this sequence needs somewhere to pull its own image from.
+3. Mirror the Trivy vulnerability database into ECR, so the CI pipeline never has to pull it from the
+   internet during a build.
+4. Build and push the Jenkins controller image (CI now runs inside the cluster; see
+   [Connect to each part](#connect-to-each-part-dashboards-argocd-jenkins-the-database) below).
+5. Build the rest of the AWS infrastructure (**asks you to type `yes`**) — the cluster, the database,
+   the WAF that rate-limits `/api/vote`, and Jenkins itself as a platform add-on alongside ArgoCD and
+   the other controllers.
+6. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git). The
+   database password is read straight from `voteball.tfvars` (the same file Terraform used in step 5,
+   so the two can't disagree); only the **admin** password is asked for — up front, before step 5. Run
+   `deploy.sh` in a real terminal — see the note below.
+7. Copy Jenkins' own credentials (a GitHub deploy key, a webhook secret, an admin login) into AWS's
+   secret vault the same way. Also asked for up front, same reason.
+8. Point `kubectl` at the new cluster.
+9. Build the four app container images and upload them.
+10. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
+    certificate, the WAF, the bucket, and the IAM roles all change on every rebuild, so **never edit
+    these ten fields by hand**.
+11. Install the app and wait for it to come up, then hand ongoing control to ArgoCD. A short-lived
+    migration Job applies the database schema **once** before the app pods start, rather than every
+    replica racing to do it.
 
-Step 6 commits and pushes `values.yaml` for you, because ArgoCD deploys from `master` and not from
+Step 10 commits and pushes `values.yaml` for you, because ArgoCD deploys from `master` and not from
 this laptop. You don't need to do anything.
 
 ### Run it in a real terminal
 
-Right at the start — **before Terraform builds anything billed** — the script asks for your admin
-password on screen (nothing is echoed), then runs the rest unattended. (The database password isn't
-asked for at all; it's read from `voteball.tfvars`.) Asking up front is deliberate: a missing
-password fails in seconds, not after a ~15-minute billed `terraform apply`. That also means
-**`deploy.sh` cannot run in a window that has no keyboard attached** — a script, a cron job, or a
-tool running it in the background. There it stops with:
+Right at the start — **before Terraform builds anything billed** — the script asks for four things: the
+app's admin password, and a username + password for Jenkins' own login (nothing is echoed for either
+password), then runs the rest unattended. (The database password isn't asked for at all; it's read from
+`voteball.tfvars`.) Asking up front is deliberate: a missing value fails in seconds, not after a
+~15-minute billed `terraform apply`. That also means **`deploy.sh` cannot run in a window that has no
+keyboard attached** — a script, a cron job, or a tool running it in the background. There it stops with:
 
 ```
-ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD are not set.
+ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD / JENKINS_ADMIN_USER /
+JENKINS_ADMIN_PASSWORD are not all set.
 ```
 
 That is the script refusing to continue rather than saving a blank password. To run it without a
-keyboard, supply the admin password up front instead (the database password still comes from
-`voteball.tfvars`, but you can override it here too):
+keyboard, supply all four up front instead (the database password still comes from `voteball.tfvars`,
+but you can override it here too):
 
 ```bash
-ADMIN_USERNAME=admin ADMIN_PASSWORD='...' VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
+ADMIN_USERNAME=admin ADMIN_PASSWORD='...' \
+JENKINS_ADMIN_USER='...' JENKINS_ADMIN_PASSWORD='...' \
+VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
 ```
 
 `VOTEBALL_AUTO_APPROVE=1` skips Terraform's "type yes" prompt. On its own it is **not** enough to
-make the deploy unattended — without `ADMIN_PASSWORD` it still stops before step 2.
+make the deploy unattended — without the other four it still stops before step 5.
 
-**Re-running `deploy.sh` is safe, but step 3 reseeds the admin secret every run — two things follow
+**Re-running `deploy.sh` is safe, but step 6 reseeds the admin secret every run — two things follow
 from that:**
 
 - It issues a **new admin session key**, signing out anyone currently logged into the admin page.
@@ -202,8 +215,8 @@ Do step 2 **before** step 3 — restart the backend before the in-cluster secret
 fresh pod just reloads the old value. Only `backend` needs restarting; the worker and jobs mount the
 same secret but use only the (unchanged) database credentials.
 
-> **On a full rebuild**, this same reseed happens as step 3 of `deploy.sh`, which is why a custom
-> username has to be passed on the `deploy.sh` command line — see the note under
+> **On a full rebuild**, this same reseed happens as one of the early steps of `deploy.sh`, which is
+> why a custom username has to be passed on the `deploy.sh` command line — see the note under
 > [Put the site online](#run-it-in-a-real-terminal).
 
 ---
@@ -224,7 +237,7 @@ only one.
 | Prometheus | tunnel → `http://localhost:9090` | AWS login (it has no password) |
 | Alertmanager | tunnel → `http://localhost:9093` | AWS login (it has no password) |
 | ArgoCD | tunnel → `https://localhost:8081` | AWS login + `admin` password |
-| Jenkins | **SSH** tunnel → `http://localhost:8080` | your SSH key + a Jenkins login |
+| Jenkins | `kubectl port-forward` → `http://localhost:8080` | your AWS login (cluster access) + a Jenkins login |
 | The database | a throwaway pod inside the cluster | being inside the cluster + the DB password |
 | ECR, S3, secrets, SNS, logs | the `aws` command | your AWS login |
 
@@ -308,29 +321,22 @@ kubectl get applications -n argocd      # "Synced / Healthy" is the answer
 
 ### Jenkins (the build server)
 
-Jenkins is **not in the cluster** — it's a separate machine, built by `terraform/jenkins/`, and it is
-normally **switched off** to save money. Webhooks are thrown away while it's off, so start it before
-pushing anything you expect to build:
+Jenkins runs **inside the cluster** now (namespace `ci`) — there is no separate machine, nothing to
+start or stop, and no bill for it beyond the pods it uses on nodes the cluster already runs. It comes up
+and goes down with the cluster itself. Reach the UI the same way you'd reach Grafana or ArgoCD:
 
 ```bash
-cd terraform/jenkins
-aws ec2 start-instances --instance-ids "$(terraform output -raw instance_id)"
-aws ec2 wait instance-status-ok --instance-ids "$(terraform output -raw instance_id)"
-
-terraform output -raw ssh_tunnel_command   # prints an ssh command; run it, then browse http://localhost:8080
-
-aws ec2 stop-instances --instance-ids "$(terraform output -raw instance_id)"   # when you're done
+kubectl port-forward -n ci svc/jenkins 8080:8080   # then browse http://localhost:8080
 ```
 
-Its web port is **not open to you** — only to GitHub's webhook addresses. The UI arrives through the
-SSH tunnel instead. Two things that catch people out:
+Its web address (`https://jenkins.<your app_domain>/`) is only open for one path — the GitHub webhook —
+so the UI itself is not reachable from the internet at all; the port-forward above is the only way in.
+One thing that catches people out:
 
-- **The login password can't be recovered.** Only a one-way hash of it is stored, so if you forget
-  it, re-set it: `JENKINS_ADMIN_USER=... JENKINS_ADMIN_PASSWORD='...' ./scripts/seed-jenkins-secret.sh`,
-  then restart Jenkins on the host.
-- **SSH suddenly times out** (rather than refusing) usually means your home IP address changed.
-  Update `admin_cidr` in `terraform/jenkins/jenkins.tfvars` and re-apply. See
-  `terraform/jenkins/README.md` and `docs/cicd.md`.
+- **The login password can't be recovered.** Only a one-way hash of it is stored, so if you forget it,
+  re-set it: `JENKINS_ADMIN_USER=... JENKINS_ADMIN_PASSWORD='...' ./scripts/seed-jenkins-secret.sh`,
+  then force a fresh controller so it re-reads the secret:
+  `kubectl delete pod -n ci -l app.kubernetes.io/component=jenkins-controller`. See `docs/cicd.md`.
 
 ### The database
 
@@ -391,8 +397,8 @@ aws logs tail "/aws/containerinsights/$(terraform output -raw cluster_name)/appl
 | Port-forward says the service doesn't exist | A chart upgrade renamed it — run `kubectl get svc -n monitoring` and use the real name |
 | Grafana rejects the password | It's regenerated on every rebuild — print it again |
 | `localhost:3000` shows nothing | The tunnel closed — it dies with its terminal, silently |
-| SSH to Jenkins times out | Your home IP changed — update `admin_cidr` and re-apply |
-| A push doesn't trigger a build | The Jenkins machine is switched off; webhooks are discarded, not queued |
+| `kubectl port-forward -n ci svc/jenkins` fails | The cluster (and Jenkins with it) is torn down, or the pod is mid-reschedule after a Spot reclaim — retry in a few seconds |
+| A push doesn't trigger a build | Check the webhook is pointed at `https://jenkins.<your app_domain>/github-webhook/` (repoints on every rebuild — the hostname is stable via external-dns, but a stale webhook from a much older setup can still exist in GitHub's settings) |
 | Alerts never arrive | The email subscription is still `PendingConfirmation` |
 
 ---
@@ -415,13 +421,18 @@ infrastructure. Order matters:
 A final database snapshot is taken automatically, so the next `./scripts/deploy.sh` restores your
 votes. (This changed on 2026-07-20 — teardown used to discard them.)
 
-**Three things `destroy.sh` deliberately does NOT delete**, and none should be added to it:
+**Two things `destroy.sh` deliberately does NOT delete**, and neither should be added to it:
 
 | Kept | Why |
 |---|---|
 | The Terraform **state bucket** | It holds the record of what is being deleted. Removing it mid-teardown would orphan anything left behind. |
-| The **Jenkins stack** (`terraform/jenkins/`) | A CI server owned by the stack it builds for would lose its config and history on every rebuild. Stop the instance to save money; don't destroy it. |
 | **Database snapshots** | They are the restore point for the next deploy. Prune old ones by hand, keeping the newest. |
+
+Jenkins is **not** in this list any more — it is part of the same stack as the app now (namespace `ci`,
+installed by the same `terraform apply`), so `terraform destroy` removes it along with everything else.
+There is nothing left to keep running between sessions: its credentials live in Secrets Manager, its
+configuration lives in git as JCasC, and its build history was already designed to be disposable (see
+`docs/cicd.md`) — none of that is lost by tearing the cluster down.
 
 ---
 

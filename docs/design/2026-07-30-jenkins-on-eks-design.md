@@ -532,3 +532,97 @@ effort worse than an omission does.
   porting the `TRIVY_CACHE` mount to a pod volume would have silently turned a cross-build cache into
   a per-build one.
 - **Node capacity:** measured rather than assumed; disk risk closed, CPU/memory confirmed ample.
+
+## Verification outcome (2026-07-30/31)
+
+Executed in full: the in-cluster Jenkins was built and proven green **before** the EC2 stack was
+touched, per §11's cutover order. A real push built four images, scanned them clean, pushed them,
+committed the tag bump, and ArgoCD deployed it; the tag-bump commit's own webhook delivery was then
+correctly refused by the Guard stage. The EC2 stack was destroyed and deleted only after that.
+
+**The design was sound end to end, and every one of its major bets paid off** — rootless BuildKit over
+Docker-in-Docker or Kaniko, both caches moved to ECR, the disposable `emptyDir` controller, the
+namespace-scoped RBAC, the webhook-only Ingress. **None of what follows is a flaw in those decisions.**
+What it is: ten assumptions the design treated as mechanical detail, each of which turned out to be a
+real failure mode, and none of which was caught by `terraform validate`, `helm lint`, `helm template`,
+the backend/worker/frontend test suites, or any `Jenkinsfile` syntax check — **every one of those
+passed throughout**, on every commit, including the ones that shipped a build that could not run. All
+ten only surfaced by actually pushing a commit through the pipeline and watching what happened, which is
+the same lesson §11's "no honest substitute for one real green build" already drew from the pipeline's
+*logic* in the 2026-07-20 design — it turned out to apply just as hard to the *mechanism* of running
+that logic on Kubernetes instead of EC2.
+
+In the order hit:
+
+1. **An empty `environment {}` block is a declarative parse error, not a no-op.** Removing the old
+   `AWS_REGION`/`CLUSTER_NAME` assignments (now Jenkins global env vars set by JCasC, unchanged from
+   before) left an empty block behind. Declarative Groovy rejects it outright — "No variables specified
+   for environment" — before any stage runs. No linter here catches Groovy semantics; `Jenkinsfile`
+   syntax checkers largely validate structure, not this rule. Fixed by deleting the block entirely.
+2. **`JCasC.defaultConfig = true` plus a custom `configScripts` entry is not additive — it conflicts.**
+   The chart's default config emits its own `jenkins:` block (mode, `numExecutors`, a whole Kubernetes
+   cloud); `ci/jenkins/jenkins.yaml` defines the same keys. Two configurators defining one key is a
+   `ConfiguratorConflictException`: exit code 5, "Failed to initialize Jenkins", `CrashLoopBackOff` with
+   nothing informative in `kubectl describe pod` or events. `helm template` renders the values fine —
+   the conflict only exists at JCasC's own boot-time validation, which no static check reaches. Fixed by
+   setting `defaultConfig = false`.
+3. **Rootless BuildKit's privilege requirement fails silently, not loudly.** Design §5 stated the agent
+   pod's containers would need "no privileged flag" (true) without spelling out that
+   `allowPrivilegeEscalation: false` plus `capabilities.drop: [ALL]` — the project's own container
+   baseline — makes `rootlesskit` unable to create its user namespace at all. The failure has no error
+   message: the pod reports a healthy-looking 4/5 containers, and the build hangs forever on "still
+   waiting to schedule". Fixed by granting the `buildkit` container `allowPrivilegeEscalation: true` and
+   `capabilities.add: [SETUID, SETGID]` — see item 10 below for what this means for the design's own
+   claims.
+4. **A NetworkPolicy's "allow the internet, deny the VPC" shape silently denies pod-to-pod traffic in
+   the same namespace too**, because agent pod IPs fall inside the VPC CIDR the policy excludes. Design
+   §8 covered egress to RDS and `devops-app` in detail but did not anticipate that the controller↔agent
+   channel needed its own explicit allow. Symptom: agent pod 5/5 Running, everything green, and the
+   build simply never proceeds until the cloud's `retentionTimeout` reaps the pod — no denial logged
+   anywhere. Fixed by adding an explicit `podSelector: {}` same-namespace egress rule.
+5. **`aws: not found`, exit 127**, when a step ran outside `container('awscli')`. The design's pod
+   template (§6) never stated which shell environment plain (non-`container()`) steps execute in — it
+   is the `jnlp` container, which carries git but no AWS CLI. Not a design flaw so much as an
+   underspecified detail that the design's own prose ("everything about HOW to build lives in the
+   Jenkinsfile") did not flag as needing this precision.
+6. **`HOME=/` on uid 1000 breaks both the AWS CLI and Trivy.** The `trivy`/`awscli`/`skopeo` base images
+   assume a root user and leave `HOME` unset (`/`), which is not writable by uid 1000. Symptom:
+   `[Errno 13] Permission denied: '/.aws'` and Trivy failing to create its cache directory. Fixed by
+   setting `HOME=/tmp` on every one of those containers.
+7. **BuildKit does not inherit registry credentials from the agent's IRSA identity** — `buildctl` reads
+   `$DOCKER_CONFIG/config.json` for the cache import/export, and nothing populates it automatically.
+   Symptom: `401 Unauthorized` against the `buildcache` repository, minutes into a build, after the
+   Dockerfile has already resolved — reads like an IAM problem, is actually a missing file. Fixed by
+   writing an ECR login to a shared volume in the `awscli` container first.
+8. **ECR rejects BuildKit's default cache-export manifest format outright.** `--export-cache` without
+   `image-manifest=true,oci-mediatypes=true` produces an OCI image *index*; ECR's manifest PUT returns a
+   bare `400 Bad Request` — after the whole image has built and every layer uploaded, so it reads like a
+   transient registry fault. Design §5a specified the registry-backed cache mechanism correctly but did
+   not anticipate this format mismatch, which only ECR's actual API surfaces.
+9. **`type=oci` and `type=docker` both produce a tarball, but only one is scannable.** `type=oci` writes
+   an OCI *archive* (`index.json` + `blobs/`); Trivy's `--input` reads a `docker-archive` tar or an OCI
+   *directory* — never an OCI archive. The failure, `manifest.json not found in tar`, reads like image
+   corruption rather than an export-format choice. Design §5's "build → scan the tarball → push the
+   tarball" flow was exactly right; it just didn't specify which tarball format that requires.
+10. **The JCasC-pinned SSH host key covers the git *plugin*'s checkout only, not raw `git`.** The tag-bump
+    stage shells out to plain `git push` in the `jnlp` container, which has its own separate
+    `~/.ssh/known_hosts` that the plugin's pinned key never touches. Symptom: `Host key verification
+    failed`, *after* the image has already built, scanned and pushed — the same message a plugin-side
+    misconfiguration would give, for a mechanically different reason. Fixed by writing the same pinned
+    key into that stage's own `known_hosts` before the push.
+
+**One claim in this design's own text was simply wrong, not just underspecified: §5's "not privileged"
+framing implied every build container would keep the project's `allowPrivilegeEscalation: false`
+baseline.** Item 3 above shows that isn't achievable for rootless BuildKit specifically — the mapping
+capabilities are load-bearing for the mechanism the design chose, not an oversight in applying it. The
+correction is not "use a different mechanism" (DinD needs a strictly larger grant, `privileged: true`;
+Kaniko is archived) but to state the exception honestly, scoped to one container, with the comparison to
+DinD spelled out — which `docs/security.md` and `CLAUDE.md` now both do. The design's broader security
+posture — namespace-scoped RBAC, IRSA split narrower than the EC2 instance profile it replaced, a
+NetworkPolicy denying RDS/`devops-app` regardless of what runs inside any agent container — holds
+exactly as designed and was not weakened by this correction.
+
+**What this outcome does not call into question:** the decision to move in-cluster at all, the choice of
+rootless BuildKit, the registry-backed caching strategy, or the disposable-controller model. All ten
+items above are failures in getting a sound design's *details* right on the first pass, the same kind of
+gap end-to-end verification exists to catch — not evidence the design itself needed to be different.

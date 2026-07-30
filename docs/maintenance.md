@@ -108,9 +108,10 @@ so these need bumping *with* the EKS upgrade, not after it.
 
 **Check with:** `helm search repo <chart> --versions | head`.
 
-**Terraform floor** (`terraform/versions.tf` and `terraform/jenkins/versions.tf`):
-`required_version >= 1.11.0`, because the S3 backend uses native `use_lockfile` locking rather than the
-deprecated `dynamodb_table` argument. Downgrading below 1.11 breaks `init` in both stacks.
+**Terraform floor** (`terraform/versions.tf`): `required_version >= 1.11.0`, because the S3 backend uses
+native `use_lockfile` locking rather than the deprecated `dynamodb_table` argument. Downgrading below
+1.11 breaks `init`. There is only the one stack now — the separate Jenkins EC2 stack and its own
+version floor were retired on 2026-07-31 when Jenkins moved in-cluster.
 
 **Provider pins** (`terraform/versions.tf`): `aws ~> 5.0` is capped by `terraform-aws-modules/eks`
 v20, which requires `< 6.0`. Moving to AWS provider v6 means upgrading that module first — that pair
@@ -179,46 +180,38 @@ protection on the container side without a PR queue.
 
 ---
 
-## The Jenkins build host needs its own upkeep
+## Jenkins needs its own upkeep, even though it now lives in the cluster
 
-CI is Jenkins on a dedicated EC2 host (`terraform/jenkins/`, see `docs/cicd.md`). Unlike GitHub's hosted
-runners, **this is a server you own**, so it ages like one. Nothing here is urgent; all of it is silent.
+CI is Jenkins in the `ci` namespace, installed by Terraform (`terraform/addon-jenkins.tf`, see
+`docs/cicd.md`). Moving it in-cluster on 2026-07-31 removed the OS-patching and AMI-churn maintenance an
+EC2 host needed, but two things still age on their own schedule and nothing alerts on either:
 
-- **Jenkins core.** Jenkins publishes security advisories regularly and its own UI shows an update
-  banner. Bump it with `sudo dnf update jenkins && sudo systemctl restart jenkins` over the SSH tunnel.
-  There is no automation for this, and no alert — the host has no public UI, so nobody sees the banner
-  unless they open the tunnel. Fold it into the quarterly pass.
-- **Jenkins plugins.** Since the JCasC pass the set is declared in `terraform/jenkins/casc/plugins.txt`
-  — 8 top-level entries, dependencies resolved automatically (70 on a freshly built host, against the 94
-  the setup wizard used to leave behind). **Versions are deliberately unpinned**, so a rebuilt host takes
-  whatever is current; that is the trade for not maintaining a second list that silently goes stale
-  beside the Jenkins version. It also means two builds of the same commit can install different plugin
-  versions, which is why `jenkins-plugin-cli --list` output belongs in any bug report.
+- **The Jenkins controller image.** Plugins are baked in at build time
+  (`ci/jenkins/Dockerfile`, `ci/jenkins/plugins.txt` — 8 top-level entries, dependencies resolved
+  automatically), pushed to ECR as `<cluster_name>-jenkins`, and referenced by a pinned tag in
+  `terraform/voteball.tfvars` (`jenkins_image_tag`). This trades the EC2 host's "always current, ages
+  invisibly" plugin set for an explicit, reproducible one — but that means **it never updates itself.**
+  Rebuild it deliberately: bump `plugins.txt` if needed, run
+  `./scripts/build-push-ecr.sh jenkins <new-tag>`, update `jenkins_image_tag`, `terraform apply`. Fold
+  this into the quarterly pass; `jenkins-plugin-cli --list` output at build time belongs in any bug
+  report.
 
-  Plugin updates are the most common source of advisories *and* of behaviour changes: the webhook-secret
-  bug in `docs/cicd.md` is a quirk of github plugin **1.47.0** specifically. After any plugin update,
-  **re-test the webhook with a SHA-256 signature** — signed should give `200`, unsigned `400`. A SHA-1
-  probe fails against a correct config, so an under-specified test can also mislead you.
-
-- **⚠️ Do not `terraform apply` the Jenkins stack without reading the plan.** `data.aws_ssm_parameter`
-  resolves to the *newest* Amazon Linux image, and `ami` forces replacement — so once Amazon ships a new
-  image the stack plans a destroy-and-rebuild of the CI host. `lifecycle.ignore_changes = [ami]` now
-  prevents that, and **patching happens in place** (`sudo dnf update --releasever=latest` + reboot); an
-  instance's AMI id is fixed at launch, so patching never settles that diff on its own. Moving to a new
-  image should be a deliberate `-replace`, which is safe now that JCasC can rebuild the configuration.
-- **`aquasec/trivy:0.58.1` is pinned in the `Jenkinsfile`.** The vulnerability *database* refreshes on
-  every run, so scanning stays current, but the scanner *binary* ages and stops learning new detection
-  formats. Pinning is deliberate — an unpinned scanner can turn a green pipeline red overnight with no
-  change from you — but a pin is a promise to revisit it. Bump the tag, run one build with `FORCE_BUILD`,
-  and confirm the app images still scan clean before relying on it.
-- **The host's OS.** Amazon Linux 2023 does not patch itself. `sudo dnf update --releasever=latest` when
-  you are on the box anyway; Docker and Java updates want a `systemctl restart jenkins` afterwards, and a
-  kernel update wants a reboot. Snapshot the root volume first if you want a way back — cheap insurance
-  on a host whose configuration used to exist nowhere else.
-- **Cheapest maintenance posture: stop the instance.** ~$37/month running, ~$6/month stopped, and all
-  state persists on the EBS volume (see `docs/cicd.md`). Webhooks are discarded while it is stopped.
-- **`buildDiscarder` keeps the last 20 builds** and `docker image prune -f` runs after every build, so the
-  30 GB volume is bounded — but check `df -h` if builds ever start failing oddly.
+  Plugin updates are the most common source of both security advisories and behaviour changes. After
+  bumping the plugin set, **re-test the webhook with a SHA-256 signature** — signed should give `200`,
+  unsigned `400`.
+- **`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.58.1`, `quay.io/skopeo/stable:v1.17.0` and
+  `amazon/aws-cli:2.22.0`** are pinned in `ci/jenkins/jenkins.yaml`'s agent pod template. The Trivy
+  vulnerability *database* refreshes on every run via `--db-repository`, so scanning stays current, but
+  all four *binaries* age and stop learning new formats/APIs. Pinning is deliberate — an unpinned image
+  can turn a green pipeline red (or, worse, silently less strict) overnight with no change from you —
+  but each pin is a promise to revisit it. Bump one, run a build with `FORCE_BUILD`, confirm the app
+  images still scan clean before relying on it.
+- **`buildDiscarder` keeps the last 20 builds.** There is no equivalent of "check `df -h`" any more — a
+  pod agent is destroyed after every build, so there is no persistent disk to fill. The volume that
+  *does* age is a different one: **build history itself resets on every Spot reclaim** (the node group
+  is 100% Spot, reclaimed roughly once a day) because `JENKINS_HOME` is a deliberate `emptyDir`, not a
+  PersistentVolumeClaim — see `docs/cicd.md` for why a PVC would make this worse, not better. Nothing to
+  maintain here; it is a designed-in property, not drift.
 
 ---
 
@@ -243,7 +236,7 @@ runners, **this is a server you own**, so it ages like one. Nothing here is urge
 |---|---|
 | Each deploy | Watch for the Trivy gate failing on new CVEs |
 | Monthly | Check for dependency updates **by hand** — nothing raises them for you (see above); prune old RDS snapshots |
-| Quarterly | Bump add-on chart versions; check the EKS support window; update Jenkins core + plugins and the pinned `aquasec/trivy` tag |
+| Quarterly | Bump add-on chart versions (Jenkins included); check the EKS support window; rebuild the Jenkins controller image and bump the pinned `buildkit`/`trivy`/`skopeo`/`aws-cli` tags in `ci/jenkins/jenkins.yaml` |
 | **Before 2026-12-02** | **Upgrade EKS off 1.34 or start paying 5×** |
 | When torn down | Nothing rots — the cheapest maintenance posture is not running it |
 
@@ -251,9 +244,10 @@ That last row is worth stating plainly: this stack is designed to be destroyed a
 and `./scripts/destroy.sh` preserves the data in a snapshot. If it is not being demoed, the correct
 maintenance action is to tear it down.
 
-One caveat to it: **`./scripts/destroy.sh` does not touch `terraform/jenkins/`**, deliberately — a CI
-server owned by the stack it builds for would lose its history on every rebuild cycle. So while the
-application stack is down, the Jenkins host keeps running and keeps billing unless you stop it
-separately. Stopping it is the right move; destroying it is not, and would also leave an orphaned 30 GB
-volume behind (its root volume is `delete_on_termination = false` on purpose, because Jenkins'
-credentials and job configuration live only there).
+The old caveat to this — that a separately-owned Jenkins EC2 host kept running and billing after
+`./scripts/destroy.sh`, and had to be stopped by hand — no longer applies. Jenkins is part of the same
+stack as the app now (namespace `ci`, installed by the same `terraform apply`), so `destroy.sh` takes it
+down too, with nothing left running to bill for and nothing orphaned to clean up by hand: its
+credentials live in Secrets Manager (survives teardown) and its configuration lives in git as JCasC
+(survives teardown); only its disposable build history is lost, which was already designed to be
+disposable.

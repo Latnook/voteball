@@ -18,14 +18,15 @@ Worth stating, because these are the parts that are painful to retrofit and are 
 - **Identity:** IRSA per workload, least privilege, nothing `cluster-admin`. `frontend`/`backend`
   carry no AWS role at all; `worker` and `backup` have separate roles scoped to one topic/prefix each.
 - **Secrets:** AWS Secrets Manager + External Secrets Operator. No secret in git or Terraform state.
-  The Jenkins build host authenticates by IAM **instance profile** — no stored AWS keys — and its role
-  is scoped to ECR push plus read on one secret ARN (its own JCasC credentials); it holds no cluster
-  access.
+  Jenkins (in-cluster since 2026-07-31, namespace `ci`) authenticates its agent pods by **IRSA** — no
+  stored AWS keys — scoped to ECR push only; the controller itself holds no AWS role and no cluster
+  access beyond managing its own agent pods.
 - **Supply chain:** git-SHA image tags (never `latest`), ECR scan-on-push, Trivy blocking CI on
   CRITICAL/HIGH.
-- **Containers:** non-root, read-only rootfs, all capabilities dropped, no privilege escalation.
-- **Delivery:** GitOps via ArgoCD, fed by Jenkins; `git push` to live in a few minutes, verified end to
-  end (see `docs/cicd.md`).
+- **Containers:** non-root, read-only rootfs, all capabilities dropped, no privilege escalation — with
+  one documented, narrowly-scoped exception for the CI `buildkit` container; see `docs/security.md`.
+- **Delivery:** GitOps via ArgoCD, fed by an in-cluster Jenkins; `git push` to live in a few minutes,
+  verified end to end (see `docs/cicd.md`).
 - **Teardown/rebuild:** verified across three full destroy→deploy cycles with data preserved.
 
 ---
@@ -38,9 +39,10 @@ the Jenkins stack's 14 live resources were migrated and verified. See
 the reasoning still explains why the bucket is protected the way it is.
 
 > **Correction to what this section assumed:** it named only `terraform/`. At the time of the fix
-> that was the *less* exposed of the two — the cluster was destroyed, so its state described nothing.
-> The file that actually held value was `terraform/jenkins/terraform.tfstate`, which this section did
-> not mention. Remote state covers both.
+> that was the *less* exposed of the two stacks then in play — the cluster was destroyed, so its state
+> described nothing. The Jenkins EC2 stack's own local state file was the one that actually held live
+> resources, and this section did not mention it. Remote state covered both stacks while they were
+> separate; since 2026-07-31 there is only the one stack and one state file (see the update below).
 
 **Current (before the fix):** no `backend` block in `terraform/`, so `terraform.tfstate` lives on one
 laptop.
@@ -57,7 +59,11 @@ slightly chicken-and-egg: create the bucket/table in a small separate stack, or 
 in favour of S3-native `use_lockfile`, so there is no lock table. Bootstrap is
 `scripts/bootstrap-tf-backend.sh` (idempotent, no state of its own). The bucket
 (`<cluster_name>-tfstate-<account_id>`) **belongs to no stack and must never be added to
-`scripts/destroy.sh`**, for the same reason `terraform/jenkins/` is not there.
+`scripts/destroy.sh`** — deleting it mid-teardown would delete the record of what is being deleted.
+
+> **Update 2026-07-31:** the separate `voteball/jenkins.tfstate` key this section originally referred
+> to no longer exists. Jenkins moved into the main stack (namespace `ci`) and is destroyed and rebuilt
+> with everything else — there is now only one key, `voteball/main.tfstate`, in this same bucket.
 
 ---
 
@@ -143,7 +149,7 @@ Verify the final snapshot by **`SnapshotCreateTime`, never by its identifier** �
 alone would suggest the final snapshot had failed and the newest was five days old.
 
 Making the dumps genuine off-stack insurance means moving the bucket out of the stack it insures —
-the same argument that keeps `terraform/jenkins/` and the tfstate bucket out of `scripts/destroy.sh`.
+the same argument that keeps the tfstate bucket out of `scripts/destroy.sh`.
 
 ---
 
@@ -240,7 +246,7 @@ first. The `Watchdog` heartbeat is routed to a null receiver; delivered to a mai
 
 ## 7. The CI server is a single instance with no backup, and it fails silently — mostly RESOLVED 2026-07-21
 
-**Current:** Jenkins runs on one EC2 instance (`terraform/jenkins/`). Its configuration, credentials and
+**Current (as of 2026-07-21):** Jenkins ran on one EC2 instance, its own separate Terraform stack. Its configuration, credentials and
 build history live only on that instance's EBS volume. There is no snapshot schedule, no second instance,
 and the server is configured by hand through the UI rather than from a file. It also sends **no
 notifications** — Jenkins emails nothing without SMTP, and this Jenkins has no public UI to show a red
@@ -256,7 +262,7 @@ banner to anyone.
   `aws_instance.jenkins` *must be replaced*, because `data.aws_ssm_parameter.al2023` resolves to
   whatever the newest Amazon Linux 2023 image is and `ami` forces replacement. Nothing was applied,
   and the state was accurate — the live host still runs the recorded `ami-05471ba2d056f72c5` — but
-  **`terraform apply` in `terraform/jenkins/` would today destroy and rebuild the CI server**, on
+  **`terraform apply` on that separate stack would today destroy and rebuild the CI server**, on
   Amazon's release schedule rather than yours. The preserved volume does not save you: the
   replacement instance does not attach it. This makes the JCasC pass below the fix, not a nicety;
   pinning the AMI is the narrower stopgap.
@@ -272,7 +278,7 @@ scheduled check that the ArgoCD Application's deployed tag matches `master`. **S
 access, replacing the SSH tunnel and closing port 22, is deferred alongside it.
 
 **Status 2026-07-21 — JCasC done, and the AMI foot-gun above is disarmed.** Configuration now lives in
-`terraform/jenkins/casc/jenkins.yaml`, applied at every start; credentials come from Secrets Manager
+that stack's own JCasC config file, applied at every start; credentials come from Secrets Manager
 (`voteball/jenkins`) via a single-ARN, read-only IAM grant. The deploy key — whose only copy was inside
 Jenkins' own credential store, recoverable from nowhere — was extracted and is now stored outside the
 host, verified byte-for-byte including the trailing newline that OpenSSH requires.
@@ -294,6 +300,28 @@ Three things remain open, and the first is the one that matters:
 
 Until then the compensating practice is explicit: **verification means opening the Jenkins UI or running
 `kubectl get application voteball -n argocd`** — never inferring success from the live site still working.
+
+**Status 2026-07-31 — the single-instance premise of this whole section is gone.** Jenkins moved from
+its dedicated EC2 host into the cluster itself (namespace `ci`, `terraform/addon-jenkins.tf`), and that
+closes the *first* problem this section identified outright rather than mitigating it further:
+
+- **"Losing the host" is no longer a scenario.** There is no host — Jenkins is pods on the same Spot
+  node group as everything else, and it is torn down and rebuilt with the rest of the stack by the same
+  `terraform apply`/`destroy`. Its credentials live in Secrets Manager (survives teardown) and its
+  configuration lives in git as JCasC (survives teardown); nothing depends on one instance's EBS volume
+  any more.
+- **The rebuild path is no longer a special case that needs separate verification.** Every
+  `terraform apply` *is* a rebuild of the controller from JCasC — it is not a rare disaster-recovery
+  path exercised once and hoped to still work later.
+- **The plugin-set-drifts-on-a-running-host problem (item two above) cannot recur.** Plugins are baked
+  into the controller image at build time (`ci/jenkins/Dockerfile`); there is no long-lived host for a
+  plugin set to diverge on.
+- **Two items remain open, unchanged by the move:** notifications (G7) are still absent, and SSM
+  Session Manager is now moot rather than solved — there is no SSH access to anything Jenkins runs on
+  to begin with.
+
+See [`docs/design/2026-07-30-jenkins-on-eks-design.md`](design/2026-07-30-jenkins-on-eks-design.md) for
+the full design and its "Verification outcome" section for what the move itself broke in practice.
 
 ---
 
@@ -331,8 +359,8 @@ but the list had not caught up — item 2 in particular still called a disarmed 
 contradicted the §7 status note above it.*
 
 1. ~~**Terraform remote state**~~ — **done 2026-07-21.**
-2. ~~**JCasC + Jenkins AMI**~~ (§7) — **done 2026-07-21.** Configuration is in
-   `terraform/jenkins/casc/`, and `lifecycle.ignore_changes = [user_data, ami]` stops a routine
+2. ~~**JCasC + Jenkins AMI**~~ (§7) — **done 2026-07-21, then the whole EC2 host retired 2026-07-31.**
+   Configuration lived in that stack's own JCasC file, and `lifecycle.ignore_changes = [user_data, ami]` stopped a routine
    apply from churning the host. Ignored rather than pinned, so a *new* host still gets the latest
    image.
 3. ~~**WAF + rate limiting**~~ — **done 2026-07-21.** `terraform/waf.tf`, four rules; see

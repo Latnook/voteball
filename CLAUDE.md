@@ -18,9 +18,10 @@ a hardcoded ARN, bucket, registry or domain anywhere, that is a bug.**
 ArgoCD deploys what is on `master`, not what is on your disk, so those ten fields must be committed
 with **real** values — this account's ECR registry, RDS endpoint, ACM/WAF/IRSA ARNs and domain are
 in git right now. Bootstrapping ArgoCD while they are still placeholders reverts the cluster to a
-stale image tag and every pod lands in `ImagePullBackOff` (observed on the 2026-07-20 rebuild; see
-step 8 of `scripts/deploy.sh`). A forker replaces them by running the sync script, not by editing
-the file. Only the header comment says `FILLED-BY-SYNC`; the values themselves are live.
+stale image tag and every pod lands in `ImagePullBackOff` (observed on the 2026-07-20 rebuild; see the
+"Syncing values.yaml" / "Bootstrapping ArgoCD" steps of `scripts/deploy.sh`). A forker replaces them by
+running the sync script, not by editing the file. Only the header comment says `FILLED-BY-SYNC`; the
+values themselves are live.
 
 > **The single-node k3s deployment is RETIRED and its code was removed on 2026-07-20** (the `terraform/`
 > stack, the Ansible playbook/roles, and the SSH-based reverse-seed script — all recoverable from git
@@ -220,13 +221,16 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
 - **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
   confirmation before Terraform touches billed resources; `VOTEBALL_AUTO_APPROVE=1` skips the prompt
   for unattended runs only). **`VOTEBALL_AUTO_APPROVE=1` alone does NOT make `deploy.sh`
-  unattended** — the admin password is prompted on `/dev/tty`, so a detached run also needs
-  `ADMIN_PASSWORD` in the environment (the db password is read from `voteball.tfvars` and only needs
-  to be passed as `DB_PASS` if it isn't there). Both are collected in a preflight check at the top of
-  the script — *before* step 2 — because the failure otherwise lands *after* a ~15-minute billed
-  `terraform apply` (hit for real on the 2026-07-21 rebuild). Note `deploy.sh` is only re-runnable at
-  a cost: step 3 runs unconditionally and reissues `ADMIN_SESSION_SECRET`, invalidating live admin
-  sessions.
+  unattended** — the admin password (and, since the in-cluster Jenkins move, a Jenkins username +
+  password) is prompted on `/dev/tty`, so a detached run also needs `ADMIN_PASSWORD`,
+  `JENKINS_ADMIN_USER` and `JENKINS_ADMIN_PASSWORD` in the environment (the db password is read from
+  `voteball.tfvars` and only needs to be passed as `DB_PASS` if it isn't there). All are collected in a
+  preflight check at the top of the script — *before* the billed `terraform apply` — because the
+  failure otherwise lands *after* a ~15-minute billed run (hit for real on the 2026-07-21 rebuild). Note
+  `deploy.sh` is only re-runnable at a cost: it reseeds both secrets unconditionally, reissuing
+  `ADMIN_SESSION_SECRET` and invalidating live admin sessions. Count `grep -nE '^\s*step "'
+  scripts/deploy.sh` for the current step numbers rather than reciting them here — they shift whenever
+  a step is inserted, most recently 2026-07-30/31 when Jenkins moved in-cluster.
 - **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
   `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file
@@ -241,15 +245,47 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   tfstate. `DB_PASS` **must** match `db_password` in `terraform/voteball.tfvars` — so it now defaults
   to reading it straight from there (`tf_db_password` in `scripts/lib/config.sh`), which makes the
   match automatic; pass `DB_PASS` in the environment only to override.
-- **CI/CD is Jenkins**, defined by the root `Jenkinsfile` and running on a dedicated EC2 host built by
-  the **separate** `terraform/jenkins/` stack. Pushing app code to `master` fires a GitHub webhook →
-  guard → build → Trivy → ECR → bump `image.tag` `[skip ci]` → ArgoCD auto-syncs.
-  `./scripts/build-push-ecr.sh` does the same by hand. Jenkins authenticates to AWS via an **instance
-  profile** (ECR push only — no keys stored anywhere, no EKS/RDS/S3/SNS/Secrets Manager access) and
-  **never deploys**; ArgoCD does. Region and cluster name come from Jenkins **global environment
-  variables** (`AWS_REGION`, `CLUSTER_NAME`) — the equivalent of the retired repo variables, and the
-  reason a hardcoded region or prefix in the `Jenkinsfile` would be a bug. **See `docs/cicd.md`** for
-  the full flow, the first-time setup runbook, and failure modes.
+- **CI/CD is Jenkins, running IN the cluster** (namespace `ci`), installed by Terraform as a
+  `helm_release` (`terraform/addon-jenkins.tf`) of the official chart, configured by JCasC
+  (`ci/jenkins/jenkins.yaml`). Pushing app code to `master` fires a GitHub webhook → guard → build
+  (rootless BuildKit, pod agent) → Trivy → ECR → bump `image.tag` `[skip ci]` → ArgoCD auto-syncs.
+  `./scripts/build-push-ecr.sh` does the same by hand, and is the **only** way to build while the
+  cluster is destroyed (there is no CI without a cluster). Agent pods authenticate to AWS via **IRSA**
+  (ECR push only, on the `jenkins-agent` ServiceAccount — the controller itself carries no AWS role at
+  all). Region, cluster name, GitHub repo and app domain arrive as **pod environment variables** set by
+  Terraform — the equivalent of the retired EC2 host's global environment variables, and the reason a
+  hardcoded region or prefix in the `Jenkinsfile` or `ci/jenkins/jenkins.yaml` would be a bug. **See
+  `docs/cicd.md`** for the full flow, the first-time setup runbook, and failure modes.
+
+  **Jenkins is a platform add-on, not the application** — the opposite of `charts/voteball`. Changes to
+  the Jenkins release reach the cluster by `terraform apply`, **not** by committing to `master` (ArgoCD
+  does not manage it; Terraform does, the same way it owns ArgoCD, ESO and external-dns). Committing a
+  change to `ci/jenkins/jenkins.yaml` or `terraform/addon-jenkins.tf` and walking away does nothing
+  until someone runs `terraform apply`.
+
+  **The controller is disposable — `JENKINS_HOME` is an `emptyDir`, not a volume, and that is
+  deliberate.** The node group is 100% Spot, reclaimed roughly once a day; an EBS volume is locked to
+  one Availability Zone, so a PersistentVolumeClaim would need every reschedule to land back in the
+  same AZ or the pod hangs `Pending` forever — the one failure mode in this design that needs a human.
+  At a daily reclaim rate a PVC would preserve almost nothing while adding that risk. **Do not "fix"
+  this with a PVC.** What is lost on a reclaim is build history (capped at 20 builds anyway) — the
+  durable record is the `ci: image tag <sha> [skip ci]` commits on `master`, which never expire.
+
+  **The `buildkit` container is the one container in this entire project that runs
+  `allowPrivilegeEscalation: true` plus `SETUID`/`SETGID`.** Rootless BuildKit builds inside a user
+  namespace, and mapping UIDs into that namespace needs those two things — without them the pod looks
+  healthy (4/5 containers) and the build just hangs forever with nothing logged. It is still **uid
+  1000, not privileged, no host devices, no host paths** — nothing like Docker-in-Docker's
+  `privileged: true`, which is why DinD was rejected for this pipeline in the first place. Every
+  container in `devops-app` still runs `allowPrivilegeEscalation: false`; **do not "tidy" this one
+  container to match them** — rootless BuildKit cannot start without the exception, and it is scoped to
+  one CI pod in a namespace whose NetworkPolicy already denies it any route to RDS or `devops-app`.
+
+  **Both build caches live in ECR** (`${cluster_name}-buildcache`, `${cluster_name}-trivy-db`), and
+  both repos **must stay `MUTABLE` and outside `local.ecr_repos`** in `terraform/ecr.tf`. That set is
+  `IMMUTABLE` because a git-SHA tag must never be silently overwritten; a cache tag is *rewritten on
+  every build* by design, so adding either repo to that set fails every build's cache export with
+  "cannot overwrite immutable tag" — at the end of a long build, not the start.
 
 **Do not remove the Guard stage from the `Jenkinsfile`, or `scripts/ci/should-skip-build.sh`.** Jenkins
 has no native `[skip ci]` — that is a GitHub Actions feature. The Guard stage is the *only* thing
@@ -258,49 +294,28 @@ billable build loop that also rolls production pods continuously. It looks like 
 `[skip ci]` marker in the commit message; it is not. This is proven, not theoretical — build 5 in
 `docs/cicd.md` is the webhook firing on Jenkins' own commit and being stopped by exactly this stage.
 
-**`terraform/jenkins/` is a separate stack with its own state and is deliberately outside
-`scripts/destroy.sh`'s scope.** Never add it there. A CI server owned by the stack it builds for would be
-destroyed — with its credentials, job configuration and build history — on every rebuild cycle. It also
-holds no reference to the main stack (its ECR permission is an ARN *pattern*), so it applies cleanly
-while the cluster is destroyed. Stop the instance to save money; do not destroy it.
+**Jenkins is configured by JCasC, not by clicking — but the mechanism is `terraform apply`, not a
+reboot of a hand-managed host.** `ci/jenkins/jenkins.yaml` is loaded into the Helm release's
+`controller.JCasC.configScripts` and applied by the chart's config-reload sidecar (plugins, admin
+user, authorization, the Kubernetes cloud, the agent pod template, both credentials, the `voteball`
+job), so **UI changes are lost the next time the controller restarts** — which, on Spot, is roughly
+daily whether you touch anything or not. Edit the YAML, commit, then run `terraform apply` to push it
+to the running release; committing alone changes nothing (see the platform-add-on note above).
+Secrets come from Secrets Manager (`voteball/jenkins`, seeded by `./scripts/seed-jenkins-secret.sh`),
+synced into a Kubernetes Secret by External Secrets Operator and projected as pod environment
+variables — a Kubernetes Secret carries the deploy key's trailing newline natively, so the old
+one-file-per-value workaround for that is gone. **The GitHub plugin is configured by the official
+chart, not by hand-written XML** — the EC2-era `hookSecretConfigs`/two-file/SHA-256 workaround
+existed only because that plugin version couldn't be data-bound by JCasC; it no longer applies.
 
-**The Jenkins host's AMI foot-gun is DISARMED — don't re-arm it.** `terraform/jenkins/main.tf` carries
-`lifecycle { ignore_changes = [user_data, ami] }`. Without it, `data.aws_ssm_parameter.al2023`
-resolves to the *newest* Amazon Linux 2023 image and `ami` forces replacement, so a routine
-`terraform apply` would **destroy and rebuild the CI host** on Amazon's release schedule — losing its
-plugins, credentials, job config and build history (`delete_on_termination = false` preserves the
-volume, but the replacement instance does not attach it). Confirmed live on 2026-07-21, fixed the
-same day. Ignoring rather than pinning is deliberate: a *new* host still builds from the latest
-image while an existing one is never churned. Patch the running host in place
-(`sudo dnf update --releasever=latest`); move it to a new image only via a deliberate
-`-replace`, which is safe now that JCasC can rebuild the configuration.
-
-**The Jenkins host is configured by JCasC, not by clicking.** `terraform/jenkins/casc/jenkins.yaml`
-is applied at every Jenkins start (plugins, admin user, authorization, global env vars, both
-credentials, the `voteball` job), so **UI changes are lost on the next restart** — edit the YAML,
-commit, and re-run the bootstrap on the host. Secrets come from Secrets Manager (`voteball/jenkins`,
-seeded by `./scripts/seed-jenkins-secret.sh`) and are written as one file per value, because the
-deploy key is multi-line and its trailing newline is load-bearing. **The GitHub plugin is configured
-by XML, not JCasC** (`GitHubPluginConfig` is not data-bound on github 1.47.0 — JCasC aborts the whole
-boot on `manageHooks`), and `user_data.sh` writes **two files**, which is not optional:
-
-- **`github-plugin-configuration.xml`** — where the hook secret is actually read from. Uses the
-  **plural, populated** `hookSecretConfigs` list with `signatureAlgorithm SHA256`.
-- `org.jenkinsci.plugins.github.config.GitHubPluginConfig.xml` — where `manageHooks: false` is read.
-
-Writing only the second produces a host that looks configured and **enforces no webhook signature at
-all** (unsigned deliveries accepted with 200). The legacy *singular* `hookSecretConfig` is **not read
-on a fresh boot** — it appeared to work only because an already-configured host had the right value
-in the other file. `docs/cicd.md` failure mode 3 concerns an *empty* plural list; the fix is to
-populate that list, not to avoid it. Test with **SHA-256** — a SHA-1-only probe fails against a
-correct config. Likewise don't add `crumbIssuer` back.
-
-**Terraform state lives in S3** (`<cluster_name>-tfstate-<account_id>`), one bucket, one key per
-stack (`voteball/main.tfstate`, `voteball/jenkins.tfstate`), with versioning and S3-native locking
+**Terraform state lives in S3** (`<cluster_name>-tfstate-<account_id>`), one bucket, **one key**
+(`voteball/main.tfstate` — the separate `voteball/jenkins.tfstate` is retired along with the EC2
+stack), with versioning and S3-native locking
 (`use_lockfile` — *not* a DynamoDB table; that argument is deprecated, and `required_version` is
 `>= 1.11.0` for this reason). **The bucket belongs to no stack and must never be added to
-`scripts/destroy.sh`** — same reasoning as `terraform/jenkins/` above, one level more severe: it
-would delete the record of what it is deleting, mid-teardown. `backend.hcl` is **generated by
+`scripts/destroy.sh`** — a CI server or the app stack disappearing on teardown is recoverable from
+git and Secrets Manager; this bucket disappearing mid-teardown would delete the record of what is
+being deleted, with nothing left to reconstruct it from. `backend.hcl` is **generated by
 `./scripts/bootstrap-tf-backend.sh` and gitignored**, because a `backend` block cannot interpolate
 variables and the bucket name embeds the AWS account id — so `terraform init` needs
 `-backend-config=backend.hcl`, and without it fails on incomplete backend configuration rather than
@@ -405,18 +420,16 @@ $200/mo) — treat it as a confirm-before-running step, never automatic. Pins th
 (`aws eks describe-cluster-versions --region <your region>`). Community chart/add-on versions drift fast;
 verify with `helm search repo <chart> --versions` before pinning.
 
-### Jenkins build host (`terraform/jenkins/` — a SEPARATE stack)
+### Jenkins (`ci` namespace — installed by the main Terraform stack)
 
 ```bash
-cd terraform/jenkins
-terraform apply -var-file=jenkins.tfvars   # own state; never destroyed by scripts/destroy.sh
-terraform output -raw ssh_tunnel_command   # then browse http://localhost:8080
+cd terraform
+terraform apply -var-file=voteball.tfvars   # same stack, same state; re-applies the Jenkins release too
+kubectl port-forward -n ci svc/jenkins 8080:8080   # then browse http://localhost:8080
 ```
 
-Normally left **stopped** (~$6/mo vs ~$37 running; the Elastic IP is billed either way):
-`aws ec2 stop-instances --instance-ids "$(terraform output -raw instance_id)"`. **Webhooks are
-silently discarded while it is stopped.** `admin_cidr` is your home IP — update and re-apply when
-your ISP reassigns it. See `terraform/jenkins/README.md`.
+There is nothing to start or stop — it runs whenever the cluster does, and goes with it on
+`terraform destroy`. Webhook URL: `https://jenkins.<app_domain>/github-webhook/`.
 
 ### CI guard scripts (`scripts/ci/`)
 
@@ -463,8 +476,7 @@ Two audit passes on 2026-07-26 found seven stale claims; every one was mechanica
 - `docs/deploy.md`'s numbered steps vs `grep -E '^\s*step "' scripts/deploy.sh`.
 - The sync-managed field list vs the `managed` dict in `scripts/sync-values-from-tf.sh` — count it,
   don't recall it (three different counts have been asserted; **ten** is correct).
-- Cost figures (~$200/mo stack, $37 vs $6 Jenkins) and EKS 1.34 / 2026-12-02 repeat across several
-  docs and must agree.
+- Cost figures (~$200/mo stack) and EKS 1.34 / 2026-12-02 repeat across several docs and must agree.
 - **A doc contradicting another doc — or itself — is the reliable tell.** Both 2026-07-26 findings
   were *solved* problems still described as unsolved, which misdirects effort worse than an omission
   does. `docs/eks/live-cluster-snapshot.md` is the model for dated material: it states up front that
