@@ -229,8 +229,14 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   `voteball.tfvars` and only needs to be passed as `DB_PASS` if it isn't there). All are collected in a
   preflight check at the top of the script — *before* the billed `terraform apply` — because the
   failure otherwise lands *after* a ~15-minute billed run (hit for real on the 2026-07-21 rebuild). Note
-  `deploy.sh` is only re-runnable at a cost: it reseeds both secrets unconditionally, reissuing
-  `ADMIN_SESSION_SECRET` and invalidating live admin sessions. Count `grep -nE '^\s*step "'
+  `deploy.sh` is only re-runnable at a cost, and **the two seed scripts behave oppositely — do not
+  assume they match.** `seed-eks-secret.sh` rewrites the app secret **every run**: whatever
+  `ADMIN_PASSWORD` you supply becomes the new password, `ADMIN_USERNAME` silently reverts to `admin`
+  unless you pass it, and a fresh `ADMIN_SESSION_SECRET` invalidates every live admin session.
+  `seed-jenkins-secret.sh` is the reverse — it **exits early and changes nothing** once the secret
+  holds a deploy key, so re-running deploy does *not* update the Jenkins username or password. Those
+  only change under `FORCE_ROTATE=1`, which also mints a new deploy key and webhook secret and so
+  requires re-registering both on GitHub. Count `grep -nE '^\s*step "'
   scripts/deploy.sh` for the current step numbers rather than reciting them here — they shift whenever
   a step is inserted or moved, most recently 2026-07-31 when both secret-seeding steps moved *ahead* of
   the billed apply (now 3 and 3b). **That order is load-bearing, not cosmetic:** the full apply creates
