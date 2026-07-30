@@ -29,16 +29,27 @@ if kubectl cluster-info >/dev/null 2>&1; then
   step "1/6  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
   kubectl delete -f argocd/voteball-application.yaml --ignore-not-found || true
 
-  step "2/6  Removing the Ingress (releases the ALB and the DNS records)"
+  step "2/6  Removing the Ingresses (releases the ALB and the DNS records)"
+  # BOTH Ingresses, not just the app's. Since 2026-07-31 they share ALB group "voteball"
+  # (alb.ingress.kubernetes.io/group.name), and an ALB is only de-provisioned when its group has NO
+  # members left. Deleting one and not the other leaves the ALB alive, so step 3 waits forever and
+  # `terraform destroy` then hits DependencyViolation on subnet deletion because the ALB's ENIs are
+  # still attached -- the 10-20 minute hang this script exists to prevent.
   kubectl delete ingress voteball -n devops-app --ignore-not-found || true
+  kubectl delete ingress jenkins-webhook -n ci --ignore-not-found || true
 else
   step "1-2/6  Cluster unreachable — skipping ArgoCD/Ingress deletion (already gone)"
 fi
 
 step "3/6  Waiting for the ALB to de-provision (its ENIs block VPC deletion)"
+# TWO name shapes are matched on purpose. The AWS Load Balancer Controller names an ALB after the
+# INGRESS GROUP when one is set (k8s-<group>-<hash>, i.e. k8s-voteball-...) and after the
+# namespace+ingress when it is not (k8s-devopsap-voteball-...). Joining the group on 2026-07-31
+# changed the name, and a filter matching only the old shape reports "ALB gone" INSTANTLY while the
+# load balancer is still running -- a false negative that is worse than no check at all.
 for _ in $(seq 1 60); do
   remaining="$(aws elbv2 describe-load-balancers --region "$REGION" \
-    --query "LoadBalancers[?starts_with(LoadBalancerName, 'k8s-devopsap-voteball')].LoadBalancerName" \
+    --query "LoadBalancers[?starts_with(LoadBalancerName, 'k8s-${CLUSTER}-') || starts_with(LoadBalancerName, 'k8s-devopsap-${CLUSTER}')].LoadBalancerName" \
     --output text 2>/dev/null || echo "")"
   if [ -z "$remaining" ] || [ "$remaining" = "None" ]; then
     echo "ALB gone."

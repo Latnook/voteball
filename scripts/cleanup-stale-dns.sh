@@ -17,7 +17,12 @@ cd "$(dirname "$0")/.."   # repo root
 . scripts/lib/config.sh
 require_config
 OWNER="$CLUSTER"
-HOST="${APP_DOMAIN}."
+# BOTH hostnames external-dns manages for this cluster. jenkins.<app_domain> was added on
+# 2026-07-31 when CI moved in-cluster; cleaning only the app's host strands the Jenkins A/AAAA
+# records pointing at a deleted ALB -- exactly the failure this script exists to prevent, just for
+# the newer name. Everything else in the zone (apex, MX, DKIM) stays ineligible: a record is only
+# ever removed when a sibling ownership TXT proves external-dns created it for THIS cluster.
+HOSTS="${APP_DOMAIN}. jenkins.${APP_DOMAIN}."
 WAIT_SECONDS="${CLEANUP_DNS_WAIT:-90}"
 DRY_RUN=0
 
@@ -72,7 +77,8 @@ fi
 CHANGES="$(records_json | python3 -c "
 import json, sys
 d = json.load(sys.stdin)
-owner, host = '$OWNER', '$HOST'
+owner = '$OWNER'
+hosts = set('$HOSTS'.split())
 marker = f'external-dns/owner={owner}'
 
 owned_txt = []
@@ -86,7 +92,7 @@ for r in d['ResourceRecordSets']:
 # Only remove address records for the exact host external-dns manages, and only when at least one
 # ownership TXT for this cluster exists (proving external-dns created them).
 addr = [r for r in d['ResourceRecordSets']
-        if r['Name'] == host and r['Type'] in ('A', 'AAAA')] if owned_txt else []
+        if r['Name'] in hosts and r['Type'] in ('A', 'AAAA')] if owned_txt else []
 
 batch = [{'Action': 'DELETE', 'ResourceRecordSet': r} for r in owned_txt + addr]
 print(json.dumps({'Changes': batch}))
