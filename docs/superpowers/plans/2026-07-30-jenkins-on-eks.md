@@ -1878,6 +1878,27 @@ aws s3 rm "s3://$(terraform output -raw state_bucket 2>/dev/null || echo votebal
 ```
 (The bucket belongs to no stack and must never be destroyed — only this one key is removed.)
 
+- [ ] **Step 4b: Revert the Helm chart-URL workaround — its cause is now gone**
+
+`terraform/addon-jenkins.tf` installs Jenkins from a release `.tgz` URL rather than the normal
+`repository` + `chart = "jenkins"` form. That exists for one reason: Helm's `LocateChart` calls
+`os.Stat()` on the literal chart name **before** consulting `repository`, and the directory
+`terraform/jenkins/` collided with the string `"jenkins"` — so Helm resolved the local EC2 stack
+directory instead of the remote chart.
+
+Step 2 just deleted that directory, so the collision is gone. Revert to the conventional form:
+
+```hcl
+  repository = "https://charts.jenkins.io"
+  chart      = "jenkins"
+  version    = local.jenkins_chart_version
+```
+
+**This is not cosmetic.** While `chart` is a URL, Helm ignores the `version` argument entirely, so a
+future maintainer bumping `version` alone gets a successful apply that installs nothing new. Reverting
+restores `version` to being load-bearing. Verify with `terraform plan` — expect no change to the
+release, since the same chart at the same version resolves either way.
+
 - [ ] **Step 5: Delete the directory and its gitignore entries**
 
 ```bash
