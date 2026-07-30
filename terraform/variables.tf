@@ -11,14 +11,23 @@ variable "cluster_name" {
 }
 
 variable "cluster_version" {
-  # PIN THIS. Extended support costs 5x standard ($0.50 vs $0.10/hr).
-  # Verified 2026-07-19 via `aws eks describe-cluster-versions --region il-central-1`:
-  # STANDARD support = 1.33/1.34/1.35/1.36 (1.36 default); 1.30/1.31/1.32 already EXTENDED.
-  # 1.34 chosen: standard support past the early-Aug-2026 deadline (~Dec 2026), mature enough for
-  # all Plan-2b add-ons. Re-confirm the tier at apply time if this sits unbuilt for weeks.
+  # PIN THIS, AND KEEP IT IN STANDARD SUPPORT. Extended support costs 5x ($0.50 vs $0.10/hr) and
+  # nothing alerts when a version crosses over -- the bill just quadruples.
+  #
+  # This pin lives here rather than in voteball.tfvars ON PURPOSE: that file is gitignored, so a
+  # value set there would leave the committed default disagreeing with the live cluster forever.
+  # It is an engineering pin, not account identity -- unlike the region/domain/ARNs.
+  #
+  # Deliberately NOT restating the support table here; it goes stale (this comment claimed 1.33 was
+  # STANDARD until 1.33 crossed over on 2026-07-29). Re-verify before changing:
+  #   aws eks describe-cluster-versions --region <region>
+  # Current window and the upgrade procedure: docs/maintenance.md.
+  #
+  # An in-place upgrade CANNOT skip a minor -- 1.34 -> 1.36 is two sequential applies. A fresh
+  # apply against no existing cluster creates this version directly, no hops.
   description = "EKS Kubernetes minor version (pinned; keep in standard support)."
   type        = string
-  default     = "1.34"
+  default     = "1.35"
 }
 
 variable "vpc_cidr" {

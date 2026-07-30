@@ -7,20 +7,42 @@ Verified against the repo on 2026-07-29.
 
 ---
 
-## The one with a deadline: EKS 1.34
+## The one with a deadline: EKS 1.35
 
 ```
-Standard support ends   2026-12-02
-Runway from 2026-07-29  ~126 days (about 4 months)
+Standard support ends   2027-03-27
+Runway from 2026-07-30  ~240 days (about 8 months)
 ```
+
+> Upgraded 1.34 → 1.35 in place on 2026-07-30 (control plane 7m29s, node roll 12m21s, no downtime;
+> the site stayed 200 throughout). **A second hop to 1.36 is intended** — it runs to 2027-08-02 —
+> and is held only on `cluster-autoscaler` publishing a 1.36-matching release; the newest chart
+> (9.59.0) still ships app v1.35.0, which matches 1.35 exactly and would trail on 1.36.
 
 After that date the cluster silently moves to **extended support at 5× the control-plane price**
 (≈$0.10/hr → ≈$0.60/hr, roughly **+$360/month** for a cluster that otherwise costs ~$200/month total).
 Nothing breaks; the bill just quadruples, which is the worst kind of failure because nothing alerts.
 
-**Action:** bump `cluster_version` in `terraform/voteball.tfvars` before December. Check the window
-first — `aws eks describe-cluster-versions --region <region>` — and pick a version still in *standard*
-support. Expect to bump some add-on chart versions with it.
+**Action:** bump `cluster_version` in **`terraform/variables.tf`** before December, then apply.
+
+> **Not in `voteball.tfvars`** — that file is gitignored (`.gitignore:14`), so a value set there
+> lives only on one laptop while the committed default stays behind, and the repo silently stops
+> describing the running cluster. This page said "tfvars" until 2026-07-30; it was wrong.
+
+Check the window first — `aws eks describe-cluster-versions --region <region>` — and pick a version
+still in *standard* support. Expect to bump some add-on chart versions with it.
+
+Two things that make this less of a one-liner than it looks:
+
+- **Do not upgrade from the AWS console.** Terraform owns `cluster_version` (`terraform/eks.tf:10`).
+  A console upgrade leaves the real cluster ahead of the config, so the next `terraform plan` tries
+  to *downgrade* — which EKS rejects — and every later apply fails until you reconcile by hand.
+- **EKS cannot skip a minor version.** 1.34 → 1.36 is two sequential applies, each upgrading the
+  control plane and then rolling the node group. Bump the default one minor at a time and let each
+  hop go ACTIVE before starting the next. (A *fresh* apply against no existing cluster has no such
+  limit — it creates the pinned version directly.)
+- **Upgrades are one-way.** There is no EKS downgrade. If a version misbehaves, recovery is
+  destroy-and-rebuild from the RDS snapshot, not a rollback.
 
 > This is the single highest-value item on this page: it is dated, costed, and silent.
 
