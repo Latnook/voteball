@@ -6,7 +6,7 @@ resource "helm_release" "kube_prometheus_stack" {
   name             = "kube-prometheus-stack"
   repository       = "https://prometheus-community.github.io/helm-charts"
   chart            = "kube-prometheus-stack"
-  version          = "87.17.0" # verified latest via `helm search repo` on 2026-07-19 (app v0.92.1)
+  version          = "87.21.0" # verified latest via `helm search repo` on 2026-07-30 (app v0.92.1)
   namespace        = "monitoring"
   create_namespace = true
 

@@ -50,18 +50,30 @@ Two things that make this less of a one-liner than it looks:
 
 ## Version pins that drift
 
-Eight Helm charts and the EKS add-ons are pinned, all verified on 2026-07-19:
+Eight Helm charts and the EKS add-ons are pinned, all re-verified against the repo on 2026-07-30
+(the date each pin was last confirmed *latest*, which is the number that matters — a pin nobody has
+re-checked is the one that has drifted):
 
-| Chart | Pinned |
-|---|---|
-| ArgoCD | 10.1.4 |
-| AWS Load Balancer Controller | 3.4.2 |
-| kube-prometheus-stack | 87.17.0 |
-| External Secrets Operator | 2.8.0 |
-| Cluster Autoscaler | 9.58.0 |
-| external-dns | 1.21.1 |
-| metrics-server | 3.13.1 |
-| Node Termination Handler | 0.21.0 |
+| Chart | Pinned | Last confirmed latest |
+|---|---|---|
+| ArgoCD | 10.2.1 | 2026-07-30 |
+| AWS Load Balancer Controller | 3.4.3 | 2026-07-30 |
+| kube-prometheus-stack | 87.21.0 | 2026-07-30 |
+| External Secrets Operator | 2.8.0 | 2026-07-30 |
+| Cluster Autoscaler | 9.59.0 | 2026-07-30 |
+| external-dns | 1.21.1 | 2026-07-30 |
+| metrics-server | 3.13.1 | 2026-07-30 |
+| Node Termination Handler | 0.21.0 | 2026-07-30 |
+
+**The mechanical check is `helm show chart <ref> --version <v>` and its `kubeVersion` field**, not the
+release notes. On 2026-07-30 every one of the eight declared either no constraint or an open-ended
+floor (`>= 1.16-0`, `>= 1.19.0-0`, `>=1.25.0-0`) — no upper bound excluded the target Kubernetes
+version. That check takes a minute and is what makes an EKS bump boring.
+
+The exception it will not catch is **Cluster Autoscaler**, which declares *no* `kubeVersion` at all
+while being the one add-on whose app version tracks the Kubernetes minor. Read its `appVersion`
+instead: `helm search repo autoscaler/cluster-autoscaler --versions` shows chart → app, and the app
+minor should equal the cluster minor.
 
 Pinning is correct — unpinned charts turn every `terraform apply` into a surprise. But pins are a
 promise to revisit them. Community charts move fast and old versions stop supporting newer Kubernetes,
