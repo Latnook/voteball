@@ -236,6 +236,19 @@ Originally done once, through Terraform and the Jenkins UI.
 
 Prints a deploy public key to add to GitHub (with write access) and the webhook secret.
 
+> **"Once per account" does not survive a teardown — steps 1 and 4 both repeat after every
+> destroy/rebuild.** `terraform/secrets.tf` sets `recovery_window_in_days = 0`, so `voteball/jenkins`
+> is *hard-deleted* on destroy (deliberately — a 7-day recovery window would block recreating a secret
+> of the same name for a week). With nothing left to preserve, this script mints a **fresh deploy key
+> and a fresh webhook secret**, and GitHub still holds the old ones. Until both are re-registered the
+> webhook is rejected and the pipeline's final `git push` is denied — a cluster that looks entirely
+> healthy with a CI pipeline nothing can trigger. `deploy.sh` does not warn about this.
+>
+> `scripts/deploy.sh` runs this at step 3b, **before** the apply that creates Jenkins. That order is
+> load-bearing: External Secrets Operator copies the vault into the `jenkins-secret` Kubernetes Secret
+> once at creation and then only every `refreshInterval` (1h), so seeding afterwards leaves the
+> controller with no admin account until the hourly refresh lands (hit on the 2026-07-31 rebuild).
+
 **2. `terraform apply -var-file=voteball.tfvars`** from `terraform/`. This is the **main** stack now —
 there is no separate `jenkins.tfvars` or second `terraform init`. It creates the `ci` namespace, the
 agent's IRSA role, the webhook's ACM certificate, `charts/jenkins-support` (ExternalSecret +
