@@ -860,6 +860,44 @@ def test_get_clubs_breakdown_shape(conn):
     assert entry['previous'] == [{'party_id': party_id, 'count': 9}]
 
 
+def test_get_clubs_breakdown_includes_upcoming_and_upcoming_only_clubs(conn):
+    league_id, liverpool_id = _epl_and_liverpool(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM clubs WHERE name = 'Chelsea'")
+    chelsea_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party Y') RETURNING id")
+    upcoming_party_id = cur.fetchone()[0]
+
+    # Liverpool gets both a previous and an upcoming rollup row.
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, liverpool_id, None, 5)
+    )
+    cur.execute(
+        'INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, liverpool_id, upcoming_party_id, 4)
+    )
+    # Chelsea has upcoming votes only -- no previous rollup row at all.
+    cur.execute(
+        'INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count) VALUES (%s, %s, %s, %s)',
+        (league_id, chelsea_id, upcoming_party_id, 6)
+    )
+    conn.commit()
+    cur.close()
+
+    breakdown = queries.get_clubs_breakdown(conn)
+    by_id = {row['club_id']: row for row in breakdown}
+
+    liverpool = by_id[liverpool_id]
+    assert liverpool['previous'] == [{'party_id': None, 'count': 5}]
+    assert liverpool['upcoming'] == [{'party_id': upcoming_party_id, 'count': 4}]
+
+    chelsea = by_id[chelsea_id]
+    assert chelsea['previous'] == []
+    assert chelsea['upcoming'] == [{'party_id': upcoming_party_id, 'count': 6}]
+
+
 # Parties deliberately left NULL on the religiosity axis: Ra'am and Hadash are scoped out (design
 # Decision 3 -- "how religiously Jewish should the state be" is not a question they answer).
 # "Other" ('אחר') is NOT listed here -- the loop below `continue`s

@@ -270,15 +270,29 @@ def get_results_switch(conn, league_id=None, club_id=None):
 
 def get_clubs_breakdown(conn):
     cur = conn.cursor()
+    by_club = {}
+
     cur.execute(
         'SELECT club_id, previous_party_id, SUM(vote_count) FROM rollup_previous '
         'WHERE club_id IS NOT NULL GROUP BY club_id, previous_party_id'
     )
-    by_club = {}
     for club_id, party_id, count in cur.fetchall():
-        by_club.setdefault(club_id, []).append({'party_id': party_id, 'count': count})
+        by_club.setdefault(club_id, {'previous': [], 'upcoming': []})
+        by_club[club_id]['previous'].append({'party_id': party_id, 'count': count})
+
+    cur.execute(
+        'SELECT club_id, upcoming_party_id, SUM(vote_count) FROM rollup_upcoming '
+        'WHERE club_id IS NOT NULL GROUP BY club_id, upcoming_party_id'
+    )
+    for club_id, party_id, count in cur.fetchall():
+        by_club.setdefault(club_id, {'previous': [], 'upcoming': []})
+        by_club[club_id]['upcoming'].append({'party_id': party_id, 'count': count})
+
     cur.close()
-    return [{'club_id': club_id, 'previous': rows} for club_id, rows in by_club.items()]
+    return [
+        {'club_id': club_id, 'previous': rows['previous'], 'upcoming': rows['upcoming']}
+        for club_id, rows in by_club.items()
+    ]
 
 
 def get_results_by_party(conn, party_type, party_id):
