@@ -1,20 +1,20 @@
 key,family_value,en,he,ru,note
-familyUniversalConscription,universal-conscription,Universal conscription,גיוס לכולם,Всеобщий призыв,"Draft everyone incl. Haredim and Arabs. 5 parties."
-familyConscriptionExemption,conscription-exemption,Yeshiva draft exemption,פטור לבני ישיבות,Освобождение ешив от призыва,"Preserve the exemption. Likud + Shas."
-familyConscriptionSplit,conscription-split,Split on conscription,מחלוקת פנימית על הגיוס,Раскол по призыву,"Party voted against itself. RZ + UTJ."
-familyConscriptionByIncentive,conscription-by-incentive,Enlistment by incentive,גיוס בעידוד ולא בכפייה,Призыв через стимулы,"Pro-service anti-coercion. Otzma + Noam."
+familyUniversalConscription,universal-conscription,Universal conscription,גיוס לכולם,Всеобщая воинская повинность,Draft everyone incl. Haredim and Arabs. 5 parties.
+familyConscriptionExemption,conscription-exemption,Yeshiva draft exemption,פטור לבני ישיבות,Освобождение ешив от воинской повинности,Preserve the exemption. Likud + Shas.
+familyConscriptionSplit,conscription-split,Split on conscription,מחלוקת פנימית על הגיוס,Раскол по воинской повинности,Party voted against itself. RZ + UTJ.
+familyConscriptionByIncentive,conscription-by-incentive,Enlistment by incentive,גיוס בעידוד ולא בכפייה,Призыв через стимулы,Pro-service anti-coercion. Otzma + Noam.
 familyConstitutionalReform,constitutional-reform,Constitution & checks,חוקה ואיזונים,Конституция и сдержки,"Constitution, term limits, rule of law. 7 parties."
-familyJudicialRestraint,judicial-restraint,Curbing the courts,ריסון בתי המשפט,Ограничение судов,"Judicial overhaul side. 5 parties."
-familyWelfareState,welfare-state,Welfare state,מדינת רווחה,Социальное государство,"Redistribution. Haredi + Arab + left, 5 parties."
+familyJudicialRestraint,judicial-restraint,Curbing the courts,ריסון בתי המשפט,Ограничение судов,Judicial overhaul side. 5 parties.
+familyWelfareState,welfare-state,Welfare state,מדינת רווחה,Государство всеобщего благосостояния,"Redistribution. Haredi + Arab + left, 5 parties."
 familyCostOfLiving,cost-of-living,Cost of living,יוקר המחיה,Стоимость жизни,"Trust-busting, competition, consumer. 4 parties."
-familySectoralBudgeting,sectoral-budgeting,Sectoral budgeting,תקצוב מגזרי,Секторальное финансирование,"Fiscal power as constituency delivery. NOT pejorative. 4 parties."
-familyMarketLiberal,market-liberal,Free market,שוק חופשי,Свободный рынок,"Actually withdraws the state. YB + Zehut."
-familyNotEconomyFocused,not-economy-focused,Not economy-focused,לא ממוקדת בכלכלה,Экономика не в приоритете,"Economics is not their agenda. Otzma + Noam."
-familyArabRepresentation,arab-representation,Arab representation,ייצוג ערבי,Арабское представительство,"The three Arab parties."
-familyJewishArabPartnership,jewish-arab-partnership,Jewish-Arab partnership,שותפות יהודית-ערבית,Еврейско-арабское партнёрство,"Democrats + Hadash-Taal."
-familyReservistMovement,reservist-movement,Reservist movement,תנועת המילואימניקים,Движение резервистов,"El HaDegel + The Reservists."
-analyticsTabTraits,,Shared traits,מאפיינים משותפים,Общие черты,"The tab name itself."
-analyticsTraitsNationalAvg,,national average {pct}%,ממוצע ארצי {pct}%,в среднем по стране {pct}%,"KEEP THE {pct} TOKEN in all three."
-analyticsTraitsNone,,No trait stands out for this club yet.,עדיין אין מאפיין בולט למועדון הזה.,Пока нет выраженной черты для этого клуба.,"Shown when no family is over-represented."
-analyticsTraitsEvidenceRecord,,from voting record,לפי דפוסי הצבעה בכנסת,по результатам голосований,"Grade label for the 10 [R] parties."
-analyticsTraitsEvidencePlatform,,from stated platform,לפי המצע המוצהר,по заявленной программе,"Grade label for the 8 [P] parties."
+familySectoralBudgeting,sectoral-budgeting,Sectoral budgeting,תקצוב מגזרי,Секторальное финансирование,Fiscal power as constituency delivery. NOT pejorative. 4 parties.
+familyMarketLiberal,market-liberal,Free market,שוק חופשי,Свободный рынок,Actually withdraws the state. YB + Zehut.
+familyNotEconomyFocused,not-economy-focused,Not economy-focused,לא ממוקדת בכלכלה,Экономика не в приоритете,Economics is not their agenda. Otzma + Noam.
+familyArabRepresentation,arab-representation,Arab representation,ייצוג ערבי,Арабское представительство,The three Arab parties.
+familyJewishArabPartnership,jewish-arab-partnership,Jewish-Arab partnership,שותפות יהודית-ערבית,Еврейско-арабское партнёрство,Democrats + Hadash-Taal.
+familyReservistMovement,reservist-movement,Reservist movement,תנועת המילואימניקים,Движение резервистов,El HaDegel + The Reservists.
+analyticsTabTraits,,Shared traits,מאפיינים משותפים,Общие черты,The tab name itself.
+analyticsTraitsNationalAvg,,national average {pct}%,ממוצע ארצי {pct}%,в среднем по стране {pct}%,KEEP THE {pct} TOKEN in all three.
+analyticsTraitsNone,,No trait stands out for this club yet.,עדיין אין מאפיין בולט למועדון הזה.,Пока нет выраженной черты для этого клуба.,Shown when no family is over-represented.
+analyticsTraitsEvidenceRecord,,from voting record in the Knesset,לפי דפוסי הצבעה בכנסת,по результатам голосований в Кнессете,Grade label for the 10 [R] parties.
+analyticsTraitsEvidencePlatform,,from stated platform,לפי המצע המוצהר,по заявленной программе,Grade label for the 8 [P] parties.
