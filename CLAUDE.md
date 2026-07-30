@@ -322,11 +322,21 @@ variables and the bucket name embeds the AWS account id — so `terraform init` 
 silently using local state. See `docs/design/2026-07-21-terraform-remote-state-design.md`.
 
 **Teardown order matters** and `./scripts/destroy.sh` encodes it: delete the ArgoCD Application (else
-`selfHeal` recreates what you remove), then the Ingress (so the ALB de-provisions and external-dns
-removes its records — a leftover ALB's ENIs block VPC deletion), wait for the ALB to disappear, *then*
-`terraform destroy`. If destroy hangs uninstalling a `helm_release` ("context deadline exceeded" — Helm
-can't cleanly uninstall while the cluster is being deleted), `terraform state rm` that release and
-re-run destroy; it dies with the cluster anyway.
+`selfHeal` recreates what you remove), then **both Ingresses** (so the ALB de-provisions and
+external-dns removes its records — a leftover ALB's ENIs block VPC deletion), wait for the ALB to
+disappear, *then* `terraform destroy`.
+
+**"Both" is load-bearing.** Since 2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share ALB
+group `voteball`, and an ALB is de-provisioned only when its group has **no** members left — deleting
+one leaves it running. The same change renamed the ALB: a grouped one is `k8s-<group>-<hash>`, not
+`k8s-<namespace>-<ingress>-<hash>`, so any check filtering on the old shape reports "ALB gone"
+instantly while it is still there. `scripts/cleanup-stale-dns.sh` likewise cleans **two** hosts now,
+`<app_domain>` and `jenkins.<app_domain>`.
+
+If destroy hangs uninstalling a `helm_release` ("context deadline exceeded" — Helm can't cleanly
+uninstall while the cluster is being deleted), `terraform state rm` that release and re-run destroy;
+it dies with the cluster anyway. **There are now three such releases**, not one: the app's, plus
+`jenkins` and `jenkins-support`.
 
 RDS takes a **final snapshot on destroy** (since 2026-07-20), so destroy→rebuild preserves votes;
 `find-latest-snapshot.sh` picks the newest one up automatically before the next apply. Two traps
