@@ -123,3 +123,13 @@ variable "db_snapshot_identifier" {
   # ("DBSnapshot not found") the moment that one snapshot is pruned.
   default = null
 }
+
+variable "jenkins_image_tag" {
+  description = "Tag of the Jenkins controller image in ECR. Built by ./scripts/build-push-ecr.sh jenkins; bumped by hand when ci/jenkins/ changes, which is rare."
+  type        = string
+}
+
+variable "github_repo" {
+  description = "owner/name of the GitHub repository Jenkins builds. Kept out of code so a fork supplies its own."
+  type        = string
+}
