@@ -237,7 +237,7 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
 | Each deploy | Watch for the Trivy gate failing on new CVEs |
 | Monthly | Check for dependency updates **by hand** — nothing raises them for you (see above); prune old RDS snapshots |
 | Quarterly | Bump add-on chart versions (Jenkins included); check the EKS support window; rebuild the Jenkins controller image and bump the pinned `buildkit`/`trivy`/`skopeo`/`aws-cli` tags in `ci/jenkins/jenkins.yaml` |
-| **Before 2026-12-02** | **Upgrade EKS off 1.34 or start paying 5×** |
+| **Before 2027-08-02** | **Upgrade EKS off 1.36 or start paying 5×** (the 2026-12-02 deadline was met — 1.34 → 1.36 on 2026-07-30, see above) |
 | When torn down | Nothing rots — the cheapest maintenance posture is not running it |
 
 That last row is worth stating plainly: this stack is designed to be destroyed and rebuilt on demand,

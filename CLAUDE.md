@@ -135,7 +135,9 @@ counted one row per vote with no league/club dimension, since summing the league
 rollups for national totals would over-count a multi-team ballot, plus `rollup_vote_switch` and
 `rollup_national_vote_switch` backing `/api/results/switch`) that the backend reads for fast
 `/api/results` responses. **There are eight rollup tables** — count them in `schema.sql`, and keep
-`tests/conftest.py`'s `DROP TABLE ... CASCADE` list in step with them.
+**both** `services/backend/tests/conftest.py` and `services/worker/tests/conftest.py` `DROP TABLE ...
+CASCADE` lists in step with them — there is no top-level `tests/` directory, and updating only one of
+the two leaves the other suite dropping a stale set.
 
 ### Backend request-handling pattern
 
@@ -230,7 +232,11 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   `deploy.sh` is only re-runnable at a cost: it reseeds both secrets unconditionally, reissuing
   `ADMIN_SESSION_SECRET` and invalidating live admin sessions. Count `grep -nE '^\s*step "'
   scripts/deploy.sh` for the current step numbers rather than reciting them here — they shift whenever
-  a step is inserted, most recently 2026-07-30/31 when Jenkins moved in-cluster.
+  a step is inserted or moved, most recently 2026-07-31 when both secret-seeding steps moved *ahead* of
+  the billed apply (now 3 and 3b). **That order is load-bearing, not cosmetic:** the full apply creates
+  `helm_release.jenkins` and its ExternalSecret together, and ESO copies the vault into the cluster
+  once at creation and then only hourly — so seeding afterwards boots Jenkins with no admin account and
+  401s every login for an hour, while the deploy reports success throughout.
 - **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
   `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file
@@ -426,7 +432,8 @@ terraform plan  -var-file=voteball.tfvars
 $200/mo) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
 (the EKS module v20 caps the provider at `< 6.0`) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
-(**1.34 leaves standard support 2026-12-02**; see `docs/maintenance.md`)
+(pinned at **1.36** since the 2026-07-30 in-place upgrade; **standard support ends 2027-08-02**; see
+`docs/maintenance.md`)
 (`aws eks describe-cluster-versions --region <your region>`). Community chart/add-on versions drift fast;
 verify with `helm search repo <chart> --versions` before pinning.
 
@@ -486,7 +493,11 @@ Two audit passes on 2026-07-26 found seven stale claims; every one was mechanica
 - `docs/deploy.md`'s numbered steps vs `grep -E '^\s*step "' scripts/deploy.sh`.
 - The sync-managed field list vs the `managed` dict in `scripts/sync-values-from-tf.sh` — count it,
   don't recall it (three different counts have been asserted; **ten** is correct).
-- Cost figures (~$200/mo stack) and EKS 1.34 / 2026-12-02 repeat across several docs and must agree.
+- Cost figures (~$200/mo stack) and the EKS version + support deadline (**1.36 / 2027-08-02**) repeat
+  across several docs and must agree. Read the pin from `terraform/variables.tf`, never from memory —
+  it moved 1.34 → 1.36 on 2026-07-30 and four docs kept asserting 1.34 afterwards. Dated *evidence*
+  (`docs/eks/live-cluster-snapshot.md`) and the upgrade history in `docs/maintenance.md` legitimately
+  still say 1.34; those are records, not claims about the present. Don't "fix" them.
 - **A doc contradicting another doc — or itself — is the reliable tell.** Both 2026-07-26 findings
   were *solved* problems still described as unsolved, which misdirects effort worse than an omission
   does. `docs/eks/live-cluster-snapshot.md` is the model for dated material: it states up front that

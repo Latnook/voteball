@@ -466,8 +466,9 @@ configuration lives in git as JCasC, and its build history was already designed 
   go with it. Nothing is left behind and nothing is billed.
 - **A brief error when a pod restarts** → normal for a second or two while the load balancer notices; the
   site stays up. Real visitors' browsers just retry.
-- **"version not supported" style errors on the cluster** → the Kubernetes version pin (`1.34`) may have
-  aged out; check `aws eks describe-cluster-versions --region <your region>` and bump it if needed.
+- **"version not supported" style errors on the cluster** → the Kubernetes version pin (`cluster_version`
+  in `terraform/variables.tf`, currently `1.36`) may have aged out; check
+  `aws eks describe-cluster-versions --region <your region>` and bump it if needed.
 - **The site can't be found right after a rebuild** → DNS, and there are **two different causes** —
   flushing your local cache only fixes one of them.
   1. **The ALB is still `provisioning`.** external-dns recreates the record as an *ALIAS* to the load

@@ -67,9 +67,8 @@ for want in put-bucket-versioning put-bucket-encryption put-public-access-block 
 done
 
 # ---- backend.hcl generation ----------------------------------------------------------------------
-[ -f "$WORK/tf/backend.hcl" ]         || fail "main stack backend.hcl not written"
-[ -f "$WORK/tf/jenkins/backend.hcl" ] || fail "jenkins stack backend.hcl not written"
-pass=$((pass+2))
+[ -f "$WORK/tf/backend.hcl" ] || fail "main stack backend.hcl not written"
+pass=$((pass+1))
 
 grep -q 'bucket *= *"testball-tfstate-123456789012"' "$WORK/tf/backend.hcl" \
   || fail "main backend.hcl must name the bucket the script just created"
@@ -79,15 +78,14 @@ grep -q 'key *= *"voteball/main.tfstate"' "$WORK/tf/backend.hcl" \
   || fail "main backend.hcl must use the main state key"
 pass=$((pass+1))
 
-grep -q 'key *= *"voteball/jenkins.tfstate"' "$WORK/tf/jenkins/backend.hcl" \
-  || fail "jenkins backend.hcl must use the jenkins state key"
-pass=$((pass+1))
-
-# The two stacks sharing a key would have them overwrite each other's state -- catastrophic and
-# silent until a plan shows the wrong resources.
-main_key="$(sed -nE 's/^ *key *= *"(.*)"/\1/p' "$WORK/tf/backend.hcl")"
-jenk_key="$(sed -nE 's/^ *key *= *"(.*)"/\1/p' "$WORK/tf/jenkins/backend.hcl")"
-[ "$main_key" != "$jenk_key" ] || fail "the two stacks must not share a state key"
+# ONE key, one stack. The separate terraform/jenkins/ EC2 stack and its voteball/jenkins.tfstate key
+# were retired on 2026-07-31 when CI moved into the cluster. This asserts the ABSENCE of that second
+# backend on purpose: writing it again would mean a second stack had reappeared, and two stacks are
+# how you get state overwriting state. Until 2026-07-31 this file asserted the opposite, and kept
+# failing after the retirement -- reintroducing the stack should be a deliberate act that updates
+# this test, not something a stale assertion quietly demands.
+[ ! -e "$WORK/tf/jenkins/backend.hcl" ] \
+  || fail "a jenkins-stack backend.hcl was written; the separate stack is retired"
 pass=$((pass+1))
 
 grep -q 'region *= *"eu-west-1"' "$WORK/tf/backend.hcl" || fail "backend.hcl region must match tfvars"
