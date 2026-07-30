@@ -399,10 +399,16 @@ COPY --chown=jenkins:jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --verbose \
  && jenkins-plugin-cli --list
 
-# JCasC is read from here at every boot. The chart also mounts its own config; this copy is the
-# fallback that makes the image self-describing and lets `docker run` smoke-test it offline.
-COPY --chown=jenkins:jenkins jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
-ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs
+# JCasC is NOT baked into this image, deliberately (decided 2026-07-30). The Helm release supplies
+# ci/jenkins/jenkins.yaml through controller.JCasC.configScripts, so a second copy here would be a
+# second source of truth that can disagree with it whenever the image and the chart are built from
+# different commits.
+#
+# It would also not work. `persistence.enabled: false` mounts an emptyDir over /var/jenkins_home, so
+# anything COPYed under that path is MASKED in the cluster while still being visible to `docker run`
+# -- local testing passes and the cluster silently disagrees. The plugins above survive only because
+# jenkins-plugin-cli writes them to /usr/share/jenkins/ref/, which the entrypoint copies INTO
+# JENKINS_HOME at boot.
 
 # Skip the setup wizard: JCasC owns this configuration, and the wizard would leave the 94-plugin
 # "install suggested" set the plugins.txt header exists to replace.
@@ -415,16 +421,22 @@ USER jenkins
 
 ```bash
 docker build -t voteball-jenkins:test ci/jenkins
-docker run --rm voteball-jenkins:test \
-  sh -c 'ls /var/jenkins_home/plugins | wc -l; ls /var/jenkins_home/plugins | grep -c kubernetes'
+docker run --rm --entrypoint sh voteball-jenkins:test -c \
+  'ls /usr/share/jenkins/ref/plugins/*.jpi | wc -l; ls /usr/share/jenkins/ref/plugins/ | grep -c "^kubernetes"'
 ```
 Expected: a plugin count well above 8 (dependencies resolved), and at least 1 for `kubernetes`.
 If the `kubernetes` count is 0, Step 2's edit did not take.
 
+> **Check `/usr/share/jenkins/ref/plugins/`, not `/var/jenkins_home/plugins/`.** `jenkins-plugin-cli`
+> writes to the reference directory, and the entrypoint copies it into `JENKINS_HOME` at boot — which
+> is exactly what makes baked plugins survive the `emptyDir` home this controller runs with.
+> `/var/jenkins_home/plugins/` does not exist in the built image, so checking it reports 0 and looks
+> like a build failure.
+
 - [ ] **Step 6: Verify `credentials-binding` is gone and nothing depends on it**
 
 ```bash
-docker run --rm voteball-jenkins:test ls /var/jenkins_home/plugins | grep credentials
+docker run --rm --entrypoint sh voteball-jenkins:test -c 'ls /usr/share/jenkins/ref/plugins/ | grep credentials'
 ```
 Expected: `credentials` (a dependency of `git`/`github`, correct) but **not**
 `credentials-binding`. If `credentials-binding` appears, something pulled it in transitively — that
