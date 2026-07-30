@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# Offline assertions on the rendered Jenkins release. Same pattern as test-sync-values.sh and
-# test-ci-guards.sh: the dangerous properties are checked without touching a cluster.
+# Assertions on the rendered Jenkins release -- NOT offline: `helm template jenkins/jenkins` fetches
+# that chart version from charts.jenkins.io (or your local Helm cache of it) the same as any other
+# `helm template` against a repository chart. Same pattern as test-sync-values.sh and
+# test-ci-guards.sh in every OTHER respect: the dangerous properties are checked without touching a
+# cluster, and it needs no AWS credentials.
 #
 # EXTEND THIS whenever the chart version is bumped. Its whole job is to catch a chart default
 # quietly widening Jenkins' permissions -- a change that would deploy green and be invisible.
@@ -9,6 +12,24 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 fail=0
 check() { if eval "$2"; then echo "ok   - $1"; else echo "FAIL - $1"; fail=1; fi; }
+
+# Derive the chart version from terraform/addon-jenkins.tf's `local.jenkins_chart_version` rather
+# than hardcoding a second literal here. Two literals drift apart silently: bump Terraform alone and
+# this test would keep asserting the OLD chart, defeating the "EXTEND THIS" comment above. Override
+# with JENKINS_CHART_VERSION for a one-off run against a version not yet committed.
+JENKINS_CHART_VERSION="${JENKINS_CHART_VERSION:-}"
+if [ -z "$JENKINS_CHART_VERSION" ]; then
+  TF_ADDON_FILE="$REPO_ROOT/terraform/addon-jenkins.tf"
+  JENKINS_CHART_VERSION="$(sed -nE \
+    's/^[[:space:]]*jenkins_chart_version[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' \
+    "$TF_ADDON_FILE" | head -1)"
+fi
+if [ -z "$JENKINS_CHART_VERSION" ]; then
+  echo "FAIL - could not derive jenkins_chart_version from terraform/addon-jenkins.tf" >&2
+  echo "       (set JENKINS_CHART_VERSION to override)" >&2
+  exit 1
+fi
+echo "Testing against jenkins/jenkins chart version ${JENKINS_CHART_VERSION}"
 
 # pods/exec must be authorised under BOTH verbs: a SPDY exec upgrade is an HTTP POST (authorises as
 # `create`), a WebSocket upgrade is a GET (authorises as `get`), and EKS 1.36 enables
@@ -58,7 +79,7 @@ rendered="$(mktemp)"
 trap 'rm -f "$rendered"' EXIT
 
 helm template jenkins jenkins/jenkins --namespace ci \
-  --version 5.9.45 \
+  --version "$JENKINS_CHART_VERSION" \
   --set controller.installPlugins=false \
   --set controller.numExecutors=0 \
   --set persistence.enabled=false \

@@ -41,12 +41,16 @@ spec:
     # The Kubernetes API, so the controller can create agent pods in its own namespace.
     - to:
         - ipBlock:
-            cidr: 172.20.0.0/16   # EKS service CIDR -- verified live via `aws eks describe-cluster`
+            cidr: {{ .Values.serviceCidr | quote }}   # EKS service CIDR, e.g. via `aws eks describe-cluster`
       ports:
         - protocol: TCP
           port: 443
 ---
-# Agents connect to the controller inside this namespace; nothing outside it may reach either.
+# Agents connect to the controller inside this namespace. Ingress from elsewhere in the cluster is
+# denied -- but NOT from elsewhere on the network: the rule below admits the whole VPC CIDR on 8080,
+# because that is where the ALB's ENIs (which health-check and proxy /github-webhook/ to the
+# controller) live. "Nothing outside this namespace may reach either" is not literally true; what is
+# true is that nothing outside the VPC can.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

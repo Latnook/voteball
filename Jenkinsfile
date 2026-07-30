@@ -104,15 +104,28 @@ pipeline {
       } }
       steps {
         container('buildkit') {
+          // NOTE: --export-cache pushes unscanned layer-cache blobs to the *-buildcache repo below,
+          // ahead of the Trivy scan. That is fine -- buildcache is not a repo the app ever deploys
+          // from -- but it means "nothing reaches ECR before the scan passes" is not literally true
+          // of bytes. What IS still true: no deployable, tagged image reaches ECR pre-scan; see
+          // the 'Push to ECR' stage and design doc section 5.
           sh '''
             set -eu
+            # BUILDKIT_HOST, not buildctl-daemonless.sh. daemonless.sh ignores any existing daemon
+            # and spawns its OWN buildkitd under a fresh temp root, taking flags only from
+            # $BUILDKITD_FLAGS -- which is unset here. That silently drops
+            # --oci-worker-no-process-sandbox, the flag the buildkit sidecar in
+            # ci/jenkins/jenkins.yaml was started with to run rootless. Pointing plain `buildctl` at
+            # the sidecar's socket instead means the daemon that actually builds is the one that was
+            # configured for it.
+            export BUILDKIT_HOST=unix:///run/user/1000/buildkit/buildkitd.sock
             CACHE="$ECR_REGISTRY/$CLUSTER_NAME-buildcache"
             for svc in backend worker nginx backup; do
               case "$svc" in
                 nginx) ctx=services/frontend ;;
                 *)     ctx=services/$svc ;;
               esac
-              buildctl-daemonless.sh build \
+              buildctl build \
                 --frontend dockerfile.v0 \
                 --local context="$ctx" --local dockerfile="$ctx" \
                 --output type=oci,dest=/images/$svc.tar,name="$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG" \

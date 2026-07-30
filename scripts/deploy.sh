@@ -20,15 +20,15 @@ if [ ! -f "terraform/$TFVARS" ]; then
   exit 1
 fi
 
-# Steps 3 and 3b (seed-eks-secret.sh, seed-jenkins-secret.sh) need four credentials between them.
+# Steps 6 and 6b (seed-eks-secret.sh, seed-jenkins-secret.sh) need four credentials between them.
 # They are only USED at those steps, but we collect them HERE -- before the ~15-minute billed
-# `terraform apply` in step 2 -- so a missing value fails cheaply instead of after the bill has
-# already started (hit for real on the 2026-07-21 rebuild, for DB_PASS/ADMIN_PASSWORD; the same
-# reasoning applies to the Jenkins pair added 2026-07-30). Prompting up front also means an
-# interactive deploy needs no env vars at all: you are asked once, then the rest of the run is
-# unattended. Anything already in the environment is left untouched, so the detached/CI path (pass
-# them all in) still works. We `export` what we read so the seed scripts inherit it and never
-# re-prompt.
+# `terraform apply` in step 5 (and the smaller targeted apply in step 2) -- so a missing value fails
+# cheaply instead of after the bill has already started (hit for real on the 2026-07-21 rebuild, for
+# DB_PASS/ADMIN_PASSWORD; the same reasoning applies to the Jenkins pair added 2026-07-30). Prompting
+# up front also means an interactive deploy needs no env vars at all: you are asked once, then the
+# rest of the run is unattended. Anything already in the environment is left untouched, so the
+# detached/CI path (pass them all in) still works. We `export` what we read so the seed scripts
+# inherit it and never re-prompt.
 #
 # Test the terminal by actually opening /dev/tty, not with `[ -r /dev/tty ]` -- the latter consults
 # permissions and returns TRUE in exactly the detached case we need to catch (verified 2026-07-21),
@@ -49,8 +49,8 @@ prompt_secret() {   # prompt_secret VARNAME "prompt text"
   export "${var?}"
 }
 
-# db_password already lives in voteball.tfvars, and step 2 applies that same -var-file, so read it
-# from there instead of asking -- the seeded DB_PASS then matches RDS by construction, with no way to
+# db_password already lives in voteball.tfvars, and steps 2 and 5 apply that same -var-file, so read
+# it from there instead of asking -- the seeded DB_PASS then matches RDS by construction, with no way to
 # fat-finger a mismatch. Only ADMIN_PASSWORD (which is not in tfvars) is actually prompted below.
 if [ -z "${DB_PASS:-}" ] && DB_PASS="$(tf_db_password "terraform/$TFVARS")" && [ -n "$DB_PASS" ]; then
   export DB_PASS
@@ -76,7 +76,7 @@ prompt_plain() {   # prompt_plain VARNAME "prompt text"
 if has_tty; then
   prompt_secret DB_PASS        "Database password (db_password from terraform/voteball.tfvars)"
   prompt_secret ADMIN_PASSWORD "Admin password for '${ADMIN_USERNAME:-admin}'"
-  # Step 3b seeds the Jenkins secret the same way -- collected here, not inline, for the identical
+  # Step 6b seeds the Jenkins secret the same way -- collected here, not inline, for the identical
   # reason: seed-jenkins-secret.sh would otherwise prompt for these itself, after the billed apply.
   prompt_plain  JENKINS_ADMIN_USER     "Jenkins admin username"
   prompt_secret JENKINS_ADMIN_PASSWORD "Jenkins admin password"
@@ -86,7 +86,7 @@ elif [ -z "${DB_PASS:-}" ] || [ -z "${ADMIN_PASSWORD:-}" ] || \
 ERROR: no terminal is attached, and DB_PASS / ADMIN_PASSWORD / JENKINS_ADMIN_USER /
 JENKINS_ADMIN_PASSWORD are not all set.
 
-Steps 3 and 3b seed Secrets Manager with those four values. Without a terminal this run cannot ask
+Steps 6 and 6b seed Secrets Manager with those four values. Without a terminal this run cannot ask
 for them, and it would otherwise fail only after Terraform had already built (and started billing
 for) the infrastructure. Stopping now instead.
 
@@ -102,34 +102,63 @@ MSG
   exit 1
 fi
 
-step "1/8  Resolving the newest DB snapshot"
+step "1/11  Resolving the newest DB snapshot"
 ./scripts/find-latest-snapshot.sh
 
-step "2/8  Building AWS infrastructure (Terraform will ask you to confirm)"
-echo "This creates real, billed resources (~\$200/month while up)."
-# State lives in S3 (see docs/design/2026-07-21-terraform-remote-state-design.md). This is
-# idempotent and costs nothing on a re-run; it exists here so a fresh clone never hits the
-# "incomplete backend configuration" error -- backend.hcl is generated, not committed.
+step "2/11  Creating ECR repositories (targeted apply)"
+# helm_release.jenkins in step 5's full apply pulls ${CLUSTER}-jenkins:<tag> immediately -- Helm
+# waits for that pull to succeed before the release is considered done. After a fresh
+# destroy/rebuild the ECR repos are gone (ecr.tf sets force_delete = true), so without this the
+# image does not exist yet and the full apply fails several minutes in, mid-bill. A targeted apply
+# of just the repositories first means step 4 has somewhere to push the Jenkins image into before
+# step 5 needs it there.
 ./scripts/bootstrap-tf-backend.sh
 terraform -chdir=terraform init -upgrade -backend-config=backend.hcl
+terraform -chdir=terraform apply -var-file="$TFVARS" \
+  -target=aws_ecr_repository.app -target=aws_ecr_repository.cache "${APPROVE[@]}"
+
+step "3/11  Mirroring the Trivy vulnerability database into ECR"
+# Must exist before any image is scanned. Not otherwise on any automated path (see
+# scripts/mirror-trivy-db.sh) -- skipping this after a fresh rebuild means every
+# `trivy --db-repository` lookup in the pipeline errors on the very first build.
+./scripts/mirror-trivy-db.sh
+
+step "4/11  Building and pushing the Jenkins controller image"
+# Pushed under the TAG ALREADY PINNED in terraform/voteball.tfvars (jenkins_image_tag), not a fresh
+# git SHA -- ci/jenkins/ changes rarely, and this only needs to reproduce the image the full apply
+# below is about to ask ECR for. Bumping jenkins_image_tag to a new build is a separate, deliberate,
+# by-hand step (see the variable's description in terraform/variables.tf), not something a routine
+# deploy should do on its own.
+JENKINS_TAG="$(tfvar jenkins_image_tag "" "terraform/$TFVARS")"
+if [ -z "$JENKINS_TAG" ]; then
+  echo "ERROR: jenkins_image_tag is not set in terraform/${TFVARS}." >&2
+  exit 1
+fi
+./scripts/build-push-ecr.sh jenkins "$JENKINS_TAG"
+
+step "5/11  Building AWS infrastructure (Terraform will ask you to confirm)"
+echo "This creates real, billed resources (~\$200/month while up)."
 terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
 
-step "3/8  Seeding app credentials into Secrets Manager"
+step "6/11  Seeding app credentials into Secrets Manager"
 ./scripts/seed-eks-secret.sh
 
-step "3b/8 Seeding Jenkins credentials into Secrets Manager"
+step "6b/11 Seeding Jenkins credentials into Secrets Manager"
+# Idempotent: a no-op, printing nothing sensitive, whenever the secret already holds a real deploy
+# key -- i.e. on every run of deploy.sh except the one right after a fresh destroy/rebuild. Only
+# that run needs FORCE_ROTATE-free reseeding; see scripts/seed-jenkins-secret.sh.
 ./scripts/seed-jenkins-secret.sh
 
-step "4/8  Pointing kubectl at the cluster"
+step "7/11  Pointing kubectl at the cluster"
 aws eks update-kubeconfig --name "$CLUSTER" --region "$REGION"
 
-step "5/8  Building and pushing container images"
+step "8/11  Building and pushing container images"
 ./scripts/build-push-ecr.sh
 
-step "6/8  Syncing values.yaml from Terraform outputs"
+step "9/11  Syncing values.yaml from Terraform outputs"
 ./scripts/sync-values-from-tf.sh
 
-# ArgoCD deploys whatever is on master, NOT what is on this disk. Bootstrapping it (step 8) while
+# ArgoCD deploys whatever is on master, NOT what is on this disk. Bootstrapping it (step 11) while
 # values.yaml is still uncommitted makes ArgoCD immediately revert the cluster to the OLD image tag
 # -- which, after a rebuild, points at an image that does not exist in the fresh ECR, so every pod
 # lands in ImagePullBackOff. Observed on the 2026-07-20 rebuild. Commit before ArgoCD exists.
@@ -163,13 +192,13 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   fi
 fi
 
-step "7/8  Installing the app"
+step "10/11 Installing the app"
 helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
 kubectl rollout status deployment/backend  -n devops-app --timeout=300s
 kubectl rollout status deployment/frontend -n devops-app --timeout=300s
 kubectl rollout status deployment/worker   -n devops-app --timeout=300s
 
-step "8/8  Bootstrapping ArgoCD (GitOps takes over from here)"
+step "11/11 Bootstrapping ArgoCD (GitOps takes over from here)"
 if [ "${SKIP_ARGOCD:-0}" = "1" ]; then
   echo "SKIPPED — values.yaml is not on master (see the error above)."
 else

@@ -8,3 +8,10 @@ refreshInterval: 1h
 # cannot reach RDS or the app) and allowed for ingress (so the ALB's ENIs can health-check the
 # controller). Terraform passes the real value; hardcoding it in the template would break a fork.
 vpcCidr: 10.0.0.0/16
+
+# The EKS cluster's Service CIDR (NOT the VPC's -- it's a separate, cluster-internal range that the
+# Kubernetes API server's ClusterIP lives on). The controller needs egress to it to create/watch/exec
+# into agent pods. Like vpcCidr, this is account/cluster-specific and would break a fork if
+# hardcoded, so Terraform passes the real value (`aws eks describe-cluster`'s serviceIpv4Cidr); this
+# default exists only so `helm template` runs offline.
+serviceCidr: 172.20.0.0/16

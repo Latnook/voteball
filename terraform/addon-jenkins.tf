@@ -24,6 +24,13 @@ resource "kubernetes_namespace" "ci" {
 # ---- IRSA: ECR push for the AGENTS. The controller gets no AWS role at all. ----
 # Narrower than the EC2 instance profile it replaces, which held ECR push AND Secrets Manager read on
 # one identity. Secrets Manager access now belongs to ESO alone.
+#
+# Bound to the chart's AGENT service account (system:serviceaccount:ci:jenkins-agent), NOT the
+# controller's "jenkins". The Jenkins chart's `serviceAccount` block is the CONTROLLER's SA; putting
+# the role-arn annotation there (an earlier version of this file did) gave the controller itself ECR
+# push to every voteball-* repo, contradicting design doc section 7 ("Jenkins controller: none"). The
+# agent pod template in ci/jenkins/jenkins.yaml runs as `serviceAccountName: jenkins-agent` to pick
+# this role up via IRSA; the controller's own SA carries no annotation at all.
 data "aws_iam_policy_document" "jenkins_trust" {
   statement {
     effect  = "Allow"
@@ -35,7 +42,7 @@ data "aws_iam_policy_document" "jenkins_trust" {
     condition {
       test     = "StringEquals"
       variable = "${module.eks.oidc_provider}:sub"
-      values   = ["system:serviceaccount:ci:jenkins"]
+      values   = ["system:serviceaccount:ci:jenkins-agent"]
     }
     condition {
       test     = "StringEquals"
@@ -128,6 +135,11 @@ resource "helm_release" "jenkins_support" {
     # This VPC's real CIDR, not the 10.0.0.0/16 default baked into the chart for offline `helm
     # template` runs -- see charts/jenkins-support/values.yaml.
     { name = "vpcCidr", value = module.vpc.vpc_cidr_block },
+    # The EKS cluster's Service CIDR, not this VPC's -- a separate, cluster-internal range the API
+    # server's ClusterIP lives on. Read from the module rather than hardcoded in the chart, so a
+    # fork (or a future cluster with a non-default service CIDR) is not silently broken by a value
+    # baked into charts/jenkins-support/values.yaml only as an offline-`helm template` default.
+    { name = "serviceCidr", value = module.eks.cluster_service_cidr },
     # charts/jenkins-support/values.yaml states every value comes from Terraform; its own default
     # exists only so `helm template` runs offline. Passing this explicitly, rather than relying on
     # that default, keeps it from drifting silently if the chart's default ever changes.
@@ -241,14 +253,28 @@ resource "helm_release" "jenkins" {
       }
     }
 
+    # The CONTROLLER's service account. Deliberately carries NO role-arn annotation and therefore no
+    # AWS permissions at all (design doc section 7: "Jenkins controller: none") -- it only needs the
+    # namespace-scoped Role below, to create/watch/exec into agent pods.
     serviceAccount = {
       name = "jenkins"
+    }
+
+    # The AGENT service account, separate from the controller's. This is the one IRSA is bound to
+    # (see data.aws_iam_policy_document.jenkins_trust above), so only agent pods -- which is to say
+    # only builds -- can push to ECR. `create = true` because the chart does not create one by
+    # default (serviceAccountAgent.create defaults to false).
+    serviceAccountAgent = {
+      create = true
+      name   = "jenkins-agent"
       annotations = {
         "eks.amazonaws.com/role-arn" = aws_iam_role.jenkins.arn
       }
     }
 
-    # Namespace-scoped Role only. The chart's default is already namespaced; asserted by
+    # Namespace-scoped Role only, bound to the CONTROLLER's service account (chart default) -- it is
+    # what lets the controller create/watch/delete/exec into agent pods, and has nothing to do with
+    # AWS permissions. The chart's default is already namespaced; asserted by
     # scripts/tests/test-jenkins-chart.sh so a future chart bump cannot widen it unnoticed.
     rbac = { create = true, readSecrets = false }
 
@@ -257,11 +283,11 @@ resource "helm_release" "jenkins" {
     # mode needing manual recovery (pod Pending forever, unable to mount).
     persistence = { enabled = false }
 
-    agent = {
-      # The pod template lives in the Jenkinsfile (that is "how to build"); this only sets defaults.
-      enabled = true
-      podName = "jenkins-agent"
-    }
+    # No `agent = {...}` block: with JCasC.defaultConfig = false above, the chart never renders its
+    # own Kubernetes cloud/podTemplate config, so `agent.enabled`/`agent.podName` etc. have no effect
+    # -- the pod template that actually runs comes entirely from the `clouds:` block in
+    # ci/jenkins/jenkins.yaml. An earlier version of this file set them anyway with a comment implying
+    # they mattered; they did not.
   })]
 
   depends_on = [

@@ -2,8 +2,12 @@
 # Seeds AWS Secrets Manager (<cluster_name>/jenkins) with everything JCasC needs to configure the
 # build host: the admin login, the GitHub deploy key, and the webhook shared secret.
 #
-# Run this ONCE per account, before Jenkins first boots. Terraform creates only the empty container
-# (terraform/secrets.tf), so no credential ever enters git or tfstate.
+# IDEMPOTENT: if the secret already holds a real deploy key, this exits immediately without
+# generating or printing anything -- safe for deploy.sh to call on every run. It only actually seeds
+# (1) the first time, when Terraform's placeholder is still in place, and (2) after a destroy/rebuild,
+# when terraform/secrets.tf recreates the secret as a placeholder (recovery_window_in_days = 0 means
+# the old value is genuinely gone). Pass FORCE_ROTATE=1 to rotate deliberately at any other time --
+# e.g. a leaked key -- which is the one case that must always stay possible standalone.
 #
 # Nothing is echoed and nothing is written to disk outside a private temp dir that is removed on
 # exit. The generated deploy key's PUBLIC half is printed -- that is the one value you must copy,
@@ -11,6 +15,9 @@
 # the image-tag bump commit back to master).
 #
 # Same shape as scripts/seed-eks-secret.sh, which does this for the application stack.
+#
+# Requires: aws CLI (logged in), jq (idempotency check), ssh-keygen, openssl, and either python3 with
+# bcrypt or htpasswd (httpd-tools).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -19,6 +26,28 @@ cd "$(dirname "$0")/.."
 require_config   # needs APP_DOMAIN, printed in the webhook instructions below
 
 SECRET_ID="${CLUSTER}/jenkins"
+
+# ---- idempotency guard ---------------------------------------------------------------------------
+# This script generates a NEW ed25519 deploy key and a NEW webhook secret every time the code below
+# runs -- correct right after a destroy/rebuild, when terraform/secrets.tf has just recreated the
+# secret as a placeholder (recovery_window_in_days = 0, so the old value is genuinely gone and there
+# is nothing to preserve). Wrong on every OTHER deploy.sh run: it would silently invalidate the
+# deploy key and webhook secret GitHub already has, breaking builds until a human notices and
+# re-pastes both -- and it prints the webhook secret to stdout, which then lands in the deploy log.
+#
+# So: skip regenerating (and re-printing secrets) when the secret already holds a real deploy key.
+# Set FORCE_ROTATE=1 to rotate on purpose (e.g. a leaked key) -- that path must never be removed,
+# since re-running deploy.sh is not a substitute for it once this guard is in place.
+if [ "${FORCE_ROTATE:-0}" != "1" ]; then
+  EXISTING="$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$REGION" \
+              --query SecretString --output text 2>/dev/null || true)"
+  if [ -n "$EXISTING" ] && printf '%s' "$EXISTING" \
+       | jq -e '(.GITHUB_DEPLOY_KEY // "") | length > 0' >/dev/null 2>&1; then
+    echo "${SECRET_ID} already holds a deploy key and webhook secret -- leaving credentials intact."
+    echo "(Set FORCE_ROTATE=1 to rotate deliberately, e.g. after a leaked key.)"
+    exit 0
+  fi
+fi
 
 TMP="$(mktemp -d)"
 chmod 700 "$TMP"

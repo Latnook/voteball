@@ -83,7 +83,11 @@ jenkins:
               apiVersion: v1
               kind: Pod
               spec:
-                serviceAccountName: jenkins
+                # jenkins-agent, NOT jenkins. "jenkins" is the CONTROLLER's service account and
+                # carries no AWS role; the ECR-push IRSA role is bound to jenkins-agent (see
+                # terraform/addon-jenkins.tf's serviceAccountAgent block), so this is what makes the
+                # buildkit/skopeo containers below able to push to ECR.
+                serviceAccountName: jenkins-agent
                 securityContext:
                   runAsNonRoot: true
                   runAsUser: 1000

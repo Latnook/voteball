@@ -11,12 +11,15 @@
 TF_DIR="${TF_DIR:-terraform}"
 TFVARS="${TFVARS:-$TF_DIR/voteball.tfvars}"
 
-# Read `name = "value"` out of the tfvars file. $2 is the fallback when the key is absent.
+# Read `name = "value"` out of the tfvars file. $2 is the fallback when the key is absent. $3 is an
+# explicit path, defaulting to $TFVARS -- pass it explicitly from any script that (like deploy.sh)
+# reassigns the global $TFVARS to a bare filename for `terraform -chdir=terraform -var-file=`, which
+# does not resolve from the repo root (same reason tf_db_password() takes a path argument).
 # Deliberately tolerant of spacing and of unquoted values.
 tfvar() {
-  local key="$1" fallback="${2:-}" val=""
-  if [ -f "$TFVARS" ]; then
-    val="$(sed -nE "s/^[[:space:]]*${key}[[:space:]]*=[[:space:]]*\"?([^\"#]*[^\"# ])\"?.*$/\1/p" "$TFVARS" | head -1)"
+  local key="$1" fallback="${2:-}" file="${3:-$TFVARS}" val=""
+  if [ -f "$file" ]; then
+    val="$(sed -nE "s/^[[:space:]]*${key}[[:space:]]*=[[:space:]]*\"?([^\"#]*[^\"# ])\"?.*$/\1/p" "$file" | head -1)"
   fi
   printf '%s' "${val:-$fallback}"
 }

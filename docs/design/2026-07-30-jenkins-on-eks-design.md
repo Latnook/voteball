@@ -195,8 +195,10 @@ is maintained by the Moby project, and is the documented migration target from K
 gate than today's. BuildKit exports an OCI archive to disk; Trivy scans that file; `skopeo copy`
 uploads the same file. Today's flow builds, scans a local image and then pushes, quietly assuming
 those are identical bytes. Under the new flow **the scanned artifact and the pushed artifact are the
-same file**, because nothing is rebuilt between the two steps. Nothing reaches ECR before the scan
-passes.
+same file**, because nothing is rebuilt between the two steps. **No *deployable, tagged* image
+reaches ECR before the scan passes** — the Build stage's `--export-cache` does push layer-cache
+blobs to the `buildcache` repository ahead of the scan, but those are unscanned cache layers, not the
+image ArgoCD would ever deploy; that repository is scoped away from the ones the app deploys from.
 
 **BuildKit runs as a sidecar container in the agent pod**, not as a shared cluster-wide Deployment. A
 shared daemon would keep a warm local cache but puts a stateful component on a Spot node that is
