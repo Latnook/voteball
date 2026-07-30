@@ -48,12 +48,14 @@ def get_options(conn):
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4],
             'bloc': r[5], 'economic': r[6], 'security': r[7], 'sector': r[8],
             'religiosity': r[9], 'tags': r[10] or [],
+            'families': [], 'family_evidence': None,
         }
         for r in cur.fetchall()
     ]
 
     cur.execute(
-        'SELECT id, name_en, name_he, name_ru, logo_url, bloc, economic, security, sector, religiosity, tags '
+        'SELECT id, name_en, name_he, name_ru, logo_url, bloc, economic, security, sector, religiosity, tags, '
+        'families, family_evidence '
         'FROM upcoming_parties ORDER BY name_en'
     )
     upcoming_parties = [
@@ -61,6 +63,7 @@ def get_options(conn):
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4],
             'bloc': r[5], 'economic': r[6], 'security': r[7], 'sector': r[8],
             'religiosity': r[9], 'tags': r[10] or [],
+            'families': r[11] or [], 'family_evidence': r[12],
         }
         for r in cur.fetchall()
     ]

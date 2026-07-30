@@ -1,3 +1,5 @@
+import collections
+
 import pytest
 import queries
 
@@ -904,3 +906,55 @@ def test_every_seeded_party_is_classified(conn):
                 assert party['religiosity'] is not None, \
                     f'{key}/{name} is missing a religiosity value'
                 assert -3 <= party['religiosity'] <= 3
+
+
+FAMILY_VOCABULARY = {
+    'universal-conscription', 'conscription-exemption', 'conscription-split',
+    'conscription-by-incentive', 'constitutional-reform', 'judicial-restraint',
+    'welfare-state', 'cost-of-living', 'sectoral-budgeting', 'market-liberal',
+    'not-economy-focused', 'arab-representation', 'jewish-arab-partnership',
+    'reservist-movement',
+}
+
+
+def test_every_upcoming_party_has_families_and_evidence(conn):
+    for party in queries.get_options(conn)['upcoming_parties']:
+        name = party['name_he']
+        assert party['families'], f'{name} has no families'
+        assert party['family_evidence'] in ('record', 'platform'), \
+            f'{name} has family_evidence {party["family_evidence"]!r}'
+
+
+def test_family_values_come_from_the_closed_vocabulary(conn):
+    for party in queries.get_options(conn)['upcoming_parties']:
+        unknown = set(party['families']) - FAMILY_VOCABULARY
+        assert not unknown, f'{party["name_he"]} carries unknown families {sorted(unknown)}'
+
+
+def test_every_family_value_is_shared_by_at_least_two_parties(conn):
+    counts = collections.Counter(
+        f for p in queries.get_options(conn)['upcoming_parties'] for f in p['families']
+    )
+    singletons = sorted(f for f, n in counts.items() if n < 2)
+    assert not singletons, f'families on only one party: {singletons}'
+    assert set(counts) == FAMILY_VOCABULARY, \
+        f'unused vocabulary: {sorted(FAMILY_VOCABULARY - set(counts))}'
+
+
+def test_get_options_exposes_families(conn):
+    options = queries.get_options(conn)
+
+    likud = next(p for p in options['upcoming_parties'] if p['name_he'] == 'הליכוד')
+    assert sorted(likud['families']) == [
+        'conscription-exemption', 'judicial-restraint', 'sectoral-budgeting'
+    ]
+    assert likud['family_evidence'] == 'record'
+
+    yashar = next(p for p in options['upcoming_parties'] if p['name_he'] == 'ישר')
+    assert yashar['family_evidence'] == 'platform'
+
+    # previous_parties has no family layer in this pass, but the key must exist so the frontend
+    # can read both lists through one code path.
+    for party in options['previous_parties']:
+        assert party['families'] == []
+        assert party['family_evidence'] is None
