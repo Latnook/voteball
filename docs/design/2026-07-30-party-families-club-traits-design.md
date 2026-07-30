@@ -364,4 +364,57 @@ None outstanding.
 
 ## Verification outcome
 
-*To be filled in after implementation, per the convention in this directory.*
+**Automated tests: 150 backend tests passing** (`services/backend/tests/`, real-Postgres suite per
+`services/backend/CLAUDE.md`). The i18n parity check for the 42 new family keys (14 values × 3
+languages) plus the tab/column labels lives at `scripts/tests/test-i18n-parity.sh` and passes at
+**176/176/176** across `en`/`he`/`ru` — identical key sets, identical `{placeholder}` tokens.
+
+**Local verification (task 9b) matched independently pre-computed SQL ground truth to the digit.**
+Predictions were written down from `seed.sql`'s `families` arrays *before* the UI was ever loaded,
+and separately, exact expected percentages were computed by direct SQL against
+`rollup_upcoming`/`rollup_national_upcoming` (mirroring `familyShare()`'s denominator rule) — also
+before observation. Using a fake-vote generator skewing three clubs toward specific party pairs
+(Beitar Jerusalem → ש"ס + יהדות התורה, Maccabi Tel Aviv → ישר + ביחד, Hapoel Petah Tikva →
+הציונות הדתית + עוצמה יהודית), all three clubs matched their predictions exactly, to the rounding
+precision the UI displays (e.g. Beitar Jerusalem: `sectoral-budgeting` predicted 62.5%/24.0%/+38.5,
+observed 63%/24%/+39; Maccabi Tel Aviv's top three traits reproduced all three families ישר and
+ביחד actually share; Hapoel Petah Tikva's `judicial-restraint` led by more than double the next
+family, as predicted from עוצמה יהודית/הציונות הדתית's one shared family). No mismatches were
+found. Hebrew and Russian were also confirmed to relabel every row (RTL flips correctly in Hebrew),
+with a regex scan finding zero leaked raw kebab-case keys. Full detail, including the SQL and the
+prediction tables, is in the (gitignored, non-shipping) task-9b report.
+
+**Three properties a future reader must not mistake for bugs:**
+
+1. **The eligibility gate uses previous-election ballots, not upcoming.** `rollup_upcoming` holds
+   one row per (vote, party), and a ballot may name up to 3 upcoming parties plus a NULL row per
+   undecided voter — so summing it counts party-mentions, not ballots, and 4 ballots could clear a
+   floor of 10 that way. `votes.previous_party_id` is a single column, so summing on it *is* a true
+   ballot count, which is why `LEAN_MIN_VOTES` (reused from Lean/Diversity) gates on the previous
+   total. The accepted consequence: a club with plenty of upcoming votes but too few previous votes
+   can never be Traits-eligible, even though `get_clubs_breakdown`'s `setdefault` happily surfaces
+   such a club in the API response. Do not "fix" this back to gating on the upcoming total — that
+   would make the floor meaningless.
+
+2. **Shares are of party-mentions, not ballots.** A ballot may name up to 3 upcoming parties, so a
+   voter hedging across parties is weighted up to 3× in `familyShare()`. This is a labelling
+   looseness, not an arithmetic error: the club numerator, the club denominator and the national
+   baseline all apply the identical rule, so the club-vs-national gap stays apples-to-apples and the
+   ranking it produces is sound — but "63% of this club's fans" is more precisely "63% of this
+   club's party-mentions."
+
+3. **Small samples manufacture traits.** During local verification the "no trait stands out" empty
+   state (`analyticsTraitsNone`) was never observed live, because with 30–150 votes per club,
+   sampling noise alone routinely pushed some family past the +1pp display threshold — even for
+   unskewed clubs (e.g. Sunderland showed `universal-conscription` at +10pp purely by chance in a
+   larger throwaway run). `LEAN_MIN_VOTES` bounds this but does not remove it: a future reader
+   seeing an implausible trait surface on an obscure club is more likely seeing this than a defect.
+   The empty-state code path (`analytics.js` around the `rows.length === 0` branch) was confirmed
+   correct by inspection, not by observing it live.
+
+**Three defects were found in the plan during execution and corrected**, not in the shipped code:
+a stale evidence-split figure (the plan cited nine platform-graded parties against the record's
+eight); an i18n parity script draft that could pass vacuously if its key parser matched nothing
+(fixed to assert a nonzero key count); and a false claim that `analytics.js`'s tab-switching logic
+was generic, when `switchAnalyticsTab()` in fact hardcodes one line per tab id and adding the Traits
+tab required an explicit new line, not a generic hook.
