@@ -98,19 +98,46 @@ jenkins:
                   # for rootless operation on Kubernetes.
                   - name: buildkit
                     image: moby/buildkit:v0.19.0-rootless
+                    # `command: [buildkitd]` OVERRIDES the image's entrypoint, which is `rootlesskit`.
+                    # That override is the whole point, not a style choice.
+                    #
+                    # RootlessKit's first act is to build a user namespace via newuidmap -- a SETUID
+                    # binary. This pod sets allowPrivilegeEscalation:false (which sets no_new_privs,
+                    # neutering setuid) and drops ALL capabilities (removing SETUID/SETGID), so it dies
+                    # instantly with:
+                    #   failed to setup UID/GID map: newuidmap ... operation not permitted
+                    # and the build then hangs on "still waiting to schedule" with a healthy-looking
+                    # 4/5 pod -- the agent never comes online. Observed on the first real build.
+                    #
+                    # Running buildkitd DIRECTLY with --oci-worker-no-process-sandbox is upstream's
+                    # documented answer: the pod itself is already the isolation boundary, so buildkitd
+                    # does not need to create a nested user namespace. This keeps every guarantee the
+                    # design promises -- non-root, no privilege escalation, no capabilities -- which
+                    # granting SETUID/SETGID back would have quietly given up.
+                    command: ["buildkitd"]
                     args:
                       - --addr=unix:///run/user/1000/buildkit/buildkitd.sock
                       - --oci-worker-no-process-sandbox
+                    env:
+                      # buildkitd resolves its runtime state under XDG_RUNTIME_DIR; without this it
+                      # falls back to a path it cannot write to as uid 1000.
+                      - name: XDG_RUNTIME_DIR
+                        value: /run/user/1000
                     securityContext:
                       allowPrivilegeEscalation: false
                       capabilities: { drop: ["ALL"] }
                       runAsUser: 1000
+                      # Both profiles must be Unconfined: the default seccomp and AppArmor profiles
+                      # block the mount and clone syscalls buildkitd needs even without a userns.
                       seccompProfile: { type: Unconfined }
+                      appArmorProfile: { type: Unconfined }
                     resources:
                       requests: { cpu: "500m", memory: "2Gi" }
                       limits: { memory: "3Gi" }
                     volumeMounts:
                       - { name: images, mountPath: /images }
+                      # The socket directory must be writable by uid 1000; /run in the image is not.
+                      - { name: buildkit-run, mountPath: /run/user/1000 }
                   - name: trivy
                     image: aquasec/trivy:0.58.1
                     command: ["cat"]
@@ -144,6 +171,10 @@ jenkins:
                   # only. See the design doc section 5a.
                   - name: images
                     emptyDir: { sizeLimit: 8Gi }
+                  # buildkitd's runtime state and its unix socket. Separate from `images` so the
+                  # tarball volume's sizeLimit is not consumed by build state.
+                  - name: buildkit-run
+                    emptyDir: {}
 
 security:
   # SSH host key verification for git operations.
