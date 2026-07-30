@@ -36,8 +36,9 @@ jenkins:
 
   authorizationStrategy:
     loggedInUsersCanDoAnything:
-      # The UI is only reachable through an SSH tunnel, but anonymous read would also expose it to
-      # anything that reaches port 8080 -- which GitHub's webhook CIDRs do.
+      # The UI is reachable only via `kubectl port-forward -n ci svc/jenkins 8080:8080` -- the ALB
+      # exposes just the /github-webhook path, not the UI -- but anonymous read would still expose
+      # it to anyone who can reach that port-forward.
       allowAnonymousRead: false
 
   # crumbIssuer is deliberately ABSENT. Jenkins installs DefaultCrumbIssuer itself, which is what the

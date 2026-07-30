@@ -18,10 +18,16 @@ COPY --chown=jenkins:jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --verbose \
  && jenkins-plugin-cli --list
 
-# JCasC is read from here at every boot. The chart also mounts its own config; this copy is the
-# fallback that makes the image self-describing and lets `docker run` smoke-test it offline.
-COPY --chown=jenkins:jenkins jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
-ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs
+# JCasC is NOT baked into this image, deliberately (decided 2026-07-30). The Helm release supplies
+# ci/jenkins/jenkins.yaml through controller.JCasC.configScripts, so a second copy here would be a
+# second source of truth that can disagree with it whenever the image and the chart are built from
+# different commits.
+#
+# It would also not work. `persistence.enabled: false` mounts an emptyDir over /var/jenkins_home, so
+# anything COPYed under that path is MASKED in the cluster while still being visible to `docker run`
+# -- local testing passes and the cluster silently disagrees. The plugins above survive only because
+# jenkins-plugin-cli writes them to /usr/share/jenkins/ref/, which the entrypoint copies INTO
+# JENKINS_HOME at boot.
 
 # Skip the setup wizard: JCasC owns this configuration, and the wizard would leave the 94-plugin
 # "install suggested" set the plugins.txt header exists to replace.
