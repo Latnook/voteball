@@ -787,7 +787,10 @@ version: 0.1.0
 awsRegion: il-central-1
 secretName: voteball/jenkins
 refreshInterval: 1h
-appNamespace: devops-app
+# This VPC's CIDR, used twice in networkpolicy.yaml with OPPOSITE intent: excluded from egress (so CI
+# cannot reach RDS or the app) and allowed for ingress (so the ALB's ENIs can health-check the
+# controller). Terraform passes the real value; hardcoding it in the template would break a fork.
+vpcCidr: 10.0.0.0/16
 ```
 
 - [ ] **Step 3: `charts/jenkins-support/templates/externalsecret.yaml`**
@@ -869,7 +872,7 @@ spec:
         - ipBlock:
             cidr: 0.0.0.0/0
             except:
-              - 10.0.0.0/16     # this VPC: RDS, app pods, everything internal
+              - {{ .Values.vpcCidr }}   # this VPC: RDS, app pods, everything internal
               - 172.16.0.0/12
               - 192.168.0.0/16
     # The Kubernetes API, so the controller can create agent pods in its own namespace.
@@ -893,9 +896,18 @@ spec:
   ingress:
     - from:
         - podSelector: {}          # same namespace: controller <-> agents
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system   # the ALB target group health checks
+    - from:
+        # The ALB reaches the controller from ITS OWN ENIs, which live in this VPC's subnets. It is
+        # not a pod and carries no namespace label, so a namespaceSelector cannot match it -- an
+        # earlier draft used `namespaceSelector: kube-system` here and would have matched nothing.
+        # Because podSelector:{} + policyTypes:[Ingress] denies everything not listed, that mistake
+        # does not fail loudly: the health check is dropped, the target group marks the pod
+        # unhealthy, and /github-webhook/ answers 503 with a perfectly healthy Jenkins behind it.
+        - ipBlock:
+            cidr: {{ .Values.vpcCidr | quote }}
+      ports:
+        - protocol: TCP
+          port: 8080
 ```
 
 - [ ] **Step 5: Verify the VPC and service CIDRs above are this cluster's real ones**
