@@ -144,6 +144,13 @@ jenkins:
                     image: aquasec/trivy:0.58.1
                     command: ["cat"]
                     tty: true
+                    # HOME=/tmp: the pod runs every container as uid 1000, but these images assume
+                    # root and leave HOME as / -- which is not writable. The AWS CLI then fails with
+                    # "[Errno 13] Permission denied: '/.aws'" and Trivy cannot create $HOME/.cache.
+                    # Neither needs a real home: IRSA passes credentials via env vars, and the Trivy
+                    # DB comes from --db-repository.
+                    env:
+                      - { name: HOME, value: /tmp }
                     securityContext:
                       allowPrivilegeEscalation: false
                       capabilities: { drop: ["ALL"] }
@@ -153,6 +160,13 @@ jenkins:
                     image: quay.io/skopeo/stable:v1.17.0
                     command: ["cat"]
                     tty: true
+                    # HOME=/tmp: the pod runs every container as uid 1000, but these images assume
+                    # root and leave HOME as / -- which is not writable. The AWS CLI then fails with
+                    # "[Errno 13] Permission denied: '/.aws'" and Trivy cannot create $HOME/.cache.
+                    # Neither needs a real home: IRSA passes credentials via env vars, and the Trivy
+                    # DB comes from --db-repository.
+                    env:
+                      - { name: HOME, value: /tmp }
                     securityContext:
                       allowPrivilegeEscalation: false
                       capabilities: { drop: ["ALL"] }
@@ -162,6 +176,13 @@ jenkins:
                     image: amazon/aws-cli:2.22.0
                     command: ["cat"]
                     tty: true
+                    # HOME=/tmp: the pod runs every container as uid 1000, but these images assume
+                    # root and leave HOME as / -- which is not writable. The AWS CLI then fails with
+                    # "[Errno 13] Permission denied: '/.aws'" and Trivy cannot create $HOME/.cache.
+                    # Neither needs a real home: IRSA passes credentials via env vars, and the Trivy
+                    # DB comes from --db-repository.
+                    env:
+                      - { name: HOME, value: /tmp }
                     securityContext:
                       allowPrivilegeEscalation: false
                       capabilities: { drop: ["ALL"] }
