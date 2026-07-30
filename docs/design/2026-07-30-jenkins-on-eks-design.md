@@ -198,11 +198,72 @@ those are identical bytes. Under the new flow **the scanned artifact and the pus
 same file**, because nothing is rebuilt between the two steps. Nothing reaches ECR before the scan
 passes.
 
+**BuildKit runs as a sidecar container in the agent pod**, not as a shared cluster-wide Deployment. A
+shared daemon would keep a warm local cache but puts a stateful component on a Spot node that is
+reclaimed about daily — reintroducing exactly the problem §2 removes. With the registry-backed cache
+below, cache warmth no longer depends on any pod surviving, so the stateless option loses nothing.
+
+### 5a. Build caching — the one genuine regression, and its fix
+
+The EC2 host is persistent and therefore holds a warm Docker layer cache and a warm Trivy database
+between builds. **Pod agents start cold every time.** Left unaddressed this migration makes builds
+slower and reintroduces a rate-limit risk. Both caches move from local disk to ECR, which ends up
+more robust than the host cache it replaces.
+
+**Layer cache → ECR.** BuildKit exports and imports cache through a registry:
+
+```
+--export-cache type=registry,ref=$ECR_REGISTRY/$CLUSTER_NAME-buildcache:<svc>,mode=max
+--import-cache type=registry,ref=$ECR_REGISTRY/$CLUSTER_NAME-buildcache:<svc>
+```
+
+> **This collides with a deliberate setting.** `terraform/ecr.tf:10` sets
+> `image_tag_mutability = "IMMUTABLE"` across the `for_each` set, because git-SHA tags are unique and
+> immutability prevents a silent overwrite. **Cache tags must be overwritable** — they are rewritten
+> on every build by design. The cache repository is therefore a **separate `aws_ecr_repository`
+> resource with `MUTABLE` tags, deliberately outside `local.ecr_repos`.** It must not be added to
+> that set, or every build fails its cache export. A lifecycle policy expires cache blobs so the
+> repository does not grow without bound.
+
+**Trivy database → ECR.** The existing `TRIVY_CACHE` host mount cannot simply become a pod volume: a
+pod volume dies with the build, so it would not be a cache at all, and the ~100 MB database would be
+re-downloaded on each of four scans, every build — the precise ghcr.io rate-limit risk the original
+comment exists to prevent. Instead Trivy pulls the database from an OCI registry of our choosing:
+
+```
+trivy image --db-repository $ECR_REGISTRY/$CLUSTER_NAME-trivy-db --input /images/<svc>.tar
+```
+
+This is **better than the status quo**: in-region, no rate limit, and no build-time dependency on a
+third-party host. A scheduled job mirrors the upstream database into that repository; if the mirror
+is stale, Trivy warns rather than failing open silently — treat a stale-DB warning as a build
+failure, not a nuisance.
+
 ### 6. `Jenkinsfile` changes
 
 **Top:** `agent any` becomes a `kubernetes` agent with a pod template declaring containers
-`buildkit`, `trivy`, `skopeo` and `aws-cli`, plus a shared `emptyDir` at `/images` for the tarballs
-and one for the Trivy cache.
+`buildkit`, `trivy`, `skopeo` and `aws-cli`, plus a shared `emptyDir` at `/images` for the tarballs.
+There is **no** cache volume — both caches live in ECR (§5a).
+
+**The pod template lives in the `Jenkinsfile`, not in JCasC.** JCasC declares only the Kubernetes
+*cloud* — how to reach the API server, which namespace, which ServiceAccount, agent defaults. Which
+containers and image versions a build needs is part of *how to build*, and the 2026-07-20 design
+committed to that split explicitly: "everything about HOW to build lives in the Jenkinsfile, in the
+repository. This block only says where to find it and when to run it." Splitting the two by accident
+is how a project acquires two sources of truth for one thing.
+
+**Agent and controller sizing.** Measured headroom on 2026-07-30 with the full stack running (app,
+Prometheus, ArgoCD, controllers) on two `t3.large` nodes:
+
+```
+node A: cpu 625m/2000m requested (32%), memory  583Mi/~7.3Gi (8%)
+node B: cpu 875m/2000m requested (45%), memory 1207Mi/~7.3Gi (16%)
+```
+
+So roughly 1 vCPU and 6 GiB are free per node. Starting points: controller `250m`/`1Gi` requested,
+agent pod `500m`/`2Gi` across its containers. Both fit on the existing nodes without scaling, and the
+Cluster Autoscaler (max 4) absorbs a concurrent burst — though `disableConcurrentBuilds()` means
+there is normally only ever one agent.
 
 **Four stages change in mechanism:**
 
@@ -213,9 +274,10 @@ and one for the Trivy cache.
 | `Push to ECR` | 149–162 | `docker push` → `skopeo copy oci-archive:/images/<svc>.tar docker://...`. The `docker login` on line 108 disappears; credentials pass per-copy |
 | `post { always }` | 208–212 | **Deleted.** `docker image prune` (G5) exists because the EC2 host is persistent. A pod agent is destroyed after every build |
 
-The `TRIVY_CACHE` mount is retained as a pod volume rather than a host path. It stays load-bearing for
-the reason the existing comment gives: without it the ~100 MB vulnerability database is re-downloaded
-on each of four scans, every build, risking ghcr.io rate limits.
+The `TRIVY_CACHE` environment variable and its host mount are **removed**, replaced by
+`--db-repository` (§5a). Do not "port" the mount to an `emptyDir`: that silently converts a
+cross-build cache into a per-build one and restores the rate-limit exposure the original comment
+warns about.
 
 **Four stages are untouched**, and this is the payoff from extracting the guards into `scripts/ci/`:
 
@@ -291,6 +353,28 @@ build when the host has been started. In the cluster Jenkins is always running, 
 `master` touching `services/` builds.** That is correct CI behaviour and is called out because it
 differs from the status quo.
 
+**Egress — the NetworkPolicy in `ci`.** The EC2 host's security group allows unrestricted egress, and
+`terraform/jenkins/main.tf:64-66` documents why: ECR, GitHub, Docker Hub and ghcr.io all publish wide,
+shifting ranges, so an allowlist there would be brittle rather than secure. That reasoning still holds
+for *IP-based* rules, so the NetworkPolicy is written the other way round — **broad egress to the
+internet, with specific denials that actually matter**:
+
+| Destination | Policy |
+|---|---|
+| RDS security group / the isolated DB subnets | **Deny** |
+| `devops-app` namespace pods | **Deny** |
+| `kube-system` (except DNS) | **Deny** |
+| Internet (ECR, GitHub, registries) | Allow |
+| DNS | Allow |
+
+That is a meaningful tightening over the current unrestricted egress, and it is the enforceable half
+of the claim in §1. The denials are what a reviewer would actually check; an IP allowlist for
+registry endpoints would be theatre that breaks on the next range change.
+
+**IRSA scope is unchanged by §5a.** The ECR push policy is written as the ARN pattern
+`repository/${cluster_name}-*`, which already covers `-buildcache` and `-trivy-db`. No widening is
+needed — the pattern that made the old stack independent of the main one pays off again here.
+
 ### 9. Secrets
 
 Unchanged in substance. The same `voteball/jenkins` secret in Secrets Manager, the same keys
@@ -364,7 +448,10 @@ afterwards, or it bills indefinitely.
   `hookSecretConfigs` plural/singular trap, the two-files rule and the SHA-256 testing note all go
 - `plugins.txt` — `credentials-binding` out, `kubernetes` in; `docker-workflow` exclusion reason
   rewritten
-- `terraform/ecr.tf` — a fifth repository for the Jenkins image
+- `terraform/ecr.tf` — three additions: a fifth repository for the Jenkins controller image (inside
+  `local.ecr_repos`, immutable like the rest), plus **two separate `MUTABLE` repositories outside
+  that set** — `${cluster_name}-buildcache` and `${cluster_name}-trivy-db` (§5a), with a lifecycle
+  policy expiring old cache blobs
 - `charts/voteball/templates/ingress.yaml` — `group.name` annotation
 - `docs/cicd.md` — substantially rewritten
 - `docs/security.md` — the accepted "whole UI exposed over plaintext HTTP" risk is removed, not
@@ -406,6 +493,11 @@ effort worse than an omission does.
    internet plugin fetch.
 8. Confirm `https://jenkins.<app_domain>/` (root path) is **not** reachable, while
    `/github-webhook/` is.
+9. **Cache proof:** run the same build twice with no source change. The second run must import layer
+   cache from ECR and complete materially faster, and must not download the Trivy database. A second
+   build that is as slow as the first means §5a is not working, regardless of whether it went green.
+10. From a Jenkins agent pod, confirm the NetworkPolicy denies the RDS endpoint (`nc -z` times out)
+    while ECR and GitHub remain reachable.
 
 ## Risks
 
@@ -417,7 +509,9 @@ effort worse than an omission does.
 | `pods/exec` RBAC verb mismatch | Low but obscure | Both verbs granted; §7 records why. Verification step 4 asserts it |
 | Jenkins gains cluster access by drift | **High if it happens** | Namespace-scoped `Role` only, NetworkPolicy denying `devops-app` and RDS, verification step 3. Jenkins still never deploys |
 | Every push now builds | Low | Intended CI behaviour; noted because it differs from the status quo |
-| BuildKit resource pressure on `t3.large` Spot nodes | Low | Agent pod resource requests sized during implementation; four tarballs need node disk headroom |
+| Cold build cache makes builds slower | Medium | Resolved by §5a: layer cache and Trivy DB both move to ECR. **The cache ECR repo must be `MUTABLE` and outside `local.ecr_repos`** or every build fails its cache export |
+| ~~Node disk pressure from four images plus tarballs~~ | **Closed** | Measured 2026-07-30: 18.2 GB allocatable ephemeral storage per node; the four images total 286 MiB compressed (backend 50, worker 64, nginx 22, backup 150). Not a constraint |
+| Node CPU/memory pressure from the controller and agents | Low | Measured 2026-07-30: ~1 vCPU and ~6 GiB free per node with the full stack running. Sizing in §6 |
 
 ## Decisions confirmed (2026-07-30)
 
@@ -426,5 +520,13 @@ effort worse than an omission does.
 - **Build history:** let it go on teardown. Subsequently strengthened to "let it go on every reclaim"
   once the ~daily Spot reclaim rate was measured — the PVC was dropped as a result.
 - **ALB:** share one, accept a 2–5 minute scheduled outage on `voteball.latnook.com`.
-- **Image building:** rootless BuildKit. DinD rejected on the project's own container-security
-  requirements; Kaniko rejected as archived upstream.
+- **Image building:** rootless BuildKit, as a per-build sidecar. DinD rejected on the project's own
+  container-security requirements; Kaniko rejected as archived upstream.
+- **Terraform layout:** `terraform/jenkins/` is deleted and Jenkins becomes `terraform/addon-jenkins.tf`
+  in the main stack. This deliberately reverses the "never let the CI server be owned by the stack it
+  builds for" rule — that rule protected credentials, job config and history, none of which live on
+  the host any more.
+- **Caching:** both caches move to ECR rather than to any volume. Added after review found that
+  porting the `TRIVY_CACHE` mount to a pod volume would have silently turned a cross-build cache into
+  a per-build one.
+- **Node capacity:** measured rather than assumed; disk risk closed, CPU/memory confirmed ample.
