@@ -145,6 +145,31 @@ jenkins:
                   - name: images
                     emptyDir: { sizeLimit: 8Gi }
 
+security:
+  # SSH host key verification for git operations.
+  #
+  # WHY THIS EXISTS: the retired EC2 host ran `ssh-keyscan github.com >> ~/.ssh/known_hosts` in
+  # user_data.sh. Nothing carried that across, and the first real build on EKS failed at checkout with
+  # "No ED25519 host key is known for github.com and you have requested strict checking" -- before any
+  # stage ran, so it read like a credentials problem and was not.
+  #
+  # A known_hosts FILE would not survive here anyway: JENKINS_HOME is an emptyDir (design doc section
+  # 2), so anything written into ~/.ssh is gone on every reschedule -- roughly daily on Spot.
+  #
+  # manuallyProvided, NOT acceptFirstConnection. Trust-on-first-use would silently accept whatever
+  # answers on port 22 the first time a disposable controller boots, which is exactly the window an
+  # attacker would want. This key is pinned in git and verifiable: its SHA256 fingerprint is
+  # +DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU, matching GitHub's published
+  # ssh_key_fingerprints.SHA256_ED25519 at https://api.github.com/meta (checked 2026-07-30).
+  #
+  # If GitHub rotates it, checkout fails closed rather than silently trusting the new key -- re-verify
+  # against api.github.com/meta and update this line.
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy:
+      manuallyProvidedKeyVerificationStrategy:
+        approvedHostKeys: |
+          github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+
 credentials:
   system:
     domainCredentials:
