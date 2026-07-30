@@ -146,6 +146,29 @@ from that:**
   (The database password does *not* need passing — it is read from `voteball.tfvars`.) See
   [Change the admin username or password](#change-the-admin-username-or-password) below.
 
+**The Jenkins credentials behave the opposite way, and this surprises people.** `deploy.sh` prompts
+for a Jenkins username and password on **every** run, but `seed-jenkins-secret.sh` **exits without
+writing anything** once the vault already holds a deploy key — so on a re-run those answers are simply
+discarded and the old Jenkins login stays in force. The deploy still reports success; nothing warns
+you. That guard is deliberate (rewriting the secret would also replace the GitHub deploy key and
+webhook secret, breaking CI until both were re-registered), but it means **you cannot change the
+Jenkins password by re-running the deploy.** To actually change it:
+
+```bash
+FORCE_ROTATE=1 JENKINS_ADMIN_USER='yourname' JENKINS_ADMIN_PASSWORD='yoursecret' \
+  ./scripts/seed-jenkins-secret.sh
+```
+
+That mints a **new deploy key and a new webhook secret** as well, so afterwards you must re-register
+both on GitHub (`docs/cicd.md`, "First-time setup runbook", steps 1 and 4) or the webhook is rejected
+and the pipeline's final push is denied.
+
+**After a full `destroy.sh` → `deploy.sh` cycle none of this applies**: the vault is deleted with the
+stack, so both scripts seed from scratch and every credential you type is the new one.
+
+**`destroy.sh` needs no credentials at all** — it never touches the vault. Your AWS login is the only
+thing required.
+
 **⚠️ Confirm the alert email — every single rebuild.** Check your inbox for an AWS confirmation link
 and click it. Teardown deletes the notification topic, so each deploy recreates the subscription in a
 *pending* state, and AWS will not deliver to an unconfirmed address.
@@ -321,7 +344,11 @@ kubectl port-forward -n argocd svc/argocd-server 8081:443     # then https://loc
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d; echo
 ```
 
-Username is `admin`. If you only want to know whether the cluster matches git, you don't need the UI:
+Username is `admin`. **Fetch that password fresh each time rather than saving it** — ArgoCD generates
+a new one on every rebuild, so a stored copy stops working after any `destroy.sh` → `deploy.sh` cycle.
+Unlike the app and Jenkins logins, it is not something you choose.
+
+If you only want to know whether the cluster matches git, you don't need the UI:
 
 ```bash
 kubectl get applications -n argocd      # "Synced / Healthy" is the answer
