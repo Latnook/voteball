@@ -463,7 +463,17 @@ git push origin master
 
 ### Task 4: Migrate the Jenkins secret into the main stack
 
-**This task can destroy the GitHub deploy key if the steps are reordered. Read all steps first.**
+**Reordering these steps loses the GitHub deploy key. Recoverable, but not for free — read all steps
+first.**
+
+*What is actually at stake.* The secret holds five values: `JENKINS_ADMIN_USER`,
+`JENKINS_ADMIN_HASH` (a bcrypt hash — the plaintext admin password exists nowhere in AWS or git),
+`GITHUB_DEPLOY_USER` (`git`), `GITHUB_DEPLOY_KEY` (an ed25519 private key with **write** access to the
+repo) and `GITHUB_WEBHOOK_SECRET`. Losing the secret means re-running
+`scripts/seed-jenkins-secret.sh`, which **generates a new keypair** (line 61) and prints the public
+half — so recovery costs a manual GitHub round-trip: add the new deploy key, remove the old one,
+update the webhook secret. Not a one-way door, but CI is broken until someone does it by hand.
+The backup in Step 1 exists to avoid that round-trip, not to avert a catastrophe.
 
 **Files:**
 - Modify: `terraform/secrets.tf`, `terraform/addon-eso.tf:10`, `scripts/deploy.sh`
@@ -480,9 +490,12 @@ aws secretsmanager get-secret-value --secret-id voteball/jenkins \
 chmod 600 ~/voteball-jenkins-secret.json
 grep -c GITHUB_DEPLOY_KEY ~/voteball-jenkins-secret.json
 ```
-Expected: `1`. **Do not proceed without this file.** Store it in a password manager afterwards and
-delete the local copy. `terraform/jenkins/secrets.tf:12-15` explains why: the deploy key's only other
-copy is inside Jenkins' credential store on the EC2 volume, and it is *not* on the operator's laptop.
+Expected: `1`. Store it in a password manager afterwards and delete the local copy.
+
+*(`terraform/jenkins/secrets.tf:12-15` calls this key unrecoverable. That is true of **this** key —
+you cannot get the same one back — but not of the capability: `seed-jenkins-secret.sh` mints a
+replacement and tells you what to paste into GitHub. Treat a loss here as an outage to repair, not
+data destroyed. The comment predates the seed script and overstates the case; fix it in Task 10.)*
 
 - [ ] **Step 2: Detach the secret from the OLD stack's state so its destroy cannot delete it**
 
@@ -571,6 +584,20 @@ The app secret is already seeded at step 3 of `deploy.sh`. Add the Jenkins secre
 including collecting its inputs in the **preflight block at the top of the script** — not inline —
 for the reason the script already documents: an inline prompt fails *after* a ~15-minute billed
 `terraform apply`. Follow the existing `seed-eks-secret.sh` call's shape exactly.
+
+- [ ] **Step 7b: Fix the webhook URL the seed script prints**
+
+`scripts/seed-jenkins-secret.sh:98` tells the operator to point the webhook at
+`http://<elastic-ip>:8080/github-webhook/`. There is no Elastic IP and no port 8080 after this
+migration, and this text is what someone follows during a rebuild — leaving it turns a correct script
+into confidently wrong instructions. Change it to:
+
+```bash
+echo "     Payload URL:  https://jenkins.<app_domain>/github-webhook/"
+echo "     SSL verify:   ENABLED (the endpoint is HTTPS via ACM now)"
+```
+
+Derive `<app_domain>` from `scripts/lib/config.sh` rather than hardcoding it — Global Constraints.
 
 - [ ] **Step 8: Format, validate, apply**
 
@@ -1707,6 +1734,11 @@ DB, cache-export failure on an immutable repo, and `pods/exec` 403.
 
 - `docs/security.md` — **remove** the accepted "entire UI exposed over plaintext HTTP" risk; replace
   with the webhook-only, HTTPS posture and the NetworkPolicy denials.
+- `terraform/secrets.tf` — soften the deploy-key comment inherited in Task 4. It claims the key
+  "cannot be recovered from anywhere", which predates `scripts/seed-jenkins-secret.sh` and overstates
+  the case: the script mints a replacement and prints the public half to paste into GitHub. State it
+  accurately — losing it is an outage to repair by hand, not data destroyed — so nobody treats a
+  routine teardown as more dangerous than it is.
 - `docs/deploy.md` — Jenkins seeding in the deploy sequence; no EC2 host to start.
 - `docs/eks/architecture.md`, `README.submission.md` — the `ci` namespace in the diagram and text.
 
