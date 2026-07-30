@@ -5,7 +5,11 @@
 // Design: docs/design/2026-07-20-jenkins-migration-design.md  (G1-G7 referenced below)
 
 pipeline {
-  agent any
+  // The pod that provides these containers is declared in ci/jenkins/jenkins.yaml, under the
+  // kubernetes cloud's `templates:` block -- NOT here. The CI environment is configuration and
+  // belongs in JCasC; the Jenkinsfile owns build steps. Changing which containers exist, or their
+  // versions, means editing that file and re-applying Terraform.
+  agent { label 'voteball-build' }
 
   options {
     // Two builds racing to rewrite values.yaml and push to master would conflict. Also bounds the
@@ -26,14 +30,11 @@ pipeline {
   triggers { githubPush() }
 
   environment {
-    // AWS_REGION and CLUSTER_NAME are NOT set here. They are Jenkins global environment variables
-    // (Manage Jenkins > System > Global properties), which is the direct equivalent of the GitHub
-    // repo variables the retired pipeline used: identity stays out of the repository, so a fork
-    // supplies its own. See CLAUDE.md -- a hardcoded region or prefix here would be a bug.
-    // ECR_REGISTRY is derived at runtime in 'Resolve tag and account'; it cannot be built here
-    // because the account ID is not known until then.
+    // AWS_REGION and CLUSTER_NAME remain Jenkins global environment variables -- see JCasC.
     TRIVY_IMAGE = 'aquasec/trivy:0.58.1'
-    TRIVY_CACHE = '/var/lib/trivy-cache'
+    // TRIVY_CACHE is GONE. Do not reintroduce it as an emptyDir: that converts a cross-build cache
+    // into a per-build one and re-downloads the ~100MB database on each of four scans, every build.
+    // The DB is mirrored into ECR instead; see scripts/mirror-trivy-db.sh.
   }
 
   stages {
@@ -103,15 +104,24 @@ pipeline {
         anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }   // G3
       } }
       steps {
-        sh '''
-          set -eu
-          aws ecr get-login-password --region "$AWS_REGION" \
-            | docker login --username AWS --password-stdin "$ECR_REGISTRY"
-          docker build -t "$ECR_REGISTRY/$CLUSTER_NAME-backend:$TAG" services/backend
-          docker build -t "$ECR_REGISTRY/$CLUSTER_NAME-worker:$TAG"  services/worker
-          docker build -t "$ECR_REGISTRY/$CLUSTER_NAME-nginx:$TAG"   services/frontend
-          docker build -t "$ECR_REGISTRY/$CLUSTER_NAME-backup:$TAG"  services/backup
-        '''
+        container('buildkit') {
+          sh '''
+            set -eu
+            CACHE="$ECR_REGISTRY/$CLUSTER_NAME-buildcache"
+            for svc in backend worker nginx backup; do
+              case "$svc" in
+                nginx) ctx=services/frontend ;;
+                *)     ctx=services/$svc ;;
+              esac
+              buildctl-daemonless.sh build \
+                --frontend dockerfile.v0 \
+                --local context="$ctx" --local dockerfile="$ctx" \
+                --output type=oci,dest=/images/$svc.tar,name="$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG" \
+                --import-cache type=registry,ref="$CACHE:$svc" \
+                --export-cache type=registry,ref="$CACHE:$svc",mode=max
+            done
+          '''
+        }
       }
     }
 
@@ -121,28 +131,23 @@ pipeline {
         anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }
       } }
       steps {
-        // The cache mount is load-bearing: without it the ~100MB vulnerability database is
-        // re-downloaded on each of the four scans, every build, risking ghcr.io rate limits.
-        sh '''
-          set -eu
-          for repo in backend worker nginx; do
-            echo "--- trivy $CLUSTER_NAME-$repo (blocking) ---"
-            docker run --rm \
-              -v /var/run/docker.sock:/var/run/docker.sock \
-              -v "$TRIVY_CACHE":/root/.cache/trivy \
-              "$TRIVY_IMAGE" image --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed \
-              "$ECR_REGISTRY/$CLUSTER_NAME-$repo:$TAG"
-          done
+        container('trivy') {
+          sh '''
+            set -eu
+            DB="$ECR_REGISTRY/$CLUSTER_NAME-trivy-db"
+            for svc in backend worker nginx; do
+              echo "--- trivy $CLUSTER_NAME-$svc (blocking) ---"
+              trivy image --db-repository "$DB" --input /images/$svc.tar \
+                --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
+            done
 
-          # The backup image is a third-party base (postgres:17-alpine + aws-cli) whose CVEs are
-          # upstream Go-tooling issues outside this project's control: surface, do not block.
-          echo "--- trivy $CLUSTER_NAME-backup (report only) ---"
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -v "$TRIVY_CACHE":/root/.cache/trivy \
-            "$TRIVY_IMAGE" image --severity CRITICAL,HIGH --exit-code 0 --ignore-unfixed \
-            "$ECR_REGISTRY/$CLUSTER_NAME-backup:$TAG"
-        '''
+            # The backup image is a third-party base (postgres:17-alpine + aws-cli) whose CVEs are
+            # upstream Go-tooling issues outside this project's control: surface, do not block.
+            echo "--- trivy $CLUSTER_NAME-backup (report only) ---"
+            trivy image --db-repository "$DB" --input /images/backup.tar \
+              --severity CRITICAL,HIGH --exit-code 0 --ignore-unfixed
+          '''
+        }
       }
     }
 
@@ -152,12 +157,29 @@ pipeline {
         anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }
       } }
       steps {
-        sh '''
-          set -eu
-          for repo in backend worker nginx backup; do
-            docker push "$ECR_REGISTRY/$CLUSTER_NAME-$repo:$TAG"
-          done
-        '''
+        // The AWS CLI is not present in the skopeo image, so the ECR login password is obtained in
+        // the awscli container and handed to skopeo via a file under /images -- both containers
+        // mount that same emptyDir. skopeo copies the EXACT file Trivy scanned; nothing is rebuilt
+        // between scan and push, so the scanned artifact and the pushed artifact are provably the
+        // same bytes -- a stronger guarantee than the docker build/scan/push flow this replaces.
+        container('awscli') {
+          sh '''
+            set -eu
+            aws ecr get-login-password --region "$AWS_REGION" > /images/ecr-password
+          '''
+        }
+        container('skopeo') {
+          sh '''
+            set -eu
+            PW="$(cat /images/ecr-password)"
+            for svc in backend worker nginx backup; do
+              skopeo copy --dest-creds "AWS:$PW" \
+                oci-archive:/images/$svc.tar \
+                docker://"$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG"
+            done
+            rm -f /images/ecr-password
+          '''
+        }
       }
     }
 
@@ -206,10 +228,8 @@ pipeline {
   }
 
   post {
-    always {
-      // G5 -- this host is persistent, unlike GitHub's runners.
-      sh 'docker image prune -f || true'
-    }
+    // G5's `docker image prune` is DELETED, not ported: it existed because the EC2 host was
+    // persistent. A pod agent is destroyed after every build, so the disk cleans itself.
     failure {
       // G7 -- there is no email. This line is the record; check the UI.
       echo 'BUILD FAILED. No notification is sent (see docs/cicd.md, G7).'
