@@ -19,9 +19,12 @@ module "autoscaler_irsa" {
 
 # Cluster Autoscaler (Kubernetes autoscaler SIG, official): scales the managed node group 2->4 when
 # pods can't schedule and back down when nodes are underused. autoDiscovery finds the ASG by the tag
-# set in eks.tf. Chart 9.59.0 ships CA app v1.35.0, an EXACT match for the 1.35 cluster. CA is the one
-# add-on whose app version tracks the Kubernetes minor, so re-check it before any cluster_version bump:
-# as of 2026-07-30 no chart ships a 1.36 build, which is why the cluster stayed on 1.35.
+# set in eks.tf. CA is the one add-on whose APP version tracks the Kubernetes minor, so re-check it
+# before any cluster_version bump -- and note it declares no `kubeVersion`, so the usual chart
+# compatibility check cannot catch a mismatch. Read the app column instead:
+#   helm search repo autoscaler/cluster-autoscaler --versions
+# KNOWN GAP (2026-07-30): chart 9.59.0 is the newest and still ships app v1.35.0, one minor behind
+# the 1.36 cluster. Deliberate and accepted -- see docs/maintenance.md. Bump when a 1.36 build ships.
 resource "helm_release" "cluster_autoscaler" {
   name       = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"

@@ -7,17 +7,27 @@ Verified against the repo on 2026-07-29.
 
 ---
 
-## The one with a deadline: EKS 1.35
+## The one with a deadline: EKS 1.36
 
 ```
-Standard support ends   2027-03-27
-Runway from 2026-07-30  ~240 days (about 8 months)
+Standard support ends   2027-08-02
+Runway from 2026-07-30  ~368 days (about 12 months)
 ```
 
-> Upgraded 1.34 → 1.35 in place on 2026-07-30 (control plane 7m29s, node roll 12m21s, no downtime;
-> the site stayed 200 throughout). **A second hop to 1.36 is intended** — it runs to 2027-08-02 —
-> and is held only on `cluster-autoscaler` publishing a 1.36-matching release; the newest chart
-> (9.59.0) still ships app v1.35.0, which matches 1.35 exactly and would trail on 1.36.
+> Upgraded 1.34 → 1.35 → 1.36 in place on 2026-07-30, two sequential applies (EKS cannot skip a
+> minor). Control plane 7m29s then 6m49s; node roll 12m21s then 9m30s.
+>
+> **Downtime was measured, not assumed.** The site and `/api/results` were polled every 2s across
+> the second hop: 488 samples over 17m50s, 487 fully clean. One sample at 19:05:59 showed a failed
+> connection to `/` while `/api/results` returned 200 in the same instant — a single connection-level
+> hiccup, not an outage (an outage fails both). Effective availability 99.8% of samples, no
+> consecutive failures.
+>
+> **`cluster-autoscaler` knowingly trails at app v1.35.0** — as of 2026-07-30 no chart ships a 1.36
+> build. This is a deliberate accepted state, not an oversight: CA only adds/removes nodes across a
+> 2–4 range, so the failure mode is a `Pending` pod or an idle node, never a request-path outage.
+> **Bump it as soon as a 1.36 chart exists** (`helm search repo autoscaler/cluster-autoscaler
+> --versions` → look at the app column).
 
 After that date the cluster silently moves to **extended support at 5× the control-plane price**
 (≈$0.10/hr → ≈$0.60/hr, roughly **+$360/month** for a cluster that otherwise costs ~$200/month total).

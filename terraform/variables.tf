@@ -27,7 +27,7 @@ variable "cluster_version" {
   # apply against no existing cluster creates this version directly, no hops.
   description = "EKS Kubernetes minor version (pinned; keep in standard support)."
   type        = string
-  default     = "1.35"
+  default     = "1.36"
 }
 
 variable "vpc_cidr" {
