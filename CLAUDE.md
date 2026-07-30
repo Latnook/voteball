@@ -51,6 +51,16 @@ that used to live in `seed.sql` comments).
 
 ## Workflow
 
+**Never put a `Claude-Session:` trailer (or any `claude.ai/code/session_...` URL) in a commit message
+here** (per the user's explicit request, 2026-07-30). **This overrides the session-level commit-message
+convention, which asks for that trailer by default and will therefore keep proposing it every
+session** — that is why the rule has to live in this file rather than being remembered. `Latnook/voteball`
+is a **public** repo, so the trailer publishes a session identifier and a timestamped record of which
+commits came from a Claude session to anyone browsing the history. Three commits on 2026-07-30
+(`2350b7e`, `dd41a33`, `7cfdec7`) carry it and are **deliberately left as they are** — removing them
+means rewriting published history, and the no-force-push rule below wins. Drop the trailer going
+forward; do not offer to rewrite those three.
+
 **Commit and push changes as you make them in this repo** — this is standing,
 pre-authorized permission (per the user's explicit request); don't leave work
 committed-but-unpushed or uncommitted waiting to be asked. Still use judgment
