@@ -50,6 +50,14 @@ spec:
         # be registered as an endpoint and receive real HTTP traffic it cannot serve. `app: migrate`
         # is listed in the allow-app-egress NetworkPolicy so it can still reach RDS.
         app: migrate
+      annotations:
+        # The amazon-cloudwatch-observability addon's mutating webhook injects an OTel agent per
+        # language into every pod by default. This Job runs once and exits -- an injected agent only
+        # adds startup latency and an extra image pull. Opt out of all four explicitly.
+        instrumentation.opentelemetry.io/inject-java: "false"
+        instrumentation.opentelemetry.io/inject-python: "false"
+        instrumentation.opentelemetry.io/inject-nodejs: "false"
+        instrumentation.opentelemetry.io/inject-dotnet: "false"
     spec:
       restartPolicy: Never
       serviceAccountName: backend

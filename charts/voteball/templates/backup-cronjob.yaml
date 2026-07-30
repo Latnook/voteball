@@ -16,6 +16,14 @@ spec:
       template:
         metadata:
           labels: { app: voteball-backup }
+          annotations:
+            # The amazon-cloudwatch-observability addon's mutating webhook injects an OTel agent per
+            # language into every pod by default. This is a short-lived pg_dump job -- an injected
+            # agent only adds startup latency and an extra image pull. Opt out of all four explicitly.
+            instrumentation.opentelemetry.io/inject-java: "false"
+            instrumentation.opentelemetry.io/inject-python: "false"
+            instrumentation.opentelemetry.io/inject-nodejs: "false"
+            instrumentation.opentelemetry.io/inject-dotnet: "false"
         spec:
           serviceAccountName: backup
           restartPolicy: Never

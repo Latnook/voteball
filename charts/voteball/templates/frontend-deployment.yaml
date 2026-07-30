@@ -11,6 +11,14 @@ spec:
   template:
     metadata:
       labels: { app: frontend }
+      annotations:
+        # The amazon-cloudwatch-observability addon's mutating webhook injects an OTel agent per
+        # language into every pod by default. frontend is nginx, no runtime any of these agents
+        # attach to -- opt out of all four explicitly.
+        instrumentation.opentelemetry.io/inject-java: "false"
+        instrumentation.opentelemetry.io/inject-python: "false"
+        instrumentation.opentelemetry.io/inject-nodejs: "false"
+        instrumentation.opentelemetry.io/inject-dotnet: "false"
     spec:
       serviceAccountName: frontend
       # Graceful drain for the ALB (target-type ip): on termination, keep serving for a few seconds

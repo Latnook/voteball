@@ -11,6 +11,15 @@ spec:
   template:
     metadata:
       labels: { app: backend }
+      annotations:
+        # The amazon-cloudwatch-observability addon's mutating webhook injects an OTel agent per
+        # language into every pod by default. Backend is the only Python runtime in this chart, so
+        # keep that one and opt out of the rest explicitly (so a future addon default can't flip it
+        # back on silently).
+        instrumentation.opentelemetry.io/inject-java: "false"
+        instrumentation.opentelemetry.io/inject-python: "true"
+        instrumentation.opentelemetry.io/inject-nodejs: "false"
+        instrumentation.opentelemetry.io/inject-dotnet: "false"
     spec:
       serviceAccountName: backend
       affinity:
