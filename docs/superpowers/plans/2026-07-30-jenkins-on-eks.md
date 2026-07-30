@@ -665,10 +665,23 @@ resource "aws_secretsmanager_secret_version" "jenkins_placeholder" {
 cd ../   # terraform/
 terraform init -backend-config=backend.hcl
 terraform import -var-file=voteball.tfvars aws_secretsmanager_secret.jenkins voteball/jenkins
+
+# The VERSION import needs the real version UUID. "AWSCURRENT" is rejected -- the API requires a
+# value at least 32 characters long, so the staging alias cannot be used here.
+VER="$(aws secretsmanager describe-secret --secret-id voteball/jenkins \
+        --query 'VersionIdsToStages' --output json \
+        | python3 -c 'import json,sys; print(next(k for k,v in json.load(sys.stdin).items() if "AWSCURRENT" in v))')"
+echo "AWSCURRENT version: $VER"
 terraform import -var-file=voteball.tfvars \
-  aws_secretsmanager_secret_version.jenkins_placeholder "voteball/jenkins|AWSCURRENT"
+  aws_secretsmanager_secret_version.jenkins_placeholder "voteball/jenkins|$VER"
 ```
 Expected: `Import successful!` twice.
+
+> **Importing the version is not optional bookkeeping.** Skip it and `terraform apply` will CREATE a
+> version containing the literal placeholder JSON — `ignore_changes = [secret_string]` suppresses
+> *updates*, never the initial create. The real credentials would be demoted to `AWSPREVIOUS` and
+> Jenkins would boot with unresolved JCasC placeholders. Note the AWSCURRENT version is the one the
+> seed script wrote; the `terraform-<timestamp>` version is the original placeholder.
 
 - [ ] **Step 5: Confirm the plan wants to CHANGE the recovery window, not replace the secret**
 
