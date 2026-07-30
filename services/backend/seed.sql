@@ -458,57 +458,71 @@ FROM (VALUES
 ) AS v(name_en, name_he, name_ru)
 WHERE c.name_en = v.name_en;
 
--- World Cup 2026 national flags, via flagcdn.com's stable per-country-code SVG URLs. Unlike club
--- crests, national flags carry no trademark/licensing ambiguity, so these are safe to seed directly
--- (see CLAUDE.md/redesign plan -- club and party logo_url values are left NULL for admin curation).
-UPDATE clubs SET logo_url = 'https://flagcdn.com/br.svg' WHERE name_en = 'Brazil' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ar.svg' WHERE name_en = 'Argentina' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/fr.svg' WHERE name_en = 'France' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/gb-eng.svg' WHERE name_en = 'England' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/es.svg' WHERE name_en = 'Spain' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/de.svg' WHERE name_en = 'Germany' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/pt.svg' WHERE name_en = 'Portugal' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/nl.svg' WHERE name_en = 'Netherlands' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/be.svg' WHERE name_en = 'Belgium' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/hr.svg' WHERE name_en = 'Croatia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/uy.svg' WHERE name_en = 'Uruguay' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/co.svg' WHERE name_en = 'Colombia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/mx.svg' WHERE name_en = 'Mexico' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/us.svg' WHERE name_en = 'USA' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ca.svg' WHERE name_en = 'Canada' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/jp.svg' WHERE name_en = 'Japan' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/kr.svg' WHERE name_en = 'South Korea' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ma.svg' WHERE name_en = 'Morocco' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/sn.svg' WHERE name_en = 'Senegal' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/gh.svg' WHERE name_en = 'Ghana' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/eg.svg' WHERE name_en = 'Egypt' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/tn.svg' WHERE name_en = 'Tunisia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/dz.svg' WHERE name_en = 'Algeria' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ci.svg' WHERE name_en = 'Ivory Coast' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/au.svg' WHERE name_en = 'Australia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ir.svg' WHERE name_en = 'Iran' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/sa.svg' WHERE name_en = 'Saudi Arabia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/qa.svg' WHERE name_en = 'Qatar' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ec.svg' WHERE name_en = 'Ecuador' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ch.svg' WHERE name_en = 'Switzerland' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/se.svg' WHERE name_en = 'Sweden' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/uz.svg' WHERE name_en = 'Uzbekistan' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/jo.svg' WHERE name_en = 'Jordan' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/iq.svg' WHERE name_en = 'Iraq' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/cv.svg' WHERE name_en = 'Cape Verde' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/za.svg' WHERE name_en = 'South Africa' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/cd.svg' WHERE name_en = 'DR Congo' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/pa.svg' WHERE name_en = 'Panama' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/cw.svg' WHERE name_en = 'Curacao' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ht.svg' WHERE name_en = 'Haiti' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/py.svg' WHERE name_en = 'Paraguay' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/nz.svg' WHERE name_en = 'New Zealand' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/no.svg' WHERE name_en = 'Norway' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/gb-sct.svg' WHERE name_en = 'Scotland' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/at.svg' WHERE name_en = 'Austria' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/ba.svg' WHERE name_en = 'Bosnia and Herzegovina' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/tr.svg' WHERE name_en = 'Turkey' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://flagcdn.com/cz.svg' WHERE name_en = 'Czech Republic' AND logo_url IS NULL;
+-- World Cup 2026 national-team crests: each nation's football-federation badge, via Wikimedia's
+-- stable upload URLs. These replace the flagcdn.com national flags this block used to seed -- a
+-- badge reads as a football crest alongside the club crests in every other league, where a flag
+-- read as a country picker. Like competition emblems, federation badges carry no per-club
+-- trademark ambiguity, so they are safe to seed directly (club and party logo_url values are still
+-- left NULL for admin curation).
+--
+-- The guard accepts two states -- never seeded (NULL) and still carrying the flag this file seeded
+-- (a flagcdn.com URL) -- so an already-seeded production database moves to the crest, while a logo
+-- an admin set through the admin UI is neither, and is never overwritten. That is the same
+-- guarantee as the plain "AND logo_url IS NULL" guard used elsewhere in this file, widened by
+-- exactly one known-seeded value; see services/backend/CLAUDE.md on why these stay guarded at all.
+UPDATE clubs c SET logo_url = v.logo_url
+FROM (VALUES
+    ('Brazil', 'https://upload.wikimedia.org/wikipedia/commons/3/32/Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_logo_%282020%29.svg'),
+    ('Argentina', 'https://upload.wikimedia.org/wikipedia/en/c/c1/Argentina_national_football_team_logo.svg'),
+    ('France', 'https://upload.wikimedia.org/wikipedia/en/f/f4/France_NT_2026_logo.svg'),
+    ('England', 'https://upload.wikimedia.org/wikipedia/en/8/8b/England_national_football_team_crest.svg'),
+    ('Spain', 'https://upload.wikimedia.org/wikipedia/en/3/39/Spain_national_football_team_crest.svg'),
+    ('Germany', 'https://upload.wikimedia.org/wikipedia/en/e/e3/DFBEagle.svg'),
+    ('Portugal', 'https://upload.wikimedia.org/wikipedia/en/e/e4/Portugal_national_football_team_logo.svg'),
+    ('Netherlands', 'https://upload.wikimedia.org/wikipedia/en/7/78/Netherlands_national_football_team_logo.svg'),
+    ('Belgium', 'https://upload.wikimedia.org/wikipedia/en/f/f9/Royal_Belgian_FA_logo_2019.svg'),
+    ('Croatia', 'https://upload.wikimedia.org/wikipedia/en/e/ea/Croatia_national_football_team_logo.svg'),
+    ('Uruguay', 'https://upload.wikimedia.org/wikipedia/en/4/43/Uruguay_national_football_team_seal.svg'),
+    ('Colombia', 'https://upload.wikimedia.org/wikipedia/commons/2/29/FCF-Logo-2023.svg'),
+    ('Mexico', 'https://upload.wikimedia.org/wikipedia/en/3/3f/Mexico_national_football_team_crest.svg'),
+    ('USA', 'https://upload.wikimedia.org/wikipedia/commons/1/1e/United_States_Soccer_Federation_logo.svg'),
+    ('Canada', 'https://upload.wikimedia.org/wikipedia/commons/6/69/Canadian_Soccer_Association_logo.svg'),
+    ('Japan', 'https://upload.wikimedia.org/wikipedia/en/8/84/Japan_national_football_team_crest.svg'),
+    ('South Korea', 'https://upload.wikimedia.org/wikipedia/en/4/41/South_Korea_national_football_team.svg'),
+    ('Morocco', 'https://upload.wikimedia.org/wikipedia/en/d/d0/Royal_Moroccan_Football_Federation_logo.svg'),
+    ('Senegal', 'https://upload.wikimedia.org/wikipedia/en/1/16/Senegalese_Football_Federation_logo.svg'),
+    ('Ghana', 'https://upload.wikimedia.org/wikipedia/en/9/9c/Ghana_Football_Association_logo_%282001%29.svg'),
+    ('Egypt', 'https://upload.wikimedia.org/wikipedia/en/f/f8/Egyptian_Football_Association_logo.svg'),
+    ('Tunisia', 'https://upload.wikimedia.org/wikipedia/en/c/c4/Tunisia_national_football_team_logo.png'),
+    ('Algeria', 'https://upload.wikimedia.org/wikipedia/en/2/2d/Algerian_NT_%28logo%29.png'),
+    ('Ivory Coast', 'https://upload.wikimedia.org/wikipedia/en/0/09/Ivory_Coast_national_football_team_logo.svg'),
+    ('Australia', 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Australia_national_football_team_badge.svg'),
+    ('Iran', 'https://upload.wikimedia.org/wikipedia/en/d/d6/Football_Federation_Islamic_Republic_of_Iran_logo.svg'),
+    ('Saudi Arabia', 'https://upload.wikimedia.org/wikipedia/en/e/ee/Saudi_Arabia_national_football_team_logo.svg'),
+    ('Qatar', 'https://upload.wikimedia.org/wikipedia/en/3/3a/Qatar_Football_Association_logo.svg'),
+    ('Ecuador', 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Logo_de_la_Federaci%C3%B3n_Ecuatoriana_de_F%C3%BAtbol_%282%29.svg'),
+    ('Switzerland', 'https://upload.wikimedia.org/wikipedia/en/a/a0/Swiss_Football_Association_logo.svg'),
+    ('Sweden', 'https://upload.wikimedia.org/wikipedia/en/3/3f/Sweden_national_football_team_badge.svg'),
+    ('Uzbekistan', 'https://upload.wikimedia.org/wikipedia/en/3/3d/Uzbekistan_Football_Association.svg'),
+    ('Jordan', 'https://upload.wikimedia.org/wikipedia/commons/5/54/Jordan_national_football_team_logo_2024.svg'),
+    ('Iraq', 'https://upload.wikimedia.org/wikipedia/commons/2/24/Iraq_National_Team_Badge_2021_v1.svg'),
+    ('Cape Verde', 'https://upload.wikimedia.org/wikipedia/en/c/ce/Cape_Verdean_Football_Federation_logo.svg'),
+    ('South Africa', 'https://upload.wikimedia.org/wikipedia/en/e/e7/South_Africa_national_soccer_team_logo.svg'),
+    ('DR Congo', 'https://upload.wikimedia.org/wikipedia/en/6/62/Congolese_Association_Football_Federation_logo.png'),
+    ('Panama', 'https://upload.wikimedia.org/wikipedia/en/e/ee/Panamanian_Football_Federation_logo_2024.svg'),
+    ('Curacao', 'https://upload.wikimedia.org/wikipedia/en/1/1c/Curacao_Football_Federation.svg'),
+    ('Haiti', 'https://upload.wikimedia.org/wikipedia/en/e/e7/Federation_Haitienne_de_Football.png'),
+    ('Paraguay', 'https://upload.wikimedia.org/wikipedia/commons/1/14/Asociaci%C3%B3n_Paraguaya_de_F%C3%BAtbol_logo.svg'),
+    ('New Zealand', 'https://upload.wikimedia.org/wikipedia/en/3/3a/New_Zealand_Football_Crest_2022.svg'),
+    ('Norway', 'https://upload.wikimedia.org/wikipedia/en/6/6c/Norway_national_football_team_logo.svg'),
+    ('Scotland', 'https://upload.wikimedia.org/wikipedia/en/5/50/Scotland_national_football_team_logo_2014.svg'),
+    ('Austria', 'https://upload.wikimedia.org/wikipedia/en/b/b7/Austria_national_football_team_crest.svg'),
+    ('Bosnia and Herzegovina', 'https://upload.wikimedia.org/wikipedia/en/d/da/Football_Association_of_Bosnia_and_Herzegovina_logo.svg'),
+    ('Turkey', 'https://upload.wikimedia.org/wikipedia/commons/7/71/Roundel_flag_of_Turkey.svg'),
+    ('Czech Republic', 'https://upload.wikimedia.org/wikipedia/en/7/76/Czech_Republic_national_football_team_logo.svg')
+) AS v(name_en, logo_url)
+WHERE c.name_en = v.name_en
+  AND (c.logo_url IS NULL OR c.logo_url LIKE 'https://flagcdn.com/%');
 
 -- Admin-curated club logos, synced from the live RDS instance (added via the admin UI's Logo
 -- URL field for the full Israeli Premier League roster) so a fresh install matches current

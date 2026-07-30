@@ -1023,11 +1023,14 @@ def test_options_endpoint_exposes_club_domestic_league_id(client, conn):
     assert psg['domestic_league_id'] is None
 
 
-def test_options_endpoint_exposes_logo_url_seeded_for_world_cup_flags(client):
+def test_options_endpoint_exposes_logo_url_seeded_for_world_cup_crests(client):
     resp = client.get('/api/options')
     body = resp.get_json()
     brazil = next(c for c in body['clubs'] if c['name_en'] == 'Brazil')
-    assert brazil['logo_url'] == 'https://flagcdn.com/br.svg'
+    assert brazil['logo_url'] == (
+        'https://upload.wikimedia.org/wikipedia/commons/3/32/'
+        'Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_logo_%282020%29.svg'
+    )
 
     # Non-national clubs are also admin-curated with a seeded logo, synced from the live RDS
     # instance via scripts/sync-seed-from-rds.sh -- clubs without any curated logo still fall

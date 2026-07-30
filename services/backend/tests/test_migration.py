@@ -118,6 +118,63 @@ def test_admin_renamed_league_is_not_overwritten(conn):
     cur.close()
 
 
+BRAZIL_CREST = (
+    'https://upload.wikimedia.org/wikipedia/commons/3/32/'
+    'Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_logo_%282020%29.svg'
+)
+
+
+def test_seeded_world_cup_flag_is_replaced_by_the_crest(conn):
+    # The national-team block seeded flagcdn.com flags until 2026-07-30, so on every already-seeded
+    # database the crests are only reachable if the guard also accepts that known-seeded value. A
+    # plain "AND logo_url IS NULL" guard makes this block a no-op in production -- which is exactly
+    # how a guarded logo_url edit silently fails to ship.
+    cur = conn.cursor()
+    cur.execute("UPDATE clubs SET logo_url = 'https://flagcdn.com/br.svg' WHERE name_en = 'Brazil'")
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT logo_url FROM clubs WHERE name_en = 'Brazil'")
+    assert cur.fetchone()[0] == BRAZIL_CREST
+    cur.close()
+
+
+def test_admin_curated_club_logo_survives_the_crest_seed(conn):
+    # The other half of that guard: widening it to accept the old flag must not widen it to accept
+    # anything an admin typed into the admin UI's Logo URL field.
+    cur = conn.cursor()
+    cur.execute("UPDATE clubs SET logo_url = 'https://example.test/my-brazil.png' WHERE name_en = 'Brazil'")
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT logo_url FROM clubs WHERE name_en = 'Brazil'")
+    assert cur.fetchone()[0] == 'https://example.test/my-brazil.png'
+    cur.close()
+
+
+def test_all_world_cup_clubs_carry_a_crest(conn):
+    # All 48 qualified nations, not just the sample the two tests above pin: a name_en typo in the
+    # VALUES block matches nothing and leaves that nation on a monogram, with no error anywhere.
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT c.name_en, c.logo_url FROM clubs c "
+        "JOIN leagues l ON l.id = c.league_id "
+        # name OR name_en, for the same reason seed.sql's leagues block does: neither column alone
+        # identifies a league across every state the table can be in (see services/backend/CLAUDE.md).
+        "WHERE (l.name = 'World Cup 2026' OR l.name_en = 'World Cup 2026')"
+    )
+    rows = cur.fetchall()
+    assert len(rows) == 48
+    assert [r for r in rows if not (r[1] or '').startswith('https://upload.wikimedia.org/')] == []
+    cur.close()
+
+
 def test_partial_unique_index_rejects_duplicate_name_ru(conn):
     cur = conn.cursor()
     with pytest.raises(psycopg2.errors.UniqueViolation):
