@@ -3,4 +3,8 @@
 awsRegion: il-central-1
 secretName: voteball/jenkins
 refreshInterval: 1h
-appNamespace: devops-app
+
+# This VPC's CIDR, used twice in networkpolicy.yaml with OPPOSITE intent: excluded from egress (so CI
+# cannot reach RDS or the app) and allowed for ingress (so the ALB's ENIs can health-check the
+# controller). Terraform passes the real value; hardcoding it in the template would break a fork.
+vpcCidr: 10.0.0.0/16
