@@ -193,11 +193,35 @@ Two things confirmed before it was created, both worth re-checking if this is ev
   deletes TXT records containing both `heritage=external-dns` and `external-dns/owner=voteball`;
   this record has neither.
 
-### Remaining steps (UI-only, cannot be scripted)
+### Registration status
 
-1. **Google Search Console** — the DNS record is in place, so click **Verify** on the
-   `voteball.latnook.com` Domain property, then *Sitemaps* → submit `sitemap.xml`.
-2. **Bing Webmaster Tools** — add the same domain; it can import the Search Console setup in one
-   click. Bing also feeds DuckDuckGo.
+| Step | Status |
+|---|---|
+| Route53 verification TXT created | done 2026-07-31 |
+| Google Search Console domain verified | done 2026-07-31 |
+| `sitemap.xml` submitted and accepted (2 URLs) | done 2026-07-31, after the XML fix below |
+| Bing Webmaster Tools | outstanding — add the same domain, import from Search Console in one click; also covers DuckDuckGo |
 
-Indexing typically follows within a few days of the sitemap being submitted.
+Indexing typically follows within a few days of the sitemap being accepted.
+
+### The sitemap shipped malformed, and the guard test did not catch it
+
+Search Console rejected the first submission: **"Parsing error, line 5"**. A **double hyphen is
+illegal inside an XML comment**, and the explanatory comment at the top of `sitemap.xml` used this
+repo's usual dash style. It is harmless in shell, tolerated by HTML parsers, and a hard parse error
+in XML. The replacement comment then reintroduced the fault by quoting the offending characters
+while explaining them; the test caught that second occurrence.
+
+**The defect was in the test, not the typo.** It asserted a dozen properties of the sitemap — that
+`robots.txt` referenced it, that it hardcoded no domain, that it was in the `Dockerfile` `COPY` line
+— every one of which is true of a file no XML parser will accept. Structural checks on a document
+that is never parsed are checks on a string.
+
+`test-frontend-seo.sh` now parses `sitemap.xml` **twice**: as committed, and as served with
+`__SITE_URL__` substituted, since the substituted form is what Google actually fetches. It also
+asserts the root element is a `sitemaps.org` `urlset`, that at least one `<url>` exists, and that
+every `<loc>` is an absolute `https` URL.
+
+Generalisable: **the `--` dash style used throughout this repo's comments is unsafe in any XML file**
+(`sitemap.xml` today; any future `.xml`). The warning lives in `sitemap.xml`'s own header, where
+someone editing it will see it.
