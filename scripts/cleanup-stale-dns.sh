@@ -11,6 +11,13 @@
 # SAFETY: only deletes records that external-dns registered as owned by THIS cluster. Ownership is
 # proven by a sibling TXT record containing "external-dns/owner=<cluster>". Records without that
 # marker -- the zone apex, MX, NS, SOA, ProtonMail verification/DKIM, _dmarc -- are never touched.
+#
+# That exemption is load-bearing for one record in particular: a plain TXT at ${APP_DOMAIN} holding
+# "google-site-verification=..." (added 2026-07-31, see docs/design/2026-07-31-seo-design.md). It is
+# intentionally outside Terraform and must survive every teardown -- deleting it un-verifies Google
+# Search Console and loses the property's search history. Do NOT broaden the filter to "every TXT at
+# our host": external-dns keeps its own registry under PREFIXED names (cname-<host>, aaaa-<host>),
+# so nothing it manages lives at the bare host name, and a broader filter would catch only this.
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 

@@ -155,16 +155,49 @@ Two things found and fixed during implementation:
    `# Voteball. https://voteball.latnook.com is rewritten to the live origin by nginx`. The comments
    now describe the placeholder without containing it.
 
-## Still outstanding — a manual step
+## Search-engine registration
 
 **Nothing above causes indexing on its own.** Search engines find sites by following links, and the
-only inbound link is `nofollow`. Someone has to tell them the site exists:
+only inbound link is `nofollow`. They have to be told the site exists.
 
-1. **Google Search Console** → add `voteball.latnook.com` as a **Domain** property → verify with a
-   **DNS TXT record in Route53**. Not the HTML-file or meta-tag method: DNS verification survives
-   every destroy/rebuild (which mints a new ALB and a new cert but keeps the hosted zone) and covers
-   `jenkins.` too. Then submit `https://voteball.latnook.com/sitemap.xml`.
-2. **Bing Webmaster Tools** → same domain → it can import the Search Console setup directly. Bing
-   also feeds DuckDuckGo.
+### The Google verification TXT is a manual, out-of-stack record — on purpose
 
-Indexing typically follows within a few days. Until this is done the rest of this work is inert.
+Added 2026-07-31, zone `latnook.com` (`Z00371679I0OE09A8HIG`):
+
+```
+voteball.latnook.com.  300  TXT  "google-site-verification=YA42wzDkd8hX3aJXuZ9Z2f3U4MxuUsT74DQZeoawq9o"
+```
+
+**It is deliberately NOT a Terraform resource, and must not become one.** Terraform only *reads* the
+hosted zone (`data "aws_route53_zone" "primary"` in `providers.tf`); it does not own it. Anything it
+did own there — the ACM validation records in `acm.tf` — is deleted by `terraform destroy`, which is
+right for a cert that gets reissued anyway. This record is the opposite case: if the stack owned it,
+every `./scripts/destroy.sh` would delete it, Google would fail re-verification, and the property and
+all its accumulated search history would be lost. Surviving teardown is the entire reason DNS
+verification was chosen over the HTML-file method. `lifecycle { prevent_destroy = true }` is not a
+fix either — it makes `terraform destroy` fail outright and wedges the documented teardown path.
+
+It sits in the same category as the hosted zone itself and the tfstate bucket: **domain-level
+identity that outlives any cluster.**
+
+Two things confirmed before it was created, both worth re-checking if this is ever revisited:
+
+- **The apex `latnook.com` carries live email records** (`v=spf1 include:_spf.protonmail.ch ~all`
+  plus a ProtonMail verification string). A TXT record set is a single RRSet holding multiple values,
+  so an `UPSERT` at the apex with only a new value **destroys the SPF record** and starts sending
+  the domain's mail to spam. The verification record belongs at `voteball.latnook.com`, where no TXT
+  previously existed — not at the apex.
+- **Nothing reaps it.** external-dns runs `policy=sync` but is bounded by its ownership registry, and
+  it keeps that registry under *prefixed* names (`cname-voteball`, `aaaa-voteball`), so a bare TXT at
+  `voteball.latnook.com` collides with nothing it manages. `scripts/cleanup-stale-dns.sh` only
+  deletes TXT records containing both `heritage=external-dns` and `external-dns/owner=voteball`;
+  this record has neither.
+
+### Remaining steps (UI-only, cannot be scripted)
+
+1. **Google Search Console** — the DNS record is in place, so click **Verify** on the
+   `voteball.latnook.com` Domain property, then *Sitemaps* → submit `sitemap.xml`.
+2. **Bing Webmaster Tools** — add the same domain; it can import the Search Console setup in one
+   click. Bing also feeds DuckDuckGo.
+
+Indexing typically follows within a few days of the sitemap being submitted.
