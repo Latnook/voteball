@@ -53,4 +53,8 @@ spec:
                 - { name: tmp, mountPath: /tmp }
           volumes:
             - name: tmp
-              emptyDir: {}
+              # backup.sh stages the gzipped dump here before uploading, so this is no longer just
+              # aws-cli's HOME. sizeLimit caps it: without one, a dump that outgrows the node's
+              # ephemeral storage evicts unrelated pods on that node instead of failing this Job.
+              # Exceeding it evicts only this pod, which is a loud, contained failure.
+              emptyDir: { sizeLimit: 2Gi }
