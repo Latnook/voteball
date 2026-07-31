@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Each <loc> below starts as a placeholder rewritten to the live origin by nginx at serve time
+<!-- NOTE: the double-hyphen dash style used in comments elsewhere in this repo is ILLEGAL inside
+     an XML comment and makes this file unparseable. Google Search Console rejected exactly that on
+     2026-07-31 ("Parsing error, line 5"). Punctuate with commas or semicolons here.
+
+     Each loc below starts as a placeholder rewritten to the live origin by nginx at serve time
      (see the sub_filter directive in nginx.conf), so no domain is hardcoded in this repo.
      Hand-maintained: the site has exactly two public pages and no dynamic routes to enumerate.
-     /admin is excluded on purpose -- it is noindex. -->
+     /admin is excluded on purpose; it is noindex. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>__SITE_URL__/</loc>

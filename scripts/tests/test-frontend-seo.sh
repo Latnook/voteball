@@ -86,6 +86,32 @@ check("sub_filter __SITE_URL__" in nginx, "nginx.conf rewrites __SITE_URL__")
 check("application/json" not in nginx.split("sub_filter_types", 1)[1].split(";", 1)[0],
       "sub_filter_types excludes application/json (must never rewrite /api/ responses)")
 
+# sitemap.xml must be well-formed XML -- both as committed and as served after sub_filter has
+# substituted the placeholder. Google rejected the first version of this file ("Parsing error,
+# line 5") because an explanatory comment used this repo's usual "--" dash style, which the XML
+# spec forbids inside a comment. Nothing else here would have caught that.
+print("sitemap.xml is well-formed XML")
+# stdlib ElementTree rather than defusedxml: the only input is a first-party file committed to this
+# repo, never untrusted XML, and the frontend has no dependency manifest to add defusedxml to.
+# If this ever parses a fetched or user-supplied sitemap, switch it.
+import xml.etree.ElementTree as ET
+raw = (fe / "sitemap.xml").read_text(encoding="utf-8")
+SM = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+for label, doc in (("as committed", raw),
+                   ("as served", raw.replace("__SITE_URL__", "https://example.test"))):
+    try:
+        root = ET.fromstring(doc)
+        ok, why = True, ""
+    except ET.ParseError as e:
+        root, ok, why = None, False, f" ({e})"
+    check(ok, f"sitemap.xml parses {label}{why}")
+    if root is not None and label == "as served":
+        check(root.tag == f"{SM}urlset", f"root element is a sitemaps.org urlset (got {root.tag})")
+        urls = root.findall(f"{SM}url")
+        check(bool(urls), f"sitemap declares at least one <url> (found {len(urls)})")
+        check(all(u.findtext(f"{SM}loc", "").startswith("https://") for u in urls),
+              "every <url> has an absolute https <loc>")
+
 robots = (fe / "robots.txt").read_text(encoding="utf-8")
 check("__SITE_URL__/sitemap.xml" in robots, "robots.txt points at the sitemap")
 check(not re.search(r"^\s*Disallow:\s*/admin\s*$", robots, re.M),
