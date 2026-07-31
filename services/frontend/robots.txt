@@ -9,8 +9,22 @@ Allow: /
 # the noindex unread, and permit the URL to be indexed anyway if it is ever linked from elsewhere.
 # Blocking the crawl and de-indexing the page are mutually exclusive; de-indexing is what we want.
 
-# No content here that /results doesn't already render, and crawling it spends WAF request budget
-# and rollup queries for nothing.
-Disallow: /api/
+# DO NOT add a blanket "Disallow: /api/". It was here until 2026-07-31 and it broke indexing of
+# /results: Google renders a page by executing its JavaScript, and every bit of content on /results
+# arrives through these GETs. Blocking them makes Googlebot render an empty shell, and URL
+# Inspection reports "Googlebot blocked by robots.txt" against the XHR to /api/options.
+#
+# These are read-only and must stay crawlable. They are listed explicitly rather than left to the
+# "Allow: /" above so that a future blanket Disallow cannot silently re-break rendering: robots.txt
+# precedence is longest-match-wins, so these survive it.
+Allow: /api/options
+Allow: /api/results
+
+# Crawlable does not mean indexable. nginx sends "X-Robots-Tag: noindex" on every /api/ response, so
+# the raw JSON is fetched for rendering but never appears as a search result in its own right.
+
+# Nothing to crawl: /api/vote is POST-only and the admin routes are all token-gated.
+Disallow: /api/vote
+Disallow: /api/admin/
 
 Sitemap: __SITE_URL__/sitemap.xml

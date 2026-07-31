@@ -29,6 +29,11 @@ easy to break by accident:
 - **`robots.txt` must not `Disallow: /admin`.** `admin.html` carries `noindex,nofollow`, and a
   crawler has to fetch the page to read it. Blocking the crawl and de-indexing the page are mutually
   exclusive; de-indexing is what's wanted.
+- **Never blanket-`Disallow: /api/`.** Google indexes the *rendered* page, and everything on
+  `/results` arrives via `fetch()`. A blanket disallow makes Googlebot render an empty shell — it
+  shipped on 2026-07-31 and URL Inspection refused `/results` outright. The read-only GETs stay
+  crawlable; `nginx.conf` sends `X-Robots-Tag: noindex` on `/api/` so the JSON is never indexed as a
+  document. Crawlability and indexability are separate levers — use the header, not the disallow.
 
 `scripts/tests/test-frontend-seo.sh` asserts all of the above plus Dockerfile `COPY` coverage and
 that both names are genuine Hebrew/Cyrillic (no Latin homoglyphs). Run it after touching any of it.

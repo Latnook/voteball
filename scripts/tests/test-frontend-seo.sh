@@ -116,6 +116,46 @@ robots = (fe / "robots.txt").read_text(encoding="utf-8")
 check("__SITE_URL__/sitemap.xml" in robots, "robots.txt points at the sitemap")
 check(not re.search(r"^\s*Disallow:\s*/admin\s*$", robots, re.M),
       "robots.txt does NOT Disallow /admin (that would block the crawler from reading its noindex)")
+
+# --- 5. render-critical API paths must stay crawlable -------------------------------------------
+# Google indexes the RENDERED page, so every GET the public pages fetch has to be crawlable or the
+# page renders as an empty shell. A blanket "Disallow: /api/" shipped on 2026-07-31 and did exactly
+# that: URL Inspection refused /results with "Googlebot blocked by robots.txt" on /api/options.
+# The allowed set is derived from the JS the public pages actually load, so a new fetch() fails this
+# test until robots.txt permits it. admin.js is excluded on purpose (admin.html is noindex).
+def robots_allows(txt, path):
+    """Google's rule: longest matching prefix wins; a tie favours Allow."""
+    best_allow = best_disallow = -1
+    for line in txt.splitlines():
+        line = line.split("#", 1)[0].strip()
+        m = re.match(r"(Allow|Disallow)\s*:\s*(\S*)$", line, re.I)
+        if not m:
+            continue
+        rule, pat = m.group(1).lower(), m.group(2)
+        if pat and path.startswith(pat):
+            if rule == "allow":
+                best_allow = max(best_allow, len(pat))
+            else:
+                best_disallow = max(best_disallow, len(pat))
+    return best_allow >= best_disallow
+
+public_js = [p for p in fe.glob("*.js") if p.name != "admin.js"]
+needed = sorted({m for p in public_js
+                 for m in re.findall(r"/api/[A-Za-z0-9/_-]*", p.read_text(encoding="utf-8"))
+                 if not m.startswith("/api/admin")} - {"/api/vote"})
+print("render-critical API paths are crawlable")
+check(bool(needed), f"found API paths in the public JS to check ({len(needed)})")
+for path in needed:
+    check(robots_allows(robots, path), f"robots.txt allows {path} (fetched by the public pages)")
+
+print("non-render API paths stay blocked")
+for path in ("/api/vote", "/api/admin/login", "/api/admin/votes"):
+    check(not robots_allows(robots, path), f"robots.txt disallows {path}")
+check(robots_allows(robots, "/admin"), "robots.txt allows /admin (needed to read its noindex tag)")
+check(robots_allows(robots, "/results"), "robots.txt allows /results")
+
+check(re.search(r'add_header\s+X-Robots-Tag\s+"noindex', nginx) is not None,
+      "nginx sends X-Robots-Tag: noindex on /api/ (crawlable, but never indexed as a document)")
 check('content="noindex,nofollow"' in (fe / "admin.html").read_text(encoding="utf-8"),
       "admin.html carries the noindex tag")
 

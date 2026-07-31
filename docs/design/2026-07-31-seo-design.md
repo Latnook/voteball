@@ -91,8 +91,31 @@ Cyrillic faces per character.
 it were ever linked from elsewhere. The two are mutually exclusive and de-indexing is what is wanted,
 so `admin.html` carries `<meta name="robots" content="noindex,nofollow">` and stays crawlable.
 
-`/api/` *is* disallowed — nothing there that `/results` does not already render, and crawling it
-spends WAF request budget and rollup queries for nothing.
+### `/api/`: crawlable, but never indexed
+
+The first version of this design disallowed `/api/` wholesale, on the reasoning that it held "nothing
+`/results` does not already render". **That reasoning is inverted, and it broke indexing of
+`/results`.** Google indexes the *rendered* page — it executes the JavaScript — and every piece of
+content on `/results` arrives through those GETs. Blocking them made Googlebot render an empty
+shell. URL Inspection refused the page and reported `Googlebot blocked by robots.txt` against the
+XHR to `/api/options`.
+
+The two concerns are separable, and conflating them was the mistake:
+
+- **Crawlability** — Googlebot must be able to fetch the read-only GETs, or the page has no content.
+  `robots.txt` therefore carries explicit `Allow: /api/options` and `Allow: /api/results`. They are
+  listed explicitly rather than relying on the blanket `Allow: /`, because robots.txt precedence is
+  longest-match-wins: a future blanket `Disallow: /api/` cannot silently re-break rendering while
+  those longer rules exist.
+- **Indexability** — the raw JSON should never appear as a search result in its own right. That is
+  what `X-Robots-Tag: noindex, nofollow` on the `/api/` location in `nginx.conf` does. `always` is
+  set so the header survives error responses too.
+
+`/api/vote` (POST-only) and `/api/admin/` stay disallowed: there is genuinely nothing to crawl.
+
+The guard test derives the must-be-crawlable set from the `/api/` paths referenced in the JS the
+**public** pages load (`admin.js` excluded, since `admin.html` is `noindex`), so adding a `fetch()`
+to `results.js` fails the test until `robots.txt` permits it.
 
 ### The social card
 
