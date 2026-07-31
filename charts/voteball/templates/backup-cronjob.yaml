@@ -15,7 +15,13 @@ spec:
       backoffLimit: 2
       template:
         metadata:
-          labels: { app: voteball-backup }
+          # MUST be `backup`, matching the `allow-app-egress` NetworkPolicy's `app In (...)` list --
+          # NOT `voteball-backup` (the CronJob/Job/image name). A pod outside that list keeps only
+          # `allow-dns-egress`, so DNS resolves and every TCP connection is dropped: pg_dump to RDS
+          # and the aws-cli's STS call both time out. The VPC CNI runs NETWORK_POLICY_ENFORCING_MODE
+          # `standard`, which fails OPEN for the first seconds of a pod's life, so this hid for days
+          # as a flaky job -- pg_dump beat the policy agent, aws-cli's slower Python startup did not.
+          labels: { app: backup }
           annotations:
             # The amazon-cloudwatch-observability addon's mutating webhook injects an OTel agent per
             # language into every pod by default. This is a short-lived pg_dump job -- an injected
