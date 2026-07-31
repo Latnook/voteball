@@ -69,9 +69,16 @@ So the trilingual name is placed where JavaScript cannot reach it:
   **not** `data-i18n`. It reads identically in all three languages — it is a list of the site's
   names, not a translated string — so staying out of the dictionary costs nothing and guarantees the
   names survive. Content JavaScript does not touch is content JavaScript cannot un-index.
-- **`index.html`'s `<title>` carries all three names** and has no `data-i18n`.
-  `results.html`'s title **stays translated** — it is `data-i18n="resultsTitle"`, so any static edit
-  there is overwritten on load and would be cosmetic. The homepage is what ranks for brand queries.
+- **`index.html`'s `<title>` carried all three names** and had no `data-i18n`. **Reverted 2026-08-01
+  at the owner's request:** the tab should read just the site's name in the current language, so the
+  title is now `data-i18n="voteTitle"` (`Voteball` / `ווטבול` / `Вотбол`). The cost is real and was
+  stated before the change — the `<title>` is the strongest single on-page signal for a brand query,
+  and Googlebot resolves `navigator.language` to `en`, so the indexed homepage title is now just
+  `Voteball`. **That makes the three remaining carriers load-bearing rather than belt-and-braces:**
+  the JSON-LD `alternateName`, the static `.site-names` footer line, and the meta description. Do
+  not weaken any of them.
+  `results.html`'s title was always translated — it is `data-i18n="resultsTitle"`, so any static
+  edit there is overwritten on load and would be cosmetic.
 - **JSON-LD `WebSite` with `alternateName: ["ווטבול", "Вотбол"]`** — the mechanism Google documents
   for "this site is also known as X". Generic structured data was rejected as markup nobody consumes;
   `alternateName` earns its place the moment the brand has non-Latin forms.

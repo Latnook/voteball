@@ -22,10 +22,12 @@ easy to break by accident:
   `og:image` carry absolute URLs without hardcoding a domain. **Never add `application/json` to
   `sub_filter_types`** — that would let the filter rewrite `/api/` proxy responses. Keep the literal
   out of explanatory comments too, or the comments get rewritten and serve as nonsense.
-- **Never add `data-i18n` to `.site-names` or to `index.html`'s `<title>`.** `applyStaticText()` sets
-  `textContent` on every `[data-i18n]` element, so anything in the dictionary exists in the indexed
-  DOM only in English. Those two spots are where `ווטבול` and `Вотбол` live for search engines; a
-  `data-i18n` deletes them with no visible symptom.
+- **Never add `data-i18n` to `.site-names`.** `applyStaticText()` sets `textContent` on every
+  `[data-i18n]` element, so anything in the dictionary exists in the indexed DOM only in English.
+  That footer line, the meta description and the JSON-LD `alternateName` are the only places
+  `ווטבול` and `Вотбол` reach search engines; a `data-i18n` on the footer line deletes them with no
+  visible symptom. (`index.html`'s `<title>` **is** `data-i18n="voteTitle"` — it follows the
+  language toggle by request, and gave up that job on 2026-08-01.)
 - **`robots.txt` must not `Disallow: /admin`.** `admin.html` carries `noindex,nofollow`, and a
   crawler has to fetch the page to read it. Blocking the crawl and de-indexing the page are mutually
   exclusive; de-indexing is what's wanted.

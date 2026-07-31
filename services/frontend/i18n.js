@@ -38,6 +38,10 @@ const DICTIONARY = {
     // Hebrew and Russian wording supplied verbatim by the owner -- don't "improve" either.
     footerCredit: 'Ariel Palatnik made this',
 
+    // Browser tab title for index.html. Just the site's name in the current language -- the
+    // trilingual form that used to be hardcoded in the HTML lived there for search engines, and
+    // that job now belongs to the JSON-LD alternateName plus the static .site-names footer line.
+    voteTitle: 'Voteball',
     resultsTitle: 'Voteball — Results',
     resultsHeading: 'Voteball — Results',
     resultsEyebrow: 'LIVE RESULTS',
@@ -221,6 +225,7 @@ const DICTIONARY = {
 
     footerCredit: 'אריאל פלטניק בנה את זה',
 
+    voteTitle: 'ווטבול',
     resultsTitle: 'ווטבול — תוצאות',
     resultsHeading: 'ווטבול — תוצאות',
     resultsEyebrow: 'תוצאות חיות',
@@ -404,6 +409,7 @@ const DICTIONARY = {
 
     footerCredit: 'Это сделал Ариэль Палатник',
 
+    voteTitle: 'Вотбол',
     resultsTitle: 'Вотбол — Результаты',
     resultsHeading: 'Вотбол — Результаты',
     resultsEyebrow: 'ЖИВЫЕ РЕЗУЛЬТАТЫ',

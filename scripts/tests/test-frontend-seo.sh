@@ -73,11 +73,31 @@ for label, hay in (("JSON-LD alternateName", ld.group(1) if ld else ""),
     check(bool(HE) and HE in hay, f"{label} contains the Hebrew name")
     check(bool(RU) and RU in hay, f"{label} contains the Russian name")
 
+# index.html's <title> follows the language toggle (owner's request, 2026-08-01), so unlike
+# .site-names it MUST be data-i18n. It therefore no longer carries the Hebrew and Russian names for
+# search engines -- the JSON-LD alternateName and the footer line checked above are what do that now,
+# which is why those assertions are not optional.
+print("index.html title follows the language toggle")
 title = re.search(r"<title[^>]*>(.*?)</title>", idx, re.S)
-check(title is not None and "data-i18n" not in title.group(0),
-      "index.html <title> has no data-i18n (a translated title drops the other two names)")
-check(title is not None and HE in title.group(1) and RU in title.group(1),
-      "index.html <title> carries all three site names")
+check(title is not None and 'data-i18n="voteTitle"' in title.group(0),
+      "index.html <title> is data-i18n=voteTitle (so it follows the language toggle)")
+
+# The three voteTitle values must be the site's name in each language, and must agree with the
+# names in the .site-names footer -- otherwise the tab and the page disagree about what the site
+# is called, and a homoglyph could creep into the dictionary unnoticed.
+i18n = (fe / "i18n.js").read_text(encoding="utf-8")
+expected_titles = {"en": "Voteball", "he": HE, "ru": RU}
+scripts_by_lang = {"en": "LATIN", "he": "HEBREW", "ru": "CYRILLIC"}
+for lang, want in expected_titles.items():
+    block = re.search(rf"^  {lang}: \{{(.*?)^  \}}", i18n, re.S | re.M)
+    got = re.search(r"^\s*voteTitle:\s*'([^']*)'", block.group(1), re.M) if block else None
+    check(got is not None, f"i18n.js {lang} block defines voteTitle")
+    if got:
+        check(got.group(1) == want,
+              f"i18n.js {lang}.voteTitle is {want!r} (got {got.group(1)!r})")
+        bad = [f"{c!r} U+{ord(c):04X}" for c in got.group(1)
+               if c.isalpha() and not unicodedata.name(c, "").startswith(scripts_by_lang[lang])]
+        check(not bad, f"i18n.js {lang}.voteTitle is all {scripts_by_lang[lang]} (offenders: {bad or 'none'})")
 
 # --- 4. placeholder / robots hygiene ------------------------------------------------------------
 print("placeholder + robots hygiene")

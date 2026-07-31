@@ -7,11 +7,13 @@
   <script src="i18n.js"></script>
   <script src="theme.js"></script>
 
-  <!-- This title deliberately carries NO data-i18n. applyStaticText() in i18n.js overwrites the
-       textContent of every [data-i18n] element, <title> included, so a translated title would erase
-       the Hebrew and Russian names from the DOM that search engines index. The page renders in
-       English by default, and that default render is what gets indexed. -->
-  <title>Voteball · ווטבול · Вотбол — football fandom vs. politics</title>
+  <!-- Follows the language toggle, per the owner's request on 2026-08-01: the tab should read just
+       the site's name in the current language. It was a hardcoded trilingual string until then, so
+       search engines would index all three names from the title.
+       That job now rests on the JSON-LD alternateName below, the static .site-names footer line and
+       the meta description -- none of which applyStaticText() can overwrite. Keep those three
+       intact; this title is no longer carrying the Hebrew and Russian names for anyone. -->
+  <title data-i18n="voteTitle">Voteball</title>
 
   <!-- The absolute URLs below start as a placeholder that nginx rewrites to the live origin at
        serve time (see the sub_filter directive in nginx.conf), so no domain is hardcoded here. -->
