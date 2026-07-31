@@ -214,6 +214,13 @@ portable — but in Jenkins it is the **Guard stage**, not the marker, that does
 The `voteball` Application watches `charts/voteball` on `master` with `automated: {prune, selfHeal}`. It
 picks up the new tag unprompted and Kubernetes performs a rolling update across all three Deployments.
 
+**Expect 30-40s between Jenkins' tag-bump commit and the sync starting**, plus the rollout itself.
+ArgoCD polls git; nothing pushes to it. The interval is `timeout.reconciliation` (30s) plus
+`timeout.reconciliation.jitter` (up to 10s), set on `helm_release.argocd` in
+`terraform/addon-argocd.tf` — the argo-cd chart's own defaults are 120s and 60s, which put the wait
+at up to three minutes. If a build is green and the site has not changed after ~2 minutes, that is
+long enough to be a real fault: check `kubectl get application voteball -n argocd`, not the clock.
+
 ### 8. Cleanup
 
 `buildDiscarder` (last 20 builds) is unchanged. **`docker image prune` is gone, not ported** — it existed
