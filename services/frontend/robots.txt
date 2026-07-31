@@ -1,0 +1,16 @@
+# Voteball. The Sitemap URL below is a placeholder rewritten to the live origin by nginx at serve
+# time (see the sub_filter directive in nginx.conf), so no domain is hardcoded in this repo.
+
+User-agent: *
+Allow: /
+
+# /admin is deliberately NOT Disallowed. It carries <meta name="robots" content="noindex,nofollow">,
+# and a crawler has to fetch the page to read that tag -- Disallowing it would block the crawl, leave
+# the noindex unread, and permit the URL to be indexed anyway if it is ever linked from elsewhere.
+# Blocking the crawl and de-indexing the page are mutually exclusive; de-indexing is what we want.
+
+# No content here that /results doesn't already render, and crawling it spends WAF request budget
+# and rollup queries for nothing.
+Disallow: /api/
+
+Sitemap: __SITE_URL__/sitemap.xml

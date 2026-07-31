@@ -33,7 +33,9 @@ admin features, then the EKS migration, then the deployment-hardening and repo-f
 the 2026-07-20 CI migration from GitHub Actions to Jenkins (`2026-07-20-jenkins-migration-design.md`,
 whose G1–G7 labels the `Jenkinsfile` and `docs/cicd.md` both cite), then the 2026-07-21
 religion-and-state axis (`2026-07-21-religiosity-axis-design.md`, which extends the party-
-categorization doc rather than replacing it).
+categorization doc rather than replacing it), then the 2026-07-31 search-engine-visibility pass
+(`2026-07-31-seo-design.md`, which records what was deliberately *not* done — read its scope section
+before "improving" the SEO).
 **Read the relevant one before making architectural changes:** most decisions (and the bugs they
 avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
 justify its shape. Several also carry a "Verification outcome" section recording what actually broke

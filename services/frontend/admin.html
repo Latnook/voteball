@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Keeps the admin console out of search results. robots.txt deliberately does NOT Disallow
+       /admin: a crawler must fetch the page to read this tag, so blocking the crawl would leave it
+       unread and let the URL be indexed anyway if it were ever linked from elsewhere. -->
+  <meta name="robots" content="noindex,nofollow">
+
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
   <script src="i18n.js"></script>
   <script src="theme.js"></script>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Each <loc> below starts as a placeholder rewritten to the live origin by nginx at serve time
+     (see the sub_filter directive in nginx.conf), so no domain is hardcoded in this repo.
+     Hand-maintained: the site has exactly two public pages and no dynamic routes to enumerate.
+     /admin is excluded on purpose -- it is noindex. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>__SITE_URL__/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>__SITE_URL__/results</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>

@@ -7,6 +7,26 @@
   <script src="i18n.js"></script>
   <script src="theme.js"></script>
   <title data-i18n="resultsTitle">Voteball — Results</title>
+
+  <!-- The absolute URLs below start as a placeholder that nginx rewrites to the live origin at
+       serve time (see the sub_filter directive in nginx.conf), so no domain is hardcoded here.
+       Unlike index.html the title above stays translated: /results is a secondary page, and the
+       homepage is what carries the trilingual site name for brand-name searches. -->
+  <meta name="description" content="Live aggregate results from every Voteball (ווטבול · Вотбол) ballot: how fans of each Israeli club lean politically, and who they are switching to.">
+  <link rel="canonical" href="__SITE_URL__/results">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Voteball">
+  <meta property="og:title" content="Voteball — Results · ווטבול · Вотбол">
+  <meta property="og:description" content="How fans of each Israeli club and league lean politically.">
+  <meta property="og:url" content="__SITE_URL__/results">
+  <meta property="og:image" content="__SITE_URL__/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="he_IL">
+  <meta property="og:locale:alternate" content="ru_RU">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -113,6 +133,9 @@
 
   <footer class="site-footer">
     <p data-i18n="footerCredit">Ariel Palatnik made this</p>
+    <!-- See index.html: intentionally not data-i18n, so the Hebrew and Russian names survive in the
+         indexed DOM. -->
+    <p class="site-names">Voteball · <span lang="he" dir="rtl">ווטבול</span> · <span lang="ru">Вотбол</span></p>
   </footer>
 
   <script src="logos.js"></script>

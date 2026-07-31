@@ -14,6 +14,25 @@ no obvious symptom beyond "the page is broken" (any script that calls a function
 was supposed to define throws and silently kills the rest of that script's execution) — this
 exact gap shipped once (i18n.js, fixed in commit `d02e255`) before being caught.
 
+**SEO markup (added 2026-07-31 — see `docs/design/2026-07-31-seo-design.md`).** Three rules that are
+easy to break by accident:
+
+- **`__SITE_URL__` is a placeholder, not a bug.** `nginx.conf`'s `sub_filter` rewrites it to
+  `https://$host` at serve time, which is how `robots.txt`, `sitemap.xml`, `canonical`, `og:url` and
+  `og:image` carry absolute URLs without hardcoding a domain. **Never add `application/json` to
+  `sub_filter_types`** — that would let the filter rewrite `/api/` proxy responses. Keep the literal
+  out of explanatory comments too, or the comments get rewritten and serve as nonsense.
+- **Never add `data-i18n` to `.site-names` or to `index.html`'s `<title>`.** `applyStaticText()` sets
+  `textContent` on every `[data-i18n]` element, so anything in the dictionary exists in the indexed
+  DOM only in English. Those two spots are where `ווטבול` and `Вотбол` live for search engines; a
+  `data-i18n` deletes them with no visible symptom.
+- **`robots.txt` must not `Disallow: /admin`.** `admin.html` carries `noindex,nofollow`, and a
+  crawler has to fetch the page to read it. Blocking the crawl and de-indexing the page are mutually
+  exclusive; de-indexing is what's wanted.
+
+`scripts/tests/test-frontend-seo.sh` asserts all of the above plus Dockerfile `COPY` coverage and
+that both names are genuine Hebrew/Cyrillic (no Latin homoglyphs). Run it after touching any of it.
+
 **`services/frontend/logos/` is the exception: it is copied as a whole directory**, so adding a club
 crest is a data change, not a Dockerfile edit. Put crests there for clubs with no Wikimedia artwork and
 point `seed.sql`'s `logo_url` at `/logos/<file>.png`. **Do not hotlink social-media CDNs** — those URLs

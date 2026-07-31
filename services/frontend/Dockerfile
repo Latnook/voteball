@@ -2,6 +2,9 @@
 # stock nginx:alpine (root, :80/:443) now that the ALB terminates TLS outside the pod (EKS migration).
 FROM nginxinc/nginx-unprivileged:alpine
 COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
+# SEO assets. robots.txt and sitemap.xml carry a literal __SITE_URL__ that nginx rewrites from the
+# request Host (see nginx.conf); og-card.png is the 1200x630 link-preview image.
+COPY robots.txt sitemap.xml og-card.png /usr/share/nginx/html/
 COPY fonts/ /usr/share/nginx/html/fonts/
 # Self-hosted crests for clubs with no Wikimedia artwork. Directory copy, unlike the file list
 # above: these are data, not code, and adding one should not require editing the Dockerfile.
