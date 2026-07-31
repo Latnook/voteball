@@ -2,8 +2,8 @@
 
 What separates this deployment from one you could responsibly run for real, ordered by what would
 hurt first. Every "current state" below was verified against the repo, not assumed — originally on
-2026-07-20, re-checked 2026-07-26, and again on 2026-07-29 (§3's restore evidence and §8's snapshot
-count come from the 2026-07-27 teardown/rebuild cycle).
+2026-07-20, re-checked 2026-07-26 and 2026-07-29, and again on 2026-07-31 (§3's restore evidence and
+§8's snapshot count come from the 2026-07-27 teardown/rebuild cycle).
 
 This is a **hobby project deliberately built to demo-grade**, and most items here are conscious
 trade-offs rather than oversights — `docs/security.md` lists the security ones with their reasoning.
@@ -237,6 +237,17 @@ aws sns list-subscriptions-by-topic --topic-arn "$(terraform -chdir=terraform ou
 and on a cluster with no successful backup that series does not exist, so the expression returns
 nothing and cannot fire.
 
+> **This stopped being hypothetical on 2026-07-31.** The nightly `pg_dump` had been failing its S3
+> upload since 2026-07-19 — twelve days — because the CronJob's pods were labelled
+> `app: voteball-backup` while the `allow-app-egress` NetworkPolicy allowed only `app: backup`
+> (fixed in `1bda7b5`). Every rebuild in that window started from zero successful backups, so the
+> series the alert compares against never existed and **no alert ever fired**. `BackupJobFailed`
+> did not cover it either: the job's own `set -e` did not trip, because a failed `pg_dump` piped
+> into `gzip` still produced a valid empty archive and the pipeline exited 0 (fixed in `d44aa53`,
+> which adds `pipefail` and checks for `pg_dump`'s completion trailer). Two independent alert rules,
+> a twelve-day outage, and silence from both — the argument for checking that a signal *can* fire,
+> not just that a rule exists.
+
 **Deliberately NOT written: RDS connections/storage, ALB 5xx and certificate expiry.** Those are
 CloudWatch metrics and nothing scrapes CloudWatch into Prometheus here, so those rules could never
 fire — worse than no alert, because the coverage would look complete. They need a CloudWatch exporter
@@ -307,9 +318,13 @@ closes the *first* problem this section identified outright rather than mitigati
 
 - **"Losing the host" is no longer a scenario.** There is no host — Jenkins is pods on the same Spot
   node group as everything else, and it is torn down and rebuilt with the rest of the stack by the same
-  `terraform apply`/`destroy`. Its credentials live in Secrets Manager (survives teardown) and its
-  configuration lives in git as JCasC (survives teardown); nothing depends on one instance's EBS volume
-  any more.
+  `terraform apply`/`destroy`. Its configuration lives in git as JCasC and nothing depends on one
+  instance's EBS volume any more. **Its credentials are the one thing that does not survive a
+  teardown**, and that is a new operational cost rather than a leftover of the old design:
+  `voteball/jenkins` carries `recovery_window_in_days = 0`, so `terraform destroy` hard-deletes it and
+  the next deploy mints a fresh deploy key and webhook secret that must both be re-registered on GitHub
+  (`docs/cicd.md`, first-time setup steps 1 and 4). Until they are, CI is unreachable and unable to
+  push, on a cluster that reports itself healthy.
 - **The rebuild path is no longer a special case that needs separate verification.** Every
   `terraform apply` *is* a rebuild of the controller from JCasC — it is not a rare disaster-recovery
   path exercised once and hoped to still work later.

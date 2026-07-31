@@ -6,7 +6,8 @@ What to do if the machine this project is run from is stolen, lost, or simply di
 at all. Everything here can be done from a borrowed machine with nothing but a browser, an AWS login
 and this repository.
 
-Last verified against the live account on **2026-07-27**.
+Last verified against the live account on **2026-07-27**; re-checked against the repo on **2026-07-31**,
+after Jenkins moved into the cluster.
 
 ---
 

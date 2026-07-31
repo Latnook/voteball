@@ -3,7 +3,7 @@
 `docs/production-readiness.md` covers *"is this robust enough"*. This covers *"will it still work in
 six months"* — the things that rot on their own while nobody touches the code.
 
-Verified against the repo on 2026-07-29.
+Verified against the repo on 2026-07-31.
 
 ---
 
@@ -50,7 +50,9 @@ After that date the cluster silently moves to **extended support at 5× the cont
 (≈$0.10/hr → ≈$0.60/hr, roughly **+$360/month** for a cluster that otherwise costs ~$200/month total).
 Nothing breaks; the bill just quadruples, which is the worst kind of failure because nothing alerts.
 
-**Action:** bump `cluster_version` in **`terraform/variables.tf`** before December, then apply.
+**Action:** bump `cluster_version` in **`terraform/variables.tf`** before **2027-08-02**, then apply.
+(The earlier 2026-12-02 deadline was 1.34's, and it was met by the 2026-07-30 upgrade above — don't
+read "before December" anywhere; that instruction is retired.)
 
 > **Not in `voteball.tfvars`** — that file is gitignored (`.gitignore:14`), so a value set there
 > lives only on one laptop while the committed default stays behind, and the repo silently stops
@@ -247,7 +249,14 @@ maintenance action is to tear it down.
 The old caveat to this — that a separately-owned Jenkins EC2 host kept running and billing after
 `./scripts/destroy.sh`, and had to be stopped by hand — no longer applies. Jenkins is part of the same
 stack as the app now (namespace `ci`, installed by the same `terraform apply`), so `destroy.sh` takes it
-down too, with nothing left running to bill for and nothing orphaned to clean up by hand: its
-credentials live in Secrets Manager (survives teardown) and its configuration lives in git as JCasC
-(survives teardown); only its disposable build history is lost, which was already designed to be
-disposable.
+down too, with nothing left running to bill for and nothing orphaned to clean up by hand.
+
+**But "nothing is lost" is too strong, and the exception costs you a working pipeline.** Its
+configuration survives — that lives in git as JCasC. Its **credentials do not.**
+`terraform/secrets.tf` sets `recovery_window_in_days = 0` on `voteball/jenkins`, so the secret is
+*hard-deleted* by `terraform destroy` (deliberately: a recovery window would block recreating a
+same-named secret on the next apply). The next `deploy.sh` mints a **fresh GitHub deploy key and a
+fresh webhook secret**, and GitHub still holds the old ones — until both are re-registered by hand,
+the webhook is rejected and the pipeline's final `git push` is denied, on a cluster that otherwise
+looks entirely healthy. See `docs/cicd.md`, "First-time setup runbook", steps 1 and 4. Build history
+is the part that is genuinely disposable by design.

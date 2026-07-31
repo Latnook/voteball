@@ -46,17 +46,26 @@ Full step-by-step (with what each step does) is in **[`docs/deploy.md`](docs/dep
 ./scripts/destroy.sh    # tear it all down again
 ```
 
-Both stop and ask for confirmation before Terraform touches billed resources. `deploy.sh` runs, in order:
-resolve the newest DB snapshot → `terraform apply` → seed Secrets Manager → connect kubectl → build/push
-the 4 images to ECR (git-SHA tags) → **sync `values.yaml` from Terraform outputs** → `helm upgrade
---install` → bootstrap **ArgoCD**, which owns the release from then on.
+Both stop and ask for confirmation before Terraform touches billed resources. `deploy.sh` runs eleven
+numbered steps, in order: resolve the newest DB snapshot → targeted apply for ECR + the two empty secret
+containers → **seed both secrets** (app, then Jenkins) → mirror the Trivy DB into ECR → build/push the
+Jenkins controller image → the full `terraform apply` → connect kubectl → build/push the 4 app images to
+ECR (git-SHA tags) → **sync `values.yaml` from Terraform outputs** → `helm upgrade --install` →
+bootstrap **ArgoCD**, which owns the release from then on.
+
+**Seeding before the apply, not after it, is load-bearing** — and it was the other way round until
+2026-07-31. The full apply creates the Jenkins release and its ExternalSecret together, and External
+Secrets Operator copies the vault into the cluster once at creation and then only hourly; seeding
+afterwards boots Jenkins with no admin account and 401s every login for an hour, while the deploy
+reports success throughout.
 
 That sync step matters: the RDS endpoint, ACM certificate ARN, S3 bucket and IRSA role ARNs are all
 regenerated on every rebuild, so `charts/voteball/values.yaml` is **generated, never hand-edited**
 (`./scripts/sync-values-from-tf.sh --check` fails on drift and verifies the image tag exists in ECR).
 
 `destroy.sh` encodes the order that actually works — ArgoCD Application first (or `selfHeal` recreates
-what you delete), then the Ingress (releasing the ALB and its DNS records), then Terraform — and takes a
+what you delete), then **both** Ingresses (the app's and the CI webhook's, which share one ALB group, so
+deleting either alone leaves the ALB running and its ENIs blocking the VPC), then Terraform — and takes a
 final DB snapshot, so a destroy/rebuild cycle preserves the votes.
 
 ## CI/CD — Jenkins (in-cluster) → ECR → ArgoCD
@@ -164,9 +173,10 @@ Removes the cluster, add-ons, VPC, RDS, ECR, S3, SNS, Secrets Manager and IAM. (
 `force_destroy`/`force_delete` so a non-empty bucket/repo doesn't block it.)
 
 The script exists because the order is not obvious and getting it wrong wastes 20+ minutes: the ArgoCD
-Application must go **first** (or `selfHeal` recreates whatever you delete), then the Ingress (freeing
-the ALB and letting external-dns remove its records — a leftover ALB's ENIs block VPC deletion), then a
-poll until the ALB is actually gone, and only then `terraform destroy`. It also reaps the detached
+Application must go **first** (or `selfHeal` recreates whatever you delete), then **both** Ingresses —
+`devops-app/voteball` and `ci/jenkins-webhook` share ALB group `voteball`, and an ALB is de-provisioned
+only once its group has no members left, so removing one leaves it running — then a poll until the ALB
+is actually gone, and only then `terraform destroy`. It also reaps the detached
 CNI network interfaces that otherwise stall subnet deletion, and takes a final RDS snapshot so the next
 deploy restores the votes. Each of those steps was added after a real teardown failed on it — see
 [`docs/design/2026-07-20-deployment-hardening-design.md`](docs/design/2026-07-20-deployment-hardening-design.md).

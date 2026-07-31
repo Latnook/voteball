@@ -105,10 +105,16 @@ Everything else has a working default.
 ./scripts/deploy.sh          # asks you to confirm before Terraform creates anything billed
 ```
 
-It resolves the newest DB snapshot (or starts with an empty database), applies Terraform, prompts for
-your admin credentials and seeds them into Secrets Manager, builds and pushes the four images, fills in
-`charts/voteball/values.yaml` from Terraform outputs, installs the chart, and hands ongoing delivery to
-ArgoCD. Then confirm the SNS subscription email AWS sends you, and open `https://<your app_domain>`.
+It resolves the newest DB snapshot (or starts with an empty database), **prompts for your admin and
+Jenkins credentials up front and seeds them into Secrets Manager before anything billed is created**,
+applies Terraform, builds and pushes the four app images, fills in `charts/voteball/values.yaml` from
+Terraform outputs, installs the chart, and hands ongoing delivery to ArgoCD. Then confirm the SNS
+subscription email AWS sends you, and open `https://<your app_domain>`.
+
+Credentials are collected first on purpose: a missing one fails in seconds instead of after a
+~15-minute billed apply, and Jenkins' vault has to be populated *before* the apply that creates
+Jenkins, or the controller boots with no admin account. `docs/deploy.md` walks through all eleven
+steps.
 
 **3. Tear down:**
 

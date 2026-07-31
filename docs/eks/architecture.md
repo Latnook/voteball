@@ -48,6 +48,15 @@ flowchart LR
 - **Private:** every pod. Reachable only via the ALB, and only the frontend is a target.
 - **Isolated:** RDS. No route in from the internet and no route out — not even through the NAT.
 
+**There is one ALB, shared by two Ingresses.** `devops-app/voteball` (the site) and
+`ci/jenkins-webhook` (the CI webhook path only, diagram 4) both carry
+`alb.ingress.kubernetes.io/group.name: voteball`, so the load balancer controller puts them behind a
+single load balancer instead of billing for two. This matters at teardown: an ALB is de-provisioned
+only when its group has **no** members left, so deleting one Ingress leaves it running and its ENIs
+pinning the VPC — which is why `scripts/destroy.sh` deletes both. A grouped ALB is also named
+`k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`, so any check filtering on the old shape
+reports "ALB gone" while it is still there.
+
 ---
 
 ## 2. Inside the cluster — the Kubernetes objects

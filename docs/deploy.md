@@ -499,9 +499,15 @@ votes. (This changed on 2026-07-20 — teardown used to discard them.)
 
 Jenkins is **not** in this list any more — it is part of the same stack as the app now (namespace `ci`,
 installed by the same `terraform apply`), so `terraform destroy` removes it along with everything else.
-There is nothing left to keep running between sessions: its credentials live in Secrets Manager, its
-configuration lives in git as JCasC, and its build history was already designed to be disposable (see
-`docs/cicd.md`) — none of that is lost by tearing the cluster down.
+There is nothing left to keep running between sessions: its configuration lives in git as JCasC, and
+its build history was already designed to be disposable (see `docs/cicd.md`).
+
+**One thing does not survive, and it is the one that will bite you on the next deploy.** Jenkins'
+secret vault is deleted with the stack (as noted further up under [Put the site
+online](#put-the-site-online)), so the rebuild generates a **new GitHub deploy key and a new webhook
+secret**. GitHub still holds the old ones. Re-register both — repo → Settings → Deploy keys, and repo →
+Settings → Webhooks — or the webhook is rejected and the build's final push is denied, with nothing in
+the deploy output warning you. `docs/cicd.md`, "First-time setup runbook", steps 1 and 4.
 
 ---
 
@@ -512,7 +518,17 @@ configuration lives in git as JCasC, and its build history was already designed 
 - **The site loads but shows no parties/teams** → this was a bug we already fixed; make sure you're on the
   latest code (`git pull`). (Cause: the app's firewall rules needed to allow the internal "service"
   network, not just the machine network.)
-- **The nightly backup fails** → already fixed in the latest code (it needed a writable temp folder).
+- **The nightly backup fails** → two separate causes, both already fixed in the latest code: it needed
+  a writable temp folder, and (until 2026-07-31) its pods were labelled `app: voteball-backup` while
+  the NetworkPolicy allowed only `app: backup`, so the upload to S3 was blocked. Make sure you're on
+  the latest code. The second one is the more instructive failure: the dump itself always worked, so
+  the job looked like a flaky upload rather than a firewall rule — see `charts/voteball/CLAUDE.md`.
+- **The nightly backup reports success but the file in S3 is tiny** → that was possible until
+  2026-07-31: a failed `pg_dump` still gzipped to a valid ~20-byte archive and the job exited 0.
+  `services/backup/backup.sh` now sets `pipefail`, tests the archive, and checks for `pg_dump`'s
+  completion trailer before uploading anything. Verify a real backup with
+  `aws s3 ls "s3://$(terraform -chdir=terraform output -raw s3_bucket)/backups/" --human-readable` —
+  a healthy dump is kilobytes-to-megabytes, not bytes.
 - **Teardown prints "These resources were kept due to the resource policy: [CustomResourceDefinition]
   applications.argoproj.io ..."** → harmless. ArgoCD marks those definitions "keep" so an uninstall
   can't delete your app definitions by accident. The whole cluster is deleted moments later, so they
