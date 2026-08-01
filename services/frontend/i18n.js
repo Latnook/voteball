@@ -593,6 +593,14 @@ function localizedName(entity) {
   return entity[field] || entity.name_en;
 }
 
+// A copy of `arr` sorted by the name actually shown in the current language, collated by that
+// language's rules rather than by codepoint. Passing the locale matters: bare localeCompare() uses
+// the browser's locale, not the toggled one. Entities with no name in the current language fall
+// back to name_en via localizedName, so a Russian list can legitimately mix scripts.
+function sortByLocalizedName(arr) {
+  return arr.slice().sort((a, b) => localizedName(a).localeCompare(localizedName(b), currentLang));
+}
+
 function applyStaticText() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.dataset.i18n);
