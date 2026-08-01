@@ -362,6 +362,59 @@ monopoly; Fink is an observant Shabbat-keeper who supports separation of religio
 runs the cross-denominational Rabbis for Human Rights. **The religious figures on this list push the
 score down, not up.**
 
+**2026-08-01 — read against the party's own eight platform documents, which no previous pass had
+seen.** Every axis is confirmed and none moved; the tags were badly incomplete, and one of them is
+now in question.
+
+- **religiosity −3 confirmed, and confirmed as the *pluralist* −3 the axis design intends.** The
+  religion-and-state paper demands civil marriage and divorce by statute, breaking the Rabbinate's
+  monopoly on conversion *and* kashrut, recognition of non-Orthodox conversion, public transport on
+  Shabbat, freedom of choice in burial, and equal, transparent subsidy of religious services to all
+  streams. The framing is *"הפרדת הדת ממוסדות המדינה לצד חיזוק אופיה של ישראל כמדינה יהודית
+  ודמוקרטית"* — separation from state institutions **alongside** strengthening Jewish character,
+  which is Decision 5 almost verbatim. `civil-marriage` added.
+- **economic −2 confirmed.** Shorter work week, added vacation and sick days, paternity leave,
+  expanded subsidized early childhood, breaking up food/pharma/energy cartels, restored price
+  controls, public and long-term-rental housing, periphery investment. No privatization and no tax
+  rate anywhere in the document — social-democratic, not communist, so not −3.
+- **`universal-conscription` added, as a tag and as the fourth family.** The religion-and-state paper
+  closes on שוויון בנטל: *"ננהיג שירות לאומי שוויוני לכלל אזרחי ישראל"* — equal national service for
+  all citizens, *"מתוך כבוד לאורחות חיים שונים, אך ללא ויתור על העיקרון הבסיסי של שוויון"*. The
+  education and economic papers carry the same theme from the funding side.
+- **`core-curriculum`, `anti-annexation`, `anti-settler-violence`, `anti-indicted-pm`,
+  `regional-normalization`, `lgbt-rights` added.** The education paper ends the special status of the
+  haredi networks and defunds institutions that teach neither maths, English nor civics; the security
+  paper devotes one of its five steps to *"עוצרים את הסיפוח"* — halting annexation, repealing the
+  annexation laws, defunding illegal outposts and declaring violent settler organisations terror
+  organisations; the democracy paper legislates *"איסור כהונה תחת כתב אישום"* for ministers and the
+  PM plus an eight-year term limit; the security paper commits to Saudi normalization and IMEC.
+
+**`two-state` is now questionable and is deliberately left in place for the repo owner to rule on.**
+The security paper **never uses the words מדינה פלסטינית.** It commits to *"מהלך מדיני אחראי מול
+הפלסטינים"*, to *"הסדרים מדיניים"*, and to promoting *"אלטרנטיבה שלטונית מתונה"* in the Palestinian
+arena — and it opposes annexation on the demographic ground that it would be *"סופה של ישראל
+היהודית והדמוקרטית"*. That is structurally the **same** position the page scores as `anti-annexation`
+**without** `two-state` on ישר, where the entry says in terms that the omission is deliberate and the
+score rests on the leader's statements rather than the platform. Yair Golan is personally and
+publicly a two-stater, so the tag is not baseless — but it is currently carried by the party's
+document, and the document does not carry it. Either drop `two-state`, or keep it and record that it
+rests on Golan rather than on the platform, the way ישר's entry does. **security −1 is unaffected
+either way** — a responsible political process plus PA security coordination plus halting annexation
+lands at −1 regardless of whether the endpoint is named.
+
+Sources, all read 2026-08-01 and all first-party (`democrats-media.s3.us-east-1.amazonaws.com`):
+[מדיני־ביטחוני](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%93%D7%99%D7%A0%D7%99+%D7%91%D7%99%D7%98%D7%97%D7%95%D7%A0%D7%99+(1).pdf),
+[כלכלי־חברתי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+(2).pdf),
+[דת ומדינה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%AA+%D7%95%D7%9E%D7%93%D7%99%D7%A0%D7%94.pdf),
+[דמוקרטיה ומשפט](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%9E%D7%95%D7%A7%D7%A8%D7%98%D7%99%D7%94+%D7%95%D7%9E%D7%A9%D7%A4%D7%98.pdf),
+[חינוך](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A0%D7%95%D7%9A.pdf),
+[להט"ב](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9C%D7%94%D7%98%D7%91+(2).pdf),
+[חיסול הפשע המאורגן](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A1%D7%95%D7%9C+%D7%94%D7%A4%D7%A9%D7%A2+%D7%94%D7%9E%D7%90%D7%95%D7%A8%D7%92%D7%9F.pdf),
+[סביבה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%A6%D7%A2+%D7%A1%D7%91%D7%99%D7%91%D7%94.pdf).
+These are Illustrator exports with **no usable text layer for WebFetch** — its summarizer receives
+binary and reports the document as unreadable. `pdftotext` extracts them cleanly. Reach for it
+before concluding a party PDF is inaccessible.
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −1 · secular
 
 security **+2**. "Israel Mitazemet" is an explicit hawkish doctrine — no Palestinian state,
@@ -964,6 +1017,9 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
 - **The row is still seeded as `המילואימניקים`** while the list now runs as
   **בית ציוני – המילואימניקים**. Renaming orphans votes, so it is an admin-UI action taken when the
   ballot name is final — the same standing decision as נעם below.
+- **הדמוקרטים's `two-state` tag is not supported by the party's own platform** and needs a ruling:
+  drop it, or keep it and record that it rests on Golan's personal position rather than the document,
+  as ישר's entry already does for the mirror case. No axis is affected. Details under that entry.
 - **כחול לבן has six known party documents and two have been read.** The four unread ones are listed
   under its entry; `kachollavan.org.il` returns 403 to automated fetching, so they need to be fetched
   by hand. One of them postdates every classification pass on that row. It is also polling at ~1%,
@@ -1003,3 +1059,4 @@ pass happened, for anyone reading git history.
 | 2026-07-29 | נעם — Noam added to `upcoming_parties`; first NULL on the `economic` axis |
 | 2026-07-30 | revision 10 — Likud audited against the voting record: religiosity +1 → **+2** (kashrut monopoly restored by statute, religious funding expanded); economic **+1 confirmed** (the import reform is real liberalizing, not rhetoric). Both tables |
 | 2026-08-01 | revision 11 — כחול לבן's conscription programme found on `sherut4all.com`: 4 tags + the `universal-conscription` family added, **no axis moved**. Source URLs added to five entries. Freshness sweep: Beiteinu re-verified, נעם's economic NULL re-verified, ביחד's security NULL re-verified, רע"ם's IDI basis found undated and rejected, and המילואימניקים found to have merged into בית ציוני – המילואימניקים with its platform due 2026-08-05 |
+| 2026-08-01 | revision 12 — הדמוקרטים read against its own eight platform documents for the first time: 8 tags + the `universal-conscription` family added, **all three axes confirmed and unmoved**, and `two-state` flagged as unsupported by the platform |

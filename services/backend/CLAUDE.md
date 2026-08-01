@@ -72,6 +72,13 @@ Researching party positions: `kachollavan.org.il` returns **403** to WebFetch (t
 `he.wikipedia.org` work. When only a blocked source supports the stronger claim, score the weaker one
 and say so (see רע"ם in `docs/party-classifications.md`).
 
+**A party PDF that WebFetch calls unreadable is usually readable — use `pdftotext`.** Party platforms
+are frequently Adobe Illustrator exports; WebFetch hands its summarizer the raw binary, which then
+reports "no extractable text" and offers to help if you find another format. That is a tooling limit,
+not a property of the document. `curl` the PDF and run `pdftotext file.pdf file.txt` — all eight of
+הדמוקרטים's platform papers extracted cleanly this way after WebFetch declared four of them
+unreadable. Do not record "no platform published" on the strength of a WebFetch failure.
+
 **Reachable is not the same as current, and IDI is the standing example.** Its רע"ם page loads and
 carries a full platform — undated, and traceable to pre-2021 Joint List text rather than to anything
 the party has published since. A secondary source with no date cannot settle an axis no matter how

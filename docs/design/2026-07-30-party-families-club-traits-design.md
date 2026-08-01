@@ -113,7 +113,7 @@ here and disagree on nearly everything else.
 
 | value | n | parties |
 |---|---|---|
-| `universal-conscription` | 6 | ישר, ביחד, ישראל ביתנו, אל הדגל, המילואימניקים, כחול לבן |
+| `universal-conscription` | 7 | ישר, ביחד, ישראל ביתנו, אל הדגל, המילואימניקים, כחול לבן, הדמוקרטים |
 | `conscription-exemption` | 2 | הליכוד, ש"ס |
 | `conscription-split` | 2 | הציונות הדתית, יהדות התורה |
 | `conscription-by-incentive` | 2 | עוצמה יהודית, נעם |
@@ -178,14 +178,15 @@ participation.
 
 ## Seed data (`seed.sql`)
 
-18 rows, 1–3 families each, 10 graded `[R]` from the voting record and 8 `[P]` from platform only.
+18 rows, 1–4 families each, 10 graded `[R]` from the voting record and 8 `[P]` from platform only.
+(Originally 1–3; הדמוקרטים reached four on 2026-08-01 when its eight platform documents were read.)
 
 | party | families | grade |
 |---|---|---|
 | הליכוד | `conscription-exemption`, `judicial-restraint`, `sectoral-budgeting` | **[R]** |
 | ישר | `universal-conscription`, `constitutional-reform`, `cost-of-living` | **[P]** |
 | ביחד | `universal-conscription`, `constitutional-reform`, `cost-of-living` | **[P]** |
-| הדמוקרטים | `constitutional-reform`, `welfare-state`, `jewish-arab-partnership` | **[P]** |
+| הדמוקרטים | `constitutional-reform`, `welfare-state`, `jewish-arab-partnership`, `universal-conscription` | **[P]** |
 | כחול לבן | `constitutional-reform`, `universal-conscription` | **[P]** |
 | ישראל ביתנו | `universal-conscription`, `constitutional-reform`, `market-liberal` | **[R]** |
 | הציונות הדתית | `judicial-restraint`, `conscription-split`, `sectoral-budgeting` | **[R]** |
@@ -213,6 +214,11 @@ something false. Decision 8's denominator rule is what makes uneven coverage saf
 > to keep apart on the axes, and this layer had no equivalent guard. כחול לבן now carries
 > `universal-conscription` as well; the table and counts above are updated. **Sparse coverage on this
 > layer is a prompt to check the sources, not evidence of a party's silence.**
+>
+> The same day, **הדמוקרטים** gained the same family from the same cause — its eight platform
+> documents had never been read, and one of them closes on *"ננהיג שירות לאומי שוויוני לכלל אזרחי
+> ישראל"*. Two of the three parties this layer described as holding no position turned out to hold
+> one, in the first pass that actually opened the documents. Treat the 2026-07-30 counts as a floor.
 
 The `families` and `family_evidence` writes join the existing **unguarded** ideology `UPDATE` blocks —
 same reasoning as `bloc`/`economic`/`security`: nothing in the app writes these columns, production is
