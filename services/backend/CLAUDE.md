@@ -66,9 +66,16 @@ party row from a DB seeded with the OLD file, then diff against both (a) a fresh
 new file and (b) the old-seeded DB with the new file applied on top. Both diffs empty, or it isn't a
 refactor.
 
-Researching party positions: `idi.org.il` returns **504** and `israelhayom.co.il` returns **403** to
-WebFetch — party official sites and `he.wikipedia.org` work. When only a blocked source supports the
-stronger claim, score the weaker one and say so (see רע"ם in `docs/party-classifications.md`).
+Researching party positions: `kachollavan.org.il` returns **403** to WebFetch (the whole domain — the
+`/8ps/` page and every PDF), `israelhayom.co.il` returns **403**, and `davar1.co.il` returns **403**.
+`idi.org.il` intermittently returns **504** but was reachable on 2026-08-01. Party official sites and
+`he.wikipedia.org` work. When only a blocked source supports the stronger claim, score the weaker one
+and say so (see רע"ם in `docs/party-classifications.md`).
+
+**Reachable is not the same as current, and IDI is the standing example.** Its רע"ם page loads and
+carries a full platform — undated, and traceable to pre-2021 Joint List text rather than to anything
+the party has published since. A secondary source with no date cannot settle an axis no matter how
+authoritative the institution; that is what "from the party's own source" in the rule above is for.
 
 
 ## Working on the backend

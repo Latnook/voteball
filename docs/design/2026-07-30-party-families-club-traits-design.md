@@ -113,7 +113,7 @@ here and disagree on nearly everything else.
 
 | value | n | parties |
 |---|---|---|
-| `universal-conscription` | 5 | ישר, ביחד, ישראל ביתנו, אל הדגל, המילואימניקים |
+| `universal-conscription` | 6 | ישר, ביחד, ישראל ביתנו, אל הדגל, המילואימניקים, כחול לבן |
 | `conscription-exemption` | 2 | הליכוד, ש"ס |
 | `conscription-split` | 2 | הציונות הדתית, יהדות התורה |
 | `conscription-by-incentive` | 2 | עוצמה יהודית, נעם |
@@ -186,7 +186,7 @@ participation.
 | ישר | `universal-conscription`, `constitutional-reform`, `cost-of-living` | **[P]** |
 | ביחד | `universal-conscription`, `constitutional-reform`, `cost-of-living` | **[P]** |
 | הדמוקרטים | `constitutional-reform`, `welfare-state`, `jewish-arab-partnership` | **[P]** |
-| כחול לבן | `constitutional-reform` | **[P]** |
+| כחול לבן | `constitutional-reform`, `universal-conscription` | **[P]** |
 | ישראל ביתנו | `universal-conscription`, `constitutional-reform`, `market-liberal` | **[R]** |
 | הציונות הדתית | `judicial-restraint`, `conscription-split`, `sectoral-budgeting` | **[R]** |
 | עוצמה יהודית | `judicial-restraint`, `not-economy-focused`, `conscription-by-incentive` | **[R]** |
@@ -201,9 +201,18 @@ participation.
 | זהות | `judicial-restraint`, `market-liberal`, `cost-of-living` | **[P]** |
 | נעם | `judicial-restraint`, `conscription-by-incentive`, `not-economy-focused` | **[R]** |
 
-Coverage is deliberately uneven (1–3, not a fixed 3–5). רע"ם, כחול לבן and המפלגה הכלכלית carry one
-family each because they genuinely hold no position on the other dimensions; forcing a value would
-assert something false. Decision 8's denominator rule is what makes uneven coverage safe.
+Coverage is deliberately uneven (1–3, not a fixed 3–5). רע"ם and המפלגה הכלכלית carry one family
+each because they genuinely hold no position on the other dimensions; forcing a value would assert
+something false. Decision 8's denominator rule is what makes uneven coverage safe.
+
+> **Correction, 2026-08-01.** This paragraph originally named **כחול לבן** as a third one-family
+> party for the same reason. That was wrong, and the error is instructive: the party runs a full
+> universal-service programme on its own campaign site (`sherut4all.com`) which none of the
+> classification passes had read, so "carries one family" was recorded as *"holds no position"* when
+> it actually meant *"we found no position"*. Those are the two readings the NULL convention exists
+> to keep apart on the axes, and this layer had no equivalent guard. כחול לבן now carries
+> `universal-conscription` as well; the table and counts above are updated. **Sparse coverage on this
+> layer is a prompt to check the sources, not evidence of a party's silence.**
 
 The `families` and `family_evidence` writes join the existing **unguarded** ideology `UPDATE` blocks —
 same reasoning as `bloc`/`economic`/`security`: nothing in the app writes these columns, production is

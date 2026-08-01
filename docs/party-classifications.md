@@ -338,6 +338,14 @@ conscription).
 **Watch:** Bennett was reported in mid-June 2026 to be weighing dissolving the list over polling. If
 it dissolves, this row does not get reclassified — it gets **split back into two rows**.
 
+**Re-checked 2026-08-01 and the NULL is confirmed, not merely unresolved.**
+[he.wikipedia](https://he.wikipedia.org/wiki/ביחד_(רשימה)) still records the two parties as
+"separate and independent, cooperating within the framework of the list", with **no joint platform
+published** — three months after formation and under three months from the election. The security
+NULL therefore rests on a re-verified absence rather than on a stale reading. The dissolution watch
+above is also still live and was reported again in mid-June by Channel 13, so the split-into-two-rows
+branch remains the likelier resolution of this row than a joint position.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -368,6 +376,39 @@ extremes". economic 0: "free economy combined with social justice", imports and 
 alongside strengthening public health and education. religiosity −1: pluralist without
 disestablishing — "Judaism in the spirit of Beit Hillel", local authorities shape Shabbat in their
 own area, but the public space should still express the state's Jewish identity.
+
+**Conscription: added 2026-08-01 from `sherut4all.com`, the party's own campaign site, which the
+earlier passes missed entirely.** The row previously carried no conscription tag and one family,
+and the families design doc asserted that was because the party "genuinely holds no position on the
+other dimensions". That was wrong: B&W runs a full universal-service programme — *"כל הצעירים
+יחויבו בשירות"* (all young people obligated to serve), mandatory civilian-service tracks for Arab
+citizens (*"כל צעיר/ה בחברה הערבית לשרת במסלולים אזרחיים"*), a "מנהלת שירות ישראלי" administration,
+and *"קנוס אותו וצמצום זכויות"* — fines and reduced state-granted rights for non-servers,
+specifically allowances, subsidized housing, government tenders and public-sector posts. Hence
+`universal-conscription` (the family and the tag), `sanctions-on-non-servers` and
+`arab-civil-service`; the last has no existing counterpart, since the vocabulary held only בל"ד's
+`opposes-arab-conscription`.
+
+**No axis moved, and `religiosity −1` is what the carve-out protects.** B&W preserves the
+*"תורתו אומנותו"* exemption for genuine Torah scholars — the exact compromise Eisenkot refuses, and
+the reason ישר sits at −2 while this row stays at −1. `scholar-exemption-retained` records it,
+because otherwise a reader comparing the two rows sees identical conscription tags and an
+unexplained one-point gap. Coercion plus sanctions also rules out `conscription-by-incentive`, which
+is defined by rejecting both.
+
+Sources: [sherut4all.com](https://www.sherut4all.com/) (conscription, read 2026-08-01);
+[book-israel-mitazemet-one-page-1.pdf](https://kachollavan.org.il/im/wp-content/uploads/2025/10/book-israel-mitazemet-one-page-1.pdf)
+(security); [Hoveret Ekronot](https://kachollavan.org.il/wp-content/uploads/2025/07/20527_3_A5_Hoveret_Ekronot_ONE_PAGE_A.pdf)
+(principles). **`kachollavan.org.il` returns 403 to automated fetching**, so the two PDFs above are
+recorded from the 2026-07-21 pass and could not be re-verified on 2026-08-01. Four further party
+documents are known to exist and have **never** been read — the [eight
+principles](https://kachollavan.org.il/8ps/), [a "different
+reality" book](https://kachollavan.org.il/wp-content/uploads/2025/12/book%20different%20reality%20.pdf),
+[an education
+programme](https://kachollavan.org.il/wp-content/uploads/2025/12/book-hinuh-kahollavan.pdf) and
+[a July 2026 document](https://kachollavan.org.il/wp-content/uploads/2026/07/20678_9_Amud-Atar.pdf)
+that postdates every classification pass on this row. The education programme in particular bears on
+`religiosity −1`.
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
@@ -406,6 +447,14 @@ position, which is not the same thing as a party that has one and declines to pr
 
 The bloc is pinned down rather than inferred: they want a statutory ban on an indicted person
 forming a government.
+
+Sources: [beytenu.org.il/party-platform](https://beytenu.org.il/party-platform/). **Re-verified
+2026-08-01 and every claim above holds** — the Ashdod/Haifa privatizations, child allowances from
+the fifth, the ₪70B→₪95B defence budget, *"לא יתקיים כל מו״מ על ירושלים"*, all four
+religion-and-state planks, and the "Judea and Samaria appears exactly once, as ייצוב ביטחוני
+וכלכלי בשיתוף פעולה עם ירדן" observation. The platform also states the −3 anchor outright:
+*"אנו מאמינים כי צריך להפריד דת ממדינה"*. This is currently the only party row on the page verified
+against a live primary source.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -543,8 +592,37 @@ hence its own tag.
 `unaligned` is supported from both directions: Hendel has committed that he will "never complete
 Netanyahu to 61, even if it means more elections", which rules out the bibi bloc — but he also rules
 out the Arab parties and wants a government of Jewish Zionist parties only, which denies the
-opposition bloc its arithmetic. **If the reported merger talks with Gantz complete, this row needs
-revisiting.**
+opposition bloc its arithmetic.
+
+**2026-08-01 — the Gantz merger did NOT happen, and a different one did. This row is now stale in
+its name, and its `economic` gap has a date on it.** Sequence: the Hendel–Gantz talks collapsed over
+Gantz's refusal to declare he would not sit with the haredi parties; MK חילי טרופר then left Gantz's
+כחול לבן, registered "יסודות ישראל" in early July, and on 2026-07-07 announced a joint run with
+Hendel under the name **"בית ציוני"**, to which the "המילואימניקים" brand was then appended. The
+list now runs as **בית ציוני – המילואימניקים**, positioning itself as a
+*"חלופה ציונית וממלכתית במרכז"* — a Zionist statist alternative in the centre, explicitly
+differentiating from Gantz's כחול לבן. In late-July polls it crossed the threshold for the first
+time at 4–5 seats.
+
+Three consequences, in order of how much they matter:
+
+1. **`economic +1` — the weakest number on this page — resolves on 2026-08-05**, when the joint list
+   holds its launch conference in Jerusalem and presents its מצע. Do not guess before then; the
+   whole reason this row's economics is flagged is that it rests on Hendel's personal record with no
+   party document behind it. Read the platform on the 5th and rescore.
+2. **`unaligned` holds and is now better evidenced, not worse.** The bloc question was open pending
+   the Gantz talks; those talks died precisely over the haredi question, which is the same commitment
+   the bloc rests on. Trooper arriving from כחול לבן reinforces the centre position rather than
+   moving it.
+3. **The rename is an admin-UI action, not a `seed.sql` edit, and it is deliberately not done here.**
+   Renaming a party row orphans the votes already cast against it (see the warning above), so this is
+   the repo owner's call through the admin screen, taken when the ballot name is final. Lists are not
+   final until closer to 2026-10-27.
+
+One note against over-reading the merger: Gantz said of Trooper's departure in a 103FM interview that
+week, *"אני לא מצליח לשמוע משפט אחד שהוא אומר אחרת ממני"* — he cannot hear one sentence Trooper says
+differently from his own. Take it as an interested party's framing, but it does mean this list and
+כחול לבן are competing for one position rather than occupying two.
 
 ### זהות — Zehut · `bibi` · 3 / 3 / 2 · religious_zionist
 
@@ -679,6 +757,14 @@ has ever asserted. `not-economy-focused` carries the observation; the NULL carri
 **Revisit the moment they publish anything fiscal** — this is the "no platform yet" kind of NULL,
 which ages, not the "axis does not apply" kind, which does not.
 
+Sources: [noam.org.il](https://noam.org.il/). **Re-checked against the party's own site 2026-08-01
+and the NULL holds** — still no tax, welfare, budget, market, cost-of-living or allowance content of
+any kind. Their "באנו לתקן" section lists ten priorities and every one is Jewish identity, education
+or gender: curriculum transparency, gender ideology in schools, conversions and halakhic authority,
+Western Wall prayer arrangements, unit composition in the army, migrants, foreign NGO funding in
+education, segregation in public facilities, and "consciousness engineering". A NULL that survives a
+direct re-check against the primary source is evidence, not neglect.
+
 `bloc` **bibi**, with no ambiguity worth arguing: Noam entered Netanyahu's 37th government under the
 December 2022 coalition agreement, Maoz served as deputy minister in the PM's office, and his stated
 2026 pitch is that Noam "will be the party that takes the right-wing bloc past 61". Maoz's February
@@ -709,6 +795,22 @@ occupation, evacuation of the settlements and the right of return — which woul
 inherited from old Joint List text. −2 is what the confirmed evidence carries. If the stronger
 platform is ever verified from the party's own source this row moves to −3 — but it should move on
 evidence, not on a summary nobody could open.
+
+**2026-08-01: `idi.org.il` was reachable this time, and reading it makes the −2 stronger, not
+weaker.** The page does carry the full −3 language — *"תומכת בהקמת מדינה פלסטינית שבירתה ירושלים
+מתוך סיום הכיבוש ופינוי ההתנחלויות"* and *"זכות השיבה לפליטים הפלסטינים"* — but it is **undated**,
+and that text is the pre-2021 Joint List-era programme, not anything from Abbas's pragmatic turn. A
+search for a 2026 רע"ם platform from the party's own source returned nothing. So the suspicion
+recorded above ("may be inherited from old Joint List text") is now the likeliest reading rather
+than a caveat, and **−2 stands**. Do not move this row on the IDI page.
+
+One genuinely current item, recorded here but **not** scored: Abbas has publicly backed civilian
+national service for Arab citizens — *"קידום מתווה שירות אזרחי יענה על הצרכים של הצעירים הערבים"* —
+which is the opposite of בל"ד's `opposes-arab-conscription` and would be a real distinction between
+the two rows. It is not tagged because the interview carries no publication date; date it and it
+earns a tag. Note also that Abbas's "ריבונות" quote in the same interview is about **crime
+organisations and the state's monopoly on force inside Israel**, not territory — it is not a
+security-axis input, and reads like one at a glance.
 
 religiosity **NULL** by Decision 3: this axis measures *Jewish* religion-and-state, and Ra'am's
 conservatism is about Muslim religious life, which it does not measure.
@@ -849,10 +951,23 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
 - **ביחד's `security`** is the only NULL axis on a Jewish *upcoming* party (המחנה הממלכתי carries a
   NULL security among the frozen previous rows, for the same "no stated position" reason). It
   resolves only if the components merge or publish a joint position — or splits into two rows if the
-  list dissolves.
+  list dissolves. **Re-verified 2026-08-01: still no joint platform**, and the dissolution watch is
+  still live, so the split branch is the likelier one.
 - **רע"ם's `security`** should move to −3 if the stronger platform is verified from the party's own
-  source.
-- **המילואימניקים's `bloc`** needs revisiting if the reported merger talks with Gantz complete.
+  source. **2026-08-01: it still cannot be.** `idi.org.il` is now reachable and does carry the −3
+  language, but undated and reading as pre-2021 Joint List text; no 2026 platform exists from the
+  party's own source. Treat the IDI page as *not* sufficient evidence for this move.
+- **בית ציוני – המילואימניקים launches its platform on 2026-08-05.** This is the dated resolution
+  of the weakest number on the page — `economic +1` resting on Hendel's personal record with no party
+  document. Read it on the day and rescore. The `bloc` question is closed: the Gantz merger collapsed,
+  the Trooper merger completed, and `unaligned` holds.
+- **The row is still seeded as `המילואימניקים`** while the list now runs as
+  **בית ציוני – המילואימניקים**. Renaming orphans votes, so it is an admin-UI action taken when the
+  ballot name is final — the same standing decision as נעם below.
+- **כחול לבן has six known party documents and two have been read.** The four unread ones are listed
+  under its entry; `kachollavan.org.il` returns 403 to automated fetching, so they need to be fetched
+  by hand. One of them postdates every classification pass on that row. It is also polling at ~1%,
+  below the threshold, and losing people to בית ציוני – המילואימניקים.
 - **נעם is campaigning as `נעם לישראל`** ("Noam for Israel") for the 26th Knesset. The row is seeded
   under the plain `נעם` and it is deliberately *not* renamed yet: lists are not final, a rename
   orphans votes (see the warning above), and an admin can do it in one edit if the longer name is
@@ -887,3 +1002,4 @@ pass happened, for anyone reading git history.
 | 2026-07-27 | Zehut `bloc` corrected `unaligned` → `bibi` (criticising Netanyahu ≠ leaving his bloc) |
 | 2026-07-29 | נעם — Noam added to `upcoming_parties`; first NULL on the `economic` axis |
 | 2026-07-30 | revision 10 — Likud audited against the voting record: religiosity +1 → **+2** (kashrut monopoly restored by statute, religious funding expanded); economic **+1 confirmed** (the import reform is real liberalizing, not rhetoric). Both tables |
+| 2026-08-01 | revision 11 — כחול לבן's conscription programme found on `sherut4all.com`: 4 tags + the `universal-conscription` family added, **no axis moved**. Source URLs added to five entries. Freshness sweep: Beiteinu re-verified, נעם's economic NULL re-verified, ביחד's security NULL re-verified, רע"ם's IDI basis found undated and rejected, and המילואימניקים found to have merged into בית ציוני – המילואימניקים with its platform due 2026-08-05 |
