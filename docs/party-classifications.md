@@ -401,18 +401,48 @@ now in question.
   organisations; the democracy paper legislates *"איסור כהונה תחת כתב אישום"* for ministers and the
   PM plus an eight-year term limit; the security paper commits to Saudi normalization and IMEC.
 
-**`two-state` is now questionable and is deliberately left in place for the repo owner to rule on.**
-The security paper **never uses the words מדינה פלסטינית.** It commits to *"מהלך מדיני אחראי מול
-הפלסטינים"*, to *"הסדרים מדיניים"*, and to promoting *"אלטרנטיבה שלטונית מתונה"* in the Palestinian
-arena — and it opposes annexation on the demographic ground that it would be *"סופה של ישראל
-היהודית והדמוקרטית"*. That is structurally the **same** position the page scores as `anti-annexation`
-**without** `two-state` on ישר, where the entry says in terms that the omission is deliberate and the
-score rests on the leader's statements rather than the platform. Yair Golan is personally and
-publicly a two-stater, so the tag is not baseless — but it is currently carried by the party's
-document, and the document does not carry it. Either drop `two-state`, or keep it and record that it
-rests on Golan rather than on the platform, the way ישר's entry does. **security −1 is unaffected
-either way** — a responsible political process plus PA security coordination plus halting annexation
-lands at −1 regardless of whether the endpoint is named.
+**`two-state` was challenged on 2026-08-01 and survives. Keep it.** The eight platform papers never
+use the words מדינה פלסטינית — they commit to *"מהלך מדיני אחראי מול הפלסטינים"*, to
+*"הסדרים מדיניים"*, and to *"אלטרנטיבה שלטונית מתונה"*. Read alone, that looked like the same
+statehood-silence the page records for ישר, whose entry says the omission is deliberate and scores
+from the leader's statements instead. It is not the same, and three independent lines of evidence
+say so:
+
+- **The party's own platform text names the state.** A far-left critique
+  ([zoha.org.il](https://zoha.org.il/145596/), 2026-05-22) attacking the Democrats for *not* being
+  genuine two-staters quotes them directly: *"בהגדרת גבולות קבע ברורים תוך שמירה על רוב יהודי מוצק,
+  פירוז מלא של **המדינה הפלסטינית העתידית** – ללא צבא או איום טרור ובשליטה ביטחונית ישראלית מלאה"*.
+  A hostile source quoting a position against interest is strong attribution.
+- **The chairman states it as the party's vision**, not as a personal view: *"החזון זה שתי מדינות
+  לשני עמים"*, and he has said he entered politics to promote separation leading to two states within
+  a regional framework.
+- **The realized top six was audited candidate by candidate on 2026-08-01**, and four of the six
+  campaign on it explicitly:
+
+  | # | candidate | position on two states |
+  |---|---|---|
+  | 1 | יאיר גולן (chair) | **explicit** — *"החזון זה שתי מדינות לשני עמים"* |
+  | 2 | נעמה לזימי | **explicit** — a leading advocate; also anti-settler-violence, anti-outpost, authored a national peace-day bill |
+  | 3 | גלעד קריב | **explicit** — two states alongside religious pluralism and Jewish-Arab partnership |
+  | 4 | אפרת רייטן | **none stated** — her own site carries no conflict position at all; democracy, rule of law, judicial reform, labour and welfare |
+  | 5 | יאיא פינק | **none stated** — שוויון בנטל protest leadership, social justice at the Histadrut, religious pluralism |
+  | 6 | גבי לסקי | **explicit, and to the party's left** — two states *and* ending the occupation, from Meretz |
+
+  The two silences are **division of labour, not dissent**: both hold domestic portfolios and neither
+  has campaigned against the position. And לסקי at #6 is the tell in the other direction — she
+  carries the "end the occupation" language the party itself declines to use, which is precisely the
+  −1/−2 boundary below.
+
+**This is also why `security` is −1 and not −2, and the band table was right.** The −1 band reads
+"Zionist two-staters", which is exactly a two-state position conditioned on a solid Jewish majority,
+full demilitarization and permanent Israeli security control. The −2 band requires "two-state **with
+an end to the occupation**" — and the critique's sharpest point is that the word כיבוש never appears
+in the Democrats' material at all. The party is where the rubric says it is; the eight papers simply
+lead with security and anti-annexation framing rather than with the endpoint.
+
+Golan's own political plan (N12, 2026-06-29) fits the same shape: recognition of a Palestinian
+technocratic government replacing Hamas, PA reform into *"גורם שלטוני מתון ואפקטיבי"*, and
+*"עצירת הסיפוח"* — mechanism first, endpoint assumed rather than proclaimed.
 
 Sources, all read 2026-08-01 and all first-party (`democrats-media.s3.us-east-1.amazonaws.com`):
 [מדיני־ביטחוני](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%93%D7%99%D7%A0%D7%99+%D7%91%D7%99%D7%98%D7%97%D7%95%D7%A0%D7%99+(1).pdf),
@@ -1086,9 +1116,11 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
 - **The row is still seeded as `המילואימניקים`** while the list now runs as
   **בית ציוני – המילואימניקים**. Renaming orphans votes, so it is an admin-UI action taken when the
   ballot name is final — the same standing decision as נעם below.
-- **הדמוקרטים's `two-state` tag is not supported by the party's own platform** and needs a ruling:
-  drop it, or keep it and record that it rests on Golan's personal position rather than the document,
-  as ישר's entry already does for the mirror case. No axis is affected. Details under that entry.
+- ~~**הדמוקרטים's `two-state` tag is not supported by the party's own platform**~~ — **resolved
+  2026-08-01: the tag stays.** The platform text does name *"המדינה הפלסטינית העתידית"* (surfaced via
+  a hostile source quoting it), the chair states two states as the party vision, and four of the
+  realized top six campaign on it. `security −1` and the "Zionist two-staters" band label were both
+  correct as written. Details under that entry.
 - **כחול לבן has six known party documents and two have been read.** The four unread ones are listed
   under its entry; `kachollavan.org.il` returns 403 to automated fetching, so they need to be fetched
   by hand. One of them postdates every classification pass on that row. It is also polling at ~1%,
