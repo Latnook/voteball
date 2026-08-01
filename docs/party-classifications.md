@@ -117,10 +117,22 @@ Negative reduces religious authority.
 | **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה, זהות `[u]` |
 | **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
 | **0** | Status quo — no active religion-state agenda in either direction | אל הדגל `[u]`, המילואימניקים `[u]` |
-| **−1** | Pluralist: soften the monopolies without disestablishing | כחול לבן `[u]`, המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: civil marriage, break the monopolies, core curriculum as a funding condition | ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription; civil marriage is typical but *not* required — ישר and כחול לבן sit here without it | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
+
+**This axis folds two different fights into one number, and כחול לבן is the case that exposes it.**
+A party's posture on *religion in public life* (Shabbat, marriage, kashrut, the Rabbinate) and its
+posture on *the haredi sectoral settlement* (conscription, and the funding of separate school
+networks) can point opposite ways. B&W is mild on the first — Shabbat devolved to local authorities,
+no civil marriage, no kashrut reform, and a stated aim that the public space express the state's
+Jewish identity — and hard on the second, defunding any school that will not teach the core
+curriculum and making state-haredi education the default. It sat at −1 for months because the
+document with "religion and state" in its title contains only the first kind, and the second kind
+lives in the education and service papers. **When scoring this axis, read the education and
+conscription material too; the religion-and-state chapter alone will systematically under-score a
+party.**
 
 **בל"ד is scored, and that is deliberate.** "Arab party" is not itself a reason to leave this axis
 NULL — Balad's own programme demands "complete separation of religion from the state" in as many
@@ -415,20 +427,54 @@ These are Illustrator exports with **no usable text layer for WebFetch** — its
 binary and reports the document as unreadable. `pdftotext` extracts them cleanly. Reach for it
 before concluding a party PDF is inaccessible.
 
-### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −1 · secular
+### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
-security **+2**. "Israel Mitazemet" is an explicit hawkish doctrine — no Palestinian state,
-permanent Israeli security control over all territory, expansion of settlement, the Trump plan's
-voluntary-emigration track for Gaza, proactive targeted killings, and a declared shift from
-*solving* the conflict to *shrinking* it. Not +3: they keep the peace treaties, Palestinian freedom
-of movement, a regional moderate alliance and an international civil administration in Gaza, so they
-sit below the annexationist pole.
+security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
+doctrine — *"שליטה ביטחונית עליונה בכל השטח תוך חיזוק והרחבה של ההתיישבות החוקית"* (supreme security
+control over all the territory, with settlement strengthened and expanded), the Trump plan's
+voluntary-emigration track for Gaza, proactive targeted killings, and — from the principles booklet
+— a declared shift from *solving* the conflict to *shrinking* it. Not +3: they keep the peace
+treaties (*"חיזוק הסכמי השלום"*), guarantee Palestinian freedom of movement through dedicated
+transport infrastructure, and the word **סיפוח does not appear in the document at all**, which is
+what holds them below the annexationist pole.
+
+**The statehood plank is conditional, and the entry previously flattened it.** The text is
+*"לא תוקם מדינה פלסטינית **אשר תאיים על ישראל** ותאפשר חזרה על מתקפת הטרור... של ה-7 באוקטובר"* — no
+Palestinian state *that would threaten Israel*, not a flat refusal. Read strictly it leaves a
+non-threatening state open, and the same document calls for *"ממשל פלסטיני מתון שנלחם בטרור"*. In
+practice it is a rejectionist plank and `no-palestinian-state` stays, but the qualifier is the kind
+of distinction this page makes a point of recording elsewhere (see ישראל ביתנו below).
 
 `unaligned` holds — both documents campaign for a broad consensus government "not dependent on the
 extremes". economic 0: "free economy combined with social justice", imports and competition
-alongside strengthening public health and education. religiosity −1: pluralist without
-disestablishing — "Judaism in the spirit of Beit Hillel", local authorities shape Shabbat in their
-own area, but the public space should still express the state's Jewish identity.
+alongside strengthening public health and education.
+
+**religiosity −1 → −2 on 2026-08-01, when the education programme was finally read.** This was the
+last unread document on the row and it was the one that mattered. The −1 rested entirely on the
+principles booklet, whose religion-and-state section (*"יהדות ברוח בית הלל"*) is a single bullet
+devolving Shabbat to local authorities — genuinely a −1 posture. The education paper is a different
+animal:
+
+- **Core curriculum as a funding condition, stated twice.** *"חוק חינוך לכל"* establishes a National
+  Education Council to define shared core studies and *"ויקבע שרק מוסדות שילמדו לפי התוכנית
+  יתוקצבו"* — only institutions teaching the programme get funded. Point 06 repeats it in budget
+  terms: *"רק בתי ספר של החינוך הממלכתי יתוקצבו ב-100%. עצירת הכספים הפוליטיים לבתי ספר פרטיים שלא
+  עומדים בלימודי הליבה"*.
+- **State-haredi education as the default**, replacing the private haredi networks (point 08,
+  *"חינוך ממלכתי חרדי במקום חינוך פרטי"*).
+- Alongside the service programme's *"כלל הצעירים יחויבו בשירות"* with individual economic sanctions.
+
+Those are **the same three planks ישר carries at −2** — core curriculum, state-run haredi education,
+universal conscription. ישר demands no civil marriage either, so that criterion was never load-bearing
+for this band; the band text has been corrected to say so rather than leaving the next reader to
+rediscover it.
+
+**Why −2 and not −3, and why it sits at the top of its band.** B&W disestablishes nothing: no civil
+marriage, no kashrut reform, no move against the Rabbinate, and the public space is meant to express
+the state's Jewish identity. It also keeps the *"תורתו אומנותו"* exemption with quotas fixed in law
+and calls Torah learners *"נכס יהודי וכלל ישראלי"* — a warmth ישר explicitly refuses.
+`scholar-exemption-retained` now carries that, and it explains position *within* the band rather
+than membership of it.
 
 **Conscription: added 2026-08-01 from `sherut4all.com`, the party's own campaign site, which the
 earlier passes missed entirely.** The row previously carried no conscription tag and one family,
@@ -449,19 +495,42 @@ because otherwise a reader comparing the two rows sees identical conscription ta
 unexplained one-point gap. Coercion plus sanctions also rules out `conscription-by-incentive`, which
 is defined by rejecting both.
 
-Sources: [sherut4all.com](https://www.sherut4all.com/) (conscription, read 2026-08-01);
+Sources, all first-party and all read 2026-08-01:
+[sherut4all.com](https://www.sherut4all.com/) (the service programme — conscription, sanctions, the
+scholar exemption);
 [book-israel-mitazemet-one-page-1.pdf](https://kachollavan.org.il/im/wp-content/uploads/2025/10/book-israel-mitazemet-one-page-1.pdf)
-(security); [Hoveret Ekronot](https://kachollavan.org.il/wp-content/uploads/2025/07/20527_3_A5_Hoveret_Ekronot_ONE_PAGE_A.pdf)
-(principles). **`kachollavan.org.il` returns 403 to automated fetching**, so the two PDFs above are
-recorded from the 2026-07-21 pass and could not be re-verified on 2026-08-01. Four further party
-documents are known to exist and have **never** been read — the [eight
-principles](https://kachollavan.org.il/8ps/), [a "different
-reality" book](https://kachollavan.org.il/wp-content/uploads/2025/12/book%20different%20reality%20.pdf),
-[an education
-programme](https://kachollavan.org.il/wp-content/uploads/2025/12/book-hinuh-kahollavan.pdf) and
-[a July 2026 document](https://kachollavan.org.il/wp-content/uploads/2026/07/20678_9_Amud-Atar.pdf)
-that postdates every classification pass on this row. The education programme in particular bears on
-`religiosity −1`.
+(security doctrine, 28pp);
+[Hoveret Ekronot](https://kachollavan.org.il/wp-content/uploads/2025/07/20527_3_A5_Hoveret_Ekronot_ONE_PAGE_A.pdf)
+(the six principles — bloc, economics, religion-and-state, LGBT rights, an eight-year PM term limit);
+[book-hinuh-kahollavan.pdf](https://kachollavan.org.il/wp-content/uploads/2025/12/book-hinuh-kahollavan.pdf)
+(the 14-point education programme — **the document that moved religiosity**);
+[book-kahol-lavan.pdf](https://kachollavan.org.il/wp-content/uploads/2025/07/book-kahol-lavan.pdf)
+(צו 8 — public-service reform, the content behind the [`/8ps/`](https://kachollavan.org.il/8ps/)
+page, and the sole basis for `public-service-reform`).
+
+…plus [*מציאות אחרת*](https://kachollavan.org.il/wp-content/uploads/2025/12/book%20different%20reality%20.pdf),
+which despite the title is **B&W's reservists programme** — *"תכנית המילואימניקים של כחול לבן"* —
+and [*יחד מנצחים*](https://kachollavan.org.il/wp-content/uploads/2026/07/20678_9_Amud-Atar.pdf), a
+national mental-health and trauma authority. **All six party documents have now been read.**
+
+**מציאות אחרת is the third independent confirmation of the conscription platform**, after
+`sherut4all` and the education paper: *"כולם משרתים — חילונים, דתיים, חרדים, יהודים, ערבים
+ודרוזים"*, *"צה״ל בוחר ראשון את מי לגייס וכל השאר הולכים לשירות אזרחי"*,
+*"סנקציות אישיות על כולם, עבודה מול הפרט ולא הישיבות"* and *"מכסות לפטור במקום יעדים לגיוס"*. It
+also carries a full reservist-benefits package (free early-years education, land grants, academic
+admission without psychometric, tax relief, housing-tender priority), which earns `reservist-focused`.
+
+**It does *not* earn the `reservist-movement` family, and the distinction matters.** That family
+records what a party *is*, not what it has a policy about: אל הדגל and המילואימניקים grew out of the
+reservist protest movement. ישר is the governing precedent — it carries the `reservist-focused` tag
+and not the family, for exactly this reason. Note the competitive context: B&W is running a
+reservists programme while polling ~1%, having just lost חילי טרופר to
+בית ציוני – המילואימניקים.
+
+**`kachollavan.org.il` returns 403 to automated fetching**; these were downloaded by hand. One
+caveat for the next pass: **the education programme is a scanned-image PDF** — `pdftotext` yields 7
+bytes from 7 pages, so it has to be read visually. That is why it stayed unread while the others did
+not, and why this row carried a wrong religiosity for as long as it did.
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
@@ -1060,3 +1129,4 @@ pass happened, for anyone reading git history.
 | 2026-07-30 | revision 10 — Likud audited against the voting record: religiosity +1 → **+2** (kashrut monopoly restored by statute, religious funding expanded); economic **+1 confirmed** (the import reform is real liberalizing, not rhetoric). Both tables |
 | 2026-08-01 | revision 11 — כחול לבן's conscription programme found on `sherut4all.com`: 4 tags + the `universal-conscription` family added, **no axis moved**. Source URLs added to five entries. Freshness sweep: Beiteinu re-verified, נעם's economic NULL re-verified, ביחד's security NULL re-verified, רע"ם's IDI basis found undated and rejected, and המילואימניקים found to have merged into בית ציוני – המילואימניקים with its platform due 2026-08-05 |
 | 2026-08-01 | revision 12 — הדמוקרטים read against its own eight platform documents for the first time: 8 tags + the `universal-conscription` family added, **all three axes confirmed and unmoved**, and `two-state` flagged as unsupported by the platform |
+| 2026-08-01 | revision 13 — all six כחול לבן documents read (downloaded by hand past the 403). **religiosity −1 → −2** on the education programme's core-curriculum funding condition and state-haredi default; `core-curriculum`, `state-haredi-education`, `reservist-focused` added. security +2 and economic 0 verified against the documents and unmoved; the −2 band text corrected to stop implying civil marriage is required |
