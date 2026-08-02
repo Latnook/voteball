@@ -731,6 +731,25 @@ steps 1 and 4.
 - **`values.yaml` looks wrong / the ALB says `CertificateNotFound`** → the file drifted from the live
   stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and
   `./scripts/sync-values-from-tf.sh` to fix it. Never edit those fields by hand.
+- **You pushed code within a few minutes of a rebuild and no build ran** → the webhook delivery
+  probably got a `502` while the new load balancer's targets were still registering, and **GitHub does
+  not retry a failed `push` delivery.** That commit simply never reached Jenkins. There is no error
+  anywhere except a red row in the delivery log, so the symptom is just "CI did nothing" — and
+  `image.tag` on `master` quietly stops matching the code. Observed on the 2026-08-03 rebuild: pings
+  returned `200` at 22:59:38 and 22:59:40, and a real push still got `502` at 23:00:22.
+
+  Check and replay it (no need to re-push):
+
+  ```bash
+  H=$(gh api repos/<owner>/<repo>/hooks --jq '.[0].id')
+  gh api repos/<owner>/<repo>/hooks/$H/deliveries --jq '.[0:5][] | "\(.delivered_at) \(.event) \(.status_code)"'
+  D=$(gh api repos/<owner>/<repo>/hooks/$H/deliveries --jq '[.[] | select(.status_code!=200)][0].id')
+  gh api -X POST repos/<owner>/<repo>/hooks/$H/deliveries/$D/attempts
+  ```
+
+  Note this is *not* fixed by step 11b's delivery check: a ping succeeding at one moment says nothing
+  about a push forty seconds later while targets are still stabilising. **After a rebuild, give the
+  load balancer a couple of minutes before pushing code** — or check the delivery log afterwards.
 
 For the deeper technical details behind these, see the git history of this file and the design documents
 in `docs/design/` — in particular `2026-07-20-deployment-hardening-design.md`, which explains why the
