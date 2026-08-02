@@ -140,9 +140,8 @@ resources. The steps it performs (kept in step with the script's own numbering �
    internet during a build.
 5. Build and push the Jenkins controller image (CI now runs inside the cluster; see
    [Connect to each part](#connect-to-each-part-dashboards-argocd-jenkins-the-database) below).
-6. Build the rest of the AWS infrastructure (**asks you to type `yes`**) — the cluster, the database,
-   the WAF that rate-limits `/api/vote`, and Jenkins itself as a platform add-on alongside ArgoCD and
-   the other controllers.
+6. Build the rest of the AWS infrastructure (**asks you to type `yes`**). This is by far the biggest
+   step — around **117 resources in ~13 minutes** — so it is broken out below.
 7. Point `kubectl` at the new cluster.
 8. Build the four app container images and upload them.
 9. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
@@ -151,6 +150,50 @@ resources. The steps it performs (kept in step with the script's own numbering �
 10. Install the app and wait for it to come up. A short-lived migration Job applies the database
     schema **once** before the app pods start, rather than every replica racing to do it.
 11. Hand ongoing control to ArgoCD.
+
+### What is actually inside step 6
+
+"Build the infrastructure" hides a lot, and step 6 is where nearly all the time goes. It creates:
+
+| | |
+|---|---|
+| Network | VPC, public / private / database-only subnets, route tables, internet gateway, **NAT gateway** |
+| **EKS control plane** | the Kubernetes API — **~8 min**, one of the two long poles |
+| **RDS** | restored from the newest snapshot — **~8 min**, the other long pole, *and where your votes come back* |
+| Node group | the Spot machines that run the containers |
+| Certificates | two ACM certs (site + Jenkins webhook), validated through Route53 |
+| Supporting | WAF (rate-limits `/api/vote`), SNS alert topic, S3 bucket, EKS add-ons (VPC CNI, CloudWatch) |
+| **Ten Helm add-ons** | the platform layer — roughly a third of the step |
+
+Those ten add-ons are the part people don't expect to find here. **None of them are the application** —
+they are what the application needs in order to exist:
+
+| Add-on | Why it has to exist before the app |
+|---|---|
+| AWS Load Balancer Controller | turns an Ingress into a real ALB |
+| External Secrets Operator | copies AWS secrets into the cluster |
+| external-dns | writes the Route53 records |
+| Cluster Autoscaler | adds nodes when the cluster fills up |
+| metrics-server | supplies the CPU figures the HPA reads |
+| Node Termination Handler | drains Spot nodes before AWS reclaims them |
+| kube-prometheus-stack | Prometheus, Grafana, Alertmanager |
+| ArgoCD | the GitOps controller that deploys the app in step 11 |
+| Jenkins + jenkins-support | CI, in-cluster |
+
+**Why this is one command rather than several you could watch.** The EKS control plane and the RDS
+restore each take about eight minutes — but together they take about *eight*, not sixteen, because
+Terraform reads its dependency graph, sees they are independent, and runs them at the same time. Seven
+of the Helm releases likewise overlap. Step 6's ~13 minutes contains roughly **30 minutes of serial
+work**, and splitting it into `-target` stages would put that work back into a queue.
+
+`-target` carries its own trap, too: it prunes the graph to the targeted subset and **silently writes
+only the outputs inside it**. That is a bug this project hit for real — see the comment on step 2 in
+`scripts/deploy.sh`, where `ecr_registry` went missing from state while everything looked fine, and the
+run failed on the *next* step.
+
+If you want to watch step 6 progress, read the output rather than splitting the command: each resource
+prints `Creation complete after <duration>` as it lands, and `Still creating... [Nm elapsed]` every ten
+seconds while it works.
 
 **Both secrets are seeded at steps 3/3b, before the big apply at step 6, and that order matters.**
 Step 6 creates Jenkins and its ExternalSecret together, and External Secrets Operator copies the AWS

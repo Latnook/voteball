@@ -83,8 +83,62 @@ step is placed where it is because putting it elsewhere caused a real failure at
    third-party site being up.
 5. **Build and push the Jenkins image.**
 
-**Step 6: the expensive one.** The full `terraform apply` — cluster, nodes, database, load balancer,
-certificates, every add-on. Roughly fifteen minutes, and the point at which billing begins in earnest.
+**Step 6: the expensive one**, and by far the biggest — a single `terraform apply` that builds around
+**117 resources** in roughly thirteen minutes. It is worth knowing what is inside it, because "build
+the infrastructure" hides a lot:
+
+| Inside step 6 | What it is |
+|---|---|
+| VPC, subnets, route tables, gateways | the private network, split into public / private / database-only tiers |
+| NAT gateway | lets private nodes reach the internet without being reachable from it |
+| **EKS control plane** | the Kubernetes API itself — one of the two long poles |
+| **RDS restored from snapshot** | the database, *and the point where your data comes back* — the other long pole |
+| Spot node group | the machines that actually run the containers |
+| ACM certificates ×2 | HTTPS for the site and for the Jenkins webhook, validated through DNS |
+| WAF, SNS, S3, Secrets Manager | firewall, alert emails, backup storage, secret containers |
+| **Ten Helm add-ons** | see below — about a third of the total time |
+| 2 EKS add-ons | VPC CNI (pod networking), CloudWatch Container Insights |
+
+The **ten Helm add-ons** are the part most people don't realise is here. None of them are the
+application; they are the platform the application needs to exist at all:
+
+| Add-on | Why it must exist first |
+|---|---|
+| AWS Load Balancer Controller | turns a Kubernetes Ingress into a real AWS load balancer |
+| External Secrets Operator | copies secrets out of AWS Secrets Manager into the cluster |
+| external-dns | writes the Route53 records pointing at the load balancer |
+| Cluster Autoscaler | adds nodes when the cluster runs out of room |
+| metrics-server | supplies the CPU numbers the autoscaler for pods reads |
+| Node Termination Handler | drains a Spot node gracefully before AWS reclaims it |
+| kube-prometheus-stack | Prometheus, Grafana and Alertmanager |
+| ArgoCD | the GitOps controller that will deploy the application |
+| Jenkins + Jenkins support | CI, running in the cluster |
+
+This is the concrete meaning of the earlier "Terraform owns the platform, ArgoCD owns the
+application" split. Every row above has to be running *before* the application can be installed —
+which is why they cannot be delivered by the mechanism that delivers the application.
+
+### Why step 6 is one command and not six
+
+It is tempting to split something this large into stages you can watch. Doing so would make it
+**slower**, for a reason worth understanding.
+
+Measured on a real rebuild: the EKS control plane took **7 m 51 s** and the RDS restore took
+**7 m 56 s** — but that phase of the deploy took **about eight minutes, not sixteen**. Terraform works
+out from the dependency graph that the two are independent and starts both at once. The same happens
+with the add-ons: seven Helm releases of two to four minutes each finish in about four minutes total.
+
+So step 6's thirteen minutes contains roughly **thirty minutes of serial work**. Splitting it into
+targeted stages would force that work back into a queue. There is also a specific trap: Terraform's
+`-target` flag prunes the dependency graph to just what you asked for, and *silently omits outputs
+that live outside it* — a real bug this project hit, where a targeted run appeared to succeed and the
+next step failed with a missing registry address.
+
+**The right fix for "I can't see what's happening" is better reporting, not smaller commands.** The
+wall-clock cost of a deploy is the longest dependency chain, not the sum of the parts — and that is
+the single biggest practical advantage of declarative infrastructure over a shell script. A script
+does what you wrote, in the order you wrote it. Terraform works out what can happen at the same time
+and does that instead.
 
 **Steps 7–11: the application.** Point `kubectl` at the new cluster; build and push the four
 application images tagged with the current git commit; write the new infrastructure's addresses into
