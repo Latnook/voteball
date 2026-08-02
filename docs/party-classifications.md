@@ -574,9 +574,14 @@ rabbinical courts moved to the Justice Ministry (−3, the anchor of that axis).
 **It does not say "no Palestinian state" in those words** — unlike every other +2 party here. What
 it says is that there is no point reaching a settlement with the Palestinians alone, and that any
 arrangement must be a comprehensive regional package with the Arab states. **And it makes no
-territorial claim at all:** no sovereignty plank, no settlement plank, Gaza handed to an
-international body rather than held, and Judea and Samaria appearing exactly once, as "ייצוב
-ביטחוני וכלכלי בשיתוף פעולה עם ירדן".
+territorial claim at all:** the words ריבונות, סיפוח and התנחל do not appear in the platform at
+all — zero occurrences of each — and Gaza is handed to an international body rather than held.
+
+Judea and Samaria appear **four** times, and none of the four is a claim: the section-5 plank
+("ייצוב ביטחוני וכלכלי בשיתוף פעולה עם ירדן"), a pre-1967 historical aside ("כשירדן ומצרים עוד
+שלטו ביהודה ושומרון"), and two Border Police deployment items ("הקצאת 4,000 לוחמי מג״ב ליו״ש בלבד",
+"כל פעילות הבט״ש ביו״ש תעבור לסמכות המשטרה"). Security posture in a territory, not a position on
+who holds it.
 
 So the +2 rests on doctrine, not territory — "אפס הכלה", preemptive strikes, carrying the war to
 enemy ground, cutting Gaza's water/electricity/fuel, ₪70B→₪95B, no negotiation over Jerusalem,
@@ -601,12 +606,19 @@ The bloc is pinned down rather than inferred: they want a statutory ban on an in
 forming a government.
 
 Sources: [beytenu.org.il/party-platform](https://beytenu.org.il/party-platform/). **Re-verified
-2026-08-01 and every claim above holds** — the Ashdod/Haifa privatizations, child allowances from
-the fifth, the ₪70B→₪95B defence budget, *"לא יתקיים כל מו״מ על ירושלים"*, all four
-religion-and-state planks, and the "Judea and Samaria appears exactly once, as ייצוב ביטחוני
-וכלכלי בשיתוף פעולה עם ירדן" observation. The platform also states the −3 anchor outright:
-*"אנו מאמינים כי צריך להפריד דת ממדינה"*. This is currently the only party row on the page verified
-against a live primary source.
+2026-08-02 against the live page, string by string.** Fifteen sourced claims hold verbatim — the
+Ashdod/Haifa privatizations, child allowances from the fifth, the ₪70B→₪95B defence budget,
+*"לא יתקיים כל מו״מ על ירושלים"*, אפס הכלה, the preemptive-strike doctrine, cutting Gaza's
+water/electricity/fuel, Gaza to an international body, all four religion-and-state planks, the
+statutory ban on an indicted person forming a government, and the −3 anchor stated outright:
+*"אנו מאמינים כי צריך להפריד דת ממדינה"*.
+
+**One did not: "Judea and Samaria appears exactly once" was wrong** — it appears four times (see
+above). The count was the evidence for "no territorial claim", so it needed replacing rather than
+just correcting; the claim now rests on ריבונות / סיפוח / התנחל scoring zero occurrences each,
+which is what "makes no territorial claim" actually asserts and is not sensitive to how often the
+region is named in passing. **No axis moves** — every mention is security deployment or history.
+This is currently the only party row on the page verified against a live primary source.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -1162,3 +1174,4 @@ pass happened, for anyone reading git history.
 | 2026-08-01 | revision 11 — כחול לבן's conscription programme found on `sherut4all.com`: 4 tags + the `universal-conscription` family added, **no axis moved**. Source URLs added to five entries. Freshness sweep: Beiteinu re-verified, נעם's economic NULL re-verified, ביחד's security NULL re-verified, רע"ם's IDI basis found undated and rejected, and המילואימניקים found to have merged into בית ציוני – המילואימניקים with its platform due 2026-08-05 |
 | 2026-08-01 | revision 12 — הדמוקרטים read against its own eight platform documents for the first time: 8 tags + the `universal-conscription` family added, **all three axes confirmed and unmoved**, and `two-state` flagged as unsupported by the platform |
 | 2026-08-01 | revision 13 — all six כחול לבן documents read (downloaded by hand past the 403). **religiosity −1 → −2** on the education programme's core-curriculum funding condition and state-haredi default; `core-curriculum`, `state-haredi-education`, `reservist-focused` added. security +2 and economic 0 verified against the documents and unmoved; the −2 band text corrected to stop implying civil marriage is required |
+| 2026-08-02 | ישראל ביתנו re-verified string-by-string against the live platform: 15 sourced claims hold, **1 was wrong** — "Judea and Samaria appears exactly once" (it appears four times). Evidence for "no territorial claim" moved to ריבונות / סיפוח / התנחל = 0 occurrences each. **No axis moves** |
