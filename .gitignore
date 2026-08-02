@@ -23,9 +23,15 @@ terraform/snapshot.auto.tfvars
 # account identity out of a committed file. backend.hcl.example is the committed template.
 terraform/backend.hcl
 
-# The Jenkins build host is a SEPARATE stack with its own state, applied and destroyed
-# independently of terraform/ so that destroy.sh cannot delete CI. The rules above are anchored to
-# terraform/ and do NOT match this subdirectory.
+# Deploy-time credentials read by scripts/deploy.sh (admin + Jenkins usernames and passwords).
+# Same category as terraform/voteball.tfvars above: your own settings, never committed. Keeping it in
+# the repo folder rather than $HOME means it sits next to the tfvars it pairs with -- but it holds
+# PLAINTEXT passwords, so it is ignored here and must stay that way.
+deploy.env
+
+# (The Jenkins build host used to be a separate Terraform stack with its own state and its own
+# ignore rules. It moved into the EKS cluster on 2026-07-30/31 and terraform/jenkins/ no longer
+# exists, so those rules were removed -- the terraform/ rules above are all that is needed.)
 
 # Python
 __pycache__/
