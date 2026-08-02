@@ -61,12 +61,15 @@ const FILL_INTERIOR_PARTIES = new Set([
   'Shas',
 ]);
 
-// The dark theme's --muted. Deliberately a literal and not read from the custom property: the canvas
-// is built once when the image loads and is only ever displayed in the dark theme (see
-// .logo-recolored in style.css), so a page that loaded in light mode would bake the light --muted
-// (#5B6572) into it -- dark enough that the black lettering drops to 3.6:1 against it. This tone
-// sits at 6.9:1 and matches the weight of the neighbouring party wordmarks rather than glaring.
-const INTERIOR_FILL_RGB = [0x8b, 0x95, 0xa3];
+// Near-white, close to the theme's --ink (#F5F7FA). This started at the dark theme's --muted
+// (#8B95A3) to keep the filled tablet from outweighing the thin wordmarks on the neighbouring cards,
+// but that reads as a grey slab once it's on a real card next to them -- the user's call after seeing
+// it live, so the tablet is paper-white and simply is the brightest logo in the grid. Black lettering
+// sits at 20:1 on it. Deliberately a literal rather than a read of the custom property: the canvas is
+// built once when the image loads and CSS only ever displays it in the dark theme (see
+// .logo-recolored in style.css), so reading the property on a page that loaded in LIGHT mode would
+// bake the light value in -- which for a --muted-derived tone dropped the lettering to 3.6:1.
+const INTERIOR_FILL_RGB = [250, 250, 250];
 
 // --- HSL conversion (used by the party-logo dark-mode recolour below) ---
 function rgbToHsl(r, g, b) {
