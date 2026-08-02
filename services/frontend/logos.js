@@ -49,6 +49,25 @@ const OUTLINE_CLUBS = new Set([
   'South Korea',
 ]);
 
+// Parties (by name_en) whose artwork is dark ink on a TRANSPARENT interior, which the recolour below
+// cannot handle: it lifts the ink to white, and every enclosed gap -- the counter inside Shas's ס,
+// the slits between the three strokes of its ש -- then shows the dark card through it, reading as
+// black specks punched into white letters. No colour operation can fix that, because the interior
+// and those gaps are the same colour in the file (both fully transparent), so invert, negative and
+// recolour all map them to the same output. They differ only by which side of the outline they sit
+// on, which is why fillLogoInteriorForDark() below is a flood fill rather than a pixel rule.
+// Keyed by name_en, so a party is covered in both previous_parties and upcoming_parties.
+const FILL_INTERIOR_PARTIES = new Set([
+  'Shas',
+]);
+
+// The dark theme's --muted. Deliberately a literal and not read from the custom property: the canvas
+// is built once when the image loads and is only ever displayed in the dark theme (see
+// .logo-recolored in style.css), so a page that loaded in light mode would bake the light --muted
+// (#5B6572) into it -- dark enough that the black lettering drops to 3.6:1 against it. This tone
+// sits at 6.9:1 and matches the weight of the neighbouring party wordmarks rather than glaring.
+const INTERIOR_FILL_RGB = [0x8b, 0x95, 0xa3];
+
 // --- HSL conversion (used by the party-logo dark-mode recolour below) ---
 function rgbToHsl(r, g, b) {
   r /= 255; g /= 255; b /= 255;
@@ -139,6 +158,56 @@ function recolorLogoForDark(img) {
   return canvas;
 }
 
+// Fill the enclosed transparent interior of a dark-ink logo (FILL_INTERIOR_PARTIES) with a muted
+// light tone, leaving the ink itself untouched, so it reads on a dark card the way the original
+// reads on paper. "Enclosed" is decided by reachability, not colour: flood the transparent pixels
+// inward from all four canvas edges, and whatever transparency that flood could NOT reach is inside
+// the artwork's outline. Returns a <canvas> if anything was filled, else null (nothing enclosed --
+// e.g. an open-sided logo, which would otherwise be silently turned into a solid block).
+function fillLogoInteriorForDark(img) {
+  const MAX = 400;
+  const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, w, h);
+  const imageData = ctx.getImageData(0, 0, w, h);
+  const d = imageData.data;
+  const isClear = (i) => d[i * 4 + 3] < 20;
+
+  const outside = new Uint8Array(w * h);
+  const stack = [];
+  for (let x = 0; x < w; x++) { stack.push(x, (h - 1) * w + x); }
+  for (let y = 0; y < h; y++) { stack.push(y * w, y * w + w - 1); }
+  while (stack.length) {
+    const i = stack.pop();
+    if (outside[i] || !isClear(i)) continue;
+    outside[i] = 1;
+    const x = i % w;
+    const y = (i - x) / w;
+    if (x > 0) stack.push(i - 1);
+    if (x < w - 1) stack.push(i + 1);
+    if (y > 0) stack.push(i - w);
+    if (y < h - 1) stack.push(i + w);
+  }
+
+  let filled = 0;
+  for (let i = 0; i < w * h; i++) {
+    if (!isClear(i) || outside[i]) continue;
+    d[i * 4] = INTERIOR_FILL_RGB[0];
+    d[i * 4 + 1] = INTERIOR_FILL_RGB[1];
+    d[i * 4 + 2] = INTERIOR_FILL_RGB[2];
+    d[i * 4 + 3] = 255;
+    filled++;
+  }
+  if (!filled) return null;
+  ctx.putImageData(imageData, 0, 0);
+  return canvas;
+}
+
 // entity: {id, logo_url} (any /api/options entity). displayName: the localized name to render
 // as an image alt/monogram initials. Returns a <span class="logo"> ready to append.
 function logoEl(entity, displayName, opts) {
@@ -170,7 +239,9 @@ function logoEl(entity, displayName, opts) {
     img.crossOrigin = 'anonymous';
     img.addEventListener('load', () => {
       try {
-        const canvas = recolorLogoForDark(img);
+        const canvas = FILL_INTERIOR_PARTIES.has(entity && entity.name_en)
+          ? fillLogoInteriorForDark(img)
+          : recolorLogoForDark(img);
         if (canvas) {
           canvas.className = 'logo-recolored';
           img.classList.add('logo-orig');
