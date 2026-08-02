@@ -48,9 +48,37 @@ You run Terraform first, then Helm. Taking it down is the reverse.
 
 ## One-time setup
 
-You need these installed: `terraform`, the `aws` command, `kubectl`, `helm`, `docker`, `python3` and
-`openssl`. You must be logged into AWS (`aws sts get-caller-identity` should show your account), and you
-need a **Route53 hosted zone you already own** — the deploy looks it up, it never creates one.
+You need these installed: `terraform`, the `aws` command, `kubectl`, `helm`, `docker`, `python3`,
+`openssl`, `jq` and `ssh-keygen`. You must be logged into AWS (`aws sts get-caller-identity` should show
+your account), and you need a **Route53 hosted zone you already own** — the deploy looks it up, it never
+creates one.
+
+**`python3` alone is not enough.** Two Python libraries are needed to scramble the passwords before they
+are stored, and neither ships with Python:
+
+| Library | Used by | Without it |
+|---|---|---|
+| `werkzeug` | `seed-eks-secret.sh` (step 3) | the deploy stops at step 3 |
+| `bcrypt` | `seed-jenkins-secret.sh` (step 3b) | the deploy stops at step 3b |
+
+Check both in one line, before you start:
+
+```bash
+python3 -c "import werkzeug, bcrypt" && echo "both present"
+```
+
+If that fails, the tidiest fix is a throwaway Python folder inside the repo — `seed-eks-secret.sh`
+already knows to look there, and it is already ignored by git:
+
+```bash
+python3 -m venv services/backend/.venv
+services/backend/.venv/bin/pip install werkzeug bcrypt
+```
+
+On Linux distributions that refuse a plain `pip install` (you'll see "externally-managed-environment"),
+that folder is the answer rather than fighting the system Python. This costs nothing to get wrong
+early and is annoying to discover late: the deploy stops **before** it builds anything billable, but
+you still have to start over.
 
 Then create one settings file — the only place your own details live:
 
@@ -497,6 +525,36 @@ votes. (This changed on 2026-07-20 — teardown used to discard them.)
 | The Terraform **state bucket** | It holds the record of what is being deleted. Removing it mid-teardown would orphan anything left behind. |
 | **Database snapshots** | They are the restore point for the next deploy. Prune old ones by hand, keeping the newest. |
 
+**What is NOT kept, and catches people out: the nightly database dumps in S3.** The bucket holding them
+is deleted by `terraform destroy`, during the same run it would supposedly be insuring — `terraform/s3.tf`
+sets `force_destroy = true`, which means "delete this bucket even though it still has files in it".
+**The nightly dumps are not teardown insurance.** What actually carries your votes across a rebuild is
+the final snapshot, plus retained automated backups. If you want the dumps too, copy them off first:
+
+```bash
+aws s3 sync "s3://$(terraform -chdir=terraform output -raw s3_bucket)/backups/" ~/voteball-backups/
+```
+
+**Prune snapshots by date, never by name — the names lie.** A snapshot's identifier embeds the date the
+*stack was deployed*, not the date the snapshot was taken. On a teardown today of a stack built three
+days ago, the brand-new final snapshot is named after that older date and looks stale. Sort on
+`SnapshotCreateTime`, which is the only trustworthy field (this is also why `find-latest-snapshot.sh`
+sorts on it):
+
+```bash
+aws rds describe-db-snapshots --snapshot-type manual --region <your region> \
+  --query 'sort_by(DBSnapshots[?starts_with(DBInstanceIdentifier, `voteball`)], &SnapshotCreateTime)[].{created:SnapshotCreateTime,id:DBSnapshotIdentifier,status:Status}' \
+  --output table
+```
+
+Note also that `SnapshotCreateTime` is stamped when the snapshot **finishes**, not when it starts — so a
+snapshot in progress may briefly appear older than one taken minutes earlier.
+
+Snapshots bill on the space actually used, not the disk size allocated, so keeping several old ones
+costs very little. Keeping one from *before* any large data change is worth more than it costs: votes
+can be deleted through the admin page, so a newer snapshot does not always contain more than an older
+one, and "keep only the newest" can quietly discard history.
+
 Jenkins is **not** in this list any more — it is part of the same stack as the app now (namespace `ci`,
 installed by the same `terraform apply`), so `terraform destroy` removes it along with everything else.
 There is nothing left to keep running between sessions: its configuration lives in git as JCasC, and
@@ -577,6 +635,24 @@ the deploy output warning you. `docs/cicd.md`, "First-time setup runbook", steps
   uninstall while the cluster is being deleted. Drop it from state and re-run; it dies with the
   cluster anyway: `terraform -chdir=terraform state rm helm_release.<name>`, then
   `./scripts/destroy.sh`.
+- **A network (VPC) refuses to delete and nothing obvious is left in it** → look for a **security group
+  that Kubernetes created**, not Terraform. A VPC cannot be deleted while any non-default security group
+  survives in it, and anything Kubernetes made is invisible to the tool trying to delete around it — so
+  the delete retries silently until it gives up, with no error naming the real cause.
+
+  ```bash
+  aws ec2 describe-security-groups --region <your region> \
+    --filters Name=vpc-id,Values=<vpc-id> \
+    --query 'SecurityGroups[?GroupName!=`default`].{name:GroupName,id:GroupId}' --output table
+  ```
+
+  Delete any that come back (`aws ec2 delete-security-group --group-id <id>`); the `default` one goes
+  automatically with the VPC. This is the same lesson as the leftover network interfaces above, one
+  layer up: **when a Kubernetes cluster is deleted, the AWS resources Kubernetes created for it are
+  orphaned, not cleaned up.** Delete Services and Ingresses *before* the cluster, which is exactly what
+  `destroy.sh` steps 1–2 do and why they cannot be skipped. Observed on 2026-08-02 in an unrelated
+  practice cluster, where one such group had blocked its teardown for five weeks — and the load balancer
+  it belonged to went on billing the whole time.
 - **`values.yaml` looks wrong / the ALB says `CertificateNotFound`** → the file drifted from the live
   stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and
   `./scripts/sync-values-from-tf.sh` to fix it. Never edit those fields by hand.
