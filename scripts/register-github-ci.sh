@@ -136,8 +136,35 @@ jq -n --arg url "$HOOK_URL" --arg secret "$(cat "$TMP/webhook_secret")" \
 gh api -X POST "repos/${REPO}/hooks" --input "$TMP/hook.json" \
   --jq '"    registered hook \(.id)"'
 
+# ---- prove it actually works ----------------------------------------------------------------------
+# Registering a webhook and having one that DELIVERS are different things: a wrong secret, a
+# not-yet-resolving DNS name or an ALB with no healthy targets all look identical from the API.
+#
+# GitHub fires its own ping the moment a hook is created, and immediately after a rebuild that ping
+# reliably gets a 502 -- the ALB exists but its targets are still registering. Harmless, but it leaves
+# a red delivery as the newest entry on the repo's webhook page, which reads as "CI is broken" to
+# anyone who looks. So: retry until it succeeds, and leave a green delivery as the last word.
+HOOK_ID="$(gh api "repos/${REPO}/hooks" --jq ".[] | select(.config.url==\"${HOOK_URL}\") | .id" | head -1)"
+echo "==> Verifying delivery (a 502 here is the new ALB still warming up)"
+ok=0
+for attempt in 1 2 3 4 5 6; do
+  gh api -X POST "repos/${REPO}/hooks/${HOOK_ID}/pings" --silent 2>/dev/null || true
+  sleep 15
+  code="$(gh api "repos/${REPO}/hooks/${HOOK_ID}/deliveries" --jq '[.[] | select(.event=="ping")][0].status_code' 2>/dev/null || echo "")"
+  if [ "$code" = "200" ]; then
+    echo "    delivered OK (attempt ${attempt})"
+    ok=1
+    break
+  fi
+  echo "    attempt ${attempt}: got '${code:-no response}', retrying"
+done
+
 echo
-echo "GitHub now points at this cluster. Verify a real delivery with:"
-echo "    gh api -X POST repos/${REPO}/hooks/\$(gh api repos/${REPO}/hooks --jq '.[0].id')/pings"
-echo "    gh api repos/${REPO}/hooks/\$(gh api repos/${REPO}/hooks --jq '.[0].id')/deliveries --jq '.[0]'"
-echo "(A 502 immediately after a rebuild is the ALB still warming up -- retry after a minute.)"
+if [ "$ok" = "1" ]; then
+  echo "GitHub now points at this cluster, and a test delivery succeeded."
+else
+  echo "WARNING: the webhook is registered but no ping has succeeded yet." >&2
+  echo "         Usually just DNS/ALB warm-up — re-check in a few minutes:" >&2
+  echo "           gh api repos/${REPO}/hooks/${HOOK_ID}/deliveries --jq '.[0]'" >&2
+  echo "         If it stays failing, confirm https://jenkins.${APP_DOMAIN}/github-webhook/ resolves." >&2
+fi

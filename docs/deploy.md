@@ -621,6 +621,14 @@ both on GitHub, and prints neither. It is idempotent — it compares the vault's
 against the keys GitHub already holds and does nothing when they match — so re-running `deploy.sh`
 without a rebuild changes nothing.
 
+It then **proves the webhook works** rather than assuming it: it sends test pings until one returns
+`200`, retrying for up to 90 seconds. This matters because registering a webhook and having one that
+*delivers* are different things — a wrong secret, unresolved DNS or an ALB with no healthy targets all
+look identical from the API. It also cleans up after a cosmetic annoyance: GitHub fires its own ping
+the instant a hook is created, and straight after a rebuild that reliably returns **502** because the
+new load balancer is still warming up. Harmless, but it leaves a red delivery as the newest entry on
+the repo's webhook page, which reads as "CI is broken" to anyone glancing at it.
+
 It is **deliberately not fatal**: if the GitHub call fails, the deploy still reports success, because
 everything else did succeed and the site is up. You get a warning instead, and the fix is one command:
 
