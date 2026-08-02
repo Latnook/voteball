@@ -215,9 +215,23 @@ Worth being able to list:
 
 ## 8. Design principles this project actually follows
 
-**Nothing about one AWS account is hardcoded.** No account number, region or domain appears anywhere
-in the code. All of it lives in a single settings file plus Terraform's outputs. Someone can fork this
-repository and deploy it to their own account by editing one file.
+**The project is designed to be forkable.** No account number, region or domain is written into the
+Terraform, the scripts or the application code — identity lives in one settings file before the deploy,
+and in Terraform's outputs after it.
+
+There is **one deliberate exception, and it is worth being able to defend**: the Helm chart's
+`values.yaml` holds ten real, environment-specific values — this account's registry address, database
+endpoint, certificate and role identifiers — committed to git. That looks like exactly the thing the
+rest of the design avoids. It is required, because **ArgoCD deploys what is on `master`, not what is on
+someone's laptop.** Placeholders there would mean the cluster syncing placeholders. A script regenerates
+those ten fields from Terraform's outputs after every rebuild, and a `--check` mode fails if they have
+drifted — so they are *generated and verified*, never hand-edited. Someone forking the project runs that
+script rather than editing the file.
+
+This is a genuine trade-off rather than an oversight: GitOps requires the deployed configuration to be
+in git, which necessarily puts environment-specific values there. The mitigation is that none of them
+are secret — they are addresses and identifiers, not credentials. Every actual secret goes to AWS
+Secrets Manager and never enters git or Terraform's state file.
 
 **The reasoning lives in documentation, not code comments.** Design documents record *why* each
 decision was made, and several record what actually broke when the design met reality.
