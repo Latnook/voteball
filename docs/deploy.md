@@ -731,25 +731,42 @@ steps 1 and 4.
 - **`values.yaml` looks wrong / the ALB says `CertificateNotFound`** → the file drifted from the live
   stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and
   `./scripts/sync-values-from-tf.sh` to fix it. Never edit those fields by hand.
-- **You pushed code within a few minutes of a rebuild and no build ran** → the webhook delivery
-  probably got a `502` while the new load balancer's targets were still registering, and **GitHub does
-  not retry a failed `push` delivery.** That commit simply never reached Jenkins. There is no error
-  anywhere except a red row in the delivery log, so the symptom is just "CI did nothing" — and
-  `image.tag` on `master` quietly stops matching the code. Observed on the 2026-08-03 rebuild: pings
-  returned `200` at 22:59:38 and 22:59:40, and a real push still got `502` at 23:00:22.
+- **For ~15 minutes after a rebuild, webhook deliveries fail intermittently — and a failed `push` is
+  lost for good.** GitHub retries pings but **does not retry a failed `push` delivery**, so that commit
+  never reaches Jenkins: no build, no error, and `image.tag` on `master` quietly stops matching the
+  code. The only trace is a red row in the delivery log.
 
-  Check and replay it (no need to re-push):
+  **The cause is DNS negative caching, not the load balancer.** Teardown deletes the
+  `jenkins.<app_domain>` record (step 5), and while it is missing GitHub's resolvers cache the
+  "no address" answer. A Route53 zone pins negative caching at **15 minutes** (`min(SOA MINIMUM, SOA
+  TTL)`) — the same figure documented above for the site itself. external-dns recreates the record
+  during the rebuild, but the cached negatives outlive it. GitHub sends from a **fleet** of hosts with
+  independent resolver caches, which is why the failures are intermittent rather than total: some
+  senders still hold the stale negative, others resolve fresh.
+
+  **How to tell this apart from a genuinely broken endpoint — look at `duration`:**
 
   ```bash
   H=$(gh api repos/<owner>/<repo>/hooks --jq '.[0].id')
-  gh api repos/<owner>/<repo>/hooks/$H/deliveries --jq '.[0:5][] | "\(.delivered_at) \(.event) \(.status_code)"'
+  gh api repos/<owner>/<repo>/hooks/$H/deliveries --jq '.[0:8][] | "\(.delivered_at) \(.event) code=\(.status_code) dur=\(.duration)"'
+  ```
+
+  A failure at **`dur=0` or `0.01`** never made a network connection — that is a DNS cache miss, and it
+  clears itself. A successful delivery takes a realistic round trip (~0.5–0.7 s from the US to
+  `il-central-1`). A *genuinely* broken endpoint fails with a **realistic** duration, because the
+  connection was attempted and refused. Measured on the 2026-08-03 rebuild: every failure was
+  `dur=0.0`–`0.01`, every success `0.53`–`0.66`.
+
+  Replay a lost delivery rather than re-pushing:
+
+  ```bash
   D=$(gh api repos/<owner>/<repo>/hooks/$H/deliveries --jq '[.[] | select(.status_code!=200)][0].id')
   gh api -X POST repos/<owner>/<repo>/hooks/$H/deliveries/$D/attempts
   ```
 
-  Note this is *not* fixed by step 11b's delivery check: a ping succeeding at one moment says nothing
-  about a push forty seconds later while targets are still stabilising. **After a rebuild, give the
-  load balancer a couple of minutes before pushing code** — or check the delivery log afterwards.
+  **Step 11b's ping check does not rule this out** — it only proves *one* GitHub sender could resolve
+  the name at that instant. **After a rebuild, wait ~15 minutes before pushing code**, or check the
+  delivery log afterwards and replay anything red.
 
 For the deeper technical details behind these, see the git history of this file and the design documents
 in `docs/design/` — in particular `2026-07-20-deployment-hardening-design.md`, which explains why the
