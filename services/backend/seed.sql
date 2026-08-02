@@ -843,7 +843,10 @@ UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/h
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d4/ZehutParty.svg' WHERE name_he = 'זהות' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d3/Noamparty.svg' WHERE name_he = 'נעם' AND logo_url IS NULL;
+-- Noam's current campaign banner ("נעם לישראל, בראשות אבי מעוז"). It is an opaque JPEG, not a
+-- transparent SVG, so logos.js skips the dark-mode recolour (>90% opaque pixels = solid tile) --
+-- correct here, since the artwork is already light lettering on a dark navy field.
+UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/6e/%D7%A1%D7%9E%D7%9C_%D7%9E%D7%A4%D7%9C%D7%92%D7%AA_%D7%A0%D7%A2%D7%9D_j%2Cul.jpg' WHERE name_he = 'נעם' AND logo_url IS NULL;
 -- El HaDegel is a new movement with no Wikimedia logo; this is the square Star-of-David emblem
 -- (transparent, from the party's own Webflow CDN "webclip" app-icon) rather than the old low-res
 -- Google thumbnail, which had a dark navy background baked in and rendered as a dark box on the
