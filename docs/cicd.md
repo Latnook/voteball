@@ -249,8 +249,15 @@ Prints a deploy public key to add to GitHub (with write access) and the webhook 
 > of the same name for a week). With nothing left to preserve, this script mints a **fresh deploy key
 > and a fresh webhook secret**, and GitHub still holds the old ones. Until both are re-registered the
 > webhook is rejected and the pipeline's final `git push` is denied — a cluster that looks entirely
-> healthy with a CI pipeline nothing can trigger. `deploy.sh` does not warn about this.
+> healthy with a CI pipeline nothing can trigger.
 >
+> **Since 2026-08-03 `deploy.sh` re-registers both automatically** at step 11b, via
+> `./scripts/register-github-ci.sh` — so step 4 below is now only needed when running the seed script
+> standalone, or when that step warned. The script is idempotent (it compares the vault's deploy-key
+> fingerprint against GitHub's and does nothing when they match) and reads the credentials from Secrets
+> Manager rather than from this script's output, so the webhook secret never reaches a log file.
+>
+
 > `scripts/deploy.sh` runs this at step 3b, **before** the apply that creates Jenkins. That order is
 > load-bearing: External Secrets Operator copies the vault into the `jenkins-secret` Kubernetes Secret
 > once at creation and then only every `refreshInterval` (1h), so seeding afterwards leaves the

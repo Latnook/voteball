@@ -49,9 +49,14 @@ You run Terraform first, then Helm. Taking it down is the reverse.
 ## One-time setup
 
 You need these installed: `terraform`, the `aws` command, `kubectl`, `helm`, `docker`, `python3`,
-`openssl`, `jq` and `ssh-keygen`. You must be logged into AWS (`aws sts get-caller-identity` should show
-your account), and you need a **Route53 hosted zone you already own** — the deploy looks it up, it never
+`openssl`, `jq`, `ssh-keygen` and `gh` (the GitHub CLI). You must be logged into AWS
+(`aws sts get-caller-identity` should show your account), logged into GitHub (`gh auth status`, needing
+`repo` scope), and you need a **Route53 hosted zone you already own** — the deploy looks it up, it never
 creates one.
+
+`gh` is used only by the last step, which re-registers Jenkins' deploy key and webhook. If it is missing
+the deploy still completes and the site still works — only CI is left unregistered, and one command
+fixes it afterwards.
 
 **`python3` alone is not enough.** Two Python libraries are needed to scramble the passwords before they
 are stored, and neither ships with Python:
@@ -560,12 +565,31 @@ installed by the same `terraform apply`), so `terraform destroy` removes it alon
 There is nothing left to keep running between sessions: its configuration lives in git as JCasC, and
 its build history was already designed to be disposable (see `docs/cicd.md`).
 
-**One thing does not survive, and it is the one that will bite you on the next deploy.** Jenkins'
-secret vault is deleted with the stack (as noted further up under [Put the site
-online](#put-the-site-online)), so the rebuild generates a **new GitHub deploy key and a new webhook
-secret**. GitHub still holds the old ones. Re-register both — repo → Settings → Deploy keys, and repo →
-Settings → Webhooks — or the webhook is rejected and the build's final push is denied, with nothing in
-the deploy output warning you. `docs/cicd.md`, "First-time setup runbook", steps 1 and 4.
+**One thing does not survive a teardown: Jenkins' secret vault** (as noted further up under [Put the
+site online](#put-the-site-online)). The rebuild therefore generates a **new GitHub deploy key and a
+new webhook secret**, and GitHub is left holding the previous pair. Until both are replaced the webhook
+is rejected and the build's final push is denied — with nothing in the deploy output warning you,
+because the deploy itself genuinely succeeded.
+
+**Since 2026-08-03 `deploy.sh` handles this for you**, as step 11b, by calling
+`./scripts/register-github-ci.sh`. That script reads the new key and secret straight from Secrets
+Manager (never from the deploy log, which would leave the webhook secret in a file on disk), replaces
+both on GitHub, and prints neither. It is idempotent — it compares the vault's deploy-key fingerprint
+against the keys GitHub already holds and does nothing when they match — so re-running `deploy.sh`
+without a rebuild changes nothing.
+
+It is **deliberately not fatal**: if the GitHub call fails, the deploy still reports success, because
+everything else did succeed and the site is up. You get a warning instead, and the fix is one command:
+
+```bash
+./scripts/register-github-ci.sh          # safe any time; no-op when already correct
+FORCE_REGISTER=1 ./scripts/register-github-ci.sh   # re-register even if it looks correct
+```
+
+It needs `gh` authenticated with `repo` scope (`gh auth status`). If `gh` is missing or logged out the
+script stops **before** deleting anything, rather than removing the old key and then failing to add the
+replacement. Doing it by hand is still documented in `docs/cicd.md`, "First-time setup runbook",
+steps 1 and 4.
 
 ---
 

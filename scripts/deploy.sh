@@ -229,6 +229,27 @@ else
   kubectl apply -f argocd/voteball-application.yaml
 fi
 
+step "11b/11 Pointing GitHub at this cluster's Jenkins"
+# Step 3b minted a NEW deploy key and webhook secret (the vault is deleted with the stack), so GitHub
+# is still holding the previous rebuild's pair until this runs. Without it the deploy succeeds
+# completely and CI is silently dead: the webhook is rejected on its HMAC and the pipeline's final
+# tag-bump push is denied. This used to be a by-hand step done from terminal scrollback, which is
+# exactly the kind of step that gets skipped.
+#
+# Idempotent -- it compares the vault's deploy-key fingerprint against GitHub's and does nothing when
+# they already match, so re-running deploy.sh without a rebuild is a no-op here.
+#
+# DELIBERATELY NOT FATAL. Everything above this line has already worked: the site is up and serving.
+# Failing the whole deploy over a GitHub API call would misreport a working deployment as a broken one.
+# It warns loudly instead, and the fix is one standalone command.
+if ! ./scripts/register-github-ci.sh; then
+  echo
+  echo "WARNING: could not register the deploy key/webhook on GitHub." >&2
+  echo "         The DEPLOY ITSELF SUCCEEDED — the site is up. Only CI is affected: pushes will not" >&2
+  echo "         trigger a build, and a build's final tag-bump push would be denied." >&2
+  echo "         Fix it whenever you like, then re-run:  ./scripts/register-github-ci.sh" >&2
+fi
+
 cat <<EOF
 
 Deploy complete.
