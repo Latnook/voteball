@@ -54,10 +54,13 @@ the stack, so the cache tags do not exist yet and BuildKit proceeds without them
 |---|---|
 | `2026-08-04-destroy-steps.txt` | Six ordered teardown steps, `Destroy complete! Resources: 132 destroyed.` |
 | `2026-08-04-deploy-steps.txt` | One clean invocation, ending `Deploy complete.` / `DEPLOY_EXIT=0` |
-| `2026-08-04-pre-teardown-kubectl.txt` / `-demos.txt` | The required outputs and demos before teardown |
+| `2026-08-04-pre-teardown-kubectl.txt` | The eight required `kubectl` outputs before teardown — nodes, namespaces, pods, deployments, services, ingress, `describe pod`, and backend logs |
+| `2026-08-04-pre-teardown-demos.txt` | HTTPS + ACM certificate, HTTP→HTTPS redirect, `/api/options` and `/api/results?by=all`, the S3 backup Job writing via IRSA, the ServiceAccount role table, the NetworkPolicy probe **with its control**, SNS counters, and the shipped alert rules |
 | `2026-08-04-pre-teardown-pod-restart-poll.txt` | **123** probes, all 200, across a `kubectl delete pod` |
-| `2026-08-04-post-rebuild-kubectl.txt` / `-demos.txt` | The same, on the rebuilt cluster — new certificate, same vote totals |
+| `2026-08-04-post-rebuild-kubectl.txt` | The same eight outputs from the **rebuilt** cluster — every node IP and pod name is new |
+| `2026-08-04-post-rebuild-demos.txt` | The same demos re-run after the rebuild — new ACM certificate, identical vote totals |
 | `2026-08-04-post-rebuild-pod-restart-poll.txt` | **124** probes, all 200, on the rebuilt cluster |
+| `2026-08-04-ci-builds.txt` | All five builds on the rebuilt controller, with each one's changelog size and decision points — the checkable form of the G3b claims above |
 
 ## 2026-08-03 — the previous cycle, kept because it recorded two real faults
 

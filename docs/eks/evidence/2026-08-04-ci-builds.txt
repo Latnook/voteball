@@ -1,0 +1,96 @@
+# The five builds on the Jenkins controller created by the 2026-08-04 rebuild.
+# Frozen evidence -- do not edit. Extracted verbatim from
+# /var/jenkins_home/jobs/voteball/builds/<n>/log (Jenkins' base64 step markers stripped);
+# changelog sizes are stat(1) on the same build directories.
+#
+# WHY THIS FILE EXISTS. On 2026-08-03 a build reported SUCCESS while shipping nothing: the
+# controller had just been recreated, so it had no changelog, and `changeset 'services/**'`
+# cannot tell "nothing under services/ changed" apart from "I have nothing to compare".
+# G3b now treats the second case as "cannot determine what changed" and builds. These five
+# builds are the check on that, and on the two ways it could be wrong -- skipping a build it
+# should run, or running builds it should skip.
+#
+#   build  trigger                                     changelog  outcome
+#   -----  ------------------------------------------  ---------  -----------------------------
+#   1      deploy.sh's values.yaml push, fresh          0 bytes    BUILT (G3b fired)
+#          controller with no previous build
+#   2      the pipeline's own tag-bump commit           443 bytes  NOT_BUILT (Guard, G2)
+#   3      a docs commit whose MESSAGE quoted the       2780 bytes NOT_BUILT (Guard, G2)
+#          marker while describing it
+#   4      a docs commit, no marker                     1057 bytes SUCCESS, 4 stages skipped
+#   5      a docs commit, no marker                     3009 bytes SUCCESS, 4 stages skipped
+#
+# Builds 4 and 5 are the ones that show G3b did not over-correct: a real changelog that misses
+# services/** still skips. Build 3 is a caution -- its outcome looks like the path filter but is
+# actually the Guard, which matches the commit message and not the intent.
+
+==============================================================================
+BUILD 1
+  result          : Finished: SUCCESS
+  changelog bytes : 0
+  stages skipped  : 0
+  --- trigger and commit ---
+  Started by GitHub push by Latnook
+  Commit message: "Deploy: sync values.yaml from Terraform outputs"
+  First time build. Skipping changelog.
+  --- decision points ---
+  [2026-08-03T21:40:43.260Z] + scripts/ci/should-skip-build.sh Deploy: sync values.yaml from Terraform outputs
+  [2026-08-03T21:40:46.400Z] No changelog for this build (first build since the controller was recreated) -- treating it as "cannot determine what changed" and building rather than skipping.
+  [2026-08-03T21:40:46.421Z] Building 10ad095 into 590183895228.dkr.ecr.il-central-1.amazonaws.com
+  [2026-08-03T21:43:03.333Z] [detached HEAD 26a4257] ci: image tag 10ad095 [skip ci]
+
+==============================================================================
+BUILD 2
+  result          : Finished: NOT_BUILT
+  changelog bytes : 443
+  stages skipped  : 0
+  --- trigger and commit ---
+  Started by GitHub push by Latnook
+  Commit message: "ci: image tag 10ad095 [skip ci]"
+  --- decision points ---
+  [2026-08-03T21:43:48.466Z] + scripts/ci/should-skip-build.sh ci: image tag 10ad095 [skip ci]
+
+==============================================================================
+BUILD 3
+  result          : Finished: NOT_BUILT
+  changelog bytes : 2780
+  stages skipped  : 0
+  --- trigger and commit ---
+  Started by GitHub push by Latnook
+  Commit message: "docs(evidence): capture the 2026-08-04 rebuild, which succeeded on the first run"
+  [2026-08-03T21:51:17.627Z] - Build 1 logs "First time build. Skipping changelog." and builds anyway (G3b),
+  --- decision points ---
+  [2026-08-03T21:51:17.626Z] + scripts/ci/should-skip-build.sh docs(evidence): capture the 2026-08-04 rebuild, which succeeded on the first run
+
+==============================================================================
+BUILD 4
+  result          : Finished: SUCCESS
+  changelog bytes : 1057
+  stages skipped  : 4
+  --- trigger and commit ---
+  Started by GitHub push by Latnook
+  Commit message: "docs(evidence): note why build 3 aborted at the Guard rather than the path filter"
+  --- decision points ---
+  [2026-08-03T21:53:47.300Z] + scripts/ci/should-skip-build.sh docs(evidence): note why build 3 aborted at the Guard rather than the path filter
+  [2026-08-03T21:53:50.014Z] Building df3bbe7 into 590183895228.dkr.ecr.il-central-1.amazonaws.com
+  Stage "Build images" skipped due to when conditional
+  Stage "Trivy scan" skipped due to when conditional
+  Stage "Push to ECR" skipped due to when conditional
+  Stage "Bump image tag" skipped due to when conditional
+
+==============================================================================
+BUILD 5
+  result          : Finished: SUCCESS
+  changelog bytes : 3009
+  stages skipped  : 4
+  --- trigger and commit ---
+  Started by GitHub push by Latnook
+  Commit message: "docs: close the three drifts the 3c/G3b changes introduced"
+  --- decision points ---
+  [2026-08-03T22:03:47.980Z] + scripts/ci/should-skip-build.sh docs: close the three drifts the 3c/G3b changes introduced
+  [2026-08-03T22:03:50.689Z] Building e434cdc into 590183895228.dkr.ecr.il-central-1.amazonaws.com
+  Stage "Build images" skipped due to when conditional
+  Stage "Trivy scan" skipped due to when conditional
+  Stage "Push to ECR" skipped due to when conditional
+  Stage "Bump image tag" skipped due to when conditional
+
