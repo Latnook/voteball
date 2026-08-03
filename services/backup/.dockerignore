@@ -1,0 +1,11 @@
+# This context holds one script, so nothing here is currently excluded by name -- the file exists so
+# an editor swap file, a stray dump or a local .env cannot be copied into the image by accident.
+# The Dockerfile COPYs backup.sh by name, which is the real guard; this is the second layer.
+.env
+*.env
+*.log
+*.sql
+*.dump
+*.swp
+*~
+.DS_Store

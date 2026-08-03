@@ -36,6 +36,15 @@ before its first STS call) did not, and why `docs/eks/live-cluster-snapshot.md` 
 minute inside the pod before opening the socket, or check the rendered label against the policy list
 instead of testing at all.
 
+**`_helpers.tpl` output may never reach a `selector`, and never a pod template's labels.** A
+Deployment's `spec.selector.matchLabels` is immutable after creation: route a helper into it and the
+next chart-version bump changes the rendered label, ArgoCD's sync fails with a field-immutable error
+rather than rolling, and the only fix is deleting the Deployment in production. The same helper in a
+pod template would silently roll every replica on each version bump. So `voteball.labels` is applied
+to **object** metadata only, and the selectors stay the plain literal `app: <component>`. The way to
+prove a helper change is safe is `helm template` before and after, diffed — a pure refactor
+(`voteball.image` was one) shows *no* diff at all.
+
 **Alert rules must carry `release: kube-prometheus-stack`.** Without that label the PrometheusRule is
 created, looks correct in `kubectl get prometheusrules`, and is silently never evaluated. Only write
 rules against metrics this cluster actually exposes (kube-state-metrics): RDS, ALB and ACM figures are

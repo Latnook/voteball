@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: frontend
   namespace: {{ .Release.Namespace }}
+  labels:
+    app: frontend
+    {{- include "voteball.labels" . | nindent 4 }}
 spec:
   type: ClusterIP # the ALB Ingress (Plan 3b) fronts this; no direct LoadBalancer
   selector:

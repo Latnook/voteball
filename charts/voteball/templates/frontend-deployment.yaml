@@ -3,7 +3,9 @@ kind: Deployment
 metadata:
   name: frontend
   namespace: {{ .Release.Namespace }}
-  labels: { app: frontend }
+  labels:
+    app: frontend
+    {{- include "voteball.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.frontend.replicas }}
   selector:
@@ -35,7 +37,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: frontend
-          image: "{{ .Values.image.registry }}/voteball-nginx:{{ .Values.image.tag }}"
+          image: {{ include "voteball.image" (dict "root" $ "name" "nginx") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           lifecycle:
             preStop:

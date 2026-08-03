@@ -35,7 +35,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: backup
-              image: "{{ .Values.image.registry }}/voteball-backup:{{ .Values.image.tag }}"
+              image: {{ include "voteball.image" (dict "root" $ "name" "backup") | quote }}
               env:
                 # aws-cli writes ~/.aws (config/cache); under readOnlyRootFilesystem, point HOME at
                 # the writable /tmp emptyDir or it fails with "Read-only file system: '/.aws'".

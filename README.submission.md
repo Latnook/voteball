@@ -5,6 +5,9 @@ This is the turn-in document: architecture, how to run/verify/delete it, how sec
 trade-offs made. (For the plain-language deploy walkthrough see [`docs/deploy.md`](docs/deploy.md); for
 the full security design see [`docs/security.md`](docs/security.md).)
 
+**Division of work:** none to divide — this was done solo, by Ariel Palatnik. Every commit in the
+repository is mine.
+
 ## Architecture
 
 - **In Kubernetes** (`devops-app` namespace, chart `charts/voteball`): 3 Deployments — **frontend**
@@ -67,6 +70,59 @@ regenerated on every rebuild, so `charts/voteball/values.yaml` is **generated, n
 what you delete), then **both** Ingresses (the app's and the CI webhook's, which share one ALB group, so
 deleting either alone leaves the ALB running and its ENIs blocking the VPC), then Terraform — and takes a
 final DB snapshot, so a destroy/rebuild cycle preserves the votes.
+
+### The three steps `deploy.sh` hides: images, namespace, secret
+
+Those are wrapped in the script above, so here is each one on its own — this is what to run if you are
+doing it by hand, and what the script does on your behalf if you are not.
+
+**Building and pushing the images.** Four images, one Docker build context each
+(`services/{backend,worker,frontend,backup}/`), tagged with the **git SHA** — never `latest`:
+
+```bash
+./scripts/build-push-ecr.sh          # builds all four, logs in to ECR, pushes <account>.dkr.ecr.<region>.amazonaws.com/voteball-{backend,worker,nginx,backup}:<sha>
+```
+
+In normal operation Jenkins does this on every push to `master` (rootless BuildKit → Trivy scan →
+ECR), and the script is the manual path — it is also the **only** way to build while the cluster is
+destroyed, since CI lives inside the cluster.
+
+**Creating the namespace.** `devops-app` is created by Helm itself:
+
+```bash
+helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
+```
+
+**It is deliberately not a template in the chart.** A `Namespace` is a *cluster-scoped* object, and
+the ArgoCD `AppProject` this Application runs in sets `clusterResourceWhitelist: []` — it is allowed
+to create namespaced objects in `devops-app` and nothing else, anywhere. Shipping the namespace
+inside the chart it deploys would mean widening that whitelist, i.e. handing the app's own release
+permission to create cluster-scoped resources, to save one flag. `CreateNamespace=false` in
+`argocd/voteball-application.yaml.tmpl` records the same decision on the ArgoCD side.
+
+**Creating the real Secret.** The chart never contains a secret value — it ships an
+**ExternalSecret**, and External Secrets Operator fills the `app-secret` Kubernetes Secret from AWS
+Secrets Manager. The shape of that secret is documented in
+**[`charts/voteball/secret-example.yaml`](charts/voteball/secret-example.yaml)** (an example file with
+`REPLACE` placeholders — it is never applied). To create the real one:
+
+```bash
+ADMIN_USERNAME='<admin user>' ADMIN_PASSWORD='<admin password>' ./scripts/seed-eks-secret.sh
+```
+
+It reads `DB_PASS` from `terraform/voteball.tfvars` (so it cannot drift from the RDS master password),
+hashes the admin password with `werkzeug`, generates `ADMIN_SESSION_SECRET` itself, and writes the
+JSON to Secrets Manager. Nothing is echoed, and nothing is written to disk. Two things to know before
+re-running it: it **overwrites** the secret every time (a fresh `ADMIN_SESSION_SECRET` invalidates
+every live admin session, and `ADMIN_USERNAME` reverts to `admin` unless you pass it), and ESO copies
+the vault into the cluster at ExternalSecret creation and then only hourly — which is why deployment
+seeds the secret **before** the resources that consume it, not after.
+
+If you want to see the Secret without applying anything:
+
+```bash
+kubectl get secret app-secret -n devops-app -o jsonpath='{.data}' | jq 'keys'   # key NAMES only
+```
 
 ## CI/CD — Jenkins (in-cluster) → ECR → ArgoCD
 

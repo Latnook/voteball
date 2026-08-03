@@ -3,7 +3,9 @@ kind: Deployment
 metadata:
   name: backend
   namespace: {{ .Release.Namespace }}
-  labels: { app: backend }
+  labels:
+    app: backend
+    {{- include "voteball.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.backend.replicas }}
   selector:
@@ -34,7 +36,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: backend
-          image: "{{ .Values.image.registry }}/voteball-backend:{{ .Values.image.tag }}"
+          image: {{ include "voteball.image" (dict "root" $ "name" "backend") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5000

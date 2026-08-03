@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: backend
   namespace: {{ .Release.Namespace }}
+  labels:
+    app: backend
+    {{- include "voteball.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   selector:

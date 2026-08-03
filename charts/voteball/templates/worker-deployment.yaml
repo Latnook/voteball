@@ -3,7 +3,9 @@ kind: Deployment
 metadata:
   name: worker
   namespace: {{ .Release.Namespace }}
-  labels: { app: worker }
+  labels:
+    app: worker
+    {{- include "voteball.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.worker.replicas }}
   selector:
@@ -23,7 +25,7 @@ spec:
       serviceAccountName: worker
       containers:
         - name: worker
-          image: "{{ .Values.image.registry }}/voteball-worker:{{ .Values.image.tag }}"
+          image: {{ include "voteball.image" (dict "root" $ "name" "worker") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef: { name: app-config } # includes S3_BUCKET -> enables S3 snapshots
@@ -31,8 +33,24 @@ spec:
           resources:
             requests: { cpu: {{ .Values.worker.resources.requests.cpu }}, memory: {{ .Values.worker.resources.requests.memory }} }
             limits: { cpu: {{ .Values.worker.resources.limits.cpu }}, memory: {{ .Values.worker.resources.limits.memory }} }
+          readinessProbe:
+            # The worker backs no Service, so "ready" cannot mean "safe to route to". It means "has
+            # completed a full loop iteration recently" -- the same heartbeat file the liveness probe
+            # reads, but with no initial delay, so the probe FAILS until the first iteration finishes
+            # (`stat` on a missing file exits non-zero). That is the useful signal during a rollout:
+            # a replacement worker that cannot get through one iteration never reports Ready, so the
+            # rollout stalls with the old pod still running instead of silently replacing a working
+            # worker with a broken one.
+            exec:
+              command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            failureThreshold: 3
           livenessProbe:
             # "alive if loop spins": /tmp/heartbeat touched every iteration (Plan 1). Fail if stale >120s.
+            # Deliberately more forgiving than the readiness probe above: readiness going false is a
+            # signal, liveness going false KILLS the pod. worker.py touches the heartbeat even after a
+            # caught DB error, so a database outage must never reach this probe.
             exec:
               command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
             initialDelaySeconds: 40

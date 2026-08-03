@@ -67,7 +67,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: migrate
-          image: "{{ .Values.image.registry }}/voteball-backend:{{ .Values.image.tag }}"
+          image: {{ include "voteball.image" (dict "root" $ "name" "backend") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["python", "migrate.py"]
           envFrom:

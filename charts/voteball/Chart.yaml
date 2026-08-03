@@ -2,5 +2,5 @@ apiVersion: v2
 name: voteball
 description: Voteball frontend/backend/worker on EKS (Ingress/ALB, ESO secrets, IRSA)
 type: application
-version: 0.2.0
+version: 0.3.0
 appVersion: "1.0"

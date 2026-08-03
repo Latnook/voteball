@@ -3,6 +3,9 @@ kind: Ingress
 metadata:
   name: voteball
   namespace: {{ .Release.Namespace }}
+  labels:
+    app: frontend
+    {{- include "voteball.labels" . | nindent 4 }}
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
