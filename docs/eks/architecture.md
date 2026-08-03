@@ -170,7 +170,7 @@ separate so the graded application namespace contains only the application, and 
 - **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS (7-day PITR), ECR, ACM, WAF, S3,
   SNS, Secrets Manager (container only), IRSA roles, and every platform add-on — AWS Load Balancer
   Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
-  Container Insights, metrics-server, external-dns, ArgoCD, kube-prometheus-stack, **and Jenkins**
+  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack, **and Jenkins**
   (`terraform/addon-jenkins.tf`). State lives in a versioned, locked S3 bucket owned by no stack.
 - **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box —
   diagrams 2 and 3.

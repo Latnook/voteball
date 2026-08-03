@@ -13,11 +13,13 @@ spec:
       labels: { app: backend }
       annotations:
         # The amazon-cloudwatch-observability addon's mutating webhook injects an OTel agent per
-        # language into every pod by default. Backend is the only Python runtime in this chart, so
-        # keep that one and opt out of the rest explicitly (so a future addon default can't flip it
-        # back on silently).
+        # language into every pod by default. All four are off (so a future addon default can't flip
+        # one back on silently). Python was "true" until 2026-08-03: this pod's traces were the sole
+        # source of ~89k X-Ray traces/month, and Application Signals is now disabled add-on-wide in
+        # terraform/addon-cloudwatch.tf. Setting this back to "true" alone does nothing -- and if
+        # Application Signals is ever re-enabled, it silently resumes billing traces.
         instrumentation.opentelemetry.io/inject-java: "false"
-        instrumentation.opentelemetry.io/inject-python: "true"
+        instrumentation.opentelemetry.io/inject-python: "false"
         instrumentation.opentelemetry.io/inject-nodejs: "false"
         instrumentation.opentelemetry.io/inject-dotnet: "false"
     spec:

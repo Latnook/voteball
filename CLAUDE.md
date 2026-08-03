@@ -217,8 +217,20 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   OIDC/IRSA roles, ECR, ACM, S3, SNS, Secrets Manager (container only), RDS (restored from a pinned
   snapshot), **and every platform add-on** via `helm_release`/`aws_eks_addon` (AWS Load Balancer
   Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
-  Container Insights, metrics-server, external-dns, ArgoCD, kube-prometheus-stack). Needs
+  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack). Needs
   `terraform/voteball.tfvars` (gitignored) and `-var-file=voteball.tfvars`.
+
+  **The CloudWatch add-on is deliberately cut down to pod logs only, and the parts that are off cost
+  money per day when on.** `containerInsights` and `applicationSignals` were both billing this
+  account for a second copy of what `kube-prometheus-stack` already collects for free — measured
+  2026-08-03 at **$3.00/day of `CW:ObservationUsage`** ($30.03 in July) plus ~3.1 GB/day of log
+  ingestion, 61% of it `Type=ControlPlane` records duplicating Prometheus' apiserver scrape.
+  Application Signals was also the sole source of ~89k monthly X-Ray traces. Fluent Bit's pod-log
+  tail is scoped to `devops-app` only (it was every namespace; `ci`/`argocd`/`monitoring` were ~95%
+  of the volume). All of this lives in `terraform/addon-cloudwatch.tf` with the numbers in comments
+  — **read them before re-enabling anything there.** Note the Fluent Bit override *replaces* the
+  add-on's default `application-log.conf` rather than merging into it, so a dropped `[OUTPUT]` block
+  fails silently: the agent stays healthy and no logs arrive.
 - **Helm (`charts/voteball`)** is the app itself (namespace `devops-app`): 3 Deployments, Services,
   Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
   **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.

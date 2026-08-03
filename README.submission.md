@@ -18,7 +18,7 @@ the full security design see [`docs/security.md`](docs/security.md).)
 - **Outside Kubernetes (AWS, via `terraform/`):** the EKS cluster + Spot node group, a dedicated VPC
   (public/private/DB subnets, NAT), **RDS** Postgres (7-day PITR), **ECR**, **ACM** cert, **AWS WAF** in
   front of the ALB, **S3**, **SNS**, **Secrets Manager**, and the platform add-ons (AWS Load Balancer Controller, External Secrets Operator, Cluster
-  Autoscaler, Node Termination Handler, CloudWatch Container Insights, metrics-server, external-dns,
+  Autoscaler, Node Termination Handler, CloudWatch pod logging, metrics-server, external-dns,
   ArgoCD, kube-prometheus-stack, **and Jenkins**).
 - **In Kubernetes, a second namespace: `ci`.** Jenkins runs there — a controller with no AWS role at
   all, and ephemeral pod agents (rootless BuildKit + Trivy + skopeo + aws-cli) that build, scan and push
