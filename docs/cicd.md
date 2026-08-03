@@ -143,7 +143,8 @@ manifest does not reveal it.
 > pods are new. GitHub permission does not survive, because it is a *specific key*, and the rebuild
 > minted a different one. Anything based on proved identity is self-healing; anything based on a stored
 > secret needs re-registering. That is the whole reason step 1/4 of the runbook below repeats, and why
-> `deploy.sh` gained the automatic re-registration at step 11b.
+> `deploy.sh` gained the automatic re-registration at step 3c (with the reachability probe following
+> at step 11b, once there is a Jenkins to probe).
 
 ---
 
@@ -376,11 +377,18 @@ Prints a deploy public key to add to GitHub (with write access) and the webhook 
 > webhook is rejected and the pipeline's final `git push` is denied — a cluster that looks entirely
 > healthy with a CI pipeline nothing can trigger.
 >
-> **Since 2026-08-03 `deploy.sh` re-registers both automatically** at step 11b, via
-> `./scripts/register-github-ci.sh` — so step 4 below is now only needed when running the seed script
-> standalone, or when that step warned. The script is idempotent (it compares the vault's deploy-key
-> fingerprint against GitHub's and does nothing when they match) and reads the credentials from Secrets
-> Manager rather than from this script's output, so the webhook secret never reaches a log file.
+> **Since 2026-08-03 `deploy.sh` re-registers both automatically** at **step 3c**, via
+> `SKIP_PROBE=1 ./scripts/register-github-ci.sh` — so step 4 below is now only needed when running the
+> seed script standalone, or when that step warned. The script is idempotent (it compares the vault's
+> deploy-key fingerprint against GitHub's and does nothing when they match) and reads the credentials
+> from Secrets Manager rather than from this script's output, so the webhook secret never reaches a
+> log file.
+>
+> **Registration is early, at 3c, precisely because `deploy.sh` itself pushes** (`values.yaml`, at
+> step 9). That push fires the webhook left over from the previous cluster, so a key registered at the
+> *end* of the deploy arrives too late and the push produces a red `Permission denied (publickey)`
+> build. On the 2026-08-03 rebuild the gap was 21 seconds. The reachability probe stays at step 11b
+> (`PROBE_ONLY=1`), because unlike registration it needs a Jenkins to answer it.
 >
 
 > `scripts/deploy.sh` runs this at step 3b, **before** the apply that creates Jenkins. That order is

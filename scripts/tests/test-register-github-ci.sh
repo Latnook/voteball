@@ -45,6 +45,33 @@ grep -q "does NOT verify the shared secret" <<<"$out" \
   || fail "the success message must NOT claim the secret was verified (2026-08-03 finding)"
 ok "registers, probes, and does not overclaim about the secret"
 
+echo "== 2b. split-phase modes: deploy.sh registers early and probes late =="
+# These two modes exist to close the deploy-key race (2026-08-03 build 1): deploy.sh pushes
+# values.yaml at step 9, and until the key is on GitHub that push produces a red
+# "Permission denied (publickey)" build. Registration moved to step 3c with SKIP_PROBE=1, and the
+# probe stayed at 11b with PROBE_ONLY=1. If either mode regresses, the split silently collapses --
+# SKIP_PROBE failing open would stall the deploy on a probe that cannot pass yet, and PROBE_ONLY
+# failing open would re-delete and re-add a working key mid-deploy.
+out="$(SKIP_PROBE=1 ./scripts/register-github-ci.sh 2>&1)" || fail "SKIP_PROBE run exited non-zero"
+grep -q "Probing the webhook" <<<"$out" && fail "SKIP_PROBE=1 must not probe, got: $out"
+ok "SKIP_PROBE=1 registers (or no-ops) without probing"
+
+out="$(PROBE_ONLY=1 ./scripts/register-github-ci.sh 2>&1)" || fail "PROBE_ONLY run exited non-zero"
+grep -q "Probing the webhook" <<<"$out" || fail "PROBE_ONLY=1 must still probe, got: $out"
+grep -q "==> Deploy key" <<<"$out" && fail "PROBE_ONLY=1 must not touch the deploy key, got: $out"
+grep -q "removed stale" <<<"$out" && fail "PROBE_ONLY=1 must not delete anything"
+ok "PROBE_ONLY=1 probes without re-registering"
+
+# PROBE_ONLY must probe even though the key and hook already match -- the plain path exits early in
+# that case, which is exactly why step 11b cannot just call the script without a flag.
+grep -q "Already registered" <<<"$out" && fail "PROBE_ONLY=1 must bypass the early exit, got: $out"
+ok "PROBE_ONLY=1 bypasses the already-registered early exit"
+
+out="$(SKIP_PROBE=1 PROBE_ONLY=1 ./scripts/register-github-ci.sh 2>&1)" && \
+  fail "SKIP_PROBE + PROBE_ONLY together must be rejected, not silently do nothing"
+grep -q "mutually exclusive" <<<"$out" || fail "expected a mutual-exclusion error, got: $out"
+ok "rejects SKIP_PROBE + PROBE_ONLY together"
+
 echo "== 3. DNS-cache path: a non-resolving host must be reported CALMLY, not as a fault =="
 # Drives the script at a domain that does not exist, via TFVARS -- no production DNS is touched.
 cat > "$TMP/nx.tfvars" <<EOF

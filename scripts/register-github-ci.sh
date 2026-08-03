@@ -47,6 +47,26 @@ for c in jq ssh-keygen gh; do
   command -v "$c" >/dev/null 2>&1 || { echo "ERROR: '$c' is required by $0." >&2; exit 1; }
 done
 
+# ---- split-phase modes ------------------------------------------------------------------------------
+# The two halves of this script have DIFFERENT prerequisites, and deploy.sh needs them at different
+# points. Registration needs only the vault and tfvars -- no cluster, no DNS, no Jenkins. The probe
+# needs jenkins.<domain> resolving and Jenkins answering, which is only true near the end of a deploy.
+#
+# Running the whole thing at the end (as deploy.sh used to) leaves a window that a push falls into:
+# deploy.sh itself pushes values.yaml well before this ran, GitHub fires the webhook that survived the
+# previous cluster, and Jenkins fetches with a deploy key GitHub has not been told about yet. That is a
+# red "Permission denied (publickey)" build on an otherwise perfect deploy -- observed 2026-08-03,
+# build 1, which failed 21 seconds before the key was registered.
+#
+#   SKIP_PROBE=1  -- register, then stop. Safe before the cluster exists; deploy.sh uses it early.
+#   PROBE_ONLY=1  -- skip registration, probe only. deploy.sh uses it once Jenkins is serving.
+#
+# With neither set the behaviour is exactly as before: register if needed, then probe.
+if [ "${SKIP_PROBE:-0}" = "1" ] && [ "${PROBE_ONLY:-0}" = "1" ]; then
+  echo "ERROR: SKIP_PROBE and PROBE_ONLY are mutually exclusive -- together they would do nothing." >&2
+  exit 1
+fi
+
 # Fail closed, exactly like seed-jenkins-secret.sh's guard: an unauthenticated gh must stop here rather
 # than fall through to the branch that DELETES the live deploy key and then cannot add a replacement.
 if ! gh auth status >/dev/null 2>&1; then
@@ -98,47 +118,58 @@ done < "$TMP/ghkeys"
 
 HOOK_ID="$(gh api "repos/${REPO}/hooks" --jq ".[] | select(.config.url==\"${HOOK_URL}\") | .id" 2>/dev/null | head -1 || true)"
 
-if [ "${FORCE_REGISTER:-0}" != "1" ] && [ -n "$MATCHED_KEY" ] && [ -n "$HOOK_ID" ]; then
+if [ "${PROBE_ONLY:-0}" = "1" ]; then
   echo
-  echo "Already registered (key ${MATCHED_KEY}, hook ${HOOK_ID}) -- nothing to do."
-  echo "(Set FORCE_REGISTER=1 to re-register anyway.)"
-  exit 0
+  echo "PROBE_ONLY=1 -- skipping registration, probing only."
+else
+  if [ "${FORCE_REGISTER:-0}" != "1" ] && [ -n "$MATCHED_KEY" ] && [ -n "$HOOK_ID" ]; then
+    echo
+    echo "Already registered (key ${MATCHED_KEY}, hook ${HOOK_ID}) -- nothing to do."
+    echo "(Set FORCE_REGISTER=1 to re-register anyway.)"
+    exit 0
+  fi
+
+  # ---- deploy key ---------------------------------------------------------------------------------
+  # Remove by TITLE as well as by fingerprint: a stale key from a previous rebuild has a different
+  # fingerprint but the same title, and GitHub allows duplicate titles -- so they would otherwise pile
+  # up one per rebuild, and it would stop being obvious which one Jenkins actually uses.
+  echo
+  echo "==> Deploy key"
+  gh api "repos/${REPO}/keys" --jq ".[] | select(.title==\"${KEY_TITLE}\") | .id" | while read -r id; do
+    [ -n "$id" ] || continue
+    gh api -X DELETE "repos/${REPO}/keys/${id}" --silent && echo "    removed stale key ${id}"
+  done
+
+  # read_only=false is REQUIRED, not a preference: the pipeline pushes its own
+  # "ci: image tag <sha> [skip ci]" commit back to master. A read-only key makes every build fail at
+  # the very last step, after the image has already been built, scanned and pushed.
+  gh api -X POST "repos/${REPO}/keys" \
+    -f title="${KEY_TITLE}" \
+    -f key="$(cat "$TMP/id_ed25519.pub")" \
+    -F read_only=false \
+    --jq '"    registered key \(.id) (write access: \(.read_only|not))"'
+
+  # ---- webhook ------------------------------------------------------------------------------------
+  echo "==> Webhook"
+  gh api "repos/${REPO}/hooks" --jq ".[] | select(.config.url==\"${HOOK_URL}\") | .id" | while read -r id; do
+    [ -n "$id" ] || continue
+    gh api -X DELETE "repos/${REPO}/hooks/${id}" --silent && echo "    removed stale hook ${id}"
+  done
+
+  # Built with jq rather than -f flags so the secret is passed as a JSON value and never appears in
+  # this process's argv (where `ps` would show it to any other user on the machine).
+  jq -n --arg url "$HOOK_URL" --arg secret "$(cat "$TMP/webhook_secret")" \
+    '{name:"web", active:true, events:["push"],
+      config:{url:$url, content_type:"json", secret:$secret, insecure_ssl:"0"}}' > "$TMP/hook.json"
+  gh api -X POST "repos/${REPO}/hooks" --input "$TMP/hook.json" \
+    --jq '"    registered hook \(.id)"'
 fi
 
-# ---- deploy key -----------------------------------------------------------------------------------
-# Remove by TITLE as well as by fingerprint: a stale key from a previous rebuild has a different
-# fingerprint but the same title, and GitHub allows duplicate titles -- so they would otherwise pile up
-# one per rebuild, and it would stop being obvious which one Jenkins actually uses.
-echo
-echo "==> Deploy key"
-gh api "repos/${REPO}/keys" --jq ".[] | select(.title==\"${KEY_TITLE}\") | .id" | while read -r id; do
-  [ -n "$id" ] || continue
-  gh api -X DELETE "repos/${REPO}/keys/${id}" --silent && echo "    removed stale key ${id}"
-done
-
-# read_only=false is REQUIRED, not a preference: the pipeline pushes its own
-# "ci: image tag <sha> [skip ci]" commit back to master. A read-only key makes every build fail at the
-# very last step, after the image has already been built, scanned and pushed.
-gh api -X POST "repos/${REPO}/keys" \
-  -f title="${KEY_TITLE}" \
-  -f key="$(cat "$TMP/id_ed25519.pub")" \
-  -F read_only=false \
-  --jq '"    registered key \(.id) (write access: \(.read_only|not))"'
-
-# ---- webhook ---------------------------------------------------------------------------------------
-echo "==> Webhook"
-gh api "repos/${REPO}/hooks" --jq ".[] | select(.config.url==\"${HOOK_URL}\") | .id" | while read -r id; do
-  [ -n "$id" ] || continue
-  gh api -X DELETE "repos/${REPO}/hooks/${id}" --silent && echo "    removed stale hook ${id}"
-done
-
-# Built with jq rather than -f flags so the secret is passed as a JSON value and never appears in this
-# process's argv (where `ps` would show it to any other user on the machine).
-jq -n --arg url "$HOOK_URL" --arg secret "$(cat "$TMP/webhook_secret")" \
-  '{name:"web", active:true, events:["push"],
-    config:{url:$url, content_type:"json", secret:$secret, insecure_ssl:"0"}}' > "$TMP/hook.json"
-gh api -X POST "repos/${REPO}/hooks" --input "$TMP/hook.json" \
-  --jq '"    registered hook \(.id)"'
+if [ "${SKIP_PROBE:-0}" = "1" ]; then
+  echo
+  echo "SKIP_PROBE=1 -- registration complete; not probing (Jenkins is not expected to be up yet)."
+  exit 0
+fi
 
 # ---- probe, and classify what a failure actually means ---------------------------------------------
 # What a successful ping DOES prove: the DNS name resolves, the ALB routes to Jenkins, and Jenkins is

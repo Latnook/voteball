@@ -633,16 +633,29 @@ new webhook secret**, and GitHub is left holding the previous pair. Until both a
 is rejected and the build's final push is denied — with nothing in the deploy output warning you,
 because the deploy itself genuinely succeeded.
 
-**Since 2026-08-03 `deploy.sh` handles this for you**, as step 11b, by calling
+**Since 2026-08-03 `deploy.sh` handles this for you** by calling
 `./scripts/register-github-ci.sh`. That script reads the new key and secret straight from Secrets
 Manager (never from the deploy log, which would leave the webhook secret in a file on disk), replaces
 both on GitHub, and prints neither. It is idempotent — it compares the vault's deploy-key fingerprint
 against the keys GitHub already holds and does nothing when they match — so re-running `deploy.sh`
 without a rebuild changes nothing.
 
-It then **probes the webhook and tells you what a failure means**, which is more useful than a bare
-pass/fail. A successful ping proves the DNS name resolves, the load balancer routes, and Jenkins is up
-and answering — the whole path except the last step.
+**It runs in two halves, at two different points in the deploy, and the split is deliberate.**
+Registration happens at **step 3c**, right after the key is minted and long before anything can push
+(`SKIP_PROBE=1`). The reachability probe happens at **step 11b**, once Jenkins is actually serving
+(`PROBE_ONLY=1`).
+
+> **Why not do both at the end, as it used to?** Step 9 pushes `values.yaml` to `master`, and the
+> webhook that survived the previous cluster fires on that push. If the key has not been registered
+> yet, Jenkins fetches with a key GitHub has never been told about and the build dies on
+> `Permission denied (publickey)` — in the middle of a deploy that is otherwise going perfectly.
+> Measured on the 2026-08-03 rebuild: build 1 failed at **19:13:18Z**, the key was registered at
+> **19:13:39Z**. Twenty-one seconds. Registering first closes the window; the probe cannot move
+> earlier because there is no Jenkins to ping until step 6 has built the cluster.
+
+The probe **tells you what a failure means**, which is more useful than a bare pass/fail. A successful
+ping proves the DNS name resolves, the load balancer routes, and Jenkins is up and answering — the
+whole path except the last step.
 
 > **It does not prove the shared secret is right, and no status code can.** Tested against the live
 > stack on 2026-08-03: a webhook registered with a deliberately wrong secret still returned **200** in

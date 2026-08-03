@@ -150,6 +150,28 @@ step "3b/11 Seeding Jenkins credentials into Secrets Manager"
 # docs/cicd.md step 1 has always said to seed "before first apply"; this makes the script agree.
 ./scripts/seed-jenkins-secret.sh
 
+step "3c/11 Registering the CI deploy key and webhook on GitHub"
+# Registration is deliberately here, immediately after the key is minted, and NOT at the end of the
+# deploy where it used to live. Step 9 below pushes values.yaml to master, and the webhook that
+# survived the previous cluster fires on that push -- so Jenkins fetches with the new deploy key
+# while GitHub is still holding the previous rebuild's. The result is a red
+# "Permission denied (publickey)" build in the middle of a deploy that is otherwise going fine.
+# Observed on the 2026-08-03 rebuild: build 1 failed at 19:13:18Z, and the key was registered at
+# 19:13:39Z -- 21 seconds too late. Registering before anything can push closes the window.
+#
+# SKIP_PROBE=1 because the probe pings the webhook and expects Jenkins to answer, which cannot be
+# true yet -- the cluster is not built until step 6. The probe still runs, at step 11b, once it can
+# actually mean something.
+#
+# Same NOT-FATAL treatment as step 11b, for the same reason in reverse: this runs before the billed
+# apply, so failing here would abort a deploy over a GitHub API call that step 11b can still fix.
+if ! SKIP_PROBE=1 ./scripts/register-github-ci.sh; then
+  echo
+  echo "WARNING: could not register the deploy key/webhook on GitHub before the apply." >&2
+  echo "         The deploy continues, but a push during it may produce one failed build." >&2
+  echo "         Step 11b will retry; or run ./scripts/register-github-ci.sh yourself." >&2
+fi
+
 step "4/11  Mirroring the Trivy vulnerability database into ECR"
 # Must exist before any image is scanned. Not otherwise on any automated path (see
 # scripts/mirror-trivy-db.sh) -- skipping this after a fresh rebuild means every
@@ -190,9 +212,13 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   echo "values.yaml changed — committing so ArgoCD deploys these values, not the stale ones."
   git add charts/voteball/values.yaml
   # Deliberately NO [skip ci] here, though it looks like it belongs. This commit touches only
-  # charts/voteball/values.yaml, and the Jenkinsfile already gates every build stage on
-  # `changeset 'services/**'` (G3), so it triggers no rebuild anyway -- the marker would buy
-  # nothing. It would also actively break things: the Guard stage reads HEAD's message alone and
+  # charts/voteball/values.yaml, and the Jenkinsfile gates every build stage on
+  # `changeset 'services/**'` (G3), so it rebuilds nothing -- the marker would buy nothing.
+  # (After a controller restart G3b makes this push run the pipeline rather than skip it, because
+  # there is no changelog to judge by. That is still not a rebuild: step 8 has already pushed the
+  # images for this SHA, so G1 short-circuits build/scan/push, and the tag bump finds values.yaml
+  # already naming this tag and commits nothing. The build is a clean no-op, not a loop.)
+  # A marker here would also actively break things: the Guard stage reads HEAD's message alone and
   # aborts the WHOLE build, while `changeset` spans every commit since the last build. If an app-code
   # commit and this one land in the same build window, the marker would abort the build that was
   # supposed to build the app-code commit, and nothing would retry it.
@@ -232,25 +258,24 @@ else
   ./scripts/render-argocd-app.sh | kubectl apply -f -
 fi
 
-step "11b/11 Pointing GitHub at this cluster's Jenkins"
-# Step 3b minted a NEW deploy key and webhook secret (the vault is deleted with the stack), so GitHub
-# is still holding the previous rebuild's pair until this runs. Without it the deploy succeeds
-# completely and CI is silently dead: the webhook is rejected on its HMAC and the pipeline's final
-# tag-bump push is denied. This used to be a by-hand step done from terminal scrollback, which is
-# exactly the kind of step that gets skipped.
+step "11b/11 Checking GitHub can actually reach this cluster's Jenkins"
+# The REGISTRATION half of this now happens at step 3c, before anything can push. What is left here
+# is the probe, which is the half that needs a cluster: it pings the webhook and classifies the
+# result, proving jenkins.<domain> resolves, the ALB routes, and Jenkins is answering. None of that
+# can be true at step 3c, which is why the two are split -- see the comment there.
 #
-# Idempotent -- it compares the vault's deploy-key fingerprint against GitHub's and does nothing when
-# they already match, so re-running deploy.sh without a rebuild is a no-op here.
+# PROBE_ONLY=1 also side-steps a subtlety: register-github-ci.sh exits early and silently when the
+# key and hook already match, which after step 3c they always do. Calling it plainly here would
+# print "nothing to do" and never probe at all, quietly dropping the post-deploy reachability check.
 #
 # DELIBERATELY NOT FATAL. Everything above this line has already worked: the site is up and serving.
 # Failing the whole deploy over a GitHub API call would misreport a working deployment as a broken one.
 # It warns loudly instead, and the fix is one standalone command.
-if ! ./scripts/register-github-ci.sh; then
+if ! PROBE_ONLY=1 ./scripts/register-github-ci.sh; then
   echo
-  echo "WARNING: could not register the deploy key/webhook on GitHub." >&2
-  echo "         The DEPLOY ITSELF SUCCEEDED — the site is up. Only CI is affected: pushes will not" >&2
-  echo "         trigger a build, and a build's final tag-bump push would be denied." >&2
-  echo "         Fix it whenever you like, then re-run:  ./scripts/register-github-ci.sh" >&2
+  echo "WARNING: could not confirm GitHub can reach Jenkins." >&2
+  echo "         The DEPLOY ITSELF SUCCEEDED — the site is up. Only CI may be affected: if pushes" >&2
+  echo "         trigger no build, re-run:  ./scripts/register-github-ci.sh" >&2
 fi
 
 cat <<EOF
