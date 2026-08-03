@@ -39,6 +39,114 @@ Committing a JCasC change and walking away changes nothing until someone runs `t
 
 ---
 
+## What a build agent is, and what it is allowed to do
+
+The `Jenkinsfile` says `agent { label 'voteball-build' }` and nothing else. Everything in this section is
+what that one line sets in motion. **The agent does not exist until a build needs it, and stops existing
+when the build ends** — there is no build machine to log into, patch, or keep clean.
+
+### Lifecycle
+
+1. **A queue item appears** needing the label `voteball-build`. The controller runs `numExecutors: 0`
+   (set in both `ci/jenkins/jenkins.yaml` and the Helm values), so it can never satisfy that itself. The
+   item sits in the queue *unsatisfiable* — by design, not as a fault.
+2. **The Kubernetes cloud provisions.** It matches the label to its one pod template, checks its cap
+   (`containerCapStr: "3"` — never more than three agent pods alive at once), mints a one-time
+   connection secret for this specific agent, and creates a pod in `ci`.
+3. **Kubernetes schedules it** onto the existing Spot node group. If nothing fits, Cluster Autoscaler
+   adds a node *first* — seconds on a warm cluster, minutes on a cold one. That wait happens below
+   Jenkins and is invisible in the build log.
+4. **The agent dials out.** The `jnlp` container connects to `jenkins-agent.ci.svc.cluster.local:50000`
+   and presents its secret. Note the direction — the controller never connects to the agent. Once the
+   handshake lands the node comes online and the pipeline starts.
+5. **The pod is destroyed** when the build ends. Agents are **single-use**: one build per pod, never
+   reused. `retentionTimeout: 5` is the backstop that reaps a pod which was provisioned but never
+   connected (the NetworkPolicy failure in Failure modes is exactly that loop).
+
+The pod-creating API call in step 2 is made by the **controller's** ServiceAccount, using a
+namespace-scoped Role (`jenkins-schedule-agents`) over `pods`, `pods/exec`, `pods/log`,
+`persistentvolumeclaims` and `events` in `ci` — nothing else, and nothing in any other namespace.
+`pods/exec` is not incidental: it is *how* every `container('buildkit') { sh ... }` step runs. The build
+has no shell of its own; each step is the controller exec'ing into a named container of a pod it owns.
+
+### What is inside it
+
+Five containers. Four are declared in `ci/jenkins/jenkins.yaml`; the fifth is added by the plugin.
+
+| Container | Image | Role |
+|---|---|---|
+| `jnlp` | `jenkins/inbound-agent` — **implicit**, added by the plugin | controller connection, `git`, the workspace. Runs any `sh` step *not* wrapped in `container()` |
+| `buildkit` | `moby/buildkit:v0.19.0-rootless` | builds the four images into tarballs (§5) |
+| `trivy` | `aquasec/trivy` | scans those tarballs |
+| `skopeo` | `quay.io/skopeo/stable` | copies the scanned tarballs into ECR |
+| `awscli` | `amazon/aws-cli` | mints ECR tokens for the two above |
+
+Plus two `emptyDir`s: `images` (8 Gi cap — the tarballs, and the credential hand-off between containers)
+and `buildkit-state`. The plugin also mounts **one shared workspace volume into every container**, which
+is why the Build stage can pass a *relative* path (`--local context=services/backend`) from inside
+`buildkit` even though the checkout happened in `jnlp`.
+
+> **"5/5 Running" and "4/5" are both meaningful counts** when reading `kubectl get pods -n ci` during a
+> build — two entries in Failure modes below turn on them. Adding or removing a container changes both.
+
+### The five trust boundaries
+
+The agent crosses five, each with a different credential. **No credential works for more than one**, and
+none of them is a long-lived AWS key.
+
+| Boundary | How it is authenticated | Scope | Lifetime |
+|---|---|---|---|
+| Agent → controller | one-time secret, injected into the pod at creation | this agent only | dies with the pod |
+| Agent → Kubernetes API | ServiceAccount token | **nothing — zero RBAC** | n/a |
+| Agent → AWS | IRSA (OIDC federation) | ECR on `repository/<cluster_name>-*` | minutes, auto-renewed |
+| Agent → ECR registry | token from `ecr:GetAuthorizationToken` | same repositories | 12 h, deleted at stage end |
+| Agent → GitHub | SSH deploy key, lent for one stage | this repository | until the next rebuild |
+
+**The agent has no Kubernetes permissions at all.** The `jenkins-agent` ServiceAccount is the subject of
+*no* Role or ClusterRole binding anywhere in the cluster — its token authenticates it as
+`system:serviceaccount:ci:jenkins-agent` and authorizes nothing. A build that ran `kubectl` would get a
+403 on every call. This is the mechanical reason "Jenkins does not deploy" holds even though Jenkins now
+runs *inside* the cluster it deploys to, and it is worth re-checking after any chart bump:
+
+```bash
+kubectl get rolebinding,clusterrolebinding -A -o json \
+  | jq -r '.items[] | select(.subjects[]?.name=="jenkins-agent") | .metadata.name'   # expect: nothing
+```
+
+**AWS — identity, not a password.** Terraform told AWS once to trust this cluster's OIDC provider, and
+wrote a trust policy naming exactly one claimant: `system:serviceaccount:ci:jenkins-agent`, audience
+`sts.amazonaws.com`. At build time the EKS pod-identity webhook injects a short-lived, signed token into
+the pod; the AWS SDK exchanges it via `sts:AssumeRoleWithWebIdentity` for temporary credentials. **No
+static AWS key exists anywhere** — not in the pod, not in git, not in tfstate, not in Secrets Manager. §3
+below has the resulting permissions; this is how the pod comes to hold them. The controller's own
+ServiceAccount carries no `role-arn` annotation and therefore no AWS identity whatsoever.
+
+**GitHub — a real key, borrowed not owned.** GitHub has no equivalent of the above, so this one is an
+actual secret. `scripts/seed-jenkins-secret.sh` generates a fresh ed25519 pair at deploy time, keeps the
+private half in Secrets Manager and prints the public half;
+`scripts/register-github-ci.sh` registers that public half on the repo as a deploy key with
+`read_only=false` (write access is required — the pipeline pushes its own tag bump). At build time the
+private half travels:
+
+```
+Secrets Manager (voteball/jenkins)
+  → ESO  → k8s Secret `jenkins-secret`  → controller pod env  → JCasC credential `voteball-deploy-key`
+  → sshagent(), for the duration of the Bump stage only
+```
+
+It stays on the **controller**; `sshagent` lends it over the already-authenticated agent connection for
+one stage. It is never in the pod spec and never an agent environment variable, so reading the pod
+manifest does not reveal it.
+
+> **Why this asymmetry costs you a step after every teardown.** AWS permission survives a rebuild
+> because it is a *rule* — "trust this cluster's `jenkins-agent`" — and the rule does not care that the
+> pods are new. GitHub permission does not survive, because it is a *specific key*, and the rebuild
+> minted a different one. Anything based on proved identity is self-healing; anything based on a stored
+> secret needs re-registering. That is the whole reason step 1/4 of the runbook below repeats, and why
+> `deploy.sh` gained the automatic re-registration at step 11b.
+
+---
+
 ## The pipeline, step by step
 
 The pipeline lives in [`Jenkinsfile`](../Jenkinsfile) at the repository root, and the Jenkins job is
@@ -101,7 +209,9 @@ reviewed file, not an invisible configuration change.
 There is no Docker daemon and no `docker` CLI in a pod agent at all — EKS nodes run `containerd`. Builds
 use rootless BuildKit instead (§5).
 
-AWS identity is **IRSA**, and it is split narrower than the single EC2 instance profile it replaces:
+AWS identity is **IRSA**, and it is split narrower than the single EC2 instance profile it replaces. The
+table below is the authoritative permission split; the *mechanism* by which a pod comes to hold these
+permissions is in "What a build agent is" above.
 
 | Component | AWS role |
 |---|---|
@@ -356,6 +466,7 @@ G1–G7 differences the original design predicted and remain accurate.
 | `RepositoryNotFoundException` pushing to ECR | **The main stack is destroyed** — Jenkins goes with it, and so does ECR (`force_delete = true`) | Expected while torn down. `./scripts/build-push-ecr.sh` is the manual fallback when there is no cluster to run CI at all |
 | CI is green but the site doesn't change | No cluster, or no ArgoCD Application | `kubectl get application voteball -n argocd`; `./scripts/deploy.sh` bootstraps it |
 | Pods go to `ImagePullBackOff` after a sync | `values.yaml` on `master` names a tag/registry that doesn't exist in this account's ECR | `./scripts/sync-values-from-tf.sh --check` |
+| The Jenkins UI shows *"It appears that your reverse proxy set up is broken"* | **Cosmetic, and structural.** `unclassified.location.url` is the public `https://jenkins.<app_domain>/`, but the ALB routes **only** `/github-webhook` there and the UI is reached by port-forward on `localhost:8080`. The monitor's self-test requests the configured root URL, gets a 404 from the ALB, and concludes the proxy is broken — it is detecting the deliberate *absence* of a proxy for the UI | Ignore it; nothing is wrong and the webhook is unaffected. **Do not** point `location.url` at localhost to silence it — the GitHub plugin builds the advertised webhook URL from that value. Dismissing it in the UI does not survive a restart (`JENKINS_HOME` is an `emptyDir`); the durable route is `jenkins.disabledAdministrativeMonitors` in JCasC, but verify the key against this Jenkins version first — an unrecognised JCasC key stops the controller booting, exactly like the `crumbIssuer` case |
 
 ---
 
