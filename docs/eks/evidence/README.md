@@ -17,10 +17,49 @@ Re-capture with **[`../../../scripts/capture-evidence.sh`](../../../scripts/capt
 ./scripts/capture-evidence.sh --only-restart  # re-take just the pod-restart poll
 ```
 
-## 2026-08-03 — the current system, across a destroy → rebuild cycle
+## 2026-08-04 — the current system, and a clean first-run rebuild
 
-Captured on EKS **1.36** with Jenkins running in-cluster (namespace `ci`) — the architecture the repo
-describes today. Two matched halves either side of one `destroy.sh` → `deploy.sh` cycle:
+Captured on EKS **1.36**, Jenkins in-cluster, across one `destroy.sh` → `deploy.sh` cycle:
+**132 resources destroyed** in 12m09s, **121 created** in 17m21s. **Vote totals identical across it:
+18 previous-party, 23 upcoming.** Everything else — certificate, ALB, cluster, node IPs, every pod
+name, and this time the deploy key and webhook too — is new.
+
+**Unlike the 2026-08-03 cycle below, this one completed on the first invocation**, because the two
+faults that cycle exposed were fixed in between. This set exists to show they stay fixed:
+
+- **The deploy-key race.** On 2026-08-03, `deploy.sh` pushed `values.yaml` at step 9 while the deploy
+  key was not registered until step 11b — so the webhook fired and the build died on
+  `Permission denied (publickey)` 21 seconds before the key existed on GitHub. Registration moved to
+  **step 3c**; `2026-08-04-deploy-steps.txt` shows it registering a genuinely new key
+  (`removed stale key … / registered key …`) before the cluster is even built, and the probe running
+  separately at 11b once Jenkins can answer it.
+- **The empty-changelog skip (G3b).** The first build on a freshly recreated controller has no
+  changelog, which `changeset 'services/**'` cannot distinguish from "nothing changed" — so on
+  2026-08-03 it skipped build, scan, push and tag bump and reported **SUCCESS** while ECR gained
+  nothing. Build 1 here logs `First time build. Skipping changelog.` and **builds anyway**, then
+  build 2 — the pipeline's own `[skip ci]` commit — is correctly aborted `NOT_BUILT` by the Guard.
+  That pair is the whole invariant: never silently skip, never loop.
+
+The first build after a rebuild also logs `failed to configure registry cache importer:
+…/voteball-buildcache:… not found` four times. That is expected and non-fatal — ECR is destroyed with
+the stack, so the cache tags do not exist yet and BuildKit proceeds without them.
+
+| File | What it is |
+|---|---|
+| `2026-08-04-destroy-steps.txt` | Six ordered teardown steps, `Destroy complete! Resources: 132 destroyed.` |
+| `2026-08-04-deploy-steps.txt` | One clean invocation, ending `Deploy complete.` / `DEPLOY_EXIT=0` |
+| `2026-08-04-pre-teardown-kubectl.txt` / `-demos.txt` | The required outputs and demos before teardown |
+| `2026-08-04-pre-teardown-pod-restart-poll.txt` | **123** probes, all 200, across a `kubectl delete pod` |
+| `2026-08-04-post-rebuild-kubectl.txt` / `-demos.txt` | The same, on the rebuilt cluster — new certificate, same vote totals |
+| `2026-08-04-post-rebuild-pod-restart-poll.txt` | **124** probes, all 200, on the rebuilt cluster |
+
+## 2026-08-03 — the previous cycle, kept because it recorded two real faults
+
+Captured on EKS **1.36** with Jenkins running in-cluster (namespace `ci`) — the same architecture as
+the 2026-08-04 set above, which supersedes this one as the current-state capture. **This set is kept
+deliberately**: it is the record of the deploy-key race and the empty-changelog skip actually
+happening, and a fix is only meaningful next to evidence of what it fixes. Two matched halves either
+side of one `destroy.sh` → `deploy.sh` cycle:
 **132 resources destroyed**, then rebuilt, with the database restored from the automatic final
 snapshot. **The vote totals are identical across it: 18 previous-party, 23 upcoming.** Everything
 else — certificate, ALB, cluster, node IPs, every pod name — is new.
