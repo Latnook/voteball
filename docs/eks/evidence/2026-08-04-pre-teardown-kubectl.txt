@@ -1,0 +1,126 @@
+# Captured 2026-08-04T00:00:12+03:00 against cluster 'voteball' in il-central-1. Frozen evidence -- do not edit.
+
+### kubectl get nodes
+NAME                                           STATUS   ROLES    AGE    VERSION
+ip-10-0-32-54.il-central-1.compute.internal    Ready    <none>   118m   v1.36.2-eks-bca9cf6
+ip-10-0-51-223.il-central-1.compute.internal   Ready    <none>   118m   v1.36.2-eks-bca9cf6
+
+### kubectl get namespaces
+NAME                STATUS   AGE
+amazon-cloudwatch   Active   117m
+argocd              Active   118m
+ci                  Active   109m
+default             Active   123m
+devops-app          Active   107m
+external-secrets    Active   118m
+kube-node-lease     Active   123m
+kube-public         Active   123m
+kube-system         Active   123m
+monitoring          Active   115m
+
+### kubectl get pods -n devops-app
+NAME                        READY   STATUS    RESTARTS   AGE
+backend-df69d68cc-mcnzb     1/1     Running   0          13m
+backend-df69d68cc-rnj6g     1/1     Running   0          13m
+frontend-79885b6497-jw74h   1/1     Running   0          13m
+frontend-79885b6497-zvd69   1/1     Running   0          13m
+worker-75cd6fc77f-hfbnw     1/1     Running   0          13m
+
+### kubectl get deployments -n devops-app
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+backend    2/2     2            2           107m
+frontend   2/2     2            2           107m
+worker     1/1     1            1           107m
+
+### kubectl get services -n devops-app
+NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+backend    ClusterIP   172.20.147.178   <none>        5000/TCP   107m
+frontend   ClusterIP   172.20.84.71     <none>        80/TCP     107m
+
+### kubectl get ingress -n devops-app
+NAME       CLASS   HOSTS                  ADDRESS                                                             PORTS   AGE
+voteball   alb     voteball.latnook.com   k8s-voteball-327d05a115-1366562292.il-central-1.elb.amazonaws.com   80      107m
+
+### kubectl describe pod backend-df69d68cc-mcnzb -n devops-app
+Name:             backend-df69d68cc-mcnzb
+Namespace:        devops-app
+Priority:         0
+Service Account:  backend
+Node:             ip-10-0-32-54.il-central-1.compute.internal/10.0.32.54
+Start Time:       Mon, 03 Aug 2026 23:46:30 +0300
+Labels:           app=backend
+                  pod-template-hash=df69d68cc
+                  topology.kubernetes.io/region=il-central-1
+                  topology.kubernetes.io/zone=il-central-1a
+Annotations:      instrumentation.opentelemetry.io/inject-dotnet: false
+                  instrumentation.opentelemetry.io/inject-java: false
+                  instrumentation.opentelemetry.io/inject-nodejs: false
+                  instrumentation.opentelemetry.io/inject-python: false
+Status:           Running
+IP:               10.0.47.23
+IPs:
+  IP:           10.0.47.23
+Controlled By:  ReplicaSet/backend-df69d68cc
+Containers:
+  backend:
+    Container ID:   containerd://c994bb0ada63dd36406ae3ae162ead77c640094ae40dea884d2ec7d170c9cd1d
+    Image:          590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:e2ab5d1
+    Image ID:       590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:7b7c0ef9348ce762fc0425a40ef0b9374cb3bbed81517b90843eba83df2b2329
+    Port:           5000/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Mon, 03 Aug 2026 23:46:33 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     250m
+      memory:  256Mi
+    Requests:
+      cpu:      50m
+      memory:   128Mi
+    Liveness:   tcp-socket :5000 delay=10s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  http-get http://:5000/health delay=5s timeout=1s period=10s #success=1 #failure=3
+    Environment Variables from:
+      app-config  ConfigMap  Optional: false
+      app-secret  Secret     Optional: false
+    Environment:  <none>
+    Mounts:
+      /tmp from tmp (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-mjtdd (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  tmp:
+    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:     
+    SizeLimit:  <unset>
+  kube-api-access-mjtdd:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  13m   default-scheduler  Successfully assigned devops-app/backend-df69d68cc-mcnzb to ip-10-0-32-54.il-central-1.compute.internal
+  Normal  Pulled     13m   kubelet            spec.containers{backend}: Container image "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:e2ab5d1" already present on machine and can be accessed by the pod
+  Normal  Created    13m   kubelet            spec.containers{backend}: Container created
+  Normal  Started    13m   kubelet            spec.containers{backend}: Container started
+
+### kubectl logs backend-df69d68cc-mcnzb -n devops-app --tail=40
+[2026-08-03 20:46:34 +0000] [1] [INFO] Starting gunicorn 23.0.0
+[2026-08-03 20:46:34 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+[2026-08-03 20:46:34 +0000] [1] [INFO] Using worker: sync
+[2026-08-03 20:46:34 +0000] [7] [INFO] Booting worker with pid: 7
+[2026-08-03 20:46:34 +0000] [8] [INFO] Booting worker with pid: 8
+
