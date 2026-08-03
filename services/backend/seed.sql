@@ -244,14 +244,19 @@ UPDATE leagues SET sort_order = 7 WHERE name_en = 'World Cup 2026';
 -- League logos/emblems. Competition emblems (unlike individual club crests) carry no per-club
 -- trademark ambiguity, so these are safe to seed directly (see the World Cup national-flags note
 -- above) -- admin can still override any of these via the leagues admin UI's Logo URL field.
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/17/2026_FIFA_World_Cup_emblem.svg' WHERE name = 'World Cup 2026' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d1/UEFA_Champions_League_logo_no_text.svg' WHERE name = 'UCL' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://b.fssta.com/uploads/application/soccer/competition-logos/EnglishPremierLeague.png' WHERE name = 'EPL' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg' WHERE name = 'La Liga' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg' WHERE name = 'Serie A' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name = 'Bundesliga' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Israeli Premier League' AND logo_url IS NULL;
-UPDATE leagues SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png' WHERE name = 'Liga Leumit' AND logo_url IS NULL;
+UPDATE leagues t SET logo_url = v.logo_url
+FROM (VALUES
+    ('World Cup 2026', 'https://upload.wikimedia.org/wikipedia/commons/1/17/2026_FIFA_World_Cup_emblem.svg'),
+    ('UCL', 'https://upload.wikimedia.org/wikipedia/commons/d/d1/UEFA_Champions_League_logo_no_text.svg'),
+    ('EPL', 'https://b.fssta.com/uploads/application/soccer/competition-logos/EnglishPremierLeague.png'),
+    ('La Liga', 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg'),
+    ('Serie A', 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg'),
+    ('Bundesliga', 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg'),
+    ('Israeli Premier League', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
+    ('Liga Leumit', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png')
+) AS v(name, logo_url)
+WHERE t.name = v.name
+  AND t.logo_url IS NULL;
 
 -- Club display names.
 -- One row per entity, all display languages together. COALESCE is the per-column equivalent of
@@ -529,140 +534,148 @@ WHERE c.name_en = v.name_en
 -- production data. Also folds in the Hapoel Ramat Gan Givatayim / Maccabi Petah Tikva / Ironi
 -- Tiberias promotion swap (Ashdod, Maccabi Bnei Reineh, and Hapoel Kfar Saba relegated out) and
 -- the Hapoel Be'er Sheva / Ironi Kiryat Shmona name_en corrections above.
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/1e/%D7%A1%D7%9E%D7%9C_%D7%9E%D7%9B%D7%91%D7%99_%D7%97%D7%99%D7%A4%D7%94_2023.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Maccabi Haifa' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/4/45/Maccabi_Tel_Aviv_FC.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Maccabi Tel Aviv' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/8/85/Logo-hapoel-positive.svg' WHERE name_en = 'Hapoel Be''er Sheva' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/ac/Hapoel_Tel_Aviv_F.C.png' WHERE name_en = 'Hapoel Tel Aviv' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/61/Beitar_Jerusalem.png' WHERE name_en = 'Beitar Jerusalem' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/b/bc/MaccabiNetanyaNewlogo2021.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Maccabi Netanya' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/e4/Hapoel_Haifa_New_Logo.png' WHERE name_en = 'Hapoel Haifa' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/b/bb/Hapo%C3%83%C2%ABl_Bnei_Sakhnin.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Bnei Sakhnin' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/91/Hapoel_ramat-gan.svg' WHERE name_en = 'Hapoel Ramat Gan Givatayim' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/5d/FC_Hapoel_Jerusalem_2021.png' WHERE name_en = 'Hapoel Jerusalem' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d1/Hapoel_Ironi_Kiryat_Shmona_badge.png' WHERE name_en = 'Ironi Kiryat Shmona' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/93/MPT_FC_2024.png?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Maccabi Petah Tikva' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/6/63/Hapoel_Petach_Tikva_logo.png' WHERE name_en = 'Hapoel Petah Tikva' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/84/Ironi_logo_new.gif?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_en = 'Ironi Tiberias' AND logo_url IS NULL;
+UPDATE clubs t SET logo_url = v.logo_url
+FROM (VALUES
+    ('Maccabi Haifa', 'https://upload.wikimedia.org/wikipedia/he/1/1e/%D7%A1%D7%9E%D7%9C_%D7%9E%D7%9B%D7%91%D7%99_%D7%97%D7%99%D7%A4%D7%94_2023.png'),
+    ('Maccabi Tel Aviv', 'https://upload.wikimedia.org/wikipedia/he/4/45/Maccabi_Tel_Aviv_FC.png'),
+    ('Hapoel Be''er Sheva', 'https://upload.wikimedia.org/wikipedia/en/8/85/Logo-hapoel-positive.svg'),
+    ('Hapoel Tel Aviv', 'https://upload.wikimedia.org/wikipedia/en/a/ac/Hapoel_Tel_Aviv_F.C.png'),
+    ('Beitar Jerusalem', 'https://upload.wikimedia.org/wikipedia/en/6/61/Beitar_Jerusalem.png'),
+    ('Maccabi Netanya', 'https://upload.wikimedia.org/wikipedia/he/b/bc/MaccabiNetanyaNewlogo2021.png'),
+    ('Hapoel Haifa', 'https://upload.wikimedia.org/wikipedia/en/e/e4/Hapoel_Haifa_New_Logo.png'),
+    ('Bnei Sakhnin', 'https://upload.wikimedia.org/wikipedia/he/b/bb/Hapo%C3%83%C2%ABl_Bnei_Sakhnin.png'),
+    ('Hapoel Ramat Gan Givatayim', 'https://upload.wikimedia.org/wikipedia/en/9/91/Hapoel_ramat-gan.svg'),
+    ('Hapoel Jerusalem', 'https://upload.wikimedia.org/wikipedia/en/5/5d/FC_Hapoel_Jerusalem_2021.png'),
+    ('Ironi Kiryat Shmona', 'https://upload.wikimedia.org/wikipedia/en/d/d1/Hapoel_Ironi_Kiryat_Shmona_badge.png'),
+    ('Maccabi Petah Tikva', 'https://upload.wikimedia.org/wikipedia/he/9/93/MPT_FC_2024.png'),
+    ('Hapoel Petah Tikva', 'https://upload.wikimedia.org/wikipedia/he/6/63/Hapoel_Petach_Tikva_logo.png'),
+    ('Ironi Tiberias', 'https://upload.wikimedia.org/wikipedia/he/8/84/Ironi_logo_new.gif'),
 
--- Liga Leumit club logos. F.C. Kiryat Yam has no Wikimedia crest. It used to hotlink the club's
--- Instagram profile picture, which was wrong for three independent reasons: the URL is signed and
--- expires (`oe=`), the CDN may refuse hotlinks, and -- the one that actually bit -- browsers with
--- tracker blocking (uBlock, Firefox ETP, Brave, Safari ITP) drop *.fbcdn.net requests outright.
--- The crest was therefore invisible to many visitors while `curl` fetched it happily, which is a
--- failure no server-side check can detect. It is now served from our own origin instead.
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/5/5b/Ashdod.png' WHERE name_en = 'F.C. Ashdod' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f7/MaccabiBneiReine2022.png' WHERE name_en = 'Maccabi Bnei Reineh' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f5/Bnei_Jehuda_Tel_Aviv_FC.svg' WHERE name_en = 'Bnei Yehuda' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/81/HapoelHaderaFC.svg' WHERE name_en = 'Hapoel Hadera' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/87/Hapoel_Kfar_Saba_FC_Logo.png' WHERE name_en = 'Hapoel Kfar Saba' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/90/Hapoel_Kfar_Shalem_Logo.png' WHERE name_en = 'Hapoel Kfar Shalem' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/95/%D7%A0%D7%95%D7%A4%D7%94%D7%92%D7%9C%D7%99%D7%9C.png' WHERE name_en = 'Hapoel Nof HaGalil' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/7/75/Hapoelakko.png' WHERE name_en = 'Hapoel Akko' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/01/Hapoel_Afula_F.C.png' WHERE name_en = 'Hapoel Afula' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/ce/Hap-rish.png' WHERE name_en = 'Hapoel Rishon LeZion' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/3f/HapoelRaanana.png' WHERE name_en = 'Hapoel Ra''anana' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/6/6f/FC_Kafr_Qasim_Logo.png' WHERE name_en = 'F.C. Kafr Qasim' AND logo_url IS NULL;
+    -- Liga Leumit club logos. F.C. Kiryat Yam has no Wikimedia crest. It used to hotlink the club's
+    -- Instagram profile picture, which was wrong for three independent reasons: the URL is signed and
+    -- expires (`oe=`), the CDN may refuse hotlinks, and -- the one that actually bit -- browsers with
+    -- tracker blocking (uBlock, Firefox ETP, Brave, Safari ITP) drop *.fbcdn.net requests outright.
+    -- The crest was therefore invisible to many visitors while `curl` fetched it happily, which is a
+    -- failure no server-side check can detect. It is now served from our own origin instead.
+    ('F.C. Ashdod', 'https://upload.wikimedia.org/wikipedia/he/5/5b/Ashdod.png'),
+    ('Maccabi Bnei Reineh', 'https://upload.wikimedia.org/wikipedia/he/f/f7/MaccabiBneiReine2022.png'),
+    ('Bnei Yehuda', 'https://upload.wikimedia.org/wikipedia/en/f/f5/Bnei_Jehuda_Tel_Aviv_FC.svg'),
+    ('Hapoel Hadera', 'https://upload.wikimedia.org/wikipedia/he/8/81/HapoelHaderaFC.svg'),
+    ('Hapoel Kfar Saba', 'https://upload.wikimedia.org/wikipedia/he/8/87/Hapoel_Kfar_Saba_FC_Logo.png'),
+    ('Hapoel Kfar Shalem', 'https://upload.wikimedia.org/wikipedia/he/9/90/Hapoel_Kfar_Shalem_Logo.png'),
+    ('Hapoel Nof HaGalil', 'https://upload.wikimedia.org/wikipedia/he/9/95/%D7%A0%D7%95%D7%A4%D7%94%D7%92%D7%9C%D7%99%D7%9C.png'),
+    ('Hapoel Akko', 'https://upload.wikimedia.org/wikipedia/he/7/75/Hapoelakko.png'),
+    ('Hapoel Afula', 'https://upload.wikimedia.org/wikipedia/en/0/01/Hapoel_Afula_F.C.png'),
+    ('Hapoel Rishon LeZion', 'https://upload.wikimedia.org/wikipedia/he/c/ce/Hap-rish.png'),
+    ('Hapoel Ra''anana', 'https://upload.wikimedia.org/wikipedia/en/3/3f/HapoelRaanana.png'),
+    ('F.C. Kafr Qasim', 'https://upload.wikimedia.org/wikipedia/he/6/6f/FC_Kafr_Qasim_Logo.png'),
+    ('Maccabi Herzliya', 'https://upload.wikimedia.org/wikipedia/he/f/f5/Maccabi_Herzliya.png'),
+    ('Maccabi Kavilio Jaffa', 'https://upload.wikimedia.org/wikipedia/he/8/88/MaccabiJaffaCrestNew2018.png'),
+    ('Ironi Modi''in', 'https://upload.wikimedia.org/wikipedia/he/d/d6/IroniModiinFC.png'),
+
+    -- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
+    ('Sassuolo', 'https://upload.wikimedia.org/wikipedia/en/1/1c/US_Sassuolo_Calcio_logo.svg'),
+    ('Sunderland', 'https://upload.wikimedia.org/wikipedia/en/7/77/Logo_Sunderland.svg'),
+
+    -- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
+    ('1. FC Köln', 'https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg'),
+    ('AC Milan', 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg'),
+    ('Alavés', 'https://upload.wikimedia.org/wikipedia/en/f/f8/Deportivo_Alaves_logo_%282020%29.svg'),
+    ('Arsenal', 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg'),
+    ('Aston Villa', 'https://upload.wikimedia.org/wikipedia/en/9/9a/Aston_Villa_FC_new_crest.svg'),
+    ('Atalanta', 'https://upload.wikimedia.org/wikipedia/en/f/f2/Atalanta_BC_new_logo.svg'),
+    ('Athletic Bilbao', 'https://upload.wikimedia.org/wikipedia/en/9/98/Club_Athletic_Bilbao_logo.svg'),
+    ('Atlético Madrid', 'https://upload.wikimedia.org/wikipedia/en/f/f9/Atletico_Madrid_Logo_2024.svg'),
+    ('Barcelona', 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg'),
+    ('Bayer Leverkusen', 'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg'),
+    ('Bayern Munich', 'https://upload.wikimedia.org/wikipedia/commons/8/8d/FC_Bayern_M%C3%BCnchen_logo_%282024%29.svg'),
+    ('Bologna', 'https://upload.wikimedia.org/wikipedia/commons/5/5b/Bologna_F.C._1909_logo.svg'),
+    ('Borussia Dortmund', 'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg'),
+    ('Borussia Mönchengladbach', 'https://upload.wikimedia.org/wikipedia/commons/8/81/Borussia_M%C3%B6nchengladbach_logo.svg'),
+    ('Bournemouth', 'https://upload.wikimedia.org/wikipedia/en/e/e5/AFC_Bournemouth_%282013%29.svg'),
+    ('Brentford', 'https://upload.wikimedia.org/wikipedia/en/2/2a/Brentford_FC_crest.svg'),
+    ('Brighton & Hove Albion', 'https://upload.wikimedia.org/wikipedia/en/d/d0/Brighton_and_Hove_Albion_FC_crest.svg'),
+    ('Cagliari', 'https://upload.wikimedia.org/wikipedia/en/6/61/Cagliari_Calcio_1920.svg'),
+    ('Celta Vigo', 'https://upload.wikimedia.org/wikipedia/en/1/12/RC_Celta_de_Vigo_logo.svg'),
+    ('Chelsea', 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg'),
+    ('Club Brugge', 'https://upload.wikimedia.org/wikipedia/commons/9/97/Club_brugge.png'),
+    ('Como', 'https://upload.wikimedia.org/wikipedia/commons/9/99/Calcio_Como_-_logo_%28Italy%2C_2019-%29.svg'),
+    ('Coventry City', 'https://upload.wikimedia.org/wikipedia/en/7/7b/Coventry_City_FC_crest.svg'),
+    ('Crystal Palace', 'https://upload.wikimedia.org/wikipedia/en/a/a2/Crystal_Palace_FC_logo_%282022%29.svg'),
+    ('Deportivo de A Coruña', 'https://upload.wikimedia.org/wikipedia/en/5/56/RC_Deportivo_A_Coru%C3%B1a_logo_2026.svg'),
+    ('Eintracht Frankfurt', 'https://upload.wikimedia.org/wikipedia/en/7/7e/Eintracht_Frankfurt_crest.svg'),
+    ('Elche', 'https://upload.wikimedia.org/wikipedia/en/a/a7/Elche_CF_logo.svg'),
+    ('Espanyol', 'https://upload.wikimedia.org/wikipedia/en/9/92/RCD_Espanyol_crest.svg'),
+    ('Everton', 'https://upload.wikimedia.org/wikipedia/en/7/7c/Everton_FC_logo.svg'),
+    ('FC Augsburg', 'https://upload.wikimedia.org/wikipedia/en/c/c5/FC_Augsburg_logo.svg'),
+    ('FC Schalke 04', 'https://upload.wikimedia.org/wikipedia/commons/6/6d/FC_Schalke_04_Logo.svg'),
+    ('Feyenoord', 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Feyenoord_logo_since_2024.svg'),
+    ('Fiorentina', 'https://upload.wikimedia.org/wikipedia/commons/8/8c/ACF_Fiorentina_-_logo_%28Italy%2C_2022%29.svg'),
+    ('Frosinone', 'https://upload.wikimedia.org/wikipedia/en/0/0b/Frosinone_Calcio_logo.svg'),
+    ('Fulham', 'https://upload.wikimedia.org/wikipedia/en/e/eb/Fulham_FC_%28shield%29.svg'),
+    ('Galatasaray', 'https://upload.wikimedia.org/wikipedia/commons/0/07/Galatasaray_S.K._Logo_2026_5-stars.svg'),
+    ('Genoa', 'https://upload.wikimedia.org/wikipedia/en/2/2c/Genoa_CFC_crest.svg'),
+    ('Getafe', 'https://upload.wikimedia.org/wikipedia/en/4/46/Getafe_logo.svg'),
+    ('Hamburger SV', 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Hamburger_SV_logo.svg'),
+    ('Hull City', 'https://upload.wikimedia.org/wikipedia/en/5/54/Hull_City_A.F.C._logo.svg'),
+    ('Inter Milan', 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg'),
+    ('Ipswich Town', 'https://upload.wikimedia.org/wikipedia/en/4/43/Ipswich_Town.svg'),
+    ('Juventus', 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Juventus_FC_-_logo_black_%28Italy%2C_2020%29.svg'),
+    ('Lazio', 'https://upload.wikimedia.org/wikipedia/en/c/ce/S.S._Lazio_badge.svg'),
+    ('Lecce', 'https://upload.wikimedia.org/wikipedia/en/2/23/US_Lecce_crest.svg'),
+    ('Leeds United', 'https://upload.wikimedia.org/wikipedia/en/5/54/Leeds_United_F.C._logo.svg'),
+    ('Lens', 'https://upload.wikimedia.org/wikipedia/en/c/cc/RC_Lens_logo.svg'),
+    ('Levante', 'https://upload.wikimedia.org/wikipedia/en/7/7b/Levante_Uni%C3%B3n_Deportiva%2C_S.A.D._logo.svg'),
+    ('Lille', 'https://upload.wikimedia.org/wikipedia/en/3/3f/Lille_OSC_2018_logo.svg'),
+    ('Liverpool', 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg'),
+    ('Mainz 05', 'https://upload.wikimedia.org/wikipedia/commons/1/1b/1._FSV_Mainz_05_logo.svg'),
+    ('Manchester City', 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg'),
+    ('Manchester United', 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg'),
+    ('Monza', 'https://upload.wikimedia.org/wikipedia/en/a/a7/AC_Monza_logo_%282021%29.svg'),
+    ('Málaga', 'https://upload.wikimedia.org/wikipedia/en/6/6d/M%C3%A1laga_CF.svg'),
+    ('Napoli', 'https://upload.wikimedia.org/wikipedia/commons/4/4d/SSC_Napoli_2025_%28white_and_azure%29.svg'),
+    ('Newcastle United', 'https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg'),
+    ('Nottingham Forest', 'https://upload.wikimedia.org/wikipedia/en/e/e5/Nottingham_Forest_F.C._logo.svg'),
+    ('Osasuna', 'https://upload.wikimedia.org/wikipedia/en/3/38/CA_Osasuna_2024_crest.svg'),
+    ('PSV Eindhoven', 'https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg'),
+    ('Paris Saint-Germain', 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg'),
+    ('Parma', 'https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_Parma_Calcio_1913_%28adozione_2016%29.svg'),
+    ('Porto', 'https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg'),
+    ('RB Leipzig', 'https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg'),
+    ('Racing Santander', 'https://upload.wikimedia.org/wikipedia/en/f/f5/Racing_de_Santander_logo.svg'),
+    ('Rayo Vallecano', 'https://upload.wikimedia.org/wikipedia/en/d/d8/Rayo_Vallecano_logo.svg'),
+    ('Real Betis', 'https://upload.wikimedia.org/wikipedia/en/2/2f/Real_Betis_2022_logo.svg'),
+    ('Real Madrid', 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg'),
+    ('Real Sociedad', 'https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg'),
+    ('Roma', 'https://upload.wikimedia.org/wikipedia/en/f/f7/AS_Roma_logo_%282017%29.svg'),
+    ('SC Freiburg', 'https://upload.wikimedia.org/wikipedia/en/6/6d/SC_Freiburg_logo.svg'),
+    ('SC Paderborn 07', 'https://upload.wikimedia.org/wikipedia/commons/6/67/SC_Paderborn_07_Logo_new.svg'),
+    ('SV Elversberg', 'https://upload.wikimedia.org/wikipedia/commons/d/d4/SV_Elversberg_Logo_2021.svg'),
+    ('Sevilla', 'https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg'),
+    ('Shakhtar Donetsk', 'https://upload.wikimedia.org/wikipedia/en/a/a1/FC_Shakhtar_Donetsk.svg'),
+    ('Slavia Prague', 'https://upload.wikimedia.org/wikipedia/commons/2/2b/SK_Slavia_Praha_full_logo.svg'),
+    ('Sporting CP', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Sporting_Clube_de_Portugal_2026.svg'),
+    ('TSG Hoffenheim', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Logo_TSG_Hoffenheim.svg'),
+    ('Torino', 'https://upload.wikimedia.org/wikipedia/en/2/2e/Torino_FC_Logo.svg'),
+    ('Tottenham Hotspur', 'https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg'),
+    ('Udinese', 'https://upload.wikimedia.org/wikipedia/en/c/ce/Udinese_Calcio_logo.svg'),
+    ('Union Berlin', 'https://upload.wikimedia.org/wikipedia/commons/4/44/1._FC_Union_Berlin_Logo.svg'),
+    ('Valencia', 'https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg'),
+    ('Venezia', 'https://upload.wikimedia.org/wikipedia/en/3/39/Venezia_FC_crest.svg'),
+    ('VfB Stuttgart', 'https://upload.wikimedia.org/wikipedia/commons/e/eb/VfB_Stuttgart_1893_Logo.svg'),
+    ('Villarreal', 'https://upload.wikimedia.org/wikipedia/en/b/b9/Villarreal_CF_logo-en.svg'),
+    ('Werder Bremen', 'https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg')
+) AS v(name_en, logo_url)
+WHERE t.name_en = v.name_en
+  AND t.logo_url IS NULL;
+
 -- Served from our own origin (services/frontend/logos/kiryat-yam.png), cropped from the club's
 -- square artwork to a transparent circle. The IS NULL guard is deliberately widened here: every
 -- other row must not clobber admin edits, but this one has to CORRECT a known-bad value that is
--- already in the database, which a plain `IS NULL` guard would silently skip forever.
+-- already in the database, which a plain `IS NULL` guard would silently skip forever. That is why
+-- it stays a single statement rather than joining the VALUES block above, which carries the plain
+-- guard for all 118 other clubs.
 UPDATE clubs SET logo_url = '/logos/kiryat-yam.png' WHERE name_en = 'F.C. Kiryat Yam' AND (logo_url IS NULL OR logo_url LIKE '%fbcdn.net%');
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/f5/Maccabi_Herzliya.png' WHERE name_en = 'Maccabi Herzliya' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/8/88/MaccabiJaffaCrestNew2018.png' WHERE name_en = 'Maccabi Kavilio Jaffa' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/d6/IroniModiinFC.png' WHERE name_en = 'Ironi Modi''in' AND logo_url IS NULL;
-
--- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/1c/US_Sassuolo_Calcio_logo.svg' WHERE name_en = 'Sassuolo' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/77/Logo_Sunderland.svg' WHERE name_en = 'Sunderland' AND logo_url IS NULL;
-
--- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg' WHERE name_en = '1. FC Köln' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg' WHERE name_en = 'AC Milan' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f8/Deportivo_Alaves_logo_%282020%29.svg' WHERE name_en = 'Alavés' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg' WHERE name_en = 'Arsenal' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/9a/Aston_Villa_FC_new_crest.svg' WHERE name_en = 'Aston Villa' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f2/Atalanta_BC_new_logo.svg' WHERE name_en = 'Atalanta' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/98/Club_Athletic_Bilbao_logo.svg' WHERE name_en = 'Athletic Bilbao' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f9/Atletico_Madrid_Logo_2024.svg' WHERE name_en = 'Atlético Madrid' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg' WHERE name_en = 'Barcelona' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg' WHERE name_en = 'Bayer Leverkusen' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/8/8d/FC_Bayern_M%C3%BCnchen_logo_%282024%29.svg' WHERE name_en = 'Bayern Munich' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/5b/Bologna_F.C._1909_logo.svg' WHERE name_en = 'Bologna' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg' WHERE name_en = 'Borussia Dortmund' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/8/81/Borussia_M%C3%B6nchengladbach_logo.svg' WHERE name_en = 'Borussia Mönchengladbach' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/e5/AFC_Bournemouth_%282013%29.svg' WHERE name_en = 'Bournemouth' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2a/Brentford_FC_crest.svg' WHERE name_en = 'Brentford' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d0/Brighton_and_Hove_Albion_FC_crest.svg' WHERE name_en = 'Brighton & Hove Albion' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/61/Cagliari_Calcio_1920.svg' WHERE name_en = 'Cagliari' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/12/RC_Celta_de_Vigo_logo.svg' WHERE name_en = 'Celta Vigo' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg' WHERE name_en = 'Chelsea' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/9/97/Club_brugge.png' WHERE name_en = 'Club Brugge' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Calcio_Como_-_logo_%28Italy%2C_2019-%29.svg' WHERE name_en = 'Como' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7b/Coventry_City_FC_crest.svg' WHERE name_en = 'Coventry City' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a2/Crystal_Palace_FC_logo_%282022%29.svg' WHERE name_en = 'Crystal Palace' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/56/RC_Deportivo_A_Coru%C3%B1a_logo_2026.svg' WHERE name_en = 'Deportivo de A Coruña' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7e/Eintracht_Frankfurt_crest.svg' WHERE name_en = 'Eintracht Frankfurt' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a7/Elche_CF_logo.svg' WHERE name_en = 'Elche' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/9/92/RCD_Espanyol_crest.svg' WHERE name_en = 'Espanyol' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7c/Everton_FC_logo.svg' WHERE name_en = 'Everton' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/c5/FC_Augsburg_logo.svg' WHERE name_en = 'FC Augsburg' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/6d/FC_Schalke_04_Logo.svg' WHERE name_en = 'FC Schalke 04' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Feyenoord_logo_since_2024.svg' WHERE name_en = 'Feyenoord' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/8/8c/ACF_Fiorentina_-_logo_%28Italy%2C_2022%29.svg' WHERE name_en = 'Fiorentina' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/0b/Frosinone_Calcio_logo.svg' WHERE name_en = 'Frosinone' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/eb/Fulham_FC_%28shield%29.svg' WHERE name_en = 'Fulham' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/07/Galatasaray_S.K._Logo_2026_5-stars.svg' WHERE name_en = 'Galatasaray' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2c/Genoa_CFC_crest.svg' WHERE name_en = 'Genoa' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/4/46/Getafe_logo.svg' WHERE name_en = 'Getafe' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Hamburger_SV_logo.svg' WHERE name_en = 'Hamburger SV' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/54/Hull_City_A.F.C._logo.svg' WHERE name_en = 'Hull City' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg' WHERE name_en = 'Inter Milan' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/4/43/Ipswich_Town.svg' WHERE name_en = 'Ipswich Town' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/ed/Juventus_FC_-_logo_black_%28Italy%2C_2020%29.svg' WHERE name_en = 'Juventus' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/ce/S.S._Lazio_badge.svg' WHERE name_en = 'Lazio' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/23/US_Lecce_crest.svg' WHERE name_en = 'Lecce' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/54/Leeds_United_F.C._logo.svg' WHERE name_en = 'Leeds United' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/cc/RC_Lens_logo.svg' WHERE name_en = 'Lens' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7b/Levante_Uni%C3%B3n_Deportiva%2C_S.A.D._logo.svg' WHERE name_en = 'Levante' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/3f/Lille_OSC_2018_logo.svg' WHERE name_en = 'Lille' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg' WHERE name_en = 'Liverpool' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/1b/1._FSV_Mainz_05_logo.svg' WHERE name_en = 'Mainz 05' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg' WHERE name_en = 'Manchester City' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg' WHERE name_en = 'Manchester United' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a7/AC_Monza_logo_%282021%29.svg' WHERE name_en = 'Monza' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/6d/M%C3%A1laga_CF.svg' WHERE name_en = 'Málaga' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/4/4d/SSC_Napoli_2025_%28white_and_azure%29.svg' WHERE name_en = 'Napoli' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg' WHERE name_en = 'Newcastle United' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/e/e5/Nottingham_Forest_F.C._logo.svg' WHERE name_en = 'Nottingham Forest' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/38/CA_Osasuna_2024_crest.svg' WHERE name_en = 'Osasuna' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg' WHERE name_en = 'PSV Eindhoven' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg' WHERE name_en = 'Paris Saint-Germain' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_Parma_Calcio_1913_%28adozione_2016%29.svg' WHERE name_en = 'Parma' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg' WHERE name_en = 'Porto' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg' WHERE name_en = 'RB Leipzig' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f5/Racing_de_Santander_logo.svg' WHERE name_en = 'Racing Santander' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/d/d8/Rayo_Vallecano_logo.svg' WHERE name_en = 'Rayo Vallecano' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2f/Real_Betis_2022_logo.svg' WHERE name_en = 'Real Betis' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg' WHERE name_en = 'Real Madrid' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg' WHERE name_en = 'Real Sociedad' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f7/AS_Roma_logo_%282017%29.svg' WHERE name_en = 'Roma' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/6/6d/SC_Freiburg_logo.svg' WHERE name_en = 'SC Freiburg' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/67/SC_Paderborn_07_Logo_new.svg' WHERE name_en = 'SC Paderborn 07' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d4/SV_Elversberg_Logo_2021.svg' WHERE name_en = 'SV Elversberg' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg' WHERE name_en = 'Sevilla' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/a/a1/FC_Shakhtar_Donetsk.svg' WHERE name_en = 'Shakhtar Donetsk' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/2/2b/SK_Slavia_Praha_full_logo.svg' WHERE name_en = 'Slavia Prague' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Sporting_Clube_de_Portugal_2026.svg' WHERE name_en = 'Sporting CP' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Logo_TSG_Hoffenheim.svg' WHERE name_en = 'TSG Hoffenheim' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/2/2e/Torino_FC_Logo.svg' WHERE name_en = 'Torino' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg' WHERE name_en = 'Tottenham Hotspur' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/ce/Udinese_Calcio_logo.svg' WHERE name_en = 'Udinese' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/4/44/1._FC_Union_Berlin_Logo.svg' WHERE name_en = 'Union Berlin' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg' WHERE name_en = 'Valencia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/3/39/Venezia_FC_crest.svg' WHERE name_en = 'Venezia' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/eb/VfB_Stuttgart_1893_Logo.svg' WHERE name_en = 'VfB Stuttgart' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/b/b9/Villarreal_CF_logo-en.svg' WHERE name_en = 'Villarreal' AND logo_url IS NULL;
-UPDATE clubs SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg' WHERE name_en = 'Werder Bremen' AND logo_url IS NULL;
 
 -- Previous Knesset party display names.
 -- One row per entity, all display languages together. COALESCE is the per-column equivalent of
@@ -690,18 +703,23 @@ WHERE p.name_he = v.name_he;
 
 -- Admin-curated party logos, synced from the live RDS instance (added via the admin UI's
 -- Logo URL field, not originally seeded) so a fresh install matches current production data.
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg' WHERE name_he = 'הליכוד' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/12/%D7%99%D7%A9_%D7%A2%D7%AA%D7%99%D7%93_%D7%9C%D7%95%D7%92%D7%95.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'יש עתיד' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'הציונות הדתית' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/e0/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%9E%D7%97%D7%A0%D7%94_%D7%94%D7%9E%D7%9E%D7%9C%D7%9B%D7%AA%D7%99_%D7%90%D7%95%D7%92%D7%95%D7%A1%D7%98_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'המחנה הממלכתי' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ישראל ביתנו' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ש"ס' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'יהדות התורה' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'רע"ם' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f8/HaAvoda_Logo.svg' WHERE name_he = 'העבודה' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'מרצ' AND logo_url IS NULL;
-UPDATE previous_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
+UPDATE previous_parties t SET logo_url = v.logo_url
+FROM (VALUES
+    ('הליכוד', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg'),
+    ('יש עתיד', 'https://upload.wikimedia.org/wikipedia/he/1/12/%D7%99%D7%A9_%D7%A2%D7%AA%D7%99%D7%93_%D7%9C%D7%95%D7%92%D7%95.svg'),
+    ('הציונות הדתית', 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg'),
+    ('המחנה הממלכתי', 'https://upload.wikimedia.org/wikipedia/he/e/e0/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%9E%D7%97%D7%A0%D7%94_%D7%94%D7%9E%D7%9E%D7%9C%D7%9B%D7%AA%D7%99_%D7%90%D7%95%D7%92%D7%95%D7%A1%D7%98_2022.svg'),
+    ('ישראל ביתנו', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg'),
+    ('ש"ס', 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg'),
+    ('יהדות התורה', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg'),
+    ('רע"ם', 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg'),
+    ('חד"ש-תע"ל', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg'),
+    ('העבודה', 'https://upload.wikimedia.org/wikipedia/commons/f/f8/HaAvoda_Logo.svg'),
+    ('מרצ', 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg'),
+    ('בל"ד', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg')
+) AS v(name_he, logo_url)
+WHERE t.name_he = v.name_he
+  AND t.logo_url IS NULL;
 
 -- Party ideology classification. The VALUES below are authoritative; the REASONING for every one
 -- of them lives in docs/party-classifications.md. Do not restate reasoning in this file -- if a
@@ -825,33 +843,38 @@ FROM (VALUES
 WHERE p.name_he = v.name_he;
 
 -- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg' WHERE name_he = 'ביחד' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/cd/Logo_%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%99%D7%A0%D7%99%D7%A7%D7%99%D7%9D_-_%D7%93%D7%95%D7%A8_%D7%94%D7%A0%D7%99%D7%A6%D7%97%D7%95%D7%9F.png' WHERE name_he = 'המילואימניקים' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/c9/%D7%94%D7%9E%D7%A4%D7%9C%D7%92%D7%94_%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%99%D7%AA_%D7%94%D7%97%D7%93%D7%A9%D7%94_%D7%9C%D7%95%D7%92%D7%95.svg' WHERE name_he = 'המפלגה הכלכלית' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'יהדות התורה' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/61/Yashar_party_logo.png' WHERE name_he = 'ישר' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'רע"ם' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ש"ס' AND logo_url IS NULL;
+UPDATE upcoming_parties t SET logo_url = v.logo_url
+FROM (VALUES
+    ('ביחד', 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg'),
+    ('המילואימניקים', 'https://upload.wikimedia.org/wikipedia/he/c/cd/Logo_%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%99%D7%A0%D7%99%D7%A7%D7%99%D7%9D_-_%D7%93%D7%95%D7%A8_%D7%94%D7%A0%D7%99%D7%A6%D7%97%D7%95%D7%9F.png'),
+    ('המפלגה הכלכלית', 'https://upload.wikimedia.org/wikipedia/he/c/c9/%D7%94%D7%9E%D7%A4%D7%9C%D7%92%D7%94_%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%99%D7%AA_%D7%94%D7%97%D7%93%D7%A9%D7%94_%D7%9C%D7%95%D7%92%D7%95.svg'),
+    ('יהדות התורה', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg'),
+    ('ישר', 'https://upload.wikimedia.org/wikipedia/commons/6/61/Yashar_party_logo.png'),
+    ('רע"ם', 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg'),
+    ('ש"ס', 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg'),
 
--- Admin-curated party logos, synced from the live RDS instance (see previous_parties above).
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg' WHERE name_he = 'הליכוד' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/b/b5/The_Democrats_led_by_Yair_Golan.svg' WHERE name_he = 'הדמוקרטים' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/a/a6/%D7%9C%D7%95%D7%92%D7%95_%D7%9B%D7%97%D7%95%D7%9C_%D7%9C%D7%91%D7%9F_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'כחול לבן' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'ישראל ביתנו' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'הציונות הדתית' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'עוצמה יהודית' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'חד"ש-תע"ל' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original' WHERE name_he = 'בל"ד' AND logo_url IS NULL;
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d4/ZehutParty.svg' WHERE name_he = 'זהות' AND logo_url IS NULL;
--- Noam's current campaign banner ("נעם לישראל, בראשות אבי מעוז"). It is an opaque JPEG, not a
--- transparent SVG, so logos.js skips the dark-mode recolour (>90% opaque pixels = solid tile) --
--- correct here, since the artwork is already light lettering on a dark navy field.
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/6/6e/%D7%A1%D7%9E%D7%9C_%D7%9E%D7%A4%D7%9C%D7%92%D7%AA_%D7%A0%D7%A2%D7%9D_j%2Cul.jpg' WHERE name_he = 'נעם' AND logo_url IS NULL;
--- El HaDegel is a new movement with no Wikimedia logo; this is the square Star-of-David emblem
--- (transparent, from the party's own Webflow CDN "webclip" app-icon) rather than the old low-res
--- Google thumbnail, which had a dark navy background baked in and rendered as a dark box on the
--- logo chip. Non-Wikimedia host, so if it ever 404s the frontend falls back to a generated monogram.
-UPDATE upcoming_parties SET logo_url = 'https://cdn.prod.website-files.com/674ed46d57366b6a64400c3c/67501afebb4a91b0d0b7c6b9_el-hadegel-webclip.svg' WHERE name_he = 'אל הדגל' AND logo_url IS NULL;
+    -- Admin-curated party logos, synced from the live RDS instance (see previous_parties above).
+    ('הליכוד', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg'),
+    ('הדמוקרטים', 'https://upload.wikimedia.org/wikipedia/commons/b/b5/The_Democrats_led_by_Yair_Golan.svg'),
+    ('כחול לבן', 'https://upload.wikimedia.org/wikipedia/he/a/a6/%D7%9C%D7%95%D7%92%D7%95_%D7%9B%D7%97%D7%95%D7%9C_%D7%9C%D7%91%D7%9F_2021.svg'),
+    ('ישראל ביתנו', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg'),
+    ('הציונות הדתית', 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg'),
+    ('עוצמה יהודית', 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg'),
+    ('חד"ש-תע"ל', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg'),
+    ('בל"ד', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg'),
+    ('זהות', 'https://upload.wikimedia.org/wikipedia/commons/d/d4/ZehutParty.svg'),
+    -- Noam's current campaign banner ("נעם לישראל, בראשות אבי מעוז"). It is an opaque JPEG, not a
+    -- transparent SVG, so logos.js skips the dark-mode recolour (>90% opaque pixels = solid tile) --
+    -- correct here, since the artwork is already light lettering on a dark navy field.
+    ('נעם', 'https://upload.wikimedia.org/wikipedia/commons/6/6e/%D7%A1%D7%9E%D7%9C_%D7%9E%D7%A4%D7%9C%D7%92%D7%AA_%D7%A0%D7%A2%D7%9D_j%2Cul.jpg'),
+    -- El HaDegel is a new movement with no Wikimedia logo; this is the square Star-of-David emblem
+    -- (transparent, from the party's own Webflow CDN "webclip" app-icon) rather than the old low-res
+    -- Google thumbnail, which had a dark navy background baked in and rendered as a dark box on the
+    -- logo chip. Non-Wikimedia host, so if it ever 404s the frontend falls back to a generated monogram.
+    ('אל הדגל', 'https://cdn.prod.website-files.com/674ed46d57366b6a64400c3c/67501afebb4a91b0d0b7c6b9_el-hadegel-webclip.svg')
+) AS v(name_he, logo_url)
+WHERE t.name_he = v.name_he
+  AND t.logo_url IS NULL;
 
 -- Upcoming-party classification. Independent from previous_parties even where a lineage link
 -- exists (design spec Decision 1). Same unguarded rationale as the previous_parties block above.
@@ -889,6 +912,21 @@ UPDATE leagues SET logo_url = 'https://assets.laliga.com/assets/logos/LL_RGB_h_c
     WHERE name = 'La Liga';
 UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f1/%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D_%D7%9C%D7%95%D7%92%D7%95_%D7%95%D7%95%D7%99%D7%A7%D7%99%D7%A4%D7%93%D7%99%D7%94.jpg'
     WHERE name_he = 'המילואימניקים';
+
+-- Strip Wikipedia's utm_* referral params from stored logo URLs. 26 of the seeded URLs were copied
+-- out of he.wikipedia.org with "?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original"
+-- attached; upload.wikimedia.org ignores the query string when serving the file, so the params did
+-- nothing except send referral tracking to Wikimedia on every page load.
+--
+-- This has to be its own statement, and it has to be unguarded. The literals above are all guarded
+-- by "logo_url IS NULL", so cleaning them at the source only ever reaches a FRESH database -- an
+-- already-seeded one keeps the cruft forever. Unguarded is safe here in a way it would not be for a
+-- whole URL: it only ever removes a meaningless suffix, so an admin-curated logo keeps pointing at
+-- the same image. Idempotent -- the LIKE makes it a no-op once clean.
+UPDATE leagues          SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
+UPDATE clubs            SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
+UPDATE previous_parties SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
+UPDATE upcoming_parties SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
 
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.
