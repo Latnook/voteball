@@ -658,6 +658,19 @@ everything else did succeed and the site is up. You get a warning instead, and t
 FORCE_REGISTER=1 ./scripts/register-github-ci.sh   # re-register even if it looks correct
 ```
 
+Its own tests live in `scripts/tests/test-register-github-ci.sh` and run **online**, against real
+GitHub and a live cluster — unlike the other suites in that folder, which stub their dependencies:
+
+```bash
+scripts/tests/test-register-github-ci.sh                     # safe subset
+scripts/tests/test-register-github-ci.sh --test-fault-branch # also stops Jenkins for ~2 min
+```
+
+That choice is deliberate. What this script has to get right is not its own control flow, it is what
+GitHub and Jenkins actually do — and a stub can only ever confirm the assumptions you already hold.
+Written online, the test immediately falsified one of them (the "wrong secret returns 401" claim
+above). It cleans up after itself and leaves exactly one valid deploy key and webhook.
+
 It needs `gh` authenticated with `repo` scope (`gh auth status`). If `gh` is missing or logged out the
 script stops **before** deleting anything, rather than removing the old key and then failing to add the
 replacement. Doing it by hand is still documented in `docs/cicd.md`, "First-time setup runbook",
