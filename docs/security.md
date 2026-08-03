@@ -134,6 +134,17 @@ rate limit, a looser site-wide ceiling, AWS *KnownBadInputs* blocking, and the A
 large ballot POST, and a false positive there would silently discard a real vote. It counted a match on
 ordinary traffic within hours of going live, which is the argument for counting first.
 
+**The site-wide rule blocks the whole site for the offending address, not just the API** — 2,000
+requests / 5 minutes per IP, counted across *every* path including static assets. Confirmed the hard
+way on 2026-08-03: an unthrottled uptime-probe loop from one machine crossed it, and the next 558
+requests to `/` returned `403` from `awselb`. CloudWatch attributed them precisely —
+`voteball-rate-sitewide` blocked 1,299 requests in that window, `voteball-rate-vote` none. Two things
+follow. Operationally, a monitoring probe dense enough to prove uptime is dense enough to be blocked,
+and its `403`s look exactly like an outage (`scripts/capture-evidence.sh` throttles to 2 req/s for
+this reason). And as a policy question, a large shared NAT — a university or corporate egress — could
+plausibly reach 2,000 requests / 5 min across many genuine users at ~15 requests per page load; the
+limit is set where it is deliberately, but it is a ceiling on *addresses*, not on people.
+
 The EKS API server endpoint is public but **IAM-authenticated** and scoped to a
 tunable CIDR allow-list (`cluster_endpoint_public_access_cidrs`); private in-VPC access is always on.
 
@@ -251,6 +262,32 @@ is rejected regardless of what path it lands on.
 The app uses namespace-scoped ServiceAccounts with no bound Roles beyond Kubernetes defaults (the app
 needs no Kubernetes API access). ArgoCD and the controllers ship their own scoped RBAC from their charts.
 No app workload is granted `cluster-admin`.
+
+### The delivery path is itself an authorization boundary
+
+ArgoCD holds broad rights in the cluster, so what it is *permitted to deploy* matters as much as what
+the app can do. Since 2026-08-03 the `voteball` Application runs inside a dedicated **`AppProject`**
+(`argocd/voteball-application.yaml.tmpl`) that pins three things — live values, not aspirations:
+
+| Constraint | Value | Effect |
+|---|---|---|
+| `sourceRepos` | `https://github.com/Latnook/voteball` | It can deploy only from this repo |
+| `destinations` | `devops-app` on the in-cluster API server | It can write only into that one namespace |
+| `clusterResourceWhitelist` | `[]` (empty) | **It may create no cluster-scoped object at all** |
+
+The empty whitelist is the load-bearing one. It means a commit to `master` cannot introduce a
+`ClusterRole`, `ClusterRoleBinding`, CRD or `StorageClass` through the app's own delivery path —
+widening that blast radius takes a deliberate, reviewable edit to the AppProject first. It is also
+why the chart does **not** ship a `Namespace` template even though the namespace is part of the
+deliverable: a `Namespace` is cluster-scoped, so shipping it would mean handing the app's release
+permission to create cluster-scoped resources in order to save one `--create-namespace` flag.
+
+**Nothing here is configured through the ArgoCD UI, and that is enforced rather than asserted.**
+`./scripts/render-argocd-app.sh --check` fails on any live/template mismatch, on any
+`Application`/`AppProject` this repo does not declare, and on any hand-registered repository or
+cluster credential. It has to be a separate check because ArgoCD cannot do it itself: `selfHeal`
+reconciles the *contents* of `charts/voteball`, but nothing reconciles the `Application` pointing at
+it — so a UI edit to sync policy or destination is the one drift GitOps cannot self-correct.
 
 ## Deliberate trade-offs (demo vs production)
 
