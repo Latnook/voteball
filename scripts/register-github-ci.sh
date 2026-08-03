@@ -4,11 +4,15 @@
 # WHY THIS EXISTS: every destroy/rebuild mints a NEW deploy key and a NEW webhook secret, because
 # terraform/secrets.tf recreates voteball/jenkins with recovery_window_in_days = 0 -- the old values are
 # genuinely gone, and seed-jenkins-secret.sh generates replacements. GitHub still holds the previous
-# pair. Until both are replaced the webhook is rejected (401, wrong HMAC) and the pipeline's final
-# `git push` of the image-tag bump is denied (unauthorised key) -- and NOTHING in the deploy output
-# warns you, because the deploy genuinely succeeded. Doing this by hand meant copying a public key and
-# a one-time secret out of terminal scrollback on every rebuild, which is exactly the kind of step that
-# gets skipped at 1am.
+# pair. Until both are replaced, every push is SILENTLY IGNORED and the pipeline's final `git push` of
+# the image-tag bump is denied (unauthorised key) -- and nothing anywhere warns you, because the deploy
+# genuinely succeeded. Doing this by hand meant copying a public key and a one-time secret out of
+# terminal scrollback on every rebuild, which is exactly the kind of step that gets skipped at 1am.
+#
+# "Silently" is literal, and worse than it sounds: Jenkins answers a badly-signed webhook with 200 and
+# then DISCARDS it -- no build, no log line, no error status (verified 2026-08-03 with forged requests).
+# So a stale webhook secret is invisible from both ends: GitHub shows a green delivery, Jenkins shows
+# nothing at all, and the only symptom is that pushes stop producing builds.
 #
 # IDEMPOTENT: compares the fingerprint of the key in Secrets Manager against the keys GitHub already
 # holds. If GitHub already has this exact key AND a webhook for this URL, it changes nothing -- so
@@ -137,9 +141,15 @@ gh api -X POST "repos/${REPO}/hooks" --input "$TMP/hook.json" \
   --jq '"    registered hook \(.id)"'
 
 # ---- probe, and classify what a failure actually means ---------------------------------------------
-# A successful ping proves two things worth knowing: the endpoint is reachable, and Jenkins ACCEPTED
-# the shared secret -- a wrong secret is rejected with 401/403, not a connection failure. That is the
-# real value here.
+# What a successful ping DOES prove: the DNS name resolves, the ALB routes to Jenkins, and Jenkins is
+# up and answering. That is worth knowing after a rebuild -- it is the whole path except the last step.
+#
+# What it does NOT prove, despite the obvious assumption: that the shared secret is correct. Verified
+# against the live stack on 2026-08-03 -- a webhook registered with a deliberately WRONG secret still
+# returned 200 in 0.58s, and forged push requests (no signature, and a bogus signature) also returned
+# 200. Jenkins validates the signature and then silently DISCARDS the event: no build, no log line, no
+# 4xx. That is correct fail-closed behaviour, but it means status code alone can never tell you the
+# secret is right. Do not reintroduce a "secret verified" claim here.
 #
 # It does NOT prove a push a minute later will land, and this block must not claim otherwise.
 # Teardown deletes the jenkins.<domain> DNS record, so during the rebuild GitHub's resolvers may hold a
@@ -153,13 +163,13 @@ gh api -X POST "repos/${REPO}/hooks" --input "$TMP/hook.json" \
 #
 #   duration ~0      -> GitHub never opened a connection: DNS resolution failed from cache. Self-heals
 #                       within ~15 minutes of the record returning. EXPECTED after a rebuild; not a fault.
-#   duration ~0.5s+  -> a connection WAS made and rejected. Wrong secret, Jenkins down, or no healthy
+#   duration ~0.5s+  -> a connection WAS made and refused. Jenkins down, or the ALB has no healthy
 #                       target. A REAL fault, and the only case that deserves a warning.
 #
 # (Measured 2026-08-03: every DNS-cache failure was 0.0-0.01s, every success 0.53-0.66s from the US to
 # il-central-1. The two populations do not overlap.)
 HOOK_ID="$(gh api "repos/${REPO}/hooks" --jq ".[] | select(.config.url==\"${HOOK_URL}\") | .id" | head -1)"
-echo "==> Probing the webhook (checks reachability and that the secret is accepted)"
+echo "==> Probing the webhook (checks DNS + routing + Jenkins responding; NOT the secret)"
 code=""; dur=""
 for attempt in 1 2 3; do
   gh api -X POST "repos/${REPO}/hooks/${HOOK_ID}/pings" --silent 2>/dev/null || true
@@ -172,7 +182,9 @@ done
 
 echo
 if [ "$code" = "200" ]; then
-  echo "Webhook reachable and the secret was accepted (ping delivered in ${dur}s)."
+  echo "Webhook reachable: DNS resolves, the ALB routes, and Jenkins answered in ${dur}s."
+  echo "      (This does NOT verify the shared secret -- Jenkins returns 200 and silently drops a"
+  echo "       badly-signed event, so no status code can confirm it.)"
   echo "NOTE: right after a rebuild this does NOT guarantee the next push lands. GitHub sends from"
   echo "      many hosts with independent DNS caches, and a failed PUSH is never retried. If a push"
   echo "      in the next ~15 minutes triggers no build, replay it rather than re-pushing:"
@@ -191,8 +203,9 @@ MSG
 else
   echo "WARNING: the webhook endpoint answered but rejected the ping (code=${code:-none}, duration=${dur:-none})." >&2
   echo "         A real round-trip duration means the connection SUCCEEDED and was refused -- this is" >&2
-  echo "         not DNS, and will not clear on its own. Check the shared secret, that Jenkins is up," >&2
-  echo "         and that the ALB has a healthy target:" >&2
+  echo "         not DNS, and will not clear on its own. Check that Jenkins is up" >&2
+  echo "         and that the ALB has a healthy target (note: a wrong SECRET does not look like this" >&2
+  echo "         -- Jenkins answers 200 and drops the event silently):" >&2
   echo "           kubectl get pods -n ci" >&2
   echo "           curl -sI https://jenkins.${APP_DOMAIN}/github-webhook/   # expect 405, not 502/401" >&2
 fi

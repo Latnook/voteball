@@ -622,8 +622,17 @@ against the keys GitHub already holds and does nothing when they match — so re
 without a rebuild changes nothing.
 
 It then **probes the webhook and tells you what a failure means**, which is more useful than a bare
-pass/fail. A successful ping proves the endpoint is reachable *and* that Jenkins accepted the shared
-secret (a wrong secret is rejected with 401, not a connection error).
+pass/fail. A successful ping proves the DNS name resolves, the load balancer routes, and Jenkins is up
+and answering — the whole path except the last step.
+
+> **It does not prove the shared secret is right, and no status code can.** Tested against the live
+> stack on 2026-08-03: a webhook registered with a deliberately wrong secret still returned **200** in
+> 0.58 s, and forged push requests (no signature, and a bogus signature) also returned **200** while
+> triggering nothing at all — no build, no log line. Jenkins validates the signature and then silently
+> discards the event. That is correct fail-closed behaviour (and confirms an attacker cannot trigger
+> your builds), but it means **a stale webhook secret is invisible from both ends**: GitHub shows a
+> green delivery, Jenkins shows nothing, and the only symptom is that pushes quietly stop producing
+> builds. If that happens, re-run `./scripts/register-github-ci.sh` with `FORCE_REGISTER=1`.
 
 It deliberately **does not retry until it passes**. The failure it would be retrying against — DNS
 negative caching, described under [If something breaks](#if-something-breaks) — lasts up to 15 minutes,
@@ -633,9 +642,9 @@ result by the delivery's **`duration`**:
 
 | Result | Meaning | Action |
 |---|---|---|
-| `200` | reachable, secret accepted | none |
+| `200` | DNS resolves, ALB routes, Jenkins answered (NOT proof of the secret) | none |
 | fails in **~0 s** | GitHub never opened a connection — DNS cache from teardown | none; clears within ~15 min |
-| fails with a **realistic duration** | connection made and refused — wrong secret, Jenkins down, no healthy target | **warns**; needs you |
+| fails with a **realistic duration** | connection made and refused — Jenkins down, or no healthy target | **warns**; needs you |
 
 That middle row is why the duration matters: it is the common case after a rebuild and it is *not* a
 fault, so treating it as one would be noise. The bottom row is a genuine fault that the old
