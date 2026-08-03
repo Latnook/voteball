@@ -414,10 +414,14 @@ because getting them wrong destroys data rather than just being wrong:
 
 - **The six ideology `UPDATE`s are deliberately UNGUARDED — do not add `AND bloc IS NULL`.** A guard
   makes every later edit unreachable on an already-seeded production database.
-- **The name and `logo_url` statements stay guarded, for the opposite reason** — admins edit those
+- **The name and `logo_url` blocks stay guarded, for the opposite reason** — admins edit those
   live, and an unguarded write destroys their edits. Do not "make them consistent."
-- **Restructuring `seed.sql` must be proven data-neutral** (dump party rows from an old-seeded DB,
-  diff against both a fresh new-seeded DB and the old-seeded DB with the new file applied on top).
+- **Names and logos are one `VALUES` block per table, not one statement per row** (61 statements on
+  pod boot, not 209). Adding a logo means adding a *tuple* — and unlike the old one-statement-per-row
+  form, a duplicate key no longer resolves by file order, it matches arbitrarily.
+- **Restructuring `seed.sql` must be proven data-neutral** (dump every affected table from an
+  old-seeded DB, diff against both a fresh new-seeded DB and the old-seeded DB with the new file
+  applied on top; exclude `updated_at` and sort by `id`, or the proof fails on artefacts).
 
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 

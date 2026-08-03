@@ -36,7 +36,36 @@ For names that guard is now `COALESCE`, not `AND ... IS NULL`: since 2026-07-27 
 live in **one `VALUES` block carrying all three languages**, one row per entity
 (`COALESCE(c.name_he, v.name_he)` etc.). It is the same guarantee applied per column, and strictly
 stronger — it can fill an empty `name_ru` on a row whose `name_en` an admin has already renamed,
-which a single statement-level `IS NULL` guard cannot do. `logo_url` still uses `AND ... IS NULL`.
+which a single statement-level `IS NULL` guard cannot do.
+
+**`logo_url` is one `VALUES` block per table too, and still guarded by `AND ... IS NULL`** — four
+blocks carry 156 of the assignments (`clubs` keyed on `name_en`, `previous_parties` and
+`upcoming_parties` on `name_he`, `leagues` on `name`), in the shape `UPDATE <t> t SET logo_url =
+v.logo_url FROM (VALUES …) AS v(<key>, logo_url) WHERE t.<key> = v.<key> AND t.logo_url IS NULL`.
+The guard is evaluated per row, so it is exactly what the 156 separate statements gave; the point of
+the block is that `init_db` runs 61 statements on pod boot instead of 209. Row-specific comments live
+**inside** the block, directly above the tuple they explain — keep them there when editing.
+
+**Adding a logo means adding a tuple, and a duplicate key is now silent.** With one statement per
+club the `IS NULL` guard made it "first in file order wins". A `VALUES` block *joins*, so a key
+appearing twice lets Postgres match **arbitrarily** — same SQL, non-deterministic row. Check the key
+is not already in the block rather than appending blind.
+
+**Three logo statements stay single-row on purpose — do not fold them in.** The blocks carry only the
+plain guard, and these three need a different one: `F.C. Kiryat Yam` widens it to
+`IS NULL OR logo_url LIKE '%fbcdn.net%'` because it has to *correct* a known-bad value already in the
+database, which `IS NULL` would skip forever; the `La Liga` and `המילואימניקים` corrections are
+**unguarded** because each replaces a value that was actively wrong. Both unguarded ones run after
+their blocks, so the final state is theirs.
+
+**The `utm_*` strip at the end of the file is unguarded and separate for a reason.** 26 seeded URLs
+carried `?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original`, which
+`upload.wikimedia.org` ignores when serving the file — they only sent referral tracking on every page
+load. Because every seeded literal is guarded by `logo_url IS NULL`, cleaning them at the source
+reaches a *fresh* database only; an already-seeded one keeps them forever. The four `split_part()`
+statements are that migration. Unguarded is safe here in a way it would not be for a whole URL — it
+removes a meaningless suffix, so an admin-curated logo still points at the same image — and the
+`LIKE` makes it a no-op once clean.
 
 **The leagues block matches on `name OR name_he`, and neither column alone is enough.** No single
 column identifies a league in all three states the table can be in: on a fresh install `name_he` is
@@ -62,9 +91,23 @@ to it" (permanent) vs "it hasn't published a platform yet" (a placeholder that m
 moment one appears). Check which before removing an entry.
 
 **Restructuring `seed.sql` (as opposed to changing a value) must be proven data-neutral:** dump every
-party row from a DB seeded with the OLD file, then diff against both (a) a fresh DB seeded with the
-new file and (b) the old-seeded DB with the new file applied on top. Both diffs empty, or it isn't a
-refactor.
+row of every table the change touches from a DB seeded with the OLD file, then diff against both
+(a) a fresh DB seeded with the new file and (b) the old-seeded DB with the new file applied on top.
+Both diffs empty, or it isn't a refactor. Diff (b) is the one that matters — it is the only one that
+proves an *already-seeded* database ends up in the same state, which is the only kind that exists in
+production. Widen the dump beyond the party tables when the change does: the logo blocks span
+`leagues`, `clubs`, `previous_parties` and `upcoming_parties`.
+
+**Two things make that proof fail when nothing is wrong, and both look like real regressions.**
+Exclude `updated_at` (and any other `timestamp` column) from the dump — the three databases are
+seeded seconds apart, so every party row differs. And sort by `id`, never by the whole row text: if
+the change touches a value, the row's text changes, the sort order changes with it, and `diff`
+reports dozens of unrelated rows as modified. Both of these produced a confident "31 unexplained
+changes" against a refactor that was in fact exact.
+
+If the change *intends* a value change alongside the restructure, the diffs will not be empty —
+classify every differing row and show each one is the intended change, rather than eyeballing the
+count.
 
 Researching party positions: `kachollavan.org.il` returns **403** to WebFetch (the whole domain — the
 `/8ps/` page and every PDF), `israelhayom.co.il` returns **403**, and `davar1.co.il` returns **403**.
