@@ -164,8 +164,23 @@ A push to `master` sends a webhook to `https://jenkins.<app_domain>/github-webho
 the HMAC signature GitHub attaches using a shared secret, so a random request cannot start builds.
 
 Only app-source changes rebuild images: the build/scan/push stages carry
-`when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } } }` (**G3**). Editing
-`README.md`, `terraform/` or `docs/` triggers the job but builds nothing.
+`when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }; expression { env.NO_CHANGELOG == 'true' } } }`
+(**G3**). Editing `README.md`, `terraform/` or `docs/` triggers the job but builds nothing.
+
+The third condition (**G3b**) exists because `changeset` returns false for two different situations
+and cannot distinguish them: "no file under `services/` changed", and "Jenkins has no changelog at
+all". The second happens on the **first build after the controller is recreated** — there is no
+previous build to diff against — and `JENKINS_HOME` is an `emptyDir` on a 100% Spot node group, so
+that is roughly a daily event, not a one-off. `NO_CHANGELOG` is set from
+`currentBuild.changeSets.isEmpty()` in *Resolve tag and account*, and makes the pipeline build when
+it cannot tell what changed. Redundancy is bounded by G1: if the images for that SHA are already in
+ECR, `ALREADY_BUILT` short-circuits everything anyway.
+
+> **This was a real, silent failure, not a hypothetical.** On 2026-08-03 the cluster was rebuilt;
+> build 2 checked out `e2ab5d1`, logged `First time build. Skipping changelog.`, wrote a **0-byte**
+> changelog, skipped build/scan/push/bump, and reported **SUCCESS** — while ECR held no images for
+> that SHA and production ran a tag 7 commits behind. Nothing in the build log says "failed".
+> `scripts/tests/test-ci-guards.sh` now asserts every `changeset` gate keeps its G3b branch.
 
 > **Non-obvious:** the filter is a path match, not a "was this app code?" judgement. A docs-only commit
 > that also touches `services/backend/schema.sql` (e.g. fixing a comment) *will* trigger a full build.
@@ -459,12 +474,13 @@ G1–G7 differences the original design predicted and remain accurate.
 | **G2** — Jenkins rebuilds its own tag-bump commit, forever | The Guard stage or `scripts/ci/should-skip-build.sh` was removed. `[skip ci]` does nothing in Jenkins on its own | Restore the Guard stage. See the standing warning in `CLAUDE.md` |
 | **G1** — re-running a build fails with `tag already exists` | ECR tags are `IMMUTABLE` and images are tagged by commit SHA | Already handled by the "Already built?" stage; if it fails, check the agent's IRSA role still has `ecr:DescribeImages` |
 | A commit you expected to build finishes `NOT_BUILT` immediately, and the site does not change | The commit **message** contains the skip marker anywhere in it — including when merely *writing about* it. The Guard deliberately fails safe toward skipping: a wrong skip costs one manual rebuild, a wrong build costs an unbounded loop | Expected behaviour, not a fault. A marker-bearing commit can never be built, even with `FORCE_BUILD`, because the Guard runs first and unconditionally. Amend the commit message and push again |
-| **G3** — "Build Now" does nothing | A manual build has an empty changeset, so the `services/**` condition is false | Use *Build with Parameters* and tick `FORCE_BUILD` |
+| **G3** — "Build Now" does nothing | The changeset contains commits, but none touch `services/**` | Use *Build with Parameters* and tick `FORCE_BUILD` |
+| **G3b** — a **webhook** build reports SUCCESS but ECR gained no image | The first build after the controller was recreated has no changelog to diff against, so `changeset` is false for everything. Fixed by the `NO_CHANGELOG` branch; if it recurs, that branch has been removed | Confirm with `aws ecr describe-images --repository-name <cluster>-backend --image-ids imageTag=<sha>`; re-run with `FORCE_BUILD`. `scripts/tests/test-ci-guards.sh` fails if the branch is gone |
 | **G4** — `git push` denied at the last stage | Deploy key missing, read-only, or (see above) an HTTPS SCM URL | Deploy key with **write** access + SSH SCM URL |
 | **G6** — `FORCE_BUILD` checkbox is missing | The job has never run, so Jenkins has not read the `parameters` block yet | Run the job once; it registers them |
 | **G7** — a build failed and nobody noticed | Jenkins sends no email without SMTP | Accepted, see below. Check the Jenkins UI, or `kubectl get application voteball -n argocd` to see whether the deployed tag actually advanced |
 | `RepositoryNotFoundException` pushing to ECR | **The main stack is destroyed** — Jenkins goes with it, and so does ECR (`force_delete = true`) | Expected while torn down. `./scripts/build-push-ecr.sh` is the manual fallback when there is no cluster to run CI at all |
-| CI is green but the site doesn't change | No cluster, or no ArgoCD Application | `kubectl get application voteball -n argocd`; `./scripts/deploy.sh` bootstraps it |
+| CI is green but the site doesn't change | No cluster, or no ArgoCD Application — **or the build skipped every stage** (G3/G3b above) and never produced an image | `kubectl get application voteball -n argocd`; `./scripts/deploy.sh` bootstraps it. First check the build actually built: a run whose log says `Stage "Build images" skipped due to when conditional` shipped nothing, however green it looks |
 | Pods go to `ImagePullBackOff` after a sync | `values.yaml` on `master` names a tag/registry that doesn't exist in this account's ECR | `./scripts/sync-values-from-tf.sh --check` |
 | The Jenkins UI shows *"It appears that your reverse proxy set up is broken"* | **Cosmetic, and structural.** `unclassified.location.url` is the public `https://jenkins.<app_domain>/`, but the ALB routes **only** `/github-webhook` there and the UI is reached by port-forward on `localhost:8080`. The monitor's self-test requests the configured root URL, gets a 404 from the ALB, and concludes the proxy is broken — it is detecting the deliberate *absence* of a proxy for the UI | Ignore it; nothing is wrong and the webhook is unaffected. **Do not** point `location.url` at localhost to silence it — the GitHub plugin builds the advertised webhook URL from that value. Dismissing it in the UI does not survive a restart (`JENKINS_HOME` is an `emptyDir`); the durable route is `jenkins.disabledAdministrativeMonitors` in JCasC, but verify the key against this Jenkins version first — an unrecognised JCasC key stops the controller booting, exactly like the `crumbIssuer` case |
 

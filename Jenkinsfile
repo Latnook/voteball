@@ -20,9 +20,11 @@ pipeline {
   }
 
   parameters {
-    // G3 -- a manually triggered build has an empty changeset and would otherwise skip everything.
-    // G6 -- this checkbox does not appear until the job has run once; that first run is expected
-    // to do nothing. See the runbook in docs/cicd.md.
+    // G3 -- a build whose changeset misses services/** would otherwise skip everything. This is the
+    // manual override for "rebuild anyway".
+    // G6 -- this checkbox does not appear until the job has run once. That first run no longer does
+    // nothing, though: it has no changelog, which G3b (see 'Resolve tag and account') now treats as
+    // "cannot tell what changed" and builds. See the runbook in docs/cicd.md.
     booleanParam(name: 'FORCE_BUILD', defaultValue: false,
                  description: 'Build even if this commit touches no files under services/')
   }
@@ -92,6 +94,27 @@ pipeline {
           env.ECR_REGISTRY = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com"
           env.ECR_REPOS = "${env.CLUSTER_NAME}-backend ${env.CLUSTER_NAME}-worker " +
                           "${env.CLUSTER_NAME}-nginx ${env.CLUSTER_NAME}-backup"
+
+          // G3b -- "no changelog at all" is NOT the same as "nothing under services/ changed", and
+          // `changeset` cannot tell them apart: it returns false for both. Jenkins has no changelog
+          // on its FIRST build of this job, because there is no previous build to diff against --
+          // and on this cluster that is not a one-off. JENKINS_HOME is an emptyDir on a 100% Spot
+          // node group, so the controller is reclaimed roughly daily and every reclaim resets the
+          // baseline. Without this flag the first webhook build after each reclaim skips build,
+          // scan, push and tag bump, and reports SUCCESS -- observed 2026-08-03, build 2, which
+          // shipped nothing while master sat 7 commits ahead of production.
+          //
+          // Empty changeSets means "Jenkins cannot tell what changed", so build. A build with real
+          // commits that merely miss services/** still has a NON-empty changeSets and is still
+          // correctly skipped. Redundancy is bounded by G1 above: if the images for this SHA are
+          // already in ECR, ALREADY_BUILT short-circuits every stage anyway. This is the same
+          // fail-safe direction scripts/ci/images-exist.sh takes, and for the same reason -- a
+          // redundant build is harmless, a green build that shipped nothing is not.
+          env.NO_CHANGELOG = currentBuild.changeSets.isEmpty().toString()
+          if (env.NO_CHANGELOG == 'true') {
+            echo 'No changelog for this build (first build since the controller was recreated) -- ' +
+                 'treating it as "cannot determine what changed" and building rather than skipping.'
+          }
           echo "Building ${env.TAG} into ${env.ECR_REGISTRY}"
         }
       }
@@ -117,7 +140,8 @@ pipeline {
     stage('Build images') {
       when { allOf {
         expression { env.ALREADY_BUILT != 'present' }
-        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }   // G3
+        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
+                expression { env.NO_CHANGELOG == 'true' } }   // G3
       } }
       steps {
         // BuildKit needs ECR credentials of its own: --import-cache/--export-cache talk to the
@@ -190,7 +214,8 @@ pipeline {
     stage('Trivy scan') {
       when { allOf {
         expression { env.ALREADY_BUILT != 'present' }
-        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }
+        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
+                expression { env.NO_CHANGELOG == 'true' } }
       } }
       steps {
         container('trivy') {
@@ -216,7 +241,8 @@ pipeline {
     stage('Push to ECR') {
       when { allOf {
         expression { env.ALREADY_BUILT != 'present' }
-        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } }
+        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
+                expression { env.NO_CHANGELOG == 'true' } }
       } }
       steps {
         // Two containers: quay.io/skopeo/stable carries no AWS CLI, so the ECR login password is
@@ -258,7 +284,8 @@ pipeline {
 
     // ArgoCD watches charts/voteball on master. This commit IS the deploy.
     stage('Bump image tag') {
-      when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD } } }
+      when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
+                     expression { env.NO_CHANGELOG == 'true' } } }
       steps {
         // JOB CONFIGURATION REQUIREMENT: sshagent() below only takes effect if this workspace's
         // `origin` remote is an SSH URL. This repo's own GitHub remote is HTTPS

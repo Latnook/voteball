@@ -46,4 +46,33 @@ export CI_STUB_DESCRIBE_CMD=/tmp/ci-stub-partial.sh
 got="$(scripts/ci/images-exist.sh)"
 [ "$got" = "missing" ] || fail "partial push must rebuild, got '$got'"; pass=$((pass+1))
 
+# ---- G3b: the empty-changelog escape hatch in the Jenkinsfile -----------------------------------
+# Not a script, so it cannot be exercised like the two above -- but it is the guard whose absence
+# caused a green build that shipped nothing (2026-08-03, build 2), and the failure is invisible:
+# the pipeline reports SUCCESS. These are static assertions over the Jenkinsfile so that removing
+# the escape hatch fails here instead of silently in production a Spot reclaim later.
+
+# Every gate that keys on `changeset 'services/**'` must also accept "no changelog at all".
+# Match the gate form specifically -- the plain `env.NO_CHANGELOG == 'true'` also appears in the
+# echo that announces the fallback, which is not a gate and must not be counted.
+gates="$(grep -c "changeset 'services/\*\*'" Jenkinsfile)"
+hatches="$(grep -c "expression { env.NO_CHANGELOG == 'true' }" Jenkinsfile)"
+[ "$gates" -gt 0 ] || fail "expected at least one changeset gate in Jenkinsfile, found none"
+pass=$((pass+1))
+[ "$gates" = "$hatches" ] || \
+  fail "every 'changeset services/**' gate needs the NO_CHANGELOG escape hatch: $gates gates, $hatches hatches"
+pass=$((pass+1))
+
+# ...and NO_CHANGELOG must actually be assigned from the build's changeSets, not left undefined --
+# an unset env var compares false, which would silently restore the old skip-everything behaviour.
+grep -q 'env.NO_CHANGELOG = currentBuild.changeSets.isEmpty()' Jenkinsfile || \
+  fail "NO_CHANGELOG is referenced but never assigned from currentBuild.changeSets"
+pass=$((pass+1))
+
+# The gates must stay OR-ed with the changeset check, never replace it: a normal build with real
+# commits that miss services/** still has to skip.
+grep -q "anyOf { changeset 'services/\*\*'" Jenkinsfile || \
+  fail "changeset gate must remain inside an anyOf, or unrelated commits will rebuild every time"
+pass=$((pass+1))
+
 echo "PASS: $pass assertions"
