@@ -1,0 +1,72 @@
+# Captured 2026-08-03T21:14:25+03:00. Frozen evidence -- do not edit.
+
+### Demo 1 — HTTPS with a valid ACM certificate
+HTTP/2 200 
+issuer=C=US, O=Amazon, CN=Amazon RSA 2048 M04
+subject=CN=voteball.latnook.com
+notBefore=Aug  3 00:00:00 2026 GMT
+notAfter=Feb 16 23:59:59 2027 GMT
+
+### Demo 1b — HTTP is redirected to HTTPS
+HTTP/1.1 301 Moved Permanently
+Server: awselb/2.0
+
+### Demo 2+3 — frontend -> backend -> RDS (/api/options returns seeded DB data)
+{"clubs":[{"domestic_league_id":null,"id":2858,"league_id":6,"logo_url":"https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg","name_en":"1. FC K\u00f6ln","name_he":"
+
+### Demo 3b — vote totals read from the worker-computed rollup tables
+{"previous":[{"count":1,"party_id":null},{"count":6,"party_id":10},{"count":4,"party_id":2},{"count":1,"party_id":5},{"count":2,"party_id":4},{"count":3,"party_id":14},{"count":1,"party_id":1}],"upcoming":[{"count":1,"party_id":null},{"count":1,"party_id":13},{"count":1,"party_id":12},{"count":6,"pa
+
+### Demo 4 — S3 via IRSA (the backup CronJob writes to s3://voteball-rollups-590183895228/backups/)
+-- objects before:
+2026-08-03 21:11:17      18070 voteball-2026-08-03T18-11-09Z.sql.gz
+job.batch/evidence-backup created
+job.batch/evidence-backup condition met
+-- objects after:
+2026-08-03 21:11:17      18070 voteball-2026-08-03T18-11-09Z.sql.gz
+2026-08-03 21:14:40      18068 voteball-2026-08-03T18-14-37Z.sql.gz
+
+### Demo 4b — IRSA: only worker and backup carry an AWS role
+NAME       ROLE
+backend    <none>
+backup     arn:aws:iam::590183895228:role/voteball-backup-irsa
+default    <none>
+frontend   <none>
+worker     arn:aws:iam::590183895228:role/voteball-worker-irsa
+
+### Demo 5 — NetworkPolicy isolation, with a control
+-- policies in force:
+NAME                        POD-SELECTOR
+allow-alb-to-frontend       map[app:frontend]
+allow-app-egress            <none>
+allow-dns-egress            <none>
+allow-frontend-to-backend   map[app:backend]
+default-deny                <none>
+-- worker pod age (must be > ~2m for this probe to mean anything):
+NAME                      AGE
+worker-77b8d8bd47-9k89l   2026-08-03T18:11:24Z
+-- real probe: worker -> backend:5000 (must NOT connect):
+   BLOCKED by NetworkPolicy: TimeoutError
+-- control: worker -> RDS:5432 (must connect — allow-app-egress permits it):
+   RDS REACHABLE (the probe works)
+
+### Demo 6 — SNS topic, subscriptions and delivery over the last 7 days
+-------------------------------------------
+|           GetTopicAttributes            |
++----------------+---------------+--------+
+|  SubsConfirmed |  SubsPending  | Topic  |
++----------------+---------------+--------+
+|  1             |  0            |        |
++----------------+---------------+--------+
+NumberOfNotificationsDelivered   10.0
+NumberOfNotificationsFailed      0.0
+
+### Demo 7 — alert rules shipped by the app chart (PrometheusRule)
+VoteballPodCrashLooping
+VoteballDeploymentDegraded
+VoteballNoBackendAvailable
+VoteballMigrationJobFailed
+VoteballBackupJobFailed
+VoteballBackupMissing
+VoteballContainerOOMKilled
+

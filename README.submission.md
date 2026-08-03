@@ -187,6 +187,11 @@ nodes / namespaces / pods / deployments / services / ingress`, plus `describe po
 ServiceAccount annotations, the ExternalSecret sync, the ArgoCD Application status, and the monitoring
 pods. Quick live checks:
 
+All of the below is also **scripted** — `./scripts/capture-evidence.sh` runs the eight required
+`kubectl` commands, every demo, and the pod-restart poll, and writes them to
+`docs/eks/evidence/<date>-*.txt`. It exists because the evidence has to be re-captured after each
+rebuild (every pod name, ALB hostname and certificate is new), and a hand-run list drifts. Or by hand:
+
 ```bash
 kubectl get pods -n devops-app                                  # all Running
 curl -sf https://voteball.latnook.com/api/options | head -c 120 # leagues/clubs/parties (backend↔RDS)
@@ -201,23 +206,33 @@ s.connect((os.environ['DB_HOST'],5432)); print('RDS REACHABLE (control: the prob
 kubectl create job --from=cronjob/voteball-backup t -n devops-app && aws s3 ls s3://voteball-rollups-590183895228/backups/  # backup lands
 ```
 
-**Demos shown — captured output, not claims.** Every one below was run twice on 2026-07-27: once on
-the running cluster, then again on a cluster rebuilt from scratch. Both captures are in
-[`docs/eks/live-cluster-snapshot.md`](docs/eks/live-cluster-snapshot.md), with the raw command output
-under [`docs/eks/evidence/`](docs/eks/evidence/).
+**Demos shown — captured output, not claims.** The current set is **2026-08-03**, captured from the
+running cluster (EKS 1.36, Jenkins in-cluster). An older **2026-07-27** set covers a full
+`destroy.sh` → `deploy.sh` cycle and is kept because it proves something the current set cannot: the
+votes survive a teardown. Raw output for both is under
+[`docs/eks/evidence/`](docs/eks/evidence/); readable excerpts in
+[`docs/eks/live-cluster-snapshot.md`](docs/eks/live-cluster-snapshot.md).
 
 | Demo | Evidence |
 |---|---|
-| HTTPS with a valid ACM certificate | `HTTP/2 200`; issuer `Amazon RSA 2048 M01`. HTTP → `301` at the ALB |
-| frontend → backend → RDS | `/api/options` returns seeded league/club/party data in one unauthenticated request |
+| HTTPS with a valid ACM certificate | `HTTP/2 200`; issuer `Amazon RSA 2048 M04`, valid Aug 3 2026 → Feb 16 2027. HTTP → `301` at the ALB |
+| frontend → backend → RDS | `/api/options` returns seeded league/club/party data in one unauthenticated request; `/api/results?by=all` returns the worker-computed rollups |
 | NetworkPolicy isolation | worker → backend:5000 `BLOCKED (TimeoutError)`, **with a control**: worker → RDS:5432 `REACHABLE` |
-| S3 + SNS via IRSA | backup Job writes an object to a bucket created minutes earlier; SNS `Delivered: 1, Failed: 0`; only `worker`/`backup` hold an AWS role |
-| **Pod restart, site stays up** | **1,050** consecutive HTTP 200s (pre) and **700** (post) spanning `kubectl delete pod` of a frontend replica through to the replacement reaching `1/1 Ready` — `non-200: 0` |
-| **Full delete/rebuild lifecycle** | `destroy.sh` 112 destroyed → `deploy.sh` 112 added, RDS restored from the final snapshot, **5 votes before, 5 votes after** |
+| S3 + SNS via IRSA | backup Job writes a new object under `backups/`; SNS `Delivered: 10, Failed: 0` over 7 days; only `worker`/`backup` hold an AWS role |
+| **Pod restart, site stays up** | **2,218** consecutive HTTP 200s, `non-200: 0`, across a window that contained a CI-driven rolling update of *all three* Deployments **and** a deliberate `kubectl delete pod` — plus a dedicated, narrower restart poll in the same set |
+| **Full delete/rebuild lifecycle** (2026-07-27) | `destroy.sh` 112 destroyed → `deploy.sh` 112 added, RDS restored from the final snapshot, **5 votes before, 5 votes after** |
 
 The NetworkPolicy row carries a control deliberately. The check previously documented here was
 `wget ... || echo BLOCKED`, which printed `BLOCKED` because **`wget` is absent from the worker
 image** — it would have passed with the NetworkPolicy deleted. A test that cannot fail is not a test.
+
+The pod-restart row has the mirror-image trap: an uptime poll dense enough to prove continuity is
+dense enough to look like an attack. An unthrottled probe loop crossed the WAF's site-wide ceiling of
+2,000 requests / 5 min per IP (`terraform/waf.tf` rule 2, which counts *every* path) and the next 558
+probes returned `403` from the ALB — indistinguishable, in the log, from the site going down during
+the restart. CloudWatch named the culprit: `voteball-rate-sitewide` blocked 1,299 requests in that
+window, `voteball-rate-vote` none. `capture-evidence.sh` throttles to 2 requests/second for that
+reason.
 
 ## How to delete everything
 
