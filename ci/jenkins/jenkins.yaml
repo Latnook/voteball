@@ -199,6 +199,28 @@ jenkins:
                   - name: buildkit-state
                     emptyDir: {}
 
+appearance:
+  # This root is provided by the `theme-manager` plugin, which the `dark-theme` entry in plugins.txt
+  # pulls in as a dependency. Both must be present in the IMAGE for this block to be valid: an
+  # `appearance:` root with no theme-manager installed is an unrecognised key, and JCasC treats that
+  # as fatal -- the controller refuses to boot rather than skipping it, exactly like the crumbIssuer
+  # case noted in the jenkins: block above. So this file and ci/jenkins/plugins.txt move together,
+  # and the plugins.txt change only reaches the cluster via a rebuilt image (see the Dockerfile).
+  themeManager:
+    # "darkSystem" = the plugin's "Dark (System)" theme: it follows the OS/browser colour scheme via
+    # prefers-color-scheme, so a machine set to light mode gets a light Jenkins. The plain "dark" id,
+    # registered by the same plugin, would force dark regardless.
+    #
+    # Both ids are easy to get wrong from memory, and a wrong one does not fall back to a default --
+    # it is a boot failure. Note the two factories report the SAME getThemeId() ("dark"); what JCasC
+    # matches on is the symbol, confirmed here by setting the theme on a throwaway controller and
+    # reading back `configuration-as-code/export`, which emitted exactly the two lines below.
+    theme: "darkSystem"
+    # Leave a logged-in user free to override this for themselves. It is a weak freedom here:
+    # per-user preferences live under JENKINS_HOME/users, which is an emptyDir, so a personal choice
+    # is lost on the next reschedule -- roughly daily on Spot. The default above is what persists.
+    disableUserThemes: false
+
 security:
   # SSH host key verification for git operations.
   #

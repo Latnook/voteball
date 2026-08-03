@@ -34,6 +34,12 @@ timestamper
 # ephemeral pod agents -- the whole reason this host is now in the cluster
 kubernetes
 
+# --- appearance ---
+# dark theme, following the operator's OS setting. Pulls in `theme-manager` as a dependency, which is
+# what actually provides the `appearance:` root in jenkins.yaml -- dark-theme only registers the two
+# theme ids ("dark", "darkSystem") with it. Listed alone because jenkins-plugin-cli resolves that.
+dark-theme
+
 # Deliberately NOT included:
 #   docker-workflow  -- there is no Docker daemon and no `docker` CLI in a pod agent at all. Builds
 #                       use rootless BuildKit via buildctl; see the Jenkinsfile.
