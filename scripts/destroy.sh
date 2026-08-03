@@ -27,7 +27,11 @@ step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 # Kubernetes object dies with the cluster anyway; these steps are best-effort by design.
 if kubectl cluster-info >/dev/null 2>&1; then
   step "1/6  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
-  kubectl delete -f argocd/voteball-application.yaml --ignore-not-found || true
+  # Deleted BY NAME, not by rendering the template. Teardown must not depend on `terraform output`
+  # being readable: this script runs against half-destroyed stacks, and a render failure here would
+  # skip the deletion and leave selfHeal recreating everything the next five steps remove. The name
+  # and namespace are fixed in the template, so nothing environment-specific is needed to say which.
+  kubectl delete application voteball -n argocd --ignore-not-found || true
 
   step "2/6  Removing the Ingresses (releases the ALB and the DNS records)"
   # BOTH Ingresses, not just the app's. Since 2026-07-31 they share ALB group "voteball"

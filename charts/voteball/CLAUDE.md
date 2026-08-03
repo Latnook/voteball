@@ -42,7 +42,8 @@ rules against metrics this cluster actually exposes (kube-state-metrics): RDS, A
 CloudWatch-only and nothing scrapes them into Prometheus, so such rules could never fire — worse than no
 rule, because the coverage looks complete.
 
-ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml`), so **changes reach the
+ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml.tmpl`, rendered by
+`scripts/render-argocd-app.sh` — do not `kubectl apply` the template directly), so **changes reach the
 cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
 note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` now fails with
 `conflict with "argocd-controller"` on server-side-apply field ownership. Upgrades go through git.

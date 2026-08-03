@@ -206,12 +206,12 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   # mid-session usually has some. Without it this "fix" would fail for a different reason.
   if ! git pull --rebase --autostash; then
     echo "ERROR: could not rebase onto origin/master (conflict?)." >&2
-    echo "Resolve it, push, then run: kubectl apply -f argocd/voteball-application.yaml" >&2
+    echo "Resolve it, push, then run: ./scripts/render-argocd-app.sh | kubectl apply -f -" >&2
     SKIP_ARGOCD=1
   elif ! git push; then
     echo "ERROR: could not push values.yaml." >&2
     echo "Refusing to bootstrap ArgoCD -- it would sync master's stale image tag over this deploy." >&2
-    echo "Push manually, then re-run: kubectl apply -f argocd/voteball-application.yaml" >&2
+    echo "Push manually, then re-run: ./scripts/render-argocd-app.sh | kubectl apply -f -" >&2
     SKIP_ARGOCD=1
   fi
 fi
@@ -226,7 +226,10 @@ step "11/11 Bootstrapping ArgoCD (GitOps takes over from here)"
 if [ "${SKIP_ARGOCD:-0}" = "1" ]; then
   echo "SKIPPED — values.yaml is not on master (see the error above)."
 else
-  kubectl apply -f argocd/voteball-application.yaml
+  # Rendered from the `github_repo` Terraform output rather than applied from a static file -- see
+  # scripts/render-argocd-app.sh. `set -o pipefail` is on, so a failed render aborts here instead of
+  # feeding kubectl an empty stdin (which exits 0 and would report a bootstrap that never happened).
+  ./scripts/render-argocd-app.sh | kubectl apply -f -
 fi
 
 step "11b/11 Pointing GitHub at this cluster's Jenkins"

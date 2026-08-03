@@ -72,3 +72,8 @@ output "sns_topic_arn" {
   description = "SNS topic the worker publishes milestone alerts to (config.SNS_TOPIC in the chart)."
   value       = aws_sns_topic.notifications.arn
 }
+
+output "github_repo" {
+  description = "owner/name of the GitHub repo ArgoCD syncs from. scripts/render-argocd-app.sh composes the https:// URL, the same way ci/jenkins/jenkins.yaml composes both the project URL and the SSH remote from GITHUB_REPO."
+  value       = var.github_repo
+}

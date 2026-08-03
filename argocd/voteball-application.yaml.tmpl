@@ -1,6 +1,14 @@
 # ArgoCD watches the public repo's charts/voteball on master and keeps devops-app in sync.
 # ServerSideApply adopts the resources helm already created (no delete/redeploy, so the ALB is not
 # re-provisioned). prune+selfHeal make git the source of truth going forward.
+#
+# A TEMPLATE, not a manifest: ${REPO_URL} is filled in by scripts/render-argocd-app.sh from the
+# `github_repo` Terraform output, so a fork supplies its own repository via voteball.tfvars like
+# everything else. Rendered to stdout and piped straight into `kubectl apply -f -`, so no generated
+# copy is left on disk to drift or be edited by mistake.
+#
+# Do NOT `kubectl apply` this file directly -- kubectl does not expand ${REPO_URL}, and ArgoCD would
+# accept the resulting Application and then fail to fetch a repository that does not exist.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -9,7 +17,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Latnook/voteball
+    repoURL: ${REPO_URL}
     targetRevision: master
     path: charts/voteball
   destination:
