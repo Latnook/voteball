@@ -621,13 +621,25 @@ both on GitHub, and prints neither. It is idempotent — it compares the vault's
 against the keys GitHub already holds and does nothing when they match — so re-running `deploy.sh`
 without a rebuild changes nothing.
 
-It then **proves the webhook works** rather than assuming it: it sends test pings until one returns
-`200`, retrying for up to 90 seconds. This matters because registering a webhook and having one that
-*delivers* are different things — a wrong secret, unresolved DNS or an ALB with no healthy targets all
-look identical from the API. It also cleans up after a cosmetic annoyance: GitHub fires its own ping
-the instant a hook is created, and straight after a rebuild that reliably returns **502** because the
-new load balancer is still warming up. Harmless, but it leaves a red delivery as the newest entry on
-the repo's webhook page, which reads as "CI is broken" to anyone glancing at it.
+It then **probes the webhook and tells you what a failure means**, which is more useful than a bare
+pass/fail. A successful ping proves the endpoint is reachable *and* that Jenkins accepted the shared
+secret (a wrong secret is rejected with 401, not a connection error).
+
+It deliberately **does not retry until it passes**. The failure it would be retrying against — DNS
+negative caching, described under [If something breaks](#if-something-breaks) — lasts up to 15 minutes,
+which no sensible retry budget outlasts; a loop that eventually gave up would print a warning on a
+perfectly good deploy and train you to ignore warnings. Instead it probes briefly and classifies the
+result by the delivery's **`duration`**:
+
+| Result | Meaning | Action |
+|---|---|---|
+| `200` | reachable, secret accepted | none |
+| fails in **~0 s** | GitHub never opened a connection — DNS cache from teardown | none; clears within ~15 min |
+| fails with a **realistic duration** | connection made and refused — wrong secret, Jenkins down, no healthy target | **warns**; needs you |
+
+That middle row is why the duration matters: it is the common case after a rebuild and it is *not* a
+fault, so treating it as one would be noise. The bottom row is a genuine fault that the old
+"just retry" approach would have hidden.
 
 It is **deliberately not fatal**: if the GitHub call fails, the deploy still reports success, because
 everything else did succeed and the site is up. You get a warning instead, and the fix is one command:

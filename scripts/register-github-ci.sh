@@ -136,35 +136,63 @@ jq -n --arg url "$HOOK_URL" --arg secret "$(cat "$TMP/webhook_secret")" \
 gh api -X POST "repos/${REPO}/hooks" --input "$TMP/hook.json" \
   --jq '"    registered hook \(.id)"'
 
-# ---- prove it actually works ----------------------------------------------------------------------
-# Registering a webhook and having one that DELIVERS are different things: a wrong secret, a
-# not-yet-resolving DNS name or an ALB with no healthy targets all look identical from the API.
+# ---- probe, and classify what a failure actually means ---------------------------------------------
+# A successful ping proves two things worth knowing: the endpoint is reachable, and Jenkins ACCEPTED
+# the shared secret -- a wrong secret is rejected with 401/403, not a connection failure. That is the
+# real value here.
 #
-# GitHub fires its own ping the moment a hook is created, and immediately after a rebuild that ping
-# reliably gets a 502 -- the ALB exists but its targets are still registering. Harmless, but it leaves
-# a red delivery as the newest entry on the repo's webhook page, which reads as "CI is broken" to
-# anyone who looks. So: retry until it succeeds, and leave a green delivery as the last word.
+# It does NOT prove a push a minute later will land, and this block must not claim otherwise.
+# Teardown deletes the jenkins.<domain> DNS record, so during the rebuild GitHub's resolvers may hold a
+# cached "no address" answer. Route53 pins negative caching at 15 MINUTES, and GitHub sends from a
+# fleet of hosts with independent resolver caches -- so some senders fail while others succeed, and a
+# ping succeeding here says nothing about the next sender.
+#
+# Which is why this does NOT retry until it passes. No sane retry budget outlasts a 15-minute negative
+# cache, and a loop that eventually gives up would print a warning on a perfectly good deploy --
+# training whoever reads it to ignore warnings. Probe briefly, then classify using `duration`:
+#
+#   duration ~0      -> GitHub never opened a connection: DNS resolution failed from cache. Self-heals
+#                       within ~15 minutes of the record returning. EXPECTED after a rebuild; not a fault.
+#   duration ~0.5s+  -> a connection WAS made and rejected. Wrong secret, Jenkins down, or no healthy
+#                       target. A REAL fault, and the only case that deserves a warning.
+#
+# (Measured 2026-08-03: every DNS-cache failure was 0.0-0.01s, every success 0.53-0.66s from the US to
+# il-central-1. The two populations do not overlap.)
 HOOK_ID="$(gh api "repos/${REPO}/hooks" --jq ".[] | select(.config.url==\"${HOOK_URL}\") | .id" | head -1)"
-echo "==> Verifying delivery (a 502 here is the new ALB still warming up)"
-ok=0
-for attempt in 1 2 3 4 5 6; do
+echo "==> Probing the webhook (checks reachability and that the secret is accepted)"
+code=""; dur=""
+for attempt in 1 2 3; do
   gh api -X POST "repos/${REPO}/hooks/${HOOK_ID}/pings" --silent 2>/dev/null || true
-  sleep 15
-  code="$(gh api "repos/${REPO}/hooks/${HOOK_ID}/deliveries" --jq '[.[] | select(.event=="ping")][0].status_code' 2>/dev/null || echo "")"
-  if [ "$code" = "200" ]; then
-    echo "    delivered OK (attempt ${attempt})"
-    ok=1
-    break
-  fi
-  echo "    attempt ${attempt}: got '${code:-no response}', retrying"
+  sleep 10
+  read -r code dur <<<"$(gh api "repos/${REPO}/hooks/${HOOK_ID}/deliveries" \
+      --jq '[.[] | select(.event=="ping")][0] | "\(.status_code) \(.duration)"' 2>/dev/null || echo " ")"
+  [ "$code" = "200" ] && break
+  echo "    attempt ${attempt}: code=${code:-none} duration=${dur:-none}"
 done
 
 echo
-if [ "$ok" = "1" ]; then
-  echo "GitHub now points at this cluster, and a test delivery succeeded."
+if [ "$code" = "200" ]; then
+  echo "Webhook reachable and the secret was accepted (ping delivered in ${dur}s)."
+  echo "NOTE: right after a rebuild this does NOT guarantee the next push lands. GitHub sends from"
+  echo "      many hosts with independent DNS caches, and a failed PUSH is never retried. If a push"
+  echo "      in the next ~15 minutes triggers no build, replay it rather than re-pushing:"
+  echo "        gh api repos/${REPO}/hooks/${HOOK_ID}/deliveries --jq '.[0:5][] | \"\\(.delivered_at) \\(.event) \\(.status_code) \\(.duration)\"'"
+elif [ -n "$dur" ] && awk "BEGIN{exit !($dur < 0.1)}" 2>/dev/null; then
+  # Sub-100ms "failure" = no connection attempted = DNS negative cache. Expected, self-healing.
+  cat <<MSG
+Webhook registered. Pings are failing in ${dur}s, which means GitHub never opened a connection --
+its resolvers are still holding the "no address" answer cached while the DNS record was deleted
+during teardown. This clears itself within ~15 minutes and needs no action.
+
+  Until it clears, a PUSH that fails is LOST -- GitHub does not retry push deliveries. Either wait
+  ~15 minutes before pushing code, or replay any red delivery afterwards:
+      gh api repos/${REPO}/hooks/${HOOK_ID}/deliveries --jq '.[0:5][] | "\(.delivered_at) \(.event) \(.status_code) \(.duration)"'
+MSG
 else
-  echo "WARNING: the webhook is registered but no ping has succeeded yet." >&2
-  echo "         Usually just DNS/ALB warm-up — re-check in a few minutes:" >&2
-  echo "           gh api repos/${REPO}/hooks/${HOOK_ID}/deliveries --jq '.[0]'" >&2
-  echo "         If it stays failing, confirm https://jenkins.${APP_DOMAIN}/github-webhook/ resolves." >&2
+  echo "WARNING: the webhook endpoint answered but rejected the ping (code=${code:-none}, duration=${dur:-none})." >&2
+  echo "         A real round-trip duration means the connection SUCCEEDED and was refused -- this is" >&2
+  echo "         not DNS, and will not clear on its own. Check the shared secret, that Jenkins is up," >&2
+  echo "         and that the ALB has a healthy target:" >&2
+  echo "           kubectl get pods -n ci" >&2
+  echo "           curl -sI https://jenkins.${APP_DOMAIN}/github-webhook/   # expect 405, not 502/401" >&2
 fi
