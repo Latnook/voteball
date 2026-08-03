@@ -263,11 +263,17 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   only change under `FORCE_ROTATE=1`, which also mints a new deploy key and webhook secret and so
   requires re-registering both on GitHub. Count `grep -nE '^\s*step "'
   scripts/deploy.sh` for the current step numbers rather than reciting them here — they shift whenever
-  a step is inserted or moved, most recently 2026-07-31 when both secret-seeding steps moved *ahead* of
-  the billed apply (now 3 and 3b). **That order is load-bearing, not cosmetic:** the full apply creates
-  `helm_release.jenkins` and its ExternalSecret together, and ESO copies the vault into the cluster
-  once at creation and then only hourly — so seeding afterwards boots Jenkins with no admin account and
-  401s every login for an hour, while the deploy reports success throughout.
+  a step is inserted or moved, most recently 2026-08-04 when GitHub deploy-key registration moved from
+  the last step to **3c**, joining the two secret-seeding steps that moved *ahead* of the billed apply
+  on 2026-07-31 (now 3, 3b and 3c). **That order is load-bearing, not cosmetic**, for two separate
+  reasons. The full apply creates `helm_release.jenkins` and its ExternalSecret together, and ESO
+  copies the vault into the cluster once at creation and then only hourly — so seeding afterwards
+  boots Jenkins with no admin account and 401s every login for an hour, while the deploy reports
+  success throughout. And step 9 pushes `values.yaml` to `master`, which the previous cluster's
+  surviving webhook fires on — so a deploy key registered any later than 3c arrives after the build
+  that needed it has already failed on `Permission denied (publickey)` (observed 2026-08-03: the gap
+  was 21 seconds). The reachability *probe* deliberately stays at 11b, since it needs a live Jenkins;
+  `register-github-ci.sh` splits the two via `SKIP_PROBE=1` / `PROBE_ONLY=1`.
 - **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
   `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file

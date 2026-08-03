@@ -136,6 +136,11 @@ resources. The steps it performs (kept in step with the script's own numbering â
    resource is created. Run `deploy.sh` in a real terminal â€” see the note below.
 3b. Copy Jenkins' own credentials (a GitHub deploy key, a webhook secret, an admin login) into AWS's
     secret vault the same way. Also asked for up front, same reason.
+3c. Tell GitHub about the deploy key and webhook that step 3b just minted. This happens **here**, not
+    at the end, because step 9 below pushes to `master` â€” and the webhook left over from the previous
+    cluster fires on that push. If GitHub has not been told about the new key by then, the build dies
+    on `Permission denied (publickey)` in the middle of an otherwise healthy deploy. The reachability
+    check is *not* done here (there is no cluster yet); it runs at step 11b.
 4. Mirror the Trivy vulnerability database into ECR, so the CI pipeline never has to pull it from the
    internet during a build.
 5. Build and push the Jenkins controller image (CI now runs inside the cluster; see
@@ -150,6 +155,10 @@ resources. The steps it performs (kept in step with the script's own numbering â
 10. Install the app and wait for it to come up. A short-lived migration Job applies the database
     schema **once** before the app pods start, rather than every replica racing to do it.
 11. Hand ongoing control to ArgoCD.
+11b. Check GitHub can actually reach Jenkins â€” pings the webhook and reports whether DNS resolves, the
+     load balancer routes, and Jenkins answered. This is the half of step 3c that needs a running
+     cluster, which is why the two are separated. A failure here does **not** fail the deploy: the
+     site is already up, and only CI is affected.
 
 ### What is actually inside step 6
 

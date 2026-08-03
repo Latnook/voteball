@@ -552,3 +552,46 @@ therefore stands as written, and the following were considered and deliberately 
   hazard — a build on a non-`master` branch must never run the tag-bump stage, since ArgoCD deploys
   whatever `values.yaml` names on `master`. Should multibranch ever be adopted, the bump stage requires
   `when { branch 'master' }`.
+
+## Verification outcome (2026-08-04) — G3's analysis was incomplete
+
+**G3 above says the empty-changeset problem arises "in one case: a manually triggered build". There
+are two, and the second one shipped a silent failure.** Jenkins also has no changelog on the *first
+build of a job*, because there is no previous build to diff against — and `changeset` cannot tell
+"nothing under `services/**` changed" apart from "I have nothing to compare". It returns false for
+both.
+
+On the EC2 host this design targeted, that second case was genuinely a one-off: `JENKINS_HOME` was a
+persistent disk, so a job had a first build once and never again. **The EKS migration
+(`2026-07-30-jenkins-on-eks-design.md`) made `JENKINS_HOME` an `emptyDir` on a 100% Spot node group**,
+which reclaims the controller roughly daily. Every reclaim resets the baseline, so "the first build"
+became a recurring event and G3 began skipping the first push after each one.
+
+Observed 2026-08-03. Build 2 checked out `e2ab5d1`, logged `First time build. Skipping changelog.`,
+wrote a **0-byte** changelog, skipped build/scan/push/tag-bump, and reported **SUCCESS** — while ECR
+held no image for that SHA and production ran a tag **7 commits** behind. Nothing in the log says
+"failed".
+
+Two things are worth recording beyond the fix:
+
+- **The Risks table above anticipated this exact failure, in the wrong place.** It lists "G1 skip
+  logic wrongly reports 'already built' → green build ships nothing" and mitigates it by having G1
+  fail toward rebuilding. G1 was built that way and behaved correctly. The identical failure mode
+  arrived through G3, which had no such mitigation because its skip direction was never treated as
+  dangerous.
+- **Verification step 6 passed while the bug was live.** "A docs-only push does not trigger a build;
+  a manual build with `FORCE_BUILD` does" only exercises the *skip* direction and the *override*. No
+  step asserted that a push which should build, does. A guard that can wrongly skip needs a test for
+  the skip being wrong, not only for it being right.
+
+Fixed by **G3b**: `NO_CHANGELOG`, set from `currentBuild.changeSets.isEmpty()`, is OR-ed into all four
+gates — build when we cannot tell what changed. A build with real commits that merely miss
+`services/**` still has a non-empty `changeSets` and is still skipped, and redundancy is bounded by
+G1. Because the gate is in the `Jenkinsfile` rather than a script, `scripts/tests/test-ci-guards.sh`
+asserts it statically; both negative controls (removing a gate's branch, removing the assignment) were
+verified to fail the suite.
+
+Re-verified end to end on the 2026-08-04 destroy → rebuild cycle, across four builds: no changelog →
+**built**; the pipeline's own marker commit → **NOT_BUILT** (G2); a docs commit whose message quoted
+the marker → **NOT_BUILT** (G2 again, matching the message rather than the intent); a docs commit with
+a real changelog → **4 stages skipped**. Evidence in `docs/eks/evidence/2026-08-04-*`.
