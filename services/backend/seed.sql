@@ -29,6 +29,17 @@ WHERE NOT EXISTS (
 )
 ON CONFLICT (name) DO NOTHING;
 
+-- English spelling corrections, and they MUST run before the INSERT below, not after it.
+-- Every name_en-keyed statement in this file is guarded, so editing a literal only ever reaches a
+-- *fresh* database; an already-seeded one keeps the old spelling forever. Worse, the INSERT's
+-- `existing.name_en = c.name` guard then stops recognizing the row, inserts a second club under the
+-- new spelling, and the correction afterwards dies on clubs_name_en_uidx -- crashing init_db on
+-- every pod boot (the same shape as the 2026-07-17 duplicate-league incident above).
+-- Keyed on the exact superseded string, so an admin's own rename (which won't match) is never
+-- overwritten. The legacy `name` column is deliberately left alone: it is internal identity only,
+-- never returned by the API, and admin saves overwrite it with name_he regardless.
+UPDATE clubs SET name_en = 'Curaçao' WHERE name_en = 'Curacao';
+
 -- Same name_en guard as leagues above -- see that comment for why ON CONFLICT (league_id, name)
 -- alone isn't enough once admin edits have flipped a club's legacy `name` to Hebrew.
 INSERT INTO clubs (league_id, name)
@@ -52,7 +63,7 @@ JOIN (VALUES
     ('World Cup 2026', 'Sweden'),
     ('World Cup 2026', 'Uzbekistan'), ('World Cup 2026', 'Jordan'), ('World Cup 2026', 'Iraq'),
     ('World Cup 2026', 'Cape Verde'), ('World Cup 2026', 'South Africa'), ('World Cup 2026', 'DR Congo'),
-    ('World Cup 2026', 'Panama'), ('World Cup 2026', 'Curacao'), ('World Cup 2026', 'Haiti'),
+    ('World Cup 2026', 'Panama'), ('World Cup 2026', 'Curaçao'), ('World Cup 2026', 'Haiti'),
     ('World Cup 2026', 'Paraguay'), ('World Cup 2026', 'New Zealand'), ('World Cup 2026', 'Norway'),
     ('World Cup 2026', 'Scotland'), ('World Cup 2026', 'Austria'),
     ('World Cup 2026', 'Bosnia and Herzegovina'), ('World Cup 2026', 'Turkey'), ('World Cup 2026', 'Czech Republic'),
@@ -305,7 +316,7 @@ FROM (VALUES
     ('South Africa', 'דרום אפריקה', 'ЮАР'),
     ('DR Congo', 'קונגו הדמוקרטית', 'ДР Конго'),
     ('Panama', 'פנמה', 'Панама'),
-    ('Curacao', 'קוראסאו', 'Кюрасао'),
+    ('Curaçao', 'קוראסאו', 'Кюрасао'),
     ('Haiti', 'האיטי', 'Гаити'),
     ('Paraguay', 'פרגוואי', 'Парагвай'),
     ('New Zealand', 'ניו זילנד', 'Новая Зеландия'),
@@ -515,7 +526,7 @@ FROM (VALUES
     ('South Africa', 'https://upload.wikimedia.org/wikipedia/en/e/e7/South_Africa_national_soccer_team_logo.svg'),
     ('DR Congo', 'https://upload.wikimedia.org/wikipedia/en/6/62/Congolese_Association_Football_Federation_logo.png'),
     ('Panama', 'https://upload.wikimedia.org/wikipedia/en/e/ee/Panamanian_Football_Federation_logo_2024.svg'),
-    ('Curacao', 'https://upload.wikimedia.org/wikipedia/en/1/1c/Curacao_Football_Federation.svg'),
+    ('Curaçao', 'https://upload.wikimedia.org/wikipedia/en/1/1c/Curacao_Football_Federation.svg'),
     ('Haiti', 'https://upload.wikimedia.org/wikipedia/en/e/e7/Federation_Haitienne_de_Football.png'),
     ('Paraguay', 'https://upload.wikimedia.org/wikipedia/commons/1/14/Asociaci%C3%B3n_Paraguaya_de_F%C3%BAtbol_logo.svg'),
     ('New Zealand', 'https://upload.wikimedia.org/wikipedia/en/3/3a/New_Zealand_Football_Crest_2022.svg'),
