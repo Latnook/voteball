@@ -122,6 +122,18 @@ resource "aws_eks_addon" "cloudwatch" {
     dcgmExporter       = { enabled = false }
     neuronMonitor      = { enabled = false }
 
+    # Deploy no CloudWatch agent at all. This is NOT implied by the flags above: they turn off what
+    # the agent would collect, but `agents` is a separate list (default [{name: "cloudwatch-agent"}])
+    # that decides whether the workload exists. Leave it at the default with everything above off and
+    # the agent still lands on every node, translates an empty config, finds no
+    # amazon-cloudwatch-agent.yaml to read, and CrashLoopBackOffs forever -- which then trips the
+    # crashloop alert in charts/voteball/templates/prometheusrule.yaml and pages SNS about a pod that
+    # is not supposed to be running. Observed live on 2026-08-03 (5 restarts in 4 minutes).
+    #
+    # Fluent Bit is a separate DaemonSet under containerLogs and is unaffected -- pod logging keeps
+    # working with no agent present.
+    agents = []
+
     containerLogs = {
       enabled = true
       fluentBit = {
