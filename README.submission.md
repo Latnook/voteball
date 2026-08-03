@@ -206,12 +206,18 @@ s.connect((os.environ['DB_HOST'],5432)); print('RDS REACHABLE (control: the prob
 kubectl create job --from=cronjob/voteball-backup t -n devops-app && aws s3 ls s3://voteball-rollups-590183895228/backups/  # backup lands
 ```
 
-**Demos shown — captured output, not claims.** The current set is **2026-08-03**, captured from the
-running cluster (EKS 1.36, Jenkins in-cluster). An older **2026-07-27** set covers a full
-`destroy.sh` → `deploy.sh` cycle and is kept because it proves something the current set cannot: the
-votes survive a teardown. Raw output for both is under
-[`docs/eks/evidence/`](docs/eks/evidence/); readable excerpts in
+**Demos shown — captured output, not claims.** The current set is **2026-08-03**, captured either
+side of one deliberate `destroy.sh` → `deploy.sh` cycle on EKS 1.36 with Jenkins in-cluster. An
+older **2026-07-27** set is kept as a second, independent lifecycle record. Raw output for both is
+under [`docs/eks/evidence/`](docs/eks/evidence/); readable excerpts in
 [`docs/eks/live-cluster-snapshot.md`](docs/eks/live-cluster-snapshot.md).
+
+That rebuild needed **three** `deploy.sh` invocations and the log keeps all three, unedited: an EKS
+access-entry propagation race on the first, then an `IMMUTABLE`-tag push rejection that made the
+script unable to re-run at all, then a clean pass. Both are fixed
+(`terraform/addon-jenkins.tf` `depends_on`, and `build-push-ecr.sh` now skipping tags already in
+ECR via CI's existing G1 check). A deploy path that has only ever been run on a clean slate has not
+been shown to recover — this one has.
 
 | Demo | Evidence |
 |---|---|
@@ -220,7 +226,7 @@ votes survive a teardown. Raw output for both is under
 | NetworkPolicy isolation | worker → backend:5000 `BLOCKED (TimeoutError)`, **with a control**: worker → RDS:5432 `REACHABLE` |
 | S3 + SNS via IRSA | backup Job writes a new object under `backups/`; SNS `Delivered: 10, Failed: 0` over 7 days; only `worker`/`backup` hold an AWS role |
 | **Pod restart, site stays up** | **2,218** consecutive HTTP 200s, `non-200: 0`, across a window that contained a CI-driven rolling update of *all three* Deployments **and** a deliberate `kubectl delete pod` — plus a dedicated, narrower restart poll in the same set |
-| **Full delete/rebuild lifecycle** (2026-07-27) | `destroy.sh` 112 destroyed → `deploy.sh` 112 added, RDS restored from the final snapshot, **5 votes before, 5 votes after** |
+| **Full delete/rebuild lifecycle** | `destroy.sh` **132 destroyed** → `deploy.sh` rebuilt, RDS restored from the automatic final snapshot: **18 previous-party / 23 upcoming votes before, identical after**. New certificate, new ALB, new cluster, every pod name new. Post-rebuild: **124** probes, all 200, across a pod delete |
 
 The NetworkPolicy row carries a control deliberately. The check previously documented here was
 `wget ... || echo BLOCKED`, which printed `BLOCKED` because **`wget` is absent from the worker

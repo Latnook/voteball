@@ -12,6 +12,17 @@
 # build history is deliberately disposable (design doc section 2).
 
 resource "kubernetes_namespace" "ci" {
+  # This is the FIRST kubernetes-provider resource to touch a brand-new cluster -- every other
+  # in-cluster object here arrives via helm_release, which lands later in the graph. Without an
+  # explicit dependency its only ordering constraint is the provider config, so Terraform schedules
+  # it as soon as the cluster API answers, which can be BEFORE the EKS access entry granting the
+  # caller admin has propagated. The 2026-08-03 rebuild hit exactly that:
+  #   Error: namespaces is forbidden: User ".../cli-admin" cannot create resource "namespaces"
+  # -- after ~13 minutes of applying, with every helm_release add-on already installed, so it reads
+  # like a permissions bug rather than a race. Waiting on the whole module covers the access entry
+  # and its policy association.
+  depends_on = [module.eks]
+
   metadata {
     name = "ci"
     labels = {
