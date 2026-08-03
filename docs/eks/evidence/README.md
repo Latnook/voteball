@@ -44,6 +44,12 @@ The first build after a rebuild also logs `failed to configure registry cache im
 …/voteball-buildcache:… not found` four times. That is expected and non-fatal — ECR is destroyed with
 the stack, so the cache tags do not exist yet and BuildKit proceeds without them.
 
+> **A footnote on build 3, because it is instructive.** The commit that added this file was
+> documentation only and should have been skipped by the path filter — but it was aborted earlier
+> than that, by the Guard, because its message *described* the pipeline's marker commit and therefore
+> contained the marker text. The Guard matches the message, not the intent, and deliberately fails
+> safe toward skipping. Right outcome, different mechanism; see the G3 row in `docs/cicd.md`.
+
 | File | What it is |
 |---|---|
 | `2026-08-04-destroy-steps.txt` | Six ordered teardown steps, `Destroy complete! Resources: 132 destroyed.` |
