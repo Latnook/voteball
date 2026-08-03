@@ -45,6 +45,35 @@ for want in "name: voteball" "namespace: devops-app" "targetRevision: master" \
   check "keeps '$want'" "$want" "$out"
 done
 
+# --- 3b. The AppProject bounds what may be deployed ------------------------------------------------
+# Losing any of these silently widens the blast radius back to the stock `default` project's '*'.
+check "renders an AppProject"              "kind: AppProject"           "$out"
+check "Application joins that project"     "project: voteball"          "$out"
+check "denies cluster-scoped resources"    "clusterResourceWhitelist: []" "$out"
+check "pins the destination namespace"     "namespace: devops-app"      "$out"
+
+# The AppProject must be applied BEFORE the Application that references it -- kubectl honours document
+# order in a single stream, so a reordered template leaves the Application in "project does not exist".
+proj_line="$(printf '%s\n' "$out" | grep -n "kind: AppProject" | cut -d: -f1)"
+app_line="$(printf '%s\n' "$out" | grep -n "kind: Application" | cut -d: -f1)"
+if [ -n "$proj_line" ] && [ -n "$app_line" ] && [ "$proj_line" -lt "$app_line" ]; then
+  ok "AppProject is rendered before the Application"
+else
+  bad "AppProject is rendered before the Application"
+  echo "       AppProject at line ${proj_line:-none}, Application at line ${app_line:-none}"
+fi
+
+# The project's sourceRepos must be the SAME repo the Application pulls from. If they ever diverge --
+# say a fork edits one and not the other -- ArgoCD refuses every sync with "not permitted in project",
+# which reads like an ArgoCD fault rather than a template one.
+src_count="$(printf '%s\n' "$out" | grep -c "https://github.com/Latnook/voteball" || true)"
+if [ "$src_count" -ge 2 ]; then
+  ok "AppProject sourceRepos and Application repoURL use the same rendered URL"
+else
+  bad "AppProject sourceRepos and Application repoURL use the same rendered URL"
+  echo "       expected the URL twice, found it ${src_count}x"
+fi
+
 # --- 4. No placeholder survives --------------------------------------------------------------------
 case "$out" in
   *'${'*) bad "no unsubstituted placeholder"; echo "       got: $out" ;;
@@ -76,12 +105,29 @@ fi
 cp "$TMP/backup.tmpl" argocd/voteball-application.yaml.tmpl
 
 # --- 7. The rendered output is valid YAML ----------------------------------------------------------
+# safe_load_ALL, not safe_load: the template became a two-document stream when the AppProject was
+# added, and safe_load raises ComposerError on the second `---` -- a green test that would have gone
+# red for the right reason but with a misleading message.
 if ARGOCD_STUB_github_repo="Latnook/voteball" "$RENDER" \
-   | python3 -c 'import sys,yaml; yaml.safe_load(sys.stdin)' 2>/dev/null; then
-  ok "renders valid YAML"
+   | python3 -c '
+import sys, yaml
+docs = [d for d in yaml.safe_load_all(sys.stdin) if d]
+kinds = [d["kind"] for d in docs]
+assert kinds == ["AppProject", "Application"], kinds
+' 2>/dev/null; then
+  ok "renders valid YAML: exactly [AppProject, Application]"
 else
   # PyYAML is not a hard dependency of this repo; skip rather than fail the suite over it.
   echo "  skip renders valid YAML (PyYAML not installed)"
+fi
+
+# --- 8. Argument handling --------------------------------------------------------------------------
+# --check talks to a live cluster, so the suite (which is offline by contract) can only assert that
+# the flag is recognised and that anything else is rejected rather than silently treated as a render.
+if ARGOCD_STUB_github_repo="Latnook/voteball" "$RENDER" --bogus >/dev/null 2>&1; then
+  bad "rejects an unknown flag"
+else
+  ok "rejects an unknown flag"
 fi
 
 echo

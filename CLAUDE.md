@@ -222,6 +222,17 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
 - **Helm (`charts/voteball`)** is the app itself (namespace `devops-app`): 3 Deployments, Services,
   Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
   **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
+- **ArgoCD itself is configured in exactly two files and nothing else**: `terraform/addon-argocd.tf`
+  (the `helm_release` and every `argocd-cm`/`argocd-rbac-cm` key) and
+  `argocd/voteball-application.yaml.tmpl` (the `AppProject` **and** the `Application`, one two-document
+  template — the AppProject must render first, kubectl applies a stream in order). **Nothing is
+  configured through the UI.** `./scripts/render-argocd-app.sh --check` enforces that: it fails on a
+  live/template mismatch, on any `Application`/`AppProject` this repo does not declare, and on any
+  hand-registered repo or cluster credential. It is a *separate* check because ArgoCD cannot do it —
+  `selfHeal` reconciles `charts/voteball`, but nothing reconciles the `Application` pointing at it, so
+  a UI edit to sync policy or destination is the one drift GitOps cannot self-correct.
+  The `voteball` AppProject pins source repo + destination namespace and sets
+  `clusterResourceWhitelist: []`; see `charts/voteball/CLAUDE.md` before adding a cluster-scoped kind.
 - **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
   confirmation before Terraform touches billed resources; `VOTEBALL_AUTO_APPROVE=1` skips the prompt
   for unattended runs only). **`VOTEBALL_AUTO_APPROVE=1` alone does NOT make `deploy.sh`

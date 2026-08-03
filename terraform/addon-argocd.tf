@@ -27,12 +27,45 @@ resource "helm_release" "argocd" {
   #
   # Keys contain literal dots (argocd-cm is a flat map, not nested YAML) -- hence the quoting.
   # Helm merges this map over the chart's other `configs.cm` defaults; it does not replace them.
+  #
+  # Everything ArgoCD is configured with is in this block or in argocd/voteball-application.yaml.tmpl.
+  # Nothing is set through the UI -- `scripts/render-argocd-app.sh --check` fails if that stops being
+  # true. Settings changed in the UI would live in argocd-cm, which this release owns, so the next
+  # `terraform apply` reverts them anyway; the check is what makes that visible rather than silent.
   values = [yamlencode({
     configs = {
       cm = {
         "timeout.reconciliation"        = "30s"
         "timeout.reconciliation.jitter" = "10s"
+
+        # The chart ships the literal placeholder `https://argocd.example.com`. ArgoCD builds the
+        # links in its own UI and API responses from this, so leaving it means every "open in ArgoCD"
+        # link points at a domain nobody owns. There is no public ArgoCD endpoint by design (the
+        # Service is ClusterIP -- see docs/deploy.md), so the honest value is the port-forward the
+        # runbook actually tells you to use.
+        "url" = "https://localhost:8081"
+      }
+
+      # Codifying the DEFAULT, on purpose. Both keys are already empty in a stock install, so this
+      # changes no behaviour -- it states the intent, which is that the local `admin` account is the
+      # only identity and anyone arriving by any other route gets nothing. Written down, adding SSO
+      # later is an edit to a policy that exists; left implicit, it is a blank the next person fills
+      # in from the UI.
+      rbac = {
+        "policy.default" = ""
+        "policy.csv"     = ""
       }
     }
+
+    # Two components the chart runs by default and this deployment has no configuration for. Left on,
+    # they are a running SSO server with no connectors and a notifications controller with no
+    # triggers -- state in the cluster that no file in this repo asks for, which is the same problem
+    # as a UI-made setting. Off, the intent is explicit. Re-enable with one line and `terraform apply`.
+    #
+    # NOT disabled: the ApplicationSet controller. Chart 10.2.1 dropped `applicationSet.enabled`, and
+    # the only remaining lever is `replicas: 0`, which leaves a permanently-unready Deployment behind
+    # -- worse than the idle pod it removes.
+    dex           = { enabled = false }
+    notifications = { enabled = false }
   })]
 }

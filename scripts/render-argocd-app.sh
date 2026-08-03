@@ -9,21 +9,38 @@
 #
 #   ./scripts/render-argocd-app.sh | kubectl apply -f -    # what deploy.sh does
 #   ./scripts/render-argocd-app.sh                         # inspect what would be applied
+#   ./scripts/render-argocd-app.sh --check                 # assert the LIVE cluster still matches git
 #
 # Output goes to stdout and is never written to disk: a generated file in the working tree is a file
 # someone eventually edits, and its edits are silently discarded on the next deploy.
+#
+# --check is the counterpart to `sync-values-from-tf.sh --check`, and answers a question rendering
+# alone cannot: "did anyone configure ArgoCD through the UI?" Being written as code only holds if
+# something verifies it still is -- ArgoCD's own selfHeal watches charts/voteball, NOT the Application
+# and AppProject that point at it, so a UI edit to either is exactly the drift nothing else notices.
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
 . scripts/lib/config.sh
 TEMPLATE="argocd/voteball-application.yaml.tmpl"
 
+MODE="render"
+case "${1:-}" in
+  --check) MODE="check" ;;
+  "")      ;;
+  *)       echo "usage: $0 [--check]" >&2; exit 2 ;;
+esac
+
 # Same stub convention as scripts/sync-values-from-tf.sh: ARGOCD_STUB_<output> lets the test suite run
 # with no AWS credentials and no applied stack.
 tf_output() {
   local name="$1" stub
   stub="ARGOCD_STUB_${name}"
-  if [ -n "${!stub:-}" ]; then
+  # `+x` (is it SET) rather than `-n` (is it NON-EMPTY). With -n, a stub deliberately set to "" fell
+  # through to real Terraform -- so the test asserting that an empty github_repo is rejected only
+  # passed on a machine with no applied stack, and silently passed for the wrong reason everywhere
+  # else. An explicitly empty stub is a test case, not an absent one.
+  if [ -n "${!stub+x}" ]; then
     printf '%s' "${!stub}"
     return 0
   fi
@@ -71,4 +88,72 @@ if printf '%s' "$RENDERED" | grep -q '\${'; then
   exit 1
 fi
 
-printf '%s\n' "$RENDERED"
+if [ "$MODE" = "render" ]; then
+  printf '%s\n' "$RENDERED"
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------------------------------
+# --check: compare the LIVE cluster against what this repo says it should be.
+# ---------------------------------------------------------------------------------------------------
+kubectl cluster-info >/dev/null 2>&1 || {
+  echo "ERROR: no reachable cluster — --check has nothing to compare against." >&2
+  echo "       (This is a failure, not a pass. A skipped check must never read as a clean one.)" >&2
+  exit 1
+}
+
+drift=0
+
+# 1. Does the live Application/AppProject still match the template?
+#    `kubectl diff` and not a hand-rolled spec comparison: it applies the same server-side defaulting
+#    the real apply would, so it reports only differences that an apply would actually change. Exit 1
+#    means "differs", anything above that means the command itself failed and must not read as clean.
+diff_out=""; rc=0
+diff_out="$(printf '%s\n' "$RENDERED" | kubectl diff -f - 2>&1)" || rc=$?
+case "$rc" in
+  0) echo "ok    Application/AppProject match argocd/voteball-application.yaml.tmpl" ;;
+  1) echo "DRIFT the live Application/AppProject differ from the template:" >&2
+     printf '%s\n' "$diff_out" >&2
+     drift=1 ;;
+  *) echo "ERROR kubectl diff failed (exit ${rc}):" >&2
+     printf '%s\n' "$diff_out" >&2
+     exit 1 ;;
+esac
+
+# 2. Anything ArgoCD is managing that this repo never declared was created by hand.
+#    `default` is the AppProject the argo-cd chart ships and cannot be removed; everything else in
+#    both lists should be exactly what the template above renders.
+for pair in "applications:voteball" "appprojects:voteball default"; do
+  kind="${pair%%:*}"; allowed=" ${pair#*:} "
+  found="$(kubectl get "$kind" -n argocd -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
+  for name in $found; do
+    case "$allowed" in
+      *" $name "*) ;;
+      *) echo "DRIFT undeclared ${kind%s} '${name}' in namespace argocd — not created by this repo." >&2
+         drift=1 ;;
+    esac
+  done
+done
+
+# 3. Repository / cluster credentials registered through the UI or `argocd repo add`.
+#    There should be NONE: the Voteball repo is public and the only destination is the in-cluster API
+#    server, so any labelled secret here is a connection somebody configured outside git.
+creds="$(kubectl get secret -n argocd -l argocd.argoproj.io/secret-type \
+           -o jsonpath='{range .items[*]}{.metadata.name}{"="}{.metadata.labels.argocd\.argoproj\.io/secret-type}{"\n"}{end}' 2>/dev/null || true)"
+if [ -n "$creds" ]; then
+  echo "DRIFT repo/cluster credentials registered outside git:" >&2
+  printf '%s\n' "$creds" >&2
+  drift=1
+else
+  echo "ok    no hand-registered repository or cluster credentials"
+fi
+
+if [ "$drift" -ne 0 ]; then
+  echo >&2
+  echo "ArgoCD has configuration that is not in this repo." >&2
+  echo "Reconcile it: put the change in argocd/voteball-application.yaml.tmpl (or terraform/addon-argocd.tf" >&2
+  echo "for anything in argocd-cm), commit, then re-run: ./scripts/render-argocd-app.sh | kubectl apply -f -" >&2
+  exit 1
+fi
+
+echo "ArgoCD matches the repo — no GUI configuration."

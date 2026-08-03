@@ -1,6 +1,6 @@
-# ArgoCD watches the public repo's charts/voteball on master and keeps devops-app in sync.
-# ServerSideApply adopts the resources helm already created (no delete/redeploy, so the ALB is not
-# re-provisioned). prune+selfHeal make git the source of truth going forward.
+# The complete ArgoCD-side configuration for this deployment: an AppProject that bounds what may be
+# deployed, and the Application that does the deploying. Both live here so there is exactly one file
+# to read to know what ArgoCD is allowed to do -- and nothing to click.
 #
 # A TEMPLATE, not a manifest: ${REPO_URL} is filled in by scripts/render-argocd-app.sh from the
 # `github_repo` Terraform output, so a fork supplies its own repository via voteball.tfvars like
@@ -9,13 +9,55 @@
 #
 # Do NOT `kubectl apply` this file directly -- kubectl does not expand ${REPO_URL}, and ArgoCD would
 # accept the resulting Application and then fail to fetch a repository that does not exist.
+#
+# Document ORDER is load-bearing: kubectl applies a multi-document stream top to bottom, so the
+# AppProject exists before the Application that references it. Reversed, the Application lands first
+# in a "project voteball does not exist" error state until the next reconcile.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: voteball
+  namespace: argocd
+spec:
+  description: Voteball delivery. Deploys charts/voteball from this repo into devops-app, nothing else.
+
+  # Exactly one repo and one destination. The stock `default` project -- which this Application used
+  # until 2026-08-03 -- allows '*' for all three of these, so an Application created by mistake (or
+  # by anyone who reaches the API) could deploy an arbitrary repo into kube-system. Naming the repo
+  # and namespace here is the difference between "we only deploy one thing" being a description of
+  # current state and being an enforced rule.
+  sourceRepos:
+    - ${REPO_URL}
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: devops-app
+
+  # Empty = DENY every cluster-scoped resource. charts/voteball renders only namespaced kinds
+  # (Deployment, Service, Ingress, ConfigMap, ExternalSecret, SecretStore, ServiceAccount, Job,
+  # CronJob, HPA, PDB, NetworkPolicy, PrometheusRule) -- verify with:
+  #     helm template voteball charts/voteball -n devops-app | grep '^kind:' | sort -u
+  # If the chart ever gains a ClusterRole/ClusterRoleBinding/CRD, sync fails CLOSED with
+  # "resource ... is not permitted in project voteball" rather than silently granting cluster scope.
+  # That is the intended behaviour: whitelist it here deliberately, in this file, in a commit.
+  clusterResourceWhitelist: []
+
+  # Anything namespaced is fine -- `destinations` already pins it to devops-app, so this is not a
+  # second lock, just an absence of one. Enumerating kinds here would break the chart every time it
+  # gained a resource type, with no security gain the destination pin does not already provide.
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+---
+# ArgoCD watches the public repo's charts/voteball on master and keeps devops-app in sync.
+# ServerSideApply adopts the resources helm already created (no delete/redeploy, so the ALB is not
+# re-provisioned). prune+selfHeal make git the source of truth going forward.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: voteball
   namespace: argocd
 spec:
-  project: default
+  project: voteball
   source:
     repoURL: ${REPO_URL}
     targetRevision: master

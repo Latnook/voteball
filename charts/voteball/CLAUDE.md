@@ -48,3 +48,12 @@ cluster by committing to `master`**, not by running `helm upgrade` by hand. If y
 note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` now fails with
 `conflict with "argocd-controller"` on server-side-apply field ownership. Upgrades go through git.
 
+**Adding a CLUSTER-SCOPED resource to this chart takes two commits, not one.** Since 2026-08-03 the
+Application runs in the `voteball` AppProject, whose `clusterResourceWhitelist` is empty — every kind
+this chart renders today is namespaced, so nothing cluster-scoped is permitted. Add a `ClusterRole`,
+`ClusterRoleBinding`, `CRD` or `StorageClass` and the chart still lints, still templates, and ArgoCD
+refuses the sync with `resource ... is not permitted in project voteball` — an error that reads like an
+ArgoCD fault rather than a missing whitelist entry. Whitelist the kind in
+`argocd/voteball-application.yaml.tmpl` first. That friction is the point: cluster scope should be a
+deliberate, reviewable act.
+

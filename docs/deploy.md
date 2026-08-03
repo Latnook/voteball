@@ -456,6 +456,25 @@ If you only want to know whether the cluster matches git, you don't need the UI:
 kubectl get applications -n argocd      # "Synced / Healthy" is the answer
 ```
 
+**The UI is read-only by convention, and there is a check that enforces it.** Everything ArgoCD is
+configured with is in two files — `terraform/addon-argocd.tf` (the release and `argocd-cm`) and
+`argocd/voteball-application.yaml.tmpl` (the `AppProject` and the `Application`). To confirm nothing
+was changed through the UI:
+
+```bash
+./scripts/render-argocd-app.sh --check
+```
+
+It fails on three things: the live `Application`/`AppProject` differing from the template, an
+`Application` or `AppProject` that no file in this repo declares, and any repository or cluster
+credential registered by hand. Worth knowing *why* this is a separate check rather than something
+ArgoCD does itself: `selfHeal` reconciles the contents of `charts/voteball`, but nothing reconciles
+the `Application` that points at it. An edit to sync policy or destination made in the UI is the one
+kind of drift GitOps cannot self-correct.
+
+Settings under `argocd-cm` are a softer case — the Helm release owns that ConfigMap, so the next
+`terraform apply` reverts a UI change to it regardless. The check makes it visible; Terraform undoes it.
+
 ### Jenkins (the build server)
 
 Jenkins runs **inside the cluster** now (namespace `ci`) — there is no separate machine, nothing to
