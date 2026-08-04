@@ -1,0 +1,50 @@
+# The CD pipeline's identity. Deliberately STRICTLY READ-ONLY: there is no create, patch, update,
+# delete or apply verb anywhere below, and no ClusterRole.
+#
+# Jenkins does not deploy. ArgoCD deploys. Jenkins asks ArgoCD to sync a git revision and then reads
+# the result -- so the only Kubernetes permission it needs is the permission to look.
+#
+# An earlier draft granted `patch` on deployments for `kubectl rollout undo`. Rollback goes through
+# git instead (design doc section 8), which removed the last reason to hold a write verb. Do not add
+# one back: "Jenkins holds no write permission in devops-app" is a claim the submission makes, and it
+# is only true while this file stays read-only.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins-cd-agent
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: jenkins-cd-reader
+  namespace: {{ .Values.appNamespace }}
+rules:
+  # Enough to capture the evidence the course brief's section 10 requires, and to dump diagnostics
+  # when a smoke test fails. Nothing more.
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods", "services", "events"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-cd-reader
+  namespace: {{ .Values.appNamespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: jenkins-cd-reader
+subjects:
+  - kind: ServiceAccount
+    name: jenkins-cd-agent
+    namespace: {{ .Release.Namespace }}

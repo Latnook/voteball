@@ -22,3 +22,7 @@ serviceCidr: 172.20.0.0/16
 # template` runs offline.
 certificateArn: ""
 host: ""
+
+# The application namespace the CD agent is allowed to READ. It gets no write verb of any kind --
+# every write goes through ArgoCD. Terraform passes the real value; see terraform/addon-jenkins.tf.
+appNamespace: devops-app

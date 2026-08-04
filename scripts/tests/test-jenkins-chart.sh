@@ -75,6 +75,38 @@ check_pods_exec_both_verbs() {
   [[ "$verbs" == *create* && "$verbs" == *get* ]]
 }
 
+# The submission's central security claim, asserted rather than documented: the CD pipeline holds no
+# write permission anywhere. Collects the union of write verbs across EVERY rule of EVERY Role and
+# ClusterRole this chart renders, so a rule added later is covered automatically.
+#
+# A YAML parse, not a grep, for the same reason pods_exec_verbs above is: `verbs: [get, list]` and a
+# multi-line verb list are both valid, and a grep tuned for one silently passes the other.
+cd_write_verbs() {
+  local file="$1"
+  python3 - "$file" <<'PYEOF'
+import sys, yaml
+WRITE = {"create", "update", "patch", "delete", "deletecollection", "*"}
+found = set()
+with open(sys.argv[1]) as fh:
+    for doc in yaml.safe_load_all(fh):
+        if not doc or doc.get("kind") not in ("Role", "ClusterRole"):
+            continue
+        for rule in doc.get("rules", []):
+            found |= set(rule.get("verbs") or []) & WRITE
+print(" ".join(sorted(found)))
+PYEOF
+}
+
+check_cd_rbac_is_read_only() {
+  local verbs
+  verbs="$(cd_write_verbs "$1")"
+  if [ -n "$verbs" ]; then
+    echo "       jenkins-cd RBAC grants write verbs: $verbs" >&2
+    return 1
+  fi
+  return 0
+}
+
 rendered="$(mktemp)"
 trap 'rm -f "$rendered"' EXIT
 
@@ -97,5 +129,9 @@ helm template jenkins-support "$REPO_ROOT/charts/jenkins-support" --namespace ci
 check "ExternalSecret rendered"  "grep -q 'kind: ExternalSecret' '$rendered'"
 check "NetworkPolicy rendered"   "grep -q 'kind: NetworkPolicy' '$rendered'"
 check "VPC range is excluded"    "grep -q '10.0.0.0/16' '$rendered'"
+check "jenkins-cd-agent ServiceAccount rendered" "grep -q 'name: jenkins-cd-agent' '$rendered'"
+check "jenkins-cd-reader Role rendered"          "grep -q 'name: jenkins-cd-reader' '$rendered'"
+check "CD RBAC is strictly read-only"            "check_cd_rbac_is_read_only '$rendered'"
+check "support chart creates no ClusterRole"     "! grep -q '^kind: ClusterRole' '$rendered'"
 
 exit "$fail"
