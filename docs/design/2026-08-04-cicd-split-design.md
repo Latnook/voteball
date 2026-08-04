@@ -69,9 +69,19 @@ cite it:
 
 - **Replacing ArgoCD with `helm upgrade --install` in the CD pipeline.** The brief's example uses
   `helm upgrade`, but it permits any documented mechanism, and the course instructor confirmed
-  (2026-08-04) that ArgoCD is acceptable provided everything is configured as code — which it is. A
-  direct `helm upgrade` would additionally now fail on server-side-apply field ownership, and would
-  fight `selfHeal`. See §7.
+  (2026-08-04) first that ArgoCD is acceptable provided everything is configured as code — which it
+  is — and then that the mechanism *"doesn't matter as long as the CI/CD pipeline works"*. A direct
+  `helm upgrade` would additionally now fail on server-side-apply field ownership, and would fight
+  `selfHeal`. See §7.
+
+- **Dropping `Jenkinsfile-cd` and letting ArgoCD be the whole of CD.** Considered seriously on
+  2026-08-04 and rejected. The instructor's licence is about the deploy *mechanism*; the pipeline
+  itself is still named as a deliverable in four places (§4 p.5, §5 p.6, §9 item 1 p.10, §10 evidence
+  p.11). More importantly the two are not interchangeable: ArgoCD is a **reconciler**, not a deployer.
+  It has no concept of a deployment attempt that can fail — only current state versus desired state —
+  so it cannot smoke-test the live site, cannot judge a release bad, and will `selfHeal` a broken
+  version back into place if anyone corrects it outside git. The verification and rollback the brief
+  asks for have to live outside ArgoCD by construction. See §7 and §8.
 - **A staging environment.** The brief's promotion and manual-approval items are conditional on one
   existing (*אם קיימת סביבת staging או production*). Voteball is deliberately single-environment; that
   stays.
@@ -273,6 +283,13 @@ weight:
    condition (2026-08-04) was that everything be configured as code; ArgoCD here is declared in
    Terraform plus one rendered template, with `render-argocd-app.sh --check` failing the build on any
    UI-made drift — including a hand-registered repo or cluster credential. Nothing is clicked.
+
+**The division of labour, stated plainly for the README:** ArgoCD applies; Jenkins CD decides and
+verifies. Everything that reaches the cluster still goes through ArgoCD — Jenkins holds no permission
+to apply the chart and could not bypass it. What Jenkins CD adds is the four things a reconciler
+structurally cannot do: refuse a tag that does not exist or is `latest`, wait for the rollout and
+confirm the running images match what was asked for, make a real HTTPS request to the public site, and
+revert git when that request fails. This is the conventional GitOps split, not a workaround.
 
 The README must state this explicitly, since the brief's worked example shows `helm upgrade --install`
 and a grader will look for it.
