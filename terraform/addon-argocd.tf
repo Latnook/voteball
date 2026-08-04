@@ -44,16 +44,26 @@ resource "helm_release" "argocd" {
         # Service is ClusterIP -- see docs/deploy.md), so the honest value is the port-forward the
         # runbook actually tells you to use.
         "url" = "https://localhost:8081"
+
+        # A local account for the CD pipeline, so Jenkins does not use the admin account. apiKey
+        # only -- this account cannot log into the UI, it can only hold an API token.
+        "accounts.jenkins-cd" = "apiKey"
       }
 
-      # Codifying the DEFAULT, on purpose. Both keys are already empty in a stock install, so this
-      # changes no behaviour -- it states the intent, which is that the local `admin` account is the
-      # only identity and anyone arriving by any other route gets nothing. Written down, adding SSO
-      # later is an edit to a policy that exists; left implicit, it is a blank the next person fills
-      # in from the UI.
+      # `policy.default` stays "" -- codifying the DEFAULT, on purpose, same reasoning as before:
+      # anyone arriving by any route other than the two identities named below (admin, jenkins-cd)
+      # gets nothing. `policy.csv` is no longer empty: it grants the jenkins-cd account exactly
+      # enough to run the CD pipeline, and nothing else.
       rbac = {
         "policy.default" = ""
-        "policy.csv"     = ""
+        # Least privilege for the CD pipeline: it may sync and inspect the one Application it
+        # deploys, and nothing else. No create, no delete, no access to any other Application, no
+        # cluster or repo administration.
+        "policy.csv" = <<-EOT
+          p, role:jenkins-cd, applications, get,  voteball/voteball, allow
+          p, role:jenkins-cd, applications, sync, voteball/voteball, allow
+          g, jenkins-cd, role:jenkins-cd
+        EOT
       }
     }
 

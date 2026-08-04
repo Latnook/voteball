@@ -13,6 +13,10 @@ kind: ServiceAccount
 metadata:
   name: jenkins-cd-agent
   namespace: {{ .Release.Namespace }}
+  annotations:
+    # IRSA: the CD agent's AWS identity, ECR read-only on the four app repos (see
+    # terraform/addon-jenkins.tf's jenkins_cd_irsa module). Empty in an offline `helm template` run.
+    eks.amazonaws.com/role-arn: {{ .Values.cdRoleArn | quote }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

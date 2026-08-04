@@ -141,6 +141,12 @@ print(json.dumps({
     "GITHUB_DEPLOY_USER":    "git",
     "GITHUB_DEPLOY_KEY":     key,
     "GITHUB_WEBHOOK_SECRET": os.environ["WEBHOOK_SECRET"],
+    # ArgoCD does not exist yet on a fresh install -- the jenkins-cd account token is minted AFTER
+    # terraform apply creates ArgoCD, then merged into the live secret with a direct
+    # put-secret-value (see the ordering trap above: this script exits early on a re-run, so it
+    # can never be the thing that writes the token in). Empty here is correct, not a placeholder
+    # left by mistake.
+    "ARGOCD_AUTH_TOKEN":     os.environ.get("ARGOCD_AUTH_TOKEN", ""),
 }))' > "$TMP/payload.json"
 
 aws secretsmanager put-secret-value \

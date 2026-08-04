@@ -100,6 +100,61 @@ resource "aws_iam_role_policy" "jenkins" {
   policy = data.aws_iam_policy_document.jenkins_permissions.json
 }
 
+# ---- IRSA: ECR read-only for the CD AGENT. ----
+#
+# The CD pipeline's AWS identity. READ-ONLY on the four application repositories, and nothing else.
+#
+# Its single purpose is the Input Validation stage proving a requested tag really is in ECR before
+# anything is committed to master. It cannot push, cannot delete, and holds no other AWS permission.
+data "aws_iam_policy_document" "jenkins_cd_ecr_read" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:DescribeImages",
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
+    ]
+    # The FOUR APP REPOS ONLY -- deliberately not local.ecr_repos, which also contains
+    # "jenkins" (the controller image). CD validates application image tags and has no
+    # business reading the controller's repository. Keep this list in step with the
+    # ECR_REPOS value in Jenkinsfile-ci and Jenkinsfile-cd.
+    resources = [
+      for r in ["backend", "worker", "nginx", "backup"] :
+      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.cluster_name}-${r}"
+    ]
+  }
+  statement {
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"] # This action does not support resource-level permissions.
+  }
+}
+
+resource "aws_iam_policy" "jenkins_cd_ecr_read" {
+  name   = "${var.cluster_name}-jenkins-cd-ecr-read"
+  policy = data.aws_iam_policy_document.jenkins_cd_ecr_read.json
+}
+
+module "jenkins_cd_irsa" {
+  # Submodule path, matching every other IRSA role in this stack (addon-alb.tf,
+  # addon-eso.tf, addon-external-dns.tf ...). The registry-root form
+  # "terraform-aws-modules/iam-role-for-service-accounts-eks/aws" does not exist and fails
+  # at `terraform init`.
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.0"
+
+  role_name = "${var.cluster_name}-jenkins-cd"
+
+  role_policy_arns = { read = aws_iam_policy.jenkins_cd_ecr_read.arn }
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["ci:jenkins-cd-agent"]
+    }
+  }
+}
+
 # ---- TLS for the webhook endpoint ----
 # Its own certificate, NOT a SAN added to the app's. Keeping them separate means this never touches
 # ingress.certificateArn, so scripts/sync-values-from-tf.sh stays at ten managed fields.
@@ -159,6 +214,10 @@ resource "helm_release" "jenkins_support" {
     # comment on aws_acm_certificate.jenkins above.
     { name = "certificateArn", value = aws_acm_certificate_validation.jenkins.certificate_arn },
     { name = "host", value = "jenkins.${var.app_domain}" },
+    # The CD agent's IRSA role (ECR read-only, see jenkins_cd_irsa above) and the namespace it is
+    # allowed to read via the Role in charts/jenkins-support/templates/rbac.yaml.
+    { name = "cdRoleArn", value = module.jenkins_cd_irsa.iam_role_arn },
+    { name = "appNamespace", value = "devops-app" },
   ]
 
   depends_on = [helm_release.external_secrets]
