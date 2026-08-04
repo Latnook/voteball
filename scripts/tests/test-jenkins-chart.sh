@@ -114,14 +114,22 @@ helm template jenkins jenkins/jenkins --namespace ci \
   --version "$JENKINS_CHART_VERSION" \
   --set controller.installPlugins=false \
   --set controller.numExecutors=0 \
-  --set persistence.enabled=false \
+  --set persistence.enabled=true \
+  --set persistence.storageClass=efs-sc \
+  --set persistence.size=8Gi \
   --set rbac.create=true \
   --set rbac.readSecrets=false > "$rendered"
 
 check "no ClusterRole is created"          "! grep -q '^kind: ClusterRole$' '$rendered'"
 check "no ClusterRoleBinding is created"   "! grep -q '^kind: ClusterRoleBinding$' '$rendered'"
 check "a namespaced Role is created"       "grep -q '^kind: Role$' '$rendered'"
-check "no PersistentVolumeClaim"           "! grep -q '^kind: PersistentVolumeClaim$' '$rendered'"
+# JENKINS_HOME is on an EFS-backed PVC since 2026-08-04 -- see terraform/addon-efs.tf for why EFS
+# and not EBS. These two lines must track terraform/addon-jenkins.tf's persistence block; if that
+# block changes and these do not, the test goes on describing a release that no longer exists.
+check "a PersistentVolumeClaim is created" "grep -q '^kind: PersistentVolumeClaim$' '$rendered'"
+# The chart quotes scalar values (storageClassName: "efs-sc"), so match the quotes optionally
+# rather than pinning to one rendering style.
+check "the PVC uses the efs-sc class"      "grep -qE 'storageClassName: \"?efs-sc\"?' '$rendered'"
 check "pods/exec grants both create+get"   "check_pods_exec_both_verbs '$rendered'"
 
 # The support chart renders offline with no cluster.

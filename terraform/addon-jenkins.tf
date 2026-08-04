@@ -285,10 +285,18 @@ resource "helm_release" "jenkins" {
     # scripts/tests/test-jenkins-chart.sh so a future chart bump cannot widen it unnoticed.
     rbac = { create = true, readSecrets = false }
 
-    # JENKINS_HOME is an emptyDir. See design doc section 2: three Spot reclaims in 84 hours, and an
-    # EBS volume is AZ-locked, so a PVC would preserve almost nothing while adding the only failure
-    # mode needing manual recovery (pod Pending forever, unable to mount).
-    persistence = { enabled = false }
+    # JENKINS_HOME on EFS. See terraform/addon-efs.tf for why EFS and not EBS -- in one line: an EBS
+    # volume is AZ-locked and this node group is 100% Spot, so an EBS PVC would eventually strand the
+    # pod Pending in an AZ with no capacity. EFS has a mount target in every private subnet.
+    #
+    # The controller is still disposable by design. This preserves build history across a Spot
+    # reclaim; it is not a dependency. JCasC rebuilds everything else from code.
+    persistence = {
+      enabled      = true
+      storageClass = kubernetes_storage_class.efs.metadata[0].name
+      size         = "8Gi"
+      accessMode   = "ReadWriteOnce"
+    }
 
     # No `agent = {...}` block: with JCasC.defaultConfig = false above, the chart never renders its
     # own Kubernetes cloud/podTemplate config, so `agent.enabled`/`agent.podName` etc. have no effect
@@ -300,5 +308,6 @@ resource "helm_release" "jenkins" {
   depends_on = [
     helm_release.jenkins_support,
     aws_acm_certificate_validation.jenkins,
+    kubernetes_storage_class.efs,
   ]
 }
