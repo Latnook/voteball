@@ -120,6 +120,16 @@ pipeline {
     // commit is what tells it what to run.
     stage('Promote') {
       steps {
+        // Assert the rewrite actually landed, rather than trusting the sed exit code. sed exits 0
+        // whether or not its pattern matched anything -- if the tag: line's shape ever drifts
+        // (re-indented, unquoted), the file silently keeps its OLD tag, a `git diff --cached --quiet`
+        // check then reports no change, the log prints "already names $TAG" (false), ArgoCD syncs the
+        // unchanged old tag, and Verify/Smoke Test both pass because that old version is healthy --
+        // a green build that deployed nothing. Same failure class G3b guards against elsewhere.
+        //
+        // [skip ci] in the commit message below is documentation; the Guard stage in Jenkinsfile-ci
+        // is what enforces it. Do not remove either -- without the guard this commit retriggers CI,
+        // which triggers CD, which commits again, forever.
         sshagent(credentials: ['voteball-deploy-key']) {
           sh '''
             set -eu
@@ -129,12 +139,6 @@ pipeline {
 
             sed -i -E "s/^  tag: \".*\"/  tag: \"$TAG\"/" charts/voteball/values.yaml
 
-            # Assert the rewrite actually landed, rather than trusting the sed exit code. sed exits 0
-            # whether or not its pattern matched anything -- if the tag: line's shape ever drifts
-            # (re-indented, unquoted), the file silently keeps its OLD tag, `git diff --cached --quiet`
-            # then reports no change, the log prints "already names $TAG" (false), ArgoCD syncs the
-            # unchanged old tag, and Verify/Smoke Test both pass because that old version is healthy --
-            # a green build that deployed nothing. Same failure class G3b guards against elsewhere.
             grep -q "^  tag: \"$TAG\"" charts/voteball/values.yaml || {
               echo "values.yaml does not name $TAG after the sed -- the tag: line's shape must have" >&2
               echo "changed (indentation/quoting). Refusing to report success on an unrewritten file." >&2
@@ -148,9 +152,6 @@ pipeline {
             if git diff --cached --quiet; then
               echo "values.yaml already names $TAG -- nothing to commit"
             else
-              # [skip ci] is documentation; the Guard stage in Jenkinsfile-ci is what enforces it.
-              # Do not remove either -- without the guard this commit retriggers CI, which triggers
-              # CD, which commits again, forever.
               git commit -m "ci: image tag $TAG [skip ci]"
               git pull --rebase --autostash origin master || {
                 echo "Rebase onto origin/master failed; aborting cleanly so the next build is not wedged."

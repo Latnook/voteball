@@ -84,33 +84,32 @@ pipeline {
     stage('Lint / Static Analysis') {
       steps {
         container('python') {
+          // `ruff` (bare) is not on PATH here: this pod runs as uid 1000 with HOME=/tmp, so pip does
+          // a user install into $HOME/.local/bin, which nothing adds to PATH. The install succeeds
+          // and `ruff check` then fails with "ruff: not found", exit 127 -- a missing-tool error that
+          // reads like the pip install itself failed. `python -m ruff` sidesteps PATH entirely by
+          // asking the interpreter to run the installed module directly (confirmed ruff supports -m
+          // invocation: `python -m ruff --version` works).
           sh '''
             set -eu
             pip install --quiet --no-cache-dir ruff==0.8.4
-            # `ruff` (bare) is not on PATH here: this pod runs as uid 1000 with HOME=/tmp, so pip
-            # does a user install into $HOME/.local/bin, which nothing adds to PATH. The install
-            # succeeds and `ruff check` then fails with "ruff: not found", exit 127 -- a missing-tool
-            # error that reads like the pip install itself failed. `python -m ruff` sidesteps PATH
-            # entirely by asking the interpreter to run the installed module directly (confirmed
-            # ruff supports -m invocation: `python -m ruff --version` works).
             python -m ruff check services/backend services/worker
           '''
         }
         container('hadolint') {
+          // DL3008 (unpinned apt version), DL3013 (unpinned pip version) and DL3018 (unpinned apk
+          // version) are all the same class of rule -- hadolint wants a package-manager command to
+          // pin an exact version, and this project pins dependencies a different way (requirements.txt
+          // for pip; nothing pins apt/apk packages, deliberately) that hadolint cannot see into. A
+          // pinned Alpine/Debian package version is not more reproducible here -- it is a build that
+          // breaks the moment that exact version leaves the distro index, which is an arbitrary
+          // future failure with a confusing message, not a real guarantee. (services/backup/Dockerfile
+          // pinned aws-cli=2.34.63-r0 for exactly one commit, 3f8ea6f, before this ignore replaced it
+          // -- see git history for why that pin was reverted.)
           sh '''
             set -eu
             for svc in backend worker frontend backup; do
               echo "--- hadolint services/$svc/Dockerfile ---"
-              # DL3008 (unpinned apt version), DL3013 (unpinned pip version) and DL3018 (unpinned
-              # apk version) are all the same class of rule -- hadolint wants a package-manager
-              # command to pin an exact version, and this project pins dependencies a different way
-              # (requirements.txt for pip; nothing pins apt/apk packages, deliberately) that hadolint
-              # cannot see into. A pinned Alpine/Debian package version is not more reproducible here
-              # -- it is a build that breaks the moment that exact version leaves the distro's index,
-              # which is an arbitrary future failure with a confusing message, not a real guarantee.
-              # (services/backup/Dockerfile pinned aws-cli=2.34.63-r0 for exactly one commit,
-              # 3f8ea6f, before this ignore replaced it -- see git history for why that pin was
-              # reverted.)
               hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 "services/$svc/Dockerfile"
             done
           '''
@@ -128,17 +127,22 @@ pipeline {
     stage('Tests') {
       steps {
         container('python') {
+          // Wait for the sidecar: containers in a pod start concurrently, and psycopg2 connecting
+          // before Postgres is listening fails with "could not connect", which reads like a
+          // configuration error rather than a race.
+          //
+          // This does NOT use pg_isready: that binary ships with postgres-client packages, not with
+          // the `python` image, so it would fail with "not found", exit 127 -- the same class of bug
+          // as the ruff one above, just one stage later. A plain TCP connect via the stdlib
+          // (connect_ex returns 0 on success, no extra package needed) is enough to confirm the
+          // sidecar has opened its listening socket, which is all this loop needs to know.
+          //
+          // The shared volume is mounted at /images, OUTSIDE the Jenkins workspace -- archiveArtifacts
+          // in the post block below can only read files under $WORKSPACE. The final copy below has no
+          // `|| true`: if the XML is missing, the tests did not run, and that must fail loudly rather
+          // than be swallowed.
           sh '''
             set -eu
-            # Wait for the sidecar: containers in a pod start concurrently, and psycopg2 connecting
-            # before Postgres is listening fails with "could not connect", which reads like a
-            # configuration error rather than a race.
-            #
-            # This does NOT use pg_isready: that binary ships with postgres-client packages, not with
-            # the `python` image, so it would fail with "not found", exit 127 -- the same class of
-            # bug as the ruff one above, just one stage later. A plain TCP connect via the stdlib
-            # (connect_ex returns 0 on success, no extra package needed) is enough to confirm the
-            # sidecar has opened its listening socket, which is all this loop needs to know.
             for i in $(seq 1 30); do
               python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)" && break
               echo "waiting for postgres ($i/30)"
@@ -152,9 +156,6 @@ pipeline {
             pip install --quiet --no-cache-dir -r services/worker/requirements-dev.txt
             (cd services/worker && python -m pytest tests -q --junitxml=/images/worker-tests.xml)
 
-            # The shared volume is mounted at /images, OUTSIDE the Jenkins workspace -- archiveArtifacts
-            # below can only read files under $WORKSPACE. No `|| true`: if the XML is missing, the tests
-            # did not run, and that must fail loudly rather than be swallowed.
             cp /images/*-tests.xml "$WORKSPACE"/
           '''
         }
@@ -281,17 +282,32 @@ pipeline {
           // from -- but it means "nothing reaches ECR before the scan passes" is not literally true
           // of bytes. What IS still true: no deployable, tagged image reaches ECR pre-scan; see
           // the 'Push to ECR' stage and design doc section 5.
+          //
+          // BUILDKIT_HOST, not buildctl-daemonless.sh. daemonless.sh ignores any existing daemon and
+          // spawns its OWN buildkitd under a fresh temp root, taking flags only from
+          // $BUILDKITD_FLAGS -- which is unset here. That silently drops
+          // --oci-worker-no-process-sandbox, the flag the buildkit sidecar in ci/jenkins/jenkins.yaml
+          // was started with to run rootless. Pointing plain `buildctl` at the sidecar socket instead
+          // means the daemon that actually builds is the one that was configured for it.
+          //
+          // DOCKER_CONFIG below was written by the awscli container above; buildctl reads
+          // config.json from there.
+          //
+          // type=docker, NOT type=oci, on --output below. Both write a tar, but `type=oci` writes an
+          // OCI ARCHIVE (index.json + blobs/), and Trivy's --input reads a docker-archive or an OCI
+          // DIRECTORY -- not an OCI archive. With type=oci the whole build succeeds and Trivy then
+          // fails with "manifest.json not found in tar", which reads like a corrupt image. skopeo
+          // reads docker-archive: just as happily, so nothing downstream loses out.
+          //
+          // image-manifest=true,oci-mediatypes=true on the --export-cache below is REQUIRED for ECR.
+          // BuildKit's default cache manifest is an OCI image INDEX, which ECR rejects with a bare
+          // "400 Bad Request" on the manifest PUT -- after the whole image has already been built and
+          // every layer uploaded, so it reads like a transient registry fault rather than an
+          // unsupported media type. These two options make it export a plain image manifest, which
+          // ECR accepts.
           sh '''
             set -eu
-            # BUILDKIT_HOST, not buildctl-daemonless.sh. daemonless.sh ignores any existing daemon
-            # and spawns its OWN buildkitd under a fresh temp root, taking flags only from
-            # $BUILDKITD_FLAGS -- which is unset here. That silently drops
-            # --oci-worker-no-process-sandbox, the flag the buildkit sidecar in
-            # ci/jenkins/jenkins.yaml was started with to run rootless. Pointing plain `buildctl` at
-            # the sidecar's socket instead means the daemon that actually builds is the one that was
-            # configured for it.
             export BUILDKIT_HOST=unix:///run/user/1000/buildkit/buildkitd.sock
-            # Written by the awscli container above; buildctl reads config.json from here.
             export DOCKER_CONFIG=/images/dockercfg
             CACHE="$ECR_REGISTRY/$CLUSTER_NAME-buildcache"
             for svc in backend worker nginx backup; do
@@ -299,18 +315,6 @@ pipeline {
                 nginx) ctx=services/frontend ;;
                 *)     ctx=services/$svc ;;
               esac
-              # type=docker, NOT type=oci. Both write a tar, but `type=oci` writes an OCI ARCHIVE
-              # (index.json + blobs/), and Trivy's --input reads a docker-archive or an OCI
-              # DIRECTORY -- not an OCI archive. With type=oci the whole build succeeds and Trivy
-              # then fails with "manifest.json not found in tar", which reads like a corrupt image.
-              # skopeo reads docker-archive: just as happily, so nothing downstream loses out.
-              #
-              # image-manifest=true,oci-mediatypes=true on the cache export is REQUIRED for ECR.
-              # BuildKit's default cache manifest is an OCI image INDEX, which ECR rejects with a bare
-              # "400 Bad Request" on the manifest PUT -- after the whole image has already been built
-              # and every layer uploaded, so it reads like a transient registry fault rather than an
-              # unsupported media type. These two options make it export a plain image manifest, which
-              # ECR accepts.
               buildctl build \
                 --frontend dockerfile.v0 \
                 --local context="$ctx" --local dockerfile="$ctx" \
@@ -331,6 +335,8 @@ pipeline {
       } }
       steps {
         container('trivy') {
+          // The backup image is a third-party base (postgres:17-alpine + aws-cli) whose CVEs are
+          // upstream Go-tooling issues outside this project's control: surface, do not block.
           sh '''
             set -eu
             DB="$ECR_REGISTRY/$CLUSTER_NAME-trivy-db"
@@ -340,8 +346,6 @@ pipeline {
                 --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
             done
 
-            # The backup image is a third-party base (postgres:17-alpine + aws-cli) whose CVEs are
-            # upstream Go-tooling issues outside this project's control: surface, do not block.
             echo "--- trivy $CLUSTER_NAME-backup (report only) ---"
             trivy image --db-repository "$DB" --input /images/backup.tar \
               --severity CRITICAL,HIGH --exit-code 0 --ignore-unfixed
@@ -371,16 +375,19 @@ pipeline {
           // skopeo copies the EXACT file Trivy scanned. Nothing is rebuilt between scan and push,
           // so the scanned artifact and the pushed artifact are provably the same bytes -- a
           // stronger guarantee than the docker build/scan/push flow this replaces.
+          //
+          // The trap below is a trap, NOT a cleanup line at the bottom of the block. Under `set -eu`
+          // a failed copy exits immediately and never reaches a trailing rm, leaving a live 12-hour
+          // registry credential in a volume four containers share -- on exactly the failure path
+          // where it matters most.
+          //
+          // skopeo login below uses --authfile rather than --dest-creds: the latter puts the password
+          // in skopeo argv, readable via ps inside this container. Same pattern as
+          // scripts/mirror-trivy-db.sh.
           sh '''
             set -eu
-            # A trap, NOT a cleanup line at the bottom of the block. Under `set -eu` a failed copy
-            # exits immediately and never reaches a trailing rm, leaving a live 12-hour registry
-            # credential in a volume four containers share -- on exactly the failure path where it
-            # matters most.
             trap 'rm -f /images/ecr-password /images/auth.json' EXIT
 
-            # --authfile rather than --dest-creds: the latter puts the password in skopeo's argv,
-            # readable via ps inside this container. Same pattern as scripts/mirror-trivy-db.sh.
             skopeo login --username AWS --password-stdin \
               --authfile /images/auth.json "$ECR_REGISTRY" < /images/ecr-password
 
@@ -408,6 +415,20 @@ pipeline {
       } }
       steps {
         container('awscli') {
+          // ANSI-C quoting ($'...') on the sep= assignment below is REQUIRED, not decoration. A plain
+          // '...' string leaves \n as the two literal characters backslash+n, and printf only expands
+          // backslash escapes that appear in ITS OWN format-string argument -- never in a value
+          // substituted via %s, which is how $sep is used. Without $'...' this separator prints as a
+          // literal backslash-n between JSON entries instead of a real newline, and the emitted
+          // image-metadata.json is invalid JSON -- a failure invisible just by reading the source,
+          // since the string still looks like a comma and a newline.
+          //
+          // The backend digest is captured below at the moment it is computed, into its own file --
+          // NOT re-parsed back out of the JSON afterwards. Grepping the JSON apart is what broke this
+          // the first time: an unterminated quote failed the stage outright, and even fixed, a
+          // `grep -A1` on the backend line also captures the line of the next service, so the second
+          // grep would return two sha256 values that .trim() silently concatenates into one bogus
+          // digest.
           sh '''
             set -eu
             {
@@ -425,20 +446,7 @@ pipeline {
                   --region "$AWS_REGION" \\
                   --query 'imageDetails[0].imageDigest' --output text)"
                 printf '%s    "%s-%s": { "digest": "%s" }' "$sep" "$CLUSTER_NAME" "$svc" "$digest"
-                # ANSI-C quoting ($'...') is REQUIRED here, not decoration. A plain '...' string
-                # leaves \n as the two literal characters backslash+n, and printf only expands
-                # backslash escapes that appear in ITS OWN format-string argument -- never in a value
-                # substituted via %s, which is how $sep is used above. Without $'...' this separator
-                # prints as literal "\n" text between JSON entries instead of a real newline, and the
-                # emitted image-metadata.json is invalid JSON -- a failure invisible just by reading
-                # the source, since the string still looks like "a comma and a newline".
                 sep=$',\\n'
-                # Captured here, at the moment it is computed, into its own file -- NOT re-parsed
-                # back out of the JSON afterwards. Grepping the JSON apart is what broke this the
-                # first time: an unterminated quote failed the stage outright, and even fixed,
-                # `grep -A1` on the backend line also captures the FOLLOWING service's line, so the
-                # second grep would return two sha256 values that .trim() silently concatenates into
-                # one bogus digest.
                 if [ "$svc" = backend ]; then
                   printf '%s' "$digest" > backend-digest.txt
                 fi
