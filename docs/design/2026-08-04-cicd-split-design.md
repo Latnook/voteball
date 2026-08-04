@@ -653,3 +653,96 @@ cluster** — is enforced by RBAC, not by network path, and is absolute (defect 
 happens when that RBAC is tested for real). But "CI cannot reach `devops-app`" and "CI's network path
 to ArgoCD is minimal" are two different claims, and only the first one is true. Stated here rather
 than left implied by the comment in `charts/jenkins-support/templates/networkpolicy.yaml`.
+
+### Found by the final whole-branch review, after the pipeline was already green
+
+Everything above was found while building and running the two pipelines. The four defects below were
+found afterwards, by a whole-branch review of the finished, passing work — none of them made any build
+fail, which is exactly why they survived every stage that did run. All four are fixed on `master`
+(`Jenkinsfile-cd` carries a `FIXED 2026-08-04` comment at each site); this records what the failure
+actually was, since none of it had a durable write-up until now.
+
+1. **Rollback was silently disarmed by a Groovy escaping bug.** The Promote stage's `sed` command,
+   inside a Groovy `'''…'''` (triple-single-quoted) string, was written with `\"` around the pattern and
+   replacement — intended to reach bash as an escaped, literal quote character. Groovy's triple-single-
+   quoted strings do not treat `\"` as an escape, though: they unescape it to a bare `"` before bash ever
+   sees the script. What bash actually received was `sed -i -E "s/^  tag: ".*"/  tag: "$TAG"/"` — the
+   `"` characters there are ordinary shell quote *delimiters*, not literal characters passed to `sed` —
+   so the rewrite stripped the surrounding quotes instead of preserving them, and every CD-written tag
+   since the split had been landing in `values.yaml` **unquoted**. Three consequences, none of which any
+   test caught:
+   - `scripts/sync-values-from-tf.sh` requires a quoted `tag:` value and refuses to run against anything
+     else, so it would report `image.tag` missing and exit 2 — and `scripts/deploy.sh` calls it
+     unconditionally, so a fresh rebuild would have failed at the sync step.
+   - `scripts/ci/previous-tag.sh` (rollback's "what tag were we on before this one" lookup) greps for
+     `tag: "`, quoted, so it matched only history from before the split and would have returned the same
+     frozen tag forever. **Rollback was effectively disarmed by this bug** — not by anything in the
+     rollback logic itself, but by the tag history it reads having stopped updating. The 2026-08-04
+     rollback demo (builds #3–#6, "What was proven live" above) did roll back to the correct tag, but
+     only because that frozen tag still happened to be the right one at the time; it worked for the wrong
+     reason.
+   - Left unquoted, an all-digit or leading-zero short SHA is valid YAML and gets parsed as an integer or
+     octal number rather than a string, which is a second, independent way this shape of bug corrupts
+     `values.yaml`.
+
+   Why every gate that should have caught it, didn't: the post-`sed` `grep` verification in the same
+   stage used the identical `\"` escaping, so it checked for the same wrong (unquoted) shape it had just
+   written and confirmed it. And `scripts/tests/test-sync-values.sh` built its test fixture by hand, with
+   quotes already in place, so the guard's test never exercised what the real file actually looked like.
+   Fixed by doubling the backslash (`\\"`), which Groovy unescapes to a single `\` that reaches bash as
+   `\"` — an escaped literal quote inside the double-quoted `sed` script, which is what was intended
+   originally. A regression case for the unquoted shape has been added to
+   `scripts/tests/test-sync-values.sh` (`UNQUOTED` fixture) so this class of bug fails a test run instead
+   of only a live rebuild.
+
+2. **A live ECR credential was committed to the public repo.** Jenkins traces every `sh` step under
+   `set -x`, and that trace logs each command *after* shell expansion. The ECR password was obtained via
+   `$(aws ecr get-login-password)` and used as a `printf` **argument** — so the raw token, and its
+   base64-encoded docker-auth form, were both written into the build console output as the expanded
+   arguments of that traced command. That console log was saved verbatim as evidence and committed to
+   the repo. Jenkins' built-in credential masking did not help, because masking only redacts values that
+   came from Jenkins' credential store — this token was fetched at runtime by the AWS CLI, so Jenkins had
+   never seen it and had nothing to mask. The token was redacted from the committed evidence, and
+   separately self-expires (ECR tokens are valid 12 hours and cannot be revoked or manually renewed); the
+   repo owner decided on 2026-08-04 to let it expire on its own rather than rewrite published git
+   history, consistent with this repo's standing no-force-push rule (there is no evidence the token was
+   ever used by anyone but this pipeline). All stored evidence files were then checked and confirmed to
+   carry no other secret values.
+
+3. **Fixing (2) regressed the credential a different way.** The fix moved the token out of argument
+   position — writing `aws ecr get-login-password` straight to a file instead of capturing it into a
+   `printf` argument via `$(...)`. That silently broke something the old `$(...)` form had been doing for
+   free: command substitution strips trailing newlines, and redirecting straight to a file does not.
+   `aws ecr get-login-password`'s output ends in a newline, so the file-based version encoded
+   `AWS:<token>\n` into the docker-auth string instead of `AWS:<token>`, and BuildKit's ECR cache
+   authentication with that corrupted auth would have failed with a 401 — not at the start of a build,
+   but at the very end, during cache export, after the image had already built and every layer had
+   already uploaded. The two requirements pull in opposite directions and both are real: the token value
+   must never reach an argument position (that's what caused defect 2), *and* its trailing newline must
+   still be stripped (or the auth is corrupt) — and satisfying the first one silently broke the second,
+   because the newline-stripping had been an unstated side effect of the very syntax (`$(...)`) that had
+   to be removed. Fixed with `tr -d '\n' < file`, which strips the newline while keeping the value out of
+   argument position, satisfying both constraints — commented together at the fix site so the two don't
+   get separated again.
+
+4. **Three further ways a healthy deploy could have been rolled back**, beyond the cold-image Rollout
+   timeout already recorded above (defect matching build #10): (a) Verify's `sync.revision` equality
+   check would fail a good deploy if any unrelated commit landed on `master` during the Deploy/Rollout
+   window and got auto-synced first — and this repo's own `CLAUDE.md` tells every contributor to commit
+   and push continuously, so that window is not a rare edge case; (b) the evidence-capture `kubectl get`
+   after Promote was running under the same `set -eu` as the checks around it, so a transient, read-only
+   API hiccup on a diagnostics-only call could fail the whole stage; (c) `scripts/ci/previous-tag.sh`
+   throws (exit 1) when there is no previous tag to roll back to, and the Groovy calling it used
+   `sh(..., returnStdout: true)`, which throws on a non-zero exit — aborting the surrounding script block
+   before the `ROLLBACK_DEPTH` recursion-bound check ever ran, which is exactly the path the depth-1
+   "NEEDS A HUMAN" message exists to print, and it could never print on it. All three are fixed on
+   `master`: (a) a revision mismatch alone now only logs a `WARNING`, gated instead on whether the
+   *running* Deployments actually name the requested tag; (b) that `kubectl get` now runs outside the
+   strict block and only warns on failure; (c) the call now uses `returnStatus: true`, capturing the exit
+   code as data instead of throwing.
+
+   The general lesson, stated plainly: **anything that can fail after Promote is a rollback trigger** —
+   Promote is the point of no return, since it is what commits production to a new tag — so every timeout
+   value and every command written into that back half of the pipeline is a correctness parameter, not a
+   performance one. A too-tight timeout or an over-strict error check doesn't just make the build slower
+   or noisier; it fires an automatic, production-affecting rollback of a deploy that was actually fine.
