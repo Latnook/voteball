@@ -332,9 +332,13 @@ appearance:
     # matches on is the symbol, confirmed here by setting the theme on a throwaway controller and
     # reading back `configuration-as-code/export`, which emitted exactly the two lines below.
     theme: "darkSystem"
-    # Leave a logged-in user free to override this for themselves. It is a weak freedom here:
-    # per-user preferences live under JENKINS_HOME/users, which is an emptyDir, so a personal choice
-    # is lost on the next reschedule -- roughly daily on Spot. The default above is what persists.
+    # Leave a logged-in user free to override this for themselves. Since the 2026-08-04 CI/CD split,
+    # JENKINS_HOME is an EFS-backed PVC (terraform/addon-efs.tf), not an emptyDir, so a personal
+    # choice under JENKINS_HOME/users now survives a routine Spot reclaim of the controller pod --
+    # the PVC rebinds to the same EFS data (see docs/cicd.md, "Running the instance"). It is still
+    # lost if the Jenkins release itself is removed (helm uninstall deletes the PVC; the EFS data
+    # survives but a reinstall provisions a new access point) or on a full teardown of the EFS
+    # resources. The default above is what a controller with no prior volume data starts on.
     disableUserThemes: false
 
 security:
@@ -345,8 +349,13 @@ security:
   # "No ED25519 host key is known for github.com and you have requested strict checking" -- before any
   # stage ran, so it read like a credentials problem and was not.
   #
-  # A known_hosts FILE would not survive here anyway: JENKINS_HOME is an emptyDir (design doc section
-  # 2), so anything written into ~/.ssh is gone on every reschedule -- roughly daily on Spot.
+  # A hand-maintained known_hosts file is not the fix even though JENKINS_HOME now persists across a
+  # routine Spot reclaim (it is an EFS-backed PVC since the 2026-08-04 split, not an emptyDir --
+  # docs/cicd.md, "Running the instance"): a controller that has never booted before -- a genuinely
+  # fresh install, or a reinstall after the release (and its PVC) was removed -- would still have to
+  # populate ~/.ssh/known_hosts from *something* on its first connection, and trust-on-first-use is
+  # exactly the wrong thing to trust for that. JCasC pinning the key is what makes every boot, first
+  # or hundredth, behave identically -- it does not depend on the volume's contents either way.
   #
   # manuallyProvided, NOT acceptFirstConnection. Trust-on-first-use would silently accept whatever
   # answers on port 22 the first time a disposable controller boots, which is exactly the window an

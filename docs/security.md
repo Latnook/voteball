@@ -52,14 +52,17 @@ Autoscaler to this cluster's ASG only; ESO to the one app secret only.
   `ConfigMap`; only the passwords are a `Secret`. No secret is ever in a ConfigMap.
 - **Grafana / ArgoCD:** neither admin password is hardcoded; both are chart-auto-generated and live only
   in in-cluster Secrets, retrieved on demand.
-- **CI:** Jenkins runs in-cluster (namespace `ci`) and its agent pods authenticate via **IRSA** — see
-  below. **No AWS key material exists anywhere**: not in Jenkins' credentials store, not in git, not on
-  any node's disk. Jenkins holds exactly two credentials of its own, a GitHub deploy key and the webhook
-  shared secret, both in Secrets Manager (`voteball/jenkins`), synced into the cluster by External
-  Secrets Operator and installed by JCasC — never typed into the UI. Because the controller's
-  `JENKINS_HOME` is an `emptyDir` (build history is deliberately disposable — see `docs/cicd.md`), those
-  credentials living outside Jenkins' own credential store is not a nicety, it is the only reason the
-  deploy key survives a daily Spot reclaim at all.
+- **CI/CD:** Jenkins runs in-cluster (namespace `ci`), split since 2026-08-04 into two pipelines
+  (`application-ci`, `application-cd`), and its agent pods authenticate via **IRSA** — see below.
+  **No AWS key material exists anywhere**: not in Jenkins' credentials store, not in git, not on any
+  node's disk. Jenkins holds three credentials of its own — a GitHub deploy key (used by both
+  pipelines), the webhook shared secret, and an ArgoCD API token scoped to the `voteball` Application
+  (used only by `application-cd`) — all in Secrets Manager (`voteball/jenkins`), synced into the
+  cluster by External Secrets Operator and installed by JCasC, never typed into the UI. The controller's
+  `JENKINS_HOME` is a PersistentVolumeClaim on EFS (not an `emptyDir` — see `docs/cicd.md`), so build
+  history now survives a routine Spot reclaim; credentials still live outside Jenkins' own credential
+  store regardless, since that store is not what ESO writes to and is not what would need to be
+  re-registered after a genuine loss of the volume.
 
 **The honest caveat (documented, not hidden):** the repo is public, and until 2026-07-20 it carried the
 retired k3s Ansible vault (`secrets.yml`) as `AES256` ciphertext. Its 256-bit password (`.vault_pass`)
@@ -152,9 +155,10 @@ tunable CIDR allow-list (`cluster_endpoint_public_access_cidrs`); private in-VPC
 
 Every app container (`charts/voteball/templates/*-deployment.yaml`, `backup-cronjob.yaml`) runs with:
 `runAsNonRoot: true` (uid 1000; frontend uid 101 via `nginx-unprivileged`), `allowPrivilegeEscalation:
-false`, `capabilities.drop: ["ALL"]`, and `readOnlyRootFilesystem: true` with an `emptyDir` mounted only
-where a write is genuinely needed (`/tmp` for gunicorn's worker dir, the worker heartbeat file, nginx's
-cache, and the backup job's aws-cli config).
+false`, `capabilities.drop: ["ALL"]`, and `readOnlyRootFilesystem: true` with an `emptyDir` volume
+mounted only where a write is genuinely needed (`/tmp` for gunicorn's worker dir, the worker heartbeat
+file, nginx's cache, and the backup job's aws-cli config) — unrelated to Jenkins' own storage, covered
+separately below.
 
 **One deliberate, documented exception: the `buildkit` container in a CI agent pod** (`ci` namespace,
 `ci/jenkins/jenkins.yaml`). It is the only container in the entire project that runs
@@ -186,37 +190,44 @@ including the other three containers in the same CI agent pod (`trivy`, `skopeo`
   third-party `backup` image is scanned in report-only mode (its CVEs are upstream Go-tooling issues
   outside our control — see Trade-offs).
 
-## CI (Jenkins, in-cluster)
+## CI/CD (Jenkins, in-cluster, two pipelines)
 
-CI runs **inside the EKS cluster**, namespace `ci`, installed by Terraform
-(`terraform/addon-jenkins.tf`) as a `helm_release`. It replaced a dedicated EC2 host on 2026-07-30/31.
-Design rationale:
+CI/CD runs **inside the EKS cluster**, namespace `ci`, installed by Terraform
+(`terraform/addon-jenkins.tf`) as a `helm_release`. It replaced a dedicated EC2 host on 2026-07-30/31,
+and split from one pipeline into two (`application-ci`, `application-cd`) on 2026-08-04. Design
+rationale:
 [`docs/design/2026-07-20-jenkins-migration-design.md`](design/2026-07-20-jenkins-migration-design.md)
 (pipeline logic) and
 [`docs/design/2026-07-30-jenkins-on-eks-design.md`](design/2026-07-30-jenkins-on-eks-design.md)
 (in-cluster move, including what its own security assumptions got wrong in practice — see that doc's
-"Verification outcome").
+"Verification outcome"), and
+[`docs/design/2026-08-04-cicd-split-design.md`](design/2026-08-04-cicd-split-design.md) (the split
+itself, including why ArgoCD remains the sole applier).
 
-### Identity: IRSA, split narrower than the instance profile it replaces
+### Identity: IRSA, split narrower than the instance profile it replaces, then split again by job
 
 The old EC2 instance profile held both ECR push and one Secrets Manager permission on a single identity.
-In the cluster that is split across two ServiceAccounts:
+In the cluster that is split across the controller and, since the 2026-08-04 CI/CD split, **two separate
+agent ServiceAccounts** — one per pipeline, each holding only what that pipeline's job needs:
 
-| ServiceAccount | AWS role | Permissions |
-|---|---|---|
-| `jenkins` (the controller) | **none** | The controller never touches AWS at all |
-| `jenkins-agent` (build pods only) | IRSA | `ecr:GetAuthorizationToken` + push/pull on `repository/<cluster_name>-*`, nothing else — no EKS, RDS, S3, SNS |
+| ServiceAccount | Used by | AWS role (IRSA) | Kubernetes RBAC |
+|---|---|---|---|
+| `jenkins` (the controller) | both jobs' scheduling | **none** | namespace-scoped `Role` in `ci`: create/watch/delete/exec its own agent pods, nothing else, nothing in any other namespace |
+| `jenkins-agent` (`application-ci` agents) | build/test/scan/push | `ecr:GetAuthorizationToken` + push/pull on `repository/<cluster_name>-*`, nothing else — no EKS, RDS, S3, SNS | **none** — no Role or ClusterRole binds this ServiceAccount anywhere |
+| `jenkins-cd-agent` (`application-cd` agents) | promote/deploy/verify | `ecr:DescribeImages`/`ecr:BatchGetImage` **read-only** on the four app repos — no push | namespaced, **strictly read-only** `Role` in `devops-app` (`get`/`list`/`watch` on deployments, replicasets, pods, services, events, ingresses, plus `get` on pod logs — no `patch`, `create`, or `delete`, no ClusterRole) |
 
-Secrets Manager access belongs to **External Secrets Operator's** role, not Jenkins' — Jenkins never
+Secrets Manager access belongs to **External Secrets Operator's** role, not Jenkins' — neither job ever
 calls `secretsmanager:GetSecretValue` itself; ESO syncs `voteball/jenkins` into a Kubernetes Secret and
 JCasC reads it as pod environment variables. This is a narrower design than the EC2 host's single
 `GetSecretValue` grant, not a like-for-like port of it.
 
-**Jenkins holds no cluster-deploy access at all**, for a sharper reason than before it moved in-cluster:
-it stops at "push images and commit the new tag"; ArgoCD does the deploying, and Jenkins is now
-*physically inside* the cluster it must still be unable to change. The controller's own Role (namespace
-`ci`) only lets it create/watch/delete/exec into agent pods in that one namespace — verified
-(`kubectl auth can-i --as=system:serviceaccount:ci:jenkins get pods -n devops-app` → no).
+**Neither pipeline holds cluster-*write* access**, for a sharper reason than before Jenkins moved
+in-cluster: `application-ci` stops at "push images and hand the tag to CD"; `application-cd` stops at
+"ask ArgoCD to sync a git revision, then read the result back" — its Role has no verb that changes
+state. ArgoCD does every apply, and Jenkins is *physically inside* the cluster it must still be unable
+to change. This is asserted, not just documented: `scripts/jenkins/verify-jenkins.sh` runs
+`kubectl auth can-i patch deployments --as=system:serviceaccount:ci:jenkins-cd-agent -n devops-app` and
+fails the check if the answer is ever `yes`.
 
 ### Network exposure — only the webhook path, not the UI
 
@@ -242,6 +253,13 @@ not carried forward:**
   RFC1918 ranges are excluded from the "allow the internet" rule, closing the specific routes to RDS and
   the app namespace. Verified from an agent pod: the RDS endpoint times out, ECR and GitHub are
   reachable.
+- **`application-cd` can reach `argocd-server` on port 443 (used) and, verified live, also on port
+  80** — looser than the NetworkPolicy's own comment implies, since the rule that re-admits the EKS
+  service CIDR lists only ports 443/8080/50000. Stated here plainly rather than glossed over: the claim
+  this document makes is that CD **cannot write to the cluster** (enforced by its read-only RBAC, and
+  absolute), not that its network path to ArgoCD is minimal (it is not, and the practical impact of that
+  gap is nil — every `argocd` CLI call in `Jenkinsfile-cd` uses `--grpc-web` over 443, and `--plaintext`,
+  which would use port 80, is never invoked).
 
 The webhook itself is still authenticated the same way as on EC2: Jenkins verifies the HMAC signature
 GitHub attaches to every delivery (signed → 200, unsigned → 400), so a request without the shared secret
@@ -250,12 +268,22 @@ is rejected regardless of what path it lands on.
 ### Blast radius of the credentials Jenkins does hold
 
 - **GitHub deploy key** — repository-scoped, chosen over a personal access token precisely because a PAT
-  covers the whole account. Compromise loses exactly this repository.
-- **Webhook shared secret** — lets an attacker trigger builds. It cannot make Jenkins build code that is
-  not on `master`.
-- Both live only in Secrets Manager and the in-cluster Secret ESO writes from it — never in Jenkins' own
-  credential store, which is moot anyway now that `JENKINS_HOME` is an `emptyDir` that does not survive
-  a Spot reclaim.
+  covers the whole account. Compromise loses exactly this repository, and grants write access to
+  `master` — the same access level a compromised laptop with a valid GitHub session already has.
+- **Webhook shared secret** — lets an attacker trigger `application-ci` builds. It cannot make Jenkins
+  build code that is not on `master`, and cannot reach `application-cd` directly (that job has no
+  webhook trigger at all).
+- **ArgoCD API token (`jenkins-cd` account)** — new with the 2026-08-04 split. Scoped in
+  `argocd-rbac-cm` to `get`/`sync` on the `voteball` Application only: no other Application, no admin
+  scope, and the account is `apiKey`-only so a stolen token cannot be used to log into the ArgoCD UI.
+  Compromise lets an attacker force a sync of whatever `master` currently says — which they could
+  already do more directly with the GitHub deploy key above — but grants no ability to change *what*
+  gets synced independent of git, and no ability to touch any other Application.
+- All three live only in Secrets Manager and the in-cluster Secret ESO writes from it — never in
+  Jenkins' own credential store. `JENKINS_HOME` is a PersistentVolumeClaim on EFS, not an `emptyDir`
+  (see `docs/cicd.md`), so this is a design choice rather than a consequence of the volume being wiped
+  daily: even with build history now surviving a routine reclaim, no credential is ever stored where
+  only Jenkins' own database would have it.
 
 ## RBAC
 
@@ -305,7 +333,7 @@ change them:
 | Grafana/ArgoCD UIs | port-forward only (ClusterIP, no Ingress); each chart generates its own admin password into a Secret at install — **not** a chart default, and different after every rebuild (verified 2026-07-27: 40 random alphanumerics, not `prom-operator`). Reaching either requires cluster access first, so the passwords are a second layer | SSO, private ingress, rotated secrets |
 | Jenkins webhook | HTTPS (ACM) + HMAC shared secret; only `/github-webhook` routed | Already close to production shape here |
 | Jenkins UI access | `kubectl port-forward` only, no Ingress rule at all | Same in production — this is the stronger option, not a shortcut |
-| Jenkins build history | Disposable — `JENKINS_HOME` is an `emptyDir`, reset roughly daily by Spot reclaim and on every teardown | Accepted permanently, not just for the demo — see `docs/cicd.md` and the design doc's §2 for why a PVC would be worse, not better, at this reclaim rate |
+| Jenkins build history | Persists across a routine Spot reclaim — `JENKINS_HOME` is a PersistentVolumeClaim on EFS (not EBS, which stays AZ-locked on this 100%-Spot node group) — but is lost if the Jenkins release itself is removed, and gone for good only on a full teardown of the EFS resources | See `docs/cicd.md`'s storage-survival table; the durable record of what was *deployed* was never the build log anyway |
 | Jenkins configuration | **JCasC** (`ci/jenkins/jenkins.yaml`), applied via `terraform apply`; credentials from Secrets Manager via ESO. Verified by booting a fresh controller and by a real end-to-end build | Notifications on build failure (G7) |
 
 All are documented rather than hidden — the point is that each was a decision, not an oversight.

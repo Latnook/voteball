@@ -78,6 +78,13 @@ the two work differently on purpose.
 
 ### 2. The controller is disposable — no PersistentVolume
 
+> **This section is a dated record of the 2026-07-30 decision, not a description of the present.**
+> `JENKINS_HOME` is now an EFS-backed PVC — see
+> [`2026-08-04-cicd-split-design.md`](2026-08-04-cicd-split-design.md) §6, which keeps the reasoning
+> below (an EBS volume's AZ lock is a real problem on a 100%-Spot node group) but solves it with EFS
+> instead of `emptyDir`, because the course brief for that later pass requires persistent Jenkins-home
+> storage.
+
 This is the decision the rest of the design hangs off, and it is grounded in measured behaviour of
 this cluster rather than in general Spot guidance.
 

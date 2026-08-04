@@ -24,9 +24,14 @@ repository is mine.
   Autoscaler, Node Termination Handler, CloudWatch pod logging, metrics-server, external-dns,
   ArgoCD, kube-prometheus-stack, **and Jenkins**).
 - **In Kubernetes, a second namespace: `ci`.** Jenkins runs there — a controller with no AWS role at
-  all, and ephemeral pod agents (rootless BuildKit + Trivy + skopeo + aws-cli) that build, scan and push
-  the four app images. It is a **platform add-on like ArgoCD**, not the graded application namespace, so
-  it is installed by `terraform apply` alongside the other add-ons rather than by ArgoCD.
+  all, and two kinds of ephemeral pod agent: `voteball-build` (rootless BuildKit + Trivy + skopeo +
+  aws-cli + a test toolchain, IRSA scoped to ECR push) runs `application-ci`; `voteball-deploy`
+  (kubectl + helm + the ArgoCD CLI, IRSA scoped to ECR read-only, plus a strictly read-only Kubernetes
+  Role in `devops-app`) runs `application-cd`. It is a **platform add-on like ArgoCD**, not the graded
+  application namespace, so it is installed by `terraform apply` alongside the other add-ons rather
+  than by ArgoCD. Full detail, including why the pipeline is split in two, is in the
+  [**Task 4 — CI/CD with Jenkins in Kubernetes**](#task-4--cicd-with-jenkins-in-kubernetes) section
+  below.
 - **Terraform vs Helm boundary:** Terraform builds the AWS infra + cluster + platform add-ons (Jenkins
   included); the Helm chart is the app, delivered by **ArgoCD** (GitOps) from this repo's `master`. See
   `docs/deploy.md`.
@@ -34,9 +39,12 @@ repository is mine.
   bucket belongs to no stack and is never destroyed.
 - **CI config is code too:** Jenkins configures itself from `ci/jenkins/jenkins.yaml` (JCasC), applied
   via the Helm release's `controller.JCasC.configScripts`, with its credentials read from Secrets
-  Manager through External Secrets Operator. Its controller is deliberately disposable —
-  `JENKINS_HOME` is an `emptyDir`, not a volume, because the node group is 100% Spot and reclaimed
-  roughly daily; see `docs/cicd.md` for why a PersistentVolumeClaim would make that worse, not better.
+  Manager through External Secrets Operator. Its controller is deliberately disposable — every
+  setting rebuilds from JCasC on every boot, never from the UI — but `JENKINS_HOME` is a
+  PersistentVolumeClaim backed by **EFS** (`efs-sc`, `Retain`), not an `emptyDir`: the node group is
+  100% Spot and reclaimed roughly daily, and EFS (unlike EBS) has a mount target in every AZ, so the
+  same volume rebinds wherever the controller pod reschedules. See `docs/cicd.md` for the full
+  storage-survival breakdown across a reclaim, a release removal, and a full teardown.
 
 Architecture diagram: [`docs/eks/architecture.md`](docs/eks/architecture.md).
 
@@ -127,57 +135,349 @@ kubectl get secret app-secret -n devops-app -o jsonpath='{.data}' | jq 'keys'   
 ## CI/CD — Jenkins (in-cluster) → ECR → ArgoCD
 
 ```
-git push (services/**) → GitHub webhook → Jenkins pod agent (BuildKit) → Trivy → ECR → values.yaml tag bump → ArgoCD → pods roll
+git push (services/**) → webhook → application-ci (test/build/scan/push) → application-cd (promote/deploy/verify) → ArgoCD → pods roll
 ```
 
-CI is **Jenkins**, running inside the cluster itself (namespace `ci`), installed by Terraform as a
-`helm_release` of the official chart. Ephemeral pod agents — not a Docker daemon, which EKS nodes don't
-have — build with **rootless BuildKit**, scan with Trivy, and push with skopeo. The pipeline is a
-declarative [`Jenkinsfile`](Jenkinsfile) in this repo — the job is *Pipeline script from SCM*, so the
-build definition is reviewable here rather than hidden in Jenkins' database. Its five real steps: guard
-against its own commit → build four images tagged with the git SHA → **Trivy** scan (blocking on the
-app images) → push to **ECR** → commit the new tag to `charts/voteball/values.yaml`.
+CI/CD is **Jenkins**, running inside the cluster itself (namespace `ci`), installed by Terraform as a
+`helm_release` of the official chart, split since 2026-08-04 into **two pipelines**: `application-ci`
+tests, builds, scans and pushes; `application-cd` promotes a tag, has ArgoCD deploy it, verifies the
+live site, and rolls back automatically on failure. Neither can do the other's job — CI holds no
+cluster credentials at all, CD holds a strictly read-only Kubernetes Role and cannot build an image.
+The full walkthrough — every stage of both pipelines, the two agent pod templates, the rollback
+mechanism, install/verify/uninstall, the secrets, the security posture and why ArgoCD (not
+`helm upgrade --install`) stays the applier — is in the dedicated
+**[Task 4 — CI/CD with Jenkins in Kubernetes](#task-4--cicd-with-jenkins-in-kubernetes)** section
+below; this section stays a summary.
 
-Three decisions worth calling out:
+Three decisions worth calling out here:
 
-- **Jenkins never deploys and holds no cluster-deploy credentials.** It stops at "push images, commit
-  the tag"; **ArgoCD** observes that commit and rolls the Deployments. A compromised build pod cannot
-  touch the rest of the cluster — its ServiceAccount's Role is scoped to creating/watching/exec'ing its
-  own agent pods in the `ci` namespace, nothing else.
-- **No stored AWS keys anywhere.** Agent pods authenticate through **IRSA** scoped to ECR push on
-  `voteball-*` and nothing else; the controller itself carries **no AWS role at all**. Verified:
-  `aws ecr get-login-password` works from an agent, `aws eks list-clusters` is denied.
-  A NetworkPolicy separately denies the whole namespace any route to RDS or the app namespace.
-- **This build container is the one exception to "no privilege escalation" in the whole project.**
+- **Jenkins never deploys and holds no cluster-write credentials in either pipeline.** CI stops at
+  "push images, hand the tag to CD"; CD stops at "ask ArgoCD to sync, then read the result back."
+  **ArgoCD** performs every write. A compromised build pod cannot touch the rest of the cluster — its
+  ServiceAccount has zero RBAC anywhere. A compromised deploy pod can ask ArgoCD to sync a commit and
+  read `devops-app`, and nothing more.
+- **No stored AWS keys anywhere.** CI's agent authenticates through **IRSA** scoped to ECR push;
+  CD's agent through a *separate* IRSA role scoped to ECR **read-only**; the controller itself carries
+  **no AWS role at all**. A NetworkPolicy separately denies the whole `ci` namespace any route to RDS
+  or the app namespace.
+- **The `buildkit` container is the one exception to "no privilege escalation" in the whole project.**
   Rootless BuildKit needs `allowPrivilegeEscalation: true` + `SETUID`/`SETGID` to create its own user
   namespace — still uid 1000, no host access, nothing like Docker-in-Docker's `privileged: true`, which
   was rejected for exactly that reason. See `docs/security.md`.
 
-**Evidence of a green run.** A real GitHub webhook push built four images, scanned them clean
-(`backend`/`worker`/`nginx`: 0 HIGH, 0 CRITICAL), pushed them, and committed the tag bump. ArgoCD synced
-unprompted and rolled all three Deployments with zero downtime; the site and `/api/options` both
-returned 200. The tag-bump commit's own webhook delivery was then correctly refused by the Guard stage —
-**exactly one bump commit exists per build; there was no loop.**
+The most important check is the one that runs unattended: **Jenkins has no native `[skip ci]`** — that
+is a GitHub Actions feature — so without an explicit Guard stage in `application-ci`, `application-cd`'s
+own tag-bump commit would retrigger `application-ci`, which would retrigger `application-cd` again, in
+an unbounded, billable loop across both jobs that also rolls production pods continuously.
 
-The most important check is the one that runs unattended: **Jenkins has no native `[skip ci]`** — that is
-a GitHub Actions feature — so without an explicit guard, the pipeline's own tag-bump commit retriggers it
-in an unbounded, billable loop that also rolls production pods continuously.
-
-Full pipeline walkthrough, the first-time setup runbook, and a failure-modes table are in
-**[`docs/cicd.md`](docs/cicd.md)**; the design rationale for the pipeline's *logic* is in
+Full pipeline walkthrough, stage-by-stage, the first-time setup runbook, and a failure-modes table are
+in **[`docs/cicd.md`](docs/cicd.md)**; the design rationale for the pipeline's original *logic* is in
 [`docs/design/2026-07-20-jenkins-migration-design.md`](docs/design/2026-07-20-jenkins-migration-design.md),
-and the rationale (and verification outcome) for running it *in the cluster instead of on a dedicated
+the rationale (and verification outcome) for running it *in the cluster instead of on a dedicated
 EC2 host* is in
-[`docs/design/2026-07-30-jenkins-on-eks-design.md`](docs/design/2026-07-30-jenkins-on-eks-design.md).
+[`docs/design/2026-07-30-jenkins-on-eks-design.md`](docs/design/2026-07-30-jenkins-on-eks-design.md),
+and the rationale for the **two-pipeline split** — including why ArgoCD stays the applier — is in
+[`docs/design/2026-08-04-cicd-split-design.md`](docs/design/2026-08-04-cicd-split-design.md).
 
-**The controller is deliberately disposable.** The node group is 100% Spot, reclaimed roughly once a
-day; `JENKINS_HOME` is an `emptyDir`, not a PersistentVolume, because an EBS volume is AZ-locked and
-would preserve almost nothing at that reclaim rate while adding a pod that can hang `Pending` forever.
-Build history resets on reclaim and on every teardown — the durable record is the `ci: image tag <sha>
-[skip ci]` commits on `master`, which never expire. Two things remain **deliberately deferred**: SSM
-Session Manager (moot now — there is no SSH access to anything Jenkins runs on), and build-failure
-notifications — Jenkins sends no email without SMTP, so verification means checking the Jenkins UI or
-ArgoCD's state rather than assuming success.
+**The controller is disposable, but `JENKINS_HOME` is not.** The node group is 100% Spot, reclaimed
+roughly once a day; `JENKINS_HOME` is a PersistentVolumeClaim backed by **EFS** (not EBS — an EBS
+volume is AZ-locked and would hang the pod `Pending` on a reschedule into the "wrong" AZ; EFS has a
+mount target in every AZ), so build history now survives a routine reclaim. What is unchanged: the
+controller's *configuration* still rebuilds entirely from JCasC on every boot, never from the UI, and
+losing the volume entirely (a full teardown of the EFS resources) is still a recoverable event, not a
+disaster — the durable record of what was *deployed* is the `ci: image tag <sha> [skip ci]` commits on
+`master`, which never expire. Two things remain **deliberately deferred**: SSM Session Manager (moot —
+there is no SSH access to anything Jenkins runs on), and build-failure notifications — Jenkins sends no
+email without SMTP, so verification means checking the Jenkins UI or ArgoCD's state (and, for CD, the
+fact that a failed deploy rolls itself back) rather than assuming success.
+
+## Task 4 — CI/CD with Jenkins in Kubernetes
+
+This section is the self-contained answer to the course's CI/CD assignment (*משימה 4*), in the order
+its own brief asks for. It overlaps deliberately with material earlier in this document — the brief is
+graded as its own unit, so this section does not assume a grader has read the rest first.
+
+### Architecture, and why EKS
+
+The CI/CD platform is not a separate system bolted onto the EKS deployment — it runs **on the same
+cluster**, in its own namespace (`ci`, alongside `devops-app`), provisioned by the same Terraform
+stack. That was the deciding factor for keeping it on EKS rather than standing up a separate host or
+managed CI service: the assignment's thesis is that everything is Kubernetes-native and
+configuration-as-code, and a hand-run CI box (the project's own EC2-hosted Jenkins predecessor, retired
+2026-07-31) is the one thing that would have contradicted it. Running in-cluster also means Jenkins'
+build agents can reach the same OIDC provider the application pods use for IRSA, so "no static AWS
+keys anywhere" extends to CI/CD without inventing a second credential mechanism.
+
+Two Jenkins **jobs**, each with its own **Jenkinsfile** at the repo root and its own **agent pod
+template** in JCasC: `application-ci` (`Jenkinsfile-ci`, template `voteball-build`) tests, builds,
+scans and pushes; `application-cd` (`Jenkinsfile-cd`, template `voteball-deploy`) promotes, deploys via
+ArgoCD, verifies, and rolls back. They hand off through Jenkins' own `build job:` trigger — one of the
+brief's permitted CI→CD connection mechanisms — passing the image tag, digest and originating CI build
+number as parameters. See [`docs/eks/architecture.md`](docs/eks/architecture.md) diagrams 5 (Pipeline
+Flow) and 6 (Deployment View) for the two required diagrams, drawn directly from the stage names in
+`Jenkinsfile-ci`/`Jenkinsfile-cd` rather than summarized from memory.
+
+### Prerequisites and tool versions
+
+Nothing beyond what the rest of this repo already needs: `terraform` (`>= 1.11.0`, pinned in
+`terraform/versions.tf`), the `aws` CLI (logged in), `kubectl`, `helm`. To operate Jenkins directly —
+optional, only needed for manual verification or the runbook steps below — the `argocd` CLI matching
+server v3.4.5 (the CD pipeline carries its own copy inside the agent pod, so this is only for a human
+running commands from a laptop) and `jq`. Pinned component versions, so the same run of `terraform
+apply` is reproducible: EKS **1.36** (standard support until 2027-08-02, `terraform/variables.tf`),
+Jenkins Helm chart **5.9.45** (app v2.568.1), ArgoCD Helm chart **10.2.1** (app v3.4.5),
+`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.58.1`, `alpine/k8s:1.31.3` for the CD agent's
+`deploy` container. No component pulls `latest`, checked mechanically by `application-ci`'s Validation
+stage.
+
+### Install / configure / verify / uninstall
+
+```bash
+./scripts/jenkins/install-jenkins.sh      # targeted terraform apply: EFS + both helm_releases
+./scripts/jenkins/verify-jenkins.sh       # asserts the brief's whole §10 checklist, non-zero on failure
+./scripts/jenkins/uninstall-jenkins.sh    # targeted terraform destroy: removes Jenkins, leaves the app
+```
+
+All three are **thin wrappers around Terraform**, not a parallel install path — Jenkins is a platform
+add-on Terraform owns (like ArgoCD, ESO and external-dns), not an application ArgoCD deploys, so a
+second install mechanism would misrepresent how the repo actually works. `install-jenkins.sh` is for
+the case where the cluster already exists and only the Jenkins add-on needs (re)installing; a full
+first deploy uses `./scripts/deploy.sh`, which calls the same underlying `terraform apply`.
+
+**Configuring** Jenkins after the first install means editing `ci/jenkins/jenkins.yaml` (JCasC) or the
+Helm values in `terraform/addon-jenkins.tf`, committing, then running `terraform apply` again — **not**
+committing to `master` and walking away, which is how `charts/voteball` is updated but is a no-op here.
+
+**Verifying** is not a checklist for a human to eyeball. `verify-jenkins.sh` runs every command the
+brief's §10 lists (`kubectl get namespaces`, `pods -n ci -o wide`, `service,ingress,pvc -n ci`,
+`serviceaccount,role,rolebinding -n ci`, `helm list -n ci`, plus an authenticated Jenkins API check)
+and **asserts** on the results: both namespaces exist, the controller is Ready, the home PVC is
+`Bound`, the webhook Ingress routes only `/github-webhook` (the UI is not internet-facing),
+`jenkins-cd-agent` genuinely cannot patch `devops-app` (and genuinely can read it), the `jenkins`
+release is installed, exactly the two expected jobs exist (`application-cd`, `application-ci` — no
+stale leftovers, see Security below), and `numExecutors` is `0`. **Evidence runs must set
+`VERIFY_STRICT=1`**, which turns a credential-less skip into a hard failure — without it, a run with no
+Jenkins admin credentials on hand still prints `ALL CHECKS PASSED`, which would misrepresent an
+incomplete check as a complete one for anyone reading the evidence later.
+
+**Uninstalling** removes the Jenkins and jenkins-support Helm releases (and their Ingress) without
+touching `devops-app`, RDS, or the ArgoCD Application. It does **not** delete the EFS filesystem or its
+data — only a full `terraform destroy` of the EFS resources does that — see "Full teardown" below and
+the storage-survival table in `docs/cicd.md`.
+
+### How the two jobs are created from code
+
+**Neither job was ever created by clicking in the Jenkins UI.** Both are declared in the `jobs:` block
+of `ci/jenkins/jenkins.yaml`, using the Job DSL plugin's `pipelineJob(...)` syntax, applied by the
+Helm release's `controller.JCasC.configScripts` at every controller boot:
+
+```groovy
+pipelineJob('application-ci') {
+  // properties, parameters, triggers { githubPush() }, logRotator { numToKeep(20) }
+  definition {
+    cpsScm {
+      scm { git { remote { url('git@github.com:${GITHUB_REPO}.git'); credentials('voteball-deploy-key') }; branch('*/master') } }
+      scriptPath('Jenkinsfile-ci')
+    }
+  }
+}
+```
+
+`application-cd`'s declaration is identical in shape, minus the `githubPush()` trigger (it is started
+by `application-ci`'s `build job:` call, or by hand — a push trigger on CD would deploy every commit
+regardless of whether CI passed). Both jobs are deliberately **thin**: everything about *how* to build
+or deploy lives in `Jenkinsfile-ci`/`Jenkinsfile-cd`, in the repository; the JCasC blocks only say where
+to find them and when to run them. A UI-created job would not survive the next controller restart
+anyway (roughly daily, on Spot) — JCasC is not a convenience here, it is the only mechanism that
+persists.
+
+### How to create the secrets
+
+Two independent secrets, both in AWS Secrets Manager, both synced into the cluster by External Secrets
+Operator — nothing secret ever enters git, Terraform state, or a Jenkinsfile:
+
+```bash
+./scripts/seed-eks-secret.sh       # the APPLICATION secret: DB password, admin credentials
+./scripts/seed-jenkins-secret.sh   # the JENKINS secret: admin login, GitHub deploy key, webhook secret, ArgoCD token
+```
+
+Their shapes are documented, with every value replaced by a placeholder, in
+[`charts/voteball/secret-example.yaml`](charts/voteball/secret-example.yaml) and
+[`ci/jenkins/secret.example.yaml`](ci/jenkins/secret.example.yaml) — neither file is ever applied; they
+exist so the schema is reviewable without the values being readable. `seed-jenkins-secret.sh` is a
+no-op once a real deploy key exists (it prints two confirming lines and changes nothing), specifically
+so `deploy.sh` can call it on every run without rotating a key GitHub already trusts; the ArgoCD token
+field is filled in separately, after ArgoCD exists — see the first-time setup runbook in
+`docs/cicd.md`, which this section does not repeat in full.
+
+### Running CI
+
+Trigger: a GitHub webhook on every push to `master`, or *Build with Parameters* → `FORCE_BUILD` by
+hand. Stage list, in order (from `Jenkinsfile-ci`): **Guard** (refuses its own tag-bump commits) →
+**Validation** (repo-shape checks) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (153
+pytest tests against a real, ephemeral Postgres sidecar) → **Resolve tag and account** → **Already
+built?** (skip if this SHA's images already exist in the immutable ECR repos) → **Build images**
+(rootless BuildKit, four contexts) → **Trivy scan** (blocking on HIGH/CRITICAL for the app images) →
+**Push to ECR** → **Publish Metadata** (digests, archived as `image-metadata.json`) → **Trigger CD**.
+
+**The image tag is the short git commit SHA, resolved with `git rev-parse --short HEAD` — never
+`latest`.** Every deployed pod therefore maps to an exact commit, and `application-ci`'s own Validation
+stage fails the build if any Dockerfile pins (or implicitly resolves to) `:latest`.
+
+### Running CD
+
+Parameters: `IMAGE_TAG` (required — must already exist in ECR, checked, not trusted), `IMAGE_DIGEST`
+and `SOURCE_BUILD` (traceability, optional), `NAMESPACE` (default and only allowed value:
+`devops-app`), `ROLLBACK_DEPTH` (internal, never set by hand). Target: the `voteball` ArgoCD
+Application, which applies to `devops-app`. Stage list: **Checkout** → **Input Validation** (rejects
+`latest`, non-SHA values, and tags not present in ECR) → **Manifest Validation** (`helm lint` +
+`helm template` + `kubectl apply --dry-run=client`) → **Promote** (writes `image.tag`, commits
+`ci: image tag <sha> [skip ci]`, pushes) → **Deploy** (`argocd app sync --revision <promote-sha>`) →
+**Rollout** (`argocd app wait --sync --health`) → **Verify** (reads ArgoCD's own sync/health verdict,
+then one read-only `kubectl get` purely to capture evidence) → **Smoke Test** (real HTTPS requests
+against the live site — root, `/api/options`, `/api/results?by=all` — not just a probe check).
+
+**Success is verified three separate ways, deliberately redundant**: ArgoCD reports `Synced` +
+`Healthy` at the revision just promoted (platform-level); the `kubectl get` in Verify shows the
+Deployments actually running (evidence, not a second opinion); and the smoke test proves the *product*
+answers correctly over HTTPS, which is the one thing ArgoCD's health model cannot see — healthy pods
+serving a broken page are `Healthy` to ArgoCD.
+
+### The rollback procedure, and the evidence that it fired
+
+**Automatic**: any failure in Deploy, Rollout, Verify or Smoke Test triggers `post { failure }` in
+`Jenkinsfile-cd`, which dumps diagnostics (`kubectl get events`, the last 200 log lines per Deployment)
+and then re-runs `application-cd` itself against the previous promoted tag (found by
+`scripts/ci/previous-tag.sh` reading `git log` on `charts/voteball/values.yaml`), with
+`ROLLBACK_DEPTH` incremented. If *that* rollback also fails verification, the pipeline stops rather
+than oscillating between two tags forever, and reports that production needs a human — see Rollback in
+`docs/cicd.md` for the b/c/b/c cycle this bound was written against.
+
+**Manual**, and it is the same mechanism, not a separate one:
+
+> Run `application-cd` with `IMAGE_TAG` set to any older commit SHA. That is the whole procedure; it
+> is the same machinery the automatic rollback uses.
+
+**Evidence.** The mechanism is exercised as part of the graded evidence capture (design doc
+Verification item 7: deploy a backend image whose health endpoint deliberately fails, watch the
+Failure Handling stage detect it, roll back automatically, and re-verify green), archived under
+`docs/eks/evidence/2026-08-04-task4-*.txt` alongside the rest of this submission's evidence — see
+[`docs/eks/live-cluster-snapshot.md`](docs/eks/live-cluster-snapshot.md) for the readable excerpts and
+`docs/eks/evidence/` for the raw command output.
+
+### Security
+
+- **Image security.** Trivy scans every app image before it can be pushed (`backend`/`worker`/`nginx`
+  block the build on fixable `CRITICAL`/`HIGH`; the third-party `backup` base is report-only). ECR
+  repositories for the four app images are `IMMUTABLE`, so a tag, once pushed, cannot be silently
+  retargeted. `skopeo` pushes the **exact file Trivy scanned** — no rebuild between scan and push.
+- **RBAC, including the read-only claim.** CI's `jenkins-agent` ServiceAccount carries **zero**
+  Kubernetes RBAC anywhere in the cluster. CD's `jenkins-cd-agent` carries a namespaced `Role` in
+  `devops-app` (`charts/jenkins-support/templates/rbac.yaml`) with only `get`/`list`/`watch` on
+  deployments, replicasets, pods, services, events and ingresses, plus `get` on pod logs — **no
+  `patch`, no `create`, no `delete`, no ClusterRole anywhere.** `verify-jenkins.sh` does not just
+  document this claim, it **tests** it: `kubectl auth can-i patch deployments
+  --as=system:serviceaccount:ci:jenkins-cd-agent -n devops-app` must return `no`, and the script fails
+  if it doesn't.
+- **Secrets.** Both application and Jenkins secrets live in AWS Secrets Manager, synced into the
+  cluster by External Secrets Operator, never in git or Terraform state. The GitHub deploy key and the
+  ArgoCD API token reach agent pods only for the one stage that needs each (`sshagent()`,
+  `withCredentials()`), never as a standing pod environment variable.
+- **Agent isolation.** The two agent templates cannot do each other's job — CI can push images but has
+  no path to the cluster; CD can read the cluster and ask ArgoCD to sync but cannot build or push an
+  image (its IRSA role is ECR **read-only**). Every container drops all Linux capabilities and runs
+  `allowPrivilegeEscalation: false` **except** `buildkit`, whose narrow, documented exception (uid
+  1000, `SETUID`/`SETGID` only, no host access) is what rootless BuildKit needs to avoid
+  Docker-in-Docker's `privileged: true`.
+- **Network exposure — stated accurately, not flatteringly.** The `ci` namespace's egress
+  NetworkPolicy denies any route to RDS or `devops-app`'s own pods, verified live: a pod in `ci` cannot
+  reach the backend or the database. It **can** reach `argocd-server` — necessarily, since CD has to
+  call it — on port 443 (used) and, verified live, also on port 80, which is looser than the policy's
+  own comment (which lists only 443/8080/50000 for the re-allowed service-CIDR rule) implies. The
+  practical impact is nil: CD's three `argocd` CLI calls all use `--grpc-web` over 443, and `--plaintext`
+  (port 80) is never invoked. This is recorded here rather than glossed over, because the claim this
+  submission makes is "CD cannot write to the cluster," not "CD's network path is minimal" — the first
+  is enforced by RBAC and is absolute; the second is not, and should not be asserted as if it were.
+  Only `/github-webhook` is reachable from the internet on the Jenkins Ingress; the UI, script console
+  and credential store have no ALB rule and are reached only via `kubectl port-forward`.
+
+### Full teardown
+
+```bash
+./scripts/destroy.sh                    # everything, including Jenkins and its EFS filesystem
+./scripts/jenkins/uninstall-jenkins.sh   # Jenkins only, leaves devops-app and RDS untouched
+```
+
+`destroy.sh` deletes the ArgoCD Application first (so `selfHeal` cannot recreate what is being
+removed), then both Ingresses sharing the `voteball` ALB group (the app's and the CI webhook's — an
+ALB is de-provisioned only once its group has no members left), waits for the ALB to actually
+disappear, and only then runs `terraform destroy` — which removes the Jenkins releases, the EFS
+filesystem and its mount targets along with everything else. RDS takes a final snapshot first, so a
+subsequent `deploy.sh` restores the votes; nothing in the Jenkins/CI teardown is treated as backup
+insurance, because none of it needs to be — the durable record of every deploy is the git history on
+`master`, which teardown cannot touch.
+
+### Trade-offs and significant architectural decisions
+
+#### Why ArgoCD is the applier and Jenkins CD is not
+
+The brief's worked example uses `helm upgrade --install` for the deploy step. This project deliberately
+does not: `application-cd` never runs `helm upgrade`, `kubectl apply`, or `kubectl rollout` against
+`devops-app`. It asks ArgoCD to sync, waits on ArgoCD's own health verdict, and reads ArgoCD's own
+status back. The instructor confirmed (2026-08-04) that the deploy *mechanism* is free as long as the
+CI/CD pipeline works, provided everything stays configured as code — which drove the decision, recorded
+in full in `docs/design/2026-08-04-cicd-split-design.md` §7.
+
+Three reasons, in order of weight:
+
+1. **A direct `helm upgrade` would now fail outright.** ArgoCD already owns this release with
+   server-side apply; a manual upgrade loses on field ownership (`conflict with "argocd-controller"`).
+2. **`selfHeal` would fight it.** ArgoCD continuously reconciles `charts/voteball` against `master`. A
+   Jenkins-applied change that the git state didn't already describe would be reverted within the next
+   reconciliation window — a green Jenkins pipeline and an un-deployed change.
+3. **It is a stronger answer to the brief's own criteria, not a weaker one.** ArgoCD itself is fully
+   declared in code (`terraform/addon-argocd.tf` + `argocd/voteball-application.yaml.tmpl`), with
+   `render-argocd-app.sh --check` failing the build on any UI-made drift. Nothing about using it
+   involves clicking.
+
+The governing rule adopted for the whole CD design: **whatever ArgoCD can do, ArgoCD does; Jenkins CD
+is scoped to exactly what a reconciler structurally cannot do.**
+
+| Job | Owner | Why |
+|---|---|---|
+| Apply manifests to the cluster | **ArgoCD** | It already does, with server-side apply and field ownership. Jenkins has no write permission at all. |
+| Decide when a resource is healthy | **ArgoCD** | It has a health model per resource kind. `kubectl rollout status` on three Deployments would be a worse copy of it. |
+| Keep the cluster matching git | **ArgoCD** | `selfHeal`. Nothing in CD tries to hold the cluster in a state git disagrees with. |
+| Reconcile drift, prune removed resources | **ArgoCD** | Continuous, not per-build. |
+| Refuse a tag that is `latest` or absent from ECR | **Jenkins** | ArgoCD deploys whatever git says; it has no notion of an invalid request. |
+| Decide *which* tag git should name | **Jenkins** | Only CI knows what it just built and tested. |
+| Ask the live site over HTTPS whether it works | **Jenkins** | ArgoCD checks pod health, never the product. Healthy pods serving a broken site is `Healthy` to ArgoCD. |
+| Judge a release bad and revert git | **Jenkins** | ArgoCD has no concept of a failed deployment attempt — only of drift, which it would *undo*. |
+| Link commit → tests → digest → deployment | **Jenkins** | Build records are a CI/CD artifact; ArgoCD keeps sync history, not provenance. |
+
+The practical consequence in `Jenkinsfile-cd`: Deploy, Rollout and Verify are three `argocd` CLI calls,
+not a hand-rolled rollout loop. The only `kubectl` call in the happy path is one read, in Verify,
+purely to capture evidence — and even that runs through a ServiceAccount that cannot write anything.
+
+#### Other decisions worth recording
+
+- **EFS over EBS for `JENKINS_HOME`, over staying on `emptyDir`.** The brief requires persistent
+  Jenkins-home storage; `emptyDir` cannot provide it. EBS was rejected in the predecessor design
+  because it is AZ-locked on a 100%-Spot node group reclaimed roughly daily; EFS avoids that at a
+  measured cost of roughly $1–2/month.
+- **Rollback is bounded to one retry, not unbounded.** An unbounded retry loop was considered and
+  rejected — a second consecutive verification failure means the *tag* is not the problem, and
+  continuing to bounce between two tags would flap production and push a commit every cycle with no
+  human aware it was happening.
+- **Rollback demonstrated by actually breaking the live site**, not by simulating the failure. The
+  public site is degraded for the few minutes this takes; accepted deliberately, because evidence that
+  the mechanism *fires* is worth more than evidence that it merely compiles.
+- **No staging environment, no PR pipeline.** Both are conditional in the brief on already existing;
+  Voteball is deliberately single-environment, and the repo owner works solo, committing straight to
+  `master` — a PR-triggered pipeline would never fire.
+- **The `postgres` test sidecar is ephemeral and per-build**, not a shared test database — it holds no
+  real data and dies with the pod, so `application-ci`'s Tests stage adds no new attack surface and no
+  new route to the real RDS instance.
 
 ## How to verify
 

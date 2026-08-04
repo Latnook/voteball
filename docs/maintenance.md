@@ -202,18 +202,24 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   bumping the plugin set, **re-test the webhook with a SHA-256 signature** — signed should give `200`,
   unsigned `400`.
 - **`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.58.1`, `quay.io/skopeo/stable:v1.17.0` and
-  `amazon/aws-cli:2.22.0`** are pinned in `ci/jenkins/jenkins.yaml`'s agent pod template. The Trivy
-  vulnerability *database* refreshes on every run via `--db-repository`, so scanning stays current, but
-  all four *binaries* age and stop learning new formats/APIs. Pinning is deliberate — an unpinned image
-  can turn a green pipeline red (or, worse, silently less strict) overnight with no change from you —
-  but each pin is a promise to revisit it. Bump one, run a build with `FORCE_BUILD`, confirm the app
-  images still scan clean before relying on it.
-- **`buildDiscarder` keeps the last 20 builds.** There is no equivalent of "check `df -h`" any more — a
-  pod agent is destroyed after every build, so there is no persistent disk to fill. The volume that
-  *does* age is a different one: **build history itself resets on every Spot reclaim** (the node group
-  is 100% Spot, reclaimed roughly once a day) because `JENKINS_HOME` is a deliberate `emptyDir`, not a
-  PersistentVolumeClaim — see `docs/cicd.md` for why a PVC would make this worse, not better. Nothing to
-  maintain here; it is a designed-in property, not drift.
+  `amazon/aws-cli:2.22.0`** are pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod
+  template (`application-ci`); `alpine/k8s:1.31.3` and `quay.io/argoproj/argocd:v3.4.5` (matched to the
+  running ArgoCD server's app version, not just any tag) are pinned in the `voteball-deploy` template
+  (`application-cd`). The Trivy vulnerability *database* refreshes on every run via `--db-repository`,
+  so scanning stays current, but every pinned binary ages and stops learning new formats/APIs. Pinning
+  is deliberate — an unpinned image can turn a green pipeline red (or, worse, silently less strict)
+  overnight with no change from you — but each pin is a promise to revisit it. Bump one, run a build
+  with `FORCE_BUILD` (`application-ci`) or a manual `application-cd` run against a known-good tag,
+  confirm nothing regressed before relying on it. Bumping the `argocd` CLI pin specifically also needs
+  checking it still matches the server's chart version (`terraform/addon-argocd.tf`) — a client ahead
+  of the server risks talking a gRPC dialect the server doesn't understand.
+- **`buildDiscarder` keeps the last 20 builds, on both jobs.** There is no equivalent of "check `df -h`"
+  any more — a pod agent is destroyed after every build, so there is no persistent disk to fill. Build
+  history itself now **survives a routine Spot reclaim** (the node group is 100% Spot, reclaimed
+  roughly once a day): `JENKINS_HOME` is a PersistentVolumeClaim on EFS, not an `emptyDir`, since the
+  2026-08-04 CI/CD split — see `docs/cicd.md` for the storage-survival table across a reclaim, a
+  release removal, and a full teardown. Nothing to maintain here; it is a designed-in property, not
+  drift.
 
 ---
 

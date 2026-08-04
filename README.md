@@ -71,10 +71,11 @@ Three containers, plus managed AWS services:
 
 It runs on **EKS** in a dedicated VPC: an **ALB Ingress** (HTTPS via **ACM**, with **AWS WAF**
 rate-limiting the vote endpoint) fronts the app; secrets come from **Secrets Manager** via External
-Secrets Operator; images live in **ECR**; delivery is **GitOps** (ArgoCD) fed by a **Jenkins** pipeline
-running **in the cluster itself** (namespace `ci`, rootless-BuildKit pod agents; build → Trivy scan →
-ECR → tag bump → auto-sync); monitoring is Prometheus/Grafana + CloudWatch, with Alertmanager paging to
-**SNS**.
+Secrets Operator; images live in **ECR**; delivery is **GitOps** (ArgoCD) fed by two **Jenkins**
+pipelines running **in the cluster itself** (namespace `ci`, rootless-BuildKit pod agents):
+`application-ci` tests, builds, scans and pushes; `application-cd` promotes the tag, has ArgoCD sync
+it, smoke-tests the live site, and rolls back automatically on failure; monitoring is
+Prometheus/Grafana + CloudWatch, with Alertmanager paging to **SNS**.
 
 Terraform's state lives in **S3** (versioned, encrypted, locked), and Jenkins configures itself from
 **JCasC** in this repo, applied by Terraform alongside every other platform add-on (ArgoCD, External
@@ -139,14 +140,17 @@ steps.
 - **Secrets never enter git.** Terraform creates an empty Secrets Manager container and ignores its
   contents; `./scripts/seed-eks-secret.sh` populates it from your environment or a silent prompt, and
   External Secrets Operator syncs it into the cluster.
-- **CI is Jenkins, installed by the same `terraform apply`** as everything else (namespace `ci`) — run
-  `./scripts/seed-jenkins-secret.sh` once, before or after that apply (it generates a deploy key and
-  webhook secret, and prints the public key to add to your repo). Jenkins **configures itself** from
-  `ci/jenkins/jenkins.yaml` (JCasC) — plugins, the admin user, both credentials and the job — so the
-  only manual step left is adding the GitHub webhook, pointed at
-  `https://jenkins.<your app_domain>/github-webhook/`. Build agents get their AWS access from **IRSA**;
-  there are no keys to store. `github_repo` and your domain flow through the same Terraform variables as
-  everything else, keeping your identity out of the repository like every other forkability rule here.
+- **CI/CD is two Jenkins pipelines (`application-ci`, `application-cd`), installed by the same
+  `terraform apply`** as everything else (namespace `ci`) — run `./scripts/seed-jenkins-secret.sh`
+  once, before or after that apply (it generates a deploy key and webhook secret, and prints the
+  public key to add to your repo). Jenkins **configures itself** from `ci/jenkins/jenkins.yaml`
+  (JCasC) — plugins, the admin user, both agent templates, both credentials and both jobs, none of
+  it created through the UI — so the manual steps left are adding the GitHub webhook (pointed at
+  `https://jenkins.<your app_domain>/github-webhook/`) and, once ArgoCD exists, minting the
+  `jenkins-cd` ArgoCD account token (see `docs/cicd.md`'s first-time setup runbook). Build agents get
+  their AWS access from **IRSA** — CI pushes to ECR, CD only reads it; there are no keys to store.
+  `github_repo` and your domain flow through the same Terraform variables as everything else, keeping
+  your identity out of the repository like every other forkability rule here.
   See [`docs/cicd.md`](docs/cicd.md).
 - **Costs.** The EKS control plane, NAT gateway, ALB and RDS dominate the bill. Node capacity is Spot.
 - **Adding a club crest with no Wikimedia artwork?** Drop the image in `services/frontend/logos/` and

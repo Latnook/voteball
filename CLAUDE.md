@@ -31,11 +31,15 @@ values themselves are live.
 **Design docs live in `docs/design/`**, one per feature or infrastructure pass — the balloting and
 admin features, then the EKS migration, then the deployment-hardening and repo-forkability passes, then
 the 2026-07-20 CI migration from GitHub Actions to Jenkins (`2026-07-20-jenkins-migration-design.md`,
-whose G1–G7 labels the `Jenkinsfile` and `docs/cicd.md` both cite), then the 2026-07-21
+whose G1–G7 labels `Jenkinsfile-ci` and `docs/cicd.md` both cite), then the 2026-07-21
 religion-and-state axis (`2026-07-21-religiosity-axis-design.md`, which extends the party-
 categorization doc rather than replacing it), then the 2026-07-31 search-engine-visibility pass
 (`2026-07-31-seo-design.md`, which records what was deliberately *not* done — read its scope section
-before "improving" the SEO).
+before "improving" the SEO), then the 2026-08-04 CI/CD split
+(`2026-08-04-cicd-split-design.md`, which splits the single Jenkins pipeline into
+`application-ci`/`application-cd` and supersedes the `emptyDir` storage decision in
+`2026-07-30-jenkins-on-eks-design.md` §2 — that doc's text stays as a dated record, per its own new
+pointer, rather than being edited).
 **Read the relevant one before making architectural changes:** most decisions (and the bugs they
 avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
 justify its shape. Several also carry a "Verification outcome" section recording what actually broke
@@ -290,15 +294,23 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   match automatic; pass `DB_PASS` in the environment only to override.
 - **CI/CD is Jenkins, running IN the cluster** (namespace `ci`), installed by Terraform as a
   `helm_release` (`terraform/addon-jenkins.tf`) of the official chart, configured by JCasC
-  (`ci/jenkins/jenkins.yaml`). Pushing app code to `master` fires a GitHub webhook → guard → build
-  (rootless BuildKit, pod agent) → Trivy → ECR → bump `image.tag` `[skip ci]` → ArgoCD auto-syncs.
-  `./scripts/build-push-ecr.sh` does the same by hand, and is the **only** way to build while the
-  cluster is destroyed (there is no CI without a cluster). Agent pods authenticate to AWS via **IRSA**
-  (ECR push only, on the `jenkins-agent` ServiceAccount — the controller itself carries no AWS role at
-  all). Region, cluster name, GitHub repo and app domain arrive as **pod environment variables** set by
-  Terraform — the equivalent of the retired EC2 host's global environment variables, and the reason a
-  hardcoded region or prefix in the `Jenkinsfile` or `ci/jenkins/jenkins.yaml` would be a bug. **See
-  `docs/cicd.md`** for the full flow, the first-time setup runbook, and failure modes.
+  (`ci/jenkins/jenkins.yaml`), and split (since 2026-08-04) into **two pipelines**: `application-ci`
+  (`Jenkinsfile-ci`) tests, builds, scans and pushes; `application-cd` (`Jenkinsfile-cd`) promotes,
+  deploys, verifies and rolls back. CI never deploys and holds no cluster credentials; CD never
+  builds and holds a strictly read-only Kubernetes Role. Pushing app code to `master` fires a GitHub
+  webhook → `application-ci` (guard → validate → lint → test → build → Trivy → push → publish
+  metadata) → triggers `application-cd` (validate → promote `image.tag` `[skip ci]` → ArgoCD sync →
+  wait → verify → smoke test, with automatic rollback on failure). `./scripts/build-push-ecr.sh` does
+  the build/scan/push part by hand, and is the **only** way to build while the cluster is destroyed
+  (there is no CI without a cluster). Agent pods authenticate to AWS via **IRSA** — CI's
+  `jenkins-agent` ServiceAccount gets ECR push, CD's `jenkins-cd-agent` gets ECR read-only, and the
+  controller itself carries no AWS role at all. Region, cluster name, GitHub repo and app domain
+  arrive as **pod environment variables** set by Terraform — the equivalent of the retired EC2 host's
+  global environment variables, and the reason a hardcoded region or prefix in either `Jenkinsfile-*`
+  or `ci/jenkins/jenkins.yaml` would be a bug. **See `docs/cicd.md`** for the full flow, the
+  first-time setup runbook, and failure modes; the split's design rationale — including why ArgoCD
+  stays the applier instead of a direct `helm upgrade`, and how rollback works — is in
+  `docs/design/2026-08-04-cicd-split-design.md`.
 
   **Jenkins is a platform add-on, not the application** — the opposite of `charts/voteball`. Changes to
   the Jenkins release reach the cluster by `terraform apply`, **not** by committing to `master` (ArgoCD
@@ -306,13 +318,19 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   change to `ci/jenkins/jenkins.yaml` or `terraform/addon-jenkins.tf` and walking away does nothing
   until someone runs `terraform apply`.
 
-  **The controller is disposable — `JENKINS_HOME` is an `emptyDir`, not a volume, and that is
-  deliberate.** The node group is 100% Spot, reclaimed roughly once a day; an EBS volume is locked to
-  one Availability Zone, so a PersistentVolumeClaim would need every reschedule to land back in the
-  same AZ or the pod hangs `Pending` forever — the one failure mode in this design that needs a human.
-  At a daily reclaim rate a PVC would preserve almost nothing while adding that risk. **Do not "fix"
-  this with a PVC.** What is lost on a reclaim is build history (capped at 20 builds anyway) — the
-  durable record is the `ci: image tag <sha> [skip ci]` commits on `master`, which never expire.
+  **`JENKINS_HOME` is a PersistentVolumeClaim backed by EFS, not an `emptyDir`.** The node group is
+  100% Spot, reclaimed roughly once a day, and the reason an *EBS*-backed PVC was rejected still
+  holds: an EBS volume is locked to one Availability Zone, so it would need every reschedule to land
+  back in the same AZ or the pod hangs `Pending` forever. **EFS has a mount target in every AZ**, so
+  it carries none of that lock-in — a rescheduled controller pod rebinds the same volume regardless of
+  which AZ it lands in. That is why the fix is EFS (`terraform/addon-efs.tf`), not an EBS PVC pinned
+  to one AZ, and not staying on `emptyDir` — the course brief for the 2026-08-04 CI/CD split lists
+  persistent Jenkins-home storage as a mandatory component. Build history (last 20 builds) now
+  survives a routine Spot reclaim; it is still lost if the Jenkins release itself is removed (the PVC
+  carries no `resource-policy: keep`) and gone for good only on a full `terraform destroy` of the EFS
+  resources — see `docs/cicd.md`'s "Running the instance" for the three-tier breakdown. The durable
+  record of what was *deployed* was never the build log regardless — it is the
+  `ci: image tag <sha> [skip ci]` commits on `master`, which never expire.
 
   **The `buildkit` container is the one container in this entire project that runs
   `allowPrivilegeEscalation: true` plus `SETUID`/`SETGID`.** Rootless BuildKit builds inside a user
@@ -330,18 +348,20 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   every build* by design, so adding either repo to that set fails every build's cache export with
   "cannot overwrite immutable tag" — at the end of a long build, not the start.
 
-**Do not remove the Guard stage from the `Jenkinsfile`, or `scripts/ci/should-skip-build.sh`.** Jenkins
+**Do not remove the Guard stage from `Jenkinsfile-ci`, or `scripts/ci/should-skip-build.sh`.** Jenkins
 has no native `[skip ci]` — that is a GitHub Actions feature. The Guard stage is the *only* thing
-stopping the pipeline's own tag-bump commit from retriggering the pipeline, forever: an unbounded,
-billable build loop that also rolls production pods continuously. It looks like dead weight next to the
-`[skip ci]` marker in the commit message; it is not. This is proven, not theoretical — build 5 in
-`docs/cicd.md` is the webhook firing on Jenkins' own commit and being stopped by exactly this stage.
+stopping `application-cd`'s own tag-bump commit from retriggering `application-ci`, which would
+retrigger `application-cd`, forever: an unbounded, billable build loop across both pipelines that also
+rolls production pods continuously. It looks like dead weight next to the `[skip ci]` marker in the
+commit message; it is not. This is proven, not theoretical — build 5 in `docs/cicd.md` is the webhook
+firing on Jenkins' own commit and being stopped by exactly this stage.
 
 **Jenkins is configured by JCasC, not by clicking — but the mechanism is `terraform apply`, not a
 reboot of a hand-managed host.** `ci/jenkins/jenkins.yaml` is loaded into the Helm release's
 `controller.JCasC.configScripts` and applied by the chart's config-reload sidecar (plugins, admin
-user, authorization, the Kubernetes cloud, the agent pod template, both credentials, the `voteball`
-job), so **UI changes are lost the next time the controller restarts** — which, on Spot, is roughly
+user, authorization, the Kubernetes cloud, both agent pod templates, all credentials, and both jobs —
+`application-ci` and `application-cd`), so **UI changes are lost the next time the controller
+restarts** — which, on Spot, is roughly
 daily whether you touch anything or not. Edit the YAML, commit, then run `terraform apply` to push it
 to the running release; committing alone changes nothing (see the platform-add-on note above).
 Secrets come from Secrets Manager (`voteball/jenkins`, seeded by `./scripts/seed-jenkins-secret.sh`),
@@ -492,8 +512,9 @@ There is nothing to start or stop — it runs whenever the cluster does, and goe
 ### CI guard scripts (`scripts/ci/`)
 
 `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the immutable-tag
-re-run check) hold the `Jenkinsfile`'s two decision points, extracted so they can be tested without
-triggering real builds:
+re-run check) hold two of `Jenkinsfile-ci`'s decision points — `images-exist.sh` is also reused,
+read-only, by `Jenkinsfile-cd`'s Input Validation stage to confirm a requested tag really is in ECR
+before promoting it — extracted so they can be tested without triggering real builds:
 
 ```bash
 scripts/tests/test-ci-guards.sh   # offline; stubs ECR via CI_STUB_DESCRIBE_CMD
