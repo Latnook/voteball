@@ -1,8 +1,8 @@
-// Voteball CI. Builds, scans and pushes the four images, then commits the new image tag to master.
-// ArgoCD observes that commit and rolls the Deployments -- Jenkins never touches the cluster and
-// holds no cluster credentials.
+// Voteball CI. Tests, builds, scans and pushes the four images, then hands the tag to the CD
+// pipeline. This pipeline NEVER deploys and holds no cluster credentials -- see Jenkinsfile-cd.
 //
-// Design: docs/design/2026-07-20-jenkins-migration-design.md  (G1-G7 referenced below)
+// Design: docs/design/2026-08-04-cicd-split-design.md (supersedes the single-pipeline design in
+// docs/design/2026-07-20-jenkins-migration-design.md, whose G1-G7 labels are still referenced below)
 
 pipeline {
   // The pod that provides these containers is declared in ci/jenkins/jenkins.yaml, under the
@@ -72,6 +72,82 @@ pipeline {
       }
     }
 
+    // Cheap repo-shape assertions, before anything is built. A repo that fails these must not
+    // produce an image at all, so this runs ahead of 'Already built?' -- a re-run of an
+    // already-built tag still has to pass validation.
+    stage('Validation') {
+      steps {
+        sh 'scripts/ci/validate-repo.sh'
+      }
+    }
+
+    stage('Lint / Static Analysis') {
+      steps {
+        container('python') {
+          sh '''
+            set -eu
+            pip install --quiet --no-cache-dir ruff==0.8.4
+            ruff check services/backend services/worker
+          '''
+        }
+        container('hadolint') {
+          sh '''
+            set -eu
+            for svc in backend worker frontend backup; do
+              echo "--- hadolint services/$svc/Dockerfile ---"
+              # DL3008/DL3013 (unpinned apt/pip versions) are informational here; the Dockerfiles
+              # pin via requirements.txt, which hadolint cannot see.
+              hadolint --ignore DL3008 --ignore DL3013 "services/$svc/Dockerfile"
+            done
+          '''
+        }
+      }
+    }
+
+    // The 153 tests in services/{backend,worker}/tests. They existed before this pipeline stage did
+    // and were never run by CI -- so a failing test blocked nothing. They now block everything.
+    //
+    // They need a REAL Postgres: both conftest.py files DROP TABLE ... CASCADE and call init_db().
+    // The `postgres` sidecar in the pod template provides it on localhost; it is ephemeral, holds no
+    // real data, and is reachable only from inside this pod's own network namespace, so the ci
+    // NetworkPolicies are untouched and no route to the real RDS instance exists or is needed.
+    stage('Tests') {
+      steps {
+        container('python') {
+          sh '''
+            set -eu
+            # Wait for the sidecar: containers in a pod start concurrently, and psycopg2 connecting
+            # before Postgres is listening fails with "could not connect", which reads like a
+            # configuration error rather than a race.
+            for i in $(seq 1 30); do
+              pg_isready -h localhost -p 5432 -q && break
+              echo "waiting for postgres ($i/30)"
+              sleep 2
+            done
+            pg_isready -h localhost -p 5432 || { echo "postgres sidecar never became ready"; exit 1; }
+
+            pip install --quiet --no-cache-dir -r services/backend/requirements-dev.txt
+            (cd services/backend && python -m pytest tests -q --junitxml=/images/backend-tests.xml)
+
+            pip install --quiet --no-cache-dir -r services/worker/requirements-dev.txt
+            (cd services/worker && python -m pytest tests -q --junitxml=/images/worker-tests.xml)
+
+            # The shared volume is mounted at /images, OUTSIDE the Jenkins workspace -- junit below
+            # can only read files under $WORKSPACE. No `|| true`: if the XML is missing, the tests
+            # did not run, and that must fail loudly rather than be swallowed.
+            cp /images/*-tests.xml "$WORKSPACE"/
+          '''
+        }
+      }
+      post {
+        always {
+          // allowEmptyResults:false -- a Tests stage that silently published nothing is exactly the
+          // "green build that verified nothing" failure this whole split exists to prevent.
+          junit allowEmptyResults: false, testResults: '*-tests.xml'
+        }
+      }
+    }
+
     stage('Resolve tag and account') {
       steps {
         script {
@@ -116,6 +192,9 @@ pipeline {
                  'treating it as "cannot determine what changed" and building rather than skipping.'
           }
           echo "Building ${env.TAG} into ${env.ECR_REGISTRY}"
+
+          // The brief requires branch, commit SHA and build number to be visible on the build.
+          currentBuild.description = "${env.BRANCH_NAME ?: 'master'} @ ${env.TAG} (build #${env.BUILD_NUMBER})"
         }
       }
     }
@@ -282,57 +361,78 @@ pipeline {
       }
     }
 
-    // ArgoCD watches charts/voteball on master. This commit IS the deploy.
-    stage('Bump image tag') {
-      when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
-                     expression { env.NO_CHANGELOG == 'true' } } }
+    // Traceability. The brief requires that a CD build can identify the CI build, the git commit,
+    // the image and the digest that produced it. The digest is the part that matters: a tag is a
+    // pointer and could in principle be moved, a digest is the content.
+    stage('Publish Metadata') {
+      // Same guard as 'Trigger CD' below, for the same reason: with no images in ECR for this SHA
+      // the digest lookups return None and the metadata file would record nothing.
+      when { anyOf {
+        expression { env.ALREADY_BUILT == 'present' }
+        changeset 'services/**'
+        expression { params.FORCE_BUILD }
+        expression { env.NO_CHANGELOG == 'true' }
+      } }
       steps {
-        // JOB CONFIGURATION REQUIREMENT: sshagent() below only takes effect if this workspace's
-        // `origin` remote is an SSH URL. This repo's own GitHub remote is HTTPS
-        // (https://github.com/Latnook/voteball.git); if the Jenkins job's SCM URL is left as
-        // HTTPS, this credential is silently ignored and the push at the bottom of this stage
-        // will fail (or hang on a credential prompt). The job MUST be configured with SCM URL
-        // git@github.com:Latnook/voteball.git, and github.com must already be in the Jenkins
-        // agent's known_hosts.
-        sshagent(credentials: ['voteball-deploy-key']) {     // G4
+        container('awscli') {
           sh '''
             set -eu
-            # The JCasC-pinned host key covers the git PLUGIN's checkout, not raw ssh. This stage
-            # shells out to git, which uses plain OpenSSH in the jnlp container -- and that has no
-            # known_hosts, so the push fails with "Host key verification failed" AFTER the image has
-            # been built, scanned and pushed. Same message as a plugin-side failure, different
-            # mechanism, different fix. The key is the one pinned in ci/jenkins/jenkins.yaml; its
-            # fingerprint matches GitHub's published SHA256_ED25519.
-            mkdir -p ~/.ssh && chmod 700 ~/.ssh
-            printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
-            chmod 600 ~/.ssh/known_hosts
-
-            sed -i -E "s/^  tag: \\".*\\"/  tag: \\"$TAG\\"/" charts/voteball/values.yaml
-
-            git config user.name  "jenkins"
-            git config user.email "jenkins@voteball.local"
-            git add charts/voteball/values.yaml
-
-            if git diff --cached --quiet; then
-              echo "values.yaml already names $TAG -- nothing to commit"
-              exit 0
-            fi
-
-            # [skip ci] is written for continuity and documentation; the Guard stage is what
-            # actually enforces it in Jenkins. Do not remove either.
-            git commit -m "ci: image tag $TAG [skip ci]"
-
-            # Same race scripts/deploy.sh hit (commits ed39db2, 1269ba8): origin/master may have
-            # moved while this build ran. On a conflict, abort the rebase explicitly instead of
-            # leaving the workspace mid-rebase, which would wedge the next build's checkout.
-            git pull --rebase --autostash origin master || {
-              echo "Rebase onto origin/master failed; aborting cleanly so the next build is not wedged."
-              git rebase --abort || true
-              exit 1
-            }
-            git push origin HEAD:master
+            {
+              printf '{\\n'
+              printf '  "image_tag": "%s",\\n' "$TAG"
+              printf '  "git_commit": "%s",\\n' "$(git rev-parse HEAD)"
+              printf '  "ci_build": "%s",\\n' "$BUILD_NUMBER"
+              printf '  "built_at": "%s",\\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              printf '  "images": {\\n'
+              sep=""
+              for svc in backend worker nginx backup; do
+                digest="$(aws ecr describe-images \\
+                  --repository-name "$CLUSTER_NAME-$svc" \\
+                  --image-ids "imageTag=$TAG" \\
+                  --region "$AWS_REGION" \\
+                  --query 'imageDetails[0].imageDigest' --output text)"
+                printf '%s    "%s-%s": { "digest": "%s" }' "$sep" "$CLUSTER_NAME" "$svc" "$digest"
+                sep=",\\n"
+              done
+              printf '\\n  }\\n}\\n'
+            } > image-metadata.json
+            cat image-metadata.json
           '''
         }
+        archiveArtifacts artifacts: 'image-metadata.json', fingerprint: true
+        script {
+          env.BACKEND_DIGEST = sh(
+            script: '''grep -A1 '"'"$CLUSTER_NAME"-backend"' image-metadata.json | grep -oE 'sha256:[0-9a-f]+' ''',
+            returnStdout: true).trim()
+        }
+      }
+    }
+
+    // Handing the tag to a separate job is one of the four connection mechanisms the brief permits
+    // ("הפעלת CD מתוך build trigger והעברת parameter"). It is NOT a deploy stage: this pipeline
+    // holds no cluster credentials and cannot reach the cluster.
+    //
+    // wait:false so a slow rollout does not hold a CI executor, and so a CD failure is reported
+    // against the CD build where the logs are, not as a confusing CI failure.
+    //
+    // THE `when` GUARD IS LOAD-BEARING and is the same one the retired tag-bump stage (now
+    // Jenkinsfile-cd) carried. Without it, a commit touching only docs/ or README.md triggers CD
+    // with a tag that has no images in ECR -- CD's Input Validation then correctly refuses, and
+    // every documentation commit produces a red CD build. The condition is "this SHA has images",
+    // which is true when we just built them OR when they were already present.
+    stage('Trigger CD') {
+      when { anyOf {
+        expression { env.ALREADY_BUILT == 'present' }
+        changeset 'services/**'
+        expression { params.FORCE_BUILD }
+        expression { env.NO_CHANGELOG == 'true' }
+      } }
+      steps {
+        build job: 'application-cd', wait: false, parameters: [
+          string(name: 'IMAGE_TAG',    value: env.TAG),
+          string(name: 'IMAGE_DIGEST', value: env.BACKEND_DIGEST ?: ''),
+          string(name: 'SOURCE_BUILD', value: env.BUILD_NUMBER),
+        ]
       }
     }
   }
@@ -345,6 +445,9 @@ pipeline {
       container('awscli') {
         sh 'rm -rf /images/dockercfg || true'
       }
+      // The brief's Cleanup stage. The pod is destroyed anyway, but an explicit clean is what makes
+      // the guarantee independent of that.
+      cleanWs()
     }
     // G5's `docker image prune` is DELETED, not ported: it existed because the EC2 host was
     // persistent. A pod agent is destroyed after every build, so the disk cleans itself.
