@@ -1,0 +1,22 @@
+# Task 4 evidence — automatic rollback and its recursion bound (2026-08-04)
+
+These are UNSTAGED occurrences: the rollback path fired on its own while the pipeline was
+still being brought up, which is stronger evidence than a rehearsed demo.
+
+## Build descriptions
+application-cd #3: tag 71453ec <- ci #14 (sha256:6b3836498d59) | ROLLED BACK to 7b31993
+application-cd #4: tag 7b31993 <- ci #rollback-from-3 (no digest) | ROLLBACK STOPPED -- NEEDS A HUMAN
+application-cd #5: tag 241bed6 <- ci #20 (sha256:95228d0e1c74) | ROLLED BACK to 7b31993
+application-cd #6: tag 7b31993 <- ci #rollback-from-5 (no digest) | ROLLBACK STOPPED -- NEEDS A HUMAN
+
+## The rollback firing (build #5 post{failure})
+[2026-08-04T15:12:52.503Z] ROLLING BACK to 7b31993 (this deploy of 241bed6 failed verification).
+
+## The recursion bound holding (build #6, depth 1)
+[2026-08-04T15:14:42.251Z] NO ROLLBACK: this build is ITSELF a rollback (depth 1) and it also failed verification. Refusing to roll back again -- PRODUCTION IS LEFT RUNNING 7b31993, WHICH FAILED VERIFICATION, AND NEEDS A HUMAN. See docs/cicd.md for the manual rollback procedure.
+
+## Why this matters
+Without the ROLLBACK_DEPTH bound, previous-tag.sh returns the tag before the current one --
+so a failed rollback makes the failed tag 'previous' again and the two oscillate forever,
+each cycle pushing a commit to master and rolling production pods. Builds #5 and #6 show the
+chain terminating after exactly one rollback attempt, as designed.

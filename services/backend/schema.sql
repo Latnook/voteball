@@ -47,7 +47,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS leagues_name_he_uidx ON leagues (name_he) WHER
 CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_en_uidx ON clubs (league_id, name_en) WHERE name_en IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS clubs_league_name_he_uidx ON clubs (league_id, name_he) WHERE name_he IS NOT NULL;
 
--- Russian as a third display language (docs/superpowers/specs/2026-07-27-russian-language-support-design.md).
+-- Russian as a third display language (see the Languages section of the root CLAUDE.md).
 -- Same structural-only rule as the bilingual block above: backfill lives in seed.sql.
 -- Nullable like name_he, which is what lets this ship ahead of the translations and lets an
 -- untranslated row fall back to its English name instead of rendering blank.

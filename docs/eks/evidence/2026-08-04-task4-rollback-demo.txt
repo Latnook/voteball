@@ -1,0 +1,33 @@
+# Task 4 evidence — deliberate broken deploy and automatic rollback (2026-08-04)
+
+A backend image whose /api/results returns 500 was built OUTSIDE CI (CI would have refused it:
+the failing behaviour is deliberate, not a test failure) and deployed as tag 3f19f67.
+/health was left untouched on purpose, so pods pass their readiness probe.
+
+## Timeline (wall clock, measured live)
+  19:12:55  deploy of the broken tag begins        /api/results = 200
+  19:14:09  rollout completes, broken version live /api/results = 500  <-- degradation starts
+  19:14:35  smoke test begins detecting it         /api/results = 500
+  19:15:33  rollback decision taken
+  19:15:55  rollback build (cd#14) starts          /api/results = 500
+  19:17:07  site recovers                          /api/results = 200  <-- degradation ends
+  19:17:42  cd#14 green, its own smoke test passes /api/results = 200
+  => visitor-visible degradation: approximately 3 minutes, self-healed, no human action
+
+## THE POINT: ArgoCD reported the broken release as Healthy
+[2026-08-04T16:14:33.308Z] sync=Synced health=Healthy revision=9d94185ef66b93a1e0c491a5c7b8c81f98936399
+
+Pods started, passed their readiness probe, and ArgoCD marked the application Synced and
+Healthy. A reconciler compares desired state to actual state; it has no notion of whether the
+product works. Only the smoke test could tell the difference:
+[2026-08-04T16:14:35.113Z] smoke: OK   / (site root loads)
+[2026-08-04T16:14:35.375Z] smoke: OK   /api/options (options API reads the database)
+[2026-08-04T16:14:35.375Z] smoke: attempt 1/10 on /api/results?by=all -> 500
+[2026-08-04T16:15:31.012Z] smoke: FAIL /api/results?by=all (results API reads the rollup tables) after 10 attempts
+
+## The rollback
+[2026-08-04T16:15:33.616Z] ROLLING BACK to 7b31993 (this deploy of 3f19f67 failed verification).
+
+## The rollback verified itself green (cd#14)
+[2026-08-04T16:17:13.783Z] sync=Synced health=Healthy revision=67572183b584425dacb648323d9d2546221dd4f7
+[2026-08-04T16:17:15.818Z] smoke: all checks passed against https://voteball.latnook.com

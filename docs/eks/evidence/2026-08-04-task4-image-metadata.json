@@ -1,0 +1,12 @@
+{
+  "image_tag": "731af4b",
+  "git_commit": "",
+  "ci_build": "33",
+  "built_at": "2026-08-04T15:59:33Z",
+  "images": {
+    "voteball-backend": { "digest": "sha256:95228d0e1c74f80c53c8f2c4f0782eb407a8f5fc5fd12719a4092c79666294dc" },
+    "voteball-worker": { "digest": "sha256:20b0e6ce577a110c31394d711a8ad5dd250f785bf55f85c05b4e0fc15b468ab4" },
+    "voteball-nginx": { "digest": "sha256:858a9d19a1acbc81266e765fc27d69a3300a3882340dd33fbb0d6f8e590d28dd" },
+    "voteball-backup": { "digest": "sha256:f1d8af4e5a4d5109f6bcb7d5e6be6a6e1cb68c718ec6cf95e07216e548907984" }
+  }
+}

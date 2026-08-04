@@ -511,3 +511,145 @@ Every item below produces a file in `docs/eks/evidence/` or `docs/screenshots/`:
   (§3); verification reads ArgoCD's own sync and health status rather than re-deriving it (§3); the
   CD ServiceAccount's `Role` lost its `patch` verb and is now strictly read-only, so Jenkins holds no
   write permission anywhere in `devops-app` (§4).
+
+## Verification outcome (2026-08-04)
+
+**Eleven distinct defects surfaced only by actually running both pipelines against the live
+cluster.** None were caught by `helm lint`, `terraform validate`, `hadolint` run outside CI, or
+reading either Jenkinsfile before running it. §4 above already carries the full narrative for three
+of them (the ArgoCD/RBAC failures on `application-cd`'s first live runs); this section is the
+complete, ordered list, including the eight that have no write-up anywhere else. They are recorded
+here in the order they were hit, because that is also the order a rebuild would hit them again if any
+one fix in this list were ever reverted.
+
+1. **`ruff` installed but not runnable — exit 127.** The Lint / Static Analysis stage runs as uid
+   1000 with `HOME=/tmp`; `pip install --quiet ruff` succeeds but installs to `~/.local/bin`, which
+   nothing puts on `PATH` in that container. Bare `ruff check` then failed with "ruff: not found" —
+   reading like the install itself failed, not like a `PATH` problem. Fixed by invoking `python -m
+   ruff check services/backend services/worker` instead, which runs the installed module directly and
+   needs no `PATH` entry.
+2. **`pg_isready` is not in `python:3.12-slim`.** The Tests stage's wait-for-Postgres loop was
+   written around `pg_isready`, which ships with postgres-client packages this slim base image
+   doesn't carry. Replaced with a stdlib TCP-connect loop
+   (`python3 -c "import socket,sys; s=socket.socket(); ...; s.connect_ex(('localhost',5432))"`), which
+   needs nothing beyond the interpreter already in the image and asks exactly what the loop needs to
+   know: has the sidecar opened its listening socket.
+3. **`cleanWs()` needs the `ws-cleanup` plugin, absent from the controller image.** Both
+   `post { always }` blocks originally called `cleanWs()`; `ws-cleanup` is not in
+   `ci/jenkins/plugins.txt`, and adding it means rebuilding the controller image. Replaced with
+   `deleteDir()`, a Jenkins-core step needing no plugin, with the same practical effect.
+4. **`junit` needs the JUnit plugin, also absent.** The Tests stage's `junit '*-tests.xml'` step
+   failed with `NoSuchMethodError` for the same missing-plugin reason. Replaced with
+   `archiveArtifacts artifacts: '*-tests.xml', allowEmptyArchive: false`. The test **gate** was never
+   this step — it is pytest's own exit code under `set -eu` — so this loses only the per-test report
+   view in Jenkins' UI, not any of what actually blocks a bad build from proceeding.
+5. **Six genuine `ruff` violations, once it could actually run.** Two unused imports and four uses of
+   the ambiguous variable name `l` (`E741`) in test files. Fixed in the test files themselves — not
+   suppressed with `noqa` or a relaxed ruleset.
+6. **hadolint DL3021 on the frontend Dockerfile.** A multi-source `COPY` (several named files into
+   one destination directory) needs a `/`-terminated destination; `services/frontend/Dockerfile`'s
+   `COPY index.html ... /usr/share/nginx/html` was missing the trailing slash. Fixed by adding it.
+7. **A DL3018 apk-version pin was reverted as a time bomb.** An early pass pinned exact apk package
+   versions in `services/backup/Dockerfile` to satisfy hadolint's DL3018 (unpinned apk version) — but
+   Alpine's package versions move with the base image tag, so a pin silently breaks the next build
+   whenever Alpine moves and the pinned version stops existing. It was also inconsistent with DL3008
+   and DL3013, already deliberately ignored in the same Dockerfile for the identical reason. Reverted
+   the pin; added `--ignore DL3018` to hadolint's invocation in `Jenkinsfile-ci`, alongside the
+   already-ignored DL3008/DL3013.
+8. **The Publish Metadata stage's shell failed with an unterminated-quote error that reproduces
+   nowhere.** The stage failed inside Jenkins with a quoting error, but the identical script text is
+   clean under `bash -n` run locally **and** under `sh -n` inside the real
+   `amazon/aws-cli:2.22.0` image (bash 4.2.46) — the two places that should have caught it, didn't.
+   **The root cause was never identified.** It was mitigated, not fixed: prose comments were moved out
+   of shell step bodies, and `scripts/tests/check-jenkinsfile-shell.sh` was hardened to catch more
+   shapes of this class of error statically before a build ever runs. Say plainly what this is: a
+   workaround. If Publish Metadata breaks again in a way that looks like this, do not assume the
+   hardening covers it.
+9. **`kubectl apply --dry-run=client` is not purely local.** Full detail in §4 above (build #1). In
+   short: client-side `apply` GETs each object's current state to decide create-versus-patch, so it
+   needs read RBAC on every kind the chart renders — which the CD ServiceAccount's deliberately
+   narrow, seven-kind read-only `Role` does not grant, by design. Switched Manifest Validation to
+   `kubectl create --dry-run=client`, which never reads an existing object and needs no RBAC beyond
+   the cluster's default discovery access; verified for real as `jenkins-cd-agent` (a minted token,
+   not cluster-admin) against all 24 rendered resources.
+10. **`argocd app sync --revision <sha>` is rejected once automated sync tracks a branch.** Full
+    detail in §4 above (build #3): `FailedPrecondition ... auto-sync currently set to master`. Fixed
+    by dropping `--revision` entirely — Promote (stage 5) already pushed the tag bump to `master`
+    before Deploy runs, so a plain `argocd app sync voteball` reaches the promoted commit anyway.
+    Verify's assertion that `sync.revision` equals the promote SHA is what now confirms ArgoCD landed
+    on *this* build's commit rather than a newer one that raced in.
+11. **`argocd app get` also needs `projects, get` on the AppProject.** Full detail in §4 above
+    (builds #5 and #6). `app get` transitively resolves and reads the Application's owning AppProject,
+    not just the Application object; the RBAC policy granted `applications, get/sync` but nothing on
+    `projects`. Fixed with one additional read-only line, scoped to the single `voteball` project —
+    same lesson as defect 9: a permission scoped to "the one object it needs" still has to cover
+    everything reading that object transitively touches.
+
+Plus two more, found while verifying rather than while first building the stages:
+
+- **A 300s Deploy/Rollout timeout was too tight for the first deploy of a newly built tag**, and the
+  failure mode was a false rollback, not just a slow one. Full detail in §4 above (build #10): four
+  cold image pulls on a Spot node group that had never run that tag pushed the rollout past 300s,
+  which **failed the stage and thus triggered an automatic rollback of a deploy that was actually
+  healthy** and reached `Synced`/`Healthy` on its own moments later. Raised `argocd app sync`/
+  `app wait` timeouts to 600s, and the pipeline's own `options { timeout(...) }` to 30 minutes to
+  leave room for both.
+- **`image-metadata.json` shipped with an empty `git_commit`** (visible in
+  `docs/eks/evidence/2026-08-04-task4-image-metadata.json`, captured from build #33, which still
+  shows `"git_commit": ""`). Cause: `amazon/aws-cli:2.22.0`, the container Publish Metadata runs in,
+  has no `git` binary at all — confirmed with
+  `docker run --rm --entrypoint sh amazon/aws-cli:2.22.0 -c "command -v git"`, which finds nothing —
+  and the failing `git rev-parse HEAD` was buried inside a `$(...)` substitution used as one argument
+  to `printf`. `set -eu` does not catch that: the discarded exit status belongs to the substitution,
+  not to the `printf` call itself, so the stage kept going and wrote an empty string. Fixed by
+  capturing the full commit SHA earlier, in the "Resolve tag and account" stage, which runs in the
+  default `jnlp` container that does have `git`, and asserting the captured `GIT_COMMIT_SHA` is
+  non-empty before Publish Metadata writes the file — a container that structurally cannot do the job
+  is no longer asked to.
+
+### What was proven live
+
+The strongest form of evidence this design has: a running pipeline against the real cluster, not a
+plan for one. Full logs in `docs/eks/evidence/2026-08-04-task4-*.txt`.
+
+- **CI green end to end**: 188 tests run inside the pipeline (153 backend + 35 worker), Trivy clean
+  (`Total: 0 (HIGH: 0, CRITICAL: 0)`) on all four images, four images built and pushed to ECR,
+  metadata archived, CD triggered by parameter — `application-ci` build 33 handing off to
+  `application-cd` build 12.
+- **A real change deployed and verified to production by the pipeline**, end to end, with no human
+  step between the push and a verified-healthy live site.
+- **A failing test blocks the deploy**: `application-ci` build 28 went red at Tests
+  (`1 failed, 153 passed`), and `application-cd`'s build count did not move — nothing was deployed
+  from a red build.
+- **The G2 guard closes the loop on both pipelines' own commits**: `application-ci` builds 30 and 34,
+  triggered by `application-cd`'s own tag-bump commits, both reported `NOT_BUILT` at the Guard stage
+  rather than rebuilding what CD had just promoted.
+- **Automatic rollback fired unstaged** — not as a rehearsed demo, but live while the pipeline was
+  still being brought up (`application-cd` builds #3 and #5) — and the `ROLLBACK_DEPTH` recursion
+  bound held on both (builds #4 and #6: a rollback that itself fails verification does not roll back
+  again; it stops and says so, rather than oscillating forever between two tags, each cycle pushing a
+  commit and rolling production pods).
+- **The deliberate demo**: a backend build whose `/api/results` returns 500 while `/health` stays
+  healthy, deployed outside CI (CI would have refused it — the failure is deliberate, not a test
+  regression). ArgoCD reported `sync=Synced health=Healthy` the entire time the site was broken,
+  because a reconciler has no notion of whether the product actually works; only the smoke test
+  caught it, after 10 retries. Rollback fired automatically and the site recovered.
+  Visitor-visible degradation ran approximately 3 minutes, entirely self-healed, with no human action
+  taken. This is the single clearest justification for the CD pipeline existing at all — a reconciler
+  cannot see this failure, by construction, and did not.
+
+### Security caveat, stated plainly rather than glossed over
+
+Already recorded in `docs/security.md`, and repeated here because it belongs next to the rest of the
+verification story rather than only in the security doc: the `ci` namespace's NetworkPolicy does what
+its comment claims for the thing it exists to protect — an agent pod's route to the RDS endpoint times
+out, and `devops-app` is unreachable, both verified live. But the same policy's re-admission of the
+EKS service CIDR (needed so agents can reach the Kubernetes API on 443) is scoped to a CIDR block, not
+to the API server's specific address, and lists ports 443/8080/50000 — which also reaches
+`argocd-server`'s ClusterIP on port 443 (used) and, verified live, port 80 too. The practical exposure
+is nil: every `argocd` CLI call in `Jenkinsfile-cd` uses `--grpc-web` over 443, and `--plaintext`,
+which would use port 80, is never invoked. The claim that matters — CD **cannot write to the
+cluster** — is enforced by RBAC, not by network path, and is absolute (defect 9 above is exactly what
+happens when that RBAC is tested for real). But "CI cannot reach `devops-app`" and "CI's network path
+to ArgoCD is minimal" are two different claims, and only the first one is true. Stated here rather
+than left implied by the comment in `charts/jenkins-support/templates/networkpolicy.yaml`.

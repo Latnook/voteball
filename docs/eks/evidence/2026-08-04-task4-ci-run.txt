@@ -1,0 +1,1181 @@
+Started by user latnook
+Obtained Jenkinsfile-ci from git git@github.com:Latnook/voteball.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Agent voteball-build-dlm3j is provisioned from template voteball-build
+---
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  annotations:
+    kubernetes.jenkins.io/last-refresh: "1785858958827"
+  labels:
+    jenkins: "slave"
+    jenkins/label-digest: "8fdcb1e398bb98bb64843bdb8109cdf847cf0854"
+    jenkins/label: "voteball-build"
+    kubernetes.jenkins.io/controller: "http___jenkins_ci_svc_cluster_local_8080x"
+  name: "voteball-build-dlm3j"
+  namespace: "ci"
+spec:
+  containers:
+  - args:
+    - "--addr=unix:///run/user/1000/buildkit/buildkitd.sock"
+    - "--oci-worker-no-process-sandbox"
+    image: "moby/buildkit:v0.19.0-rootless"
+    name: "buildkit"
+    resources:
+      limits:
+        memory: "3Gi"
+      requests:
+        cpu: "500m"
+        memory: "2Gi"
+    securityContext:
+      allowPrivilegeEscalation: true
+      appArmorProfile:
+        type: "Unconfined"
+      capabilities:
+        add:
+        - "SETUID"
+        - "SETGID"
+        drop:
+        - "ALL"
+      runAsGroup: 1000
+      runAsUser: 1000
+      seccompProfile:
+        type: "Unconfined"
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/user/.local/share/buildkit"
+      name: "buildkit-state"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "aquasec/trivy:0.58.1"
+    name: "trivy"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "quay.io/skopeo/stable:v1.17.0"
+    name: "skopeo"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "amazon/aws-cli:2.22.0"
+    name: "awscli"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    - name: "PIP_CACHE_DIR"
+      value: "/tmp/pip"
+    - name: "DB_HOST"
+      value: "localhost"
+    - name: "DB_NAME"
+      value: "postgres"
+    - name: "DB_USER"
+      value: "postgres"
+    - name: "DB_PASS"
+      value: "test"
+    - name: "DB_SSLMODE"
+      value: "disable"
+    image: "python:3.12-slim"
+    name: "python"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "POSTGRES_PASSWORD"
+      value: "test"
+    - name: "PGDATA"
+      value: "/tmp/pgdata"
+    image: "postgres:16-alpine"
+    name: "postgres"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    volumeMounts:
+    - mountPath: "/tmp"
+      name: "pgdata"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "hadolint/hadolint:2.12.0-alpine"
+    name: "hadolint"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "JENKINS_SECRET"
+      value: "********"
+    - name: "JENKINS_TUNNEL"
+      value: "jenkins-agent.ci.svc.cluster.local:50000"
+    - name: "JENKINS_AGENT_NAME"
+      value: "voteball-build-dlm3j"
+    - name: "REMOTING_OPTS"
+      value: "-noReconnectAfter 1d"
+    - name: "JENKINS_NAME"
+      value: "voteball-build-dlm3j"
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/home/jenkins/agent"
+    - name: "JENKINS_URL"
+      value: "http://jenkins.ci.svc.cluster.local:8080/"
+    image: "jenkins/inbound-agent:3383.vc8881d4b_0e76-1-jdk25"
+    name: "jnlp"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  nodeSelector:
+    kubernetes.io/os: "linux"
+  restartPolicy: "Never"
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: "jenkins-agent"
+  volumes:
+  - emptyDir:
+      sizeLimit: "8Gi"
+    name: "images"
+  - emptyDir: {}
+    name: "buildkit-state"
+  - emptyDir: {}
+    name: "pgdata"
+  - emptyDir:
+      medium: ""
+    name: "workspace-volume"
+
+Running on voteball-build-dlm3j in /home/jenkins/agent/workspace/application-ci
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential voteball-deploy-key
+Cloning the remote Git repository
+Cloning repository git@github.com:Latnook/voteball.git
+ > git init /home/jenkins/agent/workspace/application-ci # timeout=10
+Fetching upstream changes from git@github.com:Latnook/voteball.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_SSH to set credentials Deploy key for Latnook/voteball (managed by JCasC)
+[INFO] Currently running in a labeled security context
+ > /usr/bin/chcon --type=ssh_home_t /home/jenkins/agent/workspace/application-ci@tmp/jenkins-gitclient-ssh16642478199340639524.key
+Verifying host key using manually-configured host key entries
+ > git fetch --tags --force --progress -- git@github.com:Latnook/voteball.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision 731af4b6809f4a5e36f92e883fea2508b25e0ca5 (refs/remotes/origin/master)
+Commit message: "fix(cd): raise Deploy/Rollout timeouts to 600s, avoid false rollback on cold images"
+ > git config remote.origin.url git@github.com:Latnook/voteball.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 731af4b6809f4a5e36f92e883fea2508b25e0ca5 # timeout=10
+ > git rev-list --no-walk 731af4b6809f4a5e36f92e883fea2508b25e0ca5 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Guard: is this our own commit?)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:56:16.975Z] + git log -1 --pretty=%B
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:56:17.503Z] + scripts/ci/should-skip-build.sh fix(cd): raise Deploy/Rollout timeouts to 600s, avoid false rollback on cold images
+[2026-08-04T15:56:17.503Z] 
+[2026-08-04T15:56:17.503Z] Build #10 failed Deploy at the 300s argocd timeout because tag 9474665's four
+[2026-08-04T15:56:17.503Z] images were freshly built and had never been pulled onto the Spot node group;
+[2026-08-04T15:56:17.503Z] build #9's warm-image deploy went Synced/Healthy in ~90s. A timeout here isn't
+[2026-08-04T15:56:17.503Z] just slow -- it fails the stage and triggers the automatic rollback of a deploy
+[2026-08-04T15:56:17.503Z] that ArgoCD went on to mark Healthy on its own. Raise both argocd app sync and
+[2026-08-04T15:56:17.503Z] argocd app wait from 300 to 600, and the pipeline-level options.timeout from 20
+[2026-08-04T15:56:17.503Z] to 30 minutes so the outer budget can't fire mid-rollout and cause the same
+[2026-08-04T15:56:17.503Z] false rollback by a different route. Update the CD design doc's stage table and
+[2026-08-04T15:56:17.503Z] verification-outcome record to match.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Validation)
+[Pipeline] sh
+[2026-08-04T15:56:18.447Z] + scripts/ci/validate-repo.sh
+[2026-08-04T15:56:18.447Z] validate-repo: all checks passed
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint / Static Analysis)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:56:19.469Z] + set -eu
+[2026-08-04T15:56:19.469Z] + pip install --quiet --no-cache-dir ruff==0.8.4
+[2026-08-04T15:56:24.837Z] 
+[2026-08-04T15:56:24.837Z] [notice] A new release of pip is available: 25.0.1 -> 26.2
+[2026-08-04T15:56:24.837Z] [notice] To update, run: pip install --upgrade pip
+[2026-08-04T15:56:24.837Z] + python -m ruff check services/backend services/worker
+[2026-08-04T15:56:24.837Z] All checks passed!
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:56:25.826Z] + set -eu
+[2026-08-04T15:56:25.826Z] + echo '--- hadolint services/backend/Dockerfile ---'
+[2026-08-04T15:56:25.826Z] --- hadolint services/backend/Dockerfile ---
+[2026-08-04T15:56:25.826Z] + hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 services/backend/Dockerfile
+[2026-08-04T15:56:25.826Z] + echo '--- hadolint services/worker/Dockerfile ---'
+[2026-08-04T15:56:25.826Z] --- hadolint services/worker/Dockerfile ---
+[2026-08-04T15:56:25.826Z] + hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 services/worker/Dockerfile
+[2026-08-04T15:56:25.826Z] + echo '--- hadolint services/frontend/Dockerfile ---'
+[2026-08-04T15:56:25.826Z] --- hadolint services/frontend/Dockerfile ---
+[2026-08-04T15:56:25.827Z] + hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 services/frontend/Dockerfile
+[2026-08-04T15:56:26.094Z] + echo '--- hadolint services/backup/Dockerfile ---'
+[2026-08-04T15:56:26.094Z] --- hadolint services/backup/Dockerfile ---
+[2026-08-04T15:56:26.094Z] + hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 services/backup/Dockerfile
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Tests)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:56:27.399Z] + set -eu
+[2026-08-04T15:56:27.399Z] + seq 1 30
+[2026-08-04T15:56:27.399Z] + python3 -c import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)
+[2026-08-04T15:56:27.399Z] + break
+[2026-08-04T15:56:27.399Z] + python3 -c import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)
+[2026-08-04T15:56:27.399Z] + pip install --quiet --no-cache-dir -r services/backend/requirements-dev.txt
+[2026-08-04T15:56:34.029Z]   WARNING: The scripts py.test and pytest are installed in '/tmp/.local/bin' which is not on PATH.
+[2026-08-04T15:56:34.029Z]   Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+[2026-08-04T15:56:34.296Z]   WARNING: The script gunicorn is installed in '/tmp/.local/bin' which is not on PATH.
+[2026-08-04T15:56:34.296Z]   Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+[2026-08-04T15:56:34.563Z]   WARNING: The script flask is installed in '/tmp/.local/bin' which is not on PATH.
+[2026-08-04T15:56:34.563Z]   Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+[2026-08-04T15:56:34.830Z] 
+[2026-08-04T15:56:34.830Z] [notice] A new release of pip is available: 25.0.1 -> 26.2
+[2026-08-04T15:56:34.830Z] [notice] To update, run: pip install --upgrade pip
+[2026-08-04T15:56:34.830Z] + cd services/backend
+[2026-08-04T15:56:34.830Z] + python -m pytest tests -q --junitxml=/images/backend-tests.xml
+[2026-08-04T15:57:16.202Z] ........................................................................ [ 47%]
+[2026-08-04T15:57:50.340Z] ........................................................................ [ 94%]
+[2026-08-04T15:57:53.424Z] .........                                                                [100%]
+[2026-08-04T15:57:53.424Z] ---------------- generated xml file: /images/backend-tests.xml -----------------
+[2026-08-04T15:57:53.424Z] 153 passed in 77.11s (0:01:17)
+[2026-08-04T15:57:53.424Z] + pip install --quiet --no-cache-dir -r services/worker/requirements-dev.txt
+[2026-08-04T15:58:01.585Z] 
+[2026-08-04T15:58:01.585Z] [notice] A new release of pip is available: 25.0.1 -> 26.2
+[2026-08-04T15:58:01.585Z] [notice] To update, run: pip install --upgrade pip
+[2026-08-04T15:58:01.849Z] + cd services/worker
+[2026-08-04T15:58:01.849Z] + python -m pytest tests -q --junitxml=/images/worker-tests.xml
+[2026-08-04T15:58:12.679Z] ...................................                                      [100%]
+[2026-08-04T15:58:12.679Z] ----------------- generated xml file: /images/worker-tests.xml -----------------
+[2026-08-04T15:58:12.679Z] 35 passed in 9.81s
+[2026-08-04T15:58:12.679Z] + cp /images/backend-tests.xml /images/worker-tests.xml /home/jenkins/agent/workspace/application-ci/
+[Pipeline] }
+[Pipeline] // container
+Post stage
+[Pipeline] archiveArtifacts
+[2026-08-04T15:58:12.920Z] Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Resolve tag and account)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:58:14.196Z] + git rev-parse --short HEAD
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:58:15.006Z] + aws sts get-caller-identity --query Account --output text
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] echo
+[2026-08-04T15:58:16.776Z] No changelog for this build (first build since the controller was recreated) -- treating it as "cannot determine what changed" and building rather than skipping.
+[Pipeline] echo
+[2026-08-04T15:58:16.832Z] Building 731af4b into 590183895228.dkr.ecr.il-central-1.amazonaws.com
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Already built?)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:58:18.326Z] + scripts/ci/images-exist.sh
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build images)
+[Pipeline] echo
+[2026-08-04T15:58:20.490Z] Warning, empty changelog. Have you run checkout?
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:58:21.279Z] + set -eu
+[2026-08-04T15:58:21.279Z] + umask 077
+[2026-08-04T15:58:21.279Z] + mkdir -p /images/dockercfg
+[2026-08-04T15:58:21.279Z] ++ base64 -w0
+[2026-08-04T15:58:21.279Z] +++ aws ecr get-login-password --region il-central-1
+[2026-08-04T15:58:22.676Z] ++ printf AWS:%s eyJwYXlsb2FkIjoib1dlUFE1eW9sUmZ0bDhQUHU1Zy9QeDZKNTFodUlKaENyKzd2MGpqTVFQb0JzOUdjTlArN2Y0eG9jYjJSS0E4VnQ2UTBzZmFsZFJoWlN1cU1PRDMvR002a09TYmdmM1ZLYldsREZzWWRzVWpmVnAyd1g4OCtTS2ZQYXRubkJVM1AwcjEwcTRMR09QanJtdFVxTm1wWE5LN0xPTUdqbDRTcnR2dUlINm5oQzI2Z3Q5SGpaM3ZoZmpmTVZBQndyYzdQV0lkbnAxUHBZb1FENFhMY3drcy9LbFlZd0RrTmxQV1E1UGIwS2N5cFlGdVgwK0J3bEErdzBsLzF5aGZZWnlvZWIvRVVEbFljemhxMk00aXlUa3YwaHN6NGdNVTJDVW9VNmJMNnkzdncrYnFGQXVqQ1FqU0dJSWM5NWNpUEh5dWpkcUFKeTdtaG5rK21TNTdnaVoyTnFCY2dYYmtBVVUvSlQ4a2ZvNFF6dkRCVmdsSDQzYnZPOWthZTArVkZ3Z1NLcHh0OHpidkFWRHZaT3hSdytXNmhUb1lzbldZWnJxYnFONkl0WDhoQmhyQi9nY25XaGRjVlVsNWhyZEZjTFJBNEVpbGQrUmwyNnFPLzczelZUVVJNbk11NFk1V1FkWjJSYzNXSHlKa3B5TUdVY2RRL2c1OCs5aTZPbWh0cC9ZaWpFOWUwVVhTVTI4c2FEZ09vUXRQN0NENTE1eUhCWjJ3eWhWTjA1MVlaRkJGdlQ0NUdtMUZtc0ZNNUpFMGliKzdoZzA0UWdhS0ZFMDE0REsyY2E2Sjl3SzFFTmoyY1F1VlZHTk56M3NvS2VLR0taKzEvYlprSW4yOTVXbHV2YUNSYlROSkh4VHAweHlmUE9mR3Z3eW1selRRYUxWa0pCWmZ0RUtKTHB6Ti9ydHVSc3RmR09jUmxqSzRGWGI5Mk53SHordFVaVDZuRHpNdUlrb05teU5uVnU3TDk0N3lya2diUGZ1VjB6SzQ2NE8vOFIxZWlzbWxiMmpHL0VtV0N6QmhSQjdRVWVnK3dkR2l1dlFsMGl1RVVDR0U2bENvYndXMXJtKzlrNElaYXIvanRvTis2MkFaTEwxQVVxQ283M2U4VS9mZytKaE9HN3A2YWNCem40U3Urc21zcDVLRjhnWmhZd2huYUk5dXRlaUw0aVVrQ2FEOHFvOXp2blpPS3h3dkVQSGVpUk1haEVOLzhlRWtRMm1uTTZZbjFjMGROY2laQ2tBaVhTS3BydVg2WkhQR1UxTnFQYUpmcjZiMmZ6RHZWbGh5aTNMbjhic28yenN3dEdyNzFXRVE3NnlFRHYvRDIyckxxZXRpTGllQTkwRmZsakxGay95aXBxZ2lWOEhxcXlseEtveEwweWZJVnFrYllFQTFibWI1b2I2SDByL01NU0VSZm9IS0tFWlVEcjJCUXpaNGxIdkZpcFZYa1F4RDFxbEp5bmpTQVJlOHdOKzdLNmZsa2NuazdLc3U2cjhhNXljZjdWZzZLcVlsOWJqWVFNbEF5Z2N2OUlwcTZUTFhhRGRLandBL2c4bHM3cmhTbHZxZUd5THpWaTF1cmJ2VHZLNld4YThmbEJaVytzSnVtTUQzbDFOKzVNU0VmM3JIVm8vbEJERDhyLzRTZDJjalFKcU5hVFhaSHJHWWR0bGM5eEJwYmRCZXBiTnN6MUVpV01hNkFjeXVhQ0lhSkhmak82OHlweXZFOTlaMmFXRE1lL1F5eFNrU1BCN0VmMEkxVUl4aklnTVphcVNRYU1OVUVhdDUrcjFnM2xyQ3BsNjJONnlSa1RaanE1WlJObzJhTTVCTFBUQTQydVFqcmZvZEgzdEUwWUI3bkU2bVFFRW82citNU0g2emo0TWxEaHBmVTNaZXhyRnhwd1lKdTlWc1c0aEtBMzR2WUxFZ3VXN0Mzc1BNZGdpODFBYkxTS1dKR3VGY2RlSHpNK1ZDeW9ldE03NnUxSWZOLy9scS9uQjNheG5wU1Fsc0RST2c4bU1rYXRTNkpvVm9tbXRwbk1EZVJWTVFvQlpFWkdCUFlHTVdpbzJneTZma2Ewdmk4aFJSNXVrS0g5ZVdzelNWbG04eUt2aGZCeWVkQnlxRGFMRzNOMytkVUpielhBODcvS0JzSitSMHl4MUl1TDVzQW9WU0xZdFczWEtRMTdsVjNRUDN2NVI2d0NPV1dFZmhzYlRoa1JFVHZNOCtRVDhkRGQ0L3MraTgyNzQxQUVoUm5XUjY0bjVmUXJDcWdMK1BCemt3Vm1UQzNIdEN6UVUzN29HdklVZVlYWS8yMmpCNDJoa3JpaTNkMjlzUWNJMm9yZzdieE5UL3JjenRpVzZ6TkdwaVhZcVYrVG9kSXFuRWRublg1OG50VE1EaWZXMDhuamRISlFDTkhSclp6UGltWm9YTUNIYW1kTlFkVXYrckdOL1ZWc2hrRnJqSVVhOVF3cFhNT085THhBT0c0dkFSMXpDUE84UDRUNHBoaEJzcHRaOW1MNjhxcy9OY3ZCUmxtR21YOGtBZnpxZDc1citkK2Y2d3dtQkFvU3podzBHYm1zUmFJSDNXWUhZV2ZYZ1B6Z2JBQXYyVlIwbHJOcWROWEJsMmZjNm1hQkVxWk1oSXQ2M21tRHNTVEpjREYxRUZCMHMyOXpJVDlBVE9JMXAxS1o0QmJpQjNBbHFLRmxrdHR6OERheTE5Zm9KV2dZeSt6aElEcEZkOVAxNFdPTXRYY1hPZzFydU5ha0I0SlQwOTdIYzZla2tTd2lLRk1Eb0orcXpRU0RwM2diV0h0OEl3LzV2N1hxaXJzUHVyMGpFd3ZZRU53NFltc1JzTVAxRVNCRFk3Rm1VV3Z2dnJMN3BlV202T1NiUUVuVVZHamkwWlNMQThENTJsckljZmN4VDd3WDJwU0dzV1doRS8zc0U5WnJpSWowZFRsN3g0TEExdnRaVlBuZGw3cmpPT2JqR0syeUU1eXJVT3AzZ2hXU1hoWkNldHJpS1FoNzlKTHVYM1FuVjFvUWJ2cVNNRHI3NU8xQ2I2WTBVVTFpNElvbzYyU0lteUlQbnpTL1FrOHdUUkp1TWpFSE9mcUppUnhqYmVSQThVODFPbXJMMXNmZEhSd3VZVmlOV0lJeTkxRXdNSjVYQSt5TFpFTTR1az0iLCJkYXRha2V5IjoiQVFJQkFIaFo4WjNFTWNLWmJ3N01LMXVsNVI3dllnWkxodDcrVFloTUlkd2FFeUU5VEFGNmU2T01HeWJYcnFzVHYwNVJZWGtBQUFBQWZqQjhCZ2txaGtpRzl3MEJCd2FnYnpCdEFnRUFNR2dHQ1NxR1NJYjNEUUVIQVRBZUJnbGdoa2dCWlFNRUFTNHdFUVFNa2JqdzhIUiszWUxSbzRBVkFnRVFnRHNrZ0tRM2l4WVZBVHZyNlJQNkVSejdWZHk1enJ6VGliUmpQcERRazRSYXF4Y2ZEU1dVYXhBWVoyT1lxMkpmU2VwaGV3dU0vYVd3OFp4enR3PT0iLCJ2ZXJzaW9uIjoiMiIsInR5cGUiOiJEQVRBX0tFWSIsImV4cGlyYXRpb24iOjE3ODU5MDIzMDJ9
+[2026-08-04T15:58:22.677Z] + printf '{"auths":{"%s":{"auth":"%s"}}}' 590183895228.dkr.ecr.il-central-1.amazonaws.com QVdTOmV5SndZWGxzYjJGa0lqb2liMWRsVUZFMWVXOXNVbVowYkRoUVVIVTFaeTlRZURaS05URm9kVWxLYUVOeUt6ZDJNR3BxVFZGUWIwSnpPVWRqVGxBck4yWTBlRzlqWWpKU1MwRTRWblEyVVRCelptRnNaRkpvV2xOMWNVMVBSRE12UjAwMmEwOVRZbWRtTTFaTFlsZHNSRVp6V1dSelZXcG1WbkF5ZDFnNE9DdFRTMlpRWVhSdWJrSlZNMUF3Y2pFd2NUUk1SMDlRYW5KdGRGVnhUbTF3V0U1TE4weFBUVWRxYkRSVGNuUjJkVWxJTm01b1F6STJaM1E1U0dwYU0zWm9abXBtVFZaQlFuZHlZemRRVjBsa2JuQXhVSEJaYjFGRU5GaE1ZM2RyY3k5TGJGbFpkMFJyVG14UVYxRTFVR0l3UzJONWNGbEdkVmd3SzBKM2JFRXJkekJzTHpGNWFHWlpXbmx2WldJdlJWVkViRmxqZW1oeE1rMDBhWGxVYTNZd2FITjZOR2ROVlRKRFZXOVZObUpNTm5remRuY3JZbkZHUVhWcVExRnFVMGRKU1dNNU5XTnBVRWg1ZFdwa2NVRktlVGR0YUc1cksyMVROVGRuYVZveVRuRkNZMmRZWW10QlZWVXZTbFE0YTJadk5GRjZka1JDVm1kc1NEUXpZblpQT1d0aFpUQXJWa1ozWjFOTGNIaDBPSHBpZGtGV1JIWmFUM2hTZHl0WE5taFViMWx6YmxkWlduSnhZbkZPTmtsMFdEaG9RbWh5UWk5blkyNVhhR1JqVmxWc05XaHlaRVpqVEZKQk5FVnBiR1FyVW13eU5uRlBMemN6ZWxaVVZWSk5iazExTkZrMVYxRmtXakpTWXpOWFNIbEthM0I1VFVkVlkyUlJMMmMxT0NzNWFUWlBiV2gwY0M5WmFXcEZPV1V3VlZoVFZUSTRjMkZFWjA5dlVYUlFOME5FTlRFMWVVaENXakozZVdoV1RqQTFNVmxhUmtKR2RsUTBOVWR0TVVadGMwWk5OVXBGTUdsaUt6ZG9aekEwVVdkaFMwWkZNREUwUkVzeVkyRTJTamwzU3pGRlRtb3lZMUYxVmxaSFRrNTZNM052UzJWTFIwdGFLekV2WWxwclNXNHlPVFZYYkhWMllVTlNZbFJPU2toNFZIQXdlSGxtVUU5bVIzWjNlVzFzZWxSUllVeFdhMHBDV21aMFJVdEtUSEI2VGk5eWRIVlNjM1JtUjA5alVteHFTelJHV0dJNU1rNTNTSG9yZEZWYVZEWnVSSHBOZFVscmIwNXRlVTV1Vm5VM1REazBOM2x5YTJkaVVHWjFWakI2U3pRMk5FOHZPRkl4WldsemJXeGlNbXBITDBWdFYwTjZRbWhTUWpkUlZXVm5LM2RrUjJsMWRsRnNNR2wxUlZWRFIwVTJiRU52WW5kWE1YSnRLemxyTkVsYVlYSXZhblJ2VGlzMk1rRmFURXd4UVZWeFEyODNNMlU0VlM5bVp5dEthRTlITjNBMllXTkNlbTQwVTNVcmMyMXpjRFZMUmpobldtaFpkMmh1WVVrNWRYUmxhVXcwYVZWclEyRkVPSEZ2T1hwMmJscFBTM2gzZGtWUVNHVnBVazFoYUVWT0x6aGxSV3RSTW0xdVRUWlpiakZqTUdST1kybGFRMnRCYVZoVFMzQnlkVmcyV2toUVIxVXhUbkZRWVVwbWNqWmlNbVo2UkhaV2JHaDVhVE5NYmpoaWMyOHllbk4zZEVkeU56RlhSVkUzTm5sRlJIWXZSREl5Y2t4eFpYUnBUR2xsUVRrd1JtWnNha3hHYXk5NWFYQnhaMmxXT0VoeGNYbHNlRXR2ZUV3d2VXWkpWbkZyWWxsRlFURmliV0kxYjJJMlNEQnlMMDFOVTBWU1ptOUlTMHRGV2xWRWNqSkNVWHBhTkd4SWRrWnBjRlpZYTFGNFJERnhiRXA1Ym1wVFFWSmxPSGRPS3pkTE5tWnNhMk51YXpkTGMzVTJjamhoTlhsalpqZFdaelpMY1Zsc09XSnFXVkZOYkVGNVoyTjJPVWx3Y1RaVVRGaGhSR1JMYW5kQkwyYzRiSE0zY21oVGJIWnhaVWQ1VEhwV2FURjFjbUoyVkhaTE5sZDRZVGhtYkVKYVZ5dHpTblZ0VFVRemJERk9LelZOVTBWbU0zSklWbTh2YkVKRVJEaHlMelJUWkRKamFsRktjVTVoVkZoYVNISkhXV1IwYkdNNWVFSndZbVJDWlhCaVRuTjZNVVZwVjAxaE5rRmplWFZoUTBsaFNraG1hazgyT0hsd2VYWkZPVGxhTW1GWFJFMWxMMUY1ZUZOclUxQkNOMFZtTUVreFZVbDRha2xuVFZwaGNWTlJZVTFPVlVWaGREVXJjakZuTTJ4eVEzQnNOakpPTm5sU2ExUmFhbkUxV2xKT2J6SmhUVFZDVEZCVVFUUXlkVkZxY21adlpFZ3pkRVV3V1VJM2JrVTJiVkZGUlc4MmNpdE5VMGcyZW1vMFRXeEVhSEJtVlROYVpYaHlSbmh3ZDFsS2RUbFdjMWMwYUV0Qk16UjJXVXhGWjNWWE4wTXpjMUJOWkdkcE9ERkJZa3hUUzFkS1IzVkdZMlJsU0hwTksxWkRlVzlsZEUwM05uVXhTV1pPTHk5c2NTOXVRak5oZUc1d1UxRnNjMFJTVDJjNGJVMXJZWFJUTmtwdlZtOXRiWFJ3YmsxRVpWSldUVkZ2UWxwRldrZENVRmxIVFZkcGJ6Sm5lVFptYTJFd2RtazRhRkpTTlhWclMwZzVaVmR6ZWxOV2JHMDRlVXQyYUdaQ2VXVmtRbmx4UkdGTVJ6Tk9NeXRrVlVwaWVsaEJPRGN2UzBKelNpdFNNSGw0TVVsMVREVnpRVzlXVTB4WmRGY3pXRXRSTVRkc1ZqTlJVRE4yTlZJMmQwTlBWMWRGWm1oellsUm9hMUpGVkhaTk9DdFJWRGhrUkdRMEwzTXJhVGd5TnpReFFVVm9VbTVYVWpZMGJqVm1VWEpEY1dkTUsxQkNlbXQzVm0xVVF6TklkRU42VVZVek4yOUhka2xWWlZsWVdTOHlNbXBDTkRKb2EzSnBhVE5rTWpselVXTkpNbTl5WnpkaWVFNVVMM0pqZW5ScFZ6WjZUa2R3YVZoWmNWWXJWRzlrU1hGdVJXUnVibGcxT0c1MFZFMUVhV1pYTURodWFtUklTbEZEVGtoU2NscDZVR2x0V205WVRVTklZVzFrVGxGa1ZYWXJja2RPTDFaV2MyaHJSbkpxU1ZWaE9WRjNjRmhOVDA4NVRIaEJUMGMwZGtGU01YcERVRTg0VURSVU5IQm9hRUp6Y0hSYU9XMU1Oamh4Y3k5T1kzWkNVbXh0UjIxWU9HdEJabnB4WkRjMWNpdGtLMlkyZDNkdFFrRnZVM3BvZHpCSFltMXpVbUZKU0ROWFdVaFpWMlpZWjFCNloySkJRWFl5VmxJd2JISk9jV1JPV0VKc01tWmpObTFoUWtWeFdrMW9TWFEyTTIxdFJITlRWRXBqUkVZeFJVWkNNSE15T1hwSlZEbEJWRTlKTVhBeFMxbzBRbUpwUWpOQmJIRkxSbXhyZEhSNk9FUmhlVEU1Wm05S1YyZFplU3Q2YUVsRWNFWmtPVkF4TkZkUFRYUllZMWhQWnpGeWRVNWhhMEkwU2xRd09UZElZelpsYTJ0VGQybExSazFFYjBvcmNYcFJVMFJ3TTJkaVYwaDBPRWwzTHpWMk4xaHhhWEp6VUhWeU1HcEZkM1paUlU1M05GbHRjMUp6VFZBeFJWTkNSRmszUm0xVlYzWjJkbkpNTjNCbFYyMDJUMU5pVVVWdVZWWkhhbWt3V2xOTVFUaEVOVEpzY2tsalptTjRWRGQzV0RKd1UwZHpWMWRvUlM4emMwVTVXbkpwU1dvd1pGUnNOM2cwVEVFeGRuUmFWbEJ1Wkd3M2NtcFBUMkpxUjBzeWVVVTFlWEpWVDNBeloyaFhVMWhvV2tObGRISnBTMUZvTnpsS1RIVllNMUZ1VmpGdlVXSjJjVk5OUkhJM05VOHhRMkkyV1RCVlZURnBORWx2YnpZeVUwbHRlVWxRYm5wVEwxRnJPSGRVVWtwMVRXcEZTRTltY1VwcFVuaHFZbVZTUVRoVk9ERlBiWEpNTVhObVpFaFNkM1ZaVm1sT1YwbEplVGt4UlhkTlNqVllRU3Q1VEZwRlRUUjFhejBpTENKa1lYUmhhMlY1SWpvaVFWRkpRa0ZJYUZvNFdqTkZUV05MV21KM04wMUxNWFZzTlZJM2RsbG5Xa3hvZERjclZGbG9UVWxrZDJGRmVVVTVWRUZHTm1VMlQwMUhlV0pZY25GelZIWXdOVkpaV0d0QlFVRkJRV1pxUWpoQ1oydHhhR3RwUnpsM01FSkNkMkZuWW5wQ2RFRm5SVUZOUjJkSFExTnhSMU5KWWpORVVVVklRVlJCWlVKbmJHZG9hMmRDV2xGTlJVRlROSGRGVVZGTmEySnFkemhJVWlzeldVeFNielJCVmtGblJWRm5SSE5yWjB0Uk0ybDRXVlpCVkhaeU5sSlFOa1ZTZWpkV1pIazFlbko2VkdsaVVtcFFjRVJSYXpSU1lYRjRZMlpFVTFkVllYaEJXVm95VDFseE1rcG1VMlZ3YUdWM2RVMHZZVmQzT0ZwNGVuUjNQVDBpTENKMlpYSnphVzl1SWpvaU1pSXNJblI1Y0dVaU9pSkVRVlJCWDB0RldTSXNJbVY0Y0dseVlYUnBiMjRpT2pFM09EVTVNREl6TURKOQ==
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:58:23.561Z] + set -eu
+[2026-08-04T15:58:23.561Z] + export 'BUILDKIT_HOST=unix:///run/user/1000/buildkit/buildkitd.sock'
+[2026-08-04T15:58:23.561Z] + export 'DOCKER_CONFIG=/images/dockercfg'
+[2026-08-04T15:58:23.561Z] + CACHE=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache
+[2026-08-04T15:58:23.561Z] + ctx=services/backend
+[2026-08-04T15:58:23.562Z] + buildctl build --frontend dockerfile.v0 --local 'context=services/backend' --local 'dockerfile=services/backend' --output 'type=docker,dest=/images/backend.tar,name=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:731af4b' --import-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:backend' --export-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:backend,mode=max,image-manifest=true,oci-mediatypes=true'
+[2026-08-04T15:58:23.562Z] #1 [internal] load build definition from Dockerfile
+[2026-08-04T15:58:23.562Z] #1 transferring dockerfile: 423B done
+[2026-08-04T15:58:23.562Z] #1 DONE 0.0s
+[2026-08-04T15:58:23.562Z] 
+[2026-08-04T15:58:23.562Z] #2 [internal] load metadata for docker.io/library/python:3.12-slim
+[2026-08-04T15:58:24.951Z] #2 DONE 1.6s
+[2026-08-04T15:58:25.213Z] 
+[2026-08-04T15:58:25.213Z] #3 [internal] load .dockerignore
+[2026-08-04T15:58:25.213Z] #3 transferring context: 152B done
+[2026-08-04T15:58:25.213Z] #3 DONE 0.0s
+[2026-08-04T15:58:25.213Z] 
+[2026-08-04T15:58:25.213Z] #4 [internal] load build context
+[2026-08-04T15:58:25.213Z] #4 DONE 0.0s
+[2026-08-04T15:58:25.213Z] 
+[2026-08-04T15:58:25.213Z] #5 [1/6] FROM docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+[2026-08-04T15:58:25.213Z] #5 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de 0.0s done
+[2026-08-04T15:58:25.213Z] #5 DONE 0.0s
+[2026-08-04T15:58:25.213Z] 
+[2026-08-04T15:58:25.213Z] #6 [auth] sharing credentials for 590183895228.dkr.ecr.il-central-1.amazonaws.com
+[2026-08-04T15:58:25.213Z] #6 DONE 0.0s
+[2026-08-04T15:58:25.213Z] 
+[2026-08-04T15:58:25.213Z] #7 importing cache manifest from 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:backend
+[2026-08-04T15:58:25.213Z] #7 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
+[2026-08-04T15:58:25.479Z] #7 DONE 0.2s
+[2026-08-04T15:58:25.479Z] 
+[2026-08-04T15:58:25.479Z] #4 [internal] load build context
+[2026-08-04T15:58:25.479Z] #4 transferring context: 158.35kB 0.0s done
+[2026-08-04T15:58:25.479Z] #4 DONE 0.0s
+[2026-08-04T15:58:25.479Z] 
+[2026-08-04T15:58:25.479Z] #8 [5/6] RUN pip install --no-cache-dir -r requirements.txt
+[2026-08-04T15:58:25.479Z] #8 CACHED
+[2026-08-04T15:58:25.479Z] 
+[2026-08-04T15:58:25.479Z] #9 [2/6] WORKDIR /app
+[2026-08-04T15:58:25.480Z] #9 CACHED
+[2026-08-04T15:58:25.480Z] 
+[2026-08-04T15:58:25.480Z] #10 [3/6] RUN useradd --create-home --uid 1000 appuser
+[2026-08-04T15:58:25.480Z] #10 CACHED
+[2026-08-04T15:58:25.480Z] 
+[2026-08-04T15:58:25.480Z] #11 [4/6] COPY requirements.txt .
+[2026-08-04T15:58:25.480Z] #11 CACHED
+[2026-08-04T15:58:25.480Z] 
+[2026-08-04T15:58:25.480Z] #12 [6/6] COPY app.py db.py queries.py gunicorn.conf.py migrate.py schema.sql seed.sql ./
+[2026-08-04T15:58:25.480Z] #12 CACHED
+[2026-08-04T15:58:25.743Z] 
+[2026-08-04T15:58:25.743Z] #13 exporting to docker image format
+[2026-08-04T15:58:25.743Z] #13 exporting layers done
+[2026-08-04T15:58:25.743Z] #13 exporting manifest sha256:850ccf559f77223836fe8f860872bb03744bf327834d5a3902cba242150483ef 0.0s done
+[2026-08-04T15:58:25.743Z] #13 exporting config sha256:f96fdfa8008284dcbb6251f8accfbdf5b926c4fed7720dea7c5f40f9112fca47 0.0s done
+[2026-08-04T15:58:26.343Z] #13 ...
+[2026-08-04T15:58:26.343Z] 
+[2026-08-04T15:58:26.343Z] #12 [6/6] COPY app.py db.py queries.py gunicorn.conf.py migrate.py schema.sql seed.sql ./
+[2026-08-04T15:58:26.343Z] #12 sha256:8777410e5d2687c82022d72e75c4fa77e8a9ae1eaad2dac320364a8661514809 36.94kB / 36.94kB 0.1s done
+[2026-08-04T15:58:26.343Z] #12 sha256:7b93aef6d68348d55469df155f15b8886ba28a6927a90790084ed6bb17e59399 397B / 397B 0.1s done
+[2026-08-04T15:58:26.343Z] #12 sha256:98db2485a0d07a8914586b02387e3813aa7e9fed79ab252898d3e96e21c717ea 1.29MB / 1.29MB 0.1s done
+[2026-08-04T15:58:26.343Z] #12 sha256:fd079632edc0ab4e9d10c77ec348d5057a976e6fc508e93855548096dec2ae1e 250B / 250B 0.0s done
+[2026-08-04T15:58:26.343Z] #12 sha256:062e450697faa5f02a3a74eba9864ee4d79bc9cfbd65769fc6cdff2c05c6a053 29.78MB / 29.78MB 0.4s done
+[2026-08-04T15:58:26.343Z] #12 sha256:f013a192ff5b6b02851775d603165c2adc09e855fe9550a11a708b5da96f6ee4 3.31kB / 3.31kB 0.0s done
+[2026-08-04T15:58:26.343Z] #12 sha256:d70815ed1fa963636715f77679b20567a31212a133e7548e03b0149155a39d42 93B / 93B 0.1s done
+[2026-08-04T15:58:26.343Z] #12 sha256:48347b15c85fd6dde9c5b0259f378fbaee3ce231b30a42f2f2bcc4ea0285cbc9 12.11MB / 12.11MB 0.2s done
+[2026-08-04T15:58:26.343Z] #12 sha256:abed7bf1b2d096413ee5f7866d8dbe5fadbb50810ff6a03a82c1a459d443563a 9.80MB / 9.80MB 0.1s done
+[2026-08-04T15:58:26.343Z] #12 DONE 0.7s
+[2026-08-04T15:58:26.343Z] 
+[2026-08-04T15:58:26.343Z] #13 exporting to docker image format
+[2026-08-04T15:58:26.343Z] #13 sending tarball
+[2026-08-04T15:58:26.609Z] #13 sending tarball 0.7s done
+[2026-08-04T15:58:26.609Z] #13 DONE 1.1s
+[2026-08-04T15:58:26.609Z] 
+[2026-08-04T15:58:26.609Z] #14 exporting cache to registry
+[2026-08-04T15:58:26.609Z] #14 preparing build cache for export
+[2026-08-04T15:58:26.871Z] #14 writing layer sha256:062e450697faa5f02a3a74eba9864ee4d79bc9cfbd65769fc6cdff2c05c6a053
+[2026-08-04T15:58:26.871Z] #14 writing layer sha256:062e450697faa5f02a3a74eba9864ee4d79bc9cfbd65769fc6cdff2c05c6a053 0.0s done
+[2026-08-04T15:58:26.871Z] #14 writing layer sha256:48347b15c85fd6dde9c5b0259f378fbaee3ce231b30a42f2f2bcc4ea0285cbc9 0.0s done
+[2026-08-04T15:58:26.871Z] #14 writing layer sha256:7b93aef6d68348d55469df155f15b8886ba28a6927a90790084ed6bb17e59399 0.0s done
+[2026-08-04T15:58:26.871Z] #14 writing layer sha256:8777410e5d2687c82022d72e75c4fa77e8a9ae1eaad2dac320364a8661514809 0.0s done
+[2026-08-04T15:58:26.872Z] #14 writing layer sha256:98db2485a0d07a8914586b02387e3813aa7e9fed79ab252898d3e96e21c717ea 0.0s done
+[2026-08-04T15:58:26.872Z] #14 writing layer sha256:abed7bf1b2d096413ee5f7866d8dbe5fadbb50810ff6a03a82c1a459d443563a 0.0s done
+[2026-08-04T15:58:26.872Z] #14 writing layer sha256:d70815ed1fa963636715f77679b20567a31212a133e7548e03b0149155a39d42 0.0s done
+[2026-08-04T15:58:26.872Z] #14 writing layer sha256:f013a192ff5b6b02851775d603165c2adc09e855fe9550a11a708b5da96f6ee4 0.0s done
+[2026-08-04T15:58:26.872Z] #14 writing layer sha256:fd079632edc0ab4e9d10c77ec348d5057a976e6fc508e93855548096dec2ae1e
+[2026-08-04T15:58:27.134Z] #14 preparing build cache for export 0.3s done
+[2026-08-04T15:58:27.134Z] #14 writing layer sha256:fd079632edc0ab4e9d10c77ec348d5057a976e6fc508e93855548096dec2ae1e 0.0s done
+[2026-08-04T15:58:27.134Z] #14 writing config sha256:80a3b6f8b81d490d6e60cac7876349a05dd0cdbf5803e279fb8bba21728ae05f 0.0s done
+[2026-08-04T15:58:27.134Z] #14 writing cache image manifest sha256:7f640498e89d1f6a5d8820aafdcfbc9114fe5c98300edee4843febc2d6521cd3 0.0s done
+[2026-08-04T15:58:27.134Z] #14 DONE 0.3s
+[2026-08-04T15:58:27.134Z] + ctx=services/worker
+[2026-08-04T15:58:27.134Z] + buildctl build --frontend dockerfile.v0 --local 'context=services/worker' --local 'dockerfile=services/worker' --output 'type=docker,dest=/images/worker.tar,name=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker:731af4b' --import-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:worker' --export-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:worker,mode=max,image-manifest=true,oci-mediatypes=true'
+[2026-08-04T15:58:27.398Z] #1 [internal] load build definition from Dockerfile
+[2026-08-04T15:58:27.398Z] #1 transferring dockerfile: 399B done
+[2026-08-04T15:58:27.398Z] #1 DONE 0.0s
+[2026-08-04T15:58:27.398Z] 
+[2026-08-04T15:58:27.398Z] #2 [internal] load metadata for docker.io/library/python:3.12-slim
+[2026-08-04T15:58:27.398Z] #2 DONE 0.2s
+[2026-08-04T15:58:27.398Z] 
+[2026-08-04T15:58:27.398Z] #3 [internal] load .dockerignore
+[2026-08-04T15:58:27.398Z] #3 transferring context: 152B done
+[2026-08-04T15:58:27.398Z] #3 DONE 0.0s
+[2026-08-04T15:58:27.398Z] 
+[2026-08-04T15:58:27.398Z] #4 [internal] load build context
+[2026-08-04T15:58:27.398Z] #4 DONE 0.0s
+[2026-08-04T15:58:27.398Z] 
+[2026-08-04T15:58:27.398Z] #5 [auth] sharing credentials for 590183895228.dkr.ecr.il-central-1.amazonaws.com
+[2026-08-04T15:58:27.398Z] #5 DONE 0.0s
+[2026-08-04T15:58:27.398Z] 
+[2026-08-04T15:58:27.398Z] #6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de
+[2026-08-04T15:58:27.398Z] #6 resolve docker.io/library/python:3.12-slim@sha256:57cd7c3a7a273101a6485ba99423ee568157882804b1124b4dd04266317710de 0.0s done
+[2026-08-04T15:58:27.398Z] #6 DONE 0.0s
+[2026-08-04T15:58:27.398Z] 
+[2026-08-04T15:58:27.398Z] #7 importing cache manifest from 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:worker
+[2026-08-04T15:58:27.398Z] #7 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
+[2026-08-04T15:58:27.660Z] #7 DONE 0.1s
+[2026-08-04T15:58:27.660Z] 
+[2026-08-04T15:58:27.660Z] #4 [internal] load build context
+[2026-08-04T15:58:27.660Z] #4 transferring context: 24.98kB done
+[2026-08-04T15:58:27.660Z] #4 DONE 0.0s
+[2026-08-04T15:58:27.660Z] 
+[2026-08-04T15:58:27.660Z] #8 [4/6] COPY requirements.txt .
+[2026-08-04T15:58:27.660Z] #8 CACHED
+[2026-08-04T15:58:27.660Z] 
+[2026-08-04T15:58:27.660Z] #9 [5/6] RUN pip install --no-cache-dir -r requirements.txt
+[2026-08-04T15:58:27.660Z] #9 CACHED
+[2026-08-04T15:58:27.660Z] 
+[2026-08-04T15:58:27.660Z] #10 [2/6] WORKDIR /app
+[2026-08-04T15:58:27.660Z] #10 CACHED
+[2026-08-04T15:58:27.660Z] 
+[2026-08-04T15:58:27.660Z] #11 [3/6] RUN useradd --create-home --uid 1000 appuser
+[2026-08-04T15:58:27.660Z] #11 CACHED
+[2026-08-04T15:58:27.660Z] 
+[2026-08-04T15:58:27.660Z] #12 [6/6] COPY worker.py db.py rollups.py alerts.py snapshots.py heartbeat.py notifications.py ./
+[2026-08-04T15:58:27.660Z] #12 CACHED
+[2026-08-04T15:58:27.927Z] 
+[2026-08-04T15:58:27.927Z] #13 exporting to docker image format
+[2026-08-04T15:58:27.927Z] #13 exporting layers done
+[2026-08-04T15:58:27.927Z] #13 exporting manifest sha256:fe9f8c157ef511a0a7fa4a741f0e73bb29c77c2ba9487ec2de6c8cf87075fc25 0.0s done
+[2026-08-04T15:58:27.927Z] #13 exporting config sha256:2f42220b38b93bc8f74703f6355737261c6fe3fb12f0b8decdb2a7d4070232a6 0.0s done
+[2026-08-04T15:58:27.927Z] #13 ...
+[2026-08-04T15:58:27.927Z] 
+[2026-08-04T15:58:27.927Z] #12 [6/6] COPY worker.py db.py rollups.py alerts.py snapshots.py heartbeat.py notifications.py ./
+[2026-08-04T15:58:27.927Z] #12 sha256:13466c7ae420bdb261398ff357f35f463b6eda658f061280252fa8e772715fa3 256B / 256B 0.1s done
+[2026-08-04T15:58:27.927Z] #12 sha256:c76b12e061f626fb467742c9153016b7662bdb7798c1ae75bc9c6817a77c68be 7.66kB / 7.66kB 0.1s done
+[2026-08-04T15:58:27.927Z] #12 sha256:2dc296aa3d7424ee0b91b15d054546a03a8ae6547dda12a46d06d17231a8c762 24.14MB / 24.14MB 0.3s done
+[2026-08-04T15:58:27.927Z] #12 DONE 0.5s
+[2026-08-04T15:58:28.207Z] 
+[2026-08-04T15:58:28.207Z] #13 exporting to docker image format
+[2026-08-04T15:58:28.207Z] #13 sending tarball
+[2026-08-04T15:58:28.792Z] #13 sending tarball 0.9s done
+[2026-08-04T15:58:28.792Z] #13 DONE 1.2s
+[2026-08-04T15:58:29.054Z] 
+[2026-08-04T15:58:29.054Z] #14 exporting cache to registry
+[2026-08-04T15:58:29.054Z] #14 preparing build cache for export
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:062e450697faa5f02a3a74eba9864ee4d79bc9cfbd65769fc6cdff2c05c6a053
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:062e450697faa5f02a3a74eba9864ee4d79bc9cfbd65769fc6cdff2c05c6a053 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:13466c7ae420bdb261398ff357f35f463b6eda658f061280252fa8e772715fa3 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:2dc296aa3d7424ee0b91b15d054546a03a8ae6547dda12a46d06d17231a8c762 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:48347b15c85fd6dde9c5b0259f378fbaee3ce231b30a42f2f2bcc4ea0285cbc9 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:98db2485a0d07a8914586b02387e3813aa7e9fed79ab252898d3e96e21c717ea 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:c76b12e061f626fb467742c9153016b7662bdb7798c1ae75bc9c6817a77c68be 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:d70815ed1fa963636715f77679b20567a31212a133e7548e03b0149155a39d42 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:f013a192ff5b6b02851775d603165c2adc09e855fe9550a11a708b5da96f6ee4 0.0s done
+[2026-08-04T15:58:29.054Z] #14 writing layer sha256:fd079632edc0ab4e9d10c77ec348d5057a976e6fc508e93855548096dec2ae1e
+[2026-08-04T15:58:29.322Z] #14 preparing build cache for export 0.3s done
+[2026-08-04T15:58:29.322Z] #14 writing layer sha256:fd079632edc0ab4e9d10c77ec348d5057a976e6fc508e93855548096dec2ae1e 0.0s done
+[2026-08-04T15:58:29.322Z] #14 writing config sha256:5f62a6b3e37748698b0a88060a9af4f7360cf8356e35fae5eb3ac651b5e69d81 0.0s done
+[2026-08-04T15:58:29.322Z] #14 writing cache image manifest sha256:3574dc7aac1934331d3f21a568503685f0f89c01bff5f86e0c67c97b155a694c 0.0s done
+[2026-08-04T15:58:29.322Z] #14 DONE 0.3s
+[2026-08-04T15:58:29.322Z] + ctx=services/frontend
+[2026-08-04T15:58:29.322Z] + buildctl build --frontend dockerfile.v0 --local 'context=services/frontend' --local 'dockerfile=services/frontend' --output 'type=docker,dest=/images/nginx.tar,name=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:731af4b' --import-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:nginx' --export-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:nginx,mode=max,image-manifest=true,oci-mediatypes=true'
+[2026-08-04T15:58:29.585Z] #1 [internal] load build definition from Dockerfile
+[2026-08-04T15:58:29.585Z] #1 transferring dockerfile: 1.03kB done
+[2026-08-04T15:58:29.585Z] #1 DONE 0.0s
+[2026-08-04T15:58:29.585Z] 
+[2026-08-04T15:58:29.585Z] #2 [internal] load metadata for docker.io/nginxinc/nginx-unprivileged:alpine
+[2026-08-04T15:58:30.535Z] #2 DONE 1.1s
+[2026-08-04T15:58:30.535Z] 
+[2026-08-04T15:58:30.535Z] #3 [internal] load .dockerignore
+[2026-08-04T15:58:30.535Z] #3 transferring context: 107B done
+[2026-08-04T15:58:30.535Z] #3 DONE 0.0s
+[2026-08-04T15:58:30.535Z] 
+[2026-08-04T15:58:30.535Z] #4 [internal] load build context
+[2026-08-04T15:58:30.535Z] #4 DONE 0.0s
+[2026-08-04T15:58:30.535Z] 
+[2026-08-04T15:58:30.535Z] #5 [auth] sharing credentials for 590183895228.dkr.ecr.il-central-1.amazonaws.com
+[2026-08-04T15:58:30.535Z] #5 DONE 0.0s
+[2026-08-04T15:58:30.535Z] 
+[2026-08-04T15:58:30.535Z] #6 [1/6] FROM docker.io/nginxinc/nginx-unprivileged:alpine@sha256:a6c3ec0c0d249d68b0682df854d4a9e222b90fb607dc3fcf2f1d2fcbc85d347e
+[2026-08-04T15:58:30.535Z] #6 resolve docker.io/nginxinc/nginx-unprivileged:alpine@sha256:a6c3ec0c0d249d68b0682df854d4a9e222b90fb607dc3fcf2f1d2fcbc85d347e 0.0s done
+[2026-08-04T15:58:30.535Z] #6 DONE 0.0s
+[2026-08-04T15:58:30.535Z] 
+[2026-08-04T15:58:30.535Z] #7 importing cache manifest from 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:nginx
+[2026-08-04T15:58:30.535Z] #7 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
+[2026-08-04T15:58:30.798Z] #7 DONE 0.1s
+[2026-08-04T15:58:30.798Z] 
+[2026-08-04T15:58:30.798Z] #4 [internal] load build context
+[2026-08-04T15:58:30.798Z] #4 transferring context: 438.56kB 0.0s done
+[2026-08-04T15:58:30.798Z] #4 DONE 0.0s
+[2026-08-04T15:58:30.798Z] 
+[2026-08-04T15:58:30.798Z] #8 [4/6] COPY fonts/ /usr/share/nginx/html/fonts/
+[2026-08-04T15:58:30.798Z] #8 CACHED
+[2026-08-04T15:58:30.798Z] 
+[2026-08-04T15:58:30.798Z] #9 [5/6] COPY logos/ /usr/share/nginx/html/logos/
+[2026-08-04T15:58:30.798Z] #9 CACHED
+[2026-08-04T15:58:30.798Z] 
+[2026-08-04T15:58:30.798Z] #10 [2/6] COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
+[2026-08-04T15:58:30.798Z] #10 CACHED
+[2026-08-04T15:58:30.798Z] 
+[2026-08-04T15:58:30.798Z] #11 [3/6] COPY robots.txt sitemap.xml og-card.png /usr/share/nginx/html/
+[2026-08-04T15:58:30.798Z] #11 CACHED
+[2026-08-04T15:58:30.798Z] 
+[2026-08-04T15:58:30.798Z] #12 [6/6] COPY nginx.conf /etc/nginx/conf.d/default.conf
+[2026-08-04T15:58:31.371Z] #12 CACHED
+[2026-08-04T15:58:31.371Z] 
+[2026-08-04T15:58:31.371Z] #13 exporting to docker image format
+[2026-08-04T15:58:31.371Z] #13 exporting layers done
+[2026-08-04T15:58:31.371Z] #13 exporting manifest sha256:a41d2fd7f45df5a6520383c14aaf636992cb053fcded72c8defe37dac29a5521 0.0s done
+[2026-08-04T15:58:31.371Z] #13 exporting config sha256:0da4dd1d68e718c355fd8431179e42af0dc6cab14af5aa6b3c2202a999d23088 0.0s done
+[2026-08-04T15:58:31.644Z] #13 ...
+[2026-08-04T15:58:31.644Z] 
+[2026-08-04T15:58:31.644Z] #12 [6/6] COPY nginx.conf /etc/nginx/conf.d/default.conf
+[2026-08-04T15:58:31.644Z] #12 sha256:6fb0f2fde192eea1230488c5ac3f44715f00e660d63d89cd313a4b5fdc031e21 1.30kB / 1.30kB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:e585ac59afe8da0e02eb79ba8faac4e7ef91528f84a73817a607b9da71e7b003 2.79kB / 2.79kB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:445e3c587488d8f07718b1301887736ea14938ce5f3269e8cd6df36a75b02b00 1.89MB / 1.89MB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 3.85MB / 3.85MB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:e498e8f0e0bed4b1b95b801df26509d676bab556a5dacf07e1ef066e50e3af4b 957B / 957B 0.0s done
+[2026-08-04T15:58:31.644Z] #12 sha256:12a47e10f5bbcf8621289a7ca0e1a8b9a6e61c45421f4f3a9aa50712f3fbd2a3 629B / 629B 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:211966279d6562c89763262367719fdd8a031657c9aa498fa4571d2236e1c123 404B / 404B 0.0s done
+[2026-08-04T15:58:31.644Z] #12 sha256:29a0b601ba412af01b40c0088b09e09bed3bae749cc3691e404c44b9569f6474 38.21kB / 38.21kB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:785cadf330950e2f59868593d821f3be7f2c03b0a8d780e3f0d5eeef29e30734 1.40kB / 1.40kB 0.0s done
+[2026-08-04T15:58:31.644Z] #12 sha256:f884da1cc7747d44aef669263310533e6b4ecd41f80124e205f67cdd4c577e9c 51.56kB / 51.56kB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:d5bcfe62b7f4a237a0eae02db89f4323a55eff80918a9ab7248a9ab0ef89db81 64.60kB / 64.60kB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:48c64ac3f3035fb96d6c5729dfb5cda00eaf3bdfff241fbcf77c4b7206b091c0 124.12kB / 124.12kB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 sha256:ec16100ce6df2267df6f1b880c3dc717b327bf71f98de1167bbd405734fc6764 17.30MB / 17.30MB 0.2s done
+[2026-08-04T15:58:31.644Z] #12 sha256:46a4f25d0881793303d91c4b783a0b5fa53dd3838fdd1f0d261c4d0bb88c094b 1.20kB / 1.20kB 0.1s done
+[2026-08-04T15:58:31.644Z] #12 DONE 0.9s
+[2026-08-04T15:58:31.644Z] 
+[2026-08-04T15:58:31.644Z] #13 exporting to docker image format
+[2026-08-04T15:58:31.644Z] #13 sending tarball
+[2026-08-04T15:58:31.911Z] #13 sending tarball 0.3s done
+[2026-08-04T15:58:31.911Z] #13 DONE 0.7s
+[2026-08-04T15:58:31.911Z] 
+[2026-08-04T15:58:31.911Z] #14 exporting cache to registry
+[2026-08-04T15:58:31.911Z] #14 preparing build cache for export
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:12a47e10f5bbcf8621289a7ca0e1a8b9a6e61c45421f4f3a9aa50712f3fbd2a3
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:12a47e10f5bbcf8621289a7ca0e1a8b9a6e61c45421f4f3a9aa50712f3fbd2a3 0.0s done
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:211966279d6562c89763262367719fdd8a031657c9aa498fa4571d2236e1c123 0.0s done
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:29a0b601ba412af01b40c0088b09e09bed3bae749cc3691e404c44b9569f6474 0.0s done
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:445e3c587488d8f07718b1301887736ea14938ce5f3269e8cd6df36a75b02b00 0.0s done
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:46a4f25d0881793303d91c4b783a0b5fa53dd3838fdd1f0d261c4d0bb88c094b 0.0s done
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:48c64ac3f3035fb96d6c5729dfb5cda00eaf3bdfff241fbcf77c4b7206b091c0 0.0s done
+[2026-08-04T15:58:32.173Z] #14 writing layer sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:6fb0f2fde192eea1230488c5ac3f44715f00e660d63d89cd313a4b5fdc031e21 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:785cadf330950e2f59868593d821f3be7f2c03b0a8d780e3f0d5eeef29e30734 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:d5bcfe62b7f4a237a0eae02db89f4323a55eff80918a9ab7248a9ab0ef89db81 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:e498e8f0e0bed4b1b95b801df26509d676bab556a5dacf07e1ef066e50e3af4b 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:e585ac59afe8da0e02eb79ba8faac4e7ef91528f84a73817a607b9da71e7b003 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:ec16100ce6df2267df6f1b880c3dc717b327bf71f98de1167bbd405734fc6764 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:f884da1cc7747d44aef669263310533e6b4ecd41f80124e205f67cdd4c577e9c
+[2026-08-04T15:58:32.436Z] #14 preparing build cache for export 0.6s done
+[2026-08-04T15:58:32.436Z] #14 writing layer sha256:f884da1cc7747d44aef669263310533e6b4ecd41f80124e205f67cdd4c577e9c 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing config sha256:2d534048bff6835c5b5c70a711bd043de527b0b7ded42c71275fe30fa3df3c28 0.0s done
+[2026-08-04T15:58:32.436Z] #14 writing cache image manifest sha256:e48e860f404be843b1ec2b91a8cd947d3b3eca20f882586159ed5b637c2b1605 0.0s done
+[2026-08-04T15:58:32.436Z] #14 DONE 0.6s
+[2026-08-04T15:58:32.436Z] + ctx=services/backup
+[2026-08-04T15:58:32.436Z] + buildctl build --frontend dockerfile.v0 --local 'context=services/backup' --local 'dockerfile=services/backup' --output 'type=docker,dest=/images/backup.tar,name=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backup:731af4b' --import-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:backup' --export-cache 'type=registry,ref=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:backup,mode=max,image-manifest=true,oci-mediatypes=true'
+[2026-08-04T15:58:32.697Z] #1 [internal] load build definition from Dockerfile
+[2026-08-04T15:58:32.697Z] #1 transferring dockerfile: 564B done
+[2026-08-04T15:58:32.697Z] #1 DONE 0.0s
+[2026-08-04T15:58:32.697Z] 
+[2026-08-04T15:58:32.697Z] #2 [internal] load metadata for docker.io/library/postgres:17-alpine
+[2026-08-04T15:58:33.642Z] #2 DONE 1.1s
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #3 [internal] load .dockerignore
+[2026-08-04T15:58:33.904Z] #3 transferring context: 435B done
+[2026-08-04T15:58:33.904Z] #3 DONE 0.0s
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #4 [internal] load build context
+[2026-08-04T15:58:33.904Z] #4 DONE 0.0s
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #5 [auth] sharing credentials for 590183895228.dkr.ecr.il-central-1.amazonaws.com
+[2026-08-04T15:58:33.904Z] #5 DONE 0.0s
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #6 [1/4] FROM docker.io/library/postgres:17-alpine@sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193
+[2026-08-04T15:58:33.904Z] #6 resolve docker.io/library/postgres:17-alpine@sha256:742f40ea20b9ff2ff31db5458d127452988a2164df9e17441e191f3b72252193 0.0s done
+[2026-08-04T15:58:33.904Z] #6 DONE 0.0s
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #7 importing cache manifest from 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-buildcache:backup
+[2026-08-04T15:58:33.904Z] #7 inferred cache manifest type: application/vnd.oci.image.manifest.v1+json done
+[2026-08-04T15:58:33.904Z] #7 DONE 0.1s
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #4 [internal] load build context
+[2026-08-04T15:58:33.904Z] #4 transferring context: 1.96kB done
+[2026-08-04T15:58:33.904Z] #4 DONE 0.0s
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #8 [2/4] RUN apk add --no-cache aws-cli
+[2026-08-04T15:58:33.904Z] #8 CACHED
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #9 [3/4] COPY backup.sh /usr/local/bin/backup.sh
+[2026-08-04T15:58:33.904Z] #9 CACHED
+[2026-08-04T15:58:33.904Z] 
+[2026-08-04T15:58:33.904Z] #10 [4/4] RUN chmod +x /usr/local/bin/backup.sh
+[2026-08-04T15:58:34.166Z] #10 CACHED
+[2026-08-04T15:58:34.166Z] 
+[2026-08-04T15:58:34.166Z] #11 exporting to docker image format
+[2026-08-04T15:58:34.166Z] #11 exporting layers done
+[2026-08-04T15:58:34.166Z] #11 exporting manifest sha256:7136cfa3bc00366f93be35cd080273bfa853c3e7e88656c1277499c526c75435 0.0s done
+[2026-08-04T15:58:34.166Z] #11 exporting config sha256:f56b698de31737bb93461fc7c6f1913cd83b95116eea37c35992011569c73115 0.0s done
+[2026-08-04T15:58:36.142Z] #11 ...
+[2026-08-04T15:58:36.142Z] 
+[2026-08-04T15:58:36.142Z] #10 [4/4] RUN chmod +x /usr/local/bin/backup.sh
+[2026-08-04T15:58:36.142Z] #10 sha256:5635b2c7f90fc2678bba09ea4dda939c3532f90752e59f619715f53bc339a4b7 128B / 128B 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:4635b503f9b250a73c2aa3422617c92e2abd15a2afad5897b1a40f47a68f4645 171B / 171B 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:e5d94dfa43d98d14ce57df1e1153c844a9821060617a406a9e12d6244c52cca0 6.11kB / 6.11kB 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:7bd7d677a4b5884c740053d49236614c981f2539973c1871952c630330d08d13 183B / 183B 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:ccf6a80028fdce6df482e0f4b7e5ef30691e7bab48de4ed3dddf5ffb13f782a2 1.26kB / 1.26kB 0.0s done
+[2026-08-04T15:58:36.142Z] #10 sha256:603858638485a3e221e5708c98c63b116f767078c8625df74b4eb8282c25985e 970B / 970B 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:b1aad2d5f3997590e1111b4ad0cf683b22c3c80d36c0a38c8b7b7fc0ac629ae4 9.95kB / 9.95kB 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:9cf33c25d5751340c4709b95ae640acc6810a14a4ad82d65713207e33cb1e351 116B / 116B 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 32B / 32B done
+[2026-08-04T15:58:36.142Z] #10 sha256:34a3e2652f22e7633720754b8553895b8159c317755567e6999bfaf2970d94f1 900.25kB / 900.25kB 0.1s done
+[2026-08-04T15:58:36.142Z] #10 sha256:99747c2a6a16322ca23f54bd41682f9f3ccb04dada4fb4ea2d7fc4fa3a682bf2 41.05MB / 41.05MB 0.5s done
+[2026-08-04T15:58:36.142Z] #10 sha256:ae8ed6ddf5d2ec285fe34a85144b20a3a954fdc5c9c44ce112ae843e856bea75 112.38MB / 112.38MB 1.3s done
+[2026-08-04T15:58:36.142Z] #10 DONE 1.7s
+[2026-08-04T15:58:36.142Z] 
+[2026-08-04T15:58:36.142Z] #11 exporting to docker image format
+[2026-08-04T15:58:36.142Z] #11 sending tarball
+[2026-08-04T15:58:37.641Z] #11 sending tarball 2.1s done
+[2026-08-04T15:58:37.641Z] #11 DONE 3.6s
+[2026-08-04T15:58:37.641Z] 
+[2026-08-04T15:58:37.641Z] #12 exporting cache to registry
+[2026-08-04T15:58:37.641Z] #12 preparing build cache for export
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:34a3e2652f22e7633720754b8553895b8159c317755567e6999bfaf2970d94f1 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:4635b503f9b250a73c2aa3422617c92e2abd15a2afad5897b1a40f47a68f4645 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:5635b2c7f90fc2678bba09ea4dda939c3532f90752e59f619715f53bc339a4b7 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:603858638485a3e221e5708c98c63b116f767078c8625df74b4eb8282c25985e 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:7bd7d677a4b5884c740053d49236614c981f2539973c1871952c630330d08d13 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:99747c2a6a16322ca23f54bd41682f9f3ccb04dada4fb4ea2d7fc4fa3a682bf2 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:9cf33c25d5751340c4709b95ae640acc6810a14a4ad82d65713207e33cb1e351 0.0s done
+[2026-08-04T15:58:37.906Z] #12 writing layer sha256:ae8ed6ddf5d2ec285fe34a85144b20a3a954fdc5c9c44ce112ae843e856bea75
+[2026-08-04T15:58:38.167Z] #12 preparing build cache for export 0.3s done
+[2026-08-04T15:58:38.167Z] #12 writing layer sha256:ae8ed6ddf5d2ec285fe34a85144b20a3a954fdc5c9c44ce112ae843e856bea75 0.0s done
+[2026-08-04T15:58:38.167Z] #12 writing layer sha256:b1aad2d5f3997590e1111b4ad0cf683b22c3c80d36c0a38c8b7b7fc0ac629ae4 0.0s done
+[2026-08-04T15:58:38.167Z] #12 writing layer sha256:ccf6a80028fdce6df482e0f4b7e5ef30691e7bab48de4ed3dddf5ffb13f782a2 0.0s done
+[2026-08-04T15:58:38.167Z] #12 writing layer sha256:e5d94dfa43d98d14ce57df1e1153c844a9821060617a406a9e12d6244c52cca0 0.0s done
+[2026-08-04T15:58:38.167Z] #12 writing config sha256:4f08e68402da1aa0124a9635ecefbd100edf21bd2f5af00993ebddf331f252f7 0.0s done
+[2026-08-04T15:58:38.168Z] #12 writing cache image manifest sha256:175f1ce3939c6db825c0563e920094f27968173543d70a50070d0d8e9641a85e 0.0s done
+[2026-08-04T15:58:38.168Z] #12 DONE 0.3s
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Trivy scan)
+[Pipeline] echo
+[2026-08-04T15:58:38.682Z] Warning, empty changelog. Have you run checkout?
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:58:39.419Z] + set -eu
+[2026-08-04T15:58:39.419Z] + DB=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db
+[2026-08-04T15:58:39.419Z] + echo '--- trivy voteball-backend (blocking) ---'
+[2026-08-04T15:58:39.419Z] --- trivy voteball-backend (blocking) ---
+[2026-08-04T15:58:39.419Z] + trivy image --db-repository 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db --input /images/backend.tar --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
+[2026-08-04T15:58:39.419Z] 2026-08-04T15:58:39Z	INFO	Adding schema version to the DB repository for backward compatibility	repository="590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db:2"
+[2026-08-04T15:58:39.419Z] 2026-08-04T15:58:39Z	INFO	[vulndb] Need to update DB
+[2026-08-04T15:58:39.419Z] 2026-08-04T15:58:39Z	INFO	[vulndb] Downloading vulnerability DB...
+[2026-08-04T15:58:39.419Z] 2026-08-04T15:58:39Z	INFO	[vulndb] Downloading artifact...	repo="590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db:2"
+[2026-08-04T15:58:46.105Z] 28.36 MiB / 103.35 MiB [---------------->___________________________________________] 27.44% ? p/s ?47.22 MiB / 103.35 MiB [--------------------------->________________________________] 45.69% ? p/s ?66.86 MiB / 103.35 MiB [-------------------------------------->_____________________] 64.69% ? p/s ?83.80 MiB / 103.35 MiB [-------------------------------------->________] 81.08% 92.57 MiB p/s ETA 0s99.98 MiB / 103.35 MiB [--------------------------------------------->_] 96.74% 92.57 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 92.57 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 88.70 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 88.70 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 88.70 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 82.98 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 82.98 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 82.98 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 77.62 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 77.62 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 77.62 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 72.62 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 72.62 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 72.62 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 67.93 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 67.93 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 67.93 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 63.55 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 63.55 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 63.55 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 59.45 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 59.45 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 59.45 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 55.61 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 55.61 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 55.61 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-------------------------------------------->] 100.00% 52.02 MiB p/s ETA 0s103.35 MiB / 103.35 MiB [-----------------------------------------------] 100.00% 17.01 MiB p/s 6.3s2026-08-04T15:58:45Z	INFO	[vulndb] Artifact successfully downloaded	repo="590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db:2"
+[2026-08-04T15:58:46.106Z] 2026-08-04T15:58:45Z	INFO	[vuln] Vulnerability scanning is enabled
+[2026-08-04T15:58:46.106Z] 2026-08-04T15:58:45Z	INFO	[secret] Secret scanning is enabled
+[2026-08-04T15:58:46.106Z] 2026-08-04T15:58:45Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+[2026-08-04T15:58:46.106Z] 2026-08-04T15:58:45Z	INFO	[secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
+[2026-08-04T15:58:48.663Z] 2026-08-04T15:58:48Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="gunicorn" version="23.0.0"
+[2026-08-04T15:58:48.663Z] 2026-08-04T15:58:48Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="psycopg2-binary" version="2.9.11"
+[2026-08-04T15:58:48.663Z] 2026-08-04T15:58:48Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="pip" version="25.0.1"
+[2026-08-04T15:58:49.238Z] 2026-08-04T15:58:49Z	INFO	Detected OS	family="debian" version="13.6"
+[2026-08-04T15:58:49.238Z] 2026-08-04T15:58:49Z	INFO	[debian] Detecting vulnerabilities...	os_version="13" pkg_num=87
+[2026-08-04T15:58:49.238Z] 2026-08-04T15:58:49Z	INFO	Number of language-specific files	num=1
+[2026-08-04T15:58:49.238Z] 2026-08-04T15:58:49Z	INFO	[python-pkg] Detecting vulnerabilities...
+[2026-08-04T15:58:49.238Z] 2026-08-04T15:58:49Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.58/docs/scanner/vulnerability#severity-selection for details.
+[2026-08-04T15:58:49.238Z] 
+[2026-08-04T15:58:49.238Z] For OSS Maintainers: VEX Notice
+[2026-08-04T15:58:49.238Z] --------------------------------
+[2026-08-04T15:58:49.238Z] If you're an OSS maintainer and Trivy has detected vulnerabilities in your project that you believe are not actually exploitable, consider issuing a VEX (Vulnerability Exploitability eXchange) statement.
+[2026-08-04T15:58:49.238Z] VEX allows you to communicate the actual status of vulnerabilities in your project, improving security transparency and reducing false positives for your users.
+[2026-08-04T15:58:49.238Z] Learn more and start using VEX: https://aquasecurity.github.io/trivy/v0.58/docs/supply-chain/vex/repo#publishing-vex-documents
+[2026-08-04T15:58:49.238Z] 
+[2026-08-04T15:58:49.238Z] To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
+[2026-08-04T15:58:49.238Z] 
+[2026-08-04T15:58:49.238Z] 
+[2026-08-04T15:58:49.238Z] /images/backend.tar (debian 13.6)
+[2026-08-04T15:58:49.238Z] =================================
+[2026-08-04T15:58:49.238Z] Total: 0 (HIGH: 0, CRITICAL: 0)
+[2026-08-04T15:58:49.238Z] 
+[2026-08-04T15:58:49.238Z] + echo '--- trivy voteball-worker (blocking) ---'
+[2026-08-04T15:58:49.238Z] --- trivy voteball-worker (blocking) ---
+[2026-08-04T15:58:49.238Z] + trivy image --db-repository 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db --input /images/worker.tar --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
+[2026-08-04T15:58:49.826Z] 2026-08-04T15:58:49Z	INFO	Adding schema version to the DB repository for backward compatibility	repository="590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db:2"
+[2026-08-04T15:58:49.826Z] 2026-08-04T15:58:49Z	INFO	[vuln] Vulnerability scanning is enabled
+[2026-08-04T15:58:49.826Z] 2026-08-04T15:58:49Z	INFO	[secret] Secret scanning is enabled
+[2026-08-04T15:58:49.826Z] 2026-08-04T15:58:49Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+[2026-08-04T15:58:49.826Z] 2026-08-04T15:58:49Z	INFO	[secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="jmespath" version="1.1.0"
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="psycopg2-binary" version="2.9.11"
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="python-dateutil" version="2.9.0.post0"
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="s3transfer" version="0.16.1"
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	[python] License acquired from METADATA classifiers may be subject to additional terms	name="six" version="1.17.0"
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	Detected OS	family="debian" version="13.6"
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	[debian] Detecting vulnerabilities...	os_version="13" pkg_num=87
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	Number of language-specific files	num=1
+[2026-08-04T15:58:50.776Z] 2026-08-04T15:58:50Z	INFO	[python-pkg] Detecting vulnerabilities...
+[2026-08-04T15:58:50.777Z] 2026-08-04T15:58:50Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.58/docs/scanner/vulnerability#severity-selection for details.
+[2026-08-04T15:58:50.777Z] 
+[2026-08-04T15:58:50.777Z] For OSS Maintainers: VEX Notice
+[2026-08-04T15:58:50.777Z] --------------------------------
+[2026-08-04T15:58:50.777Z] If you're an OSS maintainer and Trivy has detected vulnerabilities in your project that you believe are not actually exploitable, consider issuing a VEX (Vulnerability Exploitability eXchange) statement.
+[2026-08-04T15:58:50.777Z] VEX allows you to communicate the actual status of vulnerabilities in your project, improving security transparency and reducing false positives for your users.
+[2026-08-04T15:58:50.777Z] Learn more and start using VEX: https://aquasecurity.github.io/trivy/v0.58/docs/supply-chain/vex/repo#publishing-vex-documents
+[2026-08-04T15:58:50.777Z] 
+[2026-08-04T15:58:50.777Z] To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
+[2026-08-04T15:58:50.777Z] 
+[2026-08-04T15:58:50.777Z] 
+[2026-08-04T15:58:50.777Z] /images/worker.tar (debian 13.6)
+[2026-08-04T15:58:50.777Z] ================================
+[2026-08-04T15:58:50.777Z] Total: 0 (HIGH: 0, CRITICAL: 0)
+[2026-08-04T15:58:50.777Z] 
+[2026-08-04T15:58:50.777Z] + echo '--- trivy voteball-nginx (blocking) ---'
+[2026-08-04T15:58:50.777Z] --- trivy voteball-nginx (blocking) ---
+[2026-08-04T15:58:50.777Z] + trivy image --db-repository 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db --input /images/nginx.tar --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
+[2026-08-04T15:58:51.038Z] 2026-08-04T15:58:50Z	INFO	Adding schema version to the DB repository for backward compatibility	repository="590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db:2"
+[2026-08-04T15:58:51.038Z] 2026-08-04T15:58:50Z	INFO	[vuln] Vulnerability scanning is enabled
+[2026-08-04T15:58:51.039Z] 2026-08-04T15:58:50Z	INFO	[secret] Secret scanning is enabled
+[2026-08-04T15:58:51.039Z] 2026-08-04T15:58:50Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+[2026-08-04T15:58:51.039Z] 2026-08-04T15:58:50Z	INFO	[secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
+[2026-08-04T15:58:52.479Z] 2026-08-04T15:58:52Z	INFO	Detected OS	family="alpine" version="3.24.1"
+[2026-08-04T15:58:52.479Z] 2026-08-04T15:58:52Z	WARN	This OS version is not on the EOL list	family="alpine" version="3.24"
+[2026-08-04T15:58:52.479Z] 2026-08-04T15:58:52Z	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=70
+[2026-08-04T15:58:52.479Z] 2026-08-04T15:58:52Z	INFO	Number of language-specific files	num=0
+[2026-08-04T15:58:52.479Z] 
+[2026-08-04T15:58:52.479Z] For OSS Maintainers: VEX Notice
+[2026-08-04T15:58:52.479Z] --------------------------------
+[2026-08-04T15:58:52.479Z] If you're an OSS maintainer and Trivy has detected vulnerabilities in your project that you believe are not actually exploitable, consider issuing a VEX (Vulnerability Exploitability eXchange) statement.
+[2026-08-04T15:58:52.479Z] VEX allows you to communicate the actual status of vulnerabilities in your project, improving security transparency and reducing false positives for your users.
+[2026-08-04T15:58:52.479Z] Learn more and start using VEX: https://aquasecurity.github.io/trivy/v0.58/docs/supply-chain/vex/repo#publishing-vex-documents
+[2026-08-04T15:58:52.479Z] 
+[2026-08-04T15:58:52.479Z] To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
+[2026-08-04T15:58:52.479Z] 
+[2026-08-04T15:58:52.479Z] 
+[2026-08-04T15:58:52.479Z] /images/nginx.tar (alpine 3.24.1)
+[2026-08-04T15:58:52.479Z] =================================
+[2026-08-04T15:58:52.479Z] Total: 0 (HIGH: 0, CRITICAL: 0)
+[2026-08-04T15:58:52.479Z] 
+[2026-08-04T15:58:52.479Z] + echo '--- trivy voteball-backup (report only) ---'
+[2026-08-04T15:58:52.479Z] --- trivy voteball-backup (report only) ---
+[2026-08-04T15:58:52.479Z] + trivy image --db-repository 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db --input /images/backup.tar --severity CRITICAL,HIGH --exit-code 0 --ignore-unfixed
+[2026-08-04T15:58:52.742Z] 2026-08-04T15:58:52Z	INFO	Adding schema version to the DB repository for backward compatibility	repository="590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db:2"
+[2026-08-04T15:58:52.742Z] 2026-08-04T15:58:52Z	INFO	[vuln] Vulnerability scanning is enabled
+[2026-08-04T15:58:52.742Z] 2026-08-04T15:58:52Z	INFO	[secret] Secret scanning is enabled
+[2026-08-04T15:58:52.742Z] 2026-08-04T15:58:52Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+[2026-08-04T15:58:52.742Z] 2026-08-04T15:58:52Z	INFO	[secret] Please see also https://aquasecurity.github.io/trivy/v0.58/docs/scanner/secret#recommendation for faster secret detection
+[2026-08-04T15:58:58.046Z] 2026-08-04T15:58:57Z	INFO	Detected OS	family="alpine" version="3.24.1"
+[2026-08-04T15:58:58.046Z] 2026-08-04T15:58:57Z	WARN	This OS version is not on the EOL list	family="alpine" version="3.24"
+[2026-08-04T15:58:58.046Z] 2026-08-04T15:58:57Z	INFO	[alpine] Detecting vulnerabilities...	os_version="3.24" repository="3.24" pkg_num=99
+[2026-08-04T15:58:58.046Z] 2026-08-04T15:58:57Z	INFO	Number of language-specific files	num=1
+[2026-08-04T15:58:58.046Z] 2026-08-04T15:58:57Z	INFO	[gobinary] Detecting vulnerabilities...
+[2026-08-04T15:58:58.046Z] 2026-08-04T15:58:57Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://aquasecurity.github.io/trivy/v0.58/docs/scanner/vulnerability#severity-selection for details.
+[2026-08-04T15:58:58.046Z] 
+[2026-08-04T15:58:58.046Z] For OSS Maintainers: VEX Notice
+[2026-08-04T15:58:58.046Z] --------------------------------
+[2026-08-04T15:58:58.046Z] If you're an OSS maintainer and Trivy has detected vulnerabilities in your project that you believe are not actually exploitable, consider issuing a VEX (Vulnerability Exploitability eXchange) statement.
+[2026-08-04T15:58:58.046Z] VEX allows you to communicate the actual status of vulnerabilities in your project, improving security transparency and reducing false positives for your users.
+[2026-08-04T15:58:58.046Z] Learn more and start using VEX: https://aquasecurity.github.io/trivy/v0.58/docs/supply-chain/vex/repo#publishing-vex-documents
+[2026-08-04T15:58:58.046Z] 
+[2026-08-04T15:58:58.046Z] To disable this notice, set the TRIVY_DISABLE_VEX_NOTICE environment variable.
+[2026-08-04T15:58:58.046Z] 
+[2026-08-04T15:58:58.046Z] 
+[2026-08-04T15:58:58.046Z] /images/backup.tar (alpine 3.24.1)
+[2026-08-04T15:58:58.046Z] ==================================
+[2026-08-04T15:58:58.046Z] Total: 0 (HIGH: 0, CRITICAL: 0)
+[2026-08-04T15:58:58.046Z] 
+[2026-08-04T15:58:58.046Z] 
+[2026-08-04T15:58:58.046Z] usr/local/bin/gosu (gobinary)
+[2026-08-04T15:58:58.046Z] =============================
+[2026-08-04T15:58:58.046Z] Total: 15 (HIGH: 14, CRITICAL: 1)
+[2026-08-04T15:58:58.046Z] 
+[2026-08-04T15:58:58.046Z] ┌─────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────┬──────────────────────────────────────────────────────────────┐
+[2026-08-04T15:58:58.046Z] │ Library │ Vulnerability  │ Severity │ Status │ Installed Version │        Fixed Version         │                            Title                             │
+[2026-08-04T15:58:58.046Z] ├─────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.046Z] │ stdlib  │ CVE-2025-68121 │ CRITICAL │ fixed  │ v1.24.6           │ 1.24.13, 1.25.7, 1.26.0-rc.3 │ crypto/tls: crypto/tls: Incorrect certificate validation     │
+[2026-08-04T15:58:58.046Z] │         │                │          │        │                   │                              │ during TLS session resumption                                │
+[2026-08-04T15:58:58.046Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-68121                   │
+[2026-08-04T15:58:58.047Z] │         ├────────────────┼──────────┤        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.047Z] │         │ CVE-2025-61726 │ HIGH     │        │                   │ 1.24.12, 1.25.6              │ golang: net/url: Memory exhaustion in query parameter        │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ parsing in net/url                                           │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-61726                   │
+[2026-08-04T15:58:58.047Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.047Z] │         │ CVE-2025-61729 │          │        │                   │ 1.24.11, 1.25.5              │ crypto/x509: golang: Denial of Service due to excessive      │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ resource consumption via crafted...                          │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2025-61729                   │
+[2026-08-04T15:58:58.047Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.047Z] │         │ CVE-2026-25679 │          │        │                   │ 1.25.8, 1.26.1               │ net/url: Incorrect parsing of IPv6 host literals in net/url  │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-25679                   │
+[2026-08-04T15:58:58.047Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.047Z] │         │ CVE-2026-27145 │          │        │                   │ 1.25.11, 1.26.4              │ crypto/x509: golang: golang crypto/x509: Denial of Service   │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ via excessive processing of DNS...                           │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-27145                   │
+[2026-08-04T15:58:58.047Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.047Z] │         │ CVE-2026-32280 │          │        │                   │ 1.25.9, 1.26.2               │ crypto/x509: crypto/tls: golang: Go: Denial of Service       │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ vulnerability in certificate chain building...               │
+[2026-08-04T15:58:58.047Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-32280                   │
+[2026-08-04T15:58:58.048Z] │         ├────────────────┤          │        │                   │                              ├──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.048Z] │         │ CVE-2026-32281 │          │        │                   │                              │ crypto/x509: golang: Go crypto/x509: Denial of Service via   │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ inefficient certificate chain validation...                  │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-32281                   │
+[2026-08-04T15:58:58.048Z] │         ├────────────────┤          │        │                   │                              ├──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.048Z] │         │ CVE-2026-32283 │          │        │                   │                              │ crypto/tls: golang: Go crypto/tls: Denial of Service via     │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ multiple TLS 1.3 key...                                      │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-32283                   │
+[2026-08-04T15:58:58.048Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.048Z] │         │ CVE-2026-33811 │          │        │                   │ 1.25.10, 1.26.3              │ net: golang: Go net package: Denial of Service via long      │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ CNAME response...                                            │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-33811                   │
+[2026-08-04T15:58:58.048Z] │         ├────────────────┤          │        │                   │                              ├──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.048Z] │         │ CVE-2026-33814 │          │        │                   │                              │ net/http/internal/http2: golang: golang.org/x/net: Go        │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ HTTP/2: Denial of Service via malformed                      │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ SETTINGS_MAX_FRAME_SIZE frame...                             │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-33814                   │
+[2026-08-04T15:58:58.048Z] │         ├────────────────┤          │        │                   │                              ├──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.048Z] │         │ CVE-2026-39820 │          │        │                   │                              │ net/mail: golang: Go net/mail: Denial of Service via crafted │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ email inputs                                                 │
+[2026-08-04T15:58:58.048Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-39820                   │
+[2026-08-04T15:58:58.048Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.049Z] │         │ CVE-2026-39822 │          │        │                   │ 1.25.12, 1.26.5, 1.27.0-rc.2 │ golang: Go os.Root: Symlink following vulnerability allows   │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ directory traversal                                          │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-39822                   │
+[2026-08-04T15:58:58.049Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.049Z] │         │ CVE-2026-39836 │          │        │                   │ 1.25.10, 1.26.3              │ net: golang: Go net package: Denial of Service via NUL byte  │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ in...                                                        │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-39836                   │
+[2026-08-04T15:58:58.049Z] │         ├────────────────┤          │        │                   │                              ├──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.049Z] │         │ CVE-2026-42499 │          │        │                   │                              │ net/mail: golang: net/mail: Denial of Service via            │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ pathological email address parsing                           │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-42499                   │
+[2026-08-04T15:58:58.049Z] │         ├────────────────┤          │        │                   ├──────────────────────────────┼──────────────────────────────────────────────────────────────┤
+[2026-08-04T15:58:58.049Z] │         │ CVE-2026-42504 │          │        │                   │ 1.25.11, 1.26.4              │ mime: golang: Golang MIME: Denial of Service via             │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ maliciously-crafted MIME header                              │
+[2026-08-04T15:58:58.049Z] │         │                │          │        │                   │                              │ https://avd.aquasec.com/nvd/cve-2026-42504                   │
+[2026-08-04T15:58:58.049Z] └─────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────┴──────────────────────────────────────────────────────────────┘
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push to ECR)
+[Pipeline] echo
+[2026-08-04T15:58:58.575Z] Warning, empty changelog. Have you run checkout?
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:58:59.320Z] + set -eu
+[2026-08-04T15:58:59.320Z] + umask 077
+[2026-08-04T15:58:59.320Z] + aws ecr get-login-password --region il-central-1
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:59:01.580Z] + set -eu
+[2026-08-04T15:59:01.580Z] + trap 'rm -f /images/ecr-password /images/auth.json' EXIT
+[2026-08-04T15:59:01.580Z] + skopeo login --username AWS --password-stdin --authfile /images/auth.json 590183895228.dkr.ecr.il-central-1.amazonaws.com
+[2026-08-04T15:59:01.580Z] Login Succeeded!
+[2026-08-04T15:59:01.580Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:01.580Z] + skopeo copy --dest-authfile /images/auth.json docker-archive:/images/backend.tar docker://590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:731af4b
+[2026-08-04T15:59:02.977Z] Getting image source signatures
+[2026-08-04T15:59:02.977Z] Copying blob sha256:07cb5841368398bcd2114307b4cdc2a24d9129800318110af7371c3a865f35cd
+[2026-08-04T15:59:02.977Z] Copying blob sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167
+[2026-08-04T15:59:02.977Z] Copying blob sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f
+[2026-08-04T15:59:02.977Z] Copying blob sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f
+[2026-08-04T15:59:02.977Z] Copying blob sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd
+[2026-08-04T15:59:02.977Z] Copying blob sha256:28538eb93d18d05943798cbc86ca3cd8c002516bcc40c5a0b6ceb7e8cb950d46
+[2026-08-04T15:59:03.551Z] Copying blob sha256:36d0124c3b43513ac4f45c197fa3c67a333a4bb64b6e496ff2a02d93affd5129
+[2026-08-04T15:59:03.551Z] Copying blob sha256:ac2297d464c8e1ae87ebff57459812521621b117f8ab2932bcea877d219ab03d
+[2026-08-04T15:59:03.814Z] Copying blob sha256:4843a2ea91196f28a3788819cfc4963198741f99d9bd8e34783d1a0650b82490
+[2026-08-04T15:59:08.047Z] Copying config sha256:f96fdfa8008284dcbb6251f8accfbdf5b926c4fed7720dea7c5f40f9112fca47
+[2026-08-04T15:59:08.047Z] Writing manifest to image destination
+[2026-08-04T15:59:08.047Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:08.047Z] + skopeo copy --dest-authfile /images/auth.json docker-archive:/images/worker.tar docker://590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker:731af4b
+[2026-08-04T15:59:08.992Z] Getting image source signatures
+[2026-08-04T15:59:08.992Z] Copying blob sha256:07cb5841368398bcd2114307b4cdc2a24d9129800318110af7371c3a865f35cd
+[2026-08-04T15:59:08.992Z] Copying blob sha256:ccbaccfc0388284959cf106031557105fad2067d6c4435937b3414ce90760167
+[2026-08-04T15:59:08.992Z] Copying blob sha256:f2ec4de84f559f5c7be4233b589cdbdbb5507807e05621b77320edd55a1f2a0f
+[2026-08-04T15:59:08.992Z] Copying blob sha256:b80f3ed1ee6de85c788d9ae7203207c44724eab4baac8697390ca1412954ad2f
+[2026-08-04T15:59:08.992Z] Copying blob sha256:83fdf57f71f28b640f11d5072c284c81eadefc5ea538050fedcedba6149879bd
+[2026-08-04T15:59:08.992Z] Copying blob sha256:28538eb93d18d05943798cbc86ca3cd8c002516bcc40c5a0b6ceb7e8cb950d46
+[2026-08-04T15:59:09.565Z] Copying blob sha256:b683524e8767e579584e132394150c8977ed42c99bac5c684e86daa1ea3accda
+[2026-08-04T15:59:09.565Z] Copying blob sha256:f200909f973c42762385ba9890ba28dc6878355a77f824798f5ce631a3a7fa38
+[2026-08-04T15:59:09.828Z] Copying blob sha256:c8dc05abb58f68ca181ab379df5680de5c5823722ba59fe18fa6880b3c473a29
+[2026-08-04T15:59:14.047Z] Copying config sha256:2f42220b38b93bc8f74703f6355737261c6fe3fb12f0b8decdb2a7d4070232a6
+[2026-08-04T15:59:14.047Z] Writing manifest to image destination
+[2026-08-04T15:59:14.047Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:14.047Z] + skopeo copy --dest-authfile /images/auth.json docker-archive:/images/nginx.tar docker://590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:731af4b
+[2026-08-04T15:59:14.312Z] Getting image source signatures
+[2026-08-04T15:59:14.312Z] Copying blob sha256:8ccf5b54078753466674e57ed0cdb5743ba091632f1731784546b905e1c30532
+[2026-08-04T15:59:14.312Z] Copying blob sha256:30efe6721c494440c7411d57ad5b0c45acb15f9a3775cb57dd1960ec15512fe1
+[2026-08-04T15:59:14.312Z] Copying blob sha256:34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c
+[2026-08-04T15:59:14.312Z] Copying blob sha256:3ab1450e46aaa36b9e271f0475b7b8afa49f7a586e503ae6b14b9f89b2874b57
+[2026-08-04T15:59:14.312Z] Copying blob sha256:e2a1d4d38947c332c05c7928e5e4b5ebced3d586673e3a80155dc8ea2eeaf531
+[2026-08-04T15:59:14.312Z] Copying blob sha256:ffedd0a571ce2d034f49db855e2805a3ac1f182d2579050bbd59a3fea0a11b9f
+[2026-08-04T15:59:14.887Z] Copying blob sha256:f111d6d1c216cc709b4934ce0c35136194c0c4904de844be06d7a8af5348ee0e
+[2026-08-04T15:59:14.887Z] Copying blob sha256:9402ac825d9c4fdf06fd43fab01c394e2c7c3915109de2ad4a3a25c40d794f11
+[2026-08-04T15:59:14.887Z] Copying blob sha256:f6c7e3dedeb4dcc4cdd5c9aa50986697e3c94a3fb4529345a4a6de3f58f7bde5
+[2026-08-04T15:59:14.887Z] Copying blob sha256:99cebcad24f5ff56c7a30d79e0cff94c0813378448c8d9490ba7b1712a89dfbf
+[2026-08-04T15:59:14.887Z] Copying blob sha256:b034325bee0669c827507d5709e4992dbc759bbe837b623277bea42f1c3c143d
+[2026-08-04T15:59:15.149Z] Copying blob sha256:a4d021b059816016ff665f86a66ede29eaa59de0cc6448fe7ffa4f2e2bdb545b
+[2026-08-04T15:59:15.149Z] Copying blob sha256:27ace240f7bc5e0118ff6f83b138127793c7d12d7dd993409813c6702fade625
+[2026-08-04T15:59:15.149Z] Copying blob sha256:c269eb36c72f002ea71a04b8562d5a731359254aa7887cdaf75bc330d40b6bd7
+[2026-08-04T15:59:16.632Z] Copying config sha256:0da4dd1d68e718c355fd8431179e42af0dc6cab14af5aa6b3c2202a999d23088
+[2026-08-04T15:59:16.632Z] Writing manifest to image destination
+[2026-08-04T15:59:16.632Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:16.632Z] + skopeo copy --dest-authfile /images/auth.json docker-archive:/images/backup.tar docker://590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backup:731af4b
+[2026-08-04T15:59:20.853Z] Getting image source signatures
+[2026-08-04T15:59:20.853Z] Copying blob sha256:5003499144dbe7d217cb99b70b06ffe9bcad4262a1c554e4507b6ea55d588bad
+[2026-08-04T15:59:20.853Z] Copying blob sha256:4643ad51875ff2838c13a1e4b993a707089a768ae033a229bac5d2db97c55832
+[2026-08-04T15:59:20.853Z] Copying blob sha256:34884abbe92863fce933ed7c39c0e045631af0ed86d5cc0dfbdf9fdca426ce3c
+[2026-08-04T15:59:20.853Z] Copying blob sha256:0502920837e278c8c6d878791d24e8cbd803f79ea83870df7fe2c3165bf91c45
+[2026-08-04T15:59:20.853Z] Copying blob sha256:aaf299cc7dae36f850e300d0af739896c59c066f074d7af904d58522a9bf2844
+[2026-08-04T15:59:20.853Z] Copying blob sha256:6456488612e11609cb2a5fc1a8eda4c8d924451fb20db90a1b339e081266805e
+[2026-08-04T15:59:21.434Z] Copying blob sha256:311cd0ffc445af0568e302d8c6796abef12d48fdb9822298ff006f5a3936c888
+[2026-08-04T15:59:21.434Z] Copying blob sha256:f53315efed4c9c04899c21bd745fa795ad54260ad83789b6d62ca1c690db48e6
+[2026-08-04T15:59:21.434Z] Copying blob sha256:b909b982a192dcb6aef2e315388581129097ab6f52dca53fa4af993d0f7e6041
+[2026-08-04T15:59:21.695Z] Copying blob sha256:9f2248e81d67be265ef9a8cf7ac17e2bdc6914c2c7ae30985062a3ab26e14800
+[2026-08-04T15:59:21.957Z] Copying blob sha256:6aa6075d311f0371723ebebf4168d7ed08c4d99522d063fd28fe9c129be13c94
+[2026-08-04T15:59:21.957Z] Copying blob sha256:ffc883d2800964d8e208a8f81d645baf5e395f9cba8f6585d3f10259719b07ce
+[2026-08-04T15:59:22.218Z] Copying blob sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef
+[2026-08-04T15:59:32.314Z] Copying config sha256:f56b698de31737bb93461fc7c6f1913cd83b95116eea37c35992011569c73115
+[2026-08-04T15:59:32.314Z] Writing manifest to image destination
+[2026-08-04T15:59:32.314Z] + rm -f /images/ecr-password /images/auth.json
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish Metadata)
+[Pipeline] echo
+[2026-08-04T15:59:32.834Z] Warning, empty changelog. Have you run checkout?
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:59:33.592Z] + set -eu
+[2026-08-04T15:59:33.592Z] + printf '{\n'
+[2026-08-04T15:59:33.592Z] + printf '  "image_tag": "%s",\n' 731af4b
+[2026-08-04T15:59:33.592Z] ++ git rev-parse HEAD
+[2026-08-04T15:59:33.592Z] /home/jenkins/agent/workspace/application-ci@tmp/durable-34d32778/script.sh.copy: line 6: git: command not found
+[2026-08-04T15:59:33.592Z] + printf '  "git_commit": "%s",\n' ''
+[2026-08-04T15:59:33.592Z] + printf '  "ci_build": "%s",\n' 33
+[2026-08-04T15:59:33.592Z] ++ date -u +%Y-%m-%dT%H:%M:%SZ
+[2026-08-04T15:59:33.592Z] + printf '  "built_at": "%s",\n' 2026-08-04T15:59:33Z
+[2026-08-04T15:59:33.592Z] + printf '  "images": {\n'
+[2026-08-04T15:59:33.592Z] + sep=
+[2026-08-04T15:59:33.592Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:33.592Z] ++ aws ecr describe-images --repository-name voteball-backend --image-ids imageTag=731af4b --region il-central-1 --query 'imageDetails[0].imageDigest' --output text
+[2026-08-04T15:59:35.019Z] + digest=sha256:95228d0e1c74f80c53c8f2c4f0782eb407a8f5fc5fd12719a4092c79666294dc
+[2026-08-04T15:59:35.019Z] + printf '%s    "%s-%s": { "digest": "%s" }' '' voteball backend sha256:95228d0e1c74f80c53c8f2c4f0782eb407a8f5fc5fd12719a4092c79666294dc
+[2026-08-04T15:59:35.019Z] + sep=',
+[2026-08-04T15:59:35.019Z] '
+[2026-08-04T15:59:35.019Z] + '[' backend = backend ']'
+[2026-08-04T15:59:35.019Z] + printf %s sha256:95228d0e1c74f80c53c8f2c4f0782eb407a8f5fc5fd12719a4092c79666294dc
+[2026-08-04T15:59:35.019Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:35.019Z] ++ aws ecr describe-images --repository-name voteball-worker --image-ids imageTag=731af4b --region il-central-1 --query 'imageDetails[0].imageDigest' --output text
+[2026-08-04T15:59:36.418Z] + digest=sha256:20b0e6ce577a110c31394d711a8ad5dd250f785bf55f85c05b4e0fc15b468ab4
+[2026-08-04T15:59:36.418Z] + printf '%s    "%s-%s": { "digest": "%s" }' ',
+[2026-08-04T15:59:36.418Z] ' voteball worker sha256:20b0e6ce577a110c31394d711a8ad5dd250f785bf55f85c05b4e0fc15b468ab4
+[2026-08-04T15:59:36.418Z] + sep=',
+[2026-08-04T15:59:36.418Z] '
+[2026-08-04T15:59:36.418Z] + '[' worker = backend ']'
+[2026-08-04T15:59:36.418Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:36.418Z] ++ aws ecr describe-images --repository-name voteball-nginx --image-ids imageTag=731af4b --region il-central-1 --query 'imageDetails[0].imageDigest' --output text
+[2026-08-04T15:59:37.807Z] + digest=sha256:858a9d19a1acbc81266e765fc27d69a3300a3882340dd33fbb0d6f8e590d28dd
+[2026-08-04T15:59:37.807Z] + printf '%s    "%s-%s": { "digest": "%s" }' ',
+[2026-08-04T15:59:37.807Z] ' voteball nginx sha256:858a9d19a1acbc81266e765fc27d69a3300a3882340dd33fbb0d6f8e590d28dd
+[2026-08-04T15:59:37.807Z] + sep=',
+[2026-08-04T15:59:37.807Z] '
+[2026-08-04T15:59:37.807Z] + '[' nginx = backend ']'
+[2026-08-04T15:59:37.807Z] + for svc in backend worker nginx backup
+[2026-08-04T15:59:37.807Z] ++ aws ecr describe-images --repository-name voteball-backup --image-ids imageTag=731af4b --region il-central-1 --query 'imageDetails[0].imageDigest' --output text
+[2026-08-04T15:59:38.763Z] + digest=sha256:f1d8af4e5a4d5109f6bcb7d5e6be6a6e1cb68c718ec6cf95e07216e548907984
+[2026-08-04T15:59:38.763Z] + printf '%s    "%s-%s": { "digest": "%s" }' ',
+[2026-08-04T15:59:38.763Z] ' voteball backup sha256:f1d8af4e5a4d5109f6bcb7d5e6be6a6e1cb68c718ec6cf95e07216e548907984
+[2026-08-04T15:59:38.763Z] + sep=',
+[2026-08-04T15:59:38.763Z] '
+[2026-08-04T15:59:38.763Z] + '[' backup = backend ']'
+[2026-08-04T15:59:38.763Z] + printf '\n  }\n}\n'
+[2026-08-04T15:59:38.763Z] + cat image-metadata.json
+[2026-08-04T15:59:38.763Z] {
+[2026-08-04T15:59:38.763Z]   "image_tag": "731af4b",
+[2026-08-04T15:59:38.763Z]   "git_commit": "",
+[2026-08-04T15:59:38.763Z]   "ci_build": "33",
+[2026-08-04T15:59:38.763Z]   "built_at": "2026-08-04T15:59:33Z",
+[2026-08-04T15:59:38.763Z]   "images": {
+[2026-08-04T15:59:38.763Z]     "voteball-backend": { "digest": "sha256:95228d0e1c74f80c53c8f2c4f0782eb407a8f5fc5fd12719a4092c79666294dc" },
+[2026-08-04T15:59:38.763Z]     "voteball-worker": { "digest": "sha256:20b0e6ce577a110c31394d711a8ad5dd250f785bf55f85c05b4e0fc15b468ab4" },
+[2026-08-04T15:59:38.763Z]     "voteball-nginx": { "digest": "sha256:858a9d19a1acbc81266e765fc27d69a3300a3882340dd33fbb0d6f8e590d28dd" },
+[2026-08-04T15:59:38.763Z]     "voteball-backup": { "digest": "sha256:f1d8af4e5a4d5109f6bcb7d5e6be6a6e1cb68c718ec6cf95e07216e548907984" }
+[2026-08-04T15:59:38.763Z]   }
+[2026-08-04T15:59:38.763Z] }
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] archiveArtifacts
+[2026-08-04T15:59:38.997Z] Archiving artifacts
+[2026-08-04T15:59:39.026Z] Recording fingerprints
+[Pipeline] script
+[Pipeline] {
+[Pipeline] fileExists
+[Pipeline] readFile
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Trigger CD)
+[Pipeline] echo
+[2026-08-04T15:59:39.990Z] Warning, empty changelog. Have you run checkout?
+[Pipeline] build
+[2026-08-04T15:59:40.091Z] Scheduling project: application-cd
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-04T15:59:41.116Z] + rm -rf /images/dockercfg
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] deleteDir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

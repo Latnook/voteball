@@ -1,0 +1,36 @@
+# Task 4 evidence — application CD deploy state (captured 2026-08-04)
+
+=== kubectl get deployments,pods,services,ingress -n devops-app ===
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/backend    2/2     2            2           7h27m
+deployment.apps/frontend   2/2     2            2           7h27m
+deployment.apps/worker     1/1     1            1           7h27m
+
+NAME                            READY   STATUS    RESTARTS       AGE
+pod/backend-54b56fc485-55xv6    1/1     Running   1 (2m6s ago)   3m37s
+pod/backend-54b56fc485-thxr5    1/1     Running   0              116s
+pod/frontend-6b8474676f-2q6nb   1/1     Running   0              3m22s
+pod/frontend-6b8474676f-gjglh   1/1     Running   0              3m37s
+pod/worker-94bd69b75-m4tlb      1/1     Running   0              3m37s
+
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/backend    ClusterIP   172.20.5.175     <none>        5000/TCP   7h27m
+service/frontend   ClusterIP   172.20.230.138   <none>        80/TCP     7h27m
+
+NAME                                 CLASS   HOSTS                  ADDRESS                                                             PORTS   AGE
+ingress.networking.k8s.io/voteball   alb     voteball.latnook.com   k8s-voteball-327d05a115-2003455520.il-central-1.elb.amazonaws.com   80      7h27m
+
+=== running images ===
+backend-54b56fc485-55xv6	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:731af4b
+backend-54b56fc485-thxr5	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:731af4b
+frontend-6b8474676f-2q6nb	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:731af4b
+frontend-6b8474676f-gjglh	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:731af4b
+worker-94bd69b75-m4tlb	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker:731af4b
+
+=== ArgoCD application state ===
+sync=Synced health=Healthy revision=3686cc59921507a966f9819608e1700e36cce5b5
+
+=== live site ===
+GET / -> 200
+GET /api/options -> 200
+GET /api/results?by=all -> 200
