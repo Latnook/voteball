@@ -7,12 +7,33 @@
 # delete jobs it no longer declares (removedJobAction defaults to "ignore"), so a stale job from a
 # previous JCasC revision survives silently pointing at a deleted Jenkinsfile. Nothing else catches
 # that; this does.
+#
+# VERIFY_STRICT=1 turns a SKIP into a FAILURE (and a non-zero exit). Default is permissive -- the
+# script is still useful with no Jenkins credentials on hand -- but a skip means the two checks this
+# task exists to add (the exactly-two-jobs check and numExecutors) never ran, and a plain "ALL CHECKS
+# PASSED" would then read as complete evidence when it is not. Evidence runs (Task 12) MUST set
+# VERIFY_STRICT=1 so a credential-less run fails loudly instead of looking clean.
 set -uo pipefail
 
 status=0
+skip_count=0
+skip_names=()
+strict="${VERIFY_STRICT:-0}"
+
 ok()   { echo "  PASS  $*"; }
 bad()  { echo "  FAIL  $*" >&2; status=1; }
-skip() { echo "  SKIP  $*"; }
+# skip NAME REASON -- NAME is the short label that appears in the summary line; REASON is printed
+# either way. Under VERIFY_STRICT=1 a skip counts as a failure instead of being silently permissive.
+skip() {
+  local name="$1" reason="$2"
+  if [ "$strict" = "1" ]; then
+    bad "$name: $reason (VERIFY_STRICT=1: skips are treated as failures)"
+  else
+    echo "  SKIP  $name: $reason"
+    skip_count=$((skip_count + 1))
+    skip_names+=("$name")
+  fi
+}
 
 echo "=== kubectl get namespaces ==="
 kubectl get namespaces
@@ -79,7 +100,8 @@ echo "=== Jenkins API: job list and numExecutors (needs JENKINS_ADMIN_USER/JENKI
 # GETs need no CSRF crumb -- Jenkins only enforces the crumb+session-cookie pair on state-changing
 # requests -- so plain HTTP basic auth via curl -u is enough; no cookie jar required.
 if [ -z "${JENKINS_ADMIN_USER:-}" ] || [ -z "${JENKINS_ADMIN_PASSWORD:-}" ]; then
-  skip "job list / numExecutors checks (no credentials: set JENKINS_ADMIN_USER and JENKINS_ADMIN_PASSWORD)"
+  skip "job list" "no credentials (set JENKINS_ADMIN_USER and JENKINS_ADMIN_PASSWORD)"
+  skip "numExecutors" "no credentials (set JENKINS_ADMIN_USER and JENKINS_ADMIN_PASSWORD)"
 else
   pf_log="$(mktemp)"
   kubectl port-forward -n ci svc/jenkins 0:8080 >"$pf_log" 2>&1 &
@@ -134,5 +156,19 @@ else
 fi
 
 echo
-[ "$status" -eq 0 ] && echo "verify-jenkins: ALL CHECKS PASSED" || echo "verify-jenkins: FAILURES ABOVE" >&2
+if [ "$status" -ne 0 ]; then
+  echo "verify-jenkins: FAILURES ABOVE" >&2
+elif [ "$skip_count" -gt 0 ]; then
+  # Named, not just counted -- "some checks skipped" doesn't tell a reader of this line (the part
+  # anyone actually reads, and what Task 12 captures as evidence) WHICH guarantees were not checked.
+  # Built with an explicit loop rather than `IFS=', '; "${skip_names[*]}"` -- array-to-string joins
+  # via IFS only ever use IFS's FIRST character as the separator, which would silently drop the space.
+  skip_list=""
+  for n in "${skip_names[@]}"; do
+    [ -z "$skip_list" ] && skip_list="$n" || skip_list="$skip_list, $n"
+  done
+  echo "verify-jenkins: ALL CHECKS PASSED (${skip_count} SKIPPED: ${skip_list} -- no credentials)"
+else
+  echo "verify-jenkins: ALL CHECKS PASSED"
+fi
 exit "$status"
