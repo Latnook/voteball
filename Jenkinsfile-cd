@@ -169,6 +169,19 @@ pipeline {
         // [skip ci] in the commit message below is documentation; the Guard stage in Jenkinsfile-ci
         // is what enforces it. Do not remove either -- without the guard this commit retriggers CI,
         // which triggers CD, which commits again, forever.
+        //
+        // QUOTING BUG, FIXED 2026-08-04: this used to write \" (a single backslash before the
+        // quote) around the sed pattern/replacement and the grep check below. Groovy's triple-
+        // single-quoted string unescapes \" to a bare " before bash ever sees the script -- so
+        // what bash actually received was: sed -i -E "s/^  tag: ".*"/  tag: "$TAG"/" (the bare "
+        // characters visible there are ordinary shell quote DELIMITERS, not literal characters
+        // passed to sed). Bash consumes them and hands sed the unquoted pattern
+        // s/^  tag: .*/  tag: $TAG/. The result is a rewrite that strips the quotes instead of
+        // preserving them -- confirmed live: every CD-written tag since has been unquoted
+        // (charts/voteball/values.yaml history), and the grep verification below had the
+        // identical bug, so it happily confirmed the wrong shape. Doubling the backslash (\\")
+        // is what's needed: Groovy unescapes \\ to a single \, which THEN reaches bash as \" --
+        // an escaped, literal quote character inside the double-quoted sed script, as intended.
         sshagent(credentials: ['voteball-deploy-key']) {
           sh '''
             set -eu
@@ -176,11 +189,12 @@ pipeline {
             printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
             chmod 600 ~/.ssh/known_hosts
 
-            sed -i -E "s/^  tag: \".*\"/  tag: \"$TAG\"/" charts/voteball/values.yaml
+            sed -i -E "s/^  tag: \\".*\\"/  tag: \\"$TAG\\"/" charts/voteball/values.yaml
 
-            grep -q "^  tag: \"$TAG\"" charts/voteball/values.yaml || {
-              echo "values.yaml does not name $TAG after the sed -- the tag: line's shape must have" >&2
-              echo "changed (indentation/quoting). Refusing to report success on an unrewritten file." >&2
+            grep -q "^  tag: \\"$TAG\\"" charts/voteball/values.yaml || {
+              echo "values.yaml does not name $TAG, QUOTED, after the sed -- the tag: line's shape" >&2
+              echo "must have changed (indentation/quoting). Refusing to report success on an" >&2
+              echo "unrewritten or wrongly-shaped file." >&2
               exit 1
             }
 
@@ -325,6 +339,17 @@ pipeline {
           // comparison as a false-but-silent mismatch instead of a loud failure. Failing on
           // empty/missing explicitly means a broken read can never masquerade as a legitimate
           // "not Synced" verdict.
+          // The revision check below is deliberately NOT "sync.revision == PROMOTE_SHA, full
+          // stop" (fixed 2026-08-04, I1). This repo's own CLAUDE.md tells every contributor to
+          // commit and push continuously, and `voteball`'s Application has selfHeal/automated
+          // sync -- so any push to master during this build's Deploy/Rollout window (someone
+          // else's unrelated commit, or even another CD build) gets auto-synced by ArgoCD before
+          // this stage runs, and sync.revision then legitimately points past PROMOTE_SHA even
+          // though THIS build's deploy landed and is healthy. Failing outright on that read would
+          // roll back a working deploy for a reason that has nothing to do with whether it worked.
+          // What actually decides pass/fail is the second sh block below: do the running images
+          // name the tag this build asked for. A revision mismatch here is logged as a WARNING,
+          // not a failure -- the check is not silently dropped, it just no longer gates alone.
           sh '''
             set -eu
             sync_status="$(jq -r '.status.sync.status // empty'     app-status.json)"
@@ -339,14 +364,46 @@ pipeline {
             [ "$health"      = "Healthy" ] || { echo "ArgoCD reports $health" >&2; exit 1; }
             case "$revision" in
               "$PROMOTE_SHA"*) ;;
-              *) echo "ArgoCD synced $revision, not the promoted $PROMOTE_SHA" >&2; exit 1 ;;
+              *) echo "WARNING: ArgoCD synced $revision, not the promoted $PROMOTE_SHA -- a later" >&2
+                 echo "push to master (auto-synced by ArgoCD while this build was running) has" >&2
+                 echo "moved the app past this deploy's own commit. NOT failing on this alone: the" >&2
+                 echo "next check confirms whether the RUNNING images actually name tag $TAG." >&2
+                 ;;
             esac
           '''
-          // Evidence capture for the brief's section 10, NOT a second opinion on ArgoCD's verdict.
-          // This is the only kubectl call in the happy path, and it is read-only.
+          // The check that actually decides pass/fail for I1: the running Deployments must be on
+          // the tag this build asked for, regardless of which git revision ArgoCD's status
+          // currently reports. `helm template` in Manifest Validation already proved each
+          // Deployment renders one container each (see charts/voteball/templates/
+          // {frontend,backend,worker}-deployment.yaml), so a plain jsonpath on container 0 is
+          // exact, not a heuristic.
           sh '''
             set -eu
-            kubectl get deployments,pods,services,ingress -n "$NAMESPACE"
+            for d in frontend backend worker; do
+              image="$(kubectl get deployment "$d" -n "$NAMESPACE" \
+                       -o jsonpath='{.spec.template.spec.containers[0].image}')"
+              echo "$d -> $image"
+              case "$image" in
+                *":$TAG") ;;
+                *) echo "Deployment $d is running $image, which is not tagged $TAG. The requested" >&2
+                   echo "tag is not what is actually running -- failing verification." >&2
+                   exit 1 ;;
+              esac
+            done
+            echo "All three Deployments (frontend, backend, worker) are running tag $TAG."
+          '''
+          // Evidence capture for the brief's section 10, NOT a second opinion on ArgoCD's verdict.
+          //
+          // I2, FIXED 2026-08-04: this used to run under the SAME `set -eu` as the checks above,
+          // so a transient API hiccup on a read-only `kubectl get` failed the whole stage and
+          // triggered the automatic rollback of a deploy that had already passed every real check
+          // above. The comment already said this capture is "NOT a second opinion" -- it wasn't
+          // behaving like one. `set +e` plus the `||` fallback below make a failure here non-fatal
+          // and still leave a note in the log; the block's own exit code is not otherwise inspected.
+          sh '''
+            set +e
+            kubectl get deployments,pods,services,ingress -n "$NAMESPACE" || \
+              echo "WARNING: evidence-capture kubectl call failed -- not failing the build over it, this is diagnostics only." >&2
           '''
         }
       }
@@ -355,9 +412,14 @@ pipeline {
     stage('Smoke Test') {
       steps {
         container('deploy') {
+          // SMOKE_RETRIES raised 10 -> 15 (2026-08-04): the default 6s delay gave the old budget
+          // 60s total, and a cold ALB target registration (fresh pods just gone Ready in Rollout)
+          // can take longer than that to start passing health checks. A smoke-test timeout is
+          // itself a rollback trigger, so this budget failing spuriously rolls back a deploy that
+          // was actually fine and just needed a few more seconds. 15 x 6s = 90s.
           sh '''
             set -eu
-            SMOKE_BASE_URL="https://$APP_DOMAIN" scripts/ci/smoke-test.sh
+            SMOKE_BASE_URL="https://$APP_DOMAIN" SMOKE_RETRIES=15 scripts/ci/smoke-test.sh
           '''
         }
       }
@@ -384,7 +446,20 @@ pipeline {
         // Validation or Manifest Validation changed nothing, so there is nothing to undo -- and
         // rolling back then would deploy an older tag for no reason.
         if (env.PROMOTE_SHA) {
-          def previous = sh(script: 'scripts/ci/previous-tag.sh', returnStdout: true).trim()
+          // I3, FIXED 2026-08-04: this used to call sh(..., returnStdout: true) directly.
+          // previous-tag.sh exits 1 (by design) when there is no previous tag to roll back to --
+          // and returnStdout's default behaviour is to THROW on a non-zero exit, which aborted
+          // this whole script block before the depth check or either "NO ROLLBACK"/"ROLLING BACK"
+          // branch below ever ran. That is exactly the path the depth-1 "NEEDS A HUMAN" message
+          // exists for, and it never printed on it. returnStatus captures the exit code instead of
+          // throwing, so a failure here is just data the branches below can act on.
+          def prevStatus = sh(script: 'scripts/ci/previous-tag.sh > previous-tag.out 2> previous-tag.err',
+                               returnStatus: true)
+          def previous = (prevStatus == 0) ? readFile('previous-tag.out').trim() : ''
+          if (prevStatus != 0) {
+            def errText = fileExists('previous-tag.err') ? readFile('previous-tag.err').trim() : '(no stderr captured)'
+            echo "previous-tag.sh exited ${prevStatus} (no previous tag found): ${errText}"
+          }
           def depth = (params.ROLLBACK_DEPTH ?: '0').toInteger()
           // Bound against unbounded oscillation. "previous != env.TAG" alone does NOT stop this:
           // deploy c fails -> rollback commits b, that build ALSO fails -> its previous-tag.sh now

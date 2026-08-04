@@ -86,4 +86,51 @@ grep -q '# git-SHA tag'         "$FIXTURE" || fail "trailing comment was lost"
 ./scripts/sync-values-from-tf.sh --check --tag NEWTAG --values "$FIXTURE" \
   || fail "--check should exit 0 when the file is already in sync"
 
+# --- 6. an UNQUOTED tag line must be detected, not silently accepted ---
+# Regression test for the Jenkinsfile-cd Promote-stage quoting bug fixed 2026-08-04 (a Groovy
+# ''' string escaping mistake made the CD pipeline write `tag: <sha>` with no quotes on every
+# deploy). This script's own scaffold above is hand-written WITH quotes, so it never exercised
+# this shape and the bug shipped to production undetected. `kv_re` only matches a QUOTED
+# `  key: "value"` line, so an unquoted `tag:` line is invisible to it -- the key is then reported
+# "not found" rather than silently left alone or, worse, treated as already-synced.
+# Built from scratch, not derived from $FIXTURE -- by this point in the script $FIXTURE has
+# already been rewritten to NEWTAG by test 2 above, so a sed derived from it would not contain
+# OLDTAG to unquote.
+UNQUOTED="$TMP/values-unquoted.yaml"
+cat > "$UNQUOTED" <<'EOF'
+image:
+  registry: "old.dkr.ecr.example.com"
+  tag: OLDTAG # git-SHA tag
+  pullPolicy: IfNotPresent
+
+config:
+  DB_HOST: "old-db.example.com"
+  DB_NAME: "postgres"
+  S3_BUCKET: "old-bucket"
+  SNS_TOPIC: "arn:aws:sns:old"
+
+ingress:
+  host: "voteball.latnook.com"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/OLD"
+  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/OLD/OLD"
+
+backup:
+  roleArn: "arn:aws:iam::590183895228:role/OLD-backup"
+  schedule: "0 2 * * *"
+
+worker:
+  replicas: 1
+  roleArn: "arn:aws:iam::590183895228:role/OLD-worker"
+EOF
+grep -q '^  tag: OLDTAG' "$UNQUOTED" || fail "test setup: fixture copy does not have an unquoted tag line"
+
+if ./scripts/sync-values-from-tf.sh --tag NEWTAG --values "$UNQUOTED" 2>/tmp/unquoted-sync.err; then
+  fail "sync-values-from-tf.sh must refuse to run against an unquoted tag: line, not exit 0"
+fi
+grep -q 'expected key image.tag not found' /tmp/unquoted-sync.err \
+  || fail "unquoted tag: line was not detected as a missing/malformed key (got: $(cat /tmp/unquoted-sync.err))"
+grep -q '^  tag: OLDTAG' "$UNQUOTED" \
+  || fail "an unquoted tag: line must be left untouched on refusal, not silently rewritten"
+rm -f /tmp/unquoted-sync.err
+
 echo "PASS: all sync-values assertions"
