@@ -1,0 +1,23 @@
+# EXAMPLE ONLY. The real values are supplied by terraform/addon-jenkins.tf at apply time -- this
+# file exists to document what the chart expects, and to satisfy the course brief's requirement for
+# a values example carrying no real values.
+#
+# Nothing here is secret: these are identifiers and network ranges, not credentials. Secrets reach
+# the chart only through the ExternalSecret, which names an AWS Secrets Manager key -- see
+# ci/jenkins/secret.example.yaml.
+#
+# Every value is account-, region- or cluster-specific. Hardcoding any of them would break a fork,
+# which is why Terraform passes them rather than the chart defaulting to something real.
+
+awsRegion: REPLACE_ME          # e.g. il-central-1
+secretName: REPLACE_ME         # the AWS Secrets Manager key, e.g. voteball/jenkins
+refreshInterval: 1h            # how often ESO re-reads the vault
+
+vpcCidr: 10.0.0.0/16           # this VPC's real CIDR
+serviceCidr: 172.20.0.0/16     # the EKS cluster's Service CIDR (NOT the VPC's)
+
+certificateArn: REPLACE_ME     # ACM cert for the webhook host; a NEW ARN on every rebuild
+host: REPLACE_ME               # e.g. jenkins.example.com
+
+appNamespace: devops-app       # the namespace the CD agent may READ (never write)
+cdRoleArn: REPLACE_ME          # IRSA role for jenkins-cd-agent; ECR read-only
