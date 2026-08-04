@@ -174,8 +174,8 @@ Parameters: `IMAGE_TAG` (required), `IMAGE_DIGEST` (optional), `SOURCE_BUILD` (o
 | 4 | Authenticate | in-cluster ServiceAccount `jenkins-cd-agent`; `kubectl auth can-i` self-check proves the token works and is scoped (§4) |
 | 5 | Promote | rewrite `image.tag` in `charts/voteball/values.yaml`, commit `ci: image tag <sha> [skip ci]`, push to `master` |
 | 6 | Deploy | `argocd app sync voteball --revision <promote-commit> --timeout 300` |
-| 7 | Rollout | `kubectl rollout status deployment/{frontend,backend,worker} -n $NAMESPACE --timeout=300s` |
-| 8 | Verify | `kubectl get deployments,pods,services,ingress -n $NAMESPACE`; assert every running container image ends in `:$IMAGE_TAG` |
+| 7 | Rollout | `argocd app wait voteball --sync --health --timeout 300` — ArgoCD's own health model, **not** a reimplementation of it with `kubectl rollout status` |
+| 8 | Verify | `argocd app get voteball -o json`: assert `sync.status == Synced`, `health.status == Healthy`, and `sync.revision` equals the promote commit. One `kubectl get deployments,pods,services,ingress -n $NAMESPACE` afterwards **purely to capture the brief's §10 evidence**, not as a second opinion |
 | 9 | Smoke Test | `scripts/ci/smoke-test.sh` — HTTPS `GET /health` expecting 200, `GET /api/results` expecting 200 and parseable JSON containing the expected keys, retried with backoff |
 | 10 | Failure Handling | on any failure in 6–9: dump `kubectl get events --sort-by=.metadata.creationTimestamp` and the last 200 log lines per Deployment, then **roll back** (§8) and re-verify |
 | — | `post { always }` | `cleanWs()` |
@@ -192,30 +192,40 @@ The brief asks for *template אחד עבור CI ואחד עבור CD*. Two templ
 | | `voteball-build` (CI) | `voteball-deploy` (CD) |
 |---|---|---|
 | ServiceAccount | `jenkins-agent` | `jenkins-cd-agent` (**new**) |
-| AWS role (IRSA) | ECR push to this account's repos | **none** |
-| Kubernetes RBAC | none | Role in `devops-app` only |
-| Containers | `jnlp`, `buildkit`, `tools` (aws-cli, trivy, ruff, hadolint), `postgres` | `jnlp`, `deploy` (kubectl, helm, argocd CLI, curl, jq) |
+| AWS role (IRSA) | ECR **push** to this account's repos | ECR **read-only** on the four app repos |
+| Kubernetes RBAC | none | read-only `Role` in `devops-app` only |
+| Containers | `jnlp`, `buildkit`, `tools` (aws-cli, trivy, ruff, hadolint), `postgres` | `jnlp`, `deploy` (argocd CLI, kubectl, helm, aws-cli, curl, jq) |
 | Can build an image | yes | no |
-| Can change what production runs | no | yes |
+| Can write to the cluster | no | **no** — only ArgoCD applies |
 
 Neither can do the other's job, which is the whole point: a compromised build agent can push a junk
-image but cannot deploy it; a compromised deploy agent can only deploy images that already exist and
-already passed Trivy.
+image but cannot deploy it; a compromised deploy agent can only ask ArgoCD to sync a commit, and only
+of images that already exist and already passed Trivy.
 
-`jenkins-cd-agent`'s RBAC is a namespaced `Role` + `RoleBinding` in `devops-app` — no
-`ClusterRole`, no `cluster-admin`:
+`jenkins-cd-agent`'s RBAC is a namespaced, **read-only** `Role` + `RoleBinding` in `devops-app` — no
+`ClusterRole`, no `cluster-admin`, and no write verb of any kind:
 
-- `apps`: `deployments` — `get,list,watch,patch` (for `rollout status` and `rollout undo`)
+- `apps`: `deployments`, `replicasets` — `get,list,watch`
 - `""`: `pods`, `services`, `events` — `get,list,watch`
 - `""`: `pods/log` — `get`
 - `networking.k8s.io`: `ingresses` — `get,list`
 
-`kubectl apply --dry-run=server` in stage 3 needs create permission it does not have, so the dry-run
-is scoped to a `--dry-run=server` against a namespace it can read; where a permission is genuinely
-absent the stage degrades to `--dry-run=client` and says so in the log rather than failing silently.
-This is deliberate: expanding CD's RBAC to full `create` on every kind in the chart would undo the
-least-privilege story for the sake of one validation nicety, and ArgoCD — which *does* hold those
-permissions — performs the real apply immediately afterwards.
+There is deliberately **no `patch` on deployments**. An earlier draft granted it for `kubectl rollout
+undo`; rollback goes through git (§8), so nothing in CD ever writes to the cluster. That makes the
+security claim absolute rather than approximate: *Jenkins holds no permission to change anything in
+`devops-app`.* Everything that reaches the cluster goes through ArgoCD, and CD could not bypass it
+even if its Jenkinsfile tried.
+
+The read-only ECR role exists for one job — stage 2 proving the requested tag really is in the
+registry before anything is committed to `master`. `ecr:DescribeImages` and
+`ecr:BatchGetImage` on the four app repositories, nothing else, no push.
+
+`kubectl apply --dry-run=server` in stage 3 would need create permission the CD agent does not have
+and must not be given, so manifest validation is `helm lint` + `helm template` + `kubectl apply
+--dry-run=client` over the rendered output. The server-side dry run is not worth broad write access
+to the app namespace, and ArgoCD — which *does* hold those permissions — performs the real
+server-side apply seconds later and fails the sync if the manifests are invalid. The log says which
+form ran, so nothing degrades silently.
 
 The ArgoCD CLI authenticates with a dedicated ArgoCD **local account** (`jenkins-cd`) declared in
 `terraform/addon-argocd.tf`'s `argocd-cm`, granted only `applications, sync/get/action` on
@@ -286,10 +296,27 @@ weight:
 
 **The division of labour, stated plainly for the README:** ArgoCD applies; Jenkins CD decides and
 verifies. Everything that reaches the cluster still goes through ArgoCD — Jenkins holds no permission
-to apply the chart and could not bypass it. What Jenkins CD adds is the four things a reconciler
-structurally cannot do: refuse a tag that does not exist or is `latest`, wait for the rollout and
-confirm the running images match what was asked for, make a real HTTPS request to the public site, and
-revert git when that request fails. This is the conventional GitOps split, not a workaround.
+to apply the chart and could not bypass it. This is the conventional GitOps split, not a workaround.
+
+**The governing rule (decided 2026-08-04): whatever ArgoCD can do, ArgoCD does. Jenkins does only what
+ArgoCD structurally cannot.** Applied literally, that is a short list on each side:
+
+| Job | Owner | Why |
+|---|---|---|
+| Apply manifests to the cluster | **ArgoCD** | It already does, with server-side apply and field ownership. Jenkins has no write permission at all. |
+| Decide when a resource is healthy | **ArgoCD** | It has a health model per resource kind. `kubectl rollout status` on three Deployments would be a worse copy of it. |
+| Keep the cluster matching git | **ArgoCD** | `selfHeal`. Nothing in CD tries to hold the cluster in a state git disagrees with. |
+| Reconcile drift, prune removed resources | **ArgoCD** | Continuous, not per-build. |
+| Refuse a tag that is `latest` or absent from ECR | **Jenkins** | ArgoCD deploys whatever git says; it has no notion of an invalid request. |
+| Decide *which* tag git should name | **Jenkins** | Only CI knows what it just built and tested. |
+| Ask the live site over HTTPS whether it works | **Jenkins** | ArgoCD checks pod health, never the product. Healthy pods serving a broken site is `Healthy` to ArgoCD. |
+| Judge a release bad and revert git | **Jenkins** | ArgoCD has no concept of a failed deployment attempt — only of drift, which it would *undo*. |
+| Link commit → tests → digest → deployment | **Jenkins** | Build records are a CI/CD artifact; ArgoCD keeps sync history, not provenance. |
+
+The practical consequence in `Jenkinsfile-cd`: stages 6, 7 and 8 are three `argocd` CLI calls, not a
+hand-rolled rollout loop. The only `kubectl` in the happy path is one read to capture the evidence the
+brief's §10 requires. If a stage could be written either as ArgoCD delegation or as Jenkins logic,
+it is written as delegation.
 
 The README must state this explicitly, since the brief's worked example shows `helm upgrade --install`
 and a grader will look for it.
@@ -386,3 +413,9 @@ Every item below produces a file in `docs/eks/evidence/` or `docs/screenshots/`:
   healthy version.
 - **ArgoCD retained as the applier**, on the instructor's confirmation that as-code configuration is
   what matters.
+- **"Whatever ArgoCD can do, ArgoCD does"** as the governing rule for the CD pipeline, stated by the
+  repo owner. Jenkins CD is scoped to exactly what a reconciler cannot do. Consequences already
+  applied above: rollout waiting delegates to `argocd app wait` instead of `kubectl rollout status`
+  (§3); verification reads ArgoCD's own sync and health status rather than re-deriving it (§3); the
+  CD ServiceAccount's `Role` lost its `patch` verb and is now strictly read-only, so Jenkins holds no
+  write permission anywhere in `devops-app` (§4).
