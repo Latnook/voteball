@@ -255,7 +255,7 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
 |---|---|
 | Each deploy | Watch for the Trivy gate failing on new CVEs |
 | Monthly | Check for dependency updates **by hand** — nothing raises them for you (see above); prune old RDS snapshots |
-| Quarterly | Bump add-on chart versions (Jenkins included); check the EKS support window; rebuild the Jenkins controller image and bump the pinned `buildkit`/`trivy`/`skopeo`/`aws-cli` tags in `ci/jenkins/jenkins.yaml` |
+| Quarterly | Bump add-on chart versions (Jenkins included); check the EKS support window; rebuild the Jenkins controller image and bump the nine pinned image tags in `ci/jenkins/jenkins.yaml` listed above (including the `argocd` CLI pin, which must track the ArgoCD chart's app version) |
 | **Before 2027-08-02** | **Upgrade EKS off 1.36 or start paying 5×** (the 2026-12-02 deadline was met — 1.34 → 1.36 on 2026-07-30, see above) |
 | When torn down | Nothing rots — the cheapest maintenance posture is not running it |
 
@@ -277,3 +277,10 @@ fresh webhook secret**, and GitHub still holds the old ones — until both are r
 the webhook is rejected and the pipeline's final `git push` is denied, on a cluster that otherwise
 looks entirely healthy. See `docs/cicd.md`, "First-time setup runbook", steps 1 and 4. Build history
 is the part that is genuinely disposable by design.
+
+The secret carries a sixth key too, `ARGOCD_AUTH_TOKEN`, destroyed the same way but refilled
+differently — it isn't a GitHub-side registration problem, it's minted fresh against the rebuilt
+ArgoCD by `./scripts/seed-argocd-token.sh` (`deploy.sh` step 7b/11). Skip that and the failure looks
+nothing like the deploy-key case: JCasC doesn't fail on the unresolved variable, it logs "will
+default to empty string" and boots, so Jenkins comes up looking healthy and every `application-cd`
+build fails at Deploy with an empty ArgoCD credential.
