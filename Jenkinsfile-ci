@@ -192,6 +192,17 @@ pipeline {
                   '(Manage Jenkins > System > Global properties). See docs/cicd.md.')
           }
           env.TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+          // Full SHA, captured HERE rather than in 'Publish Metadata' below: this stage runs in the
+          // default jnlp container, which has git. amazon/aws-cli:2.22.0 (Publish Metadata's
+          // container) does not ship git at all -- confirmed with
+          // `docker run --rm --entrypoint sh amazon/aws-cli:2.22.0 -c "command -v git"`, which finds
+          // nothing. CI build 33 shipped image-metadata.json with an empty git_commit because a
+          // failing `git rev-parse HEAD` was buried inside $(...) used as one printf ARGUMENT there --
+          // set -eu does not abort on that, since the discarded exit status belongs to the
+          // substitution, not to printf itself. Publish Metadata now reads GIT_COMMIT_SHA from here
+          // and asserts it is non-empty before writing the file, instead of shelling out to a
+          // container that cannot do it.
+          env.GIT_COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
           // container('awscli') is REQUIRED, not decoration. Steps outside a container() block run
           // in the `jnlp` container, which has git but no AWS CLI -- on the retired EC2 host `aws`
           // was simply on PATH, so this line needed no wrapper there. Without it the build dies with
@@ -429,12 +440,20 @@ pipeline {
           // `grep -A1` on the backend line also captures the line of the next service, so the second
           // grep would return two sha256 values that .trim() silently concatenates into one bogus
           // digest.
+          //
+          // git_commit comes from $GIT_COMMIT_SHA (set in 'Resolve tag and account'), NOT from a
+          // `git rev-parse HEAD` run in this container. amazon/aws-cli ships no git binary at all, and
+          // CI build 33 shipped image-metadata.json with an empty git_commit for exactly that reason:
+          // the failing git call was buried inside $(...) used as one argument to printf, so its
+          // non-zero exit was discarded and never seen by set -eu. The assertion below makes an empty
+          // GIT_COMMIT_SHA fail this stage instead of silently writing "".
           sh '''
             set -eu
+            : "${GIT_COMMIT_SHA:?GIT_COMMIT_SHA is empty. amazon/aws-cli has no git; the commit must be captured earlier, in Resolve tag and account.}"
             {
               printf '{\\n'
               printf '  "image_tag": "%s",\\n' "$TAG"
-              printf '  "git_commit": "%s",\\n' "$(git rev-parse HEAD)"
+              printf '  "git_commit": "%s",\\n' "$GIT_COMMIT_SHA"
               printf '  "ci_build": "%s",\\n' "$BUILD_NUMBER"
               printf '  "built_at": "%s",\\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
               printf '  "images": {\\n'
