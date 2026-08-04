@@ -387,11 +387,26 @@ is told to name it.
 ### 3. Manifest Validation
 
 `helm lint charts/voteball`; `helm template ... --set image.tag=$TAG`; then
-`kubectl apply --dry-run=client` against the rendered output — **client**, not `=server`. A
-server-side dry run would need create permission on every kind in the chart, and granting the
-read-only CD agent that would undo the read-only guarantee for one validation nicety. ArgoCD holds
-those permissions and performs the real server-side apply seconds later, failing the sync if the
-manifests are invalid — nothing degrades silently, and the log states which form ran.
+`kubectl create --dry-run=client` against the rendered output — **`create`, not `apply`, and
+`=client`, not `=server`.**
+
+A server-side dry run would need create permission on every kind in the chart, and granting the
+read-only CD agent that would undo the read-only guarantee for one validation nicety — so client-side
+was always the plan. But `application-cd` build #1, the pipeline's first ever live run, showed that
+`apply --dry-run=client` needs real permission too: to decide create-vs-patch it GETs each object's
+*current* configuration from the API server first, and `jenkins-cd-reader` cannot `get` most of the
+kinds this chart renders (see `charts/jenkins-support/templates/rbac.yaml`). The build failed
+Forbidden on every one of them. `kubectl create --dry-run=client` doesn't have this problem — `create`
+never reads an existing object — and was verified (as `jenkins-cd-agent`, not cluster-admin) to pass
+cleanly against the real chart with zero Forbidden errors.
+
+**What it does and doesn't catch, also verified for real rather than assumed:** it catches a chart
+that fails to render, malformed YAML, and a document missing required fields or naming an unknown
+`kind`. It does **not** catch deep per-field schema errors (a string where an int is expected, or a
+made-up field, both still pass) or anything that depends on the live object's current state — that
+class of check is why ArgoCD's real server-side apply, seconds later, is still what actually catches
+an invalid manifest and fails the sync. This stage narrows the failure window; it does not close it.
+Full writeup: `docs/design/2026-08-04-cicd-split-design.md` §4.
 
 ### 4. Promote
 

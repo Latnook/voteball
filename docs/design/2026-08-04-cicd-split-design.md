@@ -170,7 +170,7 @@ Parameters: `IMAGE_TAG` (required), `IMAGE_DIGEST` (optional), `SOURCE_BUILD` (o
 |---|---|---|
 | 1 | Checkout | chart and scripts only; sets the traceability build description |
 | 2 | Input Validation | `IMAGE_TAG` non-empty, **rejects `latest`** and any non-`[0-9a-f]{7,40}` value; `NAMESPACE` must be in an allowlist of one (`devops-app`); `scripts/ci/images-exist.sh` confirms the tag genuinely exists in ECR for all four repos |
-| 3 | Manifest Validation | `helm lint charts/voteball`; `helm template … --set image.tag=$IMAGE_TAG`; `kubectl apply --dry-run=server -f -` against the rendered output |
+| 3 | Manifest Validation | `helm lint charts/voteball`; `helm template … --set image.tag=$IMAGE_TAG`; `kubectl create --dry-run=client -f -` against the rendered output (§4 explains why `create`, not `apply`, and not `=server`) |
 | 4 | Authenticate | in-cluster ServiceAccount `jenkins-cd-agent`; `kubectl auth can-i` self-check proves the token works and is scoped (§4) |
 | 5 | Promote | rewrite `image.tag` in `charts/voteball/values.yaml`, commit `ci: image tag <sha> [skip ci]`, push to `master` |
 | 6 | Deploy | `argocd app sync voteball --revision <promote-commit> --timeout 300` |
@@ -221,11 +221,45 @@ registry before anything is committed to `master`. `ecr:DescribeImages` and
 `ecr:BatchGetImage` on the four app repositories, nothing else, no push.
 
 `kubectl apply --dry-run=server` in stage 3 would need create permission the CD agent does not have
-and must not be given, so manifest validation is `helm lint` + `helm template` + `kubectl apply
+and must not be given, so the original plan here was `helm lint` + `helm template` + `kubectl apply
 --dry-run=client` over the rendered output. The server-side dry run is not worth broad write access
 to the app namespace, and ArgoCD — which *does* hold those permissions — performs the real
-server-side apply seconds later and fails the sync if the manifests are invalid. The log says which
-form ran, so nothing degrades silently.
+server-side apply seconds later and fails the sync if the manifests are invalid.
+
+**Verification outcome (application-cd build #1, 2026-08-04): even `apply --dry-run=client` was
+wrong, not just `=server`.** The build reached Manifest Validation and failed with `Error from
+server (Forbidden): error when retrieving current configuration of:`, repeated once per resource
+kind in the chart. The reason is that client-side `apply` is not purely local either — to decide
+create-versus-patch it first GETs each object's *current* configuration from the API server, and
+`jenkins-cd-reader` can only `get` the seven kinds listed above. Every other kind the chart renders
+(`ServiceAccount`, `ConfigMap`, `ExternalSecret`, `HorizontalPodAutoscaler`,
+`PodDisruptionBudget`, `NetworkPolicy`, `CronJob`, the migration `Job`) came back Forbidden. The
+design's own read-only guarantee for `jenkins-cd-agent` — the thing this section exists to protect —
+was the direct cause of the first live pipeline run failing.
+
+The fix, verified for real against the cluster (a minted token *as* `jenkins-cd-agent`, not
+cluster-admin — testing as ourselves and assuming the result would generalise is exactly how this
+bug got in): `kubectl create --dry-run=client` instead of `apply`. `create` never reads an existing
+object, so it needs no RBAC read grant at all beyond the cluster's default discovery/OpenAPI-schema
+access that every authenticated identity already has — not anything this Role grants. Run against the
+full rendered chart (24 resources) as `jenkins-cd-agent`, it exits 0 with every resource reported
+`created (dry run)` and zero Forbidden errors, where `apply --dry-run=client` against the identical
+input fails on the first `NetworkPolicy`.
+
+**This narrows the failure window, it does not close it, and that has to be stated plainly rather
+than implied.** Also verified for real, not assumed: `create --dry-run=client` catches a chart that
+fails to render (via `helm template`'s own exit code, checked first), malformed YAML, a document
+missing required top-level fields, and a `kind` the API server doesn't recognise. It does **not**
+catch deep per-field schema/type errors — a `Deployment` rendered with `replicas: "not-a-number"`
+(string where an int32 is expected) or with a wholly invented `spec.totallyBogusUnknownField` both
+still print `created (dry run)` and exit 0, identically whether run as `jenkins-cd-agent` or as
+cluster-admin, so this is a property of client-side dry-run itself, not a permission gap the Role
+could close. Nor can it catch anything that depends on the *live* object — immutable-field conflicts,
+admission-webhook behaviour tied to existing state — since `create` never looks at what already
+exists. ArgoCD's real server-side apply, moments later, remains the actual safety net; this stage
+narrows what can reach it, and the CD Jenkinsfile's own comment states this rather than leaving the
+narrower coverage implicit. The log states which form ran and what it does and does not cover, so
+nothing degrades silently.
 
 The ArgoCD CLI authenticates with a dedicated ArgoCD **local account** (`jenkins-cd`) declared in
 `terraform/addon-argocd.tf`'s `argocd-cm`, granted only `applications, sync/get/action` on

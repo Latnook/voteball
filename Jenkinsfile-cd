@@ -98,19 +98,48 @@ pipeline {
     stage('Manifest Validation') {
       steps {
         container('deploy') {
-          // --dry-run=client, not =server: a server-side dry run needs create permission on every
-          // kind in the chart, and granting CD that would undo the read-only guarantee for one
-          // validation nicety. ArgoCD holds those permissions and does the real server-side apply
-          // seconds later, failing the sync if the manifests are invalid. Stating which form ran
-          // means nothing degrades silently.
+          // Discovered on application-cd build #1, the pipeline's first ever live run: `kubectl
+          // apply --dry-run=client` is NOT purely local. To decide create-vs-patch it first GETs
+          // each object's current configuration from the API server -- and jenkins-cd-reader (see
+          // charts/jenkins-support/templates/rbac.yaml) can only `get` deployments, replicasets,
+          // pods, services, events, pods/log and ingresses. Every other kind the chart renders
+          // (ServiceAccount, ConfigMap, ExternalSecret, HPA, PDB, NetworkPolicy, CronJob, the
+          // migration Job, ...) came back "Forbidden", for every single resource of that kind.
+          //
+          // `kubectl create --dry-run=client` does not have this problem -- `create` never reads an
+          // existing object, so it needs no RBAC read grant at all beyond the cluster's default
+          // discovery/OpenAPI-schema access (system:discovery + system:basic-user, bound to
+          // system:authenticated by every cluster, not anything this Role grants). Verified for
+          // real against this cluster, authenticated AS jenkins-cd-agent (a minted token, not
+          // cluster-admin -- testing as ourselves and assuming it generalises is exactly how build
+          // #1 broke): `kubectl create --dry-run=client -f <rendered-chart>` exits 0 with all 24
+          // resources reported "created (dry run)" and zero Forbidden errors, while `kubectl apply
+          // --dry-run=client` against the identical input fails on the first NetworkPolicy.
+          //
+          // WHAT THIS DOES catch: a chart that fails to render at all (caught earlier, by `helm
+          // template`'s own exit code); malformed YAML/JSON; a document missing required top-level
+          // fields; a `kind` the API server's discovery doesn't recognise. Also proven for real
+          // against this cluster.
+          //
+          // WHAT THIS DOES NOT catch, also proven for real rather than assumed: deep per-field
+          // schema/type checking. A Deployment rendered with `replicas: "not-a-number"` (a string
+          // where the API expects an int32) and one with an entirely made-up
+          // `spec.totallyBogusUnknownField` both still print "created (dry run)" and exit 0 -- and
+          // do so identically whether run as jenkins-cd-agent or as cluster-admin, so this is a
+          // property of client-side dry-run itself, not a permission gap. It also cannot catch
+          // anything that depends on the *live* object (immutable-field conflicts, admission
+          // webhooks tied to existing state) -- `create` never looks at what's already there.
+          // ArgoCD's real server-side apply, moments later, is what actually catches those; this
+          // stage narrows the failure window, it does not close it. See
+          // docs/design/2026-08-04-cicd-split-design.md section 4 for the full writeup.
           sh '''
             set -eu
             helm lint charts/voteball
             helm template voteball charts/voteball \
               --namespace "$NAMESPACE" \
               --set image.tag="$TAG" > /tmp/rendered.yaml
-            echo "--- kubectl apply --dry-run=client (see the comment above for why not =server) ---"
-            kubectl apply --dry-run=client -f /tmp/rendered.yaml
+            echo "--- kubectl create --dry-run=client (see the comment above for exactly what this does and does not catch) ---"
+            kubectl create --dry-run=client -f /tmp/rendered.yaml
           '''
         }
       }

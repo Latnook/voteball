@@ -331,7 +331,10 @@ and `SOURCE_BUILD` (traceability, optional), `NAMESPACE` (default and only allow
 `devops-app`), `ROLLBACK_DEPTH` (internal, never set by hand). Target: the `voteball` ArgoCD
 Application, which applies to `devops-app`. Stage list: **Checkout** → **Input Validation** (rejects
 `latest`, non-SHA values, and tags not present in ECR) → **Manifest Validation** (`helm lint` +
-`helm template` + `kubectl apply --dry-run=client`) → **Promote** (writes `image.tag`, commits
+`helm template` + `kubectl create --dry-run=client` — `create`, not `apply`: `apply`'s
+create-vs-patch decision reads each object's current config from the API server, which the read-only
+CD agent cannot do for most kinds in the chart, discovered on the pipeline's first live run; see
+`docs/cicd.md` §3) → **Promote** (writes `image.tag`, commits
 `ci: image tag <sha> [skip ci]`, pushes) → **Deploy** (`argocd app sync --revision <promote-sha>`) →
 **Rollout** (`argocd app wait --sync --health`) → **Verify** (reads ArgoCD's own sync/health verdict,
 then one read-only `kubectl get` purely to capture evidence) → **Smoke Test** (real HTTPS requests
