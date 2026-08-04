@@ -56,6 +56,12 @@ jenkins:
             value: "${AWS_REGION}"
           - key: "CLUSTER_NAME"
             value: "${CLUSTER_NAME}"
+          # Reaches AGENTS, unlike the controller's containerEnv. Jenkinsfile-cd's Smoke Test builds
+          # the site URL from this; without it the request goes to "https:///health" and every
+          # deploy fails verification -- which, with automatic rollback, means every deploy rolls
+          # itself back.
+          - key: "APP_DOMAIN"
+            value: "${APP_DOMAIN}"
 
   clouds:
     - kubernetes:
@@ -65,8 +71,11 @@ jenkins:
         jenkinsUrl: "http://jenkins.ci.svc.cluster.local:8080"
         jenkinsTunnel: "jenkins-agent.ci.svc.cluster.local:50000"
         directConnection: false
-        # Bounded so a wedged agent cannot hold the queue forever.
-        containerCapStr: "3"
+        # Bounded so a wedged agent cannot hold the queue forever. Raised from 3 to 4 with the
+        # application-cd template: a CD deploy (or a manual rollback) can now legitimately run
+        # concurrently with the CI build for the next push, and 3 left no room for a second queued
+        # CI build on top of that pair.
+        containerCapStr: "4"
         retentionTimeout: 5
         connectTimeout: 60
         readTimeout: 60
@@ -188,6 +197,62 @@ jenkins:
                       capabilities: { drop: ["ALL"] }
                     volumeMounts:
                       - { name: images, mountPath: /images }
+
+                  # Runs ruff and the 153 pytest tests. python:3.12-slim, not alpine: psycopg2-binary
+                  # ships manylinux wheels, so nothing is compiled and no build toolchain is needed.
+                  - name: python
+                    image: python:3.12-slim
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      # HOME=/tmp for the same reason as the containers above: uid 1000 with a
+                      # non-writable /. pip also needs a writable cache dir.
+                      - { name: HOME, value: /tmp }
+                      - { name: PIP_CACHE_DIR, value: /tmp/pip }
+                      # Point the tests at the sidecar, not at RDS. conftest.py only setdefault()s
+                      # these, so an explicit value wins.
+                      - { name: DB_HOST, value: "localhost" }
+                      - { name: DB_NAME, value: "postgres" }
+                      - { name: DB_USER, value: "postgres" }
+                      - { name: DB_PASS, value: "test" }
+                      - { name: DB_SSLMODE, value: "disable" }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "200m", memory: "512Mi" }
+                      limits: { memory: "1Gi" }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+
+                  # Ephemeral Postgres for the test suite. Holds no real data and is reachable only
+                  # from inside this pod's network namespace, so the ci NetworkPolicies are
+                  # unaffected and no route to the real RDS instance is created or needed.
+                  - name: postgres
+                    image: postgres:16-alpine
+                    env:
+                      - { name: POSTGRES_PASSWORD, value: "test" }
+                      # The image initialises the data directory as uid 70 by default; the pod
+                      # forces uid 1000, so PGDATA must sit somewhere writable by it.
+                      - { name: PGDATA, value: /tmp/pgdata }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "100m", memory: "256Mi" }
+                      limits: { memory: "512Mi" }
+                    volumeMounts:
+                      - { name: pgdata, mountPath: /tmp }
+
+                  - name: hadolint
+                    image: hadolint/hadolint:2.12.0-alpine
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      - { name: HOME, value: /tmp }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
                 volumes:
                   # Tarballs only. There is deliberately NO cache volume -- both caches live in
                   # ECR, because a pod volume dies with the build and would be a cache in name
@@ -198,6 +263,57 @@ jenkins:
                   # is not consumed by build state.
                   - name: buildkit-state
                     emptyDir: {}
+                  # Postgres' data directory. Separate from `images` so a large test database cannot
+                  # consume the tarball volume's sizeLimit and fail the build at push time.
+                  - name: pgdata
+                    emptyDir: {}
+
+          - name: "voteball-deploy"
+            label: "voteball-deploy"
+            yamlMergeStrategy: override
+            yaml: |
+              apiVersion: v1
+              kind: Pod
+              spec:
+                # jenkins-cd-agent, NOT jenkins-agent. The build agent's role can PUSH to ECR; this
+                # one is ECR read-only and carries a strictly read-only Kubernetes Role in
+                # devops-app (charts/jenkins-support/templates/rbac.yaml). Neither can do the
+                # other's job, which is the point: a compromised build agent can push a junk image
+                # but cannot deploy it, and a compromised deploy agent can only ask ArgoCD to sync a
+                # commit.
+                serviceAccountName: jenkins-cd-agent
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                containers:
+                  # kubectl, helm, aws-cli, jq and curl in one image, so the CD pod stays two
+                  # containers rather than five. Pinned; alpine/k8s tags track a Kubernetes minor.
+                  - name: deploy
+                    image: alpine/k8s:1.31.3
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      - { name: HOME, value: /tmp }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "200m", memory: "512Mi" }
+                      limits: { memory: "1Gi" }
+                  # The argocd CLI. Same image as the running ArgoCD server (chart 10.2.1 =>
+                  # app v3.4.5) so the client can never be a version ahead of the server.
+                  - name: argocd
+                    image: quay.io/argoproj/argocd:v3.4.5
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      - { name: HOME, value: /tmp }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "100m", memory: "256Mi" }
+                      limits: { memory: "512Mi" }
 
 appearance:
   # This root is provided by the `theme-manager` plugin, which the `dark-theme` entry in plugins.txt
@@ -270,6 +386,15 @@ credentials:
               description: "GitHub webhook shared secret (managed by JCasC)"
               secret: "${GITHUB_WEBHOOK_SECRET}"
 
+          # API token for the `jenkins-cd` ArgoCD local account, whose RBAC allows sync and get on
+          # the voteball Application and nothing else (terraform/addon-argocd.tf). Resolved at boot
+          # from the environment, same as every other placeholder here.
+          - string:
+              scope: GLOBAL
+              id: "argocd-auth-token"
+              description: "ArgoCD API token for the CD pipeline (managed by JCasC)"
+              secret: "${ARGOCD_AUTH_TOKEN}"
+
 unclassified:
   location:
     # Must be the real external URL now: the GitHub plugin builds the webhook URL from it, and the
@@ -279,11 +404,13 @@ unclassified:
     # SMTP (G7). Setting it would imply notifications that do not exist.
 
 jobs:
-  # Job DSL. The job is deliberately thin: everything about HOW to build lives in the Jenkinsfile,
-  # in the repository. This block only says where to find it and when to run it.
+  # Two jobs, per the brief. Both are deliberately thin: everything about HOW to build or deploy
+  # lives in the Jenkinsfiles, in the repository. These blocks only say where to find them and when
+  # to run them. Created from code -- creating jobs through the Jenkins UI is explicitly out of
+  # scope for this project.
   - script: |
-      pipelineJob('voteball') {
-        description('Voteball CI. Definition lives in the Jenkinsfile; this job is managed by JCasC.')
+      pipelineJob('application-ci') {
+        description('Voteball CI: test, build, scan, push. Never deploys. Definition lives in Jenkinsfile-ci.')
 
         properties {
           githubProjectUrl('https://github.com/${GITHUB_REPO}/')
@@ -293,7 +420,6 @@ jobs:
           booleanParam('FORCE_BUILD', false, 'Build even if this commit touches no files under services/')
         }
 
-        // G5: four images per build on a persistent host fills the disk.
         logRotator {
           numToKeep(20)
         }
@@ -307,16 +433,57 @@ jobs:
             scm {
               git {
                 remote {
-                  // MUST be the SSH remote. sshagent() only affects SSH remotes -- with an HTTPS
-                  // URL the deploy key is silently ignored and the final push fails after a
-                  // successful build. This is failure mode 1 in docs/cicd.md.
+                  // MUST be the SSH remote -- see the note on application-cd below, which is the
+                  // job that actually pushes.
                   url('git@github.com:${GITHUB_REPO}.git')
                   credentials('voteball-deploy-key')
                 }
                 branch('*/master')
               }
             }
-            scriptPath('Jenkinsfile')
+            scriptPath('Jenkinsfile-ci')
+            lightweight(true)
+          }
+        }
+      }
+
+  - script: |
+      pipelineJob('application-cd') {
+        description('Voteball CD: validate a tag, promote it to git, have ArgoCD deploy it, smoke test, roll back on failure. Never builds. Definition lives in Jenkinsfile-cd.')
+
+        properties {
+          githubProjectUrl('https://github.com/${GITHUB_REPO}/')
+        }
+
+        // No githubPush trigger. This job is started by application-ci with a tag, or by hand for a
+        // rollback. A push trigger here would deploy on every commit regardless of whether CI
+        // passed -- which is the exact gate this split exists to create.
+        parameters {
+          stringParam('IMAGE_TAG', '', 'Short commit SHA to deploy. Must already exist in ECR.')
+          stringParam('IMAGE_DIGEST', '', 'Backend image digest, recorded for traceability.')
+          stringParam('SOURCE_BUILD', '', 'The application-ci build number this came from.')
+          stringParam('NAMESPACE', 'devops-app', 'Target namespace. Allowlisted.')
+        }
+
+        logRotator {
+          numToKeep(20)
+        }
+
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  // MUST be the SSH remote. sshagent() only affects SSH remotes -- with an HTTPS
+                  // URL the deploy key is silently ignored and the Promote stage's push fails after
+                  // everything else succeeded. This is failure mode 1 in docs/cicd.md.
+                  url('git@github.com:${GITHUB_REPO}.git')
+                  credentials('voteball-deploy-key')
+                }
+                branch('*/master')
+              }
+            }
+            scriptPath('Jenkinsfile-cd')
             lightweight(true)
           }
         }
