@@ -6,7 +6,11 @@
 #   2. Ingress next              -- lets external-dns remove its DNS records and the ALB
 #                                   de-provision. A leftover ALB's ENIs block VPC deletion.
 #   3. Wait for the ALB to go    -- polling, because deletion is asynchronous.
-#   4. terraform destroy last.
+#   4. Uninstall Helm releases   -- while the cluster is still healthy (see step 4 below for why).
+#   5. DNS cleanup backstop.
+#   6. terraform destroy last, with one bounded automatic retry if it hits either of the two hangs
+#      documented in CLAUDE.md's teardown section (a Helm uninstall racing cluster deletion, and the
+#      second-order External Secrets finalizer hang that follows it) -- see step 6 for the detail.
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
@@ -63,11 +67,31 @@ for _ in $(seq 1 60); do
   sleep 10
 done
 
-step "4/6  Uninstalling the Helm release"
+step "4/6  Uninstalling Helm releases while the cluster is still healthy"
+# All three of this stack's OWN helm_release resources -- voteball, jenkins, jenkins-support --
+# uninstalled explicitly HERE, before `terraform destroy` starts deleting the cluster underneath them.
+# This is the actual fix for the 2026-08-04 hang, not a workaround for it: `terraform destroy` also
+# runs `helm uninstall` internally when it gets to these resources, and THAT is what hung with
+# "context deadline exceeded" -- Helm cannot cleanly uninstall a release from a cluster that is
+# simultaneously being torn down. Doing the uninstall here, while every node and controller is still
+# up, is the situation Helm actually expects; letting Terraform attempt it mid-deletion is the
+# workaround, and this avoids needing one for these three releases.
+#
+# external-secrets (the ExternalSecrets Operator / ESO) is DELIBERATELY NOT uninstalled here. Its
+# controller has to stay alive until Terraform deletes the namespaces (ci, devops-app) that hold
+# ExternalSecret/SecretStore custom resources -- those carry finalizers that only the ESO controller
+# can clear. Pulling ESO out early just relocates the same class of hang to one step earlier, which is
+# exactly what happened by hand on 2026-08-04: removing helm_release.external_secrets from state left
+# the ci namespace's ExternalSecret/SecretStore finalizers with no controller left to clear them, and
+# kubernetes_namespace.ci sat Terminating forever. Leaving ESO to Terraform's own destroy graph (it
+# naturally uninstalls consumers before their dependencies) is the safer order; the retry logic in
+# step 6 below is what recovers if it still hangs.
 if kubectl cluster-info >/dev/null 2>&1; then
-  helm uninstall voteball -n devops-app --ignore-not-found || true
+  helm uninstall voteball        -n devops-app --ignore-not-found || true
+  helm uninstall jenkins         -n ci         --ignore-not-found || true
+  helm uninstall jenkins-support -n ci         --ignore-not-found || true
 else
-  echo "Cluster unreachable — skipping (the release dies with the cluster)."
+  echo "Cluster unreachable — skipping (these releases die with the cluster)."
 fi
 
 step "5/6  Removing this cluster's DNS records"
@@ -108,20 +132,111 @@ reap_orphaned_enis() {
 
 reap_orphaned_enis &
 REAPER_PID=$!
-trap 'kill "$REAPER_PID" 2>/dev/null || true' EXIT
 
-terraform -chdir=terraform destroy -var-file="$TFVARS" "${APPROVE[@]}"
+DESTROY_LOG="$(mktemp)"
+cleanup() {
+  kill "$REAPER_PID" 2>/dev/null || true
+  rm -f "$DESTROY_LOG"
+}
+trap cleanup EXIT
 
-kill "$REAPER_PID" 2>/dev/null || true
-trap - EXIT
+# Runs `terraform destroy`, streaming it live to the terminal (never buffer a long-running infra
+# command -- a masked exit code can report a failed run as success) while also capturing it to
+# $DESTROY_LOG so the caller can inspect the failure text afterwards. `set -o pipefail` (part of the
+# shebang's `set -euo pipefail`) makes the function's exit status reflect terraform's, not tee's.
+destroy_attempt() {
+  : >"$DESTROY_LOG"
+  terraform -chdir=terraform destroy -var-file="$TFVARS" "${APPROVE[@]}" 2>&1 | tee "$DESTROY_LOG"
+}
+
+DESTROY_OK=0
+destroy_attempt && DESTROY_OK=1
+
+if [ "$DESTROY_OK" = 0 ] && grep -q "Error acquiring the state lock" "$DESTROY_LOG"; then
+  # A stale lock left by an interrupted previous run (Ctrl-C, a timeout) -- OR a lock legitimately
+  # held by another operator who is mid-apply right now. This script cannot tell those two apart, and
+  # force-unlocking the second case can corrupt state, so it deliberately does NOT clear the lock
+  # automatically. It prints the exact recovery instead, with the lock id parsed out of Terraform's
+  # own error output when possible.
+  lock_id="$(sed -n 's/^[[:space:]]*ID:[[:space:]]*//p' "$DESTROY_LOG" | head -1)"
+  account_id="$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "<account id>")"
+  step "Destroy stopped: the Terraform state lock is held"
+  cat <<EOF
+
+Before retrying, confirm no one else (including a previous run of this script, or Terraform running
+somewhere else) is genuinely still applying or destroying this stack. If you're sure the lock is
+stale -- the usual cause is this script or "terraform apply" being interrupted by Ctrl-C or a
+timeout -- clear it and re-run:
+
+  Lock file:  s3://${CLUSTER}-tfstate-${account_id}/voteball/main.tfstate.tflock
+  Lock ID:    ${lock_id:-<see "Error acquiring the state lock" above for the ID>}
+
+  terraform -chdir=terraform force-unlock ${lock_id:-<LOCK_ID>}
+  ./scripts/destroy.sh
+
+If it is NOT stale -- someone else really is running Terraform -- wait for that run to finish instead.
+EOF
+  exit 1
+fi
+
+if [ "$DESTROY_OK" = 0 ]; then
+  step "Destroy failed — retrying once after dropping cluster-bound resources from state"
+  cat <<'EOF'
+
+The most common cause (hit for real on 2026-08-04) is "context deadline exceeded": Helm cannot
+cleanly uninstall a release, or Kubernetes cannot clear a finalizer, while the EKS control plane is
+simultaneously being deleted underneath it -- first on helm_release.jenkins, then (second-order, once
+external-secrets' controller was gone) on kubernetes_namespace.ci, whose ExternalSecret/SecretStore
+child resources had finalizers nothing was left alive to clear. Both kinds of resource die with the
+cluster regardless of whether Terraform got to clean them up first, so forgetting Terraform ever
+created them loses nothing -- unlike an AWS resource, which would keep existing (and billing) with no
+record left to find it by.
+
+That is why this only ever drops resources matching EXACTLY two prefixes -- helm_release. and
+kubernetes_ -- and NEVER touches anything else, in particular never an aws_* address. See the filter
+below if you want to check it yourself; it is intentionally an allowlist, not a blocklist.
+EOF
+
+  mapfile -t all_resources < <(terraform -chdir=terraform state list 2>/dev/null || true)
+  # Matches "helm_release.<name>" or "kubernetes_<anything>.<name>", each optionally followed by an
+  # index ([0]) and optionally preceded by a module path (module.foo.helm_release.bar). Anchored on
+  # the resource-type boundary (a literal "." or start-of-string right before the type, and a "."
+  # right after it) so it can only ever match those two exact type prefixes -- never, for example, an
+  # unrelated type that merely contains "kubernetes_" or "helm_release" as a substring, and never any
+  # aws_* type, which does not start with either prefix.
+  RM_FILTER='(^|\.)(helm_release|kubernetes_[a-zA-Z0-9_]+)\.[^.]+(\[[0-9]+\])?$'
+  mapfile -t to_remove < <(printf '%s\n' "${all_resources[@]}" | grep -E "$RM_FILTER" || true)
+
+  if [ "${#to_remove[@]}" -eq 0 ]; then
+    echo "No helm_release.* or kubernetes_* resources remain in state -- nothing safe to drop."
+    echo "The failure above is something else; investigate the captured output by hand."
+    exit 1
+  fi
+
+  echo "Dropping ${#to_remove[@]} resource(s) from state (they die with the cluster regardless):"
+  for addr in "${to_remove[@]}"; do
+    echo "  $addr"
+    terraform -chdir=terraform state rm "$addr" || echo "    (state rm failed -- continuing anyway)"
+  done
+
+  step "Retrying terraform destroy (final attempt — this script retries exactly once)"
+  DESTROY_OK=0
+  destroy_attempt && DESTROY_OK=1
+
+  if [ "$DESTROY_OK" = 0 ]; then
+    cat <<'EOF'
+
+Retry also failed. The resources listed above are dropped from state either way, so they are gone or
+going regardless of what Terraform thinks now -- what's in the output above is the real remaining
+problem. Investigate it directly; this script does not retry a second time on purpose (an unbounded
+retry loop here could silently drop state forever without ever surfacing a genuine, unrelated
+failure). See CLAUDE.md's teardown section for the background on both known hangs.
+EOF
+    exit 1
+  fi
+fi
 
 cat <<'EOF'
 
 Teardown complete. A final DB snapshot was taken -- the next deploy restores from it automatically.
-
-  If destroy hung uninstalling a helm_release ("context deadline exceeded"), Helm cannot cleanly
-  uninstall while the cluster is being deleted. Drop that release from state and re-run; it dies
-  with the cluster anyway:
-      terraform -chdir=terraform state rm helm_release.<name>
-      ./scripts/destroy.sh
 EOF

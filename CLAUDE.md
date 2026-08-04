@@ -408,7 +408,8 @@ silently using local state. See `docs/design/2026-07-21-terraform-remote-state-d
 **Teardown order matters** and `./scripts/destroy.sh` encodes it: delete the ArgoCD Application (else
 `selfHeal` recreates what you remove), then **both Ingresses** (so the ALB de-provisions and
 external-dns removes its records — a leftover ALB's ENIs block VPC deletion), wait for the ALB to
-disappear, *then* `terraform destroy`.
+disappear, **uninstall this stack's own three Helm releases while the cluster is still healthy**
+(`voteball`, `jenkins`, `jenkins-support` — see below), *then* `terraform destroy`.
 
 **"Both" is load-bearing.** Since 2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share ALB
 group `voteball`, and an ALB is de-provisioned only when its group has **no** members left — deleting
@@ -417,23 +418,35 @@ one leaves it running. The same change renamed the ALB: a grouped one is `k8s-<g
 instantly while it is still there. `scripts/cleanup-stale-dns.sh` likewise cleans **two** hosts now,
 `<app_domain>` and `jenkins.<app_domain>`.
 
-If destroy hangs uninstalling a `helm_release` ("context deadline exceeded" — Helm can't cleanly
-uninstall while the cluster is being deleted), `terraform state rm` that release and re-run destroy;
-it dies with the cluster anyway. **There are now three such releases**, not one: the app's, plus
-`jenkins` and `jenkins-support`.
+**`terraform destroy` uninstalls `helm_release`s itself when it reaches them, and doing that while the
+cluster is simultaneously being deleted underneath it is what hung with `context deadline exceeded`**
+(observed 2026-08-04, on `helm_release.jenkins`: Helm cannot cleanly uninstall from a cluster that's
+disappearing). `destroy.sh` avoids this for its own three releases by uninstalling them explicitly one
+step earlier, while every node and controller is still up — the situation Helm actually expects, not a
+workaround for it. `external-secrets` is deliberately left **out** of that pre-uninstall: its
+controller has to stay alive until Terraform deletes the `ci`/`devops-app` namespaces, because the
+ExternalSecret/SecretStore custom resources inside them carry finalizers only that controller can
+clear. Pulling it out early just relocates the same hang one step earlier — which is exactly what
+happened by hand on 2026-08-04: `helm_release.external_secrets` was dropped from state pre-emptively,
+and `kubernetes_namespace.ci` then sat `Terminating` forever with no controller left to clear its
+children's finalizers.
 
-**`kubernetes_namespace.ci` hangs the same way, one level down, and the same fix applies** (observed
-2026-08-04). Removing `helm_release.external_secrets` from state leaves the ExternalSecret and
-SecretStore in `ci` with finalizers and no controller to clear them, so the namespace sits
-`Terminating` until `terraform state rm kubernetes_namespace.ci`. Expect to remove it *after* the
-three releases, not instead of them — it only becomes stuck once its controller is gone.
+**If `terraform destroy` still hangs this way — on a `helm_release` it manages that isn't one of the
+three pre-uninstalled above, or on a `kubernetes_*` resource the way `kubernetes_namespace.ci` did —
+`destroy.sh` now recovers automatically, once.** On a failed destroy it drops every remaining
+`helm_release.*` and `kubernetes_*` resource from state — **never an `aws_*` resource**, since that
+would orphan billed infrastructure with nothing left in Terraform's records to find it by — and
+retries `terraform destroy` exactly one more time. Both kinds of resource die with the cluster
+regardless of whether Terraform got to clean them up first, so forgetting Terraform ever created them
+costs nothing. If the retry also fails, the script exits non-zero having printed what it removed and
+the real remaining error; it does not loop further.
 
-**Both of these are symptoms of running `terraform destroy` directly instead of
-`./scripts/destroy.sh`**, which deletes the ArgoCD Application and both Ingresses first and reaps
-orphaned ENIs in the background. A raw destroy still completes, but expect to clear the state entries
-above by hand, and note that a `terraform destroy` interrupted mid-run (e.g. by a command timeout)
-leaves an S3 state lock — read the lock id from `s3://<cluster_name>-tfstate-<account_id>/voteball/
-main.tfstate.tflock` and `terraform force-unlock` it before re-running.
+**A `terraform destroy` interrupted mid-run (Ctrl-C, a command timeout) leaves an S3 state lock.**
+`destroy.sh` detects `Error acquiring the state lock` and prints the exact recovery — the lock file's
+path (`s3://<cluster_name>-tfstate-<account_id>/voteball/main.tfstate.tflock`), the lock id parsed out
+of Terraform's own error, and the `terraform force-unlock <id>` command — rather than clearing it
+automatically: a held lock can legitimately mean another operator is mid-apply, and force-unlocking
+that case can corrupt state, so that judgment call is left to whoever runs the script.
 
 RDS takes a **final snapshot on destroy** (since 2026-07-20), so destroy→rebuild preserves votes;
 `find-latest-snapshot.sh` picks the newest one up automatically before the next apply. Two traps
@@ -449,13 +462,18 @@ around this, both hit for real on the 2026-07-27 rebuild (see `docs/production-r
   snapshot and **retained automated backups** (`delete_automated_backups = false`). Don't count the
   dumps when deciding whether a teardown is safe.
 
-Two teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
+Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
 - **`./scripts/cleanup-stale-dns.sh`** removes this cluster's Route53 records if external-dns didn't get
   to it first (it only reconciles on a timer and can be destroyed before noticing the deleted Ingress).
   Gated on the ownership TXT (`external-dns/owner=voteball`), so apex/MX/DKIM records are never eligible.
 - **An orphaned-ENI reaper** runs in the background during destroy. The VPC CNI leaves detached
   `aws-K8S-*` interfaces when nodes terminate, and they make Terraform retry `DeleteSubnet` against a
   `DependencyViolation` for 10–20 minutes. See `docs/deploy.md` troubleshooting for the manual command.
+- **Pre-uninstalling `voteball`/`jenkins`/`jenkins-support` via Helm while the cluster is still
+  healthy**, and **one bounded automatic retry** (state-rm on `helm_release.*`/`kubernetes_*` only,
+  never `aws_*`) if `terraform destroy` still hangs — see above for both.
+- **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
+  never force-unlocks on its own (see above).
 
 **Do not add `ignore_changes` to `final_snapshot_identifier`** in `database.tf` — the provider reads it
 from state at destroy time, so that silently disables the final snapshot *and* wedges the VPC teardown.
