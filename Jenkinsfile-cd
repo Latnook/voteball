@@ -26,6 +26,11 @@ pipeline {
     string(name: 'IMAGE_DIGEST', defaultValue: '', description: 'Backend image digest, recorded for traceability.')
     string(name: 'SOURCE_BUILD', defaultValue: '', description: 'The application-ci build number this came from.')
     string(name: 'NAMESPACE',    defaultValue: 'devops-app', description: 'Target namespace. Allowlisted.')
+    // Internal -- set only by this pipeline's own rollback invocation (post > failure below), never
+    // by a human or by application-ci. Bounds the rollback-retriggers-rollback oscillation: see the
+    // comment at the ROLLBACK_DEPTH check in post > failure for why "previous != TAG" alone cannot
+    // stop it.
+    string(name: 'ROLLBACK_DEPTH', defaultValue: '0', description: 'Internal: rollback recursion depth. Do not set by hand.')
   }
 
   stages {
@@ -61,8 +66,14 @@ pipeline {
           if (!(params.NAMESPACE in ['devops-app'])) {
             error("NAMESPACE '${params.NAMESPACE}' is not allowlisted.")
           }
-          if (!env.AWS_REGION || !env.CLUSTER_NAME) {
-            error('AWS_REGION and CLUSTER_NAME must be set as Jenkins global environment variables.')
+          // APP_DOMAIN is a Jenkins global environment variable set via JCasC globalNodeProperties,
+          // same mechanism as AWS_REGION/CLUSTER_NAME -- it does NOT reach agent pods any other way
+          // (agents do not inherit the controller pod's own environment). Checked here, not left to
+          // fail inside Smoke Test's `set -eu`: by Smoke Test, PROMOTE_SHA is already set, so an
+          // "unbound variable" abort there would trigger the automatic rollback below against a
+          // deploy that actually worked. Failing here costs nothing -- nothing has been promoted yet.
+          if (!env.AWS_REGION || !env.CLUSTER_NAME || !env.APP_DOMAIN) {
+            error('AWS_REGION, CLUSTER_NAME and APP_DOMAIN must be set as Jenkins global environment variables.')
           }
           env.TAG = params.IMAGE_TAG
           env.ECR_REPOS = "${env.CLUSTER_NAME}-backend ${env.CLUSTER_NAME}-worker " +
@@ -117,6 +128,18 @@ pipeline {
             chmod 600 ~/.ssh/known_hosts
 
             sed -i -E "s/^  tag: \".*\"/  tag: \"$TAG\"/" charts/voteball/values.yaml
+
+            # Assert the rewrite actually landed, rather than trusting the sed exit code. sed exits 0
+            # whether or not its pattern matched anything -- if the tag: line's shape ever drifts
+            # (re-indented, unquoted), the file silently keeps its OLD tag, `git diff --cached --quiet`
+            # then reports no change, the log prints "already names $TAG" (false), ArgoCD syncs the
+            # unchanged old tag, and Verify/Smoke Test both pass because that old version is healthy --
+            # a green build that deployed nothing. Same failure class G3b guards against elsewhere.
+            grep -q "^  tag: \"$TAG\"" charts/voteball/values.yaml || {
+              echo "values.yaml does not name $TAG after the sed -- the tag: line's shape must have" >&2
+              echo "changed (indentation/quoting). Refusing to report success on an unrewritten file." >&2
+              exit 1
+            }
 
             git config user.name  "jenkins"
             git config user.email "jenkins@voteball.local"
@@ -258,13 +281,29 @@ pipeline {
         // rolling back then would deploy an older tag for no reason.
         if (env.PROMOTE_SHA) {
           def previous = sh(script: 'scripts/ci/previous-tag.sh', returnStdout: true).trim()
-          if (previous && previous != env.TAG) {
+          def depth = (params.ROLLBACK_DEPTH ?: '0').toInteger()
+          // Bound against unbounded oscillation. "previous != env.TAG" alone does NOT stop this:
+          // deploy c fails -> rollback commits b, that build ALSO fails -> its previous-tag.sh now
+          // reads c (the commit just before b) -> rolls back to c -> its previous-tag.sh reads b ->
+          // rolls back to b -> ... forever. previous != TAG is true at every single step of that
+          // cycle, since b and c keep alternating -- reproduced for real (b, c, b, c, ...) against a
+          // scratch repo and the real previous-tag.sh. Refusing to recurse past one rollback breaks
+          // the cycle: the SECOND failure in a row means the problem is not "which tag", so it stops
+          // and waits for a human instead of flapping production and pushing a commit every cycle.
+          if (depth >= 1) {
+            echo "NO ROLLBACK: this build is ITSELF a rollback (depth ${depth}) and it also failed " +
+                 "verification. Refusing to roll back again -- PRODUCTION IS LEFT RUNNING ${env.TAG}, " +
+                 "WHICH FAILED VERIFICATION, AND NEEDS A HUMAN. See docs/cicd.md for the manual " +
+                 "rollback procedure."
+            currentBuild.description = "${currentBuild.description} | ROLLBACK STOPPED -- NEEDS A HUMAN"
+          } else if (previous && previous != env.TAG) {
             echo "ROLLING BACK to ${previous} (this deploy of ${env.TAG} failed verification)."
             currentBuild.description = "${currentBuild.description} | ROLLED BACK to ${previous}"
             build job: 'application-cd', wait: false, parameters: [
-              string(name: 'IMAGE_TAG',    value: previous),
-              string(name: 'IMAGE_DIGEST', value: ''),
-              string(name: 'SOURCE_BUILD', value: "rollback-from-${env.BUILD_NUMBER}"),
+              string(name: 'IMAGE_TAG',     value: previous),
+              string(name: 'IMAGE_DIGEST',  value: ''),
+              string(name: 'SOURCE_BUILD',  value: "rollback-from-${env.BUILD_NUMBER}"),
+              string(name: 'ROLLBACK_DEPTH', value: "${depth + 1}"),
             ]
           } else {
             echo "NO ROLLBACK: could not determine a previous tag distinct from ${env.TAG}. " +
