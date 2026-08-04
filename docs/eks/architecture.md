@@ -165,6 +165,168 @@ separate so the graded application namespace contains only the application, and 
 
 ---
 
+## 5. Pipeline Flow — commit to running site
+
+Required by *משימה 4* §7 ("Pipeline Flow: הסדר הלוגי: commit, CI, tests, image build, registry, CD,
+rollout, smoke test ו-rollback"). Stage names and order below are read directly from `Jenkinsfile-ci`
+and `Jenkinsfile-cd`, not summarized from memory — grep them yourself with
+`grep -n "stage('" Jenkinsfile-ci Jenkinsfile-cd` if this drifts again.
+
+```mermaid
+flowchart TD
+    dev["Developer pushes to master"] --> gh["GitHub"]
+    gh -->|"webhook -> https://jenkins.voteball.latnook.com/github-webhook"| guard
+
+    subgraph ci["application-ci  (agent: voteball-build, SA: jenkins-agent -- ECR push)"]
+        guard{"Guard: is this our<br/>own commit? [skip ci]"}
+        guard -->|"yes"| stop(["NOT_BUILT -- loop broken"])
+        guard -->|"no"| validate["Validation<br/>repo-shape checks"]
+        validate --> lint["Lint / Static Analysis<br/>ruff + hadolint"]
+        lint --> tests["Tests<br/>153 pytest, Postgres sidecar"]
+        tests --> resolve["Resolve tag and account"]
+        resolve --> built{"Already built?<br/>tag in ECR?"}
+        built -->|"no"| build["Build images<br/>rootless BuildKit x4"]
+        build --> scan["Trivy scan<br/>fail on HIGH/CRITICAL<br/>backup image: report only"]
+        scan --> push["Push to ECR<br/>skopeo, tag = commit SHA"]
+        built -->|"yes"| meta
+        push --> meta["Publish Metadata<br/>image-metadata.json + digest"]
+        meta --> trigger["Trigger CD<br/>build application-cd, wait:false"]
+    end
+
+    tests -.->|"any test fails"| failci(["FAILED -- nothing built, nothing deployed"])
+    scan -.->|"HIGH/CRITICAL"| failci
+
+    trigger -->|"IMAGE_TAG, IMAGE_DIGEST, SOURCE_BUILD"| inval
+
+    subgraph cd["application-cd  (agent: voteball-deploy, SA: jenkins-cd-agent -- ECR READ-ONLY)"]
+        inval["Input Validation<br/>not latest, is a SHA, images in ECR, NAMESPACE allowlisted"]
+        inval --> manval["Manifest Validation<br/>helm lint + template + kubectl apply --dry-run=client"]
+        manval --> promote["Promote<br/>write image.tag, commit skip ci, push"]
+        promote --> sync["Deploy<br/>argocd app sync --revision"]
+        sync --> wait["Rollout<br/>argocd app wait --sync --health"]
+        wait --> verify["Verify<br/>argocd app get: Synced + Healthy + revision"]
+        verify --> smoke["Smoke Test<br/>HTTPS GET /health and /api/results"]
+        smoke -->|"pass"| done(["Deployed and verified"])
+        smoke -.->|"fail"| rb
+        wait -.->|"timeout"| rb
+        verify -.->|"degraded"| rb
+        rb{"Rollback -- is this build<br/>ITSELF already a rollback?<br/>ROLLBACK_DEPTH >= 1"}
+        rb -->|"no: re-run CD on the<br/>previous tag, depth + 1"| promote
+        rb -->|"yes: stop -- production<br/>left running, needs a human"| stophuman(["NO ROLLBACK -- needs a human"])
+    end
+
+    promote -->|"commit to master"| argo
+    sync -.->|"sync request"| argo
+    argo["ArgoCD<br/>the only thing that applies to the cluster"] -->|"server-side apply"| k8s["devops-app<br/>frontend / backend / worker"]
+```
+
+**Reading it:** everything inside `application-cd` is a *request* or a *read* — `argocd app sync` /
+`app wait` / `app get`, never `kubectl apply` or `kubectl rollout`. The only arrow that writes to the
+cluster comes from ArgoCD, because Jenkins holds no permission to apply anything — see
+`charts/jenkins-support/templates/rbac.yaml`. **Rollback is bounded, not an unbounded retry loop:** a
+failed deploy re-runs `application-cd` against the previous tag exactly once (`ROLLBACK_DEPTH`
+incremented); if that rollback *also* fails verification, the pipeline stops and leaves production on
+whatever is currently running rather than oscillating between two tags forever — see the `post >
+failure` block in `Jenkinsfile-cd` for the reproduced b/c/b/c cycle this bound closes.
+
+---
+
+## 6. Deployment View — what runs where
+
+Required by *משימה 4* §7 ("Deployment View: היכן Jenkins והאפליקציה רצים: clusters, namespaces, Pods,
+Services, storage ו-network boundaries").
+
+```mermaid
+flowchart LR
+    internet(["Internet"])
+
+    subgraph aws["AWS account -- il-central-1"]
+        subgraph vpc["VPC 10.0.0.0/16"]
+            alb["ALB group: voteball<br/>HTTPS via ACM"]
+
+            subgraph eks["EKS cluster -- Spot node group, private subnets"]
+                subgraph nsci["namespace: ci"]
+                    jc["jenkins-0 StatefulSet<br/>numExecutors 0 -- runs no builds<br/>SA: jenkins -- no AWS role"]
+                    pvc[("PVC: jenkins-home<br/>storageClass efs-sc, Retain")]
+                    ab["agent pod: voteball-build<br/>buildkit, trivy, skopeo, awscli,<br/>python, postgres, hadolint<br/>SA: jenkins-agent -- ECR push"]
+                    ad["agent pod: voteball-deploy<br/>deploy: kubectl+helm+awscli+jq+curl<br/>argocd: argocd CLI<br/>SA: jenkins-cd-agent -- ECR read-only"]
+                end
+
+                subgraph nsargo["namespace: argocd"]
+                    ac["argocd-server + controller<br/>the only applier"]
+                end
+
+                subgraph nsapp["namespace: devops-app"]
+                    fe["frontend x2<br/>nginx-unprivileged :8080"]
+                    be["backend x2<br/>Flask"]
+                    wk["worker x1"]
+                end
+            end
+
+            subgraph iso["isolated DB subnets"]
+                rds[("RDS PostgreSQL<br/>sslmode=require")]
+            end
+
+            efs[("EFS filesystem<br/>mount target per AZ")]
+        end
+
+        ecr[("ECR -- 4 app repos, IMMUTABLE<br/>+ buildcache, trivy-db")]
+        sm[("Secrets Manager<br/>voteball/app-secret, voteball/jenkins")]
+        s3[("S3 -- backups, rollups")]
+        sns[("SNS -- milestone alerts")]
+    end
+
+    internet -->|"HTTPS voteball.latnook.com"| alb
+    internet -->|"HTTPS jenkins.voteball.latnook.com/github-webhook ONLY"| alb
+    alb --> fe
+    alb -->|"webhook path only -- the UI has no ALB rule"| jc
+
+    jc -.->|"provisions"| ab
+    jc -.->|"provisions"| ad
+    jc --- pvc
+    pvc -.-> efs
+
+    ab -->|"push images"| ecr
+    ad -->|"describe images, read-only"| ecr
+    ad -->|"sync / wait / get"| ac
+    ad -.->|"read-only: deployments, pods, services, events, logs, ingresses"| nsapp
+    ac ==>|"server-side apply -- the ONLY write path"| nsapp
+
+    fe --> be
+    be --> rds
+    wk --> rds
+    wk --> sns
+    wk --> s3
+
+    sm -.->|"External Secrets Operator"| nsci
+    sm -.->|"External Secrets Operator"| nsapp
+
+    ab -.->|"NetworkPolicy denies any route to RDS and devops-app"| rds
+```
+
+**Boundaries that matter:**
+
+- **Only two paths from the internet exist**: the app on `voteball.latnook.com`, and exactly one path,
+  `/github-webhook`, on `jenkins.voteball.latnook.com`. The Jenkins UI, script console and credential
+  store have no ALB rule reaching them and are unreachable from outside the cluster; operators use
+  `kubectl port-forward -n ci svc/jenkins 8080:8080`.
+- **The `ci` namespace cannot reach RDS or `devops-app`** — its egress NetworkPolicy allows the
+  internet but excludes the VPC's own CIDR ranges, so it is enforced structurally, not by convention.
+- **The double arrow is the only write into `devops-app`.** Jenkins' CD agent (`jenkins-cd-agent`)
+  holds a strictly read-only Role in `devops-app` — `get`/`list`/`watch` on deployments, replicasets,
+  pods, services, events, ingresses, plus `get` on pod logs, and nothing else; every change is applied
+  by ArgoCD.
+- **The controller carries no AWS role at all.** Only the two agent ServiceAccounts do:
+  `jenkins-agent` can push to ECR, `jenkins-cd-agent` can only read it.
+- **`JENKINS_HOME` is a PersistentVolumeClaim on EFS, not an `emptyDir`.** EFS has a mount target in
+  every AZ, so a rescheduled controller pod is never stuck waiting for a volume to follow it back to
+  one AZ the way an EBS-backed PVC would be — see `terraform/addon-efs.tf`. The storage class reclaim
+  policy is `Retain`, so an accidental `helm uninstall` doesn't take build history with it; losing the
+  filesystem is still a recoverable event, since JCasC rebuilds the controller's configuration from
+  git on every boot regardless of what the volume holds.
+
+---
+
 ## What builds what
 
 - **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS (7-day PITR), ECR, ACM, WAF, S3,
