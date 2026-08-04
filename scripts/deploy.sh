@@ -198,6 +198,31 @@ terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
 step "7/11  Pointing kubectl at the cluster"
 aws eks update-kubeconfig --name "$CLUSTER" --region "$REGION"
 
+step "7b/11 Minting the ArgoCD CD token"
+# Nothing else ever generates ARGOCD_AUTH_TOKEN. seed-jenkins-secret.sh (step 3b) only ever copies
+# it from the environment -- empty on a fresh install, since ArgoCD does not exist yet at step 3b --
+# and it exits early once a deploy key is present, so a re-seed can never fill it in either. Left
+# alone, application-cd's Deploy stage fails at every future build with an ArgoCD auth error, while
+# this whole script reports success. This step is that fix.
+#
+# Has to run HERE, not earlier: the jenkins-cd account is created by step 6's full apply
+# (terraform/addon-argocd.tf's accounts.jenkins-cd), and reaching argocd-server needs the kubectl
+# context step 7 just set up. It has to run before anyone would expect CD to work -- i.e. before any
+# push can trigger application-cd -- so it lands here rather than at the end of the script.
+#
+# Idempotent: a no-op on every run except right after a fresh destroy/rebuild, when the secret's
+# token is empty or has gone stale.
+#
+# NOT FATAL, same treatment as steps 3c and 11b and for the same reason: everything up to here has
+# already succeeded, and failing the whole deploy over an ArgoCD API call would misreport a working
+# cluster as broken. It warns loudly instead, with the one command that fixes it standalone.
+if ! ./scripts/seed-argocd-token.sh; then
+  echo
+  echo "WARNING: could not mint/verify the ArgoCD token for the jenkins-cd account." >&2
+  echo "         The deploy continues, but application-cd's Deploy stage will fail auth until this" >&2
+  echo "         is fixed. Run standalone once the cluster is up:  ./scripts/seed-argocd-token.sh" >&2
+fi
+
 step "8/11  Building and pushing container images"
 ./scripts/build-push-ecr.sh
 
