@@ -319,7 +319,10 @@ pipeline {
     // delete the workspace BEFORE the failure block above runs previous-tag.sh, which needs the git
     // repository. The rollback would then fail on exactly the path it exists for.
     cleanup {
-      cleanWs()
+      // deleteDir(), not cleanWs() -- see the identical note in Jenkinsfile-ci's post { always }.
+      // The ws-cleanup plugin (which cleanWs() needs) is not in ci/jenkins/plugins.txt; deleteDir()
+      // is a core Jenkins step that clears the same workspace without it.
+      deleteDir()
     }
   }
 }

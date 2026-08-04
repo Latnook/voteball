@@ -87,7 +87,13 @@ pipeline {
           sh '''
             set -eu
             pip install --quiet --no-cache-dir ruff==0.8.4
-            ruff check services/backend services/worker
+            # `ruff` (bare) is not on PATH here: this pod runs as uid 1000 with HOME=/tmp, so pip
+            # does a user install into $HOME/.local/bin, which nothing adds to PATH. The install
+            # succeeds and `ruff check` then fails with "ruff: not found", exit 127 -- a missing-tool
+            # error that reads like the pip install itself failed. `python -m ruff` sidesteps PATH
+            # entirely by asking the interpreter to run the installed module directly (confirmed
+            # ruff supports -m invocation: `python -m ruff --version` works).
+            python -m ruff check services/backend services/worker
           '''
         }
         container('hadolint') {
@@ -119,12 +125,18 @@ pipeline {
             # Wait for the sidecar: containers in a pod start concurrently, and psycopg2 connecting
             # before Postgres is listening fails with "could not connect", which reads like a
             # configuration error rather than a race.
+            #
+            # This does NOT use pg_isready: that binary ships with postgres-client packages, not with
+            # the `python` image, so it would fail with "not found", exit 127 -- the same class of
+            # bug as the ruff one above, just one stage later. A plain TCP connect via the stdlib
+            # (connect_ex returns 0 on success, no extra package needed) is enough to confirm the
+            # sidecar has opened its listening socket, which is all this loop needs to know.
             for i in $(seq 1 30); do
-              pg_isready -h localhost -p 5432 -q && break
+              python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)" && break
               echo "waiting for postgres ($i/30)"
               sleep 2
             done
-            pg_isready -h localhost -p 5432 || { echo "postgres sidecar never became ready"; exit 1; }
+            python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)" || { echo "postgres sidecar never became ready"; exit 1; }
 
             pip install --quiet --no-cache-dir -r services/backend/requirements-dev.txt
             (cd services/backend && python -m pytest tests -q --junitxml=/images/backend-tests.xml)
@@ -471,7 +483,13 @@ pipeline {
       }
       // The brief's Cleanup stage. The pod is destroyed anyway, but an explicit clean is what makes
       // the guarantee independent of that.
-      cleanWs()
+      //
+      // deleteDir(), not cleanWs(): cleanWs() is the ws-cleanup plugin's step, and that plugin is
+      // not in ci/jenkins/plugins.txt. Adding it means rebuilding the controller image and a
+      // terraform apply -- too heavy for what this stage needs. deleteDir() is a Jenkins core step
+      // (no plugin required) and empties the same workspace directory. Do not swap this back to
+      // cleanWs() without also adding ws-cleanup to plugins.txt and rebuilding the image.
+      deleteDir()
     }
     // G5's `docker image prune` is DELETED, not ported: it existed because the EC2 host was
     // persistent. A pod agent is destroyed after every build, so the disk cleans itself.
