@@ -173,7 +173,7 @@ Parameters: `IMAGE_TAG` (required), `IMAGE_DIGEST` (optional), `SOURCE_BUILD` (o
 | 3 | Manifest Validation | `helm lint charts/voteball`; `helm template … --set image.tag=$IMAGE_TAG`; `kubectl create --dry-run=client -f -` against the rendered output (§4 explains why `create`, not `apply`, and not `=server`) |
 | 4 | Authenticate | in-cluster ServiceAccount `jenkins-cd-agent`; `kubectl auth can-i` self-check proves the token works and is scoped (§4) |
 | 5 | Promote | rewrite `image.tag` in `charts/voteball/values.yaml`, commit `ci: image tag <sha> [skip ci]`, push to `master` |
-| 6 | Deploy | `argocd app sync voteball --revision <promote-commit> --timeout 300` |
+| 6 | Deploy | `argocd app sync voteball --timeout 300` — no `--revision` (see the build #3 verification outcome below); Promote already pushed the tag bump to the tracked branch, so syncing it reaches the promoted commit |
 | 7 | Rollout | `argocd app wait voteball --sync --health --timeout 300` — ArgoCD's own health model, **not** a reimplementation of it with `kubectl rollout status` |
 | 8 | Verify | `argocd app get voteball -o json`: assert `sync.status == Synced`, `health.status == Healthy`, and `sync.revision` equals the promote commit. One `kubectl get deployments,pods,services,ingress -n $NAMESPACE` afterwards **purely to capture the brief's §10 evidence**, not as a second opinion |
 | 9 | Smoke Test | `scripts/ci/smoke-test.sh` — HTTPS `GET /health` expecting 200, `GET /api/results` expecting 200 and parseable JSON containing the expected keys, retried with backoff |
@@ -260,6 +260,29 @@ exists. ArgoCD's real server-side apply, moments later, remains the actual safet
 narrows what can reach it, and the CD Jenkinsfile's own comment states this rather than leaving the
 narrower coverage implicit. The log states which form ran and what it does and does not cover, so
 nothing degrades silently.
+
+**Verification outcome (application-cd build #3, 2026-08-04): `--revision` on Deploy was also
+wrong.** The build passed Checkout, Input Validation, Manifest Validation and Promote — the tag-bump
+commit really did land on `master` — then failed in Deploy with `argocd app sync voteball --revision
+"$PROMOTE_SHA" --timeout 300` returning `rpc error: code = FailedPrecondition desc = Cannot sync to
+<sha>: auto-sync currently set to master`. The `voteball` Application's `syncPolicy.automated` is set
+(`prune: true`, `selfHeal: true`, confirmed both in `argocd/voteball-application.yaml.tmpl` and against
+the live Application) with `targetRevision: master`. With automated sync enabled, ArgoCD refuses to pin
+a sync to an arbitrary revision — the whole point of automated sync is that it follows the tracked
+branch, so a pinned `--revision` is a contradiction of the policy the Application already declares, not
+a stricter form of it.
+
+The `--revision "$PROMOTE_SHA"` was over-specification, not extra precision: Promote (stage 5) already
+pushed the tag bump to `master` before Deploy runs, so a plain `argocd app sync voteball` — no
+revision — syncs `master`, which at that point *is* the promoted commit. This was confirmed live: even
+though the CLI call failed, ArgoCD's own automated sync picked up the promoted commit on its own and
+rolled the Deployments to the new tag without Jenkins' help. The fix removes `--revision` and keeps the
+`sync` call itself, which still forces an immediate reconciliation instead of waiting out the polling
+interval. **The right response to the rejection is not to disable automated sync so `--revision` can be
+readded** — `selfHeal` is what keeps the cluster matching git between deploys, and giving that up to
+regain a redundant flag would be a worse trade than the flag was worth. The Verify stage's assertion
+that `status.sync.revision` equals `$PROMOTE_SHA` is unchanged and is now the sole thing confirming
+ArgoCD landed on *this* build's commit rather than a newer one that raced in before reconciliation.
 
 The ArgoCD CLI authenticates with a dedicated ArgoCD **local account** (`jenkins-cd`) declared in
 `terraform/addon-argocd.tf`'s `argocd-cm`, granted only `applications, sync/get/action` on

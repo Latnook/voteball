@@ -211,12 +211,28 @@ pipeline {
             // the server.
             //
             // --grpc-web because the server does not proxy raw HTTP/2 gRPC through this path.
+            //
+            // NO --revision HERE -- deliberately. The `voteball` Application
+            // (argocd/voteball-application.yaml.tmpl) has `syncPolicy.automated` set
+            // (prune: true, selfHeal: true) and `targetRevision: master`. With automated sync
+            // enabled, ArgoCD refuses to pin a sync to an arbitrary commit: build #3 called
+            // `argocd app sync voteball --revision "$PROMOTE_SHA"` and the server rejected it with
+            // `FailedPrecondition: Cannot sync to <sha>: auto-sync currently set to master` --
+            // observed live, not theoretical. Promote (above) has already pushed the tag bump to
+            // master, so syncing master IS syncing the promoted commit; naming the revision again
+            // was over-specification, not extra precision. This call still earns its place without
+            // --revision: it forces an immediate reconciliation instead of waiting out ArgoCD's
+            // polling interval. Do NOT "fix" the FailedPrecondition by disabling automated sync so
+            // --revision works again -- selfHeal is what keeps the live cluster matching git if
+            // anything drifts between deploys, and losing that to regain a redundant flag is the
+            // wrong trade. The Verify stage below still asserts status.sync.revision == PROMOTE_SHA,
+            // which is what actually confirms ArgoCD landed on this build's commit rather than a
+            // newer one that raced in.
             sh '''
               set -eu
               argocd app sync voteball \
                 --server argocd-server.argocd.svc.cluster.local \
                 --grpc-web --insecure \
-                --revision "$PROMOTE_SHA" \
                 --timeout 300
             '''
           }
