@@ -300,13 +300,24 @@ pipeline {
         // token become a command-line ARGUMENT anywhere: every step that touches it either writes
         // straight to a file (`>`) or reads one via `cat`/a pipe, and a traced `cat <path>` or
         // `base64 -w0` logs only the command name and the filename, never the file's contents.
+        //
+        // NEWLINE, FIXED 2026-08-04: the leak fix above swapped $(...) for cat, which stopped the
+        // leak but dropped $(...)'s side effect of trimming trailing newlines. aws ecr
+        // get-login-password's output ends in a newline, and `>`/`cat` both preserve it, so the
+        // base64 "auth" value below silently encoded "AWS:<token>\n" instead of "AWS:<token>" --
+        // buildctl then got a 401 from ECR at the END of the build, reading like an IAM problem
+        // rather than a one-byte formatting bug. Two constraints pull opposite ways here, and
+        // fixing one tends to re-break the other -- keep both in mind together: (1) the token must
+        // never reach an ARGUMENT position, per the LEAK note above (commit 2c3cbcf), and (2) that
+        // trailing newline must still be stripped, or the base64 auth is corrupt. `tr -d` on a file
+        // redirect satisfies both: the value never leaves file/pipe form, and the newline is gone.
         container('awscli') {
           sh '''
             set -eu
             umask 077
             mkdir -p /images/dockercfg
             aws ecr get-login-password --region "$AWS_REGION" > /images/dockercfg/password
-            { printf 'AWS:'; cat /images/dockercfg/password; } | base64 -w0 > /images/dockercfg/auth
+            { printf 'AWS:'; tr -d '\\n' < /images/dockercfg/password; } | base64 -w0 > /images/dockercfg/auth
             {
               printf '{"auths":{"%s":{"auth":"' "$ECR_REGISTRY"
               cat /images/dockercfg/auth
