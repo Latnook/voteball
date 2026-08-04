@@ -101,9 +101,17 @@ pipeline {
             set -eu
             for svc in backend worker frontend backup; do
               echo "--- hadolint services/$svc/Dockerfile ---"
-              # DL3008/DL3013 (unpinned apt/pip versions) are informational here; the Dockerfiles
-              # pin via requirements.txt, which hadolint cannot see.
-              hadolint --ignore DL3008 --ignore DL3013 "services/$svc/Dockerfile"
+              # DL3008 (unpinned apt version), DL3013 (unpinned pip version) and DL3018 (unpinned
+              # apk version) are all the same class of rule -- hadolint wants a package-manager
+              # command to pin an exact version, and this project pins dependencies a different way
+              # (requirements.txt for pip; nothing pins apt/apk packages, deliberately) that hadolint
+              # cannot see into. A pinned Alpine/Debian package version is not more reproducible here
+              # -- it is a build that breaks the moment that exact version leaves the distro's index,
+              # which is an arbitrary future failure with a confusing message, not a real guarantee.
+              # (services/backup/Dockerfile pinned aws-cli=2.34.63-r0 for exactly one commit,
+              # 3f8ea6f, before this ignore replaced it -- see git history for why that pin was
+              # reverted.)
+              hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 "services/$svc/Dockerfile"
             done
           '''
         }
@@ -144,8 +152,8 @@ pipeline {
             pip install --quiet --no-cache-dir -r services/worker/requirements-dev.txt
             (cd services/worker && python -m pytest tests -q --junitxml=/images/worker-tests.xml)
 
-            # The shared volume is mounted at /images, OUTSIDE the Jenkins workspace -- junit below
-            # can only read files under $WORKSPACE. No `|| true`: if the XML is missing, the tests
+            # The shared volume is mounted at /images, OUTSIDE the Jenkins workspace -- archiveArtifacts
+            # below can only read files under $WORKSPACE. No `|| true`: if the XML is missing, the tests
             # did not run, and that must fail loudly rather than be swallowed.
             cp /images/*-tests.xml "$WORKSPACE"/
           '''
@@ -153,9 +161,22 @@ pipeline {
       }
       post {
         always {
-          // allowEmptyResults:false -- a Tests stage that silently published nothing is exactly the
-          // "green build that verified nothing" failure this whole split exists to prevent.
-          junit allowEmptyResults: false, testResults: '*-tests.xml'
+          // archiveArtifacts, NOT junit: the JUnit plugin is absent from this controller image (it
+          // is not in ci/jenkins/plugins.txt), and 'junit' failed here with NoSuchMethodError on a
+          // live build (CI build 11) after all 188 tests had already passed -- the tests ran and
+          // passed, only the report step didn't exist. Adding the plugin means editing
+          // ci/jenkins/plugins.txt AND rebuilding the controller image AND a terraform apply -- all
+          // three, not just the plugins.txt line -- so don't swap this back to junit without doing
+          // all of them.
+          //
+          // allowEmptyArchive:false keeps the same fail-loudly guarantee junit's
+          // allowEmptyResults:false gave: if the XML files are missing, the tests did not actually
+          // run, and that must fail the stage rather than pass quietly.
+          //
+          // Note this step only PUBLISHES results -- it is not the test gate. The gate is pytest's
+          // own exit code under `set -eu` in the stage above: a failing test fails the stage (and
+          // the pipeline) regardless of how, or whether, results get archived here.
+          archiveArtifacts artifacts: '*-tests.xml', allowEmptyArchive: false
         }
       }
     }
