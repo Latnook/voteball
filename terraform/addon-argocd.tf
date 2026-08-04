@@ -62,6 +62,12 @@ resource "helm_release" "argocd" {
         "policy.csv" = <<-EOT
           p, role:jenkins-cd, applications, get,  voteball/voteball, allow
           p, role:jenkins-cd, applications, sync, voteball/voteball, allow
+          # `argocd app get` (Verify, stage 8 of Jenkinsfile-cd) also resolves the Application's
+          # AppProject and needs read access to it -- without this line the deploy itself succeeds
+          # and Verify fails with "permission denied: projects, get, voteball" (application-cd builds
+          # #5 and #6, 2026-08-04). Read-only, scoped to the one project this account's Application
+          # lives in -- no update/delete/create, no wildcard.
+          p, role:jenkins-cd, projects, get, voteball, allow
           g, jenkins-cd, role:jenkins-cd
         EOT
       }

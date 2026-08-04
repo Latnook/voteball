@@ -289,6 +289,19 @@ The ArgoCD CLI authenticates with a dedicated ArgoCD **local account** (`jenkins
 `voteball/voteball` in `argocd-rbac-cm`. Its token is stored in Secrets Manager alongside the existing
 Jenkins secrets and reaches the pod through the existing ESO ExternalSecret — no new secret mechanism.
 
+**Verification outcome (application-cd builds #5 and #6, 2026-08-04): the RBAC policy was still one
+resource short.** Both builds got through Checkout, Input Validation, Manifest Validation, Promote,
+Deploy and Rollout — the deploy itself genuinely succeeded — then failed in Verify with `rpc error:
+code = PermissionDenied desc = permission denied: projects, get, voteball, sub: jenkins-cd`. `argocd
+app get` does not only read the Application; it also resolves and reads the AppProject the Application
+belongs to (named `voteball`, confirmed against `argocd/voteball-application.yaml.tmpl`), and the
+policy granted `applications, get/sync` on `voteball/voteball` but nothing on `projects`. The fix is
+one additional line, `p, role:jenkins-cd, projects, get, voteball, allow` — read-only, scoped to the
+single project this account's Application lives in, no `update`/`delete`/`create`, no wildcard. Same
+lesson as the build #1 outcome above: a permission grant scoped to "the one Application it deploys"
+still has to account for everything a read of that Application transitively touches, not just the
+Application object itself.
+
 ### 5. Running the tests needs a real Postgres
 
 `services/backend/tests/conftest.py` and `services/worker/tests/conftest.py` connect to a real
