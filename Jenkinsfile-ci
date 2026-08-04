@@ -393,6 +393,15 @@ pipeline {
                   --query 'imageDetails[0].imageDigest' --output text)"
                 printf '%s    "%s-%s": { "digest": "%s" }' "$sep" "$CLUSTER_NAME" "$svc" "$digest"
                 sep=",\\n"
+                # Captured here, at the moment it is computed, into its own file -- NOT re-parsed
+                # back out of the JSON afterwards. Grepping the JSON apart is what broke this the
+                # first time: an unterminated quote failed the stage outright, and even fixed,
+                # `grep -A1` on the backend line also captures the FOLLOWING service's line, so the
+                # second grep would return two sha256 values that .trim() silently concatenates into
+                # one bogus digest.
+                if [ "$svc" = backend ]; then
+                  printf '%s' "$digest" > backend-digest.txt
+                fi
               done
               printf '\\n  }\\n}\\n'
             } > image-metadata.json
@@ -401,9 +410,17 @@ pipeline {
         }
         archiveArtifacts artifacts: 'image-metadata.json', fingerprint: true
         script {
-          env.BACKEND_DIGEST = sh(
-            script: '''grep -A1 '"'"$CLUSTER_NAME"-backend"' image-metadata.json | grep -oE 'sha256:[0-9a-f]+' ''',
-            returnStdout: true).trim()
+          // Fail loudly rather than hand CD an empty or missing IMAGE_DIGEST: a Trigger CD build
+          // with a blank digest parameter would look like it ran with one and did not, and CD's
+          // Input Validation may not catch an empty string the same way it catches a missing one.
+          if (!fileExists('backend-digest.txt')) {
+            error('backend-digest.txt was not written -- the digest-capture loop in Publish ' +
+                  'Metadata did not run for svc=backend')
+          }
+          env.BACKEND_DIGEST = readFile('backend-digest.txt').trim()
+          if (!env.BACKEND_DIGEST) {
+            error('BACKEND_DIGEST is empty after reading backend-digest.txt')
+          }
         }
       }
     }
