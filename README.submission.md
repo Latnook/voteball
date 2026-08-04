@@ -448,7 +448,7 @@ is scoped to exactly what a reconciler structurally cannot do.**
 
 | Job | Owner | Why |
 |---|---|---|
-| Apply manifests to the cluster | **ArgoCD** | It already does, with server-side apply and field ownership. Jenkins has no write permission at all. |
+| Apply manifests to the cluster | **ArgoCD** | It already does, with server-side apply and field ownership. Jenkins holds no write permission in `devops-app` -- CD's Role there is strictly read-only (see "Security & RBAC" below); its only writes are the git-write deploy key for the tag-bump commit and `pods/exec create` in its own `ci` namespace, to run build steps in agent containers. |
 | Decide when a resource is healthy | **ArgoCD** | It has a health model per resource kind. `kubectl rollout status` on three Deployments would be a worse copy of it. |
 | Keep the cluster matching git | **ArgoCD** | `selfHeal`. Nothing in CD tries to hold the cluster in a state git disagrees with. |
 | Reconcile drift, prune removed resources | **ArgoCD** | Continuous, not per-build. |
@@ -570,14 +570,17 @@ deploy restores the votes. Each of those steps was added after a real teardown f
   pods use **IRSA** (no stored keys anywhere, ECR push only), the controller holds no AWS role and no
   cluster-deploy access, and its own credentials (deploy key, webhook secret) reach it only through
   ESO, never Secrets Manager calls made by Jenkins itself. Grafana/ArgoCD passwords auto-generated.
-- **Network:** only frontend is internet-facing; default-deny NetworkPolicies; RDS private, node-SG-only,
-  `sslmode=require`, encrypted.
+- **Network:** frontend is the only internet-facing *application* traffic (the shared ALB also
+  routes `/github-webhook` to Jenkins -- see "Network exposure" above); default-deny NetworkPolicies;
+  RDS private, node-SG-only, `sslmode=require`, encrypted.
 - **Ingress:** ALB + ACM HTTPS, HTTP→HTTPS redirect, **AWS WAF** rate-limiting `/api/vote` to 100
   requests / 5 min per address (verified live: a 300-request burst returned `403` while the rest of the
   site stayed `200` from the same address).
 - **Alerting:** Alertmanager → SNS via IRSA (`sns:Publish` on one topic, no SMTP credentials on the
   cluster); seven rules covering crashloops, degraded Deployments, and failed or *absent* backups.
-- **Containers:** non-root, no-priv-esc, read-only rootfs, all capabilities dropped.
+- **Containers:** non-root, no-priv-esc, read-only rootfs, all capabilities dropped -- except the
+  `buildkit` container in CI, whose narrow, documented exception (uid 1000, `SETUID`/`SETGID` only,
+  no host access) is what rootless BuildKit needs; see "Agent isolation" above.
 - **Images:** git-SHA tags (never `latest`), ECR scan-on-push + Trivy in CI (app images 0 CRITICAL/HIGH).
 
 ## Trade-offs & compromises

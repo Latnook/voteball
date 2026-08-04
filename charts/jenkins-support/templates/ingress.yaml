@@ -1,5 +1,6 @@
-# ONLY the webhook path is routed. The UI, script console and credential store are not reachable
-# from the internet at all -- the ALB has no rule that reaches them.
+# ONLY the webhook path is routed. This host sits on the same public ALB as the app (shared group
+# `voteball`), so the ALB itself is internet-facing -- what protects the UI, script console and
+# credential store is that no ALB rule reaches them, not that the load balancer is private.
 #
 # This is a deliberate tightening over the EC2 host, whose security group exposed the ENTIRE Jenkins
 # UI to GitHub's CIDR ranges over plaintext HTTP (terraform/jenkins/main.tf:41-47 recorded that as
