@@ -18,7 +18,17 @@ pipeline {
     disableConcurrentBuilds()
     buildDiscarder(logRotator(numToKeepStr: '20'))
     timestamps()
-    timeout(time: 20, unit: 'MINUTES')
+    // 30, not 20. Deploy and Rollout below were each raised 300s -> 600s (see the comments at those
+    // two `sh` blocks for why), so their worst case alone is 1200s -- already 20 minutes, the entire
+    // old budget, with nothing left for Checkout/Input Validation/Manifest Validation/Promote/Verify/
+    // Smoke Test. Those six stages together have never been observed anywhere near 10 minutes (build
+    // #9's ENTIRE pipeline, all eight stages, went green in ~90s with warm images), so 30 minutes
+    // (1800s) leaves a ~600s cushion over the 1200s worst-case Deploy+Rollout alone. A pipeline-level
+    // timeout firing mid-rollout aborts the build exactly like a stage-level one does -- same false
+    // rollback of a healthy deploy, just triggered from the outer `options` block instead of `argocd
+    // app sync`/`wait`. Raising only the two inner timeouts without this one would have reintroduced
+    // build #10's failure by a different route.
+    timeout(time: 30, unit: 'MINUTES')
   }
 
   parameters {
@@ -228,12 +238,23 @@ pipeline {
             // wrong trade. The Verify stage below still asserts status.sync.revision == PROMOTE_SHA,
             // which is what actually confirms ArgoCD landed on this build's commit rather than a
             // newer one that raced in.
+            // 600, not 300. Build #10 timed out here at 300s: it deployed tag 9474665, freshly built
+            // by CI moments earlier, so none of its four images had ever been pulled onto the nodes --
+            // the rollout had to pull all four before pods could go Ready. Build #9 (tag 241bed6, warm
+            // images already on the nodes) went fully green in ~90s. ArgoCD itself was fine both times
+            // -- the app reached Synced/Healthy on its own after build #10's "failure" too, and all
+            // four 9474665 images were confirmed present in ECR throughout. A timeout here is not
+            // merely slow: it FAILS this stage, which trips the automatic rollback in `post > failure`
+            // below and reverts a perfectly healthy deploy purely because image pulls were slow on a
+            // small Spot node group. 600s covers a cold-image first deploy with room to spare without
+            // being so long that a genuinely stuck sync blocks the pipeline for the bulk of its now-30-
+            // minute budget (see the `options.timeout` comment above for that arithmetic).
             sh '''
               set -eu
               argocd app sync voteball \
                 --server argocd-server.argocd.svc.cluster.local \
                 --grpc-web --insecure \
-                --timeout 300
+                --timeout 600
             '''
           }
         }
@@ -246,12 +267,16 @@ pipeline {
       steps {
         container('argocd') {
           withCredentials([string(credentialsId: 'argocd-auth-token', variable: 'ARGOCD_AUTH_TOKEN')]) {
+            // 600, not 300 -- same reasoning as the `argocd app sync --timeout` above (build #10: cold
+            // images on Spot nodes vs. build #9's ~90s warm-image run), and the same consequence: a
+            // timeout here fails the Rollout stage and triggers the same automatic rollback of a
+            // deploy that would have gone Healthy on its own given more time.
             sh '''
               set -eu
               argocd app wait voteball \
                 --server argocd-server.argocd.svc.cluster.local \
                 --grpc-web --insecure \
-                --sync --health --timeout 300
+                --sync --health --timeout 600
             '''
           }
         }

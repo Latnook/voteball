@@ -173,8 +173,8 @@ Parameters: `IMAGE_TAG` (required), `IMAGE_DIGEST` (optional), `SOURCE_BUILD` (o
 | 3 | Manifest Validation | `helm lint charts/voteball`; `helm template … --set image.tag=$IMAGE_TAG`; `kubectl create --dry-run=client -f -` against the rendered output (§4 explains why `create`, not `apply`, and not `=server`) |
 | 4 | Authenticate | in-cluster ServiceAccount `jenkins-cd-agent`; `kubectl auth can-i` self-check proves the token works and is scoped (§4) |
 | 5 | Promote | rewrite `image.tag` in `charts/voteball/values.yaml`, commit `ci: image tag <sha> [skip ci]`, push to `master` |
-| 6 | Deploy | `argocd app sync voteball --timeout 300` — no `--revision` (see the build #3 verification outcome below); Promote already pushed the tag bump to the tracked branch, so syncing it reaches the promoted commit |
-| 7 | Rollout | `argocd app wait voteball --sync --health --timeout 300` — ArgoCD's own health model, **not** a reimplementation of it with `kubectl rollout status` |
+| 6 | Deploy | `argocd app sync voteball --timeout 600` — no `--revision` (see the build #3 verification outcome below); Promote already pushed the tag bump to the tracked branch, so syncing it reaches the promoted commit |
+| 7 | Rollout | `argocd app wait voteball --sync --health --timeout 600` — ArgoCD's own health model, **not** a reimplementation of it with `kubectl rollout status` |
 | 8 | Verify | `argocd app get voteball -o json`: assert `sync.status == Synced`, `health.status == Healthy`, and `sync.revision` equals the promote commit. One `kubectl get deployments,pods,services,ingress -n $NAMESPACE` afterwards **purely to capture the brief's §10 evidence**, not as a second opinion |
 | 9 | Smoke Test | `scripts/ci/smoke-test.sh` — HTTPS `GET /health` expecting 200, `GET /api/results` expecting 200 and parseable JSON containing the expected keys, retried with backoff |
 | 10 | Failure Handling | on any failure in 6–9: dump `kubectl get events --sort-by=.metadata.creationTimestamp` and the last 200 log lines per Deployment, then **roll back** (§8) and re-verify |
@@ -301,6 +301,28 @@ single project this account's Application lives in, no `update`/`delete`/`create
 lesson as the build #1 outcome above: a permission grant scoped to "the one Application it deploys"
 still has to account for everything a read of that Application transitively touches, not just the
 Application object itself.
+
+**Verification outcome (application-cd build #10, 2026-08-04): 300s was too tight for a cold-image
+first deploy, and the failure mode is a false rollback, not just a slow one.** Build #9 deployed tag
+`241bed6` and went fully `Synced`/`Healthy` in about 90 seconds. Build #10 deployed tag `9474665`,
+built by CI moments earlier — none of its four images had ever been pulled onto the (100% Spot, small)
+node group, so the rollout had to pull all four before any pod could go Ready, and it did not finish
+inside Deploy's `--timeout 300`. The build failed with `timed out (300s) waiting for app "voteball"
+match desired state`, which is not a benign slow-path: a failed Deploy stage trips the automatic
+rollback in `post > failure` (§8) exactly as if the deploy were actually broken. It was not — ArgoCD
+reached `Synced`/`Healthy` on its own shortly after, and all four `9474665` images were confirmed
+present in ECR throughout. So the pipeline would have reverted a perfectly healthy deploy purely
+because image pulls were slower than a budget sized around warm-image runs.
+
+The fix raises both `argocd app sync --timeout` and `argocd app wait --timeout` from 300 to 600, large
+enough to cover a cold-image first deploy with room to spare. That alone would not have been enough:
+the pipeline's own `options { timeout(time: 20, unit: 'MINUTES') }` wraps the whole run, and 600s +
+600s for Deploy and Rollout alone is already 1200s — the entire old 20-minute budget, with nothing left
+for the other six stages. A pipeline-level timeout firing mid-rollout is the same false-rollback
+failure by a different route, so the fix raises that budget too, to 30 minutes. The other six stages
+combined have never been observed anywhere near 10 minutes — build #9's entire pipeline, all eight
+stages, went green in ~90s with warm images — so 30 minutes leaves a comfortable cushion over the
+1200s worst case for Deploy+Rollout alone.
 
 ### 5. Running the tests needs a real Postgres
 
