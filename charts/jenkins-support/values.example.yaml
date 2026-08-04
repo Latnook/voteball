@@ -6,18 +6,24 @@
 # the chart only through the ExternalSecret, which names an AWS Secrets Manager key -- see
 # ci/jenkins/secret.example.yaml.
 #
-# Every value is account-, region- or cluster-specific. Hardcoding any of them would break a fork,
-# which is why Terraform passes them rather than the chart defaulting to something real.
+# Most of these are account-, region- or cluster-specific, which is why Terraform passes them rather
+# than the chart defaulting to something real -- hardcoding any of those would break a fork. A few
+# (appNamespace, vpcCidr, serviceCidr below) are not identity-specific and carry real, reusable
+# defaults instead of a placeholder.
 
-awsRegion: REPLACE_ME          # e.g. il-central-1
-secretName: REPLACE_ME         # the AWS Secrets Manager key, e.g. voteball/jenkins
+awsRegion: REPLACE_ME          # e.g. il-central-1 -- wrong region and ESO reads a SecretStore that
+                                # can't see the secret, so the ExternalSecret never syncs and the
+                                # controller starts with no admin login or deploy key
+secretName: REPLACE_ME         # the AWS Secrets Manager key, e.g. voteball/jenkins -- wrong name and
+                                # ESO reports ResourceNotFoundException instead of syncing the secret
 refreshInterval: 1h            # how often ESO re-reads the vault
 
 vpcCidr: 10.0.0.0/16           # this VPC's real CIDR
 serviceCidr: 172.20.0.0/16     # the EKS cluster's Service CIDR (NOT the VPC's)
 
 certificateArn: REPLACE_ME     # ACM cert for the webhook host; a NEW ARN on every rebuild
-host: REPLACE_ME               # e.g. jenkins.example.com
+host: REPLACE_ME               # e.g. jenkins.example.com -- wrong host and the Ingress's TLS
+                                # binding won't match what GitHub calls, so webhook deliveries fail
 
 appNamespace: devops-app       # the namespace the CD agent may READ (never write)
 cdRoleArn: REPLACE_ME          # IRSA role for jenkins-cd-agent; ECR read-only
