@@ -467,11 +467,19 @@ jobs:
         // No githubPush trigger. This job is started by application-ci with a tag, or by hand for a
         // rollback. A push trigger here would deploy on every commit regardless of whether CI
         // passed -- which is the exact gate this split exists to create.
+        // MUST stay in step with the `parameters {}` block in Jenkinsfile-cd -- JCasC reloads this
+        // job definition from scratch on every controller restart (roughly daily, see the
+        // Terraform-managed-add-on notes in the root CLAUDE.md), which means it resets whatever is
+        // declared here, dropping any parameter Jenkinsfile-cd has that this list doesn't. Missed
+        // once already (ROLLBACK_DEPTH, fixed 2026-08-04, I4): every JCasC reload silently reset
+        // the rollback-recursion guard to Jenkins' own default handling for an undeclared
+        // parameter, instead of the explicit '0' Jenkinsfile-cd's own `parameters {}` sets.
         parameters {
           stringParam('IMAGE_TAG', '', 'Short commit SHA to deploy. Must already exist in ECR.')
           stringParam('IMAGE_DIGEST', '', 'Backend image digest, recorded for traceability.')
           stringParam('SOURCE_BUILD', '', 'The application-ci build number this came from.')
           stringParam('NAMESPACE', 'devops-app', 'Target namespace. Allowlisted.')
+          stringParam('ROLLBACK_DEPTH', '0', 'Internal: rollback recursion depth. Do not set by hand.')
         }
 
         logRotator {
