@@ -392,7 +392,14 @@ pipeline {
                   --region "$AWS_REGION" \\
                   --query 'imageDetails[0].imageDigest' --output text)"
                 printf '%s    "%s-%s": { "digest": "%s" }' "$sep" "$CLUSTER_NAME" "$svc" "$digest"
-                sep=",\\n"
+                # ANSI-C quoting ($'...') is REQUIRED here, not decoration. A plain '...' string
+                # leaves \n as the two literal characters backslash+n, and printf only expands
+                # backslash escapes that appear in ITS OWN format-string argument -- never in a value
+                # substituted via %s, which is how $sep is used above. Without $'...' this separator
+                # prints as literal "\n" text between JSON entries instead of a real newline, and the
+                # emitted image-metadata.json is invalid JSON -- a failure invisible just by reading
+                # the source, since the string still looks like "a comma and a newline".
+                sep=$',\\n'
                 # Captured here, at the moment it is computed, into its own file -- NOT re-parsed
                 # back out of the JSON afterwards. Grepping the JSON apart is what broke this the
                 # first time: an unterminated quote failed the stage outright, and even fixed,
