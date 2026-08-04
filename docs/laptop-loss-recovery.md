@@ -7,7 +7,8 @@ at all. Everything here can be done from a borrowed machine with nothing but a b
 and this repository.
 
 Last verified against the live account on **2026-07-27**; re-checked against the repo on **2026-07-31**,
-after Jenkins moved into the cluster.
+after Jenkins moved into the cluster, and again on **2026-08-04**, after the CI/CD split into
+`application-ci`/`application-cd` and the move of `JENKINS_HOME` onto an EFS-backed PVC.
 
 ---
 
@@ -208,6 +209,13 @@ The rest — dashboards, ArgoCD, Jenkins, the database — is
 `./scripts/deploy.sh` rebuilds it, restoring the newest database snapshot automatically. Votes
 survive. The full sequence is in [the deploy guide](deploy.md#put-the-site-online).
 
+Since the 2026-08-04 CI/CD split, a rebuild also needs a fresh ArgoCD API token minted for the
+`application-cd` pipeline's `jenkins-cd` account — nothing else generates one, and without it every
+CD build fails at the Deploy stage with an auth error even though the deploy itself reports success.
+`deploy.sh` now does this for you automatically (step 7b, `./scripts/seed-argocd-token.sh`); it's
+only something to do by hand if that step warned, or if you're recovering standalone rather than via
+`deploy.sh`.
+
 ---
 
 ## There is no longer a build-host key to lose
@@ -248,6 +256,15 @@ Worth knowing on a bad day:
 - **Terraform state** — S3, versioned, one object for the whole stack.
 - **The database** — RDS, plus a final snapshot on every teardown and 7-day point-in-time recovery.
 - **Container images** — ECR, tagged by commit.
+- **Jenkins build history** — `JENKINS_HOME` is a PersistentVolumeClaim on EFS (`efs-sc`, reclaim
+  policy `Retain`), not an `emptyDir`, so it survives a routine Spot node reclaim of the controller
+  pod. It is **not** insured against the Jenkins *release* being removed, though: `helm uninstall`
+  (or `scripts/jenkins/uninstall-jenkins.sh`'s targeted `terraform destroy`) still deletes the PVC —
+  it carries no `resource-policy: keep` annotation — and a reinstall provisions a brand-new, empty
+  volume rather than rebinding the old one. The EFS filesystem and its data are not deleted by that;
+  only a full `terraform destroy` of the EFS resources themselves deletes the data for good. None of
+  this is laptop-related either way — it's here because it's the one "survives" item that has a real
+  exception, unlike the others below.
 - **Every secret the app uses** — AWS Secrets Manager, synced into the cluster automatically. No human
   needs to have read them.
 - **All code, charts and docs** — GitHub, and ArgoCD is still deploying from it. The site keeps

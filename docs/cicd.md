@@ -587,6 +587,13 @@ gives Jenkins its own ability to register a hook.
 until step 2's apply creates it, so the `jenkins-cd` account's token cannot be minted before then, and
 step 1's secret payload has to leave `ARGOCD_AUTH_TOKEN` empty. After step 2:
 
+> **Since 2026-08-04, `deploy.sh` does this automatically at step 7b**
+> (`./scripts/seed-argocd-token.sh`) — it mints the token via the ArgoCD API, merges it into
+> `voteball/jenkins` without touching the other five keys, forces the ExternalSecret refresh, and
+> restarts the controller, all in one idempotent step (it changes nothing if the stored token still
+> authenticates; `FORCE_ROTATE=1` mints a new one regardless). The manual procedure below is only
+> needed standalone — outside `deploy.sh`, or if that step warned.
+
 ```bash
 argocd account generate-token --account jenkins-cd \
   --server argocd-server.argocd.svc.cluster.local --grpc-web --insecure   # run from a pod with the CLI, or port-forward argocd-server first

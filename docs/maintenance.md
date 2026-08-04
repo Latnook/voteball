@@ -3,7 +3,7 @@
 `docs/production-readiness.md` covers *"is this robust enough"*. This covers *"will it still work in
 six months"* — the things that rot on their own while nobody touches the code.
 
-Verified against the repo on 2026-07-31.
+Verified against the repo on 2026-07-31; pinned-image list re-checked 2026-08-04.
 
 ---
 
@@ -93,6 +93,15 @@ re-checked is the one that has drifted):
 | external-dns | 1.21.1 | 2026-07-30 |
 | metrics-server | 3.13.1 | 2026-07-30 |
 | Node Termination Handler | 0.21.0 | 2026-07-30 |
+
+The two native **EKS add-ons** (`aws_eks_addon`, not `helm_release`) are not both pinned the same
+way, and that asymmetry is worth stating plainly rather than leaving "the EKS add-ons are pinned"
+implying otherwise:
+
+| EKS add-on | `addon_version` | Status |
+|---|---|---|
+| `amazon-cloudwatch-observability` (`terraform/addon-cloudwatch.tf`) | `v6.3.0-eksbuild.1` | pinned — verified for K8s 1.34 via `aws eks describe-addon-versions` (2026-07-19) |
+| `aws-efs-csi-driver` (`terraform/addon-efs.tf`) | *(none set)* | **not pinned — a known, deliberate gap, not an oversight.** Terraform tracks whatever AWS currently ships as default for the cluster's EKS version. Revisit if it starts drifting the way Cluster Autoscaler did above; until then it is one fewer version to carry through every EKS minor bump. |
 
 **The mechanical check is `helm show chart <ref> --version <v>` and its `kubeVersion` field**, not the
 release notes. On 2026-07-30 every one of the eight declared either no constraint or an open-ended
@@ -201,9 +210,11 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   Plugin updates are the most common source of both security advisories and behaviour changes. After
   bumping the plugin set, **re-test the webhook with a SHA-256 signature** — signed should give `200`,
   unsigned `400`.
-- **`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.58.1`, `quay.io/skopeo/stable:v1.17.0` and
-  `amazon/aws-cli:2.22.0`** are pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod
-  template (`application-ci`); `alpine/k8s:1.31.3` and `quay.io/argoproj/argocd:v3.4.5` (matched to the
+- **`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.58.1`, `quay.io/skopeo/stable:v1.17.0`,
+  `amazon/aws-cli:2.22.0`, `python:3.12-slim` (lint/test), `postgres:16-alpine` (ephemeral test DB,
+  not the app's own `postgres:17-alpine` base image) and `hadolint/hadolint:2.12.0-alpine`** are
+  pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod template (`application-ci`);
+  `alpine/k8s:1.31.3` and `quay.io/argoproj/argocd:v3.4.5` (matched to the
   running ArgoCD server's app version, not just any tag) are pinned in the `voteball-deploy` template
   (`application-cd`). The Trivy vulnerability *database* refreshes on every run via `--db-repository`,
   so scanning stays current, but every pinned binary ages and stops learning new formats/APIs. Pinning
