@@ -143,32 +143,72 @@ subjects:
 
 - [ ] **Step 3: Write the failing assertion**
 
-Append to `scripts/tests/test-jenkins-chart.sh`, inside its existing structure:
+**Follow the existing file's conventions exactly.** `scripts/tests/test-jenkins-chart.sh` uses a
+`check "<description>" "<command>"` helper (line 14) that `eval`s its second argument and sets a
+`fail` *variable*; the script ends with `exit "$fail"`. There is **no `fail()` function** — calling
+one would be a syntax-level mistake that happens to look plausible. Boolean helpers are defined as
+shell functions and passed to `check` by name, exactly as `check_pods_exec_both_verbs` is.
+
+Add this helper alongside the existing `pods_exec_verbs` / `check_pods_exec_both_verbs` pair
+(after line 76, before `rendered="$(mktemp)"`):
 
 ```bash
-echo "--- CD RBAC is read-only ---"
-rendered="$(helm template jenkins-support charts/jenkins-support)"
+# The submission's central security claim, asserted rather than documented: the CD pipeline holds no
+# write permission anywhere. Collects the union of write verbs across EVERY rule of EVERY Role and
+# ClusterRole this chart renders, so a rule added later is covered automatically.
+#
+# A YAML parse, not a grep, for the same reason pods_exec_verbs above is: `verbs: [get, list]` and a
+# multi-line verb list are both valid, and a grep tuned for one silently passes the other.
+cd_write_verbs() {
+  local file="$1"
+  python3 - "$file" <<'PYEOF'
+import sys, yaml
+WRITE = {"create", "update", "patch", "delete", "deletecollection", "*"}
+found = set()
+with open(sys.argv[1]) as fh:
+    for doc in yaml.safe_load_all(fh):
+        if not doc or doc.get("kind") not in ("Role", "ClusterRole"):
+            continue
+        for rule in doc.get("rules", []):
+            found |= set(rule.get("verbs") or []) & WRITE
+print(" ".join(sorted(found)))
+PYEOF
+}
 
-printf '%s' "$rendered" | grep -q 'name: jenkins-cd-agent' \
-  || fail "jenkins-cd-agent ServiceAccount missing"
+check_cd_rbac_is_read_only() {
+  local verbs
+  verbs="$(cd_write_verbs "$1")"
+  if [ -n "$verbs" ]; then
+    echo "       jenkins-cd RBAC grants write verbs: $verbs" >&2
+    return 1
+  fi
+  return 0
+}
+```
 
-# The whole security claim in one assertion: no write verb may appear in this chart's RBAC.
-if printf '%s' "$rendered" | awk '/^kind: Role$/,/^---$/' \
-     | grep -qE '"(create|update|patch|delete|deletecollection|\*)"'; then
-  fail "jenkins-cd-reader Role contains a write verb -- CD must be read-only"
-fi
+Then append these four assertions to the **jenkins-support** block at the end of the file (after the
+existing `check "VPC range is excluded" ...` line, where `$rendered` already holds the support
+chart's render):
 
-printf '%s' "$rendered" | grep -q 'kind: ClusterRole' \
-  && fail "jenkins-support must not create any ClusterRole"
-
-echo "OK"
+```bash
+check "jenkins-cd-agent ServiceAccount rendered" "grep -q 'name: jenkins-cd-agent' '$rendered'"
+check "jenkins-cd-reader Role rendered"          "grep -q 'name: jenkins-cd-reader' '$rendered'"
+check "CD RBAC is strictly read-only"            "check_cd_rbac_is_read_only '$rendered'"
+check "support chart creates no ClusterRole"     "! grep -q '^kind: ClusterRole' '$rendered'"
 ```
 
 - [ ] **Step 4: Run the test to verify it fails, then passes**
 
 Run: `scripts/tests/test-jenkins-chart.sh`
 
-Before creating `rbac.yaml` it must fail with `jenkins-cd-agent ServiceAccount missing`. After Step 2 it must print `OK` and exit 0. Also run `helm lint charts/jenkins-support` — expect `0 chart(s) failed`.
+Before `rbac.yaml` exists, the two new `grep` checks must print `FAIL - ...` and the script must exit
+non-zero. After Step 2 every line must print `ok   - ...` and the script must exit 0.
+
+**Prove the read-only assertion actually bites** — an assertion that cannot fail is worse than none.
+Temporarily add `"patch"` to the `deployments` verb list in `rbac.yaml`, re-run, and confirm
+`FAIL - CD RBAC is strictly read-only` appears with the offending verb named. Then remove it.
+
+Also run `helm lint charts/jenkins-support` — expect `0 chart(s) failed`.
 
 - [ ] **Step 5: Commit**
 
@@ -327,7 +367,44 @@ In `terraform/addon-jenkins.tf`, replace line 291 (`persistence = { enabled = fa
 
 Add `kubernetes_storage_class.efs` to `helm_release.jenkins`'s `depends_on` list.
 
-- [ ] **Step 3: Validate**
+- [ ] **Step 3: Update the chart test so it still describes the real release**
+
+`scripts/tests/test-jenkins-chart.sh` renders the Jenkins chart with an explicit
+`--set persistence.enabled=false` (line 85) and asserts `check "no PersistentVolumeClaim"`
+(line 92). Enabling persistence in Terraform does **not** fail that test, because the test pins the
+flag itself — which is worse than a failure: the test silently stops describing the release that
+actually runs. That file derives the chart version from `addon-jenkins.tf` precisely to avoid this
+class of drift; leaving the storage flags hardcoded to the old value would reintroduce it.
+
+Change the render flags to match `terraform/addon-jenkins.tf`:
+
+```bash
+helm template jenkins jenkins/jenkins --namespace ci \
+  --version "$JENKINS_CHART_VERSION" \
+  --set controller.installPlugins=false \
+  --set controller.numExecutors=0 \
+  --set persistence.enabled=true \
+  --set persistence.storageClass=efs-sc \
+  --set persistence.size=8Gi \
+  --set rbac.create=true \
+  --set rbac.readSecrets=false > "$rendered"
+```
+
+and replace the PVC assertion with its inverse, plus the StorageClass it must name:
+
+```bash
+# JENKINS_HOME is on an EFS-backed PVC since 2026-08-04 -- see terraform/addon-efs.tf for why EFS
+# and not EBS. These two lines must track terraform/addon-jenkins.tf's persistence block; if that
+# block changes and these do not, the test goes on describing a release that no longer exists.
+check "a PersistentVolumeClaim is created" "grep -q '^kind: PersistentVolumeClaim$' '$rendered'"
+check "the PVC uses the efs-sc class"      "grep -q 'storageClassName: efs-sc' '$rendered'"
+```
+
+Run `scripts/tests/test-jenkins-chart.sh` — every line must print `ok`, and the script must exit 0.
+Confirm the new assertions bite: flip `persistence.enabled` back to `false` for one run and check
+that both new lines print `FAIL`, then restore.
+
+- [ ] **Step 4: Validate the Terraform**
 
 ```bash
 cd terraform
@@ -338,7 +415,7 @@ terraform validate
 
 Expected: `Success! The configuration is valid.` The `-upgrade` is required — `efs_csi_irsa` is a new module invocation.
 
-- [ ] **Step 4: Plan and read it before applying**
+- [ ] **Step 5: Plan and read it before applying**
 
 ```bash
 cd terraform && terraform plan -var-file=voteball.tfvars -out=/tmp/efs.tfplan 2>&1 | tee /tmp/efs-plan.txt
@@ -346,7 +423,7 @@ cd terraform && terraform plan -var-file=voteball.tfvars -out=/tmp/efs.tfplan 2>
 
 Expected: ~8 resources to add (filesystem, SG, SG rule, 2 mount targets, IRSA role + policy attachment, addon, storage class) and **1 to change** (`helm_release.jenkins`). **Nothing may be destroyed.** If the plan shows a destroy of the RDS instance, the VPC, or the EKS cluster, stop and diagnose — do not apply.
 
-- [ ] **Step 5: Apply, streaming output**
+- [ ] **Step 6: Apply, streaming output**
 
 ```bash
 cd terraform && terraform apply -var-file=voteball.tfvars /tmp/efs.tfplan 2>&1 | tee /tmp/efs-apply.txt
@@ -361,7 +438,7 @@ kubectl get pods -n ci -w   # jenkins-0 recreates once; wait for 2/2 Running
 
 Expected: a PVC in `Bound` state and `jenkins-0` back to `2/2 Running`. If the pod sits `Pending` with `waiting for a volume to be created`, check `kubectl logs -n kube-system deploy/efs-csi-controller -c csi-provisioner`.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add terraform/addon-efs.tf terraform/addon-jenkins.tf
