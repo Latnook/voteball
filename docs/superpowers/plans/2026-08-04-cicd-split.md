@@ -255,7 +255,11 @@ resource "aws_efs_mount_target" "jenkins" {
 }
 
 module "efs_csi_irsa" {
-  source  = "terraform-aws-modules/iam-role-for-service-accounts-eks/aws"
+  # Submodule path, matching every other IRSA role in this stack (addon-alb.tf,
+  # addon-eso.tf, addon-external-dns.tf ...). The registry-root form
+  # "terraform-aws-modules/iam-role-for-service-accounts-eks/aws" does not exist and fails
+  # at `terraform init`.
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 5.0"
 
   role_name             = "${var.cluster_name}-efs-csi"
@@ -833,7 +837,17 @@ Immediately after `stage('Guard: is this our own commit?')` and **before** `stag
     }
 ```
 
-> **Note on the junit path:** the pod mounts the shared volume at `/images`, which is outside the workspace, so `junit` cannot read it directly. Add `sh 'cp /images/*-tests.xml "$WORKSPACE"/ || true'` inside the `container('python')` block after the pytest runs, and change the `junit` glob to `'*-tests.xml'`.
+> **APPLY THIS — it modifies the block above, do not treat it as commentary.** The pod mounts the
+> shared volume at `/images`, which is *outside* the Jenkins workspace, so the `junit` step cannot
+> read `images/*-tests.xml` — it would find nothing and, with `allowEmptyResults: false`, fail the
+> stage on a passing test run. Two edits to the block above:
+>
+> 1. As the last line inside the `container('python')` shell block, after both pytest runs:
+>    `cp /images/*-tests.xml "$WORKSPACE"/`
+> 2. Change the `junit` glob from `testResults: 'images/*-tests.xml'` to `testResults: '*-tests.xml'`.
+>
+> No `|| true` on the copy: if the XML is missing, the tests did not run, and that must fail loudly
+> rather than be swallowed.
 
 - [ ] **Step 4: Add Publish Metadata and Trigger CD after `Push to ECR`**
 
@@ -1728,7 +1742,14 @@ data "aws_iam_policy_document" "jenkins_cd_ecr_read" {
       "ecr:BatchGetImage",
       "ecr:GetDownloadUrlForLayer",
     ]
-    resources = [for r in local.ecr_repos : "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.cluster_name}-${r}"]
+    # The FOUR APP REPOS ONLY -- deliberately not local.ecr_repos, which also contains
+    # "jenkins" (the controller image). CD validates application image tags and has no
+    # business reading the controller's repository. Keep this list in step with the
+    # ECR_REPOS value in Jenkinsfile-ci and Jenkinsfile-cd.
+    resources = [
+      for r in ["backend", "worker", "nginx", "backup"] :
+      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.cluster_name}-${r}"
+    ]
   }
   statement {
     effect    = "Allow"
@@ -1738,7 +1759,11 @@ data "aws_iam_policy_document" "jenkins_cd_ecr_read" {
 }
 
 module "jenkins_cd_irsa" {
-  source  = "terraform-aws-modules/iam-role-for-service-accounts-eks/aws"
+  # Submodule path, matching every other IRSA role in this stack (addon-alb.tf,
+  # addon-eso.tf, addon-external-dns.tf ...). The registry-root form
+  # "terraform-aws-modules/iam-role-for-service-accounts-eks/aws" does not exist and fails
+  # at `terraform init`.
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 5.0"
 
   role_name = "${var.cluster_name}-jenkins-cd"
