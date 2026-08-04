@@ -17,6 +17,14 @@ pipeline {
     disableConcurrentBuilds()
     buildDiscarder(logRotator(numToKeepStr: '20'))   // G5
     timestamps()
+    // Added 2026-08-04: without a pipeline-level timeout, a hung buildkit build (a stalled layer
+    // pull, a wedged rootless user-namespace build -- see the buildkit privilege-carveout notes in
+    // README.submission.md) pins this job's executor indefinitely, and disableConcurrentBuilds()
+    // above then queues every subsequent push behind it forever. 45 minutes covers four sequential
+    // buildctl builds plus lint/tests/three Trivy scans/push with cold caches and room to spare;
+    // Jenkinsfile-cd's own budget is 30 minutes for a much shorter pipeline (see the arithmetic at
+    // its `options.timeout`), and CI does strictly more work per run than CD does.
+    timeout(time: 45, unit: 'MINUTES')
   }
 
   parameters {
@@ -218,12 +226,17 @@ pipeline {
 
           // G3b -- "no changelog at all" is NOT the same as "nothing under services/ changed", and
           // `changeset` cannot tell them apart: it returns false for both. Jenkins has no changelog
-          // on its FIRST build of this job, because there is no previous build to diff against --
-          // and on this cluster that is not a one-off. JENKINS_HOME is an emptyDir on a 100% Spot
-          // node group, so the controller is reclaimed roughly daily and every reclaim resets the
-          // baseline. Without this flag the first webhook build after each reclaim skips build,
-          // scan, push and tag bump, and reports SUCCESS -- observed 2026-08-03, build 2, which
-          // shipped nothing while master sat 7 commits ahead of production.
+          // on its FIRST build of this job, because there is no previous build to diff against.
+          // FIXED 2026-08-04: this used to say JENKINS_HOME is an emptyDir reclaimed roughly daily
+          // with the rest of the 100%-Spot node group -- that stopped being true when JENKINS_HOME
+          // moved to an EFS-backed PVC (terraform/addon-jenkins.tf), which now survives ordinary
+          // pod/node reclaims along with build history. The guard is still needed for a narrower
+          // reason: a full `destroy.sh` + `deploy.sh` rebuild provisions a brand-new EFS filesystem
+          // (terraform/addon-efs.tf), so the controller's build history -- and with it every job's
+          // changelog -- genuinely starts empty again after one of those, the same way it did after
+          // every daily reclaim before EFS. Without this flag the first webhook build after such a
+          // rebuild skips build, scan, push and tag bump, and reports SUCCESS -- observed 2026-08-03,
+          // build 2, which shipped nothing while master sat 7 commits ahead of production.
           //
           // Empty changeSets means "Jenkins cannot tell what changed", so build. A build with real
           // commits that merely miss services/** still has a NON-empty changeSets and is still
@@ -276,15 +289,30 @@ pipeline {
         //
         // The AWS CLI lives in its own container, so the token is written to the shared /images
         // volume for the buildkit container to pick up. Removed in the post block.
+        //
+        // LEAK, FIXED 2026-08-04: this used to build the docker-auth string as
+        // "$(printf 'AWS:%s' "$(aws ecr get-login-password ...)" | base64 -w0)" -- a $(...) used
+        // as a printf ARGUMENT. Jenkins' sh step traces every command it runs, and tracing a
+        // command logs it AFTER argument expansion, so both the raw token (as the inner printf's
+        // argument) and its base64 form (as the outer printf's argument) were written to the
+        // console log in full. That live token ended up committed to this repo as CI evidence and
+        // had to be redacted (see git history, commit 2c3cbcf). The fix below never lets the
+        // token become a command-line ARGUMENT anywhere: every step that touches it either writes
+        // straight to a file (`>`) or reads one via `cat`/a pipe, and a traced `cat <path>` or
+        // `base64 -w0` logs only the command name and the filename, never the file's contents.
         container('awscli') {
           sh '''
             set -eu
             umask 077
             mkdir -p /images/dockercfg
-            printf '{"auths":{"%s":{"auth":"%s"}}}' \
-              "$ECR_REGISTRY" \
-              "$(printf 'AWS:%s' "$(aws ecr get-login-password --region "$AWS_REGION")" | base64 -w0)" \
-              > /images/dockercfg/config.json
+            aws ecr get-login-password --region "$AWS_REGION" > /images/dockercfg/password
+            { printf 'AWS:'; cat /images/dockercfg/password; } | base64 -w0 > /images/dockercfg/auth
+            {
+              printf '{"auths":{"%s":{"auth":"' "$ECR_REGISTRY"
+              cat /images/dockercfg/auth
+              printf '"}}}'
+            } > /images/dockercfg/config.json
+            rm -f /images/dockercfg/password /images/dockercfg/auth
           '''
         }
         container('buildkit') {
@@ -374,6 +402,11 @@ pipeline {
       steps {
         // Two containers: quay.io/skopeo/stable carries no AWS CLI, so the ECR login password is
         // obtained in `awscli` and handed over through the shared /images volume.
+        //
+        // Checked against the same 2026-08-04 leak class as 'Build images' above and confirmed
+        // safe: the password is never captured via $(...), never passed as a command ARGUMENT
+        // anywhere below, and login reads it with --password-stdin, not --dest-creds. A trace of
+        // this line logs only the command and the destination filename, never the token itself.
         container('awscli') {
           sh '''
             set -eu
