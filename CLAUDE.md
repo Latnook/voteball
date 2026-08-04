@@ -422,6 +422,19 @@ uninstall while the cluster is being deleted), `terraform state rm` that release
 it dies with the cluster anyway. **There are now three such releases**, not one: the app's, plus
 `jenkins` and `jenkins-support`.
 
+**`kubernetes_namespace.ci` hangs the same way, one level down, and the same fix applies** (observed
+2026-08-04). Removing `helm_release.external_secrets` from state leaves the ExternalSecret and
+SecretStore in `ci` with finalizers and no controller to clear them, so the namespace sits
+`Terminating` until `terraform state rm kubernetes_namespace.ci`. Expect to remove it *after* the
+three releases, not instead of them — it only becomes stuck once its controller is gone.
+
+**Both of these are symptoms of running `terraform destroy` directly instead of
+`./scripts/destroy.sh`**, which deletes the ArgoCD Application and both Ingresses first and reaps
+orphaned ENIs in the background. A raw destroy still completes, but expect to clear the state entries
+above by hand, and note that a `terraform destroy` interrupted mid-run (e.g. by a command timeout)
+leaves an S3 state lock — read the lock id from `s3://<cluster_name>-tfstate-<account_id>/voteball/
+main.tfstate.tflock` and `terraform force-unlock` it before re-running.
+
 RDS takes a **final snapshot on destroy** (since 2026-07-20), so destroy→rebuild preserves votes;
 `find-latest-snapshot.sh` picks the newest one up automatically before the next apply. Two traps
 around this, both hit for real on the 2026-07-27 rebuild (see `docs/production-readiness.md` §3):
