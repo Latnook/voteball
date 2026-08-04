@@ -300,7 +300,12 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   builds and holds a strictly read-only Kubernetes Role. Pushing app code to `master` fires a GitHub
   webhook → `application-ci` (guard → validate → lint → test → build → Trivy → push → publish
   metadata) → triggers `application-cd` (validate → promote `image.tag` `[skip ci]` → ArgoCD sync →
-  wait → verify → smoke test, with automatic rollback on failure). `./scripts/build-push-ecr.sh` does
+  wait → verify → smoke test, with automatic rollback on failure). Two parameters worth knowing:
+  `application-ci`'s `FORCE_BUILD` builds even when the changeset touches nothing under `services/**`
+  (needed for the empty-changelog case G3b guards against — see the Guard-stage note below);
+  `application-cd`'s `ROLLBACK_DEPTH` bounds rollback recursion — without it, a rollback that itself
+  fails would trigger another rollback, which could fail the same way, forever, pushing a commit each
+  cycle. `./scripts/build-push-ecr.sh` does
   the build/scan/push part by hand, and is the **only** way to build while the cluster is destroyed
   (there is no CI without a cluster). Agent pods authenticate to AWS via **IRSA** — CI's
   `jenkins-agent` ServiceAccount gets ECR push, CD's `jenkins-cd-agent` gets ECR read-only, and the
@@ -326,9 +331,13 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   which AZ it lands in. That is why the fix is EFS (`terraform/addon-efs.tf`), not an EBS PVC pinned
   to one AZ, and not staying on `emptyDir` — the course brief for the 2026-08-04 CI/CD split lists
   persistent Jenkins-home storage as a mandatory component. Build history (last 20 builds) now
-  survives a routine Spot reclaim; it is still lost if the Jenkins release itself is removed (the PVC
-  carries no `resource-policy: keep`) and gone for good only on a full `terraform destroy` of the EFS
-  resources — see `docs/cicd.md`'s "Running the instance" for the three-tier breakdown. The durable
+  survives a routine Spot reclaim. Removing the Jenkins release (`scripts/jenkins/uninstall-jenkins.sh`
+  or a targeted `terraform destroy`) deletes the PVC — it carries no `resource-policy: keep`
+  annotation — but the `efs-sc` StorageClass's reclaim policy is `Retain`, so the underlying EFS
+  access point and its data survive as a `Released` PV; a reinstall provisions a **new, empty** PVC
+  and does not rebind to the old one automatically, so recovering that history needs a manual PV
+  rebind. It is gone for good only on a full `terraform destroy` of the EFS resources themselves —
+  see `docs/cicd.md`'s "Running the instance" for the three-tier breakdown. The durable
   record of what was *deployed* was never the build log regardless — it is the
   `ci: image tag <sha> [skip ci]` commits on `master`, which never expire.
 
@@ -341,6 +350,18 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   container in `devops-app` still runs `allowPrivilegeEscalation: false`; **do not "tidy" this one
   container to match them** — rootless BuildKit cannot start without the exception, and it is scoped to
   one CI pod in a namespace whose NetworkPolicy already denies it any route to RDS or `devops-app`.
+
+  **Jenkins traces every `sh` step with `set -x`, which echoes a command AFTER argument
+  expansion — so any secret fetched at RUNTIME (as opposed to injected via `withCredentials`, which
+  Jenkins masks in the log) leaks in full the moment it reaches an argument position**, e.g. as a
+  `printf`/`$(...)` argument. This leaked a live ECR token into committed CI evidence on 2026-08-04
+  (fixed in `Jenkinsfile-ci`'s image-auth step: write straight to a file, read it back with
+  `cat`/a pipe, never as an argument). The counter-constraint is that `aws ecr get-login-password`
+  emits a trailing newline that a plain file redirect preserves, which corrupts the base64 auth
+  string it feeds into — so the newline still has to go, just without reintroducing the leak: use
+  `tr -d '\n' < file`, never `$(...)`, which trims the newline but never puts the token back in
+  argument position. State both constraints together — the trailing fix for one re-broke the other
+  once already.
 
   **Both build caches live in ECR** (`${cluster_name}-buildcache`, `${cluster_name}-trivy-db`), and
   both repos **must stay `MUTABLE` and outside `local.ecr_repos`** in `terraform/ecr.tf`. That set is
@@ -509,21 +530,56 @@ kubectl port-forward -n ci svc/jenkins 8080:8080   # then browse http://localhos
 There is nothing to start or stop — it runs whenever the cluster does, and goes with it on
 `terraform destroy`. Webhook URL: `https://jenkins.<app_domain>/github-webhook/`.
 
-### CI guard scripts (`scripts/ci/`)
+### CI/CD scripts (`scripts/ci/`, `scripts/jenkins/`)
 
-`should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the immutable-tag
-re-run check) hold two of `Jenkinsfile-ci`'s decision points — `images-exist.sh` is also reused,
-read-only, by `Jenkinsfile-cd`'s Input Validation stage to confirm a requested tag really is in ECR
-before promoting it — extracted so they can be tested without triggering real builds:
+Five scripts, each one pipeline decision point extracted so it can be tested without triggering a
+real build. `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the
+immutable-tag re-run check) hold two of `Jenkinsfile-ci`'s decisions — `images-exist.sh` is also
+reused, read-only, by `Jenkinsfile-cd`'s Input Validation stage to confirm a requested tag really is
+in ECR before promoting it. `validate-repo.sh` is the CI Validation stage: asserts every
+`services/*` context has a `Dockerfile` and `.dockerignore` and that no image is unpinned, before
+anything is built. `smoke-test.sh` is the CD Smoke Test — the **only** check in the whole pipeline
+that asks the product itself whether it works, rather than whether pods are Healthy; reads
+`SMOKE_BASE_URL` and retries with backoff against `/`, `/api/options` and `/api/results?by=all`, and
+deliberately **not** `/health` (that's the in-cluster probe target — nginx proxies only `/api/*`, so
+it 404s publicly — and it's already what ArgoCD's health check runs). `previous-tag.sh` reads the
+prior `image.tag` from `values.yaml`'s git history — what rollback targets. **Its grep requires a
+QUOTED tag (`tag: "…"`).** An escaping bug that wrote the tag unquoted disarmed rollback silently on
+2026-08-04: it returned a frozen tag forever and nothing caught it, because the hand-written test
+scaffold always used quotes — `test-sync-values.sh` now carries an unquoted-tag regression case for
+exactly this reason.
 
 ```bash
-scripts/tests/test-ci-guards.sh   # offline; stubs ECR via CI_STUB_DESCRIBE_CMD
+scripts/tests/test-ci-guards.sh       # should-skip-build.sh / images-exist.sh; stubs ECR via CI_STUB_DESCRIBE_CMD
+scripts/tests/test-validate-repo.sh
+scripts/tests/test-smoke-test.sh
+scripts/tests/check-jenkinsfile-shell.sh   # see below — not a guard test, a shell-syntax gate
 ```
 
-Same offline-stub pattern as `scripts/tests/test-sync-values.sh`. **Extend it whenever you change
-either guard** — pipeline logic that can only be tested by running the pipeline is exactly what makes
-G2 dangerous. Note the two guards deliberately fail safe in *opposite* directions (skip vs rebuild);
+Same offline-stub pattern throughout. **Extend the matching test whenever you change a script** —
+pipeline logic that can only be tested by running the pipeline is exactly what this project refuses
+to accept. The two G1/G2 guards deliberately fail safe in *opposite* directions (skip vs rebuild);
 that asymmetry is intentional, don't "make them consistent".
+
+**`check-jenkinsfile-shell.sh` exists because the Jenkins Declarative linter validates pipeline
+SCHEMA only** — stage/when/steps nesting — and never looks inside an `sh '''…'''` body. On
+2026-08-04 a shell script that didn't even parse passed the linter, this repo's own structural
+check, *and* manual review. This script globs `Jenkinsfile-*`, extracts every `sh '''…'''` body
+(including the inline `sh(script: '''…''')` form), applies Groovy's own single-quoted-string
+unescaping (Groovy, not bash, is what actually receives the raw file text), and runs `bash -n` on
+the result — testing the raw text instead was confirmed to check a string bash never sees. It also
+rejects apostrophes, backticks and double quotes inside shell comments in those blocks, after a
+quoting failure in one such comment cost a full debugging cycle that was never root-caused.
+
+`scripts/jenkins/install-jenkins.sh` and `uninstall-jenkins.sh` are thin wrappers over the
+`terraform apply -target=...`/`destroy -target=...` calls that own the Jenkins release — **not** a
+second install path, for the same reason there's no `helm upgrade` path for the app chart.
+`verify-jenkins.sh` asserts rather than prints: among other checks, that **exactly two** jobs exist
+(JCasC's Job DSL never deletes a job it stops declaring, so a stale one survived the CI/CD split and
+had to be removed by hand) and that the `jenkins-cd-agent` ServiceAccount cannot write to
+`devops-app` (ArgoCD must stay the only applier). `VERIFY_STRICT=1` turns a skipped check (e.g. no
+credentials available) into a failure — use it whenever the output is being captured as evidence,
+since a permissive skip looks identical to a passing check in a log.
 
 ### Per-directory guidance (loads automatically when you work there)
 
