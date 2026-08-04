@@ -1,0 +1,286 @@
+// Voteball CD. Receives an image tag that CI already built, tested and scanned; never builds one.
+//
+// GOVERNING RULE: whatever ArgoCD can do, ArgoCD does. This pipeline holds a strictly READ-ONLY
+// Kubernetes Role (charts/jenkins-support/templates/rbac.yaml) and cannot apply anything to the
+// cluster. Deploy, rollout-waiting and health assessment are all delegated to ArgoCD; what lives
+// here is only what a reconciler structurally cannot do -- reject an invalid request, choose which
+// tag git should name, ask the live site over HTTPS whether it works, and revert git when it does
+// not.
+//
+// Design: docs/design/2026-08-04-cicd-split-design.md sections 3, 4, 7 and 8.
+
+pipeline {
+  agent { label 'voteball-deploy' }
+
+  options {
+    // Two deploys racing to rewrite values.yaml and push to master would conflict, and a rollback
+    // racing the deploy it is undoing would be worse.
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+    timestamps()
+    timeout(time: 20, unit: 'MINUTES')
+  }
+
+  parameters {
+    string(name: 'IMAGE_TAG',    defaultValue: '', description: 'Short commit SHA to deploy. Must already exist in ECR.')
+    string(name: 'IMAGE_DIGEST', defaultValue: '', description: 'Backend image digest, recorded for traceability.')
+    string(name: 'SOURCE_BUILD', defaultValue: '', description: 'The application-ci build number this came from.')
+    string(name: 'NAMESPACE',    defaultValue: 'devops-app', description: 'Target namespace. Allowlisted.')
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        script {
+          // Traceability, per the brief: a CD build must identify the CI build, commit, image and
+          // digest that led to the deployment.
+          currentBuild.description =
+            "tag ${params.IMAGE_TAG} <- ci #${params.SOURCE_BUILD ?: '?'} " +
+            "(${params.IMAGE_DIGEST ? params.IMAGE_DIGEST.take(19) : 'no digest'})"
+        }
+      }
+    }
+
+    // Nothing is committed to master until the request is known to be valid. A bad tag caught here
+    // costs nothing; caught after the promote commit it has already fired a webhook.
+    stage('Input Validation') {
+      steps {
+        script {
+          if (!params.IMAGE_TAG?.trim()) {
+            error('IMAGE_TAG is required. Re-run with the tag application-ci produced.')
+          }
+          if (params.IMAGE_TAG == 'latest') {
+            error('Refusing to deploy the tag "latest". Releases are pinned to an immutable commit SHA.')
+          }
+          if (!(params.IMAGE_TAG ==~ /^[0-9a-f]{7,40}$/)) {
+            error("IMAGE_TAG '${params.IMAGE_TAG}' is not a commit SHA. Refusing to deploy.")
+          }
+          // Allowlist of exactly one. Single-environment by design; this exists so a typo or an
+          // injected parameter cannot aim a deploy at kube-system.
+          if (!(params.NAMESPACE in ['devops-app'])) {
+            error("NAMESPACE '${params.NAMESPACE}' is not allowlisted.")
+          }
+          if (!env.AWS_REGION || !env.CLUSTER_NAME) {
+            error('AWS_REGION and CLUSTER_NAME must be set as Jenkins global environment variables.')
+          }
+          env.TAG = params.IMAGE_TAG
+          env.ECR_REPOS = "${env.CLUSTER_NAME}-backend ${env.CLUSTER_NAME}-worker " +
+                          "${env.CLUSTER_NAME}-nginx ${env.CLUSTER_NAME}-backup"
+        }
+        container('deploy') {
+          // The same guard CI uses, read-only here: proves all four images really are in ECR before
+          // master is told to name this tag. The CD agent's IRSA role is ECR read-only.
+          sh '''
+            set -eu
+            result="$(scripts/ci/images-exist.sh)"
+            [ "$result" = "present" ] || {
+              echo "Images for $TAG are NOT all in ECR ($result). Refusing to deploy." >&2
+              exit 1
+            }
+            echo "All four images for $TAG confirmed present in ECR."
+          '''
+        }
+      }
+    }
+
+    stage('Manifest Validation') {
+      steps {
+        container('deploy') {
+          // --dry-run=client, not =server: a server-side dry run needs create permission on every
+          // kind in the chart, and granting CD that would undo the read-only guarantee for one
+          // validation nicety. ArgoCD holds those permissions and does the real server-side apply
+          // seconds later, failing the sync if the manifests are invalid. Stating which form ran
+          // means nothing degrades silently.
+          sh '''
+            set -eu
+            helm lint charts/voteball
+            helm template voteball charts/voteball \
+              --namespace "$NAMESPACE" \
+              --set image.tag="$TAG" > /tmp/rendered.yaml
+            echo "--- kubectl apply --dry-run=client (see the comment above for why not =server) ---"
+            kubectl apply --dry-run=client -f /tmp/rendered.yaml
+          '''
+        }
+      }
+    }
+
+    // The deploy decision, expressed as a commit. ArgoCD watches charts/voteball on master; this
+    // commit is what tells it what to run.
+    stage('Promote') {
+      steps {
+        sshagent(credentials: ['voteball-deploy-key']) {
+          sh '''
+            set -eu
+            mkdir -p ~/.ssh && chmod 700 ~/.ssh
+            printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
+            chmod 600 ~/.ssh/known_hosts
+
+            sed -i -E "s/^  tag: \".*\"/  tag: \"$TAG\"/" charts/voteball/values.yaml
+
+            git config user.name  "jenkins"
+            git config user.email "jenkins@voteball.local"
+            git add charts/voteball/values.yaml
+
+            if git diff --cached --quiet; then
+              echo "values.yaml already names $TAG -- nothing to commit"
+            else
+              # [skip ci] is documentation; the Guard stage in Jenkinsfile-ci is what enforces it.
+              # Do not remove either -- without the guard this commit retriggers CI, which triggers
+              # CD, which commits again, forever.
+              git commit -m "ci: image tag $TAG [skip ci]"
+              git pull --rebase --autostash origin master || {
+                echo "Rebase onto origin/master failed; aborting cleanly so the next build is not wedged."
+                git rebase --abort || true
+                exit 1
+              }
+              git push origin HEAD:master
+            fi
+            git rev-parse HEAD > /tmp/promote-sha
+          '''
+        }
+        script { env.PROMOTE_SHA = readFile('/tmp/promote-sha').trim() }
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        container('argocd') {
+          withCredentials([string(credentialsId: 'argocd-auth-token', variable: 'ARGOCD_AUTH_TOKEN')]) {
+            // PORT 443, NOT 80. `--plaintext` would target port 80, and the ci namespace's egress
+            // NetworkPolicy denies it: the broad allow-all rule excludes 172.16.0.0/12, which
+            // CONTAINS the EKS service CIDR 172.20.0.0/16, and the rule that re-allows the service
+            // CIDR lists only ports 443, 8080 and 50000. A --plaintext call therefore hangs and then
+            // fails with a transport error that reads exactly like an expired token.
+            //
+            // --insecure skips verification of argocd-server's self-signed certificate. Acceptable
+            // for a ClusterIP hop that never leaves the cluster; the token still authenticates us to
+            // the server.
+            //
+            // --grpc-web because the server does not proxy raw HTTP/2 gRPC through this path.
+            sh '''
+              set -eu
+              argocd app sync voteball \
+                --server argocd-server.argocd.svc.cluster.local \
+                --grpc-web --insecure \
+                --revision "$PROMOTE_SHA" \
+                --timeout 300
+            '''
+          }
+        }
+      }
+    }
+
+    // Delegated to ArgoCD's own health model rather than reimplemented as `kubectl rollout status`
+    // over three Deployments. ArgoCD assesses health per resource kind and already knows how.
+    stage('Rollout') {
+      steps {
+        container('argocd') {
+          withCredentials([string(credentialsId: 'argocd-auth-token', variable: 'ARGOCD_AUTH_TOKEN')]) {
+            sh '''
+              set -eu
+              argocd app wait voteball \
+                --server argocd-server.argocd.svc.cluster.local \
+                --grpc-web --insecure \
+                --sync --health --timeout 300
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Verify') {
+      steps {
+        container('argocd') {
+          withCredentials([string(credentialsId: 'argocd-auth-token', variable: 'ARGOCD_AUTH_TOKEN')]) {
+            // Reads ArgoCD's own verdict instead of re-deriving one.
+            sh '''
+              set -eu
+              argocd app get voteball \
+                --server argocd-server.argocd.svc.cluster.local \
+                --grpc-web --insecure -o json > /tmp/app.json
+
+              sync_status="$(jq -r '.status.sync.status'     /tmp/app.json)"
+              health="$(jq   -r '.status.health.status'      /tmp/app.json)"
+              revision="$(jq -r '.status.sync.revision'      /tmp/app.json)"
+
+              echo "sync=$sync_status health=$health revision=$revision"
+              [ "$sync_status" = "Synced" ]  || { echo "ArgoCD reports $sync_status" >&2; exit 1; }
+              [ "$health"      = "Healthy" ] || { echo "ArgoCD reports $health" >&2; exit 1; }
+              case "$revision" in
+                "$PROMOTE_SHA"*) ;;
+                *) echo "ArgoCD synced $revision, not the promoted $PROMOTE_SHA" >&2; exit 1 ;;
+              esac
+            '''
+          }
+        }
+        container('deploy') {
+          // Evidence capture for the brief's section 10, NOT a second opinion on ArgoCD's verdict.
+          // This is the only kubectl call in the happy path, and it is read-only.
+          sh '''
+            set -eu
+            kubectl get deployments,pods,services,ingress -n "$NAMESPACE"
+          '''
+        }
+      }
+    }
+
+    stage('Smoke Test') {
+      steps {
+        container('deploy') {
+          sh '''
+            set -eu
+            SMOKE_BASE_URL="https://$APP_DOMAIN" scripts/ci/smoke-test.sh
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    failure {
+      // Failure Handling. Diagnostics first -- once the rollback lands, the evidence of what broke
+      // is gone.
+      container('deploy') {
+        sh '''
+          set +e
+          echo "=============== EVENTS ==============="
+          kubectl get events -n "$NAMESPACE" --sort-by=.metadata.creationTimestamp | tail -40
+          for d in frontend backend worker; do
+            echo "=============== LOGS: $d ==============="
+            kubectl logs "deployment/$d" -n "$NAMESPACE" --tail=200 --all-containers 2>&1 | tail -200
+          done
+        '''
+      }
+      script {
+        // Rollback runs only if we got as far as changing what production runs. A failure in Input
+        // Validation or Manifest Validation changed nothing, so there is nothing to undo -- and
+        // rolling back then would deploy an older tag for no reason.
+        if (env.PROMOTE_SHA) {
+          def previous = sh(script: 'scripts/ci/previous-tag.sh', returnStdout: true).trim()
+          if (previous && previous != env.TAG) {
+            echo "ROLLING BACK to ${previous} (this deploy of ${env.TAG} failed verification)."
+            currentBuild.description = "${currentBuild.description} | ROLLED BACK to ${previous}"
+            build job: 'application-cd', wait: false, parameters: [
+              string(name: 'IMAGE_TAG',    value: previous),
+              string(name: 'IMAGE_DIGEST', value: ''),
+              string(name: 'SOURCE_BUILD', value: "rollback-from-${env.BUILD_NUMBER}"),
+            ]
+          } else {
+            echo "NO ROLLBACK: could not determine a previous tag distinct from ${env.TAG}. " +
+                 "Deploy an older tag manually -- see docs/cicd.md."
+          }
+        } else {
+          echo 'NO ROLLBACK NEEDED: this build failed before promoting, so production is unchanged.'
+        }
+      }
+    }
+    // cleanup, NOT always. Jenkins runs post blocks in a fixed order -- always, changed, fixed,
+    // regression, aborted, failure, success, unstable, cleanup -- so cleanWs() in `always` would
+    // delete the workspace BEFORE the failure block above runs previous-tag.sh, which needs the git
+    // repository. The rollback would then fail on exactly the path it exists for.
+    cleanup {
+      cleanWs()
+    }
+  }
+}
