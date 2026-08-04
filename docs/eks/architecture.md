@@ -333,9 +333,15 @@ flowchart LR
 - **`JENKINS_HOME` is a PersistentVolumeClaim on EFS, not an `emptyDir`.** EFS has a mount target in
   every AZ, so a rescheduled controller pod is never stuck waiting for a volume to follow it back to
   one AZ the way an EBS-backed PVC would be — see `terraform/addon-efs.tf`. The storage class reclaim
-  policy is `Retain`, so an accidental `helm uninstall` doesn't take build history with it; losing the
-  filesystem is still a recoverable event, since JCasC rebuilds the controller's configuration from
-  git on every boot regardless of what the volume holds.
+  policy is `Retain`, but that protects the *data*, not build history end-to-end: the PVC carries no
+  `helm.sh/resource-policy: keep` annotation (there is none anywhere in this repo), so a
+  `helm uninstall` — or the targeted `terraform destroy -target=helm_release.jenkins` that
+  `scripts/jenkins/uninstall-jenkins.sh` runs — still deletes the PVC and releases the PV. The EFS
+  filesystem and its data are not deleted, but a reinstall provisions a brand-new dynamic access point
+  rather than rebinding the released one, so build history does not come back on its own; recovering
+  it needs a manual PV rebind, or pointing a new PVC at the old access point (same script documents
+  the exact steps). Configuration is unaffected either way — JCasC rebuilds the controller from git on
+  every boot regardless of what the volume holds.
 
 ---
 
@@ -353,6 +359,10 @@ flowchart LR
   rest of this list — not by ArgoCD, and not by committing to `master`.** Its controller is still
   deliberately disposable — every setting rebuilds from JCasC (`ci/jenkins/jenkins.yaml`) on every
   boot, never from the UI — but `JENKINS_HOME` is a PersistentVolumeClaim on EFS (`efs-sc`, `Retain`;
-  diagram 6), not an `emptyDir`, so a Spot reclaim no longer loses build history; only a full
-  `terraform destroy` does, since that removes the EFS filesystem along with everything else.
-  Credentials still live in Secrets Manager, never on the volume. See [`docs/cicd.md`](../cicd.md).
+  diagram 6), not an `emptyDir`, so a Spot reclaim of the controller pod — the routine case — no
+  longer loses build history; the same PVC rebinds. Removing the release itself (`helm uninstall`, or
+  `scripts/jenkins/uninstall-jenkins.sh`'s targeted `terraform destroy`) still does: the PVC has no
+  `resource-policy: keep`, so it is deleted, and a reinstall provisions a new EFS access point rather
+  than rebinding the old one — see that script for the manual recovery steps. Only a full
+  `terraform destroy` of the EFS resources deletes the underlying data itself, for good. Credentials
+  still live in Secrets Manager, never on the volume. See [`docs/cicd.md`](../cicd.md).
