@@ -196,10 +196,11 @@ flowchart TD
     tests -.->|"any test fails"| failci(["FAILED -- nothing built, nothing deployed"])
     scan -.->|"HIGH/CRITICAL"| failci
 
-    trigger -->|"IMAGE_TAG, IMAGE_DIGEST, SOURCE_BUILD"| inval
+    trigger -->|"IMAGE_TAG, IMAGE_DIGEST, SOURCE_BUILD"| checkout
 
     subgraph cd["application-cd  (agent: voteball-deploy, SA: jenkins-cd-agent -- ECR READ-ONLY)"]
-        inval["Input Validation<br/>not latest, is a SHA, images in ECR, NAMESPACE allowlisted"]
+        checkout["Checkout<br/>records tag, source CI build, digest"]
+        checkout --> inval["Input Validation<br/>not latest, is a SHA, images in ECR, NAMESPACE allowlisted"]
         inval --> manval["Manifest Validation<br/>helm lint + template + kubectl apply --dry-run=client"]
         manval --> promote["Promote<br/>write image.tag, commit skip ci, push"]
         promote --> sync["Deploy<br/>argocd app sync --revision"]
@@ -246,7 +247,9 @@ flowchart LR
 
             subgraph eks["EKS cluster -- Spot node group, private subnets"]
                 subgraph nsci["namespace: ci"]
+                    svc["Service: jenkins<br/>ClusterIP :8080"]
                     jc["jenkins-0 StatefulSet<br/>numExecutors 0 -- runs no builds<br/>SA: jenkins -- no AWS role"]
+                    jobs[["Jobs: application-ci + application-cd<br/>created from JCasC, never the UI"]]
                     pvc[("PVC: jenkins-home<br/>storageClass efs-sc, Retain")]
                     ab["agent pod: voteball-build<br/>buildkit, trivy, skopeo, awscli,<br/>python, postgres, hadolint<br/>SA: jenkins-agent -- ECR push"]
                     ad["agent pod: voteball-deploy<br/>deploy: kubectl+helm+awscli+jq+curl<br/>argocd: argocd CLI<br/>SA: jenkins-cd-agent -- ECR read-only"]
@@ -276,11 +279,15 @@ flowchart LR
         sns[("SNS -- milestone alerts")]
     end
 
+    jcasc["JCasC config (git)<br/>ci/jenkins/jenkins.yaml<br/>delivered by terraform apply"]
+
     internet -->|"HTTPS voteball.latnook.com"| alb
     internet -->|"HTTPS jenkins.voteball.latnook.com/github-webhook ONLY"| alb
     alb --> fe
-    alb -->|"webhook path only -- the UI has no ALB rule"| jc
+    alb -->|"webhook path only -- the UI has no ALB rule"| svc --> jc
 
+    jcasc -.->|"controller.JCasC.configScripts"| jc
+    jc -.->|"creates both jobs, plugins,<br/>credentials -- no click-ops"| jobs
     jc -.->|"provisions"| ab
     jc -.->|"provisions"| ad
     jc --- pvc
@@ -318,6 +325,11 @@ flowchart LR
   by ArgoCD.
 - **The controller carries no AWS role at all.** Only the two agent ServiceAccounts do:
   `jenkins-agent` can push to ECR, `jenkins-cd-agent` can only read it.
+- **Both jobs, all plugins and every credential come from `ci/jenkins/jenkins.yaml` (JCasC), applied
+  by `controller.JCasC.configScripts` at every controller boot** — there is no UI job-creation step
+  and nothing configured by clicking survives the next restart. Terraform delivers the file into the
+  Helm release; a change only reaches the running controller via `terraform apply`, never by
+  committing to `master`.
 - **`JENKINS_HOME` is a PersistentVolumeClaim on EFS, not an `emptyDir`.** EFS has a mount target in
   every AZ, so a rescheduled controller pod is never stuck waiting for a volume to follow it back to
   one AZ the way an EBS-backed PVC would be — see `terraform/addon-efs.tf`. The storage class reclaim
@@ -338,7 +350,9 @@ flowchart LR
   diagrams 2 and 3.
 - **Jenkins (namespace `ci`):** builds, scans and pushes the four images, then commits the new image tag
   to `charts/voteball/values.yaml`. It is a **platform add-on, installed by `terraform apply` like the
-  rest of this list — not by ArgoCD, and not by committing to `master`.** Its controller is
-  deliberately disposable (`JENKINS_HOME` is an `emptyDir`; the node group is 100% Spot), so tearing the
-  cluster down and rebuilding it loses only build history, never credentials or job configuration — both
-  of those live in Secrets Manager and git (JCasC) respectively. See [`docs/cicd.md`](../cicd.md).
+  rest of this list — not by ArgoCD, and not by committing to `master`.** Its controller is still
+  deliberately disposable — every setting rebuilds from JCasC (`ci/jenkins/jenkins.yaml`) on every
+  boot, never from the UI — but `JENKINS_HOME` is a PersistentVolumeClaim on EFS (`efs-sc`, `Retain`;
+  diagram 6), not an `emptyDir`, so a Spot reclaim no longer loses build history; only a full
+  `terraform destroy` does, since that removes the EFS filesystem along with everything else.
+  Credentials still live in Secrets Manager, never on the volume. See [`docs/cicd.md`](../cicd.md).
