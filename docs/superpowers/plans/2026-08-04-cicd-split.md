@@ -531,18 +531,20 @@ trap 'rm -rf "$work"' EXIT
 cat > "$work/ok" <<'STUB'
 #!/usr/bin/env bash
 case "$1" in
-  */health)       echo '200 {"status":"ok"}' ;;
-  */api/results)  echo '200 {"previous":[],"upcoming":[]}' ;;
-  *)              echo '404 not found' ;;
+  */api/options)       echo '200 {"clubs":[],"leagues":[]}' ;;
+  */api/results\?by=all) echo '200 {"previous":[],"upcoming":[]}' ;;
+  *)                   echo '200 <!doctype html>' ;;   # the site root
 esac
 STUB
 
+# The failure this whole design exists to catch: the site LOOKS up (root and /health fine, pods
+# Ready, ArgoCD reports Healthy) but the data path is broken.
 cat > "$work/sick" <<'STUB'
 #!/usr/bin/env bash
 case "$1" in
-  */health)       echo '200 {"status":"ok"}' ;;
-  */api/results)  echo '503 upstream unavailable' ;;
-  *)              echo '404 not found' ;;
+  */api/options)       echo '200 {"clubs":[],"leagues":[]}' ;;
+  */api/results\?by=all) echo '503 upstream unavailable' ;;
+  *)                   echo '200 <!doctype html>' ;;
 esac
 STUB
 
@@ -557,7 +559,7 @@ echo "--- a healthy site passes ---"
 SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/ok" SMOKE_RETRIES=1 SMOKE_DELAY=0 \
   "$ROOT/scripts/ci/smoke-test.sh" >/dev/null || fail "healthy site should pass"
 
-echo "--- a 503 on /api/results fails ---"
+echo "--- a 503 on /api/results fails, even though the root still serves ---"
 SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/sick" SMOKE_RETRIES=2 SMOKE_DELAY=0 \
   "$ROOT/scripts/ci/smoke-test.sh" >/dev/null 2>&1 && fail "a 503 must fail the smoke test"
 
@@ -617,7 +619,9 @@ check() {
   while [ "$attempt" -le "$retries" ]; do
     if out="$(fetch "${SMOKE_BASE_URL}${path}" 2>/dev/null)"; then
       code="$(printf '%s' "$out" | awk '{print $1}')"
-      if [ "$code" = "200" ] && printf '%s' "$out" | grep -q "$want"; then
+      # An empty $want means "200 is enough" -- used for the HTML root, which has no JSON key to
+      # match on.
+      if [ "$code" = "200" ] && { [ -z "$want" ] || printf '%s' "$out" | grep -q "$want"; }; then
         echo "smoke: OK   ${path} (${description})"
         return 0
       fi
@@ -632,12 +636,24 @@ check() {
   return 1
 }
 
+# ENDPOINT CHOICE, verified live on 2026-08-04 from a pod in the ci namespace.
+#
+# /health is NOT used, and that is deliberate twice over. First, it is not reachable: nginx proxies
+# only /api/*, so /health from outside is a 404 -- it is the in-cluster probe target, nothing else.
+# Second, and more importantly, /health is ALREADY what the kubelet probes and therefore what
+# ArgoCD's health assessment is built on. Checking it here would re-ask a question ArgoCD has
+# already answered, which is exactly the duplication this design avoids.
+#
+# What Jenkins asks instead is the question ArgoCD cannot: does the PUBLIC URL serve real data?
 status=0
-# /health proves the backend process is up and reachable through the ALB and nginx proxy.
-check /health '"status"' 'backend health endpoint' || status=1
-# /api/results proves the backend can actually reach RDS and read the rollup tables -- the failure
-# mode /health cannot see.
-check /api/results 'previous' 'results API reads the database' || status=1
+# The site itself, through the ALB and nginx. Proves the frontend is serving.
+check / '' 'site root loads' || status=1
+# Proves the backend is reachable through the proxy AND can read the database -- /api/options is
+# unparameterised and returns seed data.
+check /api/options 'clubs' 'options API reads the database' || status=1
+# Proves the worker-computed rollup tables are readable, which is the deepest failure the other two
+# cannot see. Requires the by= parameter; without it the API correctly returns 400.
+check '/api/results?by=all' 'previous' 'results API reads the rollup tables' || status=1
 
 [ "$status" -eq 0 ] && echo "smoke: all checks passed against ${SMOKE_BASE_URL}"
 exit "$status"
@@ -2508,27 +2524,63 @@ deliberately broken deploy leaves the site down.
 
 Build an image whose backend fails its health check, push it under its own SHA, and deploy it:
 
+**Break the data path, NOT `/health`.** Breaking `/health` would fail the readiness probe, so pods
+would never go Ready, `argocd app wait` would time out, and the rollback would fire from *that* path
+— proving only that a crash is detected. The interesting failure, and the entire justification for
+the smoke test, is the one where **ArgoCD reports Healthy and the site is broken anyway**: pods up,
+probes green, data path dead.
+
 ```bash
-git checkout -b tmp-broken-health
-# Make /health return 500 -- the smoke test's first check.
-python3 - <<'PY'
-import re, pathlib
+git checkout -b tmp-broken-results
+
+# Line-based insertion with a REAL newline. An earlier draft of this plan used a string replace
+# containing a literal backslash-n, which produced `def results():\n    return ...` on ONE line --
+# a Python syntax error. The container then CrashLoopBackOffs instead of serving a 500, which
+# demonstrates the wrong failure entirely. The ast.parse check below is what catches that.
+python3 - <<'PYEOF'
+import pathlib
 p = pathlib.Path('services/backend/app.py')
-s = p.read_text()
-s = s.replace("def health():", "def health():\n    return {'status': 'deliberately-broken'}, 500  # ROLLBACK DEMO", 1)
-p.write_text(s)
-PY
-git commit -am "demo: deliberately break /health to exercise automatic rollback"
+out = []
+for line in p.read_text().splitlines(keepends=True):
+    out.append(line)
+    if line.startswith('def results():'):
+        out.append("    return {'error': 'deliberately broken for the rollback demo'}, 500\n")
+p.write_text(''.join(out))
+PYEOF
+
+# MANDATORY. The image must be broken at RUNTIME, not at import: a syntax error crashes the pod,
+# which the readiness probe catches and which therefore proves nothing about the smoke test.
+python3 -c "import ast, pathlib; ast.parse(pathlib.Path('services/backend/app.py').read_text()); print('app.py still parses -- good')"
+git diff --stat    # expect exactly 1 file, 1 insertion
+
+git commit -am "demo: deliberately break /api/results to exercise automatic rollback"
 BROKEN="$(git rev-parse --short HEAD)"
 scripts/build-push-ecr.sh          # builds and pushes under $BROKEN without going through CI
-git checkout master && git branch -D tmp-broken-health
+git checkout master && git branch -D tmp-broken-results
 ```
+
+> **Clean up the demo images afterwards.** `$BROKEN` and any other throwaway tag must be deleted from
+> all four ECR repositories once the evidence is captured — a broken backend image sitting in a
+> registry is a trap for the next person, even though nothing references it:
+> ```bash
+> for r in backend worker nginx backup; do
+>   aws ecr batch-delete-image --repository-name "$CLUSTER_NAME-$r" \
+>     --image-ids imageTag="$BROKEN" --region "$AWS_REGION"
+> done
+> ```
 
 Note the wall-clock start time, then run `application-cd` with `IMAGE_TAG=$BROKEN`.
 
-**Expected sequence:** Promote succeeds → ArgoCD syncs → `argocd app wait` returns Healthy (pods do
-start; only `/health` misbehaves) → **Smoke Test fails** → `post { failure }` dumps events and logs →
-a rollback build of `application-cd` starts with the previous tag → the site returns.
+**Expected sequence:** Promote succeeds → ArgoCD syncs → `argocd app wait` returns **Healthy**
+(pods start and pass their probes — `/health` is untouched) → Verify passes (ArgoCD is Synced and
+Healthy at the promoted revision) → **Smoke Test fails on `/api/results?by=all`** → `post { failure }`
+dumps events and logs → a rollback build of `application-cd` starts with the previous tag → the site
+returns.
+
+**That ArgoCD reports Healthy throughout is the point of the demo, not a flaw in it.** It is the
+evidence that a reconciler cannot answer the question the smoke test asks, and therefore the evidence
+that the CD pipeline earns its place. State this explicitly in the evidence file and in
+`README.submission.md`.
 
 Capture: both console logs, `kubectl get events`, and the wall-clock time from broken-deploy to
 recovery. Save to `docs/eks/evidence/2026-08-04-task4-rollback-demo.txt`. Take a browser screenshot of
@@ -2537,7 +2589,7 @@ the CD build page showing the `ROLLED BACK to <tag>` description → `docs/scree
 Confirm recovery independently of Jenkins:
 
 ```bash
-curl -sS -o /dev/null -w '%{http_code}\n' https://"$APP_DOMAIN"/health          # 200
+curl -sS -o /dev/null -w '%{http_code}\n' "https://$APP_DOMAIN/api/results?by=all"   # 200
 grep -E '^\s*tag:' charts/voteball/values.yaml                                  # the good tag
 kubectl get pods -n devops-app -o jsonpath='{.items[*].spec.containers[*].image}' | tr ' ' '\n' | sort -u
 ```
@@ -2618,4 +2670,6 @@ All must pass, the site must return 200, and `docs/superpowers` must be gone.
 - Both Jenkinsfiles are validated by the real Declarative parser via the running controller's `/pipeline-model-converter/validate`, not only structurally. That still does not exercise the *steps*, only the shape — first real proof remains the Task 12 build.
 - The rollback-recursion bound (`previous != env.TAG` plus `disableConcurrentBuilds()`) is reasoned, not tested. Task 12 Step 6 tests it; if it recurses, add `ROLLBACK_DEPTH`.
 - Task 12 Step 5 uses `scripts/build-push-ecr.sh` to build the broken image outside CI deliberately — CI would refuse to build it, which is the point.
+- **Smoke-test endpoints verified live on 2026-08-04** from a pod in the `ci` namespace: `/` → 200, `/api/options` → 200, `/api/results?by=all` → 200. The first draft used `/health` (404 from outside — nginx proxies only `/api/*`; it is the in-cluster probe target) and a bare `/api/results` (400 — `by=` is required). Both would have failed every deploy and, with automatic rollback, rolled every deploy back. The same probe confirmed the `ci` NetworkPolicy does **not** block egress to the public ALB, which resolves to addresses outside the excluded VPC range.
+- **Every destructive snippet in Task 12 must be run from a file, not pasted into a shell with a heredoc inside it.** A nested-heredoc quoting error while editing this plan on 2026-08-04 caused the Step 5 commands to execute for real against the working tree and ECR. Nothing reached production — `values.yaml` was untouched — but four throwaway image tags had to be deleted. Treat Step 5 as a script to review and then run, never as text to paste.
 - `--insecure` on the argocd CLI skips server-certificate verification on a ClusterIP hop that never leaves the cluster. Mounting ArgoCD's CA would be stricter; it is not worth the moving part here, and the token still authenticates the client.
