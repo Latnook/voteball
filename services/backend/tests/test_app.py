@@ -1341,3 +1341,8 @@ def test_options_exposes_name_ru(client):
         assert all('name_ru' in row for row in body[key]), f'{key} rows missing name_ru'
     likud = next(p for p in body['previous_parties'] if p['name_en'] == 'Likud')
     assert likud['name_ru'] == 'Ликуд'
+
+
+def test_deliberately_failing_ci_gate_demo():
+    """TEMPORARY. Proves application-ci blocks a deploy when a test fails. Reverted immediately."""
+    assert 1 == 2, "deliberate failure demonstrating the CI test gate"
