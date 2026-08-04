@@ -17,13 +17,18 @@ delay="${SMOKE_DELAY:-6}"
 # Tests override this to run offline; production uses the real curl.
 stub="${SMOKE_STUB_CURL:-}"
 
+# A fixed path (the old /tmp/smoke-body) is shared by every container in the build pod; mktemp +
+# trap keeps this invocation's body file private and guarantees cleanup on every exit path.
+body_file="$(mktemp)"
+trap 'rm -f "$body_file"' EXIT
+
 fetch() {
   if [ -n "$stub" ]; then
     "$stub" "$1"
   else
     # --max-time bounds a hung connection; without it a black-holed ALB makes the stage hang until
     # the pipeline timeout instead of failing and rolling back.
-    curl -sS --max-time 15 -o /tmp/smoke-body -w '%{http_code} ' "$1" && cat /tmp/smoke-body
+    curl -sS --max-time 15 -o "$body_file" -w '%{http_code} ' "$1" && cat "$body_file"
   fi
 }
 
@@ -32,7 +37,13 @@ check() {
   local attempt=1 out code
   while [ "$attempt" -le "$retries" ]; do
     if out="$(fetch "${SMOKE_BASE_URL}${path}" 2>/dev/null)"; then
-      code="$(printf '%s' "$out" | awk '{print $1}')"
+      # NR==1 only -- $out is "<code> <body...>" and a real page body is multi-line (nginx's
+      # index.html, for one). Without this guard, awk prints field 1 of EVERY line joined by
+      # newlines, "code" becomes "200\n<html>\n...", the comparison against "200" always fails, and
+      # every real deploy would false-fail this check -- which triggers an automatic rollback of a
+      # perfectly working deploy. Caught 2026-08-04 by code review before it ever ran against a real
+      # multi-line body.
+      code="$(printf '%s' "$out" | awk 'NR==1{print $1; exit}')"
       # An empty $want means "200 is enough" -- used for the HTML root, which has no JSON key to
       # match on.
       if [ "$code" = "200" ] && { [ -z "$want" ] || printf '%s' "$out" | grep -q "$want"; }; then

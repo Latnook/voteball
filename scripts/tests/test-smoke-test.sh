@@ -35,11 +35,32 @@ cat > "$work/down" <<'STUB'
 exit 7
 STUB
 
-chmod +x "$work"/ok "$work"/sick "$work"/down
+# A realistic multi-line HTML root -- nginx's real index.html is always several lines, with spaces
+# in most of them. This is the shape that broke the original status-code extraction
+# (`awk '{print $1}'` with no NR==1 guard): it printed field 1 of EVERY line joined by newlines, so
+# "code" became "200\n<html lang=\"en\">\n..." instead of "200", the string comparison against "200"
+# always failed, and a healthy site would false-fail the smoke test -- which triggers an automatic
+# rollback of a perfectly working deploy.
+cat > "$work/ok_multiline" <<'STUB'
+#!/usr/bin/env bash
+case "$1" in
+  */api/options)       echo '200 {"clubs":[],"leagues":[]}' ;;
+  */api/results\?by=all) echo '200 {"previous":[],"upcoming":[]}' ;;
+  *)
+    printf '200 <!doctype html>\n<html lang="en">\n  <head><title>Voteball</title></head>\n  <body>Hello world</body>\n</html>\n'
+    ;;
+esac
+STUB
+
+chmod +x "$work"/ok "$work"/sick "$work"/down "$work"/ok_multiline
 
 echo "--- a healthy site passes ---"
 SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/ok" SMOKE_RETRIES=1 SMOKE_DELAY=0 \
   "$ROOT/scripts/ci/smoke-test.sh" >/dev/null || fail "healthy site should pass"
+
+echo "--- a healthy site with a realistic multi-line body still passes ---"
+SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/ok_multiline" SMOKE_RETRIES=1 SMOKE_DELAY=0 \
+  "$ROOT/scripts/ci/smoke-test.sh" >/dev/null || fail "multi-line healthy body should pass"
 
 echo "--- a 503 on /api/results fails, even though the root still serves ---"
 SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/sick" SMOKE_RETRIES=2 SMOKE_DELAY=0 \
