@@ -260,30 +260,63 @@ pipeline {
 
     stage('Verify') {
       steps {
+        // Split across two containers, deliberately -- do not collapse this back into one block.
+        //
+        // The `argocd` container (quay.io/argoproj/argocd) carries the argocd CLI and NOTHING else
+        // useful for shell scripting: no jq, no curl, no kubectl (confirmed live,
+        // `docker run --entrypoint sh quay.io/argoproj/argocd:v3.4.5 -c 'command -v jq'` finds
+        // nothing). jq lives in the OTHER container of this pod, `deploy`
+        // (alpine/k8s:1.31.3 -- see ci/jenkins/jenkins.yaml's voteball-deploy template comment: it
+        // bundles kubectl/helm/aws-cli/jq/curl in one image specifically so this pod stays two
+        // containers instead of five). This is what build #7 hit: `jq: not found` in the argocd
+        // container, which also silently left $sync_status empty rather than failing -- see the
+        // explicit empty-value guard below.
+        //
+        // The two halves hand data across via a WORKSPACE-relative file, not /tmp. Every container
+        // in a Kubernetes-plugin pod gets its OWN root filesystem -- /tmp in `argocd` and /tmp in
+        // `deploy` are two different directories on two different filesystems, which is the second
+        // half of why build #7 failed even discounting the missing jq. The Jenkins workspace,
+        // by contrast, is a volume the Kubernetes plugin mounts into every container in the pod, so
+        // a file written there by one container is readable by another.
         container('argocd') {
           withCredentials([string(credentialsId: 'argocd-auth-token', variable: 'ARGOCD_AUTH_TOKEN')]) {
-            // Reads ArgoCD's own verdict instead of re-deriving one.
+            // Reads ArgoCD's own verdict instead of re-deriving one. Only fetches and saves JSON --
+            // no jq here, see above.
             sh '''
               set -eu
               argocd app get voteball \
                 --server argocd-server.argocd.svc.cluster.local \
-                --grpc-web --insecure -o json > /tmp/app.json
-
-              sync_status="$(jq -r '.status.sync.status'     /tmp/app.json)"
-              health="$(jq   -r '.status.health.status'      /tmp/app.json)"
-              revision="$(jq -r '.status.sync.revision'      /tmp/app.json)"
-
-              echo "sync=$sync_status health=$health revision=$revision"
-              [ "$sync_status" = "Synced" ]  || { echo "ArgoCD reports $sync_status" >&2; exit 1; }
-              [ "$health"      = "Healthy" ] || { echo "ArgoCD reports $health" >&2; exit 1; }
-              case "$revision" in
-                "$PROMOTE_SHA"*) ;;
-                *) echo "ArgoCD synced $revision, not the promoted $PROMOTE_SHA" >&2; exit 1 ;;
-              esac
+                --grpc-web --insecure -o json > app-status.json
             '''
           }
         }
         container('deploy') {
+          // jq lives here, not in `argocd` -- see the stage comment above.
+          //
+          // Explicit emptiness checks come first, before the Synced/Healthy/revision comparisons.
+          // This is the exact failure mode build #7 hit: when jq is missing, capturing its output
+          // into a shell variable still exits 0 (the shell captures nothing, not an error), so
+          // set -eu does not abort and an empty value would otherwise reach a bare equality
+          // comparison as a false-but-silent mismatch instead of a loud failure. Failing on
+          // empty/missing explicitly means a broken read can never masquerade as a legitimate
+          // "not Synced" verdict.
+          sh '''
+            set -eu
+            sync_status="$(jq -r '.status.sync.status // empty'     app-status.json)"
+            health="$(jq   -r '.status.health.status // empty'      app-status.json)"
+            revision="$(jq -r '.status.sync.revision // empty'      app-status.json)"
+
+            echo "sync=$sync_status health=$health revision=$revision"
+            [ -n "$sync_status" ] || { echo "sync_status is empty/missing -- could not read ArgoCD's verdict from app-status.json" >&2; exit 1; }
+            [ -n "$health" ]      || { echo "health is empty/missing -- could not read ArgoCD's verdict from app-status.json" >&2; exit 1; }
+            [ -n "$revision" ]    || { echo "revision is empty/missing -- could not read ArgoCD's verdict from app-status.json" >&2; exit 1; }
+            [ "$sync_status" = "Synced" ]  || { echo "ArgoCD reports $sync_status" >&2; exit 1; }
+            [ "$health"      = "Healthy" ] || { echo "ArgoCD reports $health" >&2; exit 1; }
+            case "$revision" in
+              "$PROMOTE_SHA"*) ;;
+              *) echo "ArgoCD synced $revision, not the promoted $PROMOTE_SHA" >&2; exit 1 ;;
+            esac
+          '''
           // Evidence capture for the brief's section 10, NOT a second opinion on ArgoCD's verdict.
           // This is the only kubectl call in the happy path, and it is read-only.
           sh '''
