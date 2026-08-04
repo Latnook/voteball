@@ -351,7 +351,11 @@ the full design and its "Verification outcome" section for what the move itself 
   directly rather than through the API.
 - **Log retention.** CloudWatch log groups have no retention policy set, so they grow (and bill)
   forever.
-- **Cost.** ~$200/month while up, dominated by the EKS control plane, NAT, ALB and RDS.
+- **Cost.** ~$290/month (~$9.70/day) while up. Measured 2026-08-04 from Cost Explorer, not estimated:
+  Spot nodes $80, EKS control plane $72, ALB $40, NAT gateway hours $37, public IPv4 addresses $17,
+  RDS $17, NAT data $12, WAF $9, EBS $6. The single largest lever is not any of these — it is
+  **not running the stack overnight**; `destroy.sh`/`deploy.sh` round-trip in ~30 minutes and preserve
+  votes via the final snapshot.
 
 ---
 

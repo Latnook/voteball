@@ -83,7 +83,8 @@ by files you can review, not by clicks someone once made.
 
 ## Quickstart
 
-Running this creates real, billed AWS resources (**≈$200/month** while up). Tear it down when you're
+Running this creates real, billed AWS resources (**≈$290/month**, ≈$9.70/day, while up). Tear it down
+when you're
 done — `./scripts/destroy.sh` takes a final database snapshot, so nothing is lost.
 
 **You need:** `terraform`, `aws` (logged in), `kubectl`, `helm`, `docker`, `python3`, `openssl`, and a

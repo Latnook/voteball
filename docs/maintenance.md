@@ -47,7 +47,7 @@ Runway from 2026-07-30  ~368 days (about 12 months)
 > shipping the same app v1.35.0.
 
 After that date the cluster silently moves to **extended support at 5× the control-plane price**
-(≈$0.10/hr → ≈$0.60/hr, roughly **+$360/month** for a cluster that otherwise costs ~$200/month total).
+(≈$0.10/hr → ≈$0.60/hr, roughly **+$360/month** for a cluster that otherwise costs ~$290/month total).
 Nothing breaks; the bill just quadruples, which is the worst kind of failure because nothing alerts.
 
 **Action:** bump `cluster_version` in **`terraform/variables.tf`** before **2027-08-02**, then apply.

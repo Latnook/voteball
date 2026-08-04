@@ -2,7 +2,7 @@
 
 How to put the Voteball site online on AWS, check it works, and take it back down.
 
-**Heads-up:** running this costs real money (~$200/month while it's up). Always take it down when
+**Heads-up:** running this costs real money (**~$290/month**, ~$9.70/day, while it's up). Always take it down when
 you're done. Last verified end-to-end on 2026-07-31 (full destroy + rebuild, with the vote count
 unchanged either side — 15 votes, identical ids; raw captures from the 2026-07-27 cycle in
 [`docs/eks/evidence/`](eks/evidence/)).
