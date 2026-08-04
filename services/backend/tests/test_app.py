@@ -9,8 +9,8 @@ def test_options_endpoint(client):
     assert resp.status_code == 200
     body = resp.get_json()
     assert 'leagues' in body
-    assert any(l['name_en'] == 'Premier League' for l in body['leagues'])
-    assert any(l['name_he'] == 'הפרמייר ליג' for l in body['leagues'])
+    assert any(league['name_en'] == 'Premier League' for league in body['leagues'])
+    assert any(league['name_he'] == 'הפרמייר ליג' for league in body['leagues'])
 
 
 def test_options_includes_religiosity(client):
@@ -224,7 +224,6 @@ def test_vote_endpoint_rejects_dual_league_club_picked_under_both_tabs(client, c
 
 
 def test_results_by_club_endpoint(client, conn):
-    import queries
     cur = conn.cursor()
     cur.execute("SELECT id FROM clubs WHERE name = 'Liverpool'")
     club_id = cur.fetchone()[0]
