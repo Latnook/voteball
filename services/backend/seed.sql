@@ -118,9 +118,9 @@ JOIN (VALUES
     ('Israeli Premier League', 'Hapoel Petah Tikva'), ('Israeli Premier League', 'Ironi Tiberias'),
 
     ('Liga Leumit', 'F.C. Ashdod'), ('Liga Leumit', 'Maccabi Bnei Reineh'),
-    ('Liga Leumit', 'Bnei Yehuda'), ('Liga Leumit', 'Hapoel Hadera'),
+    ('Liga Leumit', 'Bnei Yehuda'), ('Liga Leumit', 'Maccabi Kiryat Gat'),
     ('Liga Leumit', 'Hapoel Kfar Saba'), ('Liga Leumit', 'Hapoel Kfar Shalem'),
-    ('Liga Leumit', 'Hapoel Nof HaGalil'), ('Liga Leumit', 'Hapoel Akko'),
+    ('Liga Leumit', 'Maccabi Akhi Nazareth'), ('Liga Leumit', 'Hapoel Akko'),
     ('Liga Leumit', 'Hapoel Afula'), ('Liga Leumit', 'Hapoel Rishon LeZion'),
     ('Liga Leumit', 'Hapoel Ra''anana'), ('Liga Leumit', 'F.C. Kafr Qasim'),
     ('Liga Leumit', 'F.C. Kiryat Yam'), ('Liga Leumit', 'Maccabi Herzliya'),
@@ -200,6 +200,28 @@ UPDATE leagues           SET name_en = name WHERE name_en IS NULL;
 UPDATE clubs             SET name_en = name WHERE name_en IS NULL;
 UPDATE previous_parties  SET name_he = name WHERE name_he IS NULL;
 UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
+
+-- Relegation removals (2026-08-04): Hapoel Hadera and Hapoel Nof HaGalil dropped out of Liga Leumit
+-- to the third tier, which this app does not seed, and Maccabi Kiryat Gat / Maccabi Akhi Nazareth
+-- took their places in the roster above. Dropping the two from the INSERT's VALUES list is only half
+-- the change: every statement in this file runs against a database that is ALREADY seeded, so
+-- deleting a literal there reaches a *fresh* database only -- production keeps both clubs forever.
+-- Removing a club therefore needs its own explicit statement, and this is the first one in the file.
+--
+-- The NOT EXISTS guard is what keeps the app bootable, and it is not optional. vote_clubs.club_id
+-- references clubs(id) with NO ON DELETE CASCADE (schema.sql), so deleting a club somebody has voted
+-- for raises a foreign-key violation *inside init_db* -- which runs on every backend pod boot, so the
+-- failure is a CrashLoopBackOff on startup, not one failed request. The guard also encodes the policy
+-- the admin API already enforces: DELETE /api/admin/clubs/<id> returns 409 while any vote references
+-- the club (see delete_club_route in app.py). A roster tidy-up must never destroy a ballot; if either
+-- club ever does pick up votes, it stays and the admin UI's vote-reassignment flow is the way out.
+--
+-- Keyed on name_en, the stable identity used by every other guarded statement here -- so a club an
+-- admin has renamed through the live UI is left alone rather than silently deleted. Idempotent: a
+-- no-op once the rows are gone, which is why it can run on every boot forever.
+DELETE FROM clubs c
+WHERE c.name_en IN ('Hapoel Hadera', 'Hapoel Nof HaGalil')
+  AND NOT EXISTS (SELECT 1 FROM vote_clubs vc WHERE vc.club_id = c.id);
 
 -- League display names.
 -- One row per entity, all display languages together. COALESCE is the per-column equivalent of
@@ -432,10 +454,10 @@ FROM (VALUES
     ('F.C. Ashdod', 'מ.ס. אשדוד', 'Ашдод'),
     ('Maccabi Bnei Reineh', 'מכבי בני ריינה', 'Маккаби Бней Рейне'),
     ('Bnei Yehuda', 'בני יהודה', 'Бней Иегуда'),
-    ('Hapoel Hadera', 'הפועל חדרה', 'Хапоэль Хадера'),
+    ('Maccabi Kiryat Gat', 'מכבי קריית גת', 'Маккаби Кирьят-Гат'),
     ('Hapoel Kfar Saba', 'הפועל כפר סבא', 'Хапоэль Кфар-Сава'),
     ('Hapoel Kfar Shalem', 'הפועל כפר שלם', 'Хапоэль Кфар-Шалем'),
-    ('Hapoel Nof HaGalil', 'הפועל נוף הגליל', 'Хапоэль Ноф-ха-Галиль'),
+    ('Maccabi Akhi Nazareth', 'מכבי אחי נצרת', 'Маккаби Ахей Нацрат'),
     ('Hapoel Akko', 'הפועל עכו', 'Хапоэль Акко'),
     ('Hapoel Afula', 'הפועל עפולה', 'Хапоэль Афула'),
     ('Hapoel Rishon LeZion', 'הפועל ראשון לציון', 'Хапоэль Ришон-ле-Цион'),
@@ -571,10 +593,15 @@ FROM (VALUES
     ('F.C. Ashdod', 'https://upload.wikimedia.org/wikipedia/he/5/5b/Ashdod.png'),
     ('Maccabi Bnei Reineh', 'https://upload.wikimedia.org/wikipedia/he/f/f7/MaccabiBneiReine2022.png'),
     ('Bnei Yehuda', 'https://upload.wikimedia.org/wikipedia/en/f/f5/Bnei_Jehuda_Tel_Aviv_FC.svg'),
-    ('Hapoel Hadera', 'https://upload.wikimedia.org/wikipedia/he/8/81/HapoelHaderaFC.svg'),
+    -- Maccabi Kiryat Gat has no Wikimedia crest either, so it is served from our own origin for the
+    -- same three reasons as F.C. Kiryat Yam below -- the club's only artwork is on *.fbcdn.net, whose
+    -- URLs are signed and expire, and which tracker blockers drop outright in the browser. Unlike
+    -- Kiryat Yam this row carries the plain IS NULL guard, because there is no bad value to correct:
+    -- the club is new to the roster, so it has never had a logo_url at all.
+    ('Maccabi Kiryat Gat', '/logos/kiryat-gat.png'),
     ('Hapoel Kfar Saba', 'https://upload.wikimedia.org/wikipedia/he/8/87/Hapoel_Kfar_Saba_FC_Logo.png'),
     ('Hapoel Kfar Shalem', 'https://upload.wikimedia.org/wikipedia/he/9/90/Hapoel_Kfar_Shalem_Logo.png'),
-    ('Hapoel Nof HaGalil', 'https://upload.wikimedia.org/wikipedia/he/9/95/%D7%A0%D7%95%D7%A4%D7%94%D7%92%D7%9C%D7%99%D7%9C.png'),
+    ('Maccabi Akhi Nazareth', 'https://upload.wikimedia.org/wikipedia/he/3/37/Akhi_Nazareth_FC_Maalouf.png'),
     ('Hapoel Akko', 'https://upload.wikimedia.org/wikipedia/he/7/75/Hapoelakko.png'),
     ('Hapoel Afula', 'https://upload.wikimedia.org/wikipedia/en/0/01/Hapoel_Afula_F.C.png'),
     ('Hapoel Rishon LeZion', 'https://upload.wikimedia.org/wikipedia/he/c/ce/Hap-rish.png'),
