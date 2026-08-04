@@ -224,6 +224,38 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   # supposed to build the app-code commit, and nothing would retry it.
   git commit -m "Deploy: sync values.yaml from Terraform outputs"
 
+  # Wait for Jenkins to be able to RECEIVE the webhook before pushing, because GitHub does not retry
+  # a failed push delivery -- it fires once and the build is gone.
+  #
+  # This push fires the webhook. Jenkins is created during step 6's apply, but "the helm release
+  # exists" is not "the ALB has a healthy target": on the 2026-08-04 06:30 rebuild the push landed at
+  # 06:45:42 and GitHub got 502 "failed to connect to host" in 0.05s, while the very same endpoint
+  # answered 200 thirty-five seconds later. No build ran, nothing in the deploy output said so, and
+  # the delivery had to be replayed by hand. The 2026-08-04 00:22 rebuild survived only because
+  # Jenkins happened to win that race.
+  #
+  # Same shape as the deploy-key race that moved registration to step 3c: deploy.sh pushing to master
+  # before the thing that must react to the push is ready. Fixing that one did not fix this one --
+  # there, GitHub did not know the key; here, the ALB has no healthy target yet.
+  #
+  # The wait itself lives in scripts/wait-for-webhook.sh, extracted for the same reason
+  # scripts/ci/should-skip-build.sh is: a decision that can only be exercised by running a real
+  # deploy is exactly the kind that goes untested until it fails in production. Its own offline test
+  # is scripts/tests/test-webhook-wait.sh.
+  #
+  # Deliberately NOT fatal. Everything above this line succeeded, and the push must still happen --
+  # skipping it would leave master naming a stale image tag for ArgoCD to sync. On timeout it pushes
+  # anyway and prints the one command that recovers a lost delivery.
+  R="${GITHUB_REPO:-$(tfvar github_repo)}"
+  if ! ./scripts/wait-for-webhook.sh; then
+    echo "WARNING: Jenkins never answered, so this push may produce no build at all." >&2
+    echo "         GitHub delivers a push event once and never retries it. If no build appears," >&2
+    echo "         replay the delivery rather than re-pushing (a re-push changes the SHA):" >&2
+    echo "           H=\$(gh api repos/${R}/hooks --jq '.[0].id')" >&2
+    echo "           D=\$(gh api repos/${R}/hooks/\$H/deliveries --jq '[.[]|select(.event==\"push\")][0].id')" >&2
+    echo "           gh api -X POST repos/${R}/hooks/\$H/deliveries/\$D/attempts" >&2
+  fi
+
   # Rebase onto origin FIRST. CI pushes its own "ci: image tag <sha> [skip ci]" commit to master
   # after every app-code build, so the local branch is routinely behind and a plain push is rejected
   # non-fast-forward -- which then skipped the ArgoCD bootstrap below. This bites on essentially
