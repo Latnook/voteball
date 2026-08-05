@@ -216,8 +216,15 @@ resource "helm_release" "jenkins_support" {
     { name = "host", value = "jenkins.${var.app_domain}" },
     # The CD agent's IRSA role (ECR read-only, see jenkins_cd_irsa above) and the namespace it is
     # allowed to read via the Role in charts/jenkins-support/templates/rbac.yaml.
+    #
+    # appNamespace reads the namespace RESOURCE rather than the literal "devops-app" on purpose. The
+    # chart puts a Role and RoleBinding in that namespace, so this release cannot be installed before
+    # it exists -- and a literal string creates no dependency edge, which is exactly how this came to
+    # fail every from-scratch apply until 2026-08-05 (see terraform/namespaces.tf). Referencing the
+    # resource makes Terraform order the two itself, so the constraint cannot be lost to a later edit
+    # the way an explicit depends_on entry can.
     { name = "cdRoleArn", value = module.jenkins_cd_irsa.iam_role_arn },
-    { name = "appNamespace", value = "devops-app" },
+    { name = "appNamespace", value = kubernetes_namespace.devops_app.metadata[0].name },
   ]
 
   depends_on = [helm_release.external_secrets]
