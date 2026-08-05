@@ -46,8 +46,22 @@ resource "aws_vpc_security_group_ingress_rule" "efs_nfs" {
 
 # One mount target per private subnet -- this is what makes the volume AZ-independent and is the
 # entire reason EFS was chosen over EBS. Do not reduce this to a single subnet.
+#
+# for_each iterates the STATIC CIDR local, not `module.vpc.private_subnets`. Keying on that output
+# reads far more naturally and plans fine once the VPC exists -- which is exactly why it shipped --
+# but on a from-scratch apply the subnet IDs do not exist yet, so Terraform cannot know the set of
+# keys and fails the whole plan with "Invalid for_each argument". Only for_each VALUES may be unknown
+# at plan time; keys may not. Hit for real on the 2026-08-05 rebuild, and the same trap ecr.tf:70
+# records from 2026-07-30. Reverting this to `toset(module.vpc.private_subnets)` will pass every plan
+# you run against a live VPC and break only the next rebuild from an empty state.
+#
+# Keys are AZ names ("il-central-1a"), so the resource addresses stay readable. The mount-target count
+# tracks the subnet count by construction: this is the very list module.vpc turns into those subnets.
 resource "aws_efs_mount_target" "jenkins" {
-  for_each        = toset(module.vpc.private_subnets)
+  for_each = {
+    for idx, cidr in local.private_subnet_cidrs : var.azs[idx] => module.vpc.private_subnets[idx]
+  }
+
   file_system_id  = aws_efs_file_system.jenkins.id
   subnet_id       = each.value
   security_groups = [aws_security_group.efs.id]
