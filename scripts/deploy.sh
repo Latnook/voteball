@@ -4,6 +4,35 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
+# Optional repo-root credentials file (gitignored), the env-var equivalent of terraform/voteball.tfvars:
+# ADMIN_USERNAME / ADMIN_PASSWORD / JENKINS_ADMIN_USER / JENKINS_ADMIN_PASSWORD, so an unattended run
+# needs only `VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh`.
+#
+# Two things here are load-bearing, and getting either wrong reproduces the exact symptom this exists
+# to prevent -- being prompted anyway, which is indistinguishable from the file not existing at all:
+#
+#   1. `set -a`. The file holds bare `KEY=value` lines with no `export`, and the seed scripts in
+#      steps 3/3b are child processes that inherit only EXPORTED variables. Sourcing without it sets
+#      shell variables the preflight below can read but the seed scripts cannot -- half-working.
+#   2. Re-asserting the pre-existing environment AFTER the source. A sourced assignment is
+#      unconditional, so the file would otherwise silently beat an explicit
+#      `ADMIN_PASSWORD=... ./scripts/deploy.sh` -- the override you would reach for precisely when
+#      rotating the value the file still holds. Everything else in this script treats the environment
+#      as the winner (see the `${VAR:-}` guards below and DB_PASS/tfvars); this keeps that consistent.
+if [ -f deploy.env ]; then
+  declare -A _preset=()
+  for _v in ADMIN_USERNAME ADMIN_PASSWORD JENKINS_ADMIN_USER JENKINS_ADMIN_PASSWORD DB_PASS; do
+    [ -n "${!_v:-}" ] && _preset["$_v"]="${!_v}"
+  done
+  set -a; . ./deploy.env; set +a
+  for _v in "${!_preset[@]}"; do
+    printf -v "$_v" '%s' "${_preset[$_v]}"
+    export "${_v?}"
+  done
+  unset _preset _v
+  echo "Loaded credentials from ./deploy.env." >&2
+fi
+
 . scripts/lib/config.sh
 require_config
 TFVARS="voteball.tfvars"

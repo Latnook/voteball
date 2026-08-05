@@ -257,7 +257,16 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   `JENKINS_ADMIN_USER` and `JENKINS_ADMIN_PASSWORD` in the environment (the db password is read from
   `voteball.tfvars` and only needs to be passed as `DB_PASS` if it isn't there). All are collected in a
   preflight check at the top of the script — *before* the billed `terraform apply` — because the
-  failure otherwise lands *after* a ~15-minute billed run (hit for real on the 2026-07-21 rebuild). Note
+  failure otherwise lands *after* a ~15-minute billed run (hit for real on the 2026-07-21 rebuild).
+  **Those three can live in a gitignored `deploy.env` at the repo root**, which `deploy.sh` sources
+  itself (`set -a`, then the pre-existing environment is re-asserted so an explicit
+  `ADMIN_PASSWORD=… ./scripts/deploy.sh` still wins). Until 2026-08-05 that file was *only* gitignored
+  — `.gitignore` had described it as "read by `scripts/deploy.sh`" since it was added, but nothing ever
+  read it, so every deploy prompted and the failure was invisible: a gitignored file cannot be checked
+  by any test, and the symptom is identical to not having one. `scripts/tests/test-deploy-env.sh` now
+  covers it, and deliberately **extracts the loader block out of the live `deploy.sh`** rather than
+  restating it — a restated copy would have passed throughout the whole period the real script ignored
+  the file. Note
   `deploy.sh` is only re-runnable at a cost, and **the two seed scripts behave oppositely — do not
   assume they match.** `seed-eks-secret.sh` rewrites the app secret **every run**: whatever
   `ADMIN_PASSWORD` you supply becomes the new password, `ADMIN_USERNAME` silently reverts to `admin`

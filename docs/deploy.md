@@ -241,6 +241,31 @@ VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh
 make the deploy unattended — without the other four it still stops in the preflight check, before any
 billed resource is created.
 
+### Or keep them in `deploy.env`
+
+Typing those four every time gets old. Put them in a file called **`deploy.env` in the repo root** and
+`deploy.sh` loads it automatically at startup, so an unattended run needs only
+`VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh`:
+
+```bash
+ADMIN_USERNAME=yourname
+ADMIN_PASSWORD=yoursecret
+JENKINS_ADMIN_USER=yourname
+JENKINS_ADMIN_PASSWORD=yoursecret
+```
+
+Plain `KEY=value` lines, no `export` needed and no quotes required. It is **gitignored and holds
+plaintext passwords** — same category as `terraform/voteball.tfvars`, so keep it `chmod 600` and never
+commit it. The database password is deliberately *not* in here; it is read from `voteball.tfvars` so
+the two can't drift apart.
+
+Anything you set on the command line beats the file, so you can still override one value for a single
+run — `ADMIN_PASSWORD='newsecret' ./scripts/deploy.sh` — without editing it.
+
+> Sourcing it into your own shell (`source deploy.env`) is **not** a substitute and looks like it
+> should work. Those lines carry no `export`, so the values stay in your shell and never reach
+> `deploy.sh`, which then prompts exactly as if the file weren't there. Let the script load it.
+
 **Re-running `deploy.sh` is safe, but step 3 reseeds the admin secret every run — two things follow
 from that:**
 
