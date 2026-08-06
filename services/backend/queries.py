@@ -28,13 +28,14 @@ def get_options(conn):
     ]
 
     cur.execute(
-        'SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url '
+        'SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url, group_label '
         'FROM clubs ORDER BY name_en'
     )
     clubs = [
         {
             'id': r[0], 'league_id': r[1], 'domestic_league_id': r[2],
             'name_en': r[3], 'name_he': r[4], 'name_ru': r[5], 'logo_url': r[6],
+            'group_label': r[7],
         }
         for r in cur.fetchall()
     ]

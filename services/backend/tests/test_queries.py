@@ -996,3 +996,49 @@ def test_get_options_exposes_families(conn):
     for party in options['previous_parties']:
         assert party['families'] == []
         assert party['family_evidence'] is None
+
+
+def test_get_options_returns_club_group_label(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO leagues (name, name_en) VALUES ('Nations League', 'Nations League') RETURNING id"
+    )
+    league_id = cur.fetchone()[0]
+    cur.execute(
+        "INSERT INTO clubs (league_id, name, name_en, group_label) "
+        "VALUES (%s, 'Italy', 'Italy', 'A')",
+        (league_id,)
+    )
+    cur.execute(
+        "INSERT INTO clubs (league_id, name, name_en) VALUES (%s, 'Nowhere FC', 'Nowhere FC')",
+        (league_id,)
+    )
+    conn.commit()
+    cur.close()
+
+    by_name = {c['name_en']: c for c in queries.get_options(conn)['clubs']}
+    assert by_name['Italy']['group_label'] == 'A'
+    assert by_name['Nowhere FC']['group_label'] is None
+
+
+def test_rename_club_preserves_group_label(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO leagues (name, name_en) VALUES ('Nations League', 'Nations League') RETURNING id"
+    )
+    league_id = cur.fetchone()[0]
+    cur.execute(
+        "INSERT INTO clubs (league_id, name, name_en, group_label) "
+        "VALUES (%s, 'Italy', 'Italy', 'A') RETURNING id",
+        (league_id,)
+    )
+    club_id = cur.fetchone()[0]
+    conn.commit()
+    cur.close()
+
+    queries.rename_club(conn, club_id, league_id, None, 'Italy', 'איטליה', name_ru='Италия')
+
+    cur = conn.cursor()
+    cur.execute('SELECT group_label FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == 'A'
+    cur.close()

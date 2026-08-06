@@ -78,6 +78,16 @@ ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
 -- so unranked leagues fall back to alphabetical (see get_options's ORDER BY sort_order NULLS LAST).
 ALTER TABLE leagues ADD COLUMN IF NOT EXISTS sort_order INTEGER;
 
+-- Division label within the club's league -- the UEFA Nations League's A/B/C/D tiers, rendered as
+-- headers inside the single Nations League tab (docs/design/2026-08-07-nations-league-design.md
+-- decision 1). Nullable because every other league is undivided, and a club with no label renders
+-- headerless above the first division rather than disappearing.
+--
+-- Deliberately NOT named by create_club/rename_club in queries.py (decision 5): those statements
+-- replace every field they list, so an admin PATCH that forwarded a subset would write NULL here --
+-- the same trap patchClubLeagues in admin.js already works around for the name columns.
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS group_label TEXT;
+
 -- Party ideology categorization (docs/design/2026-07-16-party-categorization-analytics-design.md).
 -- Independent columns on both tables, not shared through party_lineage below -- a split/merged party
 -- can be ideologically distinct from its lineage predecessor (e.g. Otzma Yehudit vs. Religious
