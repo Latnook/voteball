@@ -1001,7 +1001,7 @@ def test_get_options_exposes_families(conn):
 def test_get_options_returns_club_group_label(conn):
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO leagues (name, name_en) VALUES ('Nations League', 'Nations League') RETURNING id"
+        "INSERT INTO leagues (name, name_en) VALUES ('Placeholder League', 'Placeholder League') RETURNING id"
     )
     league_id = cur.fetchone()[0]
     cur.execute(
@@ -1024,7 +1024,7 @@ def test_get_options_returns_club_group_label(conn):
 def test_rename_club_preserves_group_label(conn):
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO leagues (name, name_en) VALUES ('Nations League', 'Nations League') RETURNING id"
+        "INSERT INTO leagues (name, name_en) VALUES ('Placeholder League', 'Placeholder League') RETURNING id"
     )
     league_id = cur.fetchone()[0]
     cur.execute(

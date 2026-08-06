@@ -16,7 +16,7 @@ INSERT INTO alert_state (id, last_seen_total) VALUES (1, 0) ON CONFLICT (id) DO 
 INSERT INTO leagues (name)
 SELECT v.name FROM (VALUES
     ('World Cup 2026'), ('UCL'), ('EPL'), ('La Liga'), ('Serie A'), ('Bundesliga'), ('Israeli Premier League'),
-    ('Liga Leumit')
+    ('Liga Leumit'), ('Nations League')
 ) AS v(name)
 WHERE NOT EXISTS (
     SELECT 1 FROM leagues existing
@@ -252,7 +252,8 @@ FROM (VALUES
     ('Serie A', 'סרייה A', 'Серия А'),
     ('Bundesliga', 'הבונדסליגה', 'Бундеслига'),
     ('Israeli Premier League', 'ליגת העל', 'Израильская Премьер-лига'),
-    ('Liga Leumit', 'ליגה לאומית', 'Лига Леумит')
+    ('Liga Leumit', 'ליגה לאומית', 'Лига Леумит'),
+    ('Nations League', 'ליגת האומות', 'Лига наций УЕФА')
 ) AS v(name, name_he, name_ru)
 WHERE l.name = v.name OR l.name_he = v.name_he;
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
@@ -273,6 +274,7 @@ UPDATE leagues SET sort_order = 4 WHERE name_en = 'Bundesliga';
 UPDATE leagues SET sort_order = 5 WHERE name_en = 'Serie A';
 UPDATE leagues SET sort_order = 6 WHERE name_en = 'UEFA Champions League';
 UPDATE leagues SET sort_order = 7 WHERE name_en = 'World Cup 2026';
+UPDATE leagues SET sort_order = 8 WHERE name_en = 'Nations League';
 
 -- League logos/emblems. Competition emblems (unlike individual club crests) carry no per-club
 -- trademark ambiguity, so these are safe to seed directly (see the World Cup national-flags note
@@ -286,7 +288,8 @@ FROM (VALUES
     ('Serie A', 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg'),
     ('Bundesliga', 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg'),
     ('Israeli Premier League', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
-    ('Liga Leumit', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png')
+    ('Liga Leumit', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
+    ('Nations League', '/logos/uefa-nations-league.svg')
 ) AS v(name, logo_url)
 WHERE t.name = v.name
   AND t.logo_url IS NULL;

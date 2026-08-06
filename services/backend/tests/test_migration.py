@@ -15,7 +15,7 @@ def test_all_seeded_rows_have_both_languages(conn):
 def test_seeded_row_counts(conn):
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 8
+    assert cur.fetchone()[0] == 9
     cur.execute('SELECT COUNT(*) FROM clubs')
     assert cur.fetchone()[0] == 167
     cur.execute('SELECT COUNT(*) FROM previous_parties')
@@ -95,7 +95,7 @@ def test_league_names_survive_name_drift(conn):
     cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'Bundesliga'")
     assert cur.fetchone()[0] == 'Бундеслига'
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 8, 'the OR-match must not create or duplicate rows'
+    assert cur.fetchone()[0] == 9, 'the OR-match must not create or duplicate rows'
     cur.close()
 
 
@@ -316,7 +316,7 @@ def test_seed_rerun_survives_league_name_drift(conn):
 
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 8, 'league name drift must not create a phantom duplicate league'
+    assert cur.fetchone()[0] == 9, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
     assert cur.fetchone()[0] == 167, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
@@ -370,4 +370,22 @@ def test_family_columns_round_trip_and_constrain(conn):
     with pytest.raises(psycopg2.errors.CheckViolation):
         cur.execute("UPDATE upcoming_parties SET family_evidence = 'vibes' WHERE name_he = 'ש\"ס'")
     conn.rollback()
+    cur.close()
+
+
+def test_nations_league_is_seeded_after_the_world_cup(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT name_en, name_he, name_ru, sort_order, logo_url FROM leagues "
+        "WHERE name_en = 'Nations League'"
+    )
+    row = cur.fetchone()
+    assert row is not None, 'Nations League league row is missing'
+    name_en, name_he, name_ru, sort_order, logo_url = row
+    assert (name_he, name_ru) == ('ליגת האומות', 'Лига наций УЕФА')
+    assert logo_url == '/logos/uefa-nations-league.svg'
+
+    cur.execute("SELECT sort_order FROM leagues WHERE name_en = 'World Cup 2026'")
+    world_cup_order = cur.fetchone()[0]
+    assert sort_order > world_cup_order
     cur.close()
