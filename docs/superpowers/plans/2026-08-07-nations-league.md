@@ -447,19 +447,27 @@ git push origin master
 Append to `services/backend/tests/test_migration.py`:
 
 ```python
-NATIONS_LEAGUE_DIVISION_SIZES = {'A': 16, 'B': 16, 'C': 16, 'D': 6}
+NATIONS_LEAGUE_INSERTED_NATIONS = [
+    'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'Belarus', 'Bulgaria', 'Cyprus', 'Denmark',
+    'Estonia', 'Faroe Islands', 'Finland', 'Georgia', 'Gibraltar', 'Greece', 'Hungary', 'Iceland',
+    'Israel', 'Italy', 'Kazakhstan', 'Kosovo', 'Latvia', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+    'Malta', 'Moldova', 'Montenegro', 'North Macedonia', 'Northern Ireland', 'Poland',
+    'Republic of Ireland', 'Romania', 'San Marino', 'Serbia', 'Slovakia', 'Slovenia', 'Ukraine',
+    'Wales',
+]
 
 
-def test_nations_league_divisions_are_fully_populated(conn):
+def test_nations_league_inserted_nations_are_seeded_with_divisions(conn):
     cur = conn.cursor()
     cur.execute(
-        """SELECT c.group_label, COUNT(*)
+        """SELECT c.name_en, c.group_label
            FROM clubs c
-           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
-           WHERE l.name_en = 'Nations League'
-           GROUP BY c.group_label"""
+           JOIN leagues l ON l.id = c.league_id
+           WHERE l.name_en = 'Nations League'"""
     )
-    assert dict(cur.fetchall()) == NATIONS_LEAGUE_DIVISION_SIZES
+    seeded = dict(cur.fetchall())
+    assert sorted(seeded) == sorted(NATIONS_LEAGUE_INSERTED_NATIONS)
+    assert all(label in ('A', 'B', 'C', 'D') for label in seeded.values()), seeded
     cur.close()
 
 
@@ -476,7 +484,7 @@ def test_every_nations_league_team_has_a_crest_and_three_names(conn):
     cur.close()
 ```
 
-The first test will not reach its full expected counts until Task 5 links the other 16; that is intentional — it is the gate that proves Task 5 finished.
+Both tests join on `c.league_id` only — the 16 linked nations arrive in Task 5 via `domestic_league_id`, and the full 54-team, four-division assertion lives there. Nothing committed by this task is expected to fail.
 
 - [ ] **Step 2: Run to verify it fails**
 
@@ -662,7 +670,7 @@ In `test_seeded_row_counts`, change the clubs assertion from `167` to `205`.
 cd services/backend && source .venv/bin/activate && python -m pytest tests/ -v
 ```
 
-Expected: everything passes **except** `test_nations_league_divisions_are_fully_populated`, which should report `{'A': 5, 'B': 11, 'C': 16, 'D': 6}` — the 16 linked teams arrive in Task 5. `test_seeded_russian_names_are_cyrillic` must pass; if it fails, a Cyrillic name above contains a Latin homoglyph.
+Expected: **all pass**. `test_seeded_russian_names_are_cyrillic` is the one to watch — if it fails, a name above contains a Latin homoglyph (e.g. a Latin `C` inside `Сербия`).
 
 - [ ] **Step 9: Commit and push**
 
@@ -725,16 +733,45 @@ def test_nations_league_has_54_votable_teams(conn):
     )
     assert cur.fetchone()[0] == 54
     cur.close()
+
+
+def test_nations_league_divisions_are_fully_populated(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.group_label, COUNT(*)
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'Nations League'
+           GROUP BY c.group_label"""
+    )
+    assert dict(cur.fetchall()) == {'A': 16, 'B': 16, 'C': 16, 'D': 6}
+    cur.close()
+
+
+def test_every_nations_league_team_including_linked_has_a_crest(conn):
+    # The 16 linked nations must keep the crest and names their World Cup row already carries --
+    # they are deliberately absent from the Nations League crest block (a duplicate name_en key in a
+    # VALUES block makes the join ambiguous), so this is what proves they were not left blank.
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'Nations League'
+             AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
+    )
+    assert cur.fetchall() == []
+    cur.close()
 ```
 
 - [ ] **Step 2: Run to verify it fails**
 
 ```bash
 cd services/backend && source .venv/bin/activate
-python -m pytest tests/test_migration.py -k "shared_nations or 54_votable" -v
+python -m pytest tests/test_migration.py -k "shared_nations or 54_votable or divisions_are_fully or including_linked" -v
 ```
 
-Expected: FAIL — the join returns no rows, and the count is 38.
+Expected: FAIL — the link join returns no rows, the count is 38, and the divisions read `{'A': 5, 'B': 11, 'C': 16, 'D': 6}`.
 
 - [ ] **Step 3: Add the link statement**
 
@@ -764,7 +801,7 @@ WHERE league_id = (SELECT id FROM leagues WHERE name = 'World Cup 2026' OR name_
 cd services/backend && source .venv/bin/activate && python -m pytest tests/ -v
 ```
 
-Expected: all pass, **including** `test_nations_league_divisions_are_fully_populated`, which should now return `{'A': 16, 'B': 16, 'C': 16, 'D': 6}`.
+Expected: all pass. `test_nations_league_divisions_are_fully_populated` now returns `{'A': 16, 'B': 16, 'C': 16, 'D': 6}` — that jump from `{'A': 5, 'B': 11, ...}` is what proves the link statement matched all 16 rows rather than some of them.
 
 - [ ] **Step 5: Prove the change reaches an already-seeded database**
 
