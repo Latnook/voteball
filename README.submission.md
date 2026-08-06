@@ -13,7 +13,9 @@ repository is mine.
 - **In Kubernetes** (`devops-app` namespace, chart `charts/voteball`): 3 Deployments — **frontend**
   (nginx, static site + `/api` proxy), **backend** (Flask/gunicorn API), **worker** (batch rollup poller)
   — plus their Services, an **Ingress→ALB**, ConfigMap, an ESO **ExternalSecret**, 4 ServiceAccounts,
-  NetworkPolicies, an HPA on the backend, PDBs, a nightly **backup CronJob**, a
+  NetworkPolicies, an HPA on the backend, PDBs, **startup/readiness/liveness probes on all three**
+  (sized separately, because the kubelet does something different with each failure — see
+  `docs/eks/architecture.md` §2), a nightly **backup CronJob**, a
   **`post-install,pre-upgrade` schema-migration Job** (so schema work runs once per release rather than
   every replica racing on startup — `post-install` rather than `pre-install` because pre-install hooks
   run before the ServiceAccount and ConfigMap it needs exist), and a **PrometheusRule** carrying the

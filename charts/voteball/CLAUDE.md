@@ -19,6 +19,33 @@ every dependency exists. Its pod is labelled **`app: migrate`, never `app: backe
 Service selects that label and would route live HTTP to a one-shot script — and `migrate` is listed in
 the `allow-app-egress` NetworkPolicy so it can still reach RDS through the default-deny.
 
+**All three Deployments carry startup, readiness and liveness probes, and the three are sized
+independently on purpose — do not normalise them.** Four rules that are not obvious from reading the
+YAML:
+
+- **Never re-add `initialDelaySeconds` to a readiness or liveness probe here.** A startup probe
+  *suppresses* both — neither is scheduled until it passes — so an initial delay on them is dead
+  config that reads like a live tuning knob. The boot window is owned entirely by
+  `failureThreshold × periodSeconds` on the startup probe, and that product is a hard wall: exceed it
+  and the kubelet kills the container with 10s→5min backoff.
+- **Liveness on frontend/backend is a `tcpSocket` check, deliberately weaker than readiness.** Don't
+  "improve" it to hit `/health`. Readiness going false removes one pod from the Service; liveness
+  going false *kills* it, so a liveness probe that touched the database would turn one RDS blip into
+  a simultaneous crash loop across every replica. For the same reason `/health` itself must stay a
+  static response that opens no connection.
+- **The worker's 120s staleness threshold lives inside the `test` expression, not the schedule.** Its
+  probes only begin failing once `/tmp/heartbeat` is already 120s stale, so the real time-to-kill is
+  120s + `failureThreshold × periodSeconds` ≈ 3.5 min — not the 90s the schedule suggests. Budget
+  from the sum, and remember all three probes `stat` that path independently (see
+  `docs/eks/ro-fs-writable-paths.md`).
+- **The worker's probes set `timeoutSeconds: 3`, not the default 1.** Each forks `sh` + `date` +
+  `stat`, and an exec probe that times out counts as a **failure** — on a CPU-throttled Spot node the
+  default would kill a perfectly healthy worker for being slow to fork.
+
+The per-workload numbers and the reasoning behind each are in `docs/eks/architecture.md` §2
+("Health checking"); `docs/eks/live-cluster-snapshot.md` shows the *pre-2026-08-06* probe config and
+is frozen evidence — don't "correct" it.
+
 **Every new workload's pod label must be added to the `allow-app-egress` NetworkPolicy's `app In
 (...)` list, and the label is the *workload* name, not the CronJob/Job/image name.** The namespace is
 default-deny; a pod outside that list keeps only `allow-dns-egress`, so DNS resolves and every TCP

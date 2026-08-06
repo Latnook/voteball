@@ -27,6 +27,16 @@ Worth stating, because these are the parts that are painful to retrofit and are 
   one documented, narrowly-scoped exception for the CI `buildkit` container; see `docs/security.md`.
 - **Delivery:** GitOps via ArgoCD, fed by an in-cluster Jenkins; `git push` to live in a few minutes,
   verified end to end (see `docs/cicd.md`).
+- **Self-healing:** startup, readiness and liveness probes on all three Deployments (added
+  2026-08-06; before that, liveness and readiness only). Sized per workload rather than copied — the
+  backend gets the longest startup budget because gunicorn runs the schema bootstrap before it binds
+  its port, and liveness on frontend/backend is a deliberately weaker `tcpSocket` check so an RDS
+  outage cannot restart healthy pods. A failed rollout stalls on the old pods instead of taking the
+  site down (`maxUnavailable` rounds to 0 at 2 replicas). See `docs/eks/architecture.md` §2.
+  **The remaining gap is detection latency on the worker**, not the probes themselves: it runs a
+  single replica, its heartbeat check tolerates 120s of staleness before it can start failing, and
+  `VoteballDeploymentDegraded` then waits 10m — so a wedged worker is ~14 minutes from paging. Votes
+  are still recorded throughout (the backend writes `votes` directly); only rollup freshness lags.
 - **Teardown/rebuild:** verified across three full destroy→deploy cycles with data preserved.
 
 ---

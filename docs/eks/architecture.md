@@ -92,6 +92,63 @@ than carry traffic:
   only; only `backend`/`worker`/`backup`/`frontend`/`migrate` pods may reach RDS.
 - **HPA** on the backend only (CPU 70%, 2→5 pods). The frontend serves static files and is not
   CPU-bound, so it stays at a fixed 2 replicas · **PDB** (`minAvailable: 1`) on both.
+- **Startup, readiness and liveness probes** on all three Deployments. They are not three grades of
+  the same check — the kubelet does something different with each failure, so they are sized
+  separately (see "Health checking" below).
+
+### Health checking
+
+Probes are run by the **kubelet on the node**, never through the API server, so a probe verdict is a
+local judgment that survives a control-plane blip. All three probe types share the same scheduling
+fields and differ only in what failure *does*:
+
+| Probe | On failure | Recovery |
+|---|---|---|
+| **readiness** | pod IP removed from the Service's EndpointSlice, and (via `target-type: ip`) deregistered from the ALB target group | automatic, as soon as it passes again — nothing is killed |
+| **liveness** | container killed: `SIGTERM` → 30s grace → `SIGKILL` → restarted **in place** | restart only; the pod is never rescheduled, so a node-caused fault loops forever |
+| **startup** | same kill as liveness | same, with `CrashLoopBackOff` backoff 10s→20s→40s→…→5min |
+
+While a startup probe is pending, **liveness and readiness do not run at all** and the container is
+NotReady. That is the whole reason it exists: `initialDelaySeconds` only delays a probe's *first*
+check, so without a startup probe one number has to serve both a slow boot and a tight runtime hang
+check. Once the startup probe passes once, it never runs again for that container.
+
+| Deployment | startup (budget) | readiness | liveness |
+|---|---|---|---|
+| **frontend** | `GET /` :8080, 3s × 10 = **30s** | `GET /` :8080 / 10s | `tcpSocket` :8080 / 20s |
+| **backend** | `GET /health` :5000, 5s × 12 = **60s** | `GET /health` :5000 / 10s | `tcpSocket` :5000 / 20s |
+| **worker** | heartbeat `exec`, 5s × 18 = **90s** | heartbeat `exec` / 15s | heartbeat `exec` / 30s |
+
+Four things about this table are decisions, not defaults:
+
+- **The backend's budget is the largest because it does not serve immediately.**
+  `gunicorn.conf.py`'s `on_starting` hook runs `db.init_db()` (schema + seed) in the master *before*
+  binding :5000, so nothing answers until that completes — slowest against an RDS instance freshly
+  restored from a snapshot.
+- **Liveness is deliberately weaker than readiness** on frontend and backend: a `tcpSocket` check, not
+  an HTTP one. Readiness going false removes one pod from rotation; liveness going false *kills* it.
+  A liveness probe that depended on the database would turn a single RDS blip into a simultaneous
+  crash loop across every replica.
+- **The frontend probes `/`, never `/health`** — nginx proxies only `/api/*`, so `/health` 404s there.
+- **The worker's real detection time is not its `periodSeconds`.** Its probe command tests whether
+  `/tmp/heartbeat` is *less than 120s old*, so the probe cannot begin failing until the heartbeat is
+  already 120s stale. Time from "loop wedges" to "container killed" is ~120s + 3 × 30s ≈ **3.5 min**.
+  That threshold lives inside the `test` expression, not in the probe schedule. Its probes also set
+  `timeoutSeconds: 3` rather than the default 1, because each forks `sh` + `date` + `stat` and an
+  exec probe that times out counts as a **failure** — at the default a CPU-throttled Spot node could
+  kill a healthy worker for being slow to fork.
+
+**A bad rollout stalls rather than breaking the site.** With `maxSurge: 25%` / `maxUnavailable: 25%`
+on 2 replicas, Kubernetes rounds surge up (1) and unavailable down (**0**): a replacement that never
+passes its probes leaves both old pods serving. After `progressDeadlineSeconds: 600` the Deployment
+is marked `ProgressDeadlineExceeded` — Kubernetes does **not** roll back on its own, and neither does
+ArgoCD (a crashlooping pod already matches git, so `selfHeal` has nothing to correct). Automatic
+rollback comes from `Jenkinsfile-cd`, which runs only when `Jenkinsfile-ci` actually built — i.e. a
+changeset touching `services/**` (or `FORCE_BUILD`, or the empty-changelog case G3b builds
+defensively). A chart-only commit is skipped by G3 and syncs straight through ArgoCD **with no
+rollback net**: probe, resource and manifest changes are exactly the class of edit that reaches
+production without one. The alerts in `prometheusrule.yaml` are
+what close that loop — `VoteballDeploymentDegraded` fires at 10m on exactly this state.
 
 ---
 
