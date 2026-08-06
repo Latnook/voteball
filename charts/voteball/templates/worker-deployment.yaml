@@ -33,28 +33,48 @@ spec:
           resources:
             requests: { cpu: {{ .Values.worker.resources.requests.cpu }}, memory: {{ .Values.worker.resources.requests.memory }} }
             limits: { cpu: {{ .Values.worker.resources.limits.cpu }}, memory: {{ .Values.worker.resources.limits.memory }} }
-          readinessProbe:
-            # The worker backs no Service, so "ready" cannot mean "safe to route to". It means "has
-            # completed a full loop iteration recently" -- the same heartbeat file the liveness probe
-            # reads, but with no initial delay, so the probe FAILS until the first iteration finishes
-            # (`stat` on a missing file exits non-zero). That is the useful signal during a rollout:
-            # a replacement worker that cannot get through one iteration never reports Ready, so the
-            # rollout stalls with the old pod still running instead of silently replacing a working
-            # worker with a broken one.
+          # All three probes read the same heartbeat file and differ only in schedule. timeoutSeconds
+          # is 3, not the default 1: each probe forks `sh` plus `date` plus `stat`, and an exec probe
+          # that times out counts as a FAILURE, so on a CPU-throttled Spot node the default would kill
+          # a healthy worker for being slow to fork.
+          startupProbe:
+            # Owns the whole boot window: while this is pending, the liveness and readiness probes
+            # below do not run at all, and the container is NotReady. Passing once means the loop
+            # completed its first iteration and touched /tmp/heartbeat (`stat` on a missing file exits
+            # non-zero, so this cannot pass before then); after that it never runs again.
+            # Budget is failureThreshold * periodSeconds = 90s, and it is a hard wall -- exceed it and
+            # the kubelet kills the container. 90s is far beyond the ~1s the real boot takes, because
+            # the cost of being wrong differs wildly in the two directions: too generous only delays
+            # a rollout, too tight is a crash loop with 10s..5min backoff on a cold or throttled node.
             exec:
               command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
-            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 18
+            timeoutSeconds: 3
+          readinessProbe:
+            # The worker backs no Service, so "ready" cannot mean "safe to route to". It means "has
+            # completed a full loop iteration recently". That is the useful signal during a rollout:
+            # a replacement worker that cannot get through one iteration never reports Ready, so the
+            # rollout stalls with the old pod still running instead of silently replacing a working
+            # worker with a broken one. The startup probe above preserves that during boot -- a
+            # container whose startup probe has not yet passed is NotReady by definition -- which is
+            # also why this one needs no initialDelaySeconds: it cannot run before then.
+            exec:
+              command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
             periodSeconds: 15
             failureThreshold: 3
+            timeoutSeconds: 3
           livenessProbe:
             # "alive if loop spins": /tmp/heartbeat touched every iteration (Plan 1). Fail if stale >120s.
             # Deliberately more forgiving than the readiness probe above: readiness going false is a
             # signal, liveness going false KILLS the pod. worker.py touches the heartbeat even after a
             # caught DB error, so a database outage must never reach this probe.
+            # No initialDelaySeconds: the startup probe above already owns boot, and this probe is not
+            # scheduled until that one has passed.
             exec:
               command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
-            initialDelaySeconds: 40
             periodSeconds: 30
+            timeoutSeconds: 3
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000

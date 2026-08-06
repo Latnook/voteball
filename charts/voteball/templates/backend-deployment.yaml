@@ -46,13 +46,30 @@ spec:
           resources:
             requests: { cpu: {{ .Values.backend.resources.requests.cpu }}, memory: {{ .Values.backend.resources.requests.memory }} }
             limits: { cpu: {{ .Values.backend.resources.limits.cpu }}, memory: {{ .Values.backend.resources.limits.memory }} }
-          readinessProbe:
+          startupProbe:
+            # Owns the boot window: while this is pending, the two probes below do not run at all and
+            # the container is NotReady. gunicorn does NOT serve immediately -- gunicorn.conf.py's
+            # on_starting hook runs db.init_db() (schema.sql + seed.sql, 61 statements) in the master
+            # before it binds the listener, so nothing answers on :5000 until that finishes. Against a
+            # cold RDS just restored from a snapshot that is the slowest thing this container does.
+            # Budget = failureThreshold * periodSeconds = 60s, and it is a hard wall: exceed it and the
+            # kubelet kills the container, with 10s..5min backoff on each retry. Sized generously on
+            # purpose -- overshooting only delays a rollout, undershooting is a crash loop.
             httpGet: { path: /health, port: 5000 }
-            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
+          readinessProbe:
+            # /health is a static JSON response and touches no database (app.py), so this asserts
+            # "gunicorn is serving", not "RDS is reachable" -- deliberately, per the liveness note below.
+            # No initialDelaySeconds: the startup probe above already owns boot and this is not
+            # scheduled until it passes.
+            httpGet: { path: /health, port: 5000 }
             periodSeconds: 10
           livenessProbe:
+            # Weaker check than readiness on purpose: readiness going false only removes this pod from
+            # the Service, liveness going false KILLS the container. A liveness probe that depended on
+            # the database would turn one RDS blip into a simultaneous crash loop across every replica.
             tcpSocket: { port: 5000 }
-            initialDelaySeconds: 10
             periodSeconds: 20
           securityContext:
             runAsNonRoot: true

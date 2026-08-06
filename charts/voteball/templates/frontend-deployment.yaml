@@ -48,13 +48,24 @@ spec:
           resources:
             requests: { cpu: {{ .Values.frontend.resources.requests.cpu }}, memory: {{ .Values.frontend.resources.requests.memory }} }
             limits: { cpu: {{ .Values.frontend.resources.limits.cpu }}, memory: {{ .Values.frontend.resources.limits.memory }} }
-          readinessProbe:
+          startupProbe:
+            # Owns the boot window: while this is pending, the two probes below do not run at all and
+            # the container is NotReady. nginx serves static files and has no dependencies, so the real
+            # boot is ~1s; budget = failureThreshold * periodSeconds = 30s is pure headroom for a
+            # throttled Spot node. Probes target `/`, never `/health` -- nginx proxies only `/api/*`,
+            # so `/health` 404s here (the same reason scripts/ci/smoke-test.sh skips it).
             httpGet: { path: /, port: 8080 }
-            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 10
+          readinessProbe:
+            # No initialDelaySeconds: the startup probe above already owns boot and this is not
+            # scheduled until it passes.
+            httpGet: { path: /, port: 8080 }
             periodSeconds: 10
           livenessProbe:
+            # Weaker check than readiness on purpose: readiness going false only removes this pod from
+            # the Service, liveness going false KILLS the container.
             tcpSocket: { port: 8080 }
-            initialDelaySeconds: 10
             periodSeconds: 20
           securityContext:
             runAsNonRoot: true
