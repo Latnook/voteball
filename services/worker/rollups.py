@@ -3,16 +3,22 @@
 #   - one LEAGUE-SCOPE row per distinct league the vote touched (club_id IS NULL), deduped so a
 #     voter who picked 3 clubs in one league is counted once at that league's scope, not 3 times;
 #   - one CLUB-SCOPE row per specific club pick (club_id set).
-# "Distinct league touched" is the union of vote_clubs.league_id and vote_leagues.league_id for
-# that vote -- a vote_leagues row is a "just this league, no club" pick, and every vote_clubs row
-# also implies its vote touched that league.
+# "Distinct league touched" is derived from the CLUB's real memberships, not from the tab the pick
+# was filed under. A club can play in two leagues (clubs.league_id + clubs.domestic_league_id) but
+# vote_clubs.league_id records only one of them, and which one depends on which column that club
+# happened to be seeded into -- so counting by it alone put Real Madrid fans in La Liga only and
+# Real Betis fans in the Champions League only, though both clubs play in both competitions. See
+# docs/design/2026-08-07-nations-league-design.md decision 3.
 #
-# National totals (rollup_national_previous/_upcoming/_previous_upcoming) are separate: they hold
-# exactly one row's worth of counting per vote, with no league/club dimension, because summing the
-# league/club-scoped rollups for "national" would count a multi-team ballot multiple times.
-
+# UNION deduplicates, so a voter who picks three clubs in one league still yields one league-scope
+# row for it. Club-scope rows are deliberately NOT expanded the same way: ?by=club filters on
+# club_id with no league predicate (queries.py _results_for_filter), so a second club-scope row per
+# vote would SUM() one voter into two. A vote_leagues row is a "just this league, no club" pick.
 _VOTE_LEAGUES_TOUCHED_CTE = '''
-    SELECT vote_id, league_id FROM vote_clubs
+    SELECT vc.vote_id, c.league_id FROM vote_clubs vc JOIN clubs c ON c.id = vc.club_id
+    UNION
+    SELECT vc.vote_id, c.domestic_league_id FROM vote_clubs vc JOIN clubs c ON c.id = vc.club_id
+    WHERE c.domestic_league_id IS NOT NULL
     UNION
     SELECT vote_id, league_id FROM vote_leagues
 '''

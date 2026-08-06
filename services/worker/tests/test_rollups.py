@@ -428,3 +428,100 @@ def test_recompute_vote_switch_stayed_via_merge(conn):
     row = cur.fetchone()
     cur.close()
     assert row[0] == 2
+
+
+def _seed_dual_league_vote(conn):
+    """One ballot picking a club that plays in two leagues, filed under only one of them.
+
+    This is the Real Madrid shape: league_id=UCL, domestic_league_id=La Liga, and the pick filed
+    under La Liga because that is what dedupedTeamPicks() in vote.js chooses.
+    """
+    cur = conn.cursor()
+    cur.execute("INSERT INTO leagues (name) VALUES ('La Liga') RETURNING id")
+    la_liga = cur.fetchone()[0]
+    cur.execute("INSERT INTO leagues (name) VALUES ('UCL') RETURNING id")
+    ucl = cur.fetchone()[0]
+    cur.execute(
+        "INSERT INTO clubs (league_id, domestic_league_id, name) "
+        "VALUES (%s, %s, 'Real Madrid') RETURNING id",
+        (ucl, la_liga)
+    )
+    club_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Party X') RETURNING id")
+    party_x = cur.fetchone()[0]
+    cur.execute(
+        '''INSERT INTO votes (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+           VALUES ('voted', %s, 'undecided', 'dual1') RETURNING id''',
+        (party_x,)
+    )
+    vote_id = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)',
+        (vote_id, club_id, la_liga)
+    )
+    conn.commit()
+    cur.close()
+    return la_liga, ucl, club_id, party_x
+
+
+def test_dual_league_club_counts_at_both_leagues_scope(conn):
+    import rollups
+    la_liga, ucl, _club_id, party_x = _seed_dual_league_vote(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT league_id, vote_count FROM rollup_previous '
+        'WHERE club_id IS NULL AND previous_party_id = %s ORDER BY league_id',
+        (party_x,)
+    )
+    assert sorted(cur.fetchall()) == sorted([(la_liga, 1), (ucl, 1)])
+    cur.close()
+
+
+def test_dual_league_club_has_exactly_one_club_scope_row(conn):
+    # The reason two vote_clubs rows were rejected in favour of this CTE change: ?by=club filters on
+    # club_id with NO league predicate (queries.py _results_for_filter), so a second club-scope row
+    # would SUM() one voter into two.
+    import rollups
+    _la_liga, _ucl, club_id, party_x = _seed_dual_league_vote(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT SUM(vote_count) FROM rollup_previous WHERE club_id = %s AND previous_party_id = %s',
+        (club_id, party_x)
+    )
+    assert cur.fetchone()[0] == 1
+    cur.close()
+
+
+def test_dual_league_club_does_not_change_national_totals(conn):
+    import rollups
+    _la_liga, _ucl, _club_id, party_x = _seed_dual_league_vote(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT SUM(vote_count) FROM rollup_national_previous WHERE previous_party_id = %s',
+        (party_x,)
+    )
+    assert cur.fetchone()[0] == 1
+    cur.close()
+
+
+def test_dual_league_club_counts_at_both_leagues_in_vote_switch(conn):
+    import rollups
+    la_liga, ucl, _club_id, _party_x = _seed_dual_league_vote(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT DISTINCT league_id FROM rollup_vote_switch WHERE club_id IS NULL ORDER BY league_id'
+    )
+    assert sorted(r[0] for r in cur.fetchall()) == sorted([la_liga, ucl])
+    cur.close()
