@@ -429,6 +429,17 @@ button { font-family: inherit; }
   gap: 0.6rem;
 }
 
+/* Division heading inside a league's card grid (Nations League A-D). grid-column: 1 / -1 makes it
+   span every column of the auto-fill grid; without it the heading occupies a single card cell. */
+.team-group-header {
+  grid-column: 1 / -1;
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
 .pick-card {
   border: 1px solid var(--line);
   background: var(--surface);

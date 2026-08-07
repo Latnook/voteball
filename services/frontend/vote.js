@@ -11,6 +11,25 @@ function clubsForLeague(leagueId) {
   return sortByLocalizedName(clubs);
 }
 
+// Divisions inside a single league tab -- the UEFA Nations League's A/B/C/D tiers. A league whose
+// clubs carry no group_label yields one unlabelled group, so every other league renders exactly as
+// before. Unlabelled clubs inside a labelled league come FIRST and headerless: group_label is
+// seed-only (the admin club endpoints deliberately never name it), so a club added through the
+// admin UI has none, and dropping it would be a silent disappearance.
+// clubsForLeague already sorts by localised name and filter() preserves order, so each division is
+// alphabetical in the current language for free.
+function groupedClubsForLeague(leagueId) {
+  const clubs = clubsForLeague(leagueId);
+  const labels = [...new Set(clubs.map(c => c.group_label).filter(Boolean))].sort();
+  if (labels.length === 0) return [{ label: null, clubs }];
+
+  const groups = [];
+  const unlabelled = clubs.filter(c => !c.group_label);
+  if (unlabelled.length > 0) groups.push({ label: null, clubs: unlabelled });
+  labels.forEach(label => groups.push({ label, clubs: clubs.filter(c => c.group_label === label) }));
+  return groups;
+}
+
 function readLeagueEntry(leagueId) {
   return picksByLeague.get(leagueId) || { justLeague: false, clubIds: new Set() };
 }
@@ -141,24 +160,32 @@ function renderTeamGrid() {
   grid.appendChild(justLeague);
 
   const atCap = entry.clubIds.size >= 3;
-  clubsForLeague(selectedLeagueId).forEach(c => {
-    const isChecked = entry.clubIds.has(c.id);
-    const card = document.createElement('button');
-    card.type = 'button';
-    card.className = 'pick-card';
-    card.setAttribute('aria-pressed', String(isChecked));
-    card.dataset.clubId = c.id;
-    if (!isChecked && atCap) {
-      card.disabled = true;
-      card.setAttribute('aria-disabled', 'true');
+  groupedClubsForLeague(selectedLeagueId).forEach(group => {
+    if (group.label !== null) {
+      const header = document.createElement('h3');
+      header.className = 'team-group-header';
+      header.textContent = t('voteTeamGroupHeader').replace('{label}', group.label);
+      grid.appendChild(header);
     }
-    card.appendChild(logoEl(c, localizedName(c)));
-    const name = document.createElement('span');
-    name.className = 'card-name';
-    name.textContent = localizedName(c);
-    card.appendChild(name);
-    card.addEventListener('click', () => toggleClub(selectedLeagueId, c.id));
-    grid.appendChild(card);
+    group.clubs.forEach(c => {
+      const isChecked = entry.clubIds.has(c.id);
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'pick-card';
+      card.setAttribute('aria-pressed', String(isChecked));
+      card.dataset.clubId = c.id;
+      if (!isChecked && atCap) {
+        card.disabled = true;
+        card.setAttribute('aria-disabled', 'true');
+      }
+      card.appendChild(logoEl(c, localizedName(c)));
+      const name = document.createElement('span');
+      name.className = 'card-name';
+      name.textContent = localizedName(c);
+      card.appendChild(name);
+      card.addEventListener('click', () => toggleClub(selectedLeagueId, c.id));
+      grid.appendChild(card);
+    });
   });
 }
 
