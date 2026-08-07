@@ -47,9 +47,17 @@ function computeEffectiveParties(previousBreakdown) {
   return 1 / sumSquaredShares;
 }
 
-function worldCupLeagueId() {
-  const wc = analyticsOptionsData.leagues.find(l => l.name_en === 'World Cup 2026');
-  return wc ? wc.id : null;
+// Leagues whose "clubs" are national teams. The diversity ranking compares clubs to each other, and
+// a national side is not a club -- listing them together makes the ranking meaningless. Matched by
+// name_en because these are seeded identities, not ids, and the ids differ per deployment.
+const NATIONAL_TEAM_LEAGUES = new Set(['World Cup 2026', 'Nations League']);
+
+function nationalTeamLeagueIds() {
+  return new Set(
+    analyticsOptionsData.leagues
+      .filter(l => NATIONAL_TEAM_LEAGUES.has(l.name_en))
+      .map(l => l.id)
+  );
 }
 
 function clubById(clubId) {
@@ -59,7 +67,7 @@ function clubById(clubId) {
 // Every eligible club (>=DIVERSITY_MIN_VOTES previous-election votes, World-Cup-filtered per the
 // current toggle state), with its effective-parties score, sorted descending.
 function eligibleClubDiversityScores() {
-  const wcLeagueId = worldCupLeagueId();
+  const nationalLeagueIds = nationalTeamLeagueIds();
   return clubsBreakdown
     .map(entry => {
       const club = clubById(entry.club_id);
@@ -69,7 +77,7 @@ function eligibleClubDiversityScores() {
     })
     .filter(row => row !== null)
     .filter(row => row.total >= DIVERSITY_MIN_VOTES)
-    .filter(row => diversityIncludeWorldCup || row.club.league_id !== wcLeagueId)
+    .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id))
     .sort((a, b) => b.score - a.score);
 }
 
@@ -294,7 +302,7 @@ function leanAxisConfig(key) {
 // axis: the strip needs the full set so a dot can persist (and slide) even across an axis where it
 // briefly has no value.
 function allLeanClubRows() {
-  const wcLeagueId = worldCupLeagueId();
+  const nationalLeagueIds = nationalTeamLeagueIds();
   return clubsBreakdown
     .map(entry => {
       const club = clubById(entry.club_id);
@@ -305,7 +313,7 @@ function allLeanClubRows() {
       return { club, total, values, previous: entry.previous };
     })
     .filter(row => row !== null && row.total >= LEAN_MIN_VOTES)
-    .filter(row => diversityIncludeWorldCup || row.club.league_id !== wcLeagueId);
+    .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id));
 }
 
 // Positions for one axis. Dots on near-identical averages would overlap exactly, so walk them left
@@ -730,7 +738,7 @@ function renderSwitchingTab() {
 // switching back to entry.upcoming -- an unknown ballot count is not a safe basis for publishing a
 // fanbase profile, and this keeps Traits, Lean and Diversity on one shared definition of sample size.
 function traitsEligibleClubs() {
-  const wcLeagueId = worldCupLeagueId();
+  const nationalLeagueIds = nationalTeamLeagueIds();
   return clubsBreakdown
     .map(entry => {
       const club = clubById(entry.club_id);
@@ -739,7 +747,7 @@ function traitsEligibleClubs() {
       return { club, previousTotal, upcoming: entry.upcoming };
     })
     .filter(row => row !== null && row.previousTotal >= LEAN_MIN_VOTES)
-    .filter(row => diversityIncludeWorldCup || row.club.league_id !== wcLeagueId)
+    .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id))
     .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)));
 }
 

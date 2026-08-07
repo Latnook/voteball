@@ -333,14 +333,28 @@ function renderClubPickerOptions() {
   const leaguePicker = document.getElementById('league-picker');
   const clubPicker = document.getElementById('club-picker');
   const previousValue = clubPicker.value;
-  clubPicker.querySelectorAll('option:not(:first-child)').forEach(o => o.remove());
+  clubPicker.querySelectorAll('option:not(:first-child), optgroup').forEach(o => o.remove());
   const leagueId = parseInt(leaguePicker.value, 10);
-  optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId).forEach(c => {
+  const clubs = optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId);
+
+  // Divisions (Nations League A-D) become <optgroup> headings; an undivided league is one flat list,
+  // exactly as before. Sorted labels, unlabelled clubs first -- same rule as the voting form's grid.
+  const labels = [...new Set(clubs.map(c => c.group_label).filter(Boolean))].sort();
+  const appendOption = (parent, c) => {
     const opt = document.createElement('option');
     opt.value = c.id;
     opt.textContent = localizedName(c);
-    clubPicker.appendChild(opt);
+    parent.appendChild(opt);
+  };
+
+  sortByLocalizedName(clubs.filter(c => !c.group_label)).forEach(c => appendOption(clubPicker, c));
+  labels.forEach(label => {
+    const group = document.createElement('optgroup');
+    group.label = t('voteTeamGroupHeader').replace('{label}', label);
+    sortByLocalizedName(clubs.filter(c => c.group_label === label)).forEach(c => appendOption(group, c));
+    clubPicker.appendChild(group);
   });
+
   if (previousValue) clubPicker.value = previousValue;
 }
 
