@@ -124,7 +124,27 @@ JOIN (VALUES
     ('Liga Leumit', 'Hapoel Afula'), ('Liga Leumit', 'Hapoel Rishon LeZion'),
     ('Liga Leumit', 'Hapoel Ra''anana'), ('Liga Leumit', 'F.C. Kafr Qasim'),
     ('Liga Leumit', 'F.C. Kiryat Yam'), ('Liga Leumit', 'Maccabi Herzliya'),
-    ('Liga Leumit', 'Maccabi Kavilio Jaffa'), ('Liga Leumit', 'Ironi Modi''in')
+    ('Liga Leumit', 'Maccabi Kavilio Jaffa'), ('Liga Leumit', 'Ironi Modi''in'),
+
+    -- UEFA Nations League: the 38 nations NOT already seeded as World Cup 2026 teams. The other 16
+    -- are linked via domestic_league_id further down -- clubs_name_en_uidx is global, so a second
+    -- 'France' row is impossible, and they keep their existing crest and names.
+    ('Nations League', 'Italy'), ('Nations League', 'Serbia'), ('Nations League', 'Greece'),
+    ('Nations League', 'Denmark'), ('Nations League', 'Wales'), ('Nations League', 'Slovenia'),
+    ('Nations League', 'North Macedonia'), ('Nations League', 'Hungary'),
+    ('Nations League', 'Ukraine'), ('Nations League', 'Georgia'),
+    ('Nations League', 'Northern Ireland'), ('Nations League', 'Israel'),
+    ('Nations League', 'Republic of Ireland'), ('Nations League', 'Kosovo'),
+    ('Nations League', 'Poland'), ('Nations League', 'Romania'),
+    ('Nations League', 'Albania'), ('Nations League', 'Finland'), ('Nations League', 'Belarus'),
+    ('Nations League', 'San Marino'), ('Nations League', 'Montenegro'),
+    ('Nations League', 'Armenia'), ('Nations League', 'Cyprus'), ('Nations League', 'Latvia'),
+    ('Nations League', 'Kazakhstan'), ('Nations League', 'Slovakia'),
+    ('Nations League', 'Faroe Islands'), ('Nations League', 'Moldova'),
+    ('Nations League', 'Iceland'), ('Nations League', 'Bulgaria'), ('Nations League', 'Estonia'),
+    ('Nations League', 'Luxembourg'), ('Nations League', 'Gibraltar'), ('Nations League', 'Malta'),
+    ('Nations League', 'Andorra'), ('Nations League', 'Lithuania'),
+    ('Nations League', 'Azerbaijan'), ('Nations League', 'Liechtenstein')
 ) AS c(league_name, name)
     ON l.name = c.league_name
     OR l.name_en = c.league_name
@@ -470,6 +490,45 @@ FROM (VALUES
     ('Maccabi Herzliya', 'מכבי הרצליה', 'Маккаби Герцлия'),
     ('Maccabi Kavilio Jaffa', 'מכבי קביליו יפו', 'Маккаби Кавильо Яффо'),
     ('Ironi Modi''in', 'עירוני מודיעין', 'Ирони Модиин'),
+    -- UEFA Nations League nations not already listed above as World Cup teams
+    ('Italy', 'איטליה', 'Италия'),
+    ('Serbia', 'סרביה', 'Сербия'),
+    ('Greece', 'יוון', 'Греция'),
+    ('Denmark', 'דנמרק', 'Дания'),
+    ('Wales', 'ויילס', 'Уэльс'),
+    ('Slovenia', 'סלובניה', 'Словения'),
+    ('North Macedonia', 'צפון מקדוניה', 'Северная Македония'),
+    ('Hungary', 'הונגריה', 'Венгрия'),
+    ('Ukraine', 'אוקראינה', 'Украина'),
+    ('Georgia', 'גאורגיה', 'Грузия'),
+    ('Northern Ireland', 'צפון אירלנד', 'Северная Ирландия'),
+    ('Israel', 'ישראל', 'Израиль'),
+    ('Republic of Ireland', 'אירלנד', 'Ирландия'),
+    ('Kosovo', 'קוסובו', 'Косово'),
+    ('Poland', 'פולין', 'Польша'),
+    ('Romania', 'רומניה', 'Румыния'),
+    ('Albania', 'אלבניה', 'Албания'),
+    ('Finland', 'פינלנד', 'Финляндия'),
+    ('Belarus', 'בלארוס', 'Беларусь'),
+    ('San Marino', 'סן מרינו', 'Сан-Марино'),
+    ('Montenegro', 'מונטנגרו', 'Черногория'),
+    ('Armenia', 'ארמניה', 'Армения'),
+    ('Cyprus', 'קפריסין', 'Кипр'),
+    ('Latvia', 'לטביה', 'Латвия'),
+    ('Kazakhstan', 'קזחסטן', 'Казахстан'),
+    ('Slovakia', 'סלובקיה', 'Словакия'),
+    ('Faroe Islands', 'איי פארו', 'Фарерские острова'),
+    ('Moldova', 'מולדובה', 'Молдова'),
+    ('Iceland', 'איסלנד', 'Исландия'),
+    ('Bulgaria', 'בולגריה', 'Болгария'),
+    ('Estonia', 'אסטוניה', 'Эстония'),
+    ('Luxembourg', 'לוקסמבורג', 'Люксембург'),
+    ('Gibraltar', 'גיברלטר', 'Гибралтар'),
+    ('Malta', 'מלטה', 'Мальта'),
+    ('Andorra', 'אנדורה', 'Андорра'),
+    ('Lithuania', 'ליטא', 'Литва'),
+    ('Azerbaijan', 'אזרבייג''ן', 'Азербайджан'),
+    ('Liechtenstein', 'ליכטנשטיין', 'Лихтенштейн'),
     -- changes -- see scripts/sync-seed-from-rds.sh)
     ('1. FC Köln', 'פ. צ. קלן', 'Кёльн'),
     ('FC Schalke 04', 'שאלקה 04', 'Шальке 04'),
@@ -564,6 +623,81 @@ FROM (VALUES
 ) AS v(name_en, logo_url)
 WHERE c.name_en = v.name_en
   AND (c.logo_url IS NULL OR c.logo_url LIKE 'https://flagcdn.com/%');
+
+-- UEFA Nations League national-team crests: federation badges, same sourcing rule as the World Cup
+-- block above. Only the 38 nations this file inserts -- the 16 that are also World Cup teams already
+-- carry a crest from that block, and repeating a name_en key here would make the join ambiguous.
+UPDATE clubs c SET logo_url = v.logo_url
+FROM (VALUES
+    ('Italy', 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Logo_Italy_National_Football_Team_-_2023.svg'),
+    ('Serbia', 'https://upload.wikimedia.org/wikipedia/en/e/eb/Football_Association_of_Serbia_logo.svg'),
+    ('Greece', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Greece_National_Football_Team.svg'),
+    ('Denmark', 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Dansk_boldspil_union_logo.svg'),
+    ('Wales', 'https://upload.wikimedia.org/wikipedia/en/d/dc/Wales_national_football_team_logo.svg'),
+    ('Slovenia', 'https://upload.wikimedia.org/wikipedia/en/9/99/Slovenia_national_football_team.svg'),
+    ('North Macedonia', 'https://upload.wikimedia.org/wikipedia/commons/3/34/Coat_of_arms_of_the_President_of_North_Macedonia.svg'),
+    ('Hungary', 'https://upload.wikimedia.org/wikipedia/commons/3/34/Coat_of_arms_of_Hungary.svg'),
+    ('Ukraine', 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Logo_F%C3%A9d%C3%A9ration_Ukraine_Football_2016.svg'),
+    ('Georgia', 'https://upload.wikimedia.org/wikipedia/en/9/9c/Georgia_national_football_team_crest.svg'),
+    ('Northern Ireland', 'https://upload.wikimedia.org/wikipedia/en/2/25/Irish_Football_Association_logo.svg'),
+    ('Israel', 'https://upload.wikimedia.org/wikipedia/en/5/5a/Israel_Football_Association_logo.svg'),
+    ('Republic of Ireland', 'https://upload.wikimedia.org/wikipedia/en/f/f8/Republic_of_Ireland_national_football_team_crest.svg'),
+    ('Kosovo', 'https://upload.wikimedia.org/wikipedia/commons/8/85/Kosovo_National_Football_Team.svg'),
+    ('Poland', 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Herb_Polski.svg'),
+    ('Romania', 'https://upload.wikimedia.org/wikipedia/en/e/ef/Romania_national_football_team_logo.svg'),
+    ('Albania', 'https://upload.wikimedia.org/wikipedia/commons/3/30/Stema_e_Fanell%C3%ABs_s%C3%AB_Komb%C3%ABtares.svg'),
+    ('Finland', 'https://upload.wikimedia.org/wikipedia/commons/8/80/Finland_national_football_team_crest.png'),
+    ('Belarus', 'https://upload.wikimedia.org/wikipedia/commons/4/48/Coat_of_arms_of_Belarus_(2020%E2%80%93present).svg'),
+    ('San Marino', 'https://upload.wikimedia.org/wikipedia/commons/3/30/San-marino-logo.png'),
+    ('Montenegro', 'https://upload.wikimedia.org/wikipedia/en/7/78/Football_Association_of_Montenegro_logo.svg'),
+    ('Armenia', 'https://upload.wikimedia.org/wikipedia/commons/0/0f/Coat_of_arms_of_Armenia.svg'),
+    ('Cyprus', 'https://upload.wikimedia.org/wikipedia/en/6/6b/Cyprus_national_football_team_logo.png'),
+    ('Latvia', 'https://upload.wikimedia.org/wikipedia/en/7/7b/Latvia_national_team_logo.png'),
+    ('Kazakhstan', 'https://upload.wikimedia.org/wikipedia/en/0/08/Kazakhstan_Football_Federation_logo.svg'),
+    ('Slovakia', 'https://upload.wikimedia.org/wikipedia/en/8/8a/Slovak_Football_Association_logo.svg'),
+    ('Faroe Islands', 'https://upload.wikimedia.org/wikipedia/commons/b/b5/Faroe_Islands_Football_Association_logo.svg'),
+    ('Moldova', 'https://upload.wikimedia.org/wikipedia/en/c/c9/Moldova_national_football_team.svg'),
+    ('Iceland', 'https://upload.wikimedia.org/wikipedia/en/6/6d/Iceland_national_football_team_logo.svg'),
+    ('Bulgaria', 'https://upload.wikimedia.org/wikipedia/en/1/11/Bgnatcrest.png'),
+    ('Estonia', 'https://upload.wikimedia.org/wikipedia/en/a/a2/Estonian_Football_Association_logo.svg'),
+    ('Luxembourg', 'https://upload.wikimedia.org/wikipedia/en/9/9d/Luxembourg_national_football_team_crest.png'),
+    ('Gibraltar', 'https://upload.wikimedia.org/wikipedia/en/f/fe/Gibraltar_Football_Association_(2020).svg'),
+    ('Malta', 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Malta_national_football_team_crest.svg'),
+    ('Andorra', 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Coat_of_arms_of_Andorra.svg'),
+    ('Lithuania', 'https://upload.wikimedia.org/wikipedia/en/8/89/Badge_of_Lithuania_national_football_teams.png'),
+    ('Azerbaijan', 'https://upload.wikimedia.org/wikipedia/en/5/5e/AFFA_logo.png'),
+    ('Liechtenstein', 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Crown_of_Liechtenstein.svg')
+) AS v(name_en, logo_url)
+WHERE c.name_en = v.name_en
+  AND c.logo_url IS NULL;
+
+-- UEFA Nations League divisions. UNGUARDED, deliberately: nothing else in the app writes
+-- group_label (it is absent from create_club/rename_club by design -- see the schema.sql comment),
+-- so there is no admin edit to protect, and promotion/relegation between the four divisions has to
+-- be able to reach an already-seeded production database. A guarded form would make every future
+-- division change unreachable there, which is the same trap the ideology-axis UPDATEs avoid.
+-- Keyed on name_en, the stable identity: the legacy `name` column drifts to name_he on any admin save.
+UPDATE clubs c SET group_label = v.group_label
+FROM (VALUES
+    ('Belgium', 'A'), ('Croatia', 'A'), ('Czech Republic', 'A'), ('Denmark', 'A'),
+    ('England', 'A'), ('France', 'A'), ('Germany', 'A'), ('Greece', 'A'),
+    ('Italy', 'A'), ('Netherlands', 'A'), ('Norway', 'A'), ('Portugal', 'A'),
+    ('Serbia', 'A'), ('Spain', 'A'), ('Turkey', 'A'), ('Wales', 'A'),
+
+    ('Austria', 'B'), ('Bosnia and Herzegovina', 'B'), ('Georgia', 'B'), ('Hungary', 'B'),
+    ('Israel', 'B'), ('Kosovo', 'B'), ('North Macedonia', 'B'), ('Northern Ireland', 'B'),
+    ('Poland', 'B'), ('Republic of Ireland', 'B'), ('Romania', 'B'), ('Scotland', 'B'),
+    ('Slovenia', 'B'), ('Sweden', 'B'), ('Switzerland', 'B'), ('Ukraine', 'B'),
+
+    ('Albania', 'C'), ('Armenia', 'C'), ('Belarus', 'C'), ('Bulgaria', 'C'),
+    ('Cyprus', 'C'), ('Estonia', 'C'), ('Faroe Islands', 'C'), ('Finland', 'C'),
+    ('Iceland', 'C'), ('Kazakhstan', 'C'), ('Latvia', 'C'), ('Luxembourg', 'C'),
+    ('Moldova', 'C'), ('Montenegro', 'C'), ('San Marino', 'C'), ('Slovakia', 'C'),
+
+    ('Andorra', 'D'), ('Azerbaijan', 'D'), ('Gibraltar', 'D'), ('Liechtenstein', 'D'),
+    ('Lithuania', 'D'), ('Malta', 'D')
+) AS v(name_en, group_label)
+WHERE c.name_en = v.name_en;
 
 -- Admin-curated club logos, synced from the live RDS instance (added via the admin UI's Logo
 -- URL field for the full Israeli Premier League roster) so a fresh install matches current

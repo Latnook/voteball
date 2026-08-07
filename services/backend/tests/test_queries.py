@@ -999,6 +999,9 @@ def test_get_options_exposes_families(conn):
 
 
 def test_get_options_returns_club_group_label(conn):
+    # 'Ruritania' (not a real country) rather than a real nation name: since Task 4 seeded 38
+    # Nations League nations, a placeholder club named after a real country (e.g. 'Italy') now
+    # collides with clubs_name_en_uidx, which is global rather than scoped to league_id.
     cur = conn.cursor()
     cur.execute(
         "INSERT INTO leagues (name, name_en) VALUES ('Placeholder League', 'Placeholder League') RETURNING id"
@@ -1006,7 +1009,7 @@ def test_get_options_returns_club_group_label(conn):
     league_id = cur.fetchone()[0]
     cur.execute(
         "INSERT INTO clubs (league_id, name, name_en, group_label) "
-        "VALUES (%s, 'Italy', 'Italy', 'A')",
+        "VALUES (%s, 'Ruritania', 'Ruritania', 'A')",
         (league_id,)
     )
     cur.execute(
@@ -1017,11 +1020,13 @@ def test_get_options_returns_club_group_label(conn):
     cur.close()
 
     by_name = {c['name_en']: c for c in queries.get_options(conn)['clubs']}
-    assert by_name['Italy']['group_label'] == 'A'
+    assert by_name['Ruritania']['group_label'] == 'A'
     assert by_name['Nowhere FC']['group_label'] is None
 
 
 def test_rename_club_preserves_group_label(conn):
+    # See the comment on test_get_options_returns_club_group_label above for why this uses
+    # 'Ruritania' rather than a real nation name.
     cur = conn.cursor()
     cur.execute(
         "INSERT INTO leagues (name, name_en) VALUES ('Placeholder League', 'Placeholder League') RETURNING id"
@@ -1029,14 +1034,14 @@ def test_rename_club_preserves_group_label(conn):
     league_id = cur.fetchone()[0]
     cur.execute(
         "INSERT INTO clubs (league_id, name, name_en, group_label) "
-        "VALUES (%s, 'Italy', 'Italy', 'A') RETURNING id",
+        "VALUES (%s, 'Ruritania', 'Ruritania', 'A') RETURNING id",
         (league_id,)
     )
     club_id = cur.fetchone()[0]
     conn.commit()
     cur.close()
 
-    queries.rename_club(conn, club_id, league_id, None, 'Italy', 'איטליה', name_ru='Италия')
+    queries.rename_club(conn, club_id, league_id, None, 'Ruritania', 'רוריטניה', name_ru='Руритания')
 
     cur = conn.cursor()
     cur.execute('SELECT group_label FROM clubs WHERE id = %s', (club_id,))

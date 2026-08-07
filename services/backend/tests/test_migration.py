@@ -17,7 +17,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 9
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 167
+    assert cur.fetchone()[0] == 205
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -318,7 +318,7 @@ def test_seed_rerun_survives_league_name_drift(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 9, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 167, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 205, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
@@ -388,4 +388,41 @@ def test_nations_league_is_seeded_after_the_world_cup(conn):
     cur.execute("SELECT sort_order FROM leagues WHERE name_en = 'World Cup 2026'")
     world_cup_order = cur.fetchone()[0]
     assert sort_order > world_cup_order
+    cur.close()
+
+
+NATIONS_LEAGUE_INSERTED_NATIONS = [
+    'Albania', 'Andorra', 'Armenia', 'Azerbaijan', 'Belarus', 'Bulgaria', 'Cyprus', 'Denmark',
+    'Estonia', 'Faroe Islands', 'Finland', 'Georgia', 'Gibraltar', 'Greece', 'Hungary', 'Iceland',
+    'Israel', 'Italy', 'Kazakhstan', 'Kosovo', 'Latvia', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+    'Malta', 'Moldova', 'Montenegro', 'North Macedonia', 'Northern Ireland', 'Poland',
+    'Republic of Ireland', 'Romania', 'San Marino', 'Serbia', 'Slovakia', 'Slovenia', 'Ukraine',
+    'Wales',
+]
+
+
+def test_nations_league_inserted_nations_are_seeded_with_divisions(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en, c.group_label
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id
+           WHERE l.name_en = 'Nations League'"""
+    )
+    seeded = dict(cur.fetchall())
+    assert sorted(seeded) == sorted(NATIONS_LEAGUE_INSERTED_NATIONS)
+    assert all(label in ('A', 'B', 'C', 'D') for label in seeded.values()), seeded
+    cur.close()
+
+
+def test_every_nations_league_team_has_a_crest_and_three_names(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'Nations League'
+             AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
+    )
+    assert cur.fetchall() == []
     cur.close()
