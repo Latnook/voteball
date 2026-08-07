@@ -313,6 +313,10 @@ UPDATE leagues SET sort_order = 6 WHERE name_en = 'UEFA Champions League';
 UPDATE leagues SET sort_order = 7 WHERE name_en = 'World Cup 2026';
 UPDATE leagues SET sort_order = 8 WHERE name_en = 'Nations League';
 
+-- Only the Nations League renders division headers; see the schema.sql comment on has_divisions.
+UPDATE leagues SET has_divisions = TRUE  WHERE name_en = 'Nations League';
+UPDATE leagues SET has_divisions = FALSE WHERE name_en <> 'Nations League';
+
 -- League logos/emblems. Competition emblems (unlike individual club crests) carry no per-club
 -- trademark ambiguity, so these are safe to seed directly (see the World Cup national-flags note
 -- above) -- admin can still override any of these via the leagues admin UI's Logo URL field.

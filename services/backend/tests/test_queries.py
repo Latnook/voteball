@@ -1047,3 +1047,23 @@ def test_rename_club_preserves_group_label(conn):
     cur.execute('SELECT group_label FROM clubs WHERE id = %s', (club_id,))
     assert cur.fetchone()[0] == 'A'
     cur.close()
+
+
+def test_get_options_returns_league_has_divisions(conn):
+    leagues_by_name = {l['name_en']: l for l in queries.get_options(conn)['leagues']}
+    assert leagues_by_name['Nations League']['has_divisions'] is True
+    for name, league in leagues_by_name.items():
+        if name != 'Nations League':
+            assert league['has_divisions'] is False, name
+
+
+def test_world_cup_has_divisions_false_despite_labelled_clubs(conn):
+    # Fix 1's exact bug: 16 World Cup nations are ALSO Nations League members and so carry a
+    # non-null group_label, but the World Cup tab itself must not be flagged as divisioned --
+    # grouping must key off has_divisions, never off "some club here has a label".
+    options = queries.get_options(conn)
+    world_cup = next(l for l in options['leagues'] if l['name_en'] == 'World Cup 2026')
+    assert world_cup['has_divisions'] is False
+
+    world_cup_clubs = [c for c in options['clubs'] if c['league_id'] == world_cup['id']]
+    assert any(c['group_label'] is not None for c in world_cup_clubs)

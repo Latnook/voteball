@@ -11,15 +11,21 @@ function clubsForLeague(leagueId) {
   return sortByLocalizedName(clubs);
 }
 
-// Divisions inside a single league tab -- the UEFA Nations League's A/B/C/D tiers. A league whose
-// clubs carry no group_label yields one unlabelled group, so every other league renders exactly as
-// before. Unlabelled clubs inside a labelled league come FIRST and headerless: group_label is
-// seed-only (the admin club endpoints deliberately never name it), so a club added through the
-// admin UI has none, and dropping it would be a silent disappearance.
+// Divisions inside a single league tab -- the UEFA Nations League's A/B/C/D tiers. Gated on the
+// league's has_divisions flag, NOT on whether any club here carries a group_label: 16 of the 54
+// Nations League nations are ALSO World Cup 2026 teams and so carry a label there too, and grouping
+// off "some club here is labelled" would put "League A"/"League B" headers on the World Cup tab
+// (the exact bug has_divisions exists to fix -- see the schema.sql comment on that column).
+// Unlabelled clubs inside a divisioned league come FIRST and headerless: group_label is seed-only
+// (the admin club endpoints deliberately never name it), so a club added through the admin UI has
+// none, and dropping it would be a silent disappearance.
 // clubsForLeague already sorts by localised name and filter() preserves order, so each division is
 // alphabetical in the current language for free.
 function groupedClubsForLeague(leagueId) {
   const clubs = clubsForLeague(leagueId);
+  const league = optionsData.leagues.find(l => l.id === leagueId);
+  if (!league || !league.has_divisions) return [{ label: null, clubs }];
+
   const labels = [...new Set(clubs.map(c => c.group_label).filter(Boolean))].sort();
   if (labels.length === 0) return [{ label: null, clubs }];
 
@@ -135,7 +141,13 @@ function toggleClub(leagueId, clubId) {
     const hasRoom = entry.clubIds.size < 3 && (!linkedEntry || linkedEntry.clubIds.size < 3);
     if (hasRoom) {
       entry.clubIds.add(clubId);
-      if (linkedEntry) linkedEntry.clubIds.add(clubId);
+      if (linkedEntry) {
+        linkedEntry.clubIds.add(clubId);
+        // Mirroring a club pick into the linked league must also clear ITS justLeague, or a prior
+        // "just this league" pick there survives alongside the new club pick and produces a ballot
+        // the server rejects (a league can't mix "just this league" with specific club picks).
+        linkedEntry.justLeague = false;
+      }
     }
   }
   renderTeamGrid();
@@ -147,6 +159,8 @@ function renderTeamGrid() {
   grid.innerHTML = '';
   if (selectedLeagueId == null) return;
   const entry = readLeagueEntry(selectedLeagueId);
+  const selectedLeague = optionsData.leagues.find(l => l.id === selectedLeagueId);
+  grid.classList.toggle('card-grid-divisions', !!(selectedLeague && selectedLeague.has_divisions));
 
   const justLeague = document.createElement('button');
   justLeague.type = 'button';

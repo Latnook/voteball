@@ -78,6 +78,16 @@ ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS logo_url TEXT;
 -- so unranked leagues fall back to alphabetical (see get_options's ORDER BY sort_order NULLS LAST).
 ALTER TABLE leagues ADD COLUMN IF NOT EXISTS sort_order INTEGER;
 
+-- Whether this league's clubs are split into divisions rendered as headers inside its single tab
+-- (the UEFA Nations League's A-D tiers). A league-level flag rather than something inferred from
+-- the clubs, because clubs.group_label belongs to a club's NATIONS LEAGUE membership while the
+-- club itself can sit in two leagues: the 16 nations that also play in the 2026 World Cup carry a
+-- label and render under BOTH tabs, which put "League A"/"League B" headers on the World Cup tab.
+-- Inferring "this league has divisions" from "some club here is labelled" reproduces that bug; and
+-- inferring it from "every club here is labelled" breaks as soon as an admin adds an unlabelled
+-- club to the Nations League, which is a supported case (it renders first, headerless).
+ALTER TABLE leagues ADD COLUMN IF NOT EXISTS has_divisions BOOLEAN NOT NULL DEFAULT FALSE;
+
 -- Division label within the club's league -- the UEFA Nations League's A/B/C/D tiers, rendered as
 -- headers inside the single Nations League tab (docs/design/2026-08-07-nations-league-design.md
 -- decision 1). Nullable because every other league is undivided, and a club with no label renders

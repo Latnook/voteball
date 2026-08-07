@@ -429,6 +429,15 @@ button { font-family: inherit; }
   gap: 0.6rem;
 }
 
+/* A divisioned league (Nations League) has 16 teams per division; auto-fill lays those out 5-5-5-1
+   on a wide screen, orphaning one card per division. Four columns makes each division a clean 4x4.
+   Scoped above the mobile breakpoint on purpose: the 480px rule below drops every grid to 2
+   columns, and this selector is more specific, so an ungated version would win there and force 4
+   columns onto a phone. */
+@media (min-width: 481px) {
+  .card-grid.card-grid-divisions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
 /* Division heading inside a league's card grid (Nations League A-D). grid-column: 1 / -1 makes it
    span every column of the auto-fill grid; without it the heading occupies a single card cell. */
 .team-group-header {

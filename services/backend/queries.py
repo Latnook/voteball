@@ -20,10 +20,14 @@ def get_options(conn):
     cur = conn.cursor()
 
     cur.execute(
-        'SELECT id, name_en, name_he, name_ru, logo_url FROM leagues ORDER BY sort_order NULLS LAST, name_en'
+        'SELECT id, name_en, name_he, name_ru, logo_url, has_divisions FROM leagues '
+        'ORDER BY sort_order NULLS LAST, name_en'
     )
     leagues = [
-        {'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4]}
+        {
+            'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4],
+            'has_divisions': r[5],
+        }
         for r in cur.fetchall()
     ]
 

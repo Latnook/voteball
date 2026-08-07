@@ -336,10 +336,8 @@ function renderClubPickerOptions() {
   clubPicker.querySelectorAll('option:not(:first-child), optgroup').forEach(o => o.remove());
   const leagueId = parseInt(leaguePicker.value, 10);
   const clubs = optionsData.clubs.filter(c => c.league_id === leagueId || c.domestic_league_id === leagueId);
+  const league = optionsData.leagues.find(l => l.id === leagueId);
 
-  // Divisions (Nations League A-D) become <optgroup> headings; an undivided league is one flat list,
-  // exactly as before. Sorted labels, unlabelled clubs first -- same rule as the voting form's grid.
-  const labels = [...new Set(clubs.map(c => c.group_label).filter(Boolean))].sort();
   const appendOption = (parent, c) => {
     const opt = document.createElement('option');
     opt.value = c.id;
@@ -347,13 +345,24 @@ function renderClubPickerOptions() {
     parent.appendChild(opt);
   };
 
-  sortByLocalizedName(clubs.filter(c => !c.group_label)).forEach(c => appendOption(clubPicker, c));
-  labels.forEach(label => {
-    const group = document.createElement('optgroup');
-    group.label = t('voteTeamGroupHeader').replace('{label}', label);
-    sortByLocalizedName(clubs.filter(c => c.group_label === label)).forEach(c => appendOption(group, c));
-    clubPicker.appendChild(group);
-  });
+  // Divisions (Nations League A-D) become <optgroup> headings; an undivided league is one flat list,
+  // exactly as before. Gated on the league's has_divisions flag, not on whether any club here
+  // carries a group_label -- the World Cup shares 16 dual-league nations with the Nations League,
+  // so its clubs carry labels too, and grouping off "some club here is labelled" reproduces the
+  // same bug has_divisions exists to fix (see the schema.sql comment on that column).
+  if (!league || !league.has_divisions) {
+    sortByLocalizedName(clubs).forEach(c => appendOption(clubPicker, c));
+  } else {
+    // Sorted labels, unlabelled clubs first -- same rule as the voting form's grid.
+    const labels = [...new Set(clubs.map(c => c.group_label).filter(Boolean))].sort();
+    sortByLocalizedName(clubs.filter(c => !c.group_label)).forEach(c => appendOption(clubPicker, c));
+    labels.forEach(label => {
+      const group = document.createElement('optgroup');
+      group.label = t('voteTeamGroupHeader').replace('{label}', label);
+      sortByLocalizedName(clubs.filter(c => c.group_label === label)).forEach(c => appendOption(group, c));
+      clubPicker.appendChild(group);
+    });
+  }
 
   if (previousValue) clubPicker.value = previousValue;
 }
