@@ -966,77 +966,22 @@ git push origin master
 
 ---
 
-### Task 7: Record which tab a pick came from
+### Task 7: REMOVED — not implemented
 
-**Files:**
-- Modify: `services/frontend/vote.js:1-8` (module state), `:100-124` (`toggleClub`), `:36-55` (`dedupedTeamPicks`)
+**Dropped at the repo owner's request, 2026-08-07, before any work started.** "It doesn't matter
+which tab a pick came from."
 
-**Interfaces:**
-- Consumes: nothing.
-- Produces: module-level `pickOriginLeague` (`Map<clubId, leagueId>`); `dedupedTeamPicks()` keeps its name and its `Array<{league_id, club_id}>` return shape.
+This task would have tracked the originating league of each pick (`pickOriginLeague`) so that
+picking France under the World Cup tab showed "World Cup 2026 — France" on the review screen rather
+than "Nations League — France". It only ever affected that label.
 
-Without this, picking France on the World Cup tab labels it "Nations League — France" on the review screen, because `dedupedTeamPicks` attributes every dual-league pick to `domestic_league_id` regardless of where it was clicked. Task 2 already makes both leagues count, so this changes no total — only what the voter is shown, and the league dimension in `get_results_by_party`.
+It is cleanly droppable because Task 3's rollup change already counts a dual-league club toward
+**both** of its leagues at league scope, so tab origin decides no total. `dedupedTeamPicks()` keeps
+its existing behaviour: a dual-league pick is filed under `domestic_league_id`. No other task
+consumes `pickOriginLeague`, and `vote.js` is otherwise untouched by this plan except for Task 6's
+division headers.
 
-- [ ] **Step 1: Add the state**
-
-Below `let picksByLeague = ...` at the top of `vote.js`:
-
-```js
-// Which tab each club was actually picked under. A dual-league club is mirrored into both leagues'
-// clubIds sets by toggleClub, so the sets alone cannot say where the voter clicked -- and attributing
-// it to domestic_league_id instead (the old behaviour) labelled a World Cup pick "Nations League".
-let pickOriginLeague = new Map(); // clubId -> leagueId
-```
-
-- [ ] **Step 2: Maintain it in `toggleClub`**
-
-Inside the deselect branch, after `entry.clubIds.delete(clubId);`:
-
-```js
-    pickOriginLeague.delete(clubId);
-```
-
-Inside the select branch, after `entry.clubIds.add(clubId);`:
-
-```js
-      pickOriginLeague.set(clubId, leagueId);
-```
-
-- [ ] **Step 3: Use it in `dedupedTeamPicks`**
-
-Replace the `canonicalLeagueId` line:
-
-```js
-      const canonicalLeagueId = pickOriginLeague.get(clubId) ?? l.id;
-```
-
-and update the function's leading comment, replacing the "attributed to its domestic league (the club's "home" league)" sentence with:
-
-```js
-// Single source of truth for "what did the voter actually pick" -- a dual-league club mirrored into
-// two leagues' clubIds sets (see toggleClub) must only produce one pick here, attributed to the tab
-// it was actually clicked under (pickOriginLeague). The rollups expand that to BOTH of the club's
-// leagues at league scope, so this choice no longer decides which league gets counted -- only what
-// the review screen shows. Iterates optionsData.leagues (display order) so chip/review ordering
-// matches the league tabs.
-```
-
-- [ ] **Step 4: Verify in a browser**
-
-- Pick France from the **World Cup** tab → the review screen reads `World Cup 2026 — France`, and the Nations League tab shows France selected.
-- Deselect it from the **Nations League** tab → it clears on both tabs.
-- Pick France from the **Nations League** tab → the review screen reads `Nations League — France`.
-- Pick 3 clubs in one league → the 4th is disabled, unchanged from before.
-
-- [ ] **Step 5: Commit and push**
-
-```bash
-git add services/frontend/vote.js
-git commit -m "fix(vote): attribute a pick to the tab it was chosen from"
-git push origin master
-```
-
----
+Task numbering is left unchanged so the ledger, briefs and commit history stay aligned.
 
 ### Task 8: Results dropdown groups, and keep national teams out of the diversity ranking
 
@@ -1215,7 +1160,7 @@ git push origin master
 
 ## Self-review
 
-**Spec coverage.** Design decisions 1–7 map to tasks: 1 → Task 1 (column) and Tasks 3–4 (data); 2 → Task 5; 3 → Task 2; 4 → Task 7; 5 → Task 1 Step 1's `test_rename_club_preserves_group_label`; 6 → Tasks 6 and 8; 7 → Task 3 Steps 1–2. The design's "Files this touches" table is covered except `logos.js`, which is Task 9 Step 1, and the `analytics.js` note, which is Task 8 Step 2. The verification section maps to Task 5 Step 5 (already-seeded proof), Task 2 (rollup deltas), and Tasks 6–8 (browser checks).
+**Spec coverage.** Design decisions 1–7 map to tasks: 1 → Task 1 (column) and Tasks 3–4 (data); 2 → Task 5; 3 → Task 2; 4 → **withdrawn, Task 7 removed**; 5 → Task 1 Step 1's `test_rename_club_preserves_group_label`; 6 → Tasks 6 and 8; 7 → Task 3 Steps 1–2. The design's "Files this touches" table is covered except `logos.js`, which is Task 9 Step 1, and the `analytics.js` note, which is Task 8 Step 2. The verification section maps to Task 5 Step 5 (already-seeded proof), Task 2 (rollup deltas), and Tasks 6–8 (browser checks).
 
 **Deferred.** The design's "measure the rollup delta on real data" applies at deploy time, not in this plan — Task 9 Step 3 is where the numbers get recorded.
 

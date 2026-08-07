@@ -99,16 +99,21 @@ delete guard) still counts from `vote_clubs`/`vote_leagues` directly, so it can 
 than the league's rollup now reflects. It is not a data-safety hole — `count_clubs_for_league()`
 already matches on both columns, so a league cannot be deleted while any club still links to it.
 
-## Decision 4 — a pick records the tab it was clicked from
+## Decision 4 — WITHDRAWN: a pick does not record the tab it was clicked from
 
-`dedupedTeamPicks()` attributes a dual-league pick to `domestic_league_id` regardless of where the
-user clicked, so picking France on the World Cup tab would label it "Nations League — France" on the
-review screen. Track the originating league when the pick is made and use that for the club-scope
-row and for display.
+*Originally: track the originating league of each pick so the review screen labels a dual-league
+club by the tab it was chosen under. **Withdrawn at the repo owner's request on 2026-08-07, before
+implementation** — "it doesn't matter which tab a pick came from."*
 
-With decision 3 in place this no longer affects any league total — both leagues are counted either
-way — so it is purely a truthfulness fix for the review screen, the picks chips and the per-club
-league dimension in `get_results_by_party`. It also fixes the equivalent oddity for UCL clubs today.
+`dedupedTeamPicks()` therefore keeps its existing behaviour: a dual-league pick is filed under
+`domestic_league_id` regardless of where the user clicked, so picking France on the World Cup tab
+reads "Nations League — France" on the review screen.
+
+Decision 3 is what makes this harmless. Both of a club's leagues are counted at league scope no
+matter which tab filed the pick, so tab origin decides no total — it only ever decided a label. The
+one residual effect is the league dimension of `get_results_by_party`'s club-scope breakdown, which
+attributes a dual-league club to `domestic_league_id` alone; nothing in the results UI reads that
+dimension for clubs today.
 
 ## Decision 5 — `group_label` is seed-only, not admin-editable
 
@@ -173,7 +178,7 @@ collation.
 | `services/backend/seed.sql` | league row, 38 clubs, names ×3, logos, group labels, 16 `domestic_league_id` links, `sort_order = 8`, league emblem |
 | `services/backend/queries.py` | `get_options()` selects and returns `group_label` |
 | `services/worker/rollups.py` | `_VOTE_LEAGUES_TOUCHED_CTE` (decision 3) |
-| `services/frontend/vote.js` | division headers, origin-league tracking (decision 4) |
+| `services/frontend/vote.js` | division headers (decision 6). Origin-league tracking was withdrawn — see decision 4 |
 | `services/frontend/results.js` | `<optgroup>` division labels in the club dropdown |
 | `services/frontend/analytics.js` | `worldCupLeagueId()` widens to all national-team leagues |
 | `services/frontend/i18n.js` | one header key in all three languages |
