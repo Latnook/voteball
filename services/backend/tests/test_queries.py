@@ -282,7 +282,52 @@ def test_get_results_by_party_previous(conn):
     league_id, club_id, party_x = _seed_rollup_rows(conn)
 
     result = queries.get_results_by_party(conn, 'previous', party_x)
-    assert result['breakdown'] == [{'league_id': league_id, 'club_id': club_id, 'count': 7}]
+    # club-scope rows collapse their league_id to NULL (see get_results_by_party's CASE) -- this
+    # row was seeded under a real league_id, but the breakdown reports it as None.
+    assert result['breakdown'] == [{'league_id': None, 'club_id': club_id, 'count': 7}]
+
+
+def test_get_results_by_party_collapses_club_rows_across_two_leagues(conn):
+    # A club can carry vote_clubs (and so rollup) rows under two different league_id values once its
+    # second league is set -- a dual-league club whose linked league changed after some ballots were
+    # already recorded under the original one, exactly what happened to the 16 shared Nations
+    # League/World Cup nations the moment the link was added (see
+    # docs/design/2026-08-07-nations-league-design.md, Fix 1). Without collapsing the league
+    # dimension, get_results_by_party would surface these as two separate breakdown rows for the
+    # same club -- splitting its votes across two ranks and double-counting it in the standings'
+    # percentage denominator. club-scope rows must collapse to one row per club with the counts
+    # summed; league-scope rows (club_id IS NULL) must be untouched and keep their real league_id.
+    import queries
+    league_id, club_id, party_x = _seed_rollup_rows(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO leagues (name, name_en) VALUES ('Placeholder League', 'Placeholder League') "
+        "RETURNING id"
+    )
+    other_league_id = cur.fetchone()[0]
+    # Same club, same party, a SECOND league_id -- this is the duplicate-producing shape.
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) '
+        'VALUES (%s, %s, %s, %s)',
+        (other_league_id, club_id, party_x, 4)
+    )
+    # A league-scope row (club_id IS NULL) for the original league/party -- must stay a separate
+    # row with its real league_id, not get swept into the collapsed club row.
+    cur.execute(
+        'INSERT INTO rollup_previous (league_id, club_id, previous_party_id, vote_count) '
+        'VALUES (%s, NULL, %s, %s)',
+        (league_id, party_x, 5)
+    )
+    conn.commit()
+    cur.close()
+
+    result = queries.get_results_by_party(conn, 'previous', party_x)
+    club_rows = [r for r in result['breakdown'] if r['club_id'] == club_id]
+    league_rows = [r for r in result['breakdown'] if r['club_id'] is None]
+
+    assert club_rows == [{'league_id': None, 'club_id': club_id, 'count': 11}]
+    assert league_rows == [{'league_id': league_id, 'club_id': None, 'count': 5}]
 
 
 def test_get_results_by_party_previous_includes_crosstab(conn):

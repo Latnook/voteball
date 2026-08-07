@@ -306,9 +306,17 @@ def get_results_by_party(conn, party_type, party_id):
     other_column = 'upcoming_party_id' if party_type == 'previous' else 'previous_party_id'
 
     cur = conn.cursor()
+    # A club's ballots can span two league_id values once its second league is set (a dual-league
+    # club whose linked league changed after some ballots were already recorded under the original
+    # one -- see the Nations League/World Cup link in docs/design/2026-08-07-nations-league-design.md).
+    # Grouping by the raw league_id would then split one club's votes into two breakdown rows at two
+    # ranks and double-count it in the standings' percentage denominator, so club-scope rows
+    # (club_id set) collapse their league_id to NULL here -- results.js reads league_id only when
+    # club_id is falsy, so this is display-safe. League-scope rows (club_id IS NULL) are untouched.
     cur.execute(
-        f'SELECT league_id, club_id, SUM(vote_count) FROM {table} '
-        f'WHERE {column} = %s GROUP BY league_id, club_id',
+        f'SELECT CASE WHEN club_id IS NULL THEN league_id END AS league_id, '
+        f'club_id, SUM(vote_count) FROM {table} '
+        f'WHERE {column} = %s GROUP BY 1, club_id',
         (party_id,)
     )
     breakdown = [{'league_id': r[0], 'club_id': r[1], 'count': r[2]} for r in cur.fetchall()]

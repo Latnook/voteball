@@ -183,12 +183,18 @@ function renderTeamGrid() {
     }
     group.clubs.forEach(c => {
       const isChecked = entry.clubIds.has(c.id);
+      // A dual-league club is also blocked once its LINKED league is at cap -- toggleClub's
+      // hasRoom check requires room in both leagues for a dual-league club, so a card that looked
+      // enabled on this tab alone would click and silently do nothing. Reuse linkedLeagueId rather
+      // than reimplementing the lookup; single-league clubs get null back and this is a no-op.
+      const linkedId = linkedLeagueId(c, selectedLeagueId);
+      const linkedAtCap = linkedId !== null && readLeagueEntry(linkedId).clubIds.size >= 3;
       const card = document.createElement('button');
       card.type = 'button';
       card.className = 'pick-card';
       card.setAttribute('aria-pressed', String(isChecked));
       card.dataset.clubId = c.id;
-      if (!isChecked && atCap) {
+      if (!isChecked && (atCap || linkedAtCap)) {
         card.disabled = true;
         card.setAttribute('aria-disabled', 'true');
       }
