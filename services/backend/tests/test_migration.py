@@ -426,3 +426,70 @@ def test_every_nations_league_team_has_a_crest_and_three_names(conn):
     )
     assert cur.fetchall() == []
     cur.close()
+
+
+LINKED_WORLD_CUP_NATIONS = [
+    'Austria', 'Belgium', 'Bosnia and Herzegovina', 'Croatia', 'Czech Republic', 'England',
+    'France', 'Germany', 'Netherlands', 'Norway', 'Portugal', 'Scotland', 'Spain', 'Sweden',
+    'Switzerland', 'Turkey',
+]
+
+
+def test_shared_nations_are_linked_not_duplicated(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT name_en, COUNT(*) FROM clubs WHERE name_en = ANY(%s) GROUP BY name_en HAVING COUNT(*) > 1",
+        (LINKED_WORLD_CUP_NATIONS,)
+    )
+    assert cur.fetchall() == [], 'a shared nation was inserted twice instead of linked'
+
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues wc ON wc.id = c.league_id AND wc.name_en = 'World Cup 2026'
+           JOIN leagues nl ON nl.id = c.domestic_league_id AND nl.name_en = 'Nations League'
+           WHERE c.name_en = ANY(%s)""",
+        (LINKED_WORLD_CUP_NATIONS,)
+    )
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(LINKED_WORLD_CUP_NATIONS)
+    cur.close()
+
+
+def test_nations_league_has_54_votable_teams(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT COUNT(*) FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'Nations League'"""
+    )
+    assert cur.fetchone()[0] == 54
+    cur.close()
+
+
+def test_nations_league_divisions_are_fully_populated(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.group_label, COUNT(*)
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'Nations League'
+           GROUP BY c.group_label"""
+    )
+    assert dict(cur.fetchall()) == {'A': 16, 'B': 16, 'C': 16, 'D': 6}
+    cur.close()
+
+
+def test_every_nations_league_team_including_linked_has_a_crest(conn):
+    # The 16 linked nations must keep the crest and names their World Cup row already carries --
+    # they are deliberately absent from the Nations League crest block (a duplicate name_en key in a
+    # VALUES block makes the join ambiguous), so this is what proves they were not left blank.
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'Nations League'
+             AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
+    )
+    assert cur.fetchall() == []
+    cur.close()

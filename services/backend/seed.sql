@@ -221,6 +221,23 @@ UPDATE clubs             SET name_en = name WHERE name_en IS NULL;
 UPDATE previous_parties  SET name_he = name WHERE name_he IS NULL;
 UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
 
+-- The 16 nations that play in BOTH the 2026 World Cup and the UEFA Nations League. They keep
+-- league_id = World Cup 2026 and gain the Nations League as their second league, so they appear
+-- under both tabs with their existing crest and names. clubs_name_en_uidx is global, so inserting a
+-- second 'France' row is impossible -- linking is the only option, and it is also what makes
+-- toggleClub's mirroring ("picked in one tab, picked in the other") work with no frontend change.
+--
+-- Keyed on name_en rather than the legacy `name` column used by the UCL blocks above: `name` is
+-- overwritten with name_he by queries.py's rename_league/rename_club on any admin save, so a
+-- name-keyed match silently stops finding an admin-touched row. This runs after the name_en backfill
+-- just above, since a freshly-inserted club only carries `name` until that backfill runs.
+UPDATE clubs SET domestic_league_id =
+    (SELECT id FROM leagues WHERE name = 'Nations League' OR name_en = 'Nations League')
+WHERE league_id = (SELECT id FROM leagues WHERE name = 'World Cup 2026' OR name_en = 'World Cup 2026')
+  AND name_en IN ('Austria', 'Belgium', 'Bosnia and Herzegovina', 'Croatia', 'Czech Republic',
+                  'England', 'France', 'Germany', 'Netherlands', 'Norway', 'Portugal', 'Scotland',
+                  'Spain', 'Sweden', 'Switzerland', 'Turkey');
+
 -- Relegation removals (2026-08-04): Hapoel Hadera and Hapoel Nof HaGalil dropped out of Liga Leumit
 -- to the third tier, which this app does not seed, and Maccabi Kiryat Gat / Maccabi Akhi Nazareth
 -- took their places in the roster above. Dropping the two from the INSERT's VALUES list is only half
