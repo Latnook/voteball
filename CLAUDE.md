@@ -154,7 +154,11 @@ voter twice. See `docs/design/2026-08-07-nations-league-design.md` decision 3.
 
 `clubs.group_label TEXT` carries the UEFA Nations League's A–D divisions (nullable, seed-only —
 absent from both admin club endpoints by design, since either endpoint replacing every field it
-receives would otherwise let a PATCH silently null it out). See
+receives would otherwise let a PATCH silently null it out). Division rendering is gated on
+**`leagues.has_divisions`** (a plain boolean on the league), not on whether any club present carries
+a `group_label` — a dual-league club can carry its label into a league that isn't itself divided (a
+16-nation overlap between the Nations League and the World Cup made exactly this happen), so
+inferring "divided" from the clubs would put division headers on the wrong tab. See
 `docs/design/2026-08-07-nations-league-design.md` decisions 1 and 5.
 
 ### Backend request-handling pattern

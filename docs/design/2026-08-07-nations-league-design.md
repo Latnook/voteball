@@ -24,9 +24,25 @@ league ever wants divisions, it works; if a club is ever in two leagues that *bo
 one column cannot express both labels. No such club exists and none is foreseeable — every
 divisioned competition here is a national-team tournament, and a nation plays in one division.
 
+**`group_label` alone turned out not to be enough — a second column, `leagues.has_divisions
+BOOLEAN`, was added to say *whether this league renders division headers at all*, separately from
+`group_label` saying *which* division a club is in.** The gap: 16 of the 54 Nations League nations
+are also World Cup 2026 teams and carry `domestic_league_id` linking them to the Nations League (see
+decision 2), so they carry a `group_label` there too. Sixteen labelled clubs is enough for `vote.js`
+to conclude "this league has divisions" if that conclusion is inferred from the clubs present — so
+the World Cup tab, which has no divisions of its own, rendered "League A"/"League B" headers over
+those 16 shared nations while its other 32 teams sat above them with no header at all. Inferring
+"divided" from "some club here has a label" cannot tell "this league is divided" apart from "this
+league happens to contain a club that's divided somewhere else" — those are different facts once a
+club can belong to two leagues, and only one of them is true for the World Cup. `has_divisions` makes
+the first fact explicit on the league itself instead of trying to derive it from club data that a
+dual-league club can carry into a league it doesn't describe. `vote.js`'s `groupedClubsForLeague()`
+and `results.js`'s club dropdown both gate the header/`<optgroup>` rendering on `league.has_divisions`
+now, never on the presence of `group_label` values among that league's clubs.
+
 ## Decision 2 — shared teams are linked, never re-inserted
 
-`clubs_name_en_uidx` is a **global** unique index (schema.sql:160, moved there from per-league by
+`clubs_name_en_uidx` is a **global** unique index (in `schema.sql`, moved there from per-league by
 decision 7 of the CRUD design). There cannot be a second row named `France`. The sixteen teams in
 both competitions therefore keep their existing World Cup row, their existing crest and their
 existing Hebrew/Russian names, and gain `domestic_league_id = <Nations League>`:
@@ -64,7 +80,7 @@ Galatasaray, Club Brugge, Feyenoord, PSV, Lens, Lille, Shakhtar, Slavia, Sportin
 Madrid, Barcelona, Bayern, Liverpool and Arsenal fans contribute nothing to it.
 
 Every league-scope number in the app flows through **one** SQL fragment,
-`_VOTE_LEAGUES_TOUCHED_CTE` (`services/worker/rollups.py:14`), shared by `rollup_previous`,
+`_VOTE_LEAGUES_TOUCHED_CTE` (in `services/worker/rollups.py`), shared by `rollup_previous`,
 `rollup_upcoming`, `rollup_previous_upcoming` and `rollup_vote_switch`. Answering "which leagues did
 this vote touch?" from the club's real memberships instead of from the filing tab is one edit:
 
@@ -180,14 +196,17 @@ collation.
 | `services/worker/rollups.py` | `_VOTE_LEAGUES_TOUCHED_CTE` (decision 3) |
 | `services/frontend/vote.js` | division headers (decision 6). Origin-league tracking was withdrawn — see decision 4 |
 | `services/frontend/results.js` | `<optgroup>` division labels in the club dropdown |
-| `services/frontend/analytics.js` | `worldCupLeagueId()` widens to all national-team leagues |
+| `services/frontend/analytics.js` | `nationalTeamLeagueIds()` widens from a single hardcoded `'World Cup 2026'` match to the `NATIONAL_TEAM_LEAGUES` set (`{'World Cup 2026', 'Nations League'}`) |
 | `services/frontend/i18n.js` | one header key in all three languages |
 | `services/frontend/logos/` | cropped `uefa-nations-league.svg` |
 | `services/frontend/logos.js` | `OUTLINE_CLUBS` review for dark crests among the 38 |
+| `services/frontend/style.css` | `.team-group-header`, and a 4-column grid rule for divisioned leagues |
 
-`analytics.js:51` currently hardcodes `name_en === 'World Cup 2026'` to keep national teams out of
-the club-diversity ranking. Thirty-eight more countries would swamp that ranking if the filter is
-not widened; it is a silent quality regression, not an error.
+Before this change, `analytics.js` matched only `name_en === 'World Cup 2026'` to keep national
+teams out of the club-diversity ranking (the ranking compares clubs to each other, and a national
+side is not a club). Thirty-eight more countries would have swamped that ranking unfiltered — a
+silent quality regression, not an error — which is why the match widened to a set rather than
+staying a single string comparison.
 
 ## Verification
 
@@ -247,7 +266,7 @@ until the backfill runs, so a `name_en`-keyed match placed before that backfill 
 database seeded in one pass, but finds everything on a database where `name_en` was already
 populated by a previous boot's backfill (a `WHERE name_en IS NULL` guard makes the backfill a no-op
 on every later run, but the values it already wrote stay). TDD caught it immediately instead: the
-four tests written for Task 5 (`test_shared_nations_are_linked_not_duplicated`,
+three tests written for Task 5 (`test_shared_nations_are_linked_not_duplicated`,
 `test_nations_league_has_54_votable_teams`, `test_nations_league_divisions_are_fully_populated`) run
 against a fresh per-test database (`conftest.py`'s `conn` fixture calls `init_db` fresh every time),
 so they failed at RED with the exact fresh-DB numbers:
@@ -261,7 +280,9 @@ The statement now sits at `seed.sql:234`, after the backfill, with an in-file co
 Re-verified against a genuinely already-seeded database too (old `seed.sql` applied first, new
 `seed.sql` applied on top without dropping the database), confirming the corrected placement reaches
 both database shapes, then a third application confirmed it is idempotent (54/54/16/16/16/6 held
-steady). See Task 5's implementation notes for that run's full `psql` transcript.
+steady). (The full `psql` transcript of that run lived in the implementation plan for this feature,
+which — per this repo's standing rule — was deleted the moment the plan finished executing; the
+table above is the durable record of the numbers that mattered.)
 
 **Defect 2 — a fixture named after something the feature itself later seeded.** `services/backend`'s
 test fixtures run against a *fully seeded* database (`conftest.py`'s `conn` fixture calls
@@ -291,7 +312,20 @@ Malta, Finland, Luxembourg, Romania, Latvia, Faroe Islands, Azerbaijan) reads cl
 card — their raw pixel-luminance score was inflated by dark linework (a black eagle, a blue cross)
 sitting on top of a bright or saturated field that anchors legibility, the same phenomenon
 `recolorLogoForDark()`'s `warmVivid` exception in `logos.js` already accounts for on the party-logo
-side of this codebase. See Task 9's report for the full 43-crest measurement table.
+side of this codebase. (The full crest-by-crest measurement table lived in the implementation plan
+for this feature, deleted per this repo's standing rule once the plan finished executing; the ten
+names above are what it takes to reproduce the result.)
+
+**Incidental change — the results-page club dropdown now sorts every league client-side.**
+`renderClubPickerOptions()` in `results.js` needed `sortByLocalizedName()` for the 38 new Nations
+League clubs so a divisioned league's `<optgroup>`s sort correctly in the active display language
+(decision 6). Rather than branch "sort client-side only for the divisioned league, otherwise trust
+the API's `ORDER BY name_en`", the simpler change applies `sortByLocalizedName()` to every league's
+club list, divisioned or not — matching what the voting form's `clubsForLeague()` already did. That
+changes Hebrew and Russian ordering for all eight pre-existing leagues, not just the new one: the API
+order was always English-alphabetical regardless of display language, so a Hebrew or Russian visitor
+now sees those dropdowns sorted the way they read rather than the way `name_en` sorts. Improvement,
+not a regression, but it was an undocumented side effect of the Nations League change until now.
 
 **Every suite passed** at the end of this plan: 161 backend tests, 40 worker tests (both real-Postgres
 suites), `scripts/tests/test-i18n-parity.sh`, and `scripts/tests/test-frontend-seo.sh`.
