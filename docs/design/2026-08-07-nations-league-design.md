@@ -208,3 +208,90 @@ not widened; it is a silent quality regression, not an error.
 Division headers on the results page beyond the dropdown `<optgroup>`s; admin editing of
 `group_label` (decision 5); any change to the 3-picks-per-league cap, which continues to charge a
 dual-league club against both leagues' caps.
+
+## Verification outcome
+
+This feature deployed continuously as it was built — each task's commit went straight to `master`
+and Jenkins' `application-cd` promoted and synced it within minutes, per the standing repo practice
+of committing and pushing as work is made. That means the live site ran a visibly half-finished
+feature for a stretch: Task 3 (`38f7b98`, the Nations League league row plus the cropped emblem, no
+teams under it yet) deployed at `2026-08-06 22:01:33 UTC` (`ci: image tag 38f7b98`), and Task 4
+(`093a283`, the 38 new national teams) did not deploy until `2026-08-07 05:21:52 UTC` — a **7h20m
+gap** during which the voting form showed a "Nations League" tab with the cropped UEFA emblem and
+zero clubs under it. Not a data-safety issue (an empty-club league renders as an empty tab, same as
+any league with no clubs yet), but a real, visible symptom of shipping each task independently
+instead of behind a flag.
+
+Two real defects surfaced along the way, both caught before or immediately after they shipped:
+
+**Defect 1 — the Task 5 linking statement's planned placement matched zero rows on a fresh database
+while silently working on an already-seeded one.** The implementation plan said to place the
+16-nation `domestic_league_id` link (`UPDATE clubs SET domestic_league_id = ... WHERE ... AND
+name_en IN (...)`) directly after the last of the existing UCL `domestic_league_id` blocks — i.e.,
+*before* `seed.sql`'s `UPDATE clubs SET name_en = name WHERE name_en IS NULL` backfill. Verified
+directly (not just recalled from the task report) by reconstructing that exact placement and running
+it both ways:
+
+| Scenario | Shared-nation links matched |
+|---|---|
+| Fresh DB (`schema.sql` + wrong-placement `seed.sql`, first boot) | **0** |
+| Already-seeded DB (pre-Task-5 `seed.sql` applied first, wrong-placement `seed.sql` applied on top) | **16** |
+
+The asymmetry is exactly what makes this class of bug dangerous: a production database is always
+already-seeded (RDS restores from a snapshot, and `init_db` only ever adds to what's there), so this
+placement would have shipped, passed every manual smoke check against the live site, and quietly
+broken only the *next* fresh-database boot — a `terraform destroy`/rebuild, or a fork's first deploy
+— shipping a 38-team-only Nations League with the 16 shared nations silently missing from it, with
+no error anywhere. `name_en` is why: a freshly-inserted club carries only the legacy `name` column
+until the backfill runs, so a `name_en`-keyed match placed before that backfill finds nothing on a
+database seeded in one pass, but finds everything on a database where `name_en` was already
+populated by a previous boot's backfill (a `WHERE name_en IS NULL` guard makes the backfill a no-op
+on every later run, but the values it already wrote stay). TDD caught it immediately instead: the
+four tests written for Task 5 (`test_shared_nations_are_linked_not_duplicated`,
+`test_nations_league_has_54_votable_teams`, `test_nations_league_divisions_are_fully_populated`) run
+against a fresh per-test database (`conftest.py`'s `conn` fixture calls `init_db` fresh every time),
+so they failed at RED with the exact fresh-DB numbers:
+
+| | A | B | C | D |
+|---|---|---|---|---|
+| Before the fix (link statement in the planned position) | 5 | 11 | 16 | 6 |
+| After moving the statement past the `name_en` backfill | 16 | 16 | 16 | 6 |
+
+The statement now sits at `seed.sql:234`, after the backfill, with an in-file comment recording why.
+Re-verified against a genuinely already-seeded database too (old `seed.sql` applied first, new
+`seed.sql` applied on top without dropping the database), confirming the corrected placement reaches
+both database shapes, then a third application confirmed it is idempotent (54/54/16/16/16/6 held
+steady). See Task 5's implementation notes for that run's full `psql` transcript.
+
+**Defect 2 — a fixture named after something the feature itself later seeded.** `services/backend`'s
+test fixtures run against a *fully seeded* database (`conftest.py`'s `conn` fixture calls
+`db.init_db`, which loads `schema.sql` **and** `seed.sql`), and `clubs.name_en`/`leagues.name_en`
+both carry a global unique index. Two throwaway fixtures collided with real rows this feature added:
+a fixture league literally called `'Nations League'` (written before Task 3 seeded the real one) and
+a fixture club called `'Italy'` (written before Task 4 seeded the real one) — each test passed for as
+long as the name stayed unseeded and started failing the moment a later commit in the *same feature*
+seeded the real row out from under it. Both were renamed to obviously-fake names (`'Placeholder
+League'`, `'Ruritania'`); see `services/backend/CLAUDE.md`, which now carries a paragraph warning
+future fixture authors about this.
+
+**Decision 3's dual-league counting fix (the `_VOTE_LEAGUES_TOUCHED_CTE` change) worked as designed**,
+confirmed at the unit level by `services/worker/tests/test_rollups.py`'s `_seed_dual_league_vote`
+fixture (a club shaped like Real Madrid: `league_id`=UCL, `domestic_league_id`=La Liga, picked under
+La Liga only) — before the fix, the league-scope query returned one row; after, it returns one row
+per league, as decision 3 predicted. The rollup tables are always rebuilt wholesale on the next
+recompute (`TRUNCATE` then re-`INSERT`) and keep no history, so there is no literal "before" snapshot
+of the live production numbers from the moment this shipped to compare against — the unit-level
+before/after above is the durable record of the behavioral change instead.
+
+**Dark-mode crest review (Task 9) added nothing to `OUTLINE_CLUBS`.** All 38 new crests were measured
+mechanically (fraction of non-transparent pixels near-invisible against `#161B22`) and the ~10 that
+scored meaningfully above the known-good negative controls were additionally confirmed by rendering
+each one composited onto the actual card colour: every one of them (Albania, Armenia, Liechtenstein,
+Malta, Finland, Luxembourg, Romania, Latvia, Faroe Islands, Azerbaijan) reads clearly on the dark
+card — their raw pixel-luminance score was inflated by dark linework (a black eagle, a blue cross)
+sitting on top of a bright or saturated field that anchors legibility, the same phenomenon
+`recolorLogoForDark()`'s `warmVivid` exception in `logos.js` already accounts for on the party-logo
+side of this codebase. See Task 9's report for the full 43-crest measurement table.
+
+**Every suite passed** at the end of this plan: 161 backend tests, 40 worker tests (both real-Postgres
+suites), `scripts/tests/test-i18n-parity.sh`, and `scripts/tests/test-frontend-seo.sh`.

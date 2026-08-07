@@ -162,7 +162,7 @@ function renderTeamGrid() {
   const atCap = entry.clubIds.size >= 3;
   groupedClubsForLeague(selectedLeagueId).forEach(group => {
     if (group.label !== null) {
-      const header = document.createElement('h3');
+      const header = document.createElement('h2');
       header.className = 'team-group-header';
       header.textContent = t('voteTeamGroupHeader').replace('{label}', group.label);
       grid.appendChild(header);

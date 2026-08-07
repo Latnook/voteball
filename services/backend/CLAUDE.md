@@ -165,3 +165,13 @@ suite, because the venv has everything installed either way while the built imag
 `setdefault` and its `conn` fixture drops and recreates every table before each test (see the
 `DROP TABLE ... CASCADE` list — keep it in sync with `schema.sql` when adding tables).
 
+**The `conn` fixture calls `db.init_db`, which loads `schema.sql` AND `seed.sql`** — every backend
+test starts against a fully seeded database, not an empty one. Combined with the **global**
+`clubs_name_en_uidx`/`leagues_name_en_uidx` unique indexes, a throwaway fixture named after
+something real collides the moment that name gets seeded, and only then — a test written before the
+name existed in `seed.sql` passes for as long as it stays unseeded and starts failing the day someone
+adds it, with no code change in the test itself to blame. This happened twice during the Nations
+League feature: a fixture league called `'Nations League'` and a fixture club called `'Italy'`, each
+breaking only when a later commit seeded the real row. Give fixtures obviously-fake names instead —
+this repo now uses `'Placeholder League'` and `'Ruritania'` for exactly this reason.
+

@@ -514,6 +514,12 @@ def test_dual_league_club_does_not_change_national_totals(conn):
 
 
 def test_dual_league_club_counts_at_both_leagues_in_vote_switch(conn):
+    # DISTINCT on league_id alone would still pass if the join started emitting duplicate rows per
+    # league (it'd just mask them), so this asserts the full (league_id, switch_status, vote_count)
+    # tuple instead. The fixture ballot is 'voted' with a previous party (so not 'new_voter') and
+    # 'undecided' upcoming (per _VOTE_SWITCH_STATUS_CTE, upcoming_vote_status == 'undecided' always
+    # classifies as 'undecided', regardless of previous_vote_status) -- so both leagues should show
+    # exactly one 'undecided' vote, not two.
     import rollups
     la_liga, ucl, _club_id, _party_x = _seed_dual_league_vote(conn)
 
@@ -521,7 +527,64 @@ def test_dual_league_club_counts_at_both_leagues_in_vote_switch(conn):
 
     cur = conn.cursor()
     cur.execute(
-        'SELECT DISTINCT league_id FROM rollup_vote_switch WHERE club_id IS NULL ORDER BY league_id'
+        'SELECT league_id, switch_status, vote_count FROM rollup_vote_switch '
+        'WHERE club_id IS NULL ORDER BY league_id'
     )
-    assert sorted(r[0] for r in cur.fetchall()) == sorted([la_liga, ucl])
+    rows = cur.fetchall()
     cur.close()
+    assert sorted(rows) == sorted([(la_liga, 'undecided', 1), (ucl, 'undecided', 1)])
+
+
+def _seed_dual_league_vote_with_upcoming_pick(conn):
+    """Same dual-league club shape as _seed_dual_league_vote, but the ballot names an upcoming
+    party rather than being undecided -- the rollup_upcoming/rollup_previous_upcoming path a
+    typical production ballot actually hits, which the undecided fixture above never exercises."""
+    cur = conn.cursor()
+    cur.execute("INSERT INTO leagues (name) VALUES ('La Liga') RETURNING id")
+    la_liga = cur.fetchone()[0]
+    cur.execute("INSERT INTO leagues (name) VALUES ('UCL') RETURNING id")
+    ucl = cur.fetchone()[0]
+    cur.execute(
+        "INSERT INTO clubs (league_id, domestic_league_id, name) "
+        "VALUES (%s, %s, 'Real Madrid') RETURNING id",
+        (ucl, la_liga)
+    )
+    club_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO previous_parties (name) VALUES ('Party X') RETURNING id")
+    party_x = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
+    party_a = cur.fetchone()[0]
+    cur.execute(
+        '''INSERT INTO votes (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+           VALUES ('voted', %s, 'considering', 'dual2') RETURNING id''',
+        (party_x,)
+    )
+    vote_id = cur.fetchone()[0]
+    cur.execute(
+        'INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)',
+        (vote_id, club_id, la_liga)
+    )
+    cur.execute(
+        'INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)',
+        (vote_id, party_a)
+    )
+    conn.commit()
+    cur.close()
+    return la_liga, ucl, club_id, party_a
+
+
+def test_dual_league_club_counts_at_both_leagues_in_upcoming_rollup(conn):
+    import rollups
+    la_liga, ucl, _club_id, party_a = _seed_dual_league_vote_with_upcoming_pick(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT league_id, vote_count FROM rollup_upcoming '
+        'WHERE club_id IS NULL AND upcoming_party_id = %s ORDER BY league_id',
+        (party_a,)
+    )
+    rows = cur.fetchall()
+    cur.close()
+    assert sorted(rows) == sorted([(la_liga, 1), (ucl, 1)])

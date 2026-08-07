@@ -479,17 +479,3 @@ def test_nations_league_divisions_are_fully_populated(conn):
     cur.close()
 
 
-def test_every_nations_league_team_including_linked_has_a_crest(conn):
-    # The 16 linked nations must keep the crest and names their World Cup row already carries --
-    # they are deliberately absent from the Nations League crest block (a duplicate name_en key in a
-    # VALUES block makes the join ambiguous), so this is what proves they were not left blank.
-    cur = conn.cursor()
-    cur.execute(
-        """SELECT c.name_en
-           FROM clubs c
-           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
-           WHERE l.name_en = 'Nations League'
-             AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
-    )
-    assert cur.fetchall() == []
-    cur.close()

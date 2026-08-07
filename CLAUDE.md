@@ -145,6 +145,18 @@ rollups for national totals would over-count a multi-team ballot, plus `rollup_v
 CASCADE` lists in step with them — there is no top-level `tests/` directory, and updating only one of
 the two leaves the other suite dropping a stale set.
 
+**A club that plays in two leagues counts toward BOTH at league scope.** `_VOTE_LEAGUES_TOUCHED_CTE`
+in `services/worker/rollups.py` derives "which leagues did this vote touch" from `clubs.league_id`
+*and* `clubs.domestic_league_id`, not from `vote_clubs.league_id` (which records only the tab the
+pick was filed under). Club-scope rows are deliberately **not** expanded the same way — `?by=club`
+filters on `club_id` with no league predicate, so a second club-scope row per vote would count one
+voter twice. See `docs/design/2026-08-07-nations-league-design.md` decision 3.
+
+`clubs.group_label TEXT` carries the UEFA Nations League's A–D divisions (nullable, seed-only —
+absent from both admin club endpoints by design, since either endpoint replacing every field it
+receives would otherwise let a PATCH silently null it out). See
+`docs/design/2026-08-07-nations-league-design.md` decisions 1 and 5.
+
 ### Backend request-handling pattern
 
 Every route acquires its own `psycopg2` connection via `db.get_db()` (no pooling) and must guarantee

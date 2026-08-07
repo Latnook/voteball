@@ -10,6 +10,10 @@
 # Real Betis fans in the Champions League only, though both clubs play in both competitions. See
 # docs/design/2026-08-07-nations-league-design.md decision 3.
 #
+# National totals (rollup_national_previous/_upcoming/_previous_upcoming) are separate: they hold
+# exactly one row's worth of counting per vote, with no league/club dimension, because summing the
+# league/club-scoped rollups for "national" would count a multi-team ballot multiple times.
+#
 # UNION deduplicates, so a voter who picks three clubs in one league still yields one league-scope
 # row for it. Club-scope rows are deliberately NOT expanded the same way: ?by=club filters on
 # club_id with no league predicate (queries.py _results_for_filter), so a second club-scope row per
