@@ -61,23 +61,30 @@ const FILL_INTERIOR_PARTIES = new Set([
   'Shas',
 ]);
 
-// Parties whose brand ships SEPARATE light and dark artwork. `logo_url` is the light one; this is
-// its dark counterpart, shown instead of a computed canvas.
+// Parties whose artwork is used UNCHANGED in both themes -- the recolour is skipped entirely.
 //
-// Use this whenever the two versions differ by more than luminance -- which no pixel operation can
-// bridge. בית ציוני's Star of David is a KNOCKOUT in both of the party's own lockups: it is not
-// drawn, it is the background showing through a hole in the swoosh. Recolouring cannot fix that, for
-// exactly the reason fillLogoInteriorForDark() exists (see the Shas note above) -- the star's
-// interior and the transparent area outside the artwork are the same pixels in the file. Lifting the
-// swoosh to white therefore leaves the star showing the dark card through it, as black triangles.
-// Shipping two assets, each knocked out to the background it is actually displayed on, is the only
-// fix: the star reads white on the light card and dark on the dark card, which is what the party's
-// own two lockups do.
+// This exists for logos built around a KNOCKOUT. בית ציוני's Star of David is not drawn: it is a
+// hole in the swoosh that lets the background show through, so in the file the star's interior and
+// the empty space outside the artwork are the same transparent pixels. That is the defect
+// fillLogoInteriorForDark() documents for Shas above, and it has the same consequence here --
+// recolouring lifts the swoosh but cannot lift a hole, so the dark card shows through the star as
+// black triangles. A knockout can only be correct against the background it is actually drawn on,
+// and it is: white shows through on the light card, the card colour on the dark one.
+//
+// So the artwork is left alone and its colours are chosen to clear WCAG's 3:1 graphical-object
+// minimum on BOTH grounds -- the secondary elements use the brighter of the logo's own two blues
+// (#418AB8: 4.57:1 on the dark card, 3.78:1 on white). The darker #326B9F reads better on white but
+// falls to 3.08:1 on the dark card, which is the floor with nothing spare; the small
+// בראשות טרופר והנדל line is what pays for that first. This was a visual call by the repo owner
+// after seeing all three options rendered, not only a contrast calculation.
+//
+// Skipping the recolour is what makes dark match light. Without this the blues would be lifted and
+// the two themes would drift apart again.
 //
 // Keyed by name_en so one entry covers a party in both previous_parties and upcoming_parties.
-const DARK_VARIANT_LOGOS = {
-  'The Reservists': '/logos/beit-tzioni-miluimnikim-dark.png',
-};
+const SKIP_RECOLOR_PARTIES = new Set([
+  'The Reservists',
+]);
 
 // Near-white, close to the theme's --ink (#F5F7FA). This started at the dark theme's --muted
 // (#8B95A3) to keep the filled tablet from outweighing the thin wordmarks on the neighbouring cards,
@@ -248,31 +255,20 @@ function logoEl(entity, displayName, opts) {
     wrap.classList.add('logo-dark');
   }
 
-  // Parties with their own dark artwork (DARK_VARIANT_LOGOS): show that file directly instead of
-  // computing a canvas. Same two-element shape the recolour path produces -- .logo-orig for light,
-  // .logo-recolored for dark -- so the existing CSS switches them with no rule of its own. No canvas
-  // means no crossOrigin and no pixel reads, so this path cannot be defeated by a tainted canvas.
-  if (opts.recolor && entity && DARK_VARIANT_LOGOS[entity.name_en]) {
-    const light = document.createElement('img');
-    light.alt = '';
-    light.loading = 'lazy';
-    light.className = 'logo-orig';
-    // Only the light image falls back: if it fails, so would the monogram decision, and replacing
-    // the whole wrapper drops the dark <img> with it.
-    light.addEventListener('error', () => {
+  // SKIP_RECOLOR_PARTIES: a plain image shown in both themes. It deliberately does NOT get the
+  // .logo-orig class -- that class is what the dark theme hides, so leaving it off is precisely what
+  // makes the same artwork render in both. No canvas also means no crossOrigin and no pixel reads,
+  // so this path cannot be defeated by a tainted canvas.
+  if (opts.recolor && entity && SKIP_RECOLOR_PARTIES.has(entity.name_en)) {
+    const img = document.createElement('img');
+    img.alt = '';
+    img.loading = 'lazy';
+    img.addEventListener('error', () => {
       wrap.innerHTML = '';
       wrap.appendChild(buildMonogram(entity.id, displayName));
     }, { once: true });
-    light.src = url;
-
-    const dark = document.createElement('img');
-    dark.alt = '';
-    dark.loading = 'lazy';
-    dark.className = 'logo-recolored';
-    dark.src = DARK_VARIANT_LOGOS[entity.name_en];
-
-    wrap.appendChild(light);
-    wrap.appendChild(dark);
+    img.src = url;
+    wrap.appendChild(img);
     return wrap;
   }
 
