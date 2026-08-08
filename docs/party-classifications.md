@@ -76,7 +76,7 @@ Negative is left (more state), positive is right (less state).
 |---|---|---|
 | **+3** | Libertarian: shrink the state as a matter of principle, not just policy | זהות `[u]` |
 | **+2** | Privatizing: actually withdraws the state — sell Ashdod Port and Haifa Airport, end child allowances from the fifth child | ישראל ביתנו |
-| **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים `[u]`, המחנה הממלכתי `[p]` |
+| **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המחנה הממלכתי `[p]` |
 | **0** | No economic doctrine, or a genuinely balanced one | כחול לבן `[u]`, הציונות הדתית, עוצמה יהודית `[u]`, רע"ם, יש עתיד `[p]` |
 | **−1** | *(none)* | — |
 | **−2** | Social-democratic | הדמוקרטים `[u]`, בל"ד, ש"ס, יהדות התורה, העבודה `[p]`, מרצ `[p]` |
@@ -94,7 +94,7 @@ Negative is dovish, positive is hawkish.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]`, נעם `[u]` |
-| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]`, המפלגה הכלכלית `[u]` |
 | **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
@@ -116,9 +116,9 @@ Negative reduces religious authority.
 | **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
 | **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה, זהות `[u]` |
 | **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
-| **0** | Status quo — no active religion-state agenda in either direction | אל הדגל `[u]`, המילואימניקים `[u]` |
+| **0** | Status quo — no active religion-state agenda in either direction | אל הדגל `[u]` |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription; civil marriage is typical but *not* required — ישר and כחול לבן sit here without it | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription; civil marriage is typical but *not* required — ישר and כחול לבן sit here without it | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, בית ציוני - המילואימניקים `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
 
@@ -555,7 +555,7 @@ records what a party *is*, not what it has a policy about: אל הדגל and ה�
 reservist protest movement. ישר is the governing precedent — it carries the `reservist-focused` tag
 and not the family, for exactly this reason. Note the competitive context: B&W is running a
 reservists programme while polling ~1%, having just lost חילי טרופר to
-בית ציוני – המילואימניקים.
+בית ציוני - המילואימניקים.
 
 **`kachollavan.org.il` returns 403 to automated fetching**; these were downloaded by hand. One
 caveat for the next pass: **the education programme is a scanned-image PDF** — `pdftotext` yields 7
@@ -733,12 +733,23 @@ pulls negative but is offset by a Values Pillar grounded in Jewish heritage plus
 above the core. The conscription stance lives in `anti-conscription-exemption` and
 `universal-conscription`.
 
-### המילואימניקים — The Reservists · `unaligned` · 1 / 2 / 0 · secular
+### בית ציוני - המילואימניקים — The Reservists · `unaligned` · 1 / 2 / −2 · secular
 
 **Read the name-collision warning above before touching this row.**
 
-Sources: the party registry goals via IDI, the primary list composition, and — the decisive
-evidence — the candidates' own public statements, which are far more explicit than the registry text.
+Sources: since 2026-08-05, the party's own **תוכנית מגן דוד** platform, presented at the joint
+list's launch conference in Jerusalem. Before that the row rested on the party registry goals via
+IDI, the primary list composition, and the candidates' public statements; those still carry the
+`security` and `bloc` values, and the platform confirms rather than contradicts them.
+
+**The platform has no home on the open web — there is no party website.** It reaches this document
+through press reporting that quotes the מצע's own wording, cross-checked across four outlets
+including one hostile to it. That is weaker than the primary-source standard the rest of this page
+holds to, and it is recorded here rather than glossed: a later pass must not assume a party document
+was read. The strongest of those readings is `bhol.co.il`, a **haredi** outlet reporting the
+core-curriculum funding condition as a threat to haredi schools — a hostile source has no incentive
+to invent that clause, which is why it is treated as confirmation rather than as a second echo of
+the same press release.
 
 security **+2**. The registry goals alone would justify only +1; the statements do not leave it
 there. The platform promises to *take territory* from Gaza; Hendel's stated plan for the remainder
@@ -747,11 +758,38 @@ attacked the Rafah crossing opening as "establishing a Palestinian state on top 
 below +3: unlike Ach's movement they do not call for mass population transfer, and unlike Religious
 Zionism they do not call for sovereignty over Judea and Samaria.
 
-economic +1 rests on Hendel's centre-right record — no published economic platform. Their
-service-conditioned sanctions are severe but sectoral, not a general economic doctrine: Hendel's
-formulation is that whoever does not serve "will not be able to vote or be elected, and will not
-receive a shekel". **Conditioning the franchise on service** is a defining and unusual position,
+economic **+1 — confirmed against the platform on 2026-08-08, and no longer the weakest number on
+this page.** It rested for months on Hendel's centre-right record with no party document behind it.
+The מצע's cost-of-living chapter is *"הגברת התחרות, פירוק מונופולים, הפחתת רגולציה, פתיחת המשק
+ליבוא"* — competition, monopoly-breaking, deregulation, opening the economy to imports — fused with
+real spending: targeted support for working parents, higher pay for young teachers, and a benefits
+package for those who serve (full academic funding, land-purchase assistance, public-sector hiring
+preference). That is the +1 band as written, and structurally the same case as הליכוד's import
+reform. **Not +2**: nothing here withdraws the state the way selling Ashdod Port does.
+
+Their service-conditioned sanctions are severe but sectoral, not a general economic doctrine:
+Hendel's formulation is that whoever does not serve "will not be able to vote or be elected, and will
+not receive a shekel". **Conditioning the franchise on service** is a defining and unusual position,
 hence its own tag.
+
+religiosity **−2 (was 0, moved 2026-08-08).** The education chapter conditions state money on the
+core curriculum in as many words — *"מתן תקצוב ציבורי **רק** למוסדות המלמדים לימודי ליבה"*, public
+funding **only** for institutions that teach it. That is the −2 band's defining criterion verbatim,
+and it is the same evidence that moved כחול לבן −1 → −2 on 2026-08-01. It does not stand alone:
+the party makes passing a conscription law a precondition for joining any coalition, and Hendel
+campaigns on *"פירוק האוטונומיות במגזר הערבי והחרדי"* — dismantling the Arab and haredi autonomies.
+
+**The 0 was not a mistake at the time, and the reason it was wrong is the reason this axis is hard.**
+This row had no platform at all until 2026-08-05, and the haredi-exemption fight is excluded from
+this axis by the religiosity design doc's Decision 6 — so with conscription set aside there was
+genuinely nothing left to score, and 0 was the honest reading. What arrived on the 5th was not a
+conscription position but a *funding* position, which is the second of the two fights this axis
+folds together. Exactly as the כחול לבן note below warns: the religion-and-state material alone
+systematically under-scores a party, and the education chapter is where the real number lives.
+
+Held at −2, not −3: they say nothing about the Rabbinate, marriage, kashrut or Shabbat, and −3
+requires ending the monopolies outright. ישר and כחול לבן both sit at −2 without civil marriage, so
+the silence is not disqualifying.
 
 `unaligned` is supported from both directions: Hendel has committed that he will "never complete
 Netanyahu to 61, even if it means more elections", which rules out the bibi bloc — but he also rules
@@ -763,25 +801,29 @@ its name, and its `economic` gap has a date on it.** Sequence: the Hendel–Gant
 Gantz's refusal to declare he would not sit with the haredi parties; MK חילי טרופר then left Gantz's
 כחול לבן, registered "יסודות ישראל" in early July, and on 2026-07-07 announced a joint run with
 Hendel under the name **"בית ציוני"**, to which the "המילואימניקים" brand was then appended. The
-list now runs as **בית ציוני – המילואימניקים**, positioning itself as a
+list now runs as **בית ציוני - המילואימניקים**, positioning itself as a
 *"חלופה ציונית וממלכתית במרכז"* — a Zionist statist alternative in the centre, explicitly
 differentiating from Gantz's כחול לבן. In late-July polls it crossed the threshold for the first
 time at 4–5 seats.
 
-Three consequences, in order of how much they matter:
+Three consequences, all resolved on 2026-08-08:
 
-1. **`economic +1` — the weakest number on this page — resolves on 2026-08-05**, when the joint list
-   holds its launch conference in Jerusalem and presents its מצע. Do not guess before then; the
-   whole reason this row's economics is flagged is that it rests on Hendel's personal record with no
-   party document behind it. Read the platform on the 5th and rescore.
-2. **`unaligned` holds and is now better evidenced, not worse.** The bloc question was open pending
-   the Gantz talks; those talks died precisely over the haredi question, which is the same commitment
-   the bloc rests on. Trooper arriving from כחול לבן reinforces the centre position rather than
-   moving it.
-3. **The rename is an admin-UI action, not a `seed.sql` edit, and it is deliberately not done here.**
-   Renaming a party row orphans the votes already cast against it (see the warning above), so this is
-   the repo owner's call through the admin screen, taken when the ballot name is final. Lists are not
-   final until closer to 2026-10-27.
+1. **`economic +1` was confirmed, not moved** — see the axis note above. The platform arrived on
+   schedule and the number it was flagged against turned out to be right.
+2. **`unaligned` holds and is now decisively evidenced.** Hendel's condition is
+   *"ממשלה ציונית רחבה, ללא המפלגות החרדיות והערביות"* — a broad Zionist government without the
+   haredi or Arab parties — and he will not hand Netanyahu a majority *"כל עוד הוא נשען עליהן"*, as
+   long as he leans on them, adding that Netanyahu should take responsibility for October 7 and go
+   home. That closes the bloc question from both directions at once, which is what `unaligned`
+   requires.
+3. **The rename is done, and it was a `seed.sql` edit after all — a rename, not a re-seed.** The
+   earlier note here assumed renaming must be an admin-UI action because it orphans votes. That is
+   true of the *naive* edit — changing the literal in the `INSERT` block, whose `ON CONFLICT (name)`
+   matches the old name and therefore adds a second party rather than renaming the first. The
+   working form is an `UPDATE` placed **before** that `INSERT`, keyed on `name`, setting `name` and
+   `name_he` together the way `rename_upcoming_party()` does. The row keeps its `id`, so every vote
+   already cast stays attached. Verified against a database seeded with the previous file: one row,
+   `id` unchanged, one vote still attached, and idempotent across two applies.
 
 One note against over-reading the merger: Gantz said of Trooper's departure in a 103FM interview that
 week, *"אני לא מצליח לשמוע משפט אחד שהוא אומר אחרת ממני"* — he cannot hear one sentence Trooper says
@@ -912,7 +954,8 @@ neighbouring cases, because the difference is the whole point of the axis:
 
 - הציונות הדתית and עוצמה יהודית are **0**, not NULL — they actively claim economic liberalism
   (`claims-economically-liberal`) and Smotrich has a finance-ministry record to read.
-- המילואימניקים is **+1** with no published platform, resting on Hendel's centre-right record.
+- בית ציוני - המילואימניקים is **+1** on its own platform since 2026-08-05 (it rested on Hendel's
+  centre-right record with no party document until then, and the platform confirmed the number).
 - המפלגה הכלכלית is **0** on the *security* axis for the mirror-image reason: an economics party that
   genuinely takes no conflict position.
 
@@ -1066,14 +1109,52 @@ same reasoning as their upcoming counterpart at an earlier stage; only the diffe
 Logo URLs are guarded on `IS NULL` because admins edit them live through the admin UI, and those
 edits exist only in RDS until someone backfills them into `seed.sql`.
 
-**Two corrections are unguarded** and therefore *do* overwrite an admin-edited logo for those rows.
+**Three corrections are unguarded** and therefore *do* overwrite an admin-edited logo for those rows.
 That is a deliberate trade — each replaced a value that was actively wrong:
 
 - **La Liga** — swapped the Wikimedia wordmark SVG for LaLiga's own "LL" monogram PNG, which suits
   the small square logo slot better; a wide wordmark renders tiny there.
-- **המילואימניקים** — a **misattribution fix**, not a cosmetic swap. The replaced URL was
-  `Logo_המילואימניקים_-_דור_הניצחון.png`, the logo of **Gilad Ach's movement** (see the name-collision
-  warning). We were showing one organisation's mark on another organisation's row.
+- **בית ציוני - המילואימניקים** — originally a **misattribution fix**, not a cosmetic swap: the
+  replaced URL was `Logo_המילואימניקים_-_דור_הניצחון.png`, the logo of **Gilad Ach's movement** (see
+  the name-collision warning). We were showing one organisation's mark on another organisation's row.
+  Repointed again on 2026-08-08 to `/logos/beit-tzioni-miluimnikim.png` for the joint list's rebrand.
+- **הציונות הדתית**, `upcoming_parties` **only** — the 2026 rebrand. `previous_parties` deliberately
+  keeps the 2022 logo, because that row is the current Knesset faction, and the two tables carry
+  independent `logo_url` columns. Scoping the statement to one table is what enforces that.
+
+### Two logos are self-hosted under `/logos/`, and neither is a matter of taste
+
+`services/frontend/logos/` is copied into the frontend image as a whole directory, so adding a file
+there is a data change. Both party logos that live there had to leave Wikimedia/CDN hosting:
+
+- **בית ציוני - המילואימניקים** (`beit-tzioni-miluimnikim.png`) — the list's only artwork is on
+  `*.fbcdn.net`, whose URLs are signed and expire, and which tracker blockers drop in the browser.
+  That is the F.C. Kiryat Yam failure exactly: `curl` fetches it happily while a large share of real
+  visitors see nothing, and **no server-side check can detect it.** The file is cropped, its
+  background removed, and its white lettering swapped to the logo's own navy `#252934` so that
+  `recolorLogoForDark()` lifts it on the dark cards; the published artwork is white-on-dark and works
+  in one theme only.
+- **הציונות הדתית** (`religious-zionism-2026.png`) — **neither Wikimedia revision works in both
+  themes, so there is no URL to point at.** The published PNG has the white background baked in
+  (100% opaque, no alpha), which trips the `> 0.9` solid-tile guard in `recolorLogoForDark()` and
+  renders as a white plate on the dark cards. The revision it replaced — still reachable under
+  `/wikipedia/he/archive/…/20260805145808!…` — is a **white-ink knockout on transparency**, invisible
+  in light mode; the uploader replaced it 33 minutes later with the comment
+  *"עם רקע לבן וכיתוב בצבע טורקיז"*. **Do not "restore" either one.** The seeded file is the
+  canonical revision with its *outer* white flood-filled to transparent — a flood fill from the
+  edges, not a global white-to-transparent replace, which would punch holes through the white text
+  inside the teal בראשות bar. That leaves the `#31698C` wordmark (luminance 0.375) below the recolour
+  threshold and the teal bar (0.518) just above it, so the bar keeps white-on-teal in both themes.
+  **That split is luck, not design** — re-exporting the file with a slightly darker teal would send
+  the bar below 0.5, lift it, and put white text on a light background.
+
+Both were verified by rendering the real `logos.js` and `style.css` in headless Chromium over HTTP
+in both themes, not by inspecting the files. Both use `oxipng` lossless and **not** `pngquant` —
+the blue in each is faceted and bands.
+
+**An `/archive/` path or a `!<timestamp>!` prefix in a `upload.wikimedia.org` URL means a superseded
+revision.** It is easy to copy one from a file-history page and reasonable to assume it is current.
+The canonical URL has neither.
 
 **זהות's logo is dark artwork and needs no special handling — verified, not assumed.** The Wikimedia
 SVG is a `#163651` navy wordmark plus a `#6ac6de` cyan flag; 62% of its opaque pixels are
@@ -1121,13 +1202,19 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   source. **2026-08-01: it still cannot be.** `idi.org.il` is now reachable and does carry the −3
   language, but undated and reading as pre-2021 Joint List text; no 2026 platform exists from the
   party's own source. Treat the IDI page as *not* sufficient evidence for this move.
-- **בית ציוני – המילואימניקים launches its platform on 2026-08-05.** This is the dated resolution
-  of the weakest number on the page — `economic +1` resting on Hendel's personal record with no party
-  document. Read it on the day and rescore. The `bloc` question is closed: the Gantz merger collapsed,
-  the Trooper merger completed, and `unaligned` holds.
-- **The row is still seeded as `המילואימניקים`** while the list now runs as
-  **בית ציוני – המילואימניקים**. Renaming orphans votes, so it is an admin-UI action taken when the
-  ballot name is final — the same standing decision as נעם below.
+- ~~**בית ציוני - המילואימניקים launches its platform on 2026-08-05**~~ — **resolved 2026-08-08.**
+  The מצע (תוכנית מגן דוד) landed on schedule and was read. `economic +1` **confirmed** on the
+  party's own document rather than Hendel's record, so it is no longer the weakest number on the
+  page; `religiosity` moved **0 → −2** on the core-curriculum funding condition; `security +2` and
+  `bloc unaligned` both confirmed. Details under that entry. One caveat carried forward: the party
+  has **no website**, so the platform reaches this page through press quoting it, not a primary
+  source.
+- ~~**The row is still seeded as `המילואימניקים`**~~ — **renamed 2026-08-08** to
+  **בית ציוני - המילואימניקים**, in `seed.sql`, without orphaning any vote. The reasoning that made
+  this look like an admin-only action — and the `UPDATE`-before-`INSERT` shape that makes it safe —
+  is under that entry. **נעם below is NOT the same case**: that one is still open, because its
+  rename is speculative (lists are not final) while this one followed a completed merger with a
+  launched campaign.
 - ~~**הדמוקרטים's `two-state` tag is not supported by the party's own platform**~~ — **resolved
   2026-08-01: the tag stays.** The platform text does name *"המדינה הפלסטינית העתידית"* (surfaced via
   a hostile source quoting it), the chair states two states as the party vision, and four of the
@@ -1136,7 +1223,7 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
 - **כחול לבן has six known party documents and two have been read.** The four unread ones are listed
   under its entry; `kachollavan.org.il` returns 403 to automated fetching, so they need to be fetched
   by hand. One of them postdates every classification pass on that row. It is also polling at ~1%,
-  below the threshold, and losing people to בית ציוני – המילואימניקים.
+  below the threshold, and losing people to בית ציוני - המילואימניקים.
 - **נעם is campaigning as `נעם לישראל`** ("Noam for Israel") for the 26th Knesset. The row is seeded
   under the plain `נעם` and it is deliberately *not* renamed yet: lists are not final, a rename
   orphans votes (see the warning above), and an admin can do it in one edit if the longer name is
@@ -1171,7 +1258,8 @@ pass happened, for anyone reading git history.
 | 2026-07-27 | Zehut `bloc` corrected `unaligned` → `bibi` (criticising Netanyahu ≠ leaving his bloc) |
 | 2026-07-29 | נעם — Noam added to `upcoming_parties`; first NULL on the `economic` axis |
 | 2026-07-30 | revision 10 — Likud audited against the voting record: religiosity +1 → **+2** (kashrut monopoly restored by statute, religious funding expanded); economic **+1 confirmed** (the import reform is real liberalizing, not rhetoric). Both tables |
-| 2026-08-01 | revision 11 — כחול לבן's conscription programme found on `sherut4all.com`: 4 tags + the `universal-conscription` family added, **no axis moved**. Source URLs added to five entries. Freshness sweep: Beiteinu re-verified, נעם's economic NULL re-verified, ביחד's security NULL re-verified, רע"ם's IDI basis found undated and rejected, and המילואימניקים found to have merged into בית ציוני – המילואימניקים with its platform due 2026-08-05 |
+| 2026-08-01 | revision 11 — כחול לבן's conscription programme found on `sherut4all.com`: 4 tags + the `universal-conscription` family added, **no axis moved**. Source URLs added to five entries. Freshness sweep: Beiteinu re-verified, נעם's economic NULL re-verified, ביחד's security NULL re-verified, רע"ם's IDI basis found undated and rejected, and המילואימניקים found to have merged into בית ציוני - המילואימניקים with its platform due 2026-08-05 |
 | 2026-08-01 | revision 12 — הדמוקרטים read against its own eight platform documents for the first time: 8 tags + the `universal-conscription` family added, **all three axes confirmed and unmoved**, and `two-state` flagged as unsupported by the platform |
 | 2026-08-01 | revision 13 — all six כחול לבן documents read (downloaded by hand past the 403). **religiosity −1 → −2** on the education programme's core-curriculum funding condition and state-haredi default; `core-curriculum`, `state-haredi-education`, `reservist-focused` added. security +2 and economic 0 verified against the documents and unmoved; the −2 band text corrected to stop implying civil marriage is required |
 | 2026-08-02 | ישראל ביתנו re-verified string-by-string against the live platform: 15 sourced claims hold, **1 was wrong** — "Judea and Samaria appears exactly once" (it appears four times). Evidence for "no territorial claim" moved to ריבונות / סיפוח / התנחל = 0 occurrences each. **No axis moves** |
+| 2026-08-08 | revision 14 — בית ציוני - המילואימניקים read against its own תוכנית מגן דוד platform (launched 2026-08-05). **religiosity 0 → −2** on *"מתן תקצוב ציבורי רק למוסדות המלמדים לימודי ליבה"*, the same criterion that moved כחול לבן in revision 13; economic +1, security +2 and `unaligned` all **confirmed and unmoved**, with economic now resting on a party document instead of Hendel's personal record. 5 tags + the `cost-of-living` family added. **Row renamed** `המילואימניקים` → `בית ציוני - המילואימניקים` in `seed.sql` via an `UPDATE` before the `INSERT`, verified against an already-seeded database to keep its `id` and its votes. Logos: the same row repointed to a self-hosted file, and **הציונות הדתית's 2026 rebrand applied to `upcoming_parties` only** — `previous_parties` keeps the 2022 logo as the current Knesset faction |

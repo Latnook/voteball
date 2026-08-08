@@ -208,11 +208,25 @@ INSERT INTO previous_parties (name) VALUES
     ('חד"ש-תע"ל'), ('העבודה'), ('מרצ'), ('בל"ד'), ('אחר')
 ON CONFLICT (name) DO NOTHING;
 
+-- Rename, not a new row. המילואימניקים merged with חילי טרופר's יסודות ישראל and the joint list runs
+-- as בית ציוני - המילואימניקים (launched 2026-08-05). This MUST run before the INSERT below: that
+-- INSERT's ON CONFLICT matches on `name`, so on an already-seeded database the new literal would not
+-- conflict with the old row -- it would add a SECOND party, leaving every vote already cast stranded
+-- on an orphaned row while the ballot showed the empty new one.
+--
+-- Keyed on `name` rather than name_he because on a fresh database name_he is not backfilled until
+-- further down this file. Sets both columns, which is what rename_upcoming_party() does (it writes
+-- name = name_he). Idempotent: once renamed it matches nothing. It also deliberately does not fire
+-- on a row an admin has already renamed to something else -- their edit wins.
+UPDATE upcoming_parties
+   SET name = 'בית ציוני - המילואימניקים', name_he = 'בית ציוני - המילואימניקים'
+ WHERE name = 'המילואימניקים';
+
 INSERT INTO upcoming_parties (name) VALUES
     ('הליכוד'), ('ישר'), ('ביחד'), ('הדמוקרטים'), ('כחול לבן'),
     ('ישראל ביתנו'), ('הציונות הדתית'), ('עוצמה יהודית'), ('חד"ש-תע"ל'),
     ('בל"ד'), ('רע"ם'), ('ש"ס'), ('יהדות התורה'),
-    ('המפלגה הכלכלית'), ('אל הדגל'), ('המילואימניקים'), ('זהות'), ('נעם')
+    ('המפלגה הכלכלית'), ('אל הדגל'), ('בית ציוני - המילואימניקים'), ('זהות'), ('נעם')
 ON CONFLICT (name) DO NOTHING;
 
 -- Backfill each row's own language from the legacy `name` column.
@@ -1032,7 +1046,7 @@ FROM (VALUES
     ('יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора'),
     ('המפלגה הכלכלית', 'The Economic Party', 'Экономическая партия'),
     ('אל הדגל', 'El HaDegel', 'Эль ха-Дегель'),
-    ('המילואימניקים', 'The Reservists', 'Резервисты'),
+    ('בית ציוני - המילואימניקים', 'The Reservists', 'Резервисты'),
     ('זהות', 'Zehut', 'Зеут'),
     ('נעם', 'Noam', 'Ноам')
 ) AS v(name_he, name_en, name_ru)
@@ -1042,7 +1056,11 @@ WHERE p.name_he = v.name_he;
 UPDATE upcoming_parties t SET logo_url = v.logo_url
 FROM (VALUES
     ('ביחד', 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg'),
-    ('המילואימניקים', 'https://upload.wikimedia.org/wikipedia/he/c/cd/Logo_%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%99%D7%A0%D7%99%D7%A7%D7%99%D7%9D_-_%D7%93%D7%95%D7%A8_%D7%94%D7%A0%D7%99%D7%A6%D7%97%D7%95%D7%9F.png'),
+    -- Self-hosted: the list's only artwork is on *.fbcdn.net, whose URLs are signed and expire and
+    -- which tracker blockers drop in the browser (the F.C. Kiryat Yam failure). Cropped, background
+    -- removed, and the white lettering swapped to the logo's own navy so recolorLogoForDark() can
+    -- lift it on the dark cards -- the file as published works in one theme only.
+    ('בית ציוני - המילואימניקים', '/logos/beit-tzioni-miluimnikim.png'),
     ('המפלגה הכלכלית', 'https://upload.wikimedia.org/wikipedia/he/c/c9/%D7%94%D7%9E%D7%A4%D7%9C%D7%92%D7%94_%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%99%D7%AA_%D7%94%D7%97%D7%93%D7%A9%D7%94_%D7%9C%D7%95%D7%92%D7%95.svg'),
     ('יהדות התורה', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg'),
     ('ישר', 'https://upload.wikimedia.org/wikipedia/commons/6/61/Yashar_party_logo.png'),
@@ -1054,7 +1072,14 @@ FROM (VALUES
     ('הדמוקרטים', 'https://upload.wikimedia.org/wikipedia/commons/b/b5/The_Democrats_led_by_Yair_Golan.svg'),
     ('כחול לבן', 'https://upload.wikimedia.org/wikipedia/he/a/a6/%D7%9C%D7%95%D7%92%D7%95_%D7%9B%D7%97%D7%95%D7%9C_%D7%9C%D7%91%D7%9F_2021.svg'),
     ('ישראל ביתנו', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg'),
-    ('הציונות הדתית', 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg'),
+    -- 2026 rebrand, UPCOMING TABLE ONLY -- previous_parties keeps the 2022 logo, because that row is
+    -- the current Knesset faction. Self-hosted because neither Wikimedia revision works in both
+    -- themes: the published PNG has the white background baked in (100% opaque, so it trips
+    -- recolorLogoForDark()'s solid-tile guard and renders as a white plate on the dark cards), and
+    -- the earlier revision it replaced is a white-ink knockout that is invisible in light mode. This
+    -- is that PNG with the outer white flood-filled to transparent, which leaves the #31698C
+    -- wordmark below the recolour threshold and the teal בראשות bar (luminance 0.518) just above it.
+    ('הציונות הדתית', '/logos/religious-zionism-2026.png'),
     ('עוצמה יהודית', 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg'),
     ('חד"ש-תע"ל', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg'),
     ('בל"ד', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg'),
@@ -1094,7 +1119,7 @@ FROM (VALUES
     ('יהדות התורה', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[], ARRAY['conscription-split','welfare-state','sectoral-budgeting']::text[], 'record'),
     ('המפלגה הכלכלית', 'unaligned', 1, 0, -2, 'secular', ARRAY['populist', 'anti-corruption', 'anti-monopoly', 'tax-cutting', 'free-trade', 'consumer-protection', 'kashrut-liberalization', 'single-issue-economy', 'anti-clerical']::text[], ARRAY['cost-of-living']::text[], 'platform'),
     ('אל הדגל', 'unaligned', 1, 2, 0, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'sovereignty-annexation', 'preemptive-security-doctrine', 'anti-two-state', 'constitutionalist', 'governance-reform', 'core-curriculum']::text[], ARRAY['universal-conscription','reservist-movement','constitutional-reform']::text[], 'platform'),
-    ('המילואימניקים', 'unaligned', 1, 2, 0, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'anti-netanyahu', 'territorial-control-gaza', 'anti-two-state', 'pro-settlement', 'constitutionalist', 'governance-reform', 'statist', 'excludes-haredi-and-arab-parties']::text[], ARRAY['universal-conscription','reservist-movement','constitutional-reform']::text[], 'platform'),
+    ('בית ציוני - המילואימניקים', 'unaligned', 1, 2, -2, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'core-curriculum', 'anti-netanyahu', 'territorial-control-gaza', 'anti-two-state', 'pro-settlement', 'periphery-development', 'anti-monopoly', 'free-trade', 'cost-of-living', 'constitutionalist', 'governance-reform', 'statist', 'excludes-haredi-and-arab-parties']::text[], ARRAY['universal-conscription','reservist-movement','constitutional-reform','cost-of-living']::text[], 'platform'),
     ('זהות', 'bibi', 3, 3, 2, 'religious_zionist', ARRAY['libertarian', 'small-government', 'flat-tax', 'deregulation', 'privatization', 'anti-monopoly', 'cannabis-legalization', 'gun-rights', 'sovereignty-annexation', 'anti-two-state', 'population-transfer', 'permanent-residency-not-citizenship', 'state-institutions-bound-to-halakha', 'ends-state-religious-funding', 'jewish-law-parallel-jurisdiction', 'communitarian-devolution', 'temple-mount-centred', 'professional-army', 'extra-parliamentary']::text[], ARRAY['judicial-restraint','market-liberal','cost-of-living']::text[], 'platform'),
     ('נעם', 'bibi', NULL, 3, 3, 'religious_zionist', ARRAY['hardal', 'religious-fundamentalist', 'single-issue-jewish-identity', 'not-economy-focused', 'halakhic-state', 'rabbinate-as-fourth-branch', 'rabbinic-authority-led', 'anti-lgbt', 'anti-progressive', 'family-values', 'opposes-western-wall-compromise', 'education-system-focused', 'anti-judicial-review', 'sovereignty-annexation', 'anti-two-state']::text[], ARRAY['judicial-restraint','conscription-by-incentive','not-economy-focused']::text[], 'record')
 ) AS v(name_he, bloc, economic, security, religiosity, sector, tags, families, family_evidence)
@@ -1103,11 +1128,16 @@ WHERE p.name_he = v.name_he;
 -- Logo corrections. Unguarded, unlike the logo statements earlier in this file: each replaces a
 -- value that was actively wrong, and a guarded statement could never reach an already-seeded
 -- database. Rationale (including the misattribution these fix) is in docs/party-classifications.md.
--- NOTE: being unguarded, these two DO overwrite an admin-edited logo for these rows.
+-- NOTE: being unguarded, these DO overwrite an admin-edited logo for these rows.
 UPDATE leagues SET logo_url = 'https://assets.laliga.com/assets/logos/LL_RGB_h_color/LL_RGB_h_color.png'
     WHERE name = 'La Liga';
-UPDATE upcoming_parties SET logo_url = 'https://upload.wikimedia.org/wikipedia/commons/f/f1/%D7%94%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D_%D7%9C%D7%95%D7%92%D7%95_%D7%95%D7%95%D7%99%D7%A7%D7%99%D7%A4%D7%93%D7%99%D7%94.jpg'
-    WHERE name_he = 'המילואימניקים';
+UPDATE upcoming_parties SET logo_url = '/logos/beit-tzioni-miluimnikim.png'
+    WHERE name_he = 'בית ציוני - המילואימניקים';
+-- Scoped to upcoming_parties on purpose: previous_parties.'הציונות הדתית' is the current Knesset
+-- faction and keeps its 2022 logo. See the tuple in the guarded block above for why this one is
+-- self-hosted rather than a Wikimedia URL.
+UPDATE upcoming_parties SET logo_url = '/logos/religious-zionism-2026.png'
+    WHERE name_he = 'הציונות הדתית';
 
 -- Strip Wikipedia's utm_* referral params from stored logo URLs. 26 of the seeded URLs were copied
 -- out of he.wikipedia.org with "?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original"
