@@ -1130,10 +1130,9 @@ there is a data change. Both party logos that live there had to leave Wikimedia/
 - **בית ציוני - המילואימניקים** (`beit-tzioni-miluimnikim.png`) — the list's only artwork is on
   `*.fbcdn.net`, whose URLs are signed and expire, and which tracker blockers drop in the browser.
   That is the F.C. Kiryat Yam failure exactly: `curl` fetches it happily while a large share of real
-  visitors see nothing, and **no server-side check can detect it.** The file is cropped, its
-  background removed, and its white lettering swapped to the logo's own navy `#252934` so that
-  `recolorLogoForDark()` lifts it on the dark cards; the published artwork is white-on-dark and works
-  in one theme only.
+  visitors see nothing, and **no server-side check can detect it.** The file is cropped and its
+  background removed, but otherwise the party's own blue lockup, shown **unchanged in both themes** —
+  see the knockout note below, which is why it is the one party logo the dark-mode recolour skips.
 - **הציונות הדתית** (`religious-zionism-2026.png`) — **neither Wikimedia revision works in both
   themes, so there is no URL to point at.** The published PNG has the white background baked in
   (100% opaque, no alpha), which trips the `> 0.9` solid-tile guard in `recolorLogoForDark()` and
@@ -1151,6 +1150,36 @@ there is a data change. Both party logos that live there had to leave Wikimedia/
 Both were verified by rendering the real `logos.js` and `style.css` in headless Chromium over HTTP
 in both themes, not by inspecting the files. Both use `oxipng` lossless and **not** `pngquant` —
 the blue in each is faceted and bands.
+
+### A knockout cannot be recoloured, and it defeats every check based on brightness
+
+בית ציוני's Star of David is not drawn. It is a **hole** in the swoosh that lets the background show
+through, so in the file the star's interior and the empty space outside the whole logo are the same
+transparent pixels. This is the defect `fillLogoInteriorForDark()` already documents for ש"ס, and it
+has the same consequence: `recolorLogoForDark()` lifts the swoosh but **cannot lift a hole**, so the
+dark card shows through the star as black triangles.
+
+**This shipped once and was signed off as verified.** The first attempt swapped the artwork's white
+lettering to navy so the recolour would lift it, and the swoosh and wordmark did lift, exactly as
+measured. The check was of the wrong property: every test was "does this pixel brighten", and a hole
+has no pixel to brighten. The rendered screenshot contained the black triangles and was read as a
+star. **When a logo contains a knockout, the question is not how its colours transform — it is what
+shows through the holes on each background.**
+
+Two fixes were tried, and the second is the one in the repo:
+
+1. *Two assets*, one knocked out to white and one to the dark card. Correct, and the reason it was
+   dropped is not technical — the white-on-dark version was judged to look worse than the blue one.
+2. **One asset, recolour skipped** — `'The Reservists'` in `SKIP_RECOLOR_PARTIES` in `logos.js`. The
+   artwork is left exactly as the party drew it and its colours are chosen to clear WCAG's 3:1
+   graphical-object minimum on **both** grounds: the secondary elements use the brighter of the
+   logo's own two blues, `#418AB8` (**4.57:1** on the dark card, **3.78:1** on white). The darker
+   `#326B9F` reads better on white but drops to **3.08:1** on the dark card — passing, with nothing
+   spare, and the small בראשות טרופר והנדל line is what pays for it first.
+
+Skipping the recolour is the load-bearing half: without it the blues get lifted and the two themes
+drift apart again, which is the whole point of using one lockup. **Do not "tidy" this party back
+into the recolour path.**
 
 **An `/archive/` path or a `!<timestamp>!` prefix in a `upload.wikimedia.org` URL means a superseded
 revision.** It is easy to copy one from a file-history page and reasonable to assume it is current.
@@ -1263,3 +1292,4 @@ pass happened, for anyone reading git history.
 | 2026-08-01 | revision 13 — all six כחול לבן documents read (downloaded by hand past the 403). **religiosity −1 → −2** on the education programme's core-curriculum funding condition and state-haredi default; `core-curriculum`, `state-haredi-education`, `reservist-focused` added. security +2 and economic 0 verified against the documents and unmoved; the −2 band text corrected to stop implying civil marriage is required |
 | 2026-08-02 | ישראל ביתנו re-verified string-by-string against the live platform: 15 sourced claims hold, **1 was wrong** — "Judea and Samaria appears exactly once" (it appears four times). Evidence for "no territorial claim" moved to ריבונות / סיפוח / התנחל = 0 occurrences each. **No axis moves** |
 | 2026-08-08 | revision 14 — בית ציוני - המילואימניקים read against its own תוכנית מגן דוד platform (launched 2026-08-05). **religiosity 0 → −2** on *"מתן תקצוב ציבורי רק למוסדות המלמדים לימודי ליבה"*, the same criterion that moved כחול לבן in revision 13; economic +1, security +2 and `unaligned` all **confirmed and unmoved**, with economic now resting on a party document instead of Hendel's personal record. 5 tags + the `cost-of-living` family added. **Row renamed** `המילואימניקים` → `בית ציוני - המילואימניקים` in `seed.sql` via an `UPDATE` before the `INSERT`, verified against an already-seeded database to keep its `id` and its votes. Logos: the same row repointed to a self-hosted file, and **הציונות הדתית's 2026 rebrand applied to `upcoming_parties` only** — `previous_parties` keeps the 2022 logo as the current Knesset faction |
+| 2026-08-08 | בית ציוני's logo corrected after shipping: its Star of David is a **knockout**, so the dark-mode recolour left the card showing through it as black triangles. Now one blue lockup used unchanged in both themes, with the recolour skipped (`SKIP_RECOLOR_PARTIES`) and the secondary elements on `#418AB8` to clear 3:1 on both grounds. **No classification change.** See the knockout section under Logos |

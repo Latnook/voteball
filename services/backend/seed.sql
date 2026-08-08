@@ -1057,9 +1057,11 @@ UPDATE upcoming_parties t SET logo_url = v.logo_url
 FROM (VALUES
     ('ביחד', 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg'),
     -- Self-hosted: the list's only artwork is on *.fbcdn.net, whose URLs are signed and expire and
-    -- which tracker blockers drop in the browser (the F.C. Kiryat Yam failure). Cropped, background
-    -- removed, and the white lettering swapped to the logo's own navy so recolorLogoForDark() can
-    -- lift it on the dark cards -- the file as published works in one theme only.
+    -- which tracker blockers drop in the browser (the F.C. Kiryat Yam failure). Cropped and its
+    -- background removed, but otherwise the party's own blue lockup, shown UNCHANGED in both themes
+    -- -- 'The Reservists' is in SKIP_RECOLOR_PARTIES in services/frontend/logos.js, because its Star
+    -- of David is a knockout and a recolour cannot lift a hole. That file and
+    -- docs/party-classifications.md carry the reasoning.
     ('בית ציוני - המילואימניקים', '/logos/beit-tzioni-miluimnikim.png'),
     ('המפלגה הכלכלית', 'https://upload.wikimedia.org/wikipedia/he/c/c9/%D7%94%D7%9E%D7%A4%D7%9C%D7%92%D7%94_%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%99%D7%AA_%D7%94%D7%97%D7%93%D7%A9%D7%94_%D7%9C%D7%95%D7%92%D7%95.svg'),
     ('יהדות התורה', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg'),
