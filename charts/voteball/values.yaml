@@ -23,8 +23,8 @@ externalSecret:
 
 ingress:
   host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/0d4353b5-1230-4241-9f9c-f0463ab1b24d"
-  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/4b67b771-1a0d-43a1-b40b-cacaa12dbcdd"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/31b3f5f9-3c41-464f-b884-8ff3a31ae1e8"
+  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/27de669d-8cae-4a10-abdb-06c265617d24"
 
 # Alert rules (charts/voteball/templates/prometheusrule.yaml). Requires kube-prometheus-stack's
 # PrometheusRule CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart
