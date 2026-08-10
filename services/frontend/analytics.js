@@ -1,6 +1,5 @@
 let analyticsOptionsData = null;
 let clubsBreakdown = null;
-let nationalPreviousData = null;
 
 const DIVERSITY_MIN_VOTES = 10;
 const LEAN_MIN_VOTES = 10;
@@ -85,8 +84,8 @@ function clubById(clubId) {
   return analyticsOptionsData.clubs.find(c => c.id === clubId);
 }
 
-// Every eligible club (>=DIVERSITY_MIN_VOTES previous-election votes, World-Cup-filtered per the
-// current toggle state), with its effective-parties score, sorted descending.
+// Every eligible club (>=DIVERSITY_MIN_VOTES decided intended-vote ballots, World-Cup-filtered per
+// the current toggle state), with its effective-parties score, sorted descending.
 function eligibleClubDiversityScores() {
   const nationalLeagueIds = nationalTeamLeagueIds();
   return clubsBreakdown
@@ -180,6 +179,11 @@ function renderDiversityFullRanking(rows) {
 function renderDiversityTab() {
   const tab = document.getElementById('diversity-tab');
   tab.innerHTML = '';
+
+  const basis = document.createElement('p');
+  basis.className = 'note';
+  basis.textContent = t('analyticsDiversityBasis');
+  tab.appendChild(basis);
 
   const controls = document.createElement('div');
   controls.className = 'diversity-controls';
@@ -441,26 +445,14 @@ function renderLeanDetail(container, label, upcomingBreakdown) {
   }
 }
 
-// National previous-party breakdown for the Lean tab's default view. Deliberately NOT a sum over
-// clubsBreakdown (rollup_previous WHERE club_id IS NOT NULL): that would double-count multi-club
-// ballots (two club-scope rows sharing one previous_party_id) and silently drop league-only voters
-// (club_id IS NULL rows excluded by that filter). /api/results?by=all reads the worker-computed,
-// deduped rollup_national_previous table instead -- see queries.py's get_results_all. Cached at
-// module level since repeated visits to National shouldn't re-fetch.
-async function nationalPreviousBreakdown() {
-  if (!nationalPreviousData) {
-    const data = await fetchJSON('/api/results?by=all');
-    nationalPreviousData = data.previous;
-  }
-  return nationalPreviousData;
-}
-
 let nationalUpcomingData = null;
 
-// National upcoming-party breakdown for the Traits baseline. Deliberately NOT a sum over
-// clubsBreakdown (rollup_upcoming WHERE club_id IS NOT NULL): that would double-count multi-club
-// ballots and silently drop league-only voters. /api/results?by=all reads the worker-computed,
-// deduped rollup_national_upcoming -- same reasoning as nationalPreviousBreakdown above.
+// National upcoming-party breakdown for the Traits baseline and the Lean tab's default view.
+// Deliberately NOT a sum over clubsBreakdown (rollup_upcoming WHERE club_id IS NOT NULL): that
+// would double-count multi-club ballots (two club-scope rows sharing one upcoming_party_id) and
+// silently drop league-only voters (club_id IS NULL rows excluded by that filter). /api/results?by=all
+// reads the worker-computed, deduped rollup_national_upcoming table instead -- see queries.py's
+// get_results_all. Cached at module level since repeated visits to National shouldn't re-fetch.
 async function nationalUpcomingBreakdown() {
   if (!nationalUpcomingData) {
     const data = await fetchJSON('/api/results?by=all');
