@@ -436,7 +436,7 @@ enforces it — removing either reopens the unbounded commit loop described unde
 ```bash
 argocd app sync voteball \
   --server argocd-server.argocd.svc.cluster.local \
-  --grpc-web --insecure --revision "$PROMOTE_SHA" --timeout 300
+  --grpc-web --insecure --timeout 600
 ```
 
 Authenticated with the `jenkins-cd` ArgoCD local account's token (`withCredentials`). **Port 443, not
@@ -445,6 +445,25 @@ exactly like an expired token; see the "Network exposure" note below for what is
 open on that port. `--insecure` skips verifying `argocd-server`'s self-signed certificate, acceptable
 for a ClusterIP hop that never leaves the cluster (the token still authenticates the caller);
 `--grpc-web` because the server does not proxy raw HTTP/2 gRPC through this path.
+
+**No `--revision`, and `--timeout 600` not 300** — both were corrected in the code and are easy to
+"restore" by mistake. The Application has `syncPolicy.automated` with `targetRevision: master`, and
+ArgoCD refuses to pin a sync to an arbitrary commit while auto-sync is on (`FailedPrecondition:
+Cannot sync to <sha>: auto-sync currently set to master`, build #3). Promote has already pushed the
+tag bump to `master`, so syncing master *is* syncing the promoted commit. The 300s timeout was raised
+after build #10 timed out pulling four cold images onto Spot nodes — and a timeout here does not just
+run long, it fails the stage and trips the rollback below.
+
+**Two ArgoCD errors are tolerated as success, and exactly one of them is `another operation is
+already in progress`.** Automated sync means Promote's push can make ArgoCD start syncing before this
+explicit call arrives, and ArgoCD then refuses the second concurrent operation. That is not a failed
+deploy — it means the wanted sync is already running. `application-cd` #3 (2026-08-10) failed on
+precisely this: Promote pushed at 12:40:17, the sync call was refused at 12:40:20, and that same
+build's own post-failure event dump shows ArgoCD had already created the migrate Job pulling that
+build's image. The stage failed, the rollback fired, and a deploy that was succeeding was reverted.
+Rollout and Verify remain the real gates — Rollout waits for the running operation and Verify asserts
+the landed revision — which is what makes tolerating the redundant command safe. It is **not** a
+blanket `|| true`: a genuinely rejected sync (bad token, unknown app, RBAC denial) still fails.
 
 ### 6. Rollout
 
@@ -717,6 +736,7 @@ original 2026-07-20 design predicted and remain accurate, now labelled against `
 | **G7** — a build failed and nobody noticed | Jenkins sends no email without SMTP | Accepted, see "Deferred, on purpose". Check the Jenkins UI, or `kubectl get application voteball -n argocd` |
 | `application-cd` is triggered (by hand, usually) with a tag that is not in ECR | Someone passed a made-up or mistyped `IMAGE_TAG`, or a tag from before a `force_delete`d ECR repo | Input Validation's `images-exist.sh` check refuses it before anything is committed — the build fails at stage 2, `master` is untouched, nothing to roll back |
 | `application-cd`'s `Deploy`/`Rollout`/`Verify` stages fail with an auth error against ArgoCD | The `jenkins-cd` ArgoCD account's token expired or was rotated without updating Secrets Manager, or the controller was never restarted after the token was added (see runbook step 5) | Re-mint with `argocd account generate-token --account jenkins-cd`, merge into `voteball/jenkins`, then `kubectl rollout restart statefulset jenkins -n ci` — env vars only reach a controller at pod start |
+| `application-cd`'s Deploy stage fails immediately with `FailedPrecondition desc = another operation is already in progress`, and CD rolls back a deploy that was working | A race with ArgoCD's **own** automated sync, not a deploy failure. `syncPolicy.automated` means the tag-bump commit Promote just pushed can make ArgoCD start syncing seconds before the pipeline's explicit `argocd app sync` lands, and ArgoCD refuses a second concurrent operation. Hit for real by `application-cd` #3 (2026-08-10): pushed 12:40:17, refused 12:40:20, and that build's own event dump shows ArgoCD had already created the migrate Job for that build's image | Already handled — the Deploy stage treats **only** this error string as success and continues, since Rollout waits for the in-flight operation and Verify asserts the landed revision. Do not "clean this up" into a blanket `\|\| true`; every other sync error must still fail. If a deploy was already rolled back by this, re-promote the tag by hand (see Rollback) — but note `git pull --rebase` will silently **drop** that re-promote, because rolling a tag forward and back leaves two upstream commits whose patches are exact inverses, so the re-promote has the same patch-id as the original and rebase discards it as already applied, reporting only a `skippedCherryPicks` hint |
 | Smoke Test fails on what looks like a perfectly healthy site, and CD rolls back a good deploy | ALB target-group warm-up: `argocd app wait --health` can report `Healthy` fractionally before the ALB has finished routing to the newly-Ready pods, so the first smoke-test attempt lands before the path is live | `smoke-test.sh` already retries (`SMOKE_RETRIES`/`SMOKE_DELAY`, default 10×6s) for exactly this; if it still rolls back, widen the retry window rather than removing the check — the check exists because ArgoCD's `Healthy` is a pod-probe verdict, not a "the site works" verdict |
 | JCasC boots with a Jenkins-shaped controller and a job that silently has no credential | An unresolved `${VAR}` in `ci/jenkins/jenkins.yaml` — JCasC does **not** fail fatally on this; it logs `Found unresolved variable 'X'. Will default to empty string` and boots anyway | `kubectl logs -n ci jenkins-0 -c jenkins \| grep -i "unresolved variable"` after any secret or JCasC change; treat any hit as a failed deploy even though nothing crashed |
 | A key added to `voteball/jenkins` in Secrets Manager (and visible in the synced Kubernetes Secret) is still unresolved in JCasC | `containerEnvFrom` projects the Secret into the pod's environment at **pod start**, not continuously — an already-running controller never sees a key added after it started | `kubectl rollout restart statefulset jenkins -n ci` after adding or changing any key the controller consumes |
