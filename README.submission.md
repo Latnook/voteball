@@ -63,8 +63,17 @@ Both stop and ask for confirmation before Terraform touches billed resources. `d
 numbered steps, in order: resolve the newest DB snapshot → targeted apply for ECR + the two empty secret
 containers → **seed both secrets** (app, then Jenkins) → mirror the Trivy DB into ECR → build/push the
 Jenkins controller image → the full `terraform apply` → connect kubectl → build/push the 4 app images to
-ECR (git-SHA tags) → **sync `values.yaml` from Terraform outputs** → `helm upgrade --install` →
-bootstrap **ArgoCD**, which owns the release from then on.
+ECR (git-SHA tags) → **sync `values.yaml` from Terraform outputs** → install the app → bootstrap
+**ArgoCD**, which owns the release from then on.
+
+**"Install the app" picks its applier, and on a rebuild it is not Helm.** On a fresh cluster the
+ArgoCD `Application` does not exist yet, so `helm upgrade --install` is the only way to get pods up.
+On a cluster that already has ArgoCD, Helm must not apply at all: ArgoCD owns every field of the
+release, the step before has just pushed a *new* image tag, and Helm 4's server-side apply lets two
+managers co-own a field only while they apply the *same* value — so it fails on
+`conflict with "argocd-controller": …containers[name="backend"].image`, every time. The step waits
+for ArgoCD to reconcile the pushed commit instead (`scripts/wait-for-argocd-sync.sh`), then runs the
+same rollout checks. Same reasoning as §"Why ArgoCD and not `helm upgrade`" below.
 
 **Seeding before the apply, not after it, is load-bearing** — and it was the other way round until
 2026-07-31. The full apply creates the Jenkins release and its ExternalSecret together, and External

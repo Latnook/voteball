@@ -87,7 +87,7 @@ ownership. Upgrades go through git.
 
 **Never write an empty list literal (`to: []`, `imagePullSecrets: []`) in a template.** The API server
 drops it on write, so the value Helm applies can never equal the value stored — and since both Helm
-(`deploy.sh` step 10) and ArgoCD apply this chart server-side, that mismatch conflicts against
+(`deploy.sh` step 10, on a fresh cluster) and ArgoCD apply this chart server-side, that mismatch conflicts against
 whichever manager owns the field on *every* upgrade, even though the chart is otherwise identical.
 One `- to: []` in `allow-dns-egress` failed a deploy this way on 2026-08-10. An omitted field and an
 empty list mean the same thing to Kubernetes here, so omit it; an empty **map** (`podSelector: {}`) is

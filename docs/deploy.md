@@ -799,6 +799,17 @@ steps 1 and 4.
   ```
   *(All of the above was observed on the 2026-07-27 rebuild: `1.1.1.1` served nothing for ~15 minutes
   while `8.8.8.8`, `9.9.9.9` and `208.67.222.222` were already correct and the site returned 200.)*
+- **A deploy fails at step 10 with `conflict with "argocd-controller"`** → two things are trying to
+  apply the app at once. Kubernetes tracks *who owns each field*, and it lets two owners share a field
+  only while they set it to the **same** value; the moment they disagree, the second one is refused.
+  ArgoCD already owns this app, and step 9 has just published a new image version, so Helm asking for
+  a different version is exactly that disagreement. **This is expected on any re-run and `deploy.sh`
+  now avoids it** — step 10 only uses Helm on a brand-new cluster, and otherwise waits for ArgoCD to
+  pick the change up itself. If you hit it running Helm by hand, you don't need to fix anything: the
+  deploy is already correct, ArgoCD ships it within a couple of minutes. Watch it land with
+  `./scripts/wait-for-argocd-sync.sh`. **Do not reach for `--force-conflicts`** — that takes the app
+  away from ArgoCD and hands it to whatever is on your laptop, which is the one situation this whole
+  setup exists to prevent.
 - **`terraform destroy` sits on "Still destroying... subnet" for many minutes** → a leftover network
   interface from a terminated node is pinning the subnet. `destroy.sh` now cleans these up
   automatically while it runs; if you hit it in a manual destroy, find and delete the detached one:

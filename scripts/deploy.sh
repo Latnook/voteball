@@ -329,7 +329,38 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
 fi
 
 step "10/11 Installing the app"
-helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
+# WHO APPLIES depends on whether ArgoCD is already managing this release, and running the wrong one
+# does not degrade gracefully -- it fails the deploy outright.
+#
+#   FRESH CLUSTER -- step 11 has not created the Application yet, so nothing else applies this chart.
+#   Helm is the only way to get pods up, and it collides with nothing.
+#
+#   EXISTING CLUSTER -- ArgoCD already owns every field of this release, and step 9 has just pushed a
+#   new image tag. `helm upgrade` would apply that tag while ArgoCD still holds `.image` at the
+#   previous one, and Helm 4's server-side apply refuses: two managers may co-own a field only while
+#   they apply the SAME value. Steps 9->10 exist precisely to CHANGE the tag, so this is guaranteed
+#   on every re-run, not occasional (observed 2026-08-10 on all three Deployments and the backup
+#   CronJob). `--force-conflicts` would "fix" it by taking ownership away from ArgoCD -- the one
+#   thing this repo's delivery model forbids. So we let ArgoCD do its job and verify that it did.
+#   Full reasoning, and why the check is revision-specific, is in scripts/wait-for-argocd-sync.sh.
+#
+# The rollout checks below run on BOTH paths: whoever applied, the same three Deployments must land.
+if kubectl get application voteball -n argocd >/dev/null 2>&1; then
+  if [ "${SKIP_ARGOCD:-0}" = "1" ]; then
+    # values.yaml never reached master (step 9 said so), but ArgoCD is live and deploys master. It
+    # would ship the OLD values, and Helm cannot apply the new ones without fighting it for
+    # ownership. Neither applier can produce a correct result, so stop here rather than wait out a
+    # 300-second timeout for a commit that was never pushed.
+    echo "ERROR: ArgoCD manages this release, but values.yaml is not on master (see step 9)." >&2
+    echo "       Push it, then re-run:  ./scripts/wait-for-argocd-sync.sh" >&2
+    exit 1
+  fi
+  echo "ArgoCD already manages this release — it applies, not Helm (see the comment above)."
+  ./scripts/wait-for-argocd-sync.sh
+else
+  echo "No ArgoCD Application yet — installing with Helm (fresh cluster; step 11 hands over)."
+  helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
+fi
 kubectl rollout status deployment/backend  -n devops-app --timeout=300s
 kubectl rollout status deployment/frontend -n devops-app --timeout=300s
 kubectl rollout status deployment/worker   -n devops-app --timeout=300s

@@ -658,10 +658,18 @@ Two rules from those files are repeated here because they bite from outside the 
   running `helm upgrade` by hand — a hand-run upgrade of a chart that **differs** from `master` fails
   on server-side-apply field ownership (`conflict with "argocd-controller"`). An *identical* chart
   applies clean, because server-side apply grants two managers co-ownership of a field as long as they
-  apply the same value — which is the only reason `deploy.sh` step 10 can run `helm upgrade` at all.
-  The corollary bit on 2026-08-10: a manifest the API server **normalises** (an empty list literal
-  such as `to: []`, which it drops) can never match what it stored, so it conflicts forever even when
-  the chart is identical. `scripts/ci/validate-repo.sh` now fails the build on empty list literals.
+  apply the same value. Two corollaries, both found the hard way on 2026-08-10:
+  - A manifest the API server **normalises** (an empty list literal such as `to: []`, which it drops)
+    can never match what it stored, so it conflicts forever even when the chart is identical.
+    `scripts/ci/validate-repo.sh` now fails the build on empty list literals.
+  - **`deploy.sh` step 10 no longer runs `helm upgrade` when ArgoCD already manages the release** —
+    it can't. Step 9 pushes a *new* image tag and step 10 applies it while ArgoCD still owns `.image`
+    at the old one, so the values differ *by design* and the conflict is guaranteed on every re-run.
+    Step 10 now branches: Helm on a fresh cluster (no `Application` exists until step 11), and
+    `scripts/wait-for-argocd-sync.sh` otherwise, which nudges ArgoCD and waits for Synced/Healthy
+    **at the pushed SHA** — checking the revision matters, since an Application that hasn't noticed
+    the new commit reports Synced/Healthy about the old one. Test:
+    `scripts/tests/test-argocd-sync-wait.sh` (offline, stubs the cluster via `ARGOCD_STUB_*`).
 
 ### Doc claims that drift (check these before trusting them)
 
