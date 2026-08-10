@@ -27,6 +27,7 @@ Measured against live production data, 21 ballots, 2026-08-10:
 | Bloc | 82% Opposition · 12% Unaligned · 6% Bibi | 81% · 15% · 4% |
 | Sector | 94% Secular · 6% Traditional | 96% Secular · 4% Religious-Zionist |
 | *(new)* Coverage | — | "based on 20 of 21 ballots · 5% undecided" |
+| Diversity (ENP) | 4.20 | 5.23 (pick-counted, overstated — see Decision 7) |
 
 **Two of the three axis labels flip.** This sample voted Labor/Yesh Atid in 2022 and now names
 ישר, ביחד, אל הדגל and בית ציוני - המילואימניקים — the new centre-right reservist parties. The
@@ -82,12 +83,45 @@ under 0.1 on a one-decimal display. The disclosure scales honestly: at 30% undec
 rows; `partyById(null, 'upcoming_parties')` returns undefined and the existing guard skips the row.
 Only the displayed percentage is new.
 
-**5. `schema.sql` changes by `ALTER TABLE … ADD COLUMN IF NOT EXISTS`, never by editing the `CREATE`.**
+**5. The eligibility thresholds move to ballot weight, not pick count.**
+`DIVERSITY_MIN_VOTES` and `LEAN_MIN_VOTES` are both 10 (`analytics.js:5-6`), tested against
+`row.total`, which today is the sum of `entry.previous` counts — one per ballot, so "10 votes" means
+ten people. Repointing the metric at upcoming without repointing the gate would test against
+**picks**: a club with four voters naming three parties each reports 12 and walks onto a board meant
+for ten people. Both gates must sum `weight`, giving ballots again.
+
+This is the whole reason a naive table-swap is wrong, and it is invisible in testing unless a fixture
+ballot names more than one party.
+
+**6. `schema.sql` changes by `ALTER TABLE … ADD COLUMN IF NOT EXISTS`, never by editing the `CREATE`.**
 `schema.sql` re-runs on every backend boot via `db.init_db`, and `CREATE TABLE IF NOT EXISTS` skips
 an existing table entirely — so a plain edit to the `CREATE` would never reach a live database. The
 file already documents this trap at `schema.sql:196` for `votes.ip_hash`; this follows it.
 
-**6. The frontend falls back to `count` when `weight` is absent.**
+**7. The Diversity tab switches to intended vote as well, and says what it now measures.**
+Diversity is the Laakso–Taagepera effective number of parties, `1 / Σ(share²)`. Leaving it on
+last-election data would make it the only historical view on the page, so it switches too — but
+unlike the lean axes it does not merely change value, it changes **meaning**, and the label has to
+follow.
+
+ENP assumes one choice per respondent. Over a multi-pick question it can no longer distinguish
+*"fans disagree with each other"* from *"each fan is personally torn between three parties"*. Both
+raise the number. The metric is therefore relabelled as fragmentation of **intended** vote, where a
+voter hedging across three parties legitimately counts as fragmented — that is a real property of
+the electorate, just not the one the old label claimed.
+
+Measured effect is modest where it is visible: nationally ENP goes 4.20 → 5.23 (pick-counted, so an
+overstatement). Only clubs above the threshold appear, which today is Maccabi Haifa alone.
+
+**A 50/50 blend of the two distributions was considered and rejected as mathematically wrong here.**
+Pooling inflates ENP above *both* inputs — nationally 4.20 and 5.23 pool to 9.31 — because it counts
+change over time as if it were disagreement between people. The degenerate case proves it: a fanbase
+unanimously behind one party that switches unanimously to another scores 1.00 on each side and 2.00
+pooled. With 11 of 21 ballots switching, this dataset is exactly that shape. Averaging the two ENP
+values instead is not broken, but mixes two instruments (one pick per voter vs up to three) and
+needs an undefendable ratio, so it is rejected on the same grounds as the lean blend.
+
+**8. The frontend falls back to `count` when `weight` is absent.**
 Pods roll one at a time, so a new frontend can briefly meet an old API payload carrying no `weight`.
 Reading `r.weight ?? r.count` degrades to today's pick-weighted behaviour for a few seconds instead
 of rendering an empty card, and makes the deploy order-independent.
@@ -116,6 +150,14 @@ take the party-list name as a parameter and read `r.weight ?? r.count`. Four cal
 356 (axes), 370 (bloc), 384 (sector). A coverage line renders
 `undecided_weight / total_weight` for the current scope.
 
+`computeEffectiveParties` (line 40) takes the upcoming breakdown and sums `weight` rather than
+`count` — with `count` it would measure picks and inflate every multi-pick club. Its two call sites
+are the diversity rows at line 76 and the `row.total` gate at 79.
+
+Both `row.total` computations (lines 75 and 310) sum `weight` over the **upcoming** breakdown, so
+`DIVERSITY_MIN_VOTES` and `LEAN_MIN_VOTES` keep meaning "ten people" (Decision 5). Note the two are
+computed independently in two places; changing one and not the other is the likely slip.
+
 **i18n** (`services/frontend/i18n.js`) — new keys for the coverage line in `en`, `he` and `ru`. All
 three objects must carry identical key sets and identical `{placeholder}` tokens; `t()` returns the
 key itself on a miss, so a gap renders the raw key on the page rather than throwing.
@@ -133,14 +175,17 @@ pick-counting:
 Backend tests assert `/api/results` and `/api/results/clubs-breakdown` expose `weight` per row, and
 that `vote_count` is untouched and still integral.
 
+The threshold regression is the one worth naming explicitly, because it fails silently and only
+under multi-pick data: **a club with 4 ballots naming 3 parties each must NOT clear a threshold of
+10.** Any fixture used for it must include ballots that name more than one party — a suite built
+entirely from single-party ballots passes whether the gate counts ballots or picks, which is exactly
+how this would ship broken.
+
 Both `conftest.py` `DROP TABLE … CASCADE` lists are re-checked against `schema.sql`. No table is
 added, so neither list should need editing — confirming that is the point.
 
 ## Non-goals
 
-- **The Diversity tab keeps reading `entry.previous`.** It answers a different question — how
-  politically varied a club's fans are — and after this pass it is the only previous-based view on
-  the page. Deliberate, not an oversight.
 - **The "Previous Knesset vote breakdown" section is unchanged.** It is explicitly labelled as
   history and is where last-election data belongs.
 - **The Switching tab is unchanged.** It is inherently previous→upcoming.
