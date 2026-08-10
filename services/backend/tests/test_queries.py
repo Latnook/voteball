@@ -936,11 +936,11 @@ def test_get_clubs_breakdown_includes_upcoming_and_upcoming_only_clubs(conn):
 
     liverpool = by_id[liverpool_id]
     assert liverpool['previous'] == [{'party_id': None, 'count': 5}]
-    assert liverpool['upcoming'] == [{'party_id': upcoming_party_id, 'count': 4}]
+    assert liverpool['upcoming'] == [{'party_id': upcoming_party_id, 'count': 4, 'weight': 0.0}]
 
     chelsea = by_id[chelsea_id]
     assert chelsea['previous'] == []
-    assert chelsea['upcoming'] == [{'party_id': upcoming_party_id, 'count': 6}]
+    assert chelsea['upcoming'] == [{'party_id': upcoming_party_id, 'count': 6, 'weight': 0.0}]
 
 
 # Parties deliberately left NULL on the religiosity axis: Ra'am and Hadash are scoped out (design
@@ -1112,3 +1112,41 @@ def test_world_cup_has_divisions_false_despite_labelled_clubs(conn):
 
     world_cup_clubs = [c for c in options['clubs'] if c['league_id'] == world_cup['id']]
     assert any(c['group_label'] is not None for c in world_cup_clubs)
+
+
+def _seed_multi_pick_ballot(conn):
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Plan Party A') RETURNING id")
+    a = cur.fetchone()[0]
+    cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Plan Party B') RETURNING id")
+    b = cur.fetchone()[0]
+    cur.execute(
+        '''INSERT INTO votes (previous_vote_status, previous_party_id, upcoming_vote_status, cookie_token)
+           VALUES ('did_not_vote', NULL, 'considering', 'plan-t1') RETURNING id'''
+    )
+    v = cur.fetchone()[0]
+    for p in (a, b):
+        cur.execute('INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)', (v, p))
+    cur.execute(
+        '''INSERT INTO rollup_national_upcoming (upcoming_party_id, vote_count, weight)
+           VALUES (%s, 1, 0.5), (%s, 1, 0.5)''', (a, b)
+    )
+    cur.execute(
+        '''INSERT INTO rollup_national_previous (previous_party_id, vote_count) VALUES (NULL, 1)'''
+    )
+    conn.commit()
+    cur.close()
+    return a, b
+
+
+def test_results_expose_ballot_weight_on_upcoming(conn):
+    # One ballot naming two parties: 2 picks, 1 ballot.
+    _seed_multi_pick_ballot(conn)
+
+    all_results = queries.get_results_all(conn)
+
+    assert sum(r['count'] for r in all_results['upcoming']) == 2
+    assert sum(r['weight'] for r in all_results['upcoming']) == 1.0
+    assert all(isinstance(r['weight'], float) for r in all_results['upcoming'])
+    # previous rows are one-per-ballot already and carry no weight key
+    assert 'weight' not in all_results['previous'][0]

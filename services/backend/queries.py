@@ -184,11 +184,11 @@ def _results_for_filter(conn, where_clause, params):
     previous = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
 
     cur.execute(
-        f'SELECT upcoming_party_id, SUM(vote_count) FROM rollup_upcoming '
+        f'SELECT upcoming_party_id, SUM(vote_count), SUM(weight) FROM rollup_upcoming '
         f'WHERE {where_clause} GROUP BY upcoming_party_id',
         params
     )
-    upcoming = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
+    upcoming = [{'party_id': r[0], 'count': r[1], 'weight': float(r[2] or 0)} for r in cur.fetchall()]
 
     cur.close()
     return {'previous': previous, 'upcoming': upcoming}
@@ -202,8 +202,8 @@ def get_results_all(conn):
     cur.execute('SELECT previous_party_id, SUM(vote_count) FROM rollup_national_previous GROUP BY previous_party_id')
     previous = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
 
-    cur.execute('SELECT upcoming_party_id, SUM(vote_count) FROM rollup_national_upcoming GROUP BY upcoming_party_id')
-    upcoming = [{'party_id': r[0], 'count': r[1]} for r in cur.fetchall()]
+    cur.execute('SELECT upcoming_party_id, SUM(vote_count), SUM(weight) FROM rollup_national_upcoming GROUP BY upcoming_party_id')
+    upcoming = [{'party_id': r[0], 'count': r[1], 'weight': float(r[2] or 0)} for r in cur.fetchall()]
 
     cur.close()
     return {'previous': previous, 'upcoming': upcoming}
@@ -286,12 +286,14 @@ def get_clubs_breakdown(conn):
         by_club[club_id]['previous'].append({'party_id': party_id, 'count': count})
 
     cur.execute(
-        'SELECT club_id, upcoming_party_id, SUM(vote_count) FROM rollup_upcoming '
+        'SELECT club_id, upcoming_party_id, SUM(vote_count), SUM(weight) FROM rollup_upcoming '
         'WHERE club_id IS NOT NULL GROUP BY club_id, upcoming_party_id'
     )
-    for club_id, party_id, count in cur.fetchall():
+    for club_id, party_id, count, weight in cur.fetchall():
         by_club.setdefault(club_id, {'previous': [], 'upcoming': []})
-        by_club[club_id]['upcoming'].append({'party_id': party_id, 'count': count})
+        by_club[club_id]['upcoming'].append(
+            {'party_id': party_id, 'count': count, 'weight': float(weight or 0)}
+        )
 
     cur.close()
     return [
