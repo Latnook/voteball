@@ -122,6 +122,20 @@ not a property of the document. `curl` the PDF and run `pdftotext file.pdf file.
 הדמוקרטים's platform papers extracted cleanly this way after WebFetch declared four of them
 unreadable. Do not record "no platform published" on the strength of a WebFetch failure.
 
+**When `pdftotext` succeeds and returns ~1 byte per page, the PDF is image-only — read it visually
+with the `Read` tool, which takes a `pages` range.** This is the failure the rule above does not
+cover, and it does not look like a failure: exit code 0, a file created, one newline per page. Check
+the byte count, not the exit code. `7 bytes from 7 pages` and `25 bytes from 25 pages` are what
+כחול לבן's and אל הדגל's education and platform PDFs return, and **both rows carried a wrong
+`religiosity` for as long as those files went unread** (2026-08-01 and 2026-08-10). Both were fixed
+by the education paper, because that is where this axis's real number lives — see the warning under
+`religiosity` in `docs/party-classifications.md`.
+
+**A second body of text that overlaps at the introduction is not the same document.** אל הדגל
+publishes vision chapters at `elhadegel.co.il/about-us` *and* a platform PDF; they share only the
+הקדמה, and the row was scored as though reading one had covered the other. Diff the section
+headings before concluding a source is already mined.
+
 **Reachable is not the same as current, and IDI is the standing example.** Its רע"ם page loads and
 carries a full platform — undated, and traceable to pre-2021 Joint List text rather than to anything
 the party has published since. A secondary source with no date cannot settle an axis no matter how

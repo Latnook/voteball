@@ -116,9 +116,9 @@ Negative reduces religious authority.
 | **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
 | **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה, זהות `[u]` |
 | **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
-| **0** | Status quo — no active religion-state agenda in either direction | אל הדגל `[u]` |
+| **0** | Status quo — no active religion-state agenda in either direction | *(none)* |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription; civil marriage is typical but *not* required — ישר and כחול לבן sit here without it | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, בית ציוני - המילואימניקים `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription; civil marriage is typical but *not* required — ישר and כחול לבן sit here without it | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
 
@@ -712,7 +712,23 @@ disestablishment, not price policy — and their haredi section is about ending 
 subsidy-for-study model, the same fight from the fiscal side. Both `anti-clerical` and
 `kashrut-liberalization` are true.
 
-### אל הדגל — El HaDegel · `unaligned` · 1 / 2 / 0 · secular
+### אל הדגל — El HaDegel · `unaligned` · 1 / 2 / −2 · secular
+
+**Three sources, and they are not interchangeable.** The **platform PDF** (`מצע אל הדגל`,
+28.05.2026) carries four policy programmes — security, education, government/law, economy. The
+**vision chapters at `elhadegel.co.il/about-us`** are a *separate body of text*, not a rendering of
+that PDF: only the הקדמה overlaps, and קיר ברזל, דור הניצחון, אחדות העם, שבירת הגושים,
+האתגר הדמוגרפי and ישראל 2050 appear nowhere in the PDF. The **education policy document** is a
+third, and it is where the religiosity number actually lives.
+
+**Two retrieval traps here, and the row has been wrong from each in turn.** Both PDFs are
+**image-only** — `pdftotext` returns 25 bytes from 25 pages and 7 bytes from 7 pages, an exit code
+of 0 and one newline per page — so both have to be read visually, and a pipeline checking only
+whether the command failed will read that as a clean extraction. And the two bodies of text overlap
+just enough at the הקדמה to look like the same document, which is how the education paper stayed
+unread while the platform was treated as fully mined. `elhadegel.co.il` itself is **not** a
+retrieval problem: it returns 200 to automated fetching and serves all six chapter headings in the
+HTML, unlike `kachollavan.org.il`.
 
 security **+2**, from a full policy programme rather than the single-issue reservist party the old
 tags implied: sovereignty over "areas essential to its security", a reserved "right to take
@@ -726,12 +742,57 @@ massive periphery infrastructure and a strategic-industry programme. The constit
 the "El HaDegel Service" Basic Law drafting every citizen — with refusal forfeiting economic and
 employment rights — were entirely unrecorded before.
 
-religiosity **0**, and this is a deliberate call (Decision 6): the party is built on ending the
-haredi conscription exemption, and **conscription is not scored on this axis**. A party can demand
-universal service while wanting the Rabbinate left exactly as it is. Their mandatory core curriculum
-pulls negative but is offset by a Values Pillar grounded in Jewish heritage plus community autonomy
-above the core. The conscription stance lives in `anti-conscription-exemption` and
-`universal-conscription`.
+**economic was re-examined on 2026-08-10 and stays +1.** The website's economy card reads as +2 or
++3 doctrine — *"יוסרו כל הרגולציות והחסמים על השוק מלבד החיוניים"*, remove every regulation but the
+essential ones, alongside the 30% cut. The programme behind it is not: negative income tax
+expansion, targeted vocational training, differential support for weak regions, state infrastructure
+investment and a strategic-industry push. Slogan at +2, substance at +1 — which is exactly the
+fusion the crowded +1 band exists to keep visible. Recorded here because the *next* pass will find
+that sentence and reach for +2 again.
+
+religiosity **−2 (was 0, moved 2026-08-10).** The education policy document conditions state money
+on the core curriculum — *"יישום תכנית 'חבילת הבסיס' תהווה תנאי לקבלת תקצוב חינוך מהמדינה (בכל
+הרבדים, כולל בינוי)"* — and for institutions that will not comply, *"הפסקת תקציב הדרגתית אבל מוחלטת
+לכל המוסדות שאינם עומדים בקריטריונים לחינוך ציבורי"*, after a five-year adaptation plan. That is the
+−2 band's defining criterion, and the same evidence that moved כחול לבן −1 → −2 on 2026-08-01 and
+בית ציוני - המילואימניקים 0 → −2 on 2026-08-08. It is entrenched rather than aspirational: the
+package is legislated for ten years and repeal needs a special majority, and the base layer is 50%
+of the curriculum nationally with 30% to local authorities, leaving the stream itself 20%.
+
+**Decision 6 is not overridden — it is why this took a third pass to see.** Conscription stays off
+this axis, and the exemption fight stays in `anti-conscription-exemption`/`universal-conscription`.
+The 0 was scored on the platform and the website, where the education plank appears only as
+*שכבת בסיס חובה בכל מוסד מתוקצב*; with conscription set aside, "mandatory core curriculum, offset by
+a Values Pillar grounded in Jewish heritage plus community autonomy above the core" was a fair
+reading of *that* evidence. The funding position — the second of the two fights this axis folds
+together — is in the education document, which was never read. Exactly as the כחול לבן note below
+warns, and now for the third row in a row.
+
+The offset does not survive the precedent it is now measured against. כחול לבן held *a stated aim
+that the public space express the state's Jewish identity* and still moved to −2 on the funding
+condition; the autonomy here is explicitly the 20% *above* the base layer, the same bounded
+devolution as B&W's local-authority Shabbat clause. A Jewish-heritage values component has now twice
+failed to offset a funding condition in this document.
+
+Held at −2, not −3: nothing about the Rabbinate, marriage, kashrut or Shabbat, and ישר and כחול לבן
+both sit at −2 without civil marriage.
+
+**Planks recorded 2026-08-10, all previously absent.** From the website chapters: a demand for a
+**state commission of inquiry** into 7 October (*"מי שכשל צריך ללכת הביתה"*, `state-commission-of-inquiry`);
+Basic Law **protections for a sitting PM** (`pm-immunity-protections`); a standing pre-committed
+**territorial price** for attacks on the state (`territorial-price-doctrine`); and the demographic
+chapter's haredi and Arab labour-market integration track, *"היעד איננו 'לגייר' אף קהילה"*
+(`workforce-integration`). From the platform PDF: a **voluntary-emigration** benefits basket for
+Palestinians choosing to leave, held distinct from זהות's `population-transfer` because it is
+opt-in (`voluntary-emigration-incentives`).
+
+**Those first two planks point opposite ways, and that is the finding, not a defect.** Demanding a
+state commission of inquiry is the anti-Netanyahu marker; entrenching protections for a sitting PM
+is the pro-Netanyahu one. For a party whose organising pitch is שבירת הגושים — refusing the
+"רק ביבי"/"רק לא ביבי" binary in as many words — holding both is coherent, and it is the strongest
+single piece of evidence for `unaligned` in any of the three sources. Note the platform PDF is
+narrower than the website card here: an 8-year term cap with immunity confined to חטא ועוון,
+misdemeanours. The tag records the website's broader claim; this sentence records the gap.
 
 ### בית ציוני - המילואימניקים — The Reservists · `unaligned` · 1 / 2 / −2 · secular
 

@@ -88,6 +88,14 @@ numerator and denominator.
    building their platforms on the exemption. Their stance lives in
    `anti-conscription-exemption`/`universal-conscription`.
 
+   > **The rule stands; the two worked examples do not.** בית ציוני - המילואימניקים moved to −2 on
+   > 2026-08-08 and אל הדגל on 2026-08-10 — both on **education-funding** clauses, not on
+   > conscription, so neither move overrides this decision. The sentence naming them is left as the
+   > dated record of what was known on 2026-07-21; `docs/party-classifications.md` carries the
+   > current values and the reasoning. What the pair actually demonstrates is the failure mode the
+   > religiosity table warns about: setting conscription aside correctly, then scoring the remainder
+   > without having read the party's education paper. Three rows have now been caught by it.
+
 7. **`previous_parties` is populated too, and this does not contradict the seed's revision-block
    rule.** The revision blocks added on 2026-07-21 deliberately touch only `upcoming_parties`,
    because back-dating a 2026 platform onto a previous-election row would defeat the independence of
