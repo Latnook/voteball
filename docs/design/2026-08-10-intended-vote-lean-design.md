@@ -79,9 +79,17 @@ the current 5% undecided the difference between excluding them and including the
 under 0.1 on a one-decimal display. The disclosure scales honestly: at 30% undecided the reader sees
 30%, rather than the distortion being buried in a constant.
 
-**Exclusion requires no new code.** Undecided ballots are already stored as `upcoming_party_id IS NULL`
-rows; `partyById(null, 'upcoming_parties')` returns undefined and the existing guard skips the row.
-Only the displayed percentage is new.
+**Exclusion requires no new code** *for the axes*. Undecided ballots are already stored as
+`upcoming_party_id IS NULL` rows; `partyById(null, 'upcoming_parties')` returns undefined and the
+existing guard skips the row. Only the displayed percentage is new.
+
+**It is not automatic for the diversity index or the eligibility gates, and both must exclude it
+explicitly.** `computeEffectiveParties` has no party lookup to fail — it sums raw counts, so an
+undecided row would be scored as though "undecided" were a party, making a split-but-decided fanbase
+and a uniformly-undecided one look equally diverse. The gates must match the metric they admit:
+eligibility counts *decided* ballots, so a club with 9 decided and 5 undecided ballots does not clear
+a threshold of 10 on the strength of votes the number never uses. The coverage line reports undecided
+as a share of **all** ballots, which is the one place the excluded voters are visible.
 
 **5. The eligibility thresholds move to ballot weight, not pick count.**
 `DIVERSITY_MIN_VOTES` and `LEAN_MIN_VOTES` are both 10 (`analytics.js:5-6`), tested against
@@ -98,7 +106,26 @@ ballot names more than one party.
 an existing table entirely — so a plain edit to the `CREATE` would never reach a live database. The
 file already documents this trap at `schema.sql:196` for `votes.ip_hash`; this follows it.
 
-**7. The Diversity tab switches to intended vote as well, and says what it now measures.**
+**7. The Traits gate moves too, and this supersedes a standing "do not do this" comment.**
+`traitsEligibleClubs` (`analytics.js:740`) reads `entry.upcoming` for its data but gates on
+`entry.previous` ballots, under a comment that says explicitly: *"Do not 'fix' this by switching back
+to entry.upcoming — an unknown ballot count is not a safe basis for publishing a fanbase profile, and
+this keeps Traits, Lean and Diversity on one shared definition of sample size."*
+
+Both of its reasons are addressed rather than overridden. The unknown ballot count was a real
+constraint — `rollup_upcoming` held only picks — and the `weight` column is exactly what removes it;
+the gate becomes a genuine ballot count, not a pick count wearing one. And the shared definition of
+sample size is *preserved* only by moving all three together: leaving Traits on previous while Lean
+and Diversity move to upcoming is what would split it.
+
+The visible consequence is the one that comment anticipated and could not then allow: a club with
+intended-vote ballots but no last-election ballots can now become eligible. That is now safe, because
+its ballot count is known.
+
+**The comment must be rewritten in the same commit**, not deleted. A future reader who finds the old
+text will re-derive the old conclusion.
+
+**8. The Diversity tab switches to intended vote as well, and says what it now measures.**
 Diversity is the Laakso–Taagepera effective number of parties, `1 / Σ(share²)`. Leaving it on
 last-election data would make it the only historical view on the page, so it switches too — but
 unlike the lean axes it does not merely change value, it changes **meaning**, and the label has to
@@ -121,7 +148,7 @@ pooled. With 11 of 21 ballots switching, this dataset is exactly that shape. Ave
 values instead is not broken, but mixes two instruments (one pick per voter vs up to three) and
 needs an undefendable ratio, so it is rejected on the same grounds as the lean blend.
 
-**8. The frontend falls back to `count` when `weight` is absent.**
+**9. The frontend falls back to `count` when `weight` is absent.**
 Pods roll one at a time, so a new frontend can briefly meet an old API payload carrying no `weight`.
 Reading `r.weight ?? r.count` degrades to today's pick-weighted behaviour for a few seconds instead
 of rendering an empty card, and makes the deploy order-independent.
