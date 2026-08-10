@@ -252,6 +252,22 @@ pipeline {
             // wrong trade. The Verify stage below still asserts status.sync.revision == PROMOTE_SHA,
             // which is what actually confirms ArgoCD landed on this build's commit rather than a
             // newer one that raced in.
+            //
+            // THE SECOND FailedPrecondition, and why it is tolerated rather than prevented. Automated
+            // sync means Promote's push to master can make ArgoCD start syncing on its own, before
+            // this explicit call arrives -- and ArgoCD refuses a second concurrent operation with
+            // `FailedPrecondition: another operation is already in progress`. Build #5 hit exactly
+            // that: Promote pushed at 12:40:17, this call failed at 12:40:20, and the post-failure
+            // event dump from the same build shows ArgoCD had ALREADY created the migrate Job pulling
+            // that build's own image. The deploy was succeeding; only the redundant command failed --
+            // and failing this stage rolled the good deploy back.
+            //
+            // So that one error is treated as success. It does not mean "the sync did not happen", it
+            // means "the sync is already happening" -- which is what this call wanted. Every other
+            // error still fails the stage. Nothing is weakened by this: Rollout waits for the running
+            // operation to finish and Verify asserts the landed revision, so both real gates are
+            // untouched. Do NOT turn this into a blanket `|| true`; a genuinely rejected sync (bad
+            // token, unknown app, denied by RBAC) must still fail here.
             // 600, not 300. Build #10 timed out here at 300s: it deployed tag 9474665, freshly built
             // by CI moments earlier, so none of its four images had ever been pulled onto the nodes --
             // the rollout had to pull all four before pods could go Ready. Build #9 (tag 241bed6, warm
@@ -265,10 +281,29 @@ pipeline {
             // minute budget (see the `options.timeout` comment above for that arithmetic).
             sh '''
               set -eu
-              argocd app sync voteball \
-                --server argocd-server.argocd.svc.cluster.local \
-                --grpc-web --insecure \
-                --timeout 600
+
+              # Captured rather than streamed, because the concurrent-operation case has to be told
+              # apart from a real failure by what ArgoCD said. Under set -e a failing command in an
+              # if condition does not abort, so the exit status is inspectable here.
+              if out=$(argocd app sync voteball \
+                  --server argocd-server.argocd.svc.cluster.local \
+                  --grpc-web --insecure \
+                  --timeout 600 2>&1); then
+                echo "$out"
+              else
+                rc=$?
+                echo "$out"
+                case "$out" in
+                  *"another operation is already in progress"*)
+                    echo "ArgoCD is already running this sync -- auto-sync picked up the Promote"
+                    echo "commit first. Continuing; Rollout waits for it and Verify checks the"
+                    echo "revision that actually landed."
+                    ;;
+                  *)
+                    exit "$rc"
+                    ;;
+                esac
+              fi
             '''
           }
         }
