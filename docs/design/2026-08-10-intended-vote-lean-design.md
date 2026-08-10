@@ -219,3 +219,77 @@ added, so neither list should need editing — confirming that is the point.
 - **No toggle between last-election and intended views.** Two numbers on screen invites "which one
   is real"; the card commits to one question.
 - **No change to the ideology values themselves**, or to how parties are classified.
+
+## Verification outcome
+
+Ten tasks executed on `feat/intended-vote-lean`, every one passing its own review with no fix
+rounds. Final counts: worker suite 42 passed, backend suite 165 passed. Not merged to master by this
+task — the repo owner has a pending wording call (see below) and the merge is left to a later step.
+
+**This doc's own `Decimal`/`jsonify` claim was wrong, and worth correcting precisely.** The doc's
+Implementation section (via the plan derived from it) asserted that returning an un-cast `Decimal`
+from `queries.py` would make `jsonify` raise at request time. Task 4 checked this directly against
+the version actually pinned in this repo (Flask 3.1.3) instead of taking it on faith: it does not
+raise. `flask.json.provider.DefaultJSONProvider.default` catches `Decimal` and returns `str(o)`, so
+an un-cast weight serializes silently as the JSON *string* `"0.5"` rather than the number `0.5` — no
+exception, no log line. The `float()` cast in the row builder is still exactly the right fix, but the
+real failure mode it prevents is worse than a crash: it's silent. JS `0 + "0.5"` is string
+concatenation, not addition, so every weighted average on the card would have accumulated
+concatenated strings instead of a sum — corrupting every axis, bloc and sector figure with no error
+anywhere in the stack to catch it.
+
+**`services/worker/tests/conftest.py` does not load `schema.sql`, contradicting what
+`services/worker/CLAUDE.md` said.** Task 2 discovered that the worker's test fixtures define their
+own inline `CREATE TABLE` schema (roughly lines 16-52) rather than calling anything that reads the
+real `services/backend/schema.sql`. The backend's `tests/conftest.py` is the one that's fine — it
+calls `db.init_db`, which genuinely loads `schema.sql` + `seed.sql`. Task 1's schema change (the new
+`weight` column) reached the backend's tests for free and had to be hand-added to the worker's inline
+copy, or Task 2's new test failed on `UndefinedColumn` instead of the intended assertion. Practical
+consequence for future work: a column added to `schema.sql` does not reach the worker's tests until
+someone patches this duplicate too, and `services/worker/CLAUDE.md` has been corrected in this same
+commit to say so instead of the reverse.
+
+**Task 6 left two small defects behind, both cleaned up in Task 8.** Repointing the Lean tab's
+default (no-club-selected) view from `nationalPreviousBreakdown()` to `nationalUpcomingBreakdown()`
+left the former with zero callers — dead code, confirmed by repo-wide grep before removal — and its
+module-level cache variable (`nationalPreviousData`) went with it. Separately, the doc-comment above
+`eligibleClubDiversityScores` still read "previous-election votes" after the function body had been
+repointed to `entry.upcoming`; Task 8 reworded it to "decided intended-vote ballots," matching what
+the code (`decidedBallots(entry.upcoming)`) actually gates on. Neither was a functional bug — the
+stale comment couldn't mislead the running code, and the dead function couldn't execute wrongly — but
+both are exactly the kind of drift this project's design docs exist to catch, and Task 8 caught them
+in the same pass rather than leaving them as follow-up debt.
+
+**The measured before/after numbers are not directly comparable across this doc and Task 9.** The
+"What changes on screen" table above was computed pre-normalisation against 21 live production
+ballots. Task 9's browser verification used its own 12-ballot local fixture (seeded specifically to
+land the decided-ballot weight at exactly 10.0, the eligibility boundary), so its rendered figures —
+Economic 0.3, Security 1.7, Religion & state 0.3, 57%/30%/13% bloc, 4.9 effective parties, and so on
+— are answers to a different dataset, not a confirmation of the production table's specific decimals.
+Don't read Task 9 as having verified those numbers; it verified the *mechanism* instead:
+
+- the coverage line renders correctly with real counts and a real percentage ("Based on 10 of 12
+  ballots · 17% undecided"), sourced from `weight` arriving as a genuine JSON number end-to-end (not
+  a string — Task 4's `float()` cast confirmed working on the wire)
+- both eligibility gates (`LEAN_MIN_VOTES`, `DIVERSITY_MIN_VOTES`) hold exactly at the intended
+  boundary: a club with decided ballot-weight of precisely 10.0 clears the `>=` gate, matching
+  Decision 5's intent
+- a three-party ballot correctly contributes total weight 1.0 rather than 3, and an undecided ballot
+  contributes weight 1 to the undecided bucket rather than being dropped or double-counted — both
+  hand-verified against the raw `/api/results/clubs-breakdown` payload, not just eyeballed on screen
+- all three languages (English, Hebrew, Russian) render genuine translated text for both new i18n
+  keys (the coverage line and the Diversity basis caption) with correct script (verified by Unicode
+  code-point classification, not eyeballing), no raw i18n keys, no `NaN`
+- zero console or page errors across the full session (initial load, tab switches, axis switches,
+  club selection, all three language switches)
+
+One pre-existing, unrelated UI behavior was noted during Task 9 and deliberately left alone: switching
+the display language resets the Lean tab's club picker back to "National," losing a prior club
+selection. It predates this feature and nothing in this design touches that code path.
+
+**Pending, not resolved by this task:** the English wording of the new Diversity basis caption
+("Based on intended vote. A fan weighing several parties counts as mixed.") was flagged by the repo
+owner as the one judgment call in this feature worth their own review — a number that stays in the
+same place on the live site while what it measures changes underneath it. Task 8 shipped the brief's
+draft wording verbatim and left the review open; this task does not resolve it and does not merge to
+master for that reason.

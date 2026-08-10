@@ -14,7 +14,14 @@ runtime.
 ## Tests
 
 
-Same real-Postgres TDD pattern as the backend; reuse the `voteball-test-db` container. The worker's
-tests need `schema.sql` (owned by the backend) loaded into that database, since the worker itself
-never creates schema.
+Same real-Postgres TDD pattern as the backend; reuse the `voteball-test-db` container. **Unlike the
+backend, the worker's `tests/conftest.py` does NOT load `schema.sql`.** It defines its own inline
+`CREATE TABLE` schema (roughly lines 16-52), a hand-maintained duplicate of the real one. The
+backend's `tests/conftest.py` is the one that calls `db.init_db`, which really does load
+`schema.sql` + `seed.sql`.
+
+The consequence: adding a column to `schema.sql` does not reach the worker's tests until that inline
+duplicate is patched too — a schema change that only touches `services/backend/schema.sql` will make
+worker tests either fail on `UndefinedColumn` or, worse, silently pass against a stale schema. Check
+`tests/conftest.py`'s inline `CREATE TABLE` list whenever a rollup table's columns change.
 
