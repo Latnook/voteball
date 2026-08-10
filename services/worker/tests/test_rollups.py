@@ -613,3 +613,19 @@ def test_upcoming_weight_counts_ballots_not_picks(conn):
     assert sum(c for c, _ in rows.values()) == 3
     assert sum(w for _, w in rows.values()) == 2.0
     cur.close()
+
+
+def test_national_upcoming_weight_counts_ballots_not_picks(conn):
+    import rollups
+    _seed_votes(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT upcoming_party_id, vote_count, weight FROM rollup_national_upcoming')
+    rows = {r[0]: (r[1], float(r[2])) for r in cur.fetchall()}
+
+    assert sum(c for c, _ in rows.values()) == 3      # picks
+    assert sum(w for _, w in rows.values()) == 2.0    # ballots
+    assert rows[None] == (1, 1.0)                     # the undecided ballot
+    cur.close()

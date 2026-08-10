@@ -161,16 +161,19 @@ def _recompute_national(cur):
     ''')
 
     cur.execute('TRUNCATE rollup_national_upcoming')
-    cur.execute('''
-        INSERT INTO rollup_national_upcoming (upcoming_party_id, vote_count)
-        SELECT vup.upcoming_party_id, COUNT(*)
+    cur.execute(f'''
+        WITH {_PICK_COUNTS_CTE}
+        INSERT INTO rollup_national_upcoming (upcoming_party_id, vote_count, weight)
+        SELECT vup.upcoming_party_id, COUNT(*), SUM(1.0 / pc.k)
         FROM votes v
         JOIN vote_upcoming_parties vup ON vup.vote_id = v.id
+        JOIN pick_counts pc ON pc.vote_id = v.id
         GROUP BY vup.upcoming_party_id
     ''')
     cur.execute('''
-        INSERT INTO rollup_national_upcoming (upcoming_party_id, vote_count)
-        SELECT NULL, COUNT(*) FROM votes WHERE upcoming_vote_status = 'undecided'
+        INSERT INTO rollup_national_upcoming (upcoming_party_id, vote_count, weight)
+        SELECT NULL, COUNT(*), COUNT(*)::numeric
+        FROM votes WHERE upcoming_vote_status = 'undecided'
         HAVING COUNT(*) > 0
     ''')
 
