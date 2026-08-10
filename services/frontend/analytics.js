@@ -43,6 +43,15 @@ function rowWeight(r) {
   return r.weight ?? r.count;
 }
 
+// Eligibility counts BALLOTS, and only ballots the metric actually uses. Counting `count` here
+// would count picks -- four voters naming three parties each would report 12 and clear a gate meant
+// for ten people. Undecided ballots are excluded because no displayed figure is computed from them.
+function decidedBallots(breakdown) {
+  return breakdown
+    .filter(r => r.party_id !== null)
+    .reduce((sum, r) => sum + rowWeight(r), 0);
+}
+
 // shares: [{party_id, count, weight}, ...] for one club's intended-vote picks.
 // Returns 1 / sum(share^2) -- "effective number of parties" (Laakso-Taagepera index).
 // Rows with a null party_id are UNDECIDED ballots and are excluded: scoring them would treat
@@ -84,8 +93,8 @@ function eligibleClubDiversityScores() {
     .map(entry => {
       const club = clubById(entry.club_id);
       if (!club) return null;
-      const total = entry.previous.reduce((sum, r) => sum + r.count, 0);
-      return { club, total, score: computeEffectiveParties(entry.previous) };
+      const total = decidedBallots(entry.upcoming);
+      return { club, total, score: computeEffectiveParties(entry.upcoming) };
     })
     .filter(row => row !== null)
     .filter(row => row.total >= DIVERSITY_MIN_VOTES)
@@ -321,10 +330,12 @@ function allLeanClubRows() {
     .map(entry => {
       const club = clubById(entry.club_id);
       if (!club) return null;
-      const total = entry.previous.reduce((sum, r) => sum + r.count, 0);
+      const total = decidedBallots(entry.upcoming);
       const values = {};
-      LEAN_AXES.forEach(a => { values[a.key] = weightedAxisAverage(entry.previous, a.key); });
-      return { club, total, values, previous: entry.previous };
+      LEAN_AXES.forEach(a => {
+        values[a.key] = weightedAxisAverage(entry.upcoming, a.key, 'upcoming_parties');
+      });
+      return { club, total, values, upcoming: entry.upcoming };
     })
     .filter(row => row !== null && row.total >= LEAN_MIN_VOTES)
     .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id));
@@ -357,7 +368,7 @@ function layoutLeanDots(rows, axisKey) {
   return placed;
 }
 
-function renderLeanDetail(container, label, previousBreakdown) {
+function renderLeanDetail(container, label, upcomingBreakdown) {
   container.innerHTML = '';
   const heading = document.createElement('div');
   heading.className = 'scoreboard-title';
@@ -367,7 +378,7 @@ function renderLeanDetail(container, label, previousBreakdown) {
   // All three numeric axes, including the one the strip is currently positioning by -- the strip
   // shows only relative order, so the actual figure still belongs here.
   LEAN_AXES.forEach(axis => {
-    const value = weightedAxisAverage(previousBreakdown, axis.key);
+    const value = weightedAxisAverage(upcomingBreakdown, axis.key, 'upcoming_parties');
     const row = document.createElement('div');
     row.className = 'lean-detail-row';
     const rowLabel = document.createElement('span');
@@ -381,7 +392,7 @@ function renderLeanDetail(container, label, previousBreakdown) {
     container.appendChild(row);
   });
 
-  const blocPct = compositionPercentages(previousBreakdown, 'bloc', ['bibi', 'opposition', 'unaligned']);
+  const blocPct = compositionPercentages(upcomingBreakdown, 'bloc', ['bibi', 'opposition', 'unaligned'], 'upcoming_parties');
   const blocRow = document.createElement('div');
   blocRow.className = 'lean-detail-row';
   const blocLabel = document.createElement('span');
@@ -395,7 +406,7 @@ function renderLeanDetail(container, label, previousBreakdown) {
   container.appendChild(blocRow);
 
   const sectorCategories = ['secular', 'traditional', 'religious_zionist', 'haredi', 'arab'];
-  const sectorPct = compositionPercentages(previousBreakdown, 'sector', sectorCategories);
+  const sectorPct = compositionPercentages(upcomingBreakdown, 'sector', sectorCategories, 'upcoming_parties');
   const sectorRow = document.createElement('div');
   sectorRow.className = 'lean-detail-row';
   const sectorLabel = document.createElement('span');
@@ -488,11 +499,11 @@ function renderLeanTab() {
     if (dot) dot.setAttribute('aria-pressed', 'true');
     picker.value = row ? String(row.club.id) : '';
     if (row) {
-      renderLeanDetail(detail, localizedName(row.club), row.previous);
+      renderLeanDetail(detail, localizedName(row.club), row.upcoming);
       return;
     }
     try {
-      const national = await nationalPreviousBreakdown();
+      const national = await nationalUpcomingBreakdown();
       renderLeanDetail(detail, t('analyticsNational'), national);
     } catch (err) {
       analyticsShowError('lean-tab');
@@ -735,32 +746,23 @@ function renderSwitchingTab() {
   loadSwitchingScope(null, null, t('analyticsNational'));
 }
 
-// Clubs with a large enough sample to say anything about, for the Traits tab.
-//
-// The gate is deliberately the PREVIOUS-election ballot count (entry.previous), not a sum over
-// entry.upcoming, even though the shares themselves are computed from entry.upcoming below.
-// rollup_upcoming carries one row per (vote, upcoming party) -- a ballot can name up to 3 upcoming
-// parties (app.py:174) plus a separate NULL-party row for undecided voters -- so summing
-// entry.upcoming counts party-mentions-plus-undecideds, not ballots: 4 ballots naming 3 parties each
-// would sum to 12 and clear a 10-vote floor on a sample of 4. votes.previous_party_id is a single
-// column per ballot, so entry.previous is the one breakdown in clubsBreakdown that genuinely counts
-// ballots, and is the only honest basis for an eligibility floor.
-//
-// Consequence, accepted deliberately: a club with upcoming-election votes but zero previous-election
-// votes (the case allClubsBreakdown's setdefault exists to surface, Task 4) can never be eligible
-// here, because rollup_upcoming has no ballot count to gate on for such a club. Do not "fix" this by
-// switching back to entry.upcoming -- an unknown ballot count is not a safe basis for publishing a
-// fanbase profile, and this keeps Traits, Lean and Diversity on one shared definition of sample size.
+// Gates on intended-vote BALLOTS, via the weight column (2026-08-10 intended-vote-lean design,
+// Decision 7). This deliberately replaces an earlier rule that gated on previous-election ballots
+// because rollup_upcoming could only offer a pick count, and an unknown ballot count is not a safe
+// basis for publishing a fanbase profile. That count is now known, so the original objection is
+// resolved rather than overruled -- and Traits, Lean and Diversity still share one definition of
+// sample size, which is only true if all three move together.
+// Consequence, now intended: a club with intended-vote ballots but no last-election ballots can
+// become eligible here. Its sample size is real.
 function traitsEligibleClubs() {
   const nationalLeagueIds = nationalTeamLeagueIds();
   return clubsBreakdown
     .map(entry => {
       const club = clubById(entry.club_id);
       if (!club) return null;
-      const previousTotal = entry.previous.reduce((sum, r) => sum + r.count, 0);
-      return { club, previousTotal, upcoming: entry.upcoming };
+      return { club, ballots: decidedBallots(entry.upcoming), upcoming: entry.upcoming };
     })
-    .filter(row => row !== null && row.previousTotal >= LEAN_MIN_VOTES)
+    .filter(row => row !== null && row.ballots >= LEAN_MIN_VOTES)
     .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id))
     .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)));
 }
