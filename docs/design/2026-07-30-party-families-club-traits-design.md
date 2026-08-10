@@ -411,6 +411,17 @@ prediction tables, is in the (gitignored, non-shipping) task-9b report.
    such a club in the API response. Do not "fix" this back to gating on the upcoming total — that
    would make the floor meaningless.
 
+   > **Superseded — see `docs/design/2026-08-10-intended-vote-lean-design.md`.** The gate now uses
+   > decided intended-vote ballots (`rollup_upcoming`'s `weight` column), not previous-election
+   > ballots. This is not the fix this item warned against: the objection above was that
+   > `rollup_upcoming` could only offer a pick count, and a pick count is not a safe basis for a
+   > published floor. The `weight` column resolves that directly — it is a real ballot count, not a
+   > pick count wearing one — so the objection was resolved, not overruled. The shared
+   > definition of sample size this item also protects still holds, because Lean and Diversity moved
+   > to the same ballot-weighted definition in the same change; leaving Traits behind on
+   > previous-election ballots is what would have broken it. This paragraph is left as the dated
+   > record of the reasoning at the time; the pointer above is the current behaviour.
+
 2. **Shares are of party-mentions, not ballots.** A ballot may name up to 3 upcoming parties, so a
    voter hedging across parties is weighted up to 3× in `familyShare()`. This is a labelling
    looseness, not an arithmetic error: the club numerator, the club denominator and the national

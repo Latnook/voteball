@@ -122,6 +122,13 @@ The visible consequence is the one that comment anticipated and could not then a
 intended-vote ballots but no last-election ballots can now become eligible. That is now safe, because
 its ballot count is known.
 
+`familyShare` (`analytics.js`) itself is untouched by this pass and still sums `r.count`, so the
+Traits tab now pairs a ballot-weighted *gate* with a pick-weighted *metric* — a known, accepted state
+carried forward rather than a new inconsistency introduced here, for the same reason it was accepted
+in `2026-07-30-party-families-club-traits-design.md:415-419`: club numerator, club denominator and
+national baseline all apply the identical rule, so the comparison stays apples-to-apples even though
+the label ("% of fans") is loosely a label for "% of party-mentions."
+
 **The comment must be rewritten in the same commit**, not deleted. A future reader who finds the old
 text will re-derive the old conclusion.
 
@@ -151,7 +158,26 @@ needs an undefendable ratio, so it is rejected on the same grounds as the lean b
 **9. The frontend falls back to `count` when `weight` is absent.**
 Pods roll one at a time, so a new frontend can briefly meet an old API payload carrying no `weight`.
 Reading `r.weight ?? r.count` degrades to today's pick-weighted behaviour for a few seconds instead
-of rendering an empty card, and makes the deploy order-independent.
+of rendering an empty card.
+
+This does **not** make the deploy order-independent, and that claim was wrong. `??` fires only on
+`null`/`undefined`; the backend emits `float(x or 0)`, so a genuine zero correctly survives the
+fallback rather than being masked by it — but that also means the fallback only ever covers the
+old-backend/new-frontend case. The real window is the opposite direction: between the migrate Job's
+`ALTER TABLE` and the new worker's first recompute — and for as long as an *old* worker keeps
+`TRUNCATE`-and-reinserting `rollup_upcoming` rows with no `weight` — a *new* backend serves
+`weight: 0.0` for every row. In that window Diversity, Lean and Traits all show "Not enough votes
+yet" (every `total`/`ballots` computation sums to 0) and the national card's axis rows show "No
+stated position." Nothing errors and no wrong number is ever shown, and it self-heals the moment the
+new worker completes its first recompute — `worker.py` calls `run_iteration` as the first statement
+of its loop, so this is a few seconds at most, not a stuck state.
+
+One more consequence of the rolling deploy worth naming: `/api/results?by=all` (the national card)
+and `/api/results/clubs-breakdown` (the club cards) are two separate HTTP requests that can land on
+different backend pods mid-roll. For a few seconds during the roll, the national card can be
+pick-weighted (old pod) while the club cards are ballot-weighted (new pod), or vice versa — the two
+sections of the same page can briefly disagree on which convention they're using. This is
+cosmetic and transient, not a correctness issue, but it's a real window, not a hypothetical one.
 
 ## Implementation
 
@@ -271,9 +297,15 @@ Don't read Task 9 as having verified those numbers; it verified the *mechanism* 
 - the coverage line renders correctly with real counts and a real percentage ("Based on 10 of 12
   ballots · 17% undecided"), sourced from `weight` arriving as a genuine JSON number end-to-end (not
   a string — Task 4's `float()` cast confirmed working on the wire)
-- both eligibility gates (`LEAN_MIN_VOTES`, `DIVERSITY_MIN_VOTES`) hold exactly at the intended
-  boundary: a club with decided ballot-weight of precisely 10.0 clears the `>=` gate, matching
-  Decision 5's intent
+- both eligibility gates (`LEAN_MIN_VOTES`, `DIVERSITY_MIN_VOTES`) hold at the intended boundary: a
+  club with decided ballot-weight of precisely 10.0 clears the `>=` gate, matching Decision 5's
+  intent. **This is true of Task 9's fixture, not in general.** Task 9's 12-ballot fixture happened to
+  land on a mix of halves, which round-trip exactly through a double, so its ballot-weight summed to
+  a literal `10.0`. A fanbase mixing thirds (any 3-party ballot) does not have that guarantee —
+  `SUM(1.0/3)` three times over can land a float a few ULPs short of a whole number, and a genuine
+  10-ballot club can total `9.999999999999996` and miss the gate by float noise alone. This was found
+  after Task 9 and fixed with a small tolerance constant (`GATE_EPSILON`) at all three gate sites,
+  rather than by changing the thresholds themselves
 - a three-party ballot correctly contributes total weight 1.0 rather than 3, and an undecided ballot
   contributes weight 1 to the undecided bucket rather than being dropped or double-counted — both
   hand-verified against the raw `/api/results/clubs-breakdown` payload, not just eyeballed on screen

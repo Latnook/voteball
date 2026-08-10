@@ -3,6 +3,12 @@ let clubsBreakdown = null;
 
 const DIVERSITY_MIN_VOTES = 10;
 const LEAN_MIN_VOTES = 10;
+// `decidedBallots` sums one float per row, each cast from a Postgres NUMERIC `SUM(1.0/k)`. Thirds
+// (k=3) don't always round-trip through a double back to a whole number -- a real 10-ballot club can
+// total 9.999999999999996 and miss `>=` by float noise alone, sitting out until its 11th ballot for
+// no reason tied to an actual vote count. This tolerance absorbs that summation error; it is not
+// slack in the threshold itself.
+const GATE_EPSILON = 1e-6;
 const SWITCH_TAKEAWAY_THRESHOLD_POINTS = 5;
 const SWITCH_STATUSES = ['stayed', 'hedging', 'switched', 'new_voter', 'undecided'];
 let diversityIncludeWorldCup = false;
@@ -96,7 +102,7 @@ function eligibleClubDiversityScores() {
       return { club, total, score: computeEffectiveParties(entry.upcoming) };
     })
     .filter(row => row !== null)
-    .filter(row => row.total >= DIVERSITY_MIN_VOTES)
+    .filter(row => row.total >= DIVERSITY_MIN_VOTES - GATE_EPSILON)
     .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id))
     .sort((a, b) => b.score - a.score);
 }
@@ -237,7 +243,7 @@ function partyById(partyId, list) {
 // Weighted average of a numeric axis (economic/security/religiosity) over a breakdown of votes,
 // skipping parties with a null value on that axis (both from the numerator and the denominator) --
 // see design spec Decision 8.
-function weightedAxisAverage(breakdown, axis, listName = 'previous_parties') {
+function weightedAxisAverage(breakdown, axis, listName) {
   let weightedSum = 0;
   let weightTotal = 0;
   breakdown.forEach(r => {
@@ -250,7 +256,7 @@ function weightedAxisAverage(breakdown, axis, listName = 'previous_parties') {
   return weightTotal > 0 ? weightedSum / weightTotal : null;
 }
 
-function compositionPercentages(breakdown, field, categories, listName = 'previous_parties') {
+function compositionPercentages(breakdown, field, categories, listName) {
   const totals = {};
   categories.forEach(c => { totals[c] = 0; });
   let total = 0;
@@ -341,7 +347,7 @@ function allLeanClubRows() {
       });
       return { club, total, values, upcoming: entry.upcoming };
     })
-    .filter(row => row !== null && row.total >= LEAN_MIN_VOTES)
+    .filter(row => row !== null && row.total >= LEAN_MIN_VOTES - GATE_EPSILON)
     .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id));
 }
 
@@ -771,7 +777,7 @@ function traitsEligibleClubs() {
       if (!club) return null;
       return { club, ballots: decidedBallots(entry.upcoming), upcoming: entry.upcoming };
     })
-    .filter(row => row !== null && row.ballots >= LEAN_MIN_VOTES)
+    .filter(row => row !== null && row.ballots >= LEAN_MIN_VOTES - GATE_EPSILON)
     .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id))
     .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)));
 }

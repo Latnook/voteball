@@ -103,6 +103,12 @@ numerator and denominator.
    is also mandatory, not optional — the Political Lean tab computes from `entry.previous`, so
    without `previous_parties` values the feature renders nothing at all.
 
+   > **Superseded — see `docs/design/2026-08-10-intended-vote-lean-design.md`.** The Political Lean
+   > tab now computes from `entry.upcoming`, not `entry.previous`. That does not weaken the mandatory
+   > claim above — `upcoming_parties.religiosity` is exactly as required as `previous_parties.religiosity`
+   > was, just on the table the tab reads today. This paragraph is left as the dated record of the
+   > reasoning at the time.
+
 ## Scale
 
 −3 separationist … +3 theocratic. Nullable.
@@ -224,6 +230,11 @@ seed.sql ──> previous_parties.religiosity ──> get_options ──> /api/o
                                                                    │
                                                     detail card, 4th row
 ```
+
+> **Superseded — see `docs/design/2026-08-10-intended-vote-lean-design.md`.** The Lean tab now reads
+> `upcoming_parties.religiosity` via `entry.upcoming`/`weightedAxisAverage(upcoming, 'religiosity',
+> 'upcoming_parties')`, not the previous-election path drawn above. The diagram is left as the dated
+> record of the data flow at the time.
 
 Unchanged from the security axis in every respect except the column name.
 

@@ -101,6 +101,12 @@ stereotype), and switching (is it more loyal or more volatile than average).
    also keeps the two tabs internally consistent with each other. The Switching tab is the piece that
    already captures the forward-looking previous→upcoming transition, so no diversity/lean signal is
    lost by scoping the other two tabs to previous-election data alone.
+
+   > **Superseded — see `docs/design/2026-08-10-intended-vote-lean-design.md`.** Both tabs now read
+   > `upcoming_parties` instead, weighted by a new per-ballot `weight` column that spreads each
+   > ballot's weight-of-1 evenly across its picks — the double-counting risk this item raised is what
+   > that column exists to solve, not a reason it was left unsolved. This paragraph is left as the
+   > dated record of the reasoning at the time.
 10. **Small-sample clubs are excluded from ranked/leaderboard views**, mirroring the existing
     `get_results_segment` precedent (`total < 5` falls back to national). Diversity/Lean rankings use
     a minimum of 10 total previous-election votes for a club to appear in the Spotlight, Full Ranking,
@@ -398,6 +404,9 @@ Frontend (manual, no build step, per this repo's established precedent):
   defined metrics (diversity, economic lean, security lean, bloc/sector composition).
 - No previous-vs-upcoming toggle on the Diversity/Lean tabs (Decision 9) — previous-election data only,
   for the reasons given there.
+  > **Superseded — see `docs/design/2026-08-10-intended-vote-lean-design.md`.** Both tabs now read
+  > intended (upcoming) vote data, ballot-weighted; this non-goal describes the earlier scoping, left
+  > here as the dated record of it.
 
 ## Appendix: party classification data
 

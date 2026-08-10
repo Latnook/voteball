@@ -161,9 +161,11 @@ back-dating a 2026 platform onto them defeats the point (Decision 1).
 
 The one deliberate exception is a **new axis**: when `religiosity` was added it was scored for both
 tables, because each row was scored as that party stood at its own time. Nothing was back-dated —
-the value was simply missing, and the Political Lean tab computes from previous-election votes, so
-without it the feature renders nothing. Same reasoning applied to בל"ד's religiosity, whose
-programme is dated 2018 and unchanged, so it was equally their position at the previous election.
+the value was simply missing, and the Political Lean tab computes from intended-vote (`upcoming_parties`)
+ballots, so without it on `upcoming_parties` the feature renders nothing (`previous_parties` was scored
+too, for the same reason every axis is scored on both tables: each row still needs to answer to its own
+election). Same reasoning applied to בל"ד's religiosity, whose programme is dated 2018 and unchanged,
+so it was equally their position at the previous election.
 
 **Classify from the party's own sources.** A position that appears in a journalist's summary but not
 in the party's own document does not move a number. See ביחד's tax cuts and רע"ם's security score
