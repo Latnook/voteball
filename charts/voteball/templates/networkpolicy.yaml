@@ -9,6 +9,10 @@ spec:
   policyTypes: [Ingress, Egress]
 ---
 # 2) Allow DNS egress (every pod needs CoreDNS).
+# NOTE: no `to:` key here, and do not add one back as `to: []`. An omitted `to` already means "any
+# destination" -- the two are identical to Kubernetes, which is why the API server drops the empty
+# list on write. It dropping the list is what breaks `helm upgrade`: see the empty-list check in
+# scripts/ci/validate-repo.sh for the full mechanism (it cost a failed deploy on 2026-08-10).
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -18,8 +22,7 @@ spec:
   podSelector: {}
   policyTypes: [Egress]
   egress:
-    - to: []
-      ports:
+    - ports:
         - { protocol: UDP, port: 53 }
         - { protocol: TCP, port: 53 }
 ---

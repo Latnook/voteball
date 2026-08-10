@@ -81,8 +81,17 @@ rule, because the coverage looks complete.
 ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml.tmpl`, rendered by
 `scripts/render-argocd-app.sh` — do not `kubectl apply` the template directly), so **changes reach the
 cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
-note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` now fails with
-`conflict with "argocd-controller"` on server-side-apply field ownership. Upgrades go through git.
+note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` of a chart that
+**differs** from `master` fails with `conflict with "argocd-controller"` on server-side-apply field
+ownership. Upgrades go through git.
+
+**Never write an empty list literal (`to: []`, `imagePullSecrets: []`) in a template.** The API server
+drops it on write, so the value Helm applies can never equal the value stored — and since both Helm
+(`deploy.sh` step 10) and ArgoCD apply this chart server-side, that mismatch conflicts against
+whichever manager owns the field on *every* upgrade, even though the chart is otherwise identical.
+One `- to: []` in `allow-dns-egress` failed a deploy this way on 2026-08-10. An omitted field and an
+empty list mean the same thing to Kubernetes here, so omit it; an empty **map** (`podSelector: {}`) is
+meaningful, is preserved, and is fine. `scripts/ci/validate-repo.sh` gates this in CI.
 
 **Adding a CLUSTER-SCOPED resource to this chart takes two commits, not one.** Since 2026-08-03 the
 Application runs in the `voteball` AppProject, whose `clusterResourceWhitelist` is empty — every kind

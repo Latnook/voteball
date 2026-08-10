@@ -41,5 +41,29 @@ else
   note "charts/voteball/Chart.yaml is missing"
 fi
 
+# An empty LIST literal (`to: []`, `imagePullSecrets: []`) in a chart template is a deploy-breaking
+# bug here, not a style nit, and it fails ~90 minutes into a rebuild rather than at authoring time.
+#
+# The API server DROPS an empty list on write -- for every field in this chart, `[]` and "field
+# absent" are the same thing, which is exactly why it is safe to drop. But ArgoCD and `helm upgrade`
+# (step 10 of scripts/deploy.sh) both apply this chart SERVER-SIDE, and server-side apply compares
+# what you sent against what is stored to decide field ownership. Two managers may CO-OWN a field
+# only while they apply the identical value; a value the server normalises away can never match, so
+# the second applier conflicts against the first on that field on every single upgrade, forever:
+#
+#   UPGRADE FAILED: conflict occurred while applying object devops-app/allow-dns-egress
+#   ... Apply failed with 1 conflict: conflict with "argocd-controller": .spec.egress
+#
+# That is a real 2026-08-10 deploy failure caused by one `- to: []`. It stayed invisible for months
+# because Helm 3 patched client-side and never consulted field ownership; Helm 4 applies server-side
+# by default, which is what turned it into a hard failure. `--force-conflicts` is NOT the fix -- it
+# would let an uncommitted local chart silently overwrite what GitOps declares. Omitting the field is.
+#
+# An empty MAP (`podSelector: {}`) is deliberately NOT matched: it is meaningful and is preserved.
+while IFS= read -r hit; do
+  note "${hit%%:*} has an empty list literal (${hit#*:}) -- omit the field instead; see the comment in $0"
+done < <(grep -rnE '^[[:space:]]*(-[[:space:]]+)?[A-Za-z_][A-Za-z0-9_.-]*:[[:space:]]*\[[[:space:]]*\][[:space:]]*$' \
+           charts/voteball/templates 2>/dev/null || true)
+
 [ "$status" -eq 0 ] && echo "validate-repo: all checks passed"
 exit "$status"

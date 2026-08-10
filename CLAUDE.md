@@ -655,7 +655,13 @@ Two rules from those files are repeated here because they bite from outside the 
   `Dockerfile` `COPY` line.** A file on disk but missing from `COPY` is absent from the image with
   **no build error** — it surfaces as a runtime `ImportError` or a 404.
 - **ArgoCD owns the chart release**, so changes reach the cluster by committing to `master`, not by
-  running `helm upgrade` by hand — a manual upgrade now fails on server-side-apply field ownership.
+  running `helm upgrade` by hand — a hand-run upgrade of a chart that **differs** from `master` fails
+  on server-side-apply field ownership (`conflict with "argocd-controller"`). An *identical* chart
+  applies clean, because server-side apply grants two managers co-ownership of a field as long as they
+  apply the same value — which is the only reason `deploy.sh` step 10 can run `helm upgrade` at all.
+  The corollary bit on 2026-08-10: a manifest the API server **normalises** (an empty list literal
+  such as `to: []`, which it drops) can never match what it stored, so it conflicts forever even when
+  the chart is identical. `scripts/ci/validate-repo.sh` now fails the build on empty list literals.
 
 ### Doc claims that drift (check these before trusting them)
 

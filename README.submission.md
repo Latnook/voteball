@@ -435,8 +435,10 @@ in full in `docs/design/2026-08-04-cicd-split-design.md` §7.
 
 Three reasons, in order of weight:
 
-1. **A direct `helm upgrade` would now fail outright.** ArgoCD already owns this release with
-   server-side apply; a manual upgrade loses on field ownership (`conflict with "argocd-controller"`).
+1. **A direct `helm upgrade` from Jenkins would fail outright.** ArgoCD already owns this release with
+   server-side apply, and it grants a second manager co-ownership of a field only while both apply the
+   *same* value. A deploying Jenkins applies a chart that by definition differs (a new `image.tag`),
+   so it loses on field ownership (`conflict with "argocd-controller"`).
 2. **`selfHeal` would fight it.** ArgoCD continuously reconciles `charts/voteball` against `master`. A
    Jenkins-applied change that the git state didn't already describe would be reverted within the next
    reconciliation window — a green Jenkins pipeline and an un-deployed change.
