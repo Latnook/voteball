@@ -949,6 +949,12 @@ select, input[type="text"], input[type="url"], input[type="password"] {
 }
 .lean-detail-row:first-child { border-top: none; }
 
+.lean-detail-note {
+  margin-top: 0.5rem;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
 .switch-bar-label {
   font-size: 0.75rem;
   color: var(--muted);

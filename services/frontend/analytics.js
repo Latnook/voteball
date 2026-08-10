@@ -422,6 +422,23 @@ function renderLeanDetail(container, label, upcomingBreakdown) {
     : t('analyticsNoStatedPosition');
   sectorRow.appendChild(sectorValue);
   container.appendChild(sectorRow);
+
+  // Undecided ballots are excluded from every figure above, so the share is disclosed rather than
+  // hidden -- at 5% it is noise, but before an election it is routinely 20-30%.
+  const decided = decidedBallots(upcomingBreakdown);
+  const undecided = upcomingBreakdown
+    .filter(r => r.party_id === null)
+    .reduce((sum, r) => sum + rowWeight(r), 0);
+  const totalBallots = decided + undecided;
+  if (totalBallots > 0 && undecided > 0) {
+    const note = document.createElement('div');
+    note.className = 'lean-detail-note';
+    note.textContent = t('analyticsUndecidedShare')
+      .replace('{decided}', Math.round(decided))
+      .replace('{total}', Math.round(totalBallots))
+      .replace('{pct}', Math.round((undecided / totalBallots) * 100));
+    container.appendChild(note);
+  }
 }
 
 // National previous-party breakdown for the Lean tab's default view. Deliberately NOT a sum over
