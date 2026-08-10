@@ -250,8 +250,36 @@ added, so neither list should need editing — confirming that is the point.
 ## Verification outcome
 
 Ten tasks executed on `feat/intended-vote-lean`, every one passing its own review with no fix
-rounds. Final counts: worker suite 42 passed, backend suite 165 passed. Not merged to master by this
-task — the repo owner has a pending wording call (see below) and the merge is left to a later step.
+rounds. Final counts: worker suite 42 passed, backend suite 165 passed. Merged to `master` as
+`16eee9e` and deployed 2026-08-10 18:29 (CI #16, CD #6, ArgoCD converged in ~6 min end to end).
+
+### Measured against production, after the deploy
+
+**The headline prediction was half wrong, and this is the correction.** The "What changes on screen"
+table above was computed **pre-normalisation** — it summed raw pick counts, because ballot weight did
+not exist yet to compute with. It claimed *"two of the three axis labels flip."* **Only one did.**
+
+| Row | Before | Predicted | **Actual (ballot-weighted)** |
+|---|---|---|---|
+| Economic | −0.6 (Left) | +0.1 (Right) | **−0.1 (Left)** — moved right, did **not** cross zero |
+| Security | −0.3 (Dovish) | +0.5 (Hawkish) | **+0.3 (Hawkish)** — flipped, as predicted |
+| Religion & state | −1.7 (Separationist) | −2.2 | **−2.2 (Separationist)** — exact |
+| Bloc | 82/12/6 | 81/15/4 | **83/12/5** |
+| Sector | 94 Sec / 6 Trad | 96 Sec / 4 RZ | **95 Sec / 5 RZ** |
+| Coverage | — | "20 of 21 · 5% undecided" | **exact** |
+
+Every predicted figure moved in the predicted *direction*; the pre-normalisation arithmetic simply
+overstated the magnitude, and Economic's overstatement was the ~0.2 that decides a sign. The lesson
+generalises: **a pick-counted preview systematically exaggerates, because multi-party ballots are
+over-represented in it, and those ballots are not politically random** — the voters hedging across
+three parties here are the ones naming the new centre-right reservist parties. Any future "what will
+this look like" estimate computed before a normalisation lands should be read as a bound, not a
+forecast, and never as a claim about which side of zero a label ends on.
+
+Live confirmation: `sum(count) = 28` picks against `sum(weight) = 21.0` ballots on
+`/api/results?by=all` — matching the 21-ballot/28-pick ratio measured at design time — with `weight`
+arriving as a JSON float, `previous` rows correctly carrying none, and zero console errors on the
+rendered page.
 
 **This doc's own `Decimal`/`jsonify` claim was wrong, and worth correcting precisely.** The doc's
 Implementation section (via the plan derived from it) asserted that returning an un-cast `Decimal`
