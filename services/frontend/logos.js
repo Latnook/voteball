@@ -236,6 +236,48 @@ function fillLogoInteriorForDark(img) {
   return canvas;
 }
 
+// Recoloured party artwork, keyed by treatment + URL. Both operations above are pure functions of
+// the source pixels, so the same artwork always yields the same canvas -- but they were being redone
+// from scratch on every re-render, and only AFTER each new <img> fired its load event. In dark mode
+// that ordering is what shows: the un-recoloured artwork is dark ink on a dark card, so it paints
+// first as a near-invisible smudge and then visibly flips to the light recoloured version. Every
+// rebuild replayed that flip -- a results-page filter change, a language change, a league-tab switch.
+//
+// A cache hit applies the canvas synchronously, before the image loads at all, so a re-render shows
+// the finished logo with no intermediate state. null is cached as well as a canvas: it means "this
+// artwork needs no recolour" (a solid tile, or a flood fill that found nothing enclosed), which is
+// just as worth not recomputing.
+const RECOLOR_CACHE = new Map();
+
+// A canvas element can only be in one place in the DOM, so each card gets its own copy of the cached
+// one. drawImage is a straight bitmap blit -- not the per-pixel JS pass with an HSL round-trip that
+// produced it in the first place.
+function copyCanvas(src) {
+  const canvas = document.createElement('canvas');
+  canvas.width = src.width;
+  canvas.height = src.height;
+  canvas.getContext('2d').drawImage(src, 0, 0);
+  return canvas;
+}
+
+// Shared by both recolour paths: a host without CORS headers makes the crossOrigin attempt error (it
+// does not taint), so retry once without it -- keeping the logo (no recolour possible) and only
+// falling back to a monogram if that plain load also fails.
+function attachPlainImageFallback(img, wrap, entity, displayName, url) {
+  img.addEventListener('error', () => {
+    const plain = document.createElement('img');
+    plain.alt = '';
+    plain.loading = 'lazy';
+    plain.addEventListener('error', () => {
+      wrap.innerHTML = '';
+      wrap.appendChild(buildMonogram(entity.id, displayName));
+    }, { once: true });
+    plain.src = url;
+    wrap.innerHTML = '';
+    wrap.appendChild(plain);
+  }, { once: true });
+}
+
 // entity: {id, logo_url} (any /api/options entity). displayName: the localized name to render
 // as an image alt/monogram initials. Returns a <span class="logo"> ready to append.
 function logoEl(entity, displayName, opts) {
@@ -275,38 +317,45 @@ function logoEl(entity, displayName, opts) {
   if (opts.recolor) {
     // Party logos: load with crossOrigin so we can read the pixels and build a dark-mode-recoloured
     // canvas. CSS shows that canvas in the dark theme and the untouched original <img> in light (see
-    // .logo-recolored / .logo-orig). A host without CORS headers makes this attempt error (it does
-    // not taint), so on error we retry once without crossOrigin -- keeping the logo (no recolour
-    // possible) and only falling back to a monogram if that plain load also fails.
+    // .logo-recolored / .logo-orig).
+    const mode = FILL_INTERIOR_PARTIES.has(entity && entity.name_en) ? 'fill' : 'recolor';
+    const cacheKey = `${mode}|${url}`;
+
     const img = document.createElement('img');
     img.alt = '';
     img.loading = 'lazy';
     img.crossOrigin = 'anonymous';
+    attachPlainImageFallback(img, wrap, entity, displayName, url);
+
+    // Already computed for this artwork -- apply it now rather than waiting on this element's load
+    // event, which is the wait that let the un-recoloured logo paint first (see RECOLOR_CACHE).
+    if (RECOLOR_CACHE.has(cacheKey)) {
+      const cached = RECOLOR_CACHE.get(cacheKey);
+      if (cached) img.classList.add('logo-orig');
+      img.src = url;
+      wrap.appendChild(img);
+      if (cached) {
+        const canvas = copyCanvas(cached);
+        canvas.className = 'logo-recolored';
+        wrap.appendChild(canvas);
+      }
+      return wrap;
+    }
+
     img.addEventListener('load', () => {
       try {
-        const canvas = FILL_INTERIOR_PARTIES.has(entity && entity.name_en)
-          ? fillLogoInteriorForDark(img)
-          : recolorLogoForDark(img);
+        const canvas = mode === 'fill' ? fillLogoInteriorForDark(img) : recolorLogoForDark(img);
+        // Cached even when null -- "needs no recolour" is a result worth keeping too.
+        RECOLOR_CACHE.set(cacheKey, canvas);
         if (canvas) {
           canvas.className = 'logo-recolored';
           img.classList.add('logo-orig');
           wrap.appendChild(canvas);
         }
       } catch (e) {
-        /* tainted canvas / read error -- leave the original logo untouched */
+        /* tainted canvas / read error -- leave the original logo untouched, and don't cache it:
+           a taint is a property of this load, not of the artwork. */
       }
-    }, { once: true });
-    img.addEventListener('error', () => {
-      const plain = document.createElement('img');
-      plain.alt = '';
-      plain.loading = 'lazy';
-      plain.addEventListener('error', () => {
-        wrap.innerHTML = '';
-        wrap.appendChild(buildMonogram(entity.id, displayName));
-      }, { once: true });
-      plain.src = url;
-      wrap.innerHTML = '';
-      wrap.appendChild(plain);
     }, { once: true });
     img.src = url;
     wrap.appendChild(img);
