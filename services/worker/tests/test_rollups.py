@@ -588,3 +588,28 @@ def test_dual_league_club_counts_at_both_leagues_in_upcoming_rollup(conn):
     rows = cur.fetchall()
     cur.close()
     assert sorted(rows) == sorted([(la_liga, 1), (ucl, 1)])
+
+
+def test_upcoming_weight_counts_ballots_not_picks(conn):
+    import rollups
+    league_id, club_id, party_x, party_a, party_b = _seed_votes(conn)
+
+    rollups.recompute(conn)
+
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT upcoming_party_id, vote_count, weight FROM rollup_upcoming WHERE club_id = %s',
+        (club_id,)
+    )
+    rows = {r[0]: (r[1], float(r[2])) for r in cur.fetchall()}
+
+    # Vote 1 named two parties, so it is HALF a ballot on each -- but still one pick each.
+    assert rows[party_a] == (1, 0.5)
+    assert rows[party_b] == (1, 0.5)
+    # Vote 2 is undecided: a whole ballot on the NULL row.
+    assert rows[None] == (1, 1.0)
+
+    # The point of the column: 3 picks, 2 ballots.
+    assert sum(c for c, _ in rows.values()) == 3
+    assert sum(w for _, w in rows.values()) == 2.0
+    cur.close()

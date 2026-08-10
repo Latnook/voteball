@@ -42,10 +42,10 @@ CREATE TABLE vote_upcoming_parties (
 );
 CREATE TABLE alert_state (id INTEGER PRIMARY KEY DEFAULT 1, last_seen_total INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE rollup_previous (league_id INTEGER NOT NULL, club_id INTEGER, previous_party_id INTEGER, vote_count INTEGER NOT NULL);
-CREATE TABLE rollup_upcoming (league_id INTEGER NOT NULL, club_id INTEGER, upcoming_party_id INTEGER, vote_count INTEGER NOT NULL);
+CREATE TABLE rollup_upcoming (league_id INTEGER NOT NULL, club_id INTEGER, upcoming_party_id INTEGER, vote_count INTEGER NOT NULL, weight NUMERIC NOT NULL DEFAULT 0);
 CREATE TABLE rollup_previous_upcoming (previous_party_id INTEGER, upcoming_party_id INTEGER, league_id INTEGER, club_id INTEGER, vote_count INTEGER NOT NULL);
 CREATE TABLE rollup_national_previous (previous_party_id INTEGER, vote_count INTEGER NOT NULL);
-CREATE TABLE rollup_national_upcoming (upcoming_party_id INTEGER, vote_count INTEGER NOT NULL);
+CREATE TABLE rollup_national_upcoming (upcoming_party_id INTEGER, vote_count INTEGER NOT NULL, weight NUMERIC NOT NULL DEFAULT 0);
 CREATE TABLE rollup_national_previous_upcoming (previous_party_id INTEGER, upcoming_party_id INTEGER, vote_count INTEGER NOT NULL);
 CREATE TABLE party_lineage (previous_party_id INTEGER NOT NULL REFERENCES previous_parties(id), upcoming_party_id INTEGER NOT NULL REFERENCES upcoming_parties(id), PRIMARY KEY (previous_party_id, upcoming_party_id));
 CREATE TABLE rollup_vote_switch (league_id INTEGER, club_id INTEGER, switch_status TEXT NOT NULL, vote_count INTEGER NOT NULL);

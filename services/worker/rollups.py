@@ -27,6 +27,14 @@ _VOTE_LEAGUES_TOUCHED_CTE = '''
     SELECT vote_id, league_id FROM vote_leagues
 '''
 
+# Each ballot contributes total weight 1, split evenly across the parties it named, so a 3-party
+# ballot cannot outvote a 1-party one. See docs/design/2026-08-10-intended-vote-lean-design.md.
+_PICK_COUNTS_CTE = '''
+    pick_counts AS (
+        SELECT vote_id, COUNT(*)::numeric AS k FROM vote_upcoming_parties GROUP BY vote_id
+    )
+'''
+
 
 def recompute(conn):
     cur = conn.cursor()
@@ -65,33 +73,37 @@ def _recompute_upcoming(cur):
     cur.execute('TRUNCATE rollup_upcoming')
 
     cur.execute(f'''
-        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count)
-        SELECT vlt.league_id, NULL, vup.upcoming_party_id, COUNT(*)
+        WITH {_PICK_COUNTS_CTE}
+        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count, weight)
+        SELECT vlt.league_id, NULL, vup.upcoming_party_id, COUNT(*), SUM(1.0 / pc.k)
         FROM ({_VOTE_LEAGUES_TOUCHED_CTE}) vlt
         JOIN votes v ON v.id = vlt.vote_id
         JOIN vote_upcoming_parties vup ON vup.vote_id = v.id
+        JOIN pick_counts pc ON pc.vote_id = v.id
         GROUP BY vlt.league_id, vup.upcoming_party_id
     ''')
-    cur.execute('''
-        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count)
-        SELECT vc.league_id, vc.club_id, vup.upcoming_party_id, COUNT(*)
+    cur.execute(f'''
+        WITH {_PICK_COUNTS_CTE}
+        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count, weight)
+        SELECT vc.league_id, vc.club_id, vup.upcoming_party_id, COUNT(*), SUM(1.0 / pc.k)
         FROM vote_clubs vc
         JOIN votes v ON v.id = vc.vote_id
         JOIN vote_upcoming_parties vup ON vup.vote_id = v.id
+        JOIN pick_counts pc ON pc.vote_id = v.id
         GROUP BY vc.league_id, vc.club_id, vup.upcoming_party_id
     ''')
 
     cur.execute(f'''
-        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count)
-        SELECT vlt.league_id, NULL, NULL, COUNT(*)
+        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count, weight)
+        SELECT vlt.league_id, NULL, NULL, COUNT(*), COUNT(*)::numeric
         FROM ({_VOTE_LEAGUES_TOUCHED_CTE}) vlt
         JOIN votes v ON v.id = vlt.vote_id
         WHERE v.upcoming_vote_status = 'undecided'
         GROUP BY vlt.league_id
     ''')
     cur.execute('''
-        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count)
-        SELECT vc.league_id, vc.club_id, NULL, COUNT(*)
+        INSERT INTO rollup_upcoming (league_id, club_id, upcoming_party_id, vote_count, weight)
+        SELECT vc.league_id, vc.club_id, NULL, COUNT(*), COUNT(*)::numeric
         FROM vote_clubs vc
         JOIN votes v ON v.id = vc.vote_id
         WHERE v.upcoming_vote_status = 'undecided'
