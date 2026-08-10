@@ -35,13 +35,25 @@ document.getElementById('analytics-tabs').addEventListener('click', (e) => {
   switchAnalyticsTab(btn.dataset.tab);
 });
 
-// shares: [{party_id, count}, ...] for one club's previous-election votes.
+// Rows from the upcoming rollups carry `weight` -- one ballot's worth spread across the parties it
+// named -- while `count` is raw picks. Averaging on count gives a 3-party ballot triple the say of
+// a 1-party one. Falls back to count so a new frontend meeting an old API payload (pods roll one at
+// a time) degrades to the previous behaviour instead of rendering an empty card.
+function rowWeight(r) {
+  return r.weight ?? r.count;
+}
+
+// shares: [{party_id, count, weight}, ...] for one club's intended-vote picks.
 // Returns 1 / sum(share^2) -- "effective number of parties" (Laakso-Taagepera index).
-function computeEffectiveParties(previousBreakdown) {
-  const total = previousBreakdown.reduce((sum, r) => sum + r.count, 0);
+// Rows with a null party_id are UNDECIDED ballots and are excluded: scoring them would treat
+// "undecided" as a party, making a uniformly-undecided fanbase look as varied as a genuinely split
+// one. Their share is reported separately by the coverage line.
+function computeEffectiveParties(breakdown) {
+  const decided = breakdown.filter(r => r.party_id !== null);
+  const total = decided.reduce((sum, r) => sum + rowWeight(r), 0);
   if (total === 0) return 0;
-  const sumSquaredShares = previousBreakdown.reduce((sum, r) => {
-    const share = r.count / total;
+  const sumSquaredShares = decided.reduce((sum, r) => {
+    const share = rowWeight(r) / total;
     return sum + share * share;
   }, 0);
   return 1 / sumSquaredShares;
@@ -209,30 +221,32 @@ function partyById(partyId, list) {
   return analyticsOptionsData[list].find(p => p.id === partyId);
 }
 
-// Weighted average of a numeric axis (economic/security/religiosity) over a club's previous-election votes,
+// Weighted average of a numeric axis (economic/security/religiosity) over a breakdown of votes,
 // skipping parties with a null value on that axis (both from the numerator and the denominator) --
 // see design spec Decision 8.
-function weightedAxisAverage(previousBreakdown, axis) {
+function weightedAxisAverage(breakdown, axis, listName = 'previous_parties') {
   let weightedSum = 0;
   let weightTotal = 0;
-  previousBreakdown.forEach(r => {
-    const party = partyById(r.party_id, 'previous_parties');
+  breakdown.forEach(r => {
+    const party = partyById(r.party_id, listName);
     if (!party || party[axis] === null || party[axis] === undefined) return;
-    weightedSum += party[axis] * r.count;
-    weightTotal += r.count;
+    const w = rowWeight(r);
+    weightedSum += party[axis] * w;
+    weightTotal += w;
   });
   return weightTotal > 0 ? weightedSum / weightTotal : null;
 }
 
-function compositionPercentages(previousBreakdown, field, categories) {
+function compositionPercentages(breakdown, field, categories, listName = 'previous_parties') {
   const totals = {};
   categories.forEach(c => { totals[c] = 0; });
   let total = 0;
-  previousBreakdown.forEach(r => {
-    const party = partyById(r.party_id, 'previous_parties');
+  breakdown.forEach(r => {
+    const party = partyById(r.party_id, listName);
     if (!party || !party[field] || !(party[field] in totals)) return;
-    totals[party[field]] += r.count;
-    total += r.count;
+    const w = rowWeight(r);
+    totals[party[field]] += w;
+    total += w;
   });
   if (total === 0) return null;
   const pct = {};
