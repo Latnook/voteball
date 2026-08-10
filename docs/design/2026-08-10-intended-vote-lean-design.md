@@ -125,7 +125,8 @@ its ballot count is known.
 `familyShare` (`analytics.js`) itself is untouched by this pass and still sums `r.count`, so the
 Traits tab now pairs a ballot-weighted *gate* with a pick-weighted *metric* — a known, accepted state
 carried forward rather than a new inconsistency introduced here, for the same reason it was accepted
-in `2026-07-30-party-families-club-traits-design.md:415-419`: club numerator, club denominator and
+in `2026-07-30-party-families-club-traits-design.md`, under "Shares are of party-mentions, not
+ballots": club numerator, club denominator and
 national baseline all apply the identical rule, so the comparison stays apples-to-apples even though
 the label ("% of fans") is loosely a label for "% of party-mentions."
 
