@@ -286,6 +286,15 @@ CREATE TABLE IF NOT EXISTS rollup_national_upcoming (
 );
 CREATE INDEX IF NOT EXISTS idx_rollup_national_upcoming_party ON rollup_national_upcoming (upcoming_party_id);
 
+-- Ballot weight for the intended-vote lean (docs/design/2026-08-10-intended-vote-lean-design.md).
+-- vote_count counts PICKS -- a ballot may name up to 3 parties -- so averaging on it gives a
+-- 3-party ballot triple the say of a 1-party one. weight carries SUM(1.0/k) so each ballot totals
+-- exactly 1. vote_count stays INTEGER and keeps driving the displayed breakdown bars.
+-- ADD COLUMN IF NOT EXISTS, not a CREATE TABLE edit: schema.sql re-runs on every backend boot and
+-- CREATE TABLE IF NOT EXISTS skips an existing table, so a CREATE edit never reaches a live DB.
+ALTER TABLE rollup_upcoming ADD COLUMN IF NOT EXISTS weight NUMERIC NOT NULL DEFAULT 0;
+ALTER TABLE rollup_national_upcoming ADD COLUMN IF NOT EXISTS weight NUMERIC NOT NULL DEFAULT 0;
+
 CREATE TABLE IF NOT EXISTS rollup_national_previous_upcoming (
     previous_party_id INTEGER,
     upcoming_party_id INTEGER,
