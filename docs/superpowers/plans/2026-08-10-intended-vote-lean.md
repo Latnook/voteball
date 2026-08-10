@@ -601,15 +601,15 @@ function traitsEligibleClubs() {
     .map(entry => {
       const club = clubById(entry.club_id);
       if (!club) return null;
-      return { club, previousTotal: decidedBallots(entry.upcoming), upcoming: entry.upcoming };
+      return { club, ballots: decidedBallots(entry.upcoming), upcoming: entry.upcoming };
     })
-    .filter(row => row !== null && row.previousTotal >= LEAN_MIN_VOTES)
+    .filter(row => row !== null && row.ballots >= LEAN_MIN_VOTES)
     .filter(row => diversityIncludeWorldCup || !nationalLeagueIds.has(row.club.league_id))
     .sort((a, b) => localizedName(a.club).localeCompare(localizedName(b.club)));
 }
 ```
 
-Keep the property name `previousTotal` in this one function: it is read by `renderTraitsRows`' callers further down, and renaming it is a separate change with its own blast radius. The comment above now explains what it actually holds.
+The property is renamed `previousTotal` → `ballots`, because it no longer holds a previous-election total and a name that lies is worse than a rename. It is local to this function — `grep -n previousTotal services/frontend/analytics.js` returns only lines 746, 747 and 749, all inside it — so the rename is complete when those three are changed and that grep comes back empty.
 
 - [ ] **Step 7: Verify it parses, then commit**
 
