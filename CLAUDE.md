@@ -609,8 +609,20 @@ exactly this reason.
 scripts/tests/test-ci-guards.sh       # should-skip-build.sh / images-exist.sh; stubs ECR via CI_STUB_DESCRIBE_CMD
 scripts/tests/test-validate-repo.sh
 scripts/tests/test-smoke-test.sh
+scripts/tests/test-build-push-ecr.sh  # the dirty-tree guard; extracts the block, no docker/AWS
 scripts/tests/check-jenkinsfile-shell.sh   # see below — not a guard test, a shell-syntax gate
 ```
+
+**`build-push-ecr.sh` refuses to build from a dirty working tree**, because it tags images
+`git rev-parse --short HEAD` and an image built from unstaged work would carry a tag that does not
+describe its contents — with **nothing downstream to catch it**: ArgoCD syncs it, the smoke test
+passes, and CD's `ci: image tag <sha> [skip ci]` commit records the wrong provenance permanently.
+Near-missed on 2026-08-11, when revision 18's `seed.sql` was uncommitted as `deploy.sh` reached the
+image step and would have shipped as `b9e3054`. The guard runs **before** the terraform-state read
+and the ECR login, so it costs no network and fails at deploy step 5 — ahead of the billed apply at
+step 6. `ALLOW_DIRTY_BUILD=1` overrides it but suffixes the tag `-dirty`, so the escape hatch cannot
+produce a lying tag either. Untracked files count (docker's build context includes them);
+gitignored files do not.
 
 Same offline-stub pattern throughout. **Extend the matching test whenever you change a script** —
 pipeline logic that can only be tested by running the pipeline is exactly what this project refuses

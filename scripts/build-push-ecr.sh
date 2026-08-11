@@ -16,8 +16,40 @@ set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
 . scripts/lib/config.sh
-REGISTRY="$(tf_out ecr_registry)"
 TAG="$(git rev-parse --short HEAD)"
+
+# --- BEGIN dirty-tree guard ---
+# Images are tagged with the git SHA, so building from a working tree that does not match HEAD
+# publishes an image whose tag lies about its contents -- and NOTHING downstream catches it.
+# ArgoCD syncs it, the smoke test passes, and CD's `ci: image tag <sha>` commit records the wrong
+# provenance permanently. Hit for real on 2026-08-11: revision 18's seed.sql was uncommitted while
+# deploy.sh reached this script, which would have shipped it as `b9e3054` -- a commit that does not
+# contain it.
+#
+# This runs before the ECR login on purpose, so it needs no AWS credentials and costs nothing. It
+# also means deploy.sh fails at step 5 (the Jenkins image), which is BEFORE the billed apply at
+# step 6 -- the same reason the credential preflight sits at the top of that script.
+#
+# Untracked files count: they are not in HEAD but docker build DOES put them in the build context,
+# so they can reach the image. Gitignored files are excluded by git status and cannot.
+if [ -n "$(git status --porcelain)" ]; then
+  if [ "${ALLOW_DIRTY_BUILD:-}" = "1" ]; then
+    TAG="${TAG}-dirty"
+    echo "WARNING: working tree is dirty -- tagging ${TAG} so the tag cannot claim to be a commit." >&2
+    echo "         (An explicit tag argument, e.g. deploy.sh's pinned jenkins tag, is NOT suffixed" >&2
+    echo "          and remains the caller's responsibility.)" >&2
+  else
+    echo "ERROR: refusing to build -- the working tree has uncommitted changes." >&2
+    echo "       Images are tagged '${TAG}' from git, so this build would publish an image whose" >&2
+    echo "       tag does not describe its contents, and no later stage would notice." >&2
+    echo "       Commit or stash first, or re-run with ALLOW_DIRTY_BUILD=1 to tag '${TAG}-dirty'." >&2
+    git status --short >&2
+    exit 1
+  fi
+fi
+# --- END dirty-tree guard ---
+
+REGISTRY="$(tf_out ecr_registry)"
 
 echo "Logging in to ECR ${REGISTRY}"
 aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$REGISTRY"
