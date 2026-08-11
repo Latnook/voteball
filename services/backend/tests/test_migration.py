@@ -615,6 +615,51 @@ def test_europa_league_link_does_not_overwrite_an_admin_set_second_league(conn):
     cur.close()
 
 
+DEAD_FRANCE_CREST = 'https://upload.wikimedia.org/wikipedia/en/f/f4/France_NT_2026_logo.svg'
+FRANCE_CREST = 'https://upload.wikimedia.org/wikipedia/en/1/12/France_national_football_team_seal.svg'
+
+
+def test_france_crest_correction_reaches_an_already_seeded_row(conn):
+    # The World Cup crest block is guarded on "NULL or still a flagcdn flag", so a database that
+    # already holds the superseded Wikimedia URL matches neither and the edited tuple never reaches
+    # it. Only the separate correction statement moves it -- which is the whole point of that
+    # statement existing, and is invisible on a fresh database, where the tuple sets it anyway.
+    cur = conn.cursor()
+    cur.execute("UPDATE clubs SET logo_url = %s WHERE name_en = 'France'", (DEAD_FRANCE_CREST,))
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT logo_url FROM clubs WHERE name_en = 'France'")
+    assert cur.fetchone()[0] == FRANCE_CREST
+    cur.close()
+
+
+def test_france_crest_correction_leaves_an_admin_chosen_crest_alone(conn):
+    # Keyed on the exact superseded URL, so it is a correction rather than an unguarded overwrite.
+    admin_choice = 'https://example.invalid/admins-own-france.svg'
+    cur = conn.cursor()
+    cur.execute("UPDATE clubs SET logo_url = %s WHERE name_en = 'France'", (admin_choice,))
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT logo_url FROM clubs WHERE name_en = 'France'")
+    assert cur.fetchone()[0] == admin_choice
+    cur.close()
+
+
+def test_no_seeded_logo_points_at_the_dead_france_file(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT name_en FROM clubs WHERE logo_url = %s', (DEAD_FRANCE_CREST,))
+    assert cur.fetchall() == []
+    cur.close()
+
+
 def test_removing_a_seeded_club_from_the_europa_league_is_re_applied(conn):
     # The other half of the guard's behaviour, pinned because it is the surprising half: clearing the
     # link writes NULL, which is precisely the state the seed statement fills, so a removal made

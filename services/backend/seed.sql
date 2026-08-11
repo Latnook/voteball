@@ -671,7 +671,7 @@ UPDATE clubs c SET logo_url = v.logo_url
 FROM (VALUES
     ('Brazil', 'https://upload.wikimedia.org/wikipedia/commons/3/32/Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_logo_%282020%29.svg'),
     ('Argentina', 'https://upload.wikimedia.org/wikipedia/en/c/c1/Argentina_national_football_team_logo.svg'),
-    ('France', 'https://upload.wikimedia.org/wikipedia/en/f/f4/France_NT_2026_logo.svg'),
+    ('France', 'https://upload.wikimedia.org/wikipedia/en/1/12/France_national_football_team_seal.svg'),
     ('England', 'https://upload.wikimedia.org/wikipedia/en/8/8b/England_national_football_team_crest.svg'),
     ('Spain', 'https://upload.wikimedia.org/wikipedia/en/3/39/Spain_national_football_team_crest.svg'),
     ('Germany', 'https://upload.wikimedia.org/wikipedia/en/e/e3/DFBEagle.svg'),
@@ -720,6 +720,23 @@ FROM (VALUES
 ) AS v(name_en, logo_url)
 WHERE c.name_en = v.name_en
   AND (c.logo_url IS NULL OR c.logo_url LIKE 'https://flagcdn.com/%');
+
+-- France's crest, corrected 2026-08-12. This needs its own statement and CANNOT be fixed by editing
+-- the tuple above alone: the block's guard accepts only "never seeded" (NULL) and "still carrying the
+-- flag this file seeded" (flagcdn.com). An already-seeded database holds the previous Wikimedia URL,
+-- which is neither, so the edited tuple reaches a FRESH database only and production keeps the dead
+-- link forever. Same shape as the F.C. Kiryat Yam correction further down.
+--
+-- The old file (France_NT_2026_logo.svg) was deleted upstream and now 404s, so France rendered as an
+-- initials monogram -- the silent failure mode of hotlinking, since nothing server-side notices. All
+-- 238 other seeded URLs were checked the same day and are live.
+--
+-- Keyed on the exact superseded URL, so an admin who has since set their own crest (which will not
+-- match that string) is never overwritten, and it is a no-op once corrected.
+UPDATE clubs
+   SET logo_url = 'https://upload.wikimedia.org/wikipedia/en/1/12/France_national_football_team_seal.svg'
+ WHERE name_en = 'France'
+   AND logo_url = 'https://upload.wikimedia.org/wikipedia/en/f/f4/France_NT_2026_logo.svg';
 
 -- UEFA Nations League national-team crests: federation badges, same sourcing rule as the World Cup
 -- block above. Only the 38 nations this file inserts -- the 16 that are also World Cup teams already
