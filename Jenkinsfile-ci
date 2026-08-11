@@ -89,6 +89,24 @@ pipeline {
       }
     }
 
+    // The tests that protect the pipeline itself. Until 2026-08-11 nothing here ran scripts/tests/
+    // at all -- CI ran pytest for services/{backend,worker} and stopped -- so the [skip ci] loop
+    // guard, the immutable-tag re-run check, the values.yaml drift check and the dirty-tree guard
+    // were covered only by tests somebody had to remember to run. Any of them could have been
+    // deleted and every build would have stayed green.
+    //
+    // No container() block, deliberately: like Validation above, this runs in the default jnlp
+    // container, which is the only one in the voteball-build pod with `git` -- it performs the
+    // checkout. The suite needs bash, python3 and git, and several tests build throwaway git repos.
+    //
+    // Placed before Lint and Tests because it is the cheapest gate in the pipeline (seconds, no
+    // network, no services) and because a broken guard should stop a build before anything is built.
+    stage('Script tests') {
+      steps {
+        sh 'scripts/tests/run-ci-suite.sh'
+      }
+    }
+
     stage('Lint / Static Analysis') {
       steps {
         container('python') {

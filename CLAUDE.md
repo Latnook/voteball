@@ -606,12 +606,25 @@ scaffold always used quotes — `test-sync-values.sh` now carries an unquoted-ta
 exactly this reason.
 
 ```bash
+scripts/tests/run-ci-suite.sh         # runs all of the below that work offline — what CI executes
 scripts/tests/test-ci-guards.sh       # should-skip-build.sh / images-exist.sh; stubs ECR via CI_STUB_DESCRIBE_CMD
 scripts/tests/test-validate-repo.sh
 scripts/tests/test-smoke-test.sh
 scripts/tests/test-build-push-ecr.sh  # the dirty-tree guard; extracts the block, no docker/AWS
 scripts/tests/check-jenkinsfile-shell.sh   # see below — not a guard test, a shell-syntax gate
 ```
+
+**`Jenkinsfile-ci`'s "Script tests" stage runs `run-ci-suite.sh`, and until 2026-08-11 nothing ran
+these tests at all** — CI ran `pytest` for `services/{backend,worker}` and stopped, so every guard
+protecting the pipeline itself was covered by a test somebody had to remember to run. Any of them
+could have been deleted with every build staying green. **`run-ci-suite.sh`'s `RUN`/`SKIP` lists are
+exhaustive and it fails if a test file appears in neither**, so adding a test forces a one-line
+decision: a glob would silently pick up a future helm-dependent test and break every build, and an
+unchecked hand-list would silently drop a new test and protect nothing. It also fails if a listed
+test no longer exists. Three are skipped for tools the agent lacks (`helm`, `gh`, `curl`); moving one
+into `RUN` means adding that tool to the agent, not loosening the test. The stage runs **outside any
+`container()` block** — like Validation — because the default `jnlp` container is the only one in the
+`voteball-build` pod with `git`, which several tests need to build throwaway repos.
 
 **`build-push-ecr.sh` refuses to build from a dirty working tree**, because it tags images
 `git rev-parse --short HEAD` and an image built from unstaged work would carry a tag that does not

@@ -239,6 +239,32 @@ implicitly resolves to) `:latest`, and `charts/voteball/Chart.yaml` at least par
 Runs before "Already built?" deliberately — a re-run of an already-built tag still has to pass
 validation.
 
+### 3b. Script tests (new, 2026-08-11)
+
+`scripts/tests/run-ci-suite.sh` — the tests that protect the pipeline itself. Numbered `3b` rather
+than renumbering everything below it, the same convention `deploy.sh` uses for its own inserted
+steps.
+
+**Until this stage existed, nothing in CI ran `scripts/tests/` at all.** The pipeline ran `pytest`
+for `services/{backend,worker}` and stopped, so the `[skip ci]` loop guard, the immutable-tag re-run
+check, the `values.yaml` drift check and the dirty-tree guard were each covered by a test that only
+ran when somebody remembered. Any one of them could have been deleted and every build would have
+stayed green — the exact failure mode the repo's own rule ("pipeline logic that can only be tested by
+running the pipeline is exactly what this project refuses to accept") exists to prevent, applied
+everywhere except to the tests themselves.
+
+The suite's `RUN`/`SKIP` lists are **exhaustive**: it fails if any file in `scripts/tests/` appears in
+neither, and fails if a listed test has been deleted. A bare glob would silently absorb a future
+helm-dependent test and break every build; an unchecked hand-list would silently drop a new test and
+protect nothing. Three tests are skipped for tools the agent does not carry — `test-jenkins-chart.sh`
+(helm), `test-register-github-ci.sh` (gh), `test-webhook-wait.sh` (curl) — and they still run by
+hand. Moving one into `RUN` means adding the tool to the agent, not weakening the test.
+
+Runs **outside any `container()` block**, like Validation above: the default `jnlp` container is the
+only one in the `voteball-build` pod carrying `git`, and several of these tests create throwaway git
+repositories. It is placed before Lint and Tests because it is the cheapest gate in the pipeline —
+seconds, no network, no database — and a broken guard should stop a build before anything is built.
+
 ### 4. Lint / Static Analysis (new)
 
 `ruff check` over `services/backend` and `services/worker` in the `python` container; `hadolint`
