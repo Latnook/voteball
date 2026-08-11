@@ -807,6 +807,70 @@ future reader working from the link list:
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
 Religious Zionism.
 
+**2026-08-11 — read against 30 of the party's own news posts (`ozma-yeudit.co.il`, 2026-05-26 to
+2026-08-04). No axis moved; six tags added, 5 → 11.**
+
+**This row had been the thinnest in the table, and the reason matters.** It carried five tags and a
+two-line entry because it was scored from general knowledge of the party, never from party output —
+it publishes **no platform**, so earlier passes had nothing to read. It does publish a continuous
+stream of ministerial-action posts, which is a *record* source, not a platform one. `basis` therefore
+stays **`record`** — correctly, and now far better evidenced than when it was a placeholder.
+
+- **`gun-rights` added — the single best-documented position here**, in 8 of the 30 posts, with
+  first-party numbers: 6 localities approved in 2021, none in 2019/2020/2022, 23 in 2023, 21 in
+  2024, 80 in 2025, and **126 in 2026 alone**; **280,000+ personal licences** and 200+ localities
+  since the reform widened. Also a regulatory expansion to ex-police, prison officers, serving
+  combat soldiers and firefighters. זהות was the only holder; the motive differs (libertarian there,
+  armed-citizenry-for-security here) and that is exactly what the axis/tag split is for.
+- **`judicial-overhaul` added**, closing a conspicuous gap against its own bloc partner
+  הציונות הדתית, which already held it. Ben Gvir: *"אמשיך בכל הכוח עד שנעביר את הרפורמה המשפטית"*.
+- **`pro-settlement` and `sovereignty-annexation` added.** A cornerstone ceremony for a new
+  neighbourhood at חיננית in northern Samaria and a visit to חוות גלעד, with the sovereignty claim
+  stated as doctrine: *"ריבונות לא נקבעת רק בהחלטות ממשלה, אלא במציאות שקובעים כאן יום־יום… זו
+  המשמעות של ריבונות: לבנות, להתיישב ולהגן"*. Note this is the **opposite** of the כחול לבן
+  התיישבות trap recorded above — here the word does mean West Bank settlement.
+- **`temple-mount-centred` added.** The chairman ascended on Tisha B'Av, with a second minister
+  (וסרלאוף) the same morning, framed as an achievement of his tenure: *"אנחנו רואים התקדמות ענקית
+  גם בהר הבית… יהודים שמתפללים, מרגישים כאן בעלי הבית"*.
+- **`death-penalty-for-terrorists` added — a new tag, and the only new one.** Cited across three
+  posts as the party's own legislative achievement (*"במסגרת חוק עונש מוות למחבלים העברנו"*). No
+  existing tag covered capital punishment; `hardline-on-gaza` is about military conduct. This is a
+  deliberate single-holder tag on the `opposes-hostage-deals` precedent: the position is genuinely
+  distinctive and contested *within* the bloc, not a widely-held one that is merely under-recorded.
+  That is the distinction that decided against `periphery-development` on the same day.
+
+**economic 0 and `not-economy-focused` are now confirmed by evidence rather than inferred.** Across
+30 posts there is **no** economic content whatsoever — no tax, market, welfare, cost-of-living or
+privatization position. Every budget figure is a security appropriation (₪497m diverting the 550
+five-year plan into Shin Bet and police anti-crime units, tens of millions to relocate the northern
+police HQ). Thirty posts of party output with zero economic content is about as strong as negative
+evidence gets for that tag.
+
+**Two things that look like axis evidence and are not:**
+
+- **The muezzin-noise bill is not religiosity evidence.** Default prohibition on mosque loudspeakers
+  without a permit, ₪50,000 fines, police power to confiscate the system. The religiosity axis is
+  scoped to **Jewish** religion-and-state, and the bill's own sponsors frame it as public health
+  explicitly — *"המואזין בעוצמות חריגות הוא לא עניין דתי, זו פגיעה בבריאות הציבור"*. It belongs to
+  `jewish-supremacist`, which the row already carries, not to the axis.
+- **Negev enforcement is recorded here and deliberately left untagged.** ~5,700 illegal structures
+  demolished in a year, and planting on ~6,000 dunam under Bedouin ownership claims in court,
+  described as land control outright (*"אנחנו בעלי הבית"*). It is heavily evidenced and distinctive,
+  but no existing tag covers it and minting one with no comparator row is what the
+  `periphery-development` finding argues against. `jewish-supremacist` plus `far-right` already
+  position the row; revisit if a second party gives the tag something to discriminate between.
+
+**`bibi` confirmed, with a bargaining condition worth recording.** Ben Gvir wrote to Netanyahu
+setting a **precondition for joining the next government**: immediate dismissal of Attorney General
+Baharav-Miara, plus a commission with criminal-investigative powers over her conduct — *"ללא קיומו
+של תנאי זה, לא נוכל להיכנס לממשלה"*. The letter presupposes a Netanyahu government, so the bloc is
+unchanged; what is new is that the row now has a stated coalition condition, which no tag carries and
+which could matter if it is ever acted on.
+
+Sources: 30 posts at `ozma-yeudit.co.il`, published 2026-05-26 to 2026-08-04, read 2026-08-11.
+Ordinary WordPress pages — no retrieval trap, `.elementor-widget-theme-post-content` carries the
+body text.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / 0 / −2 · secular
 
 An unusual fusion: a large tax cut (VAT 18→12, marginal income 50→40, corporate 50→40) and
@@ -1436,6 +1500,15 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   one has an earning standard recorded (a costed benefits package, revision 13), so it can at least
   be tested; `periphery-development` has none. Raised by the repo owner on 2026-08-11, and the
   reason two proposed tags were dropped that day.
+- **`annexationist` and `sovereignty-annexation` are two tags for one position.** Found 2026-08-11
+  while tagging עוצמה יהודית. `annexationist` has a single holder (הציונות הדתית);
+  `sovereignty-annexation` has four (אל הדגל, זהות, נעם, and now עוצמה יהודית). Nothing
+  distinguishes them, so a reader filtering on either gets a partial answer — and the two parties
+  that sit closest together on this axis, הציונות הדתית and עוצמה יהודית, are split across the two
+  spellings, which is the worst case. Fold `annexationist` into `sovereignty-annexation`. Grouped
+  with the `periphery-development` question above: both are **vocabulary hygiene**, and they should
+  be done as one pass rather than opportunistically during a document read, which is how each of
+  them got this way.
 - **נעם is campaigning as `נעם לישראל`** ("Noam for Israel") for the 26th Knesset. The row is seeded
   under the plain `נעם` and it is deliberately *not* renamed yet: lists are not final, a rename
   orphans votes (see the warning above), and an admin can do it in one edit if the longer name is
@@ -1477,3 +1550,4 @@ pass happened, for anyone reading git history.
 | 2026-08-08 | revision 14 — בית ציוני - המילואימניקים read against its own תוכנית מגן דוד platform (launched 2026-08-05). **religiosity 0 → −2** on *"מתן תקצוב ציבורי רק למוסדות המלמדים לימודי ליבה"*, the same criterion that moved כחול לבן in revision 13; economic +1, security +2 and `unaligned` all **confirmed and unmoved**, with economic now resting on a party document instead of Hendel's personal record. 5 tags + the `cost-of-living` family added. **Row renamed** `המילואימניקים` → `בית ציוני - המילואימניקים` in `seed.sql` via an `UPDATE` before the `INSERT`, verified against an already-seeded database to keep its `id` and its votes. Logos: the same row repointed to a self-hosted file, and **הציונות הדתית's 2026 rebrand applied to `upcoming_parties` only** — `previous_parties` keeps the 2022 logo as the current Knesset faction |
 | 2026-08-08 | בית ציוני's logo corrected after shipping: its Star of David is a **knockout**, so the dark-mode recolour left the card showing through it as black triangles. Now one blue lockup used unchanged in both themes, with the recolour skipped (`SKIP_RECOLOR_PARTIES`) and the secondary elements on `#418AB8` to clear 3:1 on both grounds. **No classification change.** See the knockout section under Logos |
 | 2026-08-11 | revision 15 — five newly-read first-party documents across three rows, and **no axis moved on any of them**. הדמוקרטים's corpus 8 → 10 (מילואימניקים, שיווין מגדרי): `reservist-focused` and `gender-equality` added — the first makes this the tag's only cross-bloc holder, the second is new to the vocabulary; `sanctions-on-non-servers` rejected (this party targets institutional funding, not individuals, the opposite side of כחול לבן's line); religiosity −3 confirmed from a *third* motive (get-refusal, not pluralism or anti-clericalism); security −1 re-verified mechanically at ten papers, with a note that two documents now press on the −1/−2 boundary. ישר's October 7 commission מתווה read and **deliberately not tagged** — `state-commission-of-inquiry` sits on 1 of 18 rows and measures audit coverage rather than position; the drafted-statute-vs-slogan distinction recorded in prose instead. כחול לבן's corpus 6 → 7 (עולים צפונה): economic 0 and security +2 both held, `periphery-development` **rejected as a broken tag** and raised as an open question, and the התיישבות homograph (Negev/Galilee, not the West Bank) flagged against the row's `pro-settlement` tag. Two stale claims fixed: "כחול לבן... two have been read" contradicted revision 13, and the `kachollavan.org.il` 403 does **not** require manual download — a browser `User-Agent` plus `Referer` fetches it |
+| 2026-08-11 | revision 16 — **עוצמה יהודית read against party output for the first time**, via 30 of its own news posts (2026-05-26 → 2026-08-04); it publishes no platform, which is why the row had stood at five tags and a two-line entry. **No axis moved** (security and religiosity are already at the +3 ceiling; economic 0 is now confirmed by 30 posts containing zero economic content, rather than inferred). Six tags added, 5 → 11: `gun-rights` (8 posts, 280,000+ licences, 126 localities in 2026 alone), `judicial-overhaul` (closing a gap against its own bloc partner), `pro-settlement` + `sovereignty-annexation` (חיננית cornerstone, sovereignty stated as doctrine), `temple-mount-centred` (chairman ascending on Tisha B'Av), and one new tag `death-penalty-for-terrorists`. `basis` stays `record` — ministerial-action posts are a record source, not a platform. Two near-misses recorded rather than tagged: the muezzin-noise bill is **not** religiosity evidence (that axis is scoped to Jewish religion-and-state, and its sponsors frame it as public health), and Negev demolition enforcement is left untagged for want of a comparator row. Also logged: `annexationist` and `sovereignty-annexation` are duplicate tags for one position, splitting the two closest parties across two spellings |
