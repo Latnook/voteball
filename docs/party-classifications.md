@@ -1283,6 +1283,67 @@ promoting heteronormativity, and opposition to gender content in education and t
 `anti-judicial-review` records their attack on High Court intervention in religious matters, which is
 a separate strand from the halakhic-state demand and would otherwise be invisible.
 
+**2026-08-11 — the relaunched site (`noamlisrael.org.il`, campaign launched 2026-07-29 under
+*"חופשי להיות יהודי"*) is the first real platform this row has ever had. No axis moved; two tags
+added.**
+
+- **economic stays NULL — and this is the standing revisit firing, not being skipped.** The entry
+  above says "revisit the moment they publish anything fiscal", and they have: a **₪12,000 minimum
+  salary for a starting teacher**. That is the first fiscal number the party has ever published, and
+  it still does not move the axis, for the same reason the הציונות הדתית entry gives for ₪9B of
+  settlement budgets — it is *education policy denominated in shekels*, not a position on how the
+  economy should be organised. A single sectoral wage floor asserts nothing about tax, welfare,
+  markets or the state's economic role. **The revisit is now discharged rather than pending**; the
+  next one needs a fiscal *position*, not a fiscal *figure*.
+- **`not-economy-focused` is kept here, on the same day it was removed from הציונות הדתית.** That is
+  not inconsistency: RZP published a 6-page economic doctrine, נעם published a teacher's salary. The
+  two rows are different because the evidence is different.
+- **`opposes-hostage-deals` added, on the exact precedent that earned it for הציונות הדתית.** That
+  row got the tag because Tikva Forum founder צביקה מור entered at #3. Here **אליהו ליבמן** — second
+  of the three candidates the party has named — **founded the same forum**, and independent reporting
+  confirms he established it specifically in opposition to hostage-for-prisoner exchange deals,
+  pressing to continue until Hamas was defeated. He is also a bereaved father: his son אליקים was a
+  security guard at the Nova festival, held as presumed-kidnapped for over half a year before it
+  emerged he had been murdered and his body mistakenly buried with one of the victims. Same forum,
+  same position, higher list slot than the case that set the precedent.
+- **`judicial-overhaul` added, and it exposes a vocabulary split.** The new platform is the overhaul
+  programme in detail: legislate פסקת ההתגברות to restrain the High Court from annulling Knesset
+  decisions, **split the Attorney-General's role** so the post advises rather than serially vetoes,
+  and make political trust appointments so ministers can execute policy. נעם was the *only* holder of
+  `anti-judicial-review` while its two bloc partners held `judicial-overhaul` — three parties, one
+  programme, two tags. The tag is added rather than swapped: `anti-judicial-review` may still carry
+  something narrower (court intervention in *religious* matters specifically), and deciding that
+  belongs to the vocabulary sweep, not to an opportunistic edit. Logged under Open questions as the
+  third instance of this pattern.
+- **Confirmed first-party for the first time, having previously rested on the old site and
+  Wikipedia:** religiosity +3 and `rabbinate-as-fourth-branch` (*"חיזוק הרבנות הראשית, הסדרת מעמד
+  הכותל המערבי"*), `opposes-western-wall-compromise`, `halakhic-state` (legislation "במבט יהודי" on
+  kashrut, conversion, **משפט עברי** and family values; Shabbat as the public day of rest),
+  `education-system-focused` (a full education plank — curriculum transparency, expelling foreign
+  NGOs, abolishing registration zones, a **parental veto over content**), and `rabbinic-authority-led`
+  (Rabbi Tzvi Tau publicly blessing the campaign).
+
+**The candidates, checked independently rather than from the party's own biographies:**
+
+| # | candidate | what independent sources confirm |
+|---|---|---|
+| 1 | **אבי מעוז** | party chairman since 2019; former DG of the Interior and Housing ministries; ran the Authority for National Jewish Identity and the Education Ministry's External Programs Unit — the brief that made him nationally controversial, and the reason `education-system-focused` was never speculative |
+| 2 | **סא״ל במיל׳ אליהו ליבמן** | founded פורום תקווה in opposition to hostage-exchange deals; head of the Kiryat Arba-Hebron council, and **reported as not standing for re-election there**, i.e. leaving local office for this run; Hebron-born, Golani Sayeret officer; brother murdered 1998, son murdered at Nova |
+| 3 | **הרב שמעון טובול** | deputy mayor of Beer Sheva and councillor for 13 years, holding the environment portfolio; Givati reservist who served hundreds of days in חרבות ברזל; long record with at-risk haredi youth and a weekly food-basket operation for ~450 families |
+
+**טובול is the interesting one for what it does *not* change.** A municipal welfare-and-community
+record at #3 is the closest thing to a social profile this party has ever fielded, and it is still
+not an economic position — it is one candidate's local record, not a party doctrine, so it leaves the
+NULL untouched. Worth recording because it is exactly the sort of biography that invites reading an
+economic stance into a party that has not stated one.
+
+Sources: [noamlisrael.org.il](https://www.noamlisrael.org.il/) (the relaunched site),
+[he.wikipedia — מפלגת נעם](https://he.wikipedia.org/wiki/מפלגת_נעם),
+[Arutz 7 on Libman joining](https://www.inn.co.il/news/702060),
+[Kipa on Libman joining](https://www.kipa.co.il/חדשות/1228206-0/),
+[Makor Rishon — Libman not standing again in Kiryat Arba](https://www.makorrishon.co.il/news/671099/),
+[IDI 2026 party and candidate list](https://www.idi.org.il/policy/parties-and-elections/elections/2026-1/).
+
 **Lineage: הציונות הדתית → נעם**, on the same footing as עוצמה יהודית. Noam held its 25th-Knesset seat
 on the Religious Zionism joint slate (as it did in the 24th), and is running independently in 2026 —
 structurally the same split Otzma made, so a 2022 הציונות הדתית voter switching to נעם is a real
@@ -1571,6 +1632,15 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   "most of the parties claim to be reservist focused" is now supported by evidence rather than
   intuition, and the sweep should decide a threshold question this tag cannot answer on its own:
   **once a third of the table qualifies, is the tag still saying anything?**
+- **`anti-judicial-review` vs `judicial-overhaul` is the third instance of the same pattern**, found
+  2026-08-11 when נעם's relaunched platform turned out to be the overhaul programme in detail
+  (override clause, splitting the Attorney-General's role, political trust appointments). נעם was the
+  sole holder of `anti-judicial-review` while its two bloc partners held `judicial-overhaul` — three
+  parties in one bloc pursuing one programme, split across two tags, so filtering on either returns
+  an incomplete bloc. `judicial-overhaul` was **added** to נעם rather than swapped in, because
+  `anti-judicial-review` may still carry something genuinely narrower (High Court intervention in
+  *religious* matters), and that determination belongs to the sweep. Decide whether it is a distinct
+  position or a duplicate; if duplicate, fold it in.
 - **`annexationist` and `sovereignty-annexation` are two tags for one position.** Found 2026-08-11
   while tagging עוצמה יהודית. `annexationist` has a single holder (הציונות הדתית);
   `sovereignty-annexation` has four (אל הדגל, זהות, נעם, and now עוצמה יהודית). Nothing
@@ -1584,6 +1654,14 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   under the plain `נעם` and it is deliberately *not* renamed yet: lists are not final, a rename
   orphans votes (see the warning above), and an admin can do it in one edit if the longer name is
   what appears on the ballot.
+  **Stronger as of 2026-08-11, and still held.** The rebrand is no longer just campaign language: the
+  party relaunched on a new domain (`noamlisrael.org.il`), opened its campaign on 2026-07-29 under
+  *"חופשי להיות יהודי"*, and has named three candidates. That is close to the bar בית ציוני -
+  המילואימניקים cleared before *its* rename — but not the same bar. That one followed a **completed
+  merger**, a structural fact; this is a rebrand, and the doc's stated blocker was never the branding,
+  it was that **the ballot name is not certified**. The asymmetry decides it: waiting costs one admin
+  edit, renaming early costs a second rename plus a data migration on a row that holds votes if they
+  file as plain `נעם`. **Trigger: ballot certification, not campaign launch.**
 - **נעם's `economic` is the only NULL on that axis** and is a "no platform yet" NULL, not a
   scoped-out one. It must be revisited if they publish any fiscal position.
 - Election date is **2026-10-27**; lists are not final, so more revisions should be expected.
@@ -1623,3 +1701,4 @@ pass happened, for anyone reading git history.
 | 2026-08-11 | revision 15 — five newly-read first-party documents across three rows, and **no axis moved on any of them**. הדמוקרטים's corpus 8 → 10 (מילואימניקים, שיווין מגדרי): `reservist-focused` and `gender-equality` added — the first makes this the tag's only cross-bloc holder, the second is new to the vocabulary; `sanctions-on-non-servers` rejected (this party targets institutional funding, not individuals, the opposite side of כחול לבן's line); religiosity −3 confirmed from a *third* motive (get-refusal, not pluralism or anti-clericalism); security −1 re-verified mechanically at ten papers, with a note that two documents now press on the −1/−2 boundary. ישר's October 7 commission מתווה read and **deliberately not tagged** — `state-commission-of-inquiry` sits on 1 of 18 rows and measures audit coverage rather than position; the drafted-statute-vs-slogan distinction recorded in prose instead. כחול לבן's corpus 6 → 7 (עולים צפונה): economic 0 and security +2 both held, `periphery-development` **rejected as a broken tag** and raised as an open question, and the התיישבות homograph (Negev/Galilee, not the West Bank) flagged against the row's `pro-settlement` tag. Two stale claims fixed: "כחול לבן... two have been read" contradicted revision 13, and the `kachollavan.org.il` 403 does **not** require manual download — a browser `User-Agent` plus `Referer` fetches it |
 | 2026-08-11 | revision 16 — **עוצמה יהודית read against party output for the first time**, via 30 of its own news posts (2026-05-26 → 2026-08-04); it publishes no platform, which is why the row had stood at five tags and a two-line entry. **No axis moved** (security and religiosity are already at the +3 ceiling; economic 0 is now confirmed by 30 posts containing zero economic content, rather than inferred). Six tags added, 5 → 11: `gun-rights` (8 posts, 280,000+ licences, 126 localities in 2026 alone), `judicial-overhaul` (closing a gap against its own bloc partner), `pro-settlement` + `sovereignty-annexation` (חיננית cornerstone, sovereignty stated as doctrine), `temple-mount-centred` (chairman ascending on Tisha B'Av), and one new tag `death-penalty-for-terrorists`. `basis` stays `record` — ministerial-action posts are a record source, not a platform. Two near-misses recorded rather than tagged: the muezzin-noise bill is **not** religiosity evidence (that axis is scoped to Jewish religion-and-state, and its sponsors frame it as public health), and Negev demolition enforcement is left untagged for want of a comparator row. Also logged: `annexationist` and `sovereignty-annexation` are duplicate tags for one position, splitting the two closest parties across two spellings |
 | 2026-08-11 | revision 17 — **הציונות הדתית read against its own 13 platform PDFs** (2021-12 / 2022-10; the party has published nothing for 2026, so these are authoritative for `previous_parties` and only indicative for `upcoming_parties`, whose `basis` stays `record`). **No axis moved.** `not-economy-focused` **REMOVED from both rows** — `docs/design/2026-07-30-party-families-club-traits-design.md` had already replaced the *family* of that name here as "simply false" given Smotrich's finance ministry, but nobody removed the *tag*, so `seed.sql` kept asserting what another repo doc called false; a dedicated 6-page כלכלה paper (abolish civil-service tenure, ban political strikes, no deficit-closing via tax rises, broad tax cuts against narrowed exemptions, hospital independence, deregulation) plus a 7-page workfare-framed רווחה paper settle it. **economic stays 0 regardless** — the number records the *revealed* position and `claims-economically-liberal` carries the gap; those two tags were never the same claim, and only the second was ever true here. `death-penalty-for-terrorists` added from the טרור paper, giving that tag a **second** holder and retiring the "single-holder" rationale written for עוצמה יהודית earlier the same day. `judicial-overhaul` and `annexationist` confirmed against first-party text for the first time (the משפט paper's override clause requires a *unanimous* court to strike a Knesset law). `reservist-focused` **deliberately not added** despite a qualifying מילואים paper: pre-October-7, and it would put the tag on a third of the table — confirming the owner's prediction and sharpening the open vocabulary question. Retrieval note: **12 of the 13 are image-only**, `pdftotext` yielding 34 bytes each |
+| 2026-08-11 | revision 18 — **נעם read against its relaunched site** (`noamlisrael.org.il`, campaign opened 2026-07-29), the first real platform this row has ever had. **No axis moved.** `opposes-hostage-deals` added on the exact precedent that earned it for הציונות הדתית — that row got it because Tikva Forum founder צביקה מור stood at #3; here **אליהו ליבמן**, who *founded* the same forum in opposition to hostage-for-prisoner deals, stands at #2, and is himself a bereaved father (son murdered at Nova, held as presumed-kidnapped for over half a year). `judicial-overhaul` added: the platform is the overhaul programme in detail (פסקת ההתגברות, splitting the Attorney-General's role, political trust appointments), which exposed נעם as the sole holder of `anti-judicial-review` while both bloc partners held `judicial-overhaul` — **third instance** of the vocabulary-split pattern, logged rather than opportunistically fixed. **economic stays NULL and the standing revisit is now DISCHARGED rather than pending**: the ₪12,000 starting-teacher salary floor is the first fiscal figure the party has published, but it is education policy denominated in shekels, not a position on how the economy should be organised — the next revisit needs a fiscal *position*, not a fiscal *figure*. `not-economy-focused` **kept** here on the same day it was removed from הציונות הדתית, because the evidence differs: RZP published a 6-page economic doctrine, נעם published a teacher's salary. religiosity +3, `rabbinate-as-fourth-branch`, `halakhic-state`, `opposes-western-wall-compromise`, `education-system-focused` and `rabbinic-authority-led` all confirmed against first-party text for the first time. Candidates verified independently (Maoz, Libman, Tovol), and the נעם→נעם לישראל rename remains **held**, with the trigger restated as ballot certification rather than campaign launch |
