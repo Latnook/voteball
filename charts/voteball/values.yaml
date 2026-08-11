@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "d36f37b"
+  tag: "7ac2103"
   pullPolicy: IfNotPresent
 
 # Non-secret config -> ConfigMap app-config. DB_HOST is the Plan-3a RDS endpoint (set in Task 1/7).
@@ -23,8 +23,8 @@ externalSecret:
 
 ingress:
   host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/cdb12e75-a19e-4fa3-8533-49a70f347d15"
-  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/40b4ef47-42c1-42fc-9471-48d7194efbb3"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/5b6603a7-2645-4de0-95a7-24bfbdad1cf9"
+  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/a872349f-1534-4aea-ab87-4a9d471d2d94"
 
 # Alert rules (charts/voteball/templates/prometheusrule.yaml). Requires kube-prometheus-stack's
 # PrometheusRule CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart
