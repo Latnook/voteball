@@ -47,6 +47,27 @@ const OUTLINE_CLUBS = new Set([
   'Cape Verde',
   'Mexico',
   'South Korea',
+  // Sparta Prague's crest is a black disc on transparency: without the outline the disc vanishes
+  // into the card and only the white S and the three gold stars float there. Its Europa League
+  // neighbours Stade Rennais and Sturm Graz are deliberately NOT here -- a gold shield border and a
+  // white ring respectively already separate them from the card, so an outline only thickens them.
+  'Sparta Prague',
+]);
+
+// Clubs/leagues (by name_en) that ship a SECOND artwork file for the dark theme, rather than being
+// derived from the light one. The light file is what logo_url points at; the value here is the dark
+// one. Both render, and the same four CSS rules that switch the party canvases pick which is visible
+// (.logo-orig in light, .logo-recolored in dark), so this needs no theme logic of its own and
+// follows the manual toggle as well as the OS preference.
+//
+// This exists for artwork where neither existing treatment works. The Europa League mark is a large
+// solid black trophy: OUTLINE_CLUBS traces a silhouette without lifting it, so the trophy would stay
+// black; and the canvas recolour -- which would produce roughly the right result -- derives the dark
+// version at runtime, so it can't be reviewed by looking at a file and drags in crossOrigin, pixel
+// reads and the tainted-canvas fallback for what is a two-colour flat asset. A hand-made file is
+// both cheaper and inspectable. See docs/design/2026-08-12-europa-league-design.md decision 5.
+const DARK_VARIANT_LOGOS = new Map([
+  ['UEFA Europa League', '/logos/uefa-europa-league-dark.svg'],
 ]);
 
 // Parties (by name_en) whose artwork is dark ink on a TRANSPARENT interior, which the recolour below
@@ -295,6 +316,36 @@ function logoEl(entity, displayName, opts) {
   // work, no CORS needed) -- see OUTLINE_CLUBS / .logo-dark.
   if (!opts.recolor && entity && OUTLINE_CLUBS.has(entity.name_en)) {
     wrap.classList.add('logo-dark');
+  }
+
+  // A hand-made dark-theme artwork file: append both images and let CSS choose. Deliberately no
+  // canvas and no crossOrigin -- both files are same-origin static assets, so there is nothing to
+  // taint and nothing to compute. Each carries its own error handler, so a missing file falls back
+  // to the monogram exactly like a single image would.
+  if (!opts.recolor && entity && DARK_VARIANT_LOGOS.has(entity.name_en)) {
+    const light = document.createElement('img');
+    light.alt = '';
+    light.loading = 'lazy';
+    light.className = 'logo-orig';
+    light.addEventListener('error', () => {
+      wrap.innerHTML = '';
+      wrap.appendChild(buildMonogram(entity.id, displayName));
+    }, { once: true });
+    light.src = url;
+
+    const dark = document.createElement('img');
+    dark.alt = '';
+    dark.loading = 'lazy';
+    dark.className = 'logo-recolored';
+    dark.addEventListener('error', () => {
+      wrap.innerHTML = '';
+      wrap.appendChild(buildMonogram(entity.id, displayName));
+    }, { once: true });
+    dark.src = DARK_VARIANT_LOGOS.get(entity.name_en);
+
+    wrap.appendChild(light);
+    wrap.appendChild(dark);
+    return wrap;
   }
 
   // SKIP_RECOLOR_PARTIES: a plain image shown in both themes. It deliberately does NOT get the

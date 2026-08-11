@@ -67,6 +67,16 @@ statements are that migration. Unguarded is safe here in a way it would not be f
 removes a meaningless suffix, so an admin-curated logo still points at the same image — and the
 `LIKE` makes it a no-op once clean.
 
+**Roster membership is owned by `seed.sql`; names and `logo_url` are owned by the admin.** That split
+is what decides whether a statement is guarded, and it has a consequence that is easy to get
+backwards: the `domestic_league_id` link statements can be guarded against *overwriting* an admin's
+edit (`AND domestic_league_id IS NULL`, as the Europa League block does), but **no guard makes a
+removal stick** — clearing a link writes `NULL`, which is exactly the state the guarded statement
+fills, so the club is re-linked on the next pod boot. Verified both directions on an already-seeded
+database, 2026-08-12. Dropping a seeded club from a competition for good means editing the list;
+the admin UI's buttons are for clubs this file does not name.
+`test_removing_a_seeded_club_from_the_europa_league_is_re_applied` pins the surprising half.
+
 **The leagues block matches on `name OR name_he`, and neither column alone is enough.** No single
 column identifies a league in all three states the table can be in: on a fresh install `name_he` is
 still NULL; once seeded, `name_en` has been rewritten *unguarded* for EPL/UCL (`'EPL'` →

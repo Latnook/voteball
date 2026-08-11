@@ -519,12 +519,18 @@ button { font-family: inherit; }
 }
 :root[data-theme="light"] .logo-dark img { filter: none; }
 
-/* Party logos (opts.recolor in logos.js) are recoloured for dark backgrounds on a <canvas>: dark
-   parts lifted to light, hue preserved, bright colours kept. The dark theme (default) shows that
-   canvas and hides the untouched original <img class="logo-orig">; light mode shows the original.
-   Only parties whose logo actually changed get a .logo-recolored canvas -- everything else (clubs,
-   flags, unchanged/solid-tile party logos) just keeps its <img>, which has no .logo-orig class and
-   so is never hidden. */
+/* The light/dark artwork switch. The dark theme (default) shows .logo-recolored and hides the
+   untouched original <img class="logo-orig">; light mode shows the original. Anything with no
+   .logo-orig class (clubs, flags, unchanged/solid-tile party logos) just keeps its single <img> and
+   is never hidden.
+
+   Two things feed it, and this is the ONLY place either of them switches on the theme -- keep them
+   sharing these rules rather than adding a parallel pair, which is how the manual data-theme toggle
+   and the prefers-color-scheme fallback drift apart:
+     - party logos (opts.recolor in logos.js), recoloured for dark backgrounds on a <canvas>: dark
+       parts lifted to light, hue preserved, bright colours kept;
+     - entries in logos.js's DARK_VARIANT_LOGOS, where .logo-recolored is a plain <img> pointing at a
+       hand-made second file rather than a canvas (the UEFA Europa League's white trophy). */
 .logo .logo-recolored {
   width: 100%;
   height: 100%;

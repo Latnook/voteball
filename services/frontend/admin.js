@@ -499,7 +499,7 @@ function renderClubRow(club, data, annotateLeagueId) {
   reassignBtn.addEventListener('click', () => toggleReassignClubForm(club, data, row));
   row.appendChild(reassignBtn);
 
-  row.appendChild(renderUclToggleButton(club, data));
+  renderContinentalToggleButtons(club, data).forEach(btn => row.appendChild(btn));
 
   const deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
@@ -1037,38 +1037,46 @@ function toggleReassignClubForm(sourceClub, data, row) {
   row.after(form);
 }
 
-function findChampionsLeague(data) {
-  return data.leagues.find(l => l.name_en === 'UEFA Champions League') || null;
+// The continental competitions a club can be attached to from this screen, by name_en, in display
+// order. A club carries at most ONE of them: the link lives in the single domestic_league_id column,
+// so attaching to a second is not representable and the buttons say so rather than silently moving
+// the club. Adding a competition here is the whole change -- everything below is parameterised.
+const CONTINENTAL_COMPETITIONS = ['UEFA Champions League', 'UEFA Europa League'];
+
+function renderContinentalToggleButtons(club, data) {
+  // A competition that isn't seeded yields no button at all, rather than a hidden one.
+  return CONTINENTAL_COMPETITIONS
+    .map(nameEn => data.leagues.find(l => l.name_en === nameEn))
+    .filter(Boolean)
+    .map(league => renderContinentalToggleButton(club, league));
 }
 
-function renderUclToggleButton(club, data) {
-  const ucl = findChampionsLeague(data);
+function renderContinentalToggleButton(club, league) {
   const btn = document.createElement('button');
   btn.type = 'button';
+  const leagueName = localizedName(league);
+  const inLeague = club.league_id === league.id || club.domestic_league_id === league.id;
 
-  if (!ucl) {
-    btn.style.display = 'none';
-    return btn;
-  }
-
-  const inUcl = club.league_id === ucl.id || club.domestic_league_id === ucl.id;
-
-  if (!inUcl) {
-    btn.textContent = t('adminAddToChampionsLeague');
+  if (!inLeague) {
+    btn.textContent = t('adminAddToCompetition').replace('{league}', leagueName);
+    // domestic_league_id is already spoken for -- by the other continental competition, or by a
+    // domestic league on a club whose primary league is a competition.
     if (club.domestic_league_id !== null && club.domestic_league_id !== undefined) {
       btn.disabled = true;
-      btn.title = t('adminUclAddDisabled');
+      btn.title = t('adminContinentalAddDisabled');
     } else {
-      btn.addEventListener('click', () => patchClubLeagues(club, club.league_id, ucl.id));
+      btn.addEventListener('click', () => patchClubLeagues(club, club.league_id, league.id));
     }
     return btn;
   }
 
-  btn.textContent = t('adminRemoveFromChampionsLeague');
-  if (club.league_id === ucl.id) {
+  btn.textContent = t('adminRemoveFromCompetition').replace('{league}', leagueName);
+  if (club.league_id === league.id) {
+    // The competition IS the club's primary league, so removing it means promoting the domestic
+    // league into league_id. With nothing to promote there is no valid target to remove to.
     if (club.domestic_league_id === null || club.domestic_league_id === undefined) {
       btn.disabled = true;
-      btn.title = t('adminUclRemoveDisabled');
+      btn.title = t('adminContinentalRemoveDisabled');
     } else {
       btn.addEventListener('click', () => patchClubLeagues(club, club.domestic_league_id, null));
     }

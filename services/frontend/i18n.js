@@ -191,10 +191,10 @@ const DICTIONARY = {
     adminConfirmDeleteParty: 'Delete "{name}"? This cannot be undone.',
     adminConfirmReassign: 'Reassign {count} votes from "{source}" to "{target}"? This cannot be undone.',
     adminConfirmDeleteVote: 'Delete vote #{id}? This cannot be undone.',
-    adminAddToChampionsLeague: 'Add to UEFA Champions League',
-    adminRemoveFromChampionsLeague: 'Remove from UEFA Champions League',
-    adminUclAddDisabled: 'Already has a domestic league on file — edit via Rename instead.',
-    adminUclRemoveDisabled: 'No domestic league on file — give it one via Rename first.',
+    adminAddToCompetition: 'Add to {league}',
+    adminRemoveFromCompetition: 'Remove from {league}',
+    adminContinentalAddDisabled: 'Already has a second league on file — edit via Rename instead.',
+    adminContinentalRemoveDisabled: 'No domestic league on file — give it one via Rename first.',
   },
   he: {
     voteEyebrow: 'הצבעה חיה',
@@ -378,10 +378,13 @@ const DICTIONARY = {
     adminConfirmDeleteParty: 'למחוק את "{name}"? לא ניתן לבטל פעולה זו.',
     adminConfirmReassign: 'להעביר {count} הצבעות מ"{source}" ל"{target}"? לא ניתן לבטל פעולה זו.',
     adminConfirmDeleteVote: 'למחוק הצבעה מס\' {id}? לא ניתן לבטל פעולה זו.',
-    adminAddToChampionsLeague: 'הוספה לליגת האלופות',
-    adminRemoveFromChampionsLeague: 'הסרה מליגת האלופות',
-    adminUclAddDisabled: 'כבר קיימת ליגה מקומית — לעריכה יש להשתמש בשינוי שם.',
-    adminUclRemoveDisabled: 'אין ליגה מקומית רשומה — יש להוסיף אחת דרך שינוי שם קודם.',
+    // Colon form rather than 'הוספה ל{league}': the league name arrives from the database as it is
+    // displayed, and 'הליגה האירופית' already carries its definite article, so the prefixed form
+    // renders 'להליגה' instead of 'לליגה'. A preposition cannot be glued to an arbitrary name.
+    adminAddToCompetition: 'הוספה: {league}',
+    adminRemoveFromCompetition: 'הסרה: {league}',
+    adminContinentalAddDisabled: 'כבר קיימת ליגה שנייה — לעריכה יש להשתמש בשינוי שם.',
+    adminContinentalRemoveDisabled: 'אין ליגה מקומית רשומה — יש להוסיף אחת דרך שינוי שם קודם.',
   },
   ru: {
     voteEyebrow: 'ЖИВОЙ ОПРОС',
@@ -565,10 +568,13 @@ const DICTIONARY = {
     adminConfirmDeleteParty: 'Удалить «{name}»? Это действие необратимо.',
     adminConfirmReassign: 'Перенести {count} голосов из «{source}» в «{target}»? Это действие необратимо.',
     adminConfirmDeleteVote: 'Удалить голос №{id}? Это действие необратимо.',
-    adminAddToChampionsLeague: 'Добавить в Лигу чемпионов УЕФА',
-    adminRemoveFromChampionsLeague: 'Убрать из Лиги чемпионов УЕФА',
-    adminUclAddDisabled: 'Домашняя лига уже указана — измените её через «Переименовать».',
-    adminUclRemoveDisabled: 'Домашняя лига не указана — сначала задайте её через «Переименовать».',
+    // Colon form for the same reason as the Hebrew above: 'Добавить в {league}' needs the league
+    // name in the accusative ('в Лигу Европы'), and the database holds the nominative it is
+    // displayed under. A case ending cannot be inflected from a placeholder.
+    adminAddToCompetition: 'Добавить: {league}',
+    adminRemoveFromCompetition: 'Убрать: {league}',
+    adminContinentalAddDisabled: 'Вторая лига уже указана — измените её через «Переименовать».',
+    adminContinentalRemoveDisabled: 'Домашняя лига не указана — сначала задайте её через «Переименовать».',
   },
 };
 

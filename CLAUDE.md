@@ -215,8 +215,9 @@ Two independent layers, and adding a language means doing **both**:
   coverage can rot silently as clubs are added.
 
 **Any admin PATCH that forwards a subset of fields must forward every name column.** Those endpoints
-replace all fields, so an omitted name is written as `NULL`. `patchClubLeagues` in `admin.js` (the
-"add to Champions League" button) is the one call site that does this, and it resends
+replace all fields, so an omitted name is written as `NULL`. `patchClubLeagues` in `admin.js` (behind
+the per-competition "Add to UEFA Champions League" / "Add to UEFA Europa League" buttons, which are
+generated from `CONTINENTAL_COMPETITIONS`) is the one call site that does this, and it resends
 `name_en`/`name_he`/`name_ru`/`logo_url` for exactly this reason.
 
 **Russian names must be Cyrillic, and a homoglyph will pass review.** `РААМ` typed on a Latin

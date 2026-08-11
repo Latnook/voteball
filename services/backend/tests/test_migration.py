@@ -15,9 +15,9 @@ def test_all_seeded_rows_have_both_languages(conn):
 def test_seeded_row_counts(conn):
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 9
+    assert cur.fetchone()[0] == 10
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 205
+    assert cur.fetchone()[0] == 212
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -95,7 +95,7 @@ def test_league_names_survive_name_drift(conn):
     cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'Bundesliga'")
     assert cur.fetchone()[0] == 'Бундеслига'
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 9, 'the OR-match must not create or duplicate rows'
+    assert cur.fetchone()[0] == 10, 'the OR-match must not create or duplicate rows'
     cur.close()
 
 
@@ -316,9 +316,9 @@ def test_seed_rerun_survives_league_name_drift(conn):
 
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 9, 'league name drift must not create a phantom duplicate league'
+    assert cur.fetchone()[0] == 10, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 205, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 212, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
@@ -476,6 +476,164 @@ def test_nations_league_divisions_are_fully_populated(conn):
            GROUP BY c.group_label"""
     )
     assert dict(cur.fetchall()) == {'A': 16, 'B': 16, 'C': 16, 'D': 6}
+    cur.close()
+
+
+# Clubs whose ONLY seeded league is the Europa League -- their domestic leagues (Greek, Belgian,
+# Czech, Ligue 1, Austrian, Primeira Liga) are not seeded by this app.
+EUROPA_LEAGUE_ONLY_CLUBS = [
+    'Olympiacos', 'Olympique de Marseille', 'Sparta Prague', 'Stade Rennais', 'Sturm Graz',
+    'Torreense', 'Union Saint-Gilloise',
+]
+
+# Clubs already seeded under a domestic league that gain the Europa League as their SECOND league.
+LINKED_EUROPA_LEAGUE_CLUBS = [
+    'AC Milan', 'Bayer Leverkusen', 'Bournemouth', 'Celta Vigo', 'Crystal Palace', 'Juventus',
+    'Real Sociedad', 'Sunderland', 'TSG Hoffenheim',
+]
+
+
+def test_europa_league_sits_between_the_champions_league_and_the_world_cup(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT name, name_he, name_ru, sort_order, logo_url FROM leagues "
+        "WHERE name_en = 'UEFA Europa League'"
+    )
+    row = cur.fetchone()
+    assert row is not None, 'UEFA Europa League league row is missing'
+    name, name_he, name_ru, sort_order, logo_url = row
+    assert (name_he, name_ru) == ('הליגה האירופית', 'Лига Европы УЕФА')
+    assert logo_url == '/logos/uefa-europa-league.svg'
+    # The legacy `name` column holds the final English name, unlike UCL's 'UCL' placeholder: nothing
+    # renames this league, which is what lets the leagues INSERT skip a third identity branch for it.
+    assert name == 'UEFA Europa League'
+
+    cur.execute(
+        "SELECT name_en, sort_order FROM leagues "
+        "WHERE name_en IN ('UEFA Champions League', 'World Cup 2026')"
+    )
+    orders = dict(cur.fetchall())
+    assert orders['UEFA Champions League'] < sort_order < orders['World Cup 2026']
+    cur.close()
+
+
+def test_europa_league_only_clubs_are_seeded_under_it(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id
+           WHERE l.name_en = 'UEFA Europa League'"""
+    )
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(EUROPA_LEAGUE_ONLY_CLUBS)
+    cur.close()
+
+
+def test_shared_europa_league_clubs_are_linked_not_duplicated(conn):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT name_en, COUNT(*) FROM clubs WHERE name_en = ANY(%s) '
+        'GROUP BY name_en HAVING COUNT(*) > 1',
+        (LINKED_EUROPA_LEAGUE_CLUBS,)
+    )
+    assert cur.fetchall() == [], 'a dual-league club was inserted twice instead of linked'
+
+    # Linked in the "reverse direction": the domestic league stays primary, the competition is the
+    # secondary link. Asserting the direction matters -- the two are not interchangeable to the
+    # admin UI, which only lets you edit a club from its primary league's row.
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues uel ON uel.id = c.domestic_league_id AND uel.name_en = 'UEFA Europa League'
+           WHERE c.name_en = ANY(%s)""",
+        (LINKED_EUROPA_LEAGUE_CLUBS,)
+    )
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(LINKED_EUROPA_LEAGUE_CLUBS)
+    cur.close()
+
+
+def test_europa_league_has_16_votable_teams(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT COUNT(*) FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'UEFA Europa League'"""
+    )
+    assert cur.fetchone()[0] == 16
+    cur.close()
+
+
+def test_every_europa_league_club_has_a_crest_and_three_names(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'UEFA Europa League'
+             AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
+    )
+    assert cur.fetchall() == []
+    cur.close()
+
+
+def test_no_club_is_in_both_european_competitions(conn):
+    # domestic_league_id holds one link, so this is structurally impossible -- but a seed statement
+    # that moved a club from one cup to the other would show up here as a club whose primary league
+    # is one competition and whose secondary is the other.
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues a ON a.id = c.league_id
+           JOIN leagues b ON b.id = c.domestic_league_id
+           WHERE a.name_en IN ('UEFA Champions League', 'UEFA Europa League')
+             AND b.name_en IN ('UEFA Champions League', 'UEFA Europa League')"""
+    )
+    assert cur.fetchall() == []
+    cur.close()
+
+
+def test_europa_league_link_does_not_overwrite_an_admin_set_second_league(conn):
+    # The link statement is guarded on `domestic_league_id IS NULL`, unlike the UCL blocks, because
+    # that column IS admin-writable (PATCH /api/admin/clubs/<id>, and the admin UI's continental
+    # buttons). Without the guard, re-running seed.sql -- which init_db does on every pod boot --
+    # would silently move a club an admin had put in the other competition.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Champions League'")
+    ucl_id = cur.fetchone()[0]
+    cur.execute(
+        "UPDATE clubs SET domestic_league_id = %s WHERE name_en = 'Juventus'", (ucl_id,)
+    )
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == ucl_id, 'seed.sql overwrote an admin-set second league'
+    cur.close()
+
+
+def test_removing_a_seeded_club_from_the_europa_league_is_re_applied(conn):
+    # The other half of the guard's behaviour, pinned because it is the surprising half: clearing the
+    # link writes NULL, which is precisely the state the seed statement fills, so a removal made
+    # through the admin UI comes back on the next backend pod boot. Roster membership for the clubs
+    # seed.sql names is owned by seed.sql; dropping one for good means editing that list. Asserted
+    # rather than left implicit -- if this ever changes it should be a deliberate change, not a
+    # discovery made in production.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Europa League'")
+    uel_id = cur.fetchone()[0]
+    cur.execute("UPDATE clubs SET domestic_league_id = NULL WHERE name_en = 'Juventus'")
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == uel_id
     cur.close()
 
 

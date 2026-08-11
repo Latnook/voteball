@@ -64,6 +64,21 @@ any UCL link list — so nothing is overwritten. `domestic_league_id` is a singl
 can hold exactly one continental link; a club in both cups is not representable, and none of the
 sixteen needs to be.
 
+**The statement is guarded on `domestic_league_id IS NULL`, and the guard is narrower than it
+looks.** That column is admin-writable, so the guard stops the seed *overwriting* a link that is
+already there — an admin who moved a club to the Champions League keeps that, and a club added to
+this list later that is already in the other cup is skipped rather than silently moved. It does
+**not** make a *removal* stick: clearing the link writes `NULL`, which is exactly the state the
+statement fills, so a club removed through the admin UI is re-linked on the next backend pod boot.
+Verified empirically on an already-seeded database, both directions.
+
+That is the intended division of ownership, and it matches the UCL blocks (which are unguarded and
+so lose both edits): **rosters are owned by `seed.sql`; names and `logo_url` are owned by the
+admin.** Dropping a seeded club from the competition for good means editing the list. The admin
+button in decision 6 is for attaching clubs this file does not mention — a newly qualified one —
+where nothing in the seed contradicts the edit. `docs/admin-guide.md` states the limitation where
+an admin will meet it.
+
 ### 4. The seven new clubs stay Europa-League-only
 
 Their domestic leagues (Greek Super League, Belgian Pro League, Czech First League, Ligue 1,

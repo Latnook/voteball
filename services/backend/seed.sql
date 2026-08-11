@@ -16,7 +16,7 @@ INSERT INTO alert_state (id, last_seen_total) VALUES (1, 0) ON CONFLICT (id) DO 
 INSERT INTO leagues (name)
 SELECT v.name FROM (VALUES
     ('World Cup 2026'), ('UCL'), ('EPL'), ('La Liga'), ('Serie A'), ('Bundesliga'), ('Israeli Premier League'),
-    ('Liga Leumit'), ('Nations League')
+    ('Liga Leumit'), ('Nations League'), ('UEFA Europa League')
 ) AS v(name)
 WHERE NOT EXISTS (
     SELECT 1 FROM leagues existing
@@ -144,7 +144,19 @@ JOIN (VALUES
     ('Nations League', 'Iceland'), ('Nations League', 'Bulgaria'), ('Nations League', 'Estonia'),
     ('Nations League', 'Luxembourg'), ('Nations League', 'Gibraltar'), ('Nations League', 'Malta'),
     ('Nations League', 'Andorra'), ('Nations League', 'Lithuania'),
-    ('Nations League', 'Azerbaijan'), ('Nations League', 'Liechtenstein')
+    ('Nations League', 'Azerbaijan'), ('Nations League', 'Liechtenstein'),
+
+    -- UEFA Europa League: only the clubs whose domestic league this app does NOT seed, so the
+    -- Europa League is their one and only tab. The other nine qualified clubs are already seeded
+    -- under a domestic league and are linked via domestic_league_id further down -- clubs_name_en_uidx
+    -- is global, so a second 'Juventus' row is impossible, and they keep their existing crest and
+    -- names. Sparta Prague is a different club from the UCL's Slavia Prague; both are seeded.
+    -- Qualification for the competition is still running, so this list is expected to grow --
+    -- see docs/design/2026-08-12-europa-league-design.md.
+    ('UEFA Europa League', 'Olympiacos'), ('UEFA Europa League', 'Union Saint-Gilloise'),
+    ('UEFA Europa League', 'Sparta Prague'), ('UEFA Europa League', 'Stade Rennais'),
+    ('UEFA Europa League', 'Sturm Graz'), ('UEFA Europa League', 'Torreense'),
+    ('UEFA Europa League', 'Olympique de Marseille')
 ) AS c(league_name, name)
     ON l.name = c.league_name
     OR l.name_en = c.league_name
@@ -252,6 +264,37 @@ WHERE league_id = (SELECT id FROM leagues WHERE name = 'World Cup 2026' OR name_
                   'England', 'France', 'Germany', 'Netherlands', 'Norway', 'Portugal', 'Scotland',
                   'Spain', 'Sweden', 'Switzerland', 'Turkey');
 
+-- The nine Europa League clubs that this app already seeds under a domestic league. They keep that
+-- domestic league_id and gain the Europa League as their second league, so they appear under both
+-- tabs -- the same "reverse direction" link the UCL blocks above use for Real Betis, Aston Villa and
+-- the rest, and functionally symmetric with them (get_club_leagues/insert_vote in queries.py check
+-- both league_id and domestic_league_id).
+--
+-- Keyed on name_en rather than the legacy `name` column those UCL blocks use: `name` is overwritten
+-- with name_he by queries.py's rename_club on any admin save -- even a no-op one -- so a name-keyed
+-- match silently stops finding an admin-touched row. That places this statement after the name_en
+-- backfill above, since a freshly-inserted club carries only `name` until that backfill runs. See
+-- docs/design/2026-08-12-europa-league-design.md decision 3.
+--
+-- Guarded on `domestic_league_id IS NULL`, unlike the UCL blocks above, because that column IS
+-- admin-writable: PATCH /api/admin/clubs/<id> and the admin UI's continental-competition buttons
+-- both set it. The guard stops this statement OVERWRITING a link that is already there -- an admin
+-- who moved a club to the Champions League keeps that, and a future addition to this list that is
+-- already in the other cup is skipped rather than silently moved (the column holds one link).
+--
+-- What the guard deliberately does NOT do is make a REMOVAL stick. Clearing the link writes NULL,
+-- which is exactly the state this statement fills, so a club removed from the competition through
+-- the admin UI is re-linked on the next backend pod boot. That is the same behaviour the UCL blocks
+-- have, and it is the intended division of ownership in this file: rosters are owned here, while
+-- names and logo_url are owned by the admin. To drop a club from the competition for good, delete it
+-- from this list -- the admin button is for attaching clubs this file does not mention (a newly
+-- qualified one), where nothing here contradicts the edit.
+UPDATE clubs SET domestic_league_id =
+    (SELECT id FROM leagues WHERE name = 'UEFA Europa League' OR name_en = 'UEFA Europa League')
+WHERE name_en IN ('Bayer Leverkusen', 'Juventus', 'AC Milan', 'Real Sociedad', 'Crystal Palace',
+                  'Bournemouth', 'Sunderland', 'Celta Vigo', 'TSG Hoffenheim')
+  AND domestic_league_id IS NULL;
+
 -- Relegation removals (2026-08-04): Hapoel Hadera and Hapoel Nof HaGalil dropped out of Liga Leumit
 -- to the third tier, which this app does not seed, and Maccabi Kiryat Gat / Maccabi Akhi Nazareth
 -- took their places in the roster above. Dropping the two from the INSERT's VALUES list is only half
@@ -304,7 +347,8 @@ FROM (VALUES
     ('Bundesliga', 'הבונדסליגה', 'Бундеслига'),
     ('Israeli Premier League', 'ליגת העל', 'Израильская Премьер-лига'),
     ('Liga Leumit', 'ליגה לאומית', 'Лига Леумит'),
-    ('Nations League', 'ליגת האומות', 'Лига наций УЕФА')
+    ('Nations League', 'ליגת האומות', 'Лига наций УЕФА'),
+    ('UEFA Europa League', 'הליגה האירופית', 'Лига Европы УЕФА')
 ) AS v(name, name_he, name_ru)
 WHERE l.name = v.name OR l.name_he = v.name_he;
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
@@ -316,7 +360,9 @@ UPDATE leagues SET name_ru = 'Израильская Премьер-лига' WH
 
 -- Explicit league display order (see get_options in queries.py, ORDER BY sort_order NULLS LAST):
 -- Israeli Premier League and Liga Leumit first (domestic leagues), then the "big 5" European
--- leagues, then UCL, then the World Cup last.
+-- leagues, then the two European club cups, then the two national-team competitions last.
+-- Unguarded, which is what lets a reordering ship as a value change: the Europa League took
+-- position 7 on 2026-08-12 and pushed the last two down one on every already-seeded database.
 UPDATE leagues SET sort_order = 0 WHERE name = 'Israeli Premier League';
 UPDATE leagues SET sort_order = 1 WHERE name_en = 'Liga Leumit';
 UPDATE leagues SET sort_order = 2 WHERE name_en = 'Premier League';
@@ -324,8 +370,9 @@ UPDATE leagues SET sort_order = 3 WHERE name_en = 'La Liga';
 UPDATE leagues SET sort_order = 4 WHERE name_en = 'Bundesliga';
 UPDATE leagues SET sort_order = 5 WHERE name_en = 'Serie A';
 UPDATE leagues SET sort_order = 6 WHERE name_en = 'UEFA Champions League';
-UPDATE leagues SET sort_order = 7 WHERE name_en = 'World Cup 2026';
-UPDATE leagues SET sort_order = 8 WHERE name_en = 'Nations League';
+UPDATE leagues SET sort_order = 7 WHERE name_en = 'UEFA Europa League';
+UPDATE leagues SET sort_order = 8 WHERE name_en = 'World Cup 2026';
+UPDATE leagues SET sort_order = 9 WHERE name_en = 'Nations League';
 
 -- Only the Nations League renders division headers; see the schema.sql comment on has_divisions.
 UPDATE leagues SET has_divisions = TRUE  WHERE name_en = 'Nations League';
@@ -344,7 +391,13 @@ FROM (VALUES
     ('Bundesliga', 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg'),
     ('Israeli Premier League', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
     ('Liga Leumit', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
-    ('Nations League', '/logos/uefa-nations-league.svg')
+    ('Nations League', '/logos/uefa-nations-league.svg'),
+    -- Served from our own origin, and cropped: the upstream Wikimedia file is a raster PNG wrapped
+    -- in SVG tags, so the "UEFA EUROPA LEAGUE" wordmark below the trophy could not be removed by a
+    -- viewBox edit. A second file (uefa-europa-league-dark.svg, white trophy) is what the dark theme
+    -- shows -- logos.js knows it by name_en, not from this column. See
+    -- docs/design/2026-08-12-europa-league-design.md decision 5.
+    ('UEFA Europa League', '/logos/uefa-europa-league.svg')
 ) AS v(name, logo_url)
 WHERE t.name = v.name
   AND t.logo_url IS NULL;
@@ -589,7 +642,16 @@ FROM (VALUES
     ('Slavia Prague', 'סלביה פראג', 'Славия Прага'),
     ('Sporting CP', 'ספורטינג ליסבון', 'Спортинг Лиссабон'),
     ('Sunderland', 'סנדרלנד', 'Сандерленд'),
-    ('Sassuolo', 'ססואולו', 'Сассуоло')
+    ('Sassuolo', 'ססואולו', 'Сассуоло'),
+    -- UEFA Europa League clubs with no other seeded league. The nine that also play in a domestic
+    -- league this app seeds already have their names above.
+    ('Olympiacos', 'אולימפיאקוס', 'Олимпиакос'),
+    ('Union Saint-Gilloise', 'אוניון סן-ז''ילואז', 'Юнион Сент-Жиллуаз'),
+    ('Sparta Prague', 'ספרטה פראג', 'Спарта Прага'),
+    ('Stade Rennais', 'סטאד רן', 'Ренн'),
+    ('Sturm Graz', 'שטורם גראץ', 'Штурм'),
+    ('Torreense', 'טורנסה', 'Униан Торренсе'),
+    ('Olympique de Marseille', 'אולימפיק מרסיי', 'Олимпик Марсель')
 ) AS v(name_en, name_he, name_ru)
 WHERE c.name_en = v.name_en;
 
@@ -846,6 +908,8 @@ FROM (VALUES
     ('Napoli', 'https://upload.wikimedia.org/wikipedia/commons/4/4d/SSC_Napoli_2025_%28white_and_azure%29.svg'),
     ('Newcastle United', 'https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg'),
     ('Nottingham Forest', 'https://upload.wikimedia.org/wikipedia/en/e/e5/Nottingham_Forest_F.C._logo.svg'),
+    ('Olympiacos', 'https://upload.wikimedia.org/wikipedia/en/a/a2/Olympiacos_FC_crest.svg'),
+    ('Olympique de Marseille', 'https://upload.wikimedia.org/wikipedia/commons/4/4f/Olympique_de_Marseille_2026_logo.svg'),
     ('Osasuna', 'https://upload.wikimedia.org/wikipedia/en/3/38/CA_Osasuna_2024_crest.svg'),
     ('PSV Eindhoven', 'https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg'),
     ('Paris Saint-Germain', 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg'),
@@ -864,12 +928,17 @@ FROM (VALUES
     ('Sevilla', 'https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg'),
     ('Shakhtar Donetsk', 'https://upload.wikimedia.org/wikipedia/en/a/a1/FC_Shakhtar_Donetsk.svg'),
     ('Slavia Prague', 'https://upload.wikimedia.org/wikipedia/commons/2/2b/SK_Slavia_Praha_full_logo.svg'),
+    ('Sparta Prague', 'https://upload.wikimedia.org/wikipedia/commons/d/dd/AC-Sparta-LOGO2021.svg'),
     ('Sporting CP', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Sporting_Clube_de_Portugal_2026.svg'),
+    ('Stade Rennais', 'https://upload.wikimedia.org/wikipedia/en/9/9e/Stade_Rennais_FC.svg'),
+    ('Sturm Graz', 'https://upload.wikimedia.org/wikipedia/en/9/91/SK_Sturm_Graz_logo.svg'),
     ('TSG Hoffenheim', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Logo_TSG_Hoffenheim.svg'),
     ('Torino', 'https://upload.wikimedia.org/wikipedia/en/2/2e/Torino_FC_Logo.svg'),
+    ('Torreense', 'https://upload.wikimedia.org/wikipedia/en/d/dc/S.C.U._Torreense_logo.svg'),
     ('Tottenham Hotspur', 'https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg'),
     ('Udinese', 'https://upload.wikimedia.org/wikipedia/en/c/ce/Udinese_Calcio_logo.svg'),
     ('Union Berlin', 'https://upload.wikimedia.org/wikipedia/commons/4/44/1._FC_Union_Berlin_Logo.svg'),
+    ('Union Saint-Gilloise', 'https://upload.wikimedia.org/wikipedia/en/1/11/Royale_Union_Saint-Gilloise_logo.svg'),
     ('Valencia', 'https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg'),
     ('Venezia', 'https://upload.wikimedia.org/wikipedia/en/3/39/Venezia_FC_crest.svg'),
     ('VfB Stuttgart', 'https://upload.wikimedia.org/wikipedia/commons/e/eb/VfB_Stuttgart_1893_Logo.svg'),

@@ -139,16 +139,18 @@ you hit them than after.
 *secondary* league. That's how Real Madrid appears under both the Champions League and La Liga.
 
 "Primary" does **not** mean "more important" — it only decides which row you edit the club from. In
-the seeded data it's the other way round from what you might guess: Real Madrid's primary league is
-the *Champions League* and La Liga is its secondary, and the same goes for every seeded UCL club.
+the seeded data it goes both ways, so don't assume: Real Madrid's primary league is the *Champions
+League* with La Liga secondary, while Juventus's primary is *Serie A* with the Europa League
+secondary. Which way round a club sits is just how it was seeded.
 
 The knock-on effects show up everywhere on this tab:
 
 - A club appears twice in the list — once under each of its leagues.
 - **The second appearance is read-only.** Edit a club from the row under its *primary* league; the
   copy under its secondary league is just a listing.
-- There is only **one** secondary slot, which is why the Champions League button greys out for a
-  club that already has a secondary league.
+- There is only **one** secondary slot, which is why the continental-competition buttons grey out for
+  a club that already has a secondary league — and why a club can be in the Champions League *or* the
+  Europa League, never both.
 - A vote records *which league tab a club was picked under*. That's what makes club reassignment
   fussier than party reassignment — see below.
 
@@ -175,18 +177,30 @@ For logos, prefer a file committed to `services/frontend/logos/` pointed at as `
 `*.fbcdn.net` in the browser, so the crest vanishes for many visitors while it still loads fine for
 you. That failure is invisible from the server side. This already happened once, on F.C. Kiryat Yam.
 
-### The Champions League shortcut
+### The continental-competition shortcuts
 
-Each club row has a one-click **`Add to UEFA Champions League`** / **`Remove from UEFA Champions
-League`** button. It just fills or clears the secondary-league slot for you.
+Each club row has two one-click buttons, one per European cup: **`Add to UEFA Champions League`** and
+**`Add to UEFA Europa League`** (each flipping to `Remove from …` once the club is in). They just fill
+or clear the secondary-league slot for you.
 
-It greys out in two situations, both with an explanation on hover:
+This is the fastest way to attach a newly-qualified club to the Europa League without a code change —
+which matters while qualification is still running.
 
-- *"Already has a domestic league on file — edit via Rename instead."* The club's one secondary slot
-  is already taken. Use `Rename` if you want to swap what's in it.
+> **One limit worth knowing before you rely on it.** Adding a club *sticks*. **Removing** one only
+> sticks if that club isn't already listed in the seeded roster. The seeded clubs' competition
+> membership is re-applied every time a backend pod starts (roughly daily on this cluster), so
+> `Remove from UEFA Europa League` on, say, Juventus will quietly come back. Renames and logos you
+> set are never touched this way — only competition membership, and only for the clubs the seed data
+> names. To drop a seeded club for good, the roster list in `seed.sql` has to change.
+
+A button greys out in two situations, both with an explanation on hover:
+
+- *"Already has a second league on file — edit via Rename instead."* The club's one secondary slot is
+  already taken — by a domestic league, or by the *other* cup. Use `Rename` if you want to swap
+  what's in it. (This is also what stops a club being added to both cups at once: there is one slot.)
 - *"No domestic league on file — give it one via Rename first."* The club's **primary** league is the
-  Champions League and it has no secondary, so removing it would leave the club in no league at all.
-  Give it a domestic league via `Rename` first; the button then removes the UCL side.
+  competition itself and it has no secondary, so removing it would leave the club in no league at all.
+  Give it a domestic league via `Rename` first; the button then removes the competition side.
 
 ### Renaming (which is really "edit")
 
@@ -211,8 +225,8 @@ with the league it was picked under. Moving it to a club that isn't in that leag
 vote for a club in a league it doesn't play in — a nonsense row the results tabs would then have to
 render. The check refuses instead of creating it.
 
-**The fix is always the same:** give the target club the missing league first (via `Rename`, or the
-Champions League button if that's the missing one), *then* reassign.
+**The fix is always the same:** give the target club the missing league first (via `Rename`, or one of
+the continental-competition buttons if that's the missing one), *then* reassign.
 
 Duplicates are handled for you. If some voter picked **both** the source and the target club under
 the same league, the reassign would collide — so the redundant pick is dropped rather than erroring
