@@ -95,15 +95,22 @@ pipeline {
     // were covered only by tests somebody had to remember to run. Any of them could have been
     // deleted and every build would have stayed green.
     //
-    // No container() block, deliberately: like Validation above, this runs in the default jnlp
-    // container, which is the only one in the voteball-build pod with `git` -- it performs the
-    // checkout. The suite needs bash, python3 and git, and several tests build throwaway git repos.
+    // Split across two containers because NO container in this pod has both python3 and git: the
+    // `python` container (python:3.12-slim) has python3 and no git, while the default jnlp container
+    // has git -- it performs the checkout -- and no python3. Build #7 established that the expensive
+    // way, running the whole suite in jnlp and losing four tests to "python3: command not found".
+    // Splitting keeps full coverage without adding tooling to an image, which would need a
+    // terraform apply. run-ci-suite.sh checks that every test is classified whichever group runs, so
+    // a new test cannot slip through the gap between the two.
     //
     // Placed before Lint and Tests because it is the cheapest gate in the pipeline (seconds, no
     // network, no services) and because a broken guard should stop a build before anything is built.
     stage('Script tests') {
       steps {
-        sh 'scripts/tests/run-ci-suite.sh'
+        sh 'scripts/tests/run-ci-suite.sh git'
+        container('python') {
+          sh 'scripts/tests/run-ci-suite.sh python'
+        }
       }
     }
 

@@ -614,17 +614,24 @@ scripts/tests/test-build-push-ecr.sh  # the dirty-tree guard; extracts the block
 scripts/tests/check-jenkinsfile-shell.sh   # see below — not a guard test, a shell-syntax gate
 ```
 
-**`Jenkinsfile-ci`'s "Script tests" stage runs `run-ci-suite.sh`, and until 2026-08-11 nothing ran
-these tests at all** — CI ran `pytest` for `services/{backend,worker}` and stopped, so every guard
+**`Jenkinsfile-ci`'s "Script tests" stage runs `run-ci-suite.sh` in TWO containers, and until
+2026-08-11 nothing ran these tests at all** — CI ran `pytest` for `services/{backend,worker}` and stopped, so every guard
 protecting the pipeline itself was covered by a test somebody had to remember to run. Any of them
-could have been deleted with every build staying green. **`run-ci-suite.sh`'s `RUN`/`SKIP` lists are
-exhaustive and it fails if a test file appears in neither**, so adding a test forces a one-line
-decision: a glob would silently pick up a future helm-dependent test and break every build, and an
-unchecked hand-list would silently drop a new test and protect nothing. It also fails if a listed
-test no longer exists. Three are skipped for tools the agent lacks (`helm`, `gh`, `curl`); moving one
-into `RUN` means adding that tool to the agent, not loosening the test. The stage runs **outside any
-`container()` block** — like Validation — because the default `jnlp` container is the only one in the
-`voteball-build` pod with `git`, which several tests need to build throwaway repos.
+could have been deleted with every build staying green. **`run-ci-suite.sh`'s `PYTHON_GROUP`,
+`GIT_GROUP` and `SKIP` lists are exhaustive and it fails if a test file appears in none of them —
+whichever group is being run**, so a new test cannot slip through the gap between the two groups, and
+adding one forces a one-line decision. A glob would silently pick up a future helm-dependent test and
+break every build; an unchecked hand-list would silently drop a new test and protect nothing. It also
+fails if a listed test no longer exists. Three are skipped for tools the agent lacks (`helm`, `gh`, `curl`); moving one
+into a group means adding that tool to an image, not loosening the test.
+
+**The split exists because no container in the `voteball-build` pod has both `python3` and `git`** —
+`python:3.12-slim` has python3 and no git; the default `jnlp` container has git (it performs the
+checkout) and no python3. So `run-ci-suite.sh git` runs in jnlp and `run-ci-suite.sh python` runs in
+`container('python')`. Build #7 established this the expensive way: the whole suite ran in jnlp and
+four tests died on `python3: command not found`. **Determine a test's group by running it in a bare
+image, never by reading it** — several mention `aws` and `terraform` only in comments and stub
+variables, which is exactly how that build went wrong.
 
 **`build-push-ecr.sh` refuses to build from a dirty working tree**, because it tags images
 `git rev-parse --short HEAD` and an image built from unstaged work would carry a tag that does not

@@ -253,17 +253,26 @@ stayed green — the exact failure mode the repo's own rule ("pipeline logic tha
 running the pipeline is exactly what this project refuses to accept") exists to prevent, applied
 everywhere except to the tests themselves.
 
-The suite's `RUN`/`SKIP` lists are **exhaustive**: it fails if any file in `scripts/tests/` appears in
-neither, and fails if a listed test has been deleted. A bare glob would silently absorb a future
-helm-dependent test and break every build; an unchecked hand-list would silently drop a new test and
-protect nothing. Three tests are skipped for tools the agent does not carry — `test-jenkins-chart.sh`
-(helm), `test-register-github-ci.sh` (gh), `test-webhook-wait.sh` (curl) — and they still run by
-hand. Moving one into `RUN` means adding the tool to the agent, not weakening the test.
+The suite's `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` lists are **exhaustive**: it fails if any file in
+`scripts/tests/` appears in none of them — and that check runs whichever group is invoked, so a new
+test cannot hide in the gap between the two groups. It also fails if a listed test has been deleted.
+A bare glob would silently absorb a future helm-dependent test and break every build; an unchecked
+hand-list would silently drop a new test and protect nothing. Three tests are skipped for tools no
+image in the pod carries — `test-jenkins-chart.sh` (helm), `test-register-github-ci.sh` (gh),
+`test-webhook-wait.sh` (curl) — and they still run by hand. Moving one into a group means adding the
+tool to an image, not weakening the test.
 
-Runs **outside any `container()` block**, like Validation above: the default `jnlp` container is the
-only one in the `voteball-build` pod carrying `git`, and several of these tests create throwaway git
-repositories. It is placed before Lint and Tests because it is the cheapest gate in the pipeline —
-seconds, no network, no database — and a broken guard should stop a build before anything is built.
+**It runs in two containers, because none has both `python3` and `git`.** `python:3.12-slim` has
+python3 and no git; the default `jnlp` container has git — it performs the checkout — and no python3.
+So `run-ci-suite.sh git` runs in jnlp (one test, which builds throwaway repositories) and
+`run-ci-suite.sh python` runs in `container('python')` (the other eleven). **Build #7 established this
+the expensive way**: the whole suite ran in jnlp and four tests died on `python3: command not found`,
+failing the build. The lesson is in the script's comments — decide a test's group by running it in a
+bare image, never by reading it, since several mention `aws` and `terraform` only in comments and stub
+variables.
+
+Placed before Lint and Tests because it is the cheapest gate in the pipeline — seconds, no network,
+no database — and a broken guard should stop a build before anything is built.
 
 ### 4. Lint / Static Analysis (new)
 
