@@ -650,13 +650,15 @@ accommodations for state employees in the north.
   (*"לשנות את תפיסת הביטחון... יישובי הגבול ואזורי הספר"*), which is the same trap the
   `homeland-security` note above records for ישר: a civil document whose framing invites a
   security-axis reading it does not support. Nothing on statehood, the territories, Gaza or borders.
-- **`periphery-development` was considered and rejected — the tag is broken, not the fit.** It sits
-  on 3 of 18 rows, yet this page *already documents* periphery programmes for two rows that don't
+- **`periphery-development` was considered and rejected — the tag was broken, not the fit.** It sat
+  on 3 of 18 rows, yet this page *already documents* periphery programmes for two rows that didn't
   carry it (הדמוקרטים's economic paper, "periphery investment"; אל הדגל, "massive periphery
-  infrastructure"). So the tag is recording which documents were read closely, not which parties
+  infrastructure"). So the tag was recording which documents were read closely, not which parties
   hold the position, and a fourth arbitrary member would have made the analysis silently imply the
-  other two lack it. Unlike `reservist-focused`, it has no earning standard recorded anywhere, which
-  is how it drifted. Listed under Open questions: sweep all 18 rows or retire it.
+  other two lack it. **The 2026-08-11 sweep retired it outright**: none of its three holders had any
+  justification recorded on this page, while *עולים צפונה* — half a million people to the Negev and
+  Galilee in five years — is the most explicit periphery programme any party has published. It is
+  recorded above in prose, which is now where such programmes live. See "The vocabulary sweep".
 - **התיישבות here means the Negev and Galilee, not the West Bank.** This row carries
   `pro-settlement`, earned from the security doctrine and meaning territorial settlement. This
   document uses התיישבות repeatedly — *"השקעה בצמיחה, בהתיישבות, בביטחון"* — about communities
@@ -752,11 +754,14 @@ What the **order** changes:
   Ranked lists are evidence about *priority*, not only about presence.
 - **סטרוק at #2** is the first person-level evidence for a religiosity +3 that had been assigned
   from the programme alone. `halakhic-state` is the motive tag this party previously lacked.
-- **סוכות #5 and רחמים #7** (Yesha Council CEO) keep `settler-movement` and `annexationist`.
+- **סוכות #5 and רחמים #7** (Yesha Council CEO) keep `settler-movement` and `annexationist`
+  (the latter folded into `sovereignty-annexation` on 2026-08-11; the reasoning is unaffected).
 - **טל #6 and וולדיגר #8** are deliberately **not** tagged. One advocacy figure at sixth is not a
   foreign-policy orientation, and one welfare MK at eighth does not move `not-economy-focused` —
   there is still no economic figure anywhere on this list. Tagging thin evidence is how a tag set
-  stops meaning anything.
+  stops meaning anything. *(That tag was later removed from this row entirely — not on the strength
+  of a candidate, but on the party's own 6-page economy paper; see the 2026-08-11 entry below. The
+  judgement recorded here was right about the candidate and wrong about the party.)*
 
 economic 0 with `claims-economically-liberal` already captures the gap between Smotrich's rhetoric
 and his finance-ministry record.
@@ -767,8 +772,8 @@ them at maximum: sovereignty defined as "החלת החוק הישראלי על �
 Oslo A/B/C division dismantled, E1 approved to "תקבור את רעיון המדינה הפלסטינית", 50 new recognised
 settlements in 2.5 years, ~50,000 housing units, 30,000 dunams declared state land.
 
-`anti-two-state` **was missing and is now added.** The row carried `annexationist` but never the
-plain veto, which is odd for the party that states it most explicitly — and Yashar carries
+`anti-two-state` **was missing and is now added.** The row carried `annexationist` (folded into
+`sovereignty-annexation` by the 2026-08-11 sweep) but never the plain veto, which is odd for the party that states it most explicitly — and Yashar carries
 `no-palestinian-state` on thinner evidence. Upcoming table only; the previous-election row keeps its
 four original tags, per the no-back-dating convention above.
 
@@ -841,14 +846,21 @@ directly authoritative for the `previous_parties` row and only indicative for `u
   טרור paper separately abolishes the reasonableness ground so the HCJ cannot review house
   demolitions. Both were previously scored from the record alone.
 
-**`reservist-focused` was considered and deliberately NOT added — and the reason is a finding in its
-own right.** The מילואים paper is a costed reservist land-benefit package (discount ceiling doubled
-₪75k → ₪150k, further 5–10% for young couples), which is the same *shape* of evidence that earned
-the tag for כחול לבן. Two things stopped it: the paper is from 2021 and reservist politics is not
-what it was after October 7, so it is weak evidence for the 2026 row; and the tag already sits on 5
-of 18 rows, so a sixth would put it on a third of the table. The repo owner predicted exactly this on
-2026-08-11 — *"most of the parties claim to be reservist focused"* — and this is the first
-independent confirmation. Folded into the vocabulary-hygiene question under Open questions.
+**`reservist-focused` was initially withheld and then added the same day by the vocabulary sweep.**
+The מילואים paper is a costed reservist land-benefit package (discount ceiling doubled ₪75k → ₪150k,
+further 5–10% for young couples), the same *shape* of evidence that earned the tag for כחול לבן. It
+was first held back on two grounds — the paper is from 2021, and a sixth holder would put the tag on
+a third of the table — and the repo owner had predicted exactly that breadth
+(*"most of the parties claim to be reservist focused"*).
+
+**The sweep reversed it, and the reason the reversal is right matters more than the tag.** Withholding
+was *inconsistent*: the same 2021 corpus was used the same day to confirm `judicial-overhaul`, confirm
+`sovereignty-annexation` and remove `not-economy-focused` from this row. Evidence cannot be sound
+enough for three findings and too stale for a fourth. The staleness caveat attaches to the whole row —
+which is why `basis` stays `record` — not to one tag. And breadth turned out not to be dilution: with
+this row added, the tag's six holders span all three blocs, putting הדמוקרטים (−2/−1/−3) and this
+party (0/+3/+3) under the same label, which records something the axes cannot. See
+"The vocabulary sweep".
 
 Sources: 13 PDFs at `zionutdatit.org.il`, read 2026-08-11 —
 כלכלה, רווחה, משפט, זהות יהודית, דיני משפחה, מסתננים, התיישבות ריבונית, חינוך, טרור, טבע וסביבה,
@@ -1280,8 +1292,13 @@ criticising Netanyahu is not leaving his bloc, and Maoz was reappointed in June 
 `anti-lgbt`, `anti-progressive` and `family-values` are descriptive, not editorial, and they are the
 party's own framing: an explicit platform against "destruction of the family", campaign material
 promoting heteronormativity, and opposition to gender content in education and the army.
-`anti-judicial-review` records their attack on High Court intervention in religious matters, which is
-a separate strand from the halakhic-state demand and would otherwise be invisible.
+**Their attack on High Court intervention in *religious* matters is a separate strand from the
+halakhic-state demand**, and it is recorded here rather than in a tag. It used to carry
+`anti-judicial-review`, which the 2026-08-11 vocabulary sweep folded into `judicial-overhaul`: the
+tag was held by נעם alone while both its bloc partners used the other name for the same programme,
+the `judicial-restraint` family already grouped all three, and נעם had by then acquired
+`judicial-overhaul` itself. The religious-intervention nuance is one row wide, so prose is its right
+home — it can be explained here, where a tag could only assert it.
 
 **2026-08-11 — the relaunched site (`noamlisrael.org.il`, campaign launched 2026-07-29 under
 *"חופשי להיות יהודי"*) is the first real platform this row has ever had. No axis moved; two tags
@@ -1615,41 +1632,11 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   403 no longer needs a manual workaround either — a browser `User-Agent` plus a `Referer` header
   fetches the PDFs directly; see that entry. The row is still polling ~1%, below the threshold, and
   losing people to בית ציוני - המילואימניקים.
-- **`periphery-development` does not discriminate and needs a sweep or retirement.** It sits on 3 of
-  18 rows (ישר, ביחד, בית ציוני), but this page documents periphery programmes for at least two more
-  that don't carry it — הדמוקרטים ("periphery investment", in its economic paper) and אל הדגל
-  ("massive periphery infrastructure"). A tag whose membership tracks *which documents were read
-  closely* rather than which parties hold the position is worse than no tag, because it reads as a
-  finding. Either audit all 18 rows against it or drop it; adding members one at a time makes it
-  worse. **The same question is open for `reservist-focused`** (4 of 18) — the difference is that
-  one has an earning standard recorded (a costed benefits package, revision 13), so it can at least
-  be tested; `periphery-development` has none. Raised by the repo owner on 2026-08-11, and the
-  reason two proposed tags were dropped that day.
-  **Update, same day: the `reservist-focused` half is no longer hypothetical.** הציונות הדתית's
-  2021 מילואים paper is a costed reservist land-benefit package that *clears* the recorded standard,
-  which would make six of eighteen rows — a third of the table. It was held back only because the
-  document is pre-October-7 and so is weak evidence for a 2026 row. The owner's prediction that
-  "most of the parties claim to be reservist focused" is now supported by evidence rather than
-  intuition, and the sweep should decide a threshold question this tag cannot answer on its own:
-  **once a third of the table qualifies, is the tag still saying anything?**
-- **`anti-judicial-review` vs `judicial-overhaul` is the third instance of the same pattern**, found
-  2026-08-11 when נעם's relaunched platform turned out to be the overhaul programme in detail
-  (override clause, splitting the Attorney-General's role, political trust appointments). נעם was the
-  sole holder of `anti-judicial-review` while its two bloc partners held `judicial-overhaul` — three
-  parties in one bloc pursuing one programme, split across two tags, so filtering on either returns
-  an incomplete bloc. `judicial-overhaul` was **added** to נעם rather than swapped in, because
-  `anti-judicial-review` may still carry something genuinely narrower (High Court intervention in
-  *religious* matters), and that determination belongs to the sweep. Decide whether it is a distinct
-  position or a duplicate; if duplicate, fold it in.
-- **`annexationist` and `sovereignty-annexation` are two tags for one position.** Found 2026-08-11
-  while tagging עוצמה יהודית. `annexationist` has a single holder (הציונות הדתית);
-  `sovereignty-annexation` has four (אל הדגל, זהות, נעם, and now עוצמה יהודית). Nothing
-  distinguishes them, so a reader filtering on either gets a partial answer — and the two parties
-  that sit closest together on this axis, הציונות הדתית and עוצמה יהודית, are split across the two
-  spellings, which is the worst case. Fold `annexationist` into `sovereignty-annexation`. Grouped
-  with the `periphery-development` question above: both are **vocabulary hygiene**, and they should
-  be done as one pass rather than opportunistically during a document read, which is how each of
-  them got this way.
+- ~~**`periphery-development`, `annexationist`/`sovereignty-annexation`, and
+  `anti-judicial-review`/`judicial-overhaul` are three instances of vocabulary drift**~~ —
+  **all three RESOLVED by the vocabulary sweep, 2026-08-11 (revision 19). See "The vocabulary
+  sweep" below for the reasoning; the summary is: two tags retired, one folded, one confirmed and
+  extended.**
 - **נעם is campaigning as `נעם לישראל`** ("Noam for Israel") for the 26th Knesset. The row is seeded
   under the plain `נעם` and it is deliberately *not* renamed yet: lists are not final, a rename
   orphans votes (see the warning above), and an admin can do it in one edit if the longer name is
@@ -1663,8 +1650,88 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   edit, renaming early costs a second rename plus a data migration on a row that holds votes if they
   file as plain `נעם`. **Trigger: ballot certification, not campaign launch.**
 - **נעם's `economic` is the only NULL on that axis** and is a "no platform yet" NULL, not a
-  scoped-out one. It must be revisited if they publish any fiscal position.
+  scoped-out one. **Revisit discharged 2026-08-11** against the relaunched platform: they published
+  their first fiscal *figure* (a ₪12,000 starting-teacher salary floor) and it does not move the
+  axis, because a sectoral wage floor is not a position on how the economy should be organised. The
+  next revisit needs a fiscal **position**, not another figure.
 - Election date is **2026-10-27**; lists are not final, so more revisions should be expected.
+
+---
+
+## The vocabulary sweep (2026-08-11)
+
+Three tags were found asserting things the evidence did not support. They were deliberately **not**
+fixed as they were found — each was logged and left alone, because fixing vocabulary opportunistically
+in the middle of reading a party document is exactly how all three got that way. This section records
+the one pass that resolved them, and the test it used.
+
+**The test.** A tag earns its place if it either (a) *groups* rows in a way a reader could not
+reconstruct from the axes, or (b) records a position precisely, with membership matching the evidence
+this page documents. Rarity is **not** a defect: 72 tags sit on a single row and most are exact
+(`kahanist`, `islamist`, `flat-tax`). The defects were duplication and unjustified membership.
+
+| tag | before | after | outcome |
+|---|---|---|---|
+| `periphery-development` | 3 | **0** | **retired** |
+| `annexationist` | 1 | **0** | **folded** into `sovereignty-annexation` |
+| `anti-judicial-review` | 1 | **0** | **folded** into `judicial-overhaul` |
+| `sovereignty-annexation` | 4 | **5** | confirmed, gains הציונות הדתית |
+| `reservist-focused` | 5 | **6** | **confirmed and extended** |
+
+### `periphery-development` — retired
+
+**None of its three holders (ישר, ביחד, בית ציוני) has a single line of justification in this
+document.** Checked section by section. Meanwhile this page documents periphery programmes for two
+rows that did *not* carry it — הדמוקרטים ("periphery investment") and אל הדגל ("massive periphery
+infrastructure") — and כחול לבן's *עולים צפונה* is the most explicit periphery programme any party
+has published (half a million people to the Negev and Galilee in five years, half of all citizens
+by 2048) and was also untagged.
+
+So membership was inverted with respect to the evidence: no support for those who held it, documented
+support for several who did not. The alternative to retiring was to invent a standard and audit 18
+rows, and that was rejected because **developing the periphery is near-universal Israeli political
+rhetoric** — the honest end state is a tag on most of the table, discriminating nothing. Distinctive
+periphery programmes are recorded in prose, where they can be described precisely, and כחול לבן's and
+אל הדגל's already are.
+
+### `annexationist` → `sovereignty-annexation`
+
+One position, two spellings, and the worst possible split: `annexationist` held by הציונות הדתית
+alone while `sovereignty-annexation` held its four closest neighbours (עוצמה יהודית, אל הדגל, זהות,
+נעם). A reader filtering on either name got an incomplete right. Folded; the tag now reads 5 of 18
+and covers the sovereignty-supporting right exactly.
+
+### `anti-judicial-review` → `judicial-overhaul`
+
+Held by נעם alone, while its two bloc partners held `judicial-overhaul` for the same programme. Two
+things decided the fold rather than a sweep. First, the anti-court grouping **already exists one
+layer up**: the `judicial-restraint` *family* covers הליכוד, הציונות הדתית, עוצמה יהודית, זהות and
+נעם, so the tag was grouping nothing the family did not. Second, נעם itself now carries
+`judicial-overhaul`, so the tag was a footnote on a row that already had the general position.
+
+The nuance it carried — that נעם's objection is specifically to High Court intervention in *religious*
+matters — is real, and it survives **in prose** under that party's entry, where it can be explained
+rather than merely asserted. That is the right home for a distinction one row wide.
+
+### `reservist-focused` — confirmed, and extended to הציונות הדתית
+
+This is the one the sweep *kept*, and the reasoning runs opposite to the others. The repo owner
+predicted it would prove over-broad, and the prediction was half right: a sixth row does qualify.
+But unlike `periphery-development`, this tag has a **recorded earning standard** — a costed benefits
+package, not rhetoric (revision 13) — so membership is testable rather than impressionistic, and
+every holder meets it.
+
+**Its six holders span all three blocs**: הדמוקרטים (`opposition`, −2/−1/−3) and הציונות הדתית
+(`bibi`, 0/+3/+3) now carry the same tag. That is not dilution; it is the finding. A tag that unites
+the social-democratic left and the far right is recording something the axes cannot — that reservist
+burden became post-ideological in 2026 — which is precisely criterion (a).
+
+**הציונות הדתית was added here, reversing the same-day decision to hold it back.** It had been
+declined on the ground that its מילואים paper is pre-October-7 and therefore weak for a 2026 row.
+That objection was inconsistent: the *same* 2021 corpus was used the same day to confirm
+`judicial-overhaul`, confirm `sovereignty-annexation` and remove `not-economy-focused` from that row.
+Evidence cannot be good enough for three findings and too stale for a fourth. The date caveat belongs
+to the whole row — which is why its `basis` stays `record` — not to one tag.
 
 ---
 
@@ -1702,3 +1769,4 @@ pass happened, for anyone reading git history.
 | 2026-08-11 | revision 16 — **עוצמה יהודית read against party output for the first time**, via 30 of its own news posts (2026-05-26 → 2026-08-04); it publishes no platform, which is why the row had stood at five tags and a two-line entry. **No axis moved** (security and religiosity are already at the +3 ceiling; economic 0 is now confirmed by 30 posts containing zero economic content, rather than inferred). Six tags added, 5 → 11: `gun-rights` (8 posts, 280,000+ licences, 126 localities in 2026 alone), `judicial-overhaul` (closing a gap against its own bloc partner), `pro-settlement` + `sovereignty-annexation` (חיננית cornerstone, sovereignty stated as doctrine), `temple-mount-centred` (chairman ascending on Tisha B'Av), and one new tag `death-penalty-for-terrorists`. `basis` stays `record` — ministerial-action posts are a record source, not a platform. Two near-misses recorded rather than tagged: the muezzin-noise bill is **not** religiosity evidence (that axis is scoped to Jewish religion-and-state, and its sponsors frame it as public health), and Negev demolition enforcement is left untagged for want of a comparator row. Also logged: `annexationist` and `sovereignty-annexation` are duplicate tags for one position, splitting the two closest parties across two spellings |
 | 2026-08-11 | revision 17 — **הציונות הדתית read against its own 13 platform PDFs** (2021-12 / 2022-10; the party has published nothing for 2026, so these are authoritative for `previous_parties` and only indicative for `upcoming_parties`, whose `basis` stays `record`). **No axis moved.** `not-economy-focused` **REMOVED from both rows** — `docs/design/2026-07-30-party-families-club-traits-design.md` had already replaced the *family* of that name here as "simply false" given Smotrich's finance ministry, but nobody removed the *tag*, so `seed.sql` kept asserting what another repo doc called false; a dedicated 6-page כלכלה paper (abolish civil-service tenure, ban political strikes, no deficit-closing via tax rises, broad tax cuts against narrowed exemptions, hospital independence, deregulation) plus a 7-page workfare-framed רווחה paper settle it. **economic stays 0 regardless** — the number records the *revealed* position and `claims-economically-liberal` carries the gap; those two tags were never the same claim, and only the second was ever true here. `death-penalty-for-terrorists` added from the טרור paper, giving that tag a **second** holder and retiring the "single-holder" rationale written for עוצמה יהודית earlier the same day. `judicial-overhaul` and `annexationist` confirmed against first-party text for the first time (the משפט paper's override clause requires a *unanimous* court to strike a Knesset law). `reservist-focused` **deliberately not added** despite a qualifying מילואים paper: pre-October-7, and it would put the tag on a third of the table — confirming the owner's prediction and sharpening the open vocabulary question. Retrieval note: **12 of the 13 are image-only**, `pdftotext` yielding 34 bytes each |
 | 2026-08-11 | revision 18 — **נעם read against its relaunched site** (`noamlisrael.org.il`, campaign opened 2026-07-29), the first real platform this row has ever had. **No axis moved.** `opposes-hostage-deals` added on the exact precedent that earned it for הציונות הדתית — that row got it because Tikva Forum founder צביקה מור stood at #3; here **אליהו ליבמן**, who *founded* the same forum in opposition to hostage-for-prisoner deals, stands at #2, and is himself a bereaved father (son murdered at Nova, held as presumed-kidnapped for over half a year). `judicial-overhaul` added: the platform is the overhaul programme in detail (פסקת ההתגברות, splitting the Attorney-General's role, political trust appointments), which exposed נעם as the sole holder of `anti-judicial-review` while both bloc partners held `judicial-overhaul` — **third instance** of the vocabulary-split pattern, logged rather than opportunistically fixed. **economic stays NULL and the standing revisit is now DISCHARGED rather than pending**: the ₪12,000 starting-teacher salary floor is the first fiscal figure the party has published, but it is education policy denominated in shekels, not a position on how the economy should be organised — the next revisit needs a fiscal *position*, not a fiscal *figure*. `not-economy-focused` **kept** here on the same day it was removed from הציונות הדתית, because the evidence differs: RZP published a 6-page economic doctrine, נעם published a teacher's salary. religiosity +3, `rabbinate-as-fourth-branch`, `halakhic-state`, `opposes-western-wall-compromise`, `education-system-focused` and `rabbinic-authority-led` all confirmed against first-party text for the first time. Candidates verified independently (Maoz, Libman, Tovol), and the נעם→נעם לישראל rename remains **held**, with the trigger restated as ballot certification rather than campaign launch |
+| 2026-08-11 | **revision 19 — the vocabulary sweep.** One pass over all 18 rows resolving the three drift instances logged earlier the same day, deliberately *not* fixed as they were found. **`periphery-development` RETIRED** (3 → 0): none of its holders had a single line of justification on this page, while two untagged rows had documented programmes and כחול לבן's *עולים צפונה* — half a million people to the Negev and Galilee — is the most explicit any party has published; inventing a standard and auditing 18 rows was rejected because periphery development is near-universal Israeli rhetoric, so the honest end state is a tag on most of the table. **`annexationist` FOLDED into `sovereignty-annexation`** (1 → 0, target 4 → 5): one position under two spellings, splitting הציונות הדתית from its four closest neighbours. **`anti-judicial-review` FOLDED into `judicial-overhaul`** (1 → 0): the `judicial-restraint` *family* already grouped all five anti-court parties, and נעם had itself acquired `judicial-overhaul`; the religious-intervention nuance survives in prose under that entry. **`reservist-focused` CONFIRMED and extended to הציונות הדתית** (5 → 6), reversing the same-day decision to withhold it — withholding was inconsistent, since the same 2021 corpus was used that day to confirm `judicial-overhaul`, confirm `sovereignty-annexation` and remove `not-economy-focused` from that row; the staleness caveat attaches to the whole row (hence `basis` stays `record`), not to one tag. The tag's six holders now span all three blocs, putting הדמוקרטים (−2/−1/−3) and הציונות הדתית (0/+3/+3) under one label, which is the finding rather than dilution. **No axis moved and no `previous_parties` row was touched** (none carried any of the four tags). Test used, and recorded in the new "The vocabulary sweep" section: a tag earns its place if it *groups* rows in a way the axes cannot, or records a position precisely with membership matching documented evidence — **rarity is not a defect**, and 72 single-holder tags were deliberately left alone |
