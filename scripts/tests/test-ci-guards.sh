@@ -15,11 +15,29 @@ got="$(scripts/ci/should-skip-build.sh 'feat: add a league filter')"
 [ "$got" = "build" ] || fail "normal commit should build, got '$got'"; pass=$((pass+1))
 
 got="$(scripts/ci/should-skip-build.sh 'fix: mention [skip ci] in the docs')"
-[ "$got" = "skip" ] || fail "substring anywhere must skip (fail safe), got '$got'"; pass=$((pass+1))
+[ "$got" = "skip" ] || fail "marker in the SUBJECT must skip (fail safe), got '$got'"; pass=$((pass+1))
 
+# The marker in the BODY must NOT skip. This reverses the original behaviour on purpose: matching
+# anywhere meant any commit that *documented* this guard skipped itself, which is not hypothetical --
+# it happened twice on 2026-08-11 to the commits adding the dirty-tree guard and this very test
+# suite's CI stage. Both reported NOT_BUILT, which reads like a pass, so two CI changes shipped
+# without CI ever running. A spurious skip is only cheap when somebody notices it.
 multiline="$(printf 'subject line\n\nbody mentioning [skip ci]\n')"
 got="$(scripts/ci/should-skip-build.sh "$multiline")"
-[ "$got" = "skip" ] || fail "multi-line message body should skip, got '$got'"; pass=$((pass+1))
+[ "$got" = "build" ] || fail "marker in the body must NOT skip, got '$got'"; pass=$((pass+1))
+
+# The exact regression: a real commit body describing the guard.
+real="$(printf 'feat(ci): run the script tests in the pipeline\n\nprotecting the pipeline itself -- the [skip ci] loop guard, the\nimmutable-tag re-run check ...\n')"
+got="$(scripts/ci/should-skip-build.sh "$real")"
+[ "$got" = "build" ] || fail "a commit body describing the guard must still build, got '$got'"; pass=$((pass+1))
+
+# Pin CD's ACTUAL tag-bump format. Narrowing to the subject is only safe while the marker lives
+# there; Jenkinsfile-cd writes it with a single -m. If that ever moves to a body line, this fails
+# loudly instead of the loop guard failing silently.
+grep -q 'git commit -m "ci: image tag \$TAG \[skip ci\]"' Jenkinsfile-cd \
+  || fail "Jenkinsfile-cd no longer commits the marker in the subject line -- re-check the guard"
+got="$(scripts/ci/should-skip-build.sh "ci: image tag deadbee [skip ci]")"
+[ "$got" = "skip" ] || fail "CD's own tag-bump commit MUST skip, got '$got'"; pass=$((pass+1))
 
 got="$(scripts/ci/should-skip-build.sh '')"
 [ "$got" = "build" ] || fail "empty message should build, got '$got'"; pass=$((pass+1))
