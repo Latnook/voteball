@@ -311,6 +311,31 @@ Nor does `inlocation-and-aliya` create a territorial claim, though it comes clos
 areas" often includes Judea and Samaria — but the document does not say so, and unstated is not
 stated.
 
+**2026-08-11 — the October 7 commission framework. Read, deliberately not tagged, and the reason is
+about the tag rather than the party.**
+[מתווה ישר לוועדת חקירה ממלכתית](https://yasharwitheisenkot.com/wp-content/uploads/2026/08/%D7%9E%D7%AA%D7%95%D7%95%D7%94-%D7%99%D7%A9%D7%A8-%D7%9C%D7%95%D7%A2%D7%93%D7%AA-%D7%97%D7%A7%D7%99%D7%A8%D7%94-%D7%9E%D7%9E%D7%9C%D7%9B%D7%AA%D7%99%D7%AA-%D7%9C%D7%98%D7%91%D7%97-%D7%94-7-%D7%91%D7%90%D7%95%D7%A7%D7%98%D7%95%D7%91%D7%A8-%D7%98%D7%99%D7%95%D7%98%D7%94-%D7%9C%D7%A9%D7%99%D7%AA%D7%95%D7%A3-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8.pdf)
+is not a manifesto plank but a drafted government decision: a commission under **§1 of the
+Commissions of Inquiry Law 1968** — the clause that makes it *ממלכתית* — with the **President of
+the Supreme Court** appointing the chair and all five members, scope running back a decade to the
+end of צוק איתן, sub-committees on intelligence and security doctrine, an interim report within a
+year, and ₪25m plus 25 temporary posts. It covers the political echelon, hostage-deal
+decision-making including the ground maneuver, the government's own הסברה apparatus, Knesset
+oversight, and the implementation record of every prior commission back to אגרנט.
+
+**`state-commission-of-inquiry` was considered and rejected, because the tag does not discriminate.**
+It sits on 1 of 18 rows (אל הדגל), earned there from a *slogan* — *"מי שכשל צריך ללכת הביתה"*.
+Wanting a state commission is close to a universal opposition position, so a tag held by one or two
+parties is recording which documents happened to be read, not which parties hold the position.
+Adding a second such row would have made the tag look like a finding while measuring audit coverage.
+The distinction actually worth keeping is the one a tag cannot carry: אל הדגל wants a commission,
+ישר has drafted the statute. That belongs here, in prose.
+
+Two caveats for the next pass: the document is a **draft open for public comment until 2026-10-07**,
+and it is authored by two outside figures — גדי מוזס, a captivity survivor from ניר עוז, and
+עו"ד גיל אבריאל, formerly the National Security Council's legal adviser — published by the party as
+its own מתווה. First-party enough to read as the party's position; check whether a final version
+replaced it.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -403,7 +428,7 @@ now in question.
   organisations; the democracy paper legislates *"איסור כהונה תחת כתב אישום"* for ministers and the
   PM plus an eight-year term limit; the security paper commits to Saudi normalization and IMEC.
 
-**`two-state` was challenged on 2026-08-01 and survives. Keep it.** The eight platform papers never
+**`two-state` was challenged on 2026-08-01 and survives. Keep it.** The platform papers never
 use the words מדינה פלסטינית — they commit to *"מהלך מדיני אחראי מול הפלסטינים"*, to
 *"הסדרים מדיניים"*, and to *"אלטרנטיבה שלטונית מתונה"*. Read alone, that looked like the same
 statehood-silence the page records for ישר, whose entry says the omission is deliberate and scores
@@ -439,14 +464,57 @@ say so:
 "Zionist two-staters", which is exactly a two-state position conditioned on a solid Jewish majority,
 full demilitarization and permanent Israeli security control. The −2 band requires "two-state **with
 an end to the occupation**" — and the critique's sharpest point is that the word כיבוש never appears
-in the Democrats' material at all. The party is where the rubric says it is; the eight papers simply
+in the Democrats' material at all. The party is where the rubric says it is; the papers simply
 lead with security and anti-annexation framing rather than with the endpoint.
 
 Golan's own political plan (N12, 2026-06-29) fits the same shape: recognition of a Palestinian
 technocratic government replacing Hamas, PA reform into *"גורם שלטוני מתון ואפקטיבי"*, and
 *"עצירת הסיפוח"* — mechanism first, endpoint assumed rather than proclaimed.
 
-Sources, all read 2026-08-01 and all first-party (`democrats-media.s3.us-east-1.amazonaws.com`):
+**2026-08-11 — two further papers (מילואימניקים, שיווין מגדרי) bring the corpus to ten. No axis
+moved; two tags added.**
+
+- **religiosity −3 reached from a third motive.** The axis design's Decision 5 has this row at −3
+  from *pluralism* (Kariv, Fink, Dabush) rather than anti-clericalism. The gender paper arrives at
+  the same −3 from neither: women's structural disadvantage in religious divorce —
+  *"חשופות לסחטנות, לתלות ולסרבנות גט"* — cancelling every expansion of rabbinical-court
+  jurisdiction and opening a full civil marriage and divorce track. Same direction, third road.
+  This is the axis-records-direction/tags-record-motive rule doing real work on one row.
+- **`gender-equality` added — a new tag; the vocabulary had nothing for it.** Not a values
+  statement: a self-binding zipper list, a **statutory 40% quota** for women in the Knesset enforced
+  by docking party funding, 40% in director-general and senior public-service posts, the right to
+  equality entrenched in a Basic Law, and an independent national authority against violence against
+  women with the definition widened to economic, psychological and digital violence.
+- **`reservist-focused` added, and this row is the tag's first cross-bloc holder.** The other four
+  (ישר, כחול לבן, אל הדגל, בית ציוני) are all security-hawk centre-or-right rows at security +1/+2;
+  this one is `opposition` at −2 / −1. That is what makes the tag worth carrying here — a tag four
+  hawks share says little, one that a social-democratic dove also earns records that the
+  reservist-burden question crossed the bloc line. It clears the standard כחול לבן set in revision
+  13 (a costed benefits package, not rhetoric): ₪1,000/day for combat reservists, unified
+  entitlements replacing the current maze, a resilience-and-rehab basket, state-guaranteed loans for
+  self-employed reservists, ~₪10bn/yr, against a target of 21–30 reserve days a year.
+- **It does *not* earn the `reservist-movement` family**, on the ישר precedent — that family records
+  what a party *is*, not what it has a policy about.
+- **`sanctions-on-non-servers` was considered and rejected**, and the distinction is the same one
+  that separates כחול לבן from this row. The paper does say *"נאכוף את חובת הגיוס ונוודא שכסף ציבורי
+  לא מממן השתמטות"* — but that targets the **institutions**. כחול לבן earned the tag for the
+  opposite: fines and reduced individual entitlements, explicitly *"עבודה מול הפרט ולא הישיבות"*.
+  Tagging both identically would erase a real difference.
+- **Open: who "additional populations" means.** The conscription clause reads
+  *"גיוס אלפי חרדים והרחבת גיוס של אוכלוסיות נוספות"*. The phrase is unspecified on a row carrying
+  `jewish-arab-partnership` as a family with בשיר at #10. Either it includes Arab citizens — which
+  sits against the partnership platform — or it is deliberately vague to avoid saying so. Recorded
+  rather than tagged; revisit if the party clarifies.
+- **security −1 re-verified mechanically at ten papers.** מדינה פלסטינית, פלסטינית, כיבוש and
+  שתי מדינות each occur **0 times** in both new papers, so the −1/−2 boundary argument above still
+  holds on the full corpus. But the reservists paper presses on it harder than anything the party
+  has published — an international stabilizing force in Gaza and Lebanon *"במקום החזקת השטח בידי
+  צה"ל"*, plus evacuation of West Bank outposts and farms, which is stronger than the security
+  paper's defunding language. Two documents now lean on this boundary. **If a third does, re-open
+  the −1.**
+
+Sources: the ten papers below, the first eight read 2026-08-01 and the last two 2026-08-11, all
+first-party (`democrats-media.s3.us-east-1.amazonaws.com`):
 [מדיני־ביטחוני](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%93%D7%99%D7%A0%D7%99+%D7%91%D7%99%D7%98%D7%97%D7%95%D7%A0%D7%99+(1).pdf),
 [כלכלי־חברתי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+(2).pdf),
 [דת ומדינה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%AA+%D7%95%D7%9E%D7%93%D7%99%D7%A0%D7%94.pdf),
@@ -454,7 +522,9 @@ Sources, all read 2026-08-01 and all first-party (`democrats-media.s3.us-east-1.
 [חינוך](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A0%D7%95%D7%9A.pdf),
 [להט"ב](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9C%D7%94%D7%98%D7%91+(2).pdf),
 [חיסול הפשע המאורגן](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A1%D7%95%D7%9C+%D7%94%D7%A4%D7%A9%D7%A2+%D7%94%D7%9E%D7%90%D7%95%D7%A8%D7%92%D7%9F.pdf),
-[סביבה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%A6%D7%A2+%D7%A1%D7%91%D7%99%D7%91%D7%94.pdf).
+[סביבה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%A6%D7%A2+%D7%A1%D7%91%D7%99%D7%91%D7%94.pdf),
+[מילואימניקים](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D.pdf),
+[שיווין מגדרי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%A9%D7%99%D7%95%D7%95%D7%99%D7%95%D7%9F+%D7%9E%D7%92%D7%93%D7%A8%D7%99.pdf).
 These are Illustrator exports with **no usable text layer for WebFetch** — its summarizer receives
 binary and reports the document as unreadable. `pdftotext` extracts them cleanly. Reach for it
 before concluding a party PDF is inaccessible.
@@ -543,7 +613,10 @@ page, and the sole basis for `public-service-reform`).
 …plus [*מציאות אחרת*](https://kachollavan.org.il/wp-content/uploads/2025/12/book%20different%20reality%20.pdf),
 which despite the title is **B&W's reservists programme** — *"תכנית המילואימניקים של כחול לבן"* —
 and [*יחד מנצחים*](https://kachollavan.org.il/wp-content/uploads/2026/07/20678_9_Amud-Atar.pdf), a
-national mental-health and trauma authority. **All six party documents have now been read.**
+national mental-health and trauma authority, and
+[*עולים צפונה*](https://kachollavan.org.il/wp-content/uploads/2026/08/20678_14_Amud-Atar.pdf), the
+Galilee and Kiryat Shmona programme (2026-08, read 2026-08-11). **All seven party documents have
+now been read.**
 
 **מציאות אחרת is the third independent confirmation of the conscription platform**, after
 `sherut4all` and the education paper: *"כולם משרתים — חילונים, דתיים, חרדים, יהודים, ערבים
@@ -559,8 +632,43 @@ and not the family, for exactly this reason. Note the competitive context: B&W i
 reservists programme while polling ~1%, having just lost חילי טרופר to
 בית ציוני - המילואימניקים.
 
-**`kachollavan.org.il` returns 403 to automated fetching**; these were downloaded by hand. One
-caveat for the next pass: **the education programme is a scanned-image PDF** — `pdftotext` yields 7
+**2026-08-11 — *עולים צפונה*, the seventh document. No axis moved and no tag was added.** It is
+drafted as a bill: a national target of **half a million more Israelis in the Negev and Galilee
+within five years, and half of all Israeli citizens living there by 2048**, under it a costed
+Kiryat Shmona package — a state-funded ER within a year, מכללת תל חי elevated to
+*"אוניברסיטת קריית שמונה"* with its own Education Ministry budget line, transport and Highway 6
+discounts with rail-station priority, a five-year full ארנונה exemption for businesses, tourism and
+restaurant work reclassified as *עבודה מועדפת*, a 50% ארנונה discount for under-30s, and remote-work
+accommodations for state employees in the north.
+
+- **economic 0 holds.** The temptation is to read a large spending commitment as a move left. It
+  isn't one: the economic axis measures the state's role in the economy *broadly*, and this is
+  geographically targeted regional development — endorsed in some form across the whole spectrum —
+  with mechanisms split between public investment (ER, university) and tax relief (the ארנונה
+  exemption and discounts). Nothing here decides the row away from 0, in either direction.
+- **security +2 holds.** The document opens by tying border communities to security doctrine
+  (*"לשנות את תפיסת הביטחון... יישובי הגבול ואזורי הספר"*), which is the same trap the
+  `homeland-security` note above records for ישר: a civil document whose framing invites a
+  security-axis reading it does not support. Nothing on statehood, the territories, Gaza or borders.
+- **`periphery-development` was considered and rejected — the tag is broken, not the fit.** It sits
+  on 3 of 18 rows, yet this page *already documents* periphery programmes for two rows that don't
+  carry it (הדמוקרטים's economic paper, "periphery investment"; אל הדגל, "massive periphery
+  infrastructure"). So the tag is recording which documents were read closely, not which parties
+  hold the position, and a fourth arbitrary member would have made the analysis silently imply the
+  other two lack it. Unlike `reservist-focused`, it has no earning standard recorded anywhere, which
+  is how it drifted. Listed under Open questions: sweep all 18 rows or retire it.
+- **התיישבות here means the Negev and Galilee, not the West Bank.** This row carries
+  `pro-settlement`, earned from the security doctrine and meaning territorial settlement. This
+  document uses התיישבות repeatedly — *"השקעה בצמיחה, בהתיישבות, בביטחון"* — about communities
+  inside the Green Line, i.e. internal demographic dispersal. Anyone auditing this row by grepping
+  the corpus for התיישבות will hit these and read them as corroboration of a tag they have nothing
+  to do with.
+
+**`kachollavan.org.il` returns 403 to a bare `curl`, but not to a browser-shaped request** — sending
+a normal desktop `User-Agent` **and** a `Referer: https://kachollavan.org.il/` header fetched both
+2026-08 PDFs at 200 on 2026-08-11. The earlier "downloaded by hand" note was a workaround for a
+block that only stops default tooling, so this domain does not need manual retrieval. One caveat for
+the next pass: **the education programme is a scanned-image PDF** — `pdftotext` yields 7
 bytes from 7 pages, so it has to be read visually. That is why it stayed unread while the others did
 not, and why this row carried a wrong religiosity for as long as it did.
 
@@ -1312,10 +1420,22 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   a hostile source quoting it), the chair states two states as the party vision, and four of the
   realized top six campaign on it. `security −1` and the "Zionist two-staters" band label were both
   correct as written. Details under that entry.
-- **כחול לבן has six known party documents and two have been read.** The four unread ones are listed
-  under its entry; `kachollavan.org.il` returns 403 to automated fetching, so they need to be fetched
-  by hand. One of them postdates every classification pass on that row. It is also polling at ~1%,
-  below the threshold, and losing people to בית ציוני - המילואימניקים.
+- ~~**כחול לבן has six known party documents and two have been read**~~ — **stale as written, and it
+  contradicted revision 13 four rows above it, which recorded all six as read on 2026-08-01.**
+  Resolved 2026-08-11: there are **seven**, all read, the seventh being *עולים צפונה* (2026-08). The
+  403 no longer needs a manual workaround either — a browser `User-Agent` plus a `Referer` header
+  fetches the PDFs directly; see that entry. The row is still polling ~1%, below the threshold, and
+  losing people to בית ציוני - המילואימניקים.
+- **`periphery-development` does not discriminate and needs a sweep or retirement.** It sits on 3 of
+  18 rows (ישר, ביחד, בית ציוני), but this page documents periphery programmes for at least two more
+  that don't carry it — הדמוקרטים ("periphery investment", in its economic paper) and אל הדגל
+  ("massive periphery infrastructure"). A tag whose membership tracks *which documents were read
+  closely* rather than which parties hold the position is worse than no tag, because it reads as a
+  finding. Either audit all 18 rows against it or drop it; adding members one at a time makes it
+  worse. **The same question is open for `reservist-focused`** (4 of 18) — the difference is that
+  one has an earning standard recorded (a costed benefits package, revision 13), so it can at least
+  be tested; `periphery-development` has none. Raised by the repo owner on 2026-08-11, and the
+  reason two proposed tags were dropped that day.
 - **נעם is campaigning as `נעם לישראל`** ("Noam for Israel") for the 26th Knesset. The row is seeded
   under the plain `נעם` and it is deliberately *not* renamed yet: lists are not final, a rename
   orphans votes (see the warning above), and an admin can do it in one edit if the longer name is
@@ -1356,3 +1476,4 @@ pass happened, for anyone reading git history.
 | 2026-08-02 | ישראל ביתנו re-verified string-by-string against the live platform: 15 sourced claims hold, **1 was wrong** — "Judea and Samaria appears exactly once" (it appears four times). Evidence for "no territorial claim" moved to ריבונות / סיפוח / התנחל = 0 occurrences each. **No axis moves** |
 | 2026-08-08 | revision 14 — בית ציוני - המילואימניקים read against its own תוכנית מגן דוד platform (launched 2026-08-05). **religiosity 0 → −2** on *"מתן תקצוב ציבורי רק למוסדות המלמדים לימודי ליבה"*, the same criterion that moved כחול לבן in revision 13; economic +1, security +2 and `unaligned` all **confirmed and unmoved**, with economic now resting on a party document instead of Hendel's personal record. 5 tags + the `cost-of-living` family added. **Row renamed** `המילואימניקים` → `בית ציוני - המילואימניקים` in `seed.sql` via an `UPDATE` before the `INSERT`, verified against an already-seeded database to keep its `id` and its votes. Logos: the same row repointed to a self-hosted file, and **הציונות הדתית's 2026 rebrand applied to `upcoming_parties` only** — `previous_parties` keeps the 2022 logo as the current Knesset faction |
 | 2026-08-08 | בית ציוני's logo corrected after shipping: its Star of David is a **knockout**, so the dark-mode recolour left the card showing through it as black triangles. Now one blue lockup used unchanged in both themes, with the recolour skipped (`SKIP_RECOLOR_PARTIES`) and the secondary elements on `#418AB8` to clear 3:1 on both grounds. **No classification change.** See the knockout section under Logos |
+| 2026-08-11 | revision 15 — five newly-read first-party documents across three rows, and **no axis moved on any of them**. הדמוקרטים's corpus 8 → 10 (מילואימניקים, שיווין מגדרי): `reservist-focused` and `gender-equality` added — the first makes this the tag's only cross-bloc holder, the second is new to the vocabulary; `sanctions-on-non-servers` rejected (this party targets institutional funding, not individuals, the opposite side of כחול לבן's line); religiosity −3 confirmed from a *third* motive (get-refusal, not pluralism or anti-clericalism); security −1 re-verified mechanically at ten papers, with a note that two documents now press on the −1/−2 boundary. ישר's October 7 commission מתווה read and **deliberately not tagged** — `state-commission-of-inquiry` sits on 1 of 18 rows and measures audit coverage rather than position; the drafted-statute-vs-slogan distinction recorded in prose instead. כחול לבן's corpus 6 → 7 (עולים צפונה): economic 0 and security +2 both held, `periphery-development` **rejected as a broken tag** and raised as an open question, and the התיישבות homograph (Negev/Galilee, not the West Bank) flagged against the row's `pro-settlement` tag. Two stale claims fixed: "כחול לבן... two have been read" contradicted revision 13, and the `kachollavan.org.il` 403 does **not** require manual download — a browser `User-Agent` plus `Referer` fetches it |

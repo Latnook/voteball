@@ -115,10 +115,18 @@ Researching party positions: `kachollavan.org.il` returns **403** to WebFetch (t
 `he.wikipedia.org` work. When only a blocked source supports the stronger claim, score the weaker one
 and say so (see רע"ם in `docs/party-classifications.md`).
 
+**A 403 usually blocks *default tooling*, not you — retry with a browser-shaped request before
+concluding a source is unreachable.** `kachollavan.org.il` was recorded here and in
+`docs/party-classifications.md` as needing manual download; on 2026-08-11 a plain `curl -A
+'Mozilla/5.0 …' -H 'Referer: https://kachollavan.org.il/'` fetched its PDFs at **200** on the first
+try. The cost of the wrong belief is not effort, it is coverage: that row sat with four unread
+documents and a wrong `religiosity` partly because the domain was written off as hand-fetch-only.
+Test the block before designing around it.
+
 **A party PDF that WebFetch calls unreadable is usually readable — use `pdftotext`.** Party platforms
 are frequently Adobe Illustrator exports; WebFetch hands its summarizer the raw binary, which then
 reports "no extractable text" and offers to help if you find another format. That is a tooling limit,
-not a property of the document. `curl` the PDF and run `pdftotext file.pdf file.txt` — all eight of
+not a property of the document. `curl` the PDF and run `pdftotext file.pdf file.txt` — all ten of
 הדמוקרטים's platform papers extracted cleanly this way after WebFetch declared four of them
 unreadable. Do not record "no platform published" on the strength of a WebFetch failure.
 
