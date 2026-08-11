@@ -802,6 +802,63 @@ future reader working from the link list:
 - **`/settlement/` is inside the Green Line**, unlike the other twelve: five new communities between
   Arad and Beersheba, five more between Dimona and Beersheba, four in the north.
 
+**2026-08-11 — read against the party's own 13 platform PDFs (`zionutdatit.org.il`, 2021-12 and
+2022-10). No axis moved. `not-economy-focused` REMOVED from both rows; one tag added.**
+
+These are the **2022-election** platform. The party has published nothing for 2026, so they are
+directly authoritative for the `previous_parties` row and only indicative for `upcoming_parties`;
+`basis` stays **`record`** on the upcoming row rather than becoming `platform`.
+
+- **`not-economy-focused` is removed, and the repo already contradicted itself about it.**
+  `docs/design/2026-07-30-party-families-club-traits-design.md` records that the *family* of that
+  name was replaced by `sectoral-budgeting` here because it "was simply false: Smotrich has held the
+  finance ministry since December 2022" — but nobody removed the **tag**, so `seed.sql` kept
+  asserting what the design doc called false. The entry above already flagged it as "the strained
+  tag on this row". A dedicated 6-page **כלכלה** paper settles it: public-sector reform (compulsory
+  arbitration in essential services, a ban on political and solidarity strikes, abolition of tenure —
+  *"ביטול מוסד הקביעות בשירות המדינה"*), deficit reduction explicitly **not** via tax rises, simple
+  uniform taxes cutting exemptions in exchange for *"הפחתת מיסים אוניברסלית רחבה"*, competition
+  between hospitals with government hospitals spun out as independent מלכ"רים, education devolution
+  and parental school choice, and deregulation including cutting the power of professional guilds
+  that create *"חסמי כניסה למקצוע"*. A second 7-page **רווחה** paper adds a workfare frame
+  (*"במקום קצבאות שונות יוכלו אנשים להשתכר בכבוד"*, and *"לא ניתן להמשיך במודל הקיים של מתן
+  קצבאות"*) plus a mental-health programme. That is a developed economic doctrine, whatever one
+  makes of it.
+- **`economic` stays 0 all the same, and this is the rule working rather than an oversight.** The
+  revision procedure is explicit that where rhetoric and record diverge the *number* records the
+  revealed position and a *tag* carries the gap. This row's `basis` is `record`, and the record is a
+  finance ministry directing money to one sector. So the 13 papers do not move the number — they
+  give `claims-economically-liberal` far better evidence than it has ever had, which previously
+  rested on a settlement-budget document. **Not economy-focused and economically-liberal-in-rhetoric
+  are different claims; only the second was ever true here.**
+- **`death-penalty-for-terrorists` added — and this retires the "single-holder" note on
+  עוצמה יהודית below.** The טרור paper: *"הפרקליטות תונחה להגיש כתבי אישום כנגד מחבלים בבקשה
+  לעונש מוות"*. The tag now has two holders, both far-right bloc partners, which is a coherent
+  grouping rather than a party-specific label.
+- **`judicial-overhaul` and `annexationist` are confirmed against first-party text** for the first
+  time. The משפט paper's override clause would let the court strike a Knesset law only by a
+  **unanimous** decision of all justices, with no power at any majority to strike a Basic Law; the
+  טרור paper separately abolishes the reasonableness ground so the HCJ cannot review house
+  demolitions. Both were previously scored from the record alone.
+
+**`reservist-focused` was considered and deliberately NOT added — and the reason is a finding in its
+own right.** The מילואים paper is a costed reservist land-benefit package (discount ceiling doubled
+₪75k → ₪150k, further 5–10% for young couples), which is the same *shape* of evidence that earned
+the tag for כחול לבן. Two things stopped it: the paper is from 2021 and reservist politics is not
+what it was after October 7, so it is weak evidence for the 2026 row; and the tag already sits on 5
+of 18 rows, so a sixth would put it on a third of the table. The repo owner predicted exactly this on
+2026-08-11 — *"most of the parties claim to be reservist focused"* — and this is the first
+independent confirmation. Folded into the vocabulary-hygiene question under Open questions.
+
+Sources: 13 PDFs at `zionutdatit.org.il`, read 2026-08-11 —
+כלכלה, רווחה, משפט, זהות יהודית, דיני משפחה, מסתננים, התיישבות ריבונית, חינוך, טרור, טבע וסביבה,
+פשיעה חקלאית, מילואים, and יהדות התפוצות וקליטת עליה (2022-10).
+**Twelve of the thirteen are image-only** — `pdftotext` returns 34 bytes from each (the party name,
+set as text; everything else is a picture), which is the exit-0 failure mode
+`services/backend/CLAUDE.md` warns about. They are tall single-page infographics, 595pt wide by up
+to 4,500pt, so they must be rendered and sliced (`pdftoppm -r 150` then crop to ~1,500px bands) and
+read visually, or OCR'd with `tesseract -l heb`. Only יהדות התפוצות has a real text layer.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -834,10 +891,17 @@ stays **`record`** — correctly, and now far better evidenced than when it was 
   גם בהר הבית… יהודים שמתפללים, מרגישים כאן בעלי הבית"*.
 - **`death-penalty-for-terrorists` added — a new tag, and the only new one.** Cited across three
   posts as the party's own legislative achievement (*"במסגרת חוק עונש מוות למחבלים העברנו"*). No
-  existing tag covered capital punishment; `hardline-on-gaza` is about military conduct. This is a
-  deliberate single-holder tag on the `opposes-hostage-deals` precedent: the position is genuinely
-  distinctive and contested *within* the bloc, not a widely-held one that is merely under-recorded.
-  That is the distinction that decided against `periphery-development` on the same day.
+  existing tag covered capital punishment; `hardline-on-gaza` is about military conduct. It was
+  introduced as a deliberate single-holder tag on the `opposes-hostage-deals` precedent: the position
+  is genuinely distinctive, not a widely-held one that is merely under-recorded. That is the
+  distinction that decided against `periphery-development` on the same day.
+
+  > **Superseded later the same day.** הציונות הדתית's טרור paper carries the same position —
+  > *"הפרקליטות תונחה להגיש כתבי אישום כנגד מחבלים בבקשה לעונש מוות"* — so the tag has **two**
+  > holders, both far-right bloc partners. It is no longer single-holder and the "contested within
+  > the bloc" half of the rationale was wrong; the two partners agree on it. The tag is better for
+  > it: two of eighteen is a grouping, and it now distinguishes this pair from הליכוד, which sits in
+  > the same bloc without the position.
 
 **economic 0 and `not-economy-focused` are now confirmed by evidence rather than inferred.** Across
 30 posts there is **no** economic content whatsoever — no tax, market, welfare, cost-of-living or
@@ -1500,6 +1564,13 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   one has an earning standard recorded (a costed benefits package, revision 13), so it can at least
   be tested; `periphery-development` has none. Raised by the repo owner on 2026-08-11, and the
   reason two proposed tags were dropped that day.
+  **Update, same day: the `reservist-focused` half is no longer hypothetical.** הציונות הדתית's
+  2021 מילואים paper is a costed reservist land-benefit package that *clears* the recorded standard,
+  which would make six of eighteen rows — a third of the table. It was held back only because the
+  document is pre-October-7 and so is weak evidence for a 2026 row. The owner's prediction that
+  "most of the parties claim to be reservist focused" is now supported by evidence rather than
+  intuition, and the sweep should decide a threshold question this tag cannot answer on its own:
+  **once a third of the table qualifies, is the tag still saying anything?**
 - **`annexationist` and `sovereignty-annexation` are two tags for one position.** Found 2026-08-11
   while tagging עוצמה יהודית. `annexationist` has a single holder (הציונות הדתית);
   `sovereignty-annexation` has four (אל הדגל, זהות, נעם, and now עוצמה יהודית). Nothing
@@ -1551,3 +1622,4 @@ pass happened, for anyone reading git history.
 | 2026-08-08 | בית ציוני's logo corrected after shipping: its Star of David is a **knockout**, so the dark-mode recolour left the card showing through it as black triangles. Now one blue lockup used unchanged in both themes, with the recolour skipped (`SKIP_RECOLOR_PARTIES`) and the secondary elements on `#418AB8` to clear 3:1 on both grounds. **No classification change.** See the knockout section under Logos |
 | 2026-08-11 | revision 15 — five newly-read first-party documents across three rows, and **no axis moved on any of them**. הדמוקרטים's corpus 8 → 10 (מילואימניקים, שיווין מגדרי): `reservist-focused` and `gender-equality` added — the first makes this the tag's only cross-bloc holder, the second is new to the vocabulary; `sanctions-on-non-servers` rejected (this party targets institutional funding, not individuals, the opposite side of כחול לבן's line); religiosity −3 confirmed from a *third* motive (get-refusal, not pluralism or anti-clericalism); security −1 re-verified mechanically at ten papers, with a note that two documents now press on the −1/−2 boundary. ישר's October 7 commission מתווה read and **deliberately not tagged** — `state-commission-of-inquiry` sits on 1 of 18 rows and measures audit coverage rather than position; the drafted-statute-vs-slogan distinction recorded in prose instead. כחול לבן's corpus 6 → 7 (עולים צפונה): economic 0 and security +2 both held, `periphery-development` **rejected as a broken tag** and raised as an open question, and the התיישבות homograph (Negev/Galilee, not the West Bank) flagged against the row's `pro-settlement` tag. Two stale claims fixed: "כחול לבן... two have been read" contradicted revision 13, and the `kachollavan.org.il` 403 does **not** require manual download — a browser `User-Agent` plus `Referer` fetches it |
 | 2026-08-11 | revision 16 — **עוצמה יהודית read against party output for the first time**, via 30 of its own news posts (2026-05-26 → 2026-08-04); it publishes no platform, which is why the row had stood at five tags and a two-line entry. **No axis moved** (security and religiosity are already at the +3 ceiling; economic 0 is now confirmed by 30 posts containing zero economic content, rather than inferred). Six tags added, 5 → 11: `gun-rights` (8 posts, 280,000+ licences, 126 localities in 2026 alone), `judicial-overhaul` (closing a gap against its own bloc partner), `pro-settlement` + `sovereignty-annexation` (חיננית cornerstone, sovereignty stated as doctrine), `temple-mount-centred` (chairman ascending on Tisha B'Av), and one new tag `death-penalty-for-terrorists`. `basis` stays `record` — ministerial-action posts are a record source, not a platform. Two near-misses recorded rather than tagged: the muezzin-noise bill is **not** religiosity evidence (that axis is scoped to Jewish religion-and-state, and its sponsors frame it as public health), and Negev demolition enforcement is left untagged for want of a comparator row. Also logged: `annexationist` and `sovereignty-annexation` are duplicate tags for one position, splitting the two closest parties across two spellings |
+| 2026-08-11 | revision 17 — **הציונות הדתית read against its own 13 platform PDFs** (2021-12 / 2022-10; the party has published nothing for 2026, so these are authoritative for `previous_parties` and only indicative for `upcoming_parties`, whose `basis` stays `record`). **No axis moved.** `not-economy-focused` **REMOVED from both rows** — `docs/design/2026-07-30-party-families-club-traits-design.md` had already replaced the *family* of that name here as "simply false" given Smotrich's finance ministry, but nobody removed the *tag*, so `seed.sql` kept asserting what another repo doc called false; a dedicated 6-page כלכלה paper (abolish civil-service tenure, ban political strikes, no deficit-closing via tax rises, broad tax cuts against narrowed exemptions, hospital independence, deregulation) plus a 7-page workfare-framed רווחה paper settle it. **economic stays 0 regardless** — the number records the *revealed* position and `claims-economically-liberal` carries the gap; those two tags were never the same claim, and only the second was ever true here. `death-penalty-for-terrorists` added from the טרור paper, giving that tag a **second** holder and retiring the "single-holder" rationale written for עוצמה יהודית earlier the same day. `judicial-overhaul` and `annexationist` confirmed against first-party text for the first time (the משפט paper's override clause requires a *unanimous* court to strike a Knesset law). `reservist-focused` **deliberately not added** despite a qualifying מילואים paper: pre-October-7, and it would put the tag on a third of the table — confirming the owner's prediction and sharpening the open vocabulary question. Retrieval note: **12 of the 13 are image-only**, `pdftotext` yielding 34 bytes each |
