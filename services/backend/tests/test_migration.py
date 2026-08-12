@@ -615,6 +615,52 @@ def test_europa_league_link_does_not_overwrite_an_admin_set_second_league(conn):
     cur.close()
 
 
+# Competition emblems that moved from a Wikimedia URL to a self-hosted, cropped file. Each needs its
+# own correction statement in seed.sql: the leagues logo block is guarded on `logo_url IS NULL`, so an
+# edited tuple reaches a fresh database only -- which is every database the test suite builds, and
+# none of the ones in production. Seeding the superseded URL first is the only way to test the part
+# that actually matters.
+SELF_HOSTED_LEAGUE_EMBLEMS = [
+    ('UEFA Champions League',
+     'https://upload.wikimedia.org/wikipedia/commons/d/d1/UEFA_Champions_League_logo_no_text.svg',
+     '/logos/uefa-champions-league.svg'),
+    ('Bundesliga',
+     'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg',
+     '/logos/bundesliga.svg'),
+]
+
+
+@pytest.mark.parametrize('name_en, superseded, expected', SELF_HOSTED_LEAGUE_EMBLEMS)
+def test_league_emblem_correction_reaches_an_already_seeded_row(conn, name_en, superseded, expected):
+    cur = conn.cursor()
+    cur.execute('UPDATE leagues SET logo_url = %s WHERE name_en = %s', (superseded, name_en))
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT logo_url FROM leagues WHERE name_en = %s', (name_en,))
+    assert cur.fetchone()[0] == expected
+    cur.close()
+
+
+@pytest.mark.parametrize('name_en, superseded, expected', SELF_HOSTED_LEAGUE_EMBLEMS)
+def test_league_emblem_correction_leaves_an_admin_choice_alone(conn, name_en, superseded, expected):
+    admin_choice = 'https://example.invalid/admins-own-emblem.svg'
+    cur = conn.cursor()
+    cur.execute('UPDATE leagues SET logo_url = %s WHERE name_en = %s', (admin_choice, name_en))
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT logo_url FROM leagues WHERE name_en = %s', (name_en,))
+    assert cur.fetchone()[0] == admin_choice
+    cur.close()
+
+
 DEAD_FRANCE_CREST = 'https://upload.wikimedia.org/wikipedia/en/f/f4/France_NT_2026_logo.svg'
 FRANCE_CREST = 'https://upload.wikimedia.org/wikipedia/en/1/12/France_national_football_team_seal.svg'
 

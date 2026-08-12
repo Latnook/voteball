@@ -139,6 +139,61 @@ load-bearing across two buttons rather than one: a club already linked to the UC
 resend `name_en`/`name_he`/`name_ru`/`logo_url` on every call — that PATCH replaces every field, so
 an omitted name is written as `NULL`.
 
+### 7. The Champions League and Bundesliga marks were self-hosted the same way
+
+Follow-on pass, same day. Both upstream emblems carry the competition wordmark under the mark, which
+is redundant beside the league name the UI already prints and illegible at 3.4rem. Both are now
+cropped, self-hosted files, replacing a hotlink:
+
+| League | Light | Dark | Was |
+|---|---|---|---|
+| Champions League | navy `#00004b` starball | white starball | Wikimedia no-text starball + `OUTLINE_CLUBS` |
+| Bundesliga | red tile, white player | *(same file)* | Wikimedia 2017 logo incl. wordmark |
+
+The Champions League leaves `OUTLINE_CLUBS` — the starball is one navy silhouette, so the outline
+traced its edge without lifting it, which is the same reason the Europa League trophy needed a real
+second file. The Bundesliga needs no dark variant at all: its mark is a solid red tile that reads on
+both grounds once the black wordmark below it is gone.
+
+**Both cropped by `viewBox`, not by re-tracing** — unlike the Europa League, both upstream files are
+genuine vector. The Champions League logo is one path holding ball *and* wordmark, so the subpaths
+past the ball were dropped as well; keeping them would have shipped ~6 KB of invisible text clipped
+by the viewBox. The dropped-subpath version was proved pixel-identical to the clip-only version at
+1200 px wide before being committed. The Bundesliga separates cleanly — the wordmark is its own
+element, so it is simply removed.
+
+**Both needed a correction statement, for the France reason** (see the note in `seed.sql`): the
+leagues logo block is guarded on `logo_url IS NULL`, and both rows already hold a URL, so editing
+the tuples reaches a fresh database only. `test_league_emblem_correction_reaches_an_already_seeded_row`
+seeds the superseded URL first, which is the only way to test the half that matters.
+
+### 8. The light/dark switch runs backwards inside a selected tab
+
+Found by screenshotting the result rather than by reasoning about it. A selected league tab is a
+filled accent pill whose ground is **inverted** relative to the page — dark green with white text in
+light mode, bright green with near-black text in dark mode (`--accent` / `--accent-ink`). So the page
+theme says the wrong thing about what a logo on that pill is sitting on, and the artwork ends up
+fighting the label next to it: a white starball beside black text on the same green pill.
+
+Four CSS rules under `.tab[aria-selected="true"]` mirror the four global ones and swap which variant
+shows. Only entities that *have* two variants are affected; a single `<img>` carries no `.logo-orig`
+class and is never hidden by any of it.
+
+This was already wrong before this pass — the Champions League's outline treatment had the same
+mismatch — but it only became visible once two league emblems carried real variants.
+
+### 9. A missing self-hosted logo file is invisible everywhere it could be caught
+
+`scripts/tests/test-logo-assets.sh` asserts that every `/logos/…` path in `seed.sql` exists on disk,
+and that `services/frontend/Dockerfile` still copies `logos/` as a whole directory.
+
+The failure it prevents has no symptom anywhere in the pipeline: the seed applies (it is just a
+string), the backend tests pass (they assert the column, not the file), the pod is Healthy, ArgoCD is
+Synced, and the smoke test passes because the page loads. The crest simply renders as an initials
+monogram — `logos.js`'s error handler working correctly — which reads as "no logo set yet" rather
+than as a bug. It is the self-inflicted, fully-offline-checkable version of the dead Wikimedia France
+URL.
+
 ## Verification outcome
 
 _To be filled in after the change is deployed and verified._

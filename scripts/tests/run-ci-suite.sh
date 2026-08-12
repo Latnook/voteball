@@ -32,6 +32,9 @@ PYTHON_GROUP=(
   test-deploy-env.sh
   test-frontend-seo.sh
   test-i18n-parity.sh
+  # Needs neither python3 nor git (bash + grep only), so it could sit in either group. Placed here
+  # and confirmed passing inside a bare python:3.12-slim on 2026-08-12, per the rule above.
+  test-logo-assets.sh
   test-render-argocd-app.sh
   test-smoke-test.sh
   test-sync-values.sh

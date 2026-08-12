@@ -384,11 +384,11 @@ UPDATE leagues SET has_divisions = FALSE WHERE name_en <> 'Nations League';
 UPDATE leagues t SET logo_url = v.logo_url
 FROM (VALUES
     ('World Cup 2026', 'https://upload.wikimedia.org/wikipedia/commons/1/17/2026_FIFA_World_Cup_emblem.svg'),
-    ('UCL', 'https://upload.wikimedia.org/wikipedia/commons/d/d1/UEFA_Champions_League_logo_no_text.svg'),
+    ('UCL', '/logos/uefa-champions-league.svg'),
     ('EPL', 'https://b.fssta.com/uploads/application/soccer/competition-logos/EnglishPremierLeague.png'),
     ('La Liga', 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg'),
     ('Serie A', 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg'),
-    ('Bundesliga', 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg'),
+    ('Bundesliga', '/logos/bundesliga.svg'),
     ('Israeli Premier League', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
     ('Liga Leumit', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
     ('Nations League', '/logos/uefa-nations-league.svg'),
@@ -401,6 +401,27 @@ FROM (VALUES
 ) AS v(name, logo_url)
 WHERE t.name = v.name
   AND t.logo_url IS NULL;
+
+-- Self-hosted, cropped competition marks for the Champions League and the Bundesliga (2026-08-12).
+-- Both replace a Wikimedia URL that is already in every seeded database, so -- exactly as with the
+-- France crest above -- editing the tuples in the block would reach a FRESH database only: that
+-- block's guard is `logo_url IS NULL`, and neither row is NULL. These two statements are what move
+-- an already-seeded one.
+--
+-- Keyed on the exact superseded URL, so an admin who has since set their own emblem is never
+-- overwritten, and each is a no-op once applied.
+--
+-- Why self-hosted at all: both upstream files carry the competition wordmark under the mark, which
+-- is redundant next to the league name the UI already prints beside it, and unreadable at 3.4rem.
+-- The Champions League additionally ships a white starball for the dark theme
+-- (services/frontend/logos/uefa-champions-league-dark.svg, selected by logos.js's DARK_VARIANT_LOGOS,
+-- not from this column) -- it replaces the white-outline treatment it used to get. The Bundesliga
+-- needs no dark variant: its mark is a solid red tile that reads on both themes once the black
+-- wordmark below it is gone.
+UPDATE leagues SET logo_url = '/logos/uefa-champions-league.svg'
+ WHERE logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d1/UEFA_Champions_League_logo_no_text.svg';
+UPDATE leagues SET logo_url = '/logos/bundesliga.svg'
+ WHERE logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg';
 
 -- Club display names.
 -- One row per entity, all display languages together. COALESCE is the per-column equivalent of

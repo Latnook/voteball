@@ -39,7 +39,9 @@ const OUTLINE_CLUBS = new Set([
   "Ironi Modi'in",
   'Hapoel Petah Tikva',
   'Maccabi Bnei Reineh',
-  'UEFA Champions League',
+  // (The UEFA Champions League used to be here. It now ships a white starball for dark mode instead
+  // -- see DARK_VARIANT_LOGOS below. Leaving it here as well would trace a white outline around
+  // already-white artwork.)
   // World Cup 2026 national-team crests. The flags these replaced were uniformly bright; federation
   // badges are not, and these three are dark artwork on transparency -- Cape Verde's navy shield,
   // Mexico's dark green eagle, and South Korea's "KOREA" wordmark, which is a dark blue that
@@ -68,6 +70,9 @@ const OUTLINE_CLUBS = new Set([
 // both cheaper and inspectable. See docs/design/2026-08-12-europa-league-design.md decision 5.
 const DARK_VARIANT_LOGOS = new Map([
   ['UEFA Europa League', '/logos/uefa-europa-league-dark.svg'],
+  // The starball is one navy silhouette, so the outline treatment it used to get traced its edge
+  // without lifting it -- the same reason the Europa League trophy needed a real second file.
+  ['UEFA Champions League', '/logos/uefa-champions-league-dark.svg'],
 ]);
 
 // Parties (by name_en) whose artwork is dark ink on a TRANSPARENT interior, which the recolour below

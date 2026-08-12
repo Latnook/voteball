@@ -546,6 +546,23 @@ button { font-family: inherit; }
 :root[data-theme="light"] .logo img.logo-orig { display: block; }
 :root[data-theme="light"] .logo .logo-recolored { display: none; }
 
+/* ...and the one place that switch has to run BACKWARDS. A selected tab is a filled accent pill
+   whose ground is inverted relative to the page: dark green with white text in light mode, bright
+   green with near-black text in dark mode (--accent / --accent-ink). The page theme therefore says
+   the wrong thing about what the logo is sitting on, and without these rules the artwork fights the
+   label beside it -- a white starball next to black text on the same green pill, which is what
+   shipped for as long as the Champions League used the outline treatment instead of a variant.
+   Only entities that HAVE two variants are affected: a single <img> carries no .logo-orig class and
+   is never hidden by any of this. */
+.tab[aria-selected="true"] .logo img.logo-orig { display: block; }
+.tab[aria-selected="true"] .logo .logo-recolored { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .tab[aria-selected="true"] .logo img.logo-orig { display: none; }
+  :root:not([data-theme="dark"]) .tab[aria-selected="true"] .logo .logo-recolored { display: block; }
+}
+:root[data-theme="light"] .tab[aria-selected="true"] .logo img.logo-orig { display: none; }
+:root[data-theme="light"] .tab[aria-selected="true"] .logo .logo-recolored { display: block; }
+
 /* Party pick-cards (vote.js passes extraClass 'logo-wide'): full-width box at the SAME height as the
    square club logos, so wide Hebrew wordmark logos fill the card width while staying consistent in
    height/rhythm with the club crests. */
