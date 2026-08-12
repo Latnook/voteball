@@ -666,7 +666,13 @@ Leagues is the smallest table (10 rows, 7 properties) and carries five of the pa
 
 **AMENDMENT (found before dispatch, 2026-08-12): the temp table must carry `legacy_name`.**
 
-The clubs roster `INSERT` further down the file joins `ON l.name = c.league_name` (`seed.sql:161`) using the tokens `'UCL'` and `'EPL'` — the legacy `name` column, not `name_en`. If this task's `INSERT` writes `name = name_en`, then on a **fresh** database `leagues.name` becomes `'UEFA Champions League'`/`'Premier League'`, that join matches nothing, and **zero clubs are inserted**. Database B in the harness would come up empty and A-vs-B would fail.
+**Corrected 2026-08-12 after review — the original rationale below was wrong, and the corrected one is why `legacy_name` still stands.**
+
+~~The clubs roster joins `ON l.name = c.league_name`, so writing `name_en` into `name` would insert zero clubs.~~ **False.** That join carries a fallback the original claim missed: `OR l.name_en = (CASE c.league_name WHEN 'UCL' THEN 'UEFA Champions League' WHEN 'EPL' THEN 'Premier League' ELSE c.league_name END)`. The reviewer applied exactly that regression and got a full 212-club roster with every league correctly linked — and the harness printed `PASS`, because A-vs-B excludes `name` by design.
+
+**The real reason to keep `legacy_name`:** `services/backend/tests/test_app.py` (33 occurrences) and `test_queries.py` (3) look leagues up with `WHERE name = 'EPL'` / `'UCL'` directly, with no `name_en` fallback. Dropping `legacy_name` breaks roughly **36 ordinary unit tests**. The decision is unchanged; only the justification is.
+
+**Consequence worth carrying forward: the neutrality harness is not the safety net for this class of regression — the pytest suite is.** A-vs-B excludes `name`, and A-vs-C never sees it because adoption leaves `name` untouched. Do not rely on the harness to catch a legacy-identity change; run the full suite.
 
 So `seed_leagues` carries the exact legacy token, the `INSERT` writes it into `name`, and the `UPDATE` never touches `name` at all (adopted rows keep production's drifted value, which is what keeps A-vs-C empty). Only two differ from `name_en`:
 
