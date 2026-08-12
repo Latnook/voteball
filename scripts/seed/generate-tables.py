@@ -16,12 +16,11 @@ import psycopg2
 
 SPECS = {
     # 'name' (the legacy column) is fetched here too, ahead of name_en, and carried into
-    # the temp table as `legacy_name`. The clubs roster INSERT further down seed.sql still
-    # joins ON l.name = c.league_name using the tokens 'UCL'/'EPL' -- if this table's INSERT
-    # wrote name_en into `name` instead, that join would match nothing on a fresh database
-    # and insert zero clubs. Selecting the live `name` column (rather than deriving it) is
-    # what keeps the two literal exceptions -- UCL and EPL -- exactly in sync with what
-    # seed.sql has always inserted, with no hand-maintained exception list here.
+    # the temp table as `legacy_name`. Nothing in seed.sql joins on it any more -- the clubs
+    # roster INSERT was rewritten to join on leagues.seed_key -- but ~36 tests across
+    # test_app.py/test_queries.py still look leagues up with WHERE name = 'EPL'/'UCL' and have
+    # no name_en fallback, so `legacy_name` is what keeps seed.sql writing those two literal
+    # tokens into `name` without a hand-maintained exception list here.
     'leagues': dict(
         slug_from='name_en',
         columns=['name', 'name_en', 'name_he', 'name_ru', 'logo_url', 'sort_order',

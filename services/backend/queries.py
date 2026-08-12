@@ -371,9 +371,10 @@ def _admin_edited_after(cur, table, row_id, incoming, extra=()):
     name_en/name_he/name_ru/logo_url untouched, and historically did so for 104 of 212 clubs.
 
     `extra` names additional columns to compare that are not in _PROVENANCE_COLUMNS --
-    rename_club passes 'domestic_league_id', an integer FK rather than one of the four text
-    columns, but equally admin-writable: both PATCH /api/admin/clubs/<id> and the admin UI's
-    continental-competition buttons set it, so seed.sql must yield to a human's link too.
+    rename_club passes 'domestic_league_id' and 'league_id', integer FKs rather than one of
+    the four text columns, but equally admin-writable: both PATCH /api/admin/clubs/<id> and
+    the admin UI's continental-competition buttons set domestic_league_id, and PATCH can move
+    a club between leagues via league_id, so seed.sql must yield to a human's link/move too.
 
     `table` is interpolated because psycopg2 cannot parameterise an identifier; every call
     site passes a literal from this module, never request data.
@@ -836,7 +837,8 @@ def rename_club(conn, club_id, league_id, domestic_league_id, name_en, name_he, 
             'name_en': name_en, 'name_he': name_he,
             'name_ru': name_ru, 'logo_url': logo_url,
             'domestic_league_id': domestic_league_id,
-        }, extra=('domestic_league_id',))
+            'league_id': league_id,
+        }, extra=('domestic_league_id', 'league_id'))
         if edited is None:
             return False
         cur.execute(

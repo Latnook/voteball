@@ -1231,3 +1231,78 @@ def test_provenance_is_recorded_for_every_renamable_table(conn):
     cur.execute('SELECT admin_edited FROM upcoming_parties WHERE id = %s', (uid,))
     assert cur.fetchone()[0] == ['name_ru']
     cur.close()
+
+
+def test_name_he_provenance_is_recorded_for_every_renamable_table(conn):
+    """H2: name_he is the primary display name across the whole site, but unlike its
+    siblings (dropping 'name_ru' from _PROVENANCE_COLUMNS fails 2 tests) it had no dedicated
+    assertion -- dropping 'name_he' left all 203 tests passing. Pins it the same way
+    test_provenance_is_recorded_for_every_renamable_table pins name_en/name_ru/logo_url."""
+    cur = conn.cursor()
+    cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM leagues "
+                "WHERE name_en = 'La Liga'")
+    lid, en, he, ru, logo = cur.fetchone()
+    queries.rename_league(conn, lid, en, 'ליגה בדיונית', ru, logo)
+    cur.execute('SELECT admin_edited FROM leagues WHERE id = %s', (lid,))
+    assert cur.fetchone()[0] == ['name_he']
+
+    cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
+                "FROM clubs WHERE name_en = 'Bayern Munich'")
+    club_id, league_id, domestic_id, en, he, ru, logo = cur.fetchone()
+    queries.rename_club(conn, club_id, league_id, domestic_id, en, 'מועדון בדיוני', ru, logo)
+    cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == ['name_he']
+
+    cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM previous_parties "
+                "WHERE name_he = 'הליכוד'")
+    pid, en, he, ru, logo = cur.fetchone()
+    queries.rename_previous_party(conn, pid, en, 'מפלגה בדיונית', ru, logo)
+    cur.execute('SELECT admin_edited FROM previous_parties WHERE id = %s', (pid,))
+    assert cur.fetchone()[0] == ['name_he']
+
+    cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM upcoming_parties "
+                "WHERE name_he = 'הליכוד'")
+    uid, en, he, ru, logo = cur.fetchone()
+    queries.rename_upcoming_party(conn, uid, en, 'מפלגה בדיונית 2', ru, logo)
+    cur.execute('SELECT admin_edited FROM upcoming_parties WHERE id = %s', (uid,))
+    assert cur.fetchone()[0] == ['name_he']
+    cur.close()
+
+
+def test_domestic_league_id_change_is_recorded_as_provenance(conn):
+    """H1: rename_club's domestic_league_id provenance (the continental-competition link, set
+    via extra=('domestic_league_id', 'league_id')) had no dedicated test -- deleting the whole
+    extra= argument left all 203 tests passing, so a regression there would silently revert
+    every admin 'Add to UEFA Champions League' / 'Add to UEFA Europa League' click."""
+    cur = conn.cursor()
+    cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
+                "FROM clubs WHERE name_en = 'Bayern Munich'")
+    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'Serie A'")
+    new_domestic_id = cur.fetchone()[0]
+
+    queries.rename_club(conn, club_id, league_id, new_domestic_id, name_en, name_he,
+                        name_ru, logo_url)
+
+    cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == ['domestic_league_id']
+    cur.close()
+
+
+def test_league_id_change_is_recorded_as_provenance(conn):
+    """I1: league_id (which league a club is filed under) was not tracked in admin_edited at
+    all, while seed.sql overwrites it unconditionally -- an admin who moves a club between
+    leagues had that move silently reverted on the next pod boot."""
+    cur = conn.cursor()
+    cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
+                "FROM clubs WHERE name_en = 'Bayern Munich'")
+    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'La Liga'")
+    new_league_id = cur.fetchone()[0]
+
+    queries.rename_club(conn, club_id, new_league_id, domestic_id, name_en, name_he,
+                        name_ru, logo_url)
+
+    cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == ['league_id']
+    cur.close()

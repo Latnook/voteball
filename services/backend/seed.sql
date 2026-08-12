@@ -333,12 +333,17 @@ JOIN leagues l ON l.seed_key = s.league
 LEFT JOIN leagues d ON d.seed_key = s.also_in
 WHERE NOT EXISTS (SELECT 1 FROM clubs t WHERE t.seed_key = s.seed_key);
 
--- domestic_league_id IS admin-writable (PATCH /api/admin/clubs/<id> and the admin UI's
--- continental-competition buttons both set it), so it yields to admin_edited like the
--- names do. group_label does not: both admin club endpoints omit it by design, precisely
--- so a PATCH cannot null it out.
+-- league_id and domestic_league_id are BOTH admin-writable (PATCH /api/admin/clubs/<id> can
+-- move a club between leagues via league_id; that same endpoint and the admin UI's
+-- continental-competition buttons set domestic_league_id), so both yield to admin_edited like
+-- the names do. league_id is NOT NULL, so its guarded branch must always have a value to fall
+-- back to -- t.league_id is only read when admin_edited already names it, i.e. only after some
+-- earlier write (seed or admin) populated it, so it can never be NULL there. group_label does
+-- not follow this pattern: both admin club endpoints omit it by design, precisely so a PATCH
+-- cannot null it out.
 UPDATE clubs t SET
-    league_id          = l.id,
+    league_id          = CASE WHEN 'league_id' = ANY(t.admin_edited)
+                              THEN t.league_id ELSE l.id END,
     domestic_league_id = CASE WHEN 'domestic_league_id' = ANY(t.admin_edited)
                               THEN t.domestic_league_id ELSE d.id END,
     name_en     = CASE WHEN 'name_en'  = ANY(t.admin_edited) THEN t.name_en  ELSE s.name_en  END,

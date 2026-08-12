@@ -691,6 +691,51 @@ def test_europa_league_link_is_re_applied_after_a_raw_clear(conn):
     cur.close()
 
 
+def test_league_move_does_not_overwrite_an_admin_set_league(conn):
+    # I1: league_id (which league a club is filed under) is admin-writable via
+    # PATCH /api/admin/clubs/<id>, the same as domestic_league_id above, so it must yield to
+    # admin_edited the same way -- seed.sql used to overwrite league_id unconditionally with no
+    # guard at all, which would silently revert an admin's league move on every pod boot.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute(
+        "UPDATE clubs SET league_id = %s, admin_edited = ARRAY['league_id'] "
+        "WHERE name_en = 'Juventus'", (la_liga_id,)
+    )
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == la_liga_id, 'seed.sql overwrote an admin-set league'
+    cur.close()
+
+
+def test_league_id_is_re_applied_after_a_raw_move(conn):
+    # The negative case the positive test above doesn't cover: a raw change to league_id that
+    # does NOT record admin_edited (unlike an admin PATCH, which always does) writes exactly
+    # the state the seed statement's ELSE branch fills, so seed.sql moves the club back to its
+    # seeded league on the next backend pod boot -- init_db runs on every one.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'Serie A'")
+    serie_a_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute("UPDATE clubs SET league_id = %s WHERE name_en = 'Juventus'", (la_liga_id,))
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == serie_a_id
+    cur.close()
+
+
 # Competition emblems that moved from a Wikimedia URL to a self-hosted, cropped file. Each needs its
 # own correction statement in seed.sql: the leagues logo block is guarded on `logo_url IS NULL`, so an
 # edited tuple reaches a fresh database only -- which is every database the test suite builds, and
