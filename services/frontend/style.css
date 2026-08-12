@@ -546,16 +546,25 @@ button { font-family: inherit; }
 :root[data-theme="light"] .logo img.logo-orig { display: block; }
 :root[data-theme="light"] .logo .logo-recolored { display: none; }
 
-/* ...and the one place that switch has to run BACKWARDS. A selected tab is a filled accent pill
-   whose ground is inverted relative to the page: dark green with white text in light mode, bright
-   green with near-black text in dark mode (--accent / --accent-ink). The page theme therefore says
-   the wrong thing about what the logo is sitting on, and without these rules the artwork fights the
-   label beside it -- a white starball next to black text on the same green pill, which is what
-   shipped for as long as the Champions League used the outline treatment instead of a variant.
+/* ...and the one place the page theme does not decide it. A selected tab is a filled accent pill --
+   dark green in light mode, bright green in dark mode -- and on BOTH the logo stays light. The rule
+   is the artwork's own, not the theme's: dark artwork appears only on light surfaces, and a coloured
+   pill is not one. Without this the emblem flips colour as you click between tabs, which reads as a
+   glitch rather than as a state change.
+
+   The cost is on the dark theme's brighter pill (#2FD771), where white measures 1.90:1 -- under
+   WCAG 1.4.11's 3:1 for graphical objects. Taken deliberately, twice over: the starball and the
+   trophy are drawn as light shapes with the ground showing THROUGH them, so their form survives a
+   contrast the number says it should not (check a screenshot before trusting the ratio here); and
+   1.4.11 governs graphics required to understand the content, while these are decorative (alt="")
+   and sit beside a text label carrying the same name at full contrast. Repo owner's call after
+   seeing both rendered live, 2026-08-12.
+
    Only entities that HAVE two variants are affected: a single <img> carries no .logo-orig class and
-   is never hidden by any of this. */
-.tab[aria-selected="true"] .logo img.logo-orig { display: block; }
-.tab[aria-selected="true"] .logo .logo-recolored { display: none; }
+   is never hidden by any of this -- the Bundesliga tile is untouched here.
+
+   And only LIGHT mode needs overriding. The dark theme already shows the light-artwork variant
+   everywhere, so a rule for it would be a no-op that reads like it does something. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) .tab[aria-selected="true"] .logo img.logo-orig { display: none; }
   :root:not([data-theme="dark"]) .tab[aria-selected="true"] .logo .logo-recolored { display: block; }

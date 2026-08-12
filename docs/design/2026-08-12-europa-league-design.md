@@ -167,20 +167,31 @@ leagues logo block is guarded on `logo_url IS NULL`, and both rows already hold 
 the tuples reaches a fresh database only. `test_league_emblem_correction_reaches_an_already_seeded_row`
 seeds the superseded URL first, which is the only way to test the half that matters.
 
-### 8. The light/dark switch runs backwards inside a selected tab
+### 8. On a selected tab the logo stays light, in both themes
 
-Found by screenshotting the result rather than by reasoning about it. A selected league tab is a
-filled accent pill whose ground is **inverted** relative to the page — dark green with white text in
-light mode, bright green with near-black text in dark mode (`--accent` / `--accent-ink`). So the page
-theme says the wrong thing about what a logo on that pill is sitting on, and the artwork ends up
-fighting the label next to it: a white starball beside black text on the same green pill.
+A selected league tab is a filled accent pill — dark green in light mode, bright green in dark mode
+(`--accent`). The page theme therefore says nothing useful about what a logo sitting on it is
+against, so the pill gets its own rule: **dark artwork appears only on light surfaces, and a coloured
+pill is not one.** Two CSS rules under `.tab[aria-selected="true"]`, in light mode only — the dark
+theme already shows the light-artwork variant everywhere, so a rule for it would be a no-op that
+reads like it does something.
 
-Four CSS rules under `.tab[aria-selected="true"]` mirror the four global ones and swap which variant
-shows. Only entities that *have* two variants are affected; a single `<img>` carries no `.logo-orig`
-class and is never hidden by any of it.
+The first attempt did the opposite. It matched the pill's *text* colour (`--accent-ink`, which does
+invert with the theme), giving a navy starball on the bright green pill in dark mode — 10.06:1, the
+highest-contrast option, and rejected on sight by the repo owner: the emblem visibly flipped colour
+as you clicked between tabs, which reads as a glitch rather than as a state change. Consistency of
+the artwork beat contrast of the artwork.
 
-This was already wrong before this pass — the Champions League's outline treatment had the same
-mismatch — but it only became visible once two league emblems carried real variants.
+**The accepted cost is 1.90:1** for white on `#2FD771`, under WCAG 1.4.11's 3:1 for graphical
+objects. Deliberate, on two grounds. The starball and the trophy are drawn as light shapes with the
+ground showing *through* them, so their form survives a contrast the ratio says it should not —
+which is only visible in a render, not in a number. And 1.4.11 governs graphics *required* to
+understand the content, whereas these are decorative (`alt=""`) beside a text label carrying the same
+name at full contrast. In light mode the question does not arise: white is 4.42:1 and navy 4.31:1 on
+`#128A46`, so both pass and the choice is purely one of consistency.
+
+Both variants were rendered live and compared before deciding. The numbers alone would have picked
+the rejected option.
 
 ### 9. A missing self-hosted logo file is invisible everywhere it could be caught
 
