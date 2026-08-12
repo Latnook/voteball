@@ -20,43 +20,50 @@ import psycopg2
 
 # table -> (natural key, columns compared)
 #
-# The legacy `name` column is deliberately excluded from every entry below. Per
-# services/backend/CLAUDE.md it is internal identity only, never returned by the API, and
-# every admin rename route (rename_league/rename_club/rename_*_party in queries.py)
-# unconditionally overwrites it with name_he -- even on a no-op rename. A production
-# database that has ever been touched by an admin therefore has `name` != seed.sql's
-# literal insert value on those rows, while a pristine fresh install still has the
-# literal. That divergence is real, pre-existing, and has nothing to do with whether a
-# seed.sql restructure is data-neutral -- comparing it turned every A-vs-B diff on this
-# dump into 107 false-positive hunks, all on this one non-served column, confirmed by
-# grepping the diff for which field actually changed.
+# `name` IS compared by default -- do not exclude it here. It is a legacy column (per
+# services/backend/CLAUDE.md, internal identity only, never returned by the API) that
+# every admin rename route unconditionally overwrites with name_he, so it is exactly the
+# kind of admin-owned value a seed.sql regression could silently clobber on an
+# already-adopted row -- that is a real data-neutrality bug, and A vs C (both built from
+# the same production dump) is precisely the comparison that must catch it. Only the
+# A-vs-B comparison in verify-neutrality.sh (production-dump-derived vs pristine fresh
+# install) legitimately expects `name` to differ -- a fresh install has never been
+# admin-touched, so it still carries seed.sql's literal first-seed token (e.g. 'EPL')
+# instead of the admin-set name_he. That comparison strips `name` for itself, explicitly
+# and visibly, via --exclude; it does not change what this table defines as compared.
 TABLES = {
     'leagues': ('name_en',
-                ['name_en', 'name_he', 'name_ru', 'logo_url',
+                ['name', 'name_en', 'name_he', 'name_ru', 'logo_url',
                  'sort_order', 'has_divisions']),
     'clubs': ('name_en',
-              ['name_en', 'name_he', 'name_ru', 'logo_url', 'group_label']),
+              ['name', 'name_en', 'name_he', 'name_ru', 'logo_url', 'group_label']),
     'previous_parties': ('name_he',
-                         ['name_en', 'name_he', 'name_ru', 'logo_url', 'bloc',
+                         ['name', 'name_en', 'name_he', 'name_ru', 'logo_url', 'bloc',
                           'economic', 'security', 'religiosity', 'sector', 'tags']),
     'upcoming_parties': ('name_he',
-                         ['name_en', 'name_he', 'name_ru', 'logo_url', 'bloc',
+                         ['name', 'name_en', 'name_he', 'name_ru', 'logo_url', 'bloc',
                           'economic', 'security', 'religiosity', 'sector', 'tags',
                           'families', 'family_evidence']),
 }
 
 
-def snapshot(dsn, include=()):
+def snapshot(dsn, include=(), exclude=()):
     """Return {table: {natural_key: {column: value}}}.
 
     `include` names extra columns to compare where they exist -- used to inspect
     seed_key/admin_edited, which are excluded by default because they do not exist
     in the old schema and would make every baseline diff non-empty.
+
+    `exclude` names columns to drop from the default set for this call only -- used by
+    verify-neutrality.sh's A-vs-B comparison to strip `name` (see the TABLES comment
+    above for why that one comparison, and only that one, doesn't want it). The natural
+    key can't be excluded: rows would lose their identity and every comparison keyed on
+    it would break.
     """
     out = {}
     with psycopg2.connect(dsn) as conn:
         for table, (key, columns) in TABLES.items():
-            cols = list(columns)
+            cols = [c for c in columns if c not in exclude or c == key]
             for extra in include:
                 if extra not in cols and _has_column(conn, table, extra):
                     cols.append(extra)
@@ -97,9 +104,12 @@ def main():
     ap.add_argument('--dsn', required=True)
     ap.add_argument('--include', default='',
                     help='comma-separated extra columns to compare, e.g. seed_key')
+    ap.add_argument('--exclude', default='',
+                    help='comma-separated columns to drop from the default set, e.g. name')
     args = ap.parse_args()
     extra = [c for c in args.include.split(',') if c]
-    json.dump(snapshot(args.dsn, extra), sys.stdout,
+    drop = [c for c in args.exclude.split(',') if c]
+    json.dump(snapshot(args.dsn, extra, drop), sys.stdout,
               ensure_ascii=False, indent=1, sort_keys=True, default=str)
     print()
 

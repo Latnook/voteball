@@ -10,7 +10,16 @@
 #   A = OLD schema -> production dump -> NEW schema -> NEW seed   (the migration)
 #   B = NEW schema -> NEW seed                        (a fresh install; no dump)
 #
-# A == C is the diff that matters. A == B confirms fresh and migrated converge.
+# A == C is the diff that matters, and it compares EVERY column snapshot.py knows about,
+# including the legacy `name` column -- A and C both descend from the same production
+# dump, so a seed.sql that rewrites `name` on an already-adopted row is a genuine
+# regression only this diff can see.
+#
+# A == B confirms fresh and migrated converge, but EXCLUDES `name`: B was never
+# admin-touched, so it still carries seed.sql's literal first-seed token instead of the
+# production dump's admin-set value, and that divergence is expected on every run
+# regardless of seed.sql's content -- comparing it here would bury real findings in noise
+# (see the snapshot.py TABLES comment for the incident that first surfaced this).
 #
 # The production dump is DATA-ONLY (bare INSERT statements plus setval calls, taken via
 # psycopg2 -- the backend image has no pg_dump), so it can only be loaded into a database
@@ -36,23 +45,22 @@ git -C "$ROOT" show "$OLD_REF:services/backend/seed.sql"   > "$WORK/old-seed.sql
 
 psql_db() { docker exec -i "$CONTAINER" psql -U postgres -q -v ON_ERROR_STOP=1 "$@"; }
 
-build() {   # build <dbname> <dump-or-empty> <before-schema-or-empty> <before-seed-or-empty> <after-schema-or-empty> <after-seed-or-empty>
-    local db="$1" dump="$2" bschema="$3" bseed="$4" aschema="$5" aseed="$6"
+build() {   # build <dbname> <dump-or-empty> <before-schema-or-empty> <after-schema-or-empty> <after-seed-or-empty>
+    local db="$1" dump="$2" bschema="$3" aschema="$4" aseed="$5"
     docker exec "$CONTAINER" psql -U postgres -q \
         -c "DROP DATABASE IF EXISTS $db;" -c "CREATE DATABASE $db;" >/dev/null
     [ -n "$bschema" ] && psql_db -d "$db" < "$bschema"
-    [ -n "$bseed" ]   && psql_db -d "$db" < "$bseed"
     [ -n "$dump" ]    && psql_db -d "$db" < "$dump"
     [ -n "$aschema" ] && psql_db -d "$db" < "$aschema"
     [ -n "$aseed" ]   && psql_db -d "$db" < "$aseed"
 }
 
 echo "==> C: OLD schema + production dump + OLD seed"
-build seed_c "$DUMP" "$WORK/old-schema.sql" "" "" "$WORK/old-seed.sql"
+build seed_c "$DUMP" "$WORK/old-schema.sql" "" "$WORK/old-seed.sql"
 echo "==> A: OLD schema + production dump + NEW schema + NEW seed"
-build seed_a "$DUMP" "$WORK/old-schema.sql" "" "$ROOT/services/backend/schema.sql" "$ROOT/services/backend/seed.sql"
+build seed_a "$DUMP" "$WORK/old-schema.sql" "$ROOT/services/backend/schema.sql" "$ROOT/services/backend/seed.sql"
 echo "==> B: NEW schema + NEW seed (no dump)"
-build seed_b "" "$ROOT/services/backend/schema.sql" "" "" "$ROOT/services/backend/seed.sql"
+build seed_b "" "$ROOT/services/backend/schema.sql" "" "$ROOT/services/backend/seed.sql"
 
 for db in a b c; do
     python3 "$ROOT/scripts/seed/snapshot.py" --dsn "$DSN_BASE/seed_$db" > "$WORK/$db.json"
@@ -61,10 +69,19 @@ done
 status=0
 echo
 echo "==> DIFF A vs C  (already-seeded database is unchanged -- THE diff that matters)"
+echo "    covers every compared column, including the legacy 'name' column: A and C are"
+echo "    both built from the same production dump, so a seed.sql that rewrites 'name'"
+echo "    on an already-adopted row is a real regression this diff must catch."
 if diff -u "$WORK/c.json" "$WORK/a.json"; then echo "    OK: empty"; else status=1; fi
 echo
 echo "==> DIFF A vs B  (fresh install and migrated database converge)"
-if diff -u "$WORK/b.json" "$WORK/a.json"; then echo "    OK: empty"; else status=1; fi
+echo "    EXCLUDES the 'name' column for this comparison only: B was never admin-touched,"
+echo "    so it still carries seed.sql's literal first-seed token while A carries the"
+echo "    production dump's admin-set value -- that divergence is expected and unrelated"
+echo "    to seed.sql's neutrality, so it would otherwise mask real findings with noise."
+python3 "$ROOT/scripts/seed/snapshot.py" --dsn "$DSN_BASE/seed_b" --exclude=name > "$WORK/b-noname.json"
+python3 "$ROOT/scripts/seed/snapshot.py" --dsn "$DSN_BASE/seed_a" --exclude=name > "$WORK/a-noname.json"
+if diff -u "$WORK/b-noname.json" "$WORK/a-noname.json"; then echo "    OK: empty"; else status=1; fi
 echo
 echo "==> IDEMPOTENCE: re-apply new seed.sql to A"
 psql_db -d seed_a < "$ROOT/services/backend/seed.sql"
