@@ -1150,3 +1150,84 @@ def test_results_expose_ballot_weight_on_upcoming(conn):
     assert all(isinstance(r['weight'], float) for r in all_results['upcoming'])
     # previous rows are one-per-ballot already and carry no weight key
     assert 'weight' not in all_results['previous'][0]
+
+
+def test_no_op_admin_save_records_no_provenance(conn):
+    """A save that changes nothing must not claim the row for the admin.
+
+    All four admin endpoints replace every field they receive, so "saved" cannot mean
+    "owned": admin.js's "Add to UEFA Champions League" button resends
+    name_en/name_he/name_ru/logo_url unchanged while setting a league link. If that
+    marked every resent column, one click would freeze that club's Russian name forever.
+    """
+    cur = conn.cursor()
+    # league_id and domestic_league_id must be re-sent as they are: clubs.league_id is
+    # NOT NULL, and passing domestic_league_id=None would itself count as a change and
+    # land in admin_edited -- breaking the very assertion this test makes.
+    cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
+                "FROM clubs WHERE name_en = 'Bayern Munich'")
+    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+
+    queries.rename_club(conn, club_id, league_id=league_id, domestic_league_id=domestic_id,
+                        name_en=name_en, name_he=name_he, name_ru=name_ru,
+                        logo_url=logo_url)
+
+    cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == []
+    cur.close()
+
+
+def test_changed_field_records_exactly_that_field(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
+                "FROM clubs WHERE name_en = 'Bayern Munich'")
+    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+
+    queries.rename_club(conn, club_id, league_id=league_id, domestic_league_id=domestic_id,
+                        name_en=name_en, name_he=name_he, name_ru=name_ru,
+                        logo_url='https://example.invalid/my-own-crest.svg')
+
+    cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == ['logo_url']
+    cur.close()
+
+
+def test_provenance_accumulates_across_saves(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
+                "FROM clubs WHERE name_en = 'Arsenal'")
+    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+
+    queries.rename_club(conn, club_id, league_id, domestic_id, name_en, name_he, name_ru,
+                        'https://example.invalid/one.svg')
+    queries.rename_club(conn, club_id, league_id, domestic_id, name_en, name_he,
+                        'Арсенал ФК', 'https://example.invalid/one.svg')
+
+    cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == ['logo_url', 'name_ru']
+    cur.close()
+
+
+def test_provenance_is_recorded_for_every_renamable_table(conn):
+    """All four rename paths, not just clubs -- a missed one silently loses an edit."""
+    cur = conn.cursor()
+    cur.execute("SELECT id, name_en, name_he, name_ru FROM leagues WHERE name_en = 'La Liga'")
+    lid, en, he, ru = cur.fetchone()
+    queries.rename_league(conn, lid, en, he, ru, 'https://example.invalid/ll.svg')
+    cur.execute('SELECT admin_edited FROM leagues WHERE id = %s', (lid,))
+    assert cur.fetchone()[0] == ['logo_url']
+
+    cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM previous_parties "
+                "WHERE name_he = 'הליכוד'")
+    pid, en, he, ru, logo = cur.fetchone()
+    queries.rename_previous_party(conn, pid, 'Likud Party', he, ru, logo)
+    cur.execute('SELECT admin_edited FROM previous_parties WHERE id = %s', (pid,))
+    assert cur.fetchone()[0] == ['name_en']
+
+    cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM upcoming_parties "
+                "WHERE name_he = 'הליכוד'")
+    uid, en, he, ru, logo = cur.fetchone()
+    queries.rename_upcoming_party(conn, uid, en, he, 'Ликуд-2026', logo)
+    cur.execute('SELECT admin_edited FROM upcoming_parties WHERE id = %s', (uid,))
+    assert cur.fetchone()[0] == ['name_ru']
+    cur.close()

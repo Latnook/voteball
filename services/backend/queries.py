@@ -357,13 +357,55 @@ def create_upcoming_party(conn, name_en, name_he, name_ru=None, logo_url=None):
         cur.close()
 
 
+# Columns whose ownership can pass from seed.sql to the admin. Adding a column here is
+# what makes it protectable; forgetting to means seed.sql will overwrite admin edits to it.
+_PROVENANCE_COLUMNS = ('name_en', 'name_he', 'name_ru', 'logo_url')
+
+
+def _admin_edited_after(cur, table, row_id, incoming, extra=()):
+    """Return row_id's admin_edited array after applying `incoming`, or None if it is gone.
+
+    Only columns whose value actually CHANGES are added. Every admin endpoint replaces all
+    the fields it receives, so marking each submitted column would let a single no-op save
+    freeze the rest of the row: admin.js's continental-competition buttons resend
+    name_en/name_he/name_ru/logo_url untouched, and historically did so for 104 of 212 clubs.
+
+    `extra` names additional columns to compare that are not in _PROVENANCE_COLUMNS --
+    rename_club passes 'domestic_league_id', an integer FK rather than one of the four text
+    columns, but equally admin-writable: both PATCH /api/admin/clubs/<id> and the admin UI's
+    continental-competition buttons set it, so seed.sql must yield to a human's link too.
+
+    `table` is interpolated because psycopg2 cannot parameterise an identifier; every call
+    site passes a literal from this module, never request data.
+    """
+    columns = tuple(_PROVENANCE_COLUMNS) + tuple(extra)
+    cur.execute(
+        'SELECT admin_edited, {} FROM {} WHERE id = %s'.format(
+            ', '.join(columns), table),
+        (row_id,))
+    row = cur.fetchone()
+    if row is None:
+        return None
+    edited = set(row[0] or [])
+    for column, current in zip(columns, row[1:]):
+        if incoming.get(column) != current:
+            edited.add(column)
+    return sorted(edited)
+
+
 def rename_upcoming_party(conn, party_id, name_en, name_he, name_ru=None, logo_url=None):
     cur = conn.cursor()
     try:
+        edited = _admin_edited_after(cur, 'upcoming_parties', party_id, {
+            'name_en': name_en, 'name_he': name_he,
+            'name_ru': name_ru, 'logo_url': logo_url,
+        })
+        if edited is None:
+            return False
         cur.execute(
             'UPDATE upcoming_parties SET name = %s, name_en = %s, name_he = %s, name_ru = %s, '
-            'logo_url = %s, updated_at = NOW() WHERE id = %s',
-            (name_he, name_en, name_he, name_ru, logo_url, party_id)
+            'logo_url = %s, admin_edited = %s, updated_at = NOW() WHERE id = %s',
+            (name_he, name_en, name_he, name_ru, logo_url, edited, party_id)
         )
         updated = cur.rowcount > 0
         conn.commit()
@@ -416,10 +458,16 @@ def create_previous_party(conn, name_en, name_he, name_ru=None, logo_url=None):
 def rename_previous_party(conn, party_id, name_en, name_he, name_ru=None, logo_url=None):
     cur = conn.cursor()
     try:
+        edited = _admin_edited_after(cur, 'previous_parties', party_id, {
+            'name_en': name_en, 'name_he': name_he,
+            'name_ru': name_ru, 'logo_url': logo_url,
+        })
+        if edited is None:
+            return False
         cur.execute(
             'UPDATE previous_parties SET name = %s, name_en = %s, name_he = %s, name_ru = %s, '
-            'logo_url = %s, updated_at = NOW() WHERE id = %s',
-            (name_he, name_en, name_he, name_ru, logo_url, party_id)
+            'logo_url = %s, admin_edited = %s, updated_at = NOW() WHERE id = %s',
+            (name_he, name_en, name_he, name_ru, logo_url, edited, party_id)
         )
         updated = cur.rowcount > 0
         conn.commit()
@@ -608,10 +656,16 @@ def create_league(conn, name_en, name_he, name_ru=None, logo_url=None):
 def rename_league(conn, league_id, name_en, name_he, name_ru=None, logo_url=None):
     cur = conn.cursor()
     try:
+        edited = _admin_edited_after(cur, 'leagues', league_id, {
+            'name_en': name_en, 'name_he': name_he,
+            'name_ru': name_ru, 'logo_url': logo_url,
+        })
+        if edited is None:
+            return False
         cur.execute(
             'UPDATE leagues SET name = %s, name_en = %s, name_he = %s, name_ru = %s, '
-            'logo_url = %s WHERE id = %s',
-            (name_he, name_en, name_he, name_ru, logo_url, league_id)
+            'logo_url = %s, admin_edited = %s WHERE id = %s',
+            (name_he, name_en, name_he, name_ru, logo_url, edited, league_id)
         )
         updated = cur.rowcount > 0
         conn.commit()
@@ -778,10 +832,18 @@ def create_club(conn, league_id, domestic_league_id, name_en, name_he, name_ru=N
 def rename_club(conn, club_id, league_id, domestic_league_id, name_en, name_he, name_ru=None, logo_url=None):
     cur = conn.cursor()
     try:
+        edited = _admin_edited_after(cur, 'clubs', club_id, {
+            'name_en': name_en, 'name_he': name_he,
+            'name_ru': name_ru, 'logo_url': logo_url,
+            'domestic_league_id': domestic_league_id,
+        }, extra=('domestic_league_id',))
+        if edited is None:
+            return False
         cur.execute(
             'UPDATE clubs SET league_id = %s, domestic_league_id = %s, name = %s, name_en = %s, '
-            'name_he = %s, name_ru = %s, logo_url = %s WHERE id = %s',
-            (league_id, domestic_league_id, name_he, name_en, name_he, name_ru, logo_url, club_id)
+            'name_he = %s, name_ru = %s, logo_url = %s, admin_edited = %s WHERE id = %s',
+            (league_id, domestic_league_id, name_he, name_en, name_he, name_ru, logo_url,
+             edited, club_id)
         )
         updated = cur.rowcount > 0
         conn.commit()
