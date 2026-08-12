@@ -25,71 +25,61 @@ apart.** Each party has exactly one row in a plain `VALUES` block per table, and
 state — edit that row in place. Do **not** reintroduce reasoning as SQL comments, and do not add a
 second copy of the values to the doc; when the two disagree, `seed.sql` is right.
 
-**The classification `UPDATE`s are deliberately UNGUARDED — do not add `AND bloc IS NULL`.**
-Production is always already seeded, so a guard makes every later edit unreachable there; that is
-precisely why the file used to grow by appending. Unguarded is safe for the six ideology columns
-because nothing in the app writes them (the admin party endpoints only rename). **The name and
-`logo_url` statements stay guarded for the opposite reason — admins edit those live, and an
-unguarded write destroys their edits.** Don't "make them consistent."
+**The six ideology columns (and `group_label`) are deliberately UNCONDITIONAL — do not add `AND bloc
+IS NULL` or an `admin_edited` check to them.** Production is always already seeded, so a guard makes
+every later edit unreachable there; that is precisely why the file used to grow by appending patch
+statements instead of edited literals. Unconditional is safe for these columns because nothing in the
+app ever writes them — the admin party endpoints only rename, and both club endpoints omit
+`group_label` by design, precisely so a PATCH can't null it out.
 
-For names that guard is now `COALESCE`, not `AND ... IS NULL`: since 2026-07-27 each table's names
-live in **one `VALUES` block carrying all three languages**, one row per entity
-(`COALESCE(c.name_he, v.name_he)` etc.). It is the same guarantee applied per column, and strictly
-stronger — it can fill an empty `name_ru` on a row whose `name_en` an admin has already renamed,
-which a single statement-level `IS NULL` guard cannot do.
+**Names, `logo_url` and (on `clubs`) `domestic_league_id` are admin-ownable, and `admin_edited
+TEXT[]` is what protects an admin's edit — not a per-statement guard.** `seed_key`, `admin_edited` and
+this whole model were added 2026-08-12 (`docs/design/2026-08-12-seed-sql-declarative-design.md`);
+`schema.sql` carries the column comments. Every entity table's single `UPDATE` writes each
+admin-ownable column unconditionally *unless* that column's name is already in the row's
+`admin_edited` array, in which case the seeded value is skipped and the row keeps whatever the admin
+set:
 
-**`logo_url` is one `VALUES` block per table too, and still guarded by `AND ... IS NULL`** — four
-blocks carry 156 of the assignments (`clubs` keyed on `name_en`, `previous_parties` and
-`upcoming_parties` on `name_he`, `leagues` on `name`), in the shape `UPDATE <t> t SET logo_url =
-v.logo_url FROM (VALUES …) AS v(<key>, logo_url) WHERE t.<key> = v.<key> AND t.logo_url IS NULL`.
-The guard is evaluated per row, so it is exactly what the 156 separate statements gave; the point of
-the block is that `init_db` runs 61 statements on pod boot instead of 209. Row-specific comments live
-**inside** the block, directly above the tuple they explain — keep them there when editing.
+```sql
+name_en = CASE WHEN 'name_en' = ANY(t.admin_edited) THEN t.name_en ELSE s.name_en END
+```
 
-**Adding a logo means adding a tuple, and a duplicate key is now silent.** With one statement per
-club the `IS NULL` guard made it "first in file order wins". A `VALUES` block *joins*, so a key
-appearing twice lets Postgres match **arbitrarily** — same SQL, non-deterministic row. Check the key
-is not already in the block rather than appending blind.
+The four `rename_*`/`patch_*` functions in `queries.py` are what *append* to `admin_edited` — each
+diffs the incoming value against the current row before writing, in the same transaction as the
+existing `UPDATE`, so a no-op save (attaching a logo, say) does not lock the row's name too. This
+inverts the old rule: the base statement is now authoritative and the exception is explicit, which is
+what let the file drop its roughly twenty patch statements — each of those existed only to re-apply a
+value a guard had refused to move on an already-seeded row.
 
-**Three logo statements stay single-row on purpose — do not fold them in.** The blocks carry only the
-plain guard, and these three need a different one: `F.C. Kiryat Yam` widens it to
-`IS NULL OR logo_url LIKE '%fbcdn.net%'` because it has to *correct* a known-bad value already in the
-database, which `IS NULL` would skip forever; the `La Liga` and `המילואימניקים` corrections are
-**unguarded** because each replaces a value that was actively wrong. Both unguarded ones run after
-their blocks, so the final state is theirs.
+**Identity is `seed_key`, never a display name — and it is never a rename mechanism.** It is a
+kebab-case slug (`premier-league`, `bayern-munich`, `likud`), assigned once per row, never displayed,
+never writable through the API, and never changed once assigned; renaming a club or party is an
+admin-UI edit to its `name_*` columns, not an edit to `seed_key`. `seed_key IS NULL` means "created
+through the admin UI" — `seed.sql` ignores those rows entirely, which is what makes the declarative
+removal below safe. The legacy `name` column still exists (still written by both the seed and the
+admin endpoints, still unread by any query) but is no longer matched on anywhere in this file — see
+the header comment above `seed_leagues` in `seed.sql` for why `legacy_name` still has to feed it.
 
-**The `utm_*` strip at the end of the file is unguarded and separate for a reason.** 26 seeded URLs
-carried `?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original`, which
-`upload.wikimedia.org` ignores when serving the file — they only sent referral tracking on every page
-load. Because every seeded literal is guarded by `logo_url IS NULL`, cleaning them at the source
-reaches a *fresh* database only; an already-seeded one keeps them forever. The four `split_part()`
-statements are that migration. Unguarded is safe here in a way it would not be for a whole URL — it
-removes a meaningless suffix, so an admin-curated logo still points at the same image — and the
-`LIKE` makes it a no-op once clean.
+**Adding an entity is one row, regenerated — not hand-typed.**
+`scripts/seed/generate-tables.py --table <leagues|clubs|previous_parties|upcoming_parties>` reads a
+live seeded database and prints its `VALUES` block; that is how all four blocks were produced, and
+it's how a new club or party belongs too, rather than hand-typing into a 212-row block — exactly the
+kind of retyping that produces a silent homoglyph or a dropped field.
 
-**Roster membership is owned by `seed.sql`; names and `logo_url` are owned by the admin.** That split
-is what decides whether a statement is guarded, and it has a consequence that is easy to get
-backwards: the `domestic_league_id` link statements can be guarded against *overwriting* an admin's
-edit (`AND domestic_league_id IS NULL`, as the Europa League block does), but **no guard makes a
-removal stick** — clearing a link writes `NULL`, which is exactly the state the guarded statement
-fills, so the club is re-linked on the next pod boot. Verified both directions on an already-seeded
-database, 2026-08-12. Dropping a seeded club from a competition for good means editing the list;
-the admin UI's buttons are for clubs this file does not name.
-`test_removing_a_seeded_club_from_the_europa_league_is_re_applied` pins the surprising half.
+**Removal now sticks, guarded on votes.** A seeded row this file no longer names is deleted outright
+— no guarded link statement re-applying it on the next boot, the way `domestic_league_id` used to.
+Two guards, both load-bearing: `seed_key IS NOT NULL` (this file must never delete a row it doesn't
+own — an admin-created row carries no key) and `NOT EXISTS (SELECT 1 FROM vote_clubs ...)` (a club
+somebody voted for stays, because `vote_clubs.club_id` has no `ON DELETE CASCADE` and a raise here
+would crash `init_db` on every pod boot — the same 409 the admin API's own `DELETE
+/api/admin/clubs/<id>` already enforces). Dropping a seeded club for good is now a plain edit to the
+table; the admin UI's vote-reassignment flow is still the way out for a club that has votes.
+`test_seeded_club_absent_from_the_table_is_removed` pins the new behaviour.
 
-**The leagues block matches on `name OR name_he`, and neither column alone is enough.** No single
-column identifies a league in all three states the table can be in: on a fresh install `name_he` is
-still NULL; once seeded, `name_en` has been rewritten *unguarded* for EPL/UCL (`'EPL'` →
-`'Premier League'`); and after any admin save `rename_league` has overwritten `name` with `name_he`
-— even on a no-op rename, the 2026-07-17 drift. Both single-column forms have shipped and both
-silently left leagues untranslated (`name_en`-keyed, then `name`-keyed, which is how UCL, EPL and
-Bundesliga lost their Russian names). Each column is unique-indexed, so the `OR` still matches at
-most one row. `test_league_names_survive_name_drift` and `test_admin_renamed_league_is_not_overwritten`
-pin both halves.
-
-Verify a revision the way every existing one was: seed a container with the *previous* file, apply
-the new one, confirm the value actually moves on the already-seeded row — a fresh database proves
-nothing, since a guarded block would set the value there anyway.
+Verify a single-value revision the way every one has been: seed a container with the *previous* file,
+apply the new one on top, and confirm the value actually moves on the already-seeded row — testing
+against a fresh database only proves the literal is spelled right, not that an existing row's stale
+value gets overwritten.
 
 **Adding a new axis? Update `services/backend/tests/test_migration.py` too.** It is the reference
 test that round-trips the ideology columns and asserts the `CHECK` bounds. The religiosity pass
@@ -100,22 +90,29 @@ asserts those parties *stay* NULL. Two different reasons put a party there: "the
 to it" (permanent) vs "it hasn't published a platform yet" (a placeholder that must be revisited the
 moment one appears). Check which before removing an entry.
 
-**Restructuring `seed.sql` (as opposed to changing a value) must be proven data-neutral:** dump every
-row of every table the change touches from a DB seeded with the OLD file, then diff against both
-(a) a fresh DB seeded with the new file and (b) the old-seeded DB with the new file applied on top.
-Both diffs empty, or it isn't a refactor. Diff (b) is the one that matters — it is the only one that
-proves an *already-seeded* database ends up in the same state, which is the only kind that exists in
-production. Widen the dump beyond the party tables when the change does: the logo blocks span
-`leagues`, `clubs`, `previous_parties` and `upcoming_parties`.
+**Restructuring `seed.sql` (as opposed to changing a value) must be proven data-neutral — run
+`scripts/seed/verify-neutrality.sh <production-dump.sql> <old-git-ref>`.** It builds three databases
+— **C** (old schema + a production dump + the OLD seed, the baseline), **A** (old schema + the same
+dump + the NEW schema + the NEW seed, the migration) and **B** (new schema + new seed, a fresh
+install, no dump) — and diffs them via `scripts/seed/snapshot.py`. **Diff A-vs-C is the one that
+matters**: both sides descend from the same production dump, so it's the only comparison that proves
+an *already-seeded* database — the only kind that exists in production — ends up where it started.
+A-vs-B confirms fresh and migrated converge (it deliberately excludes the legacy `name` column for
+that one comparison only: a fresh install was never admin-touched, so it still carries `seed.sql`'s
+literal first-seed token instead of an admin-set value, and that divergence is expected on every run).
+Re-applying the new file to A and diffing against itself checks idempotence. All three must be empty.
 
-**Two things make that proof fail when nothing is wrong, and both look like real regressions.**
-Exclude `updated_at` (and any other `timestamp` column) from the dump — the three databases are
-seeded seconds apart, so every party row differs. And sort by `id`, never by the whole row text: if
-the change touches a value, the row's text changes, the sort order changes with it, and `diff`
-reports dozens of unrelated rows as modified. Both of these produced a confident "31 unexplained
-changes" against a refactor that was in fact exact.
+`snapshot.py` already handles the two things that used to make this proof fail when nothing was
+wrong, both previously mistaken for real regressions and both worth knowing if you extend it further:
+it excludes `updated_at` (and would need extending for any other `timestamp` column added later), and
+it keys every row by its natural name column rather than sorting whole-row text, so a value change in
+one row can't shuffle sort order and make `diff` report dozens of unrelated rows as modified. Widen
+`TABLES` in `snapshot.py` beyond the four entity tables if a restructure touches more than
+names/logos/ideology — see the harness's own header comment for the full contract, including why
+`clubs`' `league_id`/`domestic_league_id` are resolved through `leagues.name_en` rather than compared
+as raw ids (they're surrogate FKs, assigned independently by each of A/B/C).
 
-If the change *intends* a value change alongside the restructure, the diffs will not be empty —
+If the change *intends* a value change alongside the restructure, A-vs-C will not be empty —
 classify every differing row and show each one is the intended change, rather than eyeballing the
 count.
 

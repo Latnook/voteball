@@ -513,19 +513,32 @@ plus categorical `bloc`/`sector` and free-text `tags`. `seed.sql` holds the valu
 `docs/party-classifications.md` holds the reasoning; keep them apart.
 
 **The full revision procedure is in `services/backend/CLAUDE.md`**, which loads whenever you work
-under that directory — read it before touching `seed.sql`. Three rules from it are repeated here
+under that directory — read it before touching `seed.sql`. Four rules from it are repeated here
 because getting them wrong destroys data rather than just being wrong:
 
-- **The six ideology `UPDATE`s are deliberately UNGUARDED — do not add `AND bloc IS NULL`.** A guard
-  makes every later edit unreachable on an already-seeded production database.
-- **The name and `logo_url` blocks stay guarded, for the opposite reason** — admins edit those
-  live, and an unguarded write destroys their edits. Do not "make them consistent."
-- **Names and logos are one `VALUES` block per table, not one statement per row** (61 statements on
-  pod boot, not 209). Adding a logo means adding a *tuple* — and unlike the old one-statement-per-row
-  form, a duplicate key no longer resolves by file order, it matches arbitrarily.
-- **Restructuring `seed.sql` must be proven data-neutral** (dump every affected table from an
-  old-seeded DB, diff against both a fresh new-seeded DB and the old-seeded DB with the new file
-  applied on top; exclude `updated_at` and sort by `id`, or the proof fails on artefacts).
+- **The six ideology columns (and `group_label`) are deliberately UNCONDITIONAL — do not add `AND
+  bloc IS NULL` or an `admin_edited` check.** A guard makes every later edit unreachable on an
+  already-seeded production database.
+- **Names, `logo_url` and `domestic_league_id` are admin-ownable, and column-level provenance
+  protects them, not a per-statement guard.** `admin_edited TEXT[]` on each of the four entity
+  tables lists the columns a human has actually changed through the admin UI; `seed.sql`'s single
+  `UPDATE` per table writes every other admin-ownable column unconditionally. This is what let the
+  file drop the roughly twenty patch statements it used to grow by — a corrected value now reaches
+  an already-seeded database by editing the literal, the way the six ideology columns always could.
+- **Identity is `seed_key`, a slug assigned once and never displayed, writable through the API, or
+  used to rename anything** — not a display name. `seed_key IS NULL` means "created through the
+  admin UI," so `seed.sql` never touches that row, including on removal. Adding an entity is one row
+  in a table's `VALUES` block, regenerated via `scripts/seed/generate-tables.py`, not hand-typed.
+  `seed.sql` is now **578 lines / 46 statements** (from 1,276 lines / 78 statements), with **zero**
+  patch statements — verify with `grep -c ';\s*$' services/backend/seed.sql` rather than trusting
+  this number, it will drift the next time the file changes.
+- **Restructuring `seed.sql` must be proven data-neutral, now via
+  `scripts/seed/verify-neutrality.sh <production-dump.sql> <old-git-ref>`** — it builds three
+  databases (an old-seeded baseline, the same dump migrated through the new files, and a fresh
+  install) and diffs them, excluding timestamps and keying rows by their natural name column rather
+  than sorting whole-row text. The old-seeded-vs-migrated diff is the one that matters — it is the
+  only one built from the same production dump on both sides, so it is the only one that proves an
+  *already-seeded* database (the only kind that exists in production) ends up where it started.
 
 ### Reverse-seeding: keeping seed.sql in sync with admin-UI edits
 

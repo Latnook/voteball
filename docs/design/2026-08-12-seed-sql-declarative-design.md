@@ -1,7 +1,9 @@
 # Declarative `seed.sql`: stable identity, admin provenance, no patches
 
 **Date:** 2026-08-12
-**Status:** designed, not yet implemented
+**Status:** implemented on `feat/declarative-seed-sql` (Tasks 1–7 complete); merging to `master`
+(which is what deploys it, since `init_db` runs on every pod boot) is gated on the repo owner's
+sign-off and has not happened. See "Verification outcome" below.
 **Touches:** `services/backend/schema.sql`, `services/backend/seed.sql`, `services/backend/queries.py`,
 `services/backend/tests/`
 
@@ -173,7 +175,7 @@ only the desired end state.
 | Two upcoming-party logo patches (L1252/1257) | Gone |
 | `המילואימניקים` → `בית ציוני` rename (L233) | Gone — keyed on `seed_key` |
 | Four `?utm_source=` strips (L1270–1273) | Gone — literals carry no `utm` |
-| `name_en`/`name_he` backfill (L245–248) | Moves to `schema.sql` |
+| `name_en`/`name_he` backfill (L245–248) | Moves to `schema.sql` — but a duplicate of it lingered in `seed.sql` after the move (dead code, no longer reachable once every row adopts a `seed_key`); Task 7 deleted it |
 | Relegation `DELETE` (L316) | Declarative (decision 5) |
 | 14 `party_lineage` `INSERT`s (L1085–1138) | One straight table |
 | `name OR name_he` matching, three-way UCL check | Gone — `seed_key` |
@@ -188,8 +190,11 @@ Two, both deliberate:
 
 1. **Removing a club from the table now removes it from the database** (if unvoted). Today removal
    does not stick — a guarded link statement re-applies on the next boot, which
-   `test_removing_a_seeded_club_from_the_europa_league_is_re_applied` pins as expected behaviour.
-   That test inverts.
+   `test_removing_a_seeded_club_from_the_europa_league_is_re_applied` pinned as expected behaviour.
+   That test is deleted and replaced by `test_seeded_club_absent_from_the_table_is_removed`, which
+   pins the inversion; the narrower case it also used to cover — a raw `domestic_league_id` clear
+   that skips `admin_edited` — still gets re-applied exactly as before and is now pinned directly by
+   `test_europa_league_link_is_re_applied_after_a_raw_clear`.
 2. **An admin edit now locks that column permanently**, where today it is protected only until
    someone writes a patch that overwrites it regardless. Strictly more protective, and the reason
    the diff in decision 2 matters: without it, one save locks a whole row.
@@ -232,3 +237,85 @@ New tests, covering the property the redesign exists for and which nothing curre
   `admin_edited` entry is fixed by SQL, deliberately.
 - **No reverse-seeding.** Backfilling admin edits into `seed.sql` stays manual;
   `scripts/sync-seed-from-rds.sh` remains retired.
+
+## Verification outcome
+
+Implemented across Tasks 1–7 (`d4335de..f92f228` on `feat/declarative-seed-sql`, each task reviewed
+before the next started). This section records what actually happened; the step-by-step task briefs
+that drove it are process artefacts and are deleted at merge time, per the root `CLAUDE.md`'s rule —
+this is the durable account.
+
+**Real before/after numbers.** `seed.sql` went **1,276 lines / 78 statements → 578 lines / 46
+statements** (`grep -c ';\s*$' services/backend/seed.sql`), and its roughly twenty patch statements
+are **gone — zero remain**, confirmed by grepping the finished file for a bare
+`UPDATE (leagues|clubs|previous_parties|upcoming_parties) SET (name_|logo_url)` outside the four
+tables' single per-table `UPDATE`: the one hit is the legacy-`name` backfill, which turned out to be
+dead code once `schema.sql` runs the same backfill earlier in the same boot (see below), and was
+deleted rather than kept as a second layer. The production dump this was verified against (pulled
+2026-08-12) carries 10 leagues, 212 clubs, 13 `previous_parties`, 18 `upcoming_parties`, 14
+`party_lineage` links, 22 votes, 41 `vote_clubs` and 28 `vote_upcoming_parties` rows.
+
+**A/B/C diff, re-run against that same production dump for this section**:
+`scripts/seed/verify-neutrality.sh` reports `PASS` — the A-vs-C diff (already-seeded database
+unchanged), the A-vs-B diff (fresh install and migrated database converge) and the idempotence
+re-apply are all empty. The design's central claim holds against real data, not just synthetic
+fixtures.
+
+**The harness itself was extended twice during implementation, both times because it was found
+capable of reporting PASS on a real regression:**
+
+1. **Task 1.** The first cut of `snapshot.py` excluded the legacy `name` column from *every*
+   comparison, not just the A-vs-B one that is supposed to exclude it (a fresh install never touches
+   `name`, so excluding it there is correct; excluding it everywhere hides a genuine regression).
+   Review demonstrated a false PASS on a `seed.sql` deliberately regressed to rewrite `name` on an
+   already-adopted row. Fixed to exclude `name` from A-vs-B only, then re-proven to FAIL on the same
+   regression.
+2. **Task 5.** `snapshot.py`'s `clubs` comparison never included `league_id`/`domestic_league_id` (or
+   anything derived from them) — so every PASS up to that point said nothing about whether the 212
+   clubs' league/domestic-league links, the single most consequential thing that task rewrote and what
+   `_VOTE_LEAGUES_TOUCHED_CTE` depends on for correct multi-league vote counting, had survived.
+   Extended to resolve both FKs through **`leagues.name_en`**, never the raw ids (A, B and C each
+   assign ids independently, so a raw-id diff would report a false regression on every run) — chosen
+   over `seed_key` because the harness's C branch runs the *old* schema, which predates that column.
+   Re-proven to FAIL in a disposable detached worktree (a link nulled on `bayern-munich`) before being
+   trusted to PASS again on the clean tree.
+
+**What the harness still cannot see: a legacy-identity regression — the pytest suite is the safety
+net there.** `seed_key` and `admin_edited` are excluded from the harness's default comparison,
+deliberately: they don't exist in the pre-2026-08-12 schema its C branch runs, so comparing them by
+default would make every baseline diff non-empty regardless of correctness. That means a bug in the
+*adoption* matcher — assigning `seed_key` to the wrong row, or failing to assign it at all — can leave
+every column the harness does compare identical while identity is wrong underneath, since the
+adoption statement (`UPDATE … SET seed_key = … WHERE seed_key IS NULL AND name_en = …`) never touches
+`name`/`name_en` itself. The `DO $$ … RAISE EXCEPTION` duplicate-guard block in each table's section of
+`seed.sql`, and the dedicated adoption tests in `test_migration.py`, are what actually assert
+`seed_key` lands on the right row — not this harness.
+
+**Two claims made during design were proven wrong during implementation; the decisions they
+supported survived on different grounds, and neither wrong claim should be restated as fact:**
+
+- Task 2's schema-comment draft justified the `seed_key` indexes' `WHERE seed_key IS NOT NULL`
+  predicate as rejecting a second `NULL` value. **False** — Postgres treats `NULL` as distinct for
+  uniqueness, so a plain (non-partial) unique index already permits unlimited `NULL`s; verified by
+  hand (a plain unique index took three `NULL`s without complaint). The predicate is partial for the
+  reason `schema.sql:144-154`'s corrected comment now gives: it scopes the uniqueness guarantee to
+  rows that actually carry a key, stating "NULL is not an identity" explicitly — not to enforce it.
+- Task 4's plan amendment justified keeping `legacy_name` (the `'EPL'`/`'UCL'` tokens `leagues.name`
+  seeds under) on the grounds that writing `name_en` into `name` for a newly-inserted club would
+  insert **zero** clubs on a fresh database, because the old clubs-roster join matched `name`
+  literally. **False** — that join carried an `OR l.name_en = CASE …` fallback nobody had re-read;
+  the reviewer applied the "wrong" version and it seeded all 212 clubs correctly, links intact.
+  `legacy_name` still has to stay, for the reason `seed.sql`'s own header comment gives instead:
+  **~36 tests** in `test_app.py`/`test_queries.py` look leagues up with `WHERE name = 'EPL'`/`'UCL'`
+  and have no `name_en` fallback of their own.
+
+**Nothing broke on `master`.** Every mistake above was caught by review or by the harness's own
+re-proof-it-can-fail requirement before the task that introduced it was marked complete, and none of
+the six intermediate states between the old `seed.sql` and the new one ever reached production — that
+is the reason this whole redesign ran on a branch instead of task-by-task on `master`.
+
+**Final state, re-confirmed for this section:** `python -m pytest tests/` — **203 passed** (backend),
+**42 passed** (worker, untouched by this change and run for completeness); `ruff check .` clean on
+both services; `scripts/seed/verify-neutrality.sh` PASS against the real production dump. The dump's
+22 votes, 41 `vote_clubs` and 17 distinct voted clubs all survive the new `seed.sql`'s declarative
+`DELETE` with no foreign-key raise — the scenario the vote guard in decision 5 exists for.
