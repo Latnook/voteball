@@ -149,13 +149,22 @@ cropped, self-hosted files, replacing a hotlink:
 |---|---|---|---|
 | Champions League | navy `#00004b` starball | white starball | Wikimedia no-text starball + `OUTLINE_CLUBS` |
 | Bundesliga | red tile, white player | *(same file)* | Wikimedia 2017 logo incl. wordmark |
+| Serie A | blue gradient "A" mark | *(same file)* | Wikimedia 2022 logo incl. wordmark, tricolour, TIM block **and an opaque white background** |
 
 The Champions League leaves `OUTLINE_CLUBS` — the starball is one navy silhouette, so the outline
 traced its edge without lifting it, which is the same reason the Europa League trophy needed a real
 second file. The Bundesliga needs no dark variant at all: its mark is a solid red tile that reads on
 both grounds once the black wordmark below it is gone.
 
-**Both cropped by `viewBox`, not by re-tracing** — unlike the Europa League, both upstream files are
+Serie A went furthest: its upstream file stacks the mark, the `SERIE A` wordmark, the tricolour bar, a
+TIM sponsor block **and an opaque white background rectangle** behind all of it. That white rectangle
+is why it was the one league emblem rendering as a white slab on the dark cards — a defect nobody had
+reported, found only by rendering the file against the real card colour. Five elements form the mark
+and the other nineteen are dropped. No dark variant: the mark is a bright blue gradient that reads on
+white, on both dark surfaces and on the green selected pill, checked at 54 px — its real display size
+— on all four.
+
+**All cropped by `viewBox`, not by re-tracing** — unlike the Europa League, these upstream files are
 genuine vector. The Champions League logo is one path holding ball *and* wordmark, so the subpaths
 past the ball were dropped as well; keeping them would have shipped ~6 KB of invisible text clipped
 by the viewBox. The dropped-subpath version was proved pixel-identical to the clip-only version at

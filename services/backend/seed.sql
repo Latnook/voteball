@@ -387,7 +387,7 @@ FROM (VALUES
     ('UCL', '/logos/uefa-champions-league.svg'),
     ('EPL', 'https://b.fssta.com/uploads/application/soccer/competition-logos/EnglishPremierLeague.png'),
     ('La Liga', 'https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg'),
-    ('Serie A', 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg'),
+    ('Serie A', '/logos/serie-a.svg'),
     ('Bundesliga', '/logos/bundesliga.svg'),
     ('Israeli Premier League', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
     ('Liga Leumit', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png'),
@@ -422,6 +422,14 @@ UPDATE leagues SET logo_url = '/logos/uefa-champions-league.svg'
  WHERE logo_url = 'https://upload.wikimedia.org/wikipedia/commons/d/d1/UEFA_Champions_League_logo_no_text.svg';
 UPDATE leagues SET logo_url = '/logos/bundesliga.svg'
  WHERE logo_url = 'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg';
+-- Serie A is the same crop taken further: the upstream file is the mark, the SERIE A wordmark, the
+-- tricolour bar, a TIM sponsor block AND an opaque white background rectangle behind all of it --
+-- which is why it was the one league emblem that rendered as a white slab on the dark cards. Only
+-- the five elements forming the mark are kept. No dark variant: the mark is a bright blue gradient
+-- that reads on white, on both dark surfaces and on the green selected pill (checked at 54px, its
+-- real display size, on all four).
+UPDATE leagues SET logo_url = '/logos/serie-a.svg'
+ WHERE logo_url = 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg';
 
 -- Club display names.
 -- One row per entity, all display languages together. COALESCE is the per-column equivalent of

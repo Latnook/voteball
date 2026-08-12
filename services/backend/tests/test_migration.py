@@ -627,6 +627,9 @@ SELF_HOSTED_LEAGUE_EMBLEMS = [
     ('Bundesliga',
      'https://upload.wikimedia.org/wikipedia/he/d/df/Bundesliga_logo_%282017%29.svg',
      '/logos/bundesliga.svg'),
+    ('Serie A',
+     'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg',
+     '/logos/serie-a.svg'),
 ]
 
 
