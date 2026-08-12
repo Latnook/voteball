@@ -43,7 +43,12 @@ trap 'rm -rf "$WORK"' EXIT
 git -C "$ROOT" show "$OLD_REF:services/backend/schema.sql" > "$WORK/old-schema.sql"
 git -C "$ROOT" show "$OLD_REF:services/backend/seed.sql"   > "$WORK/old-seed.sql"
 
-psql_db() { docker exec -i "$CONTAINER" psql -U postgres -q -v ON_ERROR_STOP=1 "$@"; }
+# -1/--single-transaction: db.init_db() runs each file's whole contents as ONE cur.execute() call
+# inside ONE transaction, committed once (db.py). Plain psql auto-commits every statement
+# separately, so a `CREATE TEMP TABLE ... ON COMMIT DROP` (introduced 2026-08-12 for the leagues
+# table) would vanish before the INSERT right after it ever ran -- this flag is what makes each
+# file behave the way the real app actually applies it.
+psql_db() { docker exec -i "$CONTAINER" psql -U postgres -q -1 -v ON_ERROR_STOP=1 "$@"; }
 
 build() {   # build <dbname> <dump-or-empty> <before-schema-or-empty> <after-schema-or-empty> <after-seed-or-empty>
     local db="$1" dump="$2" bschema="$3" aschema="$4" aseed="$5"

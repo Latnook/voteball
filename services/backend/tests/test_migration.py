@@ -100,12 +100,16 @@ def test_league_names_survive_name_drift(conn):
 
 
 def test_admin_renamed_league_is_not_overwritten(conn):
-    # The other half of the same guard: filling an empty name_ru must never revert a name a human
-    # typed. COALESCE per column is what allows both at once.
+    # The other half of the same guard: an admin edit must never be reverted on the next boot.
+    # Since the 2026-08-12 seed_key/admin_edited redesign, protection is per-column and explicit
+    # (admin_edited), not implicit in "the value is already non-NULL" -- so this now records the
+    # edit the same way the admin API does. `name` itself is never touched by the leagues UPDATE
+    # regardless of admin_edited, so it needs no entry there.
     cur = conn.cursor()
     cur.execute(
         "UPDATE leagues SET name = 'ליגת האלופות שלי', name_he = 'ליגת האלופות שלי', "
-        "name_ru = 'МОЯ ЛИГА' WHERE name_en = 'UEFA Champions League'"
+        "name_ru = 'МОЯ ЛИГА', admin_edited = ARRAY['name_he', 'name_ru'] "
+        "WHERE name_en = 'UEFA Champions League'"
     )
     conn.commit()
     cur.close()
@@ -540,12 +544,13 @@ def test_europa_league_russian_rename_reaches_an_already_seeded_row(conn):
 
 
 def test_europa_league_russian_rename_leaves_an_admin_choice_alone(conn):
-    # Keyed on the exact superseded string, which is what makes it a correction rather than an
-    # unguarded overwrite of a Russian name an admin has since chosen.
+    # Protection is now admin_edited, not "this exact superseded string never matches an admin's
+    # own text" -- so the choice has to be recorded as an edit the same way the admin API does.
     admin_choice = 'Еврокубок'
     cur = conn.cursor()
     cur.execute(
-        "UPDATE leagues SET name_ru = %s WHERE name_en = 'UEFA Europa League'",
+        "UPDATE leagues SET name_ru = %s, admin_edited = ARRAY['name_ru'] "
+        "WHERE name_en = 'UEFA Europa League'",
         (admin_choice,),
     )
     conn.commit()
@@ -692,9 +697,14 @@ def test_league_emblem_correction_reaches_an_already_seeded_row(conn, name_en, s
 
 @pytest.mark.parametrize('name_en, superseded, expected', SELF_HOSTED_LEAGUE_EMBLEMS)
 def test_league_emblem_correction_leaves_an_admin_choice_alone(conn, name_en, superseded, expected):
+    # Protection is now admin_edited, not "logo_url IS NULL never matches a value an admin set" --
+    # so the choice has to be recorded as an edit the same way the admin API does.
     admin_choice = 'https://example.invalid/admins-own-emblem.svg'
     cur = conn.cursor()
-    cur.execute('UPDATE leagues SET logo_url = %s WHERE name_en = %s', (admin_choice, name_en))
+    cur.execute(
+        "UPDATE leagues SET logo_url = %s, admin_edited = ARRAY['logo_url'] WHERE name_en = %s",
+        (admin_choice, name_en),
+    )
     conn.commit()
     cur.close()
 
@@ -850,6 +860,48 @@ def test_removing_a_seeded_club_from_the_europa_league_is_re_applied(conn):
     cur = conn.cursor()
     cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
     assert cur.fetchone()[0] == uel_id
+    cur.close()
+
+
+def test_seed_overwrites_a_column_the_admin_never_touched(conn):
+    """The guarantee the whole redesign exists for, and which nothing used to test.
+
+    Under the old COALESCE/IS NULL guards this was FALSE: editing a literal reached a
+    fresh database only, so every corrected value needed its own patch statement.
+    """
+    cur = conn.cursor()
+    cur.execute("UPDATE leagues SET name_ru = 'stale value' WHERE seed_key = 'la-liga'")
+    conn.commit()
+
+    db_module.init_db(conn)  # what happens on every backend pod boot
+
+    cur.execute("SELECT name_ru FROM leagues WHERE seed_key = 'la-liga'")
+    assert cur.fetchone()[0] == 'Ла Лига'
+    cur.close()
+
+
+def test_seed_leaves_an_admin_edited_column_alone(conn):
+    cur = conn.cursor()
+    cur.execute("UPDATE leagues SET name_ru = 'Моя Лига', admin_edited = ARRAY['name_ru'] "
+                "WHERE seed_key = 'la-liga'")
+    conn.commit()
+
+    db_module.init_db(conn)
+
+    cur.execute("SELECT name_ru, name_he FROM leagues WHERE seed_key = 'la-liga'")
+    name_ru, name_he = cur.fetchone()
+    assert name_ru == 'Моя Лига', 'an admin edit was overwritten'
+    assert name_he == 'לה ליגה', 'provenance must be per-column, not per-row'
+    cur.close()
+
+
+def test_every_league_is_adopted_by_seed_key(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT count(*) FROM leagues WHERE seed_key IS NULL')
+    assert cur.fetchone()[0] == 0
+    cur.execute('SELECT count(DISTINCT seed_key), count(*) FROM leagues')
+    distinct, total = cur.fetchone()
+    assert distinct == total
     cur.close()
 
 
