@@ -502,7 +502,7 @@ def test_europa_league_sits_between_the_champions_league_and_the_world_cup(conn)
     row = cur.fetchone()
     assert row is not None, 'UEFA Europa League league row is missing'
     name, name_he, name_ru, sort_order, logo_url = row
-    assert (name_he, name_ru) == ('הליגה האירופית', 'Лига Европы УЕФА')
+    assert (name_he, name_ru) == ('הליגה האירופית', 'Лига Европы')
     assert logo_url == '/logos/uefa-europa-league.svg'
     # The legacy `name` column holds the final English name, unlike UCL's 'UCL' placeholder: nothing
     # renames this league, which is what lets the leagues INSERT skip a third identity branch for it.
@@ -514,6 +514,48 @@ def test_europa_league_sits_between_the_champions_league_and_the_world_cup(conn)
     )
     orders = dict(cur.fetchall())
     assert orders['UEFA Champions League'] < sort_order < orders['World Cup 2026']
+    cur.close()
+
+
+SUPERSEDED_EUROPA_LEAGUE_NAME_RU = 'Лига Европы УЕФА'
+
+
+def test_europa_league_russian_rename_reaches_an_already_seeded_row(conn):
+    # The names VALUES block only COALESCEs an empty name_ru, so editing the tuple never reaches a
+    # database seeded with the old name. Only the separate rename statement moves it.
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE leagues SET name_ru = %s WHERE name_en = 'UEFA Europa League'",
+        (SUPERSEDED_EUROPA_LEAGUE_NAME_RU,),
+    )
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'UEFA Europa League'")
+    assert cur.fetchone()[0] == 'Лига Европы'
+    cur.close()
+
+
+def test_europa_league_russian_rename_leaves_an_admin_choice_alone(conn):
+    # Keyed on the exact superseded string, which is what makes it a correction rather than an
+    # unguarded overwrite of a Russian name an admin has since chosen.
+    admin_choice = 'Еврокубок'
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE leagues SET name_ru = %s WHERE name_en = 'UEFA Europa League'",
+        (admin_choice,),
+    )
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'UEFA Europa League'")
+    assert cur.fetchone()[0] == admin_choice
     cur.close()
 
 

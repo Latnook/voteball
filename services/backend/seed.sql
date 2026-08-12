@@ -348,7 +348,7 @@ FROM (VALUES
     ('Israeli Premier League', 'ליגת העל', 'Израильская Премьер-лига'),
     ('Liga Leumit', 'ליגה לאומית', 'Лига Леумит'),
     ('Nations League', 'ליגת האומות', 'Лига наций УЕФА'),
-    ('UEFA Europa League', 'הליגה האירופית', 'Лига Европы УЕФА')
+    ('UEFA Europa League', 'הליגה האירופית', 'Лига Европы')
 ) AS v(name, name_he, name_ru)
 WHERE l.name = v.name OR l.name_he = v.name_he;
 UPDATE leagues SET name_en = 'Premier League' WHERE name = 'EPL';
@@ -357,6 +357,7 @@ UPDATE leagues SET name_en = 'UEFA Champions League' WHERE name = 'UCL';
 -- never reaches an already-seeded database -- a rename needs its own statement. Keyed on the exact
 -- superseded string so an admin's own Russian name (which won't match) is never overwritten.
 UPDATE leagues SET name_ru = 'Израильская Премьер-лига' WHERE name_ru = 'Лига ха-Аль';
+UPDATE leagues SET name_ru = 'Лига Европы' WHERE name_ru = 'Лига Европы УЕФА';
 
 -- Explicit league display order (see get_options in queries.py, ORDER BY sort_order NULLS LAST):
 -- Israeli Premier League and Liga Leumit first (domestic leagues), then the "big 5" European

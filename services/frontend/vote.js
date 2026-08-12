@@ -202,18 +202,6 @@ function renderTeamGrid() {
   const selectedLeague = optionsData.leagues.find(l => l.id === selectedLeagueId);
   grid.classList.toggle('card-grid-divisions', !!(selectedLeague && selectedLeague.has_divisions));
 
-  const justLeague = document.createElement('button');
-  justLeague.type = 'button';
-  justLeague.className = 'pick-card utility-card';
-  justLeague.dataset.justLeague = 'true';
-  justLeague.setAttribute('aria-pressed', String(entry.justLeague));
-  const justLeagueName = document.createElement('span');
-  justLeagueName.className = 'card-name';
-  justLeagueName.textContent = t('voteClubPlaceholderOption');
-  justLeague.appendChild(justLeagueName);
-  justLeague.addEventListener('click', () => toggleJustLeague(selectedLeagueId));
-  grid.appendChild(justLeague);
-
   groupedClubsForLeague(selectedLeagueId).forEach(group => {
     if (group.label !== null) {
       const header = document.createElement('h2');
@@ -237,6 +225,20 @@ function renderTeamGrid() {
       grid.appendChild(card);
     });
   });
+
+  // Appended last, after every club (and every division group), so the grid opens on real clubs and
+  // the fallback sits where a voter lands only after finding nothing they follow.
+  const justLeague = document.createElement('button');
+  justLeague.type = 'button';
+  justLeague.className = 'pick-card utility-card';
+  justLeague.dataset.justLeague = 'true';
+  justLeague.setAttribute('aria-pressed', String(entry.justLeague));
+  const justLeagueName = document.createElement('span');
+  justLeagueName.className = 'card-name';
+  justLeagueName.textContent = t('voteClubPlaceholderOption');
+  justLeague.appendChild(justLeagueName);
+  justLeague.addEventListener('click', () => toggleJustLeague(selectedLeagueId));
+  grid.appendChild(justLeague);
 }
 
 function syncTeamGrid() {
