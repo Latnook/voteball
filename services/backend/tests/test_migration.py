@@ -974,3 +974,40 @@ def test_club_seed_overwrites_a_column_the_admin_never_touched(conn):
     cur.close()
 
 
+def test_other_has_no_ideology(conn):
+    """'אחר' is a catch-all ballot option, not a party -- every axis stays NULL."""
+    cur = conn.cursor()
+    cur.execute("SELECT bloc, economic, security, religiosity, sector "
+                "FROM previous_parties WHERE name_he = 'אחר'")
+    assert all(v is None for v in cur.fetchone())
+    cur.close()
+
+
+def test_ideology_edits_reach_an_already_seeded_database(conn):
+    """The six ideology columns stay UNGUARDED -- a guard makes every later edit
+    unreachable in production, which is always already seeded.
+
+    bloc is 'opposition' here, not the brief's literal 'wrong': previous_parties_bloc_check
+    (schema.sql) rejects any value outside ('bibi', 'opposition', 'unaligned'), so a genuinely
+    invalid value can never reach the table to prove the point with -- the UPDATE itself would
+    fail before init_db ever ran. 'opposition' is still wrong for הליכוד (seeded as 'bibi'), so
+    it exercises the same unguarded-overwrite behaviour without fighting the CHECK constraint.
+    """
+    cur = conn.cursor()
+    cur.execute("UPDATE previous_parties SET economic = -3, bloc = 'opposition' "
+                "WHERE name_he = 'הליכוד'")
+    conn.commit()
+
+    db_module.init_db(conn)
+
+    cur.execute("SELECT economic, bloc FROM previous_parties WHERE name_he = 'הליכוד'")
+    assert cur.fetchone() == (1, 'bibi')
+    cur.close()
+
+
+def test_party_lineage_is_rebuilt_by_key(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT count(*) FROM party_lineage')
+    assert cur.fetchone()[0] == 14
+    cur.close()
+

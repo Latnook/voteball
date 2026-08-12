@@ -351,38 +351,11 @@ JOIN leagues l ON l.seed_key = s.league
 LEFT JOIN leagues d ON d.seed_key = s.also_in
 WHERE t.seed_key = s.seed_key;
 
-INSERT INTO previous_parties (name) VALUES
-    ('הליכוד'), ('יש עתיד'), ('הציונות הדתית'), ('המחנה הממלכתי'),
-    ('ישראל ביתנו'), ('ש"ס'), ('יהדות התורה'), ('רע"ם'),
-    ('חד"ש-תע"ל'), ('העבודה'), ('מרצ'), ('בל"ד'), ('אחר')
-ON CONFLICT (name) DO NOTHING;
-
--- Rename, not a new row. המילואימניקים merged with חילי טרופר's יסודות ישראל and the joint list runs
--- as בית ציוני - המילואימניקים (launched 2026-08-05). This MUST run before the INSERT below: that
--- INSERT's ON CONFLICT matches on `name`, so on an already-seeded database the new literal would not
--- conflict with the old row -- it would add a SECOND party, leaving every vote already cast stranded
--- on an orphaned row while the ballot showed the empty new one.
---
--- Keyed on `name` rather than name_he because on a fresh database name_he is not backfilled until
--- further down this file. Sets both columns, which is what rename_upcoming_party() does (it writes
--- name = name_he). Idempotent: once renamed it matches nothing. It also deliberately does not fire
--- on a row an admin has already renamed to something else -- their edit wins.
-UPDATE upcoming_parties
-   SET name = 'בית ציוני - המילואימניקים', name_he = 'בית ציוני - המילואימניקים'
- WHERE name = 'המילואימניקים';
-
-INSERT INTO upcoming_parties (name) VALUES
-    ('הליכוד'), ('ישר'), ('ביחד'), ('הדמוקרטים'), ('כחול לבן'),
-    ('ישראל ביתנו'), ('הציונות הדתית'), ('עוצמה יהודית'), ('חד"ש-תע"ל'),
-    ('בל"ד'), ('רע"ם'), ('ש"ס'), ('יהדות התורה'),
-    ('המפלגה הכלכלית'), ('אל הדגל'), ('בית ציוני - המילואימניקים'), ('זהות'), ('נעם')
-ON CONFLICT (name) DO NOTHING;
-
--- Backfill each row's own language from the legacy `name` column.
-UPDATE leagues           SET name_en = name WHERE name_en IS NULL;
-UPDATE clubs             SET name_en = name WHERE name_en IS NULL;
-UPDATE previous_parties  SET name_he = name WHERE name_he IS NULL;
-UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
+-- Backfill each row's own language from the legacy `name` column. Leagues and clubs only --
+-- previous_parties/upcoming_parties are keyed on name_he directly by the declarative blocks below,
+-- which carry name_he in the temp table literal itself, so they never needed this.
+UPDATE leagues SET name_en = name WHERE name_en IS NULL;
+UPDATE clubs   SET name_en = name WHERE name_en IS NULL;
 
 -- Relegation removals (2026-08-04): Hapoel Hadera and Hapoel Nof HaGalil dropped out of Liga Leumit
 -- to the third tier, which this app does not seed, and Maccabi Kiryat Gat / Maccabi Akhi Nazareth
@@ -406,261 +379,210 @@ DELETE FROM clubs c
 WHERE c.name_en IN ('Hapoel Hadera', 'Hapoel Nof HaGalil')
   AND NOT EXISTS (SELECT 1 FROM vote_clubs vc WHERE vc.club_id = c.id);
 
--- Previous Knesset party display names.
--- One row per entity, all display languages together. COALESCE is the per-column equivalent of
--- the old "AND name_xx IS NULL" guard: it fills only what is still empty, so a name an admin has
--- renamed through the live UI is never overwritten. Do not drop it.
-UPDATE previous_parties p SET
-    name_en = COALESCE(p.name_en, v.name_en),
-    name_ru = COALESCE(p.name_ru, v.name_ru)
-FROM (VALUES
-    ('הליכוד', 'Likud', 'Ликуд'),
-    ('יש עתיד', 'Yesh Atid', 'Еш Атид'),
-    ('הציונות הדתית', 'Religious Zionist Party', 'Ха-Цийонут ха-Датит'),
-    ('המחנה הממלכתי', 'National Unity', 'Ха-Махане ха-Мамлахти'),
-    ('ישראל ביתנו', 'Yisrael Beiteinu', 'Наш дом Израиль'),
-    ('ש"ס', 'Shas', 'ШАС'),
-    ('יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора'),
-    ('רע"ם', 'Ra''am', 'РААМ'),
-    ('חד"ש-תע"ל', 'Hadash-Ta''al', 'ХАДАШ-ТААЛ'),
-    ('העבודה', 'Labor', 'Авода'),
-    ('מרצ', 'Meretz', 'МЕРЕЦ'),
-    ('בל"ד', 'Balad', 'БАЛАД'),
-    ('אחר', 'Other', 'Другое')
-) AS v(name_he, name_en, name_ru)
-WHERE p.name_he = v.name_he;
-
--- Admin-curated party logos, synced from the live RDS instance (added via the admin UI's
--- Logo URL field, not originally seeded) so a fresh install matches current production data.
-UPDATE previous_parties t SET logo_url = v.logo_url
-FROM (VALUES
-    ('הליכוד', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg'),
-    ('יש עתיד', 'https://upload.wikimedia.org/wikipedia/he/1/12/%D7%99%D7%A9_%D7%A2%D7%AA%D7%99%D7%93_%D7%9C%D7%95%D7%92%D7%95.svg'),
-    ('הציונות הדתית', 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg'),
-    ('המחנה הממלכתי', 'https://upload.wikimedia.org/wikipedia/he/e/e0/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%9E%D7%97%D7%A0%D7%94_%D7%94%D7%9E%D7%9E%D7%9C%D7%9B%D7%AA%D7%99_%D7%90%D7%95%D7%92%D7%95%D7%A1%D7%98_2022.svg'),
-    ('ישראל ביתנו', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg'),
-    ('ש"ס', 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg'),
-    ('יהדות התורה', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg'),
-    ('רע"ם', 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg'),
-    ('חד"ש-תע"ל', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg'),
-    ('העבודה', 'https://upload.wikimedia.org/wikipedia/commons/f/f8/HaAvoda_Logo.svg'),
-    ('מרצ', 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg'),
-    ('בל"ד', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg')
-) AS v(name_he, logo_url)
-WHERE t.name_he = v.name_he
-  AND t.logo_url IS NULL;
-
--- Party ideology classification. The VALUES below are authoritative; the REASONING for every one
--- of them lives in docs/party-classifications.md. Do not restate reasoning in this file -- if a
--- number here needs justifying, justify it there and leave this table plain.
+-- ---------------------------------------------------------------------------
+-- PREVIOUS PARTIES
+-- ---------------------------------------------------------------------------
+-- Generated by scripts/seed/generate-tables.py --table previous_parties, transcribed from a seeded
+-- database, not hand-typed -- party names are almost entirely Hebrew and Russian, exactly the kind
+-- of retyping that produces a silent homoglyph.
 --
--- These UPDATEs are deliberately UNGUARDED, unlike the name/logo_url statements above. Production
--- is always already seeded, so an `AND bloc IS NULL` guard would make every later edit to this
--- table unreachable in production. Unguarded is safe for these six columns specifically: nothing
--- in the app ever writes them (the admin party endpoints only rename), so re-running seed.sql
--- rewrites identical values. Names and logo_url keep their `IS NULL` guards for the opposite
--- reason -- admins DO edit those live, and an unguarded write would destroy their edits.
+-- Adoption keys on name_he here, NOT name_en (the leagues/clubs convention). Every one of these 13
+-- rows was originally created from a bare Hebrew literal (`INSERT INTO previous_parties (name)
+-- VALUES ('הליכוד'), ...`), so name_he -- not name_en, which didn't exist yet -- is the column every
+-- production row has actually always carried, and it is what schema.sql's migration UPDATE
+-- backfills `name` into on a fresh/restored-old database.
 --
--- 'אחר' (Other) is absent on purpose: it is a catch-all ballot option, not a party, and every
--- ideology column stays NULL. test_migration.py asserts that.
-UPDATE previous_parties p SET
-    bloc = v.bloc, economic = v.economic, security = v.security,
-    religiosity = v.religiosity, sector = v.sector, tags = v.tags
-FROM (VALUES
-    ('הליכוד', 'bibi', 1, 2, 2, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[]),
-    ('יש עתיד', 'opposition', 0, 0, -2, 'secular', ARRAY['liberal-zionist', 'centrist']::text[]),
-    ('הציונות הדתית', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'ultranationalist', 'far-right']::text[]),
-    ('המחנה הממלכתי', 'unaligned', 1, NULL, -1, 'secular', ARRAY['centrist', 'avoids-security-topic', 'leans-traditional']::text[]),
-    ('ישראל ביתנו', 'opposition', 2, 2, -3, 'secular', ARRAY['anti-clerical', 'revisionist-zionist']::text[]),
-    ('ש"ס', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[]),
-    ('יהדות התורה', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[]),
-    ('רע"ם', 'opposition', 0, NULL, NULL, 'arab', ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues']::text[]),
-    ('חד"ש-תע"ל', 'opposition', -3, -2, NULL, 'arab', ARRAY['communist', 'arab-nationalist', 'pro-two-state']::text[]),
-    ('העבודה', 'opposition', -2, -1, -2, 'secular', ARRAY['social-democrat']::text[]),
-    ('מרצ', 'opposition', -2, -1, -2, 'secular', ARRAY['social-democrat']::text[]),
-    ('בל"ד', 'opposition', -2, -3, -3, 'arab', ARRAY['palestinian-nationalist', 'non-zionist']::text[])
-) AS v(name_he, bloc, economic, security, religiosity, sector, tags)
-WHERE p.name_he = v.name_he;
+-- 'אחר' (Other) is a catch-all ballot option, not a party -- it carries NULL on every ideology
+-- column below, on purpose. test_migration.py::test_other_has_no_ideology asserts it.
+--
+-- The six ideology columns (bloc, economic, security, religiosity, sector, tags) are written
+-- UNCONDITIONALLY by the UPDATE below, unlike name/logo_url -- see "Party ideology axes" in
+-- services/backend/CLAUDE.md: nothing in the app ever writes them, so a guard would make every
+-- future edit to this table unreachable in production, which is always already seeded.
+CREATE TEMP TABLE seed_previous_parties (seed_key TEXT PRIMARY KEY, name_he TEXT, name_en TEXT, name_ru TEXT, logo_url TEXT, bloc TEXT, economic INTEGER, security INTEGER, religiosity INTEGER, sector TEXT, tags TEXT[]) ON COMMIT DROP;
+INSERT INTO seed_previous_parties VALUES
+    ('likud', 'הליכוד', 'Likud', 'Ликуд', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg', 'bibi', 1, 2, 2, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[]),
+    ('yesh-atid', 'יש עתיד', 'Yesh Atid', 'Еш Атид', 'https://upload.wikimedia.org/wikipedia/he/1/12/%D7%99%D7%A9_%D7%A2%D7%AA%D7%99%D7%93_%D7%9C%D7%95%D7%92%D7%95.svg', 'opposition', 0, 0, -2, 'secular', ARRAY['liberal-zionist', 'centrist']::text[]),
+    ('religious-zionist-party', 'הציונות הדתית', 'Religious Zionist Party', 'Ха-Цийонут ха-Датит', 'https://upload.wikimedia.org/wikipedia/he/c/c2/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%A6%D7%99%D7%95%D7%A0%D7%95%D7%AA_%D7%94%D7%93%D7%AA%D7%99%D7%AA_2022.svg', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'ultranationalist', 'far-right']::text[]),
+    ('national-unity', 'המחנה הממלכתי', 'National Unity', 'Ха-Махане ха-Мамлахти', 'https://upload.wikimedia.org/wikipedia/he/e/e0/%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%9E%D7%97%D7%A0%D7%94_%D7%94%D7%9E%D7%9E%D7%9C%D7%9B%D7%AA%D7%99_%D7%90%D7%95%D7%92%D7%95%D7%A1%D7%98_2022.svg', 'unaligned', 1, NULL, -1, 'secular', ARRAY['centrist', 'avoids-security-topic', 'leans-traditional']::text[]),
+    ('yisrael-beiteinu', 'ישראל ביתנו', 'Yisrael Beiteinu', 'Наш дом Израиль', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg', 'opposition', 2, 2, -3, 'secular', ARRAY['anti-clerical', 'revisionist-zionist']::text[]),
+    ('shas', 'ש"ס', 'Shas', 'ШАС', 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[]),
+    ('united-torah-judaism', 'יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[]),
+    ('ra-am', 'רע"ם', 'Ra''am', 'РААМ', 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg', 'opposition', 0, NULL, NULL, 'arab', ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues']::text[]),
+    ('hadash-ta-al', 'חד"ש-תע"ל', 'Hadash-Ta''al', 'ХАДАШ-ТААЛ', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg', 'opposition', -3, -2, NULL, 'arab', ARRAY['communist', 'arab-nationalist', 'pro-two-state']::text[]),
+    ('labor', 'העבודה', 'Labor', 'Авода', 'https://upload.wikimedia.org/wikipedia/commons/f/f8/HaAvoda_Logo.svg', 'opposition', -2, -1, -2, 'secular', ARRAY['social-democrat']::text[]),
+    ('meretz', 'מרצ', 'Meretz', 'МЕРЕЦ', 'https://upload.wikimedia.org/wikipedia/he/f/ff/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A8%D7%A6_%D7%99%D7%95%D7%9C%D7%99_2022.svg', 'opposition', -2, -1, -2, 'secular', ARRAY['social-democrat']::text[]),
+    ('balad', 'בל"ד', 'Balad', 'БАЛАД', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg', 'opposition', -2, -3, -3, 'arab', ARRAY['palestinian-nationalist', 'non-zionist']::text[]),
+    ('other', 'אחר', 'Other', 'Другое', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
--- Party lineage: continuity between previous and upcoming parties (identity, splits, merges).
--- See design spec Appendix -- Yashar, The Economic Party, El HaDegel, The Reservists, and Blue and
--- White (as an independent brand) have no seeded predecessor; 'אחר' has no successor.
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'הליכוד' AND u.name_he = 'הליכוד'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'יש עתיד' AND u.name_he = 'ביחד'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'הציונות הדתית' AND u.name_he = 'הציונות הדתית'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'הציונות הדתית' AND u.name_he = 'עוצמה יהודית'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'הציונות הדתית' AND u.name_he = 'נעם'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'המחנה הממלכתי' AND u.name_he = 'כחול לבן'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'ישראל ביתנו' AND u.name_he = 'ישראל ביתנו'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'ש"ס' AND u.name_he = 'ש"ס'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'יהדות התורה' AND u.name_he = 'יהדות התורה'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'רע"ם' AND u.name_he = 'רע"ם'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'חד"ש-תע"ל' AND u.name_he = 'חד"ש-תע"ל'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'העבודה' AND u.name_he = 'הדמוקרטים'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'מרצ' AND u.name_he = 'הדמוקרטים'
-ON CONFLICT DO NOTHING;
-INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
-SELECT p.id, u.id FROM previous_parties p, upcoming_parties u
-WHERE p.name_he = 'בל"ד' AND u.name_he = 'בל"ד'
-ON CONFLICT DO NOTHING;
+-- Adopt rows that predate seed_key, keyed on name_he -- see the header comment above for why this
+-- table keys on name_he rather than name_en.
+UPDATE previous_parties t SET seed_key = s.seed_key
+FROM seed_previous_parties s
+WHERE t.seed_key IS NULL AND t.name_he = s.name_he;
 
--- Upcoming election party display names.
--- One row per entity, all display languages together. COALESCE is the per-column equivalent of
--- the old "AND name_xx IS NULL" guard: it fills only what is still empty, so a name an admin has
--- renamed through the live UI is never overwritten. Do not drop it.
-UPDATE upcoming_parties p SET
-    name_en = COALESCE(p.name_en, v.name_en),
-    name_ru = COALESCE(p.name_ru, v.name_ru)
-FROM (VALUES
-    ('הליכוד', 'Likud', 'Ликуд'),
-    ('ישר', 'Yashar', 'Яшар'),
-    ('ביחד', 'Together', 'Бейахад'),
-    ('הדמוקרטים', 'The Democrats', 'Ха-Демократим'),
-    ('כחול לבן', 'Blue and White', 'Кахоль-лаван'),
-    ('ישראל ביתנו', 'Yisrael Beiteinu', 'Наш дом Израиль'),
-    ('הציונות הדתית', 'Religious Zionist Party', 'Ха-Цийонут ха-Датит'),
-    ('עוצמה יהודית', 'Otzma Yehudit', 'Оцма Йехудит'),
-    ('חד"ש-תע"ל', 'Hadash-Ta''al', 'ХАДАШ-ТААЛ'),
-    ('בל"ד', 'Balad', 'БАЛАД'),
-    ('רע"ם', 'Ra''am', 'РААМ'),
-    ('ש"ס', 'Shas', 'ШАС'),
-    ('יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора'),
-    ('המפלגה הכלכלית', 'The Economic Party', 'Экономическая партия'),
-    ('אל הדגל', 'El HaDegel', 'Эль ха-Дегель'),
-    ('בית ציוני - המילואימניקים', 'The Reservists', 'Резервисты'),
-    ('זהות', 'Zehut', 'Зеут'),
-    ('נעם', 'Noam', 'Ноам')
-) AS v(name_he, name_en, name_ru)
-WHERE p.name_he = v.name_he;
+-- Refuse to insert a duplicate of a row that exists but could not be adopted -- see the leagues
+-- section above for why (the 2026-07-17 incident): previous_parties_seed_key_uidx is global, so a
+-- stray duplicate crashes init_db on every pod boot.
+DO $$
+DECLARE unadopted TEXT;
+BEGIN
+    SELECT string_agg(s.seed_key, ', ') INTO unadopted
+    FROM seed_previous_parties s
+    WHERE NOT EXISTS (SELECT 1 FROM previous_parties t WHERE t.seed_key = s.seed_key)
+      AND EXISTS (SELECT 1 FROM previous_parties t
+                  WHERE t.name_en = s.name_en OR t.name_he = s.name_he);
+    IF unadopted IS NOT NULL THEN
+        RAISE EXCEPTION 'seed.sql: previous_parties % exist but were not adopted; a name matches '
+                        'while seed_key does not. Fix the adoption matcher -- inserting '
+                        'would duplicate the row (2026-07-17 incident).', unadopted;
+    END IF;
+END $$;
 
--- Admin-curated data synced from the live RDS instance via scripts/sync-seed-from-rds.sh.
-UPDATE upcoming_parties t SET logo_url = v.logo_url
-FROM (VALUES
-    ('ביחד', 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg'),
-    -- Self-hosted: the list's only artwork is on *.fbcdn.net, whose URLs are signed and expire and
-    -- which tracker blockers drop in the browser (the F.C. Kiryat Yam failure). Cropped and its
-    -- background removed, but otherwise the party's own blue lockup, shown UNCHANGED in both themes
-    -- -- 'The Reservists' is in SKIP_RECOLOR_PARTIES in services/frontend/logos.js, because its Star
-    -- of David is a knockout and a recolour cannot lift a hole. That file and
-    -- docs/party-classifications.md carry the reasoning.
-    ('בית ציוני - המילואימניקים', '/logos/beit-tzioni-miluimnikim.png'),
-    ('המפלגה הכלכלית', 'https://upload.wikimedia.org/wikipedia/he/c/c9/%D7%94%D7%9E%D7%A4%D7%9C%D7%92%D7%94_%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%99%D7%AA_%D7%94%D7%97%D7%93%D7%A9%D7%94_%D7%9C%D7%95%D7%92%D7%95.svg'),
-    ('יהדות התורה', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg'),
-    ('ישר', 'https://upload.wikimedia.org/wikipedia/commons/6/61/Yashar_party_logo.png'),
-    ('רע"ם', 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg'),
-    ('ש"ס', 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg'),
+-- `name` gets name_he, matching the legacy roster INSERT's own behaviour
+-- (`INSERT INTO previous_parties (name) VALUES ('הליכוד')`) -- there is no separate legacy token
+-- the way leagues has 'EPL'/'UCL'.
+INSERT INTO previous_parties (seed_key, name, name_en, name_he, name_ru, logo_url, bloc, economic,
+                              security, religiosity, sector, tags)
+SELECT s.seed_key, s.name_he, s.name_en, s.name_he, s.name_ru, s.logo_url, s.bloc, s.economic,
+       s.security, s.religiosity, s.sector, s.tags
+FROM seed_previous_parties s
+WHERE NOT EXISTS (SELECT 1 FROM previous_parties t WHERE t.seed_key = s.seed_key);
 
-    -- Admin-curated party logos, synced from the live RDS instance (see previous_parties above).
-    ('הליכוד', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg'),
-    ('הדמוקרטים', 'https://upload.wikimedia.org/wikipedia/commons/b/b5/The_Democrats_led_by_Yair_Golan.svg'),
-    ('כחול לבן', 'https://upload.wikimedia.org/wikipedia/he/a/a6/%D7%9C%D7%95%D7%92%D7%95_%D7%9B%D7%97%D7%95%D7%9C_%D7%9C%D7%91%D7%9F_2021.svg'),
-    ('ישראל ביתנו', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg'),
-    -- 2026 rebrand, UPCOMING TABLE ONLY -- previous_parties keeps the 2022 logo, because that row is
-    -- the current Knesset faction. Self-hosted because neither Wikimedia revision works in both
-    -- themes: the published PNG has the white background baked in (100% opaque, so it trips
-    -- recolorLogoForDark()'s solid-tile guard and renders as a white plate on the dark cards), and
-    -- the earlier revision it replaced is a white-ink knockout that is invisible in light mode. This
-    -- is that PNG with the outer white flood-filled to transparent, which leaves the #31698C
-    -- wordmark below the recolour threshold and the teal בראשות bar (luminance 0.518) just above it.
-    ('הציונות הדתית', '/logos/religious-zionism-2026.png'),
-    ('עוצמה יהודית', 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg'),
-    ('חד"ש-תע"ל', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg'),
-    ('בל"ד', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg'),
-    ('זהות', 'https://upload.wikimedia.org/wikipedia/commons/d/d4/ZehutParty.svg'),
-    -- Noam's current campaign banner ("נעם לישראל, בראשות אבי מעוז"). It is an opaque JPEG, not a
-    -- transparent SVG, so logos.js skips the dark-mode recolour (>90% opaque pixels = solid tile) --
-    -- correct here, since the artwork is already light lettering on a dark navy field.
-    ('נעם', 'https://upload.wikimedia.org/wikipedia/commons/6/6e/%D7%A1%D7%9E%D7%9C_%D7%9E%D7%A4%D7%9C%D7%92%D7%AA_%D7%A0%D7%A2%D7%9D_j%2Cul.jpg'),
-    -- El HaDegel is a new movement with no Wikimedia logo; this is the square Star-of-David emblem
-    -- (transparent, from the party's own Webflow CDN "webclip" app-icon) rather than the old low-res
-    -- Google thumbnail, which had a dark navy background baked in and rendered as a dark box on the
-    -- logo chip. Non-Wikimedia host, so if it ever 404s the frontend falls back to a generated monogram.
-    ('אל הדגל', 'https://cdn.prod.website-files.com/674ed46d57366b6a64400c3c/67501afebb4a91b0d0b7c6b9_el-hadegel-webclip.svg')
-) AS v(name_he, logo_url)
-WHERE t.name_he = v.name_he
-  AND t.logo_url IS NULL;
+-- Admin-ownable columns yield to admin_edited; ideology columns are seed-owned and written
+-- unconditionally (see the header comment above).
+UPDATE previous_parties t SET
+    name_en     = CASE WHEN 'name_en'  = ANY(t.admin_edited) THEN t.name_en  ELSE s.name_en  END,
+    name_he     = CASE WHEN 'name_he'  = ANY(t.admin_edited) THEN t.name_he  ELSE s.name_he  END,
+    name_ru     = CASE WHEN 'name_ru'  = ANY(t.admin_edited) THEN t.name_ru  ELSE s.name_ru  END,
+    logo_url    = CASE WHEN 'logo_url' = ANY(t.admin_edited) THEN t.logo_url ELSE s.logo_url END,
+    bloc        = s.bloc,
+    economic    = s.economic,
+    security    = s.security,
+    religiosity = s.religiosity,
+    sector      = s.sector,
+    tags        = s.tags
+FROM seed_previous_parties s
+WHERE t.seed_key = s.seed_key;
 
--- Upcoming-party classification. Independent from previous_parties even where a lineage link
--- exists (design spec Decision 1). Same unguarded rationale as the previous_parties block above.
-UPDATE upcoming_parties p SET
-    bloc = v.bloc, economic = v.economic, security = v.security,
-    religiosity = v.religiosity, sector = v.sector, tags = v.tags,
-    families = v.families, family_evidence = v.family_evidence
-FROM (VALUES
-    ('הליכוד', 'bibi', 1, 2, 2, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[], ARRAY['conscription-exemption','judicial-restraint','sectoral-budgeting']::text[], 'record'),
-    ('ישר', 'opposition', 1, 1, -2, 'secular', ARRAY['new-party', 'centrist', 'liberal-zionist', 'statist', 'security-hawk', 'no-palestinian-state', 'anti-annexation', 'universal-conscription', 'core-curriculum', 'constitutionalist', 'governance-reform', 'anti-monopoly', 'tax-cutting', 'public-service-reform', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'reservist-focused', 'agricultural-protectionism']::text[], ARRAY['universal-conscription','constitutional-reform','cost-of-living']::text[], 'platform'),
-    ('ביחד', 'opposition', 1, NULL, -2, 'secular', ARRAY['liberal-zionist', 'constitutionalist', 'internally-split-on-conflict', 'anti-clerical', 'universal-conscription', 'pro-competition', 'anti-monopoly', 'free-trade', 'kashrut-liberalization']::text[], ARRAY['universal-conscription','constitutional-reform','cost-of-living']::text[], 'platform'),
-    ('הדמוקרטים', 'opposition', -2, -1, -3, 'secular', ARRAY['progressive', 'social-democrat', 'liberal-zionist', 'religious-pluralism', 'jewish-arab-partnership', 'protest-movement-rooted', 'two-state', 'anti-annexation', 'anti-settler-violence', 'universal-conscription', 'core-curriculum', 'civil-marriage', 'anti-indicted-pm', 'regional-normalization', 'lgbt-rights', 'reservist-focused', 'gender-equality']::text[], ARRAY['constitutional-reform','welfare-state','jewish-arab-partnership','universal-conscription']::text[], 'platform'),
-    ('כחול לבן', 'unaligned', 0, 2, -2, 'secular', ARRAY['centrist', 'hard-to-classify-bloc', 'statist', 'security-hawk', 'no-palestinian-state', 'pro-settlement', 'unity-government', 'public-service-reform', 'universal-conscription', 'sanctions-on-non-servers', 'arab-civil-service', 'scholar-exemption-retained', 'core-curriculum', 'state-haredi-education', 'reservist-focused']::text[], ARRAY['constitutional-reform','universal-conscription']::text[], 'platform'),
-    ('ישראל ביתנו', 'opposition', 2, 2, -3, 'secular', ARRAY['anti-clerical', 'revisionist-zionist', 'civil-marriage', 'universal-conscription', 'free-market', 'governance-reform', 'anti-indicted-pm', 'hardline-on-gaza']::text[], ARRAY['universal-conscription','constitutional-reform','market-liberal']::text[], 'record'),
-    ('הציונות הדתית', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'ultranationalist', 'far-right', 'settler-movement', 'judicial-overhaul', 'sovereignty-annexation', 'opposes-hostage-deals', 'halakhic-state', 'anti-two-state', 'death-penalty-for-terrorists', 'reservist-focused']::text[], ARRAY['judicial-restraint','conscription-split','sectoral-budgeting']::text[], 'record'),
-    ('עוצמה יהודית', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'not-economy-focused', 'kahanist', 'jewish-supremacist', 'far-right', 'gun-rights', 'judicial-overhaul', 'pro-settlement', 'sovereignty-annexation', 'temple-mount-centred', 'death-penalty-for-terrorists']::text[], ARRAY['judicial-restraint','not-economy-focused','conscription-by-incentive']::text[], 'record'),
-    ('חד"ש-תע"ל', 'opposition', -3, -2, NULL, 'arab', ARRAY['communist', 'arab-nationalist', 'pro-two-state', 'jewish-arab-partnership', 'civil-rights-focused', 'pro-joint-list', 'negev-bedouin-representation']::text[], ARRAY['arab-representation','jewish-arab-partnership','welfare-state']::text[], 'record'),
-    ('בל"ד', 'opposition', -2, -3, -3, 'arab', ARRAY['palestinian-nationalist', 'non-zionist', 'state-of-all-its-citizens', 'secular-democratic-state', 'pro-two-state', 'right-of-return', 'anti-privatization', 'progressive-taxation', 'affirmative-action', 'opposes-arab-conscription', 'program-unchanged-since-2018']::text[], ARRAY['arab-representation','welfare-state']::text[], 'record'),
-    ('רע"ם', 'opposition', 0, -2, NULL, 'arab', ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues', 'pro-two-state']::text[], ARRAY['arab-representation']::text[], 'record'),
-    ('ש"ס', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[], ARRAY['conscription-exemption','welfare-state','sectoral-budgeting']::text[], 'record'),
-    ('יהדות התורה', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[], ARRAY['conscription-split','welfare-state','sectoral-budgeting']::text[], 'record'),
-    ('המפלגה הכלכלית', 'unaligned', 1, 0, -2, 'secular', ARRAY['populist', 'anti-corruption', 'anti-monopoly', 'tax-cutting', 'free-trade', 'consumer-protection', 'kashrut-liberalization', 'single-issue-economy', 'anti-clerical']::text[], ARRAY['cost-of-living']::text[], 'platform'),
-    ('אל הדגל', 'unaligned', 1, 2, -2, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'core-curriculum', 'sovereignty-annexation', 'preemptive-security-doctrine', 'territorial-price-doctrine', 'anti-two-state', 'voluntary-emigration-incentives', 'constitutionalist', 'governance-reform', 'term-limits', 'state-commission-of-inquiry', 'pm-immunity-protections', 'municipal-devolution', 'deregulation', 'cost-of-living', 'workforce-integration']::text[], ARRAY['universal-conscription','reservist-movement','constitutional-reform','cost-of-living']::text[], 'platform'),
-    ('בית ציוני - המילואימניקים', 'unaligned', 1, 2, -2, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'core-curriculum', 'anti-netanyahu', 'territorial-control-gaza', 'anti-two-state', 'pro-settlement', 'anti-monopoly', 'free-trade', 'cost-of-living', 'constitutionalist', 'governance-reform', 'statist', 'excludes-haredi-and-arab-parties']::text[], ARRAY['universal-conscription','reservist-movement','constitutional-reform','cost-of-living']::text[], 'platform'),
-    ('זהות', 'bibi', 3, 3, 2, 'religious_zionist', ARRAY['libertarian', 'small-government', 'flat-tax', 'deregulation', 'privatization', 'anti-monopoly', 'cannabis-legalization', 'gun-rights', 'sovereignty-annexation', 'anti-two-state', 'population-transfer', 'permanent-residency-not-citizenship', 'state-institutions-bound-to-halakha', 'ends-state-religious-funding', 'jewish-law-parallel-jurisdiction', 'communitarian-devolution', 'temple-mount-centred', 'professional-army', 'extra-parliamentary']::text[], ARRAY['judicial-restraint','market-liberal','cost-of-living']::text[], 'platform'),
-    ('נעם', 'bibi', NULL, 3, 3, 'religious_zionist', ARRAY['hardal', 'religious-fundamentalist', 'single-issue-jewish-identity', 'not-economy-focused', 'halakhic-state', 'rabbinate-as-fourth-branch', 'rabbinic-authority-led', 'anti-lgbt', 'anti-progressive', 'family-values', 'opposes-western-wall-compromise', 'education-system-focused', 'judicial-overhaul', 'opposes-hostage-deals', 'sovereignty-annexation', 'anti-two-state']::text[], ARRAY['judicial-restraint','conscription-by-incentive','not-economy-focused']::text[], 'record')
-) AS v(name_he, bloc, economic, security, religiosity, sector, tags, families, family_evidence)
-WHERE p.name_he = v.name_he;
+-- ---------------------------------------------------------------------------
+-- UPCOMING PARTIES
+-- ---------------------------------------------------------------------------
+-- Generated by scripts/seed/generate-tables.py --table upcoming_parties, transcribed from a seeded
+-- database, not hand-typed. Same name_he adoption key as previous_parties above, for the same
+-- reason -- every row was originally created from a bare Hebrew `name` literal.
+--
+-- The Beit Tzioni rename (המילואימניקים -> בית ציוני - המילואימניקים, launched 2026-08-05) needs no
+-- statement here any more: production's row already carries the new name_he (this table was
+-- generated FROM that already-renamed row), so it adopts by name_he like any other row. The rename
+-- statement only ever mattered for a database that still held the pre-2026-08-05 name, and no such
+-- database exists any more -- production is the only one that has ever run this file for real.
+--
+-- Same unconditional-ideology rule as previous_parties (families/family_evidence included, since
+-- neither is admin-writable -- see docs/design/2026-07-30-party-families-club-traits-design.md).
+-- Independent from previous_parties even where a lineage link exists (design spec Decision 1).
+CREATE TEMP TABLE seed_upcoming_parties (seed_key TEXT PRIMARY KEY, name_he TEXT, name_en TEXT, name_ru TEXT, logo_url TEXT, bloc TEXT, economic INTEGER, security INTEGER, religiosity INTEGER, sector TEXT, tags TEXT[], families TEXT[], family_evidence TEXT) ON COMMIT DROP;
+INSERT INTO seed_upcoming_parties VALUES
+    ('likud', 'הליכוד', 'Likud', 'Ликуд', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg', 'bibi', 1, 2, 2, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical']::text[], ARRAY['conscription-exemption', 'judicial-restraint', 'sectoral-budgeting']::text[], 'record'),
+    ('yashar', 'ישר', 'Yashar', 'Яшар', 'https://upload.wikimedia.org/wikipedia/commons/6/61/Yashar_party_logo.png', 'opposition', 1, 1, -2, 'secular', ARRAY['new-party', 'centrist', 'liberal-zionist', 'statist', 'security-hawk', 'no-palestinian-state', 'anti-annexation', 'universal-conscription', 'core-curriculum', 'constitutionalist', 'governance-reform', 'anti-monopoly', 'tax-cutting', 'public-service-reform', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'reservist-focused', 'agricultural-protectionism']::text[], ARRAY['universal-conscription', 'constitutional-reform', 'cost-of-living']::text[], 'platform'),
+    ('together', 'ביחד', 'Together', 'Бейахад', 'https://upload.wikimedia.org/wikipedia/commons/1/14/Together-logo-29April.svg', 'opposition', 1, NULL, -2, 'secular', ARRAY['liberal-zionist', 'constitutionalist', 'internally-split-on-conflict', 'anti-clerical', 'universal-conscription', 'pro-competition', 'anti-monopoly', 'free-trade', 'kashrut-liberalization']::text[], ARRAY['universal-conscription', 'constitutional-reform', 'cost-of-living']::text[], 'platform'),
+    ('the-democrats', 'הדמוקרטים', 'The Democrats', 'Ха-Демократим', 'https://upload.wikimedia.org/wikipedia/commons/b/b5/The_Democrats_led_by_Yair_Golan.svg', 'opposition', -2, -1, -3, 'secular', ARRAY['progressive', 'social-democrat', 'liberal-zionist', 'religious-pluralism', 'jewish-arab-partnership', 'protest-movement-rooted', 'two-state', 'anti-annexation', 'anti-settler-violence', 'universal-conscription', 'core-curriculum', 'civil-marriage', 'anti-indicted-pm', 'regional-normalization', 'lgbt-rights', 'reservist-focused', 'gender-equality']::text[], ARRAY['constitutional-reform', 'welfare-state', 'jewish-arab-partnership', 'universal-conscription']::text[], 'platform'),
+    ('blue-and-white', 'כחול לבן', 'Blue and White', 'Кахоль-лаван', 'https://upload.wikimedia.org/wikipedia/he/a/a6/%D7%9C%D7%95%D7%92%D7%95_%D7%9B%D7%97%D7%95%D7%9C_%D7%9C%D7%91%D7%9F_2021.svg', 'unaligned', 0, 2, -2, 'secular', ARRAY['centrist', 'hard-to-classify-bloc', 'statist', 'security-hawk', 'no-palestinian-state', 'pro-settlement', 'unity-government', 'public-service-reform', 'universal-conscription', 'sanctions-on-non-servers', 'arab-civil-service', 'scholar-exemption-retained', 'core-curriculum', 'state-haredi-education', 'reservist-focused']::text[], ARRAY['constitutional-reform', 'universal-conscription']::text[], 'platform'),
+    ('yisrael-beiteinu', 'ישראל ביתנו', 'Yisrael Beiteinu', 'Наш дом Израиль', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg', 'opposition', 2, 2, -3, 'secular', ARRAY['anti-clerical', 'revisionist-zionist', 'civil-marriage', 'universal-conscription', 'free-market', 'governance-reform', 'anti-indicted-pm', 'hardline-on-gaza']::text[], ARRAY['universal-conscription', 'constitutional-reform', 'market-liberal']::text[], 'record'),
+    ('religious-zionist-party', 'הציונות הדתית', 'Religious Zionist Party', 'Ха-Цийонут ха-Датит', '/logos/religious-zionism-2026.png', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'ultranationalist', 'far-right', 'settler-movement', 'judicial-overhaul', 'sovereignty-annexation', 'opposes-hostage-deals', 'halakhic-state', 'anti-two-state', 'death-penalty-for-terrorists', 'reservist-focused']::text[], ARRAY['judicial-restraint', 'conscription-split', 'sectoral-budgeting']::text[], 'record'),
+    ('otzma-yehudit', 'עוצמה יהודית', 'Otzma Yehudit', 'Оцма Йехудит', 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'not-economy-focused', 'kahanist', 'jewish-supremacist', 'far-right', 'gun-rights', 'judicial-overhaul', 'pro-settlement', 'sovereignty-annexation', 'temple-mount-centred', 'death-penalty-for-terrorists']::text[], ARRAY['judicial-restraint', 'not-economy-focused', 'conscription-by-incentive']::text[], 'record'),
+    ('hadash-ta-al', 'חד"ש-תע"ל', 'Hadash-Ta''al', 'ХАДАШ-ТААЛ', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg', 'opposition', -3, -2, NULL, 'arab', ARRAY['communist', 'arab-nationalist', 'pro-two-state', 'jewish-arab-partnership', 'civil-rights-focused', 'pro-joint-list', 'negev-bedouin-representation']::text[], ARRAY['arab-representation', 'jewish-arab-partnership', 'welfare-state']::text[], 'record'),
+    ('balad', 'בל"ד', 'Balad', 'БАЛАД', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg', 'opposition', -2, -3, -3, 'arab', ARRAY['palestinian-nationalist', 'non-zionist', 'state-of-all-its-citizens', 'secular-democratic-state', 'pro-two-state', 'right-of-return', 'anti-privatization', 'progressive-taxation', 'affirmative-action', 'opposes-arab-conscription', 'program-unchanged-since-2018']::text[], ARRAY['arab-representation', 'welfare-state']::text[], 'record'),
+    ('ra-am', 'רע"ם', 'Ra''am', 'РААМ', 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg', 'opposition', 0, -2, NULL, 'arab', ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues', 'pro-two-state']::text[], ARRAY['arab-representation']::text[], 'record'),
+    ('shas', 'ש"ס', 'Shas', 'ШАС', 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[], ARRAY['conscription-exemption', 'welfare-state', 'sectoral-budgeting']::text[], 'record'),
+    ('united-torah-judaism', 'יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[], ARRAY['conscription-split', 'welfare-state', 'sectoral-budgeting']::text[], 'record'),
+    ('the-economic-party', 'המפלגה הכלכלית', 'The Economic Party', 'Экономическая партия', 'https://upload.wikimedia.org/wikipedia/he/c/c9/%D7%94%D7%9E%D7%A4%D7%9C%D7%92%D7%94_%D7%94%D7%9B%D7%9C%D7%9B%D7%9C%D7%99%D7%AA_%D7%94%D7%97%D7%93%D7%A9%D7%94_%D7%9C%D7%95%D7%92%D7%95.svg', 'unaligned', 1, 0, -2, 'secular', ARRAY['populist', 'anti-corruption', 'anti-monopoly', 'tax-cutting', 'free-trade', 'consumer-protection', 'kashrut-liberalization', 'single-issue-economy', 'anti-clerical']::text[], ARRAY['cost-of-living']::text[], 'platform'),
+    ('el-hadegel', 'אל הדגל', 'El HaDegel', 'Эль ха-Дегель', 'https://cdn.prod.website-files.com/674ed46d57366b6a64400c3c/67501afebb4a91b0d0b7c6b9_el-hadegel-webclip.svg', 'unaligned', 1, 2, -2, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'core-curriculum', 'sovereignty-annexation', 'preemptive-security-doctrine', 'territorial-price-doctrine', 'anti-two-state', 'voluntary-emigration-incentives', 'constitutionalist', 'governance-reform', 'term-limits', 'state-commission-of-inquiry', 'pm-immunity-protections', 'municipal-devolution', 'deregulation', 'cost-of-living', 'workforce-integration']::text[], ARRAY['universal-conscription', 'reservist-movement', 'constitutional-reform', 'cost-of-living']::text[], 'platform'),
+    ('the-reservists', 'בית ציוני - המילואימניקים', 'The Reservists', 'Резервисты', '/logos/beit-tzioni-miluimnikim.png', 'unaligned', 1, 2, -2, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'core-curriculum', 'anti-netanyahu', 'territorial-control-gaza', 'anti-two-state', 'pro-settlement', 'anti-monopoly', 'free-trade', 'cost-of-living', 'constitutionalist', 'governance-reform', 'statist', 'excludes-haredi-and-arab-parties']::text[], ARRAY['universal-conscription', 'reservist-movement', 'constitutional-reform', 'cost-of-living']::text[], 'platform'),
+    ('zehut', 'זהות', 'Zehut', 'Зеут', 'https://upload.wikimedia.org/wikipedia/commons/d/d4/ZehutParty.svg', 'bibi', 3, 3, 2, 'religious_zionist', ARRAY['libertarian', 'small-government', 'flat-tax', 'deregulation', 'privatization', 'anti-monopoly', 'cannabis-legalization', 'gun-rights', 'sovereignty-annexation', 'anti-two-state', 'population-transfer', 'permanent-residency-not-citizenship', 'state-institutions-bound-to-halakha', 'ends-state-religious-funding', 'jewish-law-parallel-jurisdiction', 'communitarian-devolution', 'temple-mount-centred', 'professional-army', 'extra-parliamentary']::text[], ARRAY['judicial-restraint', 'market-liberal', 'cost-of-living']::text[], 'platform'),
+    ('noam', 'נעם', 'Noam', 'Ноам', 'https://upload.wikimedia.org/wikipedia/commons/6/6e/%D7%A1%D7%9E%D7%9C_%D7%9E%D7%A4%D7%9C%D7%92%D7%AA_%D7%A0%D7%A2%D7%9D_j%2Cul.jpg', 'bibi', NULL, 3, 3, 'religious_zionist', ARRAY['hardal', 'religious-fundamentalist', 'single-issue-jewish-identity', 'not-economy-focused', 'halakhic-state', 'rabbinate-as-fourth-branch', 'rabbinic-authority-led', 'anti-lgbt', 'anti-progressive', 'family-values', 'opposes-western-wall-compromise', 'education-system-focused', 'judicial-overhaul', 'opposes-hostage-deals', 'sovereignty-annexation', 'anti-two-state']::text[], ARRAY['judicial-restraint', 'conscription-by-incentive', 'not-economy-focused']::text[], 'record');
 
--- Logo corrections. Unguarded, unlike the logo statements earlier in this file: each replaces a
--- value that was actively wrong, and a guarded statement could never reach an already-seeded
--- database. Rationale (including the misattribution these fix) is in docs/party-classifications.md.
--- NOTE: being unguarded, these DO overwrite an admin-edited logo for these rows.
--- (La Liga's own correction moved into the leagues seed_leagues table above, 2026-08-12 -- the new
--- table carries the CURRENT logo directly instead of a superseded URL plus this unguarded fix-up,
--- and this statement being unconditional would otherwise defeat that table's admin_edited honouring
--- for la-liga's logo_url specifically.)
-UPDATE upcoming_parties SET logo_url = '/logos/beit-tzioni-miluimnikim.png'
-    WHERE name_he = 'בית ציוני - המילואימניקים';
--- Scoped to upcoming_parties on purpose: previous_parties.'הציונות הדתית' is the current Knesset
--- faction and keeps its 2022 logo. See the tuple in the guarded block above for why this one is
--- self-hosted rather than a Wikimedia URL.
-UPDATE upcoming_parties SET logo_url = '/logos/religious-zionism-2026.png'
-    WHERE name_he = 'הציונות הדתית';
+-- Adopt rows that predate seed_key, keyed on name_he.
+UPDATE upcoming_parties t SET seed_key = s.seed_key
+FROM seed_upcoming_parties s
+WHERE t.seed_key IS NULL AND t.name_he = s.name_he;
+
+-- Refuse to insert a duplicate of a row that exists but could not be adopted -- see the leagues
+-- section above for why (the 2026-07-17 incident): upcoming_parties_seed_key_uidx is global, so a
+-- stray duplicate crashes init_db on every pod boot.
+DO $$
+DECLARE unadopted TEXT;
+BEGIN
+    SELECT string_agg(s.seed_key, ', ') INTO unadopted
+    FROM seed_upcoming_parties s
+    WHERE NOT EXISTS (SELECT 1 FROM upcoming_parties t WHERE t.seed_key = s.seed_key)
+      AND EXISTS (SELECT 1 FROM upcoming_parties t
+                  WHERE t.name_en = s.name_en OR t.name_he = s.name_he);
+    IF unadopted IS NOT NULL THEN
+        RAISE EXCEPTION 'seed.sql: upcoming_parties % exist but were not adopted; a name matches '
+                        'while seed_key does not. Fix the adoption matcher -- inserting '
+                        'would duplicate the row (2026-07-17 incident).', unadopted;
+    END IF;
+END $$;
+
+-- `name` gets name_he, matching the legacy roster INSERT's own behaviour, same as previous_parties.
+INSERT INTO upcoming_parties (seed_key, name, name_en, name_he, name_ru, logo_url, bloc, economic,
+                              security, religiosity, sector, tags, families, family_evidence)
+SELECT s.seed_key, s.name_he, s.name_en, s.name_he, s.name_ru, s.logo_url, s.bloc, s.economic,
+       s.security, s.religiosity, s.sector, s.tags, s.families, s.family_evidence
+FROM seed_upcoming_parties s
+WHERE NOT EXISTS (SELECT 1 FROM upcoming_parties t WHERE t.seed_key = s.seed_key);
+
+-- Admin-ownable columns yield to admin_edited; ideology columns (including families/family_evidence)
+-- are seed-owned and written unconditionally, same rule as previous_parties above.
+UPDATE upcoming_parties t SET
+    name_en         = CASE WHEN 'name_en'  = ANY(t.admin_edited) THEN t.name_en  ELSE s.name_en  END,
+    name_he         = CASE WHEN 'name_he'  = ANY(t.admin_edited) THEN t.name_he  ELSE s.name_he  END,
+    name_ru         = CASE WHEN 'name_ru'  = ANY(t.admin_edited) THEN t.name_ru  ELSE s.name_ru  END,
+    logo_url        = CASE WHEN 'logo_url' = ANY(t.admin_edited) THEN t.logo_url ELSE s.logo_url END,
+    bloc            = s.bloc,
+    economic        = s.economic,
+    security        = s.security,
+    religiosity     = s.religiosity,
+    sector          = s.sector,
+    tags            = s.tags,
+    families        = s.families,
+    family_evidence = s.family_evidence
+FROM seed_upcoming_parties s
+WHERE t.seed_key = s.seed_key;
+
+-- ---------------------------------------------------------------------------
+-- PARTY LINEAGE
+-- ---------------------------------------------------------------------------
+-- Continuity between previous and upcoming parties (identity, splits, merges). Resolved through
+-- both tables' seed_key, so this must run after both sections above have adopted/inserted their
+-- rows. See design spec Appendix -- Yashar, The Economic Party, El HaDegel, The Reservists, and Blue
+-- and White (as an independent brand) have no seeded predecessor; 'אחר' has no successor.
+CREATE TEMP TABLE seed_party_lineage (previous_key TEXT, upcoming_key TEXT) ON COMMIT DROP;
+-- Generated from production 2026-08-12; 14 links. Religious Zionism splits three ways and
+-- Labor/Meretz merge into one successor, so neither column is unique -- do not add a
+-- primary key to this temp table.
+INSERT INTO seed_party_lineage VALUES
+    ('likud', 'likud'),
+    ('yesh-atid', 'together'),
+    ('religious-zionist-party', 'religious-zionist-party'),
+    ('religious-zionist-party', 'otzma-yehudit'),
+    ('religious-zionist-party', 'noam'),
+    ('national-unity', 'blue-and-white'),
+    ('yisrael-beiteinu', 'yisrael-beiteinu'),
+    ('shas', 'shas'),
+    ('united-torah-judaism', 'united-torah-judaism'),
+    ('ra-am', 'ra-am'),
+    ('hadash-ta-al', 'hadash-ta-al'),
+    ('labor', 'the-democrats'),
+    ('meretz', 'the-democrats'),
+    ('balad', 'balad');
+
+INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
+SELECT p.id, u.id FROM seed_party_lineage s
+JOIN previous_parties p ON p.seed_key = s.previous_key
+JOIN upcoming_parties u ON u.seed_key = s.upcoming_key
+ON CONFLICT DO NOTHING;
 
 -- Strip Wikipedia's utm_* referral params from stored logo URLs. 26 of the seeded URLs were copied
 -- out of he.wikipedia.org with "?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original"
