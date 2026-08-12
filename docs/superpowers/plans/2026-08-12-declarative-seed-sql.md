@@ -662,7 +662,21 @@ Leagues is the smallest table (10 rows, 7 properties) and carries five of the pa
 
 **Interfaces:**
 - Consumes: `seed_key`/`admin_edited` (Task 2), `verify-neutrality.sh` (Task 1).
-- Produces: `seed_leagues` temp table with columns `(seed_key, name_en, name_he, name_ru, logo_url, sort_order, has_divisions)`.
+- Produces: `seed_leagues` temp table with columns `(seed_key, legacy_name, name_en, name_he, name_ru, logo_url, sort_order, has_divisions)`.
+
+**AMENDMENT (found before dispatch, 2026-08-12): the temp table must carry `legacy_name`.**
+
+The clubs roster `INSERT` further down the file joins `ON l.name = c.league_name` (`seed.sql:161`) using the tokens `'UCL'` and `'EPL'` — the legacy `name` column, not `name_en`. If this task's `INSERT` writes `name = name_en`, then on a **fresh** database `leagues.name` becomes `'UEFA Champions League'`/`'Premier League'`, that join matches nothing, and **zero clubs are inserted**. Database B in the harness would come up empty and A-vs-B would fail.
+
+So `seed_leagues` carries the exact legacy token, the `INSERT` writes it into `name`, and the `UPDATE` never touches `name` at all (adopted rows keep production's drifted value, which is what keeps A-vs-C empty). Only two differ from `name_en`:
+
+| seed_key | legacy_name | name_en |
+|---|---|---|
+| `uefa-champions-league` | `UCL` | UEFA Champions League |
+| `premier-league` | `EPL` | Premier League |
+| all eight others | same as `name_en` | — |
+
+Keep `legacy_name` permanently, not just until Task 5. It keeps a fresh install byte-identical to today's, and it records what the column actually held rather than quietly redefining it.
 
 - [ ] **Step 1: Write the generator**
 
@@ -886,8 +900,12 @@ BEGIN
     END IF;
 END $$;
 
+-- `name` gets the LEGACY token, not name_en: the clubs roster below still joins
+-- ON l.name = c.league_name using 'UCL'/'EPL'. Writing name_en here matches nothing on a
+-- fresh database and inserts zero clubs. The UPDATE below deliberately never touches `name`,
+-- so an adopted row keeps whatever production holds (Hebrew, on 3 of 10 rows).
 INSERT INTO leagues (seed_key, name, name_en, name_he, name_ru, logo_url, sort_order, has_divisions)
-SELECT s.seed_key, s.name_en, s.name_en, s.name_he, s.name_ru, s.logo_url,
+SELECT s.seed_key, s.legacy_name, s.name_en, s.name_he, s.name_ru, s.logo_url,
        s.sort_order, s.has_divisions
 FROM seed_leagues s
 WHERE NOT EXISTS (SELECT 1 FROM leagues t WHERE t.seed_key = s.seed_key);
