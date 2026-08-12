@@ -513,6 +513,15 @@ button { font-family: inherit; }
   height: 100%;
   object-fit: contain;
 }
+/* Cancels transparent padding baked into a crest file, so it renders the same size as its unpadded
+   neighbours. logos.js adds this class and sets --logo-scale from PADDED_CRESTS, where the factor and
+   the way to measure it are documented. Scoped to the opted-in crests rather than applied to every
+   .logo img at scale(1): a no-op transform still promotes each of ~200 logos to its own composited
+   layer. The overflow is transparent padding, so nothing clips or overlaps the club name below. */
+.logo-padded img,
+.logo-padded .logo-recolored {
+  transform: scale(var(--logo-scale, 1));
+}
 /* Dark logos only: logos.js adds .logo-dark to clubs/leagues in its hand-picked OUTLINE_CLUBS set
    (a per-crest visual call, not a luminance rule -- see the comment there). In the dark theme
    (default) they get a thin crisp white outline so black/navy artwork (Juventus, dark national-team
