@@ -100,12 +100,16 @@ def test_league_names_survive_name_drift(conn):
 
 
 def test_admin_renamed_league_is_not_overwritten(conn):
-    # The other half of the same guard: filling an empty name_ru must never revert a name a human
-    # typed. COALESCE per column is what allows both at once.
+    # The other half of the same guard: an admin edit must never be reverted on the next boot.
+    # Since the 2026-08-12 seed_key/admin_edited redesign, protection is per-column and explicit
+    # (admin_edited), not implicit in "the value is already non-NULL" -- so this now records the
+    # edit the same way the admin API does. `name` itself is never touched by the leagues UPDATE
+    # regardless of admin_edited, so it needs no entry there.
     cur = conn.cursor()
     cur.execute(
         "UPDATE leagues SET name = 'ליגת האלופות שלי', name_he = 'ליגת האלופות שלי', "
-        "name_ru = 'МОЯ ЛИГА' WHERE name_en = 'UEFA Champions League'"
+        "name_ru = 'МОЯ ЛИГА', admin_edited = ARRAY['name_he', 'name_ru'] "
+        "WHERE name_en = 'UEFA Champions League'"
     )
     conn.commit()
     cur.close()
@@ -143,10 +147,12 @@ def test_seeded_world_cup_flag_is_replaced_by_the_crest(conn):
 
 
 def test_admin_curated_club_logo_survives_the_crest_seed(conn):
-    # The other half of that guard: widening it to accept the old flag must not widen it to accept
-    # anything an admin typed into the admin UI's Logo URL field.
+    # Protection is now admin_edited, not "logo_url IS NULL (or still the old flag) never matches
+    # a value an admin set" -- so the choice has to be recorded as an edit the same way the admin
+    # API does.
     cur = conn.cursor()
-    cur.execute("UPDATE clubs SET logo_url = 'https://example.test/my-brazil.png' WHERE name_en = 'Brazil'")
+    cur.execute("UPDATE clubs SET logo_url = 'https://example.test/my-brazil.png', "
+                "admin_edited = ARRAY['logo_url'] WHERE name_en = 'Brazil'")
     conn.commit()
     cur.close()
 
@@ -540,12 +546,13 @@ def test_europa_league_russian_rename_reaches_an_already_seeded_row(conn):
 
 
 def test_europa_league_russian_rename_leaves_an_admin_choice_alone(conn):
-    # Keyed on the exact superseded string, which is what makes it a correction rather than an
-    # unguarded overwrite of a Russian name an admin has since chosen.
+    # Protection is now admin_edited, not "this exact superseded string never matches an admin's
+    # own text" -- so the choice has to be recorded as an edit the same way the admin API does.
     admin_choice = 'Еврокубок'
     cur = conn.cursor()
     cur.execute(
-        "UPDATE leagues SET name_ru = %s WHERE name_en = 'UEFA Europa League'",
+        "UPDATE leagues SET name_ru = %s, admin_edited = ARRAY['name_ru'] "
+        "WHERE name_en = 'UEFA Europa League'",
         (admin_choice,),
     )
     conn.commit()
@@ -636,15 +643,17 @@ def test_no_club_is_in_both_european_competitions(conn):
 
 
 def test_europa_league_link_does_not_overwrite_an_admin_set_second_league(conn):
-    # The link statement is guarded on `domestic_league_id IS NULL`, unlike the UCL blocks, because
-    # that column IS admin-writable (PATCH /api/admin/clubs/<id>, and the admin UI's continental
-    # buttons). Without the guard, re-running seed.sql -- which init_db does on every pod boot --
-    # would silently move a club an admin had put in the other competition.
+    # domestic_league_id IS admin-writable (PATCH /api/admin/clubs/<id>, and the admin UI's
+    # continental-competition buttons), so it yields to admin_edited like the name columns do --
+    # the same mechanism as everything else here, not a guard specific to this column. Without
+    # recording the edit, re-running seed.sql -- which init_db does on every pod boot -- would
+    # silently move a club an admin had put in the other competition.
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Champions League'")
     ucl_id = cur.fetchone()[0]
     cur.execute(
-        "UPDATE clubs SET domestic_league_id = %s WHERE name_en = 'Juventus'", (ucl_id,)
+        "UPDATE clubs SET domestic_league_id = %s, admin_edited = ARRAY['domestic_league_id'] "
+        "WHERE name_en = 'Juventus'", (ucl_id,)
     )
     conn.commit()
     cur.close()
@@ -654,6 +663,76 @@ def test_europa_league_link_does_not_overwrite_an_admin_set_second_league(conn):
     cur = conn.cursor()
     cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
     assert cur.fetchone()[0] == ucl_id, 'seed.sql overwrote an admin-set second league'
+    cur.close()
+
+
+def test_europa_league_link_is_re_applied_after_a_raw_clear(conn):
+    # The negative case the positive test above doesn't cover: a raw clear of domestic_league_id
+    # that does NOT record admin_edited (unlike an admin PATCH, which always does) writes exactly
+    # the state the seed statement's ELSE branch fills, so seed.sql re-links the club on the next
+    # backend pod boot -- init_db runs on every one. Roster/link membership for the clubs seed.sql
+    # names is owned by seed.sql; a removal made outside admin_edited-tracked channels does not
+    # stick. This is the behaviour test_removing_a_seeded_club_from_the_europa_league_is_re_applied
+    # used to pin before Task 7 inverted whole-club deletion; that inversion left this narrower,
+    # still-live case with no direct test. See
+    # docs/design/2026-08-12-seed-sql-declarative-design.md.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Europa League'")
+    uel_id = cur.fetchone()[0]
+    cur.execute("UPDATE clubs SET domestic_league_id = NULL WHERE name_en = 'Juventus'")
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == uel_id
+    cur.close()
+
+
+def test_league_move_does_not_overwrite_an_admin_set_league(conn):
+    # I1: league_id (which league a club is filed under) is admin-writable via
+    # PATCH /api/admin/clubs/<id>, the same as domestic_league_id above, so it must yield to
+    # admin_edited the same way -- seed.sql used to overwrite league_id unconditionally with no
+    # guard at all, which would silently revert an admin's league move on every pod boot.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute(
+        "UPDATE clubs SET league_id = %s, admin_edited = ARRAY['league_id'] "
+        "WHERE name_en = 'Juventus'", (la_liga_id,)
+    )
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == la_liga_id, 'seed.sql overwrote an admin-set league'
+    cur.close()
+
+
+def test_league_id_is_re_applied_after_a_raw_move(conn):
+    # The negative case the positive test above doesn't cover: a raw change to league_id that
+    # does NOT record admin_edited (unlike an admin PATCH, which always does) writes exactly
+    # the state the seed statement's ELSE branch fills, so seed.sql moves the club back to its
+    # seeded league on the next backend pod boot -- init_db runs on every one.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'Serie A'")
+    serie_a_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'La Liga'")
+    la_liga_id = cur.fetchone()[0]
+    cur.execute("UPDATE clubs SET league_id = %s WHERE name_en = 'Juventus'", (la_liga_id,))
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == serie_a_id
     cur.close()
 
 
@@ -692,9 +771,14 @@ def test_league_emblem_correction_reaches_an_already_seeded_row(conn, name_en, s
 
 @pytest.mark.parametrize('name_en, superseded, expected', SELF_HOSTED_LEAGUE_EMBLEMS)
 def test_league_emblem_correction_leaves_an_admin_choice_alone(conn, name_en, superseded, expected):
+    # Protection is now admin_edited, not "logo_url IS NULL never matches a value an admin set" --
+    # so the choice has to be recorded as an edit the same way the admin API does.
     admin_choice = 'https://example.invalid/admins-own-emblem.svg'
     cur = conn.cursor()
-    cur.execute('UPDATE leagues SET logo_url = %s WHERE name_en = %s', (admin_choice, name_en))
+    cur.execute(
+        "UPDATE leagues SET logo_url = %s, admin_edited = ARRAY['logo_url'] WHERE name_en = %s",
+        (admin_choice, name_en),
+    )
     conn.commit()
     cur.close()
 
@@ -729,10 +813,12 @@ def test_france_crest_correction_reaches_an_already_seeded_row(conn):
 
 
 def test_france_crest_correction_leaves_an_admin_chosen_crest_alone(conn):
-    # Keyed on the exact superseded URL, so it is a correction rather than an unguarded overwrite.
+    # Protection is now admin_edited, not "this exact superseded URL never matches an admin's own
+    # choice" -- so the choice has to be recorded as an edit the same way the admin API does.
     admin_choice = 'https://example.invalid/admins-own-france.svg'
     cur = conn.cursor()
-    cur.execute("UPDATE clubs SET logo_url = %s WHERE name_en = 'France'", (admin_choice,))
+    cur.execute("UPDATE clubs SET logo_url = %s, admin_edited = ARRAY['logo_url'] "
+                "WHERE name_en = 'France'", (admin_choice,))
     conn.commit()
     cur.close()
 
@@ -751,25 +837,277 @@ def test_no_seeded_logo_points_at_the_dead_france_file(conn):
     cur.close()
 
 
-def test_removing_a_seeded_club_from_the_europa_league_is_re_applied(conn):
-    # The other half of the guard's behaviour, pinned because it is the surprising half: clearing the
-    # link writes NULL, which is precisely the state the seed statement fills, so a removal made
-    # through the admin UI comes back on the next backend pod boot. Roster membership for the clubs
-    # seed.sql names is owned by seed.sql; dropping one for good means editing that list. Asserted
-    # rather than left implicit -- if this ever changes it should be a deliberate change, not a
-    # discovery made in production.
+SEEDED_TABLES = ('leagues', 'clubs', 'previous_parties', 'upcoming_parties')
+
+
+def test_seed_provenance_columns_exist(conn):
+    """seed_key is immutable identity; admin_edited is column-level provenance.
+
+    Both replace inference from display names, which the admin UI and seed.sql
+    both rewrite -- 104 of 212 production clubs carry a drifted legacy `name`.
+    """
     cur = conn.cursor()
-    cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Europa League'")
-    uel_id = cur.fetchone()[0]
-    cur.execute("UPDATE clubs SET domestic_league_id = NULL WHERE name_en = 'Juventus'")
-    conn.commit()
+    for table in SEEDED_TABLES:
+        cur.execute(
+            'SELECT column_name, data_type, is_nullable, column_default '
+            'FROM information_schema.columns '
+            'WHERE table_name = %s AND column_name IN (%s, %s)',
+            (table, 'seed_key', 'admin_edited'))
+        found = {r[0]: r for r in cur.fetchall()}
+        assert 'seed_key' in found, f'{table} is missing seed_key'
+        assert 'admin_edited' in found, f'{table} is missing admin_edited'
+        # data_type: without this, changing admin_edited from TEXT[] to plain TEXT (kept
+        # NOT NULL DEFAULT '') still passed every other assertion here.
+        assert found['seed_key'][1] == 'text', f'{table}.seed_key must be text'
+        assert found['admin_edited'][1] == 'ARRAY', f'{table}.admin_edited must be an array type'
+        # seed_key must stay nullable: NULL is what marks an admin-created row, and the
+        # declarative DELETE a later task adds keys on `seed_key IS NOT NULL` to avoid ever
+        # deleting a row seed.sql does not own. NOT NULL here would break every admin-created row.
+        assert found['seed_key'][2] == 'YES', f'{table}.seed_key must stay nullable'
+        assert found['admin_edited'][2] == 'NO', f'{table}.admin_edited must be NOT NULL'
+        assert found['admin_edited'][3] is not None, \
+            f'{table}.admin_edited needs a default, or every insert must name it'
     cur.close()
+
+
+def test_seed_key_uidx_is_partial(conn):
+    """The four seed_key unique indexes must carry the `seed_key IS NOT NULL` predicate.
+
+    A plain (non-partial) UNIQUE index already permits unlimited NULLs -- Postgres treats
+    NULLs as distinct for uniqueness purposes -- so a behavioural test that only inserts two
+    NULLs and checks they coexist cannot tell a partial index from a plain one. This asserts
+    the index DEFINITION carries the predicate, which is the only way to pin the intent that
+    NULL means "not seed-owned", not merely an accident of NULL comparison semantics.
+    """
+    cur = conn.cursor()
+    for table in SEEDED_TABLES:
+        cur.execute(
+            "SELECT indexdef FROM pg_indexes WHERE indexname = %s",
+            (f'{table}_seed_key_uidx',))
+        row = cur.fetchone()
+        assert row is not None, f'{table}_seed_key_uidx does not exist'
+        assert 'WHERE (seed_key IS NOT NULL)' in row[0], \
+            f'{table}_seed_key_uidx is missing its partial predicate: {row[0]}'
+    cur.close()
+
+
+def test_seed_key_is_unique_but_allows_admin_created_rows(conn):
+    """NULL seed_key means "created through the admin UI", and seed.sql ignores those.
+
+    So the index must be partial: many NULLs allowed, duplicates of a real key not. (The
+    "many NULLs allowed" half holds for any unique index, partial or not -- Postgres treats
+    NULLs as distinct -- so this test only pins the "duplicates of a real key are rejected"
+    half; test_seed_key_uidx_is_partial above is what actually distinguishes partial from
+    plain.)
+    """
+    cur = conn.cursor()
+    # Assign the key explicitly rather than reading one from the table: this task adds the
+    # column but nothing populates it until Task 4, so a SELECT ... WHERE seed_key IS NOT NULL
+    # returns no rows here and the test would fail on a TypeError instead of its assertion.
+    cur.execute("INSERT INTO leagues (name, name_en) VALUES ('Placeholder A', 'Placeholder A')")
+    cur.execute("INSERT INTO leagues (name, name_en) VALUES ('Placeholder B', 'Placeholder B')")
+    conn.commit()  # two NULL seed_keys coexist
+
+    cur.execute("UPDATE leagues SET seed_key = 'placeholder-a' WHERE name_en = 'Placeholder A'")
+    conn.commit()
+
+    with pytest.raises(psycopg2.errors.UniqueViolation):
+        cur.execute("UPDATE leagues SET seed_key = 'placeholder-a' WHERE name_en = 'Placeholder B'")
+    conn.rollback()
+    cur.close()
+
+
+# test_removing_a_seeded_club_from_the_europa_league_is_re_applied inverted here: removal is now
+# declarative (a club seed.sql no longer names is deleted, guarded on seed_key IS NOT NULL and on
+# no vote referencing it) instead of a link that a guarded UPDATE silently re-applied. See
+# docs/design/2026-08-12-seed-sql-declarative-design.md. The narrower case that test used to pin --
+# a raw domestic_league_id clear that skips admin_edited being re-applied -- is unchanged and still
+# live; test_europa_league_link_is_re_applied_after_a_raw_clear (below, next to its positive-case
+# counterpart) now pins it directly.
+
+
+def test_seeded_club_absent_from_the_table_is_removed(conn):
+    """Removal now sticks. Previously a guarded link statement re-applied it on the next
+    boot, which test_removing_a_seeded_club_from_the_europa_league_is_re_applied pinned."""
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE seed_key = 'la-liga'")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, seed_key, name, name_en) "
+                "VALUES (%s, 'ruritania-united', 'Ruritania United', 'Ruritania United')",
+                (league_id,))
+    conn.commit()
 
     db_module.init_db(conn)
 
-    cur = conn.cursor()
-    cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
-    assert cur.fetchone()[0] == uel_id
+    cur.execute("SELECT count(*) FROM clubs WHERE seed_key = 'ruritania-united'")
+    assert cur.fetchone()[0] == 0
     cur.close()
 
+
+def test_a_voted_for_club_is_never_deleted(conn):
+    """vote_clubs.club_id has no ON DELETE CASCADE, so deleting a voted-for club raises
+    inside init_db -- a CrashLoopBackOff on every pod boot, not one failed request."""
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE seed_key = 'la-liga'")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, seed_key, name, name_en) "
+                "VALUES (%s, 'ruritania-city', 'Ruritania City', 'Ruritania City') "
+                "RETURNING id", (league_id,))
+    club_id = cur.fetchone()[0]
+    cur.execute(
+        "INSERT INTO votes (previous_vote_status, upcoming_vote_status, cookie_token) "
+        "VALUES ('did_not_vote', 'undecided', 'ruritania-city-vote') RETURNING id")
+    vote_id = cur.fetchone()[0]
+    cur.execute('INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)',
+                (vote_id, club_id, league_id))
+    conn.commit()
+
+    db_module.init_db(conn)  # must not raise
+
+    cur.execute('SELECT count(*) FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == 1
+    cur.close()
+
+
+def test_seed_overwrites_a_column_the_admin_never_touched(conn):
+    """The guarantee the whole redesign exists for, and which nothing used to test.
+
+    Under the old COALESCE/IS NULL guards this was FALSE: editing a literal reached a
+    fresh database only, so every corrected value needed its own patch statement.
+    """
+    cur = conn.cursor()
+    cur.execute("UPDATE leagues SET name_ru = 'stale value' WHERE seed_key = 'la-liga'")
+    conn.commit()
+
+    db_module.init_db(conn)  # what happens on every backend pod boot
+
+    cur.execute("SELECT name_ru FROM leagues WHERE seed_key = 'la-liga'")
+    assert cur.fetchone()[0] == 'Ла Лига'
+    cur.close()
+
+
+def test_seed_leaves_an_admin_edited_column_alone(conn):
+    cur = conn.cursor()
+    cur.execute("UPDATE leagues SET name_ru = 'Моя Лига', admin_edited = ARRAY['name_ru'] "
+                "WHERE seed_key = 'la-liga'")
+    conn.commit()
+
+    db_module.init_db(conn)
+
+    cur.execute("SELECT name_ru, name_he FROM leagues WHERE seed_key = 'la-liga'")
+    name_ru, name_he = cur.fetchone()
+    assert name_ru == 'Моя Лига', 'an admin edit was overwritten'
+    assert name_he == 'לה ליגה', 'provenance must be per-column, not per-row'
+    cur.close()
+
+
+def test_every_league_is_adopted_by_seed_key(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT count(*) FROM leagues WHERE seed_key IS NULL')
+    assert cur.fetchone()[0] == 0
+    cur.execute('SELECT count(DISTINCT seed_key), count(*) FROM leagues')
+    distinct, total = cur.fetchone()
+    assert distinct == total
+    cur.close()
+
+
+def test_dual_league_clubs_keep_both_leagues(conn):
+    """A club playing two competitions must keep league_id AND domestic_league_id.
+
+    _VOTE_LEAGUES_TOUCHED_CTE in services/worker/rollups.py derives league scope from both
+    columns, so losing one silently under-counts a multi-league ballot.
+    """
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT l.seed_key, d.seed_key FROM clubs c
+        JOIN leagues l ON l.id = c.league_id
+        LEFT JOIN leagues d ON d.id = c.domestic_league_id
+        WHERE c.seed_key = 'bayern-munich'""")
+    league, domestic = cur.fetchone()
+    assert league == 'uefa-champions-league'
+    assert domestic == 'bundesliga'
+    cur.close()
+
+
+def test_nations_league_divisions_survive(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT group_label FROM clubs WHERE seed_key = 'france'")
+    assert cur.fetchone()[0] == 'A'
+    cur.execute("SELECT count(*) FROM clubs WHERE group_label IS NOT NULL")
+    assert cur.fetchone()[0] > 0
+    cur.close()
+
+
+def test_admin_created_club_survives_reseeding(conn):
+    """seed_key IS NULL means the admin created it, so declarative removal must skip it."""
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE seed_key = 'la-liga'")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, name, name_en) "
+                "VALUES (%s, 'Ruritania FC', 'Ruritania FC') RETURNING id", (league_id,))
+    club_id = cur.fetchone()[0]
+    conn.commit()
+
+    db_module.init_db(conn)
+
+    cur.execute('SELECT count(*) FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == 1, 'seed.sql deleted a club it does not own'
+    cur.close()
+
+
+def test_club_seed_overwrites_a_column_the_admin_never_touched(conn):
+    """The clubs equivalent of test_seed_overwrites_a_column_the_admin_never_touched.
+
+    Under the old COALESCE/IS NULL guards this was FALSE for clubs too: editing a literal
+    reached a fresh database only, so every corrected value needed its own patch statement
+    (the France crest correction, the Kiryat Yam correction, ...). Clubs previously only had
+    this guarantee pinned indirectly, through value-specific tests -- this is the direct one.
+    """
+    cur = conn.cursor()
+    cur.execute("UPDATE clubs SET name_ru = 'stale value' WHERE seed_key = 'bayern-munich'")
+    conn.commit()
+
+    db_module.init_db(conn)  # what happens on every backend pod boot
+
+    cur.execute("SELECT name_ru FROM clubs WHERE seed_key = 'bayern-munich'")
+    assert cur.fetchone()[0] == 'Бавария'
+    cur.close()
+
+
+def test_other_has_no_ideology(conn):
+    """'אחר' is a catch-all ballot option, not a party -- every axis stays NULL."""
+    cur = conn.cursor()
+    cur.execute("SELECT bloc, economic, security, religiosity, sector "
+                "FROM previous_parties WHERE name_he = 'אחר'")
+    assert all(v is None for v in cur.fetchone())
+    cur.close()
+
+
+def test_ideology_edits_reach_an_already_seeded_database(conn):
+    """The six ideology columns stay UNGUARDED -- a guard makes every later edit
+    unreachable in production, which is always already seeded.
+
+    bloc is 'opposition' here, not the brief's literal 'wrong': previous_parties_bloc_check
+    (schema.sql) rejects any value outside ('bibi', 'opposition', 'unaligned'), so a genuinely
+    invalid value can never reach the table to prove the point with -- the UPDATE itself would
+    fail before init_db ever ran. 'opposition' is still wrong for הליכוד (seeded as 'bibi'), so
+    it exercises the same unguarded-overwrite behaviour without fighting the CHECK constraint.
+    """
+    cur = conn.cursor()
+    cur.execute("UPDATE previous_parties SET economic = -3, bloc = 'opposition' "
+                "WHERE name_he = 'הליכוד'")
+    conn.commit()
+
+    db_module.init_db(conn)
+
+    cur.execute("SELECT economic, bloc FROM previous_parties WHERE name_he = 'הליכוד'")
+    assert cur.fetchone() == (1, 'bibi')
+    cur.close()
+
+
+def test_party_lineage_is_rebuilt_by_key(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT count(*) FROM party_lineage')
+    assert cur.fetchone()[0] == 14
+    cur.close()
 

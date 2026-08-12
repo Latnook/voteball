@@ -37,13 +37,17 @@ This file records how those decisions were applied to each party.
    state and will catch a party that loses its `bloc`/`sector`, or one that gains a religiosity
    score while still whitelisted as NULL-by-design.
 
-**Why the classification `UPDATE`s are unguarded.** The name and `logo_url` statements in `seed.sql`
-end in `AND ... IS NULL`, so they only fire on a fresh database. The classification statements
-deliberately do not. Production is always already seeded, so a guard would make every edit to these
-columns unreachable there — the whole reason the file previously grew by appending. Unguarded is
-safe for these six columns specifically because **nothing in the app ever writes them**: the admin
-party endpoints only rename. Names and logos keep their guards for exactly the opposite reason —
-admins *do* edit those live, and an unguarded write would destroy their edits.
+**Why the classification `UPDATE`s are unconditional.** The name and `logo_url` columns in `seed.sql`
+are admin-ownable: each row carries an `admin_edited TEXT[]` column listing which of those columns a
+human has actually changed through the admin UI, and the per-table `UPDATE` skips writing a column
+already listed there. The six classification columns carry no such check — they are written every
+time, unconditionally. Production is always already seeded, so a guard would make every edit to these
+columns unreachable there — the whole reason the file previously grew by appending patch statements.
+Unconditional is safe for these six columns specifically because **nothing in the app ever writes
+them**: the admin party endpoints only rename. Names and logos are the opposite case for exactly the
+opposite reason — admins *do* edit those live, and `admin_edited` is what stops a re-seed from
+destroying that edit. See `services/backend/CLAUDE.md` and
+`docs/design/2026-08-12-seed-sql-declarative-design.md` for the full mechanism.
 
 ---
 
@@ -63,8 +67,8 @@ information, not an omission.
 
 > **Verify this section rather than trusting it** — it is the part most likely to drift:
 > ```bash
-> grep -A40 'AS v(name_he, bloc, economic, security, religiosity, sector, tags)' \
->   services/backend/seed.sql
+> grep -A20 'INSERT INTO seed_previous_parties VALUES' services/backend/seed.sql
+> grep -A20 'INSERT INTO seed_upcoming_parties VALUES' services/backend/seed.sql
 > ```
 > When the tables here and `seed.sql` disagree, **`seed.sql` is right.**
 
@@ -1483,11 +1487,16 @@ same reasoning as their upcoming counterpart at an earlier stage; only the diffe
 
 ## Logos
 
-Logo URLs are guarded on `IS NULL` because admins edit them live through the admin UI, and those
-edits exist only in RDS until someone backfills them into `seed.sql`.
+`logo_url` is admin-ownable: `seed.sql` writes it on every boot unless the row's `admin_edited` array
+already lists `logo_url`, which is how an admin's live edit (through the admin UI) survives a re-seed
+— those edits exist only in RDS until someone backfills them into `seed.sql`. (Before 2026-08-12 this
+was a per-statement `AND logo_url IS NULL` guard instead; same intent, different mechanism — see
+`docs/design/2026-08-12-seed-sql-declarative-design.md`.)
 
-**Three corrections are unguarded** and therefore *do* overwrite an admin-edited logo for those rows.
-That is a deliberate trade — each replaced a value that was actively wrong:
+**Three corrections shipped as literal replacements in the seeded value itself**, which is what let
+them reach an admin-edited row too (this only matters for a row whose `admin_edited` does *not* list
+`logo_url` — the common case, since these are the exception). Each replaced a value that was actively
+wrong:
 
 - **La Liga** — swapped the Wikimedia wordmark SVG for LaLiga's own "LL" monogram PNG, which suits
   the small square logo slot better; a wide wordmark renders tiny there.

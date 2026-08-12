@@ -141,6 +141,53 @@ ALTER TABLE previous_parties ADD COLUMN IF NOT EXISTS religiosity INTEGER
 ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS religiosity INTEGER
     CHECK (religiosity BETWEEN -3 AND 3);
 
+-- Stable seed identity (2026-08-12). Every statement in seed.sql matches on seed_key and
+-- nothing else. Display names cannot serve as identity: the admin endpoints overwrite the
+-- legacy `name` column with name_he on ANY save (including a no-op one), and seed.sql used
+-- to rewrite its own name_en literals -- 104 of 212 production clubs and 3 of 10 leagues
+-- carry a drifted `name` because of it. seed_key is never displayed, never writable through
+-- the API and never changes once assigned.
+--
+-- NULL means "created through the admin UI", which is what makes seed.sql's declarative
+-- removal safe: it only ever deletes rows it owns. The index is partial so it only covers
+-- rows that actually carry a key, stating that intent explicitly -- NOT because a plain
+-- unique index would reject multiple NULLs; Postgres treats NULLs as distinct for
+-- uniqueness, so a plain unique index already permits unlimited NULLs.
+ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS seed_key TEXT;
+ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS seed_key TEXT;
+ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS seed_key TEXT;
+ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS seed_key TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS leagues_seed_key_uidx          ON leagues (seed_key)          WHERE seed_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS clubs_seed_key_uidx            ON clubs (seed_key)            WHERE seed_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS previous_parties_seed_key_uidx ON previous_parties (seed_key) WHERE seed_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS upcoming_parties_seed_key_uidx ON upcoming_parties (seed_key) WHERE seed_key IS NOT NULL;
+
+-- Column-level provenance (2026-08-12). Lists the columns a human has actually CHANGED
+-- through the admin UI; seed.sql overwrites every column not listed here.
+--
+-- This inverts the old rule. Names and logo_url used to be guarded with COALESCE/IS NULL so
+-- they could only fill an empty cell -- which meant editing a literal reached a fresh
+-- database only, and moving an already-seeded value needed a separate patch statement
+-- appended to the file. There were about twenty such patches. With the exception recorded
+-- explicitly, the base statement can be authoritative and no patch is needed.
+--
+-- Empty for every existing row on purpose: verified 2026-08-12 that production and a fresh
+-- seed differ in 107 fields, ALL of them the vestigial legacy `name` column, so no live
+-- admin edit exists to preserve.
+ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS admin_edited TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS admin_edited TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS admin_edited TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE upcoming_parties  ADD COLUMN IF NOT EXISTS admin_edited TEXT[] NOT NULL DEFAULT '{}';
+
+-- Moved here from seed.sql (design decision 6): this is a migration, and schema.sql is the
+-- migration file. It must run BEFORE seed.sql's adoption statements, which key on name_en
+-- and name_he -- a database restored from a snapshot old enough to predate those columns
+-- would otherwise have every row fail to adopt and raise the duplicate guard.
+UPDATE leagues           SET name_en = name WHERE name_en IS NULL;
+UPDATE clubs             SET name_en = name WHERE name_en IS NULL;
+UPDATE previous_parties  SET name_he = name WHERE name_he IS NULL;
+UPDATE upcoming_parties  SET name_he = name WHERE name_he IS NULL;
+
 -- Continuity, independent of ideology: which upcoming party continues which previous party. A split
 -- is multiple rows sharing one previous_party_id; a merge is multiple rows sharing one
 -- upcoming_party_id; a party with no row on either side is a genuine dead end or a fresh entrant.
