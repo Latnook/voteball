@@ -751,6 +751,53 @@ def test_no_seeded_logo_points_at_the_dead_france_file(conn):
     cur.close()
 
 
+SEEDED_TABLES = ('leagues', 'clubs', 'previous_parties', 'upcoming_parties')
+
+
+def test_seed_provenance_columns_exist(conn):
+    """seed_key is immutable identity; admin_edited is column-level provenance.
+
+    Both replace inference from display names, which the admin UI and seed.sql
+    both rewrite -- 104 of 212 production clubs carry a drifted legacy `name`.
+    """
+    cur = conn.cursor()
+    for table in SEEDED_TABLES:
+        cur.execute(
+            'SELECT column_name, data_type, is_nullable, column_default '
+            'FROM information_schema.columns '
+            'WHERE table_name = %s AND column_name IN (%s, %s)',
+            (table, 'seed_key', 'admin_edited'))
+        found = {r[0]: r for r in cur.fetchall()}
+        assert 'seed_key' in found, f'{table} is missing seed_key'
+        assert 'admin_edited' in found, f'{table} is missing admin_edited'
+        assert found['admin_edited'][2] == 'NO', f'{table}.admin_edited must be NOT NULL'
+        assert found['admin_edited'][3] is not None, \
+            f'{table}.admin_edited needs a default, or every insert must name it'
+    cur.close()
+
+
+def test_seed_key_is_unique_but_allows_admin_created_rows(conn):
+    """NULL seed_key means "created through the admin UI", and seed.sql ignores those.
+
+    So the index must be partial: many NULLs allowed, duplicates of a real key not.
+    """
+    cur = conn.cursor()
+    # Assign the key explicitly rather than reading one from the table: this task adds the
+    # column but nothing populates it until Task 4, so a SELECT ... WHERE seed_key IS NOT NULL
+    # returns no rows here and the test would fail on a TypeError instead of its assertion.
+    cur.execute("INSERT INTO leagues (name, name_en) VALUES ('Placeholder A', 'Placeholder A')")
+    cur.execute("INSERT INTO leagues (name, name_en) VALUES ('Placeholder B', 'Placeholder B')")
+    conn.commit()  # two NULL seed_keys coexist -- the partial index must allow this
+
+    cur.execute("UPDATE leagues SET seed_key = 'placeholder-a' WHERE name_en = 'Placeholder A'")
+    conn.commit()
+
+    with pytest.raises(psycopg2.errors.UniqueViolation):
+        cur.execute("UPDATE leagues SET seed_key = 'placeholder-a' WHERE name_en = 'Placeholder B'")
+    conn.rollback()
+    cur.close()
+
+
 def test_removing_a_seeded_club_from_the_europa_league_is_re_applied(conn):
     # The other half of the guard's behaviour, pinned because it is the surprising half: clearing the
     # link writes NULL, which is precisely the state the seed statement fills, so a removal made
