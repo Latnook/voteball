@@ -487,6 +487,17 @@ button { font-family: inherit; }
   color: var(--muted);
 }
 
+/* The "just the league" card is appended after every club (renderTeamGrid) and spans every column,
+   so it reads as one league-wide option rather than as a member of the row it lands in. The span is
+   what keeps it out of a division: in the Nations League an unspanned card sits inside the last
+   division's block, where a league-wide choice looks like a League D entry. Keyed on the attribute
+   rather than .utility-card because the party grids use that class for up to three cards each
+   ("Other", "Did not vote", "Undecided"), which stay club-sized. */
+.pick-card[data-just-league] {
+  grid-column: 1 / -1;
+  margin-top: 0.4rem;
+}
+
 /* ---------- Logos: real image or generated monogram ---------- */
 
 .logo {
