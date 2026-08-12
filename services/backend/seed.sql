@@ -357,26 +357,22 @@ WHERE t.seed_key = s.seed_key;
 UPDATE leagues SET name_en = name WHERE name_en IS NULL;
 UPDATE clubs   SET name_en = name WHERE name_en IS NULL;
 
--- Relegation removals (2026-08-04): Hapoel Hadera and Hapoel Nof HaGalil dropped out of Liga Leumit
--- to the third tier, which this app does not seed, and Maccabi Kiryat Gat / Maccabi Akhi Nazareth
--- took their places in the roster above. Dropping the two from the INSERT's VALUES list is only half
--- the change: every statement in this file runs against a database that is ALREADY seeded, so
--- deleting a literal there reaches a *fresh* database only -- production keeps both clubs forever.
--- Removing a club therefore needs its own explicit statement, and this is the first one in the file.
+-- Removal is declarative: a club this file no longer names is deleted. Two guards, both
+-- load-bearing.
 --
--- The NOT EXISTS guard is what keeps the app bootable, and it is not optional. vote_clubs.club_id
--- references clubs(id) with NO ON DELETE CASCADE (schema.sql), so deleting a club somebody has voted
--- for raises a foreign-key violation *inside init_db* -- which runs on every backend pod boot, so the
--- failure is a CrashLoopBackOff on startup, not one failed request. The guard also encodes the policy
--- the admin API already enforces: DELETE /api/admin/clubs/<id> returns 409 while any vote references
--- the club (see delete_club_route in app.py). A roster tidy-up must never destroy a ballot; if either
--- club ever does pick up votes, it stays and the admin UI's vote-reassignment flow is the way out.
+-- seed_key IS NOT NULL protects clubs the admin created -- this file does not own them and
+-- must not delete them for the crime of being absent from it.
 --
--- Keyed on name_en, the stable identity used by every other guarded statement here -- so a club an
--- admin has renamed through the live UI is left alone rather than silently deleted. Idempotent: a
--- no-op once the rows are gone, which is why it can run on every boot forever.
+-- The vote guard keeps the app bootable. vote_clubs.club_id references clubs(id) with NO
+-- ON DELETE CASCADE (schema.sql), so deleting a club somebody voted for raises inside
+-- init_db, which runs on every backend pod boot -- a CrashLoopBackOff on startup rather
+-- than one failed request. It also encodes the policy the admin API already enforces:
+-- DELETE /api/admin/clubs/<id> returns 409 while any vote references the club. A roster
+-- tidy-up must never destroy a ballot; if a dropped club has votes it stays, and the admin
+-- UI's vote-reassignment flow is the way out.
 DELETE FROM clubs c
-WHERE c.name_en IN ('Hapoel Hadera', 'Hapoel Nof HaGalil')
+WHERE c.seed_key IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM seed_clubs s WHERE s.seed_key = c.seed_key)
   AND NOT EXISTS (SELECT 1 FROM vote_clubs vc WHERE vc.club_id = c.id);
 
 -- ---------------------------------------------------------------------------
@@ -583,21 +579,6 @@ SELECT p.id, u.id FROM seed_party_lineage s
 JOIN previous_parties p ON p.seed_key = s.previous_key
 JOIN upcoming_parties u ON u.seed_key = s.upcoming_key
 ON CONFLICT DO NOTHING;
-
--- Strip Wikipedia's utm_* referral params from stored logo URLs. 26 of the seeded URLs were copied
--- out of he.wikipedia.org with "?utm_source=he.wikipedia.org&utm_campaign=index&utm_content=original"
--- attached; upload.wikimedia.org ignores the query string when serving the file, so the params did
--- nothing except send referral tracking to Wikimedia on every page load.
---
--- This has to be its own statement, and it has to be unguarded. The literals above are all guarded
--- by "logo_url IS NULL", so cleaning them at the source only ever reaches a FRESH database -- an
--- already-seeded one keeps the cruft forever. Unguarded is safe here in a way it would not be for a
--- whole URL: it only ever removes a meaningless suffix, so an admin-curated logo keeps pointing at
--- the same image. Idempotent -- the LIKE makes it a no-op once clean.
-UPDATE leagues          SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
-UPDATE clubs            SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
-UPDATE previous_parties SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
-UPDATE upcoming_parties SET logo_url = split_part(logo_url, '?utm_source=', 1) WHERE logo_url LIKE '%?utm_source=%';
 
 -- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
 -- left commented rather than deleted so it's a one-line restore if/when it should come back.

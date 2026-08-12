@@ -847,25 +847,52 @@ def test_seed_key_is_unique_but_allows_admin_created_rows(conn):
     cur.close()
 
 
-def test_removing_a_seeded_club_from_the_europa_league_is_re_applied(conn):
-    # The other half of the guard's behaviour, pinned because it is the surprising half: clearing the
-    # link writes NULL, which is precisely the state the seed statement fills, so a removal made
-    # through the admin UI comes back on the next backend pod boot. Roster membership for the clubs
-    # seed.sql names is owned by seed.sql; dropping one for good means editing that list. Asserted
-    # rather than left implicit -- if this ever changes it should be a deliberate change, not a
-    # discovery made in production.
+# test_removing_a_seeded_club_from_the_europa_league_is_re_applied inverted here: removal is now
+# declarative (a club seed.sql no longer names is deleted, guarded on seed_key IS NOT NULL and on
+# no vote referencing it) instead of a link that a guarded UPDATE silently re-applied. See
+# docs/design/2026-08-12-seed-sql-declarative-design.md.
+
+
+def test_seeded_club_absent_from_the_table_is_removed(conn):
+    """Removal now sticks. Previously a guarded link statement re-applied it on the next
+    boot, which test_removing_a_seeded_club_from_the_europa_league_is_re_applied pinned."""
     cur = conn.cursor()
-    cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Europa League'")
-    uel_id = cur.fetchone()[0]
-    cur.execute("UPDATE clubs SET domestic_league_id = NULL WHERE name_en = 'Juventus'")
+    cur.execute("SELECT id FROM leagues WHERE seed_key = 'la-liga'")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, seed_key, name, name_en) "
+                "VALUES (%s, 'ruritania-united', 'Ruritania United', 'Ruritania United')",
+                (league_id,))
     conn.commit()
-    cur.close()
 
     db_module.init_db(conn)
 
+    cur.execute("SELECT count(*) FROM clubs WHERE seed_key = 'ruritania-united'")
+    assert cur.fetchone()[0] == 0
+    cur.close()
+
+
+def test_a_voted_for_club_is_never_deleted(conn):
+    """vote_clubs.club_id has no ON DELETE CASCADE, so deleting a voted-for club raises
+    inside init_db -- a CrashLoopBackOff on every pod boot, not one failed request."""
     cur = conn.cursor()
-    cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
-    assert cur.fetchone()[0] == uel_id
+    cur.execute("SELECT id FROM leagues WHERE seed_key = 'la-liga'")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, seed_key, name, name_en) "
+                "VALUES (%s, 'ruritania-city', 'Ruritania City', 'Ruritania City') "
+                "RETURNING id", (league_id,))
+    club_id = cur.fetchone()[0]
+    cur.execute(
+        "INSERT INTO votes (previous_vote_status, upcoming_vote_status, cookie_token) "
+        "VALUES ('did_not_vote', 'undecided', 'ruritania-city-vote') RETURNING id")
+    vote_id = cur.fetchone()[0]
+    cur.execute('INSERT INTO vote_clubs (vote_id, club_id, league_id) VALUES (%s, %s, %s)',
+                (vote_id, club_id, league_id))
+    conn.commit()
+
+    db_module.init_db(conn)  # must not raise
+
+    cur.execute('SELECT count(*) FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == 1
     cur.close()
 
 
