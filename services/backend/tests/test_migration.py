@@ -147,10 +147,12 @@ def test_seeded_world_cup_flag_is_replaced_by_the_crest(conn):
 
 
 def test_admin_curated_club_logo_survives_the_crest_seed(conn):
-    # The other half of that guard: widening it to accept the old flag must not widen it to accept
-    # anything an admin typed into the admin UI's Logo URL field.
+    # Protection is now admin_edited, not "logo_url IS NULL (or still the old flag) never matches
+    # a value an admin set" -- so the choice has to be recorded as an edit the same way the admin
+    # API does.
     cur = conn.cursor()
-    cur.execute("UPDATE clubs SET logo_url = 'https://example.test/my-brazil.png' WHERE name_en = 'Brazil'")
+    cur.execute("UPDATE clubs SET logo_url = 'https://example.test/my-brazil.png', "
+                "admin_edited = ARRAY['logo_url'] WHERE name_en = 'Brazil'")
     conn.commit()
     cur.close()
 
@@ -641,15 +643,17 @@ def test_no_club_is_in_both_european_competitions(conn):
 
 
 def test_europa_league_link_does_not_overwrite_an_admin_set_second_league(conn):
-    # The link statement is guarded on `domestic_league_id IS NULL`, unlike the UCL blocks, because
-    # that column IS admin-writable (PATCH /api/admin/clubs/<id>, and the admin UI's continental
-    # buttons). Without the guard, re-running seed.sql -- which init_db does on every pod boot --
-    # would silently move a club an admin had put in the other competition.
+    # domestic_league_id IS admin-writable (PATCH /api/admin/clubs/<id>, and the admin UI's
+    # continental-competition buttons), so it yields to admin_edited like the name columns do --
+    # the same mechanism as everything else here, not a guard specific to this column. Without
+    # recording the edit, re-running seed.sql -- which init_db does on every pod boot -- would
+    # silently move a club an admin had put in the other competition.
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Champions League'")
     ucl_id = cur.fetchone()[0]
     cur.execute(
-        "UPDATE clubs SET domestic_league_id = %s WHERE name_en = 'Juventus'", (ucl_id,)
+        "UPDATE clubs SET domestic_league_id = %s, admin_edited = ARRAY['domestic_league_id'] "
+        "WHERE name_en = 'Juventus'", (ucl_id,)
     )
     conn.commit()
     cur.close()
@@ -739,10 +743,12 @@ def test_france_crest_correction_reaches_an_already_seeded_row(conn):
 
 
 def test_france_crest_correction_leaves_an_admin_chosen_crest_alone(conn):
-    # Keyed on the exact superseded URL, so it is a correction rather than an unguarded overwrite.
+    # Protection is now admin_edited, not "this exact superseded URL never matches an admin's own
+    # choice" -- so the choice has to be recorded as an edit the same way the admin API does.
     admin_choice = 'https://example.invalid/admins-own-france.svg'
     cur = conn.cursor()
-    cur.execute("UPDATE clubs SET logo_url = %s WHERE name_en = 'France'", (admin_choice,))
+    cur.execute("UPDATE clubs SET logo_url = %s, admin_edited = ARRAY['logo_url'] "
+                "WHERE name_en = 'France'", (admin_choice,))
     conn.commit()
     cur.close()
 
@@ -902,6 +908,50 @@ def test_every_league_is_adopted_by_seed_key(conn):
     cur.execute('SELECT count(DISTINCT seed_key), count(*) FROM leagues')
     distinct, total = cur.fetchone()
     assert distinct == total
+    cur.close()
+
+
+def test_dual_league_clubs_keep_both_leagues(conn):
+    """A club playing two competitions must keep league_id AND domestic_league_id.
+
+    _VOTE_LEAGUES_TOUCHED_CTE in services/worker/rollups.py derives league scope from both
+    columns, so losing one silently under-counts a multi-league ballot.
+    """
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT l.seed_key, d.seed_key FROM clubs c
+        JOIN leagues l ON l.id = c.league_id
+        LEFT JOIN leagues d ON d.id = c.domestic_league_id
+        WHERE c.seed_key = 'bayern-munich'""")
+    league, domestic = cur.fetchone()
+    assert league == 'uefa-champions-league'
+    assert domestic == 'bundesliga'
+    cur.close()
+
+
+def test_nations_league_divisions_survive(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT group_label FROM clubs WHERE seed_key = 'france'")
+    assert cur.fetchone()[0] == 'A'
+    cur.execute("SELECT count(*) FROM clubs WHERE group_label IS NOT NULL")
+    assert cur.fetchone()[0] > 0
+    cur.close()
+
+
+def test_admin_created_club_survives_reseeding(conn):
+    """seed_key IS NULL means the admin created it, so declarative removal must skip it."""
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE seed_key = 'la-liga'")
+    league_id = cur.fetchone()[0]
+    cur.execute("INSERT INTO clubs (league_id, name, name_en) "
+                "VALUES (%s, 'Ruritania FC', 'Ruritania FC') RETURNING id", (league_id,))
+    club_id = cur.fetchone()[0]
+    conn.commit()
+
+    db_module.init_db(conn)
+
+    cur.execute('SELECT count(*) FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == 1, 'seed.sql deleted a club it does not own'
     cur.close()
 
 
