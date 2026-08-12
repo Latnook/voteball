@@ -78,6 +78,25 @@ def snapshot(dsn, include=(), exclude=()):
                 }
                 for row in rows
             }
+            if table == 'clubs':
+                # league_id/domestic_league_id are surrogate FKs, assigned independently in
+                # every database being compared (A, B and C each seed/adopt leagues in their
+                # own order) -- a raw-id diff would report a false regression on every run, the
+                # same reason `id` itself is excluded above. Resolve through leagues.name_en
+                # instead (not seed_key: the OLD schema this snapshot also reads, for database
+                # C, predates that column entirely). This is what makes the harness able to see
+                # _VOTE_LEAGUES_TOUCHED_CTE's two link columns at all -- previously neither was
+                # captured, so a seed.sql regression that dropped or moved a link produced an
+                # empty diff.
+                with conn.cursor() as lcur:
+                    lcur.execute(
+                        'SELECT c.name_en, l.name_en, d.name_en FROM clubs c '
+                        'JOIN leagues l ON l.id = c.league_id '
+                        'LEFT JOIN leagues d ON d.id = c.domestic_league_id')
+                    for club_name, league_name, domestic_name in lcur.fetchall():
+                        if club_name in out[table]:
+                            out[table][club_name]['league_name_en'] = league_name
+                            out[table][club_name]['domestic_league_name_en'] = domestic_name
         # party_lineage carries no natural key of its own; resolve it to party names
         # so it survives id reassignment between databases.
         with conn.cursor() as cur:

@@ -955,3 +955,22 @@ def test_admin_created_club_survives_reseeding(conn):
     cur.close()
 
 
+def test_club_seed_overwrites_a_column_the_admin_never_touched(conn):
+    """The clubs equivalent of test_seed_overwrites_a_column_the_admin_never_touched.
+
+    Under the old COALESCE/IS NULL guards this was FALSE for clubs too: editing a literal
+    reached a fresh database only, so every corrected value needed its own patch statement
+    (the France crest correction, the Kiryat Yam correction, ...). Clubs previously only had
+    this guarantee pinned indirectly, through value-specific tests -- this is the direct one.
+    """
+    cur = conn.cursor()
+    cur.execute("UPDATE clubs SET name_ru = 'stale value' WHERE seed_key = 'bayern-munich'")
+    conn.commit()
+
+    db_module.init_db(conn)  # what happens on every backend pod boot
+
+    cur.execute("SELECT name_ru FROM clubs WHERE seed_key = 'bayern-munich'")
+    assert cur.fetchone()[0] == 'Бавария'
+    cur.close()
+
+
