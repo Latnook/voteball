@@ -770,16 +770,49 @@ def test_seed_provenance_columns_exist(conn):
         found = {r[0]: r for r in cur.fetchall()}
         assert 'seed_key' in found, f'{table} is missing seed_key'
         assert 'admin_edited' in found, f'{table} is missing admin_edited'
+        # data_type: without this, changing admin_edited from TEXT[] to plain TEXT (kept
+        # NOT NULL DEFAULT '') still passed every other assertion here.
+        assert found['seed_key'][1] == 'text', f'{table}.seed_key must be text'
+        assert found['admin_edited'][1] == 'ARRAY', f'{table}.admin_edited must be an array type'
+        # seed_key must stay nullable: NULL is what marks an admin-created row, and the
+        # declarative DELETE a later task adds keys on `seed_key IS NOT NULL` to avoid ever
+        # deleting a row seed.sql does not own. NOT NULL here would break every admin-created row.
+        assert found['seed_key'][2] == 'YES', f'{table}.seed_key must stay nullable'
         assert found['admin_edited'][2] == 'NO', f'{table}.admin_edited must be NOT NULL'
         assert found['admin_edited'][3] is not None, \
             f'{table}.admin_edited needs a default, or every insert must name it'
     cur.close()
 
 
+def test_seed_key_uidx_is_partial(conn):
+    """The four seed_key unique indexes must carry the `seed_key IS NOT NULL` predicate.
+
+    A plain (non-partial) UNIQUE index already permits unlimited NULLs -- Postgres treats
+    NULLs as distinct for uniqueness purposes -- so a behavioural test that only inserts two
+    NULLs and checks they coexist cannot tell a partial index from a plain one. This asserts
+    the index DEFINITION carries the predicate, which is the only way to pin the intent that
+    NULL means "not seed-owned", not merely an accident of NULL comparison semantics.
+    """
+    cur = conn.cursor()
+    for table in SEEDED_TABLES:
+        cur.execute(
+            "SELECT indexdef FROM pg_indexes WHERE indexname = %s",
+            (f'{table}_seed_key_uidx',))
+        row = cur.fetchone()
+        assert row is not None, f'{table}_seed_key_uidx does not exist'
+        assert 'WHERE (seed_key IS NOT NULL)' in row[0], \
+            f'{table}_seed_key_uidx is missing its partial predicate: {row[0]}'
+    cur.close()
+
+
 def test_seed_key_is_unique_but_allows_admin_created_rows(conn):
     """NULL seed_key means "created through the admin UI", and seed.sql ignores those.
 
-    So the index must be partial: many NULLs allowed, duplicates of a real key not.
+    So the index must be partial: many NULLs allowed, duplicates of a real key not. (The
+    "many NULLs allowed" half holds for any unique index, partial or not -- Postgres treats
+    NULLs as distinct -- so this test only pins the "duplicates of a real key are rejected"
+    half; test_seed_key_uidx_is_partial above is what actually distinguishes partial from
+    plain.)
     """
     cur = conn.cursor()
     # Assign the key explicitly rather than reading one from the table: this task adds the
@@ -787,7 +820,7 @@ def test_seed_key_is_unique_but_allows_admin_created_rows(conn):
     # returns no rows here and the test would fail on a TypeError instead of its assertion.
     cur.execute("INSERT INTO leagues (name, name_en) VALUES ('Placeholder A', 'Placeholder A')")
     cur.execute("INSERT INTO leagues (name, name_en) VALUES ('Placeholder B', 'Placeholder B')")
-    conn.commit()  # two NULL seed_keys coexist -- the partial index must allow this
+    conn.commit()  # two NULL seed_keys coexist
 
     cur.execute("UPDATE leagues SET seed_key = 'placeholder-a' WHERE name_en = 'Placeholder A'")
     conn.commit()

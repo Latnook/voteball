@@ -149,7 +149,10 @@ ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS religiosity INTEGER
 -- the API and never changes once assigned.
 --
 -- NULL means "created through the admin UI", which is what makes seed.sql's declarative
--- removal safe: it only ever deletes rows it owns. Hence a PARTIAL unique index.
+-- removal safe: it only ever deletes rows it owns. The index is partial so it only covers
+-- rows that actually carry a key, stating that intent explicitly -- NOT because a plain
+-- unique index would reject multiple NULLs; Postgres treats NULLs as distinct for
+-- uniqueness, so a plain unique index already permits unlimited NULLs.
 ALTER TABLE leagues           ADD COLUMN IF NOT EXISTS seed_key TEXT;
 ALTER TABLE clubs             ADD COLUMN IF NOT EXISTS seed_key TEXT;
 ALTER TABLE previous_parties  ADD COLUMN IF NOT EXISTS seed_key TEXT;
