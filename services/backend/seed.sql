@@ -351,12 +351,6 @@ JOIN leagues l ON l.seed_key = s.league
 LEFT JOIN leagues d ON d.seed_key = s.also_in
 WHERE t.seed_key = s.seed_key;
 
--- Backfill each row's own language from the legacy `name` column. Leagues and clubs only --
--- previous_parties/upcoming_parties are keyed on name_he directly by the declarative blocks below,
--- which carry name_he in the temp table literal itself, so they never needed this.
-UPDATE leagues SET name_en = name WHERE name_en IS NULL;
-UPDATE clubs   SET name_en = name WHERE name_en IS NULL;
-
 -- Removal is declarative: a club this file no longer names is deleted. Two guards, both
 -- load-bearing.
 --

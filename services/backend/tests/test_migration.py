@@ -666,6 +666,31 @@ def test_europa_league_link_does_not_overwrite_an_admin_set_second_league(conn):
     cur.close()
 
 
+def test_europa_league_link_is_re_applied_after_a_raw_clear(conn):
+    # The negative case the positive test above doesn't cover: a raw clear of domestic_league_id
+    # that does NOT record admin_edited (unlike an admin PATCH, which always does) writes exactly
+    # the state the seed statement's ELSE branch fills, so seed.sql re-links the club on the next
+    # backend pod boot -- init_db runs on every one. Roster/link membership for the clubs seed.sql
+    # names is owned by seed.sql; a removal made outside admin_edited-tracked channels does not
+    # stick. This is the behaviour test_removing_a_seeded_club_from_the_europa_league_is_re_applied
+    # used to pin before Task 7 inverted whole-club deletion; that inversion left this narrower,
+    # still-live case with no direct test. See
+    # docs/design/2026-08-12-seed-sql-declarative-design.md.
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name_en = 'UEFA Europa League'")
+    uel_id = cur.fetchone()[0]
+    cur.execute("UPDATE clubs SET domestic_league_id = NULL WHERE name_en = 'Juventus'")
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute("SELECT domestic_league_id FROM clubs WHERE name_en = 'Juventus'")
+    assert cur.fetchone()[0] == uel_id
+    cur.close()
+
+
 # Competition emblems that moved from a Wikimedia URL to a self-hosted, cropped file. Each needs its
 # own correction statement in seed.sql: the leagues logo block is guarded on `logo_url IS NULL`, so an
 # edited tuple reaches a fresh database only -- which is every database the test suite builds, and
@@ -850,7 +875,10 @@ def test_seed_key_is_unique_but_allows_admin_created_rows(conn):
 # test_removing_a_seeded_club_from_the_europa_league_is_re_applied inverted here: removal is now
 # declarative (a club seed.sql no longer names is deleted, guarded on seed_key IS NOT NULL and on
 # no vote referencing it) instead of a link that a guarded UPDATE silently re-applied. See
-# docs/design/2026-08-12-seed-sql-declarative-design.md.
+# docs/design/2026-08-12-seed-sql-declarative-design.md. The narrower case that test used to pin --
+# a raw domestic_league_id clear that skips admin_edited being re-applied -- is unchanged and still
+# live; test_europa_league_link_is_re_applied_after_a_raw_clear (below, next to its positive-case
+# counterpart) now pins it directly.
 
 
 def test_seeded_club_absent_from_the_table_is_removed(conn):
