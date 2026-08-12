@@ -283,7 +283,7 @@ the value there anyway. Only production-dump + new files shows that an
 already-seeded database -- the only kind that exists in production -- ends up
 unchanged. Old files come from git rather than a kept copy, so the baseline
 cannot silently drift from what the file actually did."
-git push origin master
+git push -u origin feat/declarative-seed-sql
 ```
 
 ---
@@ -439,7 +439,7 @@ admin-created, which is what will make declarative removal safe.
 
 admin_edited lists columns a human actually changed, letting the base statement
 be authoritative instead of guarded, which is what removes the need for patches."
-git push origin master
+git push -u origin feat/declarative-seed-sql
 ```
 
 ---
@@ -646,7 +646,7 @@ mean \"owned\" -- admin.js's continental-competition buttons resend all four nam
 and logo fields unchanged. Marking every submitted column would freeze the rest
 of the row on the first no-op save. Each function now diffs against the stored
 row and records only what actually moved."
-git push origin master
+git push -u origin feat/declarative-seed-sql
 ```
 
 ---
@@ -926,7 +926,7 @@ and its three corrections with one 10-row table and four fixed statements.
 la-liga and uefa-champions-league now carry their CURRENT logo directly rather
 than a superseded URL plus an unguarded correction 90 lines below. Data-neutrality
 verified against a dump of the live production database."
-git push origin master
+git push -u origin feat/declarative-seed-sql
 ```
 
 ---
@@ -1088,7 +1088,7 @@ the group_label block with one 212-row table and four fixed statements.
 
 domestic_league_id yields to admin_edited because both admin club endpoints
 write it; group_label does not, because both omit it by design."
-git push origin master
+git push -u origin feat/declarative-seed-sql
 ```
 
 ---
@@ -1221,7 +1221,7 @@ Removes both roster INSERTs, the Beit Tzioni rename, the name_he backfills, both
 names blocks, both logo blocks, two unguarded logo corrections and 14 lineage
 INSERTs. The six ideology columns stay unguarded, since no admin endpoint writes
 them and a guard would make every later edit unreachable in production."
-git push origin master
+git push -u origin feat/declarative-seed-sql
 ```
 
 ---
@@ -1349,7 +1349,7 @@ which pinned the old surprise that removal did not stick.
 
 Also drops the four utm_source strips: production carries zero such URLs and the
 literals are generated from it, so they were dead code."
-git push origin master
+git push -u origin feat/declarative-seed-sql
 ```
 
 ---
@@ -1384,9 +1384,13 @@ Record what actually happened: the real A/B/C diff results, anything that broke,
 
 - [ ] **Step 4: Deploy**
 
-`init_db` runs on pod boot, so the migration ships with the image. Push to `master`; `application-ci` builds and `application-cd` promotes and syncs.
+`init_db` runs on pod boot, so the migration ships with the image. **This is the only step that deploys** — the whole plan runs on `feat/declarative-seed-sql` precisely so the six intermediate states never reach production. Merging to `master` fires the webhook once: `application-ci` builds and `application-cd` promotes and syncs.
+
+**Stop for the human's sign-off before running this step.** It is the first time the migration touches the live database, which holds real votes.
 
 ```bash
+git checkout master && git pull --rebase origin master
+git merge --no-ff feat/declarative-seed-sql -m "feat(seed): declarative seed.sql — one statement per property"
 git push origin master
 ```
 
@@ -1407,7 +1411,7 @@ Expected: `unadopted clubs: 0`, `votes: 22` (or higher — never lower).
 
 - [ ] **Step 5: Delete this plan and commit**
 
-Per the root `CLAUDE.md` rule, an executed plan is deleted in the same commit as the last task.
+Per the root `CLAUDE.md` rule, an executed plan is deleted in the same commit as the last task. This runs on `master`, after the merge in Step 4 — the doc edits from Steps 1-3 are committed on the branch and arrive with it; only the plan deletion and the verification outcome land here.
 
 ```bash
 git rm docs/superpowers/plans/2026-08-12-declarative-seed-sql.md
