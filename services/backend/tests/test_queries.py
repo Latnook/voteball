@@ -39,7 +39,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Likud', 'Yashar', 'Together', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
         'Religious Zionist Party', 'Otzma Yehudit', "Hadash-Ta'al", 'Balad', "Ra'am",
         'Shas', 'United Torah Judaism',
-        'The Economic Party', 'El HaDegel', 'The Reservists', 'Zehut', 'Noam',
+        'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Zehut', 'Noam',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {

@@ -132,7 +132,7 @@ const FILL_INTERIOR_PARTIES = new Set([
 //
 // Keyed by name_en so one entry covers a party in both previous_parties and upcoming_parties.
 const SKIP_RECOLOR_PARTIES = new Set([
-  'The Reservists',
+  'Zionist Home – The Reservists',
 ]);
 
 // Near-white, close to the theme's --ink (#F5F7FA). This started at the dark theme's --muted
