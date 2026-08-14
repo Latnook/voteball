@@ -875,6 +875,92 @@ set as text; everything else is a picture), which is the exit-0 failure mode
 to 4,500pt, so they must be rendered and sliced (`pdftoppm -r 150` then crop to ~1,500px bands) and
 read visually, or OCR'd with `tesseract -l heb`. Only יהדות התפוצות has a real text layer.
 
+**2026-08-14 — *מילואימניקים הביתה* read, the party's first 2026-cycle policy document. Nothing
+moved: no axis, no tag, no family. One claim above is superseded.**
+
+A three-axis plan targeting **≤30 reserve days a year by 2027**: (1) reserve-force efficiency —
+return ~50,000 soldiers not currently assigned to active reserve units, raise qualification, new
+reserve frameworks, spread security tasks across more units; (2) a national Haredi enlistment
+programme in three stages — funded pre-military academies, Haredi hesder yeshivas, youth movements
+and expanded ממ"ח education; then expanded dedicated tracks (a larger חטיבת חשמונאים, more Haredi
+combat frameworks, units sited near Haredi cities, "לומדים ומשרתים" yeshivas); then a support
+envelope (בתי חייל, grants, נצח יהודה); (3) **חוק יסוד המשרתים**, giving servers priority in
+discounted housing, daycare, academic admission, student dorms, public housing, civil-service hiring
+and government tenders, extended to spouses. Attached as a coalition demand:
+*"התוכנית הזו תהיה תנאי מרכזי לכניסה לממשלה עתידית"*.
+
+**The 2026-08-11 entry's stated reason for `basis` is now false, and the value is still right.** It
+reads "The party has published nothing for 2026" — that sentence stands as a dated record of what was
+true then, and is not edited. The current reason `basis` stays **`record`** is different: this is one
+single-issue paper, not a platform. All three axes are still graded from the record, and nothing here
+speaks to the economy, the judiciary, or religion-and-state. A row becomes `platform` on a מצע, the
+way בית ציוני's did in revision 20 — not on a campaign deck about one dimension.
+
+- **religiosity +3 is confirmed, and reading this as a move away from it inverts the axis.** The axis
+  is Jewish religion-and-state; the conscription fight lives in the conscription tags (see the
+  `anti-conscription-exemption`/`universal-conscription` note under the axis definition). What the
+  plan actually does on this axis is *expand* state religious provision — funded Haredi hesder
+  yeshivas, "לומדים ומשרתים" frameworks, ממ"ח expansion, נצח יהודה.
+- **economic stays 0.** Allocating housing, land, tenders, academia and daycare by service status is
+  a doctrine of civic desert, not of markets versus state. Same call already made for בית ציוני,
+  whose economic number was decided on other grounds entirely.
+- **security +3 is at the ceiling.** Fourth consecutive reading of this row where that is the reason
+  nothing moves.
+
+**`service-conditioned-citizenship` was considered and rejected, and the distinction is the tag's
+whole content.** The tag means citizenship-level rights conditioned on service — Hendel's *"will not
+be able to vote or be elected"* is the paradigm case. This plan conditions **queue position for
+state-allocated goods**, which is a preference scheme; Israel already runs several. Stretching the
+tag to cover that turns it into "has veterans' benefits", a near-universal label — the failure that
+retired `periphery-development` in revision 19. Revision 20 had already recorded the tag thinning,
+since בית ציוני's own newer platform drops the franchise clause it rests on; a fourth holder on the
+weakest evidence yet compounds that rather than testing it.
+
+Three more rejected, all on existing precedent:
+
+- **`sanctions-on-non-servers`.** The document is positively framed throughout — *"עדיפות ב…"*, six
+  times. The negative half appears once, in Q&A prose (*"מי שמשרת פחות או לא משרת – מקבל הרבה
+  פחות"*), with no fine, no named withheld entitlement, nothing like אל הדגל's or בית ציוני's
+  enumerated סנקציות lists. כחול לבן earned this tag for individual penalties; הדמוקרטים was refused
+  it for targeting institutions. Preference-for-servers and sanctions-on-non-servers are two claims,
+  and only the first is written down here.
+- **`anti-conscription-exemption`.** The plan is silent on תורתו אומנותו in both directions — it is
+  an enlistment-*expansion* programme, not an exemption-abolition one. `scholar-exemption-retained`
+  fails on the same silence.
+- **`universal-conscription`.** It builds separate Haredi tracks, which is the opposite of the tag.
+
+No new tag was invented for "Haredi enlistment programme": the `conscription-by-incentive` *family*
+already carries that dimension, and a tag duplicating a family is the `not-economy-focused` defect
+this page cleaned up in revision 17.
+
+**Open question — the `conscription-split` family, left in place under a structural constraint.** The
+family was assigned because Solomon, Woldiger and Sofer rebelled against the draft bill *as too weak*,
+so "asserting a majority position would state something a third of the faction rejects". Those rebels
+would not reject this plan; on the merits the leader has moved to their side and the split looks
+resolved by convergence, with `conscription-by-incentive` (enlistment via tracks and incentives, no
+individual sanctions) describing the document almost exactly. It stays anyway, because decision 7 of
+`docs/design/2026-07-30-party-families-club-traits-design.md` requires every family value to sit on
+≥2 parties: moving this row leaves `conscription-split` holding only יהדות התורה and forces a second
+reclassification. That is a cascade off one campaign document on a `[R]`-graded row. **Revisit on a
+faction vote or a fuller 2026 platform** — not on further campaign material.
+
+**The rhetoric/record gap is recorded here and deliberately not tagged.** The obvious reading —
+pressed publicly by MK Vladimir Beliak (the 2026 budget assumed 40 reserve days and orders of 80–110
+followed within two months; coalition transfers to exemption-holding sectors) and by Chaim Levinson
+(three years of "תהליכים" replaced by כפייה only once the party is behind on the issue) — is that the
+plan contradicts the record of the government the party sits in. A `claims-*` tag is this page's idiom
+for exactly that gap, and it is still the wrong instrument: the charge is against a **finance
+minister's** budget conduct, whereas the party's own Knesset conduct on the draft bill was split with
+its rebels on the hawkish side. The two do not resolve into one party-level position, which is why
+this is prose. Same treatment as the הדמוקרטים "אוכלוסיות נוספות" ambiguity above.
+
+Sources: the *מילואימניקים הביתה* deck (party-circulated, including its Q&A section) and
+[maariv.co.il article-1355768](https://www.maariv.co.il/news/politics/article-1355768), both
+2026-08-13/14. **Provenance caveat:** as of reading, the plan is **not** hosted on
+`zionutdatit.org.il` — its נבחרת, מצע and news sections carry no מילואים page. Treated as first-party
+text on the strength of the deck's own branding and the direct quotation of Smotrich in Maariv, but
+this row's next revision should confirm it against a party-hosted copy.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
