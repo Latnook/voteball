@@ -563,7 +563,23 @@ hold this tag with three different ones.** ביחד's law is **sanctions-only**:
 benefits that "fund evasion" and offers *"כולם מוזמנים לקחת חלק"*, with **no criminal penalty
 anywhere in either page**. ישר attaches *דין פלילי* to non-service; כחול לבן pairs coercion with
 fines. The tag is right on all three; the mechanism is not the same, and a reader comparing them
-should not assume it is. `conscription-by-incentive` remains **wrong** here despite the incentive
+should not assume it is.
+
+**Bennett says this in his own voice, which corroborates the documents from outside them:**
+*"לא אשים בכלא, אבל מי שלא יתגייס - לא יקבל שקל"* — I will not jail them, but whoever does not
+enlist will not get a shekel — alongside *"יש היום 50 צינורות של כסף שזורם, אני סוגר את הדבר הזה"*
+([ynet, 2026-06-02](https://www.ynet.co.il/news/article/rj00itc9gzx)). The plan pages and the party
+leader arrive at the same finding independently, which is as strong as evidence gets here.
+
+**It is NOT a religiosity criterion, and the next reader should not re-derive it as one.** The
+temptation is to read "refuses to jail evaders" as a milder religion-and-state posture and hold the
+row at −2 on that basis. Two things defeat it. First, **consistency**: ישר carries *דין פלילי* and
+כחול לבן carries fines, and both sit at −2 as well — so if enforcement severity moved this axis,
+willingness to imprison draft evaders would have to count as *more* separation of religion from
+state, which it plainly is not. Enforcement appetite and religion-state posture are different
+dimensions. Second, **it is not even milder**: *"לא יקבל שקל מהמדינה"* and closing "50 channels of
+money" is a **broader** financial sanction than ישר's itemized list. Softer on criminal law, harder
+on money. −2 on this row rests on the funding criterion, exactly as on the other two. `conscription-by-incentive` remains **wrong** here despite the incentive
 framing — that tag is defined by rejecting *both* coercion and sanctions, and this programme is
 built on sanctions.
 
