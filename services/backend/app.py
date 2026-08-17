@@ -221,8 +221,10 @@ def vote():
     body = request.get_json(force=True, silent=True) or {}
 
     if body.get('upcoming_vote_status') == 'considering' and not body.get('upcoming_party_ids'):
+        metrics.VOTES_REJECTED.labels(reason='considering-without-parties').inc()
         return jsonify({'error': 'select at least one upcoming party when status is considering'}), 400
     if len(body.get('upcoming_party_ids') or []) > 3:
+        metrics.VOTES_REJECTED.labels(reason='too-many-parties').inc()
         return jsonify({'error': 'select at most 3 upcoming parties'}), 400
 
     ip_hash = _ip_hash()
@@ -232,11 +234,13 @@ def vote():
         team_picks = body.get('team_picks')
         picks_error = _validate_team_picks(conn, team_picks)
         if picks_error:
+            metrics.VOTES_REJECTED.labels(reason='invalid-team-picks').inc()
             return jsonify({'error': picks_error}), 400
 
         # Second line of defence behind the cookie: cap ballots per source address. Checked before
         # the insert so a blocked attempt writes nothing.
         if queries.count_recent_votes_by_ip(conn, ip_hash, VOTE_IP_WINDOW_HOURS) >= MAX_VOTES_PER_IP:
+            metrics.VOTES_REJECTED.labels(reason='rate-limited').inc()
             return jsonify({'error': 'Too many votes from this connection. Try again later.'}), 429
 
         vote_id = queries.insert_vote(
@@ -250,12 +254,15 @@ def vote():
             ip_hash=ip_hash,
         )
     except ValueError:
+        metrics.VOTES_REJECTED.labels(reason='duplicate').inc()
         return jsonify({'error': 'You have already voted'}), 409
     except Exception:
+        metrics.VOTES_REJECTED.labels(reason='invalid-data').inc()
         return jsonify({'error': 'invalid vote data'}), 400
     finally:
         conn.close()
 
+    metrics.VOTES_CAST.inc()
     resp = make_response(jsonify({'vote_id': vote_id}), 201)
     if is_new_token:
         # httponly: JS cannot read or forge it, so the dedup token can't be tampered with from the

@@ -1,4 +1,6 @@
 import os
+
+import metrics
 import psycopg2
 
 DB_HOST = os.environ['DB_HOST']
@@ -9,11 +11,18 @@ DB_SSLMODE = os.environ.get('DB_SSLMODE', 'require')
 
 
 def get_db():
-    return psycopg2.connect(
-        host=DB_HOST, dbname=DB_NAME,
-        user=DB_USER, password=DB_PASS,
-        sslmode=DB_SSLMODE
-    )
+    try:
+        return psycopg2.connect(
+            host=DB_HOST, dbname=DB_NAME,
+            user=DB_USER, password=DB_PASS,
+            sslmode=DB_SSLMODE
+        )
+    except Exception:
+        # One counter at the single place every route opens its connection. This is the signal the
+        # 5xx drill produces: the pod stays Ready and /health keeps answering, because neither
+        # touches the database -- only the per-request connection does.
+        metrics.DB_ERRORS.labels(operation='connect').inc()
+        raise
 
 
 def init_db(conn):

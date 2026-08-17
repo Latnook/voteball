@@ -146,3 +146,70 @@ def test_metrics_response_header_is_well_formed(client):
     # The header should contain charset=utf-8 exactly once.
     assert content_type.count('charset=utf-8') == 1, \
         f'Content-Type header has wrong charset count: {content_type}'
+
+
+def _counter_value(text, name, label=None):
+    for line in text.splitlines():
+        if not line.startswith(name):
+            continue
+        if label and label not in line:
+            continue
+        return float(line.rsplit(' ', 1)[1])
+    return 0.0
+
+
+def test_a_recorded_ballot_increments_the_business_metric(client, conn):
+    # Ballot shape copied from test_app.py's existing vote tests -- a pick is
+    # {'league_id': ..., 'club_id': None}, meaning "this league, no specific club".
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.close()
+
+    before = _counter_value(client.get('/metrics').get_data(as_text=True), 'voteball_votes_cast_total')
+
+    response = client.post('/api/vote', json={
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert response.status_code == 201
+
+    after = _counter_value(client.get('/metrics').get_data(as_text=True), 'voteball_votes_cast_total')
+    assert after == before + 1
+
+
+def test_a_rejected_ballot_is_counted_with_its_reason(client, conn):
+    text = client.get('/metrics').get_data(as_text=True)
+    before = _counter_value(text, 'voteball_votes_rejected_total', 'reason="too-many-parties"')
+
+    response = client.post('/api/vote', json={
+        'team_picks': [],
+        'upcoming_party_ids': [1, 2, 3, 4],
+    })
+    assert response.status_code == 400
+
+    text = client.get('/metrics').get_data(as_text=True)
+    after = _counter_value(text, 'voteball_votes_rejected_total', 'reason="too-many-parties"')
+    assert after == before + 1
+
+
+def test_an_unreachable_database_is_counted_as_a_dependency_failure(monkeypatch):
+    # The 5xx drill of the design doc breaks exactly this path: the pod stays Ready, /health keeps
+    # returning 200, and every request fails when it opens its connection.
+    import db
+    import psycopg2
+
+    def explode(*args, **kwargs):
+        raise psycopg2.OperationalError('could not connect to server')
+
+    monkeypatch.setattr(psycopg2, 'connect', explode)
+    before = _counter_value(metrics.render_latest()[0].decode(),
+                            'voteball_db_errors_total', 'operation="connect"')
+    try:
+        db.get_db()
+    except psycopg2.OperationalError:
+        pass
+    after = _counter_value(metrics.render_latest()[0].decode(),
+                           'voteball_db_errors_total', 'operation="connect"')
+    assert after == before + 1
