@@ -1,0 +1,48 @@
+# Task 4 evidence -- the rollback-target guard in a REAL post-rebuild window (2026-08-17)
+#
+# Captured minutes after a full destroy.sh -> deploy.sh cycle, BEFORE the first application-cd
+# promote closed the window. This is the unstaged version of the earlier capture in
+# 2026-08-17-task4-rollback-target-guard.txt: that one demonstrated the verdict by passing the
+# guard a tag by hand, because the window had already closed. This one is the condition
+# occurring on its own, which is the stronger evidence.
+#
+# THE GAP: previous-tag.sh reads values.yaml's GIT history, which survives a teardown.
+# terraform destroy deletes the ECR repositories (force_delete = true) and the next deploy
+# pushes exactly ONE tag. So git confidently names a 'previous version' that no longer exists
+# anywhere, and the automatic rollback would have aimed at it.
+
+=== what git remembers (newest first) ===
++  tag: "281daad"
++  tag: "f5f5c75"
++  tag: "dead0be"
++  tag: "f5f5c75"
++  tag: "480ee8b"
+
+=== what this REBUILT registry actually holds ===
+  281daad
+
+=== the two disagree, and that is the whole bug ===
+$ grep 'tag:' charts/voteball/values.yaml      # what production runs
+  tag: "281daad"
+$ scripts/ci/previous-tag.sh                   # what a rollback would target
+f5f5c75
+$ TAG=$(previous-tag.sh) scripts/ci/images-exist.sh   # is it deployable?
+missing
+
+=== the guard refuses, and names the tag so a human knows what to rebuild ===
+$ scripts/ci/rollback-target.sh
+NO_ROLLBACK_TARGET f5f5c75
+exit=3  (3 = NO_ROLLBACK_TARGET)
+
+=== what WOULD have happened without it ===
+post{failure} triggers application-cd with IMAGE_TAG=f5f5c75.
+That build dies in Input Validation -- which runs BEFORE Promote -- so PROMOTE_SHA is never
+set on it, the ROLLBACK_DEPTH bound never runs, and the console reports
+  "Images for f5f5c75 are NOT all in ECR (missing). Refusing to deploy."
+which reads as though somebody mistyped a parameter. Production stays on the version that
+just failed verification, and the log points at the wrong thing.
+
+=== the window closes on its own ===
+Once application-cd promotes a second tag, previous-tag.sh names a tag that IS in ECR and the
+guard returns exit 0. The gap therefore exists only between a rebuild and the first successful
+CD promote -- which is precisely the window a fresh submission demo runs in.

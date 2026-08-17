@@ -13,6 +13,7 @@
 #
 # Usage:
 #   ./scripts/capture-task4-evidence.sh                    # all static captures
+#   ./scripts/capture-task4-evidence.sh --label post-rebuild   # suffix the filenames
 #   ./scripts/capture-task4-evidence.sh --build-log application-ci 3            # a build console log
 #   ./scripts/capture-task4-evidence.sh --build-log application-ci 1 scan-blocks-deploy
 #
@@ -25,7 +26,19 @@ cd "$(dirname "$0")/.."
 
 OUT_DIR=docs/eks/evidence
 DATE="$(date +%F)"
-PREFIX="${OUT_DIR}/${DATE}-task4"
+
+# --label suffixes every filename, the same way capture-evidence.sh's --label does. Needed because a
+# destroy/rebuild cycle produces TWO valid captures on the same date, and without a label the second
+# silently overwrites the first -- which would replace the pre-teardown record of the running system
+# with the post-rebuild one and leave the evidence README pointing at changed content under unchanged
+# filenames.
+LABEL=""
+if [ "${1:-}" = "--label" ]; then
+  LABEL="-${2:?--label needs a value, e.g. --label post-rebuild}"
+  shift 2
+fi
+
+PREFIX="${OUT_DIR}/${DATE}-task4${LABEL}"
 
 kubectl get namespace ci >/dev/null 2>&1 || {
   echo "ERROR: cannot reach the cluster / namespace ci." >&2; exit 1; }
