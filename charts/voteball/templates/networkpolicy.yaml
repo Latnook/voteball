@@ -37,10 +37,44 @@ spec:
     matchLabels: { app: frontend }
   policyTypes: [Ingress]
   ingress:
+    # The ALB's network interfaces, and nothing else. Previously this said 10.0.0.0/16 -- the whole
+    # VPC -- which reads as "the load balancer" but is not: the AWS VPC CNI gives every POD a VPC
+    # address, so that rule also admitted every pod in the cluster. Both Ingresses are
+    # scheme: internet-facing with target-type: ip, so the ALB's interfaces can only ever be in the
+    # public subnets, which contain no pods.
     - from:
-        - ipBlock: { cidr: 10.0.0.0/16 }   # VPC (ALB target ENIs)
+        {{- range .Values.network.albSubnetCidrs }}
+        - ipBlock: { cidr: {{ . | quote }} }
+        {{- end }}
       ports:
         - { protocol: TCP, port: 8080 }
+---
+# Prometheus scraping the application, granted BY NAME rather than inherited from an address range.
+# After the narrowing above, this is the only thing that lets the observability namespace in, so the
+# grant is deliberate and reviewable.
+#
+# The three ports are exactly the metrics endpoints: backend /metrics on 5000, worker /metrics on
+# 9100, and the frontend's nginx exporter on 9113. Nothing else in this namespace is reachable from
+# observability.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-scrape
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app, operator: In, values: [backend, worker, frontend] }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+      ports:
+        - { protocol: TCP, port: 5000 }
+        - { protocol: TCP, port: 9100 }
+        - { protocol: TCP, port: 9113 }
 ---
 # 4) Backend: ingress from frontend only, on 5000.
 apiVersion: networking.k8s.io/v1

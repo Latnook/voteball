@@ -5,6 +5,17 @@ image:
   tag: "ae21329"
   pullPolicy: IfNotPresent
 
+# The two PUBLIC subnet CIDRs from terraform/vpc.tf. Used by the frontend ingress policy to admit the
+# ALB's network interfaces and nothing else.
+#
+# These are not sync-managed and change only if someone edits terraform/vpc.tf's `public_subnets`.
+# A mismatch fails loudly and immediately -- the ALB's health checks are dropped and the target group
+# goes unhealthy -- rather than silently.
+network:
+  albSubnetCidrs:
+    - "10.0.0.0/20"
+    - "10.0.16.0/20"
+
 # Non-secret config -> ConfigMap app-config. DB_HOST is the Plan-3a RDS endpoint (set in Task 1/7).
 config:
   DB_HOST: "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com"

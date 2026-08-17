@@ -225,6 +225,11 @@ resource "helm_release" "jenkins_support" {
     # the way an explicit depends_on entry can.
     { name = "cdRoleArn", value = module.jenkins_cd_irsa.iam_role_arn },
     { name = "appNamespace", value = kubernetes_namespace.devops_app.metadata[0].name },
+    # The PUBLIC subnet CIDRs, where the ALB's ENIs live. The ingress rule that admits the load
+    # balancer is scoped to these rather than to the whole VPC -- pods get VPC addresses from the
+    # PRIVATE subnets, so the old vpcCidr rule admitted every pod in the cluster to the controller.
+    { name = "albSubnetCidrs[0]", value = module.vpc.public_subnets_cidr_blocks[0] },
+    { name = "albSubnetCidrs[1]", value = module.vpc.public_subnets_cidr_blocks[1] },
   ]
 
   depends_on = [helm_release.external_secrets]

@@ -62,12 +62,24 @@ spec:
           port: 8080
         - protocol: TCP
           port: 50000
+    # Prometheus, for the CD pipeline's post-deploy monitoring gate (plan 4). This is the one hole in
+    # "CI/CD cannot reach anything inside the VPC" -- deliberately narrow: one namespace, one port,
+    # read-only by nature. CD gains the ability to read metrics and keeps its inability to reach RDS
+    # or the application.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+      ports:
+        - protocol: TCP
+          port: 9090
 ---
 # Agents connect to the controller inside this namespace. Ingress from elsewhere in the cluster is
-# denied -- but NOT from elsewhere on the network: the rule below admits the whole VPC CIDR on 8080,
-# because that is where the ALB's ENIs (which health-check and proxy /github-webhook/ to the
-# controller) live. "Nothing outside this namespace may reach either" is not literally true; what is
-# true is that nothing outside the VPC can.
+# denied -- but NOT from the ALB's own subnets or from Prometheus: the rule below admits the two
+# public subnets on 8080, because that is where the ALB's ENIs (which health-check and proxy
+# /github-webhook/ to the controller) live, and admits the observability namespace by name for
+# scraping. "Nothing outside this namespace may reach the controller" is not literally true; what is
+# true is that nothing outside those two grants can.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -81,14 +93,17 @@ spec:
     - from:
         - podSelector: {}          # same namespace: controller <-> agents
     - from:
-        # The ALB reaches the controller from ITS OWN ENIs, which live in this VPC's subnets. It is
-        # not a pod and carries no namespace label, so a namespaceSelector cannot match it -- an
-        # earlier draft used `namespaceSelector: kube-system` here and would have matched nothing.
-        # Because podSelector:{} + policyTypes:[Ingress] denies everything not listed, that mistake
-        # does not fail loudly: the health check is dropped, the target group marks the pod
-        # unhealthy, and /github-webhook/ answers 503 with a perfectly healthy Jenkins behind it.
-        - ipBlock:
-            cidr: {{ .Values.vpcCidr | quote }}
+        # The ALB reaches the controller from its own ENIs, which live in the PUBLIC subnets. This
+        # used to say vpcCidr -- the whole VPC -- and because the AWS VPC CNI gives pods VPC
+        # addresses, that admitted every pod in the cluster to the Jenkins controller on 8080. The
+        # comment said "the ALB"; the rule said "the network". Narrowed to where the ALB actually is.
+        {{- range .Values.albSubnetCidrs }}
+        - ipBlock: { cidr: {{ . | quote }} }
+        {{- end }}
+        # Prometheus, granted by name now that the address range no longer grants it implicitly.
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
       ports:
         - protocol: TCP
           port: 8080
