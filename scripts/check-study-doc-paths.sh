@@ -83,6 +83,11 @@ looks_like_path() {
 # Resolve a bare filename (rule 2) anywhere in the repo, ignoring vendored and generated trees.
 BARE_INDEX=""
 bare_exists() {
+  # Present at the repo root. This is the case for the study docs themselves, which are GITIGNORED and
+  # so are invisible to `git ls-files` below -- without this they could never cross-reference each
+  # other, which is exactly what they need to do.
+  [ -e "$1" ] && return 0
+
   if [ -z "$BARE_INDEX" ]; then
     BARE_INDEX=$(git ls-files | sed 's:.*/::' | sort -u)
   fi
