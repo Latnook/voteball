@@ -133,3 +133,16 @@ def test_arbitrary_method_tokens_do_not_create_distinct_series(client):
     # Verify neither junk token appears anywhere in the exposition
     assert 'JUNKVERB1' not in text, 'Junk token JUNKVERB1 appears in exposition'
     assert 'JUNKVERB2' not in text, 'Junk token JUNKVERB2 appears in exposition'
+
+
+def test_metrics_response_header_is_well_formed(client):
+    # render_latest() returns prometheus_client's CONTENT_TYPE_LATEST, which carries its own
+    # charset. Passing it through Werkzeug's mimetype= parameter appends a second charset,
+    # rendering the header unparseable by scrapers. This test asserts on the actual HTTP response
+    # header, not on render_latest()'s return value -- the prior content-type assertion only checks
+    # the function's output directly, which is exactly why the double-charset slipped through.
+    response = client.get('/metrics')
+    content_type = response.headers['Content-Type']
+    # The header should contain charset=utf-8 exactly once.
+    assert content_type.count('charset=utf-8') == 1, \
+        f'Content-Type header has wrong charset count: {content_type}'

@@ -79,11 +79,12 @@ def _metrics_record(response):
 
 @app.route('/metrics', methods=['GET'])
 def prometheus_metrics():
-    """Scrape target. NOT reachable from the internet: nginx proxies only /api/*, so this path has no
-    public route, and in-cluster only the observability namespace is admitted to port 5000 (see the
-    NetworkPolicy in charts/voteball). Deliberately separate from /health, which the probes use."""
+    """Scrape target. NOT reachable from the internet: nginx proxies only /api/*, so this path has
+    no public route. In-cluster reachability is currently whatever the namespace's NetworkPolicy
+    allows; the rule admitting the observability namespace to port 5000 arrives with the chart
+    wiring in a later plan. Deliberately separate from /health, which the probes use."""
     payload, content_type = metrics.render_latest()
-    return Response(payload, mimetype=content_type)
+    return Response(payload, content_type=content_type)
 
 
 def _client_ip():
