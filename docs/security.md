@@ -190,6 +190,43 @@ including the other three containers in the same CI agent pod (`trivy`, `skopeo`
   third-party `backup` image is scanned in report-only mode (its CVEs are upstream Go-tooling issues
   outside our control — see Trade-offs).
 
+### Base-image patching
+
+**`backend` and `worker` run `apt-get upgrade` as their first build step, and removing it will start
+failing every build within weeks.** Both are `FROM python:3.12-slim`; the official image is rebuilt on
+its own cadence and therefore lags Debian's security feed. The Trivy gate is
+`--severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed`, and `--ignore-unfixed` is what makes this
+sharp: a base-package CVE is invisible while it is unfixed, then becomes **instantly blocking** the
+moment Debian publishes a fix. So CI can go from green to red with **no change to this repository at
+all**.
+
+That is not hypothetical. `application-ci` **#1 on 2026-08-17** failed on `CVE-2026-53615` —
+9 HIGH findings across Debian 13.6's `util-linux` family (`bsdutils`, `libblkid1`, `libmount1`,
+`libsmartcols1`, `libuuid1`, `mount`, `util-linux`, `util-linux-extra`), installed `1:2.41-5` against
+an available `2.41.5-0+deb13u1`. The previous green build was six days earlier and nothing in
+`services/` had changed. Captured in
+[`eks/evidence/2026-08-17-task4-ci-scan-blocks-deploy-run.txt`](eks/evidence/2026-08-17-task4-ci-scan-blocks-deploy-run.txt),
+which is also the evidence that a failed scan **blocks the deploy**: `Push to ECR`, `Publish Metadata`
+and `Trigger CD` all report `skipped due to earlier failure(s)`, so nothing reached ECR and
+`application-cd` never ran.
+
+**Why the fix is `apt-get upgrade` and not a `.trivyignore`.** The findings carried status `fixed`
+with a named fixed version — a `.trivyignore` would have suppressed a vulnerability that had a patch
+sitting in the archive, which is the exact case the gate exists to catch. Patching at source clears
+all nine (verified: `Total: 0 (HIGH: 0, CRITICAL: 0)` on both rebuilt images against the same gate)
+and clears the *next* base CVE too, instead of needing a new waiver each time.
+
+**The trade-off, stated plainly:** the image is no longer a pure function of the git SHA — two builds
+of the same commit on different days can contain different package versions. That is bounded here
+because ECR tags are `IMMUTABLE` and CI's G1 guard (`scripts/ci/images-exist.sh`) skips any tag
+already present, so a given SHA is built exactly once and the image that SHA names never changes
+after the fact. The alternative — pinning every apt package — would trade a reproducibility gain for
+a standing obligation to hand-bump pins ahead of each CVE, which is the failure this section exists
+to describe.
+
+`frontend` (`nginx-unprivileged:alpine`) needs none of this and does not do it: Alpine's package set
+scans clean, and adding an upgrade step there would be cargo-culting.
+
 ## CI/CD (Jenkins, in-cluster, two pipelines)
 
 CI/CD runs **inside the EKS cluster**, namespace `ci`, installed by Terraform

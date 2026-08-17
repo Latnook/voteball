@@ -13,7 +13,8 @@
 #
 # Usage:
 #   ./scripts/capture-task4-evidence.sh                    # all static captures
-#   ./scripts/capture-task4-evidence.sh --build-log application-ci 1   # one build's console log
+#   ./scripts/capture-task4-evidence.sh --build-log application-ci 3            # a build console log
+#   ./scripts/capture-task4-evidence.sh --build-log application-ci 1 scan-blocks-deploy
 #
 # Static captures are read-only -- nothing here mutates the cluster, triggers a build, or pushes a
 # commit. The CI/CD run and rollback captures are deliberately NOT automated: which build to trigger,
@@ -70,7 +71,7 @@ jenkins_up() {
 # jenkins_get PATH -- echoes the response body, or returns non-zero.
 jenkins_get() {
   jenkins_up || return 1
-  curl -sS --netrc-file "$JPF_NETRC" "http://127.0.0.1:${JPF_PORT}$1"
+  curl -sS -g --netrc-file "$JPF_NETRC" "http://127.0.0.1:${JPF_PORT}$1"
 }
 
 # The running Jenkins version. It is NOT in /api/json (there is no .jenkinsVersion field there) --
@@ -78,7 +79,7 @@ jenkins_get() {
 # capture recorded "unknown".
 jenkins_version() {
   jenkins_up || return 1
-  curl -sSI --netrc-file "$JPF_NETRC" "http://127.0.0.1:${JPF_PORT}/api/json" \
+  curl -sSI -g --netrc-file "$JPF_NETRC" "http://127.0.0.1:${JPF_PORT}/api/json" \
     | sed -nE 's/^[Xx]-[Jj]enkins: *([^ \r]+).*/\1/p' | head -1
 }
 
@@ -86,11 +87,16 @@ jenkins_version() {
 # --build-log JOB NUMBER -- fetch one build's full console log.
 # ---------------------------------------------------------------------------------------------
 if [ "${1:-}" = "--build-log" ]; then
-  job="${2:?usage: --build-log JOB NUMBER}"
-  num="${3:?usage: --build-log JOB NUMBER}"
+  job="${2:?usage: --build-log JOB NUMBER [SUFFIX]}"
+  num="${3:?usage: --build-log JOB NUMBER [SUFFIX]}"
+  # An optional SUFFIX names the file for what the build DEMONSTRATES rather than just which job ran.
+  # A pipeline's failure behaviour is as much required evidence as its happy path (the brief's
+  # "התנהגות במקרי כשל"), and two runs of the same job can show opposite things -- a scan gate
+  # blocking a deploy, and a path filter correctly skipping one.
+  suffix="${4:-}"
   case "$job" in
-    application-ci) out="${PREFIX}-ci-run.txt" ;;
-    application-cd) out="${PREFIX}-cd-run.txt" ;;
+    application-ci) out="${PREFIX}-ci${suffix:+-$suffix}-run.txt" ;;
+    application-cd) out="${PREFIX}-cd${suffix:+-$suffix}-run.txt" ;;
     *) echo "ERROR: unknown job '$job'" >&2; exit 1 ;;
   esac
   jenkins_get "/job/${job}/${num}/consoleText" >"$out" || {
