@@ -33,6 +33,9 @@ ssh-agent
 timestamper
 # ephemeral pod agents -- the whole reason this host is now in the cluster
 kubernetes
+# exposes /prometheus on the controller: queue length and wait, executor and agent counts, build
+# results and durations, JVM health. Scraped by the ServiceMonitor in charts/jenkins-support.
+prometheus
 
 # --- appearance ---
 # dark theme, following the operator's OS setting. Pulls in `theme-manager` as a dependency, which is
