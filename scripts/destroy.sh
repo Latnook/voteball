@@ -70,17 +70,36 @@ for _ in $(seq 1 60); do
   sleep 10
 done
 
-step "4/7  Deleting the observability PVCs"
-# A PVC created by a StatefulSet's volumeClaimTemplate is NOT removed by `helm uninstall`, by
-# deleting the StatefulSet, or by deleting the namespace's workloads -- Kubernetes deliberately keeps
-# it so a recreated StatefulSet re-binds its data. Left alone it becomes an orphaned EBS volume that
-# bills forever, and unlike a leftover ENI it blocks nothing, so `terraform destroy` reports complete
-# success while leaking it. The gp3 StorageClass's reclaim policy is Delete, so removing the PVC here
-# is what actually deletes the volume.
-#
-# || true throughout: a cluster that is already gone, or was never built with this stack, must not
-# fail the teardown.
-kubectl delete pvc --all -n observability --ignore-not-found --timeout=60s || true
+if kubectl cluster-info >/dev/null 2>&1; then
+  step "4/7  Deleting the observability PVCs"
+  # A PVC created by a StatefulSet's volumeClaimTemplate is NOT removed by `helm uninstall`, by
+  # deleting the StatefulSet, or by deleting the namespace's workloads -- Kubernetes deliberately keeps
+  # it so a recreated StatefulSet re-binds its data. Left alone it becomes an orphaned EBS volume that
+  # bills forever, and unlike a leftover ENI it blocks nothing, so `terraform destroy` reports complete
+  # success while leaking it. The gp3 StorageClass's reclaim policy is Delete, so removing the PVC here
+  # is what actually deletes the volume.
+  #
+  # StatefulSet delete FIRST, then PVC delete -- NOT redundant with either the "keep re-binding" fact
+  # above or the Helm uninstall in the next step. A PVC still mounted by a running pod carries the
+  # pvc-protection finalizer, which blocks `kubectl delete pvc` until the mounting pod releases the
+  # volume -- Prometheus and Alertmanager are still up and still mounting these at this point in the
+  # script, so deleting the PVC first only sets a deletionTimestamp that never clears: --timeout expires,
+  # || true swallows the failure, and the step reports success having deleted nothing, which is exactly
+  # the silent leak this step exists to prevent. Deleting the StatefulSet stops those pods -- releasing
+  # the finalizer -- without touching the claims (the very "StatefulSet gone, PVC survives" behaviour
+  # this whole step exists because of). Waiting for the Helm uninstall below to stop the pods instead
+  # would work too, right up until it doesn't: that uninstall can itself hang if the cluster starts
+  # coming down mid-teardown -- the exact race that hung helm_release.jenkins with "context deadline
+  # exceeded" on 2026-08-04 -- so doing it explicitly here, while the cluster is still healthy, avoids
+  # depending on that.
+  #
+  # || true throughout: a cluster that is already gone, or was never built with this stack, must not
+  # fail the teardown.
+  kubectl delete statefulset --all -n observability --ignore-not-found --timeout=60s || true
+  kubectl delete pvc         --all -n observability --ignore-not-found --timeout=60s || true
+else
+  step "4/7  Cluster unreachable — skipping observability PVC cleanup (these volumes die with the cluster)"
+fi
 
 step "5/7  Uninstalling Helm releases while the cluster is still healthy"
 # All three of this stack's OWN helm_release resources -- voteball, jenkins, jenkins-support --

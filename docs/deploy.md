@@ -620,7 +620,9 @@ infrastructure. Order matters:
 4. **Delete the observability PVCs.** A StatefulSet's volume claim survives `helm uninstall` and the
    StatefulSet itself, by design — Kubernetes keeps it so a recreated StatefulSet can rebind its data.
    Left behind it is an orphaned EBS volume that bills forever and blocks nothing, so the teardown
-   would report success while leaking it.
+   would report success while leaking it. This step deletes the StatefulSet first, on purpose — a
+   claim still mounted by a running Prometheus or Alertmanager pod can't actually be deleted, only
+   marked for deletion, so the pods have to stop before the claim can go.
 5. **Uninstall the app's Helm release.** Jenkins is not in this step — it belongs to Terraform, so it
    goes with everything else in step 7.
 6. **Remove the DNS records** for both `<your-domain>` and `jenkins.<your-domain>`, in case
