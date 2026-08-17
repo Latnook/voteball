@@ -6,11 +6,14 @@
 #   2. Ingress next              -- lets external-dns remove its DNS records and the ALB
 #                                   de-provision. A leftover ALB's ENIs block VPC deletion.
 #   3. Wait for the ALB to go    -- polling, because deletion is asynchronous.
-#   4. Uninstall Helm releases   -- while the cluster is still healthy (see step 4 below for why).
-#   5. DNS cleanup backstop.
-#   6. terraform destroy last, with one bounded automatic retry if it hits either of the two hangs
+#   4. Delete the observability PVCs -- a StatefulSet's volumeClaimTemplate survives `helm uninstall`
+#      by design, and the gp3 StorageClass's reclaim policy is Delete, so this is what actually removes
+#      the underlying EBS volume. Must run while the cluster is still healthy, same as step 5 below.
+#   5. Uninstall Helm releases   -- while the cluster is still healthy (see step 5 below for why).
+#   6. DNS cleanup backstop.
+#   7. terraform destroy last, with one bounded automatic retry if it hits either of the two hangs
 #      documented in CLAUDE.md's teardown section (a Helm uninstall racing cluster deletion, and the
-#      second-order External Secrets finalizer hang that follows it) -- see step 6 for the detail.
+#      second-order External Secrets finalizer hang that follows it) -- see step 7 for the detail.
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
@@ -30,14 +33,14 @@ step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 # --ignore-not-found does NOT cover, so set -e would abort before reaching Terraform. Any leftover
 # Kubernetes object dies with the cluster anyway; these steps are best-effort by design.
 if kubectl cluster-info >/dev/null 2>&1; then
-  step "1/6  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
+  step "1/7  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
   # Deleted BY NAME, not by rendering the template. Teardown must not depend on `terraform output`
   # being readable: this script runs against half-destroyed stacks, and a render failure here would
   # skip the deletion and leave selfHeal recreating everything the next five steps remove. The name
   # and namespace are fixed in the template, so nothing environment-specific is needed to say which.
   kubectl delete application voteball -n argocd --ignore-not-found || true
 
-  step "2/6  Removing the Ingresses (releases the ALB and the DNS records)"
+  step "2/7  Removing the Ingresses (releases the ALB and the DNS records)"
   # BOTH Ingresses, not just the app's. Since 2026-07-31 they share ALB group "voteball"
   # (alb.ingress.kubernetes.io/group.name), and an ALB is only de-provisioned when its group has NO
   # members left. Deleting one and not the other leaves the ALB alive, so step 3 waits forever and
@@ -46,10 +49,10 @@ if kubectl cluster-info >/dev/null 2>&1; then
   kubectl delete ingress voteball -n devops-app --ignore-not-found || true
   kubectl delete ingress jenkins-webhook -n ci --ignore-not-found || true
 else
-  step "1-2/6  Cluster unreachable — skipping ArgoCD/Ingress deletion (already gone)"
+  step "1-2/7  Cluster unreachable — skipping ArgoCD/Ingress deletion (already gone)"
 fi
 
-step "3/6  Waiting for the ALB to de-provision (its ENIs block VPC deletion)"
+step "3/7  Waiting for the ALB to de-provision (its ENIs block VPC deletion)"
 # TWO name shapes are matched on purpose. The AWS Load Balancer Controller names an ALB after the
 # INGRESS GROUP when one is set (k8s-<group>-<hash>, i.e. k8s-voteball-...) and after the
 # namespace+ingress when it is not (k8s-devopsap-voteball-...). Joining the group on 2026-07-31
@@ -67,7 +70,19 @@ for _ in $(seq 1 60); do
   sleep 10
 done
 
-step "4/6  Uninstalling Helm releases while the cluster is still healthy"
+step "4/7  Deleting the observability PVCs"
+# A PVC created by a StatefulSet's volumeClaimTemplate is NOT removed by `helm uninstall`, by
+# deleting the StatefulSet, or by deleting the namespace's workloads -- Kubernetes deliberately keeps
+# it so a recreated StatefulSet re-binds its data. Left alone it becomes an orphaned EBS volume that
+# bills forever, and unlike a leftover ENI it blocks nothing, so `terraform destroy` reports complete
+# success while leaking it. The gp3 StorageClass's reclaim policy is Delete, so removing the PVC here
+# is what actually deletes the volume.
+#
+# || true throughout: a cluster that is already gone, or was never built with this stack, must not
+# fail the teardown.
+kubectl delete pvc --all -n observability --ignore-not-found --timeout=60s || true
+
+step "5/7  Uninstalling Helm releases while the cluster is still healthy"
 # All three of this stack's OWN helm_release resources -- voteball, jenkins, jenkins-support --
 # uninstalled explicitly HERE, before `terraform destroy` starts deleting the cluster underneath them.
 # This is the actual fix for the 2026-08-04 hang, not a workaround for it: `terraform destroy` also
@@ -85,7 +100,7 @@ step "4/6  Uninstalling Helm releases while the cluster is still healthy"
 # the ci namespace's ExternalSecret/SecretStore finalizers with no controller left to clear them, and
 # kubernetes_namespace.ci sat Terminating forever. Leaving ESO to Terraform's own destroy graph (it
 # naturally uninstalls consumers before their dependencies) is the safer order; the retry logic in
-# step 6 below is what recovers if it still hangs.
+# step 7 below is what recovers if it still hangs.
 if kubectl cluster-info >/dev/null 2>&1; then
   helm uninstall voteball        -n devops-app --ignore-not-found || true
   helm uninstall jenkins         -n ci         --ignore-not-found || true
@@ -94,14 +109,14 @@ else
   echo "Cluster unreachable — skipping (these releases die with the cluster)."
 fi
 
-step "5/6  Removing this cluster's DNS records"
+step "6/7  Removing this cluster's DNS records"
 # Deterministic backstop: external-dns only reconciles on a timer, so teardown can destroy it before
 # it notices the deleted Ingress, stranding the app's DNS on a dead ALB (2026-07-20). This
 # waits for external-dns to do its own job, then removes whatever it left behind. Only touches
 # records whose ownership TXT names this cluster.
 ./scripts/cleanup-stale-dns.sh || echo "WARNING: DNS cleanup failed; check the zone by hand."
 
-step "6/6  Destroying AWS infrastructure (Terraform will ask you to confirm)"
+step "7/7  Destroying AWS infrastructure (Terraform will ask you to confirm)"
 
 # When nodes terminate, the AWS VPC CNI can leave DETACHED (status=available) aws-K8S-* interfaces
 # behind. Terraform then retries DeleteSubnet against a DependencyViolation until it times out --

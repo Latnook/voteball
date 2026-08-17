@@ -617,12 +617,16 @@ infrastructure. Order matters:
    balancer keeps network interfaces alive that block the network from being deleted. This is the
    difference between a teardown that takes ten minutes and one that appears to hang for twenty.
 3. **Wait** for the load balancer to actually disappear.
-4. **Uninstall the app's Helm release.** Jenkins is not in this step — it belongs to Terraform, so it
-   goes with everything else in step 6.
-5. **Remove the DNS records** for both `<your-domain>` and `jenkins.<your-domain>`, in case
+4. **Delete the observability PVCs.** A StatefulSet's volume claim survives `helm uninstall` and the
+   StatefulSet itself, by design — Kubernetes keeps it so a recreated StatefulSet can rebind its data.
+   Left behind it is an orphaned EBS volume that bills forever and blocks nothing, so the teardown
+   would report success while leaking it.
+5. **Uninstall the app's Helm release.** Jenkins is not in this step — it belongs to Terraform, so it
+   goes with everything else in step 7.
+6. **Remove the DNS records** for both `<your-domain>` and `jenkins.<your-domain>`, in case
    external-dns was deleted before it noticed. It only ever touches records it created for this
    cluster; your email and other records are never eligible.
-6. **Then** delete everything else — and confirm before it starts, because this is the irreversible
+7. **Then** delete everything else — and confirm before it starts, because this is the irreversible
    part.
 
 A final database snapshot is taken automatically, so the next `./scripts/deploy.sh` restores your
