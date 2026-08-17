@@ -104,3 +104,32 @@ def test_latency_is_observed_for_a_served_request(client):
     text = client.get('/metrics').get_data(as_text=True)
     assert 'voteball_http_request_duration_seconds_bucket' in text
     assert 'endpoint="/health"' in text
+
+
+def test_method_label_passes_valid_verbs_unchanged():
+    for verb in ('GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD', 'OPTIONS'):
+        assert metrics.method_label(verb) == verb
+
+
+def test_method_label_collapses_arbitrary_tokens_to_other():
+    for token in ('FOOBAR', 'WHATEVER-123', 'ZZZ', 'invalid', 'custom'):
+        assert metrics.method_label(token) == 'other'
+
+
+def test_arbitrary_method_tokens_do_not_create_distinct_series(client):
+    # An attacker sending different junk tokens should not mint new series. Every junk token
+    # collapses to 'other', so two requests with two different junk verbs should produce only one
+    # entry in voteball_http_requests_total with method="other".
+    client.open('/no-such-path-exists', method='JUNKVERB1')
+    client.open('/no-such-path-exists', method='JUNKVERB2')
+    text = client.get('/metrics').get_data(as_text=True)
+
+    # Extract all lines with voteball_http_requests_total and method="other"
+    other_method_lines = [line for line in text.splitlines()
+                          if 'voteball_http_requests_total{' in line and 'method="other"' in line]
+    # Should have exactly one series (the count may be higher, but only one distinct series)
+    assert len(other_method_lines) == 1, f"Expected 1 series with method='other', got {len(other_method_lines)}"
+
+    # Verify neither junk token appears anywhere in the exposition
+    assert 'JUNKVERB1' not in text, 'Junk token JUNKVERB1 appears in exposition'
+    assert 'JUNKVERB2' not in text, 'Junk token JUNKVERB2 appears in exposition'

@@ -69,10 +69,11 @@ def _metrics_record(response):
     if request.path == '/metrics':
         return response
     endpoint = metrics.endpoint_label(request.url_rule)
+    method = metrics.method_label(request.method)
     started = request.environ.get('voteball.start')
     if started is not None:
-        metrics.LATENCY.labels(request.method, endpoint).observe(time.perf_counter() - started)
-    metrics.REQUESTS.labels(request.method, endpoint, str(response.status_code)).inc()
+        metrics.LATENCY.labels(method, endpoint).observe(time.perf_counter() - started)
+    metrics.REQUESTS.labels(method, endpoint, str(response.status_code)).inc()
     return response
 
 

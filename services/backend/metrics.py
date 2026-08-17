@@ -95,6 +95,18 @@ def endpoint_label(url_rule):
     return url_rule.rule if url_rule is not None else 'unmatched'
 
 
+def method_label(method):
+    """The bounded form of "which HTTP verb was this". See the cardinality note above.
+
+    request.method is whatever verb the client wrote on the request line, gunicorn accepts arbitrary
+    tokens, and nginx proxies anything under /api/* regardless of verb -- so the verb is
+    attacker-controlled and unbounded without this guard. Any method outside the seven verbs this app
+    can actually serve collapses to 'other'.
+    """
+    valid_methods = {'GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'HEAD', 'OPTIONS'}
+    return method if method in valid_methods else 'other'
+
+
 def set_app_info():
     """Publish the running build's identity.
 
