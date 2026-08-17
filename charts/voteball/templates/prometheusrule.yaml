@@ -24,6 +24,94 @@ metadata:
     release: kube-prometheus-stack
 spec:
   groups:
+    # The SLIs, computed once and referenced everywhere. The journey is the three endpoints a voter
+    # actually traverses -- load the options, cast the ballot, read the results -- not every route the
+    # API happens to expose, because an admin endpoint erroring does not mean a voter was failed.
+    - name: voteball.sli
+      rules:
+        - record: voteball:journey_requests:rate5m
+          expr: |
+            sum(rate(voteball_http_requests_total{
+              namespace="{{ .Release.Namespace }}",
+              endpoint=~"/api/(options|vote|results.*)"
+            }[5m]))
+
+        - record: voteball:journey_errors:rate5m
+          expr: |
+            sum(rate(voteball_http_requests_total{
+              namespace="{{ .Release.Namespace }}",
+              endpoint=~"/api/(options|vote|results.*)", status=~"5.."
+            }[5m]))
+
+        # Availability as a ratio in 0..1. `or vector(1)` covers the quiet-night case: with no traffic
+        # the division is 0/0 = NaN, and a NaN availability would read as a breach in every panel and
+        # alert that consumes it. No requests means nothing failed.
+        - record: voteball:availability:ratio5m
+          expr: |
+            1 - (
+              voteball:journey_errors:rate5m
+              / clamp_min(voteball:journey_requests:rate5m, 0.0000001)
+            ) or vector(1)
+
+        - record: voteball:latency:p95_5m
+          expr: |
+            histogram_quantile(0.95, sum by (le) (rate(
+              voteball_http_request_duration_seconds_bucket{namespace="{{ .Release.Namespace }}"}[5m]
+            )))
+
+    - name: voteball.slo
+      rules:
+        - alert: VoteballHighErrorRate
+          # 5% of the voting journey failing. Deliberately NOT "any 5xx": a single error on a public
+          # site is noise, a sustained ratio is an outage.
+          expr: |
+            (voteball:journey_errors:rate5m
+             / clamp_min(voteball:journey_requests:rate5m, 0.0000001)) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "More than 5% of voting-journey requests are failing"
+            description: "The site may still render: /health is a static response and the liveness probe is a bare TCP check, so pods stay Ready while every API call fails."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballHighErrorRate.md"
+
+        - alert: VoteballHighLatencyP95
+          expr: voteball:latency:p95_5m > 1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "95th-percentile latency above the 1s SLO"
+            description: "p95 has been over 1s for 10 minutes. The 1s boundary is a real histogram bucket edge, so this number is measured rather than interpolated."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballHighLatencyP95.md"
+
+        - alert: VoteballRollupsStale
+          # The worker is notification-driven with a 30s polling backstop. If LISTEN stops delivering
+          # AND the poll wedges, the site serves stale results with every pod Ready and every other
+          # alert quiet. Age of this gauge is the only signal that sees it.
+          expr: |
+            time() - max(voteball_worker_last_success_timestamp_seconds{namespace="{{ .Release.Namespace }}"}) > 600
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Results are more than 10 minutes stale"
+            description: "The worker has not completed a successful recompute in over 10 minutes. Votes are still being recorded; the published results are frozen."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballRollupsStale.md"
+
+        - alert: VoteballAvailabilitySLOBreach
+          # The SLO itself: 99% of journey requests succeed. Evaluated over 6h rather than the stated
+          # 7-day window because a 7d average moves too slowly to act on -- the window that matters
+          # for paging is the one where recovery is still possible.
+          expr: avg_over_time(voteball:availability:ratio5m[6h]) < 0.99
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Availability below the 99% SLO over the last 6 hours"
+            description: "Sustained failures rather than a spike. Check whether an alert above already fired and was not acted on."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballAvailabilitySLOBreach.md"
+
     - name: voteball.availability
       rules:
         - alert: VoteballPodCrashLooping
@@ -37,6 +125,7 @@ spec:
           annotations:
             summary: "{{ `{{ $labels.pod }}` }} is crash looping"
             description: "Container {{ `{{ $labels.container }}` }} in {{ `{{ $labels.pod }}` }} has been in CrashLoopBackOff for 5 minutes."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballPodCrashLooping.md"
 
         - alert: VoteballDeploymentDegraded
           # Fewer ready replicas than the spec asks for. Catches the failure the site hides well:
@@ -62,6 +151,7 @@ spec:
           annotations:
             summary: "No backend replicas available -- voting and results are down"
             description: "The frontend still serves HTML, so the site looks up while every API call fails."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballNoBackendAvailable.md"
 
     - name: voteball.jobs
       rules:
@@ -76,6 +166,7 @@ spec:
           annotations:
             summary: "Schema migration Job failed -- the release did not deploy"
             description: "The site is still running the PREVIOUS version. kubectl logs job/voteball-migrate -n {{ .Release.Namespace }}"
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballMigrationJobFailed.md"
 
         - alert: VoteballBackupJobFailed
           # A backup you believe in and never verified is the worst kind.
@@ -86,6 +177,7 @@ spec:
           annotations:
             summary: "Nightly database backup failed"
             description: "The pg_dump CronJob did not complete. RDS point-in-time recovery still covers the last 7 days."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballBackupJobFailed.md"
 
         - alert: VoteballBackupMissing
           # Absence of success, not presence of failure -- a CronJob that never runs emits no failure
@@ -99,6 +191,7 @@ spec:
           annotations:
             summary: "No successful database backup in 48 hours"
             description: "The backup CronJob has not completed successfully for two days. It is scheduled daily at 02:00 UTC."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballBackupMissing.md"
 
     - name: voteball.saturation
       rules:
@@ -113,4 +206,5 @@ spec:
           annotations:
             summary: "{{ `{{ $labels.pod }}` }} restarted more than 3 times in an hour"
             description: "Repeated restarts without a CrashLoopBackOff usually means OOMKilled or a failing liveness probe."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballContainerOOMKilled.md"
 {{- end }}
