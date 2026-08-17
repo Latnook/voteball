@@ -14,3 +14,8 @@ spec:
     - name: http
       port: 80
       targetPort: 8080
+    # The nginx exporter sidecar. Named because a ServiceMonitor selects an endpoint by Service port
+    # NAME, never by number.
+    - name: metrics
+      port: 9113
+      targetPort: 9113

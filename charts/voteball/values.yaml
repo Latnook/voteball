@@ -56,6 +56,14 @@ frontend:
     limits:
       cpu: 100m
       memory: 64Mi
+  # nginx metrics sidecar. Reads nginx's built-in stub_status over loopback and re-exposes it in
+  # Prometheus format on 9113. Pinned by tag like every other image here -- validate-repo.sh fails
+  # the build on an unpinned one.
+  exporter:
+    image: "nginx/nginx-prometheus-exporter:1.5.3"
+    resources:
+      requests: { cpu: 10m, memory: 16Mi }
+      limits: { cpu: 50m, memory: 32Mi }
 
 worker:
   # Singleton poller, not a request-serving tier — 2 replicas would just be
