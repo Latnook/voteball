@@ -21,7 +21,7 @@ cluster's OIDC provider. Each role's trust policy is federated to **one specific
 | `backend` | **none** | talks only to RDS over the network; needs no AWS API access |
 | `worker` | `voteball-worker-irsa` | `sns:Publish` (the topic) + `s3:PutObject` on **`snapshots/`** only |
 | `backup` | `voteball-backup-irsa` | `s3:PutObject` on **`backups/`** only — *no SNS, separate role* |
-| `kube-prometheus-stack-alertmanager` (`monitoring`) | `voteball-alertmanager-irsa` | `sns:Publish` on the one topic — nothing else |
+| `kube-prometheus-stack-alertmanager` (`observability`) | `voteball-alertmanager-irsa` | `sns:Publish` on the one topic — nothing else |
 
 That backend/frontend carry **no role at all** is the concrete least-privilege proof. And the worker and
 backup jobs touch the *same bucket under different prefixes with different roles* — a much stronger

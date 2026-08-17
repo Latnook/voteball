@@ -452,17 +452,19 @@ expires after 12 hours. To change those, see
 Run one of these and **leave it running** (it blocks — use a second terminal), then open the link:
 
 ```bash
-kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana      3000:80    # http://localhost:3000
-kubectl port-forward -n monitoring svc/kube-prometheus-stack-prometheus   9090:9090  # http://localhost:9090
-kubectl port-forward -n monitoring svc/kube-prometheus-stack-alertmanager 9093:9093  # http://localhost:9093
+kubectl port-forward -n observability svc/kube-prometheus-stack-grafana      3000:80    # http://localhost:3000
+kubectl port-forward -n observability svc/kube-prometheus-stack-prometheus   9090:9090  # http://localhost:9090
+kubectl port-forward -n observability svc/kube-prometheus-stack-alertmanager 9093:9093  # http://localhost:9093
 ```
 
 Grafana's username is `admin`. Its password is generated fresh at install time (deliberately — a
-fixed one would have to be written down in the repo), so **it is different after every rebuild**.
-Print the current one with:
+fixed one would have to be written down in the repo), so **it is different after every rebuild** —
+and also different after the namespace was renamed from `monitoring` to `observability`, since that
+recreates the release from scratch. If you saved the old password, it no longer works; print the
+current one with:
 
 ```bash
-kubectl get secret kube-prometheus-stack-grafana -n monitoring \
+kubectl get secret kube-prometheus-stack-grafana -n observability \
   -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
@@ -593,7 +595,7 @@ aws logs tail "/aws/containerinsights/$(terraform output -raw cluster_name)/appl
 | What you see | Almost always |
 |---|---|
 | `kubectl` hangs or complains about certificates | The cluster was rebuilt — re-run `aws eks update-kubeconfig` |
-| Port-forward says the service doesn't exist | A chart upgrade renamed it — run `kubectl get svc -n monitoring` and use the real name |
+| Port-forward says the service doesn't exist | A chart upgrade renamed it — run `kubectl get svc -n observability` and use the real name |
 | Grafana rejects the password | It's regenerated on every rebuild — print it again |
 | `localhost:3000` shows nothing | The tunnel closed — it dies with its terminal, silently |
 | `kubectl port-forward -n ci svc/jenkins` fails | The cluster (and Jenkins with it) is torn down, or the pod is mid-reschedule after a Spot reclaim — retry in a few seconds |
@@ -617,14 +619,18 @@ infrastructure. Order matters:
    balancer keeps network interfaces alive that block the network from being deleted. This is the
    difference between a teardown that takes ten minutes and one that appears to hang for twenty.
 3. **Wait** for the load balancer to actually disappear.
-4. **Delete the observability PVCs.** A StatefulSet's volume claim survives `helm uninstall` and the
-   StatefulSet itself, by design — Kubernetes keeps it so a recreated StatefulSet can rebind its data.
-   Left behind it is an orphaned EBS volume that bills forever and blocks nothing, so the teardown
-   would report success while leaking it. This step deletes the StatefulSet first, on purpose — a
-   claim still mounted by a running Prometheus or Alertmanager pod can't actually be deleted, only
-   marked for deletion, so the pods have to stop before the claim can go.
-5. **Uninstall the app's Helm release.** Jenkins is not in this step — it belongs to Terraform, so it
-   goes with everything else in step 7.
+4. **Uninstall this stack's own Helm releases** — the app, Jenkins, Jenkins' support chart, and
+   kube-prometheus-stack (Prometheus/Grafana/Alertmanager) — while the cluster is still healthy.
+   Removing kube-prometheus-stack here matters for the next step: it deletes the Prometheus and
+   Alertmanager custom resources, so the operator that watches them has nothing left to act on.
+5. **Delete the observability PVCs.** A StatefulSet's volume claim survives `helm uninstall`, by
+   design — Kubernetes keeps it so a recreated StatefulSet can rebind its data. Left behind it's an
+   orphaned EBS volume that bills forever and blocks nothing, so the teardown would report success
+   while leaking it. This has to run *after* step 4, not before: while the operator and its
+   Prometheus/Alertmanager custom resources are still around, deleting the StatefulSet doesn't work —
+   the operator just recreates it (and a fresh PVC, and a fresh EBS volume) within seconds. Once step
+   4 has removed the release, there's no operator left to do that, so the plain PVC delete here is
+   enough.
 6. **Remove the DNS records** for both `<your-domain>` and `jenkins.<your-domain>`, in case
    external-dns was deleted before it noticed. It only ever touches records it created for this
    cluster; your email and other records are never eligible.
