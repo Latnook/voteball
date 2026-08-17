@@ -178,6 +178,16 @@ series; `/api/admin/clubs/42` would be one per club. The brief bans unbounded-ca
 names raw URL, user id and request id explicitly; `request.url_rule.rule` is the bounded form, and
 requests that match no rule are labelled `unmatched` so a 404 flood cannot mint series either.
 
+**The cardinality rule is not "bound the route" — it is "bound every label whose value the client
+controls," and `method` is the same problem in a smaller costume.** A security review during this
+plan caught it: `request.method` is whatever verb string the client wrote on the request line,
+gunicorn accepts arbitrary tokens rather than validating against the HTTP method set, and nginx
+proxies anything under `/api/*` regardless of verb — so three requests carrying three junk tokens
+would mint three permanent series, the exact failure `endpoint` was already designed to prevent, just
+reintroduced through the label next to it. `metrics.method_label()` closes it the same way
+`endpoint_label()` closes the route: an allowlist of the real HTTP methods, collapsing anything else
+to `other`. Any future label needs the same question asked of it before it ships, not just `endpoint`.
+
 **Gunicorn runs 2 workers, so multiprocess mode is mandatory.** Each worker is a separate process with
 its own counters, and a scrape is served by whichever one accepts the connection — a naive setup
 reports roughly half the traffic and wobbles between scrapes. `prometheus_client`'s multiprocess mode
@@ -493,8 +503,9 @@ Offline, before anything is applied:
   names, the bounded `endpoint` label, and multiprocess aggregation across two workers
 - `helm template` and `helm lint` for both charts
 - `scripts/ci/validate-observability.sh` against the rendered output
-- `scripts/tests/run-ci-suite.sh` — the new tests must be assigned to `PYTHON_GROUP` or `GIT_GROUP`,
-  which the suite enforces
+- `scripts/tests/run-ci-suite.sh` — note its group lists classify only `scripts/tests/*.sh`, so the
+  pytest files added for instrumentation need no entry; the shell tests added for the CI/CD gates
+  (§11, §12) do, and the suite fails if one is in neither group
 - `terraform fmt -recursive` and `terraform validate`
 
 Live, after apply:
