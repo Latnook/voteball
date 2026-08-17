@@ -673,9 +673,20 @@ the result — testing the raw text instead was confirmed to check a string bash
 rejects apostrophes, backticks and double quotes inside shell comments in those blocks, after a
 quoting failure in one such comment cost a full debugging cycle that was never root-caused.
 
-`scripts/jenkins/install-jenkins.sh` and `uninstall-jenkins.sh` are thin wrappers over the
-`terraform apply -target=...`/`destroy -target=...` calls that own the Jenkins release — **not** a
-second install path, for the same reason there's no `helm upgrade` path for the app chart.
+`scripts/jenkins/` holds five thin wrappers over the `terraform apply -target=...`/`destroy
+-target=...` calls that own the Jenkins release — **not** a second install path, for the same reason
+there's no `helm upgrade` path for the app chart. `install-jenkins.sh` and `uninstall-jenkins.sh` are
+the obvious two. `configure-jenkins.sh` pushes a JCasC/plugin/credential/job change to the running
+controller (the step people forget: committing `ci/jenkins/jenkins.yaml` alone is a no-op) and then
+greps the controller log for `unresolved variable`, failing on a hit — JCasC does **not** crash on
+one, it defaults the value to an empty string and boots, so nothing else catches it; `--restart`
+covers a *new key* in `voteball/jenkins`, which `containerEnvFrom` projects only at pod start.
+**`create-jobs.sh` deliberately creates no job** — jobs come from the `jobs:` block of
+`ci/jenkins/jenkins.yaml` (Job DSL) and a second creation route would be a competing source of truth
+that JCasC erases on the next boot; the script asserts the result instead (both declared, both loading
+their `Jenkinsfile` from SCM not inline, exactly two live, `--repo-only` for the cluster-free half).
+Both exist under the names the course brief's §2 lists, so a reader looking for them finds the real
+mechanism rather than nothing.
 `verify-jenkins.sh` asserts rather than prints: among other checks, that **exactly two** jobs exist
 (JCasC's Job DSL never deletes a job it stops declaring, so a stale one survived the CI/CD split and
 had to be removed by hand) and that the `jenkins-cd-agent` ServiceAccount cannot write to

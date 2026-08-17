@@ -245,19 +245,38 @@ stage.
 
 ```bash
 ./scripts/jenkins/install-jenkins.sh      # targeted terraform apply: EFS + both helm_releases
+./scripts/jenkins/configure-jenkins.sh    # push a JCasC/plugin/credential/job change to the controller
+./scripts/jenkins/create-jobs.sh          # assert both jobs are declared in code AND live
 ./scripts/jenkins/verify-jenkins.sh       # asserts the brief's whole §10 checklist, non-zero on failure
 ./scripts/jenkins/uninstall-jenkins.sh    # targeted terraform destroy: removes Jenkins, leaves the app
 ```
 
-All three are **thin wrappers around Terraform**, not a parallel install path — Jenkins is a platform
+They are **thin wrappers around Terraform, not a parallel install path** — Jenkins is a platform
 add-on Terraform owns (like ArgoCD, ESO and external-dns), not an application ArgoCD deploys, so a
 second install mechanism would misrepresent how the repo actually works. `install-jenkins.sh` is for
 the case where the cluster already exists and only the Jenkins add-on needs (re)installing; a full
 first deploy uses `./scripts/deploy.sh`, which calls the same underlying `terraform apply`.
 
-**Configuring** Jenkins after the first install means editing `ci/jenkins/jenkins.yaml` (JCasC) or the
-Helm values in `terraform/addon-jenkins.tf`, committing, then running `terraform apply` again — **not**
-committing to `master` and walking away, which is how `charts/voteball` is updated but is a no-op here.
+**Configuring** means editing `ci/jenkins/jenkins.yaml` (JCasC) or the Helm values in
+`terraform/addon-jenkins.tf`, committing, then running **`configure-jenkins.sh`** — **not** committing
+to `master` and walking away, which is how `charts/voteball` is updated but is a no-op here. That is
+the easiest mistake to make in this repo and it fails *silently*: the file says one thing and the
+running controller keeps doing another. The script also greps the controller log for
+`unresolved variable` afterwards and **fails on a hit**, because JCasC does not crash on one — it logs
+`Will default to empty string` and boots, leaving a Jenkins-shaped controller whose job silently has
+no credential. `--restart` covers the one case that needs it: a *new key* in the `voteball/jenkins`
+secret, which `containerEnvFrom` projects only at pod start, so a running controller never sees it.
+
+**Creating the jobs** is not a separate step and `create-jobs.sh` deliberately creates nothing. Both
+jobs are declared in the `jobs:` block of `ci/jenkins/jenkins.yaml` using the Job DSL plugin's
+`pipelineJob(...)`, applied at every controller boot; anything that created a job by another route
+would be a competing source of truth and would lose, because JCasC rebuilds the configuration from
+that file on every restart — roughly daily on Spot. The script *proves the result* instead: both jobs
+declared in code, both loading their `Jenkinsfile` from SCM rather than inline, exactly two and no
+stale leftovers in the live controller (Job DSL's `removedJobAction` defaults to `ignore`, which is
+how the retired `voteball` job once survived pointing at a deleted `Jenkinsfile`). `--repo-only` runs
+the declaration half with no cluster and no credentials; without credentials the live half **fails**
+rather than skipping quietly.
 
 **Verifying** is not a checklist for a human to eyeball. `verify-jenkins.sh` runs every command the
 brief's §10 lists (`kubectl get namespaces`, `pods -n ci -o wide`, `service,ingress,pvc -n ci`,
