@@ -123,7 +123,7 @@ esac
 # 2. Anything ArgoCD is managing that this repo never declared was created by hand.
 #    `default` is the AppProject the argo-cd chart ships and cannot be removed; everything else in
 #    both lists should be exactly what the template above renders.
-for pair in "applications:voteball" "appprojects:voteball default"; do
+for pair in "applications:voteball observability" "appprojects:voteball observability default"; do
   kind="${pair%%:*}"; allowed=" ${pair#*:} "
   found="$(kubectl get "$kind" -n argocd -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
   for name in $found; do

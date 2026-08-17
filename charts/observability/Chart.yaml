@@ -1,0 +1,6 @@
+apiVersion: v2
+name: observability
+description: Dashboards, platform alert rules and network policy for the observability namespace.
+type: application
+version: 0.1.0
+appVersion: "1.0"

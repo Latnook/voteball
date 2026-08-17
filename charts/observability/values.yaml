@@ -1,0 +1,25 @@
+# Everything in this chart is gated, so `helm template` works against a cluster with no
+# kube-prometheus-stack CRDs installed -- the same escape hatch charts/voteball's alerts.enabled
+# provides, and for the same reason: `helm template` succeeds either way, but `helm install` fails on
+# an unknown kind.
+
+# Grafana dashboards, shipped as ConfigMaps the Grafana sidecar discovers by label.
+dashboards:
+  enabled: true
+
+# Platform alert rules (Kubernetes, Jenkins, the monitoring system itself). Application rules live in
+# charts/voteball, next to the application they describe.
+alerts:
+  enabled: true
+
+# NetworkPolicies for this namespace. See templates/networkpolicy.yaml -- the EGRESS list is the
+# dangerous half.
+networkPolicy:
+  enabled: true
+
+# The two PUBLIC subnet CIDRs, matching charts/voteball. Only used if a policy ever needs to admit the
+# load balancer; kept here so both charts state the fact the same way.
+network:
+  albSubnetCidrs:
+    - "10.0.0.0/20"
+    - "10.0.16.0/20"

@@ -52,15 +52,20 @@ check "Application joins that project"     "project: voteball"          "$out"
 check "denies cluster-scoped resources"    "clusterResourceWhitelist: []" "$out"
 check "pins the destination namespace"     "namespace: devops-app"      "$out"
 
-# The AppProject must be applied BEFORE the Application that references it -- kubectl honours document
-# order in a single stream, so a reordered template leaves the Application in "project does not exist".
-proj_line="$(printf '%s\n' "$out" | grep -n "kind: AppProject" | cut -d: -f1)"
-app_line="$(printf '%s\n' "$out" | grep -n "kind: Application" | cut -d: -f1)"
-if [ -n "$proj_line" ] && [ -n "$app_line" ] && [ "$proj_line" -lt "$app_line" ]; then
-  ok "AppProject is rendered before the Application"
+# The AppProject must be applied BEFORE the Application that references it, IN EACH PAIR -- kubectl
+# honours document order in a single stream, so a reordered template leaves an Application in "project
+# does not exist". There are now two pairs (voteball, observability), so this checks the whole
+# top-level kind: sequence is AppProject, Application, AppProject, Application -- not just "one
+# AppProject line precedes one Application line", which a two-pair stream could satisfy by accident
+# (e.g. both AppProjects first) while still landing an Application ahead of its own project.
+kind_order="$(printf '%s\n' "$out" | grep -E '^kind: ')"
+expected_order=$'kind: AppProject\nkind: Application\nkind: AppProject\nkind: Application'
+if [ "$kind_order" = "$expected_order" ]; then
+  ok "AppProject precedes its Application in both pairs"
 else
-  bad "AppProject is rendered before the Application"
-  echo "       AppProject at line ${proj_line:-none}, Application at line ${app_line:-none}"
+  bad "AppProject precedes its Application in both pairs"
+  echo "       expected: $(printf '%s' "$expected_order" | tr '\n' ',')"
+  echo "       got:      $(printf '%s' "$kind_order" | tr '\n' ',')"
 fi
 
 # The project's sourceRepos must be the SAME repo the Application pulls from. If they ever diverge --
@@ -105,17 +110,18 @@ fi
 cp "$TMP/backup.tmpl" argocd/voteball-application.yaml.tmpl
 
 # --- 7. The rendered output is valid YAML ----------------------------------------------------------
-# safe_load_ALL, not safe_load: the template became a two-document stream when the AppProject was
-# added, and safe_load raises ComposerError on the second `---` -- a green test that would have gone
-# red for the right reason but with a misleading message.
+# safe_load_ALL, not safe_load: the template became a multi-document stream when the AppProject was
+# added, and safe_load raises ComposerError on a second `---` -- a green test that would have gone
+# red for the right reason but with a misleading message. Four documents now: the voteball pair, then
+# the observability pair added alongside it.
 if ARGOCD_STUB_github_repo="Latnook/voteball" "$RENDER" \
    | python3 -c '
 import sys, yaml
 docs = [d for d in yaml.safe_load_all(sys.stdin) if d]
 kinds = [d["kind"] for d in docs]
-assert kinds == ["AppProject", "Application"], kinds
+assert kinds == ["AppProject", "Application", "AppProject", "Application"], kinds
 ' 2>/dev/null; then
-  ok "renders valid YAML: exactly [AppProject, Application]"
+  ok "renders valid YAML: [AppProject, Application, AppProject, Application]"
 else
   # PyYAML is not a hard dependency of this repo; skip rather than fail the suite over it.
   echo "  skip renders valid YAML (PyYAML not installed)"

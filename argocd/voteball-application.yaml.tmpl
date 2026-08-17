@@ -72,3 +72,53 @@ spec:
     syncOptions:
       - ServerSideApply=true   # adopt existing helm-created resources in place
       - CreateNamespace=false  # devops-app already exists
+---
+# The observability project. Separate from `voteball` because it deploys a different chart into a
+# different namespace, and an AppProject's whole purpose is to pin exactly that pair. Reusing the
+# voteball project would mean widening its destination to two namespaces, which would let a mistake in
+# either chart deploy into the other's namespace.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: observability
+  namespace: argocd
+spec:
+  description: Dashboards, platform alerts and network policy. Deploys charts/observability into observability, nothing else.
+  sourceRepos:
+    - ${REPO_URL}
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: observability
+  # Empty = DENY every cluster-scoped resource, same as the voteball project. This chart renders only
+  # ConfigMaps, PrometheusRules and NetworkPolicies -- all namespaced. Verify with:
+  #     helm template observability charts/observability -n observability | grep '^kind:' | sort -u
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+---
+# CreateNamespace=false: Terraform's kube-prometheus-stack release created `observability` with
+# create_namespace, so it already exists. ServerSideApply for the same reason the voteball Application
+# uses it -- these objects share a namespace with resources Helm created, and field ownership has to
+# be shared rather than fought over.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability
+  namespace: argocd
+spec:
+  project: observability
+  source:
+    repoURL: ${REPO_URL}
+    targetRevision: master
+    path: charts/observability
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=false
