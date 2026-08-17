@@ -1,0 +1,24 @@
+# Grafana's sidecar container watches for ConfigMaps carrying `grafana_dashboard: "1"` and writes
+# their contents into its provisioning directory. So a committed JSON file becomes a dashboard with no
+# API call, no import button, and nothing for a human to click -- which is the brief's
+# "Observability as Code" requirement made structural: there is nowhere for a hand-made dashboard to
+# hide.
+#
+# `.Files.Glob` means adding a dashboard is adding a file. Do not add a per-dashboard template.
+{{- if .Values.dashboards.enabled }}
+{{- range $path, $bytes := .Files.Glob "dashboards/*.json" }}
+{{- $name := base $path | trimSuffix ".json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashboard-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    grafana_dashboard: "1"
+    {{- include "observability.labels" $ | nindent 4 }}
+data:
+  {{ $name }}.json: |
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
+{{- end }}
