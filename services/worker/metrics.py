@@ -47,6 +47,8 @@ def serve(port=None):
     """Start the metrics HTTP server in a background thread.
 
     start_http_server spawns its own daemon thread, so this returns immediately and the caller's
-    loop is unaffected.
+    loop is unaffected. Returns the (httpd, thread) pair start_http_server itself returns, so a
+    caller (or a test) can shut the server down instead of leaking a listening socket and a daemon
+    thread for the rest of the process's life.
     """
-    start_http_server(port or METRICS_PORT)
+    return start_http_server(port or METRICS_PORT)

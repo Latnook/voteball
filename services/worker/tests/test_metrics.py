@@ -75,6 +75,10 @@ def test_duration_is_observed_for_every_iteration(conn, monkeypatch):
 
 
 def test_serve_exposes_the_metrics_over_http():
-    metrics.serve(port=19100)
-    body = urllib.request.urlopen('http://127.0.0.1:19100/metrics', timeout=5).read().decode()
-    assert 'voteball_worker_recompute_total' in body
+    httpd, thread = metrics.serve(port=19100)
+    try:
+        body = urllib.request.urlopen('http://127.0.0.1:19100/metrics', timeout=5).read().decode()
+        assert 'voteball_worker_recompute_total' in body
+    finally:
+        httpd.shutdown()
+        thread.join(timeout=5)
