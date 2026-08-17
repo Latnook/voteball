@@ -238,8 +238,9 @@ flowchart TD
         guard{"Guard: is this our<br/>own commit? [skip ci]"}
         guard -->|"yes"| stop(["NOT_BUILT -- loop broken"])
         guard -->|"no"| validate["Validation<br/>repo-shape checks"]
-        validate --> lint["Lint / Static Analysis<br/>ruff + hadolint"]
-        lint --> tests["Tests<br/>153 pytest, Postgres sidecar"]
+        validate --> scripttests["Script tests<br/>run-ci-suite.sh -- the pipeline's own guards<br/>run TWICE: jnlp (git) + python container"]
+        scripttests --> lint["Lint / Static Analysis<br/>ruff + hadolint"]
+        lint --> tests["Tests<br/>250 pytest (208 backend + 42 worker)<br/>Postgres sidecar"]
         tests --> resolve["Resolve tag and account"]
         resolve --> built{"Already built?<br/>tag in ECR?"}
         built -->|"no"| build["Build images<br/>rootless BuildKit x4"]
@@ -258,19 +259,21 @@ flowchart TD
     subgraph cd["application-cd  (agent: voteball-deploy, SA: jenkins-cd-agent -- ECR READ-ONLY)"]
         checkout["Checkout<br/>records tag, source CI build, digest"]
         checkout --> inval["Input Validation<br/>not latest, is a SHA, images in ECR, NAMESPACE allowlisted"]
-        inval --> manval["Manifest Validation<br/>helm lint + template + kubectl apply --dry-run=client"]
+        inval --> manval["Manifest Validation<br/>helm lint + helm template<br/>+ kubectl CREATE --dry-run=client<br/>(not apply: apply reads live objects)"]
         manval --> promote["Promote<br/>write image.tag, commit skip ci, push"]
         promote --> sync["Deploy<br/>argocd app sync --revision"]
         sync --> wait["Rollout<br/>argocd app wait --sync --health"]
         wait --> verify["Verify<br/>argocd app get: Synced + Healthy + revision"]
-        verify --> smoke["Smoke Test<br/>HTTPS GET /health and /api/results"]
+        verify --> smoke["Smoke Test<br/>HTTPS GET / + /api/options<br/>+ /api/results?by=all<br/>(NOT /health -- 404 from outside)"]
         smoke -->|"pass"| done(["Deployed and verified"])
         smoke -.->|"fail"| rb
         wait -.->|"timeout"| rb
         verify -.->|"degraded"| rb
         rb{"Rollback -- is this build<br/>ITSELF already a rollback?<br/>ROLLBACK_DEPTH >= 1"}
-        rb -->|"no: re-run CD on the<br/>previous tag, depth + 1"| promote
         rb -->|"yes: stop -- production<br/>left running, needs a human"| stophuman(["NO ROLLBACK -- needs a human"])
+        rb -->|"no"| rbtarget{"rollback-target.sh:<br/>is the previous tag<br/>STILL IN ECR?"}
+        rbtarget -->|"yes: re-run CD on the<br/>previous tag, depth + 1"| promote
+        rbtarget -->|"no -- the rebuild deleted it<br/>(git remembers, ECR does not)"| stophuman
     end
 
     promote -->|"commit to master"| argo
@@ -299,15 +302,17 @@ flowchart LR
     internet(["Internet"])
 
     subgraph aws["AWS account -- il-central-1"]
-        subgraph vpc["VPC 10.0.0.0/16"]
-            alb["ALB group: voteball<br/>HTTPS via ACM"]
+        subgraph vpc["VPC 10.0.0.0/16 -- 2 AZs, single NAT"]
+            subgraph pub["PUBLIC subnets -- the only tier the internet reaches"]
+                alb["ALB group: voteball<br/>internet-facing, HTTPS via ACM + WAF"]
+            end
 
-            subgraph eks["EKS cluster -- Spot node group, private subnets"]
+            subgraph eks["EKS cluster -- Spot node group, PRIVATE subnets (egress via NAT)"]
                 subgraph nsci["namespace: ci"]
                     svc["Service: jenkins<br/>ClusterIP :8080"]
                     jc["jenkins-0 StatefulSet<br/>numExecutors 0 -- runs no builds<br/>SA: jenkins -- no AWS role"]
                     jobs[["Jobs: application-ci + application-cd<br/>created from JCasC, never the UI"]]
-                    pvc[("PVC: jenkins-home<br/>storageClass efs-sc, Retain")]
+                    pvc[("PVC: jenkins (JENKINS_HOME)<br/>storageClass efs-sc, Retain")]
                     ab["agent pod: voteball-build<br/>buildkit, trivy, skopeo, awscli,<br/>python, postgres, hadolint<br/>SA: jenkins-agent -- ECR push"]
                     ad["agent pod: voteball-deploy<br/>deploy: kubectl+helm+awscli+jq+curl<br/>argocd: argocd CLI<br/>SA: jenkins-cd-agent -- ECR read-only"]
                 end
@@ -323,7 +328,7 @@ flowchart LR
                 end
             end
 
-            subgraph iso["isolated DB subnets"]
+            subgraph iso["INTERNAL / isolated DB subnets -- no route out at all"]
                 rds[("RDS PostgreSQL<br/>sslmode=require")]
             end
 
