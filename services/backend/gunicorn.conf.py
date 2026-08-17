@@ -28,7 +28,20 @@ def _reset_multiproc_dir():
 
 
 def _mark_process_dead(pid):
-    """Indirection so the reaping can be asserted without a real prometheus_client registry."""
+    """Indirection so the reaping can be asserted without a real prometheus_client registry.
+
+    Returns early, before ever touching prometheus_client, when PROMETHEUS_MULTIPROC_DIR is unset or
+    empty. No chart, terraform or script in this repo sets that variable yet -- it arrives in a later
+    plan -- so on a live pod it currently IS unset, and multiprocess.mark_process_dead(pid) resolves
+    it with os.path.join(None, ...), raising TypeError. gunicorn 23's reap_workers() catches only
+    OSError, so that exception used to escape into the arbiter's main loop: a worker killed while
+    running (OOM, the default 30s timeout) took the whole master down, and a plain SIGTERM -- every
+    rolling update, every ArgoCD sync, every Spot reclaim -- exited 1 with a traceback instead of
+    draining in-flight requests and exiting 0.
+    """
+    path = os.environ.get('PROMETHEUS_MULTIPROC_DIR')
+    if not path:
+        return
     from prometheus_client import multiprocess
     multiprocess.mark_process_dead(pid)
 
