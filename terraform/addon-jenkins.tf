@@ -230,9 +230,29 @@ resource "helm_release" "jenkins_support" {
     # PRIVATE subnets, so the old vpcCidr rule admitted every pod in the cluster to the controller.
     { name = "albSubnetCidrs[0]", value = module.vpc.public_subnets_cidr_blocks[0] },
     { name = "albSubnetCidrs[1]", value = module.vpc.public_subnets_cidr_blocks[1] },
+    # FALSE for this apply, overriding the chart's own default of true. The `prometheus` plugin that
+    # would serve /prometheus only ships in a controller image rebuilt from ci/jenkins/plugins.txt,
+    # and jenkins_image_tag (in the gitignored terraform/voteball.tfvars) still points at an older
+    # image with no such image built yet. installPlugins is also false below (baked-image-only, by
+    # design -- see the comment on helm_release.jenkins), so this release cannot make the endpoint
+    # exist on its own. Creating the ServiceMonitor anyway would have Prometheus scrape a target that
+    # 404s forever: `up == 0` trips the cluster's default TargetDown rule after 10 minutes and pages
+    # SNS every 12 hours, permanently, for a target nobody can fix without a separate image build.
+    # Flip this back to true in the SAME change that ships the rebuilt image and bumps
+    # jenkins_image_tag -- not before.
+    { name = "serviceMonitor.enabled", value = "false" },
   ]
 
-  depends_on = [helm_release.external_secrets]
+  depends_on = [
+    helm_release.external_secrets,
+    # The ServiceMonitor CRD comes from this release (kube-prometheus-stack's operator). Without this
+    # edge, a from-scratch `deploy.sh` rebuild can create the two releases in parallel and this one's
+    # ServiceMonitor apply fails with `no matches for kind "ServiceMonitor" in version
+    # "monitoring.coreos.com/v1"`, aborting a billed apply part-way through. Harmless today because
+    # serviceMonitor.enabled is false above (see that comment) -- kept anyway, because the flag flips
+    # back to true in a later change and the ordering has to already be correct when it does.
+    helm_release.kube_prometheus_stack,
+  ]
 }
 
 # Single source of truth for the Jenkins chart version. It MUST drive both the URL and the
