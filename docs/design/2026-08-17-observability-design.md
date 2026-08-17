@@ -219,22 +219,55 @@ time, executor and agent counts, build results/rate/duration, and JVM health.
 **This is a platform change, so committing `plugins.txt` alone does nothing** — plugins are baked into
 the controller image, and the release is owned by Terraform, not ArgoCD.
 
-### 7. Scrape paths and NetworkPolicy
+### 7. Scrape paths, and NetworkPolicies that say what they mean
 
-Both target namespaces are default-deny, and the AWS VPC CNI gives pods **VPC IP addresses**, which
-makes the existing rules behave in a way worth stating explicitly rather than discovering:
+Adding a scrape means opening a path into two default-deny namespaces, and doing that honestly first
+requires fixing something the audit for this design turned up: **two existing rules are wider than
+their own comments.**
 
-- **`devops-app` denies the scrape today.** A new `allow-prometheus-scrape` policy admits ingress from
-  `namespaceSelector: kubernetes.io/metadata.name: observability` to `backend:5000` and
-  `worker:9100`, and nothing else.
-- **`ci` already admits it, accidentally.** `jenkins-ingress` allows the whole VPC CIDR on 8080 so the
-  ALB's ENIs can reach the controller — and because pod IPs *are* VPC IPs, that rule already covers
-  Prometheus. No change is needed; the design records it because the policy's comment reads narrower
-  than the rule actually is.
-- **`ci` denies the CD monitoring gate's egress.** `jenkins-egress` allows the internet but excludes
-  the VPC and RFC1918 ranges precisely so CI cannot reach RDS or the app — which also blocks
-  Prometheus. A targeted egress rule permits `ci` → `observability` on 9090 only. CD gains the ability
-  to read metrics and keeps its inability to reach the database or the application.
+The AWS VPC CNI gives every pod a real VPC address, so an `ipBlock` naming the VPC does not mean "the
+load balancer" — it means "anything on this network, pods included". The subnet layout is what makes
+the fix available:
+
+| Range | Holds |
+|---|---|
+| `10.0.0.0/20`, `10.0.16.0/20` (public) | ALB network interfaces, NAT gateway — **no pods, ever** |
+| `10.0.32.0/20`, `10.0.48.0/20` (private) | every node and every pod |
+| `10.0.64.0/24`, `10.0.65.0/24` (database) | RDS |
+
+**(a) Narrow both ALB rules from the VPC to the public subnets.** `charts/voteball`'s
+`allow-alb-to-frontend` and `charts/jenkins-support`'s `jenkins-ingress` both admit `10.0.0.0/16` on
+8080 to let the load balancer through. Both Ingresses are `scheme: internet-facing` with
+`target-type: ip`, so the ALB's interfaces can only ever be in the two public subnets — which contain
+no pods. Replacing the one `/16` with those two `/20`s makes each rule mean what its comment already
+claims, and incidentally removes the standing ability of any pod in the cluster to reach the Jenkins
+controller on 8080.
+
+The two CIDRs are plain values in each chart, not an eleventh field for
+`scripts/sync-values-from-tf.sh` to manage: they change only if someone edits `terraform/vpc.tf`, and
+a mismatch fails loudly and immediately — the ALB's health checks are dropped and the target group
+goes unhealthy — rather than silently. `charts/jenkins-support` already receives `vpcCidr` and
+`serviceCidr` from Terraform, so its copy is passed the same way.
+
+**(b) Grant the scrape by name, not by address.** New ingress rules admit
+`namespaceSelector: kubernetes.io/metadata.name: observability` to exactly three ports:
+`backend:5000`, `worker:9100` (in `charts/voteball`) and the Jenkins controller's `8080` (in
+`charts/jenkins-support`). After (a), this is the *only* thing that lets Prometheus in — the grant is
+deliberate and reviewable instead of a side effect of network geography.
+
+**(c) Let the CD monitoring gate read Prometheus, and nothing else.** `jenkins-egress` allows the
+internet but excludes the VPC and RFC1918 ranges, precisely so CI can never reach RDS or the app —
+which also blocks Prometheus. One targeted egress rule permits `ci` → `observability` on 9090. CD
+gains the ability to read metrics and keeps its inability to reach the database or the application.
+
+**(d) `observability` gets its own default-deny.** kube-prometheus-stack supports NetworkPolicies
+natively, and without them the new namespace would arrive as the one unrestricted space in a cluster
+where every other namespace is locked down. Ingress is limited to Grafana/Prometheus/Alertmanager's
+own ports from within the namespace (plus port-forward, which goes through the API server and is not
+subject to NetworkPolicy at all); egress is what Prometheus needs to scrape its targets.
+
+The end state is that "who may reach what" is one table in which every row names a namespace or the
+load balancer, and no row says "the VPC".
 
 `/metrics` needs no authentication because it is unreachable from outside: nginx proxies only
 `/api/*`, so the backend's metrics path has no public route at all, and in-cluster only the
@@ -369,6 +402,8 @@ on real pods, exercising the whole chain through to the SNS email, over a simula
 - PrometheusRules for all alerts → both charts, per §10
 - Three provisioned dashboard JSONs → `charts/observability`
 - Instrumentation code and the PromQL behind each SLI/SLO → `services/{backend,worker}`, §9
+- NetworkPolicy tightening and the scrape grants → `charts/voteball`, `charts/jenkins-support`,
+  `charts/observability` (§7)
 - Runbooks → `docs/runbooks/`
 - Evidence: targets UP, dashboards, alerts firing and resolved, all four drills →
   `docs/eks/evidence/2026-08-17-*`
@@ -392,6 +427,10 @@ Live, after apply:
 - Every declared target `UP` in Prometheus, verified by query rather than by eye
 - Each of the three dashboards rendering with non-empty panels
 - Each alert forced to fire once and observed reaching SNS
+- **A negative network test for §7(a)**: a pod in `devops-app` must fail to reach the Jenkins
+  controller on 8080, where today it succeeds. Per `charts/voteball/CLAUDE.md`, the CNI fails *open*
+  for the first seconds of a pod's life, so the test pod must sleep at least a minute before opening
+  the socket — otherwise a denial and a not-yet-programmed policy look identical
 - The four drills of §13, captured as evidence
 - A **fresh-install proof**: delete the `charts/observability` Application, re-sync, and confirm the
   dashboards return — the brief's "prove a clean installation" requirement, and the thing that
@@ -427,3 +466,10 @@ Live, after apply:
    is a git push and not a billed apply.
 6. **The gate passes on insufficient data.** Never roll back a healthy release for lack of
    measurement; the targets-up check covers the case where measurement itself is broken.
+7. **Both ALB NetworkPolicy rules narrow from the VPC to the public subnets**, and the Prometheus
+   scrape is granted by namespace label rather than inherited from an address range (§7a, §7b). Raised
+   by the repo owner on reviewing the design: an access path that exists by accident cannot be
+   explained, and this one had a pod-to-Jenkins route nobody intended. The namespace *layout* is
+   unchanged — it was already clean; what changes is that each rule now names its intent.
+8. **The `observability` namespace ships default-deny from the start** (§7d), so the namespace added by
+   this design does not become the one permissive space in the cluster.
