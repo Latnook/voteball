@@ -1,0 +1,21 @@
+# The worker serves no traffic; this Service exists solely so a ServiceMonitor can select it, since a
+# ServiceMonitor selects Services rather than Pods. clusterIP: None (headless) because there is
+# nothing to load-balance -- the worker is a singleton by design (see values.yaml's worker.replicas),
+# and a headless Service means Prometheus scrapes the pod directly rather than through a virtual IP.
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: worker
+    {{- include "voteball.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: worker
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: 9100

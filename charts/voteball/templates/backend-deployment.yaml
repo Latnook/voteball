@@ -43,6 +43,19 @@ spec:
           envFrom:
             - configMapRef: { name: app-config }
             - secretRef: { name: app-secret }
+          env:
+            # NOT in the app-config ConfigMap, deliberately. migrate-job.yaml consumes that ConfigMap
+            # via envFrom and runs readOnlyRootFilesystem with no writable /tmp, so a multiproc dir
+            # set there would reach the migration Job -- the hook that gates every release.
+            - name: PROMETHEUS_MULTIPROC_DIR
+              value: /tmp/prom
+            # gunicorn runs 2 workers per pod, each with its own counters. Without the directory
+            # above, /metrics is answered by whichever worker accepts the connection, so the counter
+            # alternates between two independent series -- non-monotonic, which rate() reads as
+            # repeated counter resets and turns into meaningless spikes. Nothing fails loudly if this
+            # is removed; see docs/design/2026-08-17-observability-design.md section 4.
+            - name: APP_VERSION
+              value: {{ .Values.image.tag | quote }}
           resources:
             requests: { cpu: {{ .Values.backend.resources.requests.cpu }}, memory: {{ .Values.backend.resources.requests.memory }} }
             limits: { cpu: {{ .Values.backend.resources.limits.cpu }}, memory: {{ .Values.backend.resources.limits.memory }} }

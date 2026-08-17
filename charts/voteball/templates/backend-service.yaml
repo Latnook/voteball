@@ -11,5 +11,7 @@ spec:
   selector:
     app: backend
   ports:
-    - port: 5000
+    # Named because a ServiceMonitor selects an endpoint by Service port NAME, never by number.
+    - name: http
+      port: 5000
       targetPort: 5000

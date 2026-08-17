@@ -27,6 +27,9 @@ spec:
         - name: worker
           image: {{ include "voteball.image" (dict "root" $ "name" "worker") | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: metrics
+              containerPort: 9100
           envFrom:
             - configMapRef: { name: app-config } # includes S3_BUCKET -> enables S3 snapshots
             - secretRef: { name: app-secret }
