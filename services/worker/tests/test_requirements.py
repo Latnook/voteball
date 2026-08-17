@@ -14,7 +14,7 @@ import sys
 SRC_DIR = pathlib.Path(__file__).resolve().parent.parent
 
 # Distribution name -> the name you actually `import`. Only needed where they differ.
-IMPORT_NAME = {'psycopg2-binary': 'psycopg2'}
+IMPORT_NAME = {'psycopg2-binary': 'psycopg2', 'prometheus-client': 'prometheus_client'}
 
 # Nothing here is invoked as a binary rather than imported.
 RUNTIME_ONLY = set()  # the worker is a plain `python worker.py` loop, no binary-only deps

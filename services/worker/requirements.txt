@@ -1,3 +1,6 @@
 psycopg2-binary==2.9.11
 # boto3 IS used here (unlike the backend): SNS milestone alerts and the S3 rollup snapshot export.
 boto3==1.42.85
+# Metrics exposition on WORKER_METRICS_PORT. Single process here, so no multiprocess mode -- unlike
+# the backend, which runs 2 gunicorn workers per pod.
+prometheus-client==0.26.0

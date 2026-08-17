@@ -4,6 +4,7 @@ import time
 import boto3
 
 import db
+import metrics
 import rollups
 import alerts
 import snapshots
@@ -49,6 +50,7 @@ def run_iteration(sns, s3, snapshot_fingerprint):
         The (possibly updated) snapshot fingerprint, to feed into the next iteration.
     """
     conn = None
+    started = time.perf_counter()
     try:
         conn = db.get_db()
         rollups.recompute(conn)
@@ -58,9 +60,15 @@ def run_iteration(sns, s3, snapshot_fingerprint):
                 conn, s3, S3_BUCKET, S3_SNAPSHOT_PREFIX, snapshot_fingerprint
             )
         print('Rollups recomputed, milestones checked.')
+        metrics.RECOMPUTES.labels(result='success').inc()
+        # Set only on success: a failed cycle that advanced this would make the staleness alert
+        # unfireable, which is the failure the gauge exists to catch.
+        metrics.LAST_SUCCESS.set(time.time())
     except Exception as e:
+        metrics.RECOMPUTES.labels(result='failure').inc()
         print(f'Worker iteration failed, will retry next cycle: {e}')
     finally:
+        metrics.RECOMPUTE_DURATION.observe(time.perf_counter() - started)
         if conn is not None:
             conn.close()
     return snapshot_fingerprint
@@ -70,6 +78,7 @@ if __name__ == '__main__':
     sns = boto3.client('sns', region_name=AWS_REGION)
     # Only build an S3 client if a bucket is configured; otherwise stay None and skip S3 work.
     s3 = boto3.client('s3', region_name=AWS_REGION) if S3_BUCKET else None
+    metrics.serve()
     print('Voteball worker started...')
     snapshot_fingerprint = None
     listener = None
@@ -87,7 +96,8 @@ if __name__ == '__main__':
         try:
             if listener is None or listener.closed:
                 listener = notifications.open_listener(db.get_db)
-            notifications.wait_for_change(listener, POLL_INTERVAL, DEBOUNCE_SECONDS)
+            if notifications.wait_for_change(listener, POLL_INTERVAL, DEBOUNCE_SECONDS):
+                metrics.NOTIFICATIONS.inc()
         except Exception as e:
             print(f'Listener unavailable, falling back to polling this cycle: {e}')
             if listener is not None:
