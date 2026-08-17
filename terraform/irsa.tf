@@ -115,7 +115,7 @@ data "aws_iam_policy_document" "alertmanager_trust" {
       # The chart's SA name is <release>-alertmanager. Changing the release name in
       # addon-monitoring.tf without changing this string silently breaks alerting: the pod starts
       # fine and only fails when it first tries to publish.
-      values = ["system:serviceaccount:monitoring:kube-prometheus-stack-alertmanager"]
+      values = ["system:serviceaccount:observability:kube-prometheus-stack-alertmanager"]
     }
     condition {
       test     = "StringEquals"

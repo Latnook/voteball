@@ -3,17 +3,28 @@
 # budget sane; Cluster Autoscaler adds a node if the scheduler needs it. UIs are ClusterIP (port-forward,
 # not public).
 resource "helm_release" "kube_prometheus_stack" {
-  name             = "kube-prometheus-stack"
-  repository       = "https://prometheus-community.github.io/helm-charts"
-  chart            = "kube-prometheus-stack"
-  version          = "87.21.0" # verified latest via `helm search repo` on 2026-07-30 (app v0.92.1)
-  namespace        = "monitoring"
+  name       = "kube-prometheus-stack"
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  version    = "87.21.0" # verified latest via `helm search repo` on 2026-07-30 (app v0.92.1)
+  # The brief names this namespace. Renaming REPLACES the release: Terraform destroys and recreates
+  # it, so the stack is down for the length of one apply. Nothing is lost -- see the storage block
+  # below for what is and is not persistent.
+  namespace        = "observability"
   create_namespace = true
 
   set = [
     {
+      # Time-based retention. See retentionSize below -- this alone does not bound bytes.
       name  = "prometheus.prometheusSpec.retention"
-      value = "6h"
+      value = "15d"
+    },
+    {
+      # Byte-based retention, at ~80% of the volume. Without it, a growing series count fills the
+      # PVC and Prometheus CRASHES rather than dropping old data -- time-based retention has no
+      # reason to delete anything still inside its window. Whichever limit binds first does the work.
+      name  = "prometheus.prometheusSpec.retentionSize"
+      value = "8GiB"
     },
     {
       name  = "prometheus.prometheusSpec.resources.requests.memory"
@@ -23,11 +34,30 @@ resource "helm_release" "kube_prometheus_stack" {
       name  = "prometheus.prometheusSpec.resources.limits.memory"
       value = "900Mi"
     },
+    # A real disk, so history survives the roughly-daily Spot reclaim. Without it the TSDB lives in
+    # the pod's ephemeral storage and every reclaim erases it -- "the error rate rose at 14:03" is
+    # not a statement an ephemeral Prometheus can support.
+    #
+    # This is a StatefulSet volumeClaimTemplate, which means the PVC is NOT deleted by
+    # `helm uninstall` or by deleting the StatefulSet. scripts/destroy.sh deletes it explicitly; see
+    # the step added there.
+    {
+      name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
+      value = kubernetes_storage_class.gp3.metadata[0].name
+    },
+    {
+      name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
+      value = "ReadWriteOnce"
+    },
+    {
+      name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
+      value = "10Gi"
+    },
   ]
   # NOTE: Grafana's admin password is deliberately NOT set here -- hardcoding it would put a credential
   # in git and terraform.tfstate. The chart auto-generates a random password stored only in the
   # in-cluster Secret. Retrieve it (Grafana UI is port-forward-only, never public) with:
-  #   kubectl get secret kube-prometheus-stack-grafana -n monitoring \
+  #   kubectl get secret kube-prometheus-stack-grafana -n observability \
   #     -o jsonpath='{.data.admin-password}' | base64 -d
 
   # Alertmanager -> SNS. Closes docs/production-readiness.md section 6: alerts existed nowhere and
@@ -131,5 +161,10 @@ resource "helm_release" "kube_prometheus_stack" {
   # Same ALB-webhook race as addon-cloudwatch.tf's aws_eks_addon.cloudwatch: this chart's Services
   # (Prometheus/Grafana/Alertmanager) can hit the aws-load-balancer-webhook-service before its backend
   # pods are Ready if created in parallel with the ALB release. Hit on 2026-07-20 apply.
-  depends_on = [helm_release.aws_load_balancer_controller]
+  depends_on = [
+    helm_release.aws_load_balancer_controller,
+    # The PVC names this StorageClass; without the ordering, a from-scratch apply can create the
+    # release first and leave Prometheus Pending on a class that does not exist yet.
+    kubernetes_storage_class.gp3,
+  ]
 }
