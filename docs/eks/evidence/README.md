@@ -85,6 +85,53 @@ note in `2026-08-17-task4-rollback.txt`.
 path, and an unthrottled loop trips it and then reads exactly like an outage. The `sleep 0.5` is
 load-bearing.
 
+### …and then a full destroy → rebuild cycle, same day
+
+Run after everything above, to check the whole system rather than the pipeline alone. **Teardown: exit
+0, 144 resources** (132 on 2026-08-04 — the difference is the EFS filesystem, mount targets, CSI
+add-on and StorageClass added since). **Rebuild: exit 0, 135 resources added, ~20 minutes.**
+**Votes survived: 22 previous / 29 upcoming**, against 18 / 23 on 2026-08-04 — *higher*, which is
+preserved data plus thirteen days of real voting. Lower would have meant the restore lost something.
+
+Three things this cycle produced that the pre-teardown set could not:
+
+- **The rollback-target gap, occurring on its own.**
+  `2026-08-17-task4-rollback-target-post-rebuild.txt` catches it minutes after the rebuild, before the
+  first CD promote closed the window: production on `281daad`, `previous-tag.sh` naming `f5f5c75`, and
+  ECR holding only `281daad`. Earlier the same day the verdict had to be *demonstrated* by handing the
+  guard an old tag, because the window had already shut. This is the unstaged version.
+- **The dirty-tree guard stopping a real deploy.** The first `deploy.sh` invocation (kept in
+  `2026-08-17-deploy-steps.txt`, both invocations in order as with the 2026-08-03 set) died at step 5
+  because the destroy log above was still an untracked file. Images are tagged from git, so building
+  would have published `165cea4` containing a file that commit does not have — and nothing downstream
+  would have noticed. It failed *before* the billed apply at step 6, which is the whole reason the
+  guard sits there.
+- **The final-snapshot naming trap, live.** `voteball-eks-db-final-20260817084122` was created at
+  **12:14:14Z** — the identifier embeds `time_static.deploy` (08:41 UTC), so the name reads 3.5 hours
+  stale on a snapshot taken minutes earlier. Verify by `SnapshotCreateTime`, never by name.
+
+**Jenkins build history did not survive, and that is correct.** The PVC came back as a *new* volume
+(`pvc-dd841523…` vs `pvc-a3c6405a…`) so numbering restarted at `#1`: the PVC carries no
+`helm.sh/resource-policy: keep`, so uninstalling deletes it and a reinstall provisions a fresh EFS
+access point rather than rebinding the released one. The EFS *data* is retained; rebinding it would
+need a manual step. What records what was deployed was never the build log — it is the
+`ci: image tag <sha> [skip ci]` commits on `master`.
+
+| File | What it is |
+|---|---|
+| `2026-08-17-destroy-steps.txt` | Six ordered teardown steps, `ALL` three Helm releases uninstalled while the cluster was still healthy, `Destroy complete! Resources: 144 destroyed.` No hang, no state lock, no retry |
+| `2026-08-17-deploy-steps.txt` | **Both** invocations: the dirty-tree guard refusing at step 5, then a clean run — all fifteen steps, `Apply complete! Resources: 135 added`, `Deploy complete.` |
+| `2026-08-17-task4-rollback-target-post-rebuild.txt` | The git-vs-ECR disagreement occurring unprompted, and the guard returning `NO_ROLLBACK_TARGET f5f5c75` at exit 3 |
+| `2026-08-17-task4-post-rebuild-jenkins-on-k8s.txt` | The §2/§6 components again, on the **rebuilt** cluster — every node IP, pod name and PV is new |
+| `2026-08-17-task4-post-rebuild-plugins-resolved.txt` | The same 9 → 79 plugin resolution from the rebuilt controller |
+| `2026-08-17-task4-post-rebuild-verify-jenkins.txt` | `VERIFY_STRICT=1`, exit 0, zero skips — on a controller built minutes earlier and **never clicked** |
+| `2026-08-17-task4-post-rebuild-argocd-check.txt` | ArgoCD again matching the repo, with no hand-registered credentials |
+| `2026-08-17-task4-post-rebuild-ci-run.txt` | `application-ci` #1 on the fresh controller: `First time build. Skipping changelog.` and it **builds anyway** (G3b), all three blocking images `Total: 0`, then triggers CD |
+| `2026-08-17-task4-post-rebuild-cd-run.txt` | `application-cd` #1: promote → sync → `sync=Synced health=Healthy` → `smoke: all checks passed` |
+
+`application-ci` #2 on that controller is `NOT_BUILT` — the Guard aborting CD's own tag-bump commit,
+the G2 loop protection firing on a cluster that is twenty minutes old.
+
 ## 2026-08-04 — a clean first-run rebuild, and the CI/CD split going live
 
 **Superseded as the current-state capture by the 2026-08-17 set above** (its `task4-*` files predate
