@@ -325,7 +325,9 @@ field is filled in separately, after ArgoCD exists — see the first-time setup 
 
 Trigger: a GitHub webhook on every push to `master`, or *Build with Parameters* → `FORCE_BUILD` by
 hand. Stage list, in order (from `Jenkinsfile-ci`): **Guard** (refuses its own tag-bump commits) →
-**Validation** (repo-shape checks) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (153
+**Validation** (repo-shape checks) → **Script tests** (`run-ci-suite.sh`, the guards protecting the
+pipeline itself — split across two containers because no single container in the agent pod has both
+`python3` and `git`) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (250
 pytest tests against a real, ephemeral Postgres sidecar) → **Resolve tag and account** → **Already
 built?** (skip if this SHA's images already exist in the immutable ECR repos) → **Build images**
 (rootless BuildKit, four contexts) → **Trivy scan** (blocking on HIGH/CRITICAL for the app images) →
@@ -385,6 +387,15 @@ Failure Handling stage detect it, roll back automatically, and re-verify green),
   block the build on fixable `CRITICAL`/`HIGH`; the third-party `backup` base is report-only). ECR
   repositories for the four app images are `IMMUTABLE`, so a tag, once pushed, cannot be silently
   retargeted. `skopeo` pushes the **exact file Trivy scanned** — no rebuild between scan and push.
+  The word "fixable" is doing real work there: the gate runs `--ignore-unfixed`, so a base-package CVE
+  is invisible until Debian ships a patch and **blocking from that moment on**, which means CI can turn
+  red with no commit at all. It did on 2026-08-17 (`CVE-2026-53615`, nine HIGH in `util-linux`, six
+  days after a green build), so `backend` and `worker` now apply Debian security updates as their first
+  build step — the fix at source, not a `.trivyignore` waiving a CVE that had a patch available. See
+  "Base-image patching" in [`docs/security.md`](docs/security.md), and
+  [`docs/eks/evidence/2026-08-17-task4-ci-scan-blocks-deploy-run.txt`](docs/eks/evidence/2026-08-17-task4-ci-scan-blocks-deploy-run.txt)
+  for the build where the scan blocked the deploy: `Push to ECR`, `Publish Metadata` and `Trigger CD`
+  all `skipped due to earlier failure(s)`, nothing reached ECR, and `application-cd` never ran.
 - **RBAC, including the read-only claim.** CI's `jenkins-agent` ServiceAccount carries **zero**
   Kubernetes RBAC anywhere in the cluster. CD's `jenkins-cd-agent` carries a namespaced `Role` in
   `devops-app` (`charts/jenkins-support/templates/rbac.yaml`) with only `get`/`list`/`watch` on

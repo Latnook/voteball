@@ -148,6 +148,15 @@ resources. The steps it performs (kept in step with the script's own numbering �
 6. Build the rest of the AWS infrastructure (**asks you to type `yes`**). This is by far the biggest
    step — around **117 resources in ~13 minutes** — so it is broken out below.
 7. Point `kubectl` at the new cluster.
+7b. Mint the ArgoCD token the CD pipeline logs in with. Nothing else ever creates it: step 3b can only
+    copy it from the environment, and at that point ArgoCD does not exist yet — and since 3b exits
+    early once a deploy key is present, re-running the deploy can never fill it in later either. Left
+    unset, **every future `application-cd` build fails on an ArgoCD auth error while this script still
+    reports success**, which is why it is its own step rather than part of secret seeding. It has to
+    run here: the `jenkins-cd` account is created by step 6's apply, reaching ArgoCD needs the kubectl
+    context from step 7, and it must land before any push could trigger CD. A no-op on every run
+    except the first after a rebuild. Like 3c and 11b it does **not** fail the deploy — it warns and
+    prints the standalone fix (`./scripts/seed-argocd-token.sh`).
 8. Build the four app container images and upload them.
 9. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
    certificate, the WAF, the bucket, and the IAM roles all change on every rebuild, so **never edit

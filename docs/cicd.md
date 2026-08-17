@@ -282,7 +282,9 @@ versions, are suppressed — the Dockerfiles pin through `requirements.txt`, whi
 
 ### 5. Tests (new)
 
-The 153 tests in `services/{backend,worker}/tests/`, run against a **real** Postgres — both
+The 250 tests in `services/{backend,worker}/tests/` (208 backend + 42 worker — count them with
+`pytest tests/ --collect-only -q` in each service rather than trusting this number, it drifts every
+time a test is added), run against a **real** Postgres — both
 `conftest.py` files `DROP TABLE ... CASCADE` and call `init_db()`, and were never sqlite-compatible.
 The `postgres` container in the CI pod template (`postgres:16-alpine`, `DB_SSLMODE=disable`) provides
 it on `localhost`; it is ephemeral, holds no real data, and is reachable only from inside this pod's
