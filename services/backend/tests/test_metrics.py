@@ -60,3 +60,47 @@ def test_importing_metrics_survives_a_multiproc_dir_that_does_not_exist(tmp_path
     monkeypatch.setenv('PROMETHEUS_MULTIPROC_DIR', str(target))
     metrics.ensure_multiproc_dir()
     assert target.is_dir()
+
+
+def _requests_total(text, endpoint, status):
+    """Read one counter value out of the exposition text."""
+    for line in text.splitlines():
+        if line.startswith('voteball_http_requests_total{') and \
+                f'endpoint="{endpoint}"' in line and f'status="{status}"' in line:
+            return float(line.rsplit(' ', 1)[1])
+    return 0.0
+
+
+def test_metrics_endpoint_serves_prometheus_text(client):
+    response = client.get('/metrics')
+    assert response.status_code == 200
+    assert 'voteball_http_requests_total' in response.get_data(as_text=True)
+
+
+def test_a_request_is_counted_against_its_rule(client):
+    before = _requests_total(client.get('/metrics').get_data(as_text=True), '/health', '200')
+    client.get('/health')
+    after = _requests_total(client.get('/metrics').get_data(as_text=True), '/health', '200')
+    assert after == before + 1
+
+
+def test_an_unmatched_request_is_counted_as_unmatched(client):
+    before = _requests_total(client.get('/metrics').get_data(as_text=True), 'unmatched', '404')
+    client.get('/no-such-path-exists')
+    after = _requests_total(client.get('/metrics').get_data(as_text=True), 'unmatched', '404')
+    assert after == before + 1
+
+
+def test_scraping_metrics_does_not_count_itself(client):
+    # Counting scrapes would inflate the request rate by a fixed background level that looks like
+    # real traffic and never goes to zero.
+    client.get('/metrics')
+    text = client.get('/metrics').get_data(as_text=True)
+    assert _requests_total(text, '/metrics', '200') == 0.0
+
+
+def test_latency_is_observed_for_a_served_request(client):
+    client.get('/health')
+    text = client.get('/metrics').get_data(as_text=True)
+    assert 'voteball_http_request_duration_seconds_bucket' in text
+    assert 'endpoint="/health"' in text

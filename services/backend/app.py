@@ -8,14 +8,17 @@
 # Verified end to end on 2026-07-31: webhook -> guard -> BuildKit -> Trivy -> skopeo -> tag
 # bump -> ArgoCD -> running pods.
 import hashlib
-import uuid
 import os
+import time
+import uuid
 from functools import wraps
-from flask import Flask, jsonify, request, make_response
-from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
-from werkzeug.security import check_password_hash
+
 import db
+import metrics
 import queries
+from flask import Flask, Response, jsonify, make_response, request
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 
@@ -41,6 +44,45 @@ VOTE_IP_WINDOW_HOURS = int(os.environ.get('VOTE_IP_WINDOW_HOURS', '24'))
 VOTE_IP_SALT = os.environ.get('VOTE_IP_SALT', ADMIN_SESSION_SECRET)
 # Set false only if the app is ever served over plain HTTP (it is not: the ALB redirects to HTTPS).
 COOKIE_SECURE = os.environ.get('COOKIE_SECURE', 'true').lower() != 'false'
+
+# Publish the running build's identity once per worker process. With multiprocess_mode='max' the
+# workers collapse to a single series -- see metrics.py.
+metrics.set_app_info()
+
+
+@app.before_request
+def _metrics_start_timer():
+    request.environ['voteball.start'] = time.perf_counter()
+
+
+@app.after_request
+def _metrics_record(response):
+    """Count every response and observe its latency.
+
+    Runs for error responses too, including the 500 Flask synthesises from an unhandled exception --
+    which is exactly the case this instrumentation exists for, since /health is static and the
+    liveness probe is a bare TCP check, so a backend that 500s on every API call still looks Ready.
+
+    /metrics itself is excluded: counting scrapes adds a fixed background request rate that never
+    falls to zero and is indistinguishable from real traffic.
+    """
+    if request.path == '/metrics':
+        return response
+    endpoint = metrics.endpoint_label(request.url_rule)
+    started = request.environ.get('voteball.start')
+    if started is not None:
+        metrics.LATENCY.labels(request.method, endpoint).observe(time.perf_counter() - started)
+    metrics.REQUESTS.labels(request.method, endpoint, str(response.status_code)).inc()
+    return response
+
+
+@app.route('/metrics', methods=['GET'])
+def prometheus_metrics():
+    """Scrape target. NOT reachable from the internet: nginx proxies only /api/*, so this path has no
+    public route, and in-cluster only the observability namespace is admitted to port 5000 (see the
+    NetworkPolicy in charts/voteball). Deliberately separate from /health, which the probes use."""
+    payload, content_type = metrics.render_latest()
+    return Response(payload, mimetype=content_type)
 
 
 def _client_ip():
