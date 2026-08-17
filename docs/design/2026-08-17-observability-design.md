@@ -189,17 +189,33 @@ reintroduced through the label next to it. `metrics.method_label()` closes it th
 to `other`. Any future label needs the same question asked of it before it ships, not just `endpoint`.
 
 **Gunicorn runs 2 workers, so multiprocess mode is mandatory.** Each worker is a separate process with
-its own counters, and a scrape is served by whichever one accepts the connection — a naive setup
-reports roughly half the traffic and wobbles between scrapes. `prometheus_client`'s multiprocess mode
-fixes it by having workers write to a shared directory that `/metrics` sums:
+its own counters, and a scrape is served by whichever one accepts the connection — a naive setup does
+not just under-report by half. With 2 workers each scrape is answered by whichever one accepts the
+connection, so the counter series alternates between two independent processes' values, and each of
+those two values only ever moves forward on the requests *that one worker* happened to serve. Read as
+a single series, it is **non-monotonic** — `rate()` reads every drop as a counter reset, so the result
+is not a quiet under-count but wildly inflated, meaningless rates on every SLI and alert built on it,
+and nothing in this branch fails if a later plan forgets to set the variable. `prometheus_client`'s
+multiprocess mode fixes it by having workers write to a shared directory that `/metrics` sums:
 
 - `PROMETHEUS_MULTIPROC_DIR=/tmp/prom`, created at startup. `/tmp` is already an `emptyDir` mounted
   for gunicorn's `worker_tmp_dir`, so `readOnlyRootFilesystem: true` needs no new exception.
 - `gunicorn.conf.py` gains a `child_exit` hook calling `multiprocess.mark_process_dead(worker.pid)`.
-  Without it, a departed worker's counters are summed forever and the rate of a dead process reads as
-  live traffic.
+  This removes only a departed worker's `live*`-mode gauge files (prometheus-client 0.26.0); it never
+  touches counter or histogram files, and today this branch declares no `live*` gauge, so the call is
+  presently a no-op kept for when one is added. A departed worker's counter file is deliberately left
+  in the sum — that is correct: a counter that stops rising yields `rate() == 0`, and deleting it on
+  exit would cause a counter reset and a false rate spike instead.
 - `/metrics` builds a fresh `CollectorRegistry` with a `MultiProcessCollector` per request rather than
   using the default global registry.
+
+**Handoff to the chart plan: this variable is not set anywhere in this repo yet, and its absence is
+silent.** `PROMETHEUS_MULTIPROC_DIR` must be set on the backend Deployment (not the migration Job —
+see `services/backend/metrics.py`'s `ensure_multiproc_dir()` for why an unwritable `/tmp` there must
+degrade instead of failing the import). Nothing in this branch's tests or CI fails if the chart plan
+forgets it: the backend boots, `/metrics` serves single-process values, every existing test passes,
+and the only symptom is the non-monotonic-series failure mode above, invisible until an SLI or alert
+built on it starts behaving strangely under real traffic.
 
 **`voteball_app_info` must be declared `multiprocess_mode='max'`, and it cannot be an `Info` metric.**
 This is the multiprocess trap's second half. A `Gauge` in multiprocess mode defaults to
@@ -372,6 +388,13 @@ annotations, so the email carries the link.
 
 App-domain rules live in `charts/voteball`; the Kubernetes, Jenkins and monitoring-system rules live
 in `charts/observability`, matching §3's split.
+
+**`VoteballRollupsStale`'s `for:` must outlast a cold start.** `voteball_worker_last_success_
+timestamp_seconds` is an unlabelled Gauge, so it is materialised at `0` from process start until the
+first successful recompute — meaning `time() - gauge` reads as decades old during that window, not as
+"no data yet". A `for:` shorter than the time a fresh pod genuinely needs to reach its first successful
+recompute pages on every worker restart, which on this cluster's 100%-Spot node group is roughly daily
+even when nothing is actually wrong.
 
 **Every new rule must be checked against the ~100 default rules already running, and the default it
 replaces switched off.** `defaultRules.create` is `true` and 30 `PrometheusRule` objects are live in

@@ -11,12 +11,18 @@ workers = int(os.environ.get('GUNICORN_WORKERS', '2'))
 def _reset_multiproc_dir():
     """Give the metrics multiprocess directory a clean, existing home before any worker forks.
 
-    Deliberately implemented with os/shutil rather than by importing metrics.py: in multiprocess
-    mode prometheus_client writes a file per process the moment a metric is DEFINED, so importing
-    metrics.py before the directory exists is exactly the failure this function prevents.
+    Deliberately implemented with os/shutil rather than by importing metrics.py, and the reason is
+    the WIPE, not the directory-must-exist-before-import case (metrics.py already calls
+    ensure_multiproc_dir() before defining any metric, so that particular failure can't happen here
+    regardless of import order). If the master imported metrics.py itself, importing it would DEFINE
+    the metrics and write this process's own counter_<masterpid>.db -- and the rmtree() below would
+    then unlink a file the master still holds mmapped, silently losing anything later incremented in
+    the master, including DB_ERRORS from on_starting's own db.get_db() call. Doing the wipe with
+    plain os/shutil, before metrics.py is ever imported by anyone, avoids that.
 
-    The wipe matters because an emptyDir survives a container restart within the same pod -- counter
-    files written by the previous process would otherwise be summed into the new one's totals.
+    The wipe itself matters because an emptyDir survives a container restart within the same pod --
+    counter files written by the previous process would otherwise be summed into the new one's
+    totals.
     """
     path = os.environ.get('PROMETHEUS_MULTIPROC_DIR')
     if not path:
@@ -67,9 +73,19 @@ def on_starting(server):
 
 
 def child_exit(server, worker):
-    """Reap a departed worker's counter files.
+    """Reap a departed worker's 'live*' gauge files.
 
-    Without this, prometheus_client keeps summing the files of processes that no longer exist, so
-    the traffic of a worker that died an hour ago is still reported as current.
+    prometheus_client 0.26.0's multiprocess.mark_process_dead(pid) removes ONLY the five
+    gauge_{mode}_{pid}.db files for the 'live*' multiprocess_mode gauges (livesum/livemax/livemin/
+    liveall/livemostrecent) -- it never touches counter or histogram files, and this branch declares
+    no 'live*' gauge, so today the call is a no-op. Keep it anyway: it is the documented idiom, and it
+    becomes meaningful the moment a 'live*' gauge is added.
+
+    A departed worker's COUNTER file is deliberately left in place and kept in the sum -- that is
+    correct, not a gap. A counter that stops rising yields rate() == 0; deleting its file on exit
+    would cause a counter reset and a false rate spike instead. Do not "fix" APP_INFO (multiprocess_
+    mode='max') into a 'livemax' gauge thinking that mode is safely reaped by this hook: 'live*' modes
+    report only currently-alive processes, so voteball_app_info would vanish the instant its worker
+    exits, per worker, rather than persisting as the build's identity.
     """
     _mark_process_dead(worker.pid)

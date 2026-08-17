@@ -64,6 +64,24 @@ def test_importing_metrics_survives_a_multiproc_dir_that_does_not_exist(tmp_path
     assert target.is_dir()
 
 
+def test_importing_metrics_survives_a_multiproc_dir_that_cannot_be_created(tmp_path, monkeypatch):
+    # migrate-job.yaml runs readOnlyRootFilesystem: true with NO /tmp emptyDir (unlike backend,
+    # worker and backup) and consumes app-config's PROMETHEUS_MULTIPROC_DIR via envFrom -- so a
+    # read-only parent is the real production shape this guards, not a hypothetical. mkdir(parents=
+    # True, exist_ok=True) raises PermissionError on it; ensure_multiproc_dir() must swallow that
+    # instead of letting it escape, because this function runs at MODULE IMPORT time and an import
+    # failure here would fail the schema-migration Job that gates every release.
+    readonly_parent = tmp_path / 'readonly-parent'
+    readonly_parent.mkdir(mode=0o555)
+    target = readonly_parent / 'prom'
+    monkeypatch.setenv('PROMETHEUS_MULTIPROC_DIR', str(target))
+    try:
+        metrics.ensure_multiproc_dir()   # must not raise
+        assert not target.exists()
+    finally:
+        readonly_parent.chmod(0o755)
+
+
 def _requests_total(text, endpoint, status):
     """Read one counter value out of the exposition text."""
     for line in text.splitlines():
@@ -120,17 +138,29 @@ def test_method_label_collapses_arbitrary_tokens_to_other():
 
 def test_arbitrary_method_tokens_do_not_create_distinct_series(client):
     # An attacker sending different junk tokens should not mint new series. Every junk token
-    # collapses to 'other', so two requests with two different junk verbs should produce only one
-    # entry in voteball_http_requests_total with method="other".
+    # collapses to 'other', so two requests with two different junk verbs must land on the SAME
+    # series -- i.e. every method="other" line seen must be labelled identically, regardless of how
+    # many such lines exist across the session's shared registry (another test issuing some other
+    # nonstandard-verb request is not a regression here).
+    text_before = client.get('/metrics').get_data(as_text=True)
+    other_lines_before = {
+        line for line in text_before.splitlines()
+        if 'voteball_http_requests_total{' in line and 'method="other"' in line
+    }
+
     client.open('/no-such-path-exists', method='JUNKVERB1')
     client.open('/no-such-path-exists', method='JUNKVERB2')
     text = client.get('/metrics').get_data(as_text=True)
 
-    # Extract all lines with voteball_http_requests_total and method="other"
-    other_method_lines = [line for line in text.splitlines()
-                          if 'voteball_http_requests_total{' in line and 'method="other"' in line]
-    # Should have exactly one series (the count may be higher, but only one distinct series)
-    assert len(other_method_lines) == 1, f"Expected 1 series with method='other', got {len(other_method_lines)}"
+    other_method_lines = {
+        line for line in text.splitlines()
+        if 'voteball_http_requests_total{' in line and 'method="other"' in line
+    }
+    # Both junk-verb requests must have landed on a series that already existed (or on exactly one
+    # new series shared by both) -- never one distinct series per junk token.
+    new_lines = other_method_lines - other_lines_before
+    assert len(new_lines) <= 1, \
+        f'Expected junk tokens to collapse onto a single series, got {len(new_lines)} new series'
 
     # Verify neither junk token appears anywhere in the exposition
     assert 'JUNKVERB1' not in text, 'Junk token JUNKVERB1 appears in exposition'

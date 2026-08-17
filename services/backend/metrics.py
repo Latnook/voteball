@@ -4,9 +4,11 @@ Two things here are not obvious and both cost real debugging time if changed:
 
 MULTIPROCESS MODE. gunicorn runs 2 workers per pod (gunicorn.conf.py), each a separate process with
 its own counters. A scrape is served by whichever worker accepts the connection, so without
-multiprocess mode /metrics reports roughly HALF the real traffic and the number wobbles between
-scrapes -- wrong in a plausible way, which is the worst kind. In multiprocess mode workers write
-counter files into PROMETHEUS_MULTIPROC_DIR and /metrics sums them.
+multiprocess mode a counter alternates between two independent, INDEPENDENTLY-RESETTING series
+instead of reporting "half the traffic" -- and a non-monotonic series is what rate() reads as a
+repeated counter reset, turning it into wildly inflated, meaningless rates rather than a merely
+under-counted one. Wrong in a plausible way, which is the worst kind. In multiprocess mode workers
+write counter files into PROMETHEUS_MULTIPROC_DIR and /metrics sums them.
 
 CARDINALITY. Every label here has a bounded value set. `endpoint` is Flask's URL RULE, not the
 request path: /api/admin/clubs/<int:club_id> is one series where /api/admin/clubs/42 would be one
@@ -29,19 +31,34 @@ from prometheus_client import (
 
 
 def ensure_multiproc_dir():
-    """Create PROMETHEUS_MULTIPROC_DIR if it is set but missing, before any metric is defined.
+    """Best-effort: create PROMETHEUS_MULTIPROC_DIR if it is set but missing, before any metric is
+    defined.
 
     In multiprocess mode prometheus_client writes a file per process at metric CREATION time, so a
     missing directory raises during import -- and this module is imported by app.py, which is also
     what migrate.py's image runs. A missing directory must therefore never be able to fail an
     import, or it would fail the schema-migration Job that gates every release.
 
+    What this function actually guarantees is narrower than "the directory exists": it guarantees
+    that trying to create it never raises. mkdir(parents=True, exist_ok=True) still raises OSError
+    (PermissionError, in practice) when the parent is read-only -- exactly the migrate-job.yaml case,
+    which runs readOnlyRootFilesystem: true with no /tmp emptyDir, unlike backend/worker/backup. Any
+    OSError from mkdir is therefore swallowed here. A directory that cannot be created simply leaves
+    multiprocess mode inert for that process (metric objects still work; PROMETHEUS_MULTIPROC_DIR-
+    dependent behaviour such as render_latest()'s MultiProcessCollector branch is what would then
+    misbehave, not the import) -- the correct degradation for a process that was never going to serve
+    /metrics in the first place.
+
     Wiping stale files is deliberately NOT done here; that belongs to the gunicorn master before it
-    forks (see gunicorn.conf.py). This function only guarantees the directory exists.
+    forks (see gunicorn.conf.py). This function only ever tries to create the directory.
     """
     path = os.environ.get('PROMETHEUS_MULTIPROC_DIR')
-    if path:
+    if not path:
+        return
+    try:
         pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
 
 
 ensure_multiproc_dir()
