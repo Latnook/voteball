@@ -578,6 +578,35 @@ bounds it to exactly one bounce.
 broke is gone. `post { failure }` dumps `kubectl get events --sort-by=.metadata.creationTimestamp`
 (last 40 lines) and the last 200 log lines of each Deployment before deciding whether to roll back.
 
+**The rollback target is checked against ECR before it is used** (`scripts/ci/rollback-target.sh`,
+added 2026-08-17). `previous-tag.sh` answers "what did `values.yaml` say before this deploy?" from git
+history — but **git history survives a teardown and ECR does not**. `terraform destroy` deletes the
+repositories (`force_delete = true`) and the next `deploy.sh` pushes exactly one tag, so between a
+rebuild and the first successful CD promote, the tag git calls "previous" belongs to the *previous
+cluster's* registry. Measured on 2026-08-17 right after a rebuild: `previous-tag.sh` returned
+`61256d4` while ECR held only `480ee8b`.
+
+The old behaviour was worse than a failed rollback. It triggered a rollback build against the missing
+tag; that build died in **Input Validation**, which runs *before* Promote, so `PROMOTE_SHA` was never
+set on it, the depth bound never ran, and the console said `Images for <tag> are NOT all in ECR` — a
+message that reads like a mistyped parameter. Now the guard runs first and the build says what is
+actually true: *"git names `<tag>` as the previous version, but that tag is NOT in ECR … PRODUCTION IS
+LEFT RUNNING `<tag>`, WHICH FAILED VERIFICATION, AND NEEDS A HUMAN"*, with the recovery command.
+
+It **fails safe toward "needs a human"** — the opposite direction to `images-exist.sh`, whose lookup
+failures yield "missing" so the pipeline rebuilds. A redundant rebuild is cheap; attempting a recovery
+that cannot work costs ten minutes and then misreports why. The two failure verdicts stay distinct on
+purpose (`NO_ROLLBACK_TARGET`, exit 3, vs `NO_PREVIOUS_TAG`, exit 4) because they need different human
+responses: "that image is gone, pick another tag" versus "there has never been another version".
+
+It takes the tag as an argument so CD can resolve it in `jnlp` (git, where Promote already pushes) and
+check ECR in the `deploy` container (aws, where Input Validation already calls `images-exist.sh`) — no
+container in the `voteball-deploy` pod is proven to do both against that workspace, the same split and
+the same reason as `Jenkinsfile-ci` running its script suite twice.
+`scripts/tests/test-rollback-target.sh` covers it offline by building throwaway git repos, and asserts
+`Jenkinsfile-cd` still calls the script — an orphaned guard is exactly how `previous-tag.sh` sat
+silently disarmed by an escaping bug on 2026-08-04.
+
 **Rollback never fires for a failure before Promote.** A failure in Input Validation or Manifest
 Validation changed nothing, so there is nothing to undo; rolling back then would deploy an older tag
 for no reason. This is `if (env.PROMOTE_SHA)` in the Groovy — `PROMOTE_SHA` is only set once the

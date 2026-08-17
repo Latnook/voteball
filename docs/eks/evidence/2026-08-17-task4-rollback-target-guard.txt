@@ -1,0 +1,44 @@
+# Task 4 evidence -- the rollback target guard (captured 2026-08-17)
+#
+# Found while auditing task 4 on a freshly rebuilt cluster. previous-tag.sh reads
+# values.yaml's GIT history, which survives a teardown; ECR does not (terraform/ecr.tf sets
+# force_delete = true). So right after a rebuild, the tag git calls 'previous' belongs to the
+# OLD cluster's registry and cannot be deployed.
+#
+# Before scripts/ci/rollback-target.sh existed, post { failure } rolled back to that tag
+# anyway. The rollback build then died in Input Validation -- which runs BEFORE Promote, so
+# PROMOTE_SHA was never set on it, the depth-bounded retry never ran, and the log blamed a bad
+# parameter. Production stayed on the version that had just failed verification.
+
+=== the post-rebuild condition, reproduced against the live registry ===
+$ git log -p -- charts/voteball/values.yaml | grep '+  tag:'   # what git remembers
++  tag: "f5f5c75"
++  tag: "480ee8b"
++  tag: "61256d4"
++  tag: "9c4dd7f"
++  tag: "5c05fa9"
+
+$ aws ecr describe-images --repository-name voteball-backend   # what ECR actually holds
+dead0be
+f5f5c75
+480ee8b
+
+=== the guard, on the tag that is GONE (exit 3 -- refuses, and names it) ===
+$ scripts/ci/rollback-target.sh 61256d4
+NO_ROLLBACK_TARGET 61256d4
+exit=3
+
+=== the guard, on a tag that IS present (exit 0 -- rollback may proceed) ===
+$ scripts/ci/rollback-target.sh 480ee8b
+480ee8b
+exit=0
+
+=== the guard resolving from git with no argument, current state ===
+$ scripts/ci/rollback-target.sh
+480ee8b
+exit=0
+
+=== the offline test that pins all of this (no AWS, no real history) ===
+$ scripts/tests/test-rollback-target.sh
+ALL TESTS PASSED (9 assertions)
+exit=0

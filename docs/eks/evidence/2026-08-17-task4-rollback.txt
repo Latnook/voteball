@@ -1,0 +1,69 @@
+# Task 4 evidence -- deliberate broken deploy and automatic rollback (2026-08-17)
+
+A DELIBERATELY BROKEN frontend image was built outside CI (CI would have refused it -- the
+failing behaviour is intentional, not a test failure) and pushed under tag dead0be. That tag is
+valid hex and passes CD's ^[0-9a-f]{7,40}$ input check, but is deliberately NOT any real commit
+in this repository, so no genuine commit ends up with an image that misrepresents its contents.
+
+The break: nginx.conf returns 500 on "/". The frontend's startupProbe targets "/" with a 30s
+budget (failureThreshold 10 x periodSeconds 3), and a failing STARTUP probe kills the container
+-- so the new pod never became Ready and crash-looped. The other three images were built
+unmodified from the same tree.
+
+## Timeline (UTC, from the two build logs)
+  10:12:18  application-cd #2 commits and pushes the dead0be promotion to master
+  10:12:24  Deploy: argocd app sync --timeout 600 begins
+  10:12:35  the broken frontend pod pulls voteball-nginx:dead0be and starts
+  ~10:13    startup probe begins failing (first connection refused, then HTTP 500)
+  10:16:19  kubelet has killed and restarted the container -- "failed startup probe, will be
+            restarted" -- so it crash-loops rather than merely sitting NotReady
+  10:22:24  sync times out: fatal, "timed out (600s) waiting for app voteball match desired state"
+  10:22:35  post{failure} dumps events/logs FIRST (once the rollback lands, the evidence is gone)
+  10:22:36  scripts/ci/previous-tag.sh          -> f5f5c75
+  10:22:37  scripts/ci/rollback-target.sh f5f5c75 -> present in ECR, rollback permitted
+  10:22:41  ROLLING BACK to f5f5c75
+  10:23:28  application-cd #3 starts (ROLLBACK_DEPTH=1, SOURCE_BUILD=rollback-from-2)
+  10:24:29  sync=Synced health=Healthy
+  10:24:32  smoke: all checks passed -- recovered, 2m08s after the failure was detected
+
+## Visitor-visible impact: NONE
+
+1,539 probes of https://voteball.latnook.com/ at 2/s spanning 10:11:09 -> 10:26:08 -- the whole
+demo, from before the broken deploy to after the recovery -- returned HTTP 200 every time.
+See 2026-08-17-task4-rollback-site-poll.txt; check it with:
+    awk '$2!=200' docs/eks/evidence/2026-08-17-task4-rollback-site-poll.txt   # no output
+
+That is the rolling-update contract, not luck: a pod that never passes readiness is never added
+to the Service's endpoints, and the old ReplicaSet is never scaled down because the rollout
+never progresses. Contrast 2026-08-04's demo, where the backend returned 500 while PASSING its
+probes -- ArgoCD called that Healthy and only the smoke test caught it, at a cost of ~3 minutes
+of real errors. The two demos deliberately exercise different layers.
+
+## The rollback decision, verbatim from application-cd #2
+[2026-08-17T10:22:36.333Z] + scripts/ci/previous-tag.sh
+[2026-08-17T10:22:37.244Z] + scripts/ci/rollback-target.sh f5f5c75
+[2026-08-17T10:22:41.730Z] ROLLING BACK to f5f5c75 (this deploy of dead0be failed verification).
+
+## What the pipeline saw (diagnostics dumped before rolling back)
+[2026-08-17T10:22:31.542Z] {"level":"fatal","msg":"timed out (600s) waiting for app \"voteball\" match desired state","time":"2026-08-17T10:22:24Z"}
+[2026-08-17T10:22:31.546Z] {"level":"fatal","msg":"timed out (600s) waiting for app \"voteball\" match desired state","time":"2026-08-17T10:22:24Z"}
+[2026-08-17T10:22:31.551Z] {"level":"fatal","msg":"timed out (600s) waiting for app \"voteball\" match desired state","time":"2026-08-17T10:22:24Z"}
+[2026-08-17T10:22:35.347Z] 3m56s       Warning   Unhealthy                      pod/frontend-86cfcc8486-7j4vl                         Startup probe failed: HTTP probe failed with statuscode: 500
+
+## The recovery verified itself (application-cd #3)
+[2026-08-17T10:24:29.015Z] + echo 'sync=Synced health=Healthy revision=293fcc59db034b87ca48d9328eab9e3f5e23d570'
+[2026-08-17T10:24:29.015Z] sync=Synced health=Healthy revision=293fcc59db034b87ca48d9328eab9e3f5e23d570
+[2026-08-17T10:24:32.144Z] smoke: all checks passed against https://voteball.latnook.com
+
+## Final state
+-- master's promoted tag:
+  tag: "f5f5c75"
+-- running images:
+   backend	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:f5f5c75
+   frontend	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:f5f5c75
+   worker	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker:f5f5c75
+-- frontend pods (only the healthy ReplicaSet remains):
+    frontend-7f4cd84f56-4nmhf 1/1 Running
+    frontend-7f4cd84f56-4x77f 1/1 Running
+-- the broken tag is still in ECR, unused, as a demo artifact:
+   dead0be -> present
