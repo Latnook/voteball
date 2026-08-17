@@ -19,7 +19,7 @@ import sys
 SRC_DIR = pathlib.Path(__file__).resolve().parent.parent
 
 # Distribution name -> the name you actually `import`. Only needed where they differ.
-IMPORT_NAME = {'psycopg2-binary': 'psycopg2'}
+IMPORT_NAME = {'psycopg2-binary': 'psycopg2', 'prometheus-client': 'prometheus_client'}
 
 # Declared, never imported, and correct anyway: the Dockerfile's CMD runs it as a binary.
 RUNTIME_ONLY = {'gunicorn'}

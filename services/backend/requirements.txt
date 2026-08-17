@@ -6,3 +6,6 @@ psycopg2-binary==2.9.11
 # Flask release that drops or renames either fails at install time, not at login time.
 werkzeug==3.1.8
 itsdangerous==2.2.0
+# Metrics exposition for /metrics. Multiprocess mode is mandatory here -- gunicorn runs 2 workers
+# per pod and each is a separate process with its own counters; see metrics.py.
+prometheus-client==0.26.0
