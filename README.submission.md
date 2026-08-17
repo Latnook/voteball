@@ -374,12 +374,31 @@ than oscillating between two tags forever, and reports that production needs a h
 > Run `application-cd` with `IMAGE_TAG` set to any older commit SHA. That is the whole procedure; it
 > is the same machinery the automatic rollback uses.
 
-**Evidence.** The mechanism is exercised as part of the graded evidence capture (design doc
-Verification item 7: deploy a backend image whose health endpoint deliberately fails, watch the
-Failure Handling stage detect it, roll back automatically, and re-verify green), archived under
-`docs/eks/evidence/2026-08-04-task4-*.txt` alongside the rest of this submission's evidence — see
-[`docs/eks/live-cluster-snapshot.md`](docs/eks/live-cluster-snapshot.md) for the readable excerpts and
-`docs/eks/evidence/` for the raw command output.
+**A rollback target is checked against ECR before it is used.** Git history survives a teardown and
+ECR does not, so right after a rebuild the tag `values.yaml`'s history calls "previous" belongs to the
+*old* cluster's registry — measured on 2026-08-17: `previous-tag.sh` said `61256d4`, ECR held only
+`480ee8b`. Rolling back to a missing tag used to fail in Input Validation, which runs *before* Promote,
+so the depth bound never ran and the log blamed a bad parameter instead of a deleted image.
+`scripts/ci/rollback-target.sh` now refuses first and says what is actually true.
+
+**Evidence — the rollback has been demonstrated end to end, twice, at two different layers.**
+
+The current run is **2026-08-17** (`docs/eks/evidence/2026-08-17-task4-rollback.txt` and the two
+`cd-rollback-*-run.txt` logs): a deliberately broken frontend deployed through the real pipeline, the
+sync timing out at 600s, diagnostics dumped *before* anything is undone, `ROLLING BACK to f5f5c75`,
+and the rollback build verifying itself green — **2m08s from detection to recovered**, with
+**1,539 probes of the live site all returning 200** (`2026-08-17-task4-rollback-site-poll.txt`;
+`awk '$2!=200' <file>` prints nothing). Zero visitor impact, because a pod that never passes readiness
+is never added to the Service and the old ReplicaSet is never scaled down.
+
+The **2026-08-04** run is kept deliberately, because it exercises the layer the 08-17 one cannot: a
+backend that **passed its probes** while returning 500s, which ArgoCD reported as `Healthy` and only
+the smoke test caught — at a cost of roughly three minutes of real errors. That set also records the
+rollback firing *unstaged*, twice, plus the `ROLLBACK_DEPTH` bound refusing to recurse and reporting
+that production needs a human.
+
+See [`docs/eks/evidence/README.md`](docs/eks/evidence/README.md) for the indexed set and
+[`docs/eks/live-cluster-snapshot.md`](docs/eks/live-cluster-snapshot.md) for readable excerpts.
 
 ### Security
 

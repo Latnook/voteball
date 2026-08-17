@@ -17,7 +17,80 @@ Re-capture with **[`../../../scripts/capture-evidence.sh`](../../../scripts/capt
 ./scripts/capture-evidence.sh --only-restart  # re-take just the pod-restart poll
 ```
 
-## 2026-08-04 — the current system, and a clean first-run rebuild
+The Task 4 (Jenkins CI/CD) captures have their own script,
+**[`../../../scripts/capture-task4-evidence.sh`](../../../scripts/capture-task4-evidence.sh)** — the
+`task4-*` files were hand-run for the 2026-08-04 set and had drifted badly by 2026-08-17 (see that
+section below). Static captures are read-only; nothing in it triggers a build or pushes a commit.
+
+```bash
+./scripts/capture-task4-evidence.sh                                   # all static captures
+./scripts/capture-task4-evidence.sh --build-log application-ci 3      # one build's console log
+./scripts/capture-task4-evidence.sh --build-log application-cd 2 rollback-broken-deploy
+```
+
+It refuses to write a console log that appears to contain a credential — a runtime-fetched secret in
+argument position gets printed by Jenkins' `set -x`, which put a live ECR token into committed
+evidence on 2026-08-04.
+
+## 2026-08-17 — Task 4 re-captured, and three faults it exposed
+
+The current Task 4 set, captured on the live cluster after the 2026-08-17 rebuild. It supersedes the
+`2026-08-04-task4-*` files as the current-state capture; those stay as the record of what they
+recorded.
+
+**Re-capturing was not a formality — it found three real faults, two of them in things that were
+claimed to work.** That is the argument for capturing evidence from the running system rather than
+describing it:
+
+- **CI was broken and nobody knew.** `application-ci` **#1** failed on `CVE-2026-53615`: nine HIGH
+  findings in Debian 13.6's `util-linux` family in the `backend` image. **Nothing in `services/` had
+  changed since the last green build six days earlier.** The Trivy gate is
+  `--severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed`, and `--ignore-unfixed` makes it sharp in
+  one direction only: a base-package CVE is invisible while unfixed and **instantly blocking** the
+  moment Debian ships the patch. Fixed at source (`apt-get upgrade` in both Debian images), not with a
+  `.trivyignore` — the findings had a named fixed version, which is the one case the gate exists to
+  catch. See `docs/security.md`, "Base-image patching".
+- **The rollback could not have worked.** `previous-tag.sh` returned `61256d4`; ECR held only
+  `480ee8b`. Git history survives a teardown, ECR does not, so between a rebuild and the first
+  successful CD promote the "previous" tag belongs to the *old* cluster's registry. Worse than a failed
+  rollback: the rollback build died in Input Validation — *before* Promote, so the depth bound never
+  ran — and blamed a bad parameter. Now guarded by `scripts/ci/rollback-target.sh`.
+- **Three documented claims were wrong**, all mechanically checkable: the test count (153 vs an actual
+  250), a CI stage missing from `README.submission.md`'s stage list (`Script tests`, added
+  2026-08-11), and `docs/deploy.md` documenting 14 of `deploy.sh`'s 15 steps — the missing one being
+  **7b**, which mints the token CD authenticates with.
+
+**The rollback demo ran with zero visitor impact**, unlike 2026-08-04's: 1,539 probes of the live site
+across the whole cycle, all 200. Both demos are kept because they exercise different layers — see the
+note in `2026-08-17-task4-rollback.txt`.
+
+| File | What it is |
+|---|---|
+| `2026-08-17-task4-jenkins-on-k8s.txt` | The brief's §2 mandatory components and §6 container security, read off the **running** objects: namespace separation, pinned controller images (and a `:latest` grep returning nothing), probes, resource requests/limits, securityContext, the EFS-backed `Retain` PV, `numExecutors: 0`, no AWS role on the controller, both agent pod templates parsed as YAML, the **one** container allowing privilege escalation, `docker.sock` mounted nowhere, NetworkPolicies, the CD identity proven read-only, and no `cluster-admin` in `ci` |
+| `2026-08-17-task4-plugins-resolved.txt` | The 9 top-level plugins in `plugins.txt` resolved to the **79** actually loaded, with versions, next to the controller image tag that pins them. New in this set: the Dockerfile records this in the image *build log*, which is ephemeral and outside the repo, so no reviewable file said which versions a tag contains |
+| `2026-08-17-task4-verify-jenkins.txt` | `verify-jenkins.sh` under `VERIFY_STRICT=1` — exit 0, **zero skips** (a permissive skip reads identically to a passing check in a log) |
+| `2026-08-17-task4-argocd-check.txt` | `render-argocd-app.sh --check`: the live `Application`/`AppProject` match the template, no hand-registered repo or cluster credentials |
+| `2026-08-17-task4-ci-run.txt` | `application-ci` #3, a full green run: Guard → Validation → **Script tests** → Lint → Tests → Build (4 contexts) → Trivy (all three blocking images `Total: 0`) → Push → Publish Metadata → Trigger CD |
+| `2026-08-17-task4-ci-scan-blocks-deploy-run.txt` | `application-ci` #1 — **a failed scan blocking the deploy.** `Push to ECR`, `Publish Metadata` and `Trigger CD` all `skipped due to earlier failure(s)`; nothing reached ECR and `application-cd` never ran |
+| `2026-08-17-task4-ci-path-filter-skip-run.txt` | `application-ci` #2 — the `services/**` path filter correctly skipping build/scan/push for a docs-only commit, and reporting SUCCESS without shipping anything |
+| `2026-08-17-task4-cd-run.txt` | `application-cd` #1: Input Validation → Manifest Validation → Promote → Deploy → Rollout → Verify at `sync=Synced health=Healthy` → smoke test green |
+| `2026-08-17-task4-cd-rollback-broken-deploy-run.txt` | `application-cd` #2 — the deliberately broken deploy. Sync times out at 600s, diagnostics are dumped **before** anything is undone, and `ROLLING BACK to f5f5c75` |
+| `2026-08-17-task4-cd-rollback-recovery-run.txt` | `application-cd` #3 — the rollback build, `ROLLBACK_DEPTH=1`, verifying itself green through the same stages the failed deploy used |
+| `2026-08-17-task4-rollback.txt` | The measured timeline: 10:22:24 timeout → 10:22:41 rollback decision → 10:24:32 recovered and smoke-tested. **2m08s** from detection to recovery |
+| `2026-08-17-task4-rollback-site-poll.txt` | **1,539** probes at 2/s spanning 10:11:09→10:26:08 — the entire demo — **all 200**. Check it, don't believe it: `awk '$2!=200' <file>` prints nothing |
+| `2026-08-17-task4-rollback-target-guard.txt` | The guard's two verdicts against the **live** registry: exit 3 / `NO_ROLLBACK_TARGET 61256d4` for the tag the rebuild deleted, exit 0 for one that is present, plus the 9-assertion offline test |
+
+**Why the poll is throttled to two requests a second** — same reason as the 2026-08-03 set below:
+`terraform/waf.tf`'s `RateLimitSiteWide` blocks an IP at 2,000 requests per 5 minutes across *every*
+path, and an unthrottled loop trips it and then reads exactly like an outage. The `sleep 0.5` is
+load-bearing.
+
+## 2026-08-04 — a clean first-run rebuild, and the CI/CD split going live
+
+**Superseded as the current-state capture by the 2026-08-17 set above** (its `task4-*` files predate
+the `Script tests` stage, the base-image patching and the rollback-target guard). Kept as the record
+of the first-run rebuild and of the automatic rollback firing on a backend that passed its probes
+while serving 500s — a failure mode the 08-17 demo deliberately does not reproduce.
 
 Captured on EKS **1.36**, Jenkins in-cluster, across one `destroy.sh` → `deploy.sh` cycle:
 **132 resources destroyed** in 12m09s, **121 created** in 17m21s. **Vote totals identical across it:
