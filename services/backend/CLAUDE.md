@@ -204,3 +204,19 @@ League feature: a fixture league called `'Nations League'` and a fixture club ca
 breaking only when a later commit seeded the real row. Give fixtures obviously-fake names instead —
 this repo now uses `'Placeholder League'` and `'Ruritania'` for exactly this reason.
 
+**Two ways a test run lies to you.** Both cost real debugging time during the observability
+instrumentation plan:
+
+- **A second suite running against the same `voteball-test-db` container deadlocks, and looks like a
+  database problem, not a concurrency one.** Both this service's and the worker's fixtures drop and
+  recreate every table before each test, so two suites at once fight over the same table locks — the
+  symptom is a suite that hangs, or errors that read like stale database state. Run `pgrep -f "python
+  -m pytest"` before trusting any diagnosis that blames the database. During this plan an implementer
+  reported three errors as "pre-existing db state issues" and committed on that basis; a clean,
+  exclusive run showed zero errors.
+- **A stale `PROMETHEUS_MULTIPROC_DIR` masquerades as a database fault in `test_metrics.py`.** If
+  that variable is exported and points at a directory that no longer exists, the metrics tests error
+  in a way that looks unrelated to Prometheus at all. This happened for real when a by-hand
+  multiprocess check exported it, deleted the directory afterwards, and left the variable set. Unset
+  it (or run under `env -u PROMETHEUS_MULTIPROC_DIR`) before trusting any other explanation.
+

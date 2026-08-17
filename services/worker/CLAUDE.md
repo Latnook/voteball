@@ -25,3 +25,8 @@ duplicate is patched too — a schema change that only touches `services/backend
 worker tests either fail on `UndefinedColumn` or, worse, silently pass against a stale schema. Check
 `tests/conftest.py`'s inline `CREATE TABLE` list whenever a rollup table's columns change.
 
+**Never run this suite at the same time as the backend's** — both drop and recreate every table in
+the shared `voteball-test-db` container, so running two at once deadlocks on table locks and looks
+like a database problem rather than a scheduling one. See the trap note in
+`services/backend/CLAUDE.md`.
+
