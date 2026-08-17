@@ -1,0 +1,411 @@
+Loaded credentials from ./deploy.env.
+Using db_password from terraform/voteball.tfvars (not prompting for it).
+
+==> 1/11  Resolving the newest DB snapshot
+Found voteball-eks-db-final-20260817084122 — next apply will restore from it.
+(To force a fresh empty DB instead, put 'db_snapshot_identifier = null' in /home/latnook/Documents/Voteball/scripts/../terraform/snapshot.auto.tfvars.)
+
+==> 2/11  Creating ECR repositories and secret containers (targeted apply)
+
+==> State bucket: s3://voteball-tfstate-590183895228 (il-central-1)
+    already exists -- reasserting settings
+{
+    "TransitionDefaultMinimumObjectSize": "all_storage_classes_128K"
+}
+
+==> Backend configuration
+    wrote terraform/backend.hcl  (key: voteball/main.tfstate)
+
+==> Done
+The bucket is ready and belongs to NO Terraform stack -- scripts/destroy.sh must never touch it.
+
+Next (add -migrate-state the first time, to move existing local state):
+
+  terraform -chdir=terraform init -backend-config=backend.hcl -migrate-state
+Initializing the backend...
+
+Upgrading modules...
+Downloading registry.terraform.io/terraform-aws-modules/iam/aws 5.60.0 for efs_csi_irsa...
+- efs_csi_irsa in .terraform/modules/efs_csi_irsa/modules/iam-role-for-service-accounts-eks
+Downloading registry.terraform.io/terraform-aws-modules/iam/aws 5.60.0 for autoscaler_irsa...
+- autoscaler_irsa in .terraform/modules/autoscaler_irsa/modules/iam-role-for-service-accounts-eks
+Downloading registry.terraform.io/terraform-aws-modules/iam/aws 5.60.0 for alb_irsa...
+- alb_irsa in .terraform/modules/alb_irsa/modules/iam-role-for-service-accounts-eks
+Downloading registry.terraform.io/terraform-aws-modules/iam/aws 5.60.0 for eso_irsa...
+- eso_irsa in .terraform/modules/eso_irsa/modules/iam-role-for-service-accounts-eks
+Downloading registry.terraform.io/terraform-aws-modules/iam/aws 5.60.0 for jenkins_cd_irsa...
+- jenkins_cd_irsa in .terraform/modules/jenkins_cd_irsa/modules/iam-role-for-service-accounts-eks
+Downloading registry.terraform.io/terraform-aws-modules/iam/aws 5.60.0 for external_dns_irsa...
+- external_dns_irsa in .terraform/modules/external_dns_irsa/modules/iam-role-for-service-accounts-eks
+Downloading registry.terraform.io/terraform-aws-modules/iam/aws 5.60.0 for cloudwatch_irsa...
+- cloudwatch_irsa in .terraform/modules/cloudwatch_irsa/modules/iam-role-for-service-accounts-eks
+Downloading registry.terraform.io/terraform-aws-modules/eks/aws 20.37.2 for eks...
+- eks in .terraform/modules/eks
+Downloading registry.terraform.io/terraform-aws-modules/vpc/aws 5.21.0 for vpc...
+- vpc in .terraform/modules/vpc
+- eks.fargate_profile in .terraform/modules/eks/modules/fargate-profile
+Downloading registry.terraform.io/terraform-aws-modules/kms/aws 2.1.0 for eks.kms...
+- eks.kms in .terraform/modules/eks.kms
+- eks.self_managed_node_group in .terraform/modules/eks/modules/self-managed-node-group
+- eks.eks_managed_node_group in .terraform/modules/eks/modules/eks-managed-node-group
+- eks.self_managed_node_group.user_data in .terraform/modules/eks/modules/_user_data
+- eks.eks_managed_node_group.user_data in .terraform/modules/eks/modules/_user_data
+
+Initializing provider plugins...
+- Finding hashicorp/time versions matching ">= 0.9.0, ~> 0.12"...
+- Finding hashicorp/tls versions matching ">= 3.0.0"...
+- Finding hashicorp/null versions matching ">= 3.0.0"...
+- Finding hashicorp/cloudinit versions matching ">= 2.0.0"...
+- Finding hashicorp/aws versions matching ">= 4.0.0, >= 4.33.0, ~> 5.0, >= 5.79.0, >= 5.95.0, < 6.0.0"...
+- Finding hashicorp/helm versions matching "~> 3.0"...
+- Finding hashicorp/kubernetes versions matching "~> 2.31"...
+- Using previously-installed hashicorp/aws v5.100.0
+- Using previously-installed hashicorp/helm v3.2.0
+- Using previously-installed hashicorp/kubernetes v2.38.0
+- Using previously-installed hashicorp/time v0.14.1
+- Using previously-installed hashicorp/tls v4.3.0
+- Using previously-installed hashicorp/null v3.3.1
+- Using previously-installed hashicorp/cloudinit v2.4.0
+
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+data.aws_caller_identity.current: Reading...
+data.aws_caller_identity.current: Read complete after 0s [id=590183895228]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_ecr_repository.app["backend"] will be created
+  + resource "aws_ecr_repository" "app" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "IMMUTABLE"
+      + name                 = "voteball-backend"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.app["backup"] will be created
+  + resource "aws_ecr_repository" "app" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "IMMUTABLE"
+      + name                 = "voteball-backup"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.app["jenkins"] will be created
+  + resource "aws_ecr_repository" "app" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "IMMUTABLE"
+      + name                 = "voteball-jenkins"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.app["nginx"] will be created
+  + resource "aws_ecr_repository" "app" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "IMMUTABLE"
+      + name                 = "voteball-nginx"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.app["worker"] will be created
+  + resource "aws_ecr_repository" "app" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "IMMUTABLE"
+      + name                 = "voteball-worker"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = true
+        }
+    }
+
+  # aws_ecr_repository.cache["buildcache"] will be created
+  + resource "aws_ecr_repository" "cache" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "voteball-buildcache"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = false
+        }
+    }
+
+  # aws_ecr_repository.cache["trivy-db"] will be created
+  + resource "aws_ecr_repository" "cache" {
+      + arn                  = (known after apply)
+      + force_delete         = true
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "voteball-trivy-db"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + image_scanning_configuration {
+          + scan_on_push = false
+        }
+    }
+
+  # aws_secretsmanager_secret.app will be created
+  + resource "aws_secretsmanager_secret" "app" {
+      + arn                            = (known after apply)
+      + description                    = "Voteball app credentials (DB + admin). Seeded manually; synced to K8s by ESO."
+      + force_overwrite_replica_secret = false
+      + id                             = (known after apply)
+      + name                           = "voteball/app-secret"
+      + name_prefix                    = (known after apply)
+      + policy                         = (known after apply)
+      + recovery_window_in_days        = 0
+      + tags_all                       = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + replica (known after apply)
+    }
+
+  # aws_secretsmanager_secret.jenkins will be created
+  + resource "aws_secretsmanager_secret" "jenkins" {
+      + arn                            = (known after apply)
+      + description                    = "Jenkins admin + GitHub deploy key + webhook secret. Seeded by scripts/seed-jenkins-secret.sh; read at boot by JCasC via ESO."
+      + force_overwrite_replica_secret = false
+      + id                             = (known after apply)
+      + name                           = "voteball/jenkins"
+      + name_prefix                    = (known after apply)
+      + policy                         = (known after apply)
+      + recovery_window_in_days        = 0
+      + tags_all                       = {
+          + "Environment" = "dev"
+          + "Project"     = "voteball"
+        }
+
+      + replica (known after apply)
+    }
+
+  # aws_secretsmanager_secret_version.app_placeholder will be created
+  + resource "aws_secretsmanager_secret_version" "app_placeholder" {
+      + arn                  = (known after apply)
+      + has_secret_string_wo = (known after apply)
+      + id                   = (known after apply)
+      + secret_id            = (known after apply)
+      + secret_string        = (sensitive value)
+      + secret_string_wo     = (write-only attribute)
+      + version_id           = (known after apply)
+      + version_stages       = (known after apply)
+    }
+
+  # aws_secretsmanager_secret_version.jenkins_placeholder will be created
+  + resource "aws_secretsmanager_secret_version" "jenkins_placeholder" {
+      + arn                  = (known after apply)
+      + has_secret_string_wo = (known after apply)
+      + id                   = (known after apply)
+      + secret_id            = (known after apply)
+      + secret_string        = (sensitive value)
+      + secret_string_wo     = (write-only attribute)
+      + version_id           = (known after apply)
+      + version_stages       = (known after apply)
+    }
+
+Plan: 11 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + ecr_registry        = "590183895228.dkr.ecr.il-central-1.amazonaws.com"
+  + ecr_repository_urls = {
+      + backend = (known after apply)
+      + backup  = (known after apply)
+      + jenkins = (known after apply)
+      + nginx   = (known after apply)
+      + worker  = (known after apply)
+    }
+  + secret_arn          = (known after apply)
+aws_ecr_repository.app["jenkins"]: Creating...
+aws_ecr_repository.app["backup"]: Creating...
+aws_secretsmanager_secret.app: Creating...
+aws_ecr_repository.cache["buildcache"]: Creating...
+aws_ecr_repository.app["worker"]: Creating...
+aws_secretsmanager_secret.jenkins: Creating...
+aws_ecr_repository.cache["trivy-db"]: Creating...
+aws_ecr_repository.app["nginx"]: Creating...
+aws_ecr_repository.app["backend"]: Creating...
+aws_ecr_repository.app["nginx"]: Creation complete after 0s [id=voteball-nginx]
+aws_ecr_repository.cache["buildcache"]: Creation complete after 0s [id=voteball-buildcache]
+aws_ecr_repository.app["backup"]: Creation complete after 0s [id=voteball-backup]
+aws_ecr_repository.app["worker"]: Creation complete after 0s [id=voteball-worker]
+aws_ecr_repository.app["jenkins"]: Creation complete after 0s [id=voteball-jenkins]
+aws_ecr_repository.app["backend"]: Creation complete after 0s [id=voteball-backend]
+aws_ecr_repository.cache["trivy-db"]: Creation complete after 0s [id=voteball-trivy-db]
+aws_secretsmanager_secret.app: Creation complete after 0s [id=arn:aws:secretsmanager:il-central-1:590183895228:secret:voteball/app-secret-nnq5B4]
+aws_secretsmanager_secret_version.app_placeholder: Creating...
+aws_secretsmanager_secret.jenkins: Creation complete after 0s [id=arn:aws:secretsmanager:il-central-1:590183895228:secret:voteball/jenkins-PpAoX4]
+aws_secretsmanager_secret_version.jenkins_placeholder: Creating...
+aws_secretsmanager_secret_version.jenkins_placeholder: Creation complete after 0s [id=arn:aws:secretsmanager:il-central-1:590183895228:secret:voteball/jenkins-PpAoX4|terraform-20260817122020072300000004]
+aws_secretsmanager_secret_version.app_placeholder: Creation complete after 0s [id=arn:aws:secretsmanager:il-central-1:590183895228:secret:voteball/app-secret-nnq5B4|terraform-20260817122020064300000003]
+╷
+│ Warning: Resource targeting is in effect
+│ 
+│ You are creating a plan with the -target option, which means that the
+│ result of this plan may not represent all of the changes requested by the
+│ current configuration.
+│ 
+│ The -target option is not for routine use, and is provided only for
+│ exceptional situations such as recovering from errors or mistakes, or when
+│ Terraform specifically suggests to use it as part of an error message.
+╵
+╷
+│ Warning: Applied changes may be incomplete
+│ 
+│ The plan was created with the -target option in effect, so some changes
+│ requested in the configuration may have been ignored and the output values
+│ may not be fully updated. Run the following command to verify that no other
+│ changes are pending:
+│     terraform plan
+│ 
+│ Note that the -target option is not suitable for routine use, and is
+│ provided only for exceptional situations such as recovering from errors or
+│ mistakes, or when Terraform specifically suggests to use it as part of an
+│ error message.
+╵
+
+Apply complete! Resources: 11 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ecr_registry = "590183895228.dkr.ecr.il-central-1.amazonaws.com"
+ecr_repository_urls = {
+  "backend" = "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend"
+  "backup" = "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backup"
+  "jenkins" = "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-jenkins"
+  "nginx" = "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx"
+  "worker" = "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker"
+}
+secret_arn = "arn:aws:secretsmanager:il-central-1:590183895228:secret:voteball/app-secret-nnq5B4"
+
+==> 3/11  Seeding app credentials into Secrets Manager
+Done: seeded 5 values into voteball/app-secret. Nothing was printed or written to disk.
+
+==> 3b/11 Seeding Jenkins credentials into Secrets Manager
+Seeding voteball/jenkins in il-central-1.
+
+voteball/jenkins	e6958ba3-37d7-4cfe-876d-73b9659dfd31
+
+Stored. Two manual steps remain -- both need values only you can place:
+
+1. Add this PUBLIC key to GitHub -> Settings -> Deploy keys, WITH write access:
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDCcPfKRoCrxr6hOQbQ6sAyKQ4er7HnmRZTjMl5D76u4 jenkins-deploy
+
+2. Add the webhook (repo -> Settings -> Webhooks):
+     Payload URL:  https://jenkins.voteball.latnook.com/github-webhook/
+     SSL verify:   ENABLED (the endpoint is HTTPS via ACM now)
+     Content type: application/json
+     Secret:       printed once below -- copy it now, it is not stored anywhere else readable
+
+     8e6aba52e9a1b65e1074f34bed6ebb50d9304c4c9e204629206af6efe29ffe47
+
+The Jenkins admin password is NOT recoverable from Secrets Manager (only its bcrypt hash is
+stored). Re-run this script to set a new one.
+
+==> 3c/11 Registering the CI deploy key and webhook on GitHub
+Repository : Latnook/voteball
+Webhook    : https://jenkins.voteball.latnook.com/github-webhook/
+Deploy key : SHA256:N4Ah8C5mlPHV6zIuyYIonkgIdAP1i8Lpnao3MM/Sf+Q
+
+==> Deploy key
+    removed stale key 160471036
+    registered key 160490116 (write access: true)
+==> Webhook
+    removed stale hook 666892465
+    registered hook 666960305
+
+SKIP_PROBE=1 -- registration complete; not probing (Jenkins is not expected to be up yet).
+
+==> 4/11  Mirroring the Trivy vulnerability database into ECR
+Mirroring Trivy DB -> 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db
+Login Succeeded!
+Getting image source signatures
+Copying blob sha256:ab6f3d03d6156c9eb11d3ffdb0299e216b8251a6afe6a94c971e8617180ec3ca
+Copying config sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+Writing manifest to image destination
+Done. Builds pull it via: trivy image --db-repository 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-trivy-db
+
+==> 5/11  Building and pushing the Jenkins controller image
+ERROR: refusing to build -- the working tree has uncommitted changes.
+       Images are tagged '165cea4' from git, so this build would publish an image whose
+       tag does not describe its contents, and no later stage would notice.
+       Commit or stash first, or re-run with ALLOW_DIRTY_BUILD=1 to tag '165cea4-dirty'.
+?? docs/eks/evidence/2026-08-17-destroy-steps.txt
+
+[exited with code 1]
