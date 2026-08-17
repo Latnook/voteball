@@ -495,6 +495,29 @@ pipeline {
             def errText = fileExists('previous-tag.err') ? readFile('previous-tag.err').trim() : '(no stderr captured)'
             echo "previous-tag.sh exited ${prevStatus} (no previous tag found): ${errText}"
           }
+
+          // Git knowing a previous tag is NOT the same as that tag being deployable. `terraform
+          // destroy` deletes the ECR repositories (force_delete = true) but git history survives, so
+          // between a rebuild and the first successful CD promote the "previous" tag belongs to the
+          // OLD cluster's registry. Observed 2026-08-17: previous-tag.sh said 61256d4, ECR held only
+          // 480ee8b.
+          //
+          // Rolling back to a missing tag fails in Input Validation -- BEFORE Promote -- so
+          // PROMOTE_SHA never gets set on that build, the depth bound below never runs, and the
+          // operator reads "Images for <tag> are NOT all in ECR" as though they had mistyped a
+          // parameter. Checking here turns that into an accurate message while production is still
+          // broken and someone is still looking.
+          //
+          // Runs in `deploy` (aws) with the tag resolved above in jnlp (git): no container in this
+          // pod is proven to do both against this workspace.
+          def targetStatus = 0
+          if (previous) {
+            container('deploy') {
+              targetStatus = sh(
+                script: "scripts/ci/rollback-target.sh '${previous}' > rollback-target.out 2>&1",
+                returnStatus: true)
+            }
+          }
           def depth = (params.ROLLBACK_DEPTH ?: '0').toInteger()
           // Bound against unbounded oscillation. "previous != env.TAG" alone does NOT stop this:
           // deploy c fails -> rollback commits b, that build ALSO fails -> its previous-tag.sh now
@@ -510,6 +533,15 @@ pipeline {
                  "WHICH FAILED VERIFICATION, AND NEEDS A HUMAN. See docs/cicd.md for the manual " +
                  "rollback procedure."
             currentBuild.description = "${currentBuild.description} | ROLLBACK STOPPED -- NEEDS A HUMAN"
+          } else if (targetStatus == 3) {
+            echo "NO ROLLBACK: git names ${previous} as the previous version, but that tag is NOT in " +
+                 "ECR -- the registry was almost certainly recreated by a destroy/rebuild since it " +
+                 "was pushed. There is no image to roll back to. PRODUCTION IS LEFT RUNNING " +
+                 "${env.TAG}, WHICH FAILED VERIFICATION, AND NEEDS A HUMAN: build a known-good " +
+                 "commit with ./scripts/build-push-ecr.sh, then run application-cd against it. " +
+                 "See docs/cicd.md, 'Rollback'."
+            currentBuild.description =
+              "${currentBuild.description} | NO ROLLBACK TARGET (${previous} absent from ECR) -- NEEDS A HUMAN"
           } else if (previous && previous != env.TAG) {
             echo "ROLLING BACK to ${previous} (this deploy of ${env.TAG} failed verification)."
             currentBuild.description = "${currentBuild.description} | ROLLED BACK to ${previous}"

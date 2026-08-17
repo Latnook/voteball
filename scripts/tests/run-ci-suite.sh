@@ -45,6 +45,10 @@ PYTHON_GROUP=(
 # build #7 before the suite as a whole failed.
 GIT_GROUP=(
   test-build-push-ecr.sh
+  # Builds throwaway git repositories with a handmade values.yaml promote history -- the disagreement
+  # between git and ECR is the whole point of the test, so it cannot be stubbed without a real repo.
+  # Confirmed passing inside a bare alpine/git image (no python3) on 2026-08-17, per the rule above.
+  test-rollback-target.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.
