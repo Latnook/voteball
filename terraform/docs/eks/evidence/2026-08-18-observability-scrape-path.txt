@@ -1,0 +1,110 @@
+Observability scrape path — post-apply evidence
+Captured 2026-08-18, commit 30692ee, cluster voteball (il-central-1)
+Plan: docs/design/2026-08-17-observability-design.md sections 1, 2, 3, 5-7
+
+WHAT THIS SHOWS: Prometheus moved to the `observability` namespace with a persistent
+disk, and every application target is being scraped. The Jenkins target is
+deliberately absent -- see the note at the end.
+
+== terraform apply ==
+Apply complete! Resources: 6 added, 3 changed, 1 destroyed.
+
+== plan actions (6 add, 3 change, 1 destroy) ==
+  # aws_eks_addon.ebs_csi will be created
+  # aws_iam_role.alertmanager will be updated in-place
+  # helm_release.jenkins_support will be updated in-place
+  # helm_release.kube_prometheus_stack must be replaced
+  # kubernetes_namespace.devops_app will be updated in-place
+  # kubernetes_storage_class.gp3 will be created
+  # module.ebs_csi_irsa.aws_iam_policy.ebs_csi[0] will be created
+  # module.ebs_csi_irsa.aws_iam_role_policy_attachment.ebs_csi[0] will be created
+  # module.ebs_csi_irsa.aws_iam_role.this[0] will be created
+  # module.eks.module.eks_managed_node_group["default"].aws_eks_node_group.this[0] has changed
+
+== observability namespace ==
+alertmanager-kube-prometheus-stack-alertmanager-0 2/2 Running
+kube-prometheus-stack-grafana-5c8f87554c-wzknq 3/3 Running
+kube-prometheus-stack-kube-state-metrics-6f664bc8c4-6xc7g 1/1 Running
+kube-prometheus-stack-operator-7fff7f5558-jpp5h 1/1 Running
+kube-prometheus-stack-prometheus-node-exporter-lgpmk 1/1 Running
+kube-prometheus-stack-prometheus-node-exporter-w477w 1/1 Running
+prometheus-kube-prometheus-stack-prometheus-0 2/2 Running
+
+== persistent storage (the design's section 2) ==
+prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0   Bound   pvc-c9c725f1-f1bb-430b-82c7-83e396f18d5b   10Gi   RWO   gp3   <unset>   13m
+il-central-1b	10	vol-09eb96b676d155974
+NOTE: that AZ is Prometheus' permanent home. An EBS volume is AZ-locked, so if the
+      node in that AZ is reclaimed and no replacement lands there, the pod sits Pending.
+      Recovery is deleting the PVC and losing history -- acceptable for 15d of metrics.
+
+== retention, both limits ==
+15d  8GiB
+
+== storage classes ==
+efs-sc   efs.csi.aws.com         Retain   Immediate              true    8h
+gp2      kubernetes.io/aws-ebs   Delete   WaitForFirstConsumer   false   8h
+gp3      ebs.csi.aws.com         Delete   WaitForFirstConsumer   true    14m
+
+== ACCEPTANCE: every declared target UP, by query not by eye ==
+  backend    10.0.38.123:5000       up=1
+  backend    10.0.48.89:5000        up=1
+  frontend   10.0.42.221:9113       up=1
+  frontend   10.0.57.216:9113       up=1
+  worker     10.0.40.209:9100       up=1
+  total targets: 24 | up: 24
+
+== application metrics actually arriving ==
+  voteball_http_requests_total                   4 series
+  voteball_votes_cast_total                      2 series
+  voteball_app_info                              2 series
+  voteball_worker_last_success_timestamp_seconds 1 series
+  nginx_up                                       2 series
+  nginx_http_requests_total                      2 series
+
+== commit -> image -> pod -> metric, queryable ==
+  pod=backend-f4886d68-rtxmn  version=ae21329  git_sha=ae21329
+  pod=backend-f4886d68-vrtf8  version=ae21329  git_sha=ae21329
+
+== NETWORK POLICY: the narrowing works, proven by a pair ==
+Both ALB ingress rules used to admit 10.0.0.0/16 -- the whole VPC -- to mean "the load
+balancer". The AWS VPC CNI gives every POD a VPC address, so that also admitted every pod
+in the cluster. Narrowed to the two PUBLIC subnets, where the ALB's interfaces actually are
+and where no pod ever runs.
+
+A single probe cannot prove this: a pod that reaches nothing looks identical to a policy
+that works. So the evidence is a PAIR, both probes waiting 80s first because the CNI fails
+OPEN until the node programs the pod's eBPF maps.
+
+  from namespace external-secrets (no NetworkPolicy at all):
+      http://jenkins.ci:8080/  ->  timed out, no response          = blocked
+  from namespace ci (the policy admits same-namespace):
+      http://jenkins.ci:8080/  ->  HTTP/1.1 403 Forbidden          = reached
+
+The 403 is Jenkins' own auth rejecting an anonymous request -- which is the point: the
+service is alive and answering, so the timeout from outside is the policy, not a dead
+service.
+
+Verified against reality rather than the template: the live ALB k8s-voteball-327d05a115
+sits in subnets 10.0.0.0/20 and 10.0.16.0/20, exactly the CIDRs the narrowed rule admits.
+
+== ALERTMANAGER SURVIVED THE RENAME (the design's named silent failure) ==
+The IRSA trust policy names the namespace. Left behind, Alertmanager could not assume its
+role -- and alerts would still evaluate, still fire, still show as firing, and never be
+delivered.
+  trust policy condition : system:serviceaccount:observability
+  serviceaccount role-arn: arn:aws:iam::590183895228:role/voteball-alertmanager-irsa
+  credential errors in log: 0
+  /-/ready: OK
+Not yet proven end to end: that an alert actually ARRIVES at the SNS mailbox. That is a
+drill in a later plan, not an assertion made here.
+
+== JENKINS IS DELIBERATELY ABSENT FROM THE TARGET LIST ==
+ci/jenkins/plugins.txt now carries the `prometheus` plugin, but plugins are baked into the
+controller IMAGE and terraform/addon-jenkins.tf sets installPlugins=false. The image tag
+comes from jenkins_image_tag in the gitignored voteball.tfvars, still 4993a70 -- so no
+image was built and /prometheus does not exist yet.
+
+Its ServiceMonitor is therefore switched OFF (serviceMonitor.enabled=false). Left on, it
+would have produced a permanently-failing target, and the stack's own default TargetDown
+rule would email SNS every 12 hours indefinitely. It flips to true in the same change that
+builds the image and bumps the tag.
