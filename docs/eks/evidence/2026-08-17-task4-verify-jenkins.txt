@@ -1,0 +1,64 @@
+=== kubectl get namespaces ===
+NAME                STATUS   AGE
+amazon-cloudwatch   Active   49m
+argocd              Active   52m
+ci                  Active   49m
+default             Active   55m
+devops-app          Active   49m
+external-secrets    Active   52m
+kube-node-lease     Active   55m
+kube-public         Active   55m
+kube-system         Active   55m
+monitoring          Active   49m
+  PASS  the ci namespace exists
+  PASS  the devops-app namespace exists
+
+=== kubectl get pods -n ci -o wide ===
+NAME        READY   STATUS    RESTARTS   AGE   IP            NODE                                          NOMINATED NODE   READINESS GATES
+jenkins-0   2/2     Running   0          45m   10.0.44.108   ip-10-0-34-86.il-central-1.compute.internal   <none>           <none>
+  PASS  the Jenkins controller is Ready
+
+=== kubectl get service,ingress,pvc -n ci ===
+NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)     AGE
+service/jenkins         ClusterIP   172.20.4.40    <none>        8080/TCP    47m
+service/jenkins-agent   ClusterIP   172.20.151.6   <none>        50000/TCP   47m
+
+NAME                                        CLASS   HOSTS                          ADDRESS                                                             PORTS   AGE
+ingress.networking.k8s.io/jenkins-webhook   alb     jenkins.voteball.latnook.com   k8s-voteball-327d05a115-1903274334.il-central-1.elb.amazonaws.com   80      49m
+
+NAME                            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/jenkins   Bound    pvc-a3c6405a-6435-46f2-a973-3c646750fc90   8Gi        RWO            efs-sc         <unset>                 47m
+  PASS  the Jenkins home PVC (jenkins) is Bound
+  PASS  the Ingress routes only /github-webhook -- the UI is not internet-facing
+
+=== kubectl get serviceaccount,role,rolebinding -n ci ===
+NAME                              AGE
+serviceaccount/default            49m
+serviceaccount/jenkins            47m
+serviceaccount/jenkins-agent      47m
+serviceaccount/jenkins-cd-agent   49m
+
+NAME                                                     CREATED AT
+role.rbac.authorization.k8s.io/jenkins-casc-reload       2026-08-17T08:55:27Z
+role.rbac.authorization.k8s.io/jenkins-schedule-agents   2026-08-17T08:55:27Z
+
+NAME                                                             ROLE                           AGE
+rolebinding.rbac.authorization.k8s.io/jenkins-schedule-agents    Role/jenkins-schedule-agents   47m
+rolebinding.rbac.authorization.k8s.io/jenkins-watch-configmaps   Role/jenkins-casc-reload       47m
+  PASS  ServiceAccount jenkins exists
+  PASS  ServiceAccount jenkins-agent exists
+  PASS  ServiceAccount jenkins-cd-agent exists
+  PASS  jenkins-cd-agent cannot write to devops-app (ArgoCD is the only applier)
+  PASS  jenkins-cd-agent can read devops-app for evidence and diagnostics
+
+=== helm list -n ci ===
+NAME           	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART                	APP VERSION
+jenkins        	ci       	1       	2026-08-17 11:55:26.367570367 +0300 IDT	deployed	jenkins-5.9.45       	2.568.1    
+jenkins-support	ci       	1       	2026-08-17 11:53:37.807907661 +0300 IDT	deployed	jenkins-support-0.1.0	           
+  PASS  the jenkins release is installed
+
+=== Jenkins API: job list and numExecutors (needs JENKINS_ADMIN_USER/JENKINS_ADMIN_PASSWORD) ===
+  PASS  exactly the two expected jobs exist: ["application-cd","application-ci"]
+  PASS  numExecutors is 0 -- the controller runs no builds
+
+verify-jenkins: ALL CHECKS PASSED
