@@ -33,6 +33,13 @@ ingress:
 alerts:
   enabled: true
 
+# ServiceMonitors (charts/voteball/templates/servicemonitor.yaml). Requires kube-prometheus-stack's
+# ServiceMonitor CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart
+# against a cluster without it -- `helm template` succeeds either way, but `helm install` fails on an
+# unknown kind. Same escape hatch, same reason, as alerts.enabled above.
+serviceMonitors:
+  enabled: true
+
 backup:
   roleArn: "arn:aws:iam::590183895228:role/voteball-backup-irsa"
   schedule: "0 2 * * *"

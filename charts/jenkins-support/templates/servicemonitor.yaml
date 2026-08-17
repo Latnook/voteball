@@ -1,0 +1,27 @@
+# Scrapes the Jenkins controller's /prometheus endpoint, served by the `prometheus` plugin baked into
+# the controller image (ci/jenkins/plugins.txt).
+#
+# The `release: kube-prometheus-stack` label is REQUIRED -- without it Prometheus ignores this object
+# entirely while `kubectl get servicemonitors` still lists it.
+#
+# The selector matches the Service the official Jenkins chart creates, whose labels are set by that
+# chart and not by this one. If the scrape target never appears, check the live Service's labels
+# first: `kubectl get svc -n ci jenkins --show-labels`.
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: jenkins
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: jenkins-controller
+      app.kubernetes.io/instance: jenkins
+  endpoints:
+    - port: http
+      path: /prometheus
+      interval: 30s
+{{- end }}

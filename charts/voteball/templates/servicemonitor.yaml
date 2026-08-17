@@ -1,0 +1,64 @@
+# Tells Prometheus what to scrape in this namespace. One ServiceMonitor per component, rather than one
+# with three selectors, so each carries its own interval and path and a broken one takes only itself
+# down.
+#
+# EVERY OBJECT HERE MUST CARRY `release: kube-prometheus-stack`. kube-prometheus-stack sets
+# serviceMonitorSelectorNilUsesHelmValues=true by default, so Prometheus only picks up ServiceMonitors
+# bearing its release label. Without it the object is created, looks correct in
+# `kubectl get servicemonitors`, and is silently never scraped -- the same trap the PrometheusRule in
+# prometheusrule.yaml documents.
+#
+# `port` names a SERVICE PORT NAME, never a number. The Services in this chart name their ports for
+# exactly this reason.
+{{- if .Values.serviceMonitors.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: backend
+    release: kube-prometheus-stack
+    {{- include "voteball.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: { app: backend }
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: worker
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: worker
+    release: kube-prometheus-stack
+    {{- include "voteball.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: { app: worker }
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: frontend
+    release: kube-prometheus-stack
+    {{- include "voteball.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: { app: frontend }
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+{{- end }}

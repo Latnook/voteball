@@ -30,3 +30,9 @@ appNamespace: devops-app
 # The CD agent's IRSA role ARN (ECR read-only on the four app repos). Terraform passes
 # module.jenkins_cd_irsa.iam_role_arn; this default exists only so `helm template` runs offline.
 cdRoleArn: ""
+
+# ServiceMonitor for the Jenkins controller's /prometheus endpoint (the `prometheus` plugin, added to
+# ci/jenkins/plugins.txt). Requires the ServiceMonitor CRD; set false to render offline. Terraform
+# passes the real value.
+serviceMonitor:
+  enabled: true
