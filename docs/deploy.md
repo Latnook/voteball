@@ -746,6 +746,26 @@ steps 1 and 4.
 
 ## If something breaks
 
+- **Step 5 stops with "refusing to build -- the working tree has uncommitted changes" and the only
+  change is `terraform/.terraform.lock.hcl`** → **the deploy dirtied its own tree, and this will
+  happen again.** Step 2 runs `terraform init -upgrade`, which rewrites that lock file whenever
+  HashiCorp has published a newer patch release of any provider since your last deploy. Terraform
+  even prints "Review those changes and commit them to your version control system" while it does
+  it. A few steps later the image build refuses to run, because images are tagged from
+  `git rev-parse --short HEAD` and a dirty tree means the tag would not describe what is in the
+  image. **The fix is to commit the lock file and re-run the same command** — check the diff first,
+  it should be nothing but version numbers and hashes:
+
+  ```bash
+  git diff terraform/.terraform.lock.hcl     # expect only version/hash lines
+  git add terraform/.terraform.lock.hcl && git commit -m "chore(terraform): update provider lock"
+  VOTEBALL_AUTO_APPROVE=1 scripts/deploy.sh  # steps 1-4 re-run harmlessly, then it continues
+  ```
+
+  Do **not** reach for `ALLOW_DIRTY_BUILD=1` here. That exists for a genuinely different case
+  (deliberately building work in progress) and it tags the image `<sha>-dirty` forever. A provider
+  lock bump is a real change that belongs in git — committing it is the correct outcome, not a
+  workaround. Observed 2026-08-17 (`null` 3.3.0→3.3.1, `time` 0.14.0→0.14.1).
 - **The first `terraform apply` errors part-way through** → just run `terraform apply` again. Some pieces
   can only install after the cluster exists, so a second run finishes them.
 - **The site loads but shows no parties/teams** → this was a bug we already fixed; make sure you're on the
