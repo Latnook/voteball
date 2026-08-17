@@ -36,7 +36,8 @@ refused by the Guard stage in both directions (CI's own guard, and CD's rollback
 ## The short version
 
 **`application-ci`** runs on every push to `master` that touches `services/**` (or is forced). It
-validates the repo shape, lints, runs the 153 backend/worker tests against a real Postgres sidecar,
+validates the repo shape, lints, runs the backend/worker tests (count in §5 below — it drifts every
+time a test is added) against a real Postgres sidecar,
 builds four images with rootless BuildKit, scans them with Trivy, pushes the clean ones to ECR under
 the git-SHA tag, writes a metadata file recording the digests, and hands the tag to `application-cd`
 as a build parameter. **It never touches the cluster and holds no cluster credentials of any kind.**
@@ -282,9 +283,9 @@ versions, are suppressed — the Dockerfiles pin through `requirements.txt`, whi
 
 ### 5. Tests (new)
 
-The 250 tests in `services/{backend,worker}/tests/` (208 backend + 42 worker — count them with
-`pytest tests/ --collect-only -q` in each service rather than trusting this number, it drifts every
-time a test is added), run against a **real** Postgres — both
+The 280 tests in `services/{backend,worker}/tests/` (233 backend + 47 worker, measured 2026-08-17 —
+count them with `pytest tests/ --collect-only -q` in each service rather than trusting this number, it
+drifts every time a test is added), run against a **real** Postgres — both
 `conftest.py` files `DROP TABLE ... CASCADE` and call `init_db()`, and were never sqlite-compatible.
 The `postgres` container in the CI pod template (`postgres:16-alpine`, `DB_SSLMODE=disable`) provides
 it on `localhost`; it is ephemeral, holds no real data, and is reachable only from inside this pod's
