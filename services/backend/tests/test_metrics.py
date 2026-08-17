@@ -5,6 +5,8 @@ how the test suite runs. They are asserted by introspection deliberately -- the 
 discovering them on a cluster, where the symptom is a metric that silently grows a new series on
 every pod restart.
 """
+import re
+
 import metrics
 
 
@@ -192,6 +194,139 @@ def test_a_rejected_ballot_is_counted_with_its_reason(client, conn):
     text = client.get('/metrics').get_data(as_text=True)
     after = _counter_value(text, 'voteball_votes_rejected_total', 'reason="too-many-parties"')
     assert after == before + 1
+
+
+ALL_SIX_REJECTION_REASONS = frozenset({
+    'considering-without-parties',
+    'too-many-parties',
+    'invalid-team-picks',
+    'rate-limited',
+    'duplicate',
+    'invalid-data',
+})
+
+
+def _rejection_reasons_in_output(text):
+    """Every distinct reason="..." value currently exposed on voteball_votes_rejected_total."""
+    reasons = set()
+    for line in text.splitlines():
+        if not line.startswith('voteball_votes_rejected_total{'):
+            continue
+        match = re.search(r'reason="([^"]+)"', line)
+        if match:
+            reasons.add(match.group(1))
+    return reasons
+
+
+def test_every_rejection_reason_the_code_can_produce_is_one_of_the_six(client, conn):
+    """Pins all SIX rejection literals, not just too-many-parties (the only one the test above
+    covers). A typo in any of the other five would otherwise pass the suite silently -- exactly the
+    kind of silent-success failure this whole instrumentation plan exists to prevent.
+
+    Each of the six is triggered through the real /api/vote code path, one request per reason, so a
+    renamed or dropped .labels(reason=...) call in app.py fails this test too -- this does not just
+    read app.py and assert the literal is spelled right there, it proves the running code actually
+    produces it. The output-side check then confirms nothing else escapes the closed set.
+    """
+    import app as app_module
+
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
+    league_id = cur.fetchone()[0]
+    cur.close()
+
+    def rejected_count(reason):
+        text = client.get('/metrics').get_data(as_text=True)
+        return _counter_value(text, 'voteball_votes_rejected_total', f'reason="{reason}"')
+
+    # 1. considering-without-parties
+    before = rejected_count('considering-without-parties')
+    r = client.post('/api/vote', json={
+        'upcoming_vote_status': 'considering', 'upcoming_party_ids': [],
+    })
+    assert r.status_code == 400
+    assert rejected_count('considering-without-parties') == before + 1
+
+    # 2. too-many-parties
+    before = rejected_count('too-many-parties')
+    r = client.post('/api/vote', json={'upcoming_party_ids': [1, 2, 3, 4]})
+    assert r.status_code == 400
+    assert rejected_count('too-many-parties') == before + 1
+
+    # 3. invalid-team-picks (team_picks must be a non-empty list)
+    before = rejected_count('invalid-team-picks')
+    r = client.post('/api/vote', json={'team_picks': []})
+    assert r.status_code == 400
+    assert rejected_count('invalid-team-picks') == before + 1
+
+    # 4. rate-limited -- a dedicated address so it can't collide with the default-IP votes cast
+    # elsewhere in this test.
+    before = rejected_count('rate-limited')
+    headers = {'X-Forwarded-For': '203.0.113.77, 10.0.0.1'}
+    for _ in range(app_module.MAX_VOTES_PER_IP):
+        client.set_cookie('voteball_token', '', expires=0)
+        r = client.post('/api/vote', json={
+            'team_picks': [{'league_id': league_id, 'club_id': None}],
+            'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+            'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+        }, headers=headers)
+        assert r.status_code == 201, r.status_code
+    client.set_cookie('voteball_token', '', expires=0)
+    r = client.post('/api/vote', json={
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    }, headers=headers)
+    assert r.status_code == 429
+    assert rejected_count('rate-limited') == before + 1
+
+    # 5. duplicate -- same cookie, second ballot
+    client.set_cookie('voteball_token', '', expires=0)
+    before = rejected_count('duplicate')
+    ballot = {
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    }
+    r1 = client.post('/api/vote', json=ballot)
+    assert r1.status_code == 201
+    r2 = client.post('/api/vote', json=ballot)
+    assert r2.status_code == 409
+    assert rejected_count('duplicate') == before + 1
+
+    # 6. invalid-data -- a value that fails the DB CHECK constraint, not caught by _validate_team_picks
+    client.set_cookie('voteball_token', '', expires=0)
+    before = rejected_count('invalid-data')
+    r = client.post('/api/vote', json={
+        'team_picks': [{'league_id': league_id, 'club_id': None}],
+        'previous_vote_status': 'not_a_real_status', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+    assert r.status_code == 400
+    assert rejected_count('invalid-data') == before + 1
+
+    # Closed-set check: nothing outside the six ever appears in the exposition.
+    text = client.get('/metrics').get_data(as_text=True)
+    seen = _rejection_reasons_in_output(text)
+    assert seen <= ALL_SIX_REJECTION_REASONS, \
+        f'unexpected reason label(s) not in the documented six: {seen - ALL_SIX_REJECTION_REASONS}'
+    assert seen == ALL_SIX_REJECTION_REASONS, \
+        f'not all six reasons were produced by this run: missing {ALL_SIX_REJECTION_REASONS - seen}'
+
+
+def test_a_rejected_ballot_leaves_votes_cast_unchanged(client, conn):
+    # Nothing currently catches a regression that moves VOTES_CAST.inc() somewhere it fires
+    # unconditionally -- a rejected ballot must never be counted as cast.
+    before = _counter_value(client.get('/metrics').get_data(as_text=True), 'voteball_votes_cast_total')
+
+    response = client.post('/api/vote', json={
+        'team_picks': [],
+        'upcoming_party_ids': [1, 2, 3, 4],
+    })
+    assert response.status_code == 400
+
+    after = _counter_value(client.get('/metrics').get_data(as_text=True), 'voteball_votes_cast_total')
+    assert after == before
 
 
 def test_an_unreachable_database_is_counted_as_a_dependency_failure(monkeypatch):
