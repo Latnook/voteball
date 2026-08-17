@@ -230,17 +230,15 @@ resource "helm_release" "jenkins_support" {
     # PRIVATE subnets, so the old vpcCidr rule admitted every pod in the cluster to the controller.
     { name = "albSubnetCidrs[0]", value = module.vpc.public_subnets_cidr_blocks[0] },
     { name = "albSubnetCidrs[1]", value = module.vpc.public_subnets_cidr_blocks[1] },
-    # FALSE for this apply, overriding the chart's own default of true. The `prometheus` plugin that
-    # would serve /prometheus only ships in a controller image rebuilt from ci/jenkins/plugins.txt,
-    # and jenkins_image_tag (in the gitignored terraform/voteball.tfvars) still points at an older
-    # image with no such image built yet. installPlugins is also false below (baked-image-only, by
-    # design -- see the comment on helm_release.jenkins), so this release cannot make the endpoint
-    # exist on its own. Creating the ServiceMonitor anyway would have Prometheus scrape a target that
-    # 404s forever: `up == 0` trips the cluster's default TargetDown rule after 10 minutes and pages
-    # SNS every 12 hours, permanently, for a target nobody can fix without a separate image build.
-    # Flip this back to true in the SAME change that ships the rebuilt image and bumps
-    # jenkins_image_tag -- not before.
-    { name = "serviceMonitor.enabled", value = "false" },
+    # TRUE now that the controller image serves /prometheus. The `prometheus` plugin ships in a
+    # controller image rebuilt from ci/jenkins/plugins.txt, and jenkins_image_tag (in the gitignored
+    # terraform/voteball.tfvars) now points at that rebuilt image -- confirmed to contain
+    # prometheus.jpi (`ls /usr/share/jenkins/ref/plugins/` on the built image) before this flag was
+    # flipped. It was FALSE only while that was untrue: creating the ServiceMonitor against an image
+    # with no such plugin would have had Prometheus scrape a target that 404s forever, tripping the
+    # cluster's default TargetDown rule after 10 minutes and paging SNS every 12 hours, permanently,
+    # for a target nobody could fix without a separate image build.
+    { name = "serviceMonitor.enabled", value = "true" },
   ]
 
   depends_on = [
