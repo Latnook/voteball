@@ -63,6 +63,30 @@ GATE_MIN_SAMPLES="${GATE_MIN_SAMPLES:-20}"
 GATE_NAMESPACE="${GATE_NAMESPACE:-devops-app}"
 GATE_WAIT_SECONDS="${GATE_WAIT_SECONDS:-35}"
 
+# GATE_SETTLE_SECONDS: how long to wait BEFORE measuring anything, so that the recording rules'
+# 5-minute lookback no longer contains samples served by the PREVIOUS release.
+#
+# WHY THIS EXISTS -- a real failure, observed on CD #26/#27, 2026-08-18. A deliberately slow release
+# was deployed, the gate correctly failed it (p95 2.35s), and the pipeline rolled back. The ROLLBACK's
+# own deploy then ran the gate and ALSO failed -- p95 2.33s -- on code that was completely healthy and
+# already serving 0.12s. Every SLI here is rate()/histogram over [5m], so the window the rollback was
+# judged by still contained the incident the rollback existed to undo.
+#
+# That is not a nuisance, it is dangerous: rollback-target.sh had already resolved the next rollback
+# target as the SLOW build. Only the ROLLBACK_DEPTH bound in Jenkinsfile-cd stopped production
+# oscillating between a known-bad and a known-good image every few minutes, pushing a commit each
+# cycle. The depth bound is the backstop; this is the fix for the cause.
+#
+# Set to 0 for a normal deploy: the window then holds the PREVIOUS release's data, and if that release
+# passed its own gate that data is within thresholds by definition, so mixing it in is harmless.
+# Jenkinsfile-cd sets it to RATE_WINDOW_SECONDS + one scrape interval only when ROLLBACK_DEPTH > 0 --
+# i.e. exactly when the previous release is known to have failed verification.
+#
+# The cost is real and deliberate: it makes verifying a rollback ~5 minutes slower. That is the right
+# trade. A rollback is already an incident, the bad build is already off production the moment the
+# Deploy stage finishes, and this wait only delays the CONFIRMATION -- not the recovery.
+GATE_SETTLE_SECONDS="${GATE_SETTLE_SECONDS:-0}"
+
 # The lookback window baked into the recording rules (rate5m = a 5-minute rate). Needed to turn the
 # per-second rate voteball:journey_requests:rate5m reports back into an approximate request COUNT,
 # which is what GATE_MIN_SAMPLES is expressed in.
@@ -143,6 +167,18 @@ die_unreachable() {
 }
 
 echo "==> monitoring-gate: PROM_URL=${PROM_URL} GATE_BASE_URL=${GATE_BASE_URL} namespace=${GATE_NAMESPACE}"
+
+# Settle FIRST, before generating traffic -- the point is to let the previous release's samples age
+# out of the recording rules' [5m] lookback, and traffic generated before that has aged out would just
+# be measured alongside them. See the GATE_SETTLE_SECONDS comment above for the CD #26/#27 incident
+# this prevents.
+if [ "$GATE_SETTLE_SECONDS" -gt 0 ]; then
+  echo "==> Settling ${GATE_SETTLE_SECONDS}s before measuring, so the SLI lookback no longer contains"
+  echo "    samples served by the previous release (this build is a rollback; the release it replaced"
+  echo "    failed verification, so its data would otherwise poison this one's verdict)."
+  sleep "$GATE_SETTLE_SECONDS"
+fi
+
 generate_traffic "$GATE_REQUESTS" "$GATE_BASE_URL"
 
 echo "==> Waiting ${GATE_WAIT_SECONDS}s for at least one scrape (interval: 30s) to pick up that traffic"

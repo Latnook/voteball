@@ -616,6 +616,24 @@ a 1.5s sleep injected into `GET /api/options` passed Rollout, Verify and Smoke T
 `Synced`, 200 responses — and was caught only by the Monitoring Gate, which failed on
 `GATE_MAX_P95_SECONDS=1.0` and triggered the existing rollback path automatically. None of the checks
 that existed before this stage measure how long a user waits; this is the first one that does. Offline
+**A rollback settles before it is judged (`GATE_SETTLE_SECONDS`, added 2026-08-18).** Every SLI here
+is a rate over a **5-minute** window, so a deploy landing within 5 minutes of a latency regression is
+measured against data that still contains it. That is not hypothetical: on the 2026-08-18 evening
+re-run of drill 4, the rollback of the slow release **failed its own gate at p95 2.33s while production
+was already serving 0.12s** (CD #26 failed → rolled back → CD #27 failed the same way). By then
+`rollback-target.sh` had resolved the *next* rollback target as the **slow** build; only the
+`ROLLBACK_DEPTH` bound stopped production oscillating between a known-bad and a known-good image every
+few minutes, pushing a commit each cycle.
+
+`Jenkinsfile-cd` now sets `GATE_SETTLE_SECONDS=330` (the 300s rate window + one 30s scrape interval)
+**only when `ROLLBACK_DEPTH > 0`**, and the gate sleeps that long before measuring anything. It stays
+`0` for a normal deploy on purpose: there the window holds the *previous* release's data, and a
+previous release that passed its own gate was within thresholds by definition, so mixing it in cannot
+push this one over. Paying 5 minutes on every deploy to fix a case that only arises after a failed one
+would be the wrong trade. The cost lands only on rollbacks, and it delays the **confirmation**, never
+the recovery — the bad image is already off production when the Deploy stage finishes.
+`ROLLBACK_DEPTH` remains the backstop; this fixes the cause.
+
 test: `scripts/tests/test-monitoring-gate.sh` (stubs Prometheus via `PROM_STUB_QUERY_CMD`, the same
 insertion point `scripts/wait-for-argocd-sync.sh` uses for `ARGOCD_STUB_STATUS_CMD`).
 

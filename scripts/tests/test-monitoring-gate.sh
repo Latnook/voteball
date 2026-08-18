@@ -159,6 +159,40 @@ grep -qi 'ABSENT' <<<"$out" || fail "expected the ABSENT message, got: $out"
 grep -qi 'VoteballSLIAbsent' <<<"$out" || fail "expected the message to tie this to the VoteballSLIAbsent alert, got: $out"
 ok "absent SLI -> non-zero exit, distinct message (not folded into the thin-data warning)"
 
+echo "--- GATE_SETTLE_SECONDS: defaults to no wait, and announces itself when set ---"
+# REGRESSION TEST for the CD #26/#27 incident of 2026-08-18: the rollback of a slow release failed its
+# OWN gate at p95 2.33s while production was already serving 0.12s, because every SLI here is a rate
+# over [5m] and that window still contained the incident the rollback was undoing. rollback-target.sh
+# had already resolved the next target as the SLOW build; only ROLLBACK_DEPTH stopped production
+# oscillating. Jenkinsfile-cd now sets GATE_SETTLE_SECONDS=330 when ROLLBACK_DEPTH > 0.
+#
+# What is asserted here is the CONTRACT, not the sleep: unset/0 must not wait (or every normal deploy
+# silently gets 5 minutes slower), and a set value must be announced in the log (or a 5-minute stall
+# looks like a hung stage to whoever is watching an incident).
+out="$(GATE_BASE_URL=https://example.test GATE_REQUESTS=0 GATE_WAIT_SECONDS=0 \
+  PROM_STUB_QUERY_CMD="$work/healthy" "$ROOT/scripts/ci/monitoring-gate.sh" 2>&1)"; rc=$?
+[ "$rc" -eq 0 ] || fail "the healthy case must still pass with GATE_SETTLE_SECONDS unset, got: $out"
+grep -qi 'Settling' <<<"$out" && fail "GATE_SETTLE_SECONDS must default to 0 -- a normal deploy must not wait. Got: $out"
+ok "unset -> no settle wait on a normal deploy"
+
+start=$(date +%s)
+out="$(GATE_BASE_URL=https://example.test GATE_REQUESTS=0 GATE_WAIT_SECONDS=0 GATE_SETTLE_SECONDS=2 \
+  PROM_STUB_QUERY_CMD="$work/healthy" "$ROOT/scripts/ci/monitoring-gate.sh" 2>&1)"; rc=$?
+elapsed=$(( $(date +%s) - start ))
+[ "$rc" -eq 0 ] || fail "a settling run must still pass on healthy metrics, got: $out"
+grep -qi 'Settling 2s' <<<"$out" || fail "the settle wait must announce itself, or it reads as a hung stage. Got: $out"
+[ "$elapsed" -ge 2 ] || fail "GATE_SETTLE_SECONDS=2 should have waited at least 2s, waited ${elapsed}s"
+ok "set -> waits, and says why (${elapsed}s)"
+
+echo "--- Jenkinsfile-cd only settles on a rollback ---"
+# The wiring is as load-bearing as the flag: settling on EVERY deploy would pay 5 minutes to fix a case
+# that only arises after a failed one, and settling on NONE leaves the incident above unfixed.
+grep -q 'GATE_SETTLE_SECONDS' "$ROOT/Jenkinsfile-cd" \
+  || fail "Jenkinsfile-cd no longer passes GATE_SETTLE_SECONDS -- the rollback fix is disarmed"
+grep -q "ROLLBACK_DEPTH ?: '0').toInteger() > 0 ? '330' : '0'" "$ROOT/Jenkinsfile-cd" \
+  || fail "Jenkinsfile-cd must gate the settle on ROLLBACK_DEPTH > 0 (330s = 300s rate window + one 30s scrape)"
+ok "Jenkinsfile-cd settles only when ROLLBACK_DEPTH > 0"
+
 echo "--- a missing GATE_BASE_URL fails loudly ---"
 out="$(GATE_REQUESTS=0 GATE_WAIT_SECONDS=0 PROM_STUB_QUERY_CMD="$work/healthy" \
   "$ROOT/scripts/ci/monitoring-gate.sh" 2>&1)"; rc=$?

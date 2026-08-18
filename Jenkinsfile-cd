@@ -485,10 +485,27 @@ pipeline {
     stage('Monitoring Gate') {
       steps {
         container('deploy') {
-          sh '''
-            set -eu
-            GATE_BASE_URL="https://$APP_DOMAIN" scripts/ci/monitoring-gate.sh
-          '''
+          // GATE_SETTLE_SECONDS is 0 for a normal deploy and 330 when this build is itself a
+          // rollback. 330 = the recording rules' 5m lookback (300s) plus one 30s scrape interval of
+          // margin. See the long comment on GATE_SETTLE_SECONDS in scripts/ci/monitoring-gate.sh:
+          // on 2026-08-18 the rollback of a slow release FAILED its own gate at p95 2.33s while
+          // production was already serving 0.12s, because the [5m] window still held the incident the
+          // rollback was undoing. rollback-target.sh had by then resolved the next target as the SLOW
+          // build; only the ROLLBACK_DEPTH bound below stopped production oscillating between the two.
+          //
+          // Deliberately NOT applied to normal deploys: there the window holds the PREVIOUS release's
+          // data, and a previous release that passed its own gate was within thresholds by definition,
+          // so mixing it in cannot push this one over. Paying 5 minutes on every deploy to fix a case
+          // that only arises after a failed one would be the wrong trade.
+          script {
+            def settle = (params.ROLLBACK_DEPTH ?: '0').toInteger() > 0 ? '330' : '0'
+            withEnv(["GATE_SETTLE_SECONDS=${settle}"]) {
+              sh '''
+                set -eu
+                GATE_BASE_URL="https://$APP_DOMAIN" scripts/ci/monitoring-gate.sh
+              '''
+            }
+          }
         }
       }
     }

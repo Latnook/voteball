@@ -107,3 +107,47 @@ regression in the gate would be invisible until a real bad release shipped.
   It is worth saying out loud in an interview: 'automatic rollback bought me minutes to react,
   it did not fix the bug.' A rollback that also reverted source would be rewriting history from
   CI, which is a much worse property to have.
+
+================================================================================
+UNPLANNED FINDING: THE ROLLBACK'S OWN VERIFICATION FAILED, SPURIOUSLY, AND THE
+RECURSION BOUND IS THE ONLY THING THAT STOPPED IT ROLLING BACK TO THE BAD BUILD
+================================================================================
+
+CD #26 (the slow release) failed the gate and rolled back by promoting af4c5b5. That rollback
+deploy ran as CD #27 -- 'Started by upstream project application-cd build number 26' -- and it
+ALSO failed the gate:
+
+    gate: observed ~151.69 journey requests over the last 300s (rate=0.5056/s)
+    gate: OK   -- error ratio 0.000000 is within GATE_MAX_ERROR_RATIO=0.01
+    gate: FAIL -- p95 latency 2.326306145038168s exceeds GATE_MAX_P95_SECONDS=1.0s
+
+THE CODE IT WAS JUDGING WAS FINE. af4c5b5 is the pre-drill build; the site was serving 0.12s
+by then. The p95 it measured is voteball:latency:p95_5m -- a FIVE-MINUTE window. The gate ran
+18:24:59Z-18:26:04Z, and the slow release had been live 18:21:29Z-18:24:32Z. The window still
+contained the very samples the rollback existed to eliminate.
+
+  => A ROLLBACK IS VERIFIED AGAINST METRICS THAT STILL CONTAIN THE INCIDENT IT IS UNDOING.
+     Any deploy landing within ~5 minutes of a latency regression inherits its p95 and fails.
+
+WHAT SAVED IT -- the ROLLBACK_DEPTH bound, verbatim from the log:
+
+    NO ROLLBACK: this build is ITSELF a rollback (depth 1) and it also failed verification.
+    Refusing to roll back again -- PRODUCTION IS LEFT RUNNING af4c5b5, WHICH FAILED
+    VERIFICATION, AND NEEDS A HUMAN. See docs/cicd.md for the manual rollback procedure.
+
+Without that bound the pipeline would have rolled back AGAIN -- and rollback-target.sh had
+already resolved the next target as 443bd37, THE SLOW RELEASE. The loop would have been:
+slow -> good (fails on stale window) -> slow -> good -> ... flipping production between a
+known-bad and a known-good build every few minutes, pushing a commit each cycle, forever.
+
+OUTCOME: production is running af4c5b5, which is CORRECT code. The pipeline could not confirm
+that and said so instead of guessing. That is the right failure direction -- 'I cannot verify
+this, a human must look' beats both 'assume it is fine' and 'keep rolling'.
+
+THE REAL DEFECT, worth stating plainly: the gate has no notion of when the current deploy
+started. It asks 'what has the p95 been over the last 5 minutes', not 'what has the p95 been
+since this build went live'. For an ordinary deploy those are the same. For the deploy
+IMMEDIATELY AFTER a bad one -- which is exactly when correctness matters most -- they are not.
+Candidate fixes, none applied tonight: wait out the window before gating a rollback; shorten
+the window for the gate's query only; or record the rollout timestamp and gate on
+p95 over (now - rollout_time). The third is the honest one and the most work.
