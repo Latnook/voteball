@@ -1,0 +1,93 @@
+Drill 1 — controlled 5xx on the live site
+Captured 2026-08-18. Design: docs/design/2026-08-17-observability-design.md section 13.
+
+WHAT THIS DRILL IS FOR: proving that a backend which cannot reach its database is VISIBLE. The
+backend's /health is a static response and its liveness probe is a bare TCP check, so neither
+touches RDS -- pods stay Ready through a total API outage. Application metrics are the only thing
+that can see it.
+
+=====================================================================
+ATTEMPT 1 (09:42Z) -- THE DRILL FAILED, AND THE FAILURE WAS THE POINT
+=====================================================================
+Break: deleted the allow-app-egress NetworkPolicy. Pods kept running, 0 restarts.
+Visitors got 504 on every /api/* call for ~2 hours.
+
+What the monitoring reported THROUGHOUT a total API outage:
+
+  voteball:availability:ratio5m     = 1        <-- PERFECT
+  voteball:journey_errors:rate5m    = 0
+  voteball:journey_requests:rate5m  = 0
+  voteball_db_errors_total          = empty
+  VoteballHighErrorRate             = inactive
+  VoteballSLIAbsent                 = inactive
+
+Only VoteballRollupsStale fired, and only incidentally: the worker lost the same database, and that
+alert measures AGE since last success rather than counting events. A clock-based signal degrades
+into an alarm; a counting signal degrades into silence.
+
+TWO INDEPENDENT CAUSES, both fixed:
+
+1. psycopg2.connect() had no connect_timeout, so a blocked network path made the connect HANG.
+   The Flask request never completed, after_request never ran, no counter moved, and
+   voteball_db_errors_total never fired either -- the connection had not failed, it was still
+   waiting. nginx gave up at its own 60s default and returned 504 by itself. The backend recorded
+   NOTHING. Fixed: connect_timeout=5 (commit e1be770).
+   Proven in-pod afterwards:
+     with connect_timeout=5   -> OperationalError after exactly 5.0s
+     without it               -> still hanging after 25s
+
+2. Every SLI here is a RATIO, and this site has almost no organic traffic, so numerator and
+   denominator go to zero together and `or vector(1)` reports perfection. VoteballSLIAbsent did not
+   help: the series was PRESENT with value 0, not absent. Fixed: a synthetic canary Deployment
+   exercising the public journey every 30s (commit 7261b5f), so the SLI always has a denominator.
+
+=====================================================================
+ATTEMPT 2 (09:54Z) -- STILL WRONG, FOR A DIFFERENT REASON
+=====================================================================
+Same break (delete allow-app-egress). Requests returned nothing at all (curl 000).
+Cause: that ONE policy covers egress for backend, worker, backup, frontend, migrate AND canary --
+so deleting it also cut FRONTEND -> BACKEND. Requests never reached the instrumented code, so the
+backend still recorded nothing. The drill was simulating "the namespace loses all egress", not
+"the backend loses its database".
+
+=====================================================================
+ATTEMPT 3 (09:59:23Z) -- CORRECT, AND EVERYTHING WORKED
+=====================================================================
+Surgical break: kept the 10.0.0.0/16 egress rule but excluded ONLY the database subnets
+(10.0.64.0/24, 10.0.65.0/24), leaving pod-to-pod traffic intact.
+
+  kubectl patch networkpolicy allow-app-egress --type=json \
+    -p '[{"op":"replace","path":"/spec/egress/0/to/0/ipBlock",
+          "value":{"cidr":"10.0.0.0/16","except":["10.0.64.0/24","10.0.65.0/24"]}}]'
+
+Visitor view -- note the code AND the timing:
+    /                        200 in 0.17s
+    /api/options             500 in 5.17s     <-- fast, countable, matches connect_timeout=5
+    /api/results?by=all      500 in 5.08s
+  backend pods: 1/1 Running, 0 restarts       <-- Ready throughout, which is the whole point
+
+Metrics reacted, where attempt 1 showed nothing:
+    status=500 recorded             (attempt 1: none)
+    voteball_db_errors_total  1.495 (attempt 1: empty)
+    journey_errors:rate5m    0.0044 (attempt 1: 0)
+    availability:ratio5m     0.8842 (attempt 1: 1.0 "perfect")
+
+Alert timeline:
+    09:59:23Z  break applied
+    10:02:07Z  VoteballHighErrorRate -> pending
+    10:07:09Z  VoteballHighErrorRate -> FIRING, availability 0.0
+               VoteballHighLatencyP95 also fired (5s failures blow the p95)
+
+RECOVERY -- performed BY GITOPS, which is part of the evidence:
+Re-enabled ArgoCD self-heal; it restored the policy and the API returned 200 within ONE SECOND.
+Availability climbed as the 5m window rolled forward:
+    14:32Z 0.267 -> 14:33Z 0.467 -> 14:34Z 0.600 -> 14:35Z 0.733 -> 14:36Z 1.0
+VoteballHighErrorRate and VoteballHighLatencyP95 resolved at 1.0.
+
+VoteballAvailabilitySLOBreach REMAINED FIRING, and that is correct rather than a defect: it
+evaluates avg_over_time(...[6h]) < 0.99, and a multi-hour outage genuinely breaches a 99% SLO for
+as long as it sits inside the 6h window. The instant alerts clear when the site recovers; the SLO
+alert clears when the error budget does. Two horizons, both behaving as designed.
+
+NOT PROVEN HERE: that the SNS email arrived for this specific firing. The alerting chain to the
+inbox was proven separately on 2026-08-18 (DeploymentReplicasMismatch, runbook link included).
