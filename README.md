@@ -84,7 +84,8 @@ by files you can review, not by clicks someone once made.
 
 ## Quickstart
 
-Running this creates real, billed AWS resources (**≈$290/month**, ≈$9.70/day, while up). Tear it down
+Running this creates real, billed AWS resources (**≈$8.50/day** while up — ≈$256/month if run
+continuously; ≈$0.19/day once torn down). Tear it down
 when you're
 done — `./scripts/destroy.sh` takes a final database snapshot, so nothing is lost.
 

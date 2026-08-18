@@ -361,11 +361,27 @@ the full design and its "Verification outcome" section for what the move itself 
   directly rather than through the API.
 - **Log retention.** CloudWatch log groups have no retention policy set, so they grow (and bill)
   forever.
-- **Cost.** ~$290/month (~$9.70/day) while up. Measured 2026-08-04 from Cost Explorer, not estimated:
-  Spot nodes $80, EKS control plane $72, ALB $40, NAT gateway hours $37, public IPv4 addresses $17,
-  RDS $17, NAT data $12, WAF $9, EBS $6. The single largest lever is not any of these — it is
-  **not running the stack overnight**; `destroy.sh`/`deploy.sh` round-trip in ~30 minutes and preserve
-  votes via the final snapshot.
+- **Cost.** **$8.52 per full 24h with everything up** — measured from Cost Explorer on 2026-08-18 for
+  2026-08-07, which is verifiable as a complete 24h because that day's EKS control-plane charge was
+  exactly $2.40 and that item bills a flat $0.10/hour. Run continuously that is **≈$256/month**.
+  Per day: EKS control plane $2.40 (28%), EC2-Other $1.82 (21%, mostly NAT gateway + EBS), Spot nodes
+  $1.59 (19%), CloudWatch $0.78 (9%), ALB $0.64 (8%), RDS $0.58 (7%), VPC $0.36, WAF $0.29,
+  KMS + Secrets Manager $0.06.
+
+  **What actually billed: $285.07 in July 2026** — lower than 30 × $8.52 because the cluster was only
+  up ~63% of the month (467 EKS-hours). **Torn down it costs ≈$0.19/day** (S3, ECR, Secrets Manager,
+  Route 53, KMS), observed 14–16 August at $0.19/$0.19/$0.18. Tax is billed separately (~15%; $43.48
+  in July).
+
+  *(A previous revision of this note claimed "~$290/month (~$9.70/day), measured 2026-08-04" with a
+  breakdown summing to exactly $290. That was a monthly extrapolation, not a measurement: $9.70/day is
+  $290÷30, and the itemisation inflated Spot nodes, ALB and NAT while omitting CloudWatch entirely.
+  The figures above are per-day billing data.)*
+
+  The single largest lever is still not any line item — it is **not running the stack overnight**;
+  `destroy.sh`/`deploy.sh` round-trip in ~30 minutes and preserve votes via the final snapshot. The
+  largest *irreducible* item is the EKS control plane, which is a flat fee for the managed control
+  plane and is exactly what is being bought.
 
 ---
 

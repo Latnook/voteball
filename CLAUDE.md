@@ -642,7 +642,7 @@ terraform plan  -var-file=voteball.tfvars
 ```
 
 `terraform apply` creates real, billed AWS resources (EKS control plane, NAT, nodes, RDS, ALB ≈
-**$290/mo**, ≈$9.70/day — measured 2026-08-04, not estimated) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
+**≈$8.50/day** while up — a measured full 24h, 2026-08-07, ≈$256/mo continuous; July 2026 actually billed $285.07 at ~63% uptime; ≈$0.19/day torn down) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
 (the EKS module v20 caps the provider at `< 6.0`) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
 (pinned at **1.36** since the 2026-07-30 in-place upgrade; **standard support ends 2027-08-02**; see
@@ -799,7 +799,7 @@ Two audit passes on 2026-07-26 found seven stale claims; every one was mechanica
 - `docs/deploy.md`'s numbered steps vs `grep -E '^\s*step "' scripts/deploy.sh`.
 - The sync-managed field list vs the `managed` dict in `scripts/sync-values-from-tf.sh` — count it,
   don't recall it (three different counts have been asserted; **ten** is correct).
-- Cost figures (**~$290/mo**, ~$9.70/day) and the EKS version + support deadline (**1.36 / 2027-08-02**) repeat
+- Cost figures (**≈$8.50/day** up / **≈$256/mo** continuous / **≈$0.19/day** torn down) and the EKS version + support deadline (**1.36 / 2027-08-02**) repeat
   across several docs and must agree. Read the pin from `terraform/variables.tf`, never from memory —
   it moved 1.34 → 1.36 on 2026-07-30 and four docs kept asserting 1.34 afterwards. Dated *evidence*
   (`docs/eks/live-cluster-snapshot.md`) and the upgrade history in `docs/maintenance.md` legitimately
