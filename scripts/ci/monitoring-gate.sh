@@ -39,7 +39,14 @@ set -uo pipefail
 
 PROM_URL="${PROM_URL:-http://kube-prometheus-stack-prometheus.observability:9090}"
 : "${GATE_BASE_URL:?GATE_BASE_URL must be set (e.g. https://voteball.example.com, or a port-forwarded http://localhost:8080 for a by-hand run)}"
-GATE_REQUESTS="${GATE_REQUESTS:-40}"
+# 60, not 40. Task 3's live review measured GATE_REQUESTS=40 landing only ~29 estimated samples
+# against GATE_MIN_SAMPLES=20 -- a 1.45x margin, not the 2x a raw request count suggests, because
+# Prometheus' rate() extrapolation over the 5m window shaves a fraction off the true count. That gap
+# meant a perfectly healthy CD run could land in the warn-and-pass branch below on an ordinary run,
+# not just a genuinely quiet one -- the floor this default has to clear is "comfortably above
+# GATE_MIN_SAMPLES after extrapolation", not the raw request count. The warn-and-pass path itself
+# stays (see the block comment above) -- raising this just makes it rare instead of routine.
+GATE_REQUESTS="${GATE_REQUESTS:-60}"
 GATE_MAX_ERROR_RATIO="${GATE_MAX_ERROR_RATIO:-0.01}"
 GATE_MAX_P95_SECONDS="${GATE_MAX_P95_SECONDS:-1.0}"
 GATE_MIN_SAMPLES="${GATE_MIN_SAMPLES:-20}"

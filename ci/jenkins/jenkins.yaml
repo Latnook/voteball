@@ -100,6 +100,26 @@ jenkins:
                 securityContext:
                   runAsNonRoot: true
                   runAsUser: 1000
+                # Runs before every container below starts. Its only job is putting `promtool` onto
+                # the shared `images` volume for the `observability` container to find on PATH -- see
+                # that container's comment for why this two-step handoff exists instead of one image
+                # carrying everything.
+                initContainers:
+                  - name: promtool-fetch
+                    # Pinned to v3.13.1 to match the Prometheus SERVER version kube-prometheus-stack
+                    # 87.21.0 actually deploys by default (prometheus.prometheusSpec image tag
+                    # v3.13.1-distroless -- confirmed via
+                    # `helm show values prometheus-community/kube-prometheus-stack --version 87.21.0`,
+                    # terraform/addon-monitoring.tf), so `promtool check rules` validates PromQL
+                    # against the same rule-evaluation engine that will actually run these rules in
+                    # production, not an arbitrary other version.
+                    image: prom/prometheus:v3.13.1
+                    command: ["sh", "-c", "mkdir -p /images/promtool-bin && cp /bin/promtool /images/promtool-bin/promtool"]
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
                 containers:
                   # Rootless BuildKit. NOT privileged, and not Docker-in-Docker. See the long note on
                   # the securityContext below for exactly what it is allowed to do and why -- this is
@@ -253,6 +273,47 @@ jenkins:
                     securityContext:
                       allowPrivilegeEscalation: false
                       capabilities: { drop: ["ALL"] }
+
+                  # Runs scripts/ci/validate-observability.sh (Jenkinsfile-ci's Observability
+                  # Validation stage). That script needs helm (to render charts/voteball and
+                  # charts/observability), python3 + PyYAML (the checks themselves) and promtool (the
+                  # PromQL rule check) all on ONE PATH in ONE process -- no published image ships all
+                  # three. alpine/k8s:1.31.3 (same pinned image as Jenkinsfile-cd's `deploy`
+                  # container) already carries helm, python3 and PyYAML; confirmed live 2026-08-18
+                  # (`docker run --user 1000:1000 alpine/k8s:1.31.3 -- command -v helm python3` and
+                  # `python3 -c "import yaml"`, both present). promtool is not in that image, so the
+                  # initContainer above copies it onto the `images` volume this container also
+                  # mounts, and PATH below is the image's own default with that directory prepended.
+                  #
+                  # Deliberately NOT the `python` container above: that one is python:3.12-slim, which
+                  # has no helm and no apt-installable static helm binary without a network fetch on
+                  # every build -- reusing the already-pinned alpine/k8s image avoids adding a second
+                  # runtime download to the pipeline (the initContainer's promtool copy is the only
+                  # one, and it happens once per pod, not per build).
+                  #
+                  # UNTIL THIS TEMPLATE (AND THE initContainer ABOVE) REACH THE CLUSTER VIA
+                  # `terraform apply`, this container does not exist at all -- committing this file
+                  # alone changes nothing (see the root CLAUDE.md's Jenkins-is-a-platform-add-on
+                  # note). Jenkinsfile-ci's Observability Validation stage will fail every build until
+                  # that apply runs, with an error naming a container Jenkins cannot find, not the
+                  # softer "promtool: SKIPPED" path validate-observability.sh takes when only promtool
+                  # (not helm) is missing. That apply is a separate, deliberate step -- not run as
+                  # part of committing this file.
+                  - name: observability
+                    image: alpine/k8s:1.31.3
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      - { name: HOME, value: /tmp }
+                      - { name: PATH, value: "/images/promtool-bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "200m", memory: "256Mi" }
+                      limits: { memory: "512Mi" }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
                 volumes:
                   # Tarballs only. There is deliberately NO cache volume -- both caches live in
                   # ECR, because a pod volume dies with the build and would be a cache in name

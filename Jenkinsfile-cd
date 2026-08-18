@@ -459,6 +459,39 @@ pipeline {
         }
       }
     }
+
+    // Smoke Test above asks "does the product answer?" -- this asks whether it answers WELL, at the
+    // rate the SLOs promise, by generating a short burst of real traffic and checking it against the
+    // same recording rules the dashboard and alerts already use. See the header comment in
+    // scripts/ci/monitoring-gate.sh for the full reasoning; the property that matters here is that
+    // it PASSES (with a warning) on too little data rather than failing blind -- a gate that failed
+    // on a metrics hiccup would roll back a release that was actually fine.
+    //
+    // WHY THIS IS SAFE TO RUN HERE, AFTER Rollout: by this point ArgoCD has already reported
+    // Synced/Healthy (Rollout stage) and Verify has confirmed the running Deployments are on tag
+    // $TAG. Healthy means the OLD pods are gone -- ArgoCD does not report a Deployment Healthy while
+    // stale replicas are still serving traffic -- so every request this gate generates and every
+    // sample it reads back from Prometheus is attributable to THIS release, with no per-version label
+    // filtering needed to tell old traffic from new.
+    //
+    // Runs in the `deploy` container (kubectl + network access to the cluster) because
+    // GATE_BASE_URL is the real public site and PROM_URL (default in the script) reaches the
+    // in-cluster Prometheus Service directly -- neither is reachable from the `observability`
+    // container Jenkinsfile-ci uses, which deliberately has no cluster network access at all.
+    //
+    // A failure here runs in the SAME container/stage-chain as everything else post-Promote, so it
+    // trips the existing `post > failure` rollback below (env.PROMOTE_SHA is already set) exactly
+    // like a Verify or Smoke Test failure would.
+    stage('Monitoring Gate') {
+      steps {
+        container('deploy') {
+          sh '''
+            set -eu
+            GATE_BASE_URL="https://$APP_DOMAIN" scripts/ci/monitoring-gate.sh
+          '''
+        }
+      }
+    }
   }
 
   post {

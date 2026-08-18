@@ -89,6 +89,29 @@ pipeline {
       }
     }
 
+    // Renders charts/voteball and charts/observability and checks the observability config itself --
+    // Prometheus release labels, ServiceMonitor port names, metric-label collisions with
+    // prometheus-operator's reserved target labels, dashboard JSON shape, and (when promtool is on
+    // PATH) `promtool check rules` against every PrometheusRule group. Every one of those checks
+    // exists because the mistake it catches applied cleanly, `kubectl get` listed it, and nothing
+    // worked -- see the header comment in scripts/ci/validate-observability.sh for the live 2026-08-18
+    // incident (an `endpoint` label collision) that made that point directly.
+    //
+    // Runs offline against rendered chart output -- no cluster, no credentials, same contract as
+    // 'Validation' above -- and fails the build on a bad config rather than warning. Placed right
+    // after 'Validation' and before 'Script tests': both are cheap, no-network-to-the-app,
+    // repo-shape gates that should stop a build before anything is compiled or tested, and this one
+    // specifically needs `helm` on PATH the same way Manifest Validation in Jenkinsfile-cd does --
+    // see the container('observability') note in ci/jenkins/jenkins.yaml for why that container
+    // exists and what putting a normal `helm`+`python3` image cannot do alone (promtool).
+    stage('Observability Validation') {
+      steps {
+        container('observability') {
+          sh 'scripts/ci/validate-observability.sh'
+        }
+      }
+    }
+
     // The tests that protect the pipeline itself. Until 2026-08-11 nothing here ran scripts/tests/
     // at all -- CI ran pytest for services/{backend,worker} and stopped -- so the [skip ci] loop
     // guard, the immutable-tag re-run check, the values.yaml drift check and the dirty-tree guard
