@@ -1,0 +1,93 @@
+# Until this chart existed, `observability` was the one unrestricted namespace in a cluster where
+# every other namespace is default-deny. These policies close that, but the egress list below is the
+# half that can fail silently -- read its comments before narrowing anything.
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+# DNS. Without this every outbound name lookup fails and the symptom looks like "no network at all".
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+---
+# Everything this namespace legitimately reaches OUTWARD.
+#
+# Written as broad egress rather than an enumerated allowlist, for the same reason
+# charts/jenkins-support does: Prometheus scrapes pod IPs across several namespaces, the kubelet on
+# every node, and the Kubernetes API; Alertmanager reaches SNS and STS on public AWS endpoints whose
+# addresses shift. An IP allowlist here would be brittle rather than secure.
+#
+# THE AWS RULE IS LOAD-BEARING. Alertmanager assumes its IRSA role via STS and publishes to SNS, both
+# over the public internet through the NAT gateway. Remove it and alerts fire forever and are never
+# delivered -- the failure mode this whole design exists to avoid, in the component that exists to
+# avoid it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-observability-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    # Scrape targets and the Kubernetes API, both inside the VPC.
+    - to:
+        - ipBlock: { cidr: 10.0.0.0/16 }
+    # SNS and STS. Public AWS endpoints reached through the NAT gateway.
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/16
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+---
+# Ingress: within the namespace (Grafana -> Prometheus, Prometheus -> Alertmanager), and from `ci` so
+# the CD monitoring gate of the next plan can query Prometheus. Nothing else. The UIs are reached by
+# `kubectl port-forward`, which goes through the API server and is not subject to NetworkPolicy at
+# all -- so restricting ingress here does not lock the operator out.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-observability-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ci
+      ports:
+        - { protocol: TCP, port: 9090 }
+{{- end }}
