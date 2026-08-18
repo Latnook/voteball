@@ -1,0 +1,43 @@
+Drill 4 — a failed release caught by the monitoring gate
+Captured 2026-08-18. Design: docs/design/2026-08-17-observability-design.md section 13.
+
+WHAT THIS DRILL IS FOR: proving the gate catches something nothing before it could. A release that
+is BROKEN would be caught by the smoke test. This one is SLOW -- correct responses, healthy pods,
+ArgoCD Synced -- and is invisible to every check that existed before this work.
+
+THE INJECTED FAULT (commit 5f24790, reverted in 14b5780):
+  a 1.5s sleep in GET /api/options.
+  The CD smoke test uses `curl --max-time 15` and checks for a 200 -> it passes.
+  The monitoring gate's GATE_MAX_P95_SECONDS is 1.0 -> it must fail.
+
+RESULT -- CD #21, and the stage list IS the evidence:
+
+    Checkout               SUCCESS
+    Input Validation       SUCCESS
+    Manifest Validation    SUCCESS
+    Promote                SUCCESS
+    Deploy                 SUCCESS
+    Rollout                SUCCESS     <-- pods healthy
+    Verify                 SUCCESS     <-- ArgoCD Synced at the right revision
+    Smoke Test             SUCCESS     <-- endpoints returning 200
+    Monitoring Gate        FAILED      <-- the only check that saw it
+
+Every pre-existing check passed the bad release. Rollout looked at pod health; Verify looked at
+sync state; the smoke test looked at status codes. None of them measure how long a user waits.
+
+AUTOMATIC ROLLBACK, from the promote history on master:
+    7bfc94b  ci: image tag 5f24790   <-- the slow release promoted
+    1c91be1  ci: image tag 7261b5f   <-- rolled back to the last good tag
+
+Recovery confirmed: deployed tag 7261b5f, /api/options serving 200 in 0.11-0.19s (from ~1.6s),
+backend pods replaced and Running.
+
+WHY THE GATE COULD JUDGE THIS AT ALL: it runs only after ArgoCD reports Healthy, so the old pods
+are gone and every request it measures is served by the new build. That is what lets it attribute
+what it sees to this release without per-version metric filtering.
+
+AND WHY IT HAD DATA TO JUDGE WITH: the gate generates its own traffic (GATE_REQUESTS=60, raised
+from 40 after a live measurement showed 40 real requests yielding only ~29 estimated samples
+against a floor of 20 -- rate() extrapolates). Below that floor the gate WARNS AND PASSES rather
+than failing, deliberately: it sits after Promote, where any failure triggers a rollback, so
+failing on missing data would roll back healthy releases whenever the metrics pipeline hiccuped.
