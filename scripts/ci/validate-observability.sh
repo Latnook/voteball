@@ -185,28 +185,77 @@ for path, sm in servicemonitors:
 # e.g. the frontend's nginx-prometheus-exporter sidecar), the label set cannot be introspected from
 # the chart alone -- per the plan, the floor here is to flag any such endpoint without
 # honorLabels: true for manual review, which does not fail the build on its own.
+#
+# CRITICAL: "found a metric call and could not statically read its label list" must produce the SAME
+# advisory outcome as "no metrics.py at all" -- never silence. prometheus_client accepts the label
+# list either positionally (the 3rd constructor argument) or as the `labelnames=` keyword, and either
+# form can be written as something this static parser cannot resolve (a variable, a comprehension, a
+# module-level constant). Treating an unresolved label-list argument as "no labels" is exactly the
+# blind spot that let a `labelnames=[...]`-style collision (the real 2026-08-18 `endpoint` shape)
+# through silently as a false "all checks passed" -- reported clean because the check failed to look.
 # ---------------------------------------------------------------------------
 import ast
 
 
+def _read_literal_str_list(node):
+    """A List/Tuple of only string constants -> the set of strings. Anything else -> None, meaning
+    "not something we can read literally" (a variable, a call, a comprehension, a mixed list, ...)."""
+    if not isinstance(node, (ast.List, ast.Tuple)):
+        return None
+    vals = set()
+    for elt in node.elts:
+        if not (isinstance(elt, ast.Constant) and isinstance(elt.value, str)):
+            return None
+        vals.add(elt.value)
+    return vals
+
+
+def metric_call_labels(node):
+    """Try to statically read one Counter/Histogram/Gauge/Summary call's label-list argument.
+
+    Returns (labels, resolved):
+      - resolved=True,  labels=set()   : no label-list argument in ANY form -- prometheus_client's
+                                          signature is (name, documentation, labelnames=(), ...), so
+                                          this is a genuinely label-free metric, fully verified (this
+                                          repo has real examples, e.g. VOTES_CAST in the backend).
+      - resolved=True,  labels={...}   : a literal list/tuple of string constants was found, either
+                                          positionally (3rd arg) or as `labelnames=` -- fully verified,
+                                          whatever it contains.
+      - resolved=False                 : a label-list argument is PRESENT in some form but isn't a
+                                          literal this parser can read. Cannot tell what it contains.
+    """
+    if len(node.args) >= 3:
+        got = _read_literal_str_list(node.args[2])
+        return (got, True) if got is not None else (set(), False)
+    for kw in node.keywords:
+        if kw.arg == "labelnames":
+            got = _read_literal_str_list(kw.value)
+            return (got, True) if got is not None else (set(), False)
+    return set(), True
+
+
 def metric_labels(py_path):
+    """(labels, unresolved) for every recognised metric constructor call in py_path. unresolved=True
+    means at least one call's label list could not be statically determined -- including the file not
+    parsing at all -- and the caller must treat that the same as having no metrics.py to look at."""
     labels = set()
+    unresolved = False
     try:
         tree = ast.parse(open(py_path).read())
     except (OSError, SyntaxError):
-        return labels
+        return labels, True
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         fname = getattr(node.func, "id", None) or getattr(node.func, "attr", None)
         if fname not in ("Counter", "Histogram", "Gauge", "Summary"):
             continue
-        for a in node.args:
-            if isinstance(a, ast.List):
-                for elt in a.elts:
-                    if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
-                        labels.add(elt.value)
-    return labels
+        got, resolved = metric_call_labels(node)
+        if resolved:
+            labels |= got
+        else:
+            unresolved = True
+    return labels, unresolved
 
 
 for path, sm in servicemonitors:
@@ -215,13 +264,17 @@ for path, sm in servicemonitors:
     app = match_labels.get("app") or sm.get("metadata", {}).get("name", "<unknown>")
     metrics_path = os.path.join(SERVICES_DIR, app, "metrics.py")
     introspectable = os.path.isfile(metrics_path)
-    app_labels = metric_labels(metrics_path) if introspectable else set()
+    if introspectable:
+        app_labels, unresolved = metric_labels(metrics_path)
+    else:
+        app_labels, unresolved = set(), False
+    verified = introspectable and not unresolved
 
     for i, ep in enumerate(sm.get("spec", {}).get("endpoints") or []):
         if ep.get("honorLabels") is True:
             continue  # satisfies the check regardless of what the target emits
         port_name = ep.get("port")
-        if introspectable:
+        if verified:
             collision = app_labels & RESERVED
             if collision:
                 fail(
@@ -234,13 +287,27 @@ for path, sm in servicemonitors:
                     f"failure (availability reported a constant 1 from its fallback while the SLI was "
                     f"empty). Add honorLabels: true to this endpoint."
                 )
+            # else: every metric call's label list was statically readable and none of them collide
+            # -- genuinely verified clean, nothing to flag.
+        elif introspectable:
+            # unresolved: metrics.py exists and was found, but at least one metric's label-list
+            # argument could not be read literally -- "found a metric and couldn't tell" is the SAME
+            # state as "no metrics.py", not "no labels".
+            note(
+                f"ServiceMonitor '{name}' ({os.path.basename(path)}) endpoint[{i}] (port={port_name}) "
+                f"has no honorLabels: true, and {metrics_path} declares a metric whose label list "
+                f"could not be statically determined (labelnames= or a positional label list built "
+                f"from something other than a literal list of strings, or the file itself did not "
+                f"parse) -- flagged for manual review: confirm its /metrics output carries none of "
+                f"{sorted(RESERVED)} before trusting this endpoint's data."
+            )
         else:
             note(
                 f"ServiceMonitor '{name}' ({os.path.basename(path)}) endpoint[{i}] (port={port_name}) "
-                f"has no honorLabels: true and no in-repo {metrics_path} to verify its label set "
-                f"against (likely a third-party exporter) -- flagged for manual review: confirm its "
-                f"/metrics output carries none of {sorted(RESERVED)} before trusting this endpoint's "
-                f"data."
+                f"has no honorLabels: true and no in-repo {metrics_path} exists to verify its label "
+                f"set against (likely a third-party exporter) -- flagged for manual review: confirm "
+                f"its /metrics output carries none of {sorted(RESERVED)} before trusting this "
+                f"endpoint's data."
             )
 
 # ---------------------------------------------------------------------------
@@ -271,9 +338,15 @@ for dpath in dashboard_files:
     if not d.get("title"):
         fail(f"dashboard {dpath} has no 'title' -- it renders as an unlabelled dashboard in the list.")
 
-    for panel in d.get("panels") or []:
+    def check_panel(panel):
         if panel.get("type") == "row":
-            continue  # a row divider legitimately carries no query
+            # A row panel itself legitimately carries no query. But a COLLAPSED row nests its child
+            # panels inside its own "panels" list instead of at the dashboard's top level -- descend
+            # into them, or a query-less panel hidden inside a collapsed row passes unseen. None of
+            # this repo's three dashboards use collapsed rows today; this is future-proofing.
+            for child in panel.get("panels") or []:
+                check_panel(child)
+            return
         targets = panel.get("targets") or []
         queries = [t.get("expr", "").strip() for t in targets if isinstance(t, dict)]
         if not any(queries):
@@ -282,6 +355,9 @@ for dpath in dashboard_files:
                 f"query -- it renders as an empty panel with no error, indistinguishable from 'no "
                 f"data yet'."
             )
+
+    for panel in d.get("panels") or []:
+        check_panel(panel)
 
 # ---------------------------------------------------------------------------
 # Extract every PrometheusRule's groups for promtool, regardless of how the checks above went --

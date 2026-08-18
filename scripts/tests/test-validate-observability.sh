@@ -41,6 +41,31 @@ PY
   fi
 }
 
+# The reviewer's fixture for the labelnames= keyword blind spot: the SAME colliding `endpoint` label
+# as write_metrics's positional form, but declared via the `labelnames=` keyword argument --
+# prometheus_client's own documentation frequently shows this style, and the original parser only
+# read a metric call's positional list argument, so this shape extracted zero labels and the check
+# concluded (wrongly) that the ServiceMonitor was clean.
+write_metrics_labelnames_kw() {
+  mkdir -p services/backend
+  cat > services/backend/metrics.py <<'PY'
+from prometheus_client import Counter
+REQUESTS = Counter('app_requests_total', 'requests', labelnames=['method', 'endpoint', 'status'])
+PY
+}
+
+# A label list that genuinely cannot be read statically -- built from a module-level variable rather
+# than a literal. This is the shape the robust fix has to fall through to an advisory NOTE for: the
+# parser can see that a label-list argument exists, but not what it contains.
+write_metrics_unresolvable() {
+  mkdir -p services/backend
+  cat > services/backend/metrics.py <<'PY'
+from prometheus_client import Counter
+REQUEST_LABELS = ['method', 'endpoint', 'status']
+REQUESTS = Counter('app_requests_total', 'requests', labelnames=REQUEST_LABELS)
+PY
+}
+
 write_service() {
   local port_name="${1:-http}"
   mkdir -p "$(dirname "$SVC_FILE")"
@@ -189,6 +214,30 @@ write_servicemonitor "yes" "yes" "http"
 out="$(run 2>&1)" || fail "honorLabels: true should satisfy check 3 even with a colliding label. Output:
 $out"
 echo "$out" | grep -q "all checks passed" || fail "honorLabels fixture: missing the pass banner. Output:
+$out"
+
+echo "--- a labelnames= keyword collision without honorLabels fails (the reviewer's fixture) ---"
+scaffold
+write_metrics_labelnames_kw
+write_servicemonitor "yes" "no" "http"
+out="$(run 2>&1)" && fail "a labelnames=-style reserved-label collision without honorLabels must not pass silently. Output:
+$out"
+echo "$out" | grep -q "all checks passed" && fail "the labelnames= collision must not report success. Output:
+$out"
+echo "$out" | grep -q "collide with prometheus-operator's own TARGET label" \
+  || fail "wrong/missing error message for the labelnames= collision. Output:
+$out"
+
+echo "--- an unresolvable (non-literal) label list is flagged for review, not silently passed as clean ---"
+scaffold
+write_metrics_unresolvable
+write_servicemonitor "yes" "no" "http"
+out="$(run 2>&1)" || fail "an unresolvable label list must not fail the build outright (advisory only). Output:
+$out"
+echo "$out" | grep -q "^FAIL:" && fail "an unresolvable label list must not be reported as a verified-clean collision check (no FAIL line expected). Output:
+$out"
+echo "$out" | grep -q "NOTE:.*could not be statically determined" \
+  || fail "expected an advisory NOTE distinguishing 'unparseable declaration' from 'missing file'. Output:
 $out"
 
 echo "--- an endpoint with no local metrics.py and no honorLabels is flagged for review, not failed ---"
