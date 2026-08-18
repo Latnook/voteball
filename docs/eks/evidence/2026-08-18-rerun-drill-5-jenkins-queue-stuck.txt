@@ -1,0 +1,56 @@
+Drill 5 RE-RUN — Jenkins queue stuck (proving JenkinsQueueStuck)
+Captured 2026-08-18T17:38:45Z.
+
+WHY A RESOURCEQUOTA AND NOT KILLING AN AGENT: killing an agent ABORTS a build rather than
+queueing it, so jenkins_queue_size_value never moves and the alert stays unproven -- that is
+exactly the gap drill 3 left the first time. To make builds QUEUE, agent PROVISIONING must fail.
+A ResourceQuota capping pods at the current count does that, contained entirely to the ci
+namespace: it cannot affect devops-app or the public site.
+
+--- before ---
+    jenkins-0 2/2 Running
+--- applying quota (pods=1, the current count) ---
+resourcequota/drill-block-agents created
+  quota applied at 17:38:46Z
+  build triggered at 17:39:08Z (FORCE_BUILD=true, HTTP 201)
+
+--- queue over time, and the agent pod that cannot be created ---
+  17:39:18Z queue=0 | (empty)  ci_pods=1
+  17:39:38Z queue=1 | Waiting for next available executor  ci_pods=1
+  17:39:59Z queue=1 | Waiting for next available executor  ci_pods=1
+  17:40:20Z queue=1 | Waiting for next available executor  ci_pods=1
+  17:40:40Z queue=1 | Waiting for next available executor  ci_pods=1
+  17:41:01Z queue=1 | Waiting for next available executor  ci_pods=1
+
+--- queue metric + alert state ---
+  17:42:50Z queue_size=1 | JenkinsQueueStuck=pending
+  17:43:10Z queue_size=1 | JenkinsQueueStuck=pending
+  17:43:30Z queue_size=1 | JenkinsQueueStuck=pending
+  17:43:50Z queue_size=1 | JenkinsQueueStuck=pending
+  ... (polled every 20s, queue_size held at 1 throughout) ...
+  17:55:14Z queue_size=1 | JenkinsQueueStuck=pending
+  17:55:34Z queue_size=1 | JenkinsQueueStuck=firing
+  == JenkinsQueueStuck FIRING at 17:55:34Z ==
+
+  TIMELINE
+    17:38:46Z  ResourceQuota pods=1 applied to namespace ci
+    17:39:08Z  application-ci triggered with FORCE_BUILD=true (HTTP 201)
+    17:39:38Z  queue=1, 'Waiting for next available executor'; ci pods stayed at 1
+    17:42:50Z  JenkinsQueueStuck -> pending
+    17:55:34Z  JenkinsQueueStuck -> FIRING     (for: 15m, expr jenkins_queue_size_value > 0)
+
+RESULT: PASS. The alert fired on a genuinely stuck queue.
+
+  THE CAVEAT FROM THE MORNING RUN IS NOW RESOLVED. The 2026-08-18 morning evidence recorded
+  jenkins_*_value metrics reading 0.0 and the alert as unproven. jenkins_queue_size_value now
+  reads 1 and drives the alert end to end. The difference is that the Jenkins ServiceMonitor is
+  enabled (charts/jenkins-support/values.yaml serviceMonitor.enabled: true), which was gated on
+  a controller-image rebuild containing prometheus.jpi -- committing plugins.txt alone does
+  nothing, because plugins are baked into the image and Terraform owns the release.
+
+  WHY THE WEBSITE IS IRRELEVANT HERE: the quota is namespace-scoped to ci. devops-app was
+  untouched for the whole 17 minutes. CI being unable to build does not take the product down --
+  which is the alert's own description ('the website is unaffected') and the reason its severity
+  is warning, not critical.
+resourcequota "drill-block-agents" deleted from ci namespace
+  lifted at 17:55:57Z

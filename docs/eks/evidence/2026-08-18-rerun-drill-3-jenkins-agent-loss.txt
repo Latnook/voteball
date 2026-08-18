@@ -1,0 +1,42 @@
+Drill 3 RE-RUN — Jenkins agent loss mid-build
+Captured 2026-08-18T17:56:33Z. Kill an agent pod mid-build; the website must be untouched.
+
+Chained from drill 5: lifting the quota at 17:55:57Z released the build that had been queued,
+which provisions the agent this drill kills.
+
+--- waiting for the agent pod to appear ---
+  agent Running: voteball-build-z629z at 17:56:33Z
+    jenkins-0 2/2 Running
+    voteball-build-z629z 9/9 Running
+
+--- killing the agent while polling the public site every 0.5s ---
+  victim: voteball-build-z629z
+pod "voteball-build-z629z" deleted from ci namespace
+  killed at 17:57:48Z
+
+--- the website during agent loss ---
+   samples:    100
+   non-200s:   0
+   codes seen: 200 
+
+--- ci namespace after the kill ---
+    jenkins-0 2/2 Running
+
+--- what happened to the build ---
+   build #88 building=False result=ABORTED duration=1116s
+
+RESULT: PASS.
+  17:56:33Z  agent voteball-build-z629z Running, 9/9 containers
+  17:57:48Z  agent deleted
+  website:   100 samples at 0.5s intervals, ZERO non-200s
+  build #88: ABORTED
+
+  THE KEY OBSERVATION, and it is the reason drill 5 exists as a separate drill: killing an
+  agent ABORTS the build. It does not queue it. So jenkins_queue_size_value never moves and
+  JenkinsQueueStuck cannot be proven this way -- which is exactly the gap the morning run
+  recorded and left open. To make builds QUEUE you have to break agent PROVISIONING, not kill a
+  provisioned agent. That is drill 5's ResourceQuota.
+
+  The website result is the point of this drill: CI is not in the serving path. Jenkins holds no
+  cluster write credentials, ArgoCD is the only applier, and the running pods in devops-app do
+  not care that a build died. A CI outage is a delivery problem, not an availability problem.
