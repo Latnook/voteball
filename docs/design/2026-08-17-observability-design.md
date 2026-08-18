@@ -453,9 +453,18 @@ questions:
 
 | Check | Fails the release when |
 |---|---|
-| Targets up | any declared target (`backend`, `worker`, `jenkins`) reports `up == 0` |
+| Targets up | `min(up{namespace="devops-app"})` reports `0` |
 | Error ratio | 5xx ratio over the gate window exceeds 1% |
 | Latency | p95 over the gate window exceeds 1s |
+
+**Targets up is scoped to `namespace="devops-app"`, not to a named list of `backend`/`worker`/
+`jenkins` targets** — an earlier draft of this table said otherwise, which was wrong about the
+implementation, not a later change to it (`scripts/ci/monitoring-gate.sh`'s `GATE_NAMESPACE` has
+always defaulted to the release namespace). This gate exists to decide whether to roll back **the
+application release** it just deployed; Jenkins is a separate platform component with its own scrape
+target and its own `PrometheusTargetDown`/`JenkinsQueueStuck` alerts, and folding its scrape health
+into a gate that can only roll back `devops-app` would fail this gate — and roll back a perfectly
+good application release — for a Jenkins problem the rollback cannot fix.
 
 The error threshold is deliberately **tighter** than the `VoteballHighErrorRate` alert's 5%: the gate
 controls its own traffic against a freshly-deployed release and expects zero errors, whereas the alert
@@ -699,3 +708,89 @@ outer `or vector(1)` on `voteball:availability:ratio5m` would still report `1` r
 its two inputs went missing. The protection that actually closes that hole is an alert on
 `journey_requests:rate5m` being **absent** on a normally-trafficked site — not implemented in this
 plan.
+
+### Drill outcomes (2026-08-18, gates-and-drills plan)
+
+The CI/CD gates (§11, §12) and the four drills (§13) ran on 2026-08-18, after the fixes above had
+already shipped. Full transcripts are in `docs/eks/evidence/2026-08-18-drill-{1,2,3,4}-*.txt`; what
+follows is what they proved and what they found wrong, including a real defect this design had not
+predicted.
+
+**Drill 1 found a genuine blind spot: a total API outage rendered as `availability = 1`, perfect, for
+two hours.** Two independent causes, both fixed before the drill was re-run:
+
+1. `psycopg2.connect()` had no `connect_timeout`. A blocked network path (the drill's break) made the
+   connect call **hang** rather than fail — the Flask request never completed, so nothing was counted
+   in either direction: `voteball_http_requests_total` never incremented and
+   `voteball_db_errors_total` never fired, because from the application's point of view the connection
+   had not failed, it was still waiting. nginx eventually gave up at its own 60s default and returned
+   504 to the visitor, but the backend itself recorded nothing at all. Fixed with `connect_timeout=5`
+   on both services (commit `e1be770`) — proven in-pod afterward: `OperationalError` after exactly
+   5.0s with the timeout set, still hanging past 25s without it.
+2. Every SLI here is a **ratio**, and this site has close to no organic traffic, so with no requests
+   in flight the numerator and denominator go to zero together and `voteball:availability:ratio5m`'s
+   `or vector(1)` fallback reports a confident `1`. `VoteballSLIAbsent` did not catch this either — the
+   underlying series was **present with value 0**, not absent, so `absent(...)` never fired. Fixed
+   with a synthetic canary Deployment hitting the public journey every 30s (commit `7261b5f`), so the
+   ratio always has a real denominator to divide by.
+
+**The general rule this earns, worth applying to any future signal that must not go silently blind:
+prefer "how long since this last succeeded" over "how many of these failed."** During the two-hour
+outage, `VoteballRollupsStale` was the *only* alert that fired, and only incidentally — the worker lost
+the same database connection, but that alert measures **age since the worker's last successful
+recompute**, not a count of failures. A counting signal needs events to count and degrades into silence
+when there are none; a duration-since signal needs nothing but a clock and degrades into an alarm. It
+does not need traffic, a completed request, or a non-hanging connection — only for time to keep passing
+without a recorded success, which it always will during an outage.
+
+**Drill 1 also took three attempts, and the first two failed for reasons that had nothing to do with
+the defect being tested — recorded because a drill testing the wrong thing looks exactly like a system
+that failed, and that distinction matters as much as the defect itself:**
+
+- Attempt 1 hit the hang described above (found the real defect, but by an accident of timing rather
+  than by design — the break used was too blunt to isolate cause from symptom on its own).
+- Attempt 2 deleted the whole `allow-app-egress` NetworkPolicy. That policy is not database-specific —
+  it also covers frontend→backend — so deleting it cut the site off from its own backend entirely.
+  Requests never reached the instrumented code at all (`curl` returned `000`, not `500`), so the
+  backend recorded nothing for a completely different reason than attempt 1: this was simulating "the
+  whole namespace loses all egress," not "the backend loses its database."
+- Attempt 3, excluding only the two RDS subnets (`10.0.64.0/24`, `10.0.65.0/24`) from the existing
+  `10.0.0.0/16` egress rule via a JSON-patch, was the first attempt that actually isolated the
+  database dependency while leaving pod-to-pod traffic — and therefore the instrumented request
+  path — intact. Only this attempt produced the fast, countable 500s (5.17s, matching
+  `connect_timeout=5` exactly) that the design's whole premise depends on.
+
+**Drill 3 (Jenkins agent loss) left `JenkinsQueueStuck` unproven, and that gap is recorded rather than
+hidden.** The drill killed a running agent pod mid-build; Jenkins aborted build #70 and provisioned a
+fresh agent for the next one, and the website was unaffected throughout — both the properties the
+drill set out to show. But `jenkins_queue_size_value` never moved off `0`, because killing an agent
+that already exists aborts its build; it does not put anything back in the queue. Proving
+`JenkinsQueueStuck` needs a different drill — one where agent **provisioning** itself fails, so
+requested builds pile up unscheduled — and that drill was not run here. The alert is semantically
+correct and structurally untested, not disproven; do not read drill 3 as having validated it.
+
+The same drill also surfaced a caution worth generalizing: **the `jenkins_*_value` metric family
+(the bundled Metrics plugin) and the `default_jenkins_builds_*` family (the `prometheus` plugin's own
+collector) are not interchangeable, even though both come from the same Jenkins.** With the
+Kubernetes cloud provisioning agents on demand, `jenkins_queue_size_value`,
+`jenkins_executor_count_value` and `jenkins_node_online_value` read `0` almost all the time — truthfully,
+since nothing sits queued or connects between builds — while `default_jenkins_builds_*` carried 257
+non-zero series (build counts, durations, health scores) throughout the same drill. Both readings are
+correct for what they measure; a dashboard panel or alert wired to the wrong family reads as a flat,
+healthy-looking zero rather than as an error, which is the same silent-failure shape §11's checks
+exist to catch elsewhere in this design — this instance just isn't mechanically checkable the same way,
+since both families are legitimately real metrics.
+
+**Drill 4 proved the specific claim this design makes about the monitoring gate: it catches a release
+that every earlier check passes.** A 1.5s sleep injected into `GET /api/options` (commit `5f24790`,
+reverted `14b5780`) produced a release with healthy pods, ArgoCD `Synced`/`Healthy`, and 200 responses
+on the smoke test — Rollout, Verify and Smoke Test all reported `SUCCESS`. Only the Monitoring Gate
+stage failed, on `GATE_MAX_P95_SECONDS=1.0`, and the existing rollback path reverted `master` from
+`5f24790` to `7261b5f` automatically, confirmed live by `/api/options` returning to 0.11–0.19s. None
+of Rollout, Verify or Smoke Test measure how long a user waits; the gate is the first stage in this
+pipeline that does.
+
+**§12's table above has also been corrected**: the targets-up check queries
+`min(up{namespace="devops-app"})`, scoped to the application's own namespace, not the three named
+targets (`backend`/`worker`/`jenkins`) an earlier draft of this document claimed. The implementation
+was right; the table was wrong. See the note under §12 itself for why the scoping is deliberate.

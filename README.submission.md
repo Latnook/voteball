@@ -608,13 +608,13 @@ demonstrations, so a long window would sit mostly empty and read as a broken pan
 records this as a secondary reason, the primary one being that a slow-moving average is the wrong shape
 for something meant to page while recovery is still possible.
 
-### Eight alerts (plus six pre-existing), all carrying a runbook
+### Ten alerts (plus six pre-existing), all carrying a runbook
 
 Every alert — the eight this pass adds and the six that already existed — carries `summary`,
 `description` and a `runbook_url` that Alertmanager renders straight into the SNS email, so what
 arrives is "here's what broke, here's the exact page to open," not a bare metric name. Full table and
 the four-question format (what it means / what to check first / how to fix it / when to roll back
-instead) is in [`docs/runbooks/README.md`](docs/runbooks/README.md); the eight added here:
+instead) is in [`docs/runbooks/README.md`](docs/runbooks/README.md); the ten added here:
 
 | Alert | Domain | Fires when | Severity |
 |---|---|---|---|
@@ -626,6 +626,8 @@ instead) is in [`docs/runbooks/README.md`](docs/runbooks/README.md); the eight a
 | `DeploymentReplicasMismatch` | Kubernetes | replicas short of desired for 15m, with no rollout in progress | warning |
 | `JenkinsQueueStuck` | Jenkins | build queue non-empty with nothing draining it for 15m | warning |
 | `PrometheusTargetDown` | Monitoring | a declared target reports `up == 0` for 5m | critical |
+| `VoteballSLIAbsent` | Monitoring | `voteball:journey_requests:rate5m` has no data for 15m — "we can no longer tell," not "the site is down" | critical |
+| `VoteballJourneyTrafficStopped` | Monitoring | journey request rate is `0` for 10m despite the synthetic canary running every 30s | critical |
 
 **Five kube-prometheus-stack default rules that duplicated these conditions are switched off**
 (`defaultRules.disabled` in `terraform/addon-monitoring.tf`) — a duplicate alert is not redundancy,
@@ -639,6 +641,72 @@ default `KubePodNotReady`); Alertmanager published to SNS with zero failed notif
 owner confirmed receiving the email, `Runbook:` line included. Both alerts resolved cleanly once the
 canary was removed. Full command output in
 [`docs/eks/evidence/2026-08-18-observability-as-code.txt`](docs/eks/evidence/2026-08-18-observability-as-code.txt).
+
+### Two CI/CD gates, and four failure drills
+
+Two pipeline stages, and four drills exercising them against the live cluster — deliberately not
+screenshots of a healthy system. Full transcripts:
+[`docs/eks/evidence/2026-08-18-drill-1-controlled-5xx.txt`](docs/eks/evidence/2026-08-18-drill-1-controlled-5xx.txt),
+[`-2-pod-readiness.txt`](docs/eks/evidence/2026-08-18-drill-2-pod-readiness.txt),
+[`-3-jenkins-agent-loss.txt`](docs/eks/evidence/2026-08-18-drill-3-jenkins-agent-loss.txt),
+[`-4-monitoring-gate.txt`](docs/eks/evidence/2026-08-18-drill-4-monitoring-gate.txt).
+
+- **`application-ci` gains an Observability Validation stage** (`scripts/ci/validate-observability.sh`):
+  renders both charts and checks that every ServiceMonitor/PrometheusRule carries the label Prometheus
+  requires to notice it, every ServiceMonitor port name exists on its Service, no application metric
+  label collides with one prometheus-operator reserves for itself, and every dashboard panel has a
+  real query — plus `promtool check rules` against the rendered alerts.
+- **`application-cd` gains a Monitoring Gate stage** after Smoke Test (`scripts/ci/monitoring-gate.sh`):
+  it generates its own burst of traffic against the freshly-deployed release and checks the same
+  recording rules the dashboard uses — targets up, error ratio, p95 latency — deliberately **passing**
+  on too little data rather than failing, since anything that fails after the Promote stage triggers an
+  automatic rollback of production, and a gate that failed on a metrics hiccup would roll back healthy
+  releases for no reason.
+
+**A submission that only lists successes is less credible than one that shows what testing found, and
+drill 1 is the reason this section says that plainly: it found a real, live defect, not a design that
+worked as drawn on the first try.** Breaking the backend's path to RDS while every pod stayed
+`Ready` produced a **two-hour window where a total API outage read as `availability = 1`, perfect**,
+on the dashboard that exists specifically to catch this. Two causes, both real, both fixed before the
+drill was re-run and passed:
+
+1. `psycopg2.connect()` had no `connect_timeout`, so the blocked connection **hung** instead of
+   failing — the request never completed, so nothing was counted in either direction, not even the
+   error counter. Fixed with `connect_timeout=5` on both services.
+2. Every SLI here is a ratio, and with almost no organic traffic on this site, an outage with zero
+   requests in flight makes the numerator and denominator vanish together — the availability query's
+   own "no data" fallback then reports a confident, wrong `1`. Fixed with a synthetic canary Deployment
+   that exercises the public voting journey every 30 seconds, purely so the ratio always has a real
+   denominator; disabling it does not just remove a metric source, it makes the availability SLI itself
+   untrustworthy again.
+
+The only alert that fired during that two-hour window, `VoteballRollupsStale`, did so because it
+measures *time since the worker's last successful recompute* rather than counting failed events — a
+signal built on elapsed time keeps working with zero traffic; a signal built on counting events needs
+events to count, and degrades into silence exactly when it matters most. Getting the break itself right
+also took three tries: the first attempt exposed the defect above, but the second attempt broke the
+*whole* network policy covering frontend→backend traffic rather than just the database path, so
+requests never reached the instrumented code at all and the drill briefly looked like it was disproving
+the design it was meant to test — a reminder that a drill testing the wrong thing looks exactly like a
+system that failed.
+
+Drill 3 (killing a Jenkins build agent mid-build) confirmed the property it set out to prove — the
+website stayed at `200` throughout, and Jenkins re-provisioned a fresh agent on its own — but left one
+alert, `JenkinsQueueStuck`, honestly unproven: killing an agent that already exists aborts its build
+rather than queueing it, so the queue-length metric the alert watches never moved. The alert is still
+believed correct; it just was not exercised by this drill, and that gap is recorded rather than papered
+over. The same drill also showed that Jenkins' two Prometheus metric families are not interchangeable —
+the bundled Metrics plugin's `jenkins_*_value` gauges read `0` for queue/executor/node even with a
+build running, while the `prometheus` plugin's own `default_jenkins_builds_*` family carried 257
+non-zero series in the same window. Both are truthful; picking the wrong one for a dashboard panel just
+shows a flat, healthy-looking zero.
+
+Drill 4 is the gate's own proof of purpose: a release with a 1.5s sleep injected into one endpoint
+passed every check that existed before this plan — healthy pods, ArgoCD `Synced`, 200 responses on the
+smoke test — and was caught only by the Monitoring Gate, which rolled it back automatically within the
+same pipeline run. Drill 2 (deleting one of two backend pods behind a PodDisruptionBudget) confirmed
+the simpler, expected case: zero non-200 responses across 60 polls while Kubernetes replaced the pod in
+54 seconds.
 
 ### Reaching Grafana, Prometheus and Alertmanager
 

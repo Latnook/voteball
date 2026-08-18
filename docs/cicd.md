@@ -36,7 +36,8 @@ refused by the Guard stage in both directions (CI's own guard, and CD's rollback
 ## The short version
 
 **`application-ci`** runs on every push to `master` that touches `services/**` (or is forced). It
-validates the repo shape, lints, runs the backend/worker tests (count in §5 below — it drifts every
+validates the repo shape, validates the observability config (rendered chart output against
+`promtool`, §3a below), lints, runs the backend/worker tests (count in §5 below — it drifts every
 time a test is added) against a real Postgres sidecar,
 builds four images with rootless BuildKit, scans them with Trivy, pushes the clean ones to ECR under
 the git-SHA tag, writes a metadata file recording the digests, and hands the tag to `application-cd`
@@ -45,9 +46,10 @@ as a build parameter. **It never touches the cluster and holds no cluster creden
 **`application-cd`** receives a tag (from CI, or from a human re-running it by hand) that has already
 been built, tested and scanned. It validates the request, writes the tag into
 `charts/voteball/values.yaml` and pushes that commit to `master`, asks ArgoCD to sync it, waits for
-ArgoCD's own health verdict, double-checks with a real HTTPS request against the live site, and —
-if any of that fails — rolls production back to the previous tag automatically by re-running itself
-against it.
+ArgoCD's own health verdict, double-checks with a real HTTPS request against the live site, asks
+Prometheus whether the new release is actually serving *well* rather than merely answering (§8b
+below), and — if any of that fails — rolls production back to the previous tag automatically by
+re-running itself against it.
 
 ```
 git push (services/**) → webhook → application-ci → application-cd → ArgoCD → pods roll
@@ -239,6 +241,38 @@ them: every service directory has a `Dockerfile` and a `.dockerignore`, no Docke
 implicitly resolves to) `:latest`, and `charts/voteball/Chart.yaml` at least parses a `version:` line.
 Runs before "Already built?" deliberately — a re-run of an already-built tag still has to pass
 validation.
+
+### 3a. Observability Validation (new, 2026-08-18)
+
+`scripts/ci/validate-observability.sh`, run in the `observability` container of the CI pod template
+(`ci/jenkins/jenkins.yaml`) because neither of the pod's other two containers carries `helm` or
+`promtool`, and this stage needs both: it renders `charts/voteball` and `charts/observability` with
+`helm template`, then checks the rendered output. Placed right after `Validation` and before `Script
+tests` — same reasoning as both: cheap, no network to the app, and should stop a build before anything
+is compiled or tested.
+
+Four checks, each one matching a mistake this repository actually made and each one chosen because
+the mistake it catches applies cleanly, `kubectl get` lists the object, and nothing works:
+
+1. **Every `ServiceMonitor`, `PodMonitor` and `PrometheusRule` carries `release: kube-prometheus-stack`.**
+   Without it the object is created and looks correct, and Prometheus never evaluates or scrapes it.
+2. **Every `ServiceMonitor`'s `endpoints[].port` names a port that exists on the Service it selects.**
+   A typo produces a monitor with zero targets that looks identical to a healthy one in `kubectl get`.
+3. **No application metric label collides with a name prometheus-operator uses for its own target
+   labels** (`endpoint`, `job`, `namespace`, `pod`, `service`, `container`, `instance`). This is the
+   check that exists because of a real incident: on 2026-08-18 the backend's `endpoint` label collided
+   with the operator's own target label of the same name, the operator's value won, and the
+   application's own label was silently renamed `exported_endpoint` — every SLI recording rule matched
+   nothing as a result, and `voteball:availability:ratio5m`'s `or vector(1)` fallback read a constant
+   `1`. A total outage would have rendered as green 100% availability. See the design doc's
+   "Verification outcome" section for the fix (`honorLabels: true`).
+4. **Every dashboard JSON parses, carries a `uid` and a `title`, and every panel has a non-empty
+   query.** A malformed panel renders as an empty tile with no error — indistinguishable from "no data
+   yet" to anyone looking at the dashboard.
+
+It also runs `promtool check rules` against every `PrometheusRule` extracted from the rendered output,
+when `promtool` is on `PATH` — a different class of mistake (bad PromQL, a duplicate recording-rule
+name) than the four checks above. Offline test: `scripts/tests/test-validate-observability.sh`.
 
 ### 3b. Script tests (new, 2026-08-11)
 
@@ -542,9 +576,52 @@ deliberately does **not** check `/health`: that path is already what the kubelet
 ArgoCD's health assessment is built on, so re-checking it here would just re-ask a question ArgoCD
 already answered.
 
+### 8b. Monitoring Gate (new, 2026-08-18)
+
+```bash
+GATE_BASE_URL="https://$APP_DOMAIN" scripts/ci/monitoring-gate.sh
+```
+
+Runs after Smoke Test, in the `deploy` container. Smoke Test asks whether the product *answers*;
+this asks whether it answers **well**, at the rate the SLOs promise. It generates a short burst of its
+own traffic (`GATE_REQUESTS`, default 60 — raised from 40 after a live run showed 40 real requests
+extrapolating to only ~29 estimated samples through `rate()`'s 5-minute window, too close to the
+20-sample floor below) against the public journey endpoints, waits for the scrape interval to catch up,
+then asks Prometheus the same three questions the dashboard and the alerts already use — never new
+PromQL, so there is exactly one definition of each SLI in this repo:
+
+| Check | Query | Fails the release when |
+|---|---|---|
+| Targets up | `min(up{namespace="devops-app"})` | reports `0` — scoped to the application's own namespace, not Jenkins, which has its own scrape-health alert |
+| Error ratio | `voteball:availability:ratio5m`-family query over the gate window | 5xx ratio exceeds 1% (tighter than `VoteballHighErrorRate`'s 5%, because the gate controls its own traffic against a fresh release and expects zero errors, not the noise of real internet traffic) |
+| Latency | `voteball:latency:p95_5m`-family query over the gate window | p95 exceeds 1s |
+
+It can only run here because Rollout has already confirmed ArgoCD reports the release `Healthy`,
+which means the *old* pods are gone — every request the gate generates and every sample it reads back
+is attributable to this release, with no per-version label filtering needed to separate old traffic
+from new.
+
+**It deliberately passes, with a loud warning, when it observes fewer than `GATE_MIN_SAMPLES` (20)
+requests and every target is up.** Anything that fails after the Promote stage triggers an automatic
+rollback of production (§8, Rollback below) — so a gate that failed on merely *insufficient* data would
+roll back a perfectly healthy release every time the metrics pipeline had a slow scrape or a quiet
+minute, turning a safety net into an outage generator that fires on nothing. A genuinely broken scrape
+needs no traffic to detect, which is exactly what the targets-up check is for, and it runs
+unconditionally regardless of sample count. The one condition this does **not** forgive is the SLI
+being **absent** rather than merely low-sample — that is the exact condition `VoteballSLIAbsent` pages
+on, and it means the measurement pipeline itself is broken, not that traffic is quiet.
+
+**Proved live by drill 4** (`docs/eks/evidence/2026-08-18-drill-4-monitoring-gate.txt`): a release with
+a 1.5s sleep injected into `GET /api/options` passed Rollout, Verify and Smoke Test — healthy pods,
+`Synced`, 200 responses — and was caught only by the Monitoring Gate, which failed on
+`GATE_MAX_P95_SECONDS=1.0` and triggered the existing rollback path automatically. None of the checks
+that existed before this stage measure how long a user waits; this is the first one that does. Offline
+test: `scripts/tests/test-monitoring-gate.sh` (stubs Prometheus via `PROM_STUB_QUERY_CMD`, the same
+insertion point `scripts/wait-for-argocd-sync.sh` uses for `ARGOCD_STUB_STATUS_CMD`).
+
 ### Failure Handling and automatic rollback (`post { failure }`)
 
-On any failure in Deploy, Rollout, Verify or Smoke Test — see Rollback below.
+On any failure in Deploy, Rollout, Verify, Smoke Test or Monitoring Gate — see Rollback below.
 
 ### Cleanup
 
@@ -558,13 +635,15 @@ rollback's `git log` working on exactly the failure path where it matters most.
 
 ## Rollback
 
-**Automatic**, on any failure in Deploy, Rollout, Verify or Smoke Test (decided 2026-08-04; design doc
-§8). `scripts/ci/previous-tag.sh` reads `git log -p` on `charts/voteball/values.yaml` for the *second*
-most recent `tag:` value written by a promote commit — the first is the tag that just failed. The
-`post { failure }` block then re-runs `application-cd` against that previous tag with
+**Automatic**, on any failure in Deploy, Rollout, Verify, Smoke Test or Monitoring Gate (decided
+2026-08-04 for the first four; Monitoring Gate joined the list on 2026-08-18 as a normal consequence of
+being a stage in the same chain — no special-casing needed, since `post { failure }` fires on any
+stage failure). `scripts/ci/previous-tag.sh` reads `git log -p` on `charts/voteball/values.yaml` for
+the *second* most recent `tag:` value written by a promote commit — the first is the tag that just
+failed. The `post { failure }` block then re-runs `application-cd` against that previous tag with
 `ROLLBACK_DEPTH` incremented, so rolling forward and rolling back go through the exact same code path
-(Promote → Deploy → Rollout → Verify → Smoke Test) rather than two different mechanisms that could
-drift apart.
+(Promote → Deploy → Rollout → Verify → Smoke Test → Monitoring Gate) rather than two different
+mechanisms that could drift apart.
 
 **Bounded to one retry.** `ROLLBACK_DEPTH >= 1` on entry to `post { failure }` means this build is
 *itself* a rollback and it *also* failed verification — the second failure in a row means the problem

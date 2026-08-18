@@ -176,6 +176,47 @@ verifies an `Authorization: Bearer <token>` header — a signed, 12-hour-expirin
 and `werkzeug`-hashed password (`ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`/`ADMIN_SESSION_SECRET` env
 vars). Reuse this decorator for any new admin route — don't hand-roll the check.
 
+### Observability
+
+`db.get_db()` on both backend and worker connects with `psycopg2.connect(..., connect_timeout=5)` —
+**never remove this.** Without it, a blocked network path to RDS (a NetworkPolicy break, a routing
+problem, RDS itself unreachable) makes the connect call **hang** instead of failing. A hung request
+never completes, so nothing gets counted — not even the error counter — and the request-ratio SLIs
+(`voteball:availability:ratio5m` and friends) simply have no data point to include it in. This was a
+real, live defect (found by the 2026-08-18 drills, `docs/eks/evidence/2026-08-18-drill-1-controlled-
+5xx.txt`): a two-hour total API outage rendered as `availability = 1`, perfect, because every failing
+request was still in-flight, not failed. `connect_timeout=5` is what turns "the database is
+unreachable" into a fast, countable error instead of an invisible one.
+
+**The synthetic canary Deployment (`charts/voteball/templates/canary-deployment.yaml`, gated on
+`.Values.canary.enabled`) is not a nice-to-have — it is what makes every ratio-based SLI on this site
+meaningful at all.** Voteball has close to no organic traffic, so an outage with zero requests in
+flight makes the availability ratio's numerator and denominator vanish together, and its `or vector(1)`
+"no data" fallback then reports a confident, wrong `1` — the same 2026-08-18 drill found this exact
+failure. The canary hits the real public voting journey every `canary.intervalSeconds` (30s) purely to
+guarantee the ratio always has a real denominator to divide by. **Disabling the canary does not just
+remove one metric source — it silently makes `voteball:availability:ratio5m` untrustworthy again, and
+it makes `VoteballJourneyTrafficStopped` meaningless with it**, since that alert only means something
+against traffic guaranteed to exist; without the canary, zero requests is this site's normal state, and
+the alert would either fire constantly or (worse) be tuned so loose it catches nothing. The two are
+coupled on purpose — see the comment at `VoteballJourneyTrafficStopped` in
+`charts/voteball/templates/prometheusrule.yaml`.
+
+**Jenkins exposes two Prometheus metric families that are not interchangeable, and picking the wrong
+one for a dashboard panel or alert shows a flat, healthy-looking zero instead of an error.** The
+bundled Metrics plugin's `jenkins_*_value` gauges (`jenkins_queue_size_value`,
+`jenkins_executor_count_value`, `jenkins_node_online_value`) read `0` almost all the time on this
+cluster — truthfully, since the Kubernetes cloud provisions agents on demand and nothing sits queued or
+connects between builds — while the `prometheus` plugin's own `default_jenkins_builds_*` family
+(build counts, durations, health scores) carries real non-zero data throughout the same window. Both
+are correct for what they measure; verify which family a metric actually belongs to by querying it
+live, never by guessing from the name (`docs/design/2026-08-17-observability-design.md`'s "Drill
+outcomes" section and `charts/observability/values.yaml`'s `queueMetric` comment both record this being
+gotten wrong once already). One consequence still open: `JenkinsQueueStuck` (`jenkins_queue_size_value
+> 0` for 15m) has never actually been proven to fire — killing an agent mid-build aborts the build
+rather than queueing it, so a drill built around that mechanism can't reach a non-zero queue size;
+proving it needs a drill where agent *provisioning itself* fails.
+
 ### API surface
 
 The full route table — every endpoint with its method, auth, request body, validation rules and
