@@ -1,0 +1,77 @@
+{{- if .Values.canary.enabled }}
+# Synthetic canary. Loops over the real public journey (https://<app_domain>, not the in-cluster
+# Service) so the request rate voteball:journey_requests:rate5m feeds off is never zero -- see the
+# comment on `canary:` in values.yaml for why that matters and docs/runbooks/VoteballJourneyTrafficStopped.md
+# for the alert this exists to make meaningful.
+#
+# A Deployment, not a CronJob: a CronJob firing every intervalSeconds (30s) would create a new Pod
+# object roughly 2880 times/day, which is pure API-server churn for a workload that is really "start
+# once, loop forever". One long-lived pod does the same job with none of that overhead.
+#
+# NOT /health -- nginx proxies only /api/*, so /health 404s publicly (same reason
+# scripts/ci/smoke-test.sh skips it). `/` exercises the ALB+nginx path, and the two /api/* calls
+# exercise nginx's reverse proxy, the backend, and RDS -- the same dependency chain a real voter's
+# request traverses. Deliberately does NOT include /api/vote: a canary casting real ballots would
+# pollute the poll's own results, the one thing this whole site exists to measure honestly.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canary
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: canary
+    {{- include "voteball.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: canary }
+  template:
+    metadata:
+      labels: { app: canary }
+      annotations:
+        # The amazon-cloudwatch-observability addon's mutating webhook injects an OTel agent per
+        # language into every pod by default. This is a plain shell/curl loop -- opt out of all four.
+        instrumentation.opentelemetry.io/inject-java: "false"
+        instrumentation.opentelemetry.io/inject-python: "false"
+        instrumentation.opentelemetry.io/inject-nodejs: "false"
+        instrumentation.opentelemetry.io/inject-dotnet: "false"
+    spec:
+      # No ServiceAccount role needed -- the canary talks to the app over the same public HTTPS path
+      # a browser uses, not to any AWS API.
+      containers:
+        - name: canary
+          image: {{ .Values.canary.image | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: CANARY_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: INTERVAL_SECONDS
+              value: {{ .Values.canary.intervalSeconds | quote }}
+            # curl looks up the invoking uid in /etc/passwd; an arbitrary uid with no entry there is
+            # otherwise harmless for a plain GET, but HOME keeps it (and any /tmp use) pointed at a
+            # writable path under readOnlyRootFilesystem, same as backup-cronjob.yaml.
+            - name: HOME
+              value: /tmp
+          command: ["sh", "-c"]
+          args:
+            - |
+              while true; do
+                curl -fsS -o /dev/null -w '%{http_code} GET /\n' "$CANARY_URL/" || true
+                curl -fsS -o /dev/null -w '%{http_code} GET /api/options\n' "$CANARY_URL/api/options" || true
+                curl -fsS -o /dev/null -w '%{http_code} GET /api/results?by=all\n' "$CANARY_URL/api/results?by=all" || true
+                sleep "$INTERVAL_SECONDS"
+              done
+          resources:
+            requests: { cpu: {{ .Values.canary.resources.requests.cpu }}, memory: {{ .Values.canary.resources.requests.memory }} }
+            limits: { cpu: {{ .Values.canary.resources.limits.cpu }}, memory: {{ .Values.canary.resources.limits.memory }} }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 100 # curlimages/curl's built-in unprivileged "curl_user"
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - { name: tmp, emptyDir: {} }
+{{- end }}

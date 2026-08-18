@@ -95,3 +95,21 @@ worker:
     limits:
       cpu: 100m
       memory: 128Mi
+
+# Synthetic canary (charts/voteball/templates/canary-deployment.yaml). Continuously exercises the
+# real public journey (ALB -> nginx -> backend -> RDS) so voteball:journey_requests:rate5m is never
+# zero -- this site has almost no organic traffic, so "zero requests" is its normal state, and every
+# SLI/alert built on a bad/total RATIO is blind whenever both go to zero together. That blind spot is
+# what let the 2026-08-18 RDS-egress drill render as a perfect green dashboard.
+#
+# Setting this false removes the only thing guaranteeing traffic -- VoteballJourneyTrafficStopped in
+# prometheusrule.yaml is gated on this same flag for exactly that reason; disable them together.
+canary:
+  enabled: true
+  # Pinned by tag like every other image in this chart -- validate-repo.sh only checks
+  # services/*/Dockerfile, but the same "no floating tag" rule applies here by convention.
+  image: "curlimages/curl:8.7.1"
+  intervalSeconds: 30
+  resources:
+    requests: { cpu: 5m, memory: 16Mi }
+    limits: { cpu: 20m, memory: 32Mi }

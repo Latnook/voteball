@@ -104,7 +104,13 @@ spec:
       # `migrate` is the pre-upgrade schema Job. It needs the same RDS egress as the backend but must
       # NOT carry `app: backend`, which the backend Service selects -- that would route live HTTP to
       # a pod running a one-shot script.
-      - { key: app, operator: In, values: [backend, worker, backup, frontend, migrate] }
+      # `canary` (charts/voteball/templates/canary-deployment.yaml) needs no RDS access directly -- it
+      # only needs the 0.0.0.0/0:443 rule below, to reach the PUBLIC ALB the same way a browser does.
+      # It is still listed here, not given its own NetworkPolicy, for the same reason backup was: a
+      # pod outside this list keeps only allow-dns-egress, so DNS resolves and every TCP connection is
+      # silently dropped -- the backup CronJob shipped broken this exact way for 12 days (2026-07-19 to
+      # 2026-07-31) before anyone noticed its label didn't match this list.
+      - { key: app, operator: In, values: [backend, worker, backup, frontend, migrate, canary] }
   policyTypes: [Egress]
   egress:
     - to:
@@ -115,4 +121,5 @@ spec:
     - to:
         - ipBlock: { cidr: 0.0.0.0/0 }
       ports:
-        - { protocol: TCP, port: 443 }       # SNS / S3 / Secrets Manager via NAT
+        - { protocol: TCP, port: 443 }       # SNS / S3 / Secrets Manager via NAT, and the canary's
+          #                                     HTTPS calls to the public ALB

@@ -16,6 +16,7 @@ first, how to fix it, and when to stop diagnosing and roll back instead.
 | [VoteballRollupsStale](VoteballRollupsStale.md) | Worker hasn't recomputed results in 10m; site shows stale numbers | warning |
 | [VoteballAvailabilitySLOBreach](VoteballAvailabilitySLOBreach.md) | Availability below 99% over a 6h window | warning |
 | [VoteballSLIAbsent](VoteballSLIAbsent.md) | The availability SLI itself has no data for 15m — monitoring is blind, not healthy | critical |
+| [VoteballJourneyTrafficStopped](VoteballJourneyTrafficStopped.md) | The canary's journey requests dropped to 0 for 10m — meaningful only because the canary guarantees traffic | critical |
 | [VoteballPodCrashLooping](VoteballPodCrashLooping.md) | A pod is in `CrashLoopBackOff` for 5m | critical |
 | [VoteballNoBackendAvailable](VoteballNoBackendAvailable.md) | Zero backend replicas available for 2m — API fully down | critical |
 | [VoteballMigrationJobFailed](VoteballMigrationJobFailed.md) | Schema migration Job failed; release did not deploy | critical |

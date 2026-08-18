@@ -145,6 +145,26 @@ spec:
             description: "voteball:journey_requests:rate5m returned nothing for 15 minutes. Availability may still read 100%; do not trust it. Check that voteball_http_requests_total still carries an `endpoint` label with real route values rather than a target label."
             runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballSLIAbsent.md"
 
+        {{- if .Values.canary.enabled }}
+        - alert: VoteballJourneyTrafficStopped
+          # Meaningful ONLY because the canary Deployment (charts/voteball/templates/
+          # canary-deployment.yaml, gated on the SAME .Values.canary.enabled) hits the real public
+          # journey every {{ .Values.canary.intervalSeconds }}s, so journey_requests never legitimately
+          # idles at zero. Without the canary this would fire constantly and mean nothing: this site
+          # has almost no organic traffic, so zero requests is its NORMAL state -- that is precisely
+          # why the 2026-08-18 drill's total outage rendered as a green dashboard, and an alert on
+          # "rate == 0" would have been useless before the canary existed. If canary.enabled is ever
+          # set back to false, this `if` drops the alert with it; don't decouple the two.
+          expr: voteball:journey_requests:rate5m == 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The canary has stopped generating any journey traffic"
+            description: "voteball:journey_requests:rate5m has been 0 for 10 minutes despite the canary Deployment running every {{ .Values.canary.intervalSeconds }}s. Either the canary pod itself is down/hung, or every request from it to the public site is failing before nginx/the backend can record it (DNS, TLS, ALB, or a network-policy egress break like the 2026-08-18 drill)."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballJourneyTrafficStopped.md"
+        {{- end }}
+
     - name: voteball.availability
       rules:
         - alert: VoteballPodCrashLooping
