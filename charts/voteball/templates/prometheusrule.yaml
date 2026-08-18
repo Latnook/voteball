@@ -39,12 +39,17 @@ spec:
               endpoint=~"/api/(options|vote|results.*)"
             }[5m]))
 
+        # `or vector(0)` here is deliberately narrower than the `or vector(1)` fallback below: zero
+        # errors is a real, measured value (the label combination was scraped and nothing 5xx'd),
+        # whereas an absent vector means it was never scraped at all. Defaulting to 0 lets
+        # availability compute arithmetically whenever traffic exists, and reserves the outer
+        # `or vector(1)` fallback for the genuinely-no-traffic case.
         - record: voteball:journey_errors:rate5m
           expr: |
             sum(rate(voteball_http_requests_total{
               namespace="{{ .Release.Namespace }}",
               endpoint=~"/api/(options|vote|results.*)", status=~"5.."
-            }[5m]))
+            }[5m])) or vector(0)
 
         # Availability as a ratio in 0..1. `clamp_min` alone already keeps a flat-zero traffic period
         # from dividing to NaN -- once a label combination has been scraped at least once, its counter
@@ -121,6 +126,24 @@ spec:
             summary: "Availability below the 99% SLO over the last 6 hours"
             description: "Sustained failures rather than a spike. Check whether an alert above already fired and was not acted on."
             runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballAvailabilitySLOBreach.md"
+
+        - alert: VoteballSLIAbsent
+          # The SLI itself has gone missing. This is NOT "the site is down" -- it is "we can no longer
+          # tell". voteball.latnook.com is a public site with steady traffic, so journey_requests
+          # having no value at all means the instrumentation, the scrape, or the label set broke.
+          #
+          # It exists because availability CANNOT self-report this failure: with the numerator and
+          # denominator both empty, `or vector(1)` returns a confident 1 -- indistinguishable from a
+          # perfect score. That is not hypothetical; it shipped on 2026-08-18 and a total outage would
+          # have rendered as green 100%.
+          expr: absent(voteball:journey_requests:rate5m)
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The availability SLI has no data -- monitoring is blind, not healthy"
+            description: "voteball:journey_requests:rate5m returned nothing for 15 minutes. Availability may still read 100%; do not trust it. Check that voteball_http_requests_total still carries an `endpoint` label with real route values rather than a target label."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballSLIAbsent.md"
 
     - name: voteball.availability
       rules:
