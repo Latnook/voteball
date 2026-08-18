@@ -118,6 +118,16 @@ canary:
   # services/*/Dockerfile, but the same "no floating tag" rule applies here by convention.
   image: "curlimages/curl:8.7.1"
   intervalSeconds: 30
+  # RAISED AGAIN 20m -> 150m -> 500m the same day, after measuring: at 150m the container was STILL
+  # throttled 72.8% of periods while using 0.0055 cores on average and peaking at 0.0091. That is not
+  # a contradiction, it is how CFS works -- a limit is a quota PER 100ms PERIOD, and 150m grants 15ms
+  # of it. One curl (DNS + TLS handshake + HTTP) bursts well past 15ms inside a single period, so
+  # every burst is throttled even though average usage is negligible. The cost was observable:
+  # journey_requests:rate5m sat at 0.0667/s against an intended 0.1/s -- throttling was suppressing a
+  # third of the traffic the ratio-based SLIs depend on.
+  # A limit is KEPT rather than removed (the usual advice for bursty workloads) because the course
+  # brief requires requests AND limits on every container. 500m reserves nothing -- limits cap, they
+  # do not reserve -- and the 15m REQUEST is what actually affects scheduling.
   # CPU limit raised 7.5x (20m -> 150m) 2026-08-18: CPUThrottlingHigh caught this container at 97.6%
   # throttled periods (1289/1321 CFS periods over 10m) -- confirmed live via
   # container_cpu_cfs_throttled_periods_total/container_cpu_cfs_periods_total in Prometheus. The old
@@ -132,4 +142,4 @@ canary:
   # request, that was starving it.
   resources:
     requests: { cpu: 15m, memory: 16Mi }
-    limits: { cpu: 150m, memory: 32Mi }
+    limits: { cpu: 500m, memory: 32Mi }
