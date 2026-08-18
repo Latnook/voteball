@@ -56,6 +56,7 @@ GIT_GROUP=(
 declare -A SKIP=(
   [test-jenkins-chart.sh]="needs helm (chart template rendering)"
   [test-register-github-ci.sh]="needs the gh CLI"
+  [test-validate-observability.sh]="needs helm (chart template rendering); confirmed absent from both python:3.12-slim and jenkins/inbound-agent (jnlp) on 2026-08-18"
   [test-webhook-wait.sh]="needs curl, absent from the agent's slim images"
 )
 
