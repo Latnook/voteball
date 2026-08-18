@@ -10,6 +10,16 @@
 #
 # `port` names a SERVICE PORT NAME, never a number. The Services in this chart name their ports for
 # exactly this reason.
+#
+# `honorLabels: true` on the backend endpoint ONLY. Without it, prometheus-operator's TARGET label
+# for this endpoint (`endpoint="http"`, taken from `port: http` above) wins over the application's
+# own `endpoint` label (the route, e.g. `/api/vote`) -- the app's value is renamed to
+# `exported_endpoint` instead of being dropped, and every series collapses onto one
+# `endpoint="http"` label. This silently emptied every rule in prometheusrule.yaml that filters on
+# `endpoint=~"/api/..."` (the journey SLIs and the alerts built on them) until it was caught here.
+# `honorLabels` is deliberately NOT added to worker or frontend: the worker emits no `endpoint` label
+# at all, and the nginx exporter's own label is `endpoint` in name only (it means "prometheus scrape
+# endpoint config", not an HTTP route) -- honoring it would just relabel the wrong thing.
 {{- if .Values.serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
