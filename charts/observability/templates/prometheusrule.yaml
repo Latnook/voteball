@@ -24,11 +24,16 @@ spec:
     - name: platform.kubernetes
       rules:
         - alert: NodeNotReadyOrUnderPressure
-          # Replaces KubeNodeNotReady and KubeNodeUnreachable. The node group is 100% Spot, so a node
+          # Replaces KubeNodeNotReady, KubeNodeUnreachable AND KubeNodePressure (all three disabled in
+          # terraform/addon-monitoring.tf) -- the condition set below has to match KubeNodePressure's
+          # (MemoryPressure|DiskPressure|PIDPressure) exactly, or disabling that default drops
+          # PIDPressure coverage silently: Alertmanager's inhibit rules key on `equal: [namespace,
+          # alertname]`, so a differently-named rule never inhibits this one and losing the condition
+          # here isn't masked by anything, it's just gone. The node group is 100% Spot, so a node
           # going away is routine -- 10m of NotReady is not.
           expr: |
             kube_node_status_condition{condition="Ready", status="true"} == 0
-            or kube_node_status_condition{condition=~"MemoryPressure|DiskPressure", status="true"} == 1
+            or kube_node_status_condition{condition=~"MemoryPressure|DiskPressure|PIDPressure", status="true"} == 1
           for: 10m
           labels:
             severity: critical
@@ -41,10 +46,22 @@ spec:
           # Replaces KubeDeploymentReplicasMismatch. Cluster-wide on purpose -- this moved here from
           # charts/voteball, where it covered only devops-app and could not have replaced the default
           # without dropping ci, argocd and observability.
+          #
+          # The default it replaces is
+          # `(spec_replicas > status_replicas_available) and (changes(status_replicas_updated[10m]) == 0)`
+          # for 15m -- both clauses matter, and a bare `ready < spec` drops them. On this two-node
+          # 100%-Spot group an HPA scale-up where Cluster Autoscaler takes 10+ minutes to add capacity
+          # is a HEALTHY, still-progressing rollout, and `ready` (readiness-probe-gated) lags
+          # `available` (ready AND stable past minReadySeconds) further still -- so the bare form pages
+          # on ordinary autoscaling. The `changes(...updated[10m]) == 0` clause is what actually
+          # encodes "stalled": the updated-replica count stops moving only when the rollout has
+          # genuinely stopped progressing, not merely when it hasn't finished yet. The runbook here
+          # tells the reader to look for a stalled rollout, so the rule now means that.
           expr: |
-            kube_deployment_status_replicas_ready
-              < kube_deployment_spec_replicas
-          for: 10m
+            (kube_deployment_status_replicas_available
+              < kube_deployment_spec_replicas)
+            and (changes(kube_deployment_status_replicas_updated[10m]) == 0)
+          for: 15m
           labels:
             severity: warning
           annotations:
