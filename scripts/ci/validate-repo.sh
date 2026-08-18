@@ -60,10 +60,17 @@ fi
 # would let an uncommitted local chart silently overwrite what GitOps declares. Omitting the field is.
 #
 # An empty MAP (`podSelector: {}`) is deliberately NOT matched: it is meaningful and is preserved.
+#
+# EVERY chart's templates directory, not just charts/voteball's -- ArgoCD applies charts/observability
+# server-side identically (see charts/observability/templates/networkpolicy.yaml), so it has the exact
+# same `- to: []` failure mode. This still scans TEMPLATE FILES only (charts/*/templates/**), never
+# rendered output or the dashboards' JSON under charts/observability/dashboards/ -- that JSON's
+# `"overrides": []` is an opaque ConfigMap string value the Kubernetes API server never parses as a
+# list, so matching it would be a false positive, not a real instance of this bug.
 while IFS= read -r hit; do
   note "${hit%%:*} has an empty list literal (${hit#*:}) -- omit the field instead; see the comment in $0"
 done < <(grep -rnE '^[[:space:]]*(-[[:space:]]+)?[A-Za-z_][A-Za-z0-9_.-]*:[[:space:]]*\[[[:space:]]*\][[:space:]]*$' \
-           charts/voteball/templates 2>/dev/null || true)
+           charts/*/templates 2>/dev/null || true)
 
 [ "$status" -eq 0 ] && echo "validate-repo: all checks passed"
 exit "$status"
