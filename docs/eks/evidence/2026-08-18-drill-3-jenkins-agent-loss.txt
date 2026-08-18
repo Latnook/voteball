@@ -1,0 +1,59 @@
+=== DRILL 3: Jenkins agent loss — 15:17:11Z ===
+Kill an agent pod mid-build. The website must be untouched throughout.
+
+  agent Running: voteball-build-xjqv5
+  before: jenkins_queue_size_value         0.0
+  before: jenkins_executor_count_value     0.0
+  before: jenkins_node_online_value        0.0
+  --- killing the agent ---
+pod "voteball-build-xjqv5" deleted from ci namespace
+  killed at 15:17:18Z
+  --- site during agent loss ---
+
+  --- after the kill ---
+    jenkins_queue_size_value           0.0
+    jenkins_queue_stuck_value          0.0
+    jenkins_executor_count_value       0.0
+    jenkins_node_online_value          0.0
+  --- which jenkins metrics are actually NON-ZERO right now? ---
+    default_jenkins_builds_available_builds_count          17.0
+    default_jenkins_builds_available_builds_count          20.0
+    default_jenkins_builds_discard_active                  1.0
+    default_jenkins_builds_discard_active                  1.0
+    default_jenkins_builds_duration_milliseconds_summary   17.0
+    default_jenkins_builds_duration_milliseconds_summary   20.0
+    default_jenkins_builds_duration_milliseconds_summary   1787066161.39
+    default_jenkins_builds_duration_milliseconds_summary   1787066161.39
+    default_jenkins_builds_duration_milliseconds_summary   2402110.0
+    default_jenkins_builds_duration_milliseconds_summary   4058367.0
+    default_jenkins_builds_failed_build_count_created      1787036281.38
+    default_jenkins_builds_failed_build_count_total        1.0
+    default_jenkins_builds_health_score                    100.0
+    default_jenkins_builds_health_score                    100.0
+    total non-zero jenkins series: 257
+  build #70 -> ABORTED
+  --- did a NEW agent get provisioned (Jenkins self-heals)? ---
+     jenkins-0 2/2 Running
+  --- site unaffected throughout ---
+    site=200
+
+RESULT: PASS, with one honest gap.
+  - Agent pod killed mid-build -> build #70 ABORTED. Jenkins cleaned up; no orphan agent.
+  - Website served 200 throughout (5 polls during the kill, plus after). CI failure never touches
+    delivery of the running site -- which is the property this drill exists to show.
+
+FINDING (metric families are NOT interchangeable):
+  The `jenkins_*_value` family (bundled Metrics plugin) reads 0.0 for queue_size, queue_stuck,
+  executor_count and node_online -- even with a build running. The `default_jenkins_builds_*` family
+  (the prometheus plugin's own collector) carries 257 non-zero series with real data: build counts,
+  durations, health scores, failed_build_count_total.
+
+  Both readings are arguably CORRECT: with the Kubernetes cloud provisioning agents on demand, an
+  executing build is not queued, so queue_size 0 is truthful, and no agent is connected between
+  builds so node_online 0 is truthful too.
+
+  BUT: JenkinsQueueStuck fires on `jenkins_queue_size_value > 0` for 15m, and this drill did NOT
+  prove that metric can ever become non-zero on this cluster. Killing an agent aborts the build
+  rather than queueing it. To fire that alert you must make agent PROVISIONING fail (so items pile
+  up unscheduled), not kill an agent that already exists. That is a different drill and was not run.
+  Status: the alert is semantically right and UNPROVEN, not disproven. Recorded rather than claimed.

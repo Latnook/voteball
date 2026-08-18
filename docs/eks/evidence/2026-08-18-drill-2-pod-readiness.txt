@@ -1,0 +1,26 @@
+=== DRILL 2: pod readiness failure — 15:15:05Z ===
+Delete one backend pod. 2 replicas + a PDB, so the site must stay up.
+
+--- before ---
+   backend-5f595f5d4d-24msk 1/1 Running age=5h23m
+   backend-5f595f5d4d-ffg9r 1/1 Running age=5h23m
+  pdb: backend min=1 allowed=1
+  pdb: frontend min=1 allowed=1
+  victim: backend-5f595f5d4d-24msk
+--- deleting, while polling the site every 0.5s ---
+pod "backend-5f595f5d4d-24msk" deleted from devops-app namespace
+  deleted at 15:15:07Z
+  poll complete
+--- after ---
+   backend-5f595f5d4d-ffg9r 1/1 Running age=5h24m
+   backend-5f595f5d4d-qsfq7 1/1 Running age=54s
+--- what Kubernetes metrics saw ---
+  sum(kube_deployment_status_replicas_available{namespace="devops-app",d   2.0
+  sum(kube_deployment_spec_replicas{namespace="devops-app",deployment="b   2.0
+  voteball:availability:ratio5m                                            1.0
+--- alerts (DeploymentReplicasMismatch needs 15m, so a fast reschedule must NOT fire it) ---
+   [('VoteballAvailabilitySLOBreach', 'firing'), ('Watchdog', 'firing'), ('InfoInhibitor', 'firing'), ('CPUThrottlingHigh', 'firing')]
+RESULT: PASS. Pod replaced in 54s. Zero non-200 responses across 60 polls at 0.5s intervals.
+available=2/2, availability 1.0. DeploymentReplicasMismatch correctly did NOT fire -- it requires
+15m AND no rollout progress, so a fast reschedule is absorbed silently rather than paging.
+(VoteballAvailabilitySLOBreach was still firing from drill 1's 6h window -- unrelated.)
