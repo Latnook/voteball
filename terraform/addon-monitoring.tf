@@ -61,6 +61,13 @@ resource "helm_release" "kube_prometheus_stack" {
     { name = "defaultRules.disabled.KubeNodeUnreachable", value = "true" },
     { name = "defaultRules.disabled.KubeDeploymentReplicasMismatch", value = "true" },
     { name = "defaultRules.disabled.TargetDown", value = "true" },
+    # KubeNodePressure covers MemoryPressure|DiskPressure|PIDPressure; the replacement
+    # NodeNotReadyOrUnderPressure in charts/observability originally covered only the first two, so
+    # this default stayed enabled and the pressure conditions it shares with the replacement fired
+    # twice -- Alertmanager's inhibit rules all key on `equal: [namespace, alertname]`, and these two
+    # rules never share an alertname, so neither ever inhibited the other. Disabling this default only
+    # holds together with NodeNotReadyOrUnderPressure also picking up PIDPressure (see that rule).
+    { name = "defaultRules.disabled.KubeNodePressure", value = "true" },
   ]
   # NOTE: Grafana's admin password is deliberately NOT set here -- hardcoding it would put a credential
   # in git and terraform.tfstate. The chart auto-generates a random password stored only in the
@@ -157,7 +164,12 @@ resource "helm_release" "kube_prometheus_stack" {
                 topic_arn = aws_sns_topic.notifications.arn
                 sigv4     = { region = var.aws_region }
                 subject   = "[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}"
-                message   = "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n\n{{ end }}"
+                # Fourteen of the alert rules in charts/voteball and charts/observability carry a
+                # runbook_url annotation, and docs/runbooks/README.md states as fact that it "arrives
+                # in the email that wakes someone up" -- but this template only ever rendered
+                # .Annotations.summary/.description, so the link never actually reached SNS. Appending
+                # it here, still inside the existing `range .Alerts` loop, is what makes that true.
+                message = "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ if .Annotations.runbook_url }}Runbook: {{ .Annotations.runbook_url }}\n{{ end }}\n{{ end }}"
               }
             ]
           }
