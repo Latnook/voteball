@@ -23,3 +23,13 @@ network:
   albSubnetCidrs:
     - "10.0.0.0/20"
     - "10.0.16.0/20"
+
+# The Jenkins queue-length metric name. The prometheus plugin prefixes its metrics with a configurable
+# namespace, and the Metrics-plugin registry exposes a second, differently-scoped family -- verified
+# live against this cluster on 2026-08-18 (see Task 1 Step 8): default_jenkins_executors_queue_length
+# exists in the namespaced family, jenkins_queue_size_value in the Metrics-plugin family, and the
+# plan's original guess (default_jenkins_queue_size_value) exists under neither. This uses
+# jenkins_queue_size_value -- it states the alert's intent directly, and its siblings
+# (jenkins_queue_{blocked,buildable,pending,stuck}_value) give a natural escalation path later.
+jenkins:
+  queueMetric: "jenkins_queue_size_value"

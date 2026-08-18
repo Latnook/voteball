@@ -53,6 +53,14 @@ resource "helm_release" "kube_prometheus_stack" {
       name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
       value = "10Gi"
     },
+    # One rule per condition. Each of these defaults is replaced by a rule in
+    # charts/observability/templates/prometheusrule.yaml that carries a runbook_url and is tuned to
+    # this cluster. Leaving both on means two SNS emails for one problem, which is how an alert
+    # channel becomes background noise.
+    { name = "defaultRules.disabled.KubeNodeNotReady", value = "true" },
+    { name = "defaultRules.disabled.KubeNodeUnreachable", value = "true" },
+    { name = "defaultRules.disabled.KubeDeploymentReplicasMismatch", value = "true" },
+    { name = "defaultRules.disabled.TargetDown", value = "true" },
   ]
   # NOTE: Grafana's admin password is deliberately NOT set here -- hardcoding it would put a credential
   # in git and terraform.tfstate. The chart auto-generates a random password stored only in the

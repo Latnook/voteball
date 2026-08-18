@@ -1,0 +1,89 @@
+# Platform alerts: Kubernetes, Jenkins, and the monitoring system itself. Application alerts live in
+# charts/voteball, next to the application they describe.
+#
+# EVERY RULE HERE REPLACES A kube-prometheus-stack DEFAULT, which terraform/addon-monitoring.tf
+# switches off by name. One rule per condition: two emails about one problem trains the reader to
+# stop opening them, which costs more than the second rule adds.
+#
+# These are deliberately CLUSTER-WIDE, matching the scope of the defaults they replace. A rule scoped
+# to one namespace cannot replace a cluster-wide default without silently dropping coverage of every
+# other namespace.
+{{- if .Values.alerts.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: platform-alerts
+  namespace: {{ .Release.Namespace }}
+  labels:
+    # REQUIRED. Without it Prometheus never evaluates this object, while `kubectl get prometheusrules`
+    # still lists it looking perfectly correct.
+    release: kube-prometheus-stack
+    {{- include "observability.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: platform.kubernetes
+      rules:
+        - alert: NodeNotReadyOrUnderPressure
+          # Replaces KubeNodeNotReady and KubeNodeUnreachable. The node group is 100% Spot, so a node
+          # going away is routine -- 10m of NotReady is not.
+          expr: |
+            kube_node_status_condition{condition="Ready", status="true"} == 0
+            or kube_node_status_condition{condition=~"MemoryPressure|DiskPressure", status="true"} == 1
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ `{{ $labels.node }}` }} is not Ready or is under resource pressure"
+            description: "On a 100% Spot node group a brief NotReady is normal; ten minutes is not. Check whether the Cluster Autoscaler has replaced it."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/NodeNotReadyOrUnderPressure.md"
+
+        - alert: DeploymentReplicasMismatch
+          # Replaces KubeDeploymentReplicasMismatch. Cluster-wide on purpose -- this moved here from
+          # charts/voteball, where it covered only devops-app and could not have replaced the default
+          # without dropping ci, argocd and observability.
+          expr: |
+            kube_deployment_status_replicas_ready
+              < kube_deployment_spec_replicas
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Deployment {{ `{{ $labels.namespace }}` }}/{{ `{{ $labels.deployment }}` }} is short of replicas"
+            description: "Ready replicas below desired for 10 minutes. A rollout that never completed looks exactly like this."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/DeploymentReplicasMismatch.md"
+
+    - name: platform.monitoring
+      rules:
+        - alert: PrometheusTargetDown
+          # Replaces the default TargetDown. Cluster-wide, matching it: a scrape target being down is
+          # how you learn the metrics you are about to trust are missing.
+          expr: up == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Scrape target {{ `{{ $labels.job }}` }} in {{ `{{ $labels.namespace }}` }} is down"
+            description: "Prometheus cannot reach this target. Any dashboard or alert built on its metrics is now blind rather than green."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/PrometheusTargetDown.md"
+
+    - name: platform.jenkins
+      rules:
+        - alert: JenkinsQueueStuck
+          # Verified live against this cluster's /api/v1/label/__name__/values on 2026-08-18: the
+          # plan's guessed default (default_jenkins_queue_size_value) does not exist under either
+          # metric family. jenkins_queue_size_value (bundled Metrics-plugin registry) is used here
+          # because it states the alert's intent directly -- builds queued with nothing draining
+          # them -- and its siblings (jenkins_queue_blocked_value, jenkins_queue_buildable_value,
+          # jenkins_queue_pending_value, jenkins_queue_stuck_value) give a natural escalation path
+          # later. jenkins_queue_stuck_value is Jenkins' own narrower notion of "stuck" -- a task
+          # that cannot be scheduled at all -- and is worth switching to if this 15-minute window
+          # proves noisy, but it would miss a queue that is merely draining too slowly.
+          expr: {{ .Values.jenkins.queueMetric }} > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Jenkins build queue has been non-empty for 15 minutes"
+            description: "Builds are queued with nothing draining them. Usually no agent can be scheduled; the website is unaffected."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/JenkinsQueueStuck.md"
+{{- end }}

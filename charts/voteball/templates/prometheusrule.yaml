@@ -127,19 +127,6 @@ spec:
             description: "Container {{ `{{ $labels.container }}` }} in {{ `{{ $labels.pod }}` }} has been in CrashLoopBackOff for 5 minutes."
             runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/VoteballPodCrashLooping.md"
 
-        - alert: VoteballDeploymentDegraded
-          # Fewer ready replicas than the spec asks for. Catches the failure the site hides well:
-          # with an HPA and multiple replicas, one dead backend still serves traffic from the others.
-          expr: |
-            kube_deployment_status_replicas_ready{namespace="{{ .Release.Namespace }}"}
-              < kube_deployment_spec_replicas{namespace="{{ .Release.Namespace }}"}
-          for: 10m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Deployment {{ `{{ $labels.deployment }}` }} is short of replicas"
-            description: "Ready replicas have been below desired for 10 minutes. A rollout that never completed looks exactly like this."
-
         - alert: VoteballNoBackendAvailable
           expr: |
             kube_deployment_status_replicas_available{
