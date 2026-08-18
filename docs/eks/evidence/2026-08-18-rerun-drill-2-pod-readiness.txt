@@ -1,0 +1,33 @@
+Drill 2 RE-RUN — pod readiness failure
+Captured 2026-08-18T17:29:57Z. Delete one backend pod; 2 replicas + a PDB, so the site must stay up.
+
+--- before ---
+   backend-77b84f7686-npzhq 1/1 Running age=61m
+   backend-77b84f7686-nxbh6 1/1 Running age=60m
+   pdb: backend min=1 allowed=1
+   pdb: frontend min=1 allowed=1
+   victim: backend-77b84f7686-npzhq
+--- deleting, while polling the site every 0.5s ---
+pod "backend-77b84f7686-npzhq" deleted from devops-app namespace
+  deleted at 17:30:03Z
+
+--- after ---
+   backend-77b84f7686-5f522 1/1 Running age=21s
+   backend-77b84f7686-nxbh6 1/1 Running age=61m
+
+--- site during the replacement (polled every 0.5s) ---
+   samples:    37
+   non-200s:   0
+   codes seen: 200 
+
+--- final poll totals (poller ran to completion) ---
+   samples:    132
+   non-200s:   0
+   window:     17:29:58Z -> 17:31:23Z
+
+RESULT: PASS. Deleted 17:30:03Z; replacement pod Running ~21s later (first run: 54s).
+Zero non-200 responses. The PDB (min=1, allowed=1) is what makes this safe: it permits exactly
+one voluntary disruption, so the second replica must stay serving. With a single replica the
+PDB would make draining IMPOSSIBLE rather than safe -- you cannot evict the last pod without
+violating it, so it blocks until the node is force-killed. That is the reason for min 2 nodes
+and 2 replicas, not redundancy for its own sake.

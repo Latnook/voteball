@@ -1,0 +1,219 @@
+Drill 1 RE-RUN — controlled 5xx on the live site
+Captured 2026-08-18T17:07:01Z. Design: docs/design/2026-08-17-observability-design.md section 13.
+A SECOND run of the drill first captured in 2026-08-18-drill-1-controlled-5xx.txt, re-executed
+after the 68 commits of observability work that landed 2026-08-17/18.
+
+Mechanism (from the design, and it matters): withdraw the RDS egress rule only. Do NOT point
+DB_HOST at a dead host -- gunicorn's on_starting hook runs init_db() before workers fork, so a
+new pod would never boot, the rollout would stall, OLD HEALTHY PODS WOULD KEEP SERVING, and the
+alert would be VoteballPodCrashLooping -- a different scenario that proves nothing here.
+
+--- baseline ---
+   backend-77b84f7686-npzhq 1/1 Running restarts=0
+   backend-77b84f7686-nxbh6 1/1 Running restarts=0
+   canary-67c7ccfbc9-2zghd 1/1 Running restarts=0
+   frontend-675776957f-5c7g6 2/2 Running restarts=0
+   frontend-675776957f-s65fr 2/2 Running restarts=0
+   worker-86798c6dcb-pgbc6 1/1 Running restarts=0
+  /                      200 in 0.134946s
+  /api/options           200 in 0.164027s
+  /api/results?by=all    200 in 0.093280s
+
+--- PRE-BREAK NOTE: the baseline was NOT clean, and that is itself a finding ---
+VoteballAvailabilitySLOBreach was ALREADY firing before this drill began, on a site serving
+200s in 0.12s. It is not a false positive: the rule is
+    avg_over_time(voteball:availability:ratio5m[6h]) < 0.99   for 15m
+and the 6h average read 0.4496. Tracing the numerator and denominator showed why --
+journey_errors was EXACTLY EQUAL to journey_requests from 10:16Z to 14:16Z (both ~0.0407/s,
+which is the canary's 30s interval, i.e. the canary was the only traffic): 100% of requests
+failed for over four hours. That window ends at 14:36Z; commit 8f5ed8b
+'evidence(drill 1): a total outage that monitoring reported as perfect' landed 14:43Z. So the
+afternoon's drill-1 investigation and the connect_timeout=5 repair are what the SLO is still
+reflecting six hours later. A 6h error budget was chosen deliberately over the stated 7d window
+because 7d 'moves too slowly to act on' -- the cost of that choice is visible right here.
+CONSEQUENCE FOR THIS RUN: AvailabilitySLOBreach cannot serve as a signal. VoteballHighErrorRate
+is the clean one, and it was NOT firing at the start.
+
+--- pause + break ---
+  auto-sync paused, then egress[0] patched to except the two DB subnets
+  syncPolicy after pause: no 'automated' key
+  egress[0] after break:  {"cidr":"10.0.0.0/16","except":["10.0.64.0/24","10.0.65.0/24"]}
+  BREAK APPLIED 17:21:10Z
+
+--- visitor view across the transition (public site, polled every 3s) ---
+  17:20:57Z /api/options           200 0.130188s
+  17:20:57Z /api/results?by=all    200 0.130008s
+  17:21:01Z /api/options           200 0.135000s
+  17:21:01Z /api/results?by=all    200 0.078432s
+  17:21:04Z /api/options           200 0.136826s
+  17:21:04Z /api/results?by=all    200 0.085486s
+  17:21:07Z /api/options           200 0.362890s
+  17:21:07Z /api/results?by=all    200 0.082265s
+  17:21:11Z /api/options           200 0.427309s
+  17:21:11Z /api/results?by=all    500 5.060609s
+  17:21:19Z /api/options           500 5.126701s
+  17:21:19Z /api/results?by=all    500 5.068773s
+  17:21:32Z /api/options           500 5.064160s
+  17:21:32Z /api/results?by=all    500 5.067685s
+
+  NOTE: the break took effect in UNDER ONE SECOND (200 at 17:21:07Z -> 500 at 17:21:11Z).
+  The design doc warns of a CNI fail-open window of up to ~30s and says not to conclude from the
+  first few seconds that the drill failed. That window did NOT appear on this run. Both
+  behaviours are legitimate; the warning is about not misreading the slow case.
+
+  The 5.0-5.1s response time is connect_timeout=5 (commit e1be770) doing its job. Before that
+  fix, psycopg2.connect() had no timeout, the connect HUNG, and nothing was ever counted --
+  which is how the first run of this drill rendered a total outage as availability = 1.0.
+
+--- pods DURING the outage: the structural point of this whole drill ---
+  backend-77b84f7686-npzhq           1/1    Running   restarts=0
+  backend-77b84f7686-nxbh6           1/1    Running   restarts=0
+  canary-67c7ccfbc9-2zghd            1/1    Running   restarts=0
+  frontend-675776957f-5c7g6          2/2    Running   restarts=0
+  frontend-675776957f-s65fr          2/2    Running   restarts=0
+  worker-86798c6dcb-pgbc6            1/1    Running   restarts=0
+  /health (in-cluster, what the probes see):
+    200 {"status":"ok"}
+
+
+  Every pod Ready, zero restarts, /health returning 200 -- while 100% of API calls 500.
+  /health is a STATIC response and the liveness probe is a bare tcpSocket check, so neither
+  touches RDS. Kubernetes has no way to see this. Application metrics are the only thing that
+  can, and that is the entire justification for instrumenting the app.
+
+--- metric timeline, and a NEW finding this run surfaced ---
+  17:22:04Z avail=1.0000 db_errors=6.0 | VoteballAvailabilitySLOBreach=firing
+  17:22:19Z avail=1.0000 db_errors=11.0 | VoteballAvailabilitySLOBreach=firing
+  17:22:34Z avail=0.9363 db_errors=11.0 | VoteballAvailabilitySLOBreach=firing
+  17:22:50Z avail=0.9363 db_errors=17.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:23:05Z avail=0.8876 db_errors=17.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:23:20Z avail=0.8876 db_errors=23.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:23:35Z avail=0.8304 db_errors=23.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:23:50Z avail=0.8304 db_errors=29.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+
+  FINDING: voteball_db_errors_total is a LEADING indicator; the ratio SLI LAGS it.
+  At 17:22:04Z -- 54 seconds after the break -- db_errors was already 6 and climbing, while
+  voteball:availability:ratio5m still read a confident 1.0000. Availability did not move until
+  17:22:34Z and only reached 0.8876 by 17:23:05Z. The reason is structural, not a bug: the
+  availability SLI is built on rate()/rate() over a 5-MINUTE window, so a step change has to
+  dilute five minutes of good data before it shows. A raw counter has no such window.
+
+  Operationally: db_errors_total is what to look at FIRST when triaging, and the ratio is what
+  to ALERT on -- the lag is what stops a single transient error paging anyone.
+
+  SECOND FINDING, a correction to the docs: voteball_db_errors_total returned NO SERIES AT ALL
+  before the break, and appeared only once the first error occurred. That is correct behaviour
+  for a prometheus_client Counter declared with a label ('operation') -- a labelled collector
+  exports nothing until a label value is first observed. So this metric cannot distinguish
+  'no database errors' from 'instrumentation broken'; only the journey SLI has an absent()
+  guard (VoteballSLIAbsent). Do not describe db_errors_total as always-visible.
+
+--- the WORKER during the outage (not captured on the first run) ---
+  The worker also loses RDS. It is a separate failure path from the backend's: it blocks on
+  LISTEN votes_changed and recomputes rollups, so it fails on its own schedule, not per-request.
+  worker pod:
+    worker-86798c6dcb-pgbc6 1/1 Running restarts=0
+  last 12 log lines:
+    Worker iteration failed, will retry next cycle: connection to server at "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com" (10.0.65.52), port 5432 failed: timeout expired
+    
+    Worker iteration failed, will retry next cycle: connection to server at "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com" (10.0.65.52), port 5432 failed: timeout expired
+    
+    Worker iteration failed, will retry next cycle: connection to server at "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com" (10.0.65.52), port 5432 failed: timeout expired
+    
+    Worker iteration failed, will retry next cycle: connection to server at "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com" (10.0.65.52), port 5432 failed: timeout expired
+    
+    Worker iteration failed, will retry next cycle: connection to server at "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com" (10.0.65.52), port 5432 failed: timeout expired
+    
+    Worker iteration failed, will retry next cycle: connection to server at "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com" (10.0.65.52), port 5432 failed: timeout expired
+    
+
+  Two things worth reading off those log lines:
+  1. The worker DEGRADES, it does not crash: 'will retry next cycle', 1/1 Running, 0 restarts.
+     A crash-loop here would have been a design flaw -- the database being unreachable is a
+     transient condition, and a pod that dies on it turns a 10-minute outage into a
+     CrashLoopBackOff that outlives the cause.
+  2. The resolved address is 10.0.65.52, which is inside 10.0.65.0/24 -- one of the exact two
+     CIDRs excluded by the break. That is direct proof the patch cut the DATABASE path
+     specifically, and not pod-to-pod traffic. Attempt 2 of the original drill failed precisely
+     because a blunter break also cut frontend->backend, so requests never reached the
+     instrumented code and the drill measured the wrong failure.
+
+--- where a firing alert goes (terraform/addon-monitoring.tf:135-165) ---
+  receiver = "sns" -> sns_configs -> aws_sns_topic.notifications -> email subscription
+  group_by = [alertname, namespace], group_wait = 30s, repeat_interval = 12h
+
+  The 12h repeat_interval is deliberate: this topic emails a human, and a frequent reminder
+  about a known-firing alert trains the human to filter the sender. It has a consequence for
+  THIS run, though: VoteballAvailabilitySLOBreach has been firing since this afternoon, so its
+  email already went out and will not resend. VoteballHighErrorRate is firing fresh, so it is
+  the one that will actually generate a new notification.
+
+--- ALERT FIRED ---
+  17:24:51Z avail=0.6654 db_errors=40.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:25:06Z avail=0.5348 db_errors=43.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:25:21Z avail=0.5348 db_errors=47.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:25:36Z avail=0.3383 db_errors=51.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:25:51Z avail=0.3383 db_errors=53.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:26:07Z avail=0.0583 db_errors=53.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:26:22Z avail=0.0583 db_errors=59.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:26:37Z avail=0.0364 db_errors=60.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:26:52Z avail=0.0364 db_errors=63.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:27:07Z avail=0.0370 db_errors=68.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:27:23Z avail=0.0370 db_errors=71.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:27:38Z avail=0.0357 db_errors=74.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=pending; VoteballHighLatencyP95=pending
+  17:27:53Z avail=0.0357 db_errors=78.0 | VoteballAvailabilitySLOBreach=firing; VoteballHighErrorRate=firing; VoteballHighLatencyP95=pending
+  == HighErrorRate FIRING at 17:27:53Z ==
+
+  TIMELINE
+    17:21:10Z  break applied
+    17:21:11Z  first 500 (under 1s -- no CNI fail-open window this run)
+    17:22:04Z  voteball_db_errors_total appears and climbs, availability still reads 1.0000
+    17:22:34Z  availability starts falling
+    17:22:50Z  VoteballHighErrorRate -> pending
+    17:27:53Z  VoteballHighErrorRate -> FIRING   (availability bottomed at 0.0357)
+    detection: 6m43s from break to page. First run (2026-08-18 morning) was 7m46s.
+
+--- and it reached ALERTMANAGER, not just Prometheus ---
+    VoteballHighErrorRate severity=critical state=active | receiver -> sns
+    VoteballAvailabilitySLOBreach severity=warning state=active | receiver -> sns
+
+--- RECOVERY, performed by GitOps rather than by hand ---
+  17:28:54Z  ArgoCD auto-sync re-enabled (the ONLY action taken -- no repair command)
+  17:29:06Z  NetworkPolicy healed back to {"cidr":"10.0.0.0/16"}, the value in git
+  recovery: 12 SECONDS, and nothing repaired the resource directly.
+
+  This is the half of the drill that is about GitOps rather than observability. The break was a
+  hand-edit to a resource ArgoCD manages -- which is not a change, it is DRIFT, and erasing
+  drift is precisely selfHeal's job. Pausing auto-sync was therefore not drill setup so much as
+  temporarily revoking that guarantee; turning it back on was sufficient to recover. If someone
+  asks 'what happens if I kubectl edit something by hand in production?', this is the answer,
+  measured: 12 seconds.
+
+  ArgoCD app status after recovery: Synced / Healthy
+
+--- visitor view across the recovery ---
+  17:28:43Z /api/options           500 5.063721s
+  17:28:43Z /api/results?by=all    500 5.066748s
+  17:28:56Z /api/options           500 5.067014s
+  17:28:56Z /api/results?by=all    200 0.099333s
+  17:29:05Z /api/options           200 0.164458s
+  17:29:05Z /api/results?by=all    200 0.091128s
+  17:29:08Z /api/options           200 0.108899s
+  17:29:08Z /api/results?by=all    200 0.072269s
+  17:29:11Z /api/options           200 0.128963s
+  17:29:11Z /api/results?by=all    200 0.114788s
+  17:29:14Z /api/options           200 0.147922s
+  17:29:14Z /api/results?by=all    200 0.095726s
+  17:29:18Z /api/options           200 0.172540s
+  17:29:18Z /api/results?by=all    200 0.084207s
+
+--- final state ---
+  /                      200 in 0.057318s
+  /api/options           200 in 0.134176s
+  /api/results?by=all    200 in 0.098435s
+  backend-77b84f7686-npzhq           1/1    Running   restarts=0
+  backend-77b84f7686-nxbh6           1/1    Running   restarts=0
+  canary-67c7ccfbc9-2zghd            1/1    Running   restarts=0
+  frontend-675776957f-5c7g6          2/2    Running   restarts=0
+  frontend-675776957f-s65fr          2/2    Running   restarts=0
+  worker-86798c6dcb-pgbc6            1/1    Running   restarts=0
