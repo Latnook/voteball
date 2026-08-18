@@ -2,7 +2,8 @@
 # Full ordered teardown. Stops before `terraform destroy` so you confirm it yourself.
 #
 # Order matters and is the reason this script exists:
-#   1. ArgoCD Application first  -- selfHeal:true would otherwise recreate everything we delete.
+#   1. Both ArgoCD Applications first (voteball, observability) -- selfHeal:true on either would
+#      otherwise recreate everything we delete.
 #   2. Ingress next              -- lets external-dns remove its DNS records and the ALB
 #                                   de-provision. A leftover ALB's ENIs block VPC deletion.
 #   3. Wait for the ALB to go    -- polling, because deletion is asynchronous.
@@ -37,12 +38,18 @@ step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 # --ignore-not-found does NOT cover, so set -e would abort before reaching Terraform. Any leftover
 # Kubernetes object dies with the cluster anyway; these steps are best-effort by design.
 if kubectl cluster-info >/dev/null 2>&1; then
-  step "1/7  Removing the ArgoCD Application (stops selfHeal fighting the teardown)"
+  step "1/7  Removing the ArgoCD Applications (stops selfHeal fighting the teardown)"
+  # BOTH Applications, not just voteball's. `argocd/voteball-application.yaml.tmpl` also declares
+  # `observability`, and it carries the same `prune: true, selfHeal: true` -- leaving it running
+  # survives this step and keeps recreating charts/observability's NetworkPolicies (including its
+  # default-deny), dashboard ConfigMaps and PrometheusRule into a namespace mid-teardown.
+  #
   # Deleted BY NAME, not by rendering the template. Teardown must not depend on `terraform output`
   # being readable: this script runs against half-destroyed stacks, and a render failure here would
-  # skip the deletion and leave selfHeal recreating everything the next five steps remove. The name
+  # skip the deletion and leave selfHeal recreating everything the next five steps remove. The names
   # and namespace are fixed in the template, so nothing environment-specific is needed to say which.
   kubectl delete application voteball -n argocd --ignore-not-found || true
+  kubectl delete application observability -n argocd --ignore-not-found || true
 
   step "2/7  Removing the Ingresses (releases the ALB and the DNS records)"
   # BOTH Ingresses, not just the app's. Since 2026-07-31 they share ALB group "voteball"

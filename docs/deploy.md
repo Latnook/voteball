@@ -613,7 +613,9 @@ aws logs tail "/aws/containerinsights/$(terraform output -raw cluster_name)/appl
 It removes things in the order that actually works, and **asks you to confirm** before deleting the
 infrastructure. Order matters:
 
-1. **The ArgoCD app first** — otherwise ArgoCD notices the app disappearing and puts it straight back.
+1. **Both ArgoCD Applications first** (`voteball` and `observability`) — otherwise ArgoCD notices what
+   you deleted next and puts it straight back, `observability`'s `NetworkPolicy`/dashboard/alert
+   objects included.
 2. **Both Ingresses next** — the site's and Jenkins' webhook. They share one load balancer, and it is
    only released when *neither* is left. Deleting just one leaves it running, and a leftover load
    balancer keeps network interfaces alive that block the network from being deleted. This is the
