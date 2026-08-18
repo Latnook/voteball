@@ -135,7 +135,7 @@ This design extends that same boundary rather than inventing a second one.
 |---|---|---|
 | `terraform/addon-monitoring.tf` | The stack itself: PVC, retention, resource limits, dashboard sidecar config, Alertmanager→SNS routing | `terraform apply` |
 | `charts/voteball` (ArgoCD) | The app's ServiceMonitors, app alert rules, SLO recording rules, the scrape NetworkPolicy | `git push` |
-| `charts/observability` (**new**, ArgoCD) | The three dashboards, the Jenkins ServiceMonitor, platform + monitoring-system alerts | `git push` |
+| `charts/observability` (**new**, ArgoCD) | The three dashboards, platform + monitoring-system alerts | `git push` |
 
 The new chart is a **second ArgoCD Application**, which is the cost of this choice: it needs its own
 `AppProject` entry, and `scripts/render-argocd-app.sh --check` — which fails on any Application this
@@ -361,12 +361,17 @@ equivalent of an alert that can never fire.
 
 | SLI | SLO | Where it appears |
 |---|---|---|
-| Availability | 99% of voting-journey requests (`/api/options`, `/api/vote`, `/api/results`) return non-5xx, over 7 days | recording rule → dashboard panel → `VoteballAvailabilitySLOBreach` |
+| Availability | 99% of voting-journey requests (`/api/options`, `/api/vote`, `/api/results`) return non-5xx, over 6 hours | recording rule → dashboard panel → `VoteballAvailabilitySLOBreach` |
 | Latency | 95% of requests complete under 1s | recording rule → `histogram_quantile` panel → `VoteballHighLatencyP95` |
 
 Both are **recording rules**, not expressions typed into panels, so the dashboard, the alert, the CD
-gate and the writeup all cite one definition. The window is 7 days rather than 30 because the cluster
-is rebuilt for demonstrations; a 30-day window would be mostly empty and would read as a broken panel.
+gate and the writeup all cite one definition. **Corrected from this section's original 7-day window**:
+the shipped rule (`charts/voteball/templates/prometheusrule.yaml`, `VoteballAvailabilitySLOBreach`)
+evaluates `avg_over_time(voteball:availability:ratio5m[6h]) < 0.99`, with the choice explained in a
+comment there — a 7-day average moves too slowly to act on, and the window that matters for paging is
+the one where recovery is still possible. The cluster being rebuilt for demonstrations is a second,
+independent reason a long window would be mostly empty and read as a broken panel; both hold, but 6h
+is what actually ships.
 
 ### 10. Alerts and runbooks
 
@@ -604,3 +609,93 @@ a ServiceMonitor that scrapes nothing, a metric that grows unbounded, an alert t
 arrives, a disk limit that does not bind, a config line that restates a default. That signature is the
 thing to hunt for when reviewing the implementation, and it is why as many of these as possible become
 CI checks (§11) rather than sentences in this document.
+
+## Verification outcome (2026-08-18)
+
+Applied, tested end to end, and reviewed as a whole branch before shipping — three findings are worth
+recording because they were live defects on the running cluster, and all three were caught by review,
+not by any of this plan's own verification steps. The final whole-branch review found two of them
+CRITICAL and still live in production at the time it ran; this plan's own checks had already passed
+over both.
+
+1. **The `endpoint` label was silently overwritten by prometheus-operator's target label, and this
+   plan's own evidence mistook the symptom for success.** A ServiceMonitor's `port: http` produces a
+   target label `endpoint="http"` that prometheus-operator attaches to every scraped series by
+   default — colliding with the application's own `endpoint` label (§4's bounded-cardinality one,
+   e.g. `/api/results`) and silently renaming it to `exported_endpoint` instead. Every application SLI
+   (`voteball:journey_requests:rate5m`, `voteball:journey_errors:rate5m`) matched nothing as a result,
+   and `voteball:availability:ratio5m` read a constant `1` from its `or vector(1)` "no traffic" fallback
+   — meaning **a total application outage would have rendered as green 100% availability and paged
+   nobody.** This plan's Task 4 implementer recorded that same `1` in the working ledger as evidence the
+   rule was working; it was the symptom, not the confirmation. Fixed with `honorLabels: true` on the
+   backend ServiceMonitor (`charts/voteball/templates/servicemonitor.yaml`), which tells
+   prometheus-operator to keep the scraped label instead of renaming it. The first attempt to fix it
+   shipped only the explanatory comment, not the field itself — caught by re-reading the *live* object
+   after "sync" rather than trusting the diff.
+
+   **The general rule this earns a place in §4 (worth restating for the next metric added anywhere in
+   this repo): no application metric label may collide with a name prometheus-operator uses for its own
+   target labels** — `endpoint`, `job`, `namespace`, `pod`, `service`, `container`, `instance`. A
+   collision is not a rejected write or a validation error; it is a silent rename, and everything built
+   on the original name — a recording rule, a dashboard `legendFormat`, an alert — keeps evaluating
+   without complaint against data that is no longer there.
+
+2. **The `observability` namespace's egress rule admitted the Service CIDR on port 443 only, so Grafana
+   could not reach Prometheus (:9090) or Alertmanager (:9093) — every dashboard panel errored, while
+   all three dashboards still showed as "registered."** Registration and querying are two different
+   facts: the Grafana sidecar discovers a dashboard ConfigMap over its own 443 watch, which the narrow
+   rule still permitted, so "three dashboards registered" passed even though no panel could return data.
+   The same gap also blocked the prometheus-operator's admission webhook (`observability/
+   kube-prometheus-stack-operator:443` → the API server's `10250` callback), which has
+   `failurePolicy: Ignore` — so instead of failing loudly, a malformed `PrometheusRule` was silently
+   **admitted** rather than rejected, after a ~20-second timeout on every write. Fixed by widening the
+   Service-CIDR egress rule to include 9090/9093/3000 alongside 443, and by adding a narrowly-scoped
+   ingress rule (`allow-admission-webhook-ingress`, scoped to the operator pod specifically, not the
+   blanket `podSelector: {}` the other rules in this namespace use) admitting the VPC CIDR to the
+   kubelet callback port.
+
+3. **The verification lesson, which produced both of the above and belongs in this document because it
+   is a property of NetworkPolicy itself, not a one-off mistake:** NetworkPolicy does not sever
+   established connections. A policy change looks completely healthy in the seconds after it applies —
+   existing watches, existing scrape connections, existing sidecar syncs all keep working on
+   connections that were already open — and only breaks whatever **reconnects** afterward: a pod
+   restart, a fresh dashboard sidecar poll, a datasource health check that opens a new socket. This
+   plan's own Task 3 verification (target count 25/25, Alertmanager clean, site 200) passed at the
+   moment it ran for exactly this reason — every connection it observed was already open — and the
+   defect it should have caught (the Service-CIDR egress rule excluding this cluster's actual
+   172.20.0.0/16 range, found and fixed earlier in this same plan) was only discovered later, from
+   three unrelated angles: Grafana's dashboard sidecar timing out on its 60-second re-watch,
+   prometheus-operator failing to reconcile `PrometheusRule` objects, and kube-state-metrics restarting
+   on failed liveness checks against the API server.
+
+   **Any future NetworkPolicy change in this project must be verified with a check that forces a new
+   connection** — a restarted pod, a fresh datasource health check, a deployment rollout — and never by
+   observing traffic that was already flowing before the change applied. A target-count check or a
+   "still 200" site probe proves nothing about a NetworkPolicy edit; it proves only that nothing
+   *already connected* broke.
+
+Two smaller, non-silent findings from the same review pass, fixed in the same wave and confirmed live:
+`runbook_url` was never reaching the SNS message body (the Alertmanager message template rendered
+`summary`/`description` only; fixed by appending `{{ if .Annotations.runbook_url }}Runbook: {{
+.Annotations.runbook_url }}\n{{ end }}` inside the existing `range .Alerts` loop — this is what let the
+end-to-end alert test below confirm the link actually arrives in the email), and `KubeNodePressure`
+duplicated `NodeNotReadyOrUnderPressure` the same way the four already-disabled defaults did, missed in
+the first pass over §10.
+
+**Applied and tested live, 2026-08-18** (`terraform apply`: 0 added, 1 changed in-place, 0 destroyed —
+not the replacement that would have destroyed a release now holding a PVC). All 5 duplicated defaults
+confirmed absent, all 8 replacements present, and all 232 live rules report `health: ok`. The
+end-to-end alert chain was proven for real, not simulated: an unschedulable canary Deployment tripped
+`DeploymentReplicasMismatch` (and the default `KubePodNotReady` alongside it), Alertmanager published to
+SNS with zero failed notifications, and the repository owner confirmed receiving the email — including
+the `Runbook:` line the fix above put there. Both alerts resolved cleanly once the canary was removed.
+Full command output: `docs/eks/evidence/2026-08-18-observability-as-code.txt`.
+
+One item raised during the fix-round review is recorded as deliberate follow-up work, not done here:
+adding `or vector(0)` to `voteball:journey_errors:rate5m` would make an all-quiet SLI read as a clean
+`0` instead of an absent series, but it does **not** close the Critical-1 recurrence hole on its own —
+both SLI rules share the same `endpoint` filter, so a future label collapse would empty both, and the
+outer `or vector(1)` on `voteball:availability:ratio5m` would still report `1` regardless of which of
+its two inputs went missing. The protection that actually closes that hole is an alert on
+`journey_requests:rate5m` being **absent** on a normally-trafficked site — not implemented in this
+plan.

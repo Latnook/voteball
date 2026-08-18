@@ -255,6 +255,26 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
 - **Helm (`charts/voteball`)** is the app itself (namespace `devops-app`): 3 Deployments, Services,
   Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
   **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
+- **Helm (`charts/observability`)** is dashboards-and-alerts-as-code for the `observability` namespace:
+  the three Grafana dashboards (provisioned as ConfigMaps via `.Files.Glob`, not clicked together), the
+  Kubernetes/Jenkins/monitoring-system `PrometheusRule`s, and that namespace's own default-deny
+  NetworkPolicies. It is a **second ArgoCD Application with its own `AppProject`** (both declared in
+  `argocd/voteball-application.yaml.tmpl` alongside `voteball`'s), synced from `master` the same way —
+  the app's own ServiceMonitors and SLI/SLO recording rules stay in `charts/voteball` instead, next to
+  the Services and alerts they describe. kube-prometheus-stack itself (Prometheus/Grafana/Alertmanager,
+  the PVC, retention, SNS routing) is a `helm_release` in `terraform/addon-monitoring.tf`, not this
+  chart — same Terraform-vs-Helm boundary as everywhere else: the platform reaches the cluster by
+  `terraform apply`, the configuration on top of it by `git push`.
+  **The Jenkins ServiceMonitor lives in `charts/jenkins-support`, not here** — it deploys with the
+  Jenkins release it scrapes — and its enablement is coupled to a controller-image rebuild: the
+  `prometheus` plugin is baked into the image from `ci/jenkins/plugins.txt`, and the ServiceMonitor is
+  gated on `serviceMonitor.enabled`, which Terraform only flips to `true` once `jenkins_image_tag` (in
+  the gitignored `terraform/voteball.tfvars`) points at an image that actually contains
+  `prometheus.jpi`. **Committing `plugins.txt` alone changes nothing** — plugins are baked into the
+  controller image, and (per the Jenkins note below) the release is owned by Terraform, not ArgoCD;
+  turning the ServiceMonitor on ahead of the matching image/tag rebuild would scrape a target that
+  404s forever and page `PrometheusTargetDown` on a repeating schedule for nobody to fix without that
+  build.
 - **ArgoCD itself is configured in exactly two files and nothing else**: `terraform/addon-argocd.tf`
   (the `helm_release` and every `argocd-cm`/`argocd-rbac-cm` key) and
   `argocd/voteball-application.yaml.tmpl` (the `AppProject` **and** the `Application`, one two-document

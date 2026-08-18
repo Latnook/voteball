@@ -544,6 +544,133 @@ purely to capture evidence — and even that runs through a ServiceAccount that 
   real data and dies with the pod, so `application-ci`'s Tests stage adds no new attack surface and no
   new route to the real RDS instance.
 
+## Task 5 — Monitoring & Observability
+
+This section is the self-contained answer to the course's monitoring assignment (*משימה 5*,
+`DevOps_on_AWS_Final_Project_Task_5.pdf` at the repo root). The design rationale — including three
+review-caught defects that were fixed before this shipped — is in
+[`docs/design/2026-08-17-observability-design.md`](docs/design/2026-08-17-observability-design.md);
+this section is the reference for what exists and how to reach it.
+
+### What is monitored
+
+kube-prometheus-stack (Prometheus, Grafana, Alertmanager, kube-state-metrics, node-exporter) runs in
+its own `observability` namespace, on a 10Gi gp3 PVC (`retention: 15d`, `retentionSize: 8GiB` — both
+limits set, so a runaway series count fills the disk before it silently outlives the retention window).
+**25 of 25 scrape targets are UP**, across three layers:
+
+- **Application** — the backend (Flask, `prometheus_client` in multiprocess mode because gunicorn runs
+  2 workers), the worker (its own `/metrics` on a notification-driven recompute loop), and an
+  `nginx-prometheus-exporter` sidecar on the frontend, added specifically because a broken frontend
+  makes backend metrics go *quiet* rather than *red* — indistinguishable from a slow night unless
+  something is watching the edge the user actually hits. Metrics: `voteball_http_requests_total`,
+  `voteball_http_request_duration_seconds`, `voteball_votes_cast_total`,
+  `voteball_votes_rejected_total{reason}`, `voteball_db_errors_total{operation}`,
+  `voteball_app_info{version,git_sha}`, the worker's recompute/staleness gauges, and `nginx_*`.
+- **Kubernetes** — kube-state-metrics, node-exporter and kubelet/cAdvisor (already running pre-plan;
+  this pass only fixed where they persist to and who may reach them).
+- **Jenkins** — the `prometheus` plugin serves `/prometheus` on the controller's existing port 8080.
+  Enabling it is a **platform change with two moving parts, not a chart flag**: the plugin ships inside
+  the controller image (`ci/jenkins/plugins.txt` → an image rebuild), and the ServiceMonitor that
+  scrapes it lives in `charts/jenkins-support` (not `charts/observability` — it deploys with the
+  controller, next to the release that owns it) gated on `serviceMonitor.enabled`, which Terraform only
+  flips to `true` once `jenkins_image_tag` (in the gitignored `terraform/voteball.tfvars`) actually
+  points at an image containing `prometheus.jpi`. Committing `plugins.txt` alone changes nothing until
+  both the image is rebuilt and that tag is bumped — leaving the flag on against an image that doesn't
+  serve `/prometheus` would page `PrometheusTargetDown`/`TargetDown` every scrape, forever, for a target
+  nobody could fix without a separate build.
+
+### Three dashboards, provisioned from git
+
+Grafana's sidecar watches for ConfigMaps labelled `grafana_dashboard: "1"`; `charts/observability`
+renders one per JSON file under `dashboards/` via `.Files.Glob` — dropping in a new file is the entire
+process of adding a dashboard, with no import button and nothing for a human to click. Deleting the
+`observability` ArgoCD Application and re-syncing brings all three back with zero manual steps, which
+is what proves they're provisioned rather than clicked together.
+
+| Dashboard | uid | Operational question |
+|---|---|---|
+| Application Overview | `voteball-app` | Is the new release hurting users? Traffic, 5xx rate, p50/p95/p99, availability against SLO, votes cast, running `version`/`git_sha`. |
+| Kubernetes / Cluster | `voteball-k8s` | Is the fault in the app or the platform? Node readiness/capacity, pod restarts and OOMKills, CPU throttling, pending pods, replica health, PVC usage. |
+| Jenkins & Delivery | `voteball-delivery` | Is delivery healthy, and is something stuck? Queue length/wait, executors, build outcomes/duration, controller JVM heap. |
+
+### SLI / SLO
+
+Two recording rules back the dashboard panel, the alert and this document from one definition:
+
+| SLI | SLO | Recording rule |
+|---|---|---|
+| Availability | 99% of voting-journey requests (`/api/options`, `/api/vote`, `/api/results`) return non-5xx, over a 6-hour window | `voteball:availability:ratio5m` |
+| Latency | 95% of voting-journey requests complete under 1s | `voteball:latency:p95_5m` |
+
+6 hours, not the 30-day window a textbook SLO might use — the cluster is destroyed and rebuilt for
+demonstrations, so a long window would sit mostly empty and read as a broken panel; the design doc
+records this as a secondary reason, the primary one being that a slow-moving average is the wrong shape
+for something meant to page while recovery is still possible.
+
+### Eight alerts (plus six pre-existing), all carrying a runbook
+
+Every alert — the eight this pass adds and the six that already existed — carries `summary`,
+`description` and a `runbook_url` that Alertmanager renders straight into the SNS email, so what
+arrives is "here's what broke, here's the exact page to open," not a bare metric name. Full table and
+the four-question format (what it means / what to check first / how to fix it / when to roll back
+instead) is in [`docs/runbooks/README.md`](docs/runbooks/README.md); the eight added here:
+
+| Alert | Domain | Fires when | Severity |
+|---|---|---|---|
+| `VoteballHighErrorRate` | Application | 5xx ratio > 5% for 5m | critical |
+| `VoteballHighLatencyP95` | Application | p95 > 1s for 10m | warning |
+| `VoteballRollupsStale` | Application | worker's last successful recompute > 10m ago | warning |
+| `VoteballAvailabilitySLOBreach` | Application | 6h availability below 99% | warning |
+| `NodeNotReadyOrUnderPressure` | Kubernetes | node not `Ready`, or under memory/disk/PID pressure, for 10m | critical |
+| `DeploymentReplicasMismatch` | Kubernetes | replicas short of desired for 15m, with no rollout in progress | warning |
+| `JenkinsQueueStuck` | Jenkins | build queue non-empty with nothing draining it for 15m | warning |
+| `PrometheusTargetDown` | Monitoring | a declared target reports `up == 0` for 5m | critical |
+
+**Five kube-prometheus-stack default rules that duplicated these conditions are switched off**
+(`defaultRules.disabled` in `terraform/addon-monitoring.tf`) — a duplicate alert is not redundancy,
+it's noise that trains the reader to stop opening the email. Every rule in the cluster reports
+`health: ok`; see the evidence file below for the query.
+
+**Proved end to end, not just "fires":** an alert that fires and is never delivered is the exact
+silent failure this design exists to catch, so the acceptance test was a real alert, all the way to a
+received email. An unschedulable canary Deployment tripped `DeploymentReplicasMismatch` (and the
+default `KubePodNotReady`); Alertmanager published to SNS with zero failed notifications, and the repo
+owner confirmed receiving the email, `Runbook:` line included. Both alerts resolved cleanly once the
+canary was removed. Full command output in
+[`docs/eks/evidence/2026-08-18-observability-as-code.txt`](docs/eks/evidence/2026-08-18-observability-as-code.txt).
+
+### Reaching Grafana, Prometheus and Alertmanager
+
+Nothing here is public — same reasoning as ArgoCD and Jenkins: a private tunnel plus your AWS login is
+the front door.
+
+```bash
+kubectl -n observability port-forward svc/kube-prometheus-stack-grafana      3000:80    # http://localhost:3000
+kubectl -n observability port-forward svc/kube-prometheus-stack-prometheus   9090:9090  # http://localhost:9090
+kubectl -n observability port-forward svc/kube-prometheus-stack-alertmanager 9093:9093  # http://localhost:9093
+kubectl get secret kube-prometheus-stack-grafana -n observability -o jsonpath='{.data.admin-password}' | base64 -d; echo
+```
+
+Grafana's username is `admin`; the password is generated fresh at install time and changes on every
+rebuild (there is deliberately no fixed one written down anywhere in the repo). Prometheus and
+Alertmanager have no login at all — the only way to reach either is to already hold cluster access.
+
+### Where the configuration lives
+
+Three homes, matching the boundary `charts/voteball/templates/prometheusrule.yaml` already drew for
+application alerts — a threshold or dashboard change should ship as a normal commit through ArgoCD,
+not a billed Terraform apply:
+
+| Home | Holds | Reaches the cluster by |
+|---|---|---|
+| `terraform/addon-monitoring.tf` | The stack itself: PVC, retention, resource limits, Alertmanager→SNS routing, the disabled-defaults list | `terraform apply` |
+| `charts/voteball` (ArgoCD) | The app's ServiceMonitors, app alert rules, the SLI/SLO recording rules, the scrape NetworkPolicy | `git push` |
+| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The three dashboards, the Kubernetes/Jenkins/monitoring-system alert rules, the namespace's default-deny NetworkPolicies | `git push` |
+
+The Jenkins ServiceMonitor is the one exception to that split — it lives in `charts/jenkins-support`
+next to the release it scrapes, for the reason given above.
+
 ## How to verify
 
 Live outputs captured from the running cluster are in

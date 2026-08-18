@@ -474,13 +474,28 @@ would have to be stored somewhere.
 
 Where to look once you're in:
 
-- **Grafana** → Dashboards → the `kube-prometheus-stack` folder → *Kubernetes / Compute Resources /
-  Namespace (Pods)*, filtered to `devops-app`. That's the app's real CPU and memory use.
+- **Grafana** → Dashboards → three are this project's own, provisioned from git and reachable without
+  digging through a folder: **Application Overview** (`voteball-app` — traffic, error rate, latency,
+  votes cast, which build is running), **Kubernetes / Cluster** (`voteball-k8s` — node/pod health,
+  restarts, throttling), **Jenkins & Delivery** (`voteball-delivery` — queue, executors, build
+  outcomes). Everything else in that list is a bundled kube-prometheus-stack dashboard, e.g. the
+  `kube-prometheus-stack` folder's *Kubernetes / Compute Resources / Namespace (Pods)*, filtered to
+  `devops-app`, for the app's raw CPU and memory use.
 - **Prometheus** → **Status → Rule Health** lists the alert rules. If your rules are missing there,
   they are not being checked at all — see `charts/voteball/templates/prometheusrule.yaml` for the
   label that causes this. `kubectl get prometheusrules` would still look perfectly fine.
 - **Alertmanager** → the front page shows what is firing *after* grouping, which is the real answer
   to "would this have emailed me?"
+
+**To add a dashboard**, drop a Grafana-exported JSON file into `charts/observability/dashboards/` and
+push. `templates/dashboards.yaml`'s `.Files.Glob "dashboards/*.json"` wraps every file it finds in a
+ConfigMap labelled `grafana_dashboard: "1"`, and Grafana's sidecar picks it up on its next 60-second
+poll — no per-dashboard template to write, no import button to click. Give the dashboard a stable
+`"uid"` (used as the ConfigMap name) and confirm it renders offline first:
+
+```bash
+helm template observability charts/observability --namespace observability | grep 'dashboard-'
+```
 
 ### ArgoCD
 

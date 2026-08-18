@@ -1,0 +1,196 @@
+# Observability-as-code evidence (captured 2026-08-18)
+#
+# Commit: 54667b5c5df468d71259795f4c580b08605b9214 (master, at capture time)
+# Plan: docs/design/2026-08-17-observability-design.md, sections 8, 9, 10, 11
+# Captured live against the running cluster (voteball, il-central-1) roughly an hour after the
+# owner-approved terraform apply (Task 10: "0 added, 1 changed in-place, 0 destroyed" -- the
+# defaultRules.disabled changes and the runbook_url SNS template) and the end-to-end alert test that
+# followed it. This file is a fresh, independent capture, not a copy of the session log -- every
+# number below was queried again from this session, against live Prometheus/Alertmanager/Grafana/
+# CloudWatch, except where explicitly marked as carried forward from the completed test.
+#
+# WHAT THIS PROVES: the rule inventory matches the design (5 duplicated defaults off, 8 replacements
+# on, every rule in the cluster healthy); Grafana has the three dashboards registered and can actually
+# query Prometheus (not just "registered", which -- per the design doc's own audit -- is a 443/sidecar
+# fact that says nothing about whether a panel can query); all 25 scrape targets are up; and a real
+# alert fired, was delivered by SNS with zero failures, and resolved cleanly.
+#
+# WHAT THIS DOES NOT PROVE: I did not re-run the canary-deployment alert test myself -- it was already
+# executed and cleaned up before this capture (the `alert-canary` Deployment is confirmed absent
+# below). The owner's email receipt is therefore a recorded fact from that completed test, not
+# something I independently re-confirmed by looking at a mailbox -- see the "END-TO-END ALERT TEST"
+# section for exactly what is freshly re-verified here versus carried forward.
+
+=== rule inventory: 5 duplicated kube-prometheus-stack defaults switched off ===
+$ curl -s http://localhost:9090/api/v1/rules | python3 -c "..." # (via port-forward svc/kube-prometheus-stack-prometheus 9090:9090)
+KubeNodeNotReady                    disabled ok
+KubeNodeUnreachable                 disabled ok
+KubeDeploymentReplicasMismatch      disabled ok
+TargetDown                          disabled ok
+KubeNodePressure                    disabled ok
+
+=== rule inventory: 8 replacements present ===
+VoteballHighErrorRate               present
+VoteballHighLatencyP95              present
+VoteballRollupsStale                present
+VoteballAvailabilitySLOBreach       present
+DeploymentReplicasMismatch          present
+NodeNotReadyOrUnderPressure         present
+JenkinsQueueStuck                   present
+PrometheusTargetDown                present
+
+total alerting rules: 143
+
+=== every rule in the cluster reports health: ok ===
+$ python3 -c "... Counter(r.get('health') for r in all_rules) ..."
+total rules (alerting + recording): 232
+{'ok': 232}
+not-ok rules: []
+
+=== the "endpoint" label collision (Critical 1 in the final review) stays fixed ===
+$ curl -s .../api/v1/query --data-urlencode 'query=count by (endpoint) (voteball_http_requests_total)'
+{"endpoint":"/health"}       value=2
+{"endpoint":"/api/options"}  value=2
+{"endpoint":"unmatched"}     value=1
+{"endpoint":"/api/results"}  value=2
+$ curl -s .../api/v1/query --data-urlencode 'query=count by (exported_endpoint) (voteball_http_requests_total)'
+{}  value=7        <- no exported_endpoint label exists any more; every series carries real routes
+                       under `endpoint` (honorLabels: true on the backend ServiceMonitor), not the
+                       target label prometheus-operator would otherwise have overwritten it with.
+
+=== SLI recording rules, live values (quiet window -- see note) ===
+voteball:journey_requests:rate5m   = 0            (a real series, value 0 -- no traffic in the last
+                                                     5m at query time, not an absent/broken series)
+voteball:journey_errors:rate5m     = (empty)       (correct: a counter with no 5xx ever has no series)
+voteball:availability:ratio5m      = 1             (the `or vector(1)` fallback, legitimately: with
+                                                     journey_requests present at 0, "no requests" means
+                                                     "nothing failed", which is the intended reading --
+                                                     NOT the same failure as the pre-fix constant-1,
+                                                     which fired from an EMPTY vector, not a real zero)
+voteball:latency:p95_5m            = NaN           (histogram_quantile with no samples in the window;
+                                                     expected during a quiet period)
+
+=== targets: 25 of 25 UP, by query not by eye ===
+$ curl -s http://localhost:9090/api/v1/targets | python3 -c "..."
+total: 25 up: 25 down: 0
+  apiserver                           2
+  backend                             2
+  coredns                             2
+  frontend                            2
+  jenkins                             1
+  kube-prometheus-stack-alertmanager  2
+  kube-prometheus-stack-grafana       1
+  kube-prometheus-stack-operator      1
+  kube-prometheus-stack-prometheus    2
+  kube-state-metrics                  1
+  kubelet                             6
+  node-exporter                       2
+  worker                              1
+
+=== Grafana: the three dashboards registered ===
+$ curl -s -u admin:<generated password> http://localhost:3000/api/search?query=
+voteball-app        Application Overview     dash-db
+voteball-delivery   Jenkins & Delivery        dash-db
+voteball-k8s        Kubernetes / Cluster      dash-db
+  (plus the kube-prometheus-stack bundled dashboards -- CoreDNS, Grafana Overview, Kubernetes/*,
+   Node Exporter/*, Prometheus/Overview, Alertmanager/Overview -- unmodified from the chart default)
+
+=== Grafana: Prometheus datasource health -- OK, not just "registered" ===
+# The design's audit note: dashboard REGISTRATION happens over the sidecar's 443 watch and proves
+# nothing about whether a PANEL can actually query. This is the check that proves the panel can.
+$ curl -s -u admin:<pw> http://localhost:3000/api/datasources/uid/prometheus/health
+{"details":{"application":"Prometheus","features":{"rulerApiEnabled":false}},
+ "message":"Successfully queried the Prometheus API.","status":"OK"}
+
+(Alertmanager's datasource health check separately returns HTTP 500 "plugin unavailable" -- confirmed
+in the final-review fix pass to be a pre-existing Grafana/plugin-side issue, NOT a NetworkPolicy gap:
+a raw HTTP probe from the Grafana pod to alertmanager:9093/api/v2/status succeeds. Not re-probed here
+since it is unrelated to this evidence file's claims; recorded as a known, unresolved cosmetic wart.)
+
+=== Alertmanager: current state ===
+$ curl -s http://localhost:9093/api/v2/alerts | python3 -c "..."
+count: 1
+Watchdog active     <- the standard always-firing heartbeat rule. Nothing else is firing, which is
+                        the expected state after the canary alert test's cleanup (see below).
+
+=== END-TO-END ALERT TEST ===
+#
+# Mechanism (already executed and cleaned up before this capture -- see progress.md's "END-TO-END
+# ALERT TEST" entry for the full run): an unschedulable `alert-canary` Deployment was created in
+# devops-app (nodeSelector on a nonexistent node, so it starts with zero available replicas rather
+# than a patched existing Deployment whose old ReplicaSet would keep serving). This tripped
+# DeploymentReplicasMismatch and the default KubePodNotReady. Armed 05:39:20Z; for:15m -> fired
+# ~05:54Z. Cleanup: `kubectl -n devops-app delete deployment alert-canary`.
+#
+# Freshly re-verified in THIS session:
+$ kubectl -n devops-app get deployment alert-canary
+Error from server (NotFound): deployments.apps "alert-canary" not found     <- cleanup confirmed
+$ curl -s http://localhost:9093/api/v2/alerts | ...
+  only Watchdog active                                                       <- resolved cleanly
+$ curl -s .../api/v1/query --data-urlencode 'query=alertmanager_notifications_total{integration="sns"}'
+  10   (cumulative counter since the Alertmanager pod started; includes this test plus an earlier,
+        unrelated genuine alert episode from the NetworkPolicy defect found and fixed during this same
+        plan -- see below)
+$ curl -s .../api/v1/query --data-urlencode 'query=alertmanager_notifications_failed_total{integration="sns"}'
+  0 across every failure reason (clientError, contextCanceled, contextDeadlineExceeded, other,
+    serverError)
+#
+# CloudWatch SNS metrics, freshly queried (aws cloudwatch get-metric-statistics, topic
+# voteball-notifications, region il-central-1), polled repeatedly (5x over ~2.5 minutes) to let
+# metrics settle rather than trust a single read:
+$ aws cloudwatch get-metric-statistics --namespace AWS/SNS --metric-name NumberOfMessagesPublished \
+    --dimensions Name=TopicName,Value=voteball-notifications \
+    --start-time 2026-08-18T05:30:00Z --end-time <now> --period 60 --statistics Sum
+  1-min buckets in the test's window:  05:55Z -> 2   06:00Z -> 2   (total: 4)
+  NumberOfNotificationsDelivered: identical buckets, identical total (4)
+  NumberOfNotificationsFailed:    0 in every bucket
+  Stable across 5 re-polls 30s apart (06:03Z through 06:07Z) -- no further bucket appeared, so this is
+  the settled total for the canary test's own window, not a mid-flight snapshot.
+#
+# Widening the window to 04:30Z-now surfaces FOUR MORE published/delivered messages (0 failed) in an
+# earlier cluster spanning ~04:46-04:52Z -- 69 minutes before the canary test. That timing lines up
+# with the "CRITICAL DEFECT AND RECOVERY (2026-08-18 ~07:45)" entry in this plan's progress ledger
+# (07:45 Israel local time = ~04:45 UTC): genuine alerts fired for real during the NetworkPolicy
+# egress defect (kube-state-metrics restarts etc.) before it was fixed. That episode is NOT part of
+# this test's evidence and is not claimed as such -- it is a separate, real firing the same day,
+# included here only because it is what the wider CloudWatch window actually shows, and because
+# leaving it out silently would make the 4-vs-a-higher-number discrepancy below look unexplained
+# rather than accounted for.
+#   Combined total, 04:30Z-now: published=8 delivered=8 failed=0
+#
+# RECONCILING THE NUMBERS: the task brief for this capture states "8 notifications, 0 failures" at
+# Alertmanager and "6 published, 6 delivered, 0 failed" at SNS for "the window" of the canary test,
+# both recorded by the session that ran the test and obtained the owner's email confirmation directly.
+# This capture, run independently afterward, finds: alertmanager_notifications_total{sns}=10 now (2
+# higher, consistent with a counter that keeps counting -- nothing in this session generated new
+# alerts, so the 2-count gap between "8" and "10" is most plausibly the resolve-notifications for the
+# canary's own two alerts, which would only land in the counter once Alertmanager's resolve_timeout
+# elapsed after cleanup); and SNS CloudWatch shows 4/4/0 in the canary's specific 05:55-06:00Z window,
+# 8/8/0 across the full day so far. I could not reproduce the exact "6" from a live query in this
+# session -- CloudWatch's own bucket boundaries and the cumulative-counter nature of the Alertmanager
+# metric make an exact after-the-fact reconciliation to a specific "6" imprecise. What IS independently
+# and repeatedly confirmed here: zero SNS delivery failures, zero Alertmanager send failures, both
+# alerts resolved, and the canary deployment gone.
+#
+# OWNER CONFIRMATION: the repository owner confirmed receiving the alert email, including the
+# `Runbook:` line, during the test session that ran this drill (recorded in that session's own
+# ledger). This capture did not re-solicit that confirmation -- an email inbox is not something a
+# command in this session can query -- and states it here as a carried-forward fact, not a
+# freshly-reproduced one. Everything else in this file is independently re-verified against the live
+# cluster and AWS APIs, run in this session, today.
+
+=== screenshots: not captured in this pass ===
+No screenshot tool was used for this capture -- every dashboard claim above is backed by the Grafana
+HTTP API instead (search + datasource health), which is stronger evidence than a screenshot: it proves
+the dashboard is registered AND that its datasource can actually be queried, rather than showing what a
+panel rendered at one instant. Per-panel data presence (which of the Application Overview's 11 panels,
+the Kubernetes/Cluster's 10, and the Jenkins & Delivery's 7 return real series versus a correct empty
+result) was checked panel-by-panel during authoring and is recorded in this plan's task 7/8/9 reports
+(`.superpowers/sdd/2026-08-18-observability-as-code/task-{7,8,9}-report.md`), not restated here.
+
+=== clean-install proof: not re-run in this pass ===
+Already executed and recorded in this plan's own ledger (deleting the `observability` ArgoCD
+Application and re-syncing brought all three dashboard ConfigMaps back with no manual step -- the
+distinguishing test between "provisioned" and "clicked together"). Not repeated here to avoid an
+unnecessary application restart on the live cluster; the dashboards-registered check above confirms the
+same end state without that disruption.
