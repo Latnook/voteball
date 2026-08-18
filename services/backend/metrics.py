@@ -14,6 +14,13 @@ CARDINALITY. Every label here has a bounded value set. `endpoint` is Flask's URL
 request path: /api/admin/clubs/<int:club_id> is one series where /api/admin/clubs/42 would be one
 series per club. Requests matching no rule collapse to 'unmatched' so a 404 flood cannot mint series
 either. Never add a label carrying a user id, a request id, or a raw URL.
+
+THE `endpoint` LABEL DEPENDS ON `honorLabels: true` IN THE SERVICEMONITOR, and silently loses if it
+is removed. prometheus-operator attaches its own TARGET label named `endpoint` (the Service port
+name), and without honorLabels the target label wins -- this label is renamed `exported_endpoint`,
+every SLI filtering on `endpoint` matches nothing, and `voteball:availability:ratio5m` returns a
+constant 1 from its fallback. That is not hypothetical: it shipped on 2026-08-18 and a total outage
+would have rendered as green 100%. scripts/ci/validate-observability.sh now fails the build on it.
 """
 import os
 import pathlib
