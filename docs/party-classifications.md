@@ -97,8 +97,8 @@ Negative is dovish, positive is hawkish.
 
 | | meaning | parties |
 |---|---|---|
-| **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]`, נעם `[u]` |
-| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המפלגה הכלכלית `[u]` |
+| **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]`, נעם `[u]`, הליכוד `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המפלגה הכלכלית `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]` |
 | **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
@@ -223,7 +223,7 @@ these rows.
 
 ## Upcoming parties
 
-### הליכוד — Likud · `bibi` · 1 / 2 / 2 · traditional
+### הליכוד — Likud · `bibi` · 1 / 3 / 2 · traditional
 
 **religiosity +2, moved from +1 on 2026-07-30.** The old reading was that Likud "does not want a
 halakhic state, but reliably funds and defends religious authority to hold a coalition", scored +1
@@ -260,6 +260,203 @@ band's "liberalizing *fused with* real state expansion", so +1 stands.
 `claims-economically-liberal` is likewise retained: it records that the party brands itself
 free-market while presiding over record spending and tax rises on workers, which remains true even
 though the liberalizing half exists.
+
+**2026-08-18 — revision 24: read against the 2026 primary list for the first time. `security`
+moved +2 → +3. Ten tags added, 4 → 14. `previous_parties` untouched.**
+
+This row had **four tags** against 11–27 on every comparable row, because it had never been read
+against a party source at all — it publishes no platform, so `family_evidence` is `record`. The
+primary (counted to 98%, 17 Aug 2026) is the closest thing this party emits to a stated position,
+and revision 5 established the method: *ranked lists are evidence about priority, not only about
+presence.*
+
+Realized list: 1 בנימין נתניהו, 2 אלי כהן, 4 ישראל כץ, 5 גדעון סער, 6 אמיר אוחנה, 7 יריב לוין,
+8 מירי רגב, 10 אופיר כץ, 11 אורן דוברונסקי (reserved, unconfirmed), 12 יואב קיש, 13 מיקי זוהר,
+14 אלמוג כהן, 16 עמיחי שיקלי, 17 דודי אמסלם, 18 חיים כץ, 19 משה סעדה, 20 טלי גוטליב, 21 דוד ביטן,
+22 שלמה קרעי, 23 בועז ביסמוט, 24 ניר ברקת, 25 גילה גמליאל, 27 ארז תדמור, 28 שלמה לרנר, 30 שוקי אוחנה,
+31 משה בנימין פרץ, 32 זאב אלקין, 33 אמית הלוי, 34 קרן אטיאס בובליל. Turnout **53.5%**
+(~75,000 of ~142,000 members), down 4.5 points from 2022.
+
+**Two caveats on the list itself, both recorded rather than resolved.** Reporting puts **eight** slots
+under Netanyahu's personal appointment — 3, 5, 9, 11, 15, 18, 26, 29 — plus separate guaranteed
+placements for סער and ישראל כץ, but sources conflict on the exact set and the list was **not
+certified** when this was written; the 21–23 ordering (קרעי/ביסמוט/ביטן in one count, reversed in
+another) and the 16–17 ordering are both disputed. Reserved slots are evidence about **party
+structure, not policy**, and score nothing here — but one of them is load-bearing for the economic
+axis below: **slot 18 is an appointment**, upheld by a three-judge Likud internal-court panel on
+12 Aug over גוטליב's public objection that it "mocks Likud voters."
+
+#### `security` +2 → +3
+
+**This is the one axis that moved, and it moved on the government's record rather than on the list.**
+The list's own evidence is strong but not by itself decisive: אלי כהן at #2 states "only one Jewish
+state between the Jordan and the Sea" and, as Energy Minister, connected new Samaria settlements to
+electricity and water while calling it "exercising sovereignty in practice"; אמיר אוחנה at #6 was
+among ~16 ministers urging sovereignty and calls it "clearer than ever"; the Knesset carried a
+non-binding sovereignty motion on 23 July 2025.
+
+What decides it is that **the government has acted, at cabinet level, in the +3 band's terms**:
+
+- **8 February 2026 — the Security Cabinet approved a package of seven measures**: extending Israeli
+  control into **Areas A and B**, legalizing settler land purchases, removing oversight of land
+  transactions, publishing the West Bank land registry, reviving a state land-acquisition committee,
+  seizing Rachel's Tomb, and transferring Hebron planning powers to the Civil Administration. Axios
+  characterised it as "a step toward de facto annexation"; it breaches Oslo, and it came **after**
+  Kushner and Witkoff asked Netanyahu in December 2025 to de-escalate.
+- **The same day, the Ministerial Committee on Legislation** — the coalition's government-level
+  gatekeeper, not a backbencher — backed a statutory **West Bank Heritage Authority**, described as
+  the first application of domestic Israeli law to **territory** rather than persons in the West Bank.
+- **2025 cabinet decisions established 54 new official settlements** (13 March, 22 May, 19 December)
+  and granted 27 settlements municipal jurisdiction over 8,472 dunams. **E1** received final approval
+  (3,401 units) with an acceleration agreement **signed by Netanyahu personally** and ₪3bn of
+  infrastructure. The Higher Planning Council approved **27,941 units** in 2025.
+
+**The counter-evidence is real and is why this took a second pass.** Netanyahu actively worked to
+*block* the two annexation bills the Knesset advanced on 22–23 October 2025, because they risked
+angering Washington; יואב קיש at #12 says he is "a great believer in applying sovereignty" but that it
+"cannot be advanced through opposition bills"; and on 26 September 2025 a **senior Israeli official**
+told Channel 12 that Netanyahu "never intended to annex," giving the Abraham Accords as the reason and
+attributing the push to סמוטריץ' and בן גביר rather than to Likud.
+
+That evidence is weaker than it looks. It is an **unnamed official** characterising intent, about
+**formal declaration** rather than substance, and the same government extended control into Areas A
+and B four months later against explicit American requests. The pattern across both files is
+consistent: **the leadership blocks declaratory moves that create friction with Washington while
+approving administrative ones that achieve the same end quietly** — which is Crisis Group's finding
+in as many words, its October 2025 report being titled *Sovereignty in All but Name*, and its
+judgment that much of the West Bank is already annexed in substance. A senior official also told the
+Times of Israel that Jerusalem did **not** regard Trump's veto as final.
+
+**The axis records the revealed position, and the revealed position is the cabinet's, not the
+spokesman's.** +3. The one thing this does *not* license is reading Likud as עוצמה יהודית; a shared
+number is never evidence a distinction has been lost (Decision 5), and the motive tags differ.
+
+#### `economic` +1 and `religiosity` +2 both confirmed and unmoved
+
+**economic +1 is the +1 band made flesh, and the list confirms it from both directions at once** —
+which is why a crowded band is the right answer rather than a vague one. Liberalizing: אלי כהן #2
+dismantled the Standards Institute monopoly and legislated an independent Capital Market Authority;
+ישראל כץ #4 drove the private-ports reform against the Histadrut; אוחנה #6 is a self-described
+free-marketer. Expanding: **מירי רגב #8** runs an explicitly redistributive fare structure and
+deprioritised the Tel Aviv Metro for periphery lines, and **חיים כץ #18** was the Histadrut's
+pension-funds policy chairman and entered the Knesset on Amir Peretz's Am Ehad before Likud.
+
+**ניר ברקת's fall to #24 is deliberately not read as an economic verdict.** Every source attributes it
+to his post-October-7 attempt to replace Netanyahu and to the reserved-slot arithmetic — no analysis
+argues economic liberals lost as such, **ארז תדמור**, a declared economic liberal, *entered* the list at
+#27, and the "Likud Liberals" faction recently swept the party's internal institutional elections.
+Reading a leadership purge as an ideological shift would be the error here.
+
+**religiosity +2 confirmed, not at +3.** Nothing on this list is a halakhic-state programme. The +2
+evidence is stronger than ever — a Basic Law declaring Torah study a foundational value, the kashrut
+monopoly restored by statute, the law banning arrest of haredi draft evaders (58–54) — and
+`conscription-exemption` gains a fresh instance of the mechanism the families doc already cites:
+**אופיר כץ at #10 stripped Dan Illouz of two committees and barred him from private bills for six
+weeks** over the haredi draft. Individual dissent punished by the leadership is evidence *of* a party
+line. Against that, גוטליב #20 refuses the exemption bill and הלוי #33 wants haredim *and* Arabs
+conscripted — dissent, not the line.
+
+#### Ten tags added, 4 → 14
+
+- **`judicial-overhaul`** — closes a gap against all three bloc partners, and the largest one on this
+  page: the party whose own Justice Minister wrote the overhaul did not carry it. **לוין at #7** is
+  its architect and now threatens to paralyse the Court and let it "disappear"; אוחנה #6 floated an
+  alternative constitutional court; סער #5 co-authored the enacted March 2025 selection law and
+  refuses to reopen it; **אופיר כץ #10**, the coalition whip, has pledged "this time we won't stop";
+  שיקלי #16 chaired the ministerial committee that recommended firing the Attorney-General; אמסלם #17,
+  סעדה #19 (who revived the bill putting Mahash under the Justice Minister he once served under),
+  גוטליב #20 and קרעי #22 fill it out. This clears revision 23's narrow membership test decisively
+  — that test refused the tag to המפלגה הכלכלית for backing a *symmetrical* override while opposing
+  Rothman's bill; here the party authored Rothman's bill. **The brakes are exactly the people who
+  fell**: ביטן #21 counted heads to freeze the overhaul bills, ברקת #24 said he would respect a High
+  Court ruling against Levin, and אלקין #32 negotiated the President's-Residence compromise and
+  accused Netanyahu of corrupting the reform for personal ends.
+- **`no-palestinian-state`**, **`anti-two-state`**, **`security-hawk`** — three gaps that contradicted
+  the row's own score: the band Likud sat in is *defined* by the first of them, and ישר, כחול לבן and
+  המפלגה הכלכלית all carried all three. Nobody in the top ten is open to a Palestinian state.
+  סער #5: "a two-state solution means our end." אוחנה #6 on "the idea that was mistakenly called
+  'the two-state solution'."
+- **`sovereignty-annexation`** and **`pro-settlement`** — both follow the axis move. אלי כהן #2 on one
+  million Jews in the West Bank and connecting settlements to infrastructure; ישראל כץ #4's career of
+  converting settlements from security measures into permanent fact; the February 2026 cabinet package.
+- **`hardline-on-gaza`** — ישראל כץ #4 "will never fully withdraw" plus outposts inside the Strip;
+  רגב #8 rules out any permanent ceasefire; אלמוג כהן #14; סעדה #19; הלוי #33 — "there's no such
+  thing as partial control." Second holder after ישראל ביתנו.
+- **`preemptive-security-doctrine`** — ישראל כץ #4 as Defence Minister on Iran: Rising Lion was "only
+  the preview of a new Israeli policy," and "after Oct. 7, immunity is over." Second holder after אל הדגל.
+- **`scholar-exemption-retained`** — the arrest-ban law plus ביסמוט #23's exemption bill, condemned by
+  the Attorney-General, the IDF and the Finance Ministry alike. Fourth holder, and this row is the
+  first to reach it by *statute protecting non-enlistment* rather than by a quota design.
+- **`voluntary-palestinian-emigration-incentives`** — גמליאל #25 authored the Gaza "voluntary
+  migration" plan as Intelligence Minister, presented it to the government, and says a Defence
+  Ministry directorate and the Mossad are involved. **Its evidence is her ministerial record, not her
+  placement** — #25 alone would not carry a tag. Second holder after אל הדגל, and **the tag was
+  renamed** from `voluntary-emigration-incentives` in this pass: the old name never said *whose*
+  emigration. It is deliberately **not** narrowed to Gaza, because אל הדגל's plank is a benefits
+  basket for "Palestinians choosing to leave" with no geographic limit, and גמליאל has extended the
+  same logic to the West Bank. Naming a place the evidence does not support is the התיישבות homograph
+  failure in reverse. `population-transfer` stays with זהות: opt-in is a different claim, and the
+  standing warning under בית ציוני about attributing transfer to a party that has not stated it applies
+  here in the direction of restraint.
+
+#### Seven rejections, each with a reason meant to outlive the row
+
+- **`opposes-western-wall-compromise` — considered, and dropped after the evidence was checked.** The
+  claim was that לוין #7 backed a bill putting the whole Kotel including עזרת ישראל under Rabbinate
+  control. What is true is narrower: the bill is **אבי מאוז's** private member's bill, at preliminary
+  reading only; its text **does not name the Western Wall** and does not itself ban egalitarian
+  prayer — it defines "desecration" as conduct contravening Chief Rabbinate directives, making the
+  Rabbinate decision-making rather than advisory. Levin attacked the High Court over its עזרת ישראל
+  ruling and announced support for amending the Protection of Holy Places Law — advocate, not
+  sponsor — and **Netanyahu pulled the bill from the Ministerial Committee for Legislation at the
+  last moment**, so the government never endorsed it. The tag's only other holder is נעם, whose own
+  MK wrote it. Attributing it to Likud when the leader killed it inverts the same test that keeps
+  `conscription-exemption` on this row: leadership *declining* is evidence against a party line, just
+  as leadership *punishing* is evidence for one.
+- **`far-right`** — Haaretz ("Likud… is the far right") and Ben-Dror Yemini ("Ben-Gvir did not move
+  closer to Likud. Likud moved closer to Ben-Gvir") are journalists' characterisations, and a position
+  that appears in a summary but not in a party source does not move this page. The strongest datum
+  *for* it is recorded instead: **אלמוג כהן at #14 is a confirmed עוצמה יהודית defector for whom
+  Netanyahu personally waived Likud's membership cooling-off rule**, and who placed 8th among elected
+  candidates. Trigger for revisiting: a second such absorption, or the position entering a party
+  document.
+- **`opposes-hostage-deals`** — direct counter-evidence, not absence of evidence. **מיקי זוהר at #13**
+  was the public Likud voice *for* the Trump hostage deal against בן גביר and סמוטריץ' — "there's what
+  we'd like, and there's what's possible" — and the government approved it. נעם and הציונות הדתית
+  earned this tag on candidates at #2 and #3; here the comparable placement argues the other way.
+- **`pm-immunity-protections`** — אל הדגל holds it for a Basic Law plank. Likud has אוחנה's 2019
+  backing of Netanyahu's immunity bid, which is a personal position on one case, not a constitutional
+  programme.
+- **`anti-lgbt` and `lgbt-rights`** — the row genuinely splits and **neither is true of the party**.
+  **אוחנה #6 voted for an opposition civil-marriage bill as sitting Knesset Speaker in December
+  2025**, drawing formal rebukes from ש"ס and דגל התורה, and has broken the party line on surrogacy,
+  conversion therapy and adoption — while שיקלי #16 called Pride "disgraceful vulgarity." Recording
+  the split in prose is the honest end state; a tag would assert a party position that does not exist.
+  Note the limit of Ohana's liberalism too: it is confined to personal status, and he is inert on
+  Shabbat and haredi conscription.
+- **`deregulation`** — refused as audit coverage. The import reform is already documented above under
+  `economic +1`; adding a tag for it now would record that this entry was re-read, not a new position.
+- **`sovereignty-annexation` was very nearly refused on the earlier reading**, when this row was still
+  +2 and every holder sat at +3. It is recorded here because the reasoning is reusable: a tag whose
+  membership tracks a band should move *with* the band, in the same pass, or not at all.
+
+#### Not resolved, and left unresolved deliberately
+
+Four thin records that a Hebrew sweep did not close, listed so the next reader does not repeat the
+search: **שיקלי #16** has no locatable statement of his own on West Bank sovereignty, which is odd for
+a minister of his profile; **סעדה #19** calls for overhauling the haredi draft law without the
+*direction* being determinable, and it points opposite ways on this page's axes; **תדמור #27** has no
+on-record religion-and-state position despite being an explicit ideologue resident in Efrat; and
+**לרנר #28, שוקי אוחנה #30, משה בנימין פרץ #31 and אטיאס בובליל 34** have no discoverable national
+policy record at all — municipal and district figures, one of them plausibly the former mayor of
+Safed, whose district (Galilee, not the Beit She'an Valley) is itself disputed in the sources.
+
+**One structural fact that scores nothing but must not be lost.** An Agam Labs survey (11 Aug 2026)
+found **54.9% of Likud *voters* want a more centrist government, against about a third of the
+~140,000 *members*** who chose this slate. The reserved slots were reportedly used in both
+directions — to remove ברקת and אלקין, and to keep firebrands out of top positions because internal
+polling showed they repel swing voters. This row is scored on what the party does, not on that gap,
+but the gap is the reason a future revision may find the parliamentary party diverging from this list.
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
@@ -1490,7 +1687,7 @@ Basic Law **protections for a sitting PM** (`pm-immunity-protections`); a standi
 chapter's haredi and Arab labour-market integration track, *"היעד איננו 'לגייר' אף קהילה"*
 (`workforce-integration`). From the platform PDF: a **voluntary-emigration** benefits basket for
 Palestinians choosing to leave, held distinct from זהות's `population-transfer` because it is
-opt-in (`voluntary-emigration-incentives`).
+opt-in (`voluntary-palestinian-emigration-incentives`).
 
 **Those first two planks point opposite ways, and that is the finding, not a defect.** Demanding a
 state commission of inquiry is the anti-Netanyahu marker; entrenching protections for a sitting PM
@@ -2022,7 +2219,10 @@ separates them from +3.
 These describe each party **as it stood at the previous election** and are frozen. Most carry the
 same reasoning as their upcoming counterpart at an earlier stage; only the differences are noted.
 
-- **הליכוד** `bibi` · 1 / 2 / 2 · traditional — as above, including `instrumentally-clerical`.
+- **הליכוד** `bibi` · 1 / 2 / 2 · traditional — economic and religiosity as above, including
+  `instrumentally-clerical`. **`security` diverges from the upcoming row as of revision 24**: that row
+  moved to +3 on a record built entirely after November 2022, so this one keeps +2 and its original
+  four tags, per the no-back-dating convention.
 - **יש עתיד** `opposition` · 0 / 0 / −2 · secular — strong separationist.
 - **הציונות הדתית** `bibi` · 0 / 3 / 3 · religious_zionist — the four original tags only; the 2026
   primary findings are **not** back-dated here.
@@ -2259,6 +2459,30 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
   as neutrality. **Check יש עתיד against a source before this band is cited as evidence for
   anything.** It is a `previous_parties` row, so the stakes are lower, but the same reasoning that
   caught המפלגה הכלכלית applies.
+- **No press-freedom tag exists, and one row now clearly earns one.** שלמה קרעי (#22 on Likud's 2026
+  list, and a riser from 25th to 13th in the raw vote) has as Communications Minister banned Al Jazeera
+  and repeatedly extended it, advanced a **permanent** statutory power to ban foreign outlets deemed a
+  security threat **without court oversight**, carried a cabinet decision cutting all state advertising
+  and contact with הארץ, moved to privatise כאן and close its news division, and sought government
+  oversight of television ratings — condemned on record by RSF, CPJ, the IFJ and the European
+  Broadcasting Union. **No existing tag covers any of this**; `governance-reform` is the institutional
+  tag and points the other way. Refused in revision 24 on revision 15's standing reasoning — a tag
+  created from one row's audit measures reading coverage, not position. **Resolution: sweep all 18 rows
+  for press-and-broadcasting content first, then create the tag (or don't) with membership decided in
+  one pass.** This is the second tag now queued behind such a sweep, alongside the environment tag, and
+  they should be done together.
+- **זהות is now the only `judicial-restraint` family member without the `judicial-overhaul` tag.**
+  Revision 24 gave the tag to הליכוד, which was the largest gap; the family covers הליכוד,
+  הציונות הדתית, עוצמה יהודית, זהות and נעם, and four of the five now carry it. That is the same
+  shape of gap revision 16 closed for עוצמה יהודית and revision 18 for נעם. Check זהות's 2026
+  platform against the tag's membership test before assuming it belongs — the row was scored from a
+  real platform, so the evidence either exists or its absence is meaningful.
+- **הליכוד's 2026 list was not certified when revision 24 read it.** The 21–23 ordering
+  (קרעי/ביסמוט/ביטן versus the reverse) and the 16–17 ordering are disputed between counts, and the
+  exact set of Netanyahu's reserved slots is reported inconsistently (eight, at 3/5/9/11/15/18/26/29,
+  is the best-supported version). **None of it changes a tag** — every tag rests on a candidate's
+  record, not on their precise slot — but the realized list quoted in that entry should be reconciled
+  against the certified filing, and the "eight reserved slots" claim confirmed, once it exists.
 - Election date is **2026-10-27**; lists are not final, so more revisions should be expected.
 
 ---
@@ -2385,3 +2609,4 @@ pass happened, for anyone reading git history.
 | 2026-08-16 | revision 21 — **ישר's full principles corpus read for the first time**: nine principles papers, the 10-step brochure (2026-06-03) and the registrar-approved statement of party goals (2025-12-17). Revision 8 had scored the row from "eight principles documents"; there are eleven documents in all. **No axis moved** — economic +1, security +1 and religiosity −2 all confirmed against first-party text. **The religiosity justification was false and was deleted rather than patched**, on revision 20's precedent: it read "this platform demands no civil marriage", and `principles/aliyah-and-integration` carries a **מעמד אישי** section stating *"נפעל למיסוד זוגיות אזרחית בישראל"* plus respectful conversion and IDF-standard burial for terror victims, and a **המרחב הציבורי והשבת** section devolving Shabbat to municipalities and communities. Religion-and-state policy filed under immigration absorption — the mirror of the `homeland-security` trap already recorded for this row, where a URL invited the wrong axis; here a URL concealed the right one. Held at −2 by the funding criterion (revision 20's test): funding for religious education is kept and conditioned, *זהות יהודית-ישראלית* is mandated in the national core, the Rabbinate is not touched. **Three sentences elsewhere in this document cited ישר as the −2 party *without* civil marriage and all three were corrected** — the band table, the אל הדגל entry and the המפלגה הכלכלית entry. **A fourth correction is a factual overstatement about the party**: כחול לבן's entry said the *"תורתו אומנותו"* exemption is "the exact compromise Eisenkot refuses", but the service paper reserves *"עד 3%"* of each cohort for a **one-year Torah-study deferral** on the same footing as its athlete/scientist carve-out, with induction and basic training required of every recipient. That is a bounded deferral, not a retained exemption, so `scholar-exemption-retained` was **considered and rejected** for this row and the −1/−2 gap now rests on that distinction rather than on a refusal that was never total. **9 tags added** (18 → 27), all from the existing vocabulary: `civil-marriage`, `kashrut-liberalization`, `religious-pluralism`, `municipal-devolution`, `communitarian-devolution`, `state-haredi-education`, `arab-civil-service`, `workforce-integration`, `term-limits`. `arab-civil-service` **loses its single-holder status** (כחול לבן was alone), and `state-haredi-education` closes a gap where this entry had asserted the position in prose since revision 7 while the tag was missing. **Six candidates rejected**, each with a reason meant to outlive the row: `scholar-exemption-retained` (above), `state-commission-of-inquiry` (declined a third time, revisions 15 and 20), `periphery-development` (retired revision 19 — this corpus would have earned it, which **strengthens** the retirement; the retirement section is amended to say so rather than left asserting no holder had evidence), `anti-corruption` (near-universal rhetoric, the `periphery-development` failure mode; `governance-reform` already carries the institutional half), `gender-equality` (crime policy in a crime paper, not a dedicated equality programme as הדמוקרטים's was) and `welfare-state` (this row runs the opposite doctrine, *"העבודה תשתלם תמיד יותר מקצבה"*, restated verbatim). **security's demographic premise became first-party** — the registered goals commit to *"הבטחת רוב יהודי מוצק"* — while the inference from it (no annexation) still rests only on Eisenkot's statements, since eleven documents contain no sentence on statehood, the territories or sovereignty. Two earlier warnings re-checked and **both held**: `homeland-security` remains internal security only, and `inlocation-and-aliya`'s *"אזורי עדיפות לאומית"* still names no region; the agriculture paper adds a **third** instance of the התיישבות homograph (rural/border settlement, not the West Bank). Also logged: the aliya target is a million in a decade **and two million by 2048**, not the single figure this entry recorded, and the economics page **still contains Hebrew lorem ipsum**, so absences there are unwritten rather than positions. Revision 20's open question about the −3 band criterion was recorded only in this table and never in Open questions; it is now filed there, with its stated trigger ("a second pluralist-funding party") met by this row |
 | 2026-08-17 | revision 22 — **ביחד's plans corpus read in full for the first time.** The entry cited one page (`plans/yoker`) and referred to "the education and civil-service plans" in prose without linking either; the party publishes **four** (`yokermichya`, `education`, `servant-law-new`, `meshartim`) and only the `/plans/` index says so. **No axis moved.** **One justification reversed:** the entry said `kashrut-liberalization` is *not* anti-clerical evidence here because the reform works "inside the Rabbinate's framework" — the live plan makes *"נשבור את מונופול הרבנות"* a headline plank, with automatic recognition of international certifiers and supervision moved to the certifying body, and states that the Rabbinate-certificate obligation *"מרוקנת מתוכן חלקים מהרפורמה"*. Kashrut is now the strongest single piece of anti-clerical evidence on this row. **The signal was a moved URL** — `plans/yoker` 301s to `plans/yokermichya` — so a redirect on a cited source is recorded as a re-read trigger. The four education claims sitting next to that sentence were all correct but **unsourced**, which is why the stale one beside them went unnoticed. **7 tags added** (9 → 16), all existing vocabulary: `core-curriculum` (the 60% funding condition — the criterion that *defines* the −2 band this row has always sat in, untagged), `state-haredi-education` (90% of haredi-supervised pupils to state-haredi institutions within eight years), `municipal-devolution` (70% of education decisions to local authorities), `reservist-focused`, `sanctions-on-non-servers` (individual benefits, the side of the line revision 15 drew when it denied this tag to הדמוקרטים), `service-conditioned-citizenship`, `workforce-integration`. **`universal-conscription` confirmed with a mechanism note**: three holders now use three different enforcement models — ביחד sanctions-only with no criminal penalty, ישר דין פלילי, כחול לבן coercion plus fines. `conscription-by-incentive` still wrong here (defined by rejecting sanctions, which this programme is built on); `welfare-state` rejected (conditional, single-population, deficit-neutral by construction). **economic +1 confirmed** with every listed measure verified against live text, plus the previously unrecorded scale of the statist half: ₪8.8B redirected and a housing benefit the party itself costs at **~₪16B/yr**, argued as costless because it is forgone land revenue — recorded here as the state expansion it is, not as the accounting the party gives it. **security NULL re-verified and strengthened**: the list *does* publish joint plans, on four topics, and the conflict is not among them — a declined subject rather than an absent platform. **religiosity −2 confirmed by the funding criterion for the third row in three days**, and this one satisfies a different subset of the −3 band's criteria again (ends a Rabbinate monopoly outright, silent on marriage, fails on funding), making the band text the most-cited unresolved item on this page |
 | 2026-08-17 | revision 23 — **המפלגה הכלכלית read against its full platform for the first time, and `security` moved 0 → +2.** The `מצע` URL is an **index**: each section shows one intro paragraph and a *המשך לקרא* link to its own page, so the entry had been written from first paragraphs only. All 13 sub-pages read, plus two the index does not link (`רפורמה-במערכת-המשפט`, `הון-שלטון`). **The `/ביטחון` page is a full conflict platform** — *"תתנגד לכל נסיגה או וויתור ולו הקטן ביותר משטחי מדינת ישראל"*, *"תתנגד להקמתה של מדינה פלסטינאית"*, *"תתמוך בחיזוק ההתיישבות היהודית ביהודה ושומרון"*, no Gaza deal without dismantling incitement education, and abolition of Palestinian work permits. That is the +2 definition verbatim; **not +3** because ריבונות/סיפוח appear nowhere. **The old `0` was not a gap but a false positive claim**, and the band table used this very row as its worked example of what `0` means ("an economics party that genuinely takes no conflict position") — that sentence is now deleted and the band left with one unaudited holder, יש עתיד `[p]`, flagged in Open questions. **Inverse of the ישר `homeland-security` trap**: there a URL invited the wrong axis; here the page is named for the right axis, opens on defence-budget material belonging to no axis, and buries the real position in its second half. **`single-issue-economy` REMOVED** — the party publishes dedicated pages on the conflict, women's equality, environment and animal rights, health, welfare, pensions, education, transport and agriculture; same correction revision 17 made removing `not-economy-focused` from הציונות הדתית. The true observation it was standing in for — that the *framing* is economic throughout — survives in prose, since a tag cannot separate "argues everything through economics" from "holds no other positions". **9 tags added** (9 → 17 net): `no-palestinian-state`, `pro-settlement`, `security-hawk`, `universal-conscription` (+ family), `sanctions-on-non-servers`, `scholar-exemption-retained`, `state-haredi-education`, `workforce-integration`, `gender-equality`. **`pro-settlement` is the one case where the התיישבות homograph resolves toward the West Bank** — the page says ביהודה ושומרון explicitly, unlike the Negev/Galilee usages flagged in revisions 15 and 21. **`scholar-exemption-retained` gains a third holder and now marks a boundary**: כחול לבן keeps תורתו אומנותו open-ended, this row keeps a real פטור capped at 2,000 yeshiva students under rabbinic testing, ישר abolishes the exemption for a 3% one-year deferral requiring basic training (tag declined there in revision 21). **`gender-equality` gains a second holder, and the contrast with revision 21 is deliberate** — declined for ישר as violence policy in a crime paper, granted here for a dedicated programme covering pay/promotion equality, statutory representation, gender education, הדרת נשים והפרדה מגדרית and עגונות ומסורבות גט. **economic +1 and religiosity −2 both confirmed and unmoved.** religiosity is the **fourth row in four days** held at −2 by the funding criterion, reached differently again: kashrut privatized outright (*"את הכשרות יש להפריט"*) but state religious funding retained and expanded, and core studies **incentivized rather than made a funding condition** — a weaker lever than the other three use. **Three rejections recorded with reasons:** `judicial-overhaul` (Zelikha supports a *symmetrical* escalating-majority override and political-trust legal advisers but *"מתנגד בכל תוקף"* to Rothman's bill and to government control of appointments — filing him with RZP/Otzma/נעם would misrepresent him; source also dated 2023-01-31, and his distinctive claim is that the courts' failure is **economic**), `agricultural-protectionism` (identical abolish-tariffs-substitute-direct-subsidy structure to ביחד, which was not tagged; ישר keeps it for legislated ענף אסטרטגי חיוני status and production targets that neither of the others has) and a **new environment tag**, refused despite clear evidence because a tag created from one row's audit measures reading coverage — filed as an open question to be resolved by sweeping all 18 rows in one pass |
+| 2026-08-18 | revision 24 — **הליכוד read against a candidate list for the first time**, its 2026 primary (98% counted, 17 Aug). **`security` +2 → +3 on `upcoming_parties`, the only axis this pass moved** — and it moved on the *government's* record, not the list: the 8 Feb 2026 Security Cabinet package extending control into Areas A and B, the Ministerial Committee on Legislation backing a statutory West Bank Heritage Authority (the first application of domestic Israeli law to territory rather than persons), 54 new settlements by cabinet decision in 2025, E1 approved with an acceleration agreement signed by Netanyahu personally. The "Netanyahu never intended to annex" line is an unnamed official on *formal declaration*, contradicted four months later against explicit US requests; Crisis Group titles it *Sovereignty in All but Name*. **`previous_parties` deliberately held at +2** — the whole record postdates November 2022 — so the two rows now diverge on this axis and the band table marks הליכוד `[p]` at +2 and `[u]` at +3. **economic +1 and religiosity +2 both confirmed**: the list supplies the +1 band's two halves simultaneously (אלי כהן/ישראל כץ/אוחנה liberalizing, רגב/חיים כץ expanding), and ברקת's fall to #24 is explicitly *not* read as an economic verdict — it was a leadership purge, and תדמור, another economic liberal, entered at #27. `conscription-exemption` reconfirmed by a fresh instance of its own mechanism: אופיר כץ at #10 stripped Dan Illouz of two committees over the haredi draft. **Ten tags added, 4 → 14** — the row had the thinnest tag set on this page because it publishes no platform and had never been audited: `judicial-overhaul` (closing the largest gap on the page — the party whose own Justice Minister wrote it, at #7, did not carry it), `no-palestinian-state`, `anti-two-state`, `security-hawk` (three gaps contradicting the row's own band), `sovereignty-annexation`, `pro-settlement`, `hardline-on-gaza`, `preemptive-security-doctrine`, `scholar-exemption-retained`, `voluntary-palestinian-emigration-incentives`. **That last tag was RENAMED** from `voluntary-emigration-incentives` across both holders: the old name never said whose emigration, and it is deliberately *not* narrowed to Gaza, since אל הדגל's plank covers "Palestinians choosing to leave" with no geographic limit — naming a place the evidence does not support is the התיישבות homograph failure in reverse. **Seven rejections recorded**, the most instructive being `opposes-western-wall-compromise`, **considered and dropped once checked**: the Kotel bill is מאוז's private member's bill at preliminary reading, its text does not name the Western Wall, Levin was an advocate rather than its sponsor, and **Netanyahu pulled it from the Ministerial Committee for Legislation** — leadership declining is evidence *against* a party line, the mirror of the punished-dissent test that keeps `conscription-exemption`. Also refused: `far-right` (journalists' characterisation, not a party source — but אלמוג כהן's עוצמה יהודית defection at #14, for whom Netanyahu waived the membership rule, is recorded with a trigger), `opposes-hostage-deals` (זוהר at #13 publicly carried the deal), `pm-immunity-protections`, `anti-lgbt` **and** `lgbt-rights` (the row genuinely splits — אוחנה voted for a civil-marriage bill as sitting Speaker while שיקלי called Pride "disgraceful vulgarity" — so neither is true of the party), and `deregulation` (audit coverage). A press-freedom tag for קרעי's programme was refused and **queued behind an 18-row sweep**, alongside the environment tag. Four thin records left explicitly unresolved rather than inferred |
