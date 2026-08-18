@@ -55,16 +55,29 @@ spec:
   podSelector: {}
   policyTypes: [Egress]
   egress:
-    # The Kubernetes API. Its ClusterIP lives in the SERVICE CIDR, which sits inside the
-    # 172.16.0.0/12 range the AWS rule below excludes -- so without this rule the API is denied.
-    # Prometheus needs it for service discovery and Grafana's dashboard sidecar watches ConfigMaps
-    # through it. The failure is delayed rather than immediate: NetworkPolicy does not sever
-    # established connections, so existing watches survive and only reconnects fail, which is why a
-    # target-count check right after applying shows everything healthy.
+    # The AWS VPC CNI evaluates egress policy PRE-DNAT -- against the ClusterIP the client dialled,
+    # not the pod IP the Service ultimately routes to. That means EVERY ClusterIP this namespace's
+    # own components talk to each other on needs its own explicit port here, in the Service CIDR
+    # block below -- not just the API server's 443. Grafana's datasources are ClusterIP URLs at
+    # Prometheus:9090 and Alertmanager:9093, and Grafana itself is reached (by port-forward and by
+    # anything proxying to it) on ClusterIP:3000. Restricting this block to 443 alone left Grafana's
+    # datasource health check timing out (`dial tcp <clusterIP>:9090: i/o timeout`) with every
+    # dashboard panel erroring -- caught 2026-08-18.
+    #
+    # The same-namespace `podSelector: {}` INGRESS rule below does NOT cover this: that rule governs
+    # what the RECEIVING pod (Prometheus/Alertmanager) accepts, this one governs what the SENDING pod
+    # (Grafana) is allowed to open in the first place, and NetworkPolicy denies on the sender's egress
+    # regardless of what the receiver would have accepted. The failure is delayed rather than
+    # immediate: NetworkPolicy does not sever established connections, so existing watches survive and
+    # only reconnects/new dials fail, which is why a target-count check right after applying shows
+    # everything healthy.
     - to:
         - ipBlock: { cidr: {{ .Values.serviceCidr | quote }} }
       ports:
-        - { protocol: TCP, port: 443 }
+        - { protocol: TCP, port: 443 }  # Kubernetes API server (service discovery, dashboard sidecar watches)
+        - { protocol: TCP, port: 9090 } # Prometheus (Grafana's datasource, and Alertmanager -> Prometheus alerts)
+        - { protocol: TCP, port: 9093 } # Alertmanager (Grafana's datasource, and Prometheus -> Alertmanager)
+        - { protocol: TCP, port: 3000 } # Grafana itself
     # Scrape targets, both inside the VPC.
     - to:
         - ipBlock: { cidr: 10.0.0.0/16 }
@@ -100,4 +113,42 @@ spec:
               kubernetes.io/metadata.name: ci
       ports:
         - { protocol: TCP, port: 9090 }
+---
+# The API server's admission webhook call into the prometheus-operator
+# (observability/kube-prometheus-stack-operator:443 -> pod :10250), which validates every
+# PrometheusRule/Alertmanager/Prometheus/etc. custom resource on write. Scoped to the operator pod
+# specifically (not the blanket `podSelector: {}` the other rules here use), since this traffic has
+# no business reaching Prometheus, Alertmanager or Grafana.
+#
+# The API server is NOT a pod -- its ENIs sit in the private subnets, outside any namespaceSelector
+# or podSelector a NetworkPolicy can name -- so this needs a plain VPC ipBlock, matching the
+# scrape-targets egress rule above. Both validating webhooks have `failurePolicy: Ignore`, so without
+# this the webhook is merely unreachable rather than blocking: a malformed rule is silently ADMITTED
+# instead of rejected, after a ~20s timeout on every write.
+#
+# Reproduce before/after with a deliberately invalid PromQL expr:
+#   kubectl apply --dry-run=server -f - <<'EOF'
+#   apiVersion: monitoring.coreos.com/v1
+#   kind: PrometheusRule
+#   metadata: { name: webhook-repro, namespace: observability, labels: { release: kube-prometheus-stack } }
+#   spec: { groups: [{ name: repro, rules: [{ alert: Repro, expr: "this is not ( valid promql" }] }] }
+#   EOF
+# Before this rule: "created (server dry run)" after ~20s. After: rejected in under a second.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-admission-webhook-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: kube-prometheus-stack-operator
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - ipBlock: { cidr: 10.0.0.0/16 }
+      ports:
+        - { protocol: TCP, port: 10250 }
 {{- end }}
