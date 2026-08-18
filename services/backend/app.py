@@ -155,13 +155,6 @@ def health():
 
 @app.route('/api/options', methods=['GET'])
 def options():
-    # DRILL 4, SECOND RUN (2026-08-18, TEMPORARY -- reverted in the next commit). Same 1.5s delay as
-    # the first run. This time the thing under test is not the gate catching a slow release -- that is
-    # already proven -- but GATE_SETTLE_SECONDS: the ROLLBACK triggered by this failure must now PASS
-    # its own gate, where on the previous run it failed at p95 2.33s on healthy code because the [5m]
-    # SLI window still contained this very fault.
-    import time as _drill_time
-    _drill_time.sleep(1.5)
     conn = db.get_db()
     result = queries.get_options(conn)
     conn.close()

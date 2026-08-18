@@ -1,0 +1,74 @@
+Drill 4b — proving the GATE_SETTLE_SECONDS fix (commit 4b042a9)
+Captured 2026-08-18T20:59:18Z.
+
+WHAT IS UNDER TEST: not that the gate catches a slow release -- CD #26 and CD #29 both prove
+that. It is that the ROLLBACK triggered by such a failure now passes its OWN gate. On the
+2026-08-18 evening run it did not: CD #27 failed at p95 2.33s while production was already
+serving 0.12s, because every SLI here is a rate over [5m] and that window still contained the
+slow release the rollback had just removed.
+
+SEQUENCE
+  20:39:21Z  735210d pushed -- the same 1.5s sleep in GET /api/options
+  20:47:12Z  CI #96 SUCCESS (built the slow image)
+  20:50:02Z  CD #29 gate FAILED -> 'ROLLING BACK to 142d6c4 (this deploy of 735210d failed
+             verification)'    [ROLLBACK_DEPTH=0]
+  20:50:16Z  CD #30 starts    [ROLLBACK_DEPTH=1, SOURCE_BUILD=rollback-from-29, tag 142d6c4]
+  20:51:31Z  ==> Settling 330s before measuring, so the SLI lookback no longer contains
+             samples served by the previous release
+  20:57:07Z  settle over; gate sends its 60 requests
+  20:58:04Z  gate: PASS
+  20:58:24Z  CD #30 SUCCESS
+
+THE COMPARISON THAT IS THE PROOF -- same scenario, same healthy code being verified:
+
+  BEFORE (CD #27, no settle):
+    gate: FAIL -- p95 latency 2.326306145038168s exceeds GATE_MAX_P95_SECONDS=1.0s
+    NO ROLLBACK: this build is ITSELF a rollback (depth 1) and it also failed verification.
+    ... PRODUCTION IS LEFT RUNNING af4c5b5, WHICH FAILED VERIFICATION, AND NEEDS A HUMAN.
+
+  AFTER (CD #30, settled 330s):
+    gate: observed ~157.78 journey requests over the last 300s (rate=0.5259/s)
+    gate: OK   -- error ratio 0.000000 is within GATE_MAX_ERROR_RATIO=0.01
+    gate: OK   -- p95 latency 0.09328947368421053s is within GATE_MAX_P95_SECONDS=1.0s
+    gate: PASS -- all checks within threshold
+
+  p95 2.326s -> 0.093s. A 25x difference, from nothing but letting the window clear. The
+  release being judged was identical in both runs; only the data it was judged on changed.
+
+CD #30 stage list -- note the Monitoring Gate duration, which is the fix made visible:
+    Promote            SUCCESS     6s
+    Deploy             SUCCESS    34s
+    Rollout            SUCCESS     2s
+    Verify             SUCCESS     4s
+    Smoke Test         SUCCESS     2s
+    Monitoring Gate    SUCCESS   396s   <- 330s settle + 66s measuring
+
+  396s versus the ~90s a normal deploy's gate takes. That cost lands ONLY on rollbacks
+  (Jenkinsfile-cd sets GATE_SETTLE_SECONDS only when ROLLBACK_DEPTH > 0) and it delays the
+  CONFIRMATION, never the recovery: the bad image left production when Deploy finished at
+  20:51, five minutes before the gate rendered its verdict.
+
+ALSO OBSERVED: the [skip ci] Guard stopped CD's own promote commits FOUR separate times
+tonight -- CI #91, #94, #97, #98 all NOT_BUILT. Each was a 'ci: image tag <sha> [skip ci]'
+commit firing the GitHub webhook. Without that stage each one restarts the whole CI->CD cycle.
+
+VISITOR IMPACT during the injected fault:
+  slow samples:  38 of 345
+  peak:          20.002783s
+  non-200s:      1
+
+  ONE REQUEST WAS LOST, AND IT IS RECORDED RATHER THAN ROUNDED AWAY:
+     20:47:49Z 200 0.152678   <- old (fast) build
+     20:48:12Z 000 20.002783  <- hung, hit the poller's own --max-time 20
+     20:48:17Z 200 1.783053   <- new (slow) build serving
+
+  Code 000 means curl never completed, and 20.0027s is the client timeout, not a server
+  response -- so the connection HUNG rather than being refused. It lands exactly at the rollout
+  transition. The likely cause is the known target-type:ip window: the ALB registers POD IPs,
+  so there is a brief interval after a pod starts terminating during which the ALB can still
+  route to it. That is what the preStop delay exists to shrink, and this suggests it shrinks
+  the window rather than closing it.
+
+  It is one sample in 345 (0.3%) and the first drill-4 run recorded zero, so this is not
+  reproducible from two data points. Do NOT claim 'zero impact' for this run -- the honest
+  claim is 'one request lost at the rollout boundary, cause not conclusively attributed'.
