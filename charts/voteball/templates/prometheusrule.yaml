@@ -26,7 +26,10 @@ spec:
   groups:
     # The SLIs, computed once and referenced everywhere. The journey is the three endpoints a voter
     # actually traverses -- load the options, cast the ballot, read the results -- not every route the
-    # API happens to expose, because an admin endpoint erroring does not mean a voter was failed.
+    # API happens to expose, because an admin endpoint erroring does not mean a voter was failed. Both
+    # the availability rules AND the latency rule below are scoped to this same journey filter, for the
+    # same reason: a heavy /api/admin/* query (e.g. a bulk vote reassign) must not drag the p95 that
+    # VoteballHighLatencyP95 pages on, any more than an admin 500 should count against availability.
     - name: voteball.sli
       rules:
         - record: voteball:journey_requests:rate5m
@@ -43,9 +46,13 @@ spec:
               endpoint=~"/api/(options|vote|results.*)", status=~"5.."
             }[5m]))
 
-        # Availability as a ratio in 0..1. `or vector(1)` covers the quiet-night case: with no traffic
-        # the division is 0/0 = NaN, and a NaN availability would read as a breach in every panel and
-        # alert that consumes it. No requests means nothing failed.
+        # Availability as a ratio in 0..1. `clamp_min` alone already keeps a flat-zero traffic period
+        # from dividing to NaN -- once a label combination has been scraped at least once, its counter
+        # persists flat between scrapes, so that case is 0/positive = 0, not 0/0. What `or vector(1)`
+        # actually covers is the ABSENT-vector case: a label combination that has never been scraped at
+        # all (e.g. right after a fresh deploy, before the first request), where the division yields an
+        # empty result rather than a number. A quiet window must not read as a breach in every panel and
+        # alert that consumes this rule, so the fallback substitutes 1: no requests means nothing failed.
         - record: voteball:availability:ratio5m
           expr: |
             1 - (
@@ -56,7 +63,10 @@ spec:
         - record: voteball:latency:p95_5m
           expr: |
             histogram_quantile(0.95, sum by (le) (rate(
-              voteball_http_request_duration_seconds_bucket{namespace="{{ .Release.Namespace }}"}[5m]
+              voteball_http_request_duration_seconds_bucket{
+                namespace="{{ .Release.Namespace }}",
+                endpoint=~"/api/(options|vote|results.*)"
+              }[5m]
             )))
 
     - name: voteball.slo
