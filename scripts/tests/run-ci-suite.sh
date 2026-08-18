@@ -35,6 +35,9 @@ PYTHON_GROUP=(
   # Needs neither python3 nor git (bash + grep only), so it could sit in either group. Placed here
   # and confirmed passing inside a bare python:3.12-slim on 2026-08-12, per the rule above.
   test-logo-assets.sh
+  # Needs neither python3 nor git (bash + curl-free stubbed queries, awk, grep, sed only) -- confirmed
+  # passing inside a bare python:3.12-slim on 2026-08-18, per the rule above.
+  test-monitoring-gate.sh
   test-render-argocd-app.sh
   test-smoke-test.sh
   test-sync-values.sh
