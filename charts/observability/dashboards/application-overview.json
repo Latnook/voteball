@@ -43,7 +43,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum(rate(voteball_http_requests_total{namespace=\"devops-app\",status=~\"5..\"}[5m]))",
+          "expr": "sum(rate(voteball_http_requests_total{namespace=\"devops-app\",status=~\"5..\"}[5m])) or vector(0)",
           "legendFormat": "5xx",
           "refId": "A"
         }
@@ -217,7 +217,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum by (reason) (rate(voteball_votes_rejected_total{namespace=\"devops-app\"}[15m]))",
+          "expr": "sum by (reason) (rate(voteball_votes_rejected_total{namespace=\"devops-app\"}[15m])) or vector(0)",
           "legendFormat": "{{reason}}",
           "refId": "A"
         }
@@ -236,7 +236,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum(rate(voteball_db_errors_total{namespace=\"devops-app\"}[5m]))",
+          "expr": "sum(rate(voteball_db_errors_total{namespace=\"devops-app\"}[5m])) or vector(0)",
           "legendFormat": "db errors",
           "refId": "A"
         }
