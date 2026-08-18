@@ -243,12 +243,12 @@ resource "helm_release" "jenkins_support" {
 
   depends_on = [
     helm_release.external_secrets,
-    # The ServiceMonitor CRD comes from this release (kube-prometheus-stack's operator). Without this
-    # edge, a from-scratch `deploy.sh` rebuild can create the two releases in parallel and this one's
-    # ServiceMonitor apply fails with `no matches for kind "ServiceMonitor" in version
-    # "monitoring.coreos.com/v1"`, aborting a billed apply part-way through. Harmless today because
-    # serviceMonitor.enabled is false above (see that comment) -- kept anyway, because the flag flips
-    # back to true in a later change and the ordering has to already be correct when it does.
+    # jenkins_support renders a ServiceMonitor (serviceMonitor.enabled is true above), and that CRD
+    # comes from this release (kube-prometheus-stack's operator). Without this edge, a from-scratch
+    # `deploy.sh` rebuild can create the two releases in parallel and jenkins_support's ServiceMonitor
+    # apply fails with `no matches for kind "ServiceMonitor" in version "monitoring.coreos.com/v1"`,
+    # aborting a billed apply part-way through. Load-bearing now, not preparation for later --
+    # do not remove it because it looks like dead-code ordering for a disabled feature.
     helm_release.kube_prometheus_stack,
   ]
 }
