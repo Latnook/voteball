@@ -1,0 +1,35 @@
+Canary CPU throttling — found by the cluster's own alert, fixed in two steps
+Captured 2026-08-18.
+
+HOW IT WAS FOUND: CPUThrottlingHigh, a kube-prometheus-stack default alert that was firing and could
+easily have been dismissed as noise. It was reporting a real defect in something added hours earlier
+in the same session -- the synthetic canary that exists to give the ratio-based SLIs a denominator.
+
+MEASUREMENTS (fraction of CFS periods throttled, 5-10m windows):
+
+    limit    throttled   journey_requests:rate5m
+    20m        97.0%     --
+    150m       72.8%     0.0667/s     (intended ~0.1/s)
+    500m       20.3%     0.1211/s     <-- at/above target
+
+WHY THE FIRST FIX WAS NOT ENOUGH, and the useful lesson: at 150m the canary was throttled 72.8% of
+periods while using 0.0055 cores on AVERAGE and peaking at 0.0091. That looks contradictory and is
+not. A CPU limit is a quota PER 100ms CFS period -- 150m grants 15ms of each period. One curl (DNS
+resolution, TLS handshake, HTTP) bursts well past 15ms inside a single period, so every burst is
+clipped even though average usage is negligible. Average utilisation is the wrong number to size a
+bursty container's LIMIT against; the burst is.
+
+WHY IT MATTERED BEYOND TIDINESS: the throttling was suppressing about a third of the canary's
+traffic. That traffic is the denominator of every ratio-based SLI here, and it is also what keeps the
+CD monitoring gate above its GATE_MIN_SAMPLES floor -- below which the gate warns and passes instead
+of running its threshold checks. One under-resourced sidecar was quietly degrading the confidence of
+a release gate two layers away.
+
+WHY A LIMIT WAS KEPT AT ALL: the usual advice for bursty workloads is to set a CPU request and no
+limit, since limits cause exactly this. The course brief requires requests AND limits on every
+container, so the limit stays -- raised to a value the burst fits inside. A limit reserves no
+capacity, it only caps, so 500m costs nothing on a node whose actual usage is 0.0055 cores. The 15m
+REQUEST is what affects scheduling.
+
+Site served 200 throughout both changes; worker (24% -> clean) and the nginx exporter (12% -> clean)
+were corrected in the same pass.
