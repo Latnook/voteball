@@ -1,0 +1,20 @@
+Drill 4 RE-RUN — a failed release caught by the monitoring gate
+Captured 2026-08-18T18:01:31Z. Design: docs/design/2026-08-17-observability-design.md section 13.
+
+WHAT THIS DRILL IS FOR: proving the gate catches something nothing before it could. A release
+that is BROKEN would be caught by the smoke test and would prove nothing new. This one is SLOW
+-- correct responses, healthy pods, ArgoCD Synced -- and is invisible to every check that
+predates the gate.
+
+THE INJECTED FAULT: a 1.5s sleep in GET /api/options (services/backend/app.py).
+  CD smoke test:   curl --max-time 15, checks for 200      -> PASSES
+  Monitoring gate: GATE_MAX_P95_SECONDS=1.0                -> MUST FAIL (1.5 > 1.0)
+
+This re-runs the drill first captured in 2026-08-18-drill-4-monitoring-gate.txt. It matters
+because the gate's environment changed tonight: GATE_REQUESTS was raised 40->60, the SLI
+recording rules were added, and the synthetic canary now supplies baseline traffic. A
+regression in the gate would be invisible until a real bad release shipped.
+
+--- the diff ---
+ services/backend/app.py | 7 +++++++
+ 1 file changed, 7 insertions(+)
