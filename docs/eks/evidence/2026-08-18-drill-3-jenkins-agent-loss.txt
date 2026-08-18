@@ -57,3 +57,11 @@ FINDING (metric families are NOT interchangeable):
   rather than queueing it. To fire that alert you must make agent PROVISIONING fail (so items pile
   up unscheduled), not kill an agent that already exists. That is a different drill and was not run.
   Status: the alert is semantically right and UNPROVEN, not disproven. Recorded rather than claimed.
+
+
+SUPERSEDED IN PART (2026-08-18, same day): the gap recorded above -- that JenkinsQueueStuck was
+unproven -- was closed by drill 5, see 2026-08-18-drill-5-jenkins-queue-stuck.txt. Blocking agent
+PROVISIONING with a ResourceQuota (rather than killing an existing agent) drove
+jenkins_queue_size_value to 2 and the alert to firing after its 15m threshold, then back to inactive
+once the quota was removed. This file's reasoning about WHY killing an agent cannot produce that
+condition stands and is the reason drill 5 was needed.

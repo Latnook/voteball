@@ -1,0 +1,66 @@
+=== DRILL 5: Jenkins queue stuck (proving JenkinsQueueStuck) — 16:00:05Z ===
+Drill 3 killed an agent, which ABORTS a build rather than queueing it, so
+jenkins_queue_size_value never moved and the alert stayed unproven. To make builds QUEUE,
+agent PROVISIONING must fail. A ResourceQuota capping pods at the current count does that,
+contained entirely to the ci namespace.
+
+resourcequota/drill-block-agents created
+  quota applied at 16:00:06Z (auto-revert armed for +25m)
+  build triggered at 16:00:09Z
+  --- agent pod should be blocked ---
+     jenkins-0 2/2 Running
+  --- queue metric over time ---
+    16:02:20Z  queue_size=1  JenkinsQueueStuck=inactive
+    16:03:05Z  queue_size=1  JenkinsQueueStuck=pending
+    16:03:50Z  queue_size=1  JenkinsQueueStuck=pending
+    16:04:35Z  queue_size=2  JenkinsQueueStuck=pending
+    16:05:20Z  queue_size=2  JenkinsQueueStuck=pending
+    16:06:06Z  queue_size=2  JenkinsQueueStuck=pending
+    16:06:51Z  queue_size=2  JenkinsQueueStuck=pending
+    16:07:36Z  queue_size=2  JenkinsQueueStuck=pending
+    16:08:41Z  queue=2  JenkinsQueueStuck=pending
+    16:09:41Z  queue=2  JenkinsQueueStuck=pending
+    16:10:42Z  queue=2  JenkinsQueueStuck=pending
+    16:11:42Z  queue=2  JenkinsQueueStuck=pending
+    16:12:42Z  queue=2  JenkinsQueueStuck=pending
+    16:13:42Z  queue=2  JenkinsQueueStuck=pending
+    16:14:42Z  queue=2  JenkinsQueueStuck=pending
+    16:15:42Z  queue=2  JenkinsQueueStuck=pending
+    16:16:42Z  queue=2  JenkinsQueueStuck=pending
+    16:17:43Z  queue=2  JenkinsQueueStuck=firing
+  --- site untouched throughout? ---
+    site=200
+  --- RECOVERY at 16:17:56Z ---
+resourcequota "drill-block-agents" deleted from ci namespace
+  agent pods now:
+     jenkins-0 2/2 Running
+     voteball-build-xnhq6 9/9 Running
+    16:18:50Z  queue=2  alert=firing
+    16:19:36Z  queue=2  alert=firing
+    16:20:21Z  queue=1  alert=firing
+    16:21:06Z  queue=1  alert=firing
+    16:21:51Z  queue=1  alert=firing
+    16:22:36Z  queue=0  alert=inactive
+
+RESULT: PASS. JenkinsQueueStuck is now PROVEN, closing the gap drill 3 recorded as untested.
+
+  16:00:06Z  ResourceQuota pods=1 applied to the ci namespace (blocks agent provisioning)
+  16:00:09Z  build triggered
+  16:02:20Z  jenkins_queue_size_value = 1   (drill 3 could never move this)
+  16:03:05Z  JenkinsQueueStuck -> pending
+  16:04:35Z  queue = 2
+  16:17:43Z  JenkinsQueueStuck -> FIRING  (for: 15m elapsed)
+  16:17:56Z  quota removed
+  16:18:xx   agent pod voteball-build-xnhq6 provisioned, 9/9 Running
+  16:20-22Z  queue drained 2 -> 1 -> 0, alert -> inactive
+
+  Website served 200 throughout. A CI outage never touches delivery of the running site.
+
+WHY DRILL 3 COULD NOT PROVE THIS, stated plainly: killing an agent ABORTS the build it was running.
+The item leaves the queue rather than joining it. Queueing requires agent PROVISIONING to fail, so
+that items pile up with nothing able to execute them. Two different failures that both sound like
+"the agent broke", and only one of them is what this alert measures.
+
+A 25-minute automatic revert was armed BEFORE the quota was applied, so the break could not outlive
+the session that created it -- a direct correction of drill 1, where a usage limit interrupted the
+run and left the site degraded for ~4.5 hours instead of ~10 minutes.
