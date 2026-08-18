@@ -55,7 +55,17 @@ spec:
   podSelector: {}
   policyTypes: [Egress]
   egress:
-    # Scrape targets and the Kubernetes API, both inside the VPC.
+    # The Kubernetes API. Its ClusterIP lives in the SERVICE CIDR, which sits inside the
+    # 172.16.0.0/12 range the AWS rule below excludes -- so without this rule the API is denied.
+    # Prometheus needs it for service discovery and Grafana's dashboard sidecar watches ConfigMaps
+    # through it. The failure is delayed rather than immediate: NetworkPolicy does not sever
+    # established connections, so existing watches survive and only reconnects fail, which is why a
+    # target-count check right after applying shows everything healthy.
+    - to:
+        - ipBlock: { cidr: {{ .Values.serviceCidr | quote }} }
+      ports:
+        - { protocol: TCP, port: 443 }
+    # Scrape targets, both inside the VPC.
     - to:
         - ipBlock: { cidr: 10.0.0.0/16 }
     # SNS and STS. Public AWS endpoints reached through the NAT gateway.

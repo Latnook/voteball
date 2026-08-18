@@ -24,6 +24,12 @@ network:
     - "10.0.0.0/20"
     - "10.0.16.0/20"
 
+# The EKS Service CIDR -- NOT the VPC's. A separate, cluster-internal range the API server's
+# ClusterIP lives on (confirmed live: `kubectl get svc kubernetes -n default -o
+# jsonpath='{.spec.clusterIP}'` -> 172.20.0.1, inside this /16). Account- and cluster-specific, and
+# stated here as a literal because this chart is ArgoCD-synced and cannot receive a Terraform output.
+serviceCidr: "172.20.0.0/16"
+
 # The Jenkins queue-length metric name. The prometheus plugin prefixes its metrics with a configurable
 # namespace, and the Metrics-plugin registry exposes a second, differently-scoped family -- verified
 # live against this cluster on 2026-08-18 (see Task 1 Step 8): default_jenkins_executors_queue_length
