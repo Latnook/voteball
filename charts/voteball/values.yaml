@@ -77,23 +77,31 @@ frontend:
   # nginx metrics sidecar. Reads nginx's built-in stub_status over loopback and re-exposes it in
   # Prometheus format on 9113. Pinned by tag like every other image here -- validate-repo.sh fails
   # the build on an unpinned one.
+  # CPU limit doubled 2026-08-18: CPUThrottlingHigh measured this container at ~6-9% throttled
+  # periods even though average usage is tiny (~0.2m core) -- the Prometheus scrape hits stub_status
+  # in a short burst rather than a steady drip, so it needs headroom above its average, not above its
+  # request. Request is untouched -- average usage doesn't justify reserving more scheduling budget.
   exporter:
     image: "nginx/nginx-prometheus-exporter:1.5.3"
     resources:
       requests: { cpu: 10m, memory: 16Mi }
-      limits: { cpu: 50m, memory: 32Mi }
+      limits: { cpu: 100m, memory: 32Mi }
 
 worker:
   # Singleton poller, not a request-serving tier — 2 replicas would just be
   # 2 processes independently polling and computing identical rollups.
   replicas: 1
   roleArn: "arn:aws:iam::590183895228:role/voteball-worker-irsa"
+  # CPU limit doubled 2026-08-18: CPUThrottlingHigh measured ~8% throttled periods here too, from the
+  # bursty rollups.recompute() triggered by NOTIFY votes_changed -- a wholesale rebuild of all eight
+  # rollup tables in one shot, not steady load. Average usage (~1.6m core) stayed far under even the
+  # old 100m limit, so the request is untouched; only the burst ceiling needed raising.
   resources:
     requests:
       cpu: 25m
       memory: 64Mi
     limits:
-      cpu: 100m
+      cpu: 200m
       memory: 128Mi
 
 # Synthetic canary (charts/voteball/templates/canary-deployment.yaml). Continuously exercises the
@@ -110,6 +118,18 @@ canary:
   # services/*/Dockerfile, but the same "no floating tag" rule applies here by convention.
   image: "curlimages/curl:8.7.1"
   intervalSeconds: 30
+  # CPU limit raised 7.5x (20m -> 150m) 2026-08-18: CPUThrottlingHigh caught this container at 97.6%
+  # throttled periods (1289/1321 CFS periods over 10m) -- confirmed live via
+  # container_cpu_cfs_throttled_periods_total/container_cpu_cfs_periods_total in Prometheus. The old
+  # 20m limit is a 2ms compute quota per 100ms CFS period; three sequential curl invocations (DNS +
+  # TLS handshake + HTTP, three times) blow well past that in a single burst even though the 10m
+  # *average* usage is only ~4.4m core -- CFS throttles on the instantaneous burst, not the average,
+  # so a low average is not proof of a safe limit for spiky workloads like this one. Left throttled,
+  # the loop barely executes its 30s cycle, which thins voteball:journey_requests:rate5m -- the only
+  # thing keeping the ratio-based SLIs' denominator non-zero -- and pushes
+  # scripts/ci/monitoring-gate.sh's GATE_MIN_SAMPLES=20 floor closer to warn-and-pass. Request raised
+  # only 5m -> 15m (still trivial against the 2-node t3.large budget); it's the limit, not the
+  # request, that was starving it.
   resources:
-    requests: { cpu: 5m, memory: 16Mi }
-    limits: { cpu: 20m, memory: 32Mi }
+    requests: { cpu: 15m, memory: 16Mi }
+    limits: { cpu: 150m, memory: 32Mi }
