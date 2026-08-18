@@ -155,13 +155,6 @@ def health():
 
 @app.route('/api/options', methods=['GET'])
 def options():
-    # DRILL 4 (2026-08-18 re-run, TEMPORARY -- reverted in the very next commit): an artificial delay
-    # that makes this release SLOW rather than BROKEN. The CD smoke test uses `curl --max-time 15` and
-    # checks for a 200, so it PASSES; only the monitoring gate's p95 check (GATE_MAX_P95_SECONDS=1.0)
-    # can catch this. That distinction is the entire reason the gate exists alongside the smoke test,
-    # and this drill is what proves it.
-    import time as _drill_time
-    _drill_time.sleep(1.5)
     conn = db.get_db()
     result = queries.get_options(conn)
     conn.close()

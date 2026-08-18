@@ -18,3 +18,92 @@ regression in the gate would be invisible until a real bad release shipped.
 --- the diff ---
  services/backend/app.py | 7 +++++++
  1 file changed, 7 insertions(+)
+
+--- BONUS EVIDENCE: the [skip ci] Guard caught in the act ---
+  18:21:19Z  application-ci #91 started -- fired by application-cd's OWN promote commit
+             ('ci: image tag <sha> [skip ci]') hitting the GitHub webhook
+  18:22:00Z  application-ci #91 -> NOT_BUILT
+
+  Jenkins has no native [skip ci] -- that is a GitHub Actions feature. The Guard stage
+  (scripts/ci/should-skip-build.sh) is the ONLY thing stopping this: CD's tag bump retriggers
+  CI, which would retrigger CD, forever -- an unbounded, billable build loop that also rolls
+  production pods continuously. NOT_BUILT here is that guard doing its job, observed live
+  during an unrelated drill.
+
+--- CD #26 stage progression ---
+  status: IN_PROGRESS
+   Declarative: Checkout SCM SUCCESS      10s
+   Checkout               SUCCESS      1s
+   Input Validation       SUCCESS      6s
+   Manifest Validation    SUCCESS      3s
+   Promote                SUCCESS      6s
+   Deploy                 SUCCESS      34s
+   Rollout                SUCCESS      2s
+   Verify                 SUCCESS      4s
+   Smoke Test             SUCCESS      3s
+   Monitoring Gate        IN_PROGRESS  23s
+
+--- the slow release going live (public site, /api/options, polled every 3s) ---
+  last fast samples before the roll:
+    18:21:18Z 200 0.160061
+    18:21:21Z 200 0.185195
+    18:21:25Z 200 0.151321
+  first slow samples after the roll:
+    18:21:29Z 200 1.733392
+    18:21:34Z 200 1.722184
+    18:21:39Z 200 1.656819
+    18:21:43Z 200 1.635454
+
+  Every response is a 200. The latency went ~0.15s -> ~1.6s. That is the whole point: the CD
+  smoke test asks 'did it answer?' and gets yes. Nothing before the gate measures HOW LONG a
+  user waits, so Rollout, Verify and Smoke Test all passed a release that is 10x slower.
+
+--- RESULT: PASS. CD #26, and the stage list IS the evidence ---
+    Checkout               SUCCESS
+    Input Validation       SUCCESS
+    Manifest Validation    SUCCESS
+    Promote                SUCCESS
+    Deploy                 SUCCESS      <- ArgoCD applied it
+    Rollout                SUCCESS      <- pods healthy
+    Verify                 SUCCESS      <- ArgoCD Synced at the right revision
+    Smoke Test             SUCCESS      <- endpoints returning 200
+    Monitoring Gate        FAILED  96s  <- the ONLY check that saw it
+
+--- the gate's own words ---
+    gate: OK   -- error ratio 0.000000 is within GATE_MAX_ERROR_RATIO=0.01
+    gate: FAIL -- p95 latency 2.351169078355028s exceeds GATE_MAX_P95_SECONDS=1.0s
+    ROLLING BACK to af4c5b5 (this deploy of 443bd37 failed verification).
+
+  Read those two lines together -- they are the whole drill. The ERROR ratio was a clean
+  0.000000: nothing was broken, every request succeeded. Only the LATENCY check failed. A
+  release that is slow rather than broken is invisible to status-code checks by construction.
+
+--- automatic rollback, from master's own history ---
+    0397fd0 ci: image tag af4c5b5 [skip ci]
+    6d5133d ci: image tag 443bd37 [skip ci]
+    443bd37 drill(4): a release that is slow, not broken
+    charts/voteball/values.yaml now: tag: "af4c5b5"
+
+--- visitor impact, measured (every sample a 200 throughout) ---
+    slow release live:  18:21:29Z
+    recovered:          18:24:32Z
+    slow samples:       40 of 64
+    peak observed:      1.868441s
+    after rollback:     0.136s average
+    non-200s at any point: 0
+
+--- IMPORTANT: rollback reverts the IMAGE TAG, not the SOURCE ---
+  After the rollback, charts/voteball/values.yaml points at af4c5b5 and the running pods serve
+  the fast code again -- but commit 443bd37 is still on master, so services/backend/app.py
+  STILL CONTAINS THE 1.5s SLEEP. The next build from master would rebuild the slow code and
+  ship it again, and this time no rollback would help because the 'previous' tag would also
+  contain it eventually.
+
+  This is inherent to how rollback is designed here (docs/design/2026-08-04-cicd-split-design.md
+  section 8): rollback goes through git by re-pointing image.tag at a known-good SHA, precisely
+  so Jenkins needs no cluster write permission. The trade-off is that it restores the RUNNING
+  ARTEFACT, not the SOURCE. Reverting the bad commit is a separate, human step.
+
+  It is worth saying out loud in an interview: 'automatic rollback bought me minutes to react,
+  it did not fix the bug.' A rollback that also reverted source would be rewriting history from
+  CI, which is a much worse property to have.
