@@ -144,12 +144,35 @@ the byte count, not the exit code. `7 bytes from 7 pages` and `25 bytes from 25 
 כחול לבן's and אל הדגל's education and platform PDFs return, and **both rows carried a wrong
 `religiosity` for as long as those files went unread** (2026-08-01 and 2026-08-10). Both were fixed
 by the education paper, because that is where this axis's real number lives — see the warning under
-`religiosity` in `docs/party-classifications.md`.
+`religiosity` in `docs/party-classifications.md`. **Reading the image-only file is necessary but not
+sufficient: אל הדגל's platform PDF was read, and the funding clause on p. 11 was still missed** — a
+page of rendered Hebrew scanned for the chapter you came for will not surrender the clause filed
+under a different heading (revision 25, 2026-08-19).
 
 **A second body of text that overlaps at the introduction is not the same document.** אל הדגל
-publishes vision chapters at `elhadegel.co.il/about-us` *and* a platform PDF; they share only the
-הקדמה, and the row was scored as though reading one had covered the other. Diff the section
-headings before concluding a source is already mined.
+publishes vision chapters at `elhadegel.co.il/about-us` *and* a platform page at `/our-platform`
+*and* a platform PDF; the first two share no headings with each other and only the הקדמה with the
+PDF, and the row was scored as though reading one had covered the others. Diff the section headings
+before concluding a source is already mined.
+
+**Enumerate a party's document links before reading any of them, and treat the link labels as
+unreliable.** The same row went eight revisions with **two of its four PDFs never cited anywhere**,
+because the four are linked from one page under labels that do not match their filenames
+(*חוק הגיוס* → `חוק יסוד השירות`, *מסמך תכנית כלכלית* → `הכלכלה הציונית של אל הדגל`), so a reader
+who has already found "the platform PDF" has no signal that three more exist. `curl` the platform
+page and list every `.pdf` href first; it costs one request.
+
+**Retrieval difficulty is a bad proxy for coverage, and it inverts more often than not.** On that
+same row the two documents that went unread longest were the two that `pdftotext` extracts cleanly
+in one command — the image-only pair got read precisely *because* they announced themselves as hard.
+The corollary for this file's rules above: a document that gave you no trouble is not thereby a
+document you read.
+
+**A second document agreeing with the first is not evidence the first was read.** אל הדגל's
+education paper was recorded as the source that moved `religiosity`, on the reading that the
+platform contained only a slogan; the platform contained the same funding condition and the same
+50/30/20 split all along. Corroboration feels like coverage and is not — when a new source confirms
+an axis, check whether it *introduced* the evidence or merely repeated it.
 
 **Reachable is not the same as current, and IDI is the standing example.** Its רע"ם page loads and
 carries a full platform — undated, and traceable to pre-2021 Joint List text rather than to anything
