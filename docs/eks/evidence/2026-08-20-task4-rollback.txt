@@ -36,14 +36,39 @@ Monitoring Gate added by the Task 5 observability work.
   12:03:52  gate: PASS -- min(up)=1, error ratio 0.000000, p95 0.0911s
   12:04:03  application-cd #6 SUCCESS
 
-  Failure detected -> site verified healthy again: 6m08s (11:51:12 -> 11:57:20).
+  Failure detected -> site verified healthy again: 6m08s (11:51:12 -> 11:57:20), of which the
+  rollback's own apply was 26 seconds; the rest was ArgoCD finishing with the failed sync (below).
 
 ## Why this recovery is slower than 2026-08-17's 2m08s -- both halves are deliberate
 
-1. Rollout waited ~5m for ArgoCD to report Healthy again. The frontend Deployment was carrying
-   'exceeded its progress deadline' from the broken rollout, and ArgoCD reports Degraded until the
-   replacement rollout actually completes. Nothing is retried or worked around here; the pipeline
-   simply waits for the platform's own verdict instead of substituting its own.
+1. ~4m40s was spent waiting for ArgoCD to stop retrying a revision nobody wanted any more, and
+   the apply itself then took 26 seconds. The detail matters, so here it is from the Application
+   object and the argocd-application-controller log rather than from the pipeline's own narration:
+
+     11:40:54  controller initiates AUTOMATED sync to f238f30 (the dead10c promote)
+     11:40:55  application-cd #5's own `argocd app sync` is rejected: "another operation is already
+               in progress". BENIGN -- it is auto-sync racing #5's own Promote commit, which is
+               exactly what the pipeline's message says
+     11:51:14  the f238f30 operation is still alive and failing: "Retrying operation. Attempt #1"
+     11:52:13  application-cd #6's `argocd app sync` is rejected with the SAME error -- but this
+               time the operation in flight is #5's DOOMED sync of dead10c, still retrying. The
+               pipeline prints the same "auto-sync picked up the Promote commit first" message,
+               which is accurate for #5 and MISLEADING for #6
+     11:52:35  Attempt #3 -> Failed
+     11:53:59  Attempt #4 -> Failed ("waiting for healthy state of ... and 28 more resources")
+     11:56:49  Attempt #5 -> Failed
+     11:56:53  the doomed operation is finally done; auto-sync immediately initiates a sync to
+               a509871 (the rollback commit), startedAt 11:56:53Z
+     11:57:19  finishedAt -- "successfully synced (no more tasks)". The apply took 26 SECONDS
+
+   The Application's sync history confirms dead10c never landed once: id 4 is e7421e1, id 5 is
+   a509871 at 11:57:19Z, and there is no entry in between. Verify with:
+       kubectl get app voteball -n argocd -o json | jq '.status.history, .status.operationState'
+
+   So the pipeline was not slow, and neither was the rollback: CD asked for the sync at 11:52:13 and
+   was told to wait, then waited correctly. What the wait was FOR is the finding -- and it means the
+   "auto-sync picked up the Promote commit first" message should not be read as proof of the benign
+   case. It prints for both.
 2. The Monitoring Gate ran with a 330-second settle wait -- 300s of recording-rule lookback plus one
    30s scrape interval. Jenkinsfile-cd sets GATE_SETTLE_SECONDS=330 only when the build IS a rollback
    (ROLLBACK_DEPTH > 0), because the SLI recording rules' 5-minute window still contains samples from
@@ -52,10 +77,11 @@ Monitoring Gate added by the Task 5 observability work.
 
 ## Visitor-visible impact: no error was ever served, one request timed out
 
-2,555 probes of https://voteball.latnook.com/ at 2/s spanning 11:39:29Z -> 12:04:25Z -- the whole
-demo, from before the broken deploy to after the recovery.
+2,561 probes of https://voteball.latnook.com/ at 2/s spanning 11:39:29Z -> 12:04:28Z -- the whole
+demo, from before the broken deploy to after the recovery. (Counted from the committed poll file,
+which is the thing a reader greps: `wc -l < 2026-08-20-task4-rollback-site-poll.txt`.)
 
-  2,554 returned HTTP 200.
+  2,560 returned HTTP 200.
       1 returned 000 at 11:52:31Z -- curl's code for "no response", i.e. the request did not
         complete within the client's 5-second timeout. It is NOT an HTTP error returned by the
         site; no status code was ever received. It falls during the rollback sync (11:52:15-11:52:22

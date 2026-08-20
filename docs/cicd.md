@@ -538,6 +538,22 @@ Rollout and Verify remain the real gates — Rollout waits for the running opera
 the landed revision — which is what makes tolerating the redundant command safe. It is **not** a
 blanket `|| true`: a genuinely rejected sync (bad token, unknown app, RBAC denial) still fails.
 
+**But "already in progress" does not always mean the *wanted* sync is running, and the stage's own
+message ("auto-sync picked up the Promote commit first") asserts a cause it cannot actually know.**
+The 2026-08-20 rollback demo hit the other case: `application-cd` #6 was the rollback build, and the
+operation blocking its sync at 11:52:13Z was #5's **failed** sync of the broken revision, still
+retrying on backoff (controller log: `Retrying operation. Attempt #1` 11:51:14, `#3` 11:52:35, `#4`
+11:53:59, `#5` 11:56:49, each ending `Failed`). Auto-sync only moved to the rollback commit at
+11:56:53Z, once that operation finally gave up — and then applied it in **26 seconds**. So ~4m40s of
+a 6m08s recovery was spent waiting out a doomed sync of a revision nobody wanted, not deploying.
+
+Nothing here is unsafe — Rollout and Verify are still the real gates, and they asserted the landed
+revision correctly — but when reading a slow rollback, **do not take that message as evidence of the
+benign race.** Check the Application instead: `kubectl get app voteball -n argocd -o json | jq
+'.status.history, .status.operationState'`. In this incident the sync history jumped straight from
+`e7421e1` to `a509871`, proving the broken revision never landed once. Full timeline:
+[`docs/eks/evidence/2026-08-20-task4-rollback.txt`](eks/evidence/2026-08-20-task4-rollback.txt).
+
 ### 6. Rollout
 
 ```bash

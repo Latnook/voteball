@@ -415,12 +415,14 @@ The current run is **2026-08-20** (`docs/eks/evidence/2026-08-20-task4-rollback.
 `cd-rollback-*-run.txt` logs): a deliberately broken frontend (`dead10c`, 500 on `/`) deployed through
 the real pipeline on the rebuilt cluster, the sync timing out at 600s, diagnostics dumped *before*
 anything is undone, `ROLLING BACK to 9a58532`, and the rollback build verifying itself green —
-**6m08s from detection to recovered**, across **2,555 probes of the live site of which 2,554 returned
+**6m08s from detection to recovered**, across **2,561 probes of the live site of which 2,560 returned
 200** and one returned `000` (no response inside the client's 5s timeout, not an error served by the
 site; Prometheus recorded zero 5xx and availability `1` across the same window). It is slower than the
-08-17 run for two deliberate reasons: ArgoCD is allowed to take its own time clearing the frontend's
-`progress deadline exceeded` condition, and the **Monitoring Gate runs with a 330-second settle wait
-when the build is itself a rollback** — because the SLI recording rules' 5-minute window still holds
+08-17 run for two reasons, both established from the ArgoCD controller log rather than inferred: the
+rollback's own apply took **26 seconds**, but it could not start for ~4m40s because ArgoCD was still
+retrying the *failed* sync of the broken revision (which never landed once — the Application's sync
+history jumps straight from `e7421e1` to `a509871`); and the **Monitoring Gate runs with a 330-second
+settle wait when the build is itself a rollback** — because the SLI recording rules' 5-minute window still holds
 the broken release's samples, and without the wait a rollback would be judged on the failure it is
 undoing. That branch had never executed before this demo.
 
