@@ -344,10 +344,15 @@ field is filled in separately, after ArgoCD exists — see the first-time setup 
 
 Trigger: a GitHub webhook on every push to `master`, or *Build with Parameters* → `FORCE_BUILD` by
 hand. Stage list, in order (from `Jenkinsfile-ci`): **Guard** (refuses its own tag-bump commits) →
-**Validation** (repo-shape checks) → **Script tests** (`run-ci-suite.sh`, the guards protecting the
+**Validation** (repo-shape checks) → **Observability Validation**
+(`validate-observability.sh`: every `ServiceMonitor`/`PrometheusRule` carries the label Prometheus
+selects on, and no metric label collides with an operator-owned one) → **Script tests**
+(`run-ci-suite.sh`, the guards protecting the
 pipeline itself — split across two containers because no single container in the agent pod has both
-`python3` and `git`) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (250
-pytest tests against a real, ephemeral Postgres sidecar) → **Resolve tag and account** → **Already
+`python3` and `git`) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (289
+pytest tests against a real, ephemeral Postgres sidecar — 241 backend + 48 worker, as executed by
+`application-ci` build #7 on 2026-08-20; count them with `pytest tests --collect-only -q` rather than
+trusting this number) → **Resolve tag and account** → **Already
 built?** (skip if this SHA's images already exist in the immutable ECR repos) → **Build images**
 (rootless BuildKit, four contexts) → **Trivy scan** (blocking on HIGH/CRITICAL for the app images) →
 **Push to ECR** → **Publish Metadata** (digests, archived as `image-metadata.json`) → **Trigger CD**.
@@ -370,13 +375,17 @@ CD agent cannot do for most kinds in the chart, discovered on the pipeline's fir
 `ci: image tag <sha> [skip ci]`, pushes) → **Deploy** (`argocd app sync --revision <promote-sha>`) →
 **Rollout** (`argocd app wait --sync --health`) → **Verify** (reads ArgoCD's own sync/health verdict,
 then one read-only `kubectl get` purely to capture evidence) → **Smoke Test** (real HTTPS requests
-against the live site — root, `/api/options`, `/api/results?by=all` — not just a probe check).
+against the live site — root, `/api/options`, `/api/results?by=all` — not just a probe check) →
+**Monitoring Gate** (added with Task 5: generates its own short traffic burst and asks Prometheus the
+same three SLI queries the dashboards and alerts use — targets up, 5xx ratio under 1%, p95 under 1s —
+so a release that answers *badly* fails and rolls back like one that does not answer at all).
 
-**Success is verified three separate ways, deliberately redundant**: ArgoCD reports `Synced` +
+**Success is verified four separate ways, deliberately redundant**: ArgoCD reports `Synced` +
 `Healthy` at the revision just promoted (platform-level); the `kubectl get` in Verify shows the
-Deployments actually running (evidence, not a second opinion); and the smoke test proves the *product*
+Deployments actually running (evidence, not a second opinion); the smoke test proves the *product*
 answers correctly over HTTPS, which is the one thing ArgoCD's health model cannot see — healthy pods
-serving a broken page are `Healthy` to ArgoCD.
+serving a broken page are `Healthy` to ArgoCD; and the monitoring gate proves it answers within the
+error and latency budgets the SLOs promise.
 
 ### The rollback procedure, and the evidence that it fired
 

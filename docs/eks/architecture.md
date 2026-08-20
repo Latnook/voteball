@@ -238,9 +238,10 @@ flowchart TD
         guard{"Guard: is this our<br/>own commit? [skip ci]"}
         guard -->|"yes"| stop(["NOT_BUILT -- loop broken"])
         guard -->|"no"| validate["Validation<br/>repo-shape checks"]
-        validate --> scripttests["Script tests<br/>run-ci-suite.sh -- the pipeline's own guards<br/>run TWICE: jnlp (git) + python container"]
+        validate --> obsval["Observability Validation<br/>helm template + promtool<br/>alert-rule labels, ServiceMonitor ports,<br/>no colliding metric labels"]
+        obsval --> scripttests["Script tests<br/>run-ci-suite.sh -- the pipeline's own guards<br/>run TWICE: jnlp (git) + python container"]
         scripttests --> lint["Lint / Static Analysis<br/>ruff + hadolint"]
-        lint --> tests["Tests<br/>280 pytest (233 backend + 47 worker)<br/>Postgres sidecar"]
+        lint --> tests["Tests<br/>289 pytest (241 backend + 48 worker)<br/>Postgres sidecar"]
         tests --> resolve["Resolve tag and account"]
         resolve --> built{"Already built?<br/>tag in ECR?"}
         built -->|"no"| build["Build images<br/>rootless BuildKit x4"]
@@ -265,7 +266,9 @@ flowchart TD
         sync --> wait["Rollout<br/>argocd app wait --sync --health"]
         wait --> verify["Verify<br/>argocd app get: Synced + Healthy + revision"]
         verify --> smoke["Smoke Test<br/>HTTPS GET / + /api/options<br/>+ /api/results?by=all<br/>(NOT /health -- 404 from outside)"]
-        smoke -->|"pass"| done(["Deployed and verified"])
+        smoke -->|"pass"| gate["Monitoring Gate<br/>own traffic burst, then Prometheus:<br/>targets up, 5xx &lt; 1%, p95 &lt; 1s"]
+        gate -->|"pass"| done(["Deployed and verified"])
+        gate -.->|"SLI regression"| rb
         smoke -.->|"fail"| rb
         wait -.->|"timeout"| rb
         verify -.->|"degraded"| rb
