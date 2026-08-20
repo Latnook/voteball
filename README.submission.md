@@ -417,7 +417,8 @@ the real pipeline on the rebuilt cluster, the sync timing out at 600s, diagnosti
 anything is undone, `ROLLING BACK to 9a58532`, and the rollback build verifying itself green —
 **6m08s from detection to recovered**, across **2,561 probes of the live site of which 2,560 returned
 200** and one returned `000` (no response inside the client's 5s timeout, not an error served by the
-site; Prometheus recorded zero 5xx and availability `1` across the same window). It is slower than the
+site; `voteball:journey_errors:rate5m` was **0** throughout and availability `1` — on a non-zero
+denominator, so it is a measured value rather than the no-data fallback). It is slower than the
 08-17 run for two reasons, both established from the ArgoCD controller log rather than inferred: the
 rollback's own apply took **26 seconds**, but it could not start for ~4m40s because ArgoCD was still
 retrying the *failed* sync of the broken revision (which never landed once — the Application's sync

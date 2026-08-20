@@ -29,12 +29,15 @@ Monitoring Gate added by the Task 5 observability work.
   11:51:17  scripts/ci/previous-tag.sh            -> 9a58532
   11:51:18  scripts/ci/rollback-target.sh 9a58532 -> present in ECR, rollback permitted
   11:51:22  ROLLING BACK to 9a58532 (this deploy of dead10c failed verification)
-  11:51:56  application-cd #6 starts (ROLLBACK_DEPTH=1)
+  11:51:32  application-cd #6 STARTS (ROLLBACK_DEPTH=1). This is the build start from the
+            Jenkins API; #6's first CONSOLE line is 11:51:56, 24s later, because the agent
+            pod has to be provisioned first. Both numbers are real and measure different
+            things -- a reader diffing this timeline against the console log will see 11:51:56
   11:57:17  sync=Synced health=Healthy revision=a50987162aa470fb9bcb04fb943894c2c1641497
   11:57:20  smoke: all checks passed against https://voteball.latnook.com  <-- RECOVERED
   11:57:22  Monitoring Gate begins, with GATE_SETTLE_SECONDS=330 (see below)
   12:03:52  gate: PASS -- min(up)=1, error ratio 0.000000, p95 0.0911s
-  12:04:03  application-cd #6 SUCCESS
+  12:03:55  application-cd #6 SUCCESS (build end per the Jenkins API; last console line 12:03:52)
 
   Failure detected -> site verified healthy again: 6m08s (11:51:12 -> 11:57:20), of which the
   rollback's own apply was 26 seconds; the rest was ArgoCD finishing with the failed sync (below).
