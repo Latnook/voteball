@@ -200,9 +200,16 @@ function renderTeamGrid() {
   if (selectedLeagueId == null) return;
   const entry = readLeagueEntry(selectedLeagueId);
   const selectedLeague = optionsData.leagues.find(l => l.id === selectedLeagueId);
-  grid.classList.toggle('card-grid-divisions', !!(selectedLeague && selectedLeague.has_divisions));
+  // Four columns whenever a row of five would orphan a card. A divisioned league qualifies by
+  // construction (16 teams per division); a flat league qualifies when it happens to hold 16 clubs,
+  // which ליגה לאומית does. Counted from the clubs themselves rather than hardcoding a league,
+  // so a 17th club removes the rule on its own. See .card-grid-quad in style.css.
+  const groups = groupedClubsForLeague(selectedLeagueId);
+  const clubCount = groups.reduce((n, g) => n + g.clubs.length, 0);
+  const quad = !!(selectedLeague && selectedLeague.has_divisions) || clubCount === 16;
+  grid.classList.toggle('card-grid-quad', quad);
 
-  groupedClubsForLeague(selectedLeagueId).forEach(group => {
+  groups.forEach(group => {
     if (group.label !== null) {
       const header = document.createElement('h2');
       header.className = 'team-group-header';
