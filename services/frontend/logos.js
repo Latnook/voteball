@@ -110,23 +110,26 @@ const FILL_INTERIOR_PARTIES = new Set([
   'Shas',
 ]);
 
-// Parties that need the flood fill AND the recolour, in that order -- the ink lifted to white like
-// any other dark logo, and then the enclosed gaps filled to match it.
+// Parties whose wordmark is shown UNCHANGED on a near-white plate in dark mode, instead of being
+// recoloured (logos.js draws it as .logo-recolored; .logo-plate in style.css paints the plate, and
+// it rides the existing light/dark switch rather than adding a second pair of theme rules).
 //
-// This is NOT the Shas treatment above, and applying that one here renders a black wordmark that is
-// almost invisible on the dark card (verified by rendering it). The difference is what the enclosed
-// gap is supposed to BE. Shas's artwork is dark ink meant to sit on paper, so the fill supplies the
-// paper and the ink stays dark. The Joint List's artwork is a two-line Arabic/Hebrew wordmark: the
-// ink has to become white to read at all, and the gaps are the closed bowls of ة and م -- five of
-// them, all on the Arabic line, about 9x10px on the 400px canvas. Left transparent they show the
-// dark card through, which is typographically correct and still reads as black dots punched into
-// white letters once the logo is scaled into its 3.4rem box, because a counter that small stops
-// reading as a counter and starts reading as a speck. Filling them makes the glyphs solid.
+// This is for artwork the canvas recolour cannot render cleanly ON A REAL BROWSER. The 2019 Joint
+// List mark is a dense two-line Arabic/Hebrew wordmark: every ink pixel does lift to white, and the
+// canvas this repo produces measures clean, but on the repo owner's browser the recoloured canvas
+// comes back speckled with black dots through the glyph bodies -- a rasterisation artefact that
+// headless Chromium does not reproduce, so it cannot be caught here. Two earlier attempts (a plain
+// recolour, then a recolour composed with the Shas flood fill) both verified clean in automation and
+// both still looked wrong on the actual site.
 //
-// So the rule is not "dark artwork on transparency needs the fill" -- both of these are that, and
-// they need opposite things. It is "what colour should the enclosed gap end up": the page (Shas) or
-// the ink (here). Keyed by name_en like the sets above.
-const FILL_COUNTERS_PARTIES = new Set([
+// The plate sidesteps the whole class of problem rather than tuning against it: no canvas, no
+// getImageData, no crossOrigin, no per-logo pixel thresholds. The browser just renders the original
+// SVG -- which is clean at any size -- on a light ground, so dark mode reproduces exactly what light
+// mode already shows. Note this deliberately reopens the no-plate rule for parties (parties
+// recolour, clubs get an outline): the repo owner chose it on 2026-08-20 after seeing all three
+// options rendered, because no recolour-based option could be made to look right on their machine.
+// Keyed by name_en like the sets above.
+const PLATE_PARTIES = new Set([
   'The Joint List',
 ]);
 
@@ -219,13 +222,9 @@ function hslToRgb(h, s, l) {
 // else null. Parties only -- club crests/flags keep their real colours (they use the outline).
 function recolorLogoForDark(img) {
   const MAX = 400;
-  // naturalWidth on an <img>, width on a <canvas> -- recolorThenFillForDark() chains one into the
-  // other, so both functions have to accept either.
-  const sw = img.naturalWidth || img.width;
-  const sh = img.naturalHeight || img.height;
-  const scale = Math.min(1, MAX / Math.max(sw, sh));
-  const w = Math.max(1, Math.round(sw * scale));
-  const h = Math.max(1, Math.round(sh * scale));
+  const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
@@ -267,11 +266,9 @@ function recolorLogoForDark(img) {
 // e.g. an open-sided logo, which would otherwise be silently turned into a solid block).
 function fillLogoInteriorForDark(img) {
   const MAX = 400;
-  const sw = img.naturalWidth || img.width;   // see recolorLogoForDark -- may be a canvas
-  const sh = img.naturalHeight || img.height;
-  const scale = Math.min(1, MAX / Math.max(sw, sh));
-  const w = Math.max(1, Math.round(sw * scale));
-  const h = Math.max(1, Math.round(sh * scale));
+  const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
@@ -309,17 +306,6 @@ function fillLogoInteriorForDark(img) {
   if (!filled) return null;
   ctx.putImageData(imageData, 0, 0);
   return canvas;
-}
-
-// FILL_COUNTERS_PARTIES: lift the ink, then fill what the lift left behind. Both steps already
-// return null for "nothing to do", so each is allowed to be a no-op: if the recolour finds nothing
-// to lift the fill still runs on the original, and if nothing is enclosed the recoloured canvas is
-// returned unchanged. fillLogoInteriorForDark re-scales its source to the same MAX 400, so handing
-// it an already-scaled canvas costs no second resample.
-function recolorThenFillForDark(img) {
-  const recolored = recolorLogoForDark(img);
-  const filled = fillLogoInteriorForDark(recolored || img);
-  return filled || recolored;
 }
 
 // Recoloured party artwork, keyed by treatment + URL. Both operations above are pure functions of
@@ -425,6 +411,38 @@ function logoEl(entity, displayName, opts) {
   // .logo-orig class -- that class is what the dark theme hides, so leaving it off is precisely what
   // makes the same artwork render in both. No canvas also means no crossOrigin and no pixel reads,
   // so this path cannot be defeated by a tainted canvas.
+  // PLATE_PARTIES: the untouched artwork twice -- once bare for light, once inside a .logo-plate
+  // span for dark. Both carry the classes the existing theme switch already keys on, so no new
+  // theme rule is needed and the manual toggle and prefers-color-scheme cannot drift apart. No
+  // canvas on either path, which is the entire point (see PLATE_PARTIES above).
+  if (opts.recolor && entity && PLATE_PARTIES.has(entity.name_en)) {
+    const light = document.createElement('img');
+    light.alt = '';
+    light.loading = 'lazy';
+    light.className = 'logo-orig';
+    light.addEventListener('error', () => {
+      wrap.innerHTML = '';
+      wrap.appendChild(buildMonogram(entity.id, displayName));
+    }, { once: true });
+    light.src = url;
+
+    const plate = document.createElement('span');
+    plate.className = 'logo-recolored logo-plate';
+    const dark = document.createElement('img');
+    dark.alt = '';
+    dark.loading = 'lazy';
+    dark.addEventListener('error', () => {
+      wrap.innerHTML = '';
+      wrap.appendChild(buildMonogram(entity.id, displayName));
+    }, { once: true });
+    dark.src = url;
+    plate.appendChild(dark);
+
+    wrap.appendChild(light);
+    wrap.appendChild(plate);
+    return wrap;
+  }
+
   if (opts.recolor && entity && SKIP_RECOLOR_PARTIES.has(entity.name_en)) {
     const img = document.createElement('img');
     img.alt = '';
@@ -442,10 +460,7 @@ function logoEl(entity, displayName, opts) {
     // Party logos: load with crossOrigin so we can read the pixels and build a dark-mode-recoloured
     // canvas. CSS shows that canvas in the dark theme and the untouched original <img> in light (see
     // .logo-recolored / .logo-orig).
-    const name = entity && entity.name_en;
-    const mode = FILL_INTERIOR_PARTIES.has(name) ? 'fill'
-      : FILL_COUNTERS_PARTIES.has(name) ? 'recolor-fill'
-        : 'recolor';
+    const mode = FILL_INTERIOR_PARTIES.has(entity && entity.name_en) ? 'fill' : 'recolor';
     const cacheKey = `${mode}|${url}`;
 
     const img = document.createElement('img');
@@ -471,9 +486,7 @@ function logoEl(entity, displayName, opts) {
 
     img.addEventListener('load', () => {
       try {
-        const canvas = mode === 'fill' ? fillLogoInteriorForDark(img)
-          : mode === 'recolor-fill' ? recolorThenFillForDark(img)
-            : recolorLogoForDark(img);
+        const canvas = mode === 'fill' ? fillLogoInteriorForDark(img) : recolorLogoForDark(img);
         // Cached even when null -- "needs no recolour" is a result worth keeping too.
         RECOLOR_CACHE.set(cacheKey, canvas);
         if (canvas) {

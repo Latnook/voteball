@@ -566,6 +566,28 @@ button { font-family: inherit; }
 :root[data-theme="light"] .logo img.logo-orig { display: block; }
 :root[data-theme="light"] .logo .logo-recolored { display: none; }
 
+/* A near-white plate behind a party wordmark that the canvas recolour cannot render cleanly on a
+   real browser (logos.js PLATE_PARTIES -- the Joint List's Arabic/Hebrew mark, whose recoloured
+   canvas comes back speckled on the repo owner's machine while measuring clean in automation).
+   Deliberately rides the .logo-orig/.logo-recolored switch above rather than adding its own theme
+   rules, per the warning on that block: the plate IS the .logo-recolored element, so light mode
+   hides it and shows the bare artwork exactly as before. display:flex is set here because
+   .logo-recolored carries no display of its own in the dark default and a <span> would otherwise
+   stay inline and ignore the width/height above. */
+.logo .logo-recolored.logo-plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FAFAFA;
+  border-radius: 8px;
+  padding: 5px 7px;
+}
+.logo .logo-recolored.logo-plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 /* ...and the one place the page theme does not decide it. A selected tab is a filled accent pill --
    dark green in light mode, bright green in dark mode -- and on BOTH the logo stays light. The rule
    is the artwork's own, not the theme's: dark artwork appears only on light surfaces, and a coloured

@@ -2356,11 +2356,10 @@ claim that the joint list itself has a 2018 programme. The remaining 15 tags are
 rows, deduped. `families` is likewise the union (`arab-representation`, `jewish-arab-partnership`,
 `welfare-state`), and `family_evidence` stays `record` — there is no joint platform to read.
 
-**Logo**: the 2019 Joint List mark, pure black artwork on transparency, in
-`FILL_COUNTERS_PARTIES` — see "A counter too small to read as a counter" under Logos. It shipped on
-2026-08-20 with **no** `logos.js` entry, on the reasoning that a wordmark's counters are *supposed*
-to be the background colour, and that was wrong in practice: the five closed bowls on the Arabic
-line read as black dots at card size. Corrected the same day.
+**Logo**: the 2019 Joint List mark, pure black artwork on transparency, in `PLATE_PARTIES` — shown
+unchanged on a near-white plate in dark mode, like ש"ס. See "The logo that could not be recoloured"
+under Logos; it took three attempts and the first two were both verified clean by automation while
+still looking wrong on the actual site.
 
 ### ש"ס / יהדות התורה — Shas, UTJ · `bibi` · −2 / 1 / 2 · haredi
 
@@ -2519,35 +2518,46 @@ browser, so the crest is invisible to many visitors while `curl` fetches it happ
 bug is undetectable server-side. Check a candidate URL by loading it **in a real browser from the
 app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed in-browser.
 
-### A counter too small to read as a counter
+### The logo that could not be recoloured
 
-`הרשימה המשותפת` is the third distinct answer this file records to "dark artwork on a transparent
-ground", and the one that shows the other two are not a rule.
+`הרשימה המשותפת` is the row that broke the recolour pipeline's assumptions, and the lesson is about
+**verification**, not about logos.
 
-The 2019 Joint List mark is a two-line Arabic/Hebrew wordmark in pure black. `recolorLogoForDark()`
-lifts all of it to white, which is correct and was verified before it shipped. What was not checked
-is what the lift leaves behind: **five enclosed transparent regions, every one on the Arabic line** —
-the closed bowls of ة and م — each about 9×10px on the 400px canvas. Transparent means they show the
-dark card through, which is *typographically correct*: a counter is supposed to be the background.
-It still reads as black dots punched into white letters, because once the logo is scaled into its
-3.4rem box a counter that small stops reading as a counter and starts reading as a speck. **Being
-right about the typography did not make it look right**, and only looking at the rendered result at
-card size catches that — the pixel measurement said every ink pixel had lifted, and it had.
+The 2019 Joint List mark is a two-line Arabic/Hebrew wordmark in pure black on transparency —
+textbook input for `recolorLogoForDark()`. It took three attempts:
 
-The fix is `fillLogoInteriorForDark()`, the same flood fill Shas uses, but **composed with the
-recolour instead of replacing it** (`FILL_COUNTERS_PARTIES`, mode `recolor-fill`). Applying the Shas
-treatment literally was rendered and rejected: fill-only leaves the ink black, so the wordmark comes
-out black on a dark card, near-invisible. The two artworks are both "dark ink on transparency" and
-need **opposite** things, which is the point worth keeping:
+1. **Plain recolour** (shipped 2026-08-20). Every ink pixel measured as lifted to white. Reported as
+   verified. The repo owner saw black dots.
+2. **Recolour composed with the Shas flood fill** (`FILL_COUNTERS_PARTIES`, same day). Diagnosed as
+   the five enclosed bowls of ة and م on the Arabic line, showing the dark card through. Measured
+   again — 316 pixels moved from card-dark to light, in Chromium, against the live page. Reported as
+   verified. The repo owner saw black dots.
+3. **Near-white plate, artwork unchanged** (`PLATE_PARTIES`) — what ships.
 
-| | ink should become | enclosed gap should become |
-|---|---|---|
-| `ש"ס` (`FILL_INTERIOR_PARTIES`) | stays dark | the page — near-white, so it reads as ink on paper |
-| `הרשימה המשותפת` (`FILL_COUNTERS_PARTIES`) | white | the ink — so the glyph reads solid |
+**Both failed verifications were real measurements of the wrong thing.** The first measured the
+400px canvas, where the Hebrew letters' gaps are open channels that register as clean; the browser
+scales that canvas to roughly 156px, where they close into marks. The second fixed the enclosed
+subset and measured the enclosed subset. Only a screenshot from the owner's own browser showed what
+was actually happening: **the recoloured canvas comes back speckled with black dots through the
+glyph bodies**, dense and scattered, nothing to do with counters or letterform gaps. The source SVG
+renders clean at every size (48 unique colours in a magnified crop), and the live canvas read back
+from headless Chromium contains **zero** pixels darker than the card. It is a rasterisation artefact
+of that browser, and no amount of measuring from here can reproduce it.
 
-So the selector is not "does the artwork have enclosed transparency" — both do. It is **what that gap
-is meant to be**: the page, or the ink. Verified in Chromium against the real `logos.js`, reading the
-canvas back: exactly 316 pixels moved from card-dark to light, `ש"ס` and `הליכוד` unchanged.
+So the plate is not a tuning of the recolour, it is a refusal to depend on it: no canvas, no
+`getImageData`, no `crossOrigin`, no per-logo pixel thresholds. The browser renders the original SVG
+on a light ground, so dark mode reproduces exactly what light mode already shows.
+
+**This reopens the no-plate rule for parties** (parties recolour, clubs get an outline), decided when
+the logo chips were designed. The repo owner chose it on 2026-08-20 after seeing all three options
+rendered at true display size, because no recolour-based option could be made to look right on their
+machine. ש"ס already reads as a white tablet, so the plate is not a new visual language — but it is a
+second party that no longer follows the recolour rule, and a third would mean the rule is the
+exception.
+
+The transferable rule: **when a visual fix cannot be confirmed from the machine that renders it for
+the user, stop measuring and change the mechanism.** Two rounds of increasingly precise measurement
+bought nothing here, because the defect was never in the pixels being measured.
 
 ---
 
@@ -2824,3 +2834,4 @@ pass happened, for anyone reading git history.
 | 2026-08-19 | revision 25 — **אל הדגל's two unread documents read, and the row's own record corrected.** The `/our-platform` page links **four** PDFs; two had never been cited anywhere — the drafted Basic Law (`חוק יסוד השירות`, 9pp) and the economic paper (`הכלכלה הציונית`, 7pp, dated **August 2026** and marked *גרסה מתוקנת*, i.e. newer than the pass that last confirmed the axis it speaks to). **No axis moved: 1 / 2 / −2 all confirmed.** **The most consequential finding is about this document, not the party.** The entry asserted that the education-funding condition lived only in the education paper and that the platform showed *שכבת בסיס חובה בכל מוסד מתוקצב* alone; the platform's §2 עיגון חוקי (p. 11) carries the **50/30/20 split the entry credited to the education paper**, the special-majority entrenchment, and *"תנאי לקבלת תקציבים"* verbatim. So the `religiosity 0` held until 2026-08-10 was a misreading of evidence already in hand, not a gap in it — **a second document agreeing with the first is not evidence the first was read.** **A third retrieval trap recorded, inverting the first two: the two documents that went unread longest were the two that extract cleanly** — the image-only pair got read precisely because they announced themselves as hard. **economic +1 declined for the third time on a third document**, now against a fully costed programme; the two planks that argue against +2 are the party's own — periphery tax breaks rejected **on principle** as proven failures, and *"שוויון מיסוי הון ועבודה"* restricting capital tax benefits for the highest earners. Also logged: the paper is unusually self-correcting (ministry-merger savings demoted from ₪8–12B/yr to a long-run ceiling on 1–3% international evidence; the tax-bracket cost revised **down** because the Knesset already enacted part of it), and it **contradicts the platform** on the minister cap — 16 in the platform, 18 statutory with a 12 aspiration in the paper; recorded, not resolved. **The service bill does NOT move religiosity, and that is recorded because it reads like −3 evidence**: §11(c) strips all state support and bans all donations to any institution where >10% of students or graduates breached the service duty, but it conditions on **service**, so Decision 6 keeps it off the axis. **4 tags added (20 → 24), all existing vocabulary**, and **three of the four are earnable from the platform PDF alone** — missed by an earlier pass rather than created by the new documents: `free-trade` and `anti-monopoly` (both p. 22), `public-service-reform` (pp. 19–20, a חוק שירות ציבורי ממלכתי plus a biennial trust index carrying a mandatory Knesset debate — comparable to כחול לבן's צו 8, which founded the tag) and `arab-civil-service` (bill §8 plus its explanatory notes, כחול לבן's founding position in statutory drafting). **Six rejections**, the sharpest being `scholar-exemption-retained` — **third application of revision 21's test and the clearest**: a 2%-of-cohort Torah track under a state administration, subordinated to the IDF's needs being met first, as a 24-month *service* obligation, is strictly narrower than the 3% one-year deferral already declined for ישר. Also refused: `permanent-residency-not-citizenship` (זהות's tag marks a permanent ceiling; this row's השארות track is a conditional **path** to full citizenship), `small-government` (זהות holds it as libertarian doctrine; this row pairs ministry cuts with NIT expansion, a ₪2B guarantee fund and a ~$1.5B/yr AI programme — it would contradict its own economic +1), `tax-cutting` (the 25% bracket *completes* an enacted reform, cost revised down, paired with restricting capital tax benefits), `judicial-overhaul` (the override clause is bounded *מוגבלת בזמן ובנושא* and paired with **strengthening** review of Basic Law implementation and a codified constitution — `constitutionalist`, already held, is the accurate tag; same shape as revision 23's Zelikha rejection), and **a workfare tag and a labour-organization tag**, both clearly earned and both queued behind an 18-row sweep. **That queue now holds four tags** and is flagged as the largest unresolved item on this page. Source accounting corrected throughout: **six** sources, not three, and the website quotes are from `/our-platform` (a fourth body of text) rather than the `/about-us` chapters they were attributed to |
 | 2026-08-20 | revision 26 — **חד"ש-תע"ל and בל"ד merged into הרשימה המשותפת**, the first merge this file has recorded between two *upcoming* rows (העבודה/מרצ → הדמוקרטים was a previous→upcoming lineage link, which is a different operation: both predecessors keep their own rows). One `joint-list` row replaces two; `previous_parties` is untouched and both 2022 rows stay frozen. **The scoring rule was the decision, not the merge**: axes are the **union** of the components' published positions, chosen by the repo owner over two alternatives (carry חד"ש-תע"ל's numbers as a rebrand; or NULL the axes where the components differ). **economic −3** unchanged, **security −2 → −3** and **religiosity NULL → −3**, both carried from בל"ד alone. The cost is recorded in the entry rather than hidden: the list has published **no joint platform**, so every number rests on component text, and בל"ד's programme is the 2018 one. Decided against the ביחד `security` NULL precedent deliberately — ביחד's components *disagree* on the conflict, while חד"ש and בל"ד differ only in degree. **15 tags**, the union deduped, minus two dropped as no longer true of the list: `pro-joint-list` (the goal is achieved; a list tagged with wanting to form itself records nothing) and `program-unchanged-since-2018` (a note about בל"ד's evidence age that would now assert the joint list has a 2018 programme). **רע"ם declined and keeps its own row** — the door is open until the September deadline, so the open question narrows rather than closing. **Two anticipations in this file were wrong and are kept as such**: both the *Renaming* warning and the *Arab bloc may restructure* open question predicted "renaming, not reclassifying", and neither half held. **Mechanically**: `seed.sql` gained a guarded `DELETE` for `upcoming_parties` mirroring the clubs one, and it must clear `party_lineage` first — `party_lineage.upcoming_party_id` has **no** `ON DELETE CASCADE`, so removing a party that still carries a link raises inside `init_db`, which runs on every backend pod boot (a CrashLoopBackOff on startup, not one failed request). Both statements carry the same vote guard, verified by migrating a seeded database with a vote on חד"ש-תע"ל: that row and its lineage link both survived while בל"ד was removed. **No frontend change** — the logo is pure black on transparency and the existing `recolorLogoForDark()` lifts it to white correctly, so it needs no `logos.js` exception entry |
 | 2026-08-20 | revision 27 — **הרשימה המשותפת's logo corrected the same day it shipped, and revision 26's "No frontend change" reasoning is wrong.** That row said the mark needs no `logos.js` entry because `recolorLogoForDark()` lifts every ink pixel to white — which it does, and which was measured before shipping. The measurement was of the wrong thing. What the lift leaves behind is **five enclosed transparent regions, all on the Arabic line** (the closed bowls of ة and م, ~9×10px on the 400px canvas), and transparent means they show the dark card through. That is typographically correct — a counter *is* the background — and it still reads as **black dots punched into white letters** at 3.4rem, because a counter that small stops reading as a counter. **Being right about the typography did not make it look right**; only rendering it at card size catches that, and the pre-ship check rendered it at 400px and judged it clean. Now in a new **`FILL_COUNTERS_PARTIES`** set (mode `recolor-fill`): `fillLogoInteriorForDark()`, the same flood fill ש"ס uses, **composed with the recolour rather than replacing it**. The literal ש"ס treatment was rendered and **rejected** — fill-only leaves the ink black, producing a near-invisible black wordmark on the dark card. Both artworks are "dark ink on transparency" and need opposite things, so the selector is not whether enclosed transparency exists but **what the gap should become**: the page (ש"ס) or the ink (here). `recolorLogoForDark()`/`fillLogoInteriorForDark()` now accept a `<canvas>` as well as an `<img>` so the two can chain. Verified in Chromium against the real `logos.js`, reading the canvas back: **exactly 316 pixels** moved from card-dark to light (the 315 enclosed pixels plus rounding), glyph anti-aliasing untouched, and ש"ס and הליכוד rendering identically to before. **No classification change** |
+| 2026-08-20 | revision 28 — **הרשימה המשותפת's logo moved to a near-white plate (`PLATE_PARTIES`), and both earlier fixes were reverted.** Revision 27 diagnosed the black dots as the five enclosed Arabic bowls and composed the ש"ס flood fill with the recolour; it measured 316 pixels moving from card-dark to light, in Chromium, against the live page, and **the dots were still there**. A screenshot from the repo owner's own browser showed why: the recoloured canvas comes back **speckled with black dots through the glyph bodies**, dense and scattered, unrelated to counters or letterform gaps. The source SVG renders clean at every size (48 unique colours in a magnified crop) and the live canvas read back from headless Chromium holds **zero** pixels darker than the card — it is a rasterisation artefact this repo cannot reproduce, so no measurement taken here could ever have caught it. **Both failed fixes were real measurements of the wrong thing**, which is the finding worth keeping: revision 26 measured the 400px canvas rather than the ~156px it renders at, and revision 27 fixed the enclosed subset and then measured the enclosed subset. The plate refuses the mechanism instead of tuning it — no canvas, no `getImageData`, no `crossOrigin`, no per-logo thresholds — so dark mode reproduces exactly what light mode shows. `FILL_COUNTERS_PARTIES` and `recolorThenFillForDark()` are **removed**, and both pixel functions are back to their original `<img>`-only signatures. **This reopens the no-plate rule for parties**, chosen by the repo owner after seeing all three options rendered at true display size; ש"ס already reads as a white tablet, so a third such party would mean the recolour rule has become the exception. **No classification change** |
