@@ -1,0 +1,886 @@
+Started by upstream project "application-ci" build number 7
+originally caused by:
+ Started by GitHub push by Latnook
+Obtained Jenkinsfile-cd from git git@github.com:Latnook/voteball.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Agent voteball-deploy-j7dh0 is provisioned from template voteball-deploy
+---
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  annotations:
+    kubernetes.jenkins.io/last-refresh: "1787213730365"
+  labels:
+    jenkins: "slave"
+    jenkins/label-digest: "f34fd3cc852c5a932a0197425e4ccc9f64fcb851"
+    jenkins/label: "voteball-deploy"
+    kubernetes.jenkins.io/controller: "http___jenkins_ci_svc_cluster_local_8080x"
+  name: "voteball-deploy-j7dh0"
+  namespace: "ci"
+spec:
+  containers:
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "alpine/k8s:1.31.3"
+    name: "deploy"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "quay.io/argoproj/argocd:v3.4.5"
+    name: "argocd"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "JENKINS_SECRET"
+      value: "********"
+    - name: "JENKINS_TUNNEL"
+      value: "jenkins-agent.ci.svc.cluster.local:50000"
+    - name: "JENKINS_AGENT_NAME"
+      value: "voteball-deploy-j7dh0"
+    - name: "REMOTING_OPTS"
+      value: "-noReconnectAfter 1d"
+    - name: "JENKINS_NAME"
+      value: "voteball-deploy-j7dh0"
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/home/jenkins/agent"
+    - name: "JENKINS_URL"
+      value: "http://jenkins.ci.svc.cluster.local:8080/"
+    image: "jenkins/inbound-agent:3384.v60d89463d9e0-2-jdk25"
+    name: "jnlp"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  nodeSelector:
+    kubernetes.io/os: "linux"
+  restartPolicy: "Never"
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: "jenkins-cd-agent"
+  volumes:
+  - emptyDir:
+      medium: ""
+    name: "workspace-volume"
+
+Running on voteball-deploy-j7dh0 in /home/jenkins/agent/workspace/application-cd
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential voteball-deploy-key
+Cloning the remote Git repository
+Cloning repository git@github.com:Latnook/voteball.git
+ > git init /home/jenkins/agent/workspace/application-cd # timeout=10
+Fetching upstream changes from git@github.com:Latnook/voteball.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_SSH to set credentials Deploy key for Latnook/voteball (managed by JCasC)
+[INFO] Currently running in a labeled security context
+ > /usr/bin/chcon --type=ssh_home_t /home/jenkins/agent/workspace/application-cd@tmp/jenkins-gitclient-ssh5321553958906155890.key
+Verifying host key using manually-configured host key entries
+ > git fetch --tags --force --progress -- git@github.com:Latnook/voteball.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision 9a58532c03893a7fc1a11b90882f8a794297576e (refs/remotes/origin/master)
+Commit message: "vote: four columns for a 16-club league, not 5-5-5-1"
+ > git config remote.origin.url git@github.com:Latnook/voteball.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 9a58532c03893a7fc1a11b90882f8a794297576e # timeout=10
+ > git rev-list --no-walk 941ef1142af5fafd05e390abd37916b1dee62f3c # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] timeout
+[2026-08-20T08:15:46.665Z] Timeout set to expire in 30 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Input Validation)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:15:48.835Z] + set -eu
+[2026-08-20T08:15:48.836Z] + scripts/ci/images-exist.sh
+[2026-08-20T08:15:53.110Z] + result=present
+[2026-08-20T08:15:53.110Z] + '[' present '=' present ]
+[2026-08-20T08:15:53.110Z] + echo 'All four images for 9a58532 confirmed present in ECR.'
+[2026-08-20T08:15:53.110Z] All four images for 9a58532 confirmed present in ECR.
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Manifest Validation)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:15:54.626Z] + set -eu
+[2026-08-20T08:15:54.626Z] + helm lint charts/voteball
+[2026-08-20T08:15:54.626Z] ==> Linting charts/voteball
+[2026-08-20T08:15:54.626Z] [INFO] Chart.yaml: icon is recommended
+[2026-08-20T08:15:54.626Z] 
+[2026-08-20T08:15:54.626Z] 1 chart(s) linted, 0 chart(s) failed
+[2026-08-20T08:15:54.626Z] + helm template voteball charts/voteball --namespace devops-app --set 'image.tag=9a58532'
+[2026-08-20T08:15:54.626Z] + echo '--- kubectl create --dry-run=client (see the comment above for exactly what this does and does not catch) ---'
+[2026-08-20T08:15:54.626Z] --- kubectl create --dry-run=client (see the comment above for exactly what this does and does not catch) ---
+[2026-08-20T08:15:54.626Z] + kubectl create '--dry-run=client' -f /tmp/rendered.yaml
+[2026-08-20T08:15:54.893Z] networkpolicy.networking.k8s.io/default-deny created (dry run)
+[2026-08-20T08:15:54.893Z] networkpolicy.networking.k8s.io/allow-dns-egress created (dry run)
+[2026-08-20T08:15:54.893Z] networkpolicy.networking.k8s.io/allow-alb-to-frontend created (dry run)
+[2026-08-20T08:15:54.893Z] networkpolicy.networking.k8s.io/allow-prometheus-scrape created (dry run)
+[2026-08-20T08:15:54.893Z] networkpolicy.networking.k8s.io/allow-frontend-to-backend created (dry run)
+[2026-08-20T08:15:54.893Z] networkpolicy.networking.k8s.io/allow-app-egress created (dry run)
+[2026-08-20T08:15:54.893Z] poddisruptionbudget.policy/frontend created (dry run)
+[2026-08-20T08:15:54.893Z] poddisruptionbudget.policy/backend created (dry run)
+[2026-08-20T08:15:55.157Z] serviceaccount/frontend created (dry run)
+[2026-08-20T08:15:55.157Z] serviceaccount/backend created (dry run)
+[2026-08-20T08:15:55.618Z] serviceaccount/worker created (dry run)
+[2026-08-20T08:15:55.618Z] serviceaccount/backup created (dry run)
+[2026-08-20T08:15:55.618Z] configmap/app-config created (dry run)
+[2026-08-20T08:15:55.882Z] service/backend created (dry run)
+[2026-08-20T08:15:55.882Z] service/frontend created (dry run)
+[2026-08-20T08:15:55.882Z] service/worker created (dry run)
+[2026-08-20T08:15:56.147Z] deployment.apps/backend created (dry run)
+[2026-08-20T08:15:56.147Z] deployment.apps/canary created (dry run)
+[2026-08-20T08:15:56.147Z] deployment.apps/frontend created (dry run)
+[2026-08-20T08:15:56.147Z] deployment.apps/worker created (dry run)
+[2026-08-20T08:15:56.147Z] horizontalpodautoscaler.autoscaling/backend created (dry run)
+[2026-08-20T08:15:56.147Z] cronjob.batch/voteball-backup created (dry run)
+[2026-08-20T08:15:56.147Z] ingress.networking.k8s.io/voteball created (dry run)
+[2026-08-20T08:15:56.148Z] externalsecret.external-secrets.io/app-secret created (dry run)
+[2026-08-20T08:15:56.424Z] prometheusrule.monitoring.coreos.com/voteball-alerts created (dry run)
+[2026-08-20T08:15:56.424Z] secretstore.external-secrets.io/aws-secrets created (dry run)
+[2026-08-20T08:15:56.424Z] servicemonitor.monitoring.coreos.com/backend created (dry run)
+[2026-08-20T08:15:56.687Z] servicemonitor.monitoring.coreos.com/worker created (dry run)
+[2026-08-20T08:15:56.687Z] servicemonitor.monitoring.coreos.com/frontend created (dry run)
+[2026-08-20T08:15:56.687Z] job.batch/voteball-migrate created (dry run)
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Promote)
+[Pipeline] sshagent
+[2026-08-20T08:15:57.260Z] [ssh-agent] Using credentials git (Deploy key for Latnook/voteball (managed by JCasC))
+[2026-08-20T08:15:57.371Z] $ ssh-agent
+[2026-08-20T08:15:57.427Z] SSH_AUTH_SOCK=/tmp/ssh-uUyfCyLCDXrA/agent.117
+[2026-08-20T08:15:57.427Z] SSH_AGENT_PID=120
+[2026-08-20T08:15:57.441Z] Running ssh-add (command line suppressed)
+[2026-08-20T08:15:57.473Z] [ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:15:57.935Z] + set -eu
+[2026-08-20T08:15:57.935Z] + mkdir -p /home/jenkins/.ssh
+[2026-08-20T08:15:57.935Z] + chmod 700 /home/jenkins/.ssh
+[2026-08-20T08:15:57.935Z] + printf %s
+[2026-08-20T08:15:57.935Z]  github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+[2026-08-20T08:15:57.935Z] + chmod 600 /home/jenkins/.ssh/known_hosts
+[2026-08-20T08:15:57.935Z] + sed -i -E s/^  tag: ".*"/  tag: "9a58532"/ charts/voteball/values.yaml
+[2026-08-20T08:15:57.935Z] + grep -q ^  tag: "9a58532" charts/voteball/values.yaml
+[2026-08-20T08:15:57.935Z] + git config user.name jenkins
+[2026-08-20T08:15:57.935Z] + git config user.email jenkins@voteball.local
+[2026-08-20T08:15:57.935Z] + git add charts/voteball/values.yaml
+[2026-08-20T08:15:57.935Z] + git diff --cached --quiet
+[2026-08-20T08:15:57.935Z] + git commit -m ci: image tag 9a58532 [skip ci]
+[2026-08-20T08:15:57.935Z] [detached HEAD e7421e1] ci: image tag 9a58532 [skip ci]
+[2026-08-20T08:15:57.935Z]  1 file changed, 1 insertion(+), 1 deletion(-)
+[2026-08-20T08:15:57.935Z] + git pull --rebase --autostash origin master
+[2026-08-20T08:15:59.328Z] From github.com:Latnook/voteball
+[2026-08-20T08:15:59.328Z]  * branch            master     -> FETCH_HEAD
+[2026-08-20T08:15:59.591Z] HEAD is up to date.
+[2026-08-20T08:15:59.591Z] + git push origin HEAD:master
+[2026-08-20T08:16:02.146Z] To github.com:Latnook/voteball.git
+[2026-08-20T08:16:02.146Z]    9a58532..e7421e1  HEAD -> master
+[2026-08-20T08:16:02.146Z] + git rev-parse HEAD
+[Pipeline] }
+[2026-08-20T08:16:02.192Z] $ ssh-agent -k
+[2026-08-20T08:16:02.202Z] unset SSH_AUTH_SOCK;
+[2026-08-20T08:16:02.202Z] unset SSH_AGENT_PID;
+[2026-08-20T08:16:02.202Z] echo Agent pid 120 killed;
+[2026-08-20T08:16:02.212Z] [ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] script
+[Pipeline] {
+[Pipeline] readFile
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withCredentials
+[2026-08-20T08:16:03.282Z] Masking supported pattern matches of $ARGOCD_AUTH_TOKEN
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:03.951Z] + set -eu
+[2026-08-20T08:16:03.951Z] + argocd app sync voteball --server argocd-server.argocd.svc.cluster.local --grpc-web --insecure --timeout 600
+[2026-08-20T08:16:42.945Z] + out=TIMESTAMP                  GROUP                        KIND                NAMESPACE                  NAME         STATUS   HEALTH        HOOK  MESSAGE
+[2026-08-20T08:16:42.945Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app              frontend         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape      Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app               backend         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app                canary         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00                            Service               devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  autoscaling            HorizontalPodAutoscaler  devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app                worker         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend        Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-dns-egress         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  policy                 PodDisruptionBudget      devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app                backup         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  external-secrets.io    ExternalSecret           devops-app            app-secret         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  PrometheusRule           devops-app       voteball-alerts         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app                worker         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app               backend         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  networking.k8s.io         Ingress               devops-app              voteball         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  policy                 PodDisruptionBudget      devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00                            Service               devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app          default-deny         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  external-secrets.io    SecretStore              devops-app           aws-secrets         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00                            Service               devops-app                worker         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  batch                     CronJob               devops-app       voteball-backup         Synced  Healthy              
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-app-egress         Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend    Synced                       
+[2026-08-20T08:16:42.946Z] 2026-08-20T08:16:04+00:00                          ConfigMap               devops-app            app-config         Synced                       
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app              frontend         Synced                       
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app                worker         Synced                       
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:06+00:00  batch         Job  devops-app      voteball-migrate            Progressing              
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:08+00:00  batch         Job  devops-app      voteball-migrate   Running   Synced     PreSync  job.batch/voteball-migrate serverside-applied
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app               backend  OutOfSync  Progressing              
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app              frontend  OutOfSync  Progressing              
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app                worker  OutOfSync  Progressing              
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:16+00:00  batch     CronJob  devops-app       voteball-backup  OutOfSync  Healthy              
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:19+00:00  batch                         Job               devops-app      voteball-migrate       Succeeded   Synced         PreSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:19+00:00                            Service               devops-app               backend         Synced   Healthy                  service/backend serverside-applied
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:19+00:00  external-secrets.io    SecretStore              devops-app           aws-secrets         Synced   Healthy                  secretstore.external-secrets.io/aws-secrets serverside-applied
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-app-egress         Synced                            networkpolicy.networking.k8s.io/allow-app-egress serverside-applied
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app          default-deny         Synced                            networkpolicy.networking.k8s.io/default-deny serverside-applied
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:19+00:00  policy                 PodDisruptionBudget      devops-app              frontend         Synced   Healthy                  poddisruptionbudget.policy/frontend serverside-applied
+[2026-08-20T08:16:42.948Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app                backup         Synced                            serviceaccount/backup serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app               backend         Synced                            serviceaccount/backend serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00                            Service               devops-app                worker         Synced   Healthy                  service/worker serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app                canary         Synced   Healthy                  deployment.apps/canary serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  external-secrets.io    ExternalSecret           devops-app            app-secret         Synced   Healthy                  externalsecret.external-secrets.io/app-secret serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend        Synced                            networkpolicy.networking.k8s.io/allow-alb-to-frontend serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape      Synced                            networkpolicy.networking.k8s.io/allow-prometheus-scrape serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-dns-egress         Synced                            networkpolicy.networking.k8s.io/allow-dns-egress serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app               backend       OutOfSync  Progressing              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app              frontend       OutOfSync  Progressing              deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  batch                     CronJob               devops-app       voteball-backup       OutOfSync  Healthy                  cronjob.batch/voteball-backup serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  networking.k8s.io         Ingress               devops-app              voteball         Synced   Healthy                  ingress.networking.k8s.io/voteball serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app                worker         Synced                            servicemonitor.monitoring.coreos.com/worker serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend    Synced                            networkpolicy.networking.k8s.io/allow-frontend-to-backend serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app                worker         Synced                            serviceaccount/worker serverside-applied
+[2026-08-20T08:16:42.949Z] 2026-08-20T08:16:19+00:00                            Service               devops-app              frontend         Synced   Healthy                  service/frontend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app                worker       OutOfSync  Progressing              deployment.apps/worker serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  autoscaling            HorizontalPodAutoscaler  devops-app               backend         Synced   Healthy                  horizontalpodautoscaler.autoscaling/backend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app               backend         Synced                            servicemonitor.monitoring.coreos.com/backend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  policy                 PodDisruptionBudget      devops-app               backend         Synced   Healthy                  poddisruptionbudget.policy/backend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00                          ConfigMap               devops-app            app-config         Synced                            configmap/app-config serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app              frontend         Synced                            serviceaccount/frontend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app              frontend         Synced                            servicemonitor.monitoring.coreos.com/frontend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  PrometheusRule           devops-app       voteball-alerts         Synced                            prometheusrule.monitoring.coreos.com/voteball-alerts serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  batch                   CronJob               devops-app       voteball-backup  OutOfSync  Healthy              CronJob has not been scheduled yet
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  policy               PodDisruptionBudget      devops-app               backend    Synced   Healthy              PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  external-secrets.io  ExternalSecret           devops-app            app-secret    Synced   Healthy              secret synced
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  external-secrets.io  SecretStore              devops-app           aws-secrets    Synced   Healthy              store validated
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  policy               PodDisruptionBudget      devops-app              frontend    Synced   Healthy              PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:19+00:00  autoscaling          HorizontalPodAutoscaler  devops-app               backend    Synced   Healthy              recommended size matches current size
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:24+00:00   apps  Deployment  devops-app                worker  OutOfSync  Healthy              deployment.apps/worker serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:24+00:00   apps  Deployment  devops-app              frontend  OutOfSync  Healthy              deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app                worker    Synced  Healthy                  deployment.apps/worker serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app               backend    Synced  Progressing              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app              frontend    Synced  Healthy                  deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:25+00:00  batch     CronJob  devops-app       voteball-backup    Synced  Healthy                  CronJob has not been scheduled yet
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:29+00:00   apps  Deployment  devops-app               backend    Synced  Healthy              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:42.950Z] 2026-08-20T08:16:30+00:00  batch         Job  devops-app      voteball-migrate   Running   Synced    PostSync  job.batch/voteball-migrate serverside-applied
+[2026-08-20T08:16:42.951Z] 2026-08-20T08:16:37+00:00  batch         Job  devops-app      voteball-migrate  Succeeded   Synced    PostSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:42.951Z] 
+[2026-08-20T08:16:42.951Z] Name:               argocd/voteball
+[2026-08-20T08:16:42.951Z] Project:            voteball
+[2026-08-20T08:16:42.951Z] Server:             https://kubernetes.default.svc
+[2026-08-20T08:16:42.951Z] Namespace:          devops-app
+[2026-08-20T08:16:42.951Z] URL:                https://localhost:8081/applications/voteball
+[2026-08-20T08:16:42.951Z] Source:
+[2026-08-20T08:16:42.951Z] - Repo:             https://github.com/Latnook/voteball
+[2026-08-20T08:16:42.951Z]   Target:           master
+[2026-08-20T08:16:42.951Z]   Path:             charts/voteball
+[2026-08-20T08:16:42.951Z] SyncWindow:         Sync Allowed
+[2026-08-20T08:16:42.951Z] Sync Policy:        Automated (Prune)
+[2026-08-20T08:16:42.951Z] Sync Status:        Synced to master (e7421e1)
+[2026-08-20T08:16:42.951Z] Health Status:      Healthy
+[2026-08-20T08:16:42.951Z] 
+[2026-08-20T08:16:42.951Z] Operation:          Sync
+[2026-08-20T08:16:42.951Z] Sync Revision:      e7421e13fb7f6853d226d0d0aee4129b8cb740ab
+[2026-08-20T08:16:42.951Z] Phase:              Succeeded
+[2026-08-20T08:16:42.951Z] Start:              2026-08-20 08:16:04 +0000 UTC
+[2026-08-20T08:16:42.951Z] Finished:           2026-08-20 08:16:37 +0000 UTC
+[2026-08-20T08:16:42.951Z] Duration:           33s
+[2026-08-20T08:16:42.951Z] Message:            successfully synced (no more tasks)
+[2026-08-20T08:16:42.951Z] 
+[2026-08-20T08:16:42.951Z] GROUP                  KIND                     NAMESPACE   NAME                       STATUS     HEALTH   HOOK      MESSAGE
+[2026-08-20T08:16:42.951Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PreSync   Reached expected number of succeeded pods
+[2026-08-20T08:16:42.951Z] networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend      Synced                        networkpolicy.networking.k8s.io/allow-alb-to-frontend serverside-applied
+[2026-08-20T08:16:42.951Z] networking.k8s.io      NetworkPolicy            devops-app  allow-app-egress           Synced                        networkpolicy.networking.k8s.io/allow-app-egress serverside-applied
+[2026-08-20T08:16:42.951Z] networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend  Synced                        networkpolicy.networking.k8s.io/allow-frontend-to-backend serverside-applied
+[2026-08-20T08:16:42.951Z] networking.k8s.io      NetworkPolicy            devops-app  default-deny               Synced                        networkpolicy.networking.k8s.io/default-deny serverside-applied
+[2026-08-20T08:16:42.951Z] networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape    Synced                        networkpolicy.networking.k8s.io/allow-prometheus-scrape serverside-applied
+[2026-08-20T08:16:42.951Z] networking.k8s.io      NetworkPolicy            devops-app  allow-dns-egress           Synced                        networkpolicy.networking.k8s.io/allow-dns-egress serverside-applied
+[2026-08-20T08:16:42.951Z] policy                 PodDisruptionBudget      devops-app  frontend                   Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.951Z] policy                 PodDisruptionBudget      devops-app  backend                    Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.951Z]                        ServiceAccount           devops-app  backup                     Synced                        serviceaccount/backup serverside-applied
+[2026-08-20T08:16:42.965Z]                        ServiceAccount           devops-app  frontend                   Synced                        serviceaccount/frontend serverside-applied
+[2026-08-20T08:16:42.965Z]                        ServiceAccount           devops-app  backend                    Synced                        serviceaccount/backend serverside-applied
+[2026-08-20T08:16:42.965Z]                        ServiceAccount           devops-app  worker                     Synced                        serviceaccount/worker serverside-applied
+[2026-08-20T08:16:42.965Z]                        ConfigMap                devops-app  app-config                 Synced                        configmap/app-config serverside-applied
+[2026-08-20T08:16:42.965Z]                        Service                  devops-app  frontend                   Synced     Healthy            service/frontend serverside-applied
+[2026-08-20T08:16:42.965Z]                        Service                  devops-app  backend                    Synced     Healthy            service/backend serverside-applied
+[2026-08-20T08:16:42.965Z]                        Service                  devops-app  worker                     Synced     Healthy            service/worker serverside-applied
+[2026-08-20T08:16:42.965Z] apps                   Deployment               devops-app  canary                     Synced     Healthy            deployment.apps/canary serverside-applied
+[2026-08-20T08:16:42.965Z] apps                   Deployment               devops-app  frontend                   Synced     Healthy            deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:42.965Z] apps                   Deployment               devops-app  worker                     Synced     Healthy            deployment.apps/worker serverside-applied
+[2026-08-20T08:16:42.965Z] apps                   Deployment               devops-app  backend                    Synced     Healthy            deployment.apps/backend serverside-applied
+[2026-08-20T08:16:42.965Z] autoscaling            HorizontalPodAutoscaler  devops-app  backend                    Synced     Healthy            recommended size matches current size
+[2026-08-20T08:16:42.965Z] batch                  CronJob                  devops-app  voteball-backup            Synced     Healthy            CronJob has not been scheduled yet
+[2026-08-20T08:16:42.965Z] networking.k8s.io      Ingress                  devops-app  voteball                   Synced     Healthy            ingress.networking.k8s.io/voteball serverside-applied
+[2026-08-20T08:16:42.965Z] external-secrets.io    ExternalSecret           devops-app  app-secret                 Synced     Healthy            secret synced
+[2026-08-20T08:16:42.965Z] external-secrets.io    SecretStore              devops-app  aws-secrets                Synced     Healthy            store validated
+[2026-08-20T08:16:42.965Z] monitoring.coreos.com  ServiceMonitor           devops-app  frontend                   Synced                        servicemonitor.monitoring.coreos.com/frontend serverside-applied
+[2026-08-20T08:16:42.965Z] monitoring.coreos.com  ServiceMonitor           devops-app  backend                    Synced                        servicemonitor.monitoring.coreos.com/backend serverside-applied
+[2026-08-20T08:16:42.965Z] monitoring.coreos.com  PrometheusRule           devops-app  voteball-alerts            Synced                        prometheusrule.monitoring.coreos.com/voteball-alerts serverside-applied
+[2026-08-20T08:16:42.965Z] monitoring.coreos.com  ServiceMonitor           devops-app  worker                     Synced                        servicemonitor.monitoring.coreos.com/worker serverside-applied
+[2026-08-20T08:16:42.965Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PostSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:42.965Z] + echo TIMESTAMP                  GROUP                        KIND                NAMESPACE                  NAME         STATUS   HEALTH        HOOK  MESSAGE
+[2026-08-20T08:16:42.966Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app              frontend         Synced                       
+[2026-08-20T08:16:42.966Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape      Synced                       
+[2026-08-20T08:16:42.966Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app               backend         Synced                       
+[2026-08-20T08:16:42.966Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app                canary         Synced  Healthy              
+[2026-08-20T08:16:42.966Z] 2026-08-20T08:16:04+00:00                            Service               devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.973Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  autoscaling            HorizontalPodAutoscaler  devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app                worker         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend        Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-dns-egress         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  policy                 PodDisruptionBudget      devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app                backup         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  external-secrets.io    ExternalSecret           devops-app            app-secret         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  PrometheusRule           devops-app       voteball-alerts         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app                worker         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app               backend         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  networking.k8s.io         Ingress               devops-app              voteball         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  policy                 PodDisruptionBudget      devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00                            Service               devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app          default-deny         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  external-secrets.io    SecretStore              devops-app           aws-secrets         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00                            Service               devops-app                worker         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  batch                     CronJob               devops-app       voteball-backup         Synced  Healthy              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-app-egress         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend    Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00                          ConfigMap               devops-app            app-config         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app              frontend         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app                worker         Synced                       
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:06+00:00  batch         Job  devops-app      voteball-migrate            Progressing              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:08+00:00  batch         Job  devops-app      voteball-migrate   Running   Synced     PreSync  job.batch/voteball-migrate serverside-applied
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app               backend  OutOfSync  Progressing              
+[2026-08-20T08:16:42.974Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app              frontend  OutOfSync  Progressing              
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app                worker  OutOfSync  Progressing              
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:16+00:00  batch     CronJob  devops-app       voteball-backup  OutOfSync  Healthy              
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  batch                         Job               devops-app      voteball-migrate       Succeeded   Synced         PreSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00                            Service               devops-app               backend         Synced   Healthy                  service/backend serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  external-secrets.io    SecretStore              devops-app           aws-secrets         Synced   Healthy                  secretstore.external-secrets.io/aws-secrets serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-app-egress         Synced                            networkpolicy.networking.k8s.io/allow-app-egress serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app          default-deny         Synced                            networkpolicy.networking.k8s.io/default-deny serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  policy                 PodDisruptionBudget      devops-app              frontend         Synced   Healthy                  poddisruptionbudget.policy/frontend serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app                backup         Synced                            serviceaccount/backup serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app               backend         Synced                            serviceaccount/backend serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00                            Service               devops-app                worker         Synced   Healthy                  service/worker serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app                canary         Synced   Healthy                  deployment.apps/canary serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  external-secrets.io    ExternalSecret           devops-app            app-secret         Synced   Healthy                  externalsecret.external-secrets.io/app-secret serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend        Synced                            networkpolicy.networking.k8s.io/allow-alb-to-frontend serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape      Synced                            networkpolicy.networking.k8s.io/allow-prometheus-scrape serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-dns-egress         Synced                            networkpolicy.networking.k8s.io/allow-dns-egress serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app               backend       OutOfSync  Progressing              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app              frontend       OutOfSync  Progressing              deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  batch                     CronJob               devops-app       voteball-backup       OutOfSync  Healthy                  cronjob.batch/voteball-backup serverside-applied
+[2026-08-20T08:16:42.975Z] 2026-08-20T08:16:19+00:00  networking.k8s.io         Ingress               devops-app              voteball         Synced   Healthy                  ingress.networking.k8s.io/voteball serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app                worker         Synced                            servicemonitor.monitoring.coreos.com/worker serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend    Synced                            networkpolicy.networking.k8s.io/allow-frontend-to-backend serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app                worker         Synced                            serviceaccount/worker serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00                            Service               devops-app              frontend         Synced   Healthy                  service/frontend serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app                worker       OutOfSync  Progressing              deployment.apps/worker serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  autoscaling            HorizontalPodAutoscaler  devops-app               backend         Synced   Healthy                  horizontalpodautoscaler.autoscaling/backend serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app               backend         Synced                            servicemonitor.monitoring.coreos.com/backend serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  policy                 PodDisruptionBudget      devops-app               backend         Synced   Healthy                  poddisruptionbudget.policy/backend serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00                          ConfigMap               devops-app            app-config         Synced                            configmap/app-config serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app              frontend         Synced                            serviceaccount/frontend serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app              frontend         Synced                            servicemonitor.monitoring.coreos.com/frontend serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  PrometheusRule           devops-app       voteball-alerts         Synced                            prometheusrule.monitoring.coreos.com/voteball-alerts serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  batch                   CronJob               devops-app       voteball-backup  OutOfSync  Healthy              CronJob has not been scheduled yet
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  policy               PodDisruptionBudget      devops-app               backend    Synced   Healthy              PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  external-secrets.io  ExternalSecret           devops-app            app-secret    Synced   Healthy              secret synced
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  external-secrets.io  SecretStore              devops-app           aws-secrets    Synced   Healthy              store validated
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  policy               PodDisruptionBudget      devops-app              frontend    Synced   Healthy              PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:19+00:00  autoscaling          HorizontalPodAutoscaler  devops-app               backend    Synced   Healthy              recommended size matches current size
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:24+00:00   apps  Deployment  devops-app                worker  OutOfSync  Healthy              deployment.apps/worker serverside-applied
+[2026-08-20T08:16:42.976Z] 2026-08-20T08:16:24+00:00   apps  Deployment  devops-app              frontend  OutOfSync  Healthy              deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:42.977Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app                worker    Synced  Healthy                  deployment.apps/worker serverside-applied
+[2026-08-20T08:16:42.977Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app               backend    Synced  Progressing              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:42.977Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app              frontend    Synced  Healthy                  deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:42.977Z] 2026-08-20T08:16:25+00:00  batch     CronJob  devops-app       voteball-backup    Synced  Healthy                  CronJob has not been scheduled yet
+[2026-08-20T08:16:42.977Z] 2026-08-20T08:16:29+00:00   apps  Deployment  devops-app               backend    Synced  Healthy              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:42.977Z] 2026-08-20T08:16:30+00:00  batch         Job  devops-app      voteball-migrate   Running   Synced    PostSync  job.batch/voteball-migrate serverside-applied
+[2026-08-20T08:16:42.977Z] 2026-08-20T08:16:37+00:00  batch         Job  devops-app      voteball-migrate  Succeeded   Synced    PostSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:42.977Z] 
+[2026-08-20T08:16:42.977Z] Name:               argocd/voteball
+[2026-08-20T08:16:42.977Z] Project:            voteball
+[2026-08-20T08:16:42.977Z] Server:             https://kubernetes.default.svc
+[2026-08-20T08:16:42.977Z] Namespace:          devops-app
+[2026-08-20T08:16:42.977Z] URL:                https://localhost:8081/applications/voteball
+[2026-08-20T08:16:42.977Z] Source:
+[2026-08-20T08:16:42.977Z] - Repo:             https://github.com/Latnook/voteball
+[2026-08-20T08:16:42.977Z]   Target:           master
+[2026-08-20T08:16:42.977Z]   Path:             charts/voteball
+[2026-08-20T08:16:42.977Z] SyncWindow:         Sync Allowed
+[2026-08-20T08:16:42.977Z] Sync Policy:        Automated (Prune)
+[2026-08-20T08:16:42.977Z] Sync Status:        Synced to master (e7421e1)
+[2026-08-20T08:16:42.977Z] Health Status:      Healthy
+[2026-08-20T08:16:42.977Z] 
+[2026-08-20T08:16:42.977Z] Operation:          Sync
+[2026-08-20T08:16:42.977Z] Sync Revision:      e7421e13fb7f6853d226d0d0aee4129b8cb740ab
+[2026-08-20T08:16:42.977Z] Phase:              Succeeded
+[2026-08-20T08:16:42.977Z] Start:              2026-08-20 08:16:04 +0000 UTC
+[2026-08-20T08:16:42.977Z] Finished:           2026-08-20 08:16:37 +0000 UTC
+[2026-08-20T08:16:42.977Z] Duration:           33s
+[2026-08-20T08:16:42.977Z] Message:            successfully synced (no more tasks)
+[2026-08-20T08:16:42.977Z] 
+[2026-08-20T08:16:42.977Z] GROUP                  KIND                     NAMESPACE   NAME                       STATUS     HEALTH   HOOK      MESSAGE
+[2026-08-20T08:16:42.977Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PreSync   Reached expected number of succeeded pods
+[2026-08-20T08:16:42.977Z] networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend      Synced                        networkpolicy.networking.k8s.io/allow-alb-to-frontend serverside-applied
+[2026-08-20T08:16:42.977Z] networking.k8s.io      NetworkPolicy            devops-app  allow-app-egress           Synced                        networkpolicy.networking.k8s.io/allow-app-egress serverside-applied
+[2026-08-20T08:16:42.977Z] networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend  Synced                        networkpolicy.networking.k8s.io/allow-frontend-to-backend serverside-applied
+[2026-08-20T08:16:42.977Z] networking.k8s.io      NetworkPolicy            devops-app  default-deny               Synced                        networkpolicy.networking.k8s.io/default-deny serverside-applied
+[2026-08-20T08:16:42.977Z] networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape    Synced                        networkpolicy.networking.k8s.io/allow-prometheus-scrape serverside-applied
+[2026-08-20T08:16:42.977Z] networking.k8s.io      NetworkPolicy            devops-app  allow-dns-egress           Synced                        networkpolicy.networking.k8s.io/allow-dns-egress serverside-applied
+[2026-08-20T08:16:42.977Z] policy                 PodDisruptionBudget      devops-app  frontend                   Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.977Z] policy                 PodDisruptionBudget      devops-app  backend                    Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:42.977Z]                        ServiceAccount           devops-app  backup                     Synced                        serviceaccount/backup serverside-applied
+[2026-08-20T08:16:42.977Z]                        ServiceAccount           devops-app  frontend                   Synced                        serviceaccount/frontend serverside-applied
+[2026-08-20T08:16:42.977Z]                        ServiceAccount           devops-app  backend                    Synced                        serviceaccount/backend serverside-applied
+[2026-08-20T08:16:42.977Z]                        ServiceAccount           devops-app  worker                     Synced                        serviceaccount/worker serverside-applied
+[2026-08-20T08:16:42.978Z]                        ConfigMap                devops-app  app-config                 Synced                        configmap/app-config serverside-applied
+[2026-08-20T08:16:42.978Z]                        Service                  devops-app  frontend                   Synced     Healthy            service/frontend serverside-applied
+[2026-08-20T08:16:42.978Z]                        Service                  devops-app  backend                    Synced     Healthy            service/backend serverside-applied
+[2026-08-20T08:16:42.978Z]                        Service                  devops-app  worker                     Synced     Healthy            service/worker serverside-applied
+[2026-08-20T08:16:42.978Z] apps                   Deployment               devops-app  canary                     Synced     Healthy            deployment.apps/canary serverside-applied
+[2026-08-20T08:16:43.000Z] apps                   Deployment               devops-app  frontend                   Synced     Healthy            deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:43.000Z] apps                   Deployment               devops-app  worker                     Synced     Healthy            deployment.apps/worker serverside-applied
+[2026-08-20T08:16:43.000Z] apps                   Deployment               devops-app  backend                    Synced     Healthy            deployment.apps/backend serverside-applied
+[2026-08-20T08:16:43.000Z] autoscaling            HorizontalPodAutoscaler  devops-app  backend                    Synced     Healthy            recommended size matches current size
+[2026-08-20T08:16:43.000Z] batch                  CronJob                  devops-app  voteball-backup            Synced     Healthy            CronJob has not been scheduled yet
+[2026-08-20T08:16:43.000Z] networking.k8s.io      Ingress                  devops-app  voteball                   Synced     Healthy            ingress.networking.k8s.io/voteball serverside-applied
+[2026-08-20T08:16:43.000Z] external-secrets.io    ExternalSecret           devops-app  app-secret                 Synced     Healthy            secret synced
+[2026-08-20T08:16:43.000Z] external-secrets.io    SecretStore              devops-app  aws-secrets                Synced     Healthy            store validated
+[2026-08-20T08:16:43.000Z] monitoring.coreos.com  ServiceMonitor           devops-app  frontend                   Synced                        servicemonitor.monitoring.coreos.com/frontend serverside-applied
+[2026-08-20T08:16:43.000Z] monitoring.coreos.com  ServiceMonitor           devops-app  backend                    Synced                        servicemonitor.monitoring.coreos.com/backend serverside-applied
+[2026-08-20T08:16:43.000Z] monitoring.coreos.com  PrometheusRule           devops-app  voteball-alerts            Synced                        prometheusrule.monitoring.coreos.com/voteball-alerts serverside-applied
+[2026-08-20T08:16:43.000Z] monitoring.coreos.com  ServiceMonitor           devops-app  worker                     Synced                        servicemonitor.monitoring.coreos.com/worker serverside-applied
+[2026-08-20T08:16:43.000Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PostSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:43.000Z] TIMESTAMP                  GROUP                        KIND                NAMESPACE                  NAME         STATUS   HEALTH        HOOK  MESSAGE
+[2026-08-20T08:16:43.000Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app              frontend         Synced                       
+[2026-08-20T08:16:43.000Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape      Synced                       
+[2026-08-20T08:16:43.000Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app               backend         Synced                       
+[2026-08-20T08:16:43.000Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app                canary         Synced  Healthy              
+[2026-08-20T08:16:43.000Z] 2026-08-20T08:16:04+00:00                            Service               devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:43.000Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:43.000Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:43.001Z] 2026-08-20T08:16:04+00:00  autoscaling            HorizontalPodAutoscaler  devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:43.001Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app                worker         Synced                       
+[2026-08-20T08:16:43.001Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend        Synced                       
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-dns-egress         Synced                       
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00  policy                 PodDisruptionBudget      devops-app               backend         Synced  Healthy              
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app                backup         Synced                       
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00  external-secrets.io    ExternalSecret           devops-app            app-secret         Synced  Healthy              
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  PrometheusRule           devops-app       voteball-alerts         Synced                       
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00   apps                  Deployment               devops-app                worker         Synced  Healthy              
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00  monitoring.coreos.com  ServiceMonitor           devops-app               backend         Synced                       
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00  networking.k8s.io         Ingress               devops-app              voteball         Synced  Healthy              
+[2026-08-20T08:16:43.009Z] 2026-08-20T08:16:04+00:00  policy                 PodDisruptionBudget      devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00                            Service               devops-app              frontend         Synced  Healthy              
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app          default-deny         Synced                       
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00  external-secrets.io    SecretStore              devops-app           aws-secrets         Synced  Healthy              
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00                            Service               devops-app                worker         Synced  Healthy              
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00  batch                     CronJob               devops-app       voteball-backup         Synced  Healthy              
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-app-egress         Synced                       
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend    Synced                       
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00                          ConfigMap               devops-app            app-config         Synced                       
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app              frontend         Synced                       
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:04+00:00                         ServiceAccount           devops-app                worker         Synced                       
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:06+00:00  batch         Job  devops-app      voteball-migrate            Progressing              
+[2026-08-20T08:16:43.013Z] 2026-08-20T08:16:08+00:00  batch         Job  devops-app      voteball-migrate   Running   Synced     PreSync  job.batch/voteball-migrate serverside-applied
+[2026-08-20T08:16:43.014Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app               backend  OutOfSync  Progressing              
+[2026-08-20T08:16:43.014Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app              frontend  OutOfSync  Progressing              
+[2026-08-20T08:16:43.014Z] 2026-08-20T08:16:16+00:00   apps  Deployment  devops-app                worker  OutOfSync  Progressing              
+[2026-08-20T08:16:43.014Z] 2026-08-20T08:16:16+00:00  batch     CronJob  devops-app       voteball-backup  OutOfSync  Healthy              
+[2026-08-20T08:16:43.014Z] 2026-08-20T08:16:19+00:00  batch                         Job               devops-app      voteball-migrate       Succeeded   Synced         PreSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:43.014Z] 2026-08-20T08:16:19+00:00                            Service               devops-app               backend         Synced   Healthy                  service/backend serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  external-secrets.io    SecretStore              devops-app           aws-secrets         Synced   Healthy                  secretstore.external-secrets.io/aws-secrets serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-app-egress         Synced                            networkpolicy.networking.k8s.io/allow-app-egress serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app          default-deny         Synced                            networkpolicy.networking.k8s.io/default-deny serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  policy                 PodDisruptionBudget      devops-app              frontend         Synced   Healthy                  poddisruptionbudget.policy/frontend serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app                backup         Synced                            serviceaccount/backup serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app               backend         Synced                            serviceaccount/backend serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00                            Service               devops-app                worker         Synced   Healthy                  service/worker serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app                canary         Synced   Healthy                  deployment.apps/canary serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  external-secrets.io    ExternalSecret           devops-app            app-secret         Synced   Healthy                  externalsecret.external-secrets.io/app-secret serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend        Synced                            networkpolicy.networking.k8s.io/allow-alb-to-frontend serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape      Synced                            networkpolicy.networking.k8s.io/allow-prometheus-scrape serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app      allow-dns-egress         Synced                            networkpolicy.networking.k8s.io/allow-dns-egress serverside-applied
+[2026-08-20T08:16:43.019Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app               backend       OutOfSync  Progressing              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:43.020Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app              frontend       OutOfSync  Progressing              deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:43.023Z] 2026-08-20T08:16:19+00:00  batch                     CronJob               devops-app       voteball-backup       OutOfSync  Healthy                  cronjob.batch/voteball-backup serverside-applied
+[2026-08-20T08:16:43.023Z] 2026-08-20T08:16:19+00:00  networking.k8s.io         Ingress               devops-app              voteball         Synced   Healthy                  ingress.networking.k8s.io/voteball serverside-applied
+[2026-08-20T08:16:43.023Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app                worker         Synced                            servicemonitor.monitoring.coreos.com/worker serverside-applied
+[2026-08-20T08:16:43.023Z] 2026-08-20T08:16:19+00:00  networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend    Synced                            networkpolicy.networking.k8s.io/allow-frontend-to-backend serverside-applied
+[2026-08-20T08:16:43.023Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app                worker         Synced                            serviceaccount/worker serverside-applied
+[2026-08-20T08:16:43.023Z] 2026-08-20T08:16:19+00:00                            Service               devops-app              frontend         Synced   Healthy                  service/frontend serverside-applied
+[2026-08-20T08:16:43.023Z] 2026-08-20T08:16:19+00:00   apps                  Deployment               devops-app                worker       OutOfSync  Progressing              deployment.apps/worker serverside-applied
+[2026-08-20T08:16:43.024Z] 2026-08-20T08:16:19+00:00  autoscaling            HorizontalPodAutoscaler  devops-app               backend         Synced   Healthy                  horizontalpodautoscaler.autoscaling/backend serverside-applied
+[2026-08-20T08:16:43.024Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app               backend         Synced                            servicemonitor.monitoring.coreos.com/backend serverside-applied
+[2026-08-20T08:16:43.024Z] 2026-08-20T08:16:19+00:00  policy                 PodDisruptionBudget      devops-app               backend         Synced   Healthy                  poddisruptionbudget.policy/backend serverside-applied
+[2026-08-20T08:16:43.024Z] 2026-08-20T08:16:19+00:00                          ConfigMap               devops-app            app-config         Synced                            configmap/app-config serverside-applied
+[2026-08-20T08:16:43.024Z] 2026-08-20T08:16:19+00:00                         ServiceAccount           devops-app              frontend         Synced                            serviceaccount/frontend serverside-applied
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  ServiceMonitor           devops-app              frontend         Synced                            servicemonitor.monitoring.coreos.com/frontend serverside-applied
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  monitoring.coreos.com  PrometheusRule           devops-app       voteball-alerts         Synced                            prometheusrule.monitoring.coreos.com/voteball-alerts serverside-applied
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  batch                   CronJob               devops-app       voteball-backup  OutOfSync  Healthy              CronJob has not been scheduled yet
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  policy               PodDisruptionBudget      devops-app               backend    Synced   Healthy              PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  external-secrets.io  ExternalSecret           devops-app            app-secret    Synced   Healthy              secret synced
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  external-secrets.io  SecretStore              devops-app           aws-secrets    Synced   Healthy              store validated
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  policy               PodDisruptionBudget      devops-app              frontend    Synced   Healthy              PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:19+00:00  autoscaling          HorizontalPodAutoscaler  devops-app               backend    Synced   Healthy              recommended size matches current size
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:24+00:00   apps  Deployment  devops-app                worker  OutOfSync  Healthy              deployment.apps/worker serverside-applied
+[2026-08-20T08:16:43.027Z] 2026-08-20T08:16:24+00:00   apps  Deployment  devops-app              frontend  OutOfSync  Healthy              deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:43.028Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app                worker    Synced  Healthy                  deployment.apps/worker serverside-applied
+[2026-08-20T08:16:43.028Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app               backend    Synced  Progressing              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:43.028Z] 2026-08-20T08:16:25+00:00   apps  Deployment  devops-app              frontend    Synced  Healthy                  deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:43.028Z] 2026-08-20T08:16:25+00:00  batch     CronJob  devops-app       voteball-backup    Synced  Healthy                  CronJob has not been scheduled yet
+[2026-08-20T08:16:43.028Z] 2026-08-20T08:16:29+00:00   apps  Deployment  devops-app               backend    Synced  Healthy              deployment.apps/backend serverside-applied
+[2026-08-20T08:16:43.028Z] 2026-08-20T08:16:30+00:00  batch         Job  devops-app      voteball-migrate   Running   Synced    PostSync  job.batch/voteball-migrate serverside-applied
+[2026-08-20T08:16:43.028Z] 2026-08-20T08:16:37+00:00  batch         Job  devops-app      voteball-migrate  Succeeded   Synced    PostSync  Reached expected number of succeeded pods
+[2026-08-20T08:16:43.028Z] 
+[2026-08-20T08:16:43.028Z] Name:               argocd/voteball
+[2026-08-20T08:16:43.028Z] Project:            voteball
+[2026-08-20T08:16:43.028Z] Server:             https://kubernetes.default.svc
+[2026-08-20T08:16:43.028Z] Namespace:          devops-app
+[2026-08-20T08:16:43.028Z] URL:                https://localhost:8081/applications/voteball
+[2026-08-20T08:16:43.028Z] Source:
+[2026-08-20T08:16:43.028Z] - Repo:             https://github.com/Latnook/voteball
+[2026-08-20T08:16:43.028Z]   Target:           master
+[2026-08-20T08:16:43.028Z]   Path:             charts/voteball
+[2026-08-20T08:16:43.028Z] SyncWindow:         Sync Allowed
+[2026-08-20T08:16:43.028Z] Sync Policy:        Automated (Prune)
+[2026-08-20T08:16:43.028Z] Sync Status:        Synced to master (e7421e1)
+[2026-08-20T08:16:43.028Z] Health Status:      Healthy
+[2026-08-20T08:16:43.028Z] 
+[2026-08-20T08:16:43.028Z] Operation:          Sync
+[2026-08-20T08:16:43.031Z] Sync Revision:      e7421e13fb7f6853d226d0d0aee4129b8cb740ab
+[2026-08-20T08:16:43.031Z] Phase:              Succeeded
+[2026-08-20T08:16:43.031Z] Start:              2026-08-20 08:16:04 +0000 UTC
+[2026-08-20T08:16:43.031Z] Finished:           2026-08-20 08:16:37 +0000 UTC
+[2026-08-20T08:16:43.031Z] Duration:           33s
+[2026-08-20T08:16:43.031Z] Message:            successfully synced (no more tasks)
+[2026-08-20T08:16:43.031Z] 
+[2026-08-20T08:16:43.031Z] GROUP                  KIND                     NAMESPACE   NAME                       STATUS     HEALTH   HOOK      MESSAGE
+[2026-08-20T08:16:43.031Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PreSync   Reached expected number of succeeded pods
+[2026-08-20T08:16:43.031Z] networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend      Synced                        networkpolicy.networking.k8s.io/allow-alb-to-frontend serverside-applied
+[2026-08-20T08:16:43.031Z] networking.k8s.io      NetworkPolicy            devops-app  allow-app-egress           Synced                        networkpolicy.networking.k8s.io/allow-app-egress serverside-applied
+[2026-08-20T08:16:43.032Z] networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend  Synced                        networkpolicy.networking.k8s.io/allow-frontend-to-backend serverside-applied
+[2026-08-20T08:16:43.032Z] networking.k8s.io      NetworkPolicy            devops-app  default-deny               Synced                        networkpolicy.networking.k8s.io/default-deny serverside-applied
+[2026-08-20T08:16:43.032Z] networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape    Synced                        networkpolicy.networking.k8s.io/allow-prometheus-scrape serverside-applied
+[2026-08-20T08:16:43.032Z] networking.k8s.io      NetworkPolicy            devops-app  allow-dns-egress           Synced                        networkpolicy.networking.k8s.io/allow-dns-egress serverside-applied
+[2026-08-20T08:16:44.182Z] policy                 PodDisruptionBudget      devops-app  frontend                   Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:44.182Z] policy                 PodDisruptionBudget      devops-app  backend                    Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:44.182Z]                        ServiceAccount           devops-app  backup                     Synced                        serviceaccount/backup serverside-applied
+[2026-08-20T08:16:44.182Z]                        ServiceAccount           devops-app  frontend                   Synced                        serviceaccount/frontend serverside-applied
+[2026-08-20T08:16:44.182Z]                        ServiceAccount           devops-app  backend                    Synced                        serviceaccount/backend serverside-applied
+[2026-08-20T08:16:44.182Z]                        ServiceAccount           devops-app  worker                     Synced                        serviceaccount/worker serverside-applied
+[2026-08-20T08:16:44.182Z]                        ConfigMap                devops-app  app-config                 Synced                        configmap/app-config serverside-applied
+[2026-08-20T08:16:44.182Z]                        Service                  devops-app  frontend                   Synced     Healthy            service/frontend serverside-applied
+[2026-08-20T08:16:44.182Z]                        Service                  devops-app  backend                    Synced     Healthy            service/backend serverside-applied
+[2026-08-20T08:16:44.182Z]                        Service                  devops-app  worker                     Synced     Healthy            service/worker serverside-applied
+[2026-08-20T08:16:44.183Z] apps                   Deployment               devops-app  canary                     Synced     Healthy            deployment.apps/canary serverside-applied
+[2026-08-20T08:16:44.183Z] apps                   Deployment               devops-app  frontend                   Synced     Healthy            deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:44.183Z] apps                   Deployment               devops-app  worker                     Synced     Healthy            deployment.apps/worker serverside-applied
+[2026-08-20T08:16:44.183Z] apps                   Deployment               devops-app  backend                    Synced     Healthy            deployment.apps/backend serverside-applied
+[2026-08-20T08:16:44.183Z] autoscaling            HorizontalPodAutoscaler  devops-app  backend                    Synced     Healthy            recommended size matches current size
+[2026-08-20T08:16:44.183Z] batch                  CronJob                  devops-app  voteball-backup            Synced     Healthy            CronJob has not been scheduled yet
+[2026-08-20T08:16:44.183Z] networking.k8s.io      Ingress                  devops-app  voteball                   Synced     Healthy            ingress.networking.k8s.io/voteball serverside-applied
+[2026-08-20T08:16:44.183Z] external-secrets.io    ExternalSecret           devops-app  app-secret                 Synced     Healthy            secret synced
+[2026-08-20T08:16:44.183Z] external-secrets.io    SecretStore              devops-app  aws-secrets                Synced     Healthy            store validated
+[2026-08-20T08:16:44.183Z] monitoring.coreos.com  ServiceMonitor           devops-app  frontend                   Synced                        servicemonitor.monitoring.coreos.com/frontend serverside-applied
+[2026-08-20T08:16:44.183Z] monitoring.coreos.com  ServiceMonitor           devops-app  backend                    Synced                        servicemonitor.monitoring.coreos.com/backend serverside-applied
+[2026-08-20T08:16:44.183Z] monitoring.coreos.com  PrometheusRule           devops-app  voteball-alerts            Synced                        prometheusrule.monitoring.coreos.com/voteball-alerts serverside-applied
+[2026-08-20T08:16:44.183Z] monitoring.coreos.com  ServiceMonitor           devops-app  worker                     Synced                        servicemonitor.monitoring.coreos.com/worker serverside-applied
+[2026-08-20T08:16:44.183Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PostSync  Reached expected number of succeeded pods
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Rollout)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withCredentials
+[2026-08-20T08:16:45.572Z] Masking supported pattern matches of $ARGOCD_AUTH_TOKEN
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:46.238Z] + set -eu
+[2026-08-20T08:16:46.238Z] + argocd app wait voteball --server argocd-server.argocd.svc.cluster.local --grpc-web --insecure --sync --health --timeout 600
+[2026-08-20T08:16:46.238Z] 
+[2026-08-20T08:16:46.238Z] Name:               argocd/voteball
+[2026-08-20T08:16:46.238Z] Project:            voteball
+[2026-08-20T08:16:46.238Z] Server:             https://kubernetes.default.svc
+[2026-08-20T08:16:46.238Z] Namespace:          devops-app
+[2026-08-20T08:16:46.238Z] URL:                https://localhost:8081/applications/voteball
+[2026-08-20T08:16:46.238Z] Source:
+[2026-08-20T08:16:46.238Z] - Repo:             https://github.com/Latnook/voteball
+[2026-08-20T08:16:46.238Z]   Target:           master
+[2026-08-20T08:16:46.238Z]   Path:             charts/voteball
+[2026-08-20T08:16:46.238Z] SyncWindow:         Sync Allowed
+[2026-08-20T08:16:46.238Z] Sync Policy:        Automated (Prune)
+[2026-08-20T08:16:46.238Z] Sync Status:        Synced to master (e7421e1)
+[2026-08-20T08:16:46.238Z] Health Status:      Healthy
+[2026-08-20T08:16:46.238Z] 
+[2026-08-20T08:16:46.238Z] 
+[2026-08-20T08:16:46.238Z] GROUP                  KIND                     NAMESPACE   NAME                       STATUS     HEALTH   HOOK      MESSAGE
+[2026-08-20T08:16:46.238Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PreSync   Reached expected number of succeeded pods
+[2026-08-20T08:16:46.238Z] networking.k8s.io      NetworkPolicy            devops-app  allow-alb-to-frontend      Synced                        networkpolicy.networking.k8s.io/allow-alb-to-frontend serverside-applied
+[2026-08-20T08:16:46.238Z] networking.k8s.io      NetworkPolicy            devops-app  allow-app-egress           Synced                        networkpolicy.networking.k8s.io/allow-app-egress serverside-applied
+[2026-08-20T08:16:46.238Z] networking.k8s.io      NetworkPolicy            devops-app  allow-frontend-to-backend  Synced                        networkpolicy.networking.k8s.io/allow-frontend-to-backend serverside-applied
+[2026-08-20T08:16:46.238Z] networking.k8s.io      NetworkPolicy            devops-app  default-deny               Synced                        networkpolicy.networking.k8s.io/default-deny serverside-applied
+[2026-08-20T08:16:46.238Z] networking.k8s.io      NetworkPolicy            devops-app  allow-prometheus-scrape    Synced                        networkpolicy.networking.k8s.io/allow-prometheus-scrape serverside-applied
+[2026-08-20T08:16:46.238Z] networking.k8s.io      NetworkPolicy            devops-app  allow-dns-egress           Synced                        networkpolicy.networking.k8s.io/allow-dns-egress serverside-applied
+[2026-08-20T08:16:46.239Z] policy                 PodDisruptionBudget      devops-app  frontend                   Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:46.239Z] policy                 PodDisruptionBudget      devops-app  backend                    Synced     Healthy            PodDisruptionBudget has SufficientPods
+[2026-08-20T08:16:46.239Z]                        ServiceAccount           devops-app  backup                     Synced                        serviceaccount/backup serverside-applied
+[2026-08-20T08:16:46.239Z]                        ServiceAccount           devops-app  frontend                   Synced                        serviceaccount/frontend serverside-applied
+[2026-08-20T08:16:46.239Z]                        ServiceAccount           devops-app  backend                    Synced                        serviceaccount/backend serverside-applied
+[2026-08-20T08:16:46.239Z]                        ServiceAccount           devops-app  worker                     Synced                        serviceaccount/worker serverside-applied
+[2026-08-20T08:16:46.239Z]                        ConfigMap                devops-app  app-config                 Synced                        configmap/app-config serverside-applied
+[2026-08-20T08:16:46.239Z]                        Service                  devops-app  frontend                   Synced     Healthy            service/frontend serverside-applied
+[2026-08-20T08:16:46.239Z]                        Service                  devops-app  backend                    Synced     Healthy            service/backend serverside-applied
+[2026-08-20T08:16:46.239Z]                        Service                  devops-app  worker                     Synced     Healthy            service/worker serverside-applied
+[2026-08-20T08:16:46.239Z] apps                   Deployment               devops-app  canary                     Synced     Healthy            deployment.apps/canary serverside-applied
+[2026-08-20T08:16:46.239Z] apps                   Deployment               devops-app  frontend                   Synced     Healthy            deployment.apps/frontend serverside-applied
+[2026-08-20T08:16:46.239Z] apps                   Deployment               devops-app  worker                     Synced     Healthy            deployment.apps/worker serverside-applied
+[2026-08-20T08:16:46.239Z] apps                   Deployment               devops-app  backend                    Synced     Healthy            deployment.apps/backend serverside-applied
+[2026-08-20T08:16:46.239Z] autoscaling            HorizontalPodAutoscaler  devops-app  backend                    Synced     Healthy            recommended size matches current size
+[2026-08-20T08:16:46.239Z] batch                  CronJob                  devops-app  voteball-backup            Synced     Healthy            CronJob has not been scheduled yet
+[2026-08-20T08:16:46.239Z] networking.k8s.io      Ingress                  devops-app  voteball                   Synced     Healthy            ingress.networking.k8s.io/voteball serverside-applied
+[2026-08-20T08:16:46.239Z] external-secrets.io    ExternalSecret           devops-app  app-secret                 Synced     Healthy            secret synced
+[2026-08-20T08:16:46.239Z] external-secrets.io    SecretStore              devops-app  aws-secrets                Synced     Healthy            store validated
+[2026-08-20T08:16:46.239Z] monitoring.coreos.com  ServiceMonitor           devops-app  frontend                   Synced                        servicemonitor.monitoring.coreos.com/frontend serverside-applied
+[2026-08-20T08:16:46.239Z] monitoring.coreos.com  ServiceMonitor           devops-app  backend                    Synced                        servicemonitor.monitoring.coreos.com/backend serverside-applied
+[2026-08-20T08:16:46.239Z] monitoring.coreos.com  PrometheusRule           devops-app  voteball-alerts            Synced                        prometheusrule.monitoring.coreos.com/voteball-alerts serverside-applied
+[2026-08-20T08:16:46.239Z] monitoring.coreos.com  ServiceMonitor           devops-app  worker                     Synced                        servicemonitor.monitoring.coreos.com/worker serverside-applied
+[2026-08-20T08:16:46.239Z] batch                  Job                      devops-app  voteball-migrate           Succeeded  Synced   PostSync  Reached expected number of succeeded pods
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] withCredentials
+[2026-08-20T08:16:47.245Z] Masking supported pattern matches of $ARGOCD_AUTH_TOKEN
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:48.061Z] + set -eu
+[2026-08-20T08:16:48.061Z] + argocd app get voteball --server argocd-server.argocd.svc.cluster.local --grpc-web --insecure -o json
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:49.986Z] + set -eu
+[2026-08-20T08:16:49.986Z] + jq -r '.status.sync.status // empty' app-status.json
+[2026-08-20T08:16:49.986Z] + sync_status=Synced
+[2026-08-20T08:16:49.986Z] + jq -r '.status.health.status // empty' app-status.json
+[2026-08-20T08:16:49.986Z] + health=Healthy
+[2026-08-20T08:16:49.986Z] + jq -r '.status.sync.revision // empty' app-status.json
+[2026-08-20T08:16:49.986Z] + revision=e7421e13fb7f6853d226d0d0aee4129b8cb740ab
+[2026-08-20T08:16:49.986Z] + echo 'sync=Synced health=Healthy revision=e7421e13fb7f6853d226d0d0aee4129b8cb740ab'
+[2026-08-20T08:16:49.986Z] sync=Synced health=Healthy revision=e7421e13fb7f6853d226d0d0aee4129b8cb740ab
+[2026-08-20T08:16:49.986Z] + '[' -n Synced ]
+[2026-08-20T08:16:49.986Z] + '[' -n Healthy ]
+[2026-08-20T08:16:49.986Z] + '[' -n e7421e13fb7f6853d226d0d0aee4129b8cb740ab ]
+[2026-08-20T08:16:49.986Z] + '[' Synced '=' Synced ]
+[2026-08-20T08:16:49.986Z] + '[' Healthy '=' Healthy ]
+[Pipeline] sh
+[2026-08-20T08:16:50.695Z] + set -eu
+[2026-08-20T08:16:50.695Z] + kubectl get deployment frontend -n devops-app -o 'jsonpath={.spec.template.spec.containers[0].image}'
+[2026-08-20T08:16:50.695Z] + image=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:9a58532
+[2026-08-20T08:16:50.695Z] + echo 'frontend -> 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:9a58532'
+[2026-08-20T08:16:50.695Z] frontend -> 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx:9a58532
+[2026-08-20T08:16:50.695Z] + kubectl get deployment backend -n devops-app -o 'jsonpath={.spec.template.spec.containers[0].image}'
+[2026-08-20T08:16:50.695Z] + image=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:9a58532
+[2026-08-20T08:16:50.695Z] + echo 'backend -> 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:9a58532'
+[2026-08-20T08:16:50.695Z] backend -> 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend:9a58532
+[2026-08-20T08:16:50.695Z] + kubectl get deployment worker -n devops-app -o 'jsonpath={.spec.template.spec.containers[0].image}'
+[2026-08-20T08:16:50.964Z] + image=590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker:9a58532
+[2026-08-20T08:16:50.964Z] + echo 'worker -> 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker:9a58532'
+[2026-08-20T08:16:50.964Z] worker -> 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker:9a58532
+[2026-08-20T08:16:50.964Z] + echo 'All three Deployments (frontend, backend, worker) are running tag 9a58532.'
+[2026-08-20T08:16:50.964Z] All three Deployments (frontend, backend, worker) are running tag 9a58532.
+[Pipeline] sh
+[2026-08-20T08:16:51.582Z] + set +e
+[2026-08-20T08:16:51.582Z] + kubectl get deployments,pods,services,ingress -n devops-app
+[2026-08-20T08:16:51.582Z] NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+[2026-08-20T08:16:51.582Z] deployment.apps/backend    2/2     2            2           90m
+[2026-08-20T08:16:51.582Z] deployment.apps/canary     1/1     1            1           90m
+[2026-08-20T08:16:51.582Z] deployment.apps/frontend   2/2     2            2           90m
+[2026-08-20T08:16:51.582Z] deployment.apps/worker     1/1     1            1           90m
+[2026-08-20T08:16:51.582Z] 
+[2026-08-20T08:16:51.582Z] NAME                            READY   STATUS        RESTARTS   AGE
+[2026-08-20T08:16:51.582Z] pod/backend-6577654956-khpdn    1/1     Running       0          39s
+[2026-08-20T08:16:51.582Z] pod/backend-6577654956-ph4k5    1/1     Running       0          28s
+[2026-08-20T08:16:51.582Z] pod/canary-67c7ccfbc9-74r8w     1/1     Running       0          90m
+[2026-08-20T08:16:51.582Z] pod/frontend-7ff69b86db-l897j   2/2     Running       0          32s
+[2026-08-20T08:16:51.582Z] pod/frontend-7ff69b86db-wdlcf   2/2     Running       0          39s
+[2026-08-20T08:16:51.582Z] pod/worker-74bb6885b9-7pl9s     1/1     Terminating   0          30m
+[2026-08-20T08:16:51.582Z] pod/worker-76cf8d95-nn8sb       1/1     Running       0          39s
+[2026-08-20T08:16:51.582Z] 
+[2026-08-20T08:16:51.582Z] NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
+[2026-08-20T08:16:51.582Z] service/backend    ClusterIP   172.20.198.183   <none>        5000/TCP          90m
+[2026-08-20T08:16:51.582Z] service/frontend   ClusterIP   172.20.3.247     <none>        80/TCP,9113/TCP   90m
+[2026-08-20T08:16:51.582Z] service/worker     ClusterIP   None             <none>        9100/TCP          90m
+[2026-08-20T08:16:51.582Z] 
+[2026-08-20T08:16:51.582Z] NAME                                 CLASS   HOSTS                  ADDRESS                                                            PORTS   AGE
+[2026-08-20T08:16:51.582Z] ingress.networking.k8s.io/voteball   alb     voteball.latnook.com   k8s-voteball-327d05a115-781551220.il-central-1.elb.amazonaws.com   80      90m
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Smoke Test)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:52.767Z] + set -eu
+[2026-08-20T08:16:52.767Z] + SMOKE_BASE_URL=https://voteball.latnook.com SMOKE_RETRIES=15 scripts/ci/smoke-test.sh
+[2026-08-20T08:16:52.767Z] smoke: OK   / (site root loads)
+[2026-08-20T08:16:52.767Z] smoke: OK   /api/options (options API reads the database)
+[2026-08-20T08:16:53.030Z] smoke: OK   /api/results?by=all (results API reads the rollup tables)
+[2026-08-20T08:16:53.030Z] smoke: all checks passed against https://voteball.latnook.com
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Monitoring Gate)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:54.971Z] + set -eu
+[2026-08-20T08:16:54.972Z] + GATE_BASE_URL=https://voteball.latnook.com scripts/ci/monitoring-gate.sh
+[2026-08-20T08:16:54.972Z] ==> monitoring-gate: PROM_URL=http://kube-prometheus-stack-prometheus.observability:9090 GATE_BASE_URL=https://voteball.latnook.com namespace=devops-app
+[2026-08-20T08:16:54.972Z] gate: sending 60 requests to https://voteball.latnook.com (journey endpoints) over ~20s
+[2026-08-20T08:17:21.685Z] ==> Waiting 35s for at least one scrape (interval: 30s) to pick up that traffic
+[2026-08-20T08:18:00.455Z] gate: OK   -- all scrape targets in devops-app report up (min(up)=1)
+[2026-08-20T08:18:00.455Z] gate: observed ~54.79 journey requests over the last 300s (rate=0.18264895238095238/s)
+[2026-08-20T08:18:00.455Z] gate: OK   -- error ratio 0.000000 is within GATE_MAX_ERROR_RATIO=0.01
+[2026-08-20T08:18:00.455Z] gate: OK   -- p95 latency 0.09275648963091469s is within GATE_MAX_P95_SECONDS=1.0s
+[2026-08-20T08:18:00.455Z] gate: PASS -- all checks within threshold
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] deleteDir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

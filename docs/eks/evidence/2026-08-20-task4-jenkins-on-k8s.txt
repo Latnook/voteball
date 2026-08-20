@@ -1,0 +1,185 @@
+# Task 4 evidence -- Jenkins on Kubernetes (captured 2026-08-20)
+# Read off the live cluster by scripts/capture-task4-evidence.sh. Never edited afterwards.
+
+=== namespace separation: Jenkins in ci, the app in devops-app, neither in default ===
+NAME                STATUS   AGE
+amazon-cloudwatch   Active   139m
+argocd              Active   141m
+ci                  Active   138m
+default             Active   144m
+devops-app          Active   138m
+external-secrets    Active   141m
+kube-node-lease     Active   144m
+kube-public         Active   144m
+kube-system         Active   144m
+observability       Active   133m
+
+=== kubectl get pods -n ci -o wide ===
+NAME                   READY   STATUS    RESTARTS   AGE    IP            NODE                                          NOMINATED NODE   READINESS GATES
+jenkins-0              2/2     Running   0          129m   10.0.57.32    ip-10-0-60-38.il-central-1.compute.internal   <none>           <none>
+voteball-build-f8q8t   9/9     Running   0          11s    10.0.58.228   ip-10-0-60-38.il-central-1.compute.internal   <none>           <none>
+
+=== kubectl get service,ingress,pvc -n ci ===
+NAME                    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)     AGE
+service/jenkins         ClusterIP   172.20.147.138   <none>        8080/TCP    131m
+service/jenkins-agent   ClusterIP   172.20.126.235   <none>        50000/TCP   131m
+
+NAME                                        CLASS   HOSTS                          ADDRESS                                                            PORTS   AGE
+ingress.networking.k8s.io/jenkins-webhook   alb     jenkins.voteball.latnook.com   k8s-voteball-327d05a115-781551220.il-central-1.elb.amazonaws.com   80      131m
+
+NAME                            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/jenkins   Bound    pvc-b3a22bfa-603e-4cc2-a53f-6854370637d2   8Gi        RWO            efs-sc         <unset>                 131m
+
+=== the JENKINS_HOME PersistentVolume and its StorageClass (Retain, EFS-backed) ===
+NAME     PROVISIONER       RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+efs-sc   efs.csi.aws.com   Retain          Immediate           true                   133m
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM        STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+pvc-b3a22bfa-603e-4cc2-a53f-6854370637d2   8Gi        RWO            Retain           Bound    ci/jenkins   efs-sc         <unset>                          131m
+
+=== controller images are PINNED -- no :latest anywhere ===
+jenkins	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-jenkins:ded3c11
+config-reload	docker.io/kiwigrid/k8s-sidecar:2.8.1
+-- grep for a :latest tag (expect no output):
+
+=== controller probes, resource requests/limits and securityContext ===
+{
+  "podSecurityContext": {
+    "fsGroup": 1000,
+    "fsGroupChangePolicy": "OnRootMismatch",
+    "runAsNonRoot": true,
+    "runAsUser": 1000
+  },
+  "containers": [
+    {
+      "name": "jenkins",
+      "image": "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-jenkins:ded3c11",
+      "resources": {
+        "limits": {
+          "cpu": "2",
+          "memory": "2Gi"
+        },
+        "requests": {
+          "cpu": "250m",
+          "memory": "1Gi"
+        }
+      },
+      "securityContext": {
+        "allowPrivilegeEscalation": false,
+        "readOnlyRootFilesystem": true,
+        "runAsGroup": 1000,
+        "runAsUser": 1000
+      },
+      "livenessProbe": {
+        "httpGet": {
+          "path": "/login",
+          "port": "http",
+          "scheme": "HTTP"
+        },
+        "periodSeconds": 10,
+        "failureThreshold": 5,
+        "timeoutSeconds": 5
+      },
+      "readinessProbe": {
+        "httpGet": {
+          "path": "/login",
+          "port": "http",
+          "scheme": "HTTP"
+        },
+        "periodSeconds": 10,
+        "failureThreshold": 3,
+        "timeoutSeconds": 5
+      }
+    },
+    {
+      "name": "config-reload",
+      "image": "docker.io/kiwigrid/k8s-sidecar:2.8.1",
+      "resources": {},
+      "securityContext": {
+        "allowPrivilegeEscalation": false,
+        "readOnlyRootFilesystem": true
+      },
+      "livenessProbe": null,
+      "readinessProbe": null
+    }
+  ]
+}
+
+=== the controller runs NO builds, and holds NO AWS role ===
+-- numExecutors (expect 0 -- every build runs on an ephemeral agent pod):
+0
+-- controller ServiceAccount IRSA annotation (expect none):
+(empty above == the controller carries no AWS role)
+-- agent ServiceAccount IRSA roles (these DO carry one, least-privilege):
+jenkins-agent	arn:aws:iam::590183895228:role/voteball-jenkins-irsa
+jenkins-cd-agent	arn:aws:iam::590183895228:role/voteball-jenkins-cd
+
+=== the two agent pod templates declared in JCasC (CI and CD are separate) ===
+template: voteball-build  (label: voteball-build)
+  serviceAccountName: jenkins-agent
+  pod securityContext: {'runAsNonRoot': True, 'runAsUser': 1000}
+  containers (8):
+    - buildkit   image=moby/buildkit:v0.19.0-rootless
+      allowPrivilegeEscalation=True  runAsUser=1000  capabilities={drop:['ALL'], add:['SETUID', 'SETGID']}
+      resources: requests={'cpu': '500m', 'memory': '2Gi'} limits={'memory': '3Gi'}
+    - trivy      image=aquasec/trivy:0.58.1
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests=None limits=None
+    - skopeo     image=quay.io/skopeo/stable:v1.17.0
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests=None limits=None
+    - awscli     image=amazon/aws-cli:2.22.0
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests=None limits=None
+    - python     image=python:3.12-slim
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests={'cpu': '200m', 'memory': '512Mi'} limits={'memory': '1Gi'}
+    - postgres   image=postgres:16-alpine
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests={'cpu': '100m', 'memory': '256Mi'} limits={'memory': '512Mi'}
+    - hadolint   image=hadolint/hadolint:2.12.0-alpine
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests=None limits=None
+    - observability image=alpine/k8s:1.31.3
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests={'cpu': '200m', 'memory': '256Mi'} limits={'memory': '512Mi'}
+  volumes (3): ['images', 'buildkit-state', 'pgdata']
+
+template: voteball-deploy  (label: voteball-deploy)
+  serviceAccountName: jenkins-cd-agent
+  pod securityContext: {'runAsNonRoot': True, 'runAsUser': 1000}
+  containers (2):
+    - deploy     image=alpine/k8s:1.31.3
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests={'cpu': '200m', 'memory': '512Mi'} limits={'memory': '1Gi'}
+    - argocd     image=quay.io/argoproj/argocd:v3.4.5
+      allowPrivilegeEscalation=False  runAsUser=None  capabilities={drop:['ALL'], add:None}
+      resources: requests={'cpu': '100m', 'memory': '256Mi'} limits={'memory': '512Mi'}
+  volumes (0): []
+
+-- the ONE deliberate exception, and it is scoped to a single CI container:
+    voteball-build/buildkit: allowPrivilegeEscalation=True  <- rootless BuildKit needs SETUID/SETGID
+    total containers allowing privilege escalation: 1 (expected 1: voteball-build/buildkit)
+    NOTE: no container mounts /var/run/docker.sock -- this is rootless BuildKit,
+          not Docker-in-Docker. Verify with the grep below.
+-- docker.sock is mounted nowhere in JCasC (expect no output):
+
+=== NetworkPolicy is present in ci (the brief's section-6 network requirement) ===
+NAME              POD-SELECTOR   AGE
+jenkins-egress    <none>         131m
+jenkins-ingress   <none>         131m
+
+=== the CD identity is read-only in devops-app (ArgoCD is the only applier) ===
+-- can-i patch deployments (expect no):
+no
+-- can-i list pods (expect yes):
+yes
+-- can-i create secrets anywhere (expect no):
+no
+
+=== no cluster-admin anywhere in ci ===
+(no FOUND lines above == nothing in ci is cluster-admin)
+
+=== helm list -n ci ===
+NAME           	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART                	APP VERSION
+jenkins        	ci       	1       	2026-08-20 09:43:13.861947373 +0300 IDT	deployed	jenkins-5.9.45       	2.568.1    
+jenkins-support	ci       	1       	2026-08-20 09:43:09.278375724 +0300 IDT	deployed	jenkins-support-0.1.0	           

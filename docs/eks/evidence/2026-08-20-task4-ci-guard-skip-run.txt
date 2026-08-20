@@ -1,0 +1,423 @@
+Started by GitHub push by Latnook
+Obtained Jenkinsfile-ci from git git@github.com:Latnook/voteball.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Still waiting to schedule task
+‘voteball-build-ktl1d’ is offline
+Agent voteball-build-ktl1d is provisioned from template voteball-build
+---
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  annotations:
+    kubernetes.jenkins.io/last-refresh: "1787213786564"
+  labels:
+    jenkins: "slave"
+    jenkins/label-digest: "8fdcb1e398bb98bb64843bdb8109cdf847cf0854"
+    jenkins/label: "voteball-build"
+    kubernetes.jenkins.io/controller: "http___jenkins_ci_svc_cluster_local_8080x"
+  name: "voteball-build-ktl1d"
+  namespace: "ci"
+spec:
+  containers:
+  - args:
+    - "--addr=unix:///run/user/1000/buildkit/buildkitd.sock"
+    - "--oci-worker-no-process-sandbox"
+    image: "moby/buildkit:v0.19.0-rootless"
+    name: "buildkit"
+    resources:
+      limits:
+        memory: "3Gi"
+      requests:
+        cpu: "500m"
+        memory: "2Gi"
+    securityContext:
+      allowPrivilegeEscalation: true
+      appArmorProfile:
+        type: "Unconfined"
+      capabilities:
+        add:
+        - "SETUID"
+        - "SETGID"
+        drop:
+        - "ALL"
+      runAsGroup: 1000
+      runAsUser: 1000
+      seccompProfile:
+        type: "Unconfined"
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/user/.local/share/buildkit"
+      name: "buildkit-state"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "aquasec/trivy:0.58.1"
+    name: "trivy"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "quay.io/skopeo/stable:v1.17.0"
+    name: "skopeo"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "amazon/aws-cli:2.22.0"
+    name: "awscli"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    - name: "PIP_CACHE_DIR"
+      value: "/tmp/pip"
+    - name: "DB_HOST"
+      value: "localhost"
+    - name: "DB_NAME"
+      value: "postgres"
+    - name: "DB_USER"
+      value: "postgres"
+    - name: "DB_PASS"
+      value: "test"
+    - name: "DB_SSLMODE"
+      value: "disable"
+    image: "python:3.12-slim"
+    name: "python"
+    resources:
+      limits:
+        memory: "1Gi"
+      requests:
+        cpu: "200m"
+        memory: "512Mi"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "POSTGRES_PASSWORD"
+      value: "test"
+    - name: "PGDATA"
+      value: "/tmp/pgdata"
+    image: "postgres:16-alpine"
+    name: "postgres"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    volumeMounts:
+    - mountPath: "/tmp"
+      name: "pgdata"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    image: "hadolint/hadolint:2.12.0-alpine"
+    name: "hadolint"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - command:
+    - "cat"
+    env:
+    - name: "HOME"
+      value: "/tmp"
+    - name: "PATH"
+      value: "/images/promtool-bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    image: "alpine/k8s:1.31.3"
+    name: "observability"
+    resources:
+      limits:
+        memory: "512Mi"
+      requests:
+        cpu: "200m"
+        memory: "256Mi"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    tty: true
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  - env:
+    - name: "JENKINS_SECRET"
+      value: "********"
+    - name: "JENKINS_TUNNEL"
+      value: "jenkins-agent.ci.svc.cluster.local:50000"
+    - name: "JENKINS_AGENT_NAME"
+      value: "voteball-build-ktl1d"
+    - name: "REMOTING_OPTS"
+      value: "-noReconnectAfter 1d"
+    - name: "JENKINS_NAME"
+      value: "voteball-build-ktl1d"
+    - name: "JENKINS_AGENT_WORKDIR"
+      value: "/home/jenkins/agent"
+    - name: "JENKINS_URL"
+      value: "http://jenkins.ci.svc.cluster.local:8080/"
+    image: "jenkins/inbound-agent:3384.v60d89463d9e0-2-jdk25"
+    name: "jnlp"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+    volumeMounts:
+    - mountPath: "/home/jenkins/agent"
+      name: "workspace-volume"
+      readOnly: false
+  initContainers:
+  - command:
+    - "sh"
+    - "-c"
+    - "mkdir -p /images/promtool-bin && cp /bin/promtool /images/promtool-bin/promtool"
+    image: "prom/prometheus:v3.13.1"
+    name: "promtool-fetch"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - "ALL"
+    volumeMounts:
+    - mountPath: "/images"
+      name: "images"
+  nodeSelector:
+    kubernetes.io/os: "linux"
+  restartPolicy: "Never"
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: "jenkins-agent"
+  volumes:
+  - emptyDir:
+      sizeLimit: "8Gi"
+    name: "images"
+  - emptyDir: {}
+    name: "buildkit-state"
+  - emptyDir: {}
+    name: "pgdata"
+  - emptyDir:
+      medium: ""
+    name: "workspace-volume"
+
+Running on voteball-build-ktl1d in /home/jenkins/agent/workspace/application-ci
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential voteball-deploy-key
+Cloning the remote Git repository
+Cloning repository git@github.com:Latnook/voteball.git
+ > git init /home/jenkins/agent/workspace/application-ci # timeout=10
+Fetching upstream changes from git@github.com:Latnook/voteball.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_SSH to set credentials Deploy key for Latnook/voteball (managed by JCasC)
+[INFO] Currently running in a labeled security context
+ > /usr/bin/chcon --type=ssh_home_t /home/jenkins/agent/workspace/application-ci@tmp/jenkins-gitclient-ssh6217482848875227211.key
+Verifying host key using manually-configured host key entries
+ > git fetch --tags --force --progress -- git@github.com:Latnook/voteball.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+Checking out Revision e7421e13fb7f6853d226d0d0aee4129b8cb740ab (refs/remotes/origin/master)
+ > git config remote.origin.url git@github.com:Latnook/voteball.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f e7421e13fb7f6853d226d0d0aee4129b8cb740ab # timeout=10
+Commit message: "ci: image tag 9a58532 [skip ci]"
+ > git rev-list --no-walk 9a58532c03893a7fc1a11b90882f8a794297576e # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] timeout
+[2026-08-20T08:16:49.685Z] Timeout set to expire in 45 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Guard: is this our own commit?)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:50.596Z] + git log -1 --pretty=%B
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:51.174Z] + scripts/ci/should-skip-build.sh ci: image tag 9a58532 [skip ci]
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] error
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Validation)
+Stage "Validation" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Observability Validation)
+Stage "Observability Validation" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Script tests)
+Stage "Script tests" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint / Static Analysis)
+Stage "Lint / Static Analysis" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Tests)
+Stage "Tests" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Resolve tag and account)
+Stage "Resolve tag and account" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Already built?)
+Stage "Already built?" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build images)
+Stage "Build images" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Trivy scan)
+Stage "Trivy scan" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push to ECR)
+Stage "Push to ECR" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish Metadata)
+Stage "Publish Metadata" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Trigger CD)
+Stage "Trigger CD" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] container
+[Pipeline] {
+[Pipeline] sh
+[2026-08-20T08:16:58.888Z] + rm -rf /images/dockercfg
+[Pipeline] }
+[Pipeline] // container
+[Pipeline] deleteDir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: SKIP_CI
+Finished: NOT_BUILT

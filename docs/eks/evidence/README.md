@@ -32,6 +32,36 @@ It refuses to write a console log that appears to contain a credential — a run
 argument position gets printed by Jenkins' `set -x`, which put a live ECR token into committed
 evidence on 2026-08-04.
 
+## 2026-08-20 — Task 4 re-captured on the rebuilt cluster
+
+The current Task 4 static capture, taken on the cluster rebuilt this morning (Jenkins release
+installed 09:43 IDT), after the pipeline had already run today's work end to end: `application-ci`
+#1/#3/#5/#7 all SUCCESS, `application-cd` #1–#4 all SUCCESS, and #2/#4/#6/#8 `NOT_BUILT` — the Guard
+stage refusing CD's own tag-bump commits, which is the loop this repository has no `[skip ci]` support
+to break any other way. It supersedes the `2026-08-17-task4-*` files as the current-state capture;
+those stay as the record of what they recorded, and the **rollback demos stay there too** — a rollback
+demo deliberately breaks the live site, so it is re-run when the mechanism changes, not on every
+rebuild.
+
+**What re-capturing found this time: two documentation drifts, both mechanically checkable, both
+introduced by the Task 5 observability pass** (fixed in the same commit as this capture):
+`README.submission.md`'s Task 4 stage lists and the Pipeline Flow diagram in `docs/eks/architecture.md`
+both still described the pipelines *before* `Observability Validation` (CI) and `Monitoring Gate` (CD)
+were inserted into them; and the test count was asserted twice, differently, in two files — 250 in
+`README.submission.md` and 280 in `docs/cicd.md` — against an actual 289 (241 backend + 48 worker) in
+today's run. The README's own phrasing ("in order, from `Jenkinsfile-ci`") is what makes that a defect
+rather than a rounding: it invites the reader to diff it against the file.
+
+| File | What it is |
+|---|---|
+| `2026-08-20-task4-jenkins-on-k8s.txt` | The brief's §2 mandatory components and §6 container security read off the **running** objects: namespace separation, pinned controller images, probes, resource requests/limits, securityContext, the EFS-backed `Retain` PV, `numExecutors: 0`, no AWS role on the controller, both agent pod templates, the one container allowing privilege escalation, `docker.sock` mounted nowhere, NetworkPolicies, the CD identity proven read-only, no `cluster-admin` in `ci`. This capture also catches an **agent pod mid-build** — `voteball-build-f8q8t 9/9 Running 11s` alongside the 129-minute-old `jenkins-0` — which is the §10 "agent Pod created for a build" proof in a single frame: the controller is long-lived, the agent is seconds old, and only `jenkins-0` remains in every other capture here |
+| `2026-08-20-task4-plugins-resolved.txt` | The 10 top-level plugins in `plugins.txt` resolved to the **86** actually loaded, with versions, next to the controller image tag that pins them |
+| `2026-08-20-task4-verify-jenkins.txt` | `verify-jenkins.sh` under `VERIFY_STRICT=1` — exit 0, zero skips, including the credentialed half (exactly two jobs, `numExecutors` 0) |
+| `2026-08-20-task4-argocd-check.txt` | `render-argocd-app.sh --check`: the live `Application`/`AppProject` match the template, no hand-registered repo or cluster credentials |
+| `2026-08-20-task4-ci-run.txt` | `application-ci` #7, a full green run on commit `9a58532`: Guard → Validation → **Observability Validation** → Script tests → Lint → Tests (241 + 48 passed) → Build (4 contexts) → Trivy (the three blocking images `backend`/`worker`/`nginx` all `Total: 0`; the third-party `backup` base reports 22 without blocking) → Push → Publish Metadata (backend digest `sha256:f327454…`) → Trigger CD. The agent pod is provisioned per build — `Agent voteball-build-npv3h is provisioned from template voteball-build` |
+| `2026-08-20-task4-cd-run.txt` | `application-cd` #4, the deploy of that exact tag — no rebuild: Input Validation → Manifest Validation → Promote → Deploy → Rollout → Verify `Synced`/`Healthy` → Smoke Test → **Monitoring Gate** (`p95 0.093s`, within the 1s budget) |
+| `2026-08-20-task4-ci-guard-skip-run.txt` | `application-ci` #8 — the Guard stage stopping CD's own `ci: image tag 9a58532 [skip ci]` commit, `NOT_BUILT`, nothing built and nothing deployed. This is the build loop being broken, captured live |
+
 ## 2026-08-17 — Task 4 re-captured, and three faults it exposed
 
 The current Task 4 set, captured on the live cluster after the 2026-08-17 rebuild. It supersedes the
