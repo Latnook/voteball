@@ -38,6 +38,11 @@ PYTHON_GROUP=(
   # Needs neither python3 nor git (bash + curl-free stubbed queries, awk, grep, sed only) -- confirmed
   # passing inside a bare python:3.12-slim on 2026-08-18, per the rule above.
   test-monitoring-gate.sh
+  # Needs neither python3 nor git (bash + grep, sed, awk, comm over the repo's own files) -- confirmed
+  # passing inside a bare python:3.12-slim AND a bare alpine/git on 2026-08-20, per the rule above.
+  # Placed here rather than in GIT_GROUP only because that group runs a two-test container; nothing
+  # about this test prefers one.
+  test-observability-docs.sh
   test-render-argocd-app.sh
   test-smoke-test.sh
   test-sync-values.sh

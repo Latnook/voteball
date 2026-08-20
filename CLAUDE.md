@@ -52,7 +52,10 @@ removed on 2026-07-28. The cost of keeping them was not disk space: the Russian-
 there still read "implementation gated on the translation CSV" long after Russian shipped.)*
 
 Submission/reference docs: `README.submission.md`, `docs/security.md`, `docs/eks/architecture.md`,
-`docs/deploy.md` (plain-language runbook), `docs/eks/live-cluster-snapshot.md`,
+`docs/deploy.md` (plain-language runbook), `docs/cicd.md` (CI/CD operational reference),
+`docs/observability.md` (monitoring operational reference — Prometheus/Grafana/Alertmanager,
+CloudWatch, the SLIs, every alert and its runbook, the two pipeline gates),
+`docs/eks/live-cluster-snapshot.md`,
 `docs/party-classifications.md` (why each party carries the ideology values it does — the reasoning
 that used to live in `seed.sql` comments).
 
@@ -810,6 +813,20 @@ Two audit passes on 2026-07-26 found seven stale claims; every one was mechanica
   diagram; it moves whenever a test is added, and on 2026-08-20 the three disagreed with each other
   *and* with the run (250 / 280 vs an actual **289** = 241 backend + 48 worker). Read it off the
   latest `application-ci` console log (`N passed` for each service), which is what actually executed.
+- **The observability claims are the one set that is now enforced by a test, not by this list.**
+  `scripts/tests/test-observability-docs.sh` (in CI, `python` group) fails the build when
+  `docs/observability.md` or `docs/runbooks/README.md` drifts from the charts: the alert set, the
+  per-chart and total alert counts, the recording-rule count, the dashboard count and per-dashboard
+  panel counts, one-runbook-per-alert in both directions, and every `runbook_url` resolving. It also
+  fails when **any live document cites a `Voteball*` alert that does not exist** — which is how
+  `VoteballDeploymentDegraded` was found on 2026-08-20, still cited in `docs/production-readiness.md`
+  and `docs/eks/architecture.md` three days after being renamed to `DeploymentReplicasMismatch` and
+  moved to `charts/observability`. **Dated records are deliberately exempt** from that scan
+  (`docs/design/*`, `docs/eks/live-cluster-snapshot.md`, `docs/eks/evidence/*`) — those still say the
+  old name correctly, and "fixing" them would destroy the record. So: when you change an alert, a
+  dashboard or a recording rule, update `docs/observability.md` in the same commit; the build will
+  tell you if you didn't, but only for the countable half — it cannot check whether a sentence is
+  still true.
 - Cost figures (**≈$8.50/day** up / **≈$256/mo** continuous / **≈$0.19/day** torn down) and the EKS version + support deadline (**1.36 / 2027-08-02**) repeat
   across several docs and must agree. Read the pin from `terraform/variables.tf`, never from memory —
   it moved 1.34 → 1.36 on 2026-07-30 and four docs kept asserting 1.34 afterwards. Dated *evidence*

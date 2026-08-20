@@ -147,8 +147,11 @@ rollback comes from `Jenkinsfile-cd`, which runs only when `Jenkinsfile-ci` actu
 changeset touching `services/**` (or `FORCE_BUILD`, or the empty-changelog case G3b builds
 defensively). A chart-only commit is skipped by G3 and syncs straight through ArgoCD **with no
 rollback net**: probe, resource and manifest changes are exactly the class of edit that reaches
-production without one. The alerts in `prometheusrule.yaml` are
-what close that loop — `VoteballDeploymentDegraded` fires at 10m on exactly this state.
+production without one. The alerts are
+what close that loop — `DeploymentReplicasMismatch` (in `charts/observability`, cluster-wide) fires
+after 15m on exactly this state: available below desired **and** the updated-replica count unchanged
+for 10m, which is what distinguishes a stalled rollout from one still progressing. See
+[`docs/observability.md`](../observability.md).
 
 ---
 

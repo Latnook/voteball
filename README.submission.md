@@ -575,6 +575,12 @@ review-caught defects that were fixed before this shipped — is in
 [`docs/design/2026-08-17-observability-design.md`](docs/design/2026-08-17-observability-design.md);
 this section is the reference for what exists and how to reach it.
 
+> **[`docs/observability.md`](docs/observability.md) is the full operational reference** — the same
+> relationship `docs/cicd.md` has to Task 4 above. It carries what this section does not have room
+> for: the complete metric catalogue, the scrape-path NetworkPolicies, CloudWatch's role and the two
+> metered add-on features that are deliberately off, a verification checklist, and a troubleshooting
+> table of every way this system has been observed to fail *while looking healthy*.
+
 ### What is monitored
 
 kube-prometheus-stack (Prometheus, Grafana, Alertmanager, kube-state-metrics, node-exporter) runs in

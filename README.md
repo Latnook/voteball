@@ -75,7 +75,8 @@ Secrets Operator; images live in **ECR**; delivery is **GitOps** (ArgoCD) fed by
 pipelines running **in the cluster itself** (namespace `ci`, rootless-BuildKit pod agents):
 `application-ci` tests, builds, scans and pushes; `application-cd` promotes the tag, has ArgoCD sync
 it, smoke-tests the live site, and rolls back automatically on failure; monitoring is
-Prometheus/Grafana + CloudWatch, with Alertmanager paging to **SNS**.
+Prometheus/Grafana + CloudWatch, with Alertmanager paging to **SNS**
+(see [`docs/observability.md`](docs/observability.md)).
 
 Terraform's state lives in **S3** (versioned, encrypted, locked), and Jenkins configures itself from
 **JCasC** in this repo, applied by Terraform alongside every other platform add-on (ArgoCD, External

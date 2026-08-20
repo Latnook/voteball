@@ -47,3 +47,10 @@ kubectl get secret kube-prometheus-stack-grafana -n observability -o jsonpath='{
 
 Namespaces: the application runs in `devops-app`, Jenkins runs in `ci`, and all of the above run in
 `observability` (renamed from `monitoring`).
+
+For how the whole monitoring system fits together — what is scraped, where each alert rule lives, the
+SLI recording rules these alerts are built on, and CloudWatch's separate role — see
+[`docs/observability.md`](../observability.md).
+
+The table above is checked against the charts by `scripts/tests/test-observability-docs.sh`, which
+fails the build if an alert here has no rule, or a rule has no entry here.

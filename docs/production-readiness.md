@@ -35,7 +35,7 @@ Worth stating, because these are the parts that are painful to retrofit and are 
   site down (`maxUnavailable` rounds to 0 at 2 replicas). See `docs/eks/architecture.md` §2.
   **The remaining gap is detection latency on the worker**, not the probes themselves: it runs a
   single replica, its heartbeat check tolerates 120s of staleness before it can start failing, and
-  `VoteballDeploymentDegraded` then waits 10m — so a wedged worker is ~14 minutes from paging. Votes
+  `DeploymentReplicasMismatch` then waits 15m — so a wedged worker is ~17 minutes from paging. Votes
   are still recorded throughout (the backend writes `votes` directly); only rollup freshness lags.
 - **Teardown/rebuild:** verified across three full destroy→deploy cycles with data preserved.
 
