@@ -96,7 +96,7 @@ Prometheus, queried afterwards over the same window, recorded NO server-side err
 (That ratio is trustworthy here precisely because the canary Deployment guarantees the denominator
 is never empty -- see the canary note in CLAUDE.md.)
 
-So the honest reading is: the site served no errors, and one client request out of 2,555 failed to
+So the honest reading is: the site served no errors, and one client request out of 2,561 failed to
 get any response within 5 seconds during the sync. Whether that was an ALB target re-registration or
 a blip on the polling laptop cannot be determined from this evidence, and is not claimed either way.
 The 2026-08-17 demo recorded 1,539/1,539 clean, so this is not a regression in the mechanism -- it is
