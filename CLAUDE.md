@@ -799,6 +799,17 @@ Two audit passes on 2026-07-26 found seven stale claims; every one was mechanica
 - `docs/deploy.md`'s numbered steps vs `grep -E '^\s*step "' scripts/deploy.sh`.
 - The sync-managed field list vs the `managed` dict in `scripts/sync-values-from-tf.sh` — count it,
   don't recall it (three different counts have been asserted; **ten** is correct).
+- **The pipeline stage lists vs `grep -nE "^\s*stage\(" Jenkinsfile-ci Jenkinsfile-cd`.** Three
+  places narrate the stages in order — `README.submission.md`'s Task 4 section, `docs/cicd.md`, and
+  the Pipeline Flow diagram in `docs/eks/architecture.md` — and a *pass on one concern inserts a stage
+  into a pipeline owned by another*, which is how all three came to omit `Observability Validation`
+  and `Monitoring Gate` after the 2026-08-18 observability work (found 2026-08-20). The Task 4
+  section is the one that matters most: it is graded standalone and says its list is read "in order
+  (from `Jenkinsfile-ci`)", which invites exactly that diff.
+- **The test count.** Asserted in `README.submission.md`, `docs/cicd.md` and the Pipeline Flow
+  diagram; it moves whenever a test is added, and on 2026-08-20 the three disagreed with each other
+  *and* with the run (250 / 280 vs an actual **289** = 241 backend + 48 worker). Read it off the
+  latest `application-ci` console log (`N passed` for each service), which is what actually executed.
 - Cost figures (**≈$8.50/day** up / **≈$256/mo** continuous / **≈$0.19/day** torn down) and the EKS version + support deadline (**1.36 / 2027-08-02**) repeat
   across several docs and must agree. Read the pin from `terraform/variables.tf`, never from memory —
   it moved 1.34 → 1.36 on 2026-07-30 and four docs kept asserting 1.34 afterwards. Dated *evidence*
