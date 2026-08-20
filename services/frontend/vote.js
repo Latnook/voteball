@@ -207,7 +207,12 @@ function renderTeamGrid() {
   const groups = groupedClubsForLeague(selectedLeagueId);
   const clubCount = groups.reduce((n, g) => n + g.clubs.length, 0);
   const quad = !!(selectedLeague && selectedLeague.has_divisions) || clubCount === 16;
+  // Six columns for a long flat list -- the World Cup's 48 nations are nine ragged rows of five and
+  // eight clean rows of six. Counted, not hardcoded, for the same reason quad is; a divisioned
+  // league is excluded so its 16-per-division rows keep reading as divisions. See .card-grid-hex.
+  const hex = !quad && clubCount >= 40;
   grid.classList.toggle('card-grid-quad', quad);
+  grid.classList.toggle('card-grid-hex', hex);
 
   groups.forEach(group => {
     if (group.label !== null) {
