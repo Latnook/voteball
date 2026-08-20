@@ -1,0 +1,111 @@
+# Task 4 evidence -- deliberate broken deploy and automatic rollback (2026-08-20)
+
+A DELIBERATELY BROKEN frontend image was built outside CI (CI would have refused it -- the failing
+behaviour is intentional, not a test failure) and pushed under tag dead10c. That tag is valid hex
+and passes CD's ^[0-9a-f]{7,40}$ input check, but is deliberately NOT any real commit in this
+repository, so no genuine commit ends up with an image that misrepresents its contents. The other
+three images were byte-identical copies of the 9a58532 images, retagged, so ONLY the frontend is bad.
+
+The break: nginx.conf returns 500 on "/". The frontend's startupProbe targets "/" with a 30s budget
+(failureThreshold 10 x periodSeconds 3), and a failing STARTUP probe kills the container -- so the
+new pod never became Ready and crash-looped. Same mechanism as the 2026-08-17 demo, re-run on the
+cluster rebuilt 2026-08-20 and, this time, through a CD pipeline that now also carries the
+Monitoring Gate added by the Task 5 observability work.
+
+## Timeline (UTC, from the two build logs)
+  11:40:10  application-cd #5 triggered by hand with IMAGE_TAG=dead10c
+  11:40:5x  Promote commits and pushes f238f30 ("ci: image tag dead10c [skip ci]") to master
+  11:40:55  Deploy: argocd app sync returns "another operation is already in progress" -- ArgoCD's
+            auto-sync had already picked up the Promote commit. The pipeline recognises this
+            explicitly ("auto-sync picked up the Promote") and proceeds to wait rather than failing
+  11:41:03  the broken frontend pod frontend-859454df55-cxcrm is created
+  11:41:34  1/2 Running -- the exporter sidecar is up, nginx is failing its startup probe
+  11:42:05  RESTARTS 1: the kubelet has killed the container for the failed startup probe
+  11:45:39  CrashLoopBackOff -- the rollout can no longer progress
+  11:50:57  argocd app wait times out: "timed out (600s) waiting for app voteball match desired state"
+  11:51:12  post{failure} dumps events/logs FIRST (once the rollback lands, the evidence is gone).
+            Captured: 'pod/frontend-859454df55-cxcrm Startup probe failed: HTTP probe failed with
+            statuscode: 500'
+  11:51:17  scripts/ci/previous-tag.sh            -> 9a58532
+  11:51:18  scripts/ci/rollback-target.sh 9a58532 -> present in ECR, rollback permitted
+  11:51:22  ROLLING BACK to 9a58532 (this deploy of dead10c failed verification)
+  11:51:56  application-cd #6 starts (ROLLBACK_DEPTH=1)
+  11:57:17  sync=Synced health=Healthy revision=a50987162aa470fb9bcb04fb943894c2c1641497
+  11:57:20  smoke: all checks passed against https://voteball.latnook.com  <-- RECOVERED
+  11:57:22  Monitoring Gate begins, with GATE_SETTLE_SECONDS=330 (see below)
+  12:03:52  gate: PASS -- min(up)=1, error ratio 0.000000, p95 0.0911s
+  12:04:03  application-cd #6 SUCCESS
+
+  Failure detected -> site verified healthy again: 6m08s (11:51:12 -> 11:57:20).
+
+## Why this recovery is slower than 2026-08-17's 2m08s -- both halves are deliberate
+
+1. Rollout waited ~5m for ArgoCD to report Healthy again. The frontend Deployment was carrying
+   'exceeded its progress deadline' from the broken rollout, and ArgoCD reports Degraded until the
+   replacement rollout actually completes. Nothing is retried or worked around here; the pipeline
+   simply waits for the platform's own verdict instead of substituting its own.
+2. The Monitoring Gate ran with a 330-second settle wait -- 300s of recording-rule lookback plus one
+   30s scrape interval. Jenkinsfile-cd sets GATE_SETTLE_SECONDS=330 only when the build IS a rollback
+   (ROLLBACK_DEPTH > 0), because the SLI recording rules' 5-minute window still contains samples from
+   the release being rolled back. Without the wait, a rollback would be judged on the broken
+   release's error rate and fail itself. This demo is the first time that path has run for real.
+
+## Visitor-visible impact: no error was ever served, one request timed out
+
+2,555 probes of https://voteball.latnook.com/ at 2/s spanning 11:39:29Z -> 12:04:25Z -- the whole
+demo, from before the broken deploy to after the recovery.
+
+  2,554 returned HTTP 200.
+      1 returned 000 at 11:52:31Z -- curl's code for "no response", i.e. the request did not
+        complete within the client's 5-second timeout. It is NOT an HTTP error returned by the
+        site; no status code was ever received. It falls during the rollback sync (11:52:15-11:52:22
+        applied the manifests server-side).
+
+See 2026-08-20-task4-rollback-site-poll.txt; check it with:
+    awk '$2!=200' docs/eks/evidence/2026-08-20-task4-rollback-site-poll.txt   # prints the one line
+
+Prometheus, queried afterwards over the same window, recorded NO server-side error at all:
+    sum(voteball:journey_errors:rate5m)              = 0   at 11:45, 11:50, 11:52:40, 11:55, 12:00, 12:04
+    min_over_time(voteball:availability:ratio5m[30m]) = 1   evaluated at 12:05
+(That ratio is trustworthy here precisely because the canary Deployment guarantees the denominator
+is never empty -- see the canary note in CLAUDE.md.)
+
+So the honest reading is: the site served no errors, and one client request out of 2,555 failed to
+get any response within 5 seconds during the sync. Whether that was an ALB target re-registration or
+a blip on the polling laptop cannot be determined from this evidence, and is not claimed either way.
+The 2026-08-17 demo recorded 1,539/1,539 clean, so this is not a regression in the mechanism -- it is
+one unexplained timeout, recorded rather than rounded away.
+
+The structural reason the impact is this small is unchanged: a pod that never passes readiness is
+never added to the Service's endpoints, and the old ReplicaSet is never scaled down because the
+rollout never progresses. Contrast 2026-08-04's demo, where the backend returned 500 while PASSING
+its probes -- ArgoCD called that Healthy and only the smoke test caught it, at a cost of ~3 minutes
+of real errors. The three demos deliberately exercise different layers.
+
+## The rollback decision, verbatim from application-cd #5
+[2026-08-20T11:51:17.385Z] + scripts/ci/previous-tag.sh
+[2026-08-20T11:51:18.242Z] + scripts/ci/rollback-target.sh 9a58532
+[2026-08-20T11:51:22.787Z] ROLLING BACK to 9a58532 (this deploy of dead10c failed verification).
+
+## The recovery verified itself (application-cd #6)
+[2026-08-20T11:57:17.620Z] sync=Synced health=Healthy revision=a50987162aa470fb9bcb04fb943894c2c1641497
+[2026-08-20T11:57:20.554Z] smoke: all checks passed against https://voteball.latnook.com
+[2026-08-20T12:03:52.722Z] gate: OK   -- error ratio 0.000000 is within GATE_MAX_ERROR_RATIO=0.01
+[2026-08-20T12:03:52.722Z] gate: OK   -- p95 latency 0.09111912155959444s is within GATE_MAX_P95_SECONDS=1.0s
+[2026-08-20T12:03:52.722Z] gate: PASS -- all checks within threshold
+
+## Final state
+-- master's promoted tag:
+  tag: "9a58532"
+-- master's last two commits (the promotion of the broken tag, and the rollback):
+  a509871 ci: image tag 9a58532 [skip ci]
+  f238f30 ci: image tag dead10c [skip ci]
+-- running images:
+   backend   voteball-backend:9a58532
+   frontend  voteball-nginx:9a58532
+   worker    voteball-worker:9a58532
+-- frontend pods (only the healthy ReplicaSet remains, never restarted through the whole demo):
+    frontend-7ff69b86db-l897j 2/2 Running 0 3h50m
+    frontend-7ff69b86db-wdlcf 2/2 Running 0 3h50m
+-- the broken tag is still in ECR, unused, as a demo artifact:
+   dead10c -> present

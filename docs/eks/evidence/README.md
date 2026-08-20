@@ -39,9 +39,9 @@ installed 09:43 IDT), after the pipeline had already run today's work end to end
 #1/#3/#5/#7 all SUCCESS, `application-cd` #1–#4 all SUCCESS, and #2/#4/#6/#8 `NOT_BUILT` — the Guard
 stage refusing CD's own tag-bump commits, which is the loop this repository has no `[skip ci]` support
 to break any other way. It supersedes the `2026-08-17-task4-*` files as the current-state capture;
-those stay as the record of what they recorded, and the **rollback demos stay there too** — a rollback
-demo deliberately breaks the live site, so it is re-run when the mechanism changes, not on every
-rebuild.
+those stay as the record of what they recorded. **The rollback demo was re-run too** (14:36 IDT, at
+the repo owner's request), which turned out to matter: the CD pipeline gained a Monitoring Gate since
+08-17, and the rollback path through that gate had never actually executed.
 
 **What re-capturing found this time: two documentation drifts, both mechanically checkable, both
 introduced by the Task 5 observability pass** (fixed in the same commit as this capture):
@@ -60,6 +60,10 @@ rather than a rounding: it invites the reader to diff it against the file.
 | `2026-08-20-task4-argocd-check.txt` | `render-argocd-app.sh --check`: the live `Application`/`AppProject` match the template, no hand-registered repo or cluster credentials |
 | `2026-08-20-task4-ci-run.txt` | `application-ci` #7, a full green run on commit `9a58532`: Guard → Validation → **Observability Validation** → Script tests → Lint → Tests (241 + 48 passed) → Build (4 contexts) → Trivy (the three blocking images `backend`/`worker`/`nginx` all `Total: 0`; the third-party `backup` base reports 22 without blocking) → Push → Publish Metadata (backend digest `sha256:f327454…`) → Trigger CD. The agent pod is provisioned per build — `Agent voteball-build-npv3h is provisioned from template voteball-build` |
 | `2026-08-20-task4-cd-run.txt` | `application-cd` #4, the deploy of that exact tag — no rebuild: Input Validation → Manifest Validation → Promote → Deploy → Rollout → Verify `Synced`/`Healthy` → Smoke Test → **Monitoring Gate** (`p95 0.093s`, within the 1s budget) |
+| `2026-08-20-task4-cd-rollback-broken-deploy-run.txt` | `application-cd` #5 — the deliberately broken deploy (`dead10c`, a frontend that 500s on `/`; the other three images are byte-identical copies of `9a58532`). Sync times out at 600s, diagnostics are dumped **before** anything is undone (`Startup probe failed: HTTP probe failed with statuscode: 500`), then `previous-tag.sh` → `9a58532`, `rollback-target.sh` confirms it is still in ECR, and `ROLLING BACK to 9a58532` |
+| `2026-08-20-task4-cd-rollback-recovery-run.txt` | `application-cd` #6 — the rollback build at `ROLLBACK_DEPTH=1`, verifying itself green through the same stages, **including the Monitoring Gate with its 330-second settle wait** — the branch that only executes when the build *is* a rollback, and the first time it has run for real |
+| `2026-08-20-task4-rollback.txt` | The measured timeline: 11:50:57 sync timeout → 11:51:22 rollback decision → 11:57:20 recovered and smoke-tested (**6m08s** detection to recovery), then the gate passing at 12:03:52. Explains why this is slower than 08-17's 2m08s, and both reasons are deliberate |
+| `2026-08-20-task4-rollback-site-poll.txt` | **2,555** probes at 2/s spanning 11:39:29Z→12:04:25Z — the entire demo. 2,554 × HTTP 200 and **one `000`** at 11:52:31Z: no response inside the client's 5s timeout, not an error served by the site. Prometheus recorded zero 5xx and availability `1` across the same window. Recorded rather than rounded away — `awk '$2!=200' <file>` prints that one line |
 | `2026-08-20-task4-ci-guard-skip-run.txt` | `application-ci` #8 — the Guard stage stopping CD's own `ci: image tag 9a58532 [skip ci]` commit, `NOT_BUILT`, nothing built and nothing deployed. This is the build loop being broken, captured live |
 
 ## 2026-08-17 — Task 4 re-captured, and three faults it exposed

@@ -409,17 +409,28 @@ ECR does not, so right after a rebuild the tag `values.yaml`'s history calls "pr
 so the depth bound never ran and the log blamed a bad parameter instead of a deleted image.
 `scripts/ci/rollback-target.sh` now refuses first and says what is actually true.
 
-**Evidence — the rollback has been demonstrated end to end, twice, at two different layers.**
+**Evidence — the rollback has been demonstrated end to end, three times, at three different layers.**
 
-The current run is **2026-08-17** (`docs/eks/evidence/2026-08-17-task4-rollback.txt` and the two
-`cd-rollback-*-run.txt` logs): a deliberately broken frontend deployed through the real pipeline, the
-sync timing out at 600s, diagnostics dumped *before* anything is undone, `ROLLING BACK to f5f5c75`,
-and the rollback build verifying itself green — **2m08s from detection to recovered**, with
-**1,539 probes of the live site all returning 200** (`2026-08-17-task4-rollback-site-poll.txt`;
-`awk '$2!=200' <file>` prints nothing). Zero visitor impact, because a pod that never passes readiness
-is never added to the Service and the old ReplicaSet is never scaled down.
+The current run is **2026-08-20** (`docs/eks/evidence/2026-08-20-task4-rollback.txt` and the two
+`cd-rollback-*-run.txt` logs): a deliberately broken frontend (`dead10c`, 500 on `/`) deployed through
+the real pipeline on the rebuilt cluster, the sync timing out at 600s, diagnostics dumped *before*
+anything is undone, `ROLLING BACK to 9a58532`, and the rollback build verifying itself green —
+**6m08s from detection to recovered**, across **2,555 probes of the live site of which 2,554 returned
+200** and one returned `000` (no response inside the client's 5s timeout, not an error served by the
+site; Prometheus recorded zero 5xx and availability `1` across the same window). It is slower than the
+08-17 run for two deliberate reasons: ArgoCD is allowed to take its own time clearing the frontend's
+`progress deadline exceeded` condition, and the **Monitoring Gate runs with a 330-second settle wait
+when the build is itself a rollback** — because the SLI recording rules' 5-minute window still holds
+the broken release's samples, and without the wait a rollback would be judged on the failure it is
+undoing. That branch had never executed before this demo.
 
-The **2026-08-04** run is kept deliberately, because it exercises the layer the 08-17 one cannot: a
+The **2026-08-17** run is kept as the cleaner-timing record of the same layer: `ROLLING BACK to
+f5f5c75`, **2m08s from detection to recovered**, with **1,539 probes all returning 200**
+(`2026-08-17-task4-rollback-site-poll.txt`; `awk '$2!=200' <file>` prints nothing). Visitor impact is
+minimal in both because a pod that never passes readiness is never added to the Service and the old
+ReplicaSet is never scaled down.
+
+The **2026-08-04** run is kept deliberately, because it exercises the layer the other two cannot: a
 backend that **passed its probes** while returning 500s, which ArgoCD reported as `Healthy` and only
 the smoke test caught — at a cost of roughly three minutes of real errors. That set also records the
 rollback firing *unstaged*, twice, plus the `ROLLBACK_DEPTH` bound refusing to recurse and reporting
