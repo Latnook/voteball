@@ -486,8 +486,7 @@ INSERT INTO seed_upcoming_parties VALUES
     ('yisrael-beiteinu', 'ישראל ביתנו', 'Yisrael Beiteinu', 'Наш дом Израиль', 'https://upload.wikimedia.org/wikipedia/he/a/a4/%D7%9C%D7%95%D7%92%D7%95_%D7%99%D7%A9%D7%A8%D7%90%D7%9C_%D7%91%D7%99%D7%AA%D7%A0%D7%95_2022.svg', 'opposition', 2, 2, -3, 'secular', ARRAY['anti-clerical', 'revisionist-zionist', 'civil-marriage', 'universal-conscription', 'free-market', 'governance-reform', 'anti-indicted-pm', 'hardline-on-gaza']::text[], ARRAY['universal-conscription', 'constitutional-reform', 'market-liberal']::text[], 'record'),
     ('religious-zionist-party', 'הציונות הדתית', 'Religious Zionist Party', 'Ха-Цийонут ха-Датит', '/logos/religious-zionism-2026.png', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'ultranationalist', 'far-right', 'settler-movement', 'judicial-overhaul', 'sovereignty-annexation', 'opposes-hostage-deals', 'halakhic-state', 'anti-two-state', 'death-penalty-for-terrorists', 'reservist-focused']::text[], ARRAY['judicial-restraint', 'conscription-split', 'sectoral-budgeting']::text[], 'record'),
     ('otzma-yehudit', 'עוצמה יהודית', 'Otzma Yehudit', 'Оцма Йехудит', 'https://upload.wikimedia.org/wikipedia/he/9/9f/%D7%A2%D7%95%D7%A6%D7%9E%D7%94_%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg', 'bibi', 0, 3, 3, 'religious_zionist', ARRAY['claims-economically-liberal', 'not-economy-focused', 'kahanist', 'jewish-supremacist', 'far-right', 'gun-rights', 'judicial-overhaul', 'pro-settlement', 'sovereignty-annexation', 'temple-mount-centred', 'death-penalty-for-terrorists']::text[], ARRAY['judicial-restraint', 'not-economy-focused', 'conscription-by-incentive']::text[], 'record'),
-    ('hadash-ta-al', 'חד"ש-תע"ל', 'Hadash-Ta''al', 'ХАДАШ-ТААЛ', 'https://upload.wikimedia.org/wikipedia/he/e/eb/%D7%9C%D7%95%D7%92%D7%95_%D7%97%D7%93%D7%B4%D7%A9_%D7%AA%D7%A2%D7%B4%D7%9C_2022_%28%D7%A2%D7%91%D7%A8%D7%99%D7%AA%29.svg', 'opposition', -3, -2, NULL, 'arab', ARRAY['communist', 'arab-nationalist', 'pro-two-state', 'jewish-arab-partnership', 'civil-rights-focused', 'pro-joint-list', 'negev-bedouin-representation']::text[], ARRAY['arab-representation', 'jewish-arab-partnership', 'welfare-state']::text[], 'record'),
-    ('balad', 'בל"ד', 'Balad', 'БАЛАД', 'https://upload.wikimedia.org/wikipedia/he/1/19/Balad.svg', 'opposition', -2, -3, -3, 'arab', ARRAY['palestinian-nationalist', 'non-zionist', 'state-of-all-its-citizens', 'secular-democratic-state', 'pro-two-state', 'right-of-return', 'anti-privatization', 'progressive-taxation', 'affirmative-action', 'opposes-arab-conscription', 'program-unchanged-since-2018']::text[], ARRAY['arab-representation', 'welfare-state']::text[], 'record'),
+    ('joint-list', 'הרשימה המשותפת', 'The Joint List', 'Объединённый список', 'https://upload.wikimedia.org/wikipedia/commons/1/1f/Joint_List_logo_2019.svg', 'opposition', -3, -3, -3, 'arab', ARRAY['communist', 'arab-nationalist', 'palestinian-nationalist', 'non-zionist', 'state-of-all-its-citizens', 'secular-democratic-state', 'pro-two-state', 'right-of-return', 'jewish-arab-partnership', 'civil-rights-focused', 'negev-bedouin-representation', 'anti-privatization', 'progressive-taxation', 'affirmative-action', 'opposes-arab-conscription']::text[], ARRAY['arab-representation', 'jewish-arab-partnership', 'welfare-state']::text[], 'record'),
     ('ra-am', 'רע"ם', 'Ra''am', 'РААМ', 'https://upload.wikimedia.org/wikipedia/he/0/08/%D7%94%D7%A8%D7%A9%D7%99%D7%9E%D7%94_%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA_%D7%94%D7%9E%D7%90%D7%95%D7%97%D7%93%D7%AA_%D7%9C%D7%95%D7%92%D7%95_2021.svg', 'opposition', 0, -2, NULL, 'arab', ARRAY['islamist', 'conservative', 'focuses-on-arab-israeli-civil-issues', 'pro-two-state']::text[], ARRAY['arab-representation']::text[], 'record'),
     ('shas', 'ש"ס', 'Shas', 'ШАС', 'https://upload.wikimedia.org/wikipedia/he/0/05/Shas_logo.svg', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[], ARRAY['conscription-exemption', 'welfare-state', 'sectoral-budgeting']::text[], 'record'),
     ('united-torah-judaism', 'יהדות התורה', 'United Torah Judaism', 'Яхадут ха-Тора', 'https://upload.wikimedia.org/wikipedia/he/9/97/%D7%99%D7%94%D7%93%D7%95%D7%AA_%D7%94%D7%AA%D7%95%D7%A8%D7%94_%D7%9C%D7%95%D7%92%D7%95_2019.svg', 'bibi', -2, 1, 2, 'haredi', ARRAY['ultra-orthodox', 'religious-conservative']::text[], ARRAY['conscription-split', 'welfare-state', 'sectoral-budgeting']::text[], 'record'),
@@ -546,6 +545,32 @@ UPDATE upcoming_parties t SET
 FROM seed_upcoming_parties s
 WHERE t.seed_key = s.seed_key;
 
+-- A seeded party this file no longer names is removed outright, the same declarative rule as clubs
+-- above and with the same two guards: seed_key IS NOT NULL (this file must never delete a row it
+-- does not own -- an admin-created row carries no key) and no votes (a roster change must never
+-- destroy a ballot). Added 2026-08-20, when חד"ש-תע"ל and בל"ד merged into הרשימה המשותפת and their
+-- two rows had to go. If a removed party HAS votes it silently stays, which is the guard failing
+-- safe; the admin UI's vote-reassignment flow is the way out, exactly as for clubs.
+--
+-- party_lineage is cleared FIRST, and that ordering is load-bearing: party_lineage.upcoming_party_id
+-- references upcoming_parties(id) with NO ON DELETE CASCADE (schema.sql), so deleting a party that
+-- still carries a lineage link raises inside init_db -- which runs on every backend pod boot, making
+-- it a CrashLoopBackOff on startup rather than one failed request. The links are seed-owned derived
+-- data belonging to the row being removed, and the section below re-inserts the correct ones. Both
+-- statements carry the SAME vote guard on purpose: a party kept because it has votes must keep its
+-- lineage too, or it would survive as a row with its history silently cut.
+DELETE FROM party_lineage l
+USING upcoming_parties u
+WHERE l.upcoming_party_id = u.id
+  AND u.seed_key IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM seed_upcoming_parties s WHERE s.seed_key = u.seed_key)
+  AND NOT EXISTS (SELECT 1 FROM vote_upcoming_parties v WHERE v.upcoming_party_id = u.id);
+
+DELETE FROM upcoming_parties u
+WHERE u.seed_key IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM seed_upcoming_parties s WHERE s.seed_key = u.seed_key)
+  AND NOT EXISTS (SELECT 1 FROM vote_upcoming_parties v WHERE v.upcoming_party_id = u.id);
+
 -- ---------------------------------------------------------------------------
 -- PARTY LINEAGE
 -- ---------------------------------------------------------------------------
@@ -554,9 +579,10 @@ WHERE t.seed_key = s.seed_key;
 -- rows. See design spec Appendix -- Yashar, The Economic Party, El HaDegel, The Reservists, and Blue
 -- and White (as an independent brand) have no seeded predecessor; 'אחר' has no successor.
 CREATE TEMP TABLE seed_party_lineage (previous_key TEXT, upcoming_key TEXT) ON COMMIT DROP;
--- Generated from production 2026-08-12; 14 links. Religious Zionism splits three ways and
--- Labor/Meretz merge into one successor, so neither column is unique -- do not add a
--- primary key to this temp table.
+-- Generated from production 2026-08-12; 14 links. Religious Zionism splits three ways, and both
+-- Labor/Meretz and חד"ש-תע"ל/בל"ד merge into one successor each, so neither column is unique -- do
+-- not add a primary key to this temp table. רע"ם is deliberately NOT among the merged: it declined
+-- to join הרשימה המשותפת and runs on its own row (2026-08-20).
 INSERT INTO seed_party_lineage VALUES
     ('likud', 'likud'),
     ('yesh-atid', 'together'),
@@ -568,17 +594,13 @@ INSERT INTO seed_party_lineage VALUES
     ('shas', 'shas'),
     ('united-torah-judaism', 'united-torah-judaism'),
     ('ra-am', 'ra-am'),
-    ('hadash-ta-al', 'hadash-ta-al'),
+    ('hadash-ta-al', 'joint-list'),
     ('labor', 'the-democrats'),
     ('meretz', 'the-democrats'),
-    ('balad', 'balad');
+    ('balad', 'joint-list');
 
 INSERT INTO party_lineage (previous_party_id, upcoming_party_id)
 SELECT p.id, u.id FROM seed_party_lineage s
 JOIN previous_parties p ON p.seed_key = s.previous_key
 JOIN upcoming_parties u ON u.seed_key = s.upcoming_key
 ON CONFLICT DO NOTHING;
-
--- The Joint List is temporarily removed from upcoming_parties (admin decision, 2026-07-16) --
--- left commented rather than deleted so it's a one-line restore if/when it should come back.
--- INSERT INTO upcoming_parties (name, name_en, name_he) VALUES ('הרשימה המשותפת', 'The Joint List', 'הרשימה המשותפת') ON CONFLICT (name) DO NOTHING;

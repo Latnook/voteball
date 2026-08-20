@@ -214,10 +214,14 @@ Several rows have outdated names. **Do not rename them mid-cycle** — votes alr
 these rows.
 
 - `ישר` is registered as "ישר! עם איזנקוט".
-- `חד"ש-תע"ל` is the 2022 joint list with Ta'al; the list classified below is Hadash's own, and its
-  chair is campaigning to re-form the broader Joint List. If the partnership lapses or the Joint
-  List re-forms, this row needs **renaming, not reclassifying** — which is a different and larger
-  change.
+- ~~`חד"ש-תע"ל` is the 2022 joint list with Ta'al…~~ **Resolved 2026-08-20.** The Joint List
+  re-formed (חד"ש + תע"ל + בל"ד, without רע"ם) and the two upcoming rows merged into one,
+  `הרשימה המשותפת`. Note this did **not** resolve as the "renaming, not reclassifying" this warning
+  predicted: two rows cannot both be renamed into one, so the merge is a new `joint-list` row plus a
+  guarded removal of the old two, with `party_lineage` carrying both predecessors into it. The
+  warning's underlying point held anyway — the merge was done while both rows had **zero** votes, so
+  nothing was orphaned, and `seed.sql`'s removal is guarded on votes precisely so that a roster
+  change can never destroy a ballot. The frozen `previous_parties` rows keep their 2022 names.
 
 ---
 
@@ -2304,56 +2308,59 @@ security-axis input, and reads like one at a glance.
 religiosity **NULL** by Decision 3: this axis measures *Jewish* religion-and-state, and Ra'am's
 conservatism is about Muslim religious life, which it does not measure.
 
-### חד"ש-תע"ל — Hadash-Ta'al · `opposition` · −3 / −2 / NULL · arab
+### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
-**No axis changes, and that is the finding, not an omission.** The party published an electoral list
-and **no programme** this cycle, so there is no new policy evidence — inventing movement from a list
-of names would be exactly the fabrication the NULL convention exists to prevent. Re-checked
-2026-07-26: still no programme.
+**Formed 2026-08-20**, when חד"ש-תע"ל and בל"ד signed an agreement to run on one slate: #1 יוסף
+ג'בארין (חד"ש chair), #2 אחמד טיבי (תע"ל chair), #3 סאמי אבו שחאדה (בל"ד chair). One upcoming row
+replaces the two. Both `previous_parties` rows stay exactly as they were — the two lists genuinely
+did run separately in 2022 and that section is frozen — and `party_lineage` carries both
+predecessors into this row, the same two-into-one shape as העבודה/מרצ → הדמוקרטים.
 
-The list is evidence about **emphasis**, and that is what the tags record. יוסף ג'בארין replaced
-איימן עודה as chair with ~82% of the conference vote and has said his aim is to rebuild the Joint
-List (`pro-joint-list`); he is a law professor and former MK known for education and civil-rights
-work, and #2 ג'עפר פרח directs the Mossawa Center (`civil-rights-focused`). #3 עופר כסיף is the
-sitting Jewish MK — Hadash's founding Jewish-Arab principle made literal. #4 יוסף עטאונה is a former
-MK and a Negev Bedouin; #5 is ניהאיה וישאחי.
+**רע"ם is NOT in it** and keeps its own row. It said it was willing to join a technical joint list
+provided its political independence was guaranteed; the agreement was signed without it and the door
+left open. If it joins before the September list-submission deadline, this row changes again.
 
-See the renaming warning above: this row is named for the 2022 joint list with Ta'al.
+**All three axes are the union of the components' published positions** — not an average, and not
+the lead party's numbers carried over as a rebrand. This was the repo owner's call on 2026-08-20,
+taken over two alternatives: keeping חד"ש-תע"ל's −3 / −2 / NULL (which is what the *Renaming*
+warning above had anticipated), or NULLing the two axes where the components differ.
 
-### בל"ד — Balad · `opposition` · −2 / −3 / −3 · arab
+- **economic −3** — unchanged from חד"ש-תע"ל. חד"ש self-defines as communist; בל"ד's −2 was
+  social-democratic, and was held apart from −3 precisely to keep the two lists distinguishable to a
+  voter choosing between them. That distinction no longer exists to preserve, and חד"ש chairs the
+  list.
+- **security −3** — up from חד"ש-תע"ל's −2, carried from בל"ד: complete withdrawal from the
+  post-1967 territories, a Palestinian state with East Jerusalem as its capital, right of return
+  under UNGA 194, dismantling the settlements, opposition to Druze conscription and to national
+  service for Arab citizens. It is already the pole of the axis.
+- **religiosity −3** — carried from בל"ד, the only component that has published on religion and
+  state at all: "complete separation of religion from the state", freedom of worship for all
+  religions, and state symbols grounded in constitutional egalitarian principles rather than
+  sectarian ones. חד"ש is **silent** on the question, not opposed — which is why its own row is NULL
+  rather than a number contradicting this one. That NULL survives on the frozen `previous_parties`
+  row and in `RELIGIOSITY_NULL_BY_DESIGN`; read the note beside it before "fixing" the apparent
+  inconsistency.
 
-Sources: the party's own programme at `altajamoa.org` (Hebrew edition, dated 2018-09-11 and
-**unchanged since** — hence `program-unchanged-since-2018`, a note about the age of the evidence,
-not a policy position), plus the 2026 primary list: סאמי אבו שחאדה (chair), בכר עואודה,
-ד"ר מהא כרכבי סבאח, חסן נסאסרה, אורלי נוי.
+**The cost of the union rule, recorded rather than hidden: the list has published no joint
+platform.** Every number above is carried from a component's text, and security and religiosity rest
+on בל"ד's programme alone — dated 2018-09-11 and unchanged, which is what the dropped
+`program-unchanged-since-2018` tag used to record. ביחד's `security` NULL is the precedent that
+argues the other way, and it was decided differently here on purpose: ביחד's components *disagree*
+on the conflict, whereas חד"ש and בל"ד differ only in degree, with direction not in dispute.
+**Revisit all three axes the moment the list publishes jointly.**
 
-**economic stays −2.** The programme is unambiguously left — raise the minimum wage, oppose
-privatization of social services, tax capital over labour, strong labour protections, corrective
-discrimination, autonomous Arab economic planning bodies — but that is social-democratic, not
-communist. −3 is held for חד"ש, whose self-definition is communist. Moving Balad to −3 would erase a
-real distinction between the two Arab lists that voters choosing between them can see.
+**Two tags were dropped rather than carried.** `pro-joint-list` recorded ג'בארין's goal of
+rebuilding the list — a list tagged with wanting to form itself records nothing — and
+`program-unchanged-since-2018` is a note about the age of בל"ד's evidence that would now read as a
+claim that the joint list itself has a 2018 programme. The remaining 15 tags are the union of both
+rows, deduped. `families` is likewise the union (`arab-representation`, `jewish-arab-partnership`,
+`welfare-state`), and `family_evidence` stays `record` — there is no joint platform to read.
 
-**security stays −3**, confirmed rather than adjusted: complete withdrawal from the post-1967
-territories, a Palestinian state with East Jerusalem as its capital, right of return under UNGA 194,
-dismantling the settlements, opposition to Druze conscription and to national service for Arab
-citizens. It is already the pole of the axis.
-
-**sector stays `arab`** despite אורלי נוי at #5 being the first Jewish woman elected in a Balad
-primary. `sector` describes the constituency a party organises, not the biography of every candidate
-— the same reason עופר כסיף does not make חד"ש `secular`.
-
-**religiosity −3 — this amends Decision 3** of the religiosity design doc, which put all three Arab
-parties at NULL on the premise that they say nothing about how religiously Jewish the state should
-be. Balad's own text refutes the premise *for Balad*: it demands "complete separation of religion
-from the state", freedom of worship for all religions, and state symbols and an anthem grounded in
-constitutional egalitarian principles rather than sectarian ones. That is stated, not inferred.
-The amendment is **per-party evidence, not a blanket "Arab parties now get scored"** — רע"ם and
-חד"ש stay NULL because Balad moved for publishing a religion-and-state demand, not for being an Arab
-party. Motive tag `secular-democratic-state`: neither anti-clerical animus nor religious pluralism
-but civic equality.
-
-Balad's `previous_parties` row also carries religiosity −3, which is the deliberate exception
-described under Conventions — the programme is dated 2018 and unchanged, so nothing is back-dated.
+**Logo**: the 2019 Joint List mark, pure black artwork on transparency. It needs **no** entry in any
+of `logos.js`'s exception sets — `recolorLogoForDark()` lifts every ink pixel to white and the
+letter counters correctly show the dark card through, because a wordmark's counters are *supposed*
+to be the background colour. That is what separates it from Shas's superficially similar black-ink
+logo, which needs a flood fill instead; see the Logos section.
 
 ### ש"ס / יהדות התורה — Shas, UTJ · `bibi` · −2 / 1 / 2 · haredi
 
@@ -2382,10 +2389,14 @@ same reasoning as their upcoming counterpart at an earlier stage; only the diffe
 - **ש"ס**, **יהדות התורה** `bibi` · −2 / 1 / 2 · haredi.
 - **רע"ם** `opposition` · 0 / NULL / NULL · arab — the security −2 above is a 2026 statement and is
   deliberately not back-dated.
-- **חד"ש-תע"ל** `opposition` · −3 / −2 / NULL · arab.
+- **חד"ש-תע"ל** `opposition` · −3 / −2 / NULL · arab — frozen at its 2022 run. Its upcoming
+  successor merged into הרשימה המשותפת on 2026-08-20 and is scored −3 / −3 / −3; this row is
+  deliberately **not** back-dated to match, and its religiosity NULL is the one asserted by
+  `RELIGIOSITY_NULL_BY_DESIGN`.
 - **העבודה**, **מרצ** `opposition` · −2 / −1 / −2 · secular — both link to הדמוקרטים via
   `party_lineage`.
-- **בל"ד** `opposition` · −2 / −3 / −3 · arab — religiosity populated, see above.
+- **בל"ד** `opposition` · −2 / −3 / −3 · arab — religiosity populated, see הרשימה המשותפת above;
+  this row is frozen at its 2022 run and keeps economic −2, which the merged row does not.
 
 ---
 
@@ -2512,9 +2523,15 @@ app's own origin**, not just with `curl`: the fbcdn crest passed curl and failed
 
 ## Open questions
 
-- **The Arab bloc may restructure.** Talks about a Joint List are live and unresolved; nothing is
-  confirmed. If one forms, the affected rows need **renaming, not reclassifying**, and `seed.sql`
-  keeps a commented-out `הרשימה המשותפת` insert for that case.
+- ~~**The Arab bloc may restructure.**~~ — **resolved 2026-08-20.** חד"ש, תע"ל and בל"ד signed a
+  joint-run agreement and the two upcoming rows merged into `הרשימה המשותפת`; the commented-out
+  `seed.sql` insert this item pointed at was deleted, because the row is real now. **The prediction
+  in it was wrong in a way worth keeping**: it said the affected rows would need "renaming, not
+  reclassifying", and both halves turned out false — two rows merging into one is not a rename, and
+  the union scoring moved two axes (security −2 → −3, religiosity NULL → −3). Anticipating a
+  restructure is not the same as anticipating its shape. **Still open in a narrower form:** רע"ם
+  declined to join and runs alone, with the door left open until the September list-submission
+  deadline — if it joins, this row changes again.
 - **ביחד's `security`** is the only NULL axis on a Jewish *upcoming* party (המחנה הממלכתי carries a
   NULL security among the frozen previous rows, for the same "no stated position" reason). It
   resolves only if the components merge or publish a joint position — or splits into two rows if the
@@ -2775,3 +2792,4 @@ pass happened, for anyone reading git history.
 | 2026-08-17 | revision 23 — **המפלגה הכלכלית read against its full platform for the first time, and `security` moved 0 → +2.** The `מצע` URL is an **index**: each section shows one intro paragraph and a *המשך לקרא* link to its own page, so the entry had been written from first paragraphs only. All 13 sub-pages read, plus two the index does not link (`רפורמה-במערכת-המשפט`, `הון-שלטון`). **The `/ביטחון` page is a full conflict platform** — *"תתנגד לכל נסיגה או וויתור ולו הקטן ביותר משטחי מדינת ישראל"*, *"תתנגד להקמתה של מדינה פלסטינאית"*, *"תתמוך בחיזוק ההתיישבות היהודית ביהודה ושומרון"*, no Gaza deal without dismantling incitement education, and abolition of Palestinian work permits. That is the +2 definition verbatim; **not +3** because ריבונות/סיפוח appear nowhere. **The old `0` was not a gap but a false positive claim**, and the band table used this very row as its worked example of what `0` means ("an economics party that genuinely takes no conflict position") — that sentence is now deleted and the band left with one unaudited holder, יש עתיד `[p]`, flagged in Open questions. **Inverse of the ישר `homeland-security` trap**: there a URL invited the wrong axis; here the page is named for the right axis, opens on defence-budget material belonging to no axis, and buries the real position in its second half. **`single-issue-economy` REMOVED** — the party publishes dedicated pages on the conflict, women's equality, environment and animal rights, health, welfare, pensions, education, transport and agriculture; same correction revision 17 made removing `not-economy-focused` from הציונות הדתית. The true observation it was standing in for — that the *framing* is economic throughout — survives in prose, since a tag cannot separate "argues everything through economics" from "holds no other positions". **9 tags added** (9 → 17 net): `no-palestinian-state`, `pro-settlement`, `security-hawk`, `universal-conscription` (+ family), `sanctions-on-non-servers`, `scholar-exemption-retained`, `state-haredi-education`, `workforce-integration`, `gender-equality`. **`pro-settlement` is the one case where the התיישבות homograph resolves toward the West Bank** — the page says ביהודה ושומרון explicitly, unlike the Negev/Galilee usages flagged in revisions 15 and 21. **`scholar-exemption-retained` gains a third holder and now marks a boundary**: כחול לבן keeps תורתו אומנותו open-ended, this row keeps a real פטור capped at 2,000 yeshiva students under rabbinic testing, ישר abolishes the exemption for a 3% one-year deferral requiring basic training (tag declined there in revision 21). **`gender-equality` gains a second holder, and the contrast with revision 21 is deliberate** — declined for ישר as violence policy in a crime paper, granted here for a dedicated programme covering pay/promotion equality, statutory representation, gender education, הדרת נשים והפרדה מגדרית and עגונות ומסורבות גט. **economic +1 and religiosity −2 both confirmed and unmoved.** religiosity is the **fourth row in four days** held at −2 by the funding criterion, reached differently again: kashrut privatized outright (*"את הכשרות יש להפריט"*) but state religious funding retained and expanded, and core studies **incentivized rather than made a funding condition** — a weaker lever than the other three use. **Three rejections recorded with reasons:** `judicial-overhaul` (Zelikha supports a *symmetrical* escalating-majority override and political-trust legal advisers but *"מתנגד בכל תוקף"* to Rothman's bill and to government control of appointments — filing him with RZP/Otzma/נעם would misrepresent him; source also dated 2023-01-31, and his distinctive claim is that the courts' failure is **economic**), `agricultural-protectionism` (identical abolish-tariffs-substitute-direct-subsidy structure to ביחד, which was not tagged; ישר keeps it for legislated ענף אסטרטגי חיוני status and production targets that neither of the others has) and a **new environment tag**, refused despite clear evidence because a tag created from one row's audit measures reading coverage — filed as an open question to be resolved by sweeping all 18 rows in one pass |
 | 2026-08-18 | revision 24 — **הליכוד read against a candidate list for the first time**, its 2026 primary (98% counted, 17 Aug). **`security` +2 → +3 on `upcoming_parties`, the only axis this pass moved** — and it moved on the *government's* record, not the list: the 8 Feb 2026 Security Cabinet package extending control into Areas A and B, the Ministerial Committee on Legislation backing a statutory West Bank Heritage Authority (the first application of domestic Israeli law to territory rather than persons), 54 new settlements by cabinet decision in 2025, E1 approved with an acceleration agreement signed by Netanyahu personally. The "Netanyahu never intended to annex" line is an unnamed official on *formal declaration*, contradicted four months later against explicit US requests; Crisis Group titles it *Sovereignty in All but Name*. **`previous_parties` deliberately held at +2** — the whole record postdates November 2022 — so the two rows now diverge on this axis and the band table marks הליכוד `[p]` at +2 and `[u]` at +3. **economic +1 and religiosity +2 both confirmed**: the list supplies the +1 band's two halves simultaneously (אלי כהן/ישראל כץ/אוחנה liberalizing, רגב/חיים כץ expanding), and ברקת's fall to #24 is explicitly *not* read as an economic verdict — it was a leadership purge, and תדמור, another economic liberal, entered at #27. `conscription-exemption` reconfirmed by a fresh instance of its own mechanism: אופיר כץ at #10 stripped Dan Illouz of two committees over the haredi draft. **Ten tags added, 4 → 14** — the row had the thinnest tag set on this page because it publishes no platform and had never been audited: `judicial-overhaul` (closing the largest gap on the page — the party whose own Justice Minister wrote it, at #7, did not carry it), `no-palestinian-state`, `anti-two-state`, `security-hawk` (three gaps contradicting the row's own band), `sovereignty-annexation`, `pro-settlement`, `hardline-on-gaza`, `preemptive-security-doctrine`, `scholar-exemption-retained`, `voluntary-palestinian-emigration-incentives`. **That last tag was RENAMED** from `voluntary-emigration-incentives` across both holders: the old name never said whose emigration, and it is deliberately *not* narrowed to Gaza, since אל הדגל's plank covers "Palestinians choosing to leave" with no geographic limit — naming a place the evidence does not support is the התיישבות homograph failure in reverse. **Seven rejections recorded**, the most instructive being `opposes-western-wall-compromise`, **considered and dropped once checked**: the Kotel bill is מאוז's private member's bill at preliminary reading, its text does not name the Western Wall, Levin was an advocate rather than its sponsor, and **Netanyahu pulled it from the Ministerial Committee for Legislation** — leadership declining is evidence *against* a party line, the mirror of the punished-dissent test that keeps `conscription-exemption`. Also refused: `far-right` (journalists' characterisation, not a party source — but אלמוג כהן's עוצמה יהודית defection at #14, for whom Netanyahu waived the membership rule, is recorded with a trigger), `opposes-hostage-deals` (זוהר at #13 publicly carried the deal), `pm-immunity-protections`, `anti-lgbt` **and** `lgbt-rights` (the row genuinely splits — אוחנה voted for a civil-marriage bill as sitting Speaker while שיקלי called Pride "disgraceful vulgarity" — so neither is true of the party), and `deregulation` (audit coverage). A press-freedom tag for קרעי's programme was refused and **queued behind an 18-row sweep**, alongside the environment tag. Four thin records left explicitly unresolved rather than inferred |
 | 2026-08-19 | revision 25 — **אל הדגל's two unread documents read, and the row's own record corrected.** The `/our-platform` page links **four** PDFs; two had never been cited anywhere — the drafted Basic Law (`חוק יסוד השירות`, 9pp) and the economic paper (`הכלכלה הציונית`, 7pp, dated **August 2026** and marked *גרסה מתוקנת*, i.e. newer than the pass that last confirmed the axis it speaks to). **No axis moved: 1 / 2 / −2 all confirmed.** **The most consequential finding is about this document, not the party.** The entry asserted that the education-funding condition lived only in the education paper and that the platform showed *שכבת בסיס חובה בכל מוסד מתוקצב* alone; the platform's §2 עיגון חוקי (p. 11) carries the **50/30/20 split the entry credited to the education paper**, the special-majority entrenchment, and *"תנאי לקבלת תקציבים"* verbatim. So the `religiosity 0` held until 2026-08-10 was a misreading of evidence already in hand, not a gap in it — **a second document agreeing with the first is not evidence the first was read.** **A third retrieval trap recorded, inverting the first two: the two documents that went unread longest were the two that extract cleanly** — the image-only pair got read precisely because they announced themselves as hard. **economic +1 declined for the third time on a third document**, now against a fully costed programme; the two planks that argue against +2 are the party's own — periphery tax breaks rejected **on principle** as proven failures, and *"שוויון מיסוי הון ועבודה"* restricting capital tax benefits for the highest earners. Also logged: the paper is unusually self-correcting (ministry-merger savings demoted from ₪8–12B/yr to a long-run ceiling on 1–3% international evidence; the tax-bracket cost revised **down** because the Knesset already enacted part of it), and it **contradicts the platform** on the minister cap — 16 in the platform, 18 statutory with a 12 aspiration in the paper; recorded, not resolved. **The service bill does NOT move religiosity, and that is recorded because it reads like −3 evidence**: §11(c) strips all state support and bans all donations to any institution where >10% of students or graduates breached the service duty, but it conditions on **service**, so Decision 6 keeps it off the axis. **4 tags added (20 → 24), all existing vocabulary**, and **three of the four are earnable from the platform PDF alone** — missed by an earlier pass rather than created by the new documents: `free-trade` and `anti-monopoly` (both p. 22), `public-service-reform` (pp. 19–20, a חוק שירות ציבורי ממלכתי plus a biennial trust index carrying a mandatory Knesset debate — comparable to כחול לבן's צו 8, which founded the tag) and `arab-civil-service` (bill §8 plus its explanatory notes, כחול לבן's founding position in statutory drafting). **Six rejections**, the sharpest being `scholar-exemption-retained` — **third application of revision 21's test and the clearest**: a 2%-of-cohort Torah track under a state administration, subordinated to the IDF's needs being met first, as a 24-month *service* obligation, is strictly narrower than the 3% one-year deferral already declined for ישר. Also refused: `permanent-residency-not-citizenship` (זהות's tag marks a permanent ceiling; this row's השארות track is a conditional **path** to full citizenship), `small-government` (זהות holds it as libertarian doctrine; this row pairs ministry cuts with NIT expansion, a ₪2B guarantee fund and a ~$1.5B/yr AI programme — it would contradict its own economic +1), `tax-cutting` (the 25% bracket *completes* an enacted reform, cost revised down, paired with restricting capital tax benefits), `judicial-overhaul` (the override clause is bounded *מוגבלת בזמן ובנושא* and paired with **strengthening** review of Basic Law implementation and a codified constitution — `constitutionalist`, already held, is the accurate tag; same shape as revision 23's Zelikha rejection), and **a workfare tag and a labour-organization tag**, both clearly earned and both queued behind an 18-row sweep. **That queue now holds four tags** and is flagged as the largest unresolved item on this page. Source accounting corrected throughout: **six** sources, not three, and the website quotes are from `/our-platform` (a fourth body of text) rather than the `/about-us` chapters they were attributed to |
+| 2026-08-20 | revision 26 — **חד"ש-תע"ל and בל"ד merged into הרשימה המשותפת**, the first merge this file has recorded between two *upcoming* rows (העבודה/מרצ → הדמוקרטים was a previous→upcoming lineage link, which is a different operation: both predecessors keep their own rows). One `joint-list` row replaces two; `previous_parties` is untouched and both 2022 rows stay frozen. **The scoring rule was the decision, not the merge**: axes are the **union** of the components' published positions, chosen by the repo owner over two alternatives (carry חד"ש-תע"ל's numbers as a rebrand; or NULL the axes where the components differ). **economic −3** unchanged, **security −2 → −3** and **religiosity NULL → −3**, both carried from בל"ד alone. The cost is recorded in the entry rather than hidden: the list has published **no joint platform**, so every number rests on component text, and בל"ד's programme is the 2018 one. Decided against the ביחד `security` NULL precedent deliberately — ביחד's components *disagree* on the conflict, while חד"ש and בל"ד differ only in degree. **15 tags**, the union deduped, minus two dropped as no longer true of the list: `pro-joint-list` (the goal is achieved; a list tagged with wanting to form itself records nothing) and `program-unchanged-since-2018` (a note about בל"ד's evidence age that would now assert the joint list has a 2018 programme). **רע"ם declined and keeps its own row** — the door is open until the September deadline, so the open question narrows rather than closing. **Two anticipations in this file were wrong and are kept as such**: both the *Renaming* warning and the *Arab bloc may restructure* open question predicted "renaming, not reclassifying", and neither half held. **Mechanically**: `seed.sql` gained a guarded `DELETE` for `upcoming_parties` mirroring the clubs one, and it must clear `party_lineage` first — `party_lineage.upcoming_party_id` has **no** `ON DELETE CASCADE`, so removing a party that still carries a link raises inside `init_db`, which runs on every backend pod boot (a CrashLoopBackOff on startup, not one failed request). Both statements carry the same vote guard, verified by migrating a seeded database with a vote on חד"ש-תע"ל: that row and its lineage link both survived while בל"ד was removed. **No frontend change** — the logo is pure black on transparency and the existing `recolorLogoForDark()` lifts it to white correctly, so it needs no `logos.js` exception entry |

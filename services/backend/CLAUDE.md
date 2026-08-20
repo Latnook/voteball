@@ -76,6 +76,23 @@ would crash `init_db` on every pod boot — the same 409 the admin API's own `DE
 table; the admin UI's vote-reassignment flow is still the way out for a club that has votes.
 `test_seeded_club_absent_from_the_table_is_removed` pins the new behaviour.
 
+**`upcoming_parties` got the same removal rule on 2026-08-20** (the חד"ש-תע"ל + בל"ד merge into
+הרשימה המשותפת), with one addition that has no clubs equivalent and is easy to miss: it must delete
+the row's `party_lineage` links **first**. `party_lineage.upcoming_party_id` references
+`upcoming_parties(id)` with **no `ON DELETE CASCADE`** (unlike `vote_upcoming_parties`, which has
+one), so deleting a party that still carries a lineage link raises inside `init_db` — a
+CrashLoopBackOff on every backend pod boot, not one failed request. Both statements carry the **same**
+vote guard on purpose: a party kept because it has votes must keep its lineage too, or it survives as
+a row with its history silently cut. **The two tables fail in opposite directions**, which is why the
+parties guard cannot be reasoned about from the clubs one: `vote_clubs` has no cascade, so an
+unguarded club delete *raises* — loud, and caught on the first pod boot. `vote_upcoming_parties`
+*does* cascade, so dropping the vote guard from both party statements deletes the row and its ballot
+**with no error at all**. Dropping it from only the `upcoming_parties` statement happens to raise on
+the `party_lineage` FK first, but that is incidental and must not be relied on as the safety net.
+All three failure modes were verified by mutating `seed.sql` against
+`test_a_voted_for_upcoming_party_is_never_deleted` and
+`test_removing_an_upcoming_party_clears_its_lineage_first`.
+
 Verify a single-value revision the way every one has been: seed a container with the *previous* file,
 apply the new one on top, and confirm the value actually moves on the already-seeded row — testing
 against a fresh database only proves the literal is spelled right, not that an existing row's stale

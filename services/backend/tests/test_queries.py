@@ -37,14 +37,14 @@ def test_get_options_returns_seeded_leagues(conn):
     upcoming_names_en = {p['name_en'] for p in options['upcoming_parties']}
     assert upcoming_names_en == {
         'Likud', 'Yashar', 'Together', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
-        'Religious Zionist Party', 'Otzma Yehudit', "Hadash-Ta'al", 'Balad', "Ra'am",
+        'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
         'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Zehut', 'Noam',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
-        'הציונות הדתית', 'עוצמה יהודית', 'חד"ש-תע"ל', 'בל"ד', 'רע"ם',
+        'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
         'המפלגה הכלכלית', 'אל הדגל', 'בית ציוני - המילואימניקים', 'זהות', 'נעם',
     }
@@ -969,6 +969,15 @@ def test_get_clubs_breakdown_includes_upcoming_and_upcoming_only_clubs(conn):
 # unless it publishes a religion-and-state demand; a party parked here for having no platform is a
 # placeholder that MUST be revisited the moment one appears. Do not add a party to this set for the
 # second reason without leaving a note saying so.
+#
+# 'חד"ש-תע"ל' now names a previous_parties row ONLY. It merged with בל"ד into הרשימה המשותפת on
+# 2026-08-20, and that merged upcoming row is scored -3, not NULL -- which looks like a
+# contradiction of the Hadash entry above and is not. This set is keyed on name_he and the loop
+# below walks BOTH tables, so the entry still covers the frozen 2022 חד"ש-תע"ל row, which published
+# no program and stays NULL for exactly the reason given above. The -3 is carried into the merged
+# row from בל"ד's published text under the union rule (see docs/party-classifications.md). Do not
+# "fix" this by adding 'הרשימה המשותפת' here -- that would assert the merged list has no stated
+# position, which is the opposite of what the union scoring decided.
 RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל'}
 
 

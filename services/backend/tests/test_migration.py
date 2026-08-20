@@ -21,7 +21,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
-    assert cur.fetchone()[0] == 18
+    assert cur.fetchone()[0] == 17
     cur.close()
 
 
@@ -965,6 +965,109 @@ def test_a_voted_for_club_is_never_deleted(conn):
     db_module.init_db(conn)  # must not raise
 
     cur.execute('SELECT count(*) FROM clubs WHERE id = %s', (club_id,))
+    assert cur.fetchone()[0] == 1
+    cur.close()
+
+
+def test_seeded_upcoming_party_absent_from_the_table_is_removed(conn):
+    """upcoming_parties got the clubs removal rule on 2026-08-20, for the
+    חד"ש-תע"ל + בל"ד merge into הרשימה המשותפת."""
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (seed_key, name, name_en) "
+                "VALUES ('ruritanian-front', 'Ruritanian Front', 'Ruritanian Front')")
+    conn.commit()
+
+    db_module.init_db(conn)
+
+    cur.execute("SELECT count(*) FROM upcoming_parties WHERE seed_key = 'ruritanian-front'")
+    assert cur.fetchone()[0] == 0
+    cur.close()
+
+
+def test_removing_an_upcoming_party_clears_its_lineage_first(conn):
+    """The trap with no clubs equivalent: party_lineage.upcoming_party_id references
+    upcoming_parties(id) with NO ON DELETE CASCADE, so deleting a party that still carries
+    a lineage link raises inside init_db -- a CrashLoopBackOff on every backend pod boot,
+    not one failed request. seed.sql clears the links in a separate statement first."""
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (seed_key, name, name_en) "
+                "VALUES ('ruritanian-bloc', 'Ruritanian Bloc', 'Ruritanian Bloc') RETURNING id")
+    party_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM previous_parties WHERE seed_key = 'likud'")
+    previous_id = cur.fetchone()[0]
+    cur.execute('INSERT INTO party_lineage (previous_party_id, upcoming_party_id) VALUES (%s, %s)',
+                (previous_id, party_id))
+    conn.commit()
+
+    db_module.init_db(conn)  # must not raise on the foreign key
+
+    cur.execute('SELECT count(*) FROM upcoming_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone()[0] == 0
+    cur.execute('SELECT count(*) FROM party_lineage WHERE upcoming_party_id = %s', (party_id,))
+    assert cur.fetchone()[0] == 0
+    cur.close()
+
+
+def test_a_voted_for_upcoming_party_is_never_deleted(conn):
+    """The guard fails safe in the opposite direction from the clubs one, and the
+    consequence is worse. vote_clubs has no cascade, so an unguarded club delete RAISES;
+    vote_upcoming_parties.upcoming_party_id DOES cascade, so dropping the vote guard from
+    BOTH statements below deletes the row and its ballot with no error at all -- verified
+    by mutating seed.sql, which turns this test's first assertion into a bare 0 == 1.
+    Dropping it from only the party DELETE raises on the party_lineage FK instead, because
+    the surviving lineage link trips it first; that loud failure is incidental, not a
+    safety net, so both statements carry the guard."""
+    cur = conn.cursor()
+    cur.execute("INSERT INTO upcoming_parties (seed_key, name, name_en) "
+                "VALUES ('ruritanian-union', 'Ruritanian Union', 'Ruritanian Union') RETURNING id")
+    party_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM previous_parties WHERE seed_key = 'likud'")
+    previous_id = cur.fetchone()[0]
+    cur.execute('INSERT INTO party_lineage (previous_party_id, upcoming_party_id) VALUES (%s, %s)',
+                (previous_id, party_id))
+    cur.execute(
+        "INSERT INTO votes (previous_vote_status, upcoming_vote_status, cookie_token) "
+        "VALUES ('did_not_vote', 'considering', 'ruritanian-union-vote') RETURNING id")
+    vote_id = cur.fetchone()[0]
+    cur.execute('INSERT INTO vote_upcoming_parties (vote_id, upcoming_party_id) VALUES (%s, %s)',
+                (vote_id, party_id))
+    conn.commit()
+
+    db_module.init_db(conn)  # must not raise
+
+    cur.execute('SELECT count(*) FROM upcoming_parties WHERE id = %s', (party_id,))
+    assert cur.fetchone()[0] == 1
+    cur.execute('SELECT count(*) FROM vote_upcoming_parties WHERE upcoming_party_id = %s',
+                (party_id,))
+    assert cur.fetchone()[0] == 1, 'the ballot was destroyed by the cascade'
+    cur.execute('SELECT count(*) FROM party_lineage WHERE upcoming_party_id = %s', (party_id,))
+    assert cur.fetchone()[0] == 1, 'the kept row survived with its history cut'
+    cur.close()
+
+
+def test_the_joint_list_merged_both_arab_predecessors(conn):
+    """חד"ש-תע"ל + בל"ד -> הרשימה המשותפת (2026-08-20). Axes are the union of the two
+    components; previous_parties is frozen and keeps both rows separately."""
+    cur = conn.cursor()
+    cur.execute("SELECT name_en, economic, security, religiosity FROM upcoming_parties "
+                "WHERE seed_key = 'joint-list'")
+    assert cur.fetchone() == ('The Joint List', -3, -3, -3)
+
+    cur.execute("SELECT count(*) FROM upcoming_parties WHERE seed_key IN ('hadash-ta-al', 'balad')")
+    assert cur.fetchone()[0] == 0
+
+    # Frozen at their 2022 run, and deliberately not back-dated to the merged row's numbers.
+    cur.execute("SELECT count(*) FROM previous_parties WHERE seed_key IN ('hadash-ta-al', 'balad')")
+    assert cur.fetchone()[0] == 2
+
+    cur.execute("""SELECT p.seed_key FROM party_lineage l
+                   JOIN previous_parties p ON p.id = l.previous_party_id
+                   JOIN upcoming_parties u ON u.id = l.upcoming_party_id
+                   WHERE u.seed_key = 'joint-list' ORDER BY p.seed_key""")
+    assert [r[0] for r in cur.fetchall()] == ['balad', 'hadash-ta-al']
+
+    # רע"ם declined to join and keeps its own row.
+    cur.execute("SELECT count(*) FROM upcoming_parties WHERE seed_key = 'ra-am'")
     assert cur.fetchone()[0] == 1
     cur.close()
 
