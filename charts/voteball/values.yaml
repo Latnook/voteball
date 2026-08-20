@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "3e5ed10"
+  tag: "b3dd9d0"
   pullPolicy: IfNotPresent
 
 # The two PUBLIC subnet CIDRs from terraform/vpc.tf. Used by the frontend ingress policy to admit the
@@ -34,8 +34,8 @@ externalSecret:
 
 ingress:
   host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/939c5156-90ea-4992-87e0-49d33957f9d5"
-  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/cc7a04ec-750c-43ab-b238-0100d4d3533d"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/0b5fb4c4-0615-426f-a130-95ba95347e75"
+  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/d97f3632-f805-4ec3-bbb4-9fbdc913cfa6"
 
 # Alert rules (charts/voteball/templates/prometheusrule.yaml). Requires kube-prometheus-stack's
 # PrometheusRule CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart
