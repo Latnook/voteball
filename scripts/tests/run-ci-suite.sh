@@ -27,6 +27,10 @@ cd "$(dirname "$0")/../.."   # repo root
 PYTHON_GROUP=(
   check-jenkinsfile-shell.sh
   test-argocd-sync-wait.sh
+  # Needs neither python3 nor git (bash + awk, grep, sort, timeout; aws/kubectl/helm are all
+  # replaced by fake executables) -- confirmed passing inside a bare python:3.12-slim on 2026-08-21,
+  # per the rule above.
+  test-aws-progress-watch.sh
   test-bootstrap-backend.sh
   test-ci-guards.sh
   test-deploy-env.sh

@@ -222,7 +222,31 @@ fi
 
 step "6/11  Building AWS infrastructure (Terraform will ask you to confirm)"
 echo "This creates real, billed resources (~\$200/month while up)."
+
+# --- BEGIN aws progress watcher ---
+# Terraform prints `Still creating... [6m20s elapsed]` against opaque resource addresses for ~13
+# minutes and never says what AWS is doing underneath. This narrates it: the EKS control plane and
+# RDS state, the ASG launching Spot instances, their EC2 status checks going initializing -> ok
+# (the OS answering), the RDS event stream, then the nodes joining and the ten Helm add-ons landing.
+#
+# It is a SEPARATE process writing to the same terminal -- deliberately not a pipe. Piping the apply
+# through anything would put tee/PIPESTATUS between us and Terraform's exit code, which is the
+# failure mode called out in destroy.sh ("a masked exit code can report a failed run as success").
+# The line below is therefore byte-for-byte the same apply it always was.
+WATCH_PID=""
+if [ "${VOTEBALL_NO_WATCH:-0}" != "1" ]; then
+  ./scripts/watch-aws-progress.sh apply &
+  WATCH_PID=$!
+  trap 'kill "$WATCH_PID" 2>/dev/null || true' EXIT
+fi
+# --- END aws progress watcher ---
+
 terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
+
+if [ -n "$WATCH_PID" ]; then
+  kill "$WATCH_PID" 2>/dev/null || true
+  trap - EXIT
+fi
 
 step "7/11  Pointing kubectl at the cluster"
 aws eks update-kubeconfig --name "$CLUSTER" --region "$REGION"

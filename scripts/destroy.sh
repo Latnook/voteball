@@ -184,9 +184,23 @@ reap_orphaned_enis() {
 reap_orphaned_enis &
 REAPER_PID=$!
 
+# Second background job, alongside the reaper: narrates what AWS is actually doing while
+# `terraform destroy` sits on "Still destroying...". Teardown is the better-instrumented half --
+# the final snapshot reports a real PercentProgress, and the ENI count this watcher prints is
+# precisely what blocks DeleteSubnet, so the 10-20 minute subnet stall becomes legible instead of
+# alarming. Strictly read-only (describe*/list* only); the reaper above is the mutating one.
+WATCH_PID=""
+if [ "${VOTEBALL_NO_WATCH:-0}" != "1" ]; then
+  ./scripts/watch-aws-progress.sh destroy &
+  WATCH_PID=$!
+fi
+
 DESTROY_LOG="$(mktemp)"
+# ONE trap, killing both jobs. A second `trap ... EXIT` would silently REPLACE this one and leak
+# the reaper -- traps do not stack.
 cleanup() {
   kill "$REAPER_PID" 2>/dev/null || true
+  [ -n "$WATCH_PID" ] && kill "$WATCH_PID" 2>/dev/null || true
   rm -f "$DESTROY_LOG"
 }
 trap cleanup EXIT

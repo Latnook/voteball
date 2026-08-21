@@ -210,9 +210,40 @@ only the outputs inside it**. That is a bug this project hit for real — see th
 `scripts/deploy.sh`, where `ecr_registry` went missing from state while everything looked fine, and the
 run failed on the *next* step.
 
-If you want to watch step 6 progress, read the output rather than splitting the command: each resource
-prints `Creation complete after <duration>` as it lands, and `Still creating... [Nm elapsed]` every ten
-seconds while it works.
+**Watching step 6 while it runs.** Terraform reports only its own wait — `Still creating... [6m20s
+elapsed]` against opaque resource addresses. Alongside it, `deploy.sh` runs
+`scripts/watch-aws-progress.sh` in the background, which asks AWS what is actually happening and
+prints each change as it lands:
+
+```
+  aws | 00:42  EKS control plane              CREATING
+  aws | 01:05  RDS voteball-eks-db            creating
+  aws | 02:10  NAT gateway                    available
+  aws | 08:31  EKS control plane              ACTIVE            (7m49s)
+  aws | 08:40  ASG   Launching a new EC2 instance: i-0abc  [InProgress 50%]
+  aws | 09:01  instance i-0abc                running
+  aws | 09:34  instance i-0abc checks         system=ok instance=ok   <- OS up
+  aws | 09:52  node ip-10-0-39-70             Ready   <- kubelet joined
+  aws | 09:58  RDS   event: Restored from snapshot
+  aws | 10:11  RDS   event: Finished DB Instance backup
+  aws | 10:15  RDS voteball-eks-db            available         (9m10s)
+  aws | 12:40  helm releases (10)             argocd cluster-autoscaler external-dns jenkins ...
+```
+
+Only *changes* print, each with how long that resource took, and a `still waiting:` line appears if
+nothing has moved for two minutes. It is strictly read-only — `describe`/`list` calls, which are
+free — and it is a separate process writing to the same terminal, not a pipe, so Terraform's own
+output and exit code are untouched. Turn it off with `VOTEBALL_NO_WATCH=1`.
+
+**What it cannot show you, and why.** The EKS control plane is *managed*: AWS publishes exactly one
+field for it, `CREATING` → `ACTIVE`, and there are no sub-steps to display at any price — so those
+~8 minutes are one line, not a progress bar. Node provisioning is visible (the Auto Scaling group's
+launch activities, then EC2 **status checks** going `initializing` → `ok`, which is the box booted
+and answering, then the node going `NotReady` → `Ready`, which is the kubelet up). RDS is the
+best-instrumented of the three, because it publishes an event stream in plain English.
+
+Terraform's own lines still tell you the rest: each resource prints `Creation complete after
+<duration>` as it lands.
 
 **Both secrets are seeded at steps 3/3b, before the big apply at step 6, and that order matters.**
 Step 6 creates Jenkins and its ExternalSecret together, and External Secrets Operator copies the AWS
@@ -658,6 +689,24 @@ infrastructure. Order matters:
 A final database snapshot is taken automatically, so the next `./scripts/deploy.sh` restores your
 votes. (This changed on 2026-07-20 — teardown used to discard them.)
 
+**Step 7 narrates itself too.** The same background watcher used by the deploy runs during the
+teardown, and destroy is the better-instrumented half of the two — the final snapshot is the one
+thing in this whole stack that reports a real percentage:
+
+```
+  aws | 01:20  final snapshot voteball-eks-db-final-20260821  creating 34%
+  aws | 03:05  final snapshot voteball-eks-db-final-20260821  available 100%   (2m45s)
+  aws | 03:12  RDS voteball-eks-db            deleting
+  aws | 04:40  instance i-0abc                shutting-down
+  aws | 05:02  instance i-0abc                terminated
+  aws | 06:02  network interfaces left        11 (3 detached)
+  aws | 09:10  EKS control plane              gone              (8m31s)
+```
+
+That last interface count is the useful one: detached interfaces are exactly what pins a subnet and
+produces the long "Still destroying... subnet" silence, so you can watch the reaper drain them
+instead of wondering whether the teardown has died. `VOTEBALL_NO_WATCH=1` turns it off.
+
 **Two things `destroy.sh` deliberately does NOT delete**, and neither should be added to it:
 
 | Kept | Why |
@@ -871,7 +920,8 @@ steps 1 and 4.
   setup exists to prevent.
 - **`terraform destroy` sits on "Still destroying... subnet" for many minutes** → a leftover network
   interface from a terminated node is pinning the subnet. `destroy.sh` now cleans these up
-  automatically while it runs; if you hit it in a manual destroy, find and delete the detached one:
+  automatically while it runs, and its progress watcher prints the count that is holding things up
+  (`network interfaces left  14 (3 detached)`), so you can see it draining rather than guessing; if you hit it in a manual destroy, find and delete the detached one:
   `aws ec2 describe-network-interfaces --region <your region> --filters Name=status,Values=available
   --query "NetworkInterfaces[?starts_with(Description,'aws-K8S-')].NetworkInterfaceId"` then
   `aws ec2 delete-network-interface --region <your region> --network-interface-id <id>`. The subnet

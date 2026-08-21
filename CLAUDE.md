@@ -565,6 +565,28 @@ Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` 
 - **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
   never force-unlocks on its own (see above).
 
+**`scripts/watch-aws-progress.sh <apply|destroy>` narrates the AWS side while Terraform sits on
+"Still creating/destroying".** Run in the background by `deploy.sh` step 6 and `destroy.sh` step 7
+(both killed by their `EXIT` trap; `VOTEBALL_NO_WATCH=1` disables it), it polls the AWS API and prints
+only *changes*: EKS/RDS/node-group state, ASG launch activities, EC2 **status checks**
+(`initializing → ok`, the closest thing AWS publishes to "the OS booted"), the RDS event stream, then
+node `Ready` and the ten Helm releases landing. On destroy it adds the final snapshot's
+`PercentProgress` and the ENI count that pins the subnet. Three properties are load-bearing and are
+what `scripts/tests/test-aws-progress-watch.sh` actually asserts:
+- **It is read-only and must stay that way.** It runs *concurrently with a live destroy*, so the test
+  records every operation the stubbed CLI is asked to run and fails on any verb that is not
+  `describe*`/`list*`/`get*`. The single write is `eks update-kubeconfig`, pinned to a throwaway file
+  in the script's own temp dir — it must never touch `~/.kube/config`, which is step 7's job.
+- **It must never exit non-zero.** It is backgrounded inside `set -euo pipefail` in front of a billed
+  ~13-minute apply; every call is guarded, and the script is deliberately not `set -e`.
+- **It is a separate process writing to the same terminal, never a pipe.** Piping the apply through
+  anything would put `tee`/`PIPESTATUS` between the caller and Terraform's exit code — the exact
+  failure mode `destroy.sh`'s own comment warns about.
+Note the EKS **control plane** exposes one field (`CREATING`/`ACTIVE`) and nothing more — those ~8
+minutes cannot be broken down further, so don't add a probe trying to. The node instances are launched
+by the EKS-managed ASG, not Terraform, so the provider's `default_tags` never reach them: filter on
+`tag:eks:cluster-name`, not `Project`.
+
 **Do not add `ignore_changes` to `final_snapshot_identifier`** in `database.tf` — the provider reads it
 from state at destroy time, so that silently disables the final snapshot *and* wedges the VPC teardown.
 There's a comment there explaining why; keep it.
