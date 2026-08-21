@@ -7,10 +7,19 @@
 # someone to press `q`. What you see is a deploy frozen on a normal-looking step -- indistinguishable
 # from a slow AWS API call, a hung network path, or a throttled account.
 #
-# Two of the three worst spots were mid-deploy, after the billed apply had already run:
-#   deploy.sh step 7    `aws eks update-kubeconfig`      (unredirected -- prints "Added new context")
-#   deploy.sh step 7b   `put-secret-value --output text` (unredirected)
-#   deploy.sh step 3b   `put-secret-value --output text` (unredirected)
+# WHICH commands page is not about output size -- it is about which class implements them, and the
+# split is counter-intuitive. Ordinary service commands (sts get-caller-identity, secretsmanager
+# put-secret-value, every ec2 describe-*) render through OutputStreamFactory and ARE paged: even one
+# short line from `--query ... --output text` hangs. The eks customizations `update-kubeconfig` and
+# `get-token` are BasicCommand subclasses writing straight to stdout via uni_print, so they are NEVER
+# paged. That exemption is what keeps kubectl working: it shells out to `aws eks get-token` on every
+# request. Never infer this from a command's output -- check the class, or test it on a pty.
+#
+# The real hang sites are the --output text/table calls, and the two expensive ones are mid-deploy:
+#   deploy.sh step 3b   put-secret-value --output text   (seed-jenkins-secret.sh)
+#   deploy.sh step 7b   put-secret-value --output text   (seed-argocd-token.sh) -- AFTER the billed
+#                                                         ~13-minute apply, so a hang costs a rebuild
+#   capture-evidence.sh sns get-topic-attributes --output table, cloudwatch get-metric-statistics
 #
 # CI never saw it: Jenkins captures stdout, so it is not a terminal there, and the agents have run
 # amazon/aws-cli:2.x all along. That asymmetry is exactly why this needs a test -- a green pipeline
@@ -80,12 +89,12 @@ for f in "${!EXEMPT[@]}"; do
 done
 ok "every exemption still exists and is still needed"
 
-# ---- 5. the three call sites that actually hung are guarded --------------------------------------
-# Named individually because each one sits AFTER the billed ~13-minute apply: hanging there costs a
-# rebuild, not just a retry.
-for f in scripts/deploy.sh scripts/seed-argocd-token.sh scripts/seed-jenkins-secret.sh; do
+# ---- 5. the call sites that actually hang are guarded --------------------------------------------
+# Named individually because seed-argocd-token.sh runs at deploy step 7b, AFTER the billed
+# ~13-minute apply: hanging there costs a rebuild, not just a retry.
+for f in scripts/seed-argocd-token.sh scripts/seed-jenkins-secret.sh scripts/capture-evidence.sh; do
   grep -q 'lib/config.sh' "$f" || fail "$f no longer sources config.sh -- its unredirected aws calls would hang"
 done
-ok "the three post-apply hang sites still inherit the guard"
+ok "the known hang sites still inherit the guard"
 
 echo "PASS: scripts/tests/test-aws-pager-guard.sh"

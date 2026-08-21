@@ -568,10 +568,25 @@ Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` 
 **AWS CLI v2 pages its output whenever stdout is a terminal, and that hangs deploys.** v1 had no
 pager at all, so nothing noticed until the repo owner upgraded on 2026-08-21. Every script in
 `scripts/` runs at a terminal, so any `aws` call whose output is *not* captured or redirected stops
-dead waiting for `q` — and it looks exactly like a hung AWS API call, not like a pager. Three call
-sites did this, all of them **after** the billed ~13-minute apply, so hitting one costs a rebuild
-rather than a retry: `deploy.sh` step 7 (`aws eks update-kubeconfig`), step 7b and step 3b (both
-`put-secret-value … --output text`). The fix is `export AWS_PAGER=""`, set once in
+dead waiting for `q` — and it looks exactly like a hung AWS API call, not like a pager.
+
+**Which commands page is not about output size — it is about which class implements them, and the
+split is counter-intuitive.** Ordinary service commands (`sts get-caller-identity`,
+`secretsmanager put-secret-value`, every `ec2 describe-*`) render through `OutputStreamFactory` and
+**are** paged — even a single short line from `--query … --output text` hangs. The `eks`
+customizations `update-kubeconfig` and `get-token` are `BasicCommand` subclasses that write straight
+to stdout via `uni_print`, so they are **never** paged, however long their output. That exemption is
+what keeps `kubectl` working at all: it shells out to `aws eks get-token` on every single request.
+Do not infer a command's behaviour from its output — check whether it is a `BasicCommand`
+customization, or just test it on a pty (`script -qec 'timeout 4 aws … ; echo RC=$?' /dev/null`, and
+note the redirect must NOT go to `/dev/null` or there is no terminal and nothing pages).
+
+The real hang sites are therefore the `--output text`/`--output table` calls in the seed and evidence
+scripts — `deploy.sh` step 3b (`seed-jenkins-secret.sh`) and step 7b (`seed-argocd-token.sh`), both
+`put-secret-value … --output text`, plus two in `capture-evidence.sh`. Steps 3b and 7b are the
+expensive ones: 7b lands **after** the billed ~13-minute apply, so hanging there costs a rebuild
+rather than a retry. (`deploy.sh`'s own `aws eks update-kubeconfig` at step 7 was originally listed
+here and is **not** a hang site, per the `BasicCommand` rule above.) The fix is `export AWS_PAGER=""`, set once in
 `scripts/lib/config.sh` (which 17 scripts source) and repeated in the two that cannot source it,
 `scripts/ci/images-exist.sh` and `services/backup/backup.sh`. It is **forced, not defaulted** — a
 `${AWS_PAGER-}` would honour a user's global `AWS_PAGER=less` and faithfully reproduce the hang.
