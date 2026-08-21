@@ -9,6 +9,12 @@
 # and the pipeline rebuilds. A redundant build is harmless; a green build that shipped nothing is not.
 set -euo pipefail
 
+# AWS CLI v2 pages its output when stdout is a terminal, which would hang this script when it is run
+# by hand at a laptop. Set here rather than inherited: this is one of the few scripts that does NOT
+# source scripts/lib/config.sh (it must run inside a CI container with no repo checkout layout
+# assumptions), so it carries its own guard. See that file for the full reasoning.
+export AWS_PAGER=""
+
 : "${ECR_REPOS:?ECR_REPOS must be set (space-separated repository names)}"
 : "${TAG:?TAG must be set}"
 : "${AWS_REGION:?AWS_REGION must be set}"

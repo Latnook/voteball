@@ -8,6 +8,12 @@ set -eu
 # alert silent. Not POSIX, but this runs on Alpine's BusyBox ash, which supports it.
 set -o pipefail
 
+# AWS CLI v2 pages output when stdout is a terminal. This normally runs as a CronJob (never a
+# terminal), but it is also the script someone runs by hand inside the pod to take an ad-hoc backup,
+# and there stdout IS a terminal. See scripts/lib/config.sh for the full reasoning; this script
+# cannot source it (different image, no repo checkout).
+export AWS_PAGER=""
+
 TS="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
 KEY="backups/voteball-${TS}.sql.gz"
 DUMP="/tmp/voteball-${TS}.sql.gz"

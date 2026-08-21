@@ -31,6 +31,9 @@ PYTHON_GROUP=(
   # replaced by fake executables) -- confirmed passing inside a bare python:3.12-slim on 2026-08-21,
   # per the rule above.
   test-aws-progress-watch.sh
+  # Needs neither python3 nor git (bash + find, grep, sed over the repo's own files) -- confirmed
+  # passing inside a bare python:3.12-slim on 2026-08-21, per the rule above.
+  test-aws-pager-guard.sh
   test-bootstrap-backend.sh
   test-ci-guards.sh
   test-deploy-env.sh

@@ -55,6 +55,14 @@ You need these installed: `terraform`, the `aws` command, `kubectl`, `helm`, `do
 `repo` scope), and you need a **Route53 hosted zone you already own** — the deploy looks it up, it never
 creates one.
 
+**AWS CLI v1 and v2 both work, and the scripts handle the one difference between them.** v2 shows
+command output in a pager (`less`) when it is printing to a terminal, which would stop a deploy dead
+on a normal-looking step — waiting for you to press `q`, and looking exactly like a hung AWS call.
+Every script disables that (`AWS_PAGER=""`, set once in `scripts/lib/config.sh`), so you do not have
+to configure anything. If you run `aws` commands **by hand** from this guide and one seems to freeze
+with a `:` at the bottom of the screen, that is the pager, not a problem — press `q`, or run
+`export AWS_PAGER=""` in your shell first.
+
 `gh` is used only by the last step, which re-registers Jenkins' deploy key and webhook. If it is missing
 the deploy still completes and the site still works — only CI is left unregistered, and one command
 fixes it afterwards.

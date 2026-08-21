@@ -565,6 +565,26 @@ Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` 
 - **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
   never force-unlocks on its own (see above).
 
+**AWS CLI v2 pages its output whenever stdout is a terminal, and that hangs deploys.** v1 had no
+pager at all, so nothing noticed until the repo owner upgraded on 2026-08-21. Every script in
+`scripts/` runs at a terminal, so any `aws` call whose output is *not* captured or redirected stops
+dead waiting for `q` — and it looks exactly like a hung AWS API call, not like a pager. Three call
+sites did this, all of them **after** the billed ~13-minute apply, so hitting one costs a rebuild
+rather than a retry: `deploy.sh` step 7 (`aws eks update-kubeconfig`), step 7b and step 3b (both
+`put-secret-value … --output text`). The fix is `export AWS_PAGER=""`, set once in
+`scripts/lib/config.sh` (which 17 scripts source) and repeated in the two that cannot source it,
+`scripts/ci/images-exist.sh` and `services/backup/backup.sh`. It is **forced, not defaulted** — a
+`${AWS_PAGER-}` would honour a user's global `AWS_PAGER=less` and faithfully reproduce the hang.
+**CI never saw any of this and never will**: Jenkins captures stdout, so it is not a terminal there,
+and the agents have run `amazon/aws-cli:2.x` all along — which is exactly why it needs a test rather
+than a green pipeline. `scripts/tests/test-aws-pager-guard.sh` asserts the guard, that it is exported
+(a plain shell variable would set the parent and change nothing for the child `aws` process), and —
+the durable half — that **every** script calling the CLI is covered, with an explicit
+exemption list checked in both directions. Everything else about v2 is drop-in here: `None` for a
+null `--output text`, JMESPath `sort_by`/`starts_with`, `ecr get-login-password` and
+`--secret-string file://` all behave identically, and nothing in this repo passes a blob argument
+that `cli_binary_format` would change.
+
 **`scripts/watch-aws-progress.sh <apply|destroy>` narrates the AWS side while Terraform sits on
 "Still creating/destroying".** Run in the background by `deploy.sh` step 6 and `destroy.sh` step 7
 (both killed by their `EXIT` trap; `VOTEBALL_NO_WATCH=1` disables it), it polls the AWS API and prints

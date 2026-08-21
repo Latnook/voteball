@@ -8,6 +8,21 @@
 #   pre-apply  -> parsed from voteball.tfvars (falling back to the defaults in variables.tf)
 #   post-apply -> read from `terraform output` (account id, ECR registry)
 
+# AWS CLI v2 pipes command output through a pager (`less`) whenever stdout is a terminal. Every
+# script here runs at a terminal, so an `aws` call whose output is NOT captured or redirected stops
+# dead waiting for someone to press `q` -- and it looks exactly like a hung AWS API call, not like a
+# pager. deploy.sh step 7 (`aws eks update-kubeconfig`) hangs forever without this, in the middle of
+# an otherwise healthy deploy that has already spent ~13 billed minutes on the apply.
+#
+# Forced empty rather than `${AWS_PAGER-}`: honouring a user's global `AWS_PAGER=less` would
+# faithfully reproduce the hang it exists to prevent. A pager is a preference for reading output by
+# hand; these scripts are automation, and nothing here is long enough to page anyway.
+#
+# v1 had no pager at all, which is why this was invisible until 2026-08-21. CI was never affected --
+# Jenkins captures stdout, so it is not a terminal there, and the agents have run amazon/aws-cli:2.x
+# all along. scripts/tests/test-aws-pager-guard.sh keeps every aws-calling script covered.
+export AWS_PAGER=""
+
 TF_DIR="${TF_DIR:-terraform}"
 TFVARS="${TFVARS:-$TF_DIR/voteball.tfvars}"
 
