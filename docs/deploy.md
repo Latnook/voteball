@@ -597,8 +597,8 @@ One thing that catches people out:
 ### The database
 
 The database sits in a private part of the network with **no route to the internet**, and it only
-accepts connections from the cluster's own machines. There is no tunnel from your laptop to it. To
-get a database prompt, borrow a temporary pod inside the cluster:
+accepts connections from the cluster's own machines — nothing on your laptop can dial it directly.
+To get a database prompt, borrow a temporary pod inside the cluster:
 
 ```bash
 kubectl run psql-shell -n devops-app --rm -it --restart=Never \
@@ -612,6 +612,34 @@ Three details there matter. It must be in the `devops-app` namespace (elsewhere 
 block it); the label must be **`app=migrate`** and not `app=backend`, or live visitor traffic gets
 routed into your shell; and the password comes from the existing secret rather than being typed, so
 it never lands in your shell history.
+
+#### With pgAdmin (or DBeaver, or a local `psql`)
+
+A desktop client cannot borrow a pod the way the command above does, so it needs the connection
+brought out to your machine instead:
+
+```bash
+./scripts/db-tunnel.sh            # listens on localhost:5433; LOCAL_PORT=5555 to change it
+```
+
+Leave it running and point the client at **localhost / 5433 / postgres / postgres**, SSL mode
+**require**, with the password being `db_password` from `terraform/voteball.tfvars`. Ctrl-C closes
+the tunnel and deletes the pod it created.
+
+What the script does is chain two hops that each already exist: a throwaway `socat` pod inside the
+cluster relays port 5432 on to the database, and `kubectl port-forward` relays your machine to that
+pod through the Kubernetes API server. Nothing is opened to the internet — the traffic rides the same
+authenticated API connection `kubectl` already uses, and the database's firewall still only ever sees
+a connection from a cluster machine.
+
+Two things about it are easy to get wrong by hand:
+
+- The pod carries the label **`app=migrate`**, for the same reason the `psql` shell above does. A pod
+  without one of the allowed labels resolves DNS fine and then has every connection silently dropped
+  by the namespace's default-deny egress rule — it looks like a hung database, not like a firewall.
+- Use SSL mode `require`, **not** `verify-full`. `socat` passes the raw bytes through, so encryption
+  is still negotiated end-to-end between your client and the database — but the database's certificate
+  names its real AWS endpoint, and your client is dialling `localhost`, so full verification fails.
 
 ### The AWS side (images, backups, secrets, alerts, logs)
 
