@@ -163,6 +163,13 @@ found by running it rather than by reading it.**
    step 10's own comment states. It was not — ArgoCD took ownership cleanly. The actual cost was that
    every workload rolled **twice** on first deploy (revision 2, revision-1 pods still terminating).
    Fixed by writing the digests into master's values.yaml before committing, so both branches agree.
+   **Verified by a second rebuild the same day** — the fix only runs on a fresh deploy, and the deploy
+   that found it could not test it (editing a running bash script corrupts execution). Result:
+   `revision = 1` on all three, and `git diff master release` returns **nothing at all** — the
+   branches are byte-identical, which is a stronger outcome than "they agree on image references".
+   Captured in `docs/eks/evidence/2026-08-23-digest-pinned-bootstrap.txt`. That rebuild also took
+   `promote-to-release.sh`'s `read-tree` **update** path (the release branch survives a teardown), so
+   both of that mechanism's paths are now proven live, conflict-free.
 
 2. **hadolint `DL3059` failed CI #1** before a single test ran. The `gosu` removal added a second
    consecutive `RUN`; that finding is *info*-level and hadolint's default failure threshold is info.
