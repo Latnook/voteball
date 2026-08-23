@@ -17,7 +17,7 @@ ServiceAccount, ConfigMap and ExternalSecret it needs do not exist yet, and it f
 to order (the schema is built from nothing and `init_db` is idempotent); an upgrade does, and by then
 every dependency exists. Its pod is labelled **`app: migrate`, never `app: backend`** — the backend
 Service selects that label and would route live HTTP to a one-shot script — and `migrate` is listed in
-the `allow-app-egress` NetworkPolicy so it can still reach RDS through the default-deny.
+the `allow-db-egress` NetworkPolicy so it can still reach RDS through the default-deny.
 
 **All three Deployments carry startup, readiness and liveness probes, and the three are sized
 independently on purpose — do not normalise them.** Four rules that are not obvious from reading the
@@ -46,12 +46,25 @@ The per-workload numbers and the reasoning behind each are in `docs/eks/architec
 ("Health checking"); `docs/eks/live-cluster-snapshot.md` shows the *pre-2026-08-06* probe config and
 is frozen evidence — don't "correct" it.
 
-**Every new workload's pod label must be added to the `allow-app-egress` NetworkPolicy's `app In
-(...)` list, and the label is the *workload* name, not the CronJob/Job/image name.** The namespace is
-default-deny; a pod outside that list keeps only `allow-dns-egress`, so DNS resolves and every TCP
-connection is silently dropped — RDS and the AWS APIs alike. The backup CronJob shipped labelled
-`app: voteball-backup` while the policy listed `backup`, and its nightly pg_dump was broken from
-2026-07-19 until 2026-07-31 (fixed in `1bda7b5`).
+**Every new workload's pod label must be added to whichever egress NetworkPolicy grants what it
+actually needs, and the label is the *workload* name, not the CronJob/Job/image name.** The namespace
+is default-deny; a pod named by no egress policy keeps only `allow-dns-egress`, so DNS resolves and
+every TCP connection is silently dropped — RDS and the AWS APIs alike. The backup CronJob shipped
+labelled `app: voteball-backup` while the policy listed `backup`, and its nightly pg_dump was broken
+from 2026-07-19 until 2026-07-31 (fixed in `1bda7b5`).
+
+There were four egress policies since 2026-08-23, not one — pick by what the workload needs:
+
+| Policy | Selects | Grants |
+|---|---|---|
+| `allow-db-egress` | backend, worker, backup, migrate | `10.0.0.0/16` TCP **5432** (RDS) |
+| `allow-frontend-to-backend-egress` | frontend | `172.20.0.0/16` + `10.0.0.0/16` TCP **5000** |
+| `allow-aws-api-egress` | worker, backup | `0.0.0.0/0` TCP **443** (SNS, S3, STS) |
+| `allow-canary-egress` | canary | `0.0.0.0/0` TCP **443** (the public ALB) |
+
+They are additive, so `worker` gets the union of the first and third. **`scripts/ci/validate-repo.sh`
+fails the build** if a pod template carries an `app:` label that no egress policy selects — four
+selectors are four chances to forget, which is why that gate exists rather than this paragraph.
 
 **That class of bug does not fail cleanly, it fails *flakily*, so do not conclude from one green run
 that a new pod's egress is allowed.** The VPC CNI runs `NETWORK_POLICY_ENFORCING_MODE=standard`,

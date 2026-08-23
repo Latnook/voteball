@@ -89,7 +89,9 @@ Governance objects applying across the namespace, not drawn as nodes because the
 than carry traffic:
 
 - **NetworkPolicy** — default-deny ingress and egress; the backend accepts traffic from the frontend
-  only; only `backend`/`worker`/`backup`/`frontend`/`migrate` pods may reach RDS.
+  only; only `backend`/`worker`/`backup`/`migrate` pods may reach RDS, and only on 5432. Egress is
+  four per-workload policies rather than one shared allow-list (see `docs/security.md`); notably the
+  `frontend` and `canary` pods have **no** route to the database at all.
 - **HPA** on the backend only (CPU 70%, 2→5 pods). The frontend serves static files and is not
   CPU-bound, so it stays at a fixed 2 replicas · **PDB** (`minAvailable: 1`) on both.
 - **Startup, readiness and liveness probes** on all three Deployments. They are not three grades of

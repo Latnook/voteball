@@ -24,7 +24,8 @@ kubectl logs -n devops-app -l job-name=voteball-backup --tail=100
   `backup.roleArn` in `charts/voteball/values.yaml` (this field is sync-managed — never hand-edit it,
   re-run `./scripts/sync-values-from-tf.sh` if it looks wrong).
 - **`pg_dump` couldn't reach RDS** — same checks as `VoteballHighErrorRate`: RDS availability and the
-  `allow-app-egress` NetworkPolicy.
+  `allow-db-egress` (RDS 5432) and `allow-aws-api-egress` (S3 443) NetworkPolicies — the backup job
+  needs BOTH, and since the 2026-08-23 split they are separate objects.
 - **Job timed out mid-dump** — if the database has grown significantly, the Job's `activeDeadlineSeconds`
   may now be too short. Check `charts/voteball/templates/backup-cronjob.yaml` for the current value.
 

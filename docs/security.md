@@ -155,9 +155,28 @@ an anonymous public poll requires authenticating people, which this deliberately
   Service (ClusterIP :5000). Backend and worker have **no** internet-facing Service.
 - **NetworkPolicies** (`charts/voteball/templates/networkpolicy.yaml`), enforced by the VPC CNI
   network-policy engine (enabled on the `vpc-cni` addon): the namespace is **default-deny** (ingress +
-  egress), then explicit allows — ALB→frontend:8080, frontend→backend:5000, DNS egress, and app→RDS +
-  app→AWS-APIs (443) egress. **Backend is reachable only from frontend** — verified: a pod that isn't
-  `frontend` cannot reach `backend:5000`.
+  egress), then explicit allows. Ingress: ALB→frontend:8080, frontend→backend:5000, and
+  observability→metrics ports. Egress: DNS for every pod, then **one policy per thing a workload
+  legitimately needs**, which is the shape since 2026-08-23 (Task 3 review finding T3-1 — before that
+  a single `allow-app-egress` gave all six workloads every port across the whole VPC and Service CIDR):
+
+  | Policy | Selects | Grants |
+  |---|---|---|
+  | `allow-db-egress` | backend, worker, backup, migrate | `10.0.0.0/16` TCP **5432** |
+  | `allow-frontend-to-backend-egress` | frontend | `172.20.0.0/16` + `10.0.0.0/16` TCP **5000** |
+  | `allow-aws-api-egress` | worker, backup | `0.0.0.0/0` TCP **443** (SNS, S3, STS) |
+  | `allow-canary-egress` | canary | `0.0.0.0/0` TCP **443** (the public ALB) |
+
+  The frontend's exclusion from the database policy is the substantive change, not a tidy-up: the RDS
+  security group admits anything arriving from the node security group, so the previous all-ports VPC
+  rule meant the one workload the public internet can reach could open a socket to the database. It
+  had no reason to — nginx.conf has exactly one `proxy_pass`, to `backend:5000` — and now it cannot.
+  Policies are additive, so `worker` holds the union of the first and third.
+
+  **Backend is reachable only from frontend** — verified: a pod that isn't `frontend` cannot reach
+  `backend:5000`. And `scripts/ci/validate-repo.sh` fails the build if a pod template carries an
+  `app:` label no egress policy selects, because that state is invisible at runtime: DNS still
+  resolves and every TCP connection is dropped with no event and no log.
 - **RDS:** endpoint comes from the Terraform `rds_endpoint` output (→ the ConfigMap's `DB_HOST`). It sits
   in **isolated DB subnets** (no NAT/IGW route), is **not publicly accessible**, and its security group
   accepts `5432` **only from the EKS node security group**. Connections use `sslmode=require`. Storage is

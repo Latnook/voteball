@@ -10,7 +10,7 @@ This alert only exists because the `canary` Deployment
 public path a voter takes: ALB → nginx → backend → RDS. Before the canary existed, "zero journey
 requests" was this site's *normal* state — it has almost no organic traffic — so an alert on
 `rate == 0` would have fired constantly and meant nothing. It was the reason the 2026-08-18
-RDS-egress drill (the `allow-app-egress` NetworkPolicy removed, cutting the backend's route to RDS)
+RDS-egress drill (the RDS egress NetworkPolicy removed, cutting the backend's route to RDS)
 rendered as a **perfect green dashboard**: `voteball:journey_requests:rate5m` and
 `voteball:journey_errors:rate5m` both sat at 0, so every ratio-based alert (`VoteballHighErrorRate`,
 `VoteballAvailabilitySLOBreach`) was mathematically blind, and `VoteballSLIAbsent` didn't catch it
@@ -44,7 +44,7 @@ before anything else:
 - **Log lines show curl failures (exit via `|| true`, so check the line itself) or non-2xx codes on
   every request** — this is a real problem on the request path, not the canary's own health. Move to
   `VoteballHighErrorRate` / `VoteballNoBackendAvailable`'s runbooks, or if nothing is reaching the
-  backend at all, suspect a NetworkPolicy: `kubectl get networkpolicy -n devops-app allow-app-egress
+  backend at all, suspect a NetworkPolicy: `kubectl get networkpolicy -n devops-app allow-db-egress
   -o yaml` and confirm `canary` is still in the `app In (...)` list this alert's own fix depends on.
 
 ## How to fix it
@@ -55,7 +55,7 @@ before anything else:
 - **Canary healthy but every request errors** — this is very likely a real outage on the voting
   journey itself. Check `VoteballNoBackendAvailable` and `VoteballHighErrorRate` — if either is also
   firing, follow that runbook instead; this alert is corroborating evidence, not the primary signal.
-- **Canary's NetworkPolicy egress broken** — confirm `canary` is listed in `allow-app-egress`'s
+- **Canary's NetworkPolicy egress broken** — confirm `allow-canary-egress` exists and selects
   `app In (...)` (`charts/voteball/templates/networkpolicy.yaml`). A pod outside that list keeps only
   `allow-dns-egress`: DNS resolves, every TCP connection to the public ALB silently drops, and the
   canary looks identical to a real outage from inside the cluster. This is the exact class of bug that

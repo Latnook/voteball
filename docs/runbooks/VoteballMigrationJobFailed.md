@@ -28,7 +28,7 @@ name and try `kubectl logs -n devops-app <pod-name>`.
   statement and the Postgres error). Fix the schema change in `services/backend/schema.sql` or
   `seed.sql`, commit, and push; the next sync retries the Job.
 - **Migration is fine, but it can't reach the database** — check RDS status and
-  `kubectl get networkpolicy -n devops-app allow-app-egress -o yaml`, same as `VoteballHighErrorRate`.
+  `kubectl get networkpolicy -n devops-app allow-db-egress -o yaml`, same as `VoteballHighErrorRate`.
 - **ArgoCD stuck retrying the same failed Job** — Helm hook Jobs are immutable once created
   (`before-hook-creation` delete policy handles this on the *next* release, not automatically). If
   ArgoCD's sync is stuck, force a resync from the ArgoCD UI or

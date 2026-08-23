@@ -15,7 +15,8 @@ spec:
       backoffLimit: 2
       template:
         metadata:
-          # MUST be `backup`, matching the `allow-app-egress` NetworkPolicy's `app In (...)` list --
+          # MUST be `backup`, matching the `allow-db-egress` and `allow-aws-api-egress`
+          # NetworkPolicies' `app In (...)` lists (one policy, `allow-app-egress`, until 2026-08-23) --
           # NOT `voteball-backup` (the CronJob/Job/image name). A pod outside that list keeps only
           # `allow-dns-egress`, so DNS resolves and every TCP connection is dropped: pg_dump to RDS
           # and the aws-cli's STS call both time out. The VPC CNI runs NETWORK_POLICY_ENFORCING_MODE

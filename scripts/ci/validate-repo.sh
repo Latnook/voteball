@@ -72,5 +72,62 @@ while IFS= read -r hit; do
 done < <(grep -rnE '^[[:space:]]*(-[[:space:]]+)?[A-Za-z_][A-Za-z0-9_.-]*:[[:space:]]*\[[[:space:]]*\][[:space:]]*$' \
            charts/*/templates 2>/dev/null || true)
 
+# EGRESS COVERAGE. Every workload in charts/voteball must be named by at least one egress
+# NetworkPolicy, and this check exists because of how that fails when it is not.
+#
+# The namespace is default-deny, and allow-dns-egress selects ALL pods. So a workload whose label
+# appears in no other egress policy still resolves DNS perfectly and has every TCP connection
+# silently dropped. There is no event, no log line, no policy error -- it presents as an application
+# bug. The backup CronJob shipped in exactly that state for 12 days (2026-07-19 to 2026-07-31)
+# because its label did not match the one big policy's selector.
+#
+# On 2026-08-23 that one policy was split into four (Task 3 review T3-1), which is strictly better
+# for least privilege and strictly worse for this failure: four selectors are four chances to forget.
+# Hence a build gate rather than a comment.
+#
+# Deliberately grep/awk only, no helm and no python3 -- this script runs in the CI Validation stage
+# before any tooling image is available, and the whole point of these checks is that they cost
+# nothing. Comments are stripped first: this file's own prose quotes `app: backend` and `app:
+# migrate` while explaining the rules, and counting those would make the check pass on a repo where
+# the real selector had been deleted.
+NP="charts/voteball/templates/networkpolicy.yaml"
+if [ -f "$NP" ]; then
+  strip_comments() { sed -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' "$1"; }
+
+  # Labels that a real pod template carries: only files that declare a pod-bearing kind.
+  workload_files="$(grep -lE '^kind: (Deployment|Job|CronJob)' charts/voteball/templates/*.yaml 2>/dev/null || true)"
+  workload_labels=""
+  for wf in $workload_files; do
+    workload_labels="$workload_labels
+$(strip_comments "$wf" | grep -oE '\bapp: [a-z0-9][a-z0-9-]*' | awk '{print $2}')"
+  done
+  workload_labels="$(printf '%s\n' "$workload_labels" | grep -v '^$' | sort -u)"
+
+  # Labels named by an egress policy. allow-dns-egress is EXCLUDED on purpose -- it selects every pod
+  # ({}), so counting it would make this check vacuous, and DNS-only is precisely the broken state.
+  egress_labels="$(strip_comments "$NP" | awk '
+    BEGIN { RS = "\n---\n" }
+    /policyTypes: \[Egress\]/ && $0 !~ /name: allow-dns-egress/ {
+      s = $0
+      while (match(s, /app: [a-z0-9][a-z0-9-]*/)) {           # matchLabels: { app: frontend }
+        print substr(s, RSTART + 5, RLENGTH - 5)
+        s = substr(s, RSTART + RLENGTH)
+      }
+      s = $0
+      while (match(s, /values: \[[a-z0-9, -]*\]/)) {          # matchExpressions values list
+        v = substr(s, RSTART + 9, RLENGTH - 10)
+        gsub(/[[:space:]]/, "", v)
+        n = split(v, parts, ",")
+        for (i = 1; i <= n; i++) if (parts[i] != "") print parts[i]
+        s = substr(s, RSTART + RLENGTH)
+      }
+    }' | sort -u)"
+
+  for lbl in $workload_labels; do
+    printf '%s\n' "$egress_labels" | grep -qx "$lbl" || \
+      note "pod label 'app: $lbl' is selected by NO egress NetworkPolicy in $NP -- that pod will resolve DNS and then have every TCP connection silently dropped (see the comment in $0). Add it to a policy there."
+  done
+fi
+
 [ "$status" -eq 0 ] && echo "validate-repo: all checks passed"
 exit "$status"

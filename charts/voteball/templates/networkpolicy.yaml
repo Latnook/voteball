@@ -92,11 +92,42 @@ spec:
       ports:
         - { protocol: TCP, port: 5000 }
 ---
-# 5) App egress: backend/worker/backup/frontend -> RDS (VPC) + AWS APIs (443 via NAT).
+# 5) EGRESS -- one policy per thing a workload legitimately needs to reach.
+#
+# This was ONE policy (`allow-app-egress`) until 2026-08-23. It selected all six app labels and then
+# allowed the entire VPC and the entire Service CIDR on EVERY port, plus 0.0.0.0/0:443. The Task 3
+# review scored it (finding T3-1) and was right to: the RDS security group admits anything coming
+# from the node security group, so "the whole VPC on any port" meant the frontend -- the one workload
+# the public internet can reach -- could open a connection straight to the database. Nothing in the
+# app needed that; it was breadth nobody had gone back and trimmed.
+#
+# What each workload actually needs was re-derived from the code rather than from the old comment,
+# and three of those beliefs turned out to be stale:
+#   * the backend imports psycopg2, flask, itsdangerous, werkzeug and prometheus_client, and NOTHING
+#     else -- no boto3, no requests, no urllib. It carries no IRSA role. So it needs 5432 and nothing
+#     on 443 at all.
+#   * nginx.conf has exactly one proxy_pass, `http://backend:5000`. The frontend needs the backend
+#     and nothing else -- no AWS, no RDS.
+#   * the "OTel collector" justification for opening every VPC port is obsolete: all six pod
+#     templates carry the four `instrumentation.opentelemetry.io/inject-*: "false"` annotations, so
+#     no collector sidecar is injected into any of them and there is no collector to reach.
+#
+# NetworkPolicies are ADDITIVE -- a pod matched by two of these gets the union, which is how `worker`
+# ends up with both database and AWS access. Splitting them costs an object each and buys the ability
+# to say why a grant exists and to remove one without touching the others.
+#
+# THE FAILURE MODE THIS SPLIT MAKES MORE LIKELY, so read it before adding a workload: a pod whose
+# label appears in NONE of these keeps only allow-dns-egress. DNS then resolves perfectly and every
+# TCP connection is silently dropped, which looks like an application bug, not a policy gap. The
+# backup CronJob shipped exactly that way for 12 days (2026-07-19 to 2026-07-31). Four policies are
+# four chances to forget instead of one, so scripts/ci/validate-repo.sh now FAILS THE BUILD when a
+# pod template carries an `app:` label that no egress policy here selects. Add the label to a policy
+# below; do not add it to the validator's exemption list unless the pod genuinely must not talk to
+# anything.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-app-egress
+  name: allow-db-egress
   namespace: {{ .Release.Namespace }}
 spec:
   podSelector:
@@ -104,22 +135,88 @@ spec:
       # `migrate` is the pre-upgrade schema Job. It needs the same RDS egress as the backend but must
       # NOT carry `app: backend`, which the backend Service selects -- that would route live HTTP to
       # a pod running a one-shot script.
-      # `canary` (charts/voteball/templates/canary-deployment.yaml) needs no RDS access directly -- it
-      # only needs the 0.0.0.0/0:443 rule below, to reach the PUBLIC ALB the same way a browser does.
-      # It is still listed here, not given its own NetworkPolicy, for the same reason backup was: a
-      # pod outside this list keeps only allow-dns-egress, so DNS resolves and every TCP connection is
-      # silently dropped -- the backup CronJob shipped broken this exact way for 12 days (2026-07-19 to
-      # 2026-07-31) before anyone noticed its label didn't match this list.
-      - { key: app, operator: In, values: [backend, worker, backup, frontend, migrate, canary] }
+      # `frontend` and `canary` are deliberately absent: neither speaks Postgres, and their absence
+      # here is what actually closes finding T3-1.
+      - { key: app, operator: In, values: [backend, worker, backup, migrate] }
   policyTypes: [Egress]
   egress:
     - to:
-        - ipBlock: { cidr: 10.0.0.0/16 }     # VPC: RDS + pod IPs (backend<-frontend, OTel collector)
-        - ipBlock: { cidr: 172.20.0.0/16 }   # EKS Service CIDR: reaching a Service by ClusterIP
-          # ^ REQUIRED: frontend->backend goes via the backend Service ClusterIP (172.20.x), which the
-          #   VPC CNI policy agent evaluates before DNAT-to-pod-IP -- without this, the proxy is denied.
+        # RDS lives in the isolated DB subnets inside this CIDR. Port-scoped to 5432, where the old
+        # policy allowed every port to every address in the VPC -- including every other pod.
+        - ipBlock: { cidr: 10.0.0.0/16 }
+      ports:
+        - { protocol: TCP, port: 5432 }
+---
+# frontend -> backend, and nothing else. nginx serves static files and reverse-proxies /api/* to
+# `http://backend:5000`; that is the entirety of its outbound traffic.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-backend-egress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels: { app: frontend }
+  policyTypes: [Egress]
+  egress:
     - to:
+        # BOTH ranges, on purpose. nginx connects to the backend Service's ClusterIP (172.20.x), and
+        # the VPC CNI policy agent evaluates the packet BEFORE kube-proxy DNATs it to the pod IP --
+        # so without the Service CIDR the proxy is denied outright. The pod CIDR is listed too
+        # because that ordering is an implementation detail of the agent, not a guarantee, and being
+        # wrong about it costs a total frontend outage. Both are pinned to 5000, so this is still far
+        # narrower than the all-ports rule it replaces.
+        - ipBlock: { cidr: 172.20.0.0/16 }
+        - ipBlock: { cidr: 10.0.0.0/16 }
+      ports:
+        - { protocol: TCP, port: 5000 }
+---
+# worker + backup -> the AWS APIs, via the NAT gateway. worker publishes to SNS and writes S3
+# snapshots/ (boto3, services/worker/snapshots.py); backup runs `aws s3 cp` into backups/. Both also
+# reach STS on the same port to exchange their IRSA token for credentials.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-aws-api-egress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app, operator: In, values: [worker, backup] }
+  policyTypes: [Egress]
+  egress:
+    - to:
+        # NOT narrowed with `except: [10.0.0.0/16]`, deliberately. The review suggests VPC endpoints
+        # "where practical" -- but if S3/SNS/STS interface endpoints are ever added to this VPC, that
+        # traffic starts resolving to a VPC address on the same port 443, and an `except` would then
+        # break the worker and the backup job at the exact moment someone was trying to IMPROVE the
+        # network posture. The meaningful narrowing here is the port and the two-workload selector:
+        # frontend, backend, migrate and canary no longer have this rule at all.
         - ipBlock: { cidr: 0.0.0.0/0 }
       ports:
-        - { protocol: TCP, port: 443 }       # SNS / S3 / Secrets Manager via NAT, and the canary's
-          #                                     HTTPS calls to the public ALB
+        - { protocol: TCP, port: 443 }
+---
+# canary -> the PUBLIC ALB, the same way a browser reaches it. Separate from the AWS policy above
+# rather than merged into a shared selector: the justification is completely different, and a merged
+# rule means a future edit for the worker silently changes what the canary may reach.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-canary-egress
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels: { app: canary }
+  policyTypes: [Egress]
+  egress:
+    - to:
+        # The Ingress is scheme: internet-facing, so `ingress.host` resolves to PUBLIC addresses and
+        # this never actually carries in-VPC traffic. It is still written 0.0.0.0/0 rather than
+        # `except: [10.0.0.0/16]` for a blunt operational reason: per the root CLAUDE.md, disabling
+        # or breaking the canary does not just lose one metric -- it makes voteball:availability
+        # ratio5m silently untrustworthy and VoteballJourneyTrafficStopped meaningless, because this
+        # site has almost no organic traffic and the canary IS the denominator. A tighter rule that
+        # is wrong fails in the direction of "every SLI reads healthy while nothing is measured".
+        - ipBlock: { cidr: 0.0.0.0/0 }
+      ports:
+        - { protocol: TCP, port: 443 }

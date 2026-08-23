@@ -30,7 +30,7 @@ from application errors, and the fix is different.
 ## How to fix it
 
 - **Database unreachable** — check the RDS instance is available in the AWS console, and that
-  `allow-app-egress` still permits it: `kubectl get networkpolicy -n devops-app allow-app-egress -o yaml`.
+  `allow-db-egress` still permits it: `kubectl get networkpolicy -n devops-app allow-db-egress -o yaml`.
 - **A bad release** — compare the running build against the last known good:
   `kubectl get deploy -n devops-app backend -o jsonpath='{.spec.template.spec.containers[0].image}'`.
   If it changed recently, roll back (below).

@@ -140,7 +140,7 @@ except Exception as e:
 " 2>&1 || true
   # A test that cannot fail is not a test: `wget || echo BLOCKED` printed BLOCKED here for weeks
   # because wget is absent from the worker image. This control proves the probe itself works.
-  echo "-- control: worker -> RDS:5432 (must connect — allow-app-egress permits it):"
+  echo "-- control: worker -> RDS:5432 (must connect — allow-db-egress permits it):"
   kubectl exec -n "$NS" deploy/worker -- python -c "
 import os, socket
 s = socket.socket(); s.settimeout(8)
