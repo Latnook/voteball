@@ -40,7 +40,10 @@ before "improving" the SEO), then the 2026-08-04 CI/CD split
 (`2026-08-04-cicd-split-design.md`, which splits the single Jenkins pipeline into
 `application-ci`/`application-cd` and supersedes the `emptyDir` storage decision in
 `2026-07-30-jenkins-on-eks-design.md` §2 — that doc's text stays as a dated record, per its own new
-pointer, rather than being edited).
+pointer, rather than being edited), then the 2026-08-23 review pass
+(`2026-08-23-release-branch-and-digest-design.md`, which moves ArgoCD off `master` onto a
+CD-only `release` branch and pins workloads by image digest; it supersedes the branch model in
+`2026-08-04-cicd-split-design.md` §4, whose text likewise stays as a dated record).
 **Read the relevant one before making architectural changes:** most decisions (and the bugs they
 avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
 justify its shape. Several also carry a "Verification outcome" section recording what actually broke
@@ -763,7 +766,16 @@ scripts/tests/test-validate-repo.sh
 scripts/tests/test-smoke-test.sh
 scripts/tests/test-build-push-ecr.sh  # the dirty-tree guard; extracts the block, no docker/AWS
 scripts/tests/check-jenkinsfile-shell.sh   # see below — not a guard test, a shell-syntax gate
+scripts/tests/test-promote-to-release.sh   # the release-branch mechanics; GIT_GROUP, real throwaway repos
+scripts/tests/test-jenkins-plugin-lock.sh  # plugins.txt / plugins.lock.txt / Dockerfile stay in step
+scripts/tests/test-notify.sh               # the SNS notifier can NEVER fail a build
+scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; 6 of its 10 checks are refusals
 ```
+
+**The suite is 22 tests as of 2026-08-23** — read it off `run-ci-suite.sh`'s own final output line
+rather than from here. `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` are exhaustive and the runner fails if
+a file in `scripts/tests/` appears in none of them, so the count moves whenever a test is added and
+this sentence will go stale before the runner does.
 
 **`Jenkinsfile-ci`'s "Script tests" stage runs `run-ci-suite.sh` in TWO containers, and until
 2026-08-11 nothing ran these tests at all** — CI ran `pytest` for `services/{backend,worker}` and stopped, so every guard
