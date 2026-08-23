@@ -475,20 +475,27 @@ pipeline {
       } }
       steps {
         container('trivy') {
-          // The backup image is a third-party base (postgres:17-alpine + aws-cli) whose CVEs are
-          // upstream Go-tooling issues outside this project's control: surface, do not block.
+          // ALL FOUR IMAGES BLOCK, including backup (2026-08-23; Task 3 review T3-5, Task 4 review
+          // P2). The backup image was report-only, justified as "third-party base CVEs outside this
+          // project's control". That was true of where the findings came FROM and false about
+          // whether they had to be there: measuring them showed all 22 HIGH/CRITICAL findings lived
+          // in ONE binary, /usr/local/bin/gosu, a Go helper postgres:17-alpine ships so its own
+          // entrypoint can drop from root -- and this image overrides the entrypoint and runs as
+          // uid 1000, so it never used gosu at all. services/backup/Dockerfile now deletes it, the
+          // image scans clean (0 findings, and Trivy reports no language-specific files left), and
+          // the exemption has nothing to protect.
+          //
+          // Do not reintroduce a report-only image. If a future base drags in another unused binary,
+          // remove the binary -- an exemption on a deployable artifact is a permanent hole that
+          // outlives whoever accepted it.
           sh '''
             set -eu
             DB="$ECR_REGISTRY/$CLUSTER_NAME-trivy-db"
-            for svc in backend worker nginx; do
+            for svc in backend worker nginx backup; do
               echo "--- trivy $CLUSTER_NAME-$svc (blocking) ---"
               trivy image --db-repository "$DB" --input /images/$svc.tar \
                 --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
             done
-
-            echo "--- trivy $CLUSTER_NAME-backup (report only) ---"
-            trivy image --db-repository "$DB" --input /images/backup.tar \
-              --severity CRITICAL,HIGH --exit-code 0 --ignore-unfixed
           '''
         }
       }

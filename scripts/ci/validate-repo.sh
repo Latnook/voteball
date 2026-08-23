@@ -27,11 +27,21 @@ while IFS= read -r df; do
     ref="$(printf '%s' "$line" | awk '{print $2}')"
     case "$ref" in
       *:latest)      note "$df pins $ref -- no image may use the latest tag" ;;
-      *:*|*'$'*|"")  ;;  # tagged, or a build-arg reference; both fine
+      *'$'*|"")      ;;  # a build-arg reference; nothing to check here
+      *@sha256:*)    ;;  # digest-pinned, which is what we want
+      *:*)
+        # Tagged but not digest-pinned. Allowed by the brief's no-latest rule, and still a
+        # reproducibility hole: `python:3.12-slim` is a different image every few weeks, so a git-SHA
+        # image tag describes the SOURCE exactly and the BASE not at all. Task 3 review finding T3-2.
+        # Fix by running ./scripts/refresh-base-digests.sh, not by deleting this check.
+        note "$df pins $ref by tag only -- pin it by digest (tag@sha256:...) so rebuilding this commit produces the same image. Run ./scripts/refresh-base-digests.sh." ;;
       *)             note "$df has an untagged base image ($ref), which resolves to :latest" ;;
     esac
   done < <(grep -iE '^\s*FROM\s+' "$df" || true)
-done < <(find services -name Dockerfile 2>/dev/null)
+  # ci/jenkins/Dockerfile INCLUDED, not just services/. It was outside this loop until 2026-08-23,
+  # which is how the controller base sat on a floating `lts-jdk21` tag through several reviews -- the
+  # one image in the repo whose drift the Task 4 review actually caught in the evidence.
+done < <(find services -name Dockerfile 2>/dev/null; ls ci/jenkins/Dockerfile 2>/dev/null)
 
 # The chart must at least parse -- a broken Chart.yaml fails the CD pipeline much later, after a
 # full build has already been paid for.

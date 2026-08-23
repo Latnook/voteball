@@ -1,8 +1,39 @@
 # postgres-client (pg_dump) + AWS CLI, non-root. pg_dump major version must be >= the server's (17).
-FROM postgres:17-alpine
+# DIGEST-PINNED (2026-08-23, Task 3 review finding T3-2 "harden base-image reproducibility"). The tag
+# stays for readability; the digest is what actually pins. A moving tag meant this Dockerfile built a
+# different image every week, so the git-SHA tag on the result described the SOURCE precisely and the
+# BASE not at all.
+#
+# The trade this makes, deliberately: a frozen base stops receiving upstream CVE fixes, so the Trivy
+# gate will eventually start failing builds on it. That is the intended behaviour -- it converts
+# "quietly running a base nobody has looked at in four months" into a build that stops and asks. Do
+# not respond by unpinning. Run ./scripts/refresh-base-digests.sh, which re-resolves every base in
+# this repo, and commit the result; the policy and cadence are in docs/security.md.
+FROM postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
 # Unpinned deliberately -- see the hadolint --ignore DL3018 comment in Jenkinsfile-ci for why a
 # pinned Alpine package version is a time bomb, not a reproducibility win, in this project.
 RUN apk add --no-cache aws-cli
+
+# REMOVE gosu. It is the ONLY source of HIGH/CRITICAL findings in this image -- all 22 of them
+# (measured 2026-08-23 with trivy --severity CRITICAL,HIGH --ignore-unfixed), every one a Go stdlib
+# CVE statically linked into that single binary. Nothing else in the image scans dirty.
+#
+# It is also completely unused here. gosu exists so postgres:17-alpine's own docker-entrypoint.sh can
+# start as root and drop to the postgres user; this image overrides ENTRYPOINT with backup.sh and
+# runs as USER 1000 from the start, so that path is never taken. The container was carrying a
+# privilege-dropping tool it has no privileges to drop.
+#
+# THIS IS WHY THE BACKUP IMAGE'S TRIVY SCAN IS NOW BLOCKING (Task 3 review T3-5 / Task 4 review P2).
+# It was report-only on the grounds that the findings were inherited from a third-party base and
+# outside this project's control. That was true of their ORIGIN and not of their PRESENCE: the
+# offending binary was removable in one line. The review offered "build a controlled backup image,
+# make scanning blocking, or maintain time-bound risk acceptances" -- this is the first, which makes
+# the second free and the third unnecessary.
+#
+# If a future base drags in another unused Go binary, delete that too rather than reverting the
+# scan to report-only.
+RUN rm -f /usr/local/bin/gosu
+
 COPY backup.sh /usr/local/bin/backup.sh
 RUN chmod +x /usr/local/bin/backup.sh
 USER 1000

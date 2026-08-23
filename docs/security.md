@@ -246,11 +246,33 @@ including the other three containers in the same CI agent pod (`trivy`, `skopeo`
 - **Tags:** never `latest` — every image is tagged with the **git SHA** and pushed to **ECR**
   (`IMMUTABLE` tags).
 - **Scanning:** ECR scan-on-push is enabled, and the CI pipeline runs **Trivy** on every build. The three
-  app images scan **clean** (0 CRITICAL/HIGH) and the gate **blocks** on any finding in them; the
-  third-party `backup` image is scanned in report-only mode (its CVEs are upstream Go-tooling issues
-  outside our control — see Trade-offs).
+  **all four** images scan **clean** (0 CRITICAL/HIGH) and the gate **blocks** on any finding in any
+  of them. `backup` was the one exemption until 2026-08-23: its 22 findings were all Go stdlib CVEs
+  statically linked into `/usr/local/bin/gosu`, a privilege-dropping helper inherited from
+  `postgres:17-alpine` that this image — entrypoint overridden, running as uid 1000 — never invoked.
+  Deleting the binary removed every finding, so the exemption had nothing left to protect.
 
 ### Base-image patching
+
+**Every base image in this repo is pinned by DIGEST, not by tag** (`services/*/Dockerfile` and
+`ci/jenkins/Dockerfile`, since 2026-08-23 — Task 3 review finding T3-2). The tag stays alongside it
+for readability; the digest is what pins. Before this, `python:3.12-slim` was a different image every
+few weeks, so a git-SHA image tag described the *source* exactly and the *base* not at all — and the
+Task 4 review caught the same drift on the Jenkins controller, where the chart declares app version
+2.568.1 while `lts-jdk21` had already moved to 2.568.2.
+
+`scripts/ci/validate-repo.sh` fails the build on any base image that is tagged but not digest-pinned,
+so this cannot quietly regress.
+
+**Refresh policy.** Pinning buys reproducibility and costs currency: a frozen base stops receiving
+upstream fixes, so the Trivy gate will eventually block on it. That is the intended behaviour — it
+converts "quietly running a base nobody has looked at in months" into a build that stops and asks.
+The response is `./scripts/refresh-base-digests.sh`, which re-resolves every pinned base in the repo
+and rewrites the Dockerfiles; `--check` reports drift without writing. It is deliberately **not**
+automated and **not** run by CI: this is a solo repo with no pull-request review, so an unattended
+rewrite of every base image is exactly the change that should be a deliberate act with a diff someone
+reads. If the controller base moves, `./scripts/jenkins/lock-plugins.sh` must be re-run in the same
+commit — plugin resolution depends on the core version.
 
 **`backend` and `worker` run `apt-get upgrade` as their first build step, and removing it will start
 failing every build within weeks.** Both are `FROM python:3.12-slim`; the official image is rebuilt on
@@ -277,7 +299,10 @@ all nine (verified: `Total: 0 (HIGH: 0, CRITICAL: 0)` on both rebuilt images aga
 and clears the *next* base CVE too, instead of needing a new waiver each time.
 
 **The trade-off, stated plainly:** the image is no longer a pure function of the git SHA — two builds
-of the same commit on different days can contain different package versions. That is bounded here
+of the same commit on different days can contain different package versions. Digest-pinning the base
+narrows this but does not remove it: the base *layer* is now fixed byte-for-byte, and it is the
+`apt-get upgrade` on top that still floats. That residue is deliberate, for the reason the paragraph
+above gives — the alternative is shipping known-patched CVEs. That is bounded here
 because ECR tags are `IMMUTABLE` and CI's G1 guard (`scripts/ci/images-exist.sh`) skips any tag
 already present, so a given SHA is built exactly once and the image that SHA names never changes
 after the fact. The alternative — pinning every apt package — would trade a reproducibility gain for
@@ -426,7 +451,6 @@ change them:
 | EKS API endpoint | Public (IAM-authed), CIDR allow-list **required** — no default since 2026-08-23, set to the operator's /32 by `./scripts/refresh-api-cidr.sh`. Private in-VPC access is on regardless, so in-cluster components never use the public path | Private-only + an approved administration path. A /32 pinned to a home ISP address is defence in depth, not an answer: it goes stale silently and locks the operator out of their own cluster |
 | Node group | Spot, diversified types (no On-Demand fallback) | Add On-Demand fallback for guaranteed capacity |
 | NAT gateway | Single (one AZ) | One per AZ |
-| Trivy on backup image | Report-only (upstream third-party CVEs) | Pin/patch a controlled base or waive CVEs explicitly |
 | Grafana/ArgoCD UIs | port-forward only (ClusterIP, no Ingress); each chart generates its own admin password into a Secret at install — **not** a chart default, and different after every rebuild (verified 2026-07-27: 40 random alphanumerics, not `prom-operator`). Reaching either requires cluster access first, so the passwords are a second layer | SSO, private ingress, rotated secrets |
 | Jenkins webhook | HTTPS (ACM) + HMAC shared secret; only `/github-webhook` routed | Already close to production shape here |
 | Jenkins UI access | `kubectl port-forward` only, no Ingress rule at all | Same in production — this is the stronger option, not a shortcut |

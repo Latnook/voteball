@@ -166,8 +166,10 @@ When it happens:
 3. As a last resort, pin the specific CVE in a `.trivyignore` **with an expiry note** — never widen the
    severity gate.
 
-The `backup` image is deliberately scanned report-only (third-party base, upstream Go CVEs outside
-this project's control).
+All four images are scanned **blocking**. The `backup` image was report-only until 2026-08-23; its
+22 HIGH/CRITICAL findings all came from the unused `gosu` binary inherited from `postgres:17-alpine`,
+which `services/backup/Dockerfile` now removes. There is no scanning exemption anywhere in this
+pipeline.
 
 ---
 

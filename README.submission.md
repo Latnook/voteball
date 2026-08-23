@@ -444,8 +444,11 @@ See [`docs/eks/evidence/README.md`](docs/eks/evidence/README.md) for the indexed
 
 ### Security
 
-- **Image security.** Trivy scans every app image before it can be pushed (`backend`/`worker`/`nginx`
-  block the build on fixable `CRITICAL`/`HIGH`; the third-party `backup` base is report-only). ECR
+- **Image security.** Trivy scans every app image before it can be pushed, and **all four block** the
+  build on fixable `CRITICAL`/`HIGH` — there is no report-only image. (`backup` was one until
+  2026-08-23; all 22 of its findings were in the unused `gosu` binary inherited from
+  `postgres:17-alpine`, now deleted in the Dockerfile.) Base images are pinned by digest, so a
+  rebuild of a given commit produces the same bytes. ECR
   repositories for the four app images are `IMMUTABLE`, so a tag, once pushed, cannot be silently
   retargeted. `skopeo` pushes the **exact file Trivy scanned** — no rebuild between scan and push.
   The word "fixable" is doing real work there: the gate runs `--ignore-unfixed`, so a base-package CVE
@@ -873,6 +876,8 @@ deploy restores the votes. Each of those steps was added after a real teardown f
 
 Documented in full in [`docs/security.md`](docs/security.md#deliberate-trade-offs-demo-vs-production) —
 notably: reused (not rotated) credentials, a single-AZ RDS (now with 7-day point-in-time recovery;
-deletion protection stays off on purpose because it would break the destroy/rebuild workflow), a public
-(IAM-authed) API endpoint, a single NAT gateway, Spot nodes without On-Demand fallback, and report-only
-Trivy on the third-party backup image. Each is a deliberate demo decision, not an oversight.
+deletion protection stays off on purpose because it would break the destroy/rebuild workflow), a single
+NAT gateway, and Spot nodes without On-Demand fallback. Each is a deliberate demo decision, not an
+oversight. Two items that used to be on this list were closed on 2026-08-23 after the Task 3 review:
+the EKS API allow-list no longer defaults to `0.0.0.0/0` (it has no default at all, so a plan fails
+until it is set), and the backup image's Trivy scan is no longer report-only.

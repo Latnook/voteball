@@ -360,9 +360,12 @@ BuildKit/ECR-caching mechanics; nothing there changed in the split.
 
 ### 9. Trivy scan
 
-`backend`/`worker`/`nginx` **block** the build on fixable `CRITICAL`/`HIGH` findings; `backup`
-(third-party `postgres:17-alpine` + aws-cli) is report-only, since its CVEs are upstream and outside
-this project's control.
+**All four images block** the build on fixable `CRITICAL`/`HIGH` findings, `backup` included since
+2026-08-23. It was report-only before that, justified as upstream CVEs outside this project's
+control — true of where they came from, false about whether they had to be present. Measuring them
+showed all 22 findings lived in one binary, `/usr/local/bin/gosu`, which `postgres:17-alpine` ships
+so its own entrypoint can drop from root; this image overrides the entrypoint and runs as uid 1000,
+so it never used gosu at all. `services/backup/Dockerfile` deletes it and the image now scans clean.
 
 ### 10. Push to ECR
 

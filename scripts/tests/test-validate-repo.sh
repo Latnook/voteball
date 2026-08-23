@@ -14,7 +14,11 @@ scaffold() {
   cd "$work"/repo
   for svc in backend worker frontend backup; do
     mkdir -p "services/$svc"
-    printf 'FROM python:3.12-slim\n' > "services/$svc/Dockerfile"
+    # Digest-pinned, because the clean scaffold must satisfy every rule the real repo does -- the
+    # digest requirement landed 2026-08-23 (Task 3 review T3-2). The digest itself is a fixed dummy;
+    # nothing here resolves it, and using the real one would make this scaffold need updating every
+    # time an upstream base moves.
+    printf 'FROM python:3.12-slim@sha256:%s\n' "$(printf '0%.0s' $(seq 64))" > "services/$svc/Dockerfile"
     printf '__pycache__\n' > "services/$svc/.dockerignore"
   done
   mkdir -p charts/voteball/templates
@@ -60,6 +64,43 @@ scaffold
 printf 'kind: Deployment\nspec:\n  template:\n    spec:\n      imagePullSecrets: []\n' \
   > charts/voteball/templates/backend-deployment.yaml
 "$ROOT/scripts/ci/validate-repo.sh" >/dev/null 2>&1 && fail "\`imagePullSecrets: []\` should fail"
+
+# --- base image digest pinning ---------------------------------------------------------------
+echo "--- a base image pinned by TAG ONLY fails ---"
+# Allowed by the brief's no-latest rule and still a reproducibility hole: python:3.12-slim is a
+# different image every few weeks, so a git-SHA image tag describes the source exactly and the base
+# not at all. Task 3 review finding T3-2.
+scaffold
+printf 'FROM python:3.12-slim\n' > services/backend/Dockerfile
+out="$("$ROOT/scripts/ci/validate-repo.sh" 2>&1)" && fail "a tag-only base image should fail"
+grep -q "by tag only" <<<"$out" || fail "the failure should say the base is tag-only, got: $out"
+
+echo "--- ... and the fix it suggests is the one that exists ---"
+grep -q "refresh-base-digests.sh" <<<"$out" || fail "the failure should name ./scripts/refresh-base-digests.sh"
+[ -x "$ROOT/scripts/refresh-base-digests.sh" ] || fail "validate-repo points at scripts/refresh-base-digests.sh, which is missing or not executable"
+
+echo "--- a build-arg base reference is still allowed ---"
+# Multi-stage builds and ARG-driven bases cannot be digest-pinned in the FROM line; rejecting them
+# would make the check unusable rather than strict.
+scaffold
+printf 'ARG BASE=python:3.12-slim\nFROM $BASE\n' > services/backend/Dockerfile
+"$ROOT/scripts/ci/validate-repo.sh" >/dev/null || fail "a build-arg base reference should still pass"
+
+echo "--- ci/jenkins/Dockerfile is scanned too, not just services/ ---"
+# It was outside this loop until 2026-08-23, which is how the controller base sat on a floating
+# lts-jdk21 tag through several reviews -- the one drift the Task 4 review actually caught.
+scaffold
+mkdir -p ci/jenkins
+printf 'FROM jenkins/jenkins:lts-jdk21\n' > ci/jenkins/Dockerfile
+out="$("$ROOT/scripts/ci/validate-repo.sh" 2>&1)" && fail "an unpinned ci/jenkins/Dockerfile should fail"
+grep -q "ci/jenkins/Dockerfile" <<<"$out" || fail "the controller Dockerfile must be scanned, got: $out"
+
+echo "--- ... and latest is still rejected everywhere ---"
+scaffold
+mkdir -p ci/jenkins
+printf 'FROM jenkins/jenkins:latest\n' > ci/jenkins/Dockerfile
+out="$("$ROOT/scripts/ci/validate-repo.sh" 2>&1)" && fail "FROM ...:latest in ci/jenkins should fail"
+grep -q "latest tag" <<<"$out" || fail "expected the latest-tag message, got: $out"
 
 # --- egress coverage -------------------------------------------------------------------------
 # The 2026-08-23 split of allow-app-egress into four per-workload policies (Task 3 review T3-1) made

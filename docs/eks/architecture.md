@@ -250,7 +250,7 @@ flowchart TD
         tests --> resolve["Resolve tag and account"]
         resolve --> built{"Already built?<br/>tag in ECR?"}
         built -->|"no"| build["Build images<br/>rootless BuildKit x4"]
-        build --> scan["Trivy scan<br/>fail on HIGH/CRITICAL<br/>backup image: report only"]
+        build --> scan["Trivy scan<br/>fail on HIGH/CRITICAL<br/>all four images block"]
         scan --> push["Push to ECR<br/>skopeo, tag = commit SHA"]
         built -->|"yes"| meta
         push --> meta["Publish Metadata<br/>image-metadata.json + digest"]
