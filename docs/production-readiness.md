@@ -299,7 +299,9 @@ banner to anyone.
 **Fix:** **JCasC** (`jenkins.yaml` + `plugins.txt`) so the host self-configures on boot and the
 configuration is reviewable in git — this is the deferred pass that also solves the backup problem, since
 a rebuildable server needs no backup. Then either SMTP/SNS notifications on `post { failure }`, or a
-scheduled check that the ArgoCD Application's deployed tag matches `master`. **SSM Session Manager**
+scheduled check that the ArgoCD Application's deployed tag matches the `release` branch. (Failure
+notifications on the rollback path landed on 2026-08-23 — `scripts/ci/notify.sh`; what remains
+deferred is notification on ordinary build failure.) **SSM Session Manager**
 access, replacing the SSH tunnel and closing port 22, is deferred alongside it.
 
 **Status 2026-07-21 — JCasC done, and the AMI foot-gun above is disarmed.** Configuration now lives in

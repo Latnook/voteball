@@ -737,13 +737,19 @@ There is nothing to start or stop — it runs whenever the cluster does, and goe
 
 ### CI/CD scripts (`scripts/ci/`, `scripts/jenkins/`)
 
-**Twelve scripts** (count them: `ls scripts/ci/*.sh | wc -l` — this number has been wrong before,
-the entry said "Five" while the directory held eight), each one pipeline decision point extracted so
-it can be tested without triggering a real build. Four were added on 2026-08-23 by the review pass:
+**Thirteen scripts** (count them: `ls scripts/ci/*.sh | wc -l` — this number has been wrong twice
+now: it said "Five" while the directory held eight, and was corrected to "Twelve" only to be stale
+again within the same session, because `verify-deployed-image.sh` landed an hour later. Derive it,
+do not read it from here), each one pipeline decision point extracted so it can be tested without
+triggering a real build. Five were added on 2026-08-23 by the review pass:
 `promote-to-release.sh` (builds each `release` commit with `git read-tree`, never a merge — see the
 design doc), `resolve-digests.sh` (tag → the four image digests, authoritative because the ECR repos
 are `IMMUTABLE`), `current-release-tag.sh` (what is deployed right now, for the chart-only path) and
-`notify.sh` (SNS on the NEEDS A HUMAN branches; can never fail a build). `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the
+`notify.sh` (SNS on the NEEDS A HUMAN branches; can never fail a build) and
+`verify-deployed-image.sh` (CD Verify — matches the running image's DIGEST against what the tag
+resolves to, falling back to the tag only when no digest is pinned; it was inline in Jenkinsfile-cd
+and rolled back a healthy release because it still matched on `:tag` after the chart moved to
+digests). `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the
 immutable-tag re-run check) hold two of `Jenkinsfile-ci`'s decisions — `images-exist.sh` is also
 reused, read-only, by `Jenkinsfile-cd`'s Input Validation stage to confirm a requested tag really is
 in ECR before promoting it. `validate-repo.sh` is the CI Validation stage: asserts every
@@ -800,7 +806,7 @@ variables, which is exactly how that build went wrong.
 **`build-push-ecr.sh` refuses to build from a dirty working tree**, because it tags images
 `git rev-parse --short HEAD` and an image built from unstaged work would carry a tag that does not
 describe its contents — with **nothing downstream to catch it**: ArgoCD syncs it, the smoke test
-passes, and CD's `ci: image tag <sha> [skip ci]` commit records the wrong provenance permanently.
+passes, and CD's `release: <sha> (image tag <tag>)` commit records the wrong provenance permanently.
 Near-missed on 2026-08-11, when revision 18's `seed.sql` was uncommitted as `deploy.sh` reached the
 image step and would have shipped as `b9e3054`. The guard runs **before** the terraform-state read
 and the ECR login, so it costs no network and fails at deploy step 5 — ahead of the billed apply at

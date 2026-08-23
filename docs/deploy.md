@@ -169,10 +169,13 @@ resources. The steps it performs (kept in step with the script's own numbering �
 8. Build the four app container images and upload them.
 9. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
    certificate, the WAF, the bucket, and the IAM roles all change on every rebuild, so **never edit
-   these ten fields by hand**.
+   these ten fields by hand** — then resolve the four image digests from ECR and **promote that
+   commit to the `release` branch**. ArgoCD watches `release`, not `master` (since 2026-08-23), so
+   the branch has to exist and name this cluster's images before step 11 points ArgoCD at it.
 10. Install the app and wait for it to come up. A short-lived migration Job applies the database
     schema **once** before the app pods start, rather than every replica racing to do it.
-11. Hand ongoing control to ArgoCD.
+11. Hand ongoing control to ArgoCD, which syncs `charts/voteball` and `charts/observability` from the
+    `release` branch.
 11b. Check GitHub can actually reach Jenkins — pings the webhook and reports whether DNS resolves, the
      load balancer routes, and Jenkins answered. This is the half of step 3c that needs a running
      cluster, which is why the two are separated. A failure here does **not** fail the deploy: the

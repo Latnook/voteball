@@ -90,8 +90,10 @@ a future stolen key alone isn't enough.
 
 ### 2. Cut off GitHub
 
-Repo write access **is** production deploy access here: ArgoCD deploys whatever is on `master`, so
-anyone who can push can change the live site without touching AWS at all.
+Repo write access **is** production deploy access here. ArgoCD deploys the **`release`** branch, which
+only `application-cd` writes — but the deploy key Jenkins holds can push anywhere, and anyone who can
+push to `master` can change what the next promotion carries. Revoking GitHub access still cuts the
+path to the live site without touching AWS.
 
 - GitHub → Settings → *Developer settings* → **revoke** any personal access tokens.
 - GitHub → Settings → *Applications* → revoke the GitHub CLI's authorisation.
