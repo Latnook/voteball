@@ -172,4 +172,32 @@ grep -q 'git cat-file -e' Jenkinsfile-ci || \
   fail "Jenkinsfile-ci's Guard must verify the range base still exists before using it"
 pass=$((pass+1))
 
+# ---- the CI/CD credential boundary --------------------------------------------------------------
+# Task 4 review finding P1: both jobs were configured with voteball-deploy-key, a WRITE-capable
+# credential. The split's entire claim is that CI cannot affect what is deployed -- carefully true on
+# the IRSA axis (CI pushes to ECR, CD is ECR read-only) and the Kubernetes RBAC axis (CD's
+# ServiceAccount is read-only in devops-app), and quietly false on the credential axis.
+#
+# The repository is public, so CI checks out over anonymous HTTPS with no credential at all.
+JY="ci/jenkins/jenkins.yaml"
+if [ -f "$JY" ]; then
+  # Comments stripped: this file's own prose names the credential while explaining why CI no longer
+  # uses it, and counting that would make the assertion pass on a config where CI still holds it.
+  jy_code="$(sed -e 's|^[[:space:]]*//.*$||' -e 's|^[[:space:]]*#.*$||' "$JY")"
+  uses="$(printf '%s\n' "$jy_code" | grep -c "credentials('voteball-deploy-key')" || true)"
+  [ "$uses" = "1" ] || \
+    fail "expected EXACTLY ONE job to use voteball-deploy-key (application-cd, which pushes promotions); found $uses. If application-ci has it again, CI can push to the repository and the CI/CD split is decorative."
+  pass=$((pass+1))
+
+  # ...and it must be the CD job that has it, not CI. Counting alone would pass if the two swapped.
+  ci_block="$(printf '%s\n' "$jy_code" | awk "/pipelineJob\\('application-ci'\\)/,/scriptPath\\('Jenkinsfile-ci'\\)/")"
+  printf '%s\n' "$ci_block" | grep -q "credentials(" && \
+    fail "application-ci's SCM block configures a credential again. It must check out anonymously (public repo) so CI holds nothing that can write to the repository."
+  pass=$((pass+1))
+
+  printf '%s\n' "$ci_block" | grep -q "url('https://github.com" || \
+    fail "application-ci must check out over anonymous HTTPS. An SSH remote implies a credential, which is what finding P1 was about."
+  pass=$((pass+1))
+fi
+
 echo "PASS: $pass assertions"

@@ -248,21 +248,33 @@ pipeline {
       }
       post {
         always {
-          // archiveArtifacts, NOT junit: the JUnit plugin is absent from this controller image (it
-          // is not in ci/jenkins/plugins.txt), and 'junit' failed here with NoSuchMethodError on a
-          // live build (CI build 11) after all 188 tests had already passed -- the tests ran and
-          // passed, only the report step didn't exist. Adding the plugin means editing
-          // ci/jenkins/plugins.txt AND rebuilding the controller image AND a terraform apply -- all
-          // three, not just the plugins.txt line -- so don't swap this back to junit without doing
-          // all of them.
+          // junit AND archiveArtifacts, both (2026-08-23, Task 4 review finding P2 "publish tests as
+          // Jenkins test results"). The brief asks for results presented as TEST RESULTS in Jenkins
+          // -- counts, trends, individual failing cases, a link straight to the failure -- which
+          // archiving an XML file does not give you: it gives you a file to download and read.
           //
-          // allowEmptyArchive:false keeps the same fail-loudly guarantee junit's
-          // allowEmptyResults:false gave: if the XML files are missing, the tests did not actually
-          // run, and that must fail the stage rather than pass quietly.
+          // THIS PREVIOUSLY FAILED, and the reason it is safe now is a specific change, not a change
+          // of mind. `junit` died with NoSuchMethodError on live CI build 11, after all 188 tests had
+          // already passed: the step did not exist, because the plugin was not in the controller
+          // image. That comment then said not to swap back without editing ci/jenkins/plugins.txt AND
+          // rebuilding the controller image AND running terraform apply. All three are done in this
+          // pass -- `junit` is declared in plugins.txt, pinned in plugins.lock.txt at
+          // 1424.vc64a_edde7777, and the image is rebuilt by deploy.sh step 5.
+          // scripts/tests/test-jenkins-plugin-lock.sh now fails the build if that declaration is ever
+          // dropped, so the plugin cannot silently disappear again.
           //
-          // Note this step only PUBLISHES results -- it is not the test gate. The gate is pytest's
-          // own exit code under `set -eu` in the stage above: a failing test fails the stage (and
-          // the pipeline) regardless of how, or whether, results get archived here.
+          // allowEmptyResults: false is the fail-loudly guarantee: missing XML means the tests did
+          // not run, which must fail the stage rather than pass quietly.
+          //
+          // archiveArtifacts is KEPT alongside it, deliberately. The two do different jobs -- junit
+          // parses the results into Jenkins' own model (which is what the brief asks for), while the
+          // archived file is what gets attached to evidence captures and read after the build record
+          // rotates out at numToKeep(20). Dropping either loses something real.
+          //
+          // Neither step is the test GATE. The gate is pytest's own exit code under `set -eu` in the
+          // stage above: a failing test fails the stage, and the pipeline, regardless of how or
+          // whether results are published here.
+          junit testResults: '*-tests.xml', allowEmptyResults: false
           archiveArtifacts artifacts: '*-tests.xml', allowEmptyArchive: false
         }
       }

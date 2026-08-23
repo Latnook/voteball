@@ -503,10 +503,32 @@ jobs:
             scm {
               git {
                 remote {
-                  // MUST be the SSH remote -- see the note on application-cd below, which is the
-                  // job that actually pushes.
-                  url('git@github.com:${GITHUB_REPO}.git')
-                  credentials('voteball-deploy-key')
+                  // ANONYMOUS HTTPS, AND NO CREDENTIAL -- deliberately (2026-08-23, Task 4 review
+                  // finding P1 "restore the CI/CD trust boundary"). This job used to check out over
+                  // SSH with `voteball-deploy-key`, the same WRITE-capable key application-cd uses
+                  // to push promotions. The whole point of the CI/CD split is that CI cannot affect
+                  // what is deployed, and handing CI a credential that can push to the repository
+                  // quietly undid that on the credential axis while the IRSA and RBAC axes were
+                  // carefully separated.
+                  //
+                  // Latnook/voteball is a PUBLIC repository, so the cheapest read-only credential is
+                  // no credential: anonymous HTTPS can clone it and can do nothing else. That is
+                  // strictly better than minting a second read-only deploy key, which would be one
+                  // more secret to seed, rotate and leak.
+                  //
+                  // CI never pushes -- verified by test-ci-guards.sh, which fails if Jenkinsfile-cd
+                  // (let alone this job) regains a master push.
+                  //
+                  // RESIDUAL, stated honestly rather than papered over: voteball-deploy-key is still
+                  // scope: GLOBAL, so a Jenkinsfile running under this job could still ask for it by
+                  // id. Removing that needs a folder-level credential domain, which means renaming
+                  // the job to something like cd/application-cd and re-pointing every reference to
+                  // it (the `build job:` call in Jenkinsfile-ci, verify-jenkins.sh's exactly-two-jobs
+                  // assertion, docs). Not done here. What IS closed is the routine use: the CI job no
+                  // longer touches the write credential in its normal operation, and a Jenkinsfile
+                  // that reached for it would be a visible, reviewable change to a file in this repo
+                  // rather than the configured default.
+                  url('https://github.com/${GITHUB_REPO}.git')
                 }
                 branch('*/master')
               }

@@ -39,6 +39,11 @@ PYTHON_GROUP=(
   test-deploy-env.sh
   test-frontend-seo.sh
   test-i18n-parity.sh
+  # Needs neither python3 nor git (bash + grep, awk, sed, comm, cut over the repo's own files) --
+  # confirmed passing inside a bare python:3.12-slim on 2026-08-23, per the rule above. It compares
+  # ci/jenkins/plugins.txt, plugins.lock.txt and the Dockerfile; regenerating the lock needs docker
+  # and network (scripts/jenkins/lock-plugins.sh), but CHECKING it deliberately does not.
+  test-jenkins-plugin-lock.sh
   # Needs neither python3 nor git (bash + grep only), so it could sit in either group. Placed here
   # and confirmed passing inside a bare python:3.12-slim on 2026-08-12, per the rule above.
   test-logo-assets.sh

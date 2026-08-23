@@ -51,3 +51,11 @@ dark-theme
 #                       exist. See docs/production-readiness.md section 7.
 #   github-branch-source / workflow-multibranch -- this project commits directly to master and uses
 #                       a single Pipeline job, not a multibranch one.
+
+# --- test reporting ---
+# The `junit` step in Jenkinsfile-ci's Tests stage. Present in the resolved closure as a transitive
+# dependency of workflow-aggregator regardless, which is exactly why it is declared HERE too: the
+# pipeline CALLS it directly, and a step that depends on a plugin arriving by accident breaks the day
+# an unrelated dependency drops it. The 2026-08-23 Task 4 review asked for precisely this
+# ("make it an explicit dependency if the pipeline relies on it").
+junit
