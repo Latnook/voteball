@@ -197,8 +197,9 @@ volume is AZ-locked and would hang the pod `Pending` on a reschedule into the "w
 mount target in every AZ), so build history now survives a routine reclaim. What is unchanged: the
 controller's *configuration* still rebuilds entirely from JCasC on every boot, never from the UI, and
 losing the volume entirely (a full teardown of the EFS resources) is still a recoverable event, not a
-disaster — the durable record of what was *deployed* is the `ci: image tag <sha> [skip ci]` commits on
-`master`, which never expire. Two things remain **deliberately deferred**: SSM Session Manager (moot —
+disaster — the durable record of what was *deployed* is the `release: <sha> (image tag <tag>)` commits
+on the **`release`** branch, which never expire. (They were `ci: image tag <sha> [skip ci]` commits on
+`master` until the 2026-08-23 branch split.) Two things remain **deliberately deferred**: SSM Session Manager (moot —
 there is no SSH access to anything Jenkins runs on), and build-failure notifications — Jenkins sends no
 email without SMTP, so verification means checking the Jenkins UI or ArgoCD's state (and, for CD, the
 fact that a failed deploy rolls itself back) rather than assuming success.
@@ -375,8 +376,11 @@ Application, which applies to `devops-app`. Stage list: **Checkout** → **Input
 `helm template` + `kubectl create --dry-run=client` — `create`, not `apply`: `apply`'s
 create-vs-patch decision reads each object's current config from the API server, which the read-only
 CD agent cannot do for most kinds in the chart, discovered on the pipeline's first live run; see
-`docs/cicd.md` §3) → **Promote** (writes `image.tag`, commits
-`ci: image tag <sha> [skip ci]`, pushes) → **Deploy** (`argocd app sync --revision <promote-sha>`) →
+`docs/cicd.md` §3) → **Promote** (writes `image.tag` and the four image digests onto the `release`
+branch via `git read-tree`, commits `release: <sha> (image tag <tag>)`, pushes) → **Deploy**
+(`argocd app sync` — deliberately **without** `--revision`; see `Jenkinsfile-cd`'s comment, the
+Application is pinned to the branch so naming the revision adds nothing and the server rejects a SHA
+it has not fetched) →
 **Rollout** (`argocd app wait --sync --health`) → **Verify** (reads ArgoCD's own sync/health verdict,
 then one read-only `kubectl get` purely to capture evidence) → **Smoke Test** (real HTTPS requests
 against the live site — root, `/api/options`, `/api/results?by=all` — not just a probe check) →

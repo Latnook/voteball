@@ -93,10 +93,11 @@ rule, because the coverage looks complete.
 
 ArgoCD owns this release in the cluster (`argocd/voteball-application.yaml.tmpl`, rendered by
 `scripts/render-argocd-app.sh` — do not `kubectl apply` the template directly), so **changes reach the
-cluster by committing to `master`**, not by running `helm upgrade` by hand. If you do install manually,
-note ArgoCD's `selfHeal` will fight you — concretely, a manual `helm upgrade` of a chart that
-**differs** from `master` fails with `conflict with "argocd-controller"` on server-side-apply field
-ownership. Upgrades go through git.
+cluster by going through `application-cd`, which promotes them to the `release` branch** — not by
+committing to `master` (which no longer deploys anything on its own) and not by running `helm upgrade`
+by hand. If you do install manually, note ArgoCD's `selfHeal` will fight you — concretely, a manual
+`helm upgrade` of a chart that **differs** from what ArgoCD has applied fails with
+`conflict with "argocd-controller"` on server-side-apply field ownership. Upgrades go through git.
 
 **Never write an empty list literal (`to: []`, `imagePullSecrets: []`) in a template.** The API server
 drops it on write, so the value Helm applies can never equal the value stored — and since both Helm

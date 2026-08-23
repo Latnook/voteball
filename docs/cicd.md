@@ -931,7 +931,8 @@ remains the sole source of truth, and the controller still rebuilds its entire c
 `ci/jenkins/jenkins.yaml` on every boot regardless of what the volume holds — nothing in this design
 starts depending on the volume's contents for correctness. The durable record of what was *deployed*
 (as opposed to what Jenkins remembers building) was never the build log anyway — it is the
-`ci: image tag <sha> [skip ci]` commits on `master`, which never expire and survive every teardown.
+`release: <sha> (image tag <tag>)` commits on the **`release`** branch, which never expire and survive
+every teardown. (They were `ci: image tag <sha> [skip ci]` commits on `master` until 2026-08-23.)
 
 **Storage survives three different events three different ways** — see
 [`docs/eks/architecture.md`](eks/architecture.md) diagram 6 and
@@ -1011,7 +1012,8 @@ destroyed** — ArgoCD is also gone during a teardown, so nothing could deploy a
 `./scripts/build-push-ecr.sh` load-bearing rather than a convenience during that window.
 
 Note the ordering constraint `deploy.sh` encodes: **`values.yaml` must be committed and pushed before
-the ArgoCD Application is created.** Bootstrapping ArgoCD against a `master` that still holds stale
+the ArgoCD Application is created, and the `release` branch must exist and name this cluster's
+images.** Bootstrapping ArgoCD against a branch that still holds stale
 values makes it immediately revert the deploy to an image tag that no longer exists, putting every pod
 in `ImagePullBackOff`.
 
