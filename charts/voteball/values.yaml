@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "456cf37"
+  tag: "94f0aab"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -19,10 +19,10 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: ""
-    worker: ""
-    nginx: ""
-    backup: ""
+    backend: "sha256:20fce020673d326754fb14bc5f44e6e1d2cef4bda53bafe4b182749cea1ac88e"
+    worker: "sha256:6cd74a54187e145873ee9c6ffc8fc450a1fcef59fec0d3afb1b26c1c15e2a6c8"
+    nginx: "sha256:af390cde1f5e86ae31bc303e206222a05d67886749f077e33d8d2a708ff6d0a5"
+    backup: "sha256:d1d8579dccabe38e58c8563552f585be4b0b9e9d2813ca4b994b7e9a8885d4c5"
 
 # The two PUBLIC subnet CIDRs from terraform/vpc.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
@@ -53,8 +53,8 @@ externalSecret:
 
 ingress:
   host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/b1fc557d-175c-41d2-96b5-7678a2baadcd"
-  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/a54af97c-911e-4d03-b01d-7135ab115b0f"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/95ceaaaa-e0a6-42df-b520-fcc83fcc7096"
+  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/e9f2f125-2c3d-4e9b-a3fe-29515c431b34"
 
 # Alert rules (charts/voteball/templates/prometheusrule.yaml). Requires kube-prometheus-stack's
 # PrometheusRule CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart
