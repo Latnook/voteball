@@ -62,6 +62,18 @@ jenkins:
           # itself back.
           - key: "APP_DOMAIN"
             value: "${APP_DOMAIN}"
+          # Same reason, and it was missed once: scripts/ci/notify.sh runs in the CD AGENT pod, not
+          # on the controller, so putting SNS_TOPIC only in the controller's containerEnv (as the
+          # 2026-08-23 change first did) leaves the agent without it. The notifier is written never to
+          # fail a build, so the symptom was not an error -- the rollback drill's log simply read
+          # "SNS_TOPIC is not set -- skipping notification", i.e. the NEEDS A HUMAN alerting was
+          # silently absent while everything reported healthy. Exactly the failure the notifier exists
+          # to prevent, one layer up.
+          #
+          # BOTH places are required: containerEnv so JCasC can resolve ${SNS_TOPIC} at boot, and this
+          # block so the resolved value reaches agents.
+          - key: "SNS_TOPIC"
+            value: "${SNS_TOPIC}"
 
   clouds:
     - kubernetes:

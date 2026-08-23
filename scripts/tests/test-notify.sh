@@ -116,4 +116,36 @@ awk '/def notify = \{/,/^          \}/' Jenkinsfile-cd | grep -q "container('dep
   || fail "the notify closure in Jenkinsfile-cd must run inside container('deploy'); jnlp has no aws CLI"
 pass=$((pass+1))
 
+# ---- 8. SNS_TOPIC must reach the AGENT pods, not just the controller ----------------------------
+# notify.sh runs in the CD agent pod. Setting SNS_TOPIC only in the controller's containerEnv (which
+# is what the 2026-08-23 change first did) leaves the agent without it -- and because this notifier
+# is deliberately written never to fail a build, the symptom is NOT an error. The rollback drill's
+# log simply read "SNS_TOPIC is not set -- skipping notification": the NEEDS A HUMAN alerting was
+# silently absent while every stage reported healthy. That is precisely the failure the notifier
+# exists to prevent, one layer up.
+#
+# BOTH places are required and both are checked: containerEnv so JCasC can resolve ${SNS_TOPIC} at
+# boot, globalNodeProperties so the resolved value is inherited by agents.
+JY="ci/jenkins/jenkins.yaml"
+TF="terraform/addon-jenkins.tf"
+if [ -f "$JY" ] && [ -f "$TF" ]; then
+  grep -q 'name = "SNS_TOPIC"' "$TF" \
+    || fail "$TF no longer sets SNS_TOPIC in the controller's containerEnv -- JCasC cannot resolve \${SNS_TOPIC} without it"
+  pass=$((pass+1))
+
+  # Must be inside globalNodeProperties, which is what agents inherit. Comments stripped: this file's
+  # own prose names SNS_TOPIC while explaining the trap.
+  jy_code="$(sed -e 's|^[[:space:]]*#.*$||' "$JY")"
+  gnp="$(printf '%s\n' "$jy_code" | awk '/^  globalNodeProperties:/{f=1} f&&/^  clouds:/{f=0} f')"
+  printf '%s\n' "$gnp" | grep -q 'key: "SNS_TOPIC"' \
+    || fail "ci/jenkins/jenkins.yaml does not export SNS_TOPIC via globalNodeProperties. The controller's containerEnv does NOT reach agent pods, and notify.sh runs on an agent -- so the NEEDS A HUMAN notifications would silently never send."
+  pass=$((pass+1))
+
+  # APP_DOMAIN is the precedent that already learned this; if it ever leaves, the comment explaining
+  # the trap goes with it.
+  printf '%s\n' "$gnp" | grep -q 'key: "APP_DOMAIN"' \
+    || fail "APP_DOMAIN left globalNodeProperties -- agents need it too (the Smoke Test builds the site URL from it)"
+  pass=$((pass+1))
+fi
+
 echo "PASS: $(basename "$0") -- $pass checks"
