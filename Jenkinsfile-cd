@@ -591,12 +591,42 @@ pipeline {
           // scratch repo and the real previous-tag.sh. Refusing to recurse past one rollback breaks
           // the cycle: the SECOND failure in a row means the problem is not "which tag", so it stops
           // and waits for a human instead of flapping production and pushing a commit every cycle.
+          // Push the outcome somewhere a person will actually see it (2026-08-23, Task 4 review P3:
+          // "a rollback action is not a reliable notification mechanism by itself"). Until now the
+          // NEEDS A HUMAN branches announced themselves only as a red build in a UI reachable
+          // through kubectl port-forward, on a controller Spot reclaims roughly daily.
+          //
+          // notify.sh NEVER fails -- it is called from a post block that is already handling a
+          // failure, and a notification that turns a clean rollback into a broken pipeline is worse
+          // than no notification at all. Missing SNS_TOPIC is a skip, not an error.
+          //
+          // container('deploy') is REQUIRED, not tidiness. This script{} block is not inside a
+          // container directive, so a bare `sh` here runs in jnlp -- which has git and no `aws`, so
+          // every notification would die on "aws: not found" at the exact moment it mattered most.
+          // Same split, same reason, as the rollback-target.sh call below.
+          def notify = { subj, body ->
+            container('deploy') {
+              withEnv(["N_SUBJ=${subj}", "N_BODY=${body}"]) {
+                sh 'scripts/ci/notify.sh "$N_SUBJ" "$N_BODY" || true'
+              }
+            }
+          }
+          def buildRef = "application-cd #${env.BUILD_NUMBER} (tag ${env.TAG})"
+
           if (depth >= 1) {
             echo "NO ROLLBACK: this build is ITSELF a rollback (depth ${depth}) and it also failed " +
                  "verification. Refusing to roll back again -- PRODUCTION IS LEFT RUNNING ${env.TAG}, " +
                  "WHICH FAILED VERIFICATION, AND NEEDS A HUMAN. See docs/cicd.md for the manual " +
                  "rollback procedure."
             currentBuild.description = "${currentBuild.description} | ROLLBACK STOPPED -- NEEDS A HUMAN"
+            notify("Voteball DEPLOY FAILED -- needs a human (rollback stopped)",
+                   "${buildRef} failed verification, and it is ITSELF a rollback (depth ${depth}).\n\n" +
+                   "Refusing to roll back again: a second failure in a row means the problem is not\n" +
+                   "which tag is deployed, so retrying would flap production and push a commit every\n" +
+                   "cycle.\n\n" +
+                   "PRODUCTION IS RUNNING ${env.TAG}, WHICH FAILED VERIFICATION.\n\n" +
+                   "Manual rollback procedure: docs/cicd.md, 'Rollback'.\n" +
+                   "Build log: ${env.BUILD_URL ?: '(port-forward svc/jenkins -n ci)'}")
           } else if (targetStatus == 3) {
             echo "NO ROLLBACK: git names ${previous} as the previous version, but that tag is NOT in " +
                  "ECR -- the registry was almost certainly recreated by a destroy/rebuild since it " +
@@ -606,9 +636,24 @@ pipeline {
                  "See docs/cicd.md, 'Rollback'."
             currentBuild.description =
               "${currentBuild.description} | NO ROLLBACK TARGET (${previous} absent from ECR) -- NEEDS A HUMAN"
+            notify("Voteball DEPLOY FAILED -- needs a human (no rollback target)",
+                   "${buildRef} failed verification, and there is nothing to roll back to.\n\n" +
+                   "git names ${previous} as the previous version, but that tag is NOT in ECR -- the\n" +
+                   "registry was almost certainly recreated by a destroy/rebuild since it was pushed.\n\n" +
+                   "PRODUCTION IS RUNNING ${env.TAG}, WHICH FAILED VERIFICATION.\n\n" +
+                   "Recovery: build a known-good commit with ./scripts/build-push-ecr.sh, then run\n" +
+                   "application-cd against it. See docs/cicd.md, 'Rollback'.\n" +
+                   "Build log: ${env.BUILD_URL ?: '(port-forward svc/jenkins -n ci)'}")
           } else if (previous && previous != env.TAG) {
             echo "ROLLING BACK to ${previous} (this deploy of ${env.TAG} failed verification)."
             currentBuild.description = "${currentBuild.description} | ROLLED BACK to ${previous}"
+            notify("Voteball deploy failed -- rolling back to ${previous}",
+                   "${buildRef} failed verification. An automatic rollback to ${previous} has been\n" +
+                   "started as a separate application-cd build.\n\n" +
+                   "No action needed IF that build succeeds -- you will not get a second message for\n" +
+                   "a successful rollback. You WILL get one if it fails, because the depth guard then\n" +
+                   "stops and leaves production on a version nobody chose.\n\n" +
+                   "Build log: ${env.BUILD_URL ?: '(port-forward svc/jenkins -n ci)'}")
             build job: 'application-cd', wait: false, parameters: [
               string(name: 'IMAGE_TAG',     value: previous),
               string(name: 'IMAGE_DIGEST',  value: ''),
@@ -618,6 +663,12 @@ pipeline {
           } else {
             echo "NO ROLLBACK: could not determine a previous tag distinct from ${env.TAG}. " +
                  "Deploy an older tag manually -- see docs/cicd.md."
+            notify("Voteball DEPLOY FAILED -- needs a human (no previous tag)",
+                   "${buildRef} failed verification, and no previous tag distinct from ${env.TAG}\n" +
+                   "could be determined from the release branch's history.\n\n" +
+                   "PRODUCTION IS RUNNING ${env.TAG}, WHICH FAILED VERIFICATION.\n\n" +
+                   "Deploy an older tag manually -- see docs/cicd.md, 'Rollback'.\n" +
+                   "Build log: ${env.BUILD_URL ?: '(port-forward svc/jenkins -n ci)'}")
           }
         } else {
           echo 'NO ROLLBACK NEEDED: this build failed before promoting, so production is unchanged.'

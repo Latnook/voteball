@@ -135,6 +135,35 @@ resource "aws_iam_policy" "jenkins_cd_ecr_read" {
   policy = data.aws_iam_policy_document.jenkins_cd_ecr_read.json
 }
 
+# ---- CD failure notifications ----
+# Task 4 review finding P3: "a rollback action is not a reliable notification mechanism by itself".
+# It is exactly right. The pipeline's worst outcome is the NEEDS A HUMAN branch -- a deploy failed,
+# the automatic rollback was refused because this build IS already a rollback (ROLLBACK_DEPTH >= 1),
+# and production is left running a version nobody chose. That state was announced only by a red build
+# in a UI reachable through `kubectl port-forward`, on a controller that is reclaimed by Spot roughly
+# daily. Nothing pushed it anywhere a person would see.
+#
+# sns:Publish on the EXISTING notifications topic, and nothing else. Deliberately not a second topic:
+# the email subscription on this one is already confirmed (docs/eks/evidence), so reusing it means the
+# alert path is proven the moment this applies, rather than being one more thing that has never
+# actually delivered a message.
+#
+# This is the ONLY write permission the CD agent has anywhere in AWS. Its ECR access stays read-only
+# and its Kubernetes Role stays read-only -- ArgoCD is still the only thing that can change the
+# cluster. Publishing a message to a topic cannot deploy, delete or modify anything.
+data "aws_iam_policy_document" "jenkins_cd_notify" {
+  statement {
+    effect    = "Allow"
+    actions   = ["sns:Publish"]
+    resources = [aws_sns_topic.notifications.arn]
+  }
+}
+
+resource "aws_iam_policy" "jenkins_cd_notify" {
+  name   = "${var.cluster_name}-jenkins-cd-notify"
+  policy = data.aws_iam_policy_document.jenkins_cd_notify.json
+}
+
 module "jenkins_cd_irsa" {
   # Submodule path, matching every other IRSA role in this stack (addon-alb.tf,
   # addon-eso.tf, addon-external-dns.tf ...). The registry-root form
@@ -145,7 +174,10 @@ module "jenkins_cd_irsa" {
 
   role_name = "${var.cluster_name}-jenkins-cd"
 
-  role_policy_arns = { read = aws_iam_policy.jenkins_cd_ecr_read.arn }
+  role_policy_arns = {
+    read   = aws_iam_policy.jenkins_cd_ecr_read.arn
+    notify = aws_iam_policy.jenkins_cd_notify.arn
+  }
 
   oidc_providers = {
     main = {
@@ -305,6 +337,11 @@ resource "helm_release" "jenkins" {
         { name = "CLUSTER_NAME", value = var.cluster_name },
         { name = "GITHUB_REPO", value = var.github_repo },
         { name = "APP_DOMAIN", value = var.app_domain },
+        # Where application-cd sends its "this needs a human" notifications. A pod environment
+        # variable, like the four above, for the same reason: a hardcoded topic ARN in a Jenkinsfile
+        # would be a per-account value baked into a forkable repo, which the root CLAUDE.md calls a
+        # bug. Empty is handled -- the notify step skips rather than failing a build over it.
+        { name = "SNS_TOPIC", value = aws_sns_topic.notifications.arn },
       ]
 
       JCasC = {

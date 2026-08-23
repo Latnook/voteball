@@ -39,6 +39,7 @@ CONFIG=scripts/lib/config.sh
 # an explicit list with a reason, checked in BOTH directions, rather than a silent pattern exclusion.
 declare -A EXEMPT=(
   [scripts/tests/test-build-push-ecr.sh]="the aws call is text inside an extracted block assertion, never executed"
+  [scripts/tests/test-notify.sh]="the only 'aws' here is a FAKE placed on PATH by the test itself; the real CLI is never on PATH and never runs"
 )
 
 # ---- 1. the central guard exists and is unconditional -------------------------------------------
