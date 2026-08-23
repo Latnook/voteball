@@ -69,13 +69,41 @@ variable "node_desired_size" {
 }
 
 variable "cluster_endpoint_public_access_cidrs" {
-  # The EKS API endpoint is public so kubectl works from a laptop/CI, but it is IAM-authenticated:
-  # a caller still needs valid AWS creds + an EKS access entry to do anything. Defaulting to
-  # 0.0.0.0/0 for demo convenience; SET THIS to your operator/CI CIDR(s) to lock the endpoint down.
-  # Private (in-VPC) access stays enabled regardless, so in-cluster components use the private path.
-  description = "CIDRs allowed to reach the public EKS API endpoint. Restrict for production."
+  # NO DEFAULT, deliberately -- this variable used to default to ["0.0.0.0/0"] and the 2026-08-23
+  # Task 3 review scored it (finding T3-2). The endpoint is IAM-authenticated, so an open CIDR is not
+  # an unauthenticated hole: a caller still needs valid AWS credentials plus an EKS access entry. But
+  # a default nobody has to look at is a decision nobody makes, and every fork of this repo inherited
+  # an internet-reachable control plane without ever being asked. Terraform now refuses to plan until
+  # this is set, which is the point: the choice is cheap, but only if you are made to make it.
+  #
+  # Private (in-VPC) access stays enabled regardless, so in-cluster components -- ArgoCD, the Jenkins
+  # CD agent, external-dns -- never traverse the public path and are unaffected by whatever is set
+  # here. This variable governs laptops and anything else outside the VPC.
+  #
+  # OPERATIONAL COST, know this before you narrow it: a home ISP reassigns your address, and when it
+  # changes EVERYTHING outside the VPC loses the cluster at once -- kubectl, terraform plan/apply,
+  # deploy.sh, destroy.sh, the evidence scripts. The symptom is a connection/i-o timeout against the
+  # *.eks.amazonaws.com endpoint, NOT a 403, so it reads like the cluster is down rather than like an
+  # access-list miss. Run ./scripts/refresh-api-cidr.sh to rewrite this with your current address,
+  # then `terraform apply`. Check that BEFORE debugging security groups, DNS or the VPC.
+  #
+  # Setting ["0.0.0.0/0"] here on purpose is a legitimate answer for a short-lived demo cluster and is
+  # deliberately NOT rejected below -- an explicit open list is a decision; an invisible default was
+  # not.
+  description = "CIDRs allowed to reach the public EKS API endpoint. No default: set it in voteball.tfvars, e.g. via ./scripts/refresh-api-cidr.sh."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+
+  validation {
+    # EKS rejects an empty list when public access is enabled, but it does so from the AWS API in the
+    # middle of a billed apply, several minutes in. Catching it at plan time costs nothing.
+    condition     = length(var.cluster_endpoint_public_access_cidrs) > 0
+    error_message = "cluster_endpoint_public_access_cidrs must name at least one CIDR while the public endpoint is enabled. Run ./scripts/refresh-api-cidr.sh to set it to your current address."
+  }
+
+  validation {
+    condition     = alltrue([for c in var.cluster_endpoint_public_access_cidrs : can(cidrnetmask(c))])
+    error_message = "Every entry must be a CIDR block, not a bare address -- a single host is \"1.2.3.4/32\", not \"1.2.3.4\"."
+  }
 }
 
 variable "app_domain" {

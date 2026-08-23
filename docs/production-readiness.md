@@ -199,15 +199,19 @@ buys ordering, not versioning.
 ## 5. Single points of failure in the network
 
 **Current:** `single_nat_gateway = true`; node group is `capacity_type = "SPOT"` with no On-Demand
-baseline; EKS API endpoint is public (IAM-authenticated) with the CIDR allow-list defaulting to
-`0.0.0.0/0`.
+baseline. The EKS API endpoint is public (IAM-authenticated) but **no longer defaults to
+`0.0.0.0/0`** — `cluster_endpoint_public_access_cidrs` lost its default on 2026-08-23 and Terraform
+now refuses to plan until `voteball.tfvars` names a CIDR (`./scripts/refresh-api-cidr.sh` writes the
+current one).
 
 **Why it matters:** the single NAT is both a SPOF and an AZ-failure risk for all egress. Spot-only
 means a capacity reclamation event can take every node at once — the Node Termination Handler drains
 gracefully, but there is nothing to drain *to*.
 
-**Fix:** one NAT per AZ (roughly +$35/mo each), a small On-Demand baseline with Spot on top, and
-narrow `cluster_endpoint_public_access_cidrs` to your operator/CI ranges.
+**Fix:** one NAT per AZ (roughly +$35/mo each) and a small On-Demand baseline with Spot on top. The
+API allow-list is already narrowed; the residual gap there is that it is pinned to a *home* address,
+so the honest production answer is a private-only endpoint reached through an approved administration
+path rather than a /32 that changes whenever an ISP feels like it.
 
 ---
 

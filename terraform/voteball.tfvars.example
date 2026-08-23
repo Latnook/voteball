@@ -41,9 +41,13 @@ notification_email = "you@example.com"
 # snapshot restore, so it is ignored there.
 # db_username = "postgres"
 
-# Restrict who can reach the public EKS API endpoint. Defaults to 0.0.0.0/0 for convenience; the
-# endpoint is IAM-authenticated regardless, but narrowing this is worthwhile.
-# cluster_endpoint_public_access_cidrs = ["203.0.113.4/32"]
+# REQUIRED -- who may reach the public EKS API endpoint. There is no default; `terraform plan` fails
+# until this is set. The endpoint is IAM-authenticated regardless, so this is defence in depth, not
+# the only lock. Run ./scripts/refresh-api-cidr.sh to fill in your current public address, and re-run
+# it whenever your ISP reassigns you -- a stale entry makes kubectl and terraform time out against
+# the cluster, which looks like an outage rather than an access-list miss.
+#   ["0.0.0.0/0"] is accepted, and is a defensible answer for a cluster that lives a few hours.
+cluster_endpoint_public_access_cidrs = ["203.0.113.4/32"]
 
 # Node group sizing. Spot instances; min 2 gives real HA and a drain destination for PDBs.
 # node_instance_types = ["t3.large", "t3a.large"]

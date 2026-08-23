@@ -404,7 +404,7 @@ change them:
 |---|---|---|
 | App credentials | Generated per install (`db_password` in tfvars, admin password entered at seed time) | Managed rotation (Secrets Manager rotation lambda) |
 | EKS RDS | Single-AZ. **PITR is now on** (7-day retention, added 2026-07-21). Deletion protection stays **off** on purpose: it makes `terraform destroy` fail, and this stack is torn down between sessions | Multi-AZ; deletion protection only if the destroy/rebuild workflow is retired |
-| EKS API endpoint | Public (IAM-authed), CIDR = `0.0.0.0/0` | Lock CIDR to operator/CI, or private-only + bastion |
+| EKS API endpoint | Public (IAM-authed), CIDR allow-list **required** — no default since 2026-08-23, set to the operator's /32 by `./scripts/refresh-api-cidr.sh`. Private in-VPC access is on regardless, so in-cluster components never use the public path | Private-only + an approved administration path. A /32 pinned to a home ISP address is defence in depth, not an answer: it goes stale silently and locks the operator out of their own cluster |
 | Node group | Spot, diversified types (no On-Demand fallback) | Add On-Demand fallback for guaranteed capacity |
 | NAT gateway | Single (one AZ) | One per AZ |
 | Trivy on backup image | Report-only (upstream third-party CVEs) | Pin/patch a controlled base or waive CVEs explicitly |

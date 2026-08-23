@@ -131,6 +131,27 @@ MSG
   exit 1
 fi
 
+# EKS API allow-list preflight. cluster_endpoint_public_access_cidrs has no default (2026-08-23
+# review, T3-2), so an unset value fails `terraform plan` -- but it fails at step 6, after steps 2-5
+# have already created ECR repositories, seeded three secrets and pushed images. Worse is a value
+# that is SET but stale: the apply succeeds, and then step 7's kubectl and everything after it hang
+# and time out against a control plane that is quietly dropping this machine's packets. That reads
+# like a broken cluster, not like an access-list miss, and it happens after ~13 billed minutes.
+#
+# Checked here, before anything is created, and it is a WARNING rather than a hard stop: a CI runner
+# or a deliberately open ["0.0.0.0/0"] are both legitimate and neither should block a deploy.
+if ! ./scripts/refresh-api-cidr.sh --check >/dev/null 2>&1; then
+  echo >&2
+  echo "WARNING: terraform/${TFVARS} does not name this machine's current public address in" >&2
+  echo "         cluster_endpoint_public_access_cidrs. If the list does not cover wherever this" >&2
+  echo "         deploy runs from, every kubectl call after step 7 will TIME OUT rather than be" >&2
+  echo "         refused -- which looks like a dead cluster. Current state:" >&2
+  ./scripts/refresh-api-cidr.sh --check 2>&1 | sed 's/^/         /' >&2 || true
+  echo "         Fix with: ./scripts/refresh-api-cidr.sh   (then re-run this script)" >&2
+  echo "         Ignore it if the list is deliberately broad, or if you deploy from elsewhere." >&2
+  echo >&2
+fi
+
 step "1/11  Resolving the newest DB snapshot"
 ./scripts/find-latest-snapshot.sh
 

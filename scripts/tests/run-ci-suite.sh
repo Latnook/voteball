@@ -50,6 +50,10 @@ PYTHON_GROUP=(
   # Placed here rather than in GIT_GROUP only because that group runs a two-test container; nothing
   # about this test prefers one.
   test-observability-docs.sh
+  # Needs python3 (the script it tests rewrites the tfvars line through a python one-liner) and no
+  # git -- confirmed passing inside a bare python:3.12-slim on 2026-08-23, per the rule above. The
+  # public-IP lookup is stubbed via VOTEBALL_PUBLIC_IP_CMD, so it never touches the network.
+  test-refresh-api-cidr.sh
   test-render-argocd-app.sh
   test-smoke-test.sh
   test-sync-values.sh
