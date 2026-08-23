@@ -127,6 +127,33 @@ out="$(SOURCE_SHA="$src3" TAG="fffffff" bash "$SUT" 2>&1)" || fail "an idempoten
 grep -q "nothing to commit" <<<"$out" || fail "a repeat promotion should report no change, got: $out"
 ok "re-promoting the same commit at the same tag commits nothing and exits 0"
 
+# ---- 7b. an UNTRACKED workspace file must never reach the release branch ------------------------
+# Live CD #1 on 2026-08-23 committed `image-digests.tsv` -- an artifact the Input Validation stage
+# writes into the agent workspace -- onto `release`, because this script used `git add -A`. CD #2 then
+# died on `git checkout -B release` with "untracked working tree files would be overwritten", since
+# the file existed on both sides. One stray build artifact had made the deployed branch
+# un-promotable.
+setup
+git checkout -q master
+src="$(git rev-parse HEAD)"
+printf 'backend\tsha256:deadbeef\n' > image-digests.tsv     # untracked, exactly as CI leaves it
+printf 'scratch\n' > some-other-artifact.log
+SOURCE_SHA="$src" TAG="1111111" bash "$SUT" >/dev/null 2>&1 || fail "promotion failed with untracked files present"
+git ls-tree --name-only HEAD | grep -q 'image-digests.tsv' \
+  && fail "an untracked build artifact was committed to the release branch (git add -A regressed)"
+git ls-tree --name-only HEAD | grep -q 'some-other-artifact.log' \
+  && fail "an untracked file was committed to the release branch (git add -A regressed)"
+ok "untracked workspace artifacts are NOT committed to the release branch"
+
+# ...and the promotion must still work a SECOND time with those files still lying around, which is
+# the actual failure CD #2 hit.
+SOURCE_SHA="$src" TAG="2222222" bash "$SUT" >/dev/null 2>&1 \
+  || fail "a second promotion with untracked files present failed -- this is the CD #2 checkout abort"
+grep -q '^  tag: "2222222"$' "$VALUES_REL" || fail "the second promotion did not rewrite the tag"
+ok "a repeat promotion still works with untracked artifacts in the workspace"
+
+rm -f image-digests.tsv some-other-artifact.log
+
 # ---- 8. REFUSALS ---------------------------------------------------------------------------------
 out="$(SOURCE_SHA="deadbeefdeadbeefdeadbeefdeadbeefdeadbeef" TAG="ggggggg" bash "$SUT" 2>&1)" \
   && fail "promoting a nonexistent commit must fail"
