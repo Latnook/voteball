@@ -1,0 +1,126 @@
+# Captured 2026-08-23T13:45:16+03:00 against cluster 'voteball' in il-central-1. Frozen evidence -- do not edit.
+
+### kubectl get nodes
+NAME                                           STATUS   ROLES    AGE   VERSION
+ip-10-0-35-130.il-central-1.compute.internal   Ready    <none>   50m   v1.36.2-eks-b3f9404
+ip-10-0-51-222.il-central-1.compute.internal   Ready    <none>   50m   v1.36.2-eks-b3f9404
+
+### kubectl get namespaces
+NAME                STATUS   AGE
+amazon-cloudwatch   Active   49m
+argocd              Active   52m
+ci                  Active   49m
+default             Active   55m
+devops-app          Active   49m
+external-secrets    Active   52m
+kube-node-lease     Active   55m
+kube-public         Active   55m
+kube-system         Active   55m
+observability       Active   46m
+
+### kubectl get pods -n devops-app
+NAME                       READY   STATUS    RESTARTS   AGE
+backend-5468c6f8f4-6nr4z   1/1     Running   0          25m
+backend-5468c6f8f4-j4792   1/1     Running   0          25m
+canary-55dd5b9fbc-45666    1/1     Running   0          41m
+frontend-c87779d9f-lnvh5   2/2     Running   0          25m
+frontend-c87779d9f-lwd8k   2/2     Running   0          25m
+worker-84c8b8c46b-7rfxk    1/1     Running   0          25m
+
+### kubectl get deployments -n devops-app
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+backend    2/2     2            2           41m
+canary     1/1     1            1           41m
+frontend   2/2     2            2           41m
+worker     1/1     1            1           41m
+
+### kubectl get services -n devops-app
+NAME       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
+backend    ClusterIP   172.20.224.235   <none>        5000/TCP          41m
+frontend   ClusterIP   172.20.29.55     <none>        80/TCP,9113/TCP   41m
+worker     ClusterIP   None             <none>        9100/TCP          41m
+
+### kubectl get ingress -n devops-app
+NAME       CLASS   HOSTS                  ADDRESS                                                             PORTS   AGE
+voteball   alb     voteball.latnook.com   k8s-voteball-327d05a115-1686491479.il-central-1.elb.amazonaws.com   80      41m
+
+### kubectl describe pod backend-5468c6f8f4-6nr4z -n devops-app
+Name:             backend-5468c6f8f4-6nr4z
+Namespace:        devops-app
+Priority:         0
+Service Account:  backend
+Node:             ip-10-0-51-222.il-central-1.compute.internal/10.0.51.222
+Start Time:       Sun, 23 Aug 2026 13:20:16 +0300
+Labels:           app=backend
+                  pod-template-hash=5468c6f8f4
+                  topology.kubernetes.io/region=il-central-1
+                  topology.kubernetes.io/zone=il-central-1b
+Annotations:      instrumentation.opentelemetry.io/inject-dotnet: false
+                  instrumentation.opentelemetry.io/inject-java: false
+                  instrumentation.opentelemetry.io/inject-nodejs: false
+                  instrumentation.opentelemetry.io/inject-python: false
+Status:           Running
+IP:               10.0.58.182
+IPs:
+  IP:           10.0.58.182
+Controlled By:  ReplicaSet/backend-5468c6f8f4
+Containers:
+  backend:
+    Container ID:   containerd://ce65c42c854a2c9ea88d80ae1610d737b312adfc1a5ddd8b4cec78a50b07da2f
+    Image:          590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:5f655aed1cd238a5f94d84a2547730b6fcdbaf037ebe835f168db378a35df6f1
+    Image ID:       590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:5f655aed1cd238a5f94d84a2547730b6fcdbaf037ebe835f168db378a35df6f1
+    Port:           5000/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Sun, 23 Aug 2026 13:20:19 +0300
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     250m
+      memory:  256Mi
+    Requests:
+      cpu:      50m
+      memory:   128Mi
+    Liveness:   tcp-socket :5000 delay=0s timeout=1s period=20s #success=1 #failure=3
+    Readiness:  http-get http://:5000/health delay=0s timeout=1s period=10s #success=1 #failure=3
+    Startup:    http-get http://:5000/health delay=0s timeout=1s period=5s #success=1 #failure=12
+    Environment Variables from:
+      app-config  ConfigMap  Optional: false
+      app-secret  Secret     Optional: false
+    Environment:
+      PROMETHEUS_MULTIPROC_DIR:  /tmp/prom
+      APP_VERSION:               365ff2d
+    Mounts:
+      /tmp from tmp (rw)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  tmp:
+    Type:        EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:      
+    SizeLimit:   <unset>
+QoS Class:       Burstable
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                 node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  25m   default-scheduler  Successfully assigned devops-app/backend-5468c6f8f4-6nr4z to ip-10-0-51-222.il-central-1.compute.internal
+  Normal  Pulling    25m   kubelet            spec.containers{backend}: Pulling image "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:5f655aed1cd238a5f94d84a2547730b6fcdbaf037ebe835f168db378a35df6f1"
+  Normal  Pulled     25m   kubelet            spec.containers{backend}: Successfully pulled image "590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:5f655aed1cd238a5f94d84a2547730b6fcdbaf037ebe835f168db378a35df6f1" in 1.231s (1.231s including waiting). Image size: 58990322 bytes.
+  Normal  Created    25m   kubelet            spec.containers{backend}: Container created
+  Normal  Started    25m   kubelet            spec.containers{backend}: Container started
+
+### kubectl logs backend-5468c6f8f4-6nr4z -n devops-app --tail=40
+[2026-08-23 10:20:20 +0000] [1] [INFO] Starting gunicorn 23.0.0
+[2026-08-23 10:20:20 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+[2026-08-23 10:20:20 +0000] [1] [INFO] Using worker: sync
+[2026-08-23 10:20:20 +0000] [7] [INFO] Booting worker with pid: 7
+[2026-08-23 10:20:20 +0000] [8] [INFO] Booting worker with pid: 8
+

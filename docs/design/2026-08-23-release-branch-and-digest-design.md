@@ -138,4 +138,68 @@ that cannot determine a range must still fail safe.
 
 ## Verification outcome
 
-_To be filled in after the 2026-08-23 rebuild._
+Verified on the 2026-08-23 rebuild — a full `destroy`/`deploy` cycle plus five CI builds and three CD
+builds. **The design held; five defects in its implementation did not, and every one of them was
+found by running it rather than by reading it.**
+
+### What worked first time
+
+- `deploy.sh` step 9 created `release` from the promoted `master` commit and pushed it, with all four
+  digests resolved against a registry that was minutes old.
+- ArgoCD synced `charts/voteball` and `charts/observability` from `release`; both reached
+  `Synced`/`Healthy`.
+- The end state is digest-pinned: all three Deployments and the backup CronJob render
+  `repo@sha256:...`.
+- `git diff master release` is **exactly `charts/voteball/values.yaml`** — the property decision 2
+  claims, confirmed against a real branch rather than asserted.
+- The release branch **self-heals**: `read-tree` makes each promotion's tree equal master's, so the
+  stray file described below disappeared on the next promotion with no manual repair.
+
+### The five defects
+
+1. **A prediction that was wrong, and a smaller real cost.** Master kept empty digests while
+   `release` carried real ones, so Helm (step 10) and ArgoCD (step 11) applied *different* values to
+   `.spec…containers[].image`. This was expected to be a server-side-apply **conflict**, on the rule
+   step 10's own comment states. It was not — ArgoCD took ownership cleanly. The actual cost was that
+   every workload rolled **twice** on first deploy (revision 2, revision-1 pods still terminating).
+   Fixed by writing the digests into master's values.yaml before committing, so both branches agree.
+
+2. **hadolint `DL3059` failed CI #1** before a single test ran. The `gosu` removal added a second
+   consecutive `RUN`; that finding is *info*-level and hadolint's default failure threshold is info.
+   The local script suite was green because it does not run hadolint, and Lint runs before Tests.
+
+3. **CD Verify could never pass again.** It asserted the running image *ends in* the requested tag,
+   and digest-pinned images carry no tag. CD #1 rolled back a healthy release — ArgoCD
+   `Synced`/`Healthy`, pods Running, site serving 200. The rollback build failed identically and
+   `ROLLBACK_DEPTH` stopped it rather than looping, so the safety machinery was correct and the
+   assertion it acted on was stale. This is a coupling the digest decision implied and this document
+   failed to state: **if you deploy by digest, verification must check the digest.** The check now
+   lives in `scripts/ci/verify-deployed-image.sh` with nine offline tests, because
+   `check-jenkinsfile-shell.sh` proved that block *parsed*, never that it *decided* correctly.
+
+4. **`git add -A` made the deployed branch un-promotable.** It swept `image-digests.tsv` — an
+   artifact the Input Validation stage writes into the workspace — onto `release`. The next
+   promotion's `git checkout -B release` then aborted with "untracked working tree files would be
+   overwritten", because the file existed on both sides. Decision 2's claim that a release commit is
+   "a master tree plus the pins" was only true by accident; it is now enforced by staging
+   `$VALUES_FILE` alone.
+
+5. **That failure was swallowed.** The Jenkinsfile ran the promote as `… | tail -1 > /tmp/promote-sha`,
+   and a pipeline's exit status is the last command's — so `tail` returned 0 and `set -eu` never saw
+   it. The stage reported success with an empty `PROMOTE_SHA`, and Deploy, Rollout and Verify all ran
+   against a branch that had never been updated. `post { failure }` then read that empty value and
+   concluded production was unchanged, which was true only by accident. This is the same
+   "`| tail` masks the exit code" trap the project already knew about for Terraform runs, reappearing
+   in a Jenkinsfile.
+
+Defects 4 and 5 are the pair worth remembering: one broke the promotion, the other hid that it had
+broken. Either alone would have been caught quickly; together they produced a stage that reported
+success while doing nothing.
+
+### Proof of the fixed state
+
+`application-cd` #3, SUCCESS, all nine stages: Promote wrote a `release` commit, Verify reported
+`digest matches the one 365ff2d resolves to` for all three Deployments, the smoke test passed against
+the public URL, and the monitoring gate measured p95 0.096s. Captured in
+`docs/eks/evidence/2026-08-23-task4-cd-run.txt`, with the defect-3 failure kept alongside it in
+`2026-08-23-task4-cd-digest-verify-regression.txt`.

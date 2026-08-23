@@ -211,7 +211,11 @@ except Exception as e:
   # image.digests in values.yaml is written by application-cd (and by deploy.sh step 9) from
   # scripts/ci/resolve-digests.sh. A repo@sha256:... reference here means the execution identity is
   # content, not a label. A :tag reference means the digest map was empty and the chart fell back.
-  kubectl -n "$NS" get deploy,cronjob -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[*].image}{"\n"}{end}' 2>/dev/null || true
+  # Deployments and CronJobs need DIFFERENT paths: a CronJob's pod template is nested one level
+  # deeper, under .spec.jobTemplate. Querying both with the Deployment path printed the backup
+  # CronJob with an empty image -- which reads as "no image pinned" rather than "wrong jsonpath".
+  kubectl -n "$NS" get deploy -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[*].image}{"\n"}{end}' 2>/dev/null || true
+  kubectl -n "$NS" get cronjob -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.jobTemplate.spec.template.spec.containers[*].image}{"\n"}{end}' 2>/dev/null || true
   kubectl -n "$NS" get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.containerStatuses[*].imageID}{"\n"}{end}' 2>/dev/null || true
   echo
 

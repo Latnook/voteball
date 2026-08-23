@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "365ff2d"
+  tag: "97eb996"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -21,7 +21,7 @@ image:
   digests:
     backend: "sha256:5f655aed1cd238a5f94d84a2547730b6fcdbaf037ebe835f168db378a35df6f1"
     worker: "sha256:23d69692a37fc60835c22655b6df04a8ddbbde8eb26d8cb2beb3262797d73ef9"
-    nginx: "sha256:0c0c73b4bf1c35b127e2e558bc800631ed39d5d66aa5b0ebdedf7a4029f97cc8"
+    nginx: "sha256:1cc512724a6a522892c84f8b8d9af5754f07bd0a1c07100e33fd8401132db81c"
     backup: "sha256:9acbb6e69d4f2576c6cd33a8aeb9b79dd403c416ab9e042250185c9a355ce981"
 
 # The two PUBLIC subnet CIDRs from terraform/vpc.tf. Used by the frontend ingress policy to admit the
