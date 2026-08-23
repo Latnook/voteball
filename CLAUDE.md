@@ -770,9 +770,10 @@ scripts/tests/test-promote-to-release.sh   # the release-branch mechanics; GIT_G
 scripts/tests/test-jenkins-plugin-lock.sh  # plugins.txt / plugins.lock.txt / Dockerfile stay in step
 scripts/tests/test-notify.sh               # the SNS notifier can NEVER fail a build
 scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; 6 of its 10 checks are refusals
+scripts/tests/test-verify-deployed-image.sh # CD Verify: match the DIGEST, not the tag
 ```
 
-**The suite is 22 tests as of 2026-08-23** — read it off `run-ci-suite.sh`'s own final output line
+**The suite is 23 tests as of 2026-08-23** — read it off `run-ci-suite.sh`'s own final output line
 rather than from here. `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` are exhaustive and the runner fails if
 a file in `scripts/tests/` appears in none of them, so the count moves whenever a test is added and
 this sentence will go stale before the runner does.
