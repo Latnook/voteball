@@ -208,6 +208,16 @@ pipeline {
         // does not land on the branch the CI webhook watches. Jenkinsfile-ci's Guard stage stays
         // regardless -- deploy.sh step 9 still commits to master, and a guard that is only correct
         // while a separate design decision holds is a guard waiting to be wrong.
+        //
+        // THE PROMOTE CALL IS REDIRECTED, NOT PIPED. A pipeline's exit status is the LAST command's,
+        // so `promote-to-release.sh | tail -1` returns tail's 0 even when the promotion FAILED, and
+        // `set -eu` never sees it. That happened on live CD #2 (2026-08-23): the promote aborted on a
+        // git checkout error, this stage reported success with an empty PROMOTE_SHA, and the pipeline
+        // carried on to Deploy, Rollout and Verify against a release branch that had never been
+        // updated -- a build that deployed nothing while reporting progress. The post-failure handler
+        // then read the empty PROMOTE_SHA and concluded that production was unchanged, which was true
+        // only by accident. `test -s` afterwards makes an empty result an error rather than a silent
+        // one.
         sshagent(credentials: ['voteball-deploy-key']) {
           sh '''
             set -eu
@@ -215,10 +225,13 @@ pipeline {
             printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
             chmod 600 ~/.ssh/known_hosts
 
+            # Redirect, never pipe -- see the Groovy comment above this sh block.
             SOURCE_SHA="$(git rev-parse HEAD)" \
             TAG="$TAG" \
             DIGESTS="$IMAGE_DIGESTS" \
-              scripts/ci/promote-to-release.sh | tail -1 > /tmp/promote-sha
+              scripts/ci/promote-to-release.sh > /tmp/promote-out
+            tail -1 /tmp/promote-out > /tmp/promote-sha
+            test -s /tmp/promote-sha
           '''
         }
         script { env.PROMOTE_SHA = readFile('/tmp/promote-sha').trim() }

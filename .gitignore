@@ -54,3 +54,9 @@ PROJECT-QA.md
 # themselves are correspondence, not submission artifacts -- and a binary blob no test or grep can
 # read is the worst possible place for a claim about this repo to live.
 *.docx
+
+# Written by Jenkinsfile-cd's Input Validation stage (scripts/ci/resolve-digests.sh) and read by
+# Promote. It lives in the agent workspace, which is a git checkout -- so on 2026-08-23 a `git add -A`
+# in promote-to-release.sh committed it onto the `release` branch, and the NEXT promotion then failed
+# its checkout because the file existed on both sides. The add is now scoped; this is the second lock.
+image-digests.tsv

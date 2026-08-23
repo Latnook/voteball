@@ -108,7 +108,18 @@ for pair in $DIGESTS; do
   }
 done
 
-git add -A
+# ONLY the values file. NEVER `git add -A` -- that was the original, and it swept whatever untracked
+# files the agent workspace happened to contain into the release commit. Live CD #1 on 2026-08-23
+# committed `image-digests.tsv` (written by the Input Validation stage) onto `release`; CD #2 then
+# died on `git checkout -B release` with "untracked working tree files would be overwritten", because
+# the file now existed on BOTH sides. A stray build artifact on the deployed branch had made the
+# branch un-promotable.
+#
+# Nothing else needs staging: `git read-tree -u --reset` above already set the index to the promoted
+# tree, INCLUDING deletions. So the index is correct and values.yaml is the single intentional edit
+# on top of it. Scoping the add also means the release branch can only ever be "a master tree plus
+# the image pins", which is the property the whole design rests on.
+git add "$VALUES_FILE"
 
 if git diff --cached --quiet; then
   echo "promote-to-release: $RELEASE_BRANCH already matches $SOURCE_SHA at tag $TAG -- nothing to commit"
