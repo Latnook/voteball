@@ -66,6 +66,9 @@ PYTHON_GROUP=(
   test-smoke-test.sh
   test-sync-values.sh
   test-validate-repo.sh
+  # Needs neither python3 nor git (bash + a fake kubectl on PATH, grep) -- confirmed passing inside a
+  # bare python:3.12-slim on 2026-08-23, per the rule above. Never touches a cluster.
+  test-verify-deployed-image.sh
 )
 
 # Needs git (it builds throwaway repositories), does NOT need python3. Confirmed passing in jnlp by
