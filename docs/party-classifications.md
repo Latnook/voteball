@@ -80,7 +80,7 @@ Negative is left (more state), positive is right (less state).
 |---|---|---|
 | **+3** | Libertarian: shrink the state as a matter of principle, not just policy | זהות `[u]` |
 | **+2** | Privatizing: actually withdraws the state — sell Ashdod Port and Haifa Airport, end child allowances from the fifth child | ישראל ביתנו |
-| **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המחנה הממלכתי `[p]` |
+| **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, האחדות `[u]`, המחנה הממלכתי `[p]` |
 | **0** | No economic doctrine, or a genuinely balanced one | כחול לבן `[u]`, הציונות הדתית, עוצמה יהודית `[u]`, רע"ם, יש עתיד `[p]` |
 | **−1** | *(none)* | — |
 | **−2** | Social-democratic | הדמוקרטים `[u]`, בל"ד, ש"ס, יהדות התורה, העבודה `[p]`, מרצ `[p]` |
@@ -98,7 +98,7 @@ Negative is dovish, positive is hawkish.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]`, נעם `[u]`, הליכוד `[u]` |
-| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המפלגה הכלכלית `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המפלגה הכלכלית `[u]`, האחדות `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]` |
 | **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
@@ -132,7 +132,7 @@ Negative reduces religious authority.
 | **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
 | **0** | Status quo — no active religion-state agenda in either direction | *(none)* |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, האחדות `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
 
@@ -2275,6 +2275,71 @@ on the Religious Zionism joint slate (as it did in the 24th), and is running ind
 structurally the same split Otzma made, so a 2022 הציונות הדתית voter switching to נעם is a real
 transition the vote-switch rollups should be able to see.
 
+### האחדות — Unity · `unaligned` · 1 / 2 / −2 · traditional
+
+New party for 2026, led by גלעד ארדן (Gilad Erdan) — 17 years in the Knesset, Internal Security /
+Interior / Strategic Affairs, then ambassador to the UN and the US. Slate: יולי אדלשטיין,
+ד״ר עליזה בלוך, אורן סמדג׳ה, אל״ם חזי נחמה. Scored 2026-08-23 from the party's own site
+(`haachdut.org.il`), which is the entire published corpus: `/`, `/about` (הדרך שלנו),
+`/platform` (אנחנו מתחייבים) and `/candidates`. **No PDFs — the link enumeration was run and
+returned nothing**, so unlike אל הדגל there is no second tier of documents to miss. The site
+itself says *"האתר בבנייה, תכנים נוספים יועלו בקרוב"*, so this row is expected to need revisiting.
+
+**`unaligned`, and this is the party's central plank rather than a classifier's hedge.**
+*"לא ניכנס לשום ממשלה צרה - לא מימין ולא משמאל"*, and specifically neither a left government nor
+*"חותמת גומי לממשלת ימין צרה שתנציח את ההשתמטות ותעמיק את הפילוג"*. A right-wing party that
+pre-commits to refusing the right's own narrow coalition does not sit in `bibi`.
+
+security **+2** — the band's definition almost verbatim. No Palestinian state
+(*"אנחנו מתנגדים נחרצות להקמת מדינה פלסטינית"*), a territorial claim
+(*"ארץ ישראל שייכת לעם ישראל"*, settlement strengthened in יהודה ושומרון, הגולן, הגליל and הנגב),
+and a preemptive doctrine (*"הכרעה, שלילת יכולות האויב וגדיעת איומים לפני שהם מתפתחים"*).
+**Not +3**: סיפוח appears nowhere, there is no Gaza-hardline plank, and the row pairs all of the
+above with *"נרחיב את השלום מתוך עוצמה"* — the same shape that holds כחול לבן at +2.
+
+economic **+1** — liberalizing fused with real state expansion, which is exactly what the band is
+for. Deregulation and competition (*"נפחית רגולציה וחסמים"*, *"נפתח את המשק לתחרות, נרחיב יבוא
+מקביל"*, *"נפעל נגד מונופולים"*) sit alongside a trillion-dollar growth target driven by state
+investment in *"תשתיות, בהון אנושי, בבינה מלאכותית"*. **Not +2**: there is no tax plank and no
+privatization plank anywhere in the corpus, which is what separates this row from ישראל ביתנו.
+
+**religiosity −2, and the −1 reading was considered and rejected on the כחול לבן precedent.**
+The instinct is to score this row −1: its religion-in-public-life material is mild and warm —
+*"הזהות היהודית שלנו אינה מבחן. היא בית משותף"*, tradition as שבת/חגים/משפחה, Jewish identity
+advanced *"לא באמצעות כפייה או שיפוטיות"*, expanded תנ״ך and מורשת teaching, protection of the
+holy sites, and **no** civil marriage, kashrut or Rabbinate plank at all. But that is the first of
+the two fights this axis folds together, and the band keys on the second:
+
+- **Core curriculum as a funding condition** — *"מימון ציבורי יותנה בהקניית ליבת ידע ומיומנויות
+  מלאה ובמדידה שקופה של תוצאות"*. This is the −2 criterion stated in the band text.
+- **Universal conscription with personal sanctions** — *"חוק יסוד השירות"* binding
+  *"חובת שירות אישית לכל אזרח ואזרחית"*, *"במקום יעדים מגזריים תהיה אחריות אישית"*, and a legislated
+  *"מעמד משרת"* where *"מי שבוחר להשתמט יישא בסנקציות אישיות"*.
+
+That is the same pairing that moved כחול לבן from −1 to −2 once its education paper was read, and
+the warning in the axis section above — *the religion-and-state chapter alone will systematically
+under-score a party* — applies here with the polarity reversed: this row has no religion-and-state
+chapter at all, only tradition-as-identity prose, and scoring from that prose alone reproduces the
+same error. Position **within** the band is the low end: nothing is disestablished, and the
+adapted-track language for the haredi public (*"נרחיב מסלולים מותאמים לציבור החרדי, שיאפשרו לשמור
+על הזהות"*) is accommodationist in a way ישר's is not.
+
+`traditional`, not `secular` — the sector is about constituency and idiom, not the axis, and
+*"מסורת שמחברת"* is a whole section of the platform aimed at masorti right-wing voters. It is the
+same combination הליכוד carries (`traditional` sector) with the religiosity sign inverted.
+
+**Tags deliberately NOT applied**, each because the evidence is weaker than the tag's founding case:
+`reservist-focused` (the corpus mentions מילואימניקים once, in passing —
+*"ונקל על המילואימניקים"* — against holders built on a reservist movement); `judicial-overhaul`
+(the row explicitly refuses it: *"לא נוביל מתקפה על מערכת המשפט"*, and proposes
+חוק יסודות החקיקה while preserving *"עצמאות בית המשפט... ושלטון החוק"*, which is why
+`constitutionalist` is the right tag instead); `state-haredi-education` (the adapted tracks are
+*service* tracks, not school streams); `anti-netanyahu` (the refusal is of narrow coalitions, not
+of a person).
+
+**Not added to `previous_parties`** — the party did not exist at the previous election, so there is
+no lineage link to draw either.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -2835,3 +2900,4 @@ pass happened, for anyone reading git history.
 | 2026-08-20 | revision 26 — **חד"ש-תע"ל and בל"ד merged into הרשימה המשותפת**, the first merge this file has recorded between two *upcoming* rows (העבודה/מרצ → הדמוקרטים was a previous→upcoming lineage link, which is a different operation: both predecessors keep their own rows). One `joint-list` row replaces two; `previous_parties` is untouched and both 2022 rows stay frozen. **The scoring rule was the decision, not the merge**: axes are the **union** of the components' published positions, chosen by the repo owner over two alternatives (carry חד"ש-תע"ל's numbers as a rebrand; or NULL the axes where the components differ). **economic −3** unchanged, **security −2 → −3** and **religiosity NULL → −3**, both carried from בל"ד alone. The cost is recorded in the entry rather than hidden: the list has published **no joint platform**, so every number rests on component text, and בל"ד's programme is the 2018 one. Decided against the ביחד `security` NULL precedent deliberately — ביחד's components *disagree* on the conflict, while חד"ש and בל"ד differ only in degree. **15 tags**, the union deduped, minus two dropped as no longer true of the list: `pro-joint-list` (the goal is achieved; a list tagged with wanting to form itself records nothing) and `program-unchanged-since-2018` (a note about בל"ד's evidence age that would now assert the joint list has a 2018 programme). **רע"ם declined and keeps its own row** — the door is open until the September deadline, so the open question narrows rather than closing. **Two anticipations in this file were wrong and are kept as such**: both the *Renaming* warning and the *Arab bloc may restructure* open question predicted "renaming, not reclassifying", and neither half held. **Mechanically**: `seed.sql` gained a guarded `DELETE` for `upcoming_parties` mirroring the clubs one, and it must clear `party_lineage` first — `party_lineage.upcoming_party_id` has **no** `ON DELETE CASCADE`, so removing a party that still carries a link raises inside `init_db`, which runs on every backend pod boot (a CrashLoopBackOff on startup, not one failed request). Both statements carry the same vote guard, verified by migrating a seeded database with a vote on חד"ש-תע"ל: that row and its lineage link both survived while בל"ד was removed. **No frontend change** — the logo is pure black on transparency and the existing `recolorLogoForDark()` lifts it to white correctly, so it needs no `logos.js` exception entry |
 | 2026-08-20 | revision 27 — **הרשימה המשותפת's logo corrected the same day it shipped, and revision 26's "No frontend change" reasoning is wrong.** That row said the mark needs no `logos.js` entry because `recolorLogoForDark()` lifts every ink pixel to white — which it does, and which was measured before shipping. The measurement was of the wrong thing. What the lift leaves behind is **five enclosed transparent regions, all on the Arabic line** (the closed bowls of ة and م, ~9×10px on the 400px canvas), and transparent means they show the dark card through. That is typographically correct — a counter *is* the background — and it still reads as **black dots punched into white letters** at 3.4rem, because a counter that small stops reading as a counter. **Being right about the typography did not make it look right**; only rendering it at card size catches that, and the pre-ship check rendered it at 400px and judged it clean. Now in a new **`FILL_COUNTERS_PARTIES`** set (mode `recolor-fill`): `fillLogoInteriorForDark()`, the same flood fill ש"ס uses, **composed with the recolour rather than replacing it**. The literal ש"ס treatment was rendered and **rejected** — fill-only leaves the ink black, producing a near-invisible black wordmark on the dark card. Both artworks are "dark ink on transparency" and need opposite things, so the selector is not whether enclosed transparency exists but **what the gap should become**: the page (ש"ס) or the ink (here). `recolorLogoForDark()`/`fillLogoInteriorForDark()` now accept a `<canvas>` as well as an `<img>` so the two can chain. Verified in Chromium against the real `logos.js`, reading the canvas back: **exactly 316 pixels** moved from card-dark to light (the 315 enclosed pixels plus rounding), glyph anti-aliasing untouched, and ש"ס and הליכוד rendering identically to before. **No classification change** |
 | 2026-08-20 | revision 28 — **הרשימה המשותפת's logo moved to a near-white plate (`PLATE_PARTIES`), and both earlier fixes were reverted.** Revision 27 diagnosed the black dots as the five enclosed Arabic bowls and composed the ש"ס flood fill with the recolour; it measured 316 pixels moving from card-dark to light, in Chromium, against the live page, and **the dots were still there**. A screenshot from the repo owner's own browser showed why: the recoloured canvas comes back **speckled with black dots through the glyph bodies**, dense and scattered, unrelated to counters or letterform gaps. The source SVG renders clean at every size (48 unique colours in a magnified crop) and the live canvas read back from headless Chromium holds **zero** pixels darker than the card — it is a rasterisation artefact this repo cannot reproduce, so no measurement taken here could ever have caught it. **Both failed fixes were real measurements of the wrong thing**, which is the finding worth keeping: revision 26 measured the 400px canvas rather than the ~156px it renders at, and revision 27 fixed the enclosed subset and then measured the enclosed subset. The plate refuses the mechanism instead of tuning it — no canvas, no `getImageData`, no `crossOrigin`, no per-logo thresholds — so dark mode reproduces exactly what light mode shows. `FILL_COUNTERS_PARTIES` and `recolorThenFillForDark()` are **removed**, and both pixel functions are back to their original `<img>`-only signatures. **This reopens the no-plate rule for parties**, chosen by the repo owner after seeing all three options rendered at true display size; ש"ס already reads as a white tablet, so a third such party would mean the recolour rule has become the exception. **No classification change** |
+| 2026-08-23 | האחדות (Unity) added — new party, scored from its own site |

@@ -40,6 +40,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
         'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Zehut', 'Noam',
+        'Unity',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {
@@ -47,6 +48,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
         'המפלגה הכלכלית', 'אל הדגל', 'בית ציוני - המילואימניקים', 'זהות', 'נעם',
+        'האחדות',
     }
 
 
