@@ -19,10 +19,10 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: ""
-    worker: ""
-    nginx: ""
-    backup: ""
+    backend: "sha256:7c003ac1fa93805c361f6141a2c6be151fb47bc1b3595d49ac91cf243e400e2e"
+    worker: "sha256:a78431c787498a3c249ee3ec6de95bcaeb71b232fd4329ab583f9c720278c4e4"
+    nginx: "sha256:101bd401815f9684fd39019952d323aefaf45deb713b256341bbc747f69c7c6c"
+    backup: "sha256:5fcda02cf3174f964d81898b43daed23aef5025d4761b2ac0ba57aedecc7991d"
 
 # The two PUBLIC subnet CIDRs from terraform/vpc.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
