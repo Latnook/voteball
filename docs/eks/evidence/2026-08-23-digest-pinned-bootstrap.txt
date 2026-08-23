@@ -1,0 +1,70 @@
+Digest-pinned bootstrap -- deploy.sh step 9, verified on a FRESH cluster
+========================================================================
+Captured 2026-08-23, second rebuild of the day.
+
+WHAT THIS PROVES, AND WHY A SECOND REBUILD WAS NEEDED
+-----------------------------------------------------
+The first rebuild of 2026-08-23 exposed a defect: deploy.sh step 9 resolved the four image digests,
+passed them to the release-branch promotion, and left master's values.yaml digests EMPTY. Step 10
+Helm-installs from the working tree (master), and step 11 then hands over to ArgoCD, which syncs the
+release branch -- so the two appliers rendered DIFFERENT image references for the same field.
+
+It did not error. ArgoCD took ownership cleanly and the end state was correct. The cost was that
+every workload rolled TWICE on first deploy:
+
+    FIRST REBUILD (defect):   deployment.kubernetes.io/revision = 2 on all three,
+                              with revision-1 pods still terminating
+                              git diff master release -> values.yaml AND image-digests.tsv
+
+The fix writes the digests into values.yaml BEFORE committing to master, so both branches carry
+identical image references. It could not be tested by the deploy that discovered it -- editing a
+running bash script corrupts execution (bash reads lazily by byte offset) -- so it shipped verified
+only by reasoning and by scripts/tests/test-promote-to-release.sh. This capture is its first live
+exercise.
+
+RESULT
+------
+1. THE FIX FIRING (this line did not exist on the previous deploy)
+     Digest-pinned all four images in values.yaml (master and release will match).
+      1 file changed, 7 insertions(+), 7 deletions(-)
+     Promoting 12f6cfb to the release branch (tag 94f0aab)...
+       digest-pinning all four images.
+
+   The master commit is 7 insertions / 7 deletions: tag + certificateArn + wafAclArn + FOUR
+   digests. On the previous deploy the same commit was 3/3 -- the digests stayed empty.
+
+2. THE DECISIVE CHECK -- rollout revision (was 2 before the fix)
+     backend   deployment.kubernetes.io/revision = 1
+     frontend  deployment.kubernetes.io/revision = 1
+     worker    deployment.kubernetes.io/revision = 1
+     -> ONE rollout. Helm rendered digests, so ArgoCD had nothing to change.
+
+3. master and release carry IDENTICAL image references
+     $ git diff --name-only origin/master origin/release
+     <no differences at all -- the branches are byte-identical>
+
+4. master's image.digests -- now real values; all four were "" on the previous deploy
+         backend: "sha256:20fce020673d326754fb14bc5f44e6e1d2cef4bda53bafe4b182749cea1ac88e"
+         worker: "sha256:6cd74a54187e145873ee9c6ffc8fc450a1fcef59fec0d3afb1b26c1c15e2a6c8"
+         nginx: "sha256:af390cde1f5e86ae31bc303e206222a05d67886749f077e33d8d2a708ff6d0a5"
+         backup: "sha256:d1d8579dccabe38e58c8563552f585be4b0b9e9d2813ca4b994b7e9a8885d4c5"
+
+5. Workloads running by digest, matching the values above exactly
+     backend  590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:20fce020673d326754fb14bc5f44e6e1d2cef4bda53bafe4b182749cea1ac88e
+     frontend  590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx@sha256:af390cde1f5e86ae31bc303e206222a05d67886749f077e33d8d2a708ff6d0a5
+     worker  590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker@sha256:6cd74a54187e145873ee9c6ffc8fc450a1fcef59fec0d3afb1b26c1c15e2a6c8
+     voteball-backup  590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backup@sha256:d1d8579dccabe38e58c8563552f585be4b0b9e9d2813ca4b994b7e9a8885d4c5
+
+6. Cluster state
+     observability   Synced   Healthy
+     voteball        Synced   Healthy
+     site / -> 200
+     DEPLOY_EXIT_CODE=0
+
+
+ALSO EXERCISED HERE
+-------------------
+The release branch survived the teardown (it is a git branch, not cluster state), so this run took
+promote-to-release.sh's `git read-tree -u --reset` UPDATE path rather than the branch-creation path.
+The merge-free promotion mechanism therefore has a live test too, not just the offline one -- and it
+produced no conflict, which is the property it exists for.
