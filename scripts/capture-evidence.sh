@@ -123,7 +123,12 @@ echo "Capturing demos -> $DEMOS_OUT"
 
   echo "### Demo 5 — NetworkPolicy isolation, with a control"
   echo "-- policies in force:"
-  kubectl -n "$NS" get networkpolicy -o custom-columns='NAME:.metadata.name,POD-SELECTOR:.spec.podSelector.matchLabels' || true
+  # BOTH selector forms. The 2026-08-23 split (Task 3 review T3-1) uses matchExpressions for the
+  # multi-workload policies, and the old custom-columns showed only matchLabels -- so the four most
+  # important policies rendered as <none> and the evidence proved nothing about who they select.
+  kubectl -n "$NS" get networkpolicy -o custom-columns='NAME:.metadata.name,MATCHLABELS:.spec.podSelector.matchLabels,MATCHEXPR:.spec.podSelector.matchExpressions,TYPES:.spec.policyTypes' || true
+  echo "-- egress rules, per policy (who may reach what, on which port):"
+  kubectl -n "$NS" get networkpolicy -o jsonpath='{range .items[?(@.spec.egress)]}{.metadata.name}{"\n"}{range .spec.egress[*]}{"    -> "}{range .to[*]}{.ipBlock.cidr}{" "}{end}{"  ports: "}{range .ports[*]}{.protocol}{"/"}{.port}{" "}{end}{"\n"}{end}{end}' || true
   # The VPC CNI fails OPEN until the node's policy agent programs the pod's eBPF maps (observed >30s).
   # Probing a pod younger than that can succeed regardless of policy, so record the pod's age here:
   # a young pod makes this demo inconclusive, not passing.
@@ -146,6 +151,47 @@ import os, socket
 s = socket.socket(); s.settimeout(8)
 s.connect((os.environ['DB_HOST'], 5432)); print('   RDS REACHABLE (the probe works)')
 " 2>&1 || true
+  echo
+
+  echo "### Demo 5b — the FRONTEND cannot reach the database (Task 3 review T3-1)"
+  # The specific hole the 2026-08-23 egress split closed. `allow-app-egress` used to grant all six
+  # workloads every port across the whole VPC, and the RDS security group admits anything arriving
+  # from the node security group -- so the one workload the public internet can reach could open a
+  # socket straight to Postgres. It never needed to: nginx.conf has exactly one proxy_pass, to
+  # backend:5000.
+  #
+  # A CONTROL FIRST, for the reason the worker probe above learned the hard way: a negative result
+  # from a tool that is not installed looks identical to a negative result from a policy. If the
+  # control does not connect, this demo is inconclusive, not passing.
+  echo "-- control: frontend -> backend:5000 (must connect — allow-frontend-to-backend-egress permits it):"
+  kubectl exec -n "$NS" deploy/frontend -- sh -c '
+    if nc -z -w 8 backend 5000; then echo "   BACKEND REACHABLE (the probe works)";
+    else echo "   control FAILED to connect — this demo is INCONCLUSIVE, not a pass"; fi' 2>&1 || true
+  echo "-- real probe: frontend -> RDS:5432 (must NOT connect):"
+  kubectl exec -n "$NS" deploy/frontend -- sh -c '
+    if nc -z -w 8 "$DB_HOST" 5432; then echo "   RDS REACHABLE <- policy NOT enforcing, T3-1 has regressed";
+    else echo "   BLOCKED — the frontend has no route to the database"; fi' 2>&1 || true
+  echo
+
+  echo "### Demo 5c — no Kubernetes API token is mounted where it is not needed (T3-3)"
+  # frontend/backend/canary make no Kubernetes API calls, so the projected kube-api-access volume
+  # kubelet mounts by default was a credential sitting in a pod with no use for it. The review found
+  # it in a captured backend pod.
+  for d in frontend backend; do
+    printf '%-10s automountServiceAccountToken on the ServiceAccount: ' "$d"
+    kubectl -n "$NS" get sa "$d" -o jsonpath='{.automountServiceAccountToken}' 2>/dev/null || true
+    printf '\n%-10s kube-api-access volume present in the pod: ' "$d"
+    kubectl -n "$NS" get pod -l "app=$d" -o jsonpath='{.items[0].spec.volumes[*].name}' 2>/dev/null \
+      | tr ' ' '\n' | grep -c 'kube-api-access' || true
+  done
+  echo
+
+  echo "### Demo 5d — workloads run by DIGEST, not by tag (Task 4 review P2)"
+  # image.digests in values.yaml is written by application-cd (and by deploy.sh step 9) from
+  # scripts/ci/resolve-digests.sh. A repo@sha256:... reference here means the execution identity is
+  # content, not a label. A :tag reference means the digest map was empty and the chart fell back.
+  kubectl -n "$NS" get deploy,cronjob -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.template.spec.containers[*].image}{"\n"}{end}' 2>/dev/null || true
+  kubectl -n "$NS" get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.containerStatuses[*].imageID}{"\n"}{end}' 2>/dev/null || true
   echo
 
   echo "### Demo 6 — SNS topic, subscriptions and delivery over the last 7 days"
