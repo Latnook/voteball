@@ -45,7 +45,7 @@ as a build parameter. **It never touches the cluster and holds no cluster creden
 
 **`application-cd`** receives a tag (from CI, or from a human re-running it by hand) that has already
 been built, tested and scanned. It validates the request, writes the tag into
-`charts/voteball/values.yaml` and pushes that commit to `master`, asks ArgoCD to sync it, waits for
+`charts/voteball/values.yaml` and pushes that commit to the `release` branch, asks ArgoCD to sync it, waits for
 ArgoCD's own health verdict, double-checks with a real HTTPS request against the live site, asks
 Prometheus whether the new release is actually serving *well* rather than merely answering (§8b
 below), and — if any of that fails — rolls production back to the previous tag automatically by
@@ -238,7 +238,12 @@ sets `currentBuild.result = 'NOT_BUILT'` and aborts. It runs unconditionally and
 
 `scripts/ci/validate-repo.sh` — cheap, cost-nothing repo-shape assertions that gate everything after
 them: every service directory has a `Dockerfile` and a `.dockerignore`, no Dockerfile pins (or
-implicitly resolves to) `:latest`, and `charts/voteball/Chart.yaml` at least parses a `version:` line.
+implicitly resolves to) `:latest`, every base image is **pinned by digest** (`tag@sha256:...`, added
+2026-08-23 — and `ci/jenkins/Dockerfile` is scanned too, not just `services/`), no chart template
+carries an empty list literal, `charts/voteball/Chart.yaml` at least parses a `version:` line, and
+**every pod label is selected by some egress NetworkPolicy** — a workload named by none keeps only
+`allow-dns-egress`, so DNS resolves and every TCP connection is dropped with no event and no log,
+which is how the backup CronJob shipped broken for 12 days in July.
 Runs before "Already built?" deliberately — a re-run of an already-built tag still has to pass
 validation.
 
@@ -396,6 +401,25 @@ digest is what actually matters here.
 }
 ```
 
+### 11b. Chart-only change (new, 2026-08-23)
+
+Runs only when the changeset touches `charts/**` and **not** `services/**` (and no `FORCE_BUILD`, no
+empty changelog, no already-built tag).
+
+Before the release branch existed, a chart-only commit reached the cluster by itself: it skipped every
+stage in `Jenkinsfile-ci` — all gated on `changeset 'services/**'` — and ArgoCD's automated sync
+applied it directly, bypassing Manifest Validation, the smoke test, the monitoring gate and rollback.
+Closing that bypass would otherwise have swung the failure the other way, so that a chart-only commit
+deployed *never*. This stage is the other half of the fix.
+
+The wrinkle it solves: a chart-only commit is a **new SHA with no images of its own**, so CD cannot be
+triggered with `env.TAG` — Input Validation would correctly refuse a tag that is not in ECR. What is
+actually wanted is "deploy the chart at this commit with the images already running", so the tag is
+read off the release branch with `scripts/ci/current-release-tag.sh` and passed to CD instead.
+
+It is deliberately quiet, not fatal, when there is no release branch yet: on a cluster whose first CD
+run has not happened, failing here would make a docs-and-chart commit look broken.
+
 ### 12. Trigger CD (new)
 
 ```groovy
@@ -486,26 +510,69 @@ Full writeup: `docs/design/2026-08-04-cicd-split-design.md` §4.
 
 ### 4. Promote
 
-The deploy decision, expressed as a commit — the only stage that writes to a shared system before
-ArgoCD is asked to act:
+The deploy decision, expressed as a commit **on the `release` branch** — the only stage that writes
+to a shared system before ArgoCD is asked to act:
 
 ```bash
-sed -i -E "s/^  tag: \".*\"/  tag: \"$TAG\"/" charts/voteball/values.yaml
-grep -q "^  tag: \"$TAG\"" charts/voteball/values.yaml || exit 1   # assert the rewrite landed
-git commit -m "ci: image tag $TAG [skip ci]"
-git pull --rebase --autostash origin master
-git push origin HEAD:master
+SOURCE_SHA="$(git rev-parse HEAD)" TAG="$TAG" DIGESTS="$IMAGE_DIGESTS" \
+  scripts/ci/promote-to-release.sh
 ```
 
-Uses the same GitHub deploy key as CI's checkout, over `sshagent()`, with the same pinned
-`known_hosts` write this stage needs because raw `git push` in the `jnlp` container has its own,
-separate `known_hosts` from the git *plugin*'s checkout (this is **G4** — the write-access deploy key
-and SSH-remote requirement — now living here instead of in the old single pipeline's tag-bump stage).
-The `grep` assertion after the `sed` exists because `sed` exits 0 whether or not its pattern matched:
-if the `tag:` line's shape ever drifts (re-indented, unquoted), a silent no-op here would report
-success on an unrewritten file, and ArgoCD would faithfully sync the *old* tag — a green deploy that
-deployed nothing. `[skip ci]` is documentation; the Guard stage in `Jenkinsfile-ci` is what actually
-enforces it — removing either reopens the unbounded commit loop described under Guard above.
+which does, in `scripts/ci/promote-to-release.sh`:
+
+```bash
+git checkout -B release origin/release
+git read-tree -u --reset "$SOURCE_SHA"      # tree := the promoted master commit, HEAD stays on release
+# rewrite image.tag and the four image.digests entries in charts/voteball/values.yaml
+git commit -m "release: <short-sha> (image tag $TAG)"
+git push origin HEAD:release
+```
+
+**Why a release branch (2026-08-23).** ArgoCD used to watch `master`, which made `master` both the
+branch humans push to and the branch that deploys. Two Task 4 review findings shared that one root
+cause:
+
+- CD had to push its promotion commit to the branch CI watches. A source commit pushed while CI was
+  busy could end up hidden behind it and never be built — the 2026-08-21 incident in Failure modes
+  below.
+- Every gate in `Jenkinsfile-ci` is `changeset 'services/**'`, so a **chart-only** commit skipped CI
+  entirely and ArgoCD's automated sync applied it straight to the cluster, past Manifest Validation,
+  the smoke test, the monitoring gate and rollback.
+
+`release` is written only by this job, so there is no longer any way to reach `devops-app` by pushing
+to a branch. Full reasoning in `docs/design/2026-08-23-release-branch-and-digest-design.md`.
+
+**Why `read-tree` and not `merge`.** A merge would conflict on `values.yaml`'s image block on *every*
+promotion — release holds the old tag, master holds whatever was last synced — and a CD stage that
+can stop for a conflict is a CD stage that will. `git read-tree -u --reset` makes the index and
+working tree identical to the promoted commit while leaving `HEAD` on `release`, so no conflict is
+possible, history stays append-only (`--force` is never needed, and `previous-tag.sh` keeps the
+history it reads), and every release commit's tree is a real master tree plus the pins — so
+`git diff master release` shows the image block and nothing else. It also handles **deletions**,
+which `git checkout <sha> -- .` does not: that leaves a file removed on master present on release
+forever.
+
+**Digests.** The four image digests are resolved from ECR in Input Validation
+(`scripts/ci/resolve-digests.sh`, in the `deploy` container, which has `aws`) and handed to this
+stage through a file, because `jnlp` has git and no `aws`. They are looked up rather than passed down
+from CI because `terraform/ecr.tf` makes the app repositories `IMMUTABLE` — a tag names one manifest
+forever, so the lookup is authoritative. That also answers the two cases a build parameter could not:
+a chart-only promotion has no upstream CI build, and a rollback re-resolving the previous tag gets
+exactly the digests that tag always had.
+
+Uses the GitHub deploy key over `sshagent()`, with a pinned `known_hosts` write this stage needs
+because raw `git push` in the `jnlp` container has its own `known_hosts`, separate from the git
+*plugin*'s checkout (**G4**). Since 2026-08-23 this is the **only** job configured with that
+credential — `application-ci` checks out anonymously over HTTPS, because it is a public repo and CI
+must not hold anything that can write to it.
+
+`promote-to-release.sh` asserts the rewrite **landed** rather than trusting an exit code: `awk` and
+`sed` both exit 0 whether or not a rule fired, so a drifted `tag:` line would silently leave the old
+value, ArgoCD would faithfully sync the old version, and Verify and Smoke Test would both pass
+because that old version is healthy — a green deploy that deployed nothing. `[skip ci]` is no longer
+written at all: this commit does not land on the branch the CI webhook watches. The Guard stage in
+`Jenkinsfile-ci` stays regardless — `deploy.sh` step 9 still commits to `master`, and a guard that is
+only correct while a separate design decision holds is a guard waiting to be wrong.
 
 ### 5. Deploy
 
@@ -913,7 +980,7 @@ original 2026-07-20 design predicted and remain accurate, now labelled against `
 | **G2** — `application-ci` rebuilds its own tag-bump commit, forever, and re-triggers `application-cd` each time | The Guard stage or `scripts/ci/should-skip-build.sh` was removed | Restore the Guard stage — first, unconditional, in `Jenkinsfile-ci` |
 | **G1** — re-running `application-ci` fails with `tag already exists` | ECR tags are `IMMUTABLE`, images tagged by commit SHA | Already handled by "Already built?"; if it still fails, check the `jenkins-agent` IRSA role has `ecr:DescribeImages` |
 | A commit you expected to build finishes `NOT_BUILT` immediately | The commit's **subject line** contains the skip marker. Since 2026-08-11 the body is *not* matched — it used to be, and that misfired: two commits whose bodies described the guard skipped themselves, so two CI changes shipped without CI ever running and reported `NOT_BUILT`, which reads like a pass | Expected only if the marker really is in the subject. Amend the subject and push again |
-| A commit is on `master`, CI shows `NOT_BUILT`, and the site keeps serving the previous image — with no failure anywhere | **Pushed while a CI build was already running.** Jenkins queues the second build but checks out the branch **tip at start time**, not the commit that triggered it. If the first build's `application-cd` run pushes its `ci: image tag <sha> [skip ci]` commit in that window, the queued build checks out *that* tip, the Guard (G2) matches the marker, and the commit that actually triggered the build is skipped along with it — it is behind the tip, so no later build's changeset contains it either. Happened for real 2026-08-21: CI #1 built `b09a05d` 15:35–15:44, `a558113` was pushed at 15:39 and queued, CD pushed `e9e5c7a` at 15:45:59, and CI #2 started its checkout at 15:46:46 — 45 seconds too late. Both #2 and #3 reported `NOT_BUILT`, which reads as a pass | `FORCE_BUILD` cannot rescue it — the Guard runs first and unconditionally, by design. Push a new commit so the tip no longer carries the marker, then *Build with Parameters* → `FORCE_BUILD` (the new commit alone is not enough: the changeset spans only commits after the last checked-out revision, so a `services/**`-free commit skips Build images under G3). Verify with `git log --oneline origin/master` against the last `ci: image tag` commit — any commit older than it that never got its own tag-bump was never built |
+| A commit is on `master`, CI shows `NOT_BUILT`, and the site keeps serving the previous image — with no failure anywhere | **FIXED 2026-08-23 — kept here as the record of a live incident and of what the two fixes are protecting; if you see this symptom again, one of them has regressed.** Originally: **pushed while a CI build was already running.** Jenkins queues the second build but checks out the branch **tip at start time**, not the commit that triggered it. If the first build's `application-cd` run pushes its `ci: image tag <sha> [skip ci]` commit in that window, the queued build checks out *that* tip, the Guard (G2) matches the marker, and the commit that actually triggered the build is skipped along with it — it is behind the tip, so no later build's changeset contains it either. Happened for real 2026-08-21: CI #1 built `b09a05d` 15:35–15:44, `a558113` was pushed at 15:39 and queued, CD pushed `e9e5c7a` at 15:45:59, and CI #2 started its checkout at 15:46:46 — 45 seconds too late. Both #2 and #3 reported `NOT_BUILT`, which reads as a pass | `FORCE_BUILD` cannot rescue it — the Guard runs first and unconditionally, by design. Push a new commit so the tip no longer carries the marker, then *Build with Parameters* → `FORCE_BUILD` (the new commit alone is not enough: the changeset spans only commits after the last checked-out revision, so a `services/**`-free commit skips Build images under G3). Verify with `git log --oneline origin/master` against the last `ci: image tag` commit — any commit older than it that never got its own tag-bump was never built | **How it was fixed, both halves:** (1) `application-cd` no longer pushes to `master` at all — it promotes to the `release` branch, which ArgoCD watches, so CD's commit can never become the tip a queued CI build checks out. (2) The Guard is range-aware: `should-skip-build.sh --subjects` reads every commit since `GIT_PREVIOUS_SUCCESSFUL_COMMIT` (which a `NOT_BUILT` run does not advance, so a missed commit stays in range) and skips only if *every* one carries the marker. Either fix alone would close this; both are in place because the Guard must not depend on the branch model staying as it is. Regression test: `test-ci-guards.sh`, "THE 2026-08-21 RACE".
 | **G3** — "Build Now" on `application-ci` does nothing | The changeset contains commits, but none touch `services/**` | *Build with Parameters*, tick `FORCE_BUILD` |
 | **G3b** — a **webhook** `application-ci` build reports SUCCESS but ECR gained no image | First build after the controller was recreated has no changelog to diff against | `scripts/tests/test-ci-guards.sh` fails if the `NO_CHANGELOG` branch is gone; re-run with `FORCE_BUILD` |
 | **G4** — `application-cd`'s Promote stage: `git push` denied | Deploy key missing or read-only, or an HTTPS (not SSH) job SCM URL | Deploy key with **write** access + SSH SCM URL, on **both** jobs |

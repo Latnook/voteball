@@ -259,7 +259,8 @@ secret into the cluster once at creation and then only once an hour. If the vaul
 that moment, Jenkins would boot with no admin account and reject every login for an hour — while the
 deploy reported complete success throughout. (Hit for real on the 2026-07-31 rebuild.)
 
-Step 9 commits and pushes `values.yaml` for you, because ArgoCD deploys from `master` and not from
+Step 9 commits and pushes `values.yaml` for you and then promotes that commit to the `release`
+branch, because ArgoCD deploys from `release` and not from
 this laptop. You don't need to do anything.
 
 ### Run it in a real terminal

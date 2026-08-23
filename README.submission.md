@@ -35,7 +35,8 @@ repository is mine.
   [**Task 4 — CI/CD with Jenkins in Kubernetes**](#task-4--cicd-with-jenkins-in-kubernetes) section
   below.
 - **Terraform vs Helm boundary:** Terraform builds the AWS infra + cluster + platform add-ons (Jenkins
-  included); the Helm chart is the app, delivered by **ArgoCD** (GitOps) from this repo's `master`. See
+  included); the Helm chart is the app, delivered by **ArgoCD** (GitOps) from this repo's `release`
+  branch, which only the CD pipeline writes. See
   `docs/deploy.md`.
 - **Terraform state lives in S3** (versioned, encrypted, S3-native locking), one bucket, one key. The
   bucket belongs to no stack and is never destroyed.
@@ -343,7 +344,8 @@ field is filled in separately, after ArgoCD exists — see the first-time setup 
 ### Running CI
 
 Trigger: a GitHub webhook on every push to `master`, or *Build with Parameters* → `FORCE_BUILD` by
-hand. Stage list, in order (from `Jenkinsfile-ci`): **Guard** (refuses its own tag-bump commits) →
+hand. Stage list, in order (from `Jenkinsfile-ci`): **Guard** (refuses a changeset that is nothing but tag-bump commits — range-aware since
+2026-08-23, so a source commit pushed into a queued build's window can no longer hide behind one) →
 **Validation** (repo-shape checks) → **Observability Validation**
 (`validate-observability.sh`: every `ServiceMonitor`/`PrometheusRule` carries the label Prometheus
 selects on, and no metric label collides with an operator-owned one) → **Script tests**
@@ -354,8 +356,10 @@ pytest tests against a real, ephemeral Postgres sidecar — 241 backend + 48 wor
 `application-ci` build #7 on 2026-08-20; count them with `pytest tests --collect-only -q` rather than
 trusting this number) → **Resolve tag and account** → **Already
 built?** (skip if this SHA's images already exist in the immutable ECR repos) → **Build images**
-(rootless BuildKit, four contexts) → **Trivy scan** (blocking on HIGH/CRITICAL for the app images) →
-**Push to ECR** → **Publish Metadata** (digests, archived as `image-metadata.json`) → **Trigger CD**.
+(rootless BuildKit, four contexts) → **Trivy scan** (blocking on HIGH/CRITICAL for **all four** images — no exemptions) →
+**Push to ECR** → **Publish Metadata** (digests, archived as `image-metadata.json`) → **Chart-only
+change** (only when the changeset touches `charts/**` and not `services/**`: reads the tag already on
+the release branch, so a chart edit redeploys with the images currently running) → **Trigger CD**.
 
 **The image tag is the short git commit SHA, resolved with `git rev-parse --short HEAD` — never
 `latest`.** Every deployed pod therefore maps to an exact commit, and `application-ci`'s own Validation
@@ -523,7 +527,7 @@ Three reasons, in order of weight:
    server-side apply, and it grants a second manager co-ownership of a field only while both apply the
    *same* value. A deploying Jenkins applies a chart that by definition differs (a new `image.tag`),
    so it loses on field ownership (`conflict with "argocd-controller"`).
-2. **`selfHeal` would fight it.** ArgoCD continuously reconciles `charts/voteball` against `master`. A
+2. **`selfHeal` would fight it.** ArgoCD continuously reconciles `charts/voteball` against `release`. A
    Jenkins-applied change that the git state didn't already describe would be reverted within the next
    reconciliation window — a green Jenkins pipeline and an un-deployed change.
 3. **It is a stronger answer to the brief's own criteria, not a weaker one.** ArgoCD itself is fully

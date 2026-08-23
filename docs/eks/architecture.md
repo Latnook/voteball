@@ -214,14 +214,17 @@ flowchart LR
     agent --> trivy{{Trivy scan<br/>CRITICAL/HIGH fail the build}}
     trivy -->|pass| ecr[ECR · 4 app repos + buildcache + trivy-db]
     agent -.->|commits new image tag, marked skip ci| master[(master branch)]
-    master --> argocd[ArgoCD] -.->|syncs| ns[namespace: devops-app]
+    master -->|application-cd promotes| release[(branch: release)]
+    release --> argocd[ArgoCD] -.->|syncs| ns[namespace: devops-app]
     ecr -.->|image pull| ns
 ```
 
 **Jenkins never touches the rest of the cluster and holds no cluster-deploy credentials** — its
 controller carries no AWS role at all, and its namespace-scoped Role only lets it manage its own agent
 pods in `ci`. It pushes images and commits a tag; ArgoCD does every deployment. The only thing that can
-change production is a commit on `master`. **`ci` is a second namespace alongside `devops-app`**, kept
+change production is a commit on `release`, which only `application-cd` writes — `master` is where
+humans push, and reaches the cluster only by passing through the CD pipeline (see
+`docs/design/2026-08-23-release-branch-and-digest-design.md`). **`ci` is a second namespace alongside `devops-app`**, kept
 separate so the graded application namespace contains only the application, and so a NetworkPolicy in
 `ci` can enforceably deny CI any route to RDS or `devops-app` rather than merely convention.
 
@@ -254,7 +257,10 @@ flowchart TD
         scan --> push["Push to ECR<br/>skopeo, tag = commit SHA"]
         built -->|"yes"| meta
         push --> meta["Publish Metadata<br/>image-metadata.json + digest"]
-        meta --> trigger["Trigger CD<br/>build application-cd, wait:false"]
+        meta --> chartonly{"Chart-only change?<br/>charts/** and not services/**"}
+        chartonly -->|"yes"| relTag["read the tag already on release<br/>current-release-tag.sh"]
+        relTag --> trigger
+        chartonly -->|"no"| trigger["Trigger CD<br/>build application-cd, wait:false"]
     end
 
     tests -.->|"any test fails"| failci(["FAILED -- nothing built, nothing deployed"])
@@ -264,12 +270,12 @@ flowchart TD
 
     subgraph cd["application-cd  (agent: voteball-deploy, SA: jenkins-cd-agent -- ECR READ-ONLY)"]
         checkout["Checkout<br/>records tag, source CI build, digest"]
-        checkout --> inval["Input Validation<br/>not latest, is a SHA, images in ECR, NAMESPACE allowlisted"]
+        checkout --> inval["Input Validation<br/>not latest, is a SHA, images in ECR, NAMESPACE allowlisted<br/>+ resolve 4 digests from ECR"]
         inval --> manval["Manifest Validation<br/>helm lint + helm template<br/>+ kubectl CREATE --dry-run=client<br/>(not apply: apply reads live objects)"]
-        manval --> promote["Promote<br/>write image.tag, commit skip ci, push"]
-        promote --> sync["Deploy<br/>argocd app sync --revision"]
+        manval --> promote["Promote<br/>read-tree master@SHA onto RELEASE branch<br/>+ pin image.tag and 4 digests<br/>promote-to-release.sh"]
+        promote --> sync["Deploy<br/>argocd app sync (NO --revision)"]
         sync --> wait["Rollout<br/>argocd app wait --sync --health"]
-        wait --> verify["Verify<br/>argocd app get: Synced + Healthy + revision"]
+        wait --> verify["Verify<br/>argocd app get: Synced + Healthy<br/>+ live image tags (revision = warning only)"]
         verify --> smoke["Smoke Test<br/>HTTPS GET / + /api/options<br/>+ /api/results?by=all<br/>(NOT /health -- 404 from outside)"]
         smoke -->|"pass"| gate["Monitoring Gate<br/>own traffic burst, then Prometheus:<br/>targets up, 5xx &lt; 1%, p95 &lt; 1s"]
         gate -->|"pass"| done(["Deployed and verified"])

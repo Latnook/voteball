@@ -15,8 +15,9 @@ fields of `charts/voteball/values.yaml` are written by `scripts/sync-values-from
 a hardcoded ARN, bucket, registry or domain anywhere, that is a bug.**
 
 **The one deliberate exception is `charts/voteball/values.yaml` itself, and it is not optional.**
-ArgoCD deploys what is on `master`, not what is on your disk, so those ten fields must be committed
-with **real** values — this account's ECR registry, RDS endpoint, ACM/WAF/IRSA ARNs and domain are
+ArgoCD deploys what is on the **`release` branch** (not `master`, and not what is on your disk —
+since 2026-08-23, see `docs/design/2026-08-23-release-branch-and-digest-design.md`), so those ten
+fields must be committed with **real** values — this account's ECR registry, RDS endpoint, ACM/WAF/IRSA ARNs and domain are
 in git right now. Bootstrapping ArgoCD while they are still placeholders reverts the cluster to a
 stale image tag and every pod lands in `ImagePullBackOff` (observed on the 2026-07-20 rebuild; see the
 "Syncing values.yaml" / "Bootstrapping ArgoCD" steps of `scripts/deploy.sh`). A forker replaces them by
@@ -298,12 +299,13 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   fails silently: the agent stays healthy and no logs arrive.
 - **Helm (`charts/voteball`)** is the app itself (namespace `devops-app`): 3 Deployments, Services,
   Ingress→ALB, ConfigMap, ExternalSecret, 4 ServiceAccounts, NetworkPolicies, HPA, PDBs, backup CronJob.
-  **ArgoCD** syncs it from `master` (GitOps) — the chart is the single authoring path.
+  **ArgoCD** syncs it from the **`release`** branch (GitOps) — the chart is the single authoring path.
+  `release` is written only by `application-cd`; pushing to `master` cannot reach the cluster.
 - **Helm (`charts/observability`)** is dashboards-and-alerts-as-code for the `observability` namespace:
   the three Grafana dashboards (provisioned as ConfigMaps via `.Files.Glob`, not clicked together), the
   Kubernetes/Jenkins/monitoring-system `PrometheusRule`s, and that namespace's own default-deny
   NetworkPolicies. It is a **second ArgoCD Application with its own `AppProject`** (both declared in
-  `argocd/voteball-application.yaml.tmpl` alongside `voteball`'s), synced from `master` the same way —
+  `argocd/voteball-application.yaml.tmpl` alongside `voteball`'s), synced from `release` the same way —
   the app's own ServiceMonitors and SLI/SLO recording rules stay in `charts/voteball` instead, next to
   the Services and alerts they describe. kube-prometheus-stack itself (Prometheus/Grafana/Alertmanager,
   the PVC, retention, SNS routing) is a `helm_release` in `terraform/addon-monitoring.tf`, not this
@@ -371,7 +373,7 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
 - **`./scripts/sync-values-from-tf.sh` owns ten fields in `values.yaml`** — `image.registry`,
   `image.tag`, `config.DB_HOST`, `config.S3_BUCKET`, `config.SNS_TOPIC`, `ingress.host`,
   `ingress.certificateArn`, `ingress.wafAclArn`, `backup.roleArn`, `worker.roleArn`. The committed file
-  carries the **real, current** values, not placeholders — ArgoCD deploys from `master`, so it has to
+  carries the **real, current** values, not placeholders — ArgoCD deploys from `release`, so it has to
   (see the forkability note at the top). **Never hand-edit them** — they change on every rebuild. `--check`
   fails on drift *and* verifies `image.tag` names an image that exists in ECR. Its only test is
   `scripts/tests/test-sync-values.sh` (runs offline via `SYNC_STUB_*` env vars); **extend it whenever
@@ -429,7 +431,8 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   rebind. It is gone for good only on a full `terraform destroy` of the EFS resources themselves —
   see `docs/cicd.md`'s "Running the instance" for the three-tier breakdown. The durable
   record of what was *deployed* was never the build log regardless — it is the
-  `ci: image tag <sha> [skip ci]` commits on `master`, which never expire.
+  `release: <sha> (image tag <tag>)` commits on the **`release`** branch, which never expire.
+  (They were `ci: image tag <sha> [skip ci]` on `master` until the 2026-08-23 branch split.)
 
   **The `buildkit` container is the one container in this entire project that runs
   `allowPrivilegeEscalation: true` plus `SETUID`/`SETGID`.** Rootless BuildKit builds inside a user
@@ -459,13 +462,21 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   every build* by design, so adding either repo to that set fails every build's cache export with
   "cannot overwrite immutable tag" — at the end of a long build, not the start.
 
-**Do not remove the Guard stage from `Jenkinsfile-ci`, or `scripts/ci/should-skip-build.sh`.** Jenkins
-has no native `[skip ci]` — that is a GitHub Actions feature. The Guard stage is the *only* thing
-stopping `application-cd`'s own tag-bump commit from retriggering `application-ci`, which would
-retrigger `application-cd`, forever: an unbounded, billable build loop across both pipelines that also
-rolls production pods continuously. It looks like dead weight next to the `[skip ci]` marker in the
-commit message; it is not. This is proven, not theoretical — build 5 in `docs/cicd.md` is the webhook
-firing on Jenkins' own commit and being stopped by exactly this stage.
+**Do not remove the Guard stage from `Jenkinsfile-ci`, or `scripts/ci/should-skip-build.sh`** — and
+note that since 2026-08-23 **nothing writes the `[skip ci]` marker any more**, which makes the Guard
+look even more like dead weight than it did before. It is not. Jenkins has no native `[skip ci]` (that
+is a GitHub Actions feature), and the Guard is the only thing standing between a master-pushing
+promotion and an unbounded, billable build loop across both pipelines that also rolls production pods
+continuously. It must already be in place *before* anyone reintroduces one. `deploy.sh` step 9 still
+commits to `master` today. Proven, not theoretical: build 5 in `docs/cicd.md` is the webhook firing on
+Jenkins' own commit and being stopped by exactly this stage.
+
+**The Guard is range-aware and must stay that way.** `should-skip-build.sh --subjects` reads every
+commit subject since `GIT_PREVIOUS_SUCCESSFUL_COMMIT` and skips only if *all* of them carry the
+marker; the single-message form is the fallback for a first build or a rewritten base. Reading only
+the tip is what let the 2026-08-21 queued-build race hide a source commit behind a promotion commit
+so that nothing ever built it — reported as `NOT_BUILT`, which reads like a pass.
+`test-ci-guards.sh` pins the incident as a regression case.
 
 **Jenkins is configured by JCasC, not by clicking — but the mechanism is `terraform apply`, not a
 reboot of a hand-managed host.** `ci/jenkins/jenkins.yaml` is loaded into the Helm release's
@@ -723,8 +734,13 @@ There is nothing to start or stop — it runs whenever the cluster does, and goe
 
 ### CI/CD scripts (`scripts/ci/`, `scripts/jenkins/`)
 
-Five scripts, each one pipeline decision point extracted so it can be tested without triggering a
-real build. `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the
+**Twelve scripts** (count them: `ls scripts/ci/*.sh | wc -l` — this number has been wrong before,
+the entry said "Five" while the directory held eight), each one pipeline decision point extracted so
+it can be tested without triggering a real build. Four were added on 2026-08-23 by the review pass:
+`promote-to-release.sh` (builds each `release` commit with `git read-tree`, never a merge — see the
+design doc), `resolve-digests.sh` (tag → the four image digests, authoritative because the ECR repos
+are `IMMUTABLE`), `current-release-tag.sh` (what is deployed right now, for the chart-only path) and
+`notify.sh` (SNS on the NEEDS A HUMAN branches; can never fail a build). `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the
 immutable-tag re-run check) hold two of `Jenkinsfile-ci`'s decisions — `images-exist.sh` is also
 reused, read-only, by `Jenkinsfile-cd`'s Input Validation stage to confirm a requested tag really is
 in ECR before promoting it. `validate-repo.sh` is the CI Validation stage: asserts every
@@ -832,8 +848,10 @@ Two rules from those files are repeated here because they bite from outside the 
 - **Adding any new source file (backend, worker, or frontend) requires updating that service's
   `Dockerfile` `COPY` line.** A file on disk but missing from `COPY` is absent from the image with
   **no build error** — it surfaces as a runtime `ImportError` or a 404.
-- **ArgoCD owns the chart release**, so changes reach the cluster by committing to `master`, not by
-  running `helm upgrade` by hand — a hand-run upgrade of a chart that **differs** from `master` fails
+- **ArgoCD owns the chart release**, so changes reach the cluster by going through `application-cd`,
+  which promotes them to the `release` branch — **not** by committing to `master` (which no longer
+  deploys anything by itself) and not by running `helm upgrade` by hand. A hand-run upgrade of a chart
+  that **differs** from what ArgoCD has fails
   on server-side-apply field ownership (`conflict with "argocd-controller"`). An *identical* chart
   applies clean, because server-side apply grants two managers co-ownership of a field as long as they
   apply the same value. Two corollaries, both found the hard way on 2026-08-10:
