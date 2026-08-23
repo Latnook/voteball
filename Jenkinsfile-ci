@@ -59,13 +59,43 @@ pipeline {
     stage('Guard: is this our own commit?') {
       steps {
         script {
-          // This guard runs unconditionally and first: a commit whose message contains [skip ci]
-          // can never be built here, even manually with FORCE_BUILD.
-          def msg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-          def verdict
-          withEnv(["COMMIT_MSG=${msg}"]) {
-            verdict = sh(script: 'scripts/ci/should-skip-build.sh "$COMMIT_MSG"',
-                         returnStdout: true).trim()
+          // This guard runs unconditionally and first: a changeset containing nothing but [skip ci]
+          // commits can never be built here, even manually with FORCE_BUILD.
+          //
+          // RANGE, not just the tip (2026-08-23, Task 4 review P1). Jenkins checks out the branch TIP
+          // at build start, not the commit that triggered the webhook. If CD pushes its promotion
+          // commit into the gap between a queued build being triggered and that build starting its
+          // checkout, the tip carries the marker, this guard skips, and the source commit that
+          // actually triggered the build is never built -- not here and not by any later build,
+          // because it sits BEHIND the tip and so falls outside every subsequent changeset. That is
+          // the real 2026-08-21 incident (see should-skip-build.sh), and NOT_BUILT reads like a pass.
+          //
+          // GIT_PREVIOUS_SUCCESSFUL_COMMIT is the correct base: a NOT_BUILT run does not advance it,
+          // so a commit missed this way stays inside the range until something actually builds it.
+          // It is unset on the first build of a job and can name a commit that no longer exists after
+          // a history rewrite, so both cases fall back to the single-tip form rather than guessing.
+          def prev = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+          def verdict = null
+          if (prev) {
+            def rangeOk = sh(script: "git cat-file -e ${prev}^{commit} 2>/dev/null", returnStatus: true) == 0
+            if (rangeOk) {
+              withEnv(["RANGE_BASE=${prev}"]) {
+                verdict = sh(script: 'git log --format=%s "$RANGE_BASE"..HEAD | scripts/ci/should-skip-build.sh --subjects',
+                             returnStdout: true).trim()
+              }
+              echo "Guard: examined ${prev}..HEAD -> ${verdict}"
+            } else {
+              echo "Guard: GIT_PREVIOUS_SUCCESSFUL_COMMIT ${prev} is not in this repository -- falling back to the tip commit alone."
+            }
+          } else {
+            echo 'Guard: no GIT_PREVIOUS_SUCCESSFUL_COMMIT (first build of this job) -- examining the tip commit alone.'
+          }
+          if (verdict == null) {
+            def msg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+            withEnv(["COMMIT_MSG=${msg}"]) {
+              verdict = sh(script: 'scripts/ci/should-skip-build.sh "$COMMIT_MSG"',
+                           returnStdout: true).trim()
+            }
           }
           if (verdict == 'skip') {
             // currentBuild.result is set before the error() below because Jenkins only ever
@@ -73,7 +103,7 @@ pipeline {
             // exception raised next is uncaught. That uncaught exception is what actually skips
             // every later stage; nothing here catches it.
             currentBuild.result = 'NOT_BUILT'
-            currentBuild.description = 'Skipped: tag-bump commit ([skip ci])'
+            currentBuild.description = 'Skipped: every commit since the last successful build is a tag bump ([skip ci])'
             error('SKIP_CI')
           }
         }
@@ -596,12 +626,60 @@ pipeline {
     // with a tag that has no images in ECR -- CD's Input Validation then correctly refuses, and
     // every documentation commit produces a red CD build. The condition is "this SHA has images",
     // which is true when we just built them OR when they were already present.
+    // G4 -- chart changes must reach CD too, and they need a tag they do not have.
+    //
+    // Until 2026-08-23 ArgoCD watched `master`, so a chart-only commit deployed itself: it skipped
+    // every stage in this file (all gated on `changeset 'services/**'`) and was auto-synced straight
+    // to the cluster, bypassing Manifest Validation, the smoke test, the monitoring gate and
+    // rollback. Task 4 review finding P2. ArgoCD now watches `release`, which only application-cd
+    // writes -- so the bypass is gone, but a chart-only commit would now deploy NEVER instead of
+    // deploying unchecked. This stage is the other half of that fix.
+    //
+    // The wrinkle: a chart-only commit is a new SHA and no images were built for it, so CD cannot be
+    // triggered with `env.TAG`. Input Validation would correctly refuse a tag that is not in ECR.
+    // What is actually wanted is "deploy the chart at this commit with the images already running",
+    // so the tag is read off the release branch.
+    //
+    // Deliberately NOT `not { changeset 'services/**' }` alone: FORCE_BUILD and NO_CHANGELOG both
+    // mean "treat this as a real build", and in both cases the normal path already produces a tag.
+    // Overriding env.TAG there would deploy the OLD images over a fresh build.
+    stage('Chart-only change') {
+      when { allOf {
+        changeset 'charts/**'
+        not { changeset 'services/**' }
+        not { expression { params.FORCE_BUILD } }
+        not { expression { env.NO_CHANGELOG == 'true' } }
+        not { expression { env.ALREADY_BUILT == 'present' } }
+      } }
+      steps {
+        script {
+          sh 'git fetch --quiet origin release 2>/dev/null || true'
+          def st = sh(script: 'scripts/ci/current-release-tag.sh > release-tag.out 2> release-tag.err',
+                      returnStatus: true)
+          if (st != 0) {
+            // Not an error. On a cluster that has never completed a CD run there is no release
+            // branch yet, and the first application-cd run will create it -- failing the build here
+            // would make a docs-and-chart commit look broken on a brand-new deployment.
+            def why = fileExists('release-tag.err') ? readFile('release-tag.err').trim() : '(no stderr)'
+            echo "Chart-only change, but no deployable tag on the release branch yet: ${why}"
+            echo 'Skipping the CD trigger. The next application-cd run will pick this chart up.'
+          } else {
+            env.TAG = readFile('release-tag.out').trim()
+            env.CHART_ONLY = 'true'
+            currentBuild.description = "chart-only -> redeploying running tag ${env.TAG}"
+            echo "Chart-only change: triggering CD with the tag already on release (${env.TAG})."
+          }
+        }
+      }
+    }
+
     stage('Trigger CD') {
       when { anyOf {
         expression { env.ALREADY_BUILT == 'present' }
         changeset 'services/**'
         expression { params.FORCE_BUILD }
         expression { env.NO_CHANGELOG == 'true' }
+        expression { env.CHART_ONLY == 'true' }   // G4, above
       } }
       steps {
         build job: 'application-cd', wait: false, parameters: [

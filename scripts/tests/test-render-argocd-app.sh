@@ -39,7 +39,7 @@ esac
 # ServerSideApply adopts helm's resources instead of recreating the ALB). A template edit that lost
 # one of them would still render and still apply.
 out="$(ARGOCD_STUB_github_repo="Latnook/voteball" "$RENDER")"
-for want in "name: voteball" "namespace: devops-app" "targetRevision: master" \
+for want in "name: voteball" "namespace: devops-app" "targetRevision: release" \
             "path: charts/voteball" "prune: true" "selfHeal: true" \
             "ServerSideApply=true" "CreateNamespace=false"; do
   check "keeps '$want'" "$want" "$out"
@@ -134,6 +134,19 @@ if ARGOCD_STUB_github_repo="Latnook/voteball" "$RENDER" --bogus >/dev/null 2>&1;
   bad "rejects an unknown flag"
 else
   ok "rejects an unknown flag"
+fi
+
+# BOTH Applications must watch `release`, and neither may watch `master`. Checked as a count rather
+# than "the string appears somewhere", because the failure this guards against is one of the two
+# being reverted while the other stays -- charts/observability quietly syncing from an ungated branch
+# would be exactly the gap the release branch was introduced to close (2026-08-23, Task 4 review P2),
+# and the other Application looking correct is what would hide it.
+n_release="$(grep -c 'targetRevision: release' argocd/voteball-application.yaml.tmpl)"
+n_master="$(grep -c 'targetRevision: master' argocd/voteball-application.yaml.tmpl || true)"
+if [ "$n_release" = "2" ] && [ "$n_master" = "0" ]; then
+  ok "both Applications (voteball, observability) target the release branch, neither targets master"
+else
+  bad "expected 2 Applications on 'release' and 0 on 'master', found $n_release and $n_master -- ArgoCD must never sync an ungated branch"
 fi
 
 echo

@@ -64,6 +64,12 @@ PYTHON_GROUP=(
 # build #7 before the suite as a whole failed.
 GIT_GROUP=(
   test-build-push-ecr.sh
+  # Builds throwaway git repositories (a bare "remote" plus a clone) because the properties under
+  # test ARE git behaviours: that a release tree equals a master tree, that a file deleted on master
+  # disappears from release, that history stays append-only so --force is never needed. Stubbing git
+  # would assert nothing. Confirmed passing inside a bare alpine/git image (no python3) on
+  # 2026-08-23, per the rule above.
+  test-promote-to-release.sh
   # Builds throwaway git repositories with a handmade values.yaml promote history -- the disagreement
   # between git and ECR is the whole point of the test, so it cannot be stubbed without a real repo.
   # Confirmed passing inside a bare alpine/git image (no python3) on 2026-08-17, per the rule above.

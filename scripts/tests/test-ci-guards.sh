@@ -31,11 +31,24 @@ real="$(printf 'feat(ci): run the script tests in the pipeline\n\nprotecting the
 got="$(scripts/ci/should-skip-build.sh "$real")"
 [ "$got" = "build" ] || fail "a commit body describing the guard must still build, got '$got'"; pass=$((pass+1))
 
-# Pin CD's ACTUAL tag-bump format. Narrowing to the subject is only safe while the marker lives
-# there; Jenkinsfile-cd writes it with a single -m. If that ever moves to a body line, this fails
-# loudly instead of the loop guard failing silently.
-grep -q 'git commit -m "ci: image tag \$TAG \[skip ci\]"' Jenkinsfile-cd \
-  || fail "Jenkinsfile-cd no longer commits the marker in the subject line -- re-check the guard"
+# NOBODY WRITES THE MARKER ANY MORE, and the guard stays anyway. Until 2026-08-23 Jenkinsfile-cd
+# pushed `ci: image tag $TAG [skip ci]` to master and this line pinned that exact string. CD now
+# promotes to the `release` branch instead (Task 4 review P1/P2), so it never touches the branch the
+# CI webhook watches and has no reason to mark anything.
+#
+# The guard is deliberately NOT removed -- the root CLAUDE.md is explicit about that, and the reason
+# survives the branch change: it is the only thing standing between a master-pushing promotion and an
+# unbounded billable build loop, so it must already be in place if anyone ever reintroduces one.
+# deploy.sh step 9 also still commits to master today.
+#
+# So the assertion inverts. Instead of pinning a producer that no longer exists, assert that CD does
+# NOT push to master -- which is the property that made the marker unnecessary. If someone restores a
+# master push, this fails loudly and points at the two things that then need re-deciding together.
+grep -qE 'push[^\n]*(HEAD:master|origin master)' Jenkinsfile-cd \
+  && fail "Jenkinsfile-cd pushes to master again. The 2026-08-21 queued-build race comes back with it: CD's commit can become the branch tip that a queued CI build checks out, hiding the source commit that triggered it. Either promote to the release branch (scripts/ci/promote-to-release.sh) or restore a [skip ci] subject marker AND re-pin it here."
+pass=$((pass+1))
+
+# The loop guard itself must still work on the canonical string, whoever writes it next.
 got="$(scripts/ci/should-skip-build.sh "ci: image tag deadbee [skip ci]")"
 [ "$got" = "skip" ] || fail "CD's own tag-bump commit MUST skip, got '$got'"; pass=$((pass+1))
 
@@ -75,8 +88,14 @@ got="$(scripts/ci/images-exist.sh)"
 # Every gate that keys on `changeset 'services/**'` must also accept "no changelog at all".
 # Match the gate form specifically -- the plain `env.NO_CHANGELOG == 'true'` also appears in the
 # echo that announces the fallback, which is not a gate and must not be counted.
-gates="$(grep -c "changeset 'services/\*\*'" Jenkinsfile-ci)"
-hatches="$(grep -c "expression { env.NO_CHANGELOG == 'true' }" Jenkinsfile-ci)"
+# COMMENTS STRIPPED FIRST. Jenkinsfile-ci's own prose quotes `changeset 'services/**'` while
+# explaining these gates, and counting those lines makes the two totals disagree for a reason that
+# has nothing to do with the code -- which is exactly the sort of false alarm that gets a real check
+# deleted. (Same trap, same fix, as the egress-coverage check in scripts/ci/validate-repo.sh, which
+# would otherwise have been satisfied by a label mentioned only in a comment.)
+uncommented="$(sed -e 's|^[[:space:]]*//.*$||' Jenkinsfile-ci)"
+gates="$(printf '%s\n' "$uncommented" | grep -c "changeset 'services/\*\*'")"
+hatches="$(printf '%s\n' "$uncommented" | grep -c "expression { env.NO_CHANGELOG == 'true' }")"
 [ "$gates" -gt 0 ] || fail "expected at least one changeset gate in Jenkinsfile-ci, found none"
 pass=$((pass+1))
 [ "$gates" = "$hatches" ] || \
@@ -93,6 +112,64 @@ pass=$((pass+1))
 # commits that miss services/** still has to skip.
 grep -q "anyOf { changeset 'services/\*\*'" Jenkinsfile-ci || \
   fail "changeset gate must remain inside an anyOf, or unrelated commits will rebuild every time"
+pass=$((pass+1))
+
+# ---- G2, range form: the 2026-08-21 queued-build race -------------------------------------------
+# The incident, reproduced as data. CI #1 was building b09a05d when a558113 was pushed and queued; CD
+# pushed its promotion commit e9e5c7a at 15:45:59; the queued build started its checkout at 15:46:46
+# and, seeing only the TIP, matched the marker and reported NOT_BUILT. a558113 was never built by
+# that build or by any later one -- it sits behind the tip, so no subsequent changeset contains it.
+#
+# The range form is what makes that impossible: a range holding even one unmarked commit builds.
+range_verdict() { printf '%s\n' "$@" | scripts/ci/should-skip-build.sh --subjects; }
+
+got="$(range_verdict 'feat: a real source commit' 'ci: image tag e9e5c7a [skip ci]')"
+[ "$got" = "build" ] || fail "THE 2026-08-21 RACE: a source commit hidden behind a promotion commit must still build, got '$got'"
+pass=$((pass+1))
+
+# ...and the loop guard itself must survive that change, or this trade is not worth making.
+got="$(range_verdict 'ci: image tag e9e5c7a [skip ci]')"
+[ "$got" = "skip" ] || fail "a range of nothing but promotion commits must still skip (loop guard), got '$got'"
+pass=$((pass+1))
+
+got="$(range_verdict 'ci: image tag aaa1111 [skip ci]' 'ci: image tag bbb2222 [skip ci]')"
+[ "$got" = "skip" ] || fail "several consecutive promotion commits must still skip, got '$got'"
+pass=$((pass+1))
+
+got="$(range_verdict 'ci: image tag e9e5c7a [skip ci]' 'feat: pushed after the bump')"
+[ "$got" = "build" ] || fail "an unmarked commit AFTER the promotion commit must build, got '$got'"
+pass=$((pass+1))
+
+# An empty range cannot reopen the loop: had CD pushed a promotion commit it would BE in the range,
+# so empty means the tip already built. Building is the safe answer and costs one redundant run.
+got="$(printf '' | scripts/ci/should-skip-build.sh --subjects)"
+[ "$got" = "build" ] || fail "an empty range must build, not skip, got '$got'"
+pass=$((pass+1))
+
+# Blank lines are not commits. A caller assembling the subject list by other means can emit one, and
+# counting it as an unmarked commit would rebuild on every single run -- a loop by another route.
+got="$(printf 'ci: image tag abc1234 [skip ci]\n\n' | scripts/ci/should-skip-build.sh --subjects)"
+[ "$got" = "skip" ] || fail "a trailing blank line must not be counted as an unmarked commit, got '$got'"
+pass=$((pass+1))
+
+# The single-message form must keep working unchanged -- the Jenkinsfile falls back to it whenever
+# GIT_PREVIOUS_SUCCESSFUL_COMMIT is unset (first build) or names a commit that no longer exists.
+got="$(scripts/ci/should-skip-build.sh 'ci: image tag abc1234 [skip ci]')"
+[ "$got" = "skip" ] || fail "the legacy single-message form regressed, got '$got'"
+pass=$((pass+1))
+
+# The Jenkinsfile must actually USE the range form, and must fall back rather than failing when the
+# base is unavailable. A guard that silently reverts to tip-only reintroduces the race with no signal.
+grep -q 'GIT_PREVIOUS_SUCCESSFUL_COMMIT' Jenkinsfile-ci || \
+  fail "Jenkinsfile-ci's Guard no longer uses GIT_PREVIOUS_SUCCESSFUL_COMMIT -- the 2026-08-21 race is back"
+pass=$((pass+1))
+grep -q 'should-skip-build.sh --subjects' Jenkinsfile-ci || \
+  fail "Jenkinsfile-ci's Guard does not call the range form of should-skip-build.sh"
+pass=$((pass+1))
+# git cat-file guards against a base that was rewritten out of history; without it the git log fails
+# and the whole Guard stage errors out, which Jenkins reports as a FAILED build rather than a skip.
+grep -q 'git cat-file -e' Jenkinsfile-ci || \
+  fail "Jenkinsfile-ci's Guard must verify the range base still exists before using it"
 pass=$((pass+1))
 
 echo "PASS: $pass assertions"

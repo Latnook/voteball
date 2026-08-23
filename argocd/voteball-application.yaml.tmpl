@@ -48,9 +48,24 @@ spec:
     - group: '*'
       kind: '*'
 ---
-# ArgoCD watches the public repo's charts/voteball on master and keeps devops-app in sync.
-# ServerSideApply adopts the resources helm already created (no delete/redeploy, so the ALB is not
-# re-provisioned). prune+selfHeal make git the source of truth going forward.
+# ArgoCD watches the public repo's charts/voteball on the RELEASE branch and keeps devops-app in
+# sync. ServerSideApply adopts the resources helm already created (no delete/redeploy, so the ALB is
+# not re-provisioned). prune+selfHeal make git the source of truth going forward.
+#
+# `release`, NOT `master`, since 2026-08-23 -- see
+# docs/design/2026-08-23-release-branch-and-digest-design.md. `master` is where humans and deploy.sh
+# push; `release` is written ONLY by application-cd's Promote stage, via
+# scripts/ci/promote-to-release.sh. Two findings from the Task 4 review shared one root cause -- that
+# master was simultaneously the development and the deployment branch:
+#
+#   * CD had to push its promotion commit to the branch CI watches, so a source commit pushed while
+#     CI was busy could hide behind it and never be built (the real 2026-08-21 incident).
+#   * every gate in Jenkinsfile-ci is `changeset 'services/**'`, so a chart-only commit skipped CI
+#     entirely and THIS Application's automated sync applied it straight to the cluster -- past
+#     manifest validation, the smoke test, the monitoring gate and rollback.
+#
+# Pointing this at `release` closes both: there is now no way to reach devops-app by pushing to a
+# branch. If you change this back to master you reopen both, and nothing will tell you.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -60,7 +75,7 @@ spec:
   project: voteball
   source:
     repoURL: ${REPO_URL}
-    targetRevision: master
+    targetRevision: release
     path: charts/voteball
   destination:
     server: https://kubernetes.default.svc
@@ -110,7 +125,7 @@ spec:
   project: observability
   source:
     repoURL: ${REPO_URL}
-    targetRevision: master
+    targetRevision: release
     path: charts/observability
   destination:
     server: https://kubernetes.default.svc

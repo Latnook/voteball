@@ -5,6 +5,25 @@ image:
   tag: "4b0e3d2"
   pullPolicy: IfNotPresent
 
+  # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
+  # ECR with scripts/ci/resolve-digests.sh, never typed. When a name here carries a digest, the
+  # workload renders as repo@sha256:... and the tag above is only a readable label; when it is empty
+  # the chart falls back to the tag (see voteball.image in templates/_helpers.tpl).
+  #
+  # Safe to leave empty in a fork or after a rebuild against a NEW ECR registry -- an empty value
+  # falls back to the tag rather than pinning a digest that does not exist in the new account. That
+  # fallback is load-bearing: a stale digest here would be an ImagePullBackOff on every pod, whereas a
+  # stale tag is caught by sync-values-from-tf.sh --check.
+  #
+  # NOT owned by sync-values-from-tf.sh. Those ten Terraform-derived fields sit at two-space indent
+  # and this map's entries sit at four, which is why the script's line matcher cannot see them --
+  # by construction rather than by exclusion list.
+  digests:
+    backend: ""
+    worker: ""
+    nginx: ""
+    backup: ""
+
 # The two PUBLIC subnet CIDRs from terraform/vpc.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
 #

@@ -101,6 +101,28 @@ pipeline {
             }
             echo "All four images for $TAG confirmed present in ECR."
           '''
+
+          // Resolve the four digests HERE, in the container that has `aws`, and hand them to Promote
+          // through a file. Promote runs in jnlp (git + ssh) and no single container in the
+          // voteball-deploy pod is proven to have both -- the same split, for the same reason, as
+          // rollback-target.sh's two forms.
+          //
+          // Resolved from ECR rather than passed down from CI as build parameters: terraform/ecr.tf
+          // makes the application repositories IMMUTABLE, so a tag names one manifest forever and a
+          // lookup is authoritative. That also gives the two cases a parameter would have no answer
+          // for -- a chart-only promotion (no upstream CI build) and a rollback (re-resolving the
+          // previous tag returns exactly the digests it always had).
+          sh '''
+            set -eu
+            ECR_PREFIX="$CLUSTER_NAME" scripts/ci/resolve-digests.sh > image-digests.tsv
+            echo "Resolved digests for $TAG:"
+            cat image-digests.tsv
+          '''
+        }
+        script {
+          // name=sha256:... pairs, space separated -- the shape promote-to-release.sh expects.
+          env.IMAGE_DIGESTS = readFile('image-digests.tsv').trim()
+                                .split('\n').collect { it.trim().replace('\t', '=') }.join(' ')
         }
       }
     }
@@ -159,29 +181,33 @@ pipeline {
     // commit is what tells it what to run.
     stage('Promote') {
       steps {
-        // Assert the rewrite actually landed, rather than trusting the sed exit code. sed exits 0
-        // whether or not its pattern matched anything -- if the tag: line's shape ever drifts
-        // (re-indented, unquoted), the file silently keeps its OLD tag, a `git diff --cached --quiet`
-        // check then reports no change, the log prints "already names $TAG" (false), ArgoCD syncs the
-        // unchanged old tag, and Verify/Smoke Test both pass because that old version is healthy --
-        // a green build that deployed nothing. Same failure class G3b guards against elsewhere.
+        // Writes ONE commit on the `release` branch: the tree of the promoted master commit, with
+        // image.tag and the four image digests pinned in charts/voteball/values.yaml. ArgoCD watches
+        // `release` (argocd/voteball-application.yaml.tmpl), so this commit IS the deploy request.
         //
-        // [skip ci] in the commit message below is documentation; the Guard stage in Jenkinsfile-ci
-        // is what enforces it. Do not remove either -- without the guard this commit retriggers CI,
-        // which triggers CD, which commits again, forever.
+        // WHY NOT master any more (2026-08-23, Task 4 review P1 + P2 -- see
+        // docs/design/2026-08-23-release-branch-and-digest-design.md). Pushing the promotion commit
+        // to the branch application-ci watches caused two defects with one root cause:
+        //   * a source commit pushed while CI was busy could end up BEHIND this commit and never be
+        //     built by any build -- the real 2026-08-21 incident, reported as NOT_BUILT;
+        //   * every gate in Jenkinsfile-ci is `changeset 'services/**'`, so a chart-only commit
+        //     skipped CI and ArgoCD auto-synced it straight past this whole pipeline.
+        // With ArgoCD on `release`, this job is the only writer of the deployed branch.
         //
-        // QUOTING BUG, FIXED 2026-08-04: this used to write \" (a single backslash before the
-        // quote) around the sed pattern/replacement and the grep check below. Groovy's triple-
-        // single-quoted string unescapes \" to a bare " before bash ever sees the script -- so
-        // what bash actually received was: sed -i -E "s/^  tag: ".*"/  tag: "$TAG"/" (the bare "
-        // characters visible there are ordinary shell quote DELIMITERS, not literal characters
-        // passed to sed). Bash consumes them and hands sed the unquoted pattern
-        // s/^  tag: .*/  tag: $TAG/. The result is a rewrite that strips the quotes instead of
-        // preserving them -- confirmed live: every CD-written tag since has been unquoted
-        // (charts/voteball/values.yaml history), and the grep verification below had the
-        // identical bug, so it happily confirmed the wrong shape. Doubling the backslash (\\")
-        // is what's needed: Groovy unescapes \\ to a single \, which THEN reaches bash as \" --
-        // an escaped, literal quote character inside the double-quoted sed script, as intended.
+        // The mechanics live in scripts/ci/promote-to-release.sh, not in this heredoc, so they can be
+        // tested without triggering a real deploy (scripts/tests/test-promote-to-release.sh, 13
+        // checks against throwaway git repositories). It uses `git read-tree -u --reset` rather than
+        // a merge -- a merge would conflict on the image block on every single promotion, and a CD
+        // stage that can stop for a conflict is a CD stage that will. That script also asserts the
+        // rewrite LANDED rather than trusting an exit code, which is the check that would have caught
+        // the 2026-08-04 unquoted-tag bug: awk and sed both exit 0 whether or not a rule fired, and a
+        // silently unrewritten file means ArgoCD syncs the OLD version while Verify and Smoke Test
+        // pass, because that old version is healthy. A green build that deployed nothing.
+        //
+        // [skip ci] is no longer written into the message and is no longer needed here: this commit
+        // does not land on the branch the CI webhook watches. Jenkinsfile-ci's Guard stage stays
+        // regardless -- deploy.sh step 9 still commits to master, and a guard that is only correct
+        // while a separate design decision holds is a guard waiting to be wrong.
         sshagent(credentials: ['voteball-deploy-key']) {
           sh '''
             set -eu
@@ -189,31 +215,10 @@ pipeline {
             printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
             chmod 600 ~/.ssh/known_hosts
 
-            sed -i -E "s/^  tag: \\".*\\"/  tag: \\"$TAG\\"/" charts/voteball/values.yaml
-
-            grep -q "^  tag: \\"$TAG\\"" charts/voteball/values.yaml || {
-              echo "values.yaml does not name $TAG, QUOTED, after the sed -- the tag: line's shape" >&2
-              echo "must have changed (indentation/quoting). Refusing to report success on an" >&2
-              echo "unrewritten or wrongly-shaped file." >&2
-              exit 1
-            }
-
-            git config user.name  "jenkins"
-            git config user.email "jenkins@voteball.local"
-            git add charts/voteball/values.yaml
-
-            if git diff --cached --quiet; then
-              echo "values.yaml already names $TAG -- nothing to commit"
-            else
-              git commit -m "ci: image tag $TAG [skip ci]"
-              git pull --rebase --autostash origin master || {
-                echo "Rebase onto origin/master failed; aborting cleanly so the next build is not wedged."
-                git rebase --abort || true
-                exit 1
-              }
-              git push origin HEAD:master
-            fi
-            git rev-parse HEAD > /tmp/promote-sha
+            SOURCE_SHA="$(git rev-parse HEAD)" \
+            TAG="$TAG" \
+            DIGESTS="$IMAGE_DIGESTS" \
+              scripts/ci/promote-to-release.sh | tail -1 > /tmp/promote-sha
           '''
         }
         script { env.PROMOTE_SHA = readFile('/tmp/promote-sha').trim() }
@@ -538,8 +543,17 @@ pipeline {
           // branch below ever ran. That is exactly the path the depth-1 "NEEDS A HUMAN" message
           // exists for, and it never printed on it. returnStatus captures the exit code instead of
           // throwing, so a failure here is just data the branches below can act on.
-          def prevStatus = sh(script: 'scripts/ci/previous-tag.sh > previous-tag.out 2> previous-tag.err',
-                               returnStatus: true)
+          //
+          // VALUES_REF=origin/release since 2026-08-23: the sequence of DEPLOYED tags now lives in
+          // the release branch's history, not master's. This workspace is checked out on master, and
+          // master's values.yaml no longer records what was deployed -- reading HEAD here would
+          // resolve a rollback target from the wrong branch and, worse, would keep returning a
+          // plausible-looking tag rather than failing. The fetch is what makes origin/release
+          // readable at all: the SCM checkout only fetches the branch it built.
+          def prevStatus = sh(script: '''
+            git fetch --quiet origin release 2>/dev/null || true
+            VALUES_REF=origin/release scripts/ci/previous-tag.sh > previous-tag.out 2> previous-tag.err
+          ''', returnStatus: true)
           def previous = (prevStatus == 0) ? readFile('previous-tag.out').trim() : ''
           if (prevStatus != 0) {
             def errText = fileExists('previous-tag.err') ? readFile('previous-tag.err').trim() : '(no stderr captured)'

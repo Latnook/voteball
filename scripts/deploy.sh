@@ -300,7 +300,7 @@ fi
 step "8/11  Building and pushing container images"
 ./scripts/build-push-ecr.sh
 
-step "9/11  Syncing values.yaml from Terraform outputs"
+step "9/11  Syncing values.yaml and promoting to the release branch"
 ./scripts/sync-values-from-tf.sh
 
 # ArgoCD deploys whatever is on master, NOT what is on this disk. Bootstrapping it (step 11) while
@@ -367,9 +367,63 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
     SKIP_ARGOCD=1
   elif ! git push; then
     echo "ERROR: could not push values.yaml." >&2
-    echo "Refusing to bootstrap ArgoCD -- it would sync master's stale image tag over this deploy." >&2
+    echo "Refusing to bootstrap ArgoCD -- it would sync a stale image tag over this deploy." >&2
     echo "Push manually, then re-run: ./scripts/render-argocd-app.sh | kubectl apply -f -" >&2
     SKIP_ARGOCD=1
+  fi
+fi
+
+# --- the release branch ---------------------------------------------------------------------------
+# ArgoCD watches `release`, not `master` (since 2026-08-23 -- see
+# docs/design/2026-08-23-release-branch-and-digest-design.md and the comment in
+# argocd/voteball-application.yaml.tmpl). So the branch has to EXIST, and has to name this cluster's
+# images, before step 11 creates the Application -- otherwise ArgoCD is pointed at a branch that is
+# either missing or naming the previous cluster's ECR registry, and every pod lands in
+# ImagePullBackOff. That is the same failure the values.yaml commit above exists to prevent, one
+# branch over: observed on the 2026-07-20 rebuild, and the reason this is step 9 and not step 12.
+#
+# Runs OUTSIDE the `if values.yaml changed` block on purpose. On a re-run where the file is already
+# correct there is nothing to commit to master, but `release` may still not exist (first deploy) or
+# may still point at the previous cluster's tag -- and "nothing changed on master" says nothing about
+# either.
+#
+# Digests are resolved here rather than left empty so the cluster is digest-pinned from its FIRST
+# deploy instead of from its first pipeline run. If the lookup fails the promotion still goes ahead
+# with tags only: the chart falls back to the tag when a digest is empty, which is a working deploy,
+# whereas refusing to promote would leave ArgoCD with no branch at all.
+if [ "${SKIP_ARGOCD:-0}" != "1" ]; then
+  step_tag="$(sed -nE 's/^  tag: "([^"]*)".*/\1/p' charts/voteball/values.yaml | head -1)"
+  if [ -z "$step_tag" ]; then
+    echo "ERROR: could not read the image tag out of charts/voteball/values.yaml." >&2
+    echo "Refusing to promote to the release branch without knowing what is being deployed." >&2
+    SKIP_ARGOCD=1
+  else
+    echo "Promoting $(git rev-parse --short HEAD) to the release branch (tag $step_tag)..."
+    step_digests=""
+    if step_digests_raw="$(TAG="$step_tag" AWS_REGION="$(tfvar aws_region il-central-1)" \
+                           ECR_PREFIX="$(tfvar cluster_name voteball)" \
+                           ./scripts/ci/resolve-digests.sh 2>/dev/null)"; then
+      step_digests="$(printf '%s' "$step_digests_raw" | awk '{printf "%s=%s ", $1, $2}')"
+      echo "  digest-pinning all four images."
+    else
+      echo "  WARNING: could not resolve image digests from ECR -- promoting by tag only." >&2
+      echo "           The chart falls back to the tag, so this deploys correctly; the next" >&2
+      echo "           application-cd run will add the digests." >&2
+    fi
+
+    if ! SOURCE_SHA="$(git rev-parse HEAD)" TAG="$step_tag" DIGESTS="$step_digests" \
+         ./scripts/ci/promote-to-release.sh; then
+      echo "ERROR: could not promote to the release branch." >&2
+      echo "Refusing to bootstrap ArgoCD -- it would watch a branch that does not name this" >&2
+      echo "cluster's images. Fix the push, then run:" >&2
+      echo "  SOURCE_SHA=\$(git rev-parse HEAD) TAG=$step_tag ./scripts/ci/promote-to-release.sh" >&2
+      echo "  ./scripts/render-argocd-app.sh | kubectl apply -f -" >&2
+      SKIP_ARGOCD=1
+    fi
+    # promote-to-release.sh leaves the checkout ON the release branch. Everything after this point
+    # (and anyone reading the repo afterwards) expects master, and leaving a deploy script having
+    # silently switched branches is its own small trap.
+    git checkout -q master 2>/dev/null || true
   fi
 fi
 
