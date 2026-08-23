@@ -17,7 +17,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 10
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 212
+    assert cur.fetchone()[0] == 213
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -324,7 +324,7 @@ def test_seed_rerun_survives_league_name_drift(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 10, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 212, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 213, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
@@ -488,7 +488,7 @@ def test_nations_league_divisions_are_fully_populated(conn):
 # Clubs whose ONLY seeded league is the Europa League -- their domestic leagues (Greek, Belgian,
 # Czech, Ligue 1, Austrian, Primeira Liga) are not seeded by this app.
 EUROPA_LEAGUE_ONLY_CLUBS = [
-    'Olympiacos', 'Olympique de Marseille', 'Sparta Prague', 'Stade Rennais', 'Sturm Graz',
+    'Lech Poznań', 'Olympiacos', 'Olympique de Marseille', 'Sparta Prague', 'Stade Rennais', 'Sturm Graz',
     'Torreense', 'Union Saint-Gilloise',
 ]
 
@@ -601,14 +601,14 @@ def test_shared_europa_league_clubs_are_linked_not_duplicated(conn):
     cur.close()
 
 
-def test_europa_league_has_16_votable_teams(conn):
+def test_europa_league_has_17_votable_teams(conn):
     cur = conn.cursor()
     cur.execute(
         """SELECT COUNT(*) FROM clubs c
            JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
            WHERE l.name_en = 'UEFA Europa League'"""
     )
-    assert cur.fetchone()[0] == 16
+    assert cur.fetchone()[0] == 17
     cur.close()
 
 
