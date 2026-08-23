@@ -307,6 +307,52 @@ step "9/11  Syncing values.yaml and promoting to the release branch"
 # values.yaml is still uncommitted makes ArgoCD immediately revert the cluster to the OLD image tag
 # -- which, after a rebuild, points at an image that does not exist in the fresh ECR, so every pod
 # lands in ImagePullBackOff. Observed on the 2026-07-20 rebuild. Commit before ArgoCD exists.
+# Resolve the image digests and write them into values.yaml BEFORE committing, so that master and
+# the release branch carry IDENTICAL image references.
+#
+# THIS IS NOT COSMETIC -- leaving master on tags while release carries digests breaks the bootstrap.
+# Step 10 Helm-installs from the working tree (master) on a fresh cluster, and step 11 then hands the
+# release to ArgoCD, which syncs the RELEASE branch. Helm 4 applies server-side, so Helm would own
+# .spec...containers[].image at "repo:tag" while ArgoCD tries to apply "repo@sha256:..." -- a
+# different value for a field another manager owns, which server-side apply refuses. Two managers may
+# co-own a field only while they apply the SAME value; that rule is spelled out at step 10 and this is
+# the same failure in the opposite direction. Introduced and caught on 2026-08-23, during the deploy
+# that first exercised digest pinning.
+#
+# Non-fatal on failure: the chart falls back to the tag when a digest is empty, which is a working
+# deploy -- and in that case master and release BOTH fall back, so they still agree.
+step_tag_pre="$(sed -nE 's/^  tag: "([^"]*)".*/\1/p' charts/voteball/values.yaml | head -1)"
+if [ -n "$step_tag_pre" ]; then
+  if pre_digests="$(TAG="$step_tag_pre" AWS_REGION="$(tfvar aws_region il-central-1)" \
+                    ECR_PREFIX="$(tfvar cluster_name voteball)" \
+                    ./scripts/ci/resolve-digests.sh 2>/dev/null)"; then
+    printf '%s\n' "$pre_digests" | while IFS="$(printf '\t')" read -r dname ddigest; do
+      [ -n "$dname" ] || continue
+      python3 - "$dname" "$ddigest" <<'PY'
+import sys, re
+name, digest = sys.argv[1], sys.argv[2]
+p = "charts/voteball/values.yaml"
+lines = open(p).read().splitlines(keepends=True)
+out, indig = [], False
+for line in lines:
+    if re.match(r'^  digests:\s*$', line):
+        indig = True; out.append(line); continue
+    if indig and re.match(rf'^    {re.escape(name)}:', line):
+        out.append(f'    {name}: "{digest}"\n'); continue
+    if indig and not line.startswith("    ") and line.strip():
+        indig = False
+    out.append(line)
+open(p, "w").write("".join(out))
+PY
+    done
+    echo "Digest-pinned all four images in values.yaml (master and release will match)."
+  else
+    echo "WARNING: could not resolve image digests -- values.yaml stays tag-based." >&2
+    echo "         master and release still agree, so the deploy is correct; the next" >&2
+    echo "         application-cd run will add the digests." >&2
+  fi
+fi
+
 if ! git diff --quiet -- charts/voteball/values.yaml; then
   echo "values.yaml changed — committing so ArgoCD deploys these values, not the stale ones."
   git add charts/voteball/values.yaml
