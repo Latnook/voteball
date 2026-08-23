@@ -12,9 +12,15 @@
 FROM postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
 # Unpinned deliberately -- see the hadolint --ignore DL3018 comment in Jenkinsfile-ci for why a
 # pinned Alpine package version is a time bomb, not a reproducibility win, in this project.
-RUN apk add --no-cache aws-cli
+# Combined into ONE RUN with the gosu removal below, not because layer count matters here but
+# because hadolint's DL3059 (consecutive RUN instructions) is info-level and hadolint's DEFAULT
+# FAILURE THRESHOLD IS info -- so a second RUN fails the Lint stage outright. Learned on CI build #1,
+# 2026-08-23: the local script suite was green because it does not run hadolint, and Lint runs before
+# Tests, so the whole build died before a single test executed.
+RUN apk add --no-cache aws-cli \
+ && rm -f /usr/local/bin/gosu
 
-# REMOVE gosu. It is the ONLY source of HIGH/CRITICAL findings in this image -- all 22 of them
+# THE gosu REMOVAL ABOVE. It is the ONLY source of HIGH/CRITICAL findings in this image -- all 22 of them
 # (measured 2026-08-23 with trivy --severity CRITICAL,HIGH --ignore-unfixed), every one a Go stdlib
 # CVE statically linked into that single binary. Nothing else in the image scans dirty.
 #
@@ -32,8 +38,6 @@ RUN apk add --no-cache aws-cli
 #
 # If a future base drags in another unused Go binary, delete that too rather than reverting the
 # scan to report-only.
-RUN rm -f /usr/local/bin/gosu
-
 COPY backup.sh /usr/local/bin/backup.sh
 RUN chmod +x /usr/local/bin/backup.sh
 USER 1000

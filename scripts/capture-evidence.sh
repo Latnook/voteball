@@ -163,14 +163,35 @@ s.connect((os.environ['DB_HOST'], 5432)); print('   RDS REACHABLE (the probe wor
   # A CONTROL FIRST, for the reason the worker probe above learned the hard way: a negative result
   # from a tool that is not installed looks identical to a negative result from a policy. If the
   # control does not connect, this demo is inconclusive, not passing.
-  echo "-- control: frontend -> backend:5000 (must connect — allow-frontend-to-backend-egress permits it):"
-  kubectl exec -n "$NS" deploy/frontend -- sh -c '
-    if nc -z -w 8 backend 5000; then echo "   BACKEND REACHABLE (the probe works)";
+  # THE HOST COMES FROM THE CONFIGMAP, NOT FROM THE FRONTEND'S OWN ENVIRONMENT. The first version of
+  # this demo used "$DB_HOST" inside the frontend container and printed a confident BLOCKED -- while
+  # nc was actually reporting `bad address ''`, because the frontend has no DB_HOST at all (correctly:
+  # it never talks to the database, which is the entire point of the policy). The probe never
+  # attempted a connection, so the pass meant nothing. Caught live on 2026-08-23, and it is precisely
+  # the "a test that cannot fail is not a test" failure the worker probe above already learned once.
+  EV_DB_HOST="$(kubectl -n "$NS" get cm app-config -o jsonpath='{.data.DB_HOST}' 2>/dev/null)"
+  echo "-- resolved RDS host from the ConfigMap: ${EV_DB_HOST:-<EMPTY -- demo is INCONCLUSIVE>}"
+
+  # TWO controls, because this demo asserts a negative and both halves can lie independently:
+  #   A. backend -> RDS on the SAME host must CONNECT   (proves the host is right and RDS is up)
+  #   B. frontend -> backend must CONNECT               (proves nc works in the frontend image)
+  echo "-- control A: backend -> RDS:5432 on that host (must connect):"
+  kubectl exec -n "$NS" deploy/backend -- python -c "
+import socket
+s = socket.socket(); s.settimeout(10)
+try:
+    s.connect(('${EV_DB_HOST}', 5432)); print('   RDS REACHABLE from backend (host correct, RDS up)')
+except Exception as e:
+    print('   backend could NOT reach RDS:', type(e).__name__, '-- this demo is INCONCLUSIVE')
+" 2>&1 || true
+  echo "-- control B: frontend -> backend:5000 (must connect — allow-frontend-to-backend-egress permits it):"
+  kubectl exec -n "$NS" deploy/frontend -c frontend -- sh -c '
+    if nc -z -w 8 backend 5000; then echo "   BACKEND REACHABLE (nc works in this image)";
     else echo "   control FAILED to connect — this demo is INCONCLUSIVE, not a pass"; fi' 2>&1 || true
-  echo "-- real probe: frontend -> RDS:5432 (must NOT connect):"
-  kubectl exec -n "$NS" deploy/frontend -- sh -c '
-    if nc -z -w 8 "$DB_HOST" 5432; then echo "   RDS REACHABLE <- policy NOT enforcing, T3-1 has regressed";
-    else echo "   BLOCKED — the frontend has no route to the database"; fi' 2>&1 || true
+  echo "-- real probe: frontend -> RDS:5432, same host as control A (must NOT connect):"
+  kubectl exec -n "$NS" deploy/frontend -c frontend -- sh -c "
+    if nc -z -w 20 '${EV_DB_HOST}' 5432; then echo '   RDS REACHABLE <- policy NOT enforcing, T3-1 has regressed';
+    else echo '   BLOCKED — the frontend has no route to the database'; fi" 2>&1 || true
   echo
 
   echo "### Demo 5c — no Kubernetes API token is mounted where it is not needed (T3-3)"
