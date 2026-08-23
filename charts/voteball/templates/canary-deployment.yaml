@@ -38,6 +38,14 @@ spec:
     spec:
       # No ServiceAccount role needed -- the canary talks to the app over the same public HTTPS path
       # a browser uses, not to any AWS API.
+      #
+      # Set on the POD, not on a ServiceAccount, because this is the one workload in the chart with no
+      # ServiceAccount of its own: it runs as `default`, which the chart does not (and must not) own --
+      # `default` is created by Kubernetes with the namespace, and editing it from here would mean
+      # ArgoCD adopting and pruning an object it did not create. So the pod-level field is the only
+      # place this can be said. Same reasoning as frontend/backend in serviceaccounts.yaml: a curl
+      # loop has no business holding a Kubernetes API credential.
+      automountServiceAccountToken: false
       containers:
         - name: canary
           image: {{ .Values.canary.image | quote }}

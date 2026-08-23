@@ -47,3 +47,10 @@ __pycache__/
 # Personal notes (not part of the submission)
 EXPLAINER.md
 PROJECT-QA.md
+
+# Teacher's review documents. Received 2026-08-23 as .docx for Task 3 (Kubernetes/Docker) and Task 4
+# (Jenkins CI/CD); their findings were applied to the repo and are recorded in
+# docs/design/2026-08-23-release-branch-and-digest-design.md and the commits around it. The documents
+# themselves are correspondence, not submission artifacts -- and a binary blob no test or grep can
+# read is the worst possible place for a claim about this repo to live.
+*.docx

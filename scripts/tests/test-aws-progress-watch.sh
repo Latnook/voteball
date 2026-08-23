@@ -211,6 +211,39 @@ out="$(cd "$work/probe" && bash -c '. ./launch.sh; sleep 0.3; kill -0 "$WATCH_PI
 grep -q ALIVE <<<"$out" || fail "the launcher must actually start the watcher, got: $out"
 ok "the launcher actually starts the watcher in the background"
 
+# Children of a pid, read from /proc rather than pgrep/ps: python:3.12-slim (one of the two
+# containers Jenkins runs this suite in) ships no procps at all, so pgrep here fails the build.
+#
+# TWO sources, because the fast one is not universally available. /proc/<pid>/task/<tid>/children
+# needs CONFIG_PROC_CHILDREN, which some kernels are built without and some container runtimes do not
+# surface -- the file is then absent or empty, which is indistinguishable from "this process really
+# has no children". The 2026-08-23 teacher review hit exactly that: every functional assertion in
+# this file passed and only this check failed, twice, in an isolated runner. So fall back to deriving
+# the list from every /proc/<pid>/stat, which needs no kernel option and no procps.
+#
+# Parsing note: field 2 of stat is `comm`, parenthesised, and may itself contain spaces AND ')'
+# (a process can be named "foo) bar"). Only the text after the LAST ')' is reliably positional, so
+# ppid is read as field 2 of that remainder, never by cutting on whitespace from the left.
+children_of() {
+  local parent="$1" kids f line rest pid
+  kids="$(cat "/proc/$parent/task/$parent/children" 2>/dev/null || true)"
+  if [ -n "${kids//[[:space:]]/}" ]; then
+    printf '%s\n' $kids
+    return 0
+  fi
+  for f in /proc/[0-9]*/stat; do
+    line="$(cat "$f" 2>/dev/null)" || continue
+    rest="${line##*') '}"
+    [ "$rest" != "$line" ] || continue
+    # shellcheck disable=SC2086  # deliberate word-splitting: $rest is a fixed-format stat tail
+    set -- $rest
+    [ "${2:-}" = "$parent" ] || continue
+    pid="${f#/proc/}"
+    printf '%s\n' "${pid%/stat}"
+  done
+  return 0
+}
+
 # ---- 8. killing the watcher takes its sleep child with it ---------------------------------------
 # `kill` on a shell blocked in `sleep` orphans that sleep, which then lingers for up to the poll
 # interval (30s at the start delay). deploy.sh and destroy.sh kill this thing on every EXIT and on
@@ -218,10 +251,8 @@ ok "the launcher actually starts the watcher in the background"
 VOTEBALL_WATCH_START_DELAY=30 VOTEBALL_WATCH_POLL_SECS=30 "$SCRIPT" apply >/dev/null 2>&1 &
 wpid=$!
 sleep 1
-# Read the child list from /proc rather than pgrep/ps: python:3.12-slim (one of the two containers
-# Jenkins runs this suite in) ships no procps at all, so pgrep here fails the build.
-kids="$(cat "/proc/$wpid/task/$wpid/children" 2>/dev/null)"
-[ -n "${kids// /}" ] || fail "expected the watcher to be waiting on a backgrounded sleep child"
+kids="$(children_of "$wpid")"
+[ -n "${kids//[[:space:]]/}" ] || fail "expected the watcher to be waiting on a backgrounded sleep child"
 kill "$wpid" 2>/dev/null
 sleep 1
 for k in $kids; do
