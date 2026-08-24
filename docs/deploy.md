@@ -520,6 +520,21 @@ kubectl get secret kube-prometheus-stack-grafana -n observability \
   -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
+**`grafana-cli` runs inside the Grafana pod**, if you need it (checking plugin versions, mostly):
+
+```bash
+kubectl exec -it -n observability deploy/kube-prometheus-stack-grafana -c grafana -- grafana-cli --help
+```
+
+Treat it as **read-only**. Nothing it writes survives: Grafana here has no disk of its own
+(deliberately — see "no PVC" in `docs/observability.md`), so a `grafana-cli plugins install` is gone
+the next time the pod restarts, which on Spot nodes is roughly daily. A plugin that should stay
+belongs in the `helm_release` values in `terraform/addon-monitoring.tf`, and a dashboard belongs in
+`charts/observability/dashboards/` (below) — both survive a rebuild; a CLI call does not.
+`grafana-cli admin reset-admin-password` is worse than useless here: it changes the running password
+without changing the Secret above, so the real password and the one every script reads stop matching,
+and the next pod restart throws your new one away anyway.
+
 Prometheus and Alertmanager have **no login at all**. That is on purpose, not an oversight: the only
 way to reach them is to already hold cluster access, so a second password would protect nothing and
 would have to be stored somewhere.
