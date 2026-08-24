@@ -52,6 +52,12 @@ externalSecret:
   # The grafana_ro DB password lives in its OWN container so the observability namespace can read it
   # without also being handed the app's DB and admin credentials.
   grafanaSecretName: "voteball/grafana"
+  # FALSE until `terraform apply` has created the voteball/grafana container AND
+  # scripts/seed-grafana-secret.sh has seeded a real db_password into it. Chart code deploys on a
+  # git push; the Terraform container needs a billed apply. Turning this on first puts an
+  # ExternalSecret in the cluster with nothing to read, which fails the whole ArgoCD sync and makes
+  # every CD run roll production back. Happened on 2026-08-24.
+  grafanaEnabled: false
   refreshInterval: "1h"
 
 ingress:

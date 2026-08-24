@@ -46,7 +46,11 @@ jenkins:
 # The region is a literal for the same reason serviceCidr above is: this chart is ArgoCD-synced and
 # cannot receive a Terraform output.
 externalSecret:
-  enabled: true
+  # FALSE for the same reason charts/voteball's grafanaEnabled is: this reads the Secrets Manager
+  # container voteball/grafana, which only a billed `terraform apply` creates. Shipping it ungated
+  # on 2026-08-24 left both ArgoCD Applications Degraded and put application-cd into a
+  # deploy-fails-then-rollback loop. Flip to true after the apply AND the seed script have run.
+  enabled: false
   secretName: "voteball/grafana"
   region: "il-central-1"
   refreshInterval: "1h"
