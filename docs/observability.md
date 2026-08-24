@@ -757,7 +757,7 @@ for q in voteball:journey_requests:rate5m voteball:availability:ratio5m voteball
     | python3 -c 'import json,sys; r=json.load(sys.stdin)["data"]["result"]; print(r[0]["value"][1] if r else "ABSENT")'
 done
 
-# 4. All four dashboards are present as ConfigMaps.
+# 4. All six dashboards are present as ConfigMaps.
 kubectl -n observability get cm -l grafana_dashboard=1
 
 # 5. Alertmanager has the SNS receiver and has not failed a notification.
