@@ -205,6 +205,47 @@
           "refId": "B"
         }
       ]
+    },
+    {
+      "id": 8,
+      "title": "Last successful release (currently deployed)",
+      "type": "table",
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"x": 0, "y": 32, "w": 24, "h": 6},
+      "description": "The end of the delivery chain, on the delivery dashboard: a release only becomes the running one by passing application-cd, so what is serving traffic right now IS the last successful release. Read from the application's own voteball_app_info rather than from a Jenkins build counter deliberately -- a green CD build says the pipeline finished, not that the cluster is running what it promoted, and those two have disagreed here before. `release` is the image digest when the chart pins one.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true,
+              "container": true,
+              "endpoint": true,
+              "instance": true,
+              "job": true,
+              "service": true
+            }
+          }
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "expr": "voteball_app_info{namespace=\"devops-app\"}",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ]
     }
   ]
 }
