@@ -349,3 +349,80 @@ CREATE TABLE IF NOT EXISTS rollup_national_previous_upcoming (
 );
 CREATE INDEX IF NOT EXISTS idx_rollup_national_previous_upcoming_previous ON rollup_national_previous_upcoming (previous_party_id);
 CREATE INDEX IF NOT EXISTS idx_rollup_national_previous_upcoming_upcoming ON rollup_national_previous_upcoming (upcoming_party_id);
+
+-- ---------------------------------------------------------------------------------------------
+-- Grafana's read-only access. See docs/design/2026-08-24-grafana-datasources-design.md decision 3.
+--
+-- THE ROLE IS CREATED HERE, WITHOUT A PASSWORD, AND THAT SPLIT IS LOAD-BEARING.
+-- This file runs on EVERY backend boot -- db.init_db() is called from migrate.py, from app.py's
+-- __main__ guard AND from gunicorn.conf.py's on_starting hook -- not only from the migrate Job. So
+-- a GRANT naming a role that only the migrate Job creates would fail every backend pod's startup,
+-- turning a monitoring feature into an application outage. The role must therefore exist by the
+-- time the grants run, in the same file.
+--
+-- The password is set separately, by migrate.py, from GRAFANA_DB_PASSWORD. A static SQL file has
+-- nowhere to put a secret, and a Postgres role with no password cannot authenticate under
+-- scram-sha-256 -- so the intermediate state (role created, password not yet set) fails CLOSED.
+--
+-- CREATE ROLE is a CLUSTER-level operation, not a per-database one, and needs superuser or
+-- CREATEROLE -- a privilege the connecting user is expected to have (RDS's master user carries
+-- rds_superuser) but is not guaranteed to have on every fork. Since this file runs on every
+-- backend boot, an unguarded CREATE ROLE that raises on insufficient_privilege would abort
+-- init_db and crash-loop every pod. A monitoring nicety must never be able to take the app down,
+-- so a permission failure here degrades to a NOTICE instead.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'grafana_ro') THEN
+        CREATE ROLE grafana_ro LOGIN;
+    END IF;
+EXCEPTION WHEN insufficient_privilege OR others THEN
+    RAISE NOTICE 'grafana_ro not created (%): Grafana PostgreSQL data source will not authenticate', SQLERRM;
+END
+$$;
+
+-- votes carries cookie_token (unique per voter) and ip_hash. Both link a ballot to a person, so the
+-- base table is never readable by Grafana; this view is what the dashboards query instead. A view
+-- rather than column-level grants for two reasons: a reviewer can read one object and know exactly
+-- what the dashboard tool can see, and ALTER DEFAULT PRIVILEGES below does not apply to column
+-- grants.
+CREATE OR REPLACE VIEW v_grafana_votes AS
+    SELECT id,
+           created_at,
+           previous_vote_status,
+           upcoming_vote_status,
+           previous_party_id
+      FROM votes;
+
+-- Same fail-open-to-NOTICE reasoning as the role creation above: GRANT/REVOKE naming a role that
+-- does not exist (because role creation above hit insufficient_privilege and only logged a NOTICE)
+-- would itself raise and abort init_db on every backend boot. Every grant/revoke touching
+-- grafana_ro below is therefore wrapped the same way.
+--
+-- current_database(), not a literal: the database name comes from terraform/voteball.tfvars and a
+-- forker's will differ. GRANT takes an identifier, not an expression, so this needs a DO block with
+-- format(%I) rather than a plain statement -- the same reason the role creation above needs one.
+DO $$
+BEGIN
+    EXECUTE format('GRANT CONNECT ON DATABASE %I TO grafana_ro', current_database());
+    GRANT USAGE ON SCHEMA public TO grafana_ro;
+
+    -- The eight rollup tables and the four reference tables.
+    GRANT SELECT ON rollup_previous, rollup_upcoming, rollup_previous_upcoming,
+                    rollup_national_previous, rollup_national_upcoming,
+                    rollup_national_previous_upcoming,
+                    rollup_vote_switch, rollup_national_vote_switch,
+                    leagues, clubs, previous_parties, upcoming_parties,
+                    v_grafana_votes
+        TO grafana_ro;
+
+    -- Explicit and unconditional. A REVOKE that is merely "never granted" is one careless
+    -- GRANT ALL away from being wrong; stating it means the intent survives someone else's shortcut.
+    REVOKE ALL ON votes, vote_clubs, vote_leagues, vote_upcoming_parties FROM grafana_ro;
+
+    -- Without this, a rollup table added next month is a broken panel next month -- the grant list
+    -- above names tables that exist today and nothing updates it automatically.
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO grafana_ro;
+EXCEPTION WHEN insufficient_privilege OR undefined_object OR others THEN
+    RAISE NOTICE 'grafana_ro grants not applied (%): Grafana PostgreSQL data source will see no data', SQLERRM;
+END
+$$;

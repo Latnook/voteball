@@ -11,15 +11,61 @@ once per release, instead of every backend replica racing to run it on startup. 
 about the current k3s path -- on_starting stays -- and it's safe to run anytime, because init_db is
 idempotent (CREATE TABLE IF NOT EXISTS + seed inserts guarded by ON CONFLICT DO NOTHING).
 """
+import os
+
+from psycopg2 import sql
+
 import db
 
 
+def _set_grafana_password(conn):
+    """Give the grafana_ro role its password, from the environment.
+
+    schema.sql creates the role with no password, because it runs on every backend boot and can
+    carry no secret. This runs only in the migrate Job, which is the one place the password is
+    projected -- see charts/voteball/templates/externalsecret.yaml.
+
+    DELIBERATELY OPTIONAL. If GRAFANA_DB_PASSWORD is absent the Job prints a notice and succeeds.
+    A missing monitoring credential must never block a release: this Job is a pre-upgrade Helm hook,
+    so raising here would stop the application from deploying because a dashboard cannot log in.
+
+    ALSO GUARDED against grafana_ro not existing at all. schema.sql's own CREATE ROLE degrades to a
+    NOTICE (not a raise) when the connecting user lacks CREATEROLE -- see the DO block there -- so on
+    a fork missing that privilege, the role can be legitimately absent even though the password IS
+    set in the environment. An unguarded ALTER ROLE on a role that doesn't exist raises
+    UndefinedObject, which would crash this Job and block the release over the exact same class of
+    privilege shortfall Correction C already closed on the schema.sql side.
+    """
+    password = os.environ.get('GRAFANA_DB_PASSWORD', '')
+    if not password:
+        print('GRAFANA_DB_PASSWORD not set; leaving grafana_ro without a password '
+              '(the Grafana PostgreSQL data source will not authenticate until it is seeded).')
+        return
+
+    cur = conn.cursor()
+    cur.execute("SELECT 1 FROM pg_roles WHERE rolname = 'grafana_ro'")
+    if cur.fetchone() is None:
+        cur.close()
+        print('GRAFANA_DB_PASSWORD is set but grafana_ro does not exist (schema.sql could not '
+              'create it -- see its NOTICE); skipping ALTER ROLE '
+              '(the Grafana PostgreSQL data source will not authenticate until the role exists).')
+        return
+
+    # Parameterised as a VALUE is not possible here -- ALTER ROLE takes a literal, not a bind
+    # parameter -- so quote it with psycopg2's own literal quoting rather than an f-string.
+    cur.execute(sql.SQL('ALTER ROLE grafana_ro WITH PASSWORD {}').format(sql.Literal(password)))
+    conn.commit()
+    cur.close()
+    print('grafana_ro password set.')
+
+
 def main():
-    """Open a connection, apply schema + seed once, and close it."""
+    """Open a connection, apply schema + seed once, set the Grafana role's password, and close it."""
     conn = db.get_db()
     try:
         db.init_db(conn)
         print('Schema and seed applied.')
+        _set_grafana_password(conn)
     finally:
         # try/finally so the connection is released even if init_db raises -- the same
         # close-on-every-exit-path discipline the app's request handlers follow.
