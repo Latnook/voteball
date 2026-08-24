@@ -1,0 +1,265 @@
+{
+  "uid": "voteball-aws",
+  "title": "AWS Infrastructure",
+  "tags": ["voteball", "aws"],
+  "timezone": "browser",
+  "editable": false,
+  "refresh": "5m",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "RDS CPU",
+      "type": "timeseries",
+      "description": "Refresh is pinned to 5m deliberately. CloudWatch bills per metric returned; at Grafana's 10s default these 14 metrics cost roughly $12/month instead of $0.05. See docs/design/2026-08-24-grafana-datasources-design.md decision 8.",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "percent" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/RDS",
+          "metricName": "CPUUtilization",
+          "statistic": "Average",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "DBInstanceIdentifier": "voteball-eks-db" },
+          "matchExact": true,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "RDS connections",
+      "type": "timeseries",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/RDS",
+          "metricName": "DatabaseConnections",
+          "statistic": "Maximum",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "DBInstanceIdentifier": "voteball-eks-db" },
+          "matchExact": true,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "RDS free storage",
+      "type": "timeseries",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "bytes" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/RDS",
+          "metricName": "FreeStorageSpace",
+          "statistic": "Minimum",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "DBInstanceIdentifier": "voteball-eks-db" },
+          "matchExact": true,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "RDS freeable memory",
+      "type": "timeseries",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "bytes" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/RDS",
+          "metricName": "FreeableMemory",
+          "statistic": "Minimum",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "DBInstanceIdentifier": "voteball-eks-db" },
+          "matchExact": true,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "RDS read/write latency",
+      "type": "timeseries",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "s" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/RDS",
+          "metricName": "ReadLatency",
+          "statistic": "Average",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "DBInstanceIdentifier": "voteball-eks-db" },
+          "matchExact": true,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        },
+        {
+          "refId": "B",
+          "namespace": "AWS/RDS",
+          "metricName": "WriteLatency",
+          "statistic": "Average",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "DBInstanceIdentifier": "voteball-eks-db" },
+          "matchExact": true,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "ALB — site + Jenkins request count",
+      "type": "timeseries",
+      "description": "ALB group `voteball` carries BOTH devops-app/voteball (the frontend) and ci/jenkins-webhook, so RequestCount at the LoadBalancer dimension includes Jenkins webhook traffic, not just site visits -- see docs/design/2026-07-31-alb-sharing-design note or CLAUDE.md's ALB-sharing section. The site-only rate already exists and is better for that purpose: Prometheus' voteball:journey_requests:rate5m. This panel earns its place by showing what Prometheus cannot -- requests rejected by the ALB before reaching a pod. Dimension is a wildcard (LoadBalancer: \"*\", matchExact: false) because the ALB's hash suffix is rebuild-specific; there is exactly one ALB in this account so the wildcard cannot merge unrelated series.",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 16 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/ApplicationELB",
+          "metricName": "RequestCount",
+          "statistic": "Sum",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "LoadBalancer": "*" },
+          "matchExact": false,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "ALB target 5xx",
+      "type": "timeseries",
+      "description": "Errors returned by voteball's own pods (5xx from the target), not the ALB itself -- see the ELB 5xx panel for the other half. Dimension wildcarded per the request-count panel's note: no TargetGroup ARN is pinned because every rebuild mints a new one.",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 16 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/ApplicationELB",
+          "metricName": "HTTPCode_Target_5XX_Count",
+          "statistic": "Sum",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "LoadBalancer": "*" },
+          "matchExact": false,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "ALB ELB 5xx",
+      "type": "timeseries",
+      "description": "Errors generated by the ALB itself (no healthy target, request malformed, etc.) rather than by voteball's pods -- the failure class Prometheus' in-pod SLIs cannot see at all, since a request that never reaches a pod never gets counted or timed there.",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 16 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/ApplicationELB",
+          "metricName": "HTTPCode_ELB_5XX_Count",
+          "statistic": "Sum",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "LoadBalancer": "*" },
+          "matchExact": false,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "ALB target response time (p95)",
+      "type": "timeseries",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 16 },
+      "fieldConfig": {
+        "defaults": { "unit": "s" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "namespace": "AWS/ApplicationELB",
+          "metricName": "TargetResponseTime",
+          "statistic": "p95",
+          "period": "300",
+          "region": "default",
+          "dimensions": { "LoadBalancer": "*" },
+          "matchExact": false,
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "logs",
+      "title": "Recent application logs (on demand)",
+      "description": "Short range on purpose. CloudWatch Logs Insights bills per GB SCANNED, not stored, so a wide auto-refreshing log panel re-scans its whole window on every tick. Use Explore for real log investigation; this panel exists to prove the connection works and to catch an obvious burst.",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 24 },
+      "timeFrom": "15m",
+      "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
+      "targets": [
+        {
+          "refId": "A",
+          "queryMode": "Logs",
+          "region": "default",
+          "logGroups": [{ "arn": "", "name": "/aws/containerinsights/voteball/application" }],
+          "expression": "fields @timestamp, kubernetes.pod_name, log | sort @timestamp desc | limit 100",
+          "datasource": { "type": "cloudwatch", "uid": "cloudwatch" }
+        }
+      ]
+    }
+  ]
+}

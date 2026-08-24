@@ -8,7 +8,11 @@
 # silent failure #2 in docs/design/2026-08-24-grafana-datasources-design.md.
 #
 # It also checks the uid contract in the other direction: a dashboard panel naming a data source uid
-# that no data source declares renders an empty panel, not an error.
+# that no data source declares renders an empty panel, not an error. That check parses each
+# dashboard's JSON with python3 (present in the PYTHON_GROUP container run-ci-suite.sh runs this in)
+# and walks every "datasource" object at any depth -- a single-line grep for
+# `"datasource":\s*\{[^}]*"uid": "X"` cannot span newlines, so a pretty-printed, multi-line
+# "datasource" block passed this check silently until 2026-08-24, matching neither ok() nor fail().
 #
 # Offline: reads the repository's own files, renders nothing, needs no cluster.
 set -uo pipefail
@@ -69,20 +73,53 @@ declared=$( { grep -oE '^[[:space:]]+uid:[[:space:]]*[a-z0-9-]+' "$DS" | sed -E 
               printf 'prometheus\nalertmanager\n'; } | sort -u )
 for u in $declared; do ok "declares uid $u"; done
 
+# Parsed with python3, not grep. A single-line grep for `"datasource":\s*\{[^}]*"uid": "X"` cannot
+# span newlines (grep matches per LINE by default), so a pretty-printed, MULTI-LINE "datasource"
+# block never matched at all -- the enclosing `if grep -rq ...` was simply false, so neither ok() nor
+# fail() ever fired for it. That is silent pass-by-omission, not a false positive, and a reviewer
+# proved it both ways (see the sabotage transcript in the Task 6 report). python3 walks the actual
+# parsed JSON structure instead, at any depth and regardless of formatting, so it cannot miss one.
 if [ -d "$DASHBOARD_DIR" ]; then
-  used=$(grep -rhoE '"uid":[[:space:]]*"[a-z0-9-]+"' "$DASHBOARD_DIR" \
-           | sed -E 's/.*"uid":[[:space:]]*"([a-z0-9-]+)"/\1/' | sort -u)
-  for u in $used; do
-    # A dashboard's OWN uid also matches this pattern; only flag ones that look like data sources,
-    # i.e. those appearing inside a "datasource" object. Grep the enclosing key to be sure.
-    if grep -rqE "\"datasource\":[[:space:]]*\{[^}]*\"uid\":[[:space:]]*\"$u\"" "$DASHBOARD_DIR"; then
-      if echo "$declared" | grep -qx "$u"; then
-        ok "dashboard data source uid $u is declared"
-      else
-        fail "a dashboard panel uses data source uid \"$u\", which no data source declares"
-      fi
-    fi
-  done
+  python3 - "$DASHBOARD_DIR" "$declared" <<'PYEOF'
+import json
+import os
+import sys
+
+dashboard_dir = sys.argv[1]
+declared = set(sys.argv[2].split())
+
+
+def find_datasource_uids(obj):
+    """Yield every uid named by a {"datasource": {..., "uid": "..."}} object at any depth."""
+    if isinstance(obj, dict):
+        ds = obj.get("datasource")
+        if isinstance(ds, dict) and isinstance(ds.get("uid"), str):
+            yield ds["uid"]
+        for value in obj.values():
+            yield from find_datasource_uids(value)
+    elif isinstance(obj, list):
+        for item in obj:
+            yield from find_datasource_uids(item)
+
+
+fails = 0
+for fname in sorted(os.listdir(dashboard_dir)):
+    if not fname.endswith(".json"):
+        continue
+    with open(os.path.join(dashboard_dir, fname)) as f:
+        data = json.load(f)
+    for uid in sorted(set(find_datasource_uids(data))):
+        if uid in declared:
+            print(f"  ok   dashboard data source uid {uid} is declared ({fname})")
+        else:
+            print(f'  FAIL a dashboard panel in {fname} uses data source uid "{uid}", '
+                  'which no data source declares')
+            fails += 1
+
+sys.exit(min(fails, 255))
+PYEOF
+  py_rc=$?
+  [ "$py_rc" -eq 0 ] || fails=$((fails + py_rc))
 fi
 
 echo
