@@ -78,16 +78,16 @@ spec:
             # block the whole release on a monitoring credential. migrate.py treats an absent value
             # as "skip and carry on" for the same reason.
             #
-            # CONSEQUENCE, observed 2026-08-24: on the release that first ENABLES the Grafana data
-            # sources, this Secret does not exist yet when the hook runs. ArgoCD executes Helm
-            # pre-upgrade hooks in its PreSync phase -- before it applies normal resources, which is
-            # when the grafana-db-secret ExternalSecret is created and when ESO populates it. So the
-            # Job prints "GRAFANA_DB_PASSWORD not set", exits 0, and grafana_ro is left with no
-            # password. A passwordless role cannot authenticate under scram-sha-256, so the Grafana
-            # PostgreSQL data source fails with SQLSTATE 28P01 until the NEXT sync, by which time the
-            # Secret exists and this hook sets it. That is self-healing, not a fault -- do not "fix"
-            # it by ordering the ExternalSecret into PreSync, which would order the RESOURCE but not
-            # ESO's reconcile, so the Job would read an EMPTY password and write THAT to the role.
+            # NOTE, and this is NOT where the enabling-release failure comes from. On the release
+            # that first enables the Grafana data sources this Secret may not exist yet -- ArgoCD runs
+            # Helm pre-upgrade hooks in PreSync, before it applies normal resources -- so the Job
+            # prints "GRAFANA_DB_PASSWORD not set" and exits 0, and the next sync sets it. That is
+            # self-healing and was mis-diagnosed once as the cause of a 28P01 at the Grafana end.
+            #
+            # The actual cause of that was on the OTHER side: `envFromSecret` projects a Secret into
+            # Grafana's environment at POD START and never again, so a Grafana pod older than its
+            # Secret has no password at all and authenticates with an empty string. The fix there is
+            # `kubectl rollout restart deployment/kube-prometheus-stack-grafana -n observability`.
             # See docs/design/2026-08-24-grafana-datasources-design.md's Verification outcome.
             - secretRef: { name: grafana-db-secret, optional: true }
           resources:

@@ -136,16 +136,29 @@ resources. The steps it performs (kept in step with the script's own numbering �
 `grep -nE '^\s*step "' scripts/deploy.sh` if these ever look out of date):
 
 1. Find the newest database snapshot to restore from.
-2. Create the ECR repositories and the two (still empty) secret containers with a small, targeted
+2. Create the ECR repositories and the three (still empty) secret containers with a small, targeted
    Terraform apply — before the main build below, because the Jenkins install later in this sequence
-   needs somewhere to pull its own image from, and somewhere to read its credentials from.
+   needs somewhere to pull its own image from, and somewhere to read its credentials from (the third
+   container, `voteball/grafana`, has no such deadline of its own — nothing in step 6's apply reads it
+   — but is created here anyway so step 3c has somewhere to seed it before the billed apply).
 3. Copy the app's passwords into AWS's secret vault (nothing secret is printed or stored in git). The
    database password is read straight from `voteball.tfvars` (the same file Terraform uses in step 6,
    so the two can't disagree); only the **admin** password is asked for — up front, before any billed
    resource is created. Run `deploy.sh` in a real terminal — see the note below.
 3b. Copy Jenkins' own credentials (a GitHub deploy key, a webhook secret, an admin login) into AWS's
     secret vault the same way. Also asked for up front, same reason.
-3c. Tell GitHub about the deploy key and webhook that step 3b just minted. This happens **here**, not
+3c. Seed the `grafana_ro` database password (generated, never typed) — and a GitHub token, if one is
+    available — into the same vault, for Grafana's PostgreSQL and GitHub data sources. **This step is
+    new since 2026-08-24** and closes a real outage: `charts/voteball`'s and `charts/observability`'s
+    ExternalSecrets for these credentials are committed **enabled**, so without seeding them first,
+    ArgoCD would sync resources asking for a `db_password` that does not exist yet, External Secrets
+    Operator would report `SecretSyncedError`, the whole sync would go `phase: Failed`, and — because
+    anything failing after `application-cd`'s Promote stage triggers a rollback — every CD run after
+    the rebuild would deploy and then immediately roll production back. The GitHub token is
+    **optional**: unlike the four credentials above, an unattended run with none supplied does not
+    fail or hang — it just seeds `db_password` alone, and the GitHub data source's three panels stay
+    blank until a token is added later (see below).
+3d. Tell GitHub about the deploy key and webhook that step 3b just minted. This happens **here**, not
     at the end, because step 9 below pushes to `master` — and the webhook left over from the previous
     cluster fires on that push. If GitHub has not been told about the new key by then, the build dies
     on `Permission denied (publickey)` in the middle of an otherwise healthy deploy. The reachability
@@ -164,7 +177,7 @@ resources. The steps it performs (kept in step with the script's own numbering �
     reports success**, which is why it is its own step rather than part of secret seeding. It has to
     run here: the `jenkins-cd` account is created by step 6's apply, reaching ArgoCD needs the kubectl
     context from step 7, and it must land before any push could trigger CD. A no-op on every run
-    except the first after a rebuild. Like 3c and 11b it does **not** fail the deploy — it warns and
+    except the first after a rebuild. Like 3d and 11b it does **not** fail the deploy — it warns and
     prints the standalone fix (`./scripts/seed-argocd-token.sh`).
 8. Build the four app container images and upload them.
 9. Fill in `charts/voteball/values.yaml` from the Terraform outputs — the database address, the
@@ -177,7 +190,7 @@ resources. The steps it performs (kept in step with the script's own numbering �
 11. Hand ongoing control to ArgoCD, which syncs `charts/voteball` and `charts/observability` from the
     `release` branch.
 11b. Check GitHub can actually reach Jenkins — pings the webhook and reports whether DNS resolves, the
-     load balancer routes, and Jenkins answered. This is the half of step 3c that needs a running
+     load balancer routes, and Jenkins answered. This is the half of step 3d that needs a running
      cluster, which is why the two are separated. A failure here does **not** fail the deploy: the
      site is already up, and only CI is affected.
 11c. Check the **cluster** can resolve the site's own public hostname, and restart CoreDNS if it is
@@ -188,74 +201,95 @@ resources. The steps it performs (kept in step with the script's own numbering �
      internet normally while the in-cluster canary sends nothing, so availability reports a confident
      `1` from its no-data fallback. Also non-fatal, and re-runnable as
      `./scripts/verify-public-dns.sh`.
+11d. Restart Grafana, **only if needed**, so it actually picks up the credentials steps 3c and 11
+     delivered. `envFromSecret`/`envFromSecrets` project a Secret's keys as environment variables at
+     pod start and never again — Grafana is already running by step 6, long before ArgoCD (step 11)
+     creates the Secrets these credentials land in — so without a restart Grafana keeps authenticating
+     to PostgreSQL with an empty password. The script checks first: no restart if the Secret does not
+     exist yet, none if the pod already has the credential projected (a routine re-run). Non-fatal,
+     same as 11b/11c, and re-runnable as `./scripts/restart-grafana-datasources.sh`.
 
-### Optional, manual, not run by `deploy.sh`: Grafana's PostgreSQL and GitHub data sources
+### Grafana's PostgreSQL and GitHub data sources — automatic since 2026-08-24
 
-`deploy.sh` never calls this, on purpose — **skipping it entirely is safe**, because
-`terraform/addon-monitoring.tf` projects the `grafana-datasources` Secret as
-`optional = true`: Grafana starts normally whether or not that Secret exists, it does not wait on
-it, and nothing else in the stack is affected. Everything above, including the site itself, works
-with no further action. Five of the six dashboards render fully with no further action too —
-Application Overview, Kubernetes Cluster, Service Health and AWS Infrastructure are entirely
-Prometheus/CloudWatch (CloudWatch authenticates via IRSA, no credential needed — see
-`docs/security.md`), and Jenkins & Delivery's build-metrics panels are Prometheus as well. Skip it
-and the only thing that stays non-functional is Grafana's two credentialed data sources —
-PostgreSQL (all of the Business Analytics dashboard) and GitHub (three panels on Jenkins &
-Delivery). Both still provision cleanly with an empty credential (Grafana expands an unset
-environment variable to an empty string rather than erroring — see the design doc's silent-failure
-#2), so the failure shows up as a "login failed"/"bad credentials" error the first time a human
-opens one of those panels, not as a startup crash or a missing dashboard.
+`deploy.sh` now seeds and wires these up itself (steps 3c and 11d above); nothing manual is required
+on a normal rebuild. This section explains what actually happens, and covers the one case that still
+needs a person: adding a GitHub token later.
 
-If you want those two data sources live, do this **after** step 6 above — the secret container these
-credentials go into is created by the main `terraform apply`, not the small targeted one at step 2:
+**Why this had to become automatic rather than staying an optional manual step.** The chart flags
+that enable these ExternalSecrets (`externalSecret.grafanaEnabled` in `charts/voteball`,
+`externalSecret.enabled`/`dbEnabled`/`githubEnabled` in `charts/observability`) are **committed
+`true`** — ArgoCD deploys from `release`, so a forkable, real-values chart means they ship on. Leaving
+the secret unseeded on a fresh deploy therefore no longer "does nothing"; it actively breaks the
+deploy. ESO cannot resolve `db_password` from a still-placeholder `voteball/grafana`, the
+ExternalSecret goes `SecretSyncedError`, the resource goes Degraded, ArgoCD's **whole sync** reports
+`phase: Failed` — and because anything failing after `application-cd`'s Promote stage triggers a
+rollback, every CD run after the rebuild becomes *deploy succeeds, then immediately rolls production
+back*. That is exactly what happened on 2026-08-24 (four consecutive failed CD runs) before this
+section's fix landed.
 
-```bash
-./scripts/seed-grafana-secret.sh
-```
+**What step 3c actually does.** `./scripts/seed-grafana-secret.sh` generates the `grafana_ro` database
+password itself (nothing human types it), then looks for `GITHUB_TOKEN` — in the environment, in
+`deploy.env`, or (if a terminal is attached) an optional prompt you can skip with Enter. If none is
+supplied, it seeds `db_password` **only** — not an empty `github_token`, which the split
+ExternalSecrets (below) are what make safe to omit. Re-running `deploy.sh` never re-seeds
+`db_password` or rotates it out from under a live `grafana_ro` role: the script exits immediately once
+the secret already holds a real one.
 
-It generates the `grafana_ro` database password itself and asks for a GitHub token (a fine-grained
-PAT scoped to `Latnook/voteball` alone — see `docs/security.md`'s "Grafana data sources" section for
-why that scope and not a classic PAT), then stores both in the `voteball/grafana` secret Terraform
-just created. Re-running `deploy.sh` never re-runs this step and never rotates the password out from
-under a live `grafana_ro` role — it exits immediately if the secret already holds a real one; pass
-`FORCE_ROTATE=1` if you genuinely mean to rotate — and add `ROTATE_WHAT=github_token` when it's
-specifically the GitHub token expiring (see `docs/maintenance.md`), or `FORCE_ROTATE=1` alone
-silently regenerates `db_password` too and breaks Business Analytics until the next release.
+**Why the two credentials are two separate ExternalSecrets, not one.** ESO fails an ExternalSecret's
+*entire* sync if even one of its `data` entries cannot be resolved. The original design had a single
+ExternalSecret producing both `GF_DATASOURCE_DB_PASSWORD` and `GF_DATASOURCE_GITHUB_TOKEN` — which
+meant a deploy with no GitHub token (every unattended run, since it's optional) would have taken the
+PostgreSQL data source down too. `charts/observability/templates/externalsecret.yaml` now declares
+`grafana-datasource-db` and `grafana-datasource-github` independently, each gated by its own values.yaml
+flag, each projected into Grafana via its own `terraform/addon-monitoring.tf` `envFromSecrets` entry
+(both `optional = true`). A missing GitHub token now costs three GitHub panels on Jenkins & Delivery;
+it no longer touches Business Analytics.
 
-Two chart flags still have to flip before the credentials do anything, both gated off by default for
-the reason `docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome" section
-records — shipping the ExternalSecrets ahead of the secret they read put ArgoCD into a
-deploy-fails-then-rollback loop the first time this was tried:
-
-```
-charts/voteball/values.yaml       externalSecret.grafanaEnabled: false  ->  true
-charts/observability/values.yaml  externalSecret.enabled: false         ->  true
-```
-
-Flip both, commit, and push. `application-ci` → `application-cd` promotes the commit to `release` and
-ArgoCD syncs it.
-
-**Expect the PostgreSQL data source to fail on that first release, and to start working on the next
-one.** This is phase ordering, not a fault. The migrate Job is a Helm `pre-upgrade` hook, so ArgoCD
-runs it in **PreSync** — before it applies normal resources, which is when the `grafana-db-secret`
-ExternalSecret is created and when ESO populates it. So on the enabling release the Job finds no
-`GRAFANA_DB_PASSWORD` (it mounts that Secret `optional: true`), prints
-
-```
-GRAFANA_DB_PASSWORD not set; leaving grafana_ro without a password
-```
-
-and exits 0. `grafana_ro` then exists with no password, and a passwordless role cannot authenticate
-under `scram-sha-256` — so a Business Analytics panel shows
+**What step 11d does.** `envFromSecret`/`envFromSecrets` project a Secret's keys as environment
+variables **at pod start and never again**. Grafana is already running by step 6 — long before ArgoCD
+(step 11) creates the Secrets these credentials land in — so without a restart
+`GF_DATASOURCE_DB_PASSWORD` stays unset, and Grafana expands an unset provisioning variable to an
+**empty string** rather than failing:
 
 ```
 failed SASL auth: FATAL: password authentication failed for user "grafana_ro" (SQLSTATE 28P01)
 ```
 
-Nothing else is affected, and there is nothing to fix or re-run by hand: the Secret exists from that
-point on, so the **next** release's hook sets the password. Any subsequent push will do it. See
-`docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome" for why waiting on ESO
-inside the Job was rejected.
+`./scripts/restart-grafana-datasources.sh` checks first and restarts only when there is something to
+project and it hasn't been projected yet — no churn on a routine re-run. (This is the same trap the
+root `CLAUDE.md` records for Jenkins, where a new key in `voteball/jenkins` needs a controller restart
+for the same reason — a rule written for one component does not generalise itself to its neighbour,
+which is exactly how this was found the first time.) It verifies the projection landed rather than
+assuming:
+
+```bash
+kubectl exec -n observability deploy/kube-prometheus-stack-grafana -c grafana -- \
+  sh -c 'echo "${GF_DATASOURCE_DB_PASSWORD:+set}"'      # prints "set", or nothing at all
+```
+
+**Skipping all of this remains safe, if you ever want to.** Both `terraform/addon-monitoring.tf`
+`envFromSecrets` entries stay `optional = true`, so Grafana starts normally whether either Secret
+exists or not, and nothing else in the stack is affected. Five of the six dashboards render fully
+regardless — Application Overview, Kubernetes Cluster, Service Health and AWS Infrastructure are
+entirely Prometheus/CloudWatch (CloudWatch authenticates via IRSA, no credential needed — see
+`docs/security.md`), and Jenkins & Delivery's build-metrics panels are Prometheus as well. With no
+GitHub token, the only thing that stays non-functional is three GitHub panels on Jenkins & Delivery;
+with `db_password` never seeded (e.g. `externalSecret.grafanaEnabled`/`dbEnabled` flipped back to
+`false` by hand), it's all of Business Analytics.
+
+**Adding a GitHub token later**, or rotating either credential, is still a manual, standalone command
+— it was never something a routine rebuild should do on its own:
+
+```bash
+GITHUB_TOKEN='...' ROTATE_WHAT=github_token FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh
+```
+
+(a fine-grained PAT scoped to `Latnook/voteball` alone — see `docs/security.md`'s "Grafana data
+sources" section for why that scope and not a classic PAT). `ROTATE_WHAT=github_token` touches only
+the token; add `FORCE_ROTATE=1` alone instead only if you genuinely mean to rotate `db_password` too
+— that path breaks Business Analytics until the migrate Job's next `ALTER ROLE` release, exactly like
+a fresh seed does, so follow it with `./scripts/restart-grafana-datasources.sh` (or another release)
+once that has landed. See `docs/maintenance.md`'s GitHub PAT rotation runbook.
 
 CloudWatch is unaffected by any of this — it authenticates by IRSA and needs no secret, so its
 dashboard works as soon as `terraform apply` has run.
@@ -384,12 +418,16 @@ ADMIN_USERNAME=yourname
 ADMIN_PASSWORD=yoursecret
 JENKINS_ADMIN_USER=yourname
 JENKINS_ADMIN_PASSWORD=yoursecret
+GITHUB_TOKEN=yourfinegrainedpat
 ```
 
 Plain `KEY=value` lines, no `export` needed and no quotes required. It is **gitignored and holds
 plaintext passwords** — same category as `terraform/voteball.tfvars`, so keep it `chmod 600` and never
 commit it. The database password is deliberately *not* in here; it is read from `voteball.tfvars` so
-the two can't drift apart.
+the two can't drift apart. `GITHUB_TOKEN` is the one line here that's genuinely **optional** — step
+3c seeds `db_password` alone and does not fail or prompt when it's absent; add it only once you have a
+fine-grained PAT you want Grafana's GitHub data source to use (see "Grafana's PostgreSQL and GitHub
+data sources" above).
 
 Anything you set on the command line beats the file, so you can still override one value for a single
 run — `ADMIN_PASSWORD='newsecret' ./scripts/deploy.sh` — without editing it.
@@ -905,7 +943,8 @@ against the keys GitHub already holds and does nothing when they match — so re
 without a rebuild changes nothing.
 
 **It runs in two halves, at two different points in the deploy, and the split is deliberate.**
-Registration happens at **step 3c**, right after the key is minted and long before anything can push
+Registration happens at **step 3d** (renumbered from 3c on 2026-08-24 when the Grafana-secret seeding
+step was inserted ahead of it), right after the key is minted and long before anything can push
 (`SKIP_PROBE=1`). The reachability probe happens at **step 11b**, once Jenkins is actually serving
 (`PROBE_ONLY=1`).
 

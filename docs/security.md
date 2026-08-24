@@ -136,14 +136,29 @@ values: `db_password` (the `grafana_ro` password) and `github_token` (a fine-gra
 out-of-band by `scripts/seed-grafana-secret.sh`, which generates `db_password` itself (nothing human
 types it) and takes `github_token` from the environment or a silent prompt.
 
-**The GitHub token never reaches `devops-app`.** Two ExternalSecrets project the one container
-differently: `observability` gets both keys (Grafana needs both to authenticate its two extra data
-sources), while `devops-app` gets `db_password` only — that's the value the migrate Job's
+**The GitHub token never reaches `devops-app`.** Three ExternalSecrets project the one container:
+`devops-app` gets `db_password` only — that's the value the migrate Job's
 `ALTER ROLE grafana_ro PASSWORD ...` needs, and the GitHub token has no business being anywhere near
-the application namespace. Both ExternalSecrets ship **gated off by default**
-(`externalSecret.grafanaEnabled` in `charts/voteball`, `externalSecret.enabled` in
-`charts/observability`) — see `docs/deploy.md` for why, and for the two-step process that turns them
-on.
+the application namespace — and `observability` gets `db_password` and `github_token` through **two
+separate** ExternalSecrets rather than one carrying both keys. ESO fails an ExternalSecret's *entire*
+sync if even one of its `data` entries cannot be resolved, so a single two-key resource would take the
+PostgreSQL data source down along with the GitHub one on any deploy where no GitHub token was
+supplied — which is every deploy `scripts/deploy.sh` runs unattended, since the token is optional and
+`scripts/seed-grafana-secret.sh` skips it rather than prompting or failing when nobody supplies one.
+Splitting them means the two credentials really are independent, matching
+`docs/design/2026-08-24-grafana-datasources-design.md` decision 5 ("no alert, no SLI and no incident
+path depends on" the GitHub data source) — a missing token now costs three GitHub panels, not the
+whole Business Analytics dashboard.
+
+All three ExternalSecrets ship **behind a chart gate, currently committed on**: `externalSecret.
+grafanaEnabled` in `charts/voteball`, and `externalSecret.enabled`/`externalSecret.dbEnabled`/
+`externalSecret.githubEnabled` in `charts/observability` (the first of the three is the shared
+kill-switch that keeps `helm template` working with no ESO CRDs installed; the latter two gate the db
+and github ExternalSecrets independently). The gate exists so a *forked* repo — or this one, straight
+after a `terraform apply` that hasn't reached `scripts/seed-grafana-secret.sh` yet — can turn it back
+off rather than repeat the deploy-fails-then-rollback loop the design doc's "Verification outcome"
+records; `deploy.sh` now seeds the secret itself before ArgoCD ever syncs these resources (see
+`docs/deploy.md`), so leaving the gate on is safe on every rebuild from here on.
 
 ## What is deliberately public, and why that is safe
 

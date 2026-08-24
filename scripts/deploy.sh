@@ -5,23 +5,27 @@ set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
 # Optional repo-root credentials file (gitignored), the env-var equivalent of terraform/voteball.tfvars:
-# ADMIN_USERNAME / ADMIN_PASSWORD / JENKINS_ADMIN_USER / JENKINS_ADMIN_PASSWORD, so an unattended run
-# needs only `VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh`.
+# ADMIN_USERNAME / ADMIN_PASSWORD / JENKINS_ADMIN_USER / JENKINS_ADMIN_PASSWORD / GITHUB_TOKEN, so an
+# unattended run needs only `VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh`.
 #
 # Two things here are load-bearing, and getting either wrong reproduces the exact symptom this exists
 # to prevent -- being prompted anyway, which is indistinguishable from the file not existing at all:
 #
 #   1. `set -a`. The file holds bare `KEY=value` lines with no `export`, and the seed scripts in
-#      steps 3/3b are child processes that inherit only EXPORTED variables. Sourcing without it sets
-#      shell variables the preflight below can read but the seed scripts cannot -- half-working.
+#      steps 3/3b/3c are child processes that inherit only EXPORTED variables. Sourcing without it
+#      sets shell variables the preflight below can read but the seed scripts cannot -- half-working.
 #   2. Re-asserting the pre-existing environment AFTER the source. A sourced assignment is
 #      unconditional, so the file would otherwise silently beat an explicit
 #      `ADMIN_PASSWORD=... ./scripts/deploy.sh` -- the override you would reach for precisely when
 #      rotating the value the file still holds. Everything else in this script treats the environment
 #      as the winner (see the `${VAR:-}` guards below and DB_PASS/tfvars); this keeps that consistent.
+#      GITHUB_TOKEN joins this list for the same reason: unlike the other four, it is genuinely
+#      OPTIONAL (see step 3c) -- but an operator rotating it with
+#      `GITHUB_TOKEN=newvalue ./scripts/deploy.sh` still has to win over a stale one sitting in
+#      deploy.env, exactly like ADMIN_PASSWORD does.
 if [ -f deploy.env ]; then
   declare -A _preset=()
-  for _v in ADMIN_USERNAME ADMIN_PASSWORD JENKINS_ADMIN_USER JENKINS_ADMIN_PASSWORD DB_PASS; do
+  for _v in ADMIN_USERNAME ADMIN_PASSWORD JENKINS_ADMIN_USER JENKINS_ADMIN_PASSWORD DB_PASS GITHUB_TOKEN; do
     [ -n "${!_v:-}" ] && _preset["$_v"]="${!_v}"
   done
   set -a; . ./deploy.env; set +a
@@ -171,15 +175,20 @@ step "2/11  Creating ECR repositories and secret containers (targeted apply)"
 # on the NEXT step with "Terraform output 'ecr_registry' is unavailable" (hit on the 2026-07-31
 # rebuild, the first destroy/deploy cycle after this targeted apply was introduced).
 #
-# The two Secrets Manager containers (and their placeholder versions) are targeted for the same kind
-# of reason: steps 3 and 3b write the REAL credentials into them, and those have to be in place
-# before the full apply creates helm_release.jenkins. See the comment on step 3b.
+# The three Secrets Manager containers (and their placeholder versions) are targeted for the same
+# kind of reason: steps 3, 3b and 3c write the REAL credentials into them, and the Jenkins one has to
+# be in place before the full apply creates helm_release.jenkins (see the comment on step 3b). The
+# grafana container has no such hard deadline -- nothing in the full apply reads it, only the
+# ArgoCD-synced ExternalSecrets do, much later -- but it is targeted here anyway so step 3c can seed
+# it in the same place as the other two, before the billed apply, rather than needing its own
+# special-cased later targeted apply.
 ./scripts/bootstrap-tf-backend.sh
 terraform -chdir=terraform init -upgrade -backend-config=backend.hcl
 terraform -chdir=terraform apply -var-file="$TFVARS" \
   -target=aws_ecr_repository.app -target=aws_ecr_repository.cache \
   -target=aws_secretsmanager_secret_version.app_placeholder \
   -target=aws_secretsmanager_secret_version.jenkins_placeholder \
+  -target=aws_secretsmanager_secret_version.grafana_placeholder \
   -target=data.aws_caller_identity.current "${APPROVE[@]}"
 
 step "3/11  Seeding app credentials into Secrets Manager"
@@ -200,7 +209,29 @@ step "3b/11 Seeding Jenkins credentials into Secrets Manager"
 # docs/cicd.md step 1 has always said to seed "before first apply"; this makes the script agree.
 ./scripts/seed-jenkins-secret.sh
 
-step "3c/11 Registering the CI deploy key and webhook on GitHub"
+step "3c/11 Seeding Grafana data source credentials into Secrets Manager"
+# Idempotent, same shape as 3/3b: a no-op once voteball/grafana already holds a real db_password
+# (scripts/seed-grafana-secret.sh's own guard). Without this step, charts/voteball's
+# externalSecret.grafanaEnabled and charts/observability's externalSecret.enabled/dbEnabled/
+# githubEnabled are all committed TRUE, so ArgoCD would sync ExternalSecrets asking ESO for a
+# db_password that Terraform's placeholder does not carry -- ESO reports SecretSyncedError, the
+# resource goes Degraded, ArgoCD's WHOLE sync reports phase Failed, and because anything failing
+# after application-cd's Promote stage triggers a rollback, every CD run becomes
+# deploy-fails-then-roll-production-back. That exact outage happened on 2026-08-24: four consecutive
+# failed CD runs, from a monitoring feature that had not been seeded yet reverting unrelated
+# application fixes. Seeding here, before step 6's full apply creates ArgoCD, closes the gap the same
+# way steps 3/3b already close it for the app and Jenkins secrets.
+#
+# GITHUB_TOKEN is genuinely OPTIONAL -- unlike DB_PASS/ADMIN_PASSWORD/JENKINS_ADMIN_* above, this
+# script does not stop to prompt for it and does not fail without it (see
+# scripts/seed-grafana-secret.sh). If it is set (deploy.env or the environment) it is used; if a
+# terminal is attached the script still offers an optional prompt; otherwise it is skipped and only
+# db_password is seeded -- the GitHub data source's three panels stay blank until it is added later,
+# and nothing else is affected (docs/design/2026-08-24-grafana-datasources-design.md decision 5: no
+# alert, SLI or incident path depends on it).
+./scripts/seed-grafana-secret.sh
+
+step "3d/11 Registering the CI deploy key and webhook on GitHub"
 # Registration is deliberately here, immediately after the key is minted, and NOT at the end of the
 # deploy where it used to live. Step 9 below pushes values.yaml to master, and the webhook that
 # survived the previous cluster fires on that push -- so Jenkins fetches with the new deploy key
@@ -287,7 +318,7 @@ step "7b/11 Minting the ArgoCD CD token"
 # Idempotent: a no-op on every run except right after a fresh destroy/rebuild, when the secret's
 # token is empty or has gone stale.
 #
-# NOT FATAL, same treatment as steps 3c and 11b and for the same reason: everything up to here has
+# NOT FATAL, same treatment as steps 3d and 11b and for the same reason: everything up to here has
 # already succeeded, and failing the whole deploy over an ArgoCD API call would misreport a working
 # cluster as broken. It warns loudly instead, with the one command that fixes it standalone.
 if ! ./scripts/seed-argocd-token.sh; then
@@ -379,7 +410,7 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   # the delivery had to be replayed by hand. The 2026-08-04 00:22 rebuild survived only because
   # Jenkins happened to win that race.
   #
-  # Same shape as the deploy-key race that moved registration to step 3c: deploy.sh pushing to master
+  # Same shape as the deploy-key race that moved registration to step 3d: deploy.sh pushing to master
   # before the thing that must react to the push is ready. Fixing that one did not fix this one --
   # there, GitHub did not know the key; here, the ALB has no healthy target yet.
   #
@@ -521,13 +552,13 @@ else
 fi
 
 step "11b/11 Checking GitHub can actually reach this cluster's Jenkins"
-# The REGISTRATION half of this now happens at step 3c, before anything can push. What is left here
+# The REGISTRATION half of this now happens at step 3d, before anything can push. What is left here
 # is the probe, which is the half that needs a cluster: it pings the webhook and classifies the
 # result, proving jenkins.<domain> resolves, the ALB routes, and Jenkins is answering. None of that
-# can be true at step 3c, which is why the two are split -- see the comment there.
+# can be true at step 3d, which is why the two are split -- see the comment there.
 #
 # PROBE_ONLY=1 also side-steps a subtlety: register-github-ci.sh exits early and silently when the
-# key and hook already match, which after step 3c they always do. Calling it plainly here would
+# key and hook already match, which after step 3d they always do. Calling it plainly here would
 # print "nothing to do" and never probe at all, quietly dropping the post-deploy reachability check.
 #
 # DELIBERATELY NOT FATAL. Everything above this line has already worked: the site is up and serving.
@@ -562,6 +593,31 @@ if ! ./scripts/verify-public-dns.sh; then
   echo "         canary cannot reach it, so voteball:availability:ratio5m will report 1 while" >&2
   echo "         measuring nothing, and VoteballJourneyTrafficStopped will fire in ~10 minutes." >&2
   echo "         Re-run:  ./scripts/verify-public-dns.sh" >&2
+fi
+
+step "11d/11 Restarting Grafana to pick up its data source credentials, if needed"
+# envFromSecret(s) project a Secret's keys as environment variables AT POD START ONLY. kube-
+# prometheus-stack's Grafana lands during step 6's apply, long before ArgoCD (step 11) syncs
+# charts/observability and ESO fills grafana-datasources/grafana-datasources-github -- so on a fresh
+# deploy the running Grafana pod predates its own credentials, and Grafana expands an unset
+# provisioning variable to an EMPTY STRING rather than erroring: it authenticates to RDS as
+# grafana_ro with a blank password and the PostgreSQL panel fails SASL auth, with nothing in
+# Grafana's own health checks noticing. See docs/design/2026-08-24-grafana-datasources-design.md,
+# "Verification outcome", finding 3.
+#
+# CONDITIONAL, same shape as 11c's CoreDNS restart: the script itself checks whether the Secret
+# exists and whether the running pod already has it projected, and only restarts when both "there is
+# something to project" and "it has not been projected yet" are true -- an unconditional restart on
+# every deploy would be pointless churn on a Spot cluster and, worse, the kind of step nobody could
+# safely remove later because nobody could tell whether it was still doing anything.
+#
+# NOT FATAL, for the same reason as 11b/11c: the application is already up and serving; this affects
+# only what two Grafana dashboards can show, not what visitors get.
+if ! ./scripts/restart-grafana-datasources.sh; then
+  echo
+  echo "WARNING: Grafana may still be authenticating to PostgreSQL with a stale/empty password." >&2
+  echo "         The DEPLOY ITSELF SUCCEEDED — the site is up. Re-run:" >&2
+  echo "           ./scripts/restart-grafana-datasources.sh" >&2
 fi
 
 cat <<EOF

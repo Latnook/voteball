@@ -824,8 +824,9 @@ Prints a deploy public key to add to GitHub (with write access) and the webhook 
 > **"Once per account" does not survive a teardown** — steps 1 and 4 both repeat after every
 > destroy/rebuild, for the reasons in "What a build agent is" above (a rebuild mints a fresh deploy
 > key; GitHub still holds the old one). Since 2026-08-03 `deploy.sh` re-registers the deploy key
-> automatically at step 3c via `SKIP_PROBE=1 ./scripts/register-github-ci.sh`, so step 4 below is only
-> needed standalone or when that step warned.
+> automatically (now at step 3d, after the 2026-08-24 Grafana-secret step was inserted ahead of it as
+> 3c) via `SKIP_PROBE=1 ./scripts/register-github-ci.sh`, so step 4 below is only needed standalone or
+> when that step warned.
 
 **2. `terraform apply -var-file=voteball.tfvars`** from `terraform/`. This is the **main** stack — no
 separate `jenkins.tfvars`, no second `terraform init`. It creates the `ci` namespace, both agents'

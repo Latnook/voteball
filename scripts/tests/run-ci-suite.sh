@@ -69,6 +69,10 @@ PYTHON_GROUP=(
   # public-IP lookup is stubbed via VOTEBALL_PUBLIC_IP_CMD, so it never touches the network.
   test-refresh-api-cidr.sh
   test-render-argocd-app.sh
+  # Needs neither python3 nor git (bash + a fake kubectl on PATH via GRAFANA_*_CMD, mktemp) --
+  # same shape as test-verify-public-dns.sh, which is confirmed passing with kubectl/aws/terraform/
+  # git/helm all off PATH. Never touches a cluster.
+  test-restart-grafana-datasources.sh
   test-smoke-test.sh
   test-sync-values.sh
   test-validate-repo.sh

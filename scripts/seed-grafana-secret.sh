@@ -160,7 +160,9 @@ echo
 
 # Prompt only when unset/empty; -s so nothing appears on screen. Same idiom as seed-eks-secret.sh's
 # ask(), reading from /dev/tty explicitly so this still works when stdin is otherwise occupied (e.g.
-# deploy.sh's own prompts earlier in the same run).
+# deploy.sh's own prompts earlier in the same run). MANDATORY -- used only for an explicit
+# ROTATE_WHAT=github_token FORCE_ROTATE=1 rotation, where a human deliberately asked to change this
+# one value and an empty answer would silently drop it.
 ask() {
   local var="$1" prompt="$2" val="${!1:-}"
   if [ -z "$val" ]; then
@@ -172,6 +174,11 @@ ask() {
   fi
   printf '%s' "$val"
 }
+
+# Test the terminal by actually opening /dev/tty, not `[ -r /dev/tty ]` -- same guard deploy.sh uses
+# for the same reason (a permissions check returns true in exactly the detached case this exists to
+# catch).
+has_tty() { (exec </dev/tty) 2>/dev/null; }
 
 if [ "$ROTATE_WHAT" = "github_token" ]; then
   DB_PASSWORD="$EXISTING_DB_PASSWORD"
@@ -187,20 +194,66 @@ if [ "$ROTATE_WHAT" = "db_password" ]; then
   GITHUB_TOKEN="$EXISTING_GITHUB_TOKEN"
   echo "ROTATE_WHAT=db_password: leaving github_token exactly as it is."
   echo
-else
+elif [ "$ROTATE_WHAT" = "github_token" ]; then
+  # An explicit, deliberate rotation of just this value (docs/maintenance.md's PAT-expiry runbook) --
+  # an empty answer here would silently drop the token, so this path stays mandatory.
   GITHUB_TOKEN="$(ask GITHUB_TOKEN "GitHub fine-grained PAT for Latnook/voteball (not echoed)")"
+else
+  # ROTATE_WHAT=both, the path deploy.sh's automated seeding step actually takes on a fresh cluster.
+  # GITHUB_TOKEN is OPTIONAL here, unlike db_password (always generated) and unlike the admin/Jenkins
+  # credentials deploy.sh's own preflight requires: an unattended deploy must not hang on a prompt
+  # nobody can answer, and it must not fail over a token that guards nothing load-bearing --
+  # docs/design/2026-08-24-grafana-datasources-design.md decision 5 is explicit that no alert, SLI or
+  # incident path depends on the GitHub data source. So: use it if already supplied (deploy.env, CI,
+  # an explicit override); prompt for it, optionally, only if a human is actually at a terminal;
+  # otherwise skip silently. The payload below omits the key entirely rather than writing an empty
+  # string -- see the split ExternalSecret this feeds (charts/observability/templates/
+  # externalsecret.yaml), which now gates the GitHub token independently of db_password for exactly
+  # this reason.
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    : # already supplied
+  elif has_tty; then
+    read -rsp "GitHub fine-grained PAT for Latnook/voteball (optional -- Enter to skip): " GITHUB_TOKEN </dev/tty
+    echo >&2
+  else
+    GITHUB_TOKEN=""
+  fi
+  if [ -z "$GITHUB_TOKEN" ]; then
+    # Nothing new was supplied. `put-secret-value` REPLACES the whole SecretString, so simply
+    # omitting the key here would DELETE an already-stored token, not merely "not add" one -- this
+    # matters on the FORCE_ROTATE=1-alone path (rotating db_password without ROTATE_WHAT=db_password),
+    # which reaches this branch too. Best-effort carry-forward of whatever is already there; only a
+    # secret that never had a token (the true first-seed case deploy.sh's automated step actually
+    # hits) ends up with none.
+    set +e
+    GITHUB_TOKEN="$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$REGION" \
+                     --query SecretString --output text 2>/dev/null | jq -r '.github_token // empty' 2>/dev/null)"
+    set -e
+    if [ -n "$GITHUB_TOKEN" ]; then
+      echo "No new GitHub token supplied -- keeping the one already stored in ${SECRET_ID} unchanged."
+    else
+      echo "No GitHub token supplied -- seeding db_password only. The GitHub data source provisions with"
+      echo "no credential (not an empty one) and its panels stay blank; nothing else is affected. Add it"
+      echo "later with:"
+      echo "  GITHUB_TOKEN=... ROTATE_WHAT=github_token FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh"
+    fi
+    echo
+  fi
 fi
 
 TMP="$(mktemp -d)"
 chmod 700 "$TMP"
 trap 'rm -rf "$TMP"' EXIT
 
+# github_token is included only when non-empty -- writing it as "" would be indistinguishable from a
+# typo'd key to ESO/Grafana (both silently accept an empty string; see the design doc's silent-
+# failure #2), so its ABSENCE is the only way to represent "not provided" without that ambiguity.
 DB_PASSWORD="$DB_PASSWORD" GITHUB_TOKEN="$GITHUB_TOKEN" python3 -c '
 import json, os
-print(json.dumps({
-    "db_password":  os.environ["DB_PASSWORD"],
-    "github_token": os.environ["GITHUB_TOKEN"],
-}))' > "$TMP/payload.json"
+payload = {"db_password": os.environ["DB_PASSWORD"]}
+if os.environ.get("GITHUB_TOKEN"):
+    payload.update({"github_token": os.environ["GITHUB_TOKEN"]})
+print(json.dumps(payload))' > "$TMP/payload.json"
 
 # Capture the exit status separately from the output and branch on it explicitly -- never fold a
 # command's exit status into a message that also asserts success. A discarded status here is exactly
@@ -224,11 +277,14 @@ echo "Stored. ${RESULT}"
 echo
 echo "Nothing was printed or written to disk."
 echo
-echo "Two manual steps remain before either data source actually authenticates -- both documented in"
-echo "docs/deploy.md:"
+echo "charts/voteball's externalSecret.grafanaEnabled and charts/observability's externalSecret.enabled"
+echo "are already committed true, so no chart flag needs flipping. What still has to happen, both"
+echo "documented in docs/deploy.md:"
 echo
-echo "  1. Flip externalSecret.grafanaEnabled to true in charts/voteball/values.yaml, and"
-echo "     externalSecret.enabled to true in charts/observability/values.yaml."
-echo "  2. Commit and push. application-ci -> application-cd promotes the change to the release"
-echo "     branch and ArgoCD syncs it; the migrate Job's post-install,pre-upgrade hook sets"
-echo "     grafana_ro's password from this value on that same sync."
+echo "  1. ArgoCD has to sync the ExternalSecrets that read this value (automatic once the release"
+echo "     branch names a commit after this secret existed) -- the migrate Job's post-install,"
+echo "     pre-upgrade hook then sets grafana_ro's live password from it on that same sync."
+echo "  2. Grafana has to be RESTARTED to pick the projected credential up -- envFromSecret(s) only"
+echo "     projects a Secret's keys at pod start, never again. deploy.sh's step 11d does this"
+echo "     automatically and only when needed; run it by hand otherwise:"
+echo "       ./scripts/restart-grafana-datasources.sh"
