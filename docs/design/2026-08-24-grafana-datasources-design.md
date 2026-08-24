@@ -296,6 +296,44 @@ already had this shape and it was not recognised in time: `charts/voteball`'s ow
 ExternalSecret reads a container Terraform creates empty and `seed-eks-secret.sh` fills — the same
 pattern, which had simply always been seeded before anyone looked.
 
+### A third finding: the password lands one sync LATER than the gate
+
+**Observed on the enabling deploy, 2026-08-24.** Flipping the two gates to `true` and pushing does
+not, on its own, make the PostgreSQL data source work. The first panel load after that release fails
+with:
+
+```
+db query error: failed to connect to `user=grafana_ro database=postgres`:
+failed SASL auth: FATAL: password authentication failed for user "grafana_ro" (SQLSTATE 28P01)
+```
+
+The cause is phase ordering, and it is inherent rather than a bug:
+
+| Phase | What runs | State of `grafana-db-secret` |
+|---|---|---|
+| ArgoCD **PreSync** | the migrate Job (a Helm `pre-upgrade` hook) | **does not exist yet** |
+| ArgoCD **Sync** | normal resources, including the ExternalSecret | created here |
+| ESO reconcile | ESO populates the Kubernetes Secret | populated here |
+
+The Job mounts that Secret with `optional: true` (decision 4), so it does not fail — it prints
+`GRAFANA_DB_PASSWORD not set; leaving grafana_ro without a password` and exits 0. The release
+succeeds, `grafana_ro` exists with no password, and a passwordless role cannot authenticate under
+`scram-sha-256`. So the failure is closed, loud at the panel, and harmless to everything else —
+exactly what decisions 3 and 4 were built to guarantee — but it IS a failure, and nothing in the
+runbook said to expect it.
+
+**It self-heals on the NEXT sync**, because by then the Secret exists and the hook picks it up. So
+the operational rule is simply:
+
+> After flipping the gates, the PostgreSQL data source starts working on the **second** release, not
+> the first. Any subsequent push will do it; there is nothing to fix and nothing to re-run by hand.
+
+Rejected: making the ExternalSecret a PreSync hook with a lower weight so it is created before the
+Job. That orders the *resource*, not ESO's reconcile — the Secret would exist and still be empty when
+the Job read it, which is strictly worse: an empty password written to the role rather than no
+password at all. Waiting on ESO inside the Job would drag an external controller's sync latency into
+the release's critical path, which is the same argument decision 4's `optional: true` already makes.
+
 ### A second finding: "holding pushes" is meaningless on a shared branch
 
 These commits reached `origin/master` without this session ever running `git push`. A concurrent
