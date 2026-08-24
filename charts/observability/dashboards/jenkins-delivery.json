@@ -264,7 +264,7 @@
           "queryType": "Commits",
           "owner": "Latnook",
           "repository": "voteball",
-          "options": { "ref": "master" },
+          "options": { "gitRef": "master" },
           "datasource": {"type": "grafana-github-datasource", "uid": "github"}
         }
       ]
