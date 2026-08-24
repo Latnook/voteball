@@ -50,3 +50,26 @@ resource "aws_secretsmanager_secret_version" "jenkins_placeholder" {
     ignore_changes = [secret_string]
   }
 }
+
+# ---- Grafana data source credentials ----
+# Two values, one container: the grafana_ro Postgres password and a fine-grained GitHub PAT.
+# Projected by TWO ExternalSecrets (charts/observability and charts/voteball) rather than one, so
+# the GitHub token never enters the application namespace -- the migrate Job needs the DB password
+# and has no business holding a repo credential.
+#
+# recovery_window_in_days = 0 for the same reason as the two above: this stack is destroyed and
+# rebuilt routinely, and a same-named secret pending deletion blocks the next apply outright.
+resource "aws_secretsmanager_secret" "grafana" {
+  name                    = "${var.cluster_name}/grafana"
+  description             = "Grafana data source credentials (grafana_ro DB password + GitHub PAT). Seeded by scripts/seed-grafana-secret.sh; synced to K8s by ESO."
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "grafana_placeholder" {
+  secret_id     = aws_secretsmanager_secret.grafana.id
+  secret_string = jsonencode({ placeholder = "seed real values via scripts/seed-grafana-secret.sh" })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}

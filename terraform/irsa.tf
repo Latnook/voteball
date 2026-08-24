@@ -144,3 +144,77 @@ resource "aws_iam_role_policy" "alertmanager" {
   role   = aws_iam_role.alertmanager.id
   policy = data.aws_iam_policy_document.alertmanager_permissions.json
 }
+
+# ---- Grafana: read CloudWatch metrics and logs for dashboards ----
+data "aws_iam_policy_document" "grafana_trust" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      type        = "Federated"
+      identifiers = [module.eks.oidc_provider_arn]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "${module.eks.oidc_provider}:sub"
+      # The chart's SA name is <release>-grafana. Changing the release name in addon-monitoring.tf
+      # without changing this string breaks the CloudWatch data source silently: Grafana starts
+      # fine and only the panels fail, with an AccessDenied nobody is watching for.
+      values = ["system:serviceaccount:observability:kube-prometheus-stack-grafana"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "${module.eks.oidc_provider}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "grafana_permissions" {
+  # Logs: resource-scoped to this cluster's three Fluent Bit log groups and nothing else.
+  statement {
+    sid    = "ReadClusterLogs"
+    effect = "Allow"
+    actions = [
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents",
+      "logs:FilterLogEvents",
+      "logs:GetLogGroupFields",
+      "logs:StartQuery",
+      "logs:StopQuery",
+      "logs:GetQueryResults",
+    ]
+    resources = [
+      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/containerinsights/${var.cluster_name}/*",
+      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/containerinsights/${var.cluster_name}/*:log-stream:*",
+    ]
+  }
+
+  # Metrics: CANNOT be resource-scoped. AWS publishes no IAM condition key for restricting
+  # cloudwatch:GetMetricData or ListMetrics to a namespace, so these take Resource "*". The grant is
+  # read-only and this is a single-purpose account; the asymmetry with the Logs statement above is
+  # deliberate and is recorded in docs/security.md so it is not later read as an oversight.
+  # See docs/design/2026-08-24-grafana-datasources-design.md decision 2.
+  statement {
+    sid    = "ReadMetrics"
+    effect = "Allow"
+    actions = [
+      "cloudwatch:ListMetrics",
+      "cloudwatch:GetMetricData",
+      "cloudwatch:GetMetricStatistics",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role" "grafana" {
+  name               = "${var.cluster_name}-grafana-irsa"
+  assume_role_policy = data.aws_iam_policy_document.grafana_trust.json
+}
+
+resource "aws_iam_role_policy" "grafana" {
+  name   = "${var.cluster_name}-grafana-permissions"
+  role   = aws_iam_role.grafana.id
+  policy = data.aws_iam_policy_document.grafana_permissions.json
+}
