@@ -1,0 +1,60 @@
+# DRILL 5 — Jenkins queue stuck, 2026-08-24T18:47:06+03:00
+# HEAD a6f4fdc15cc45bc7d9bc27f1917b5cb93b3091a2
+# Method: ResourceQuota pods=1 on namespace ci, so agent PROVISIONING fails and the build
+# queues. Killing an existing agent aborts its build instead and never moves the queue metric.
+
+=== BEFORE ===
+  jenkins_queue_size_value  0
+  JenkinsQueueStuck         inactive
+  pods in ci                2
+  site /api/options         200
+
+=== BREAK ===
+resourcequota/drill-block-agents created
+  quota applied at 15:47:07Z
+  triggered application-ci with FORCE_BUILD=true (HTTP 201)
+
+=== OBSERVE (every 30s until JenkinsQueueStuck fires, or 22m) ===
+  TIME       QUEUE  CI_PODS  SITE       ALERT
+  15:47:08Z  0      2        200        inactive
+  15:47:39Z  0      2        200        inactive
+  15:48:10Z  2      2        200        pending
+  15:48:41Z  2      2        200        pending
+  15:49:12Z  2      2        200        pending
+  15:49:43Z  2      2        200        pending
+  15:50:14Z  2      2        200        pending
+  15:50:45Z  2      2        200        pending
+  15:51:16Z  2      2        200        pending
+  15:51:47Z  2      2        200        pending
+  15:52:18Z  2      2        200        pending
+  15:52:49Z  2      1        200        pending
+  15:53:20Z  2      1        200        pending
+  15:53:51Z  2      1        200        pending
+  15:54:22Z  3      1        200        pending
+  15:54:53Z  3      1        200        pending
+  15:55:24Z  3      1        200        pending
+  15:55:55Z  3      1        200        pending
+  15:56:26Z  3      1        200        pending
+  15:56:57Z  3      1        200        pending
+  15:57:28Z  3      1        200        pending
+  15:57:59Z  3      1        200        pending
+  15:58:30Z  3      1        200        pending
+  15:59:01Z  3      1        200        pending
+  15:59:32Z  3      1        200        pending
+  16:00:03Z  3      1        200        pending
+  16:00:34Z  3      1        200        pending
+  16:01:05Z  3      1        200        pending
+  16:01:36Z  3      1        200        pending
+  16:02:07Z  4      1        200        pending
+  16:02:38Z  4      1        200        pending
+  16:03:09Z  4      1        200        firing
+
+RESULT: PASS. JenkinsQueueStuck fired at 16:03:10Z (queue blocked from 15:47:07Z) -- the rule's own for: 15m.
+
+  The SITE column is the other half of the point: the quota is scoped to ci, so devops-app was
+  untouched for the whole window. CI being unable to build does not take the product down,
+  which is why this alert is severity: warning.
+
+=== RESTORE ===
+resourcequota "drill-block-agents" deleted from ci namespace
+  quota lifted at 16:03:11Z -- agents can be provisioned again
