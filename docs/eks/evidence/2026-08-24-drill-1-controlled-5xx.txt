@@ -1,0 +1,72 @@
+# DRILL 1 — controlled 5xx, 2026-08-24T18:18:07+03:00
+# HEAD 45296a3b1147d53831a96c976634c8781e645bc3
+# Method: remove the backend's RDS egress NetworkPolicy (allow-db-egress) so every database-backed
+# request fails fast (connect_timeout=5) instead of hanging. Site degraded on purpose.
+
+=== BEFORE ===
+  availability      1
+  journey requests  0.07407407407407408
+  journey errors    0
+  HighErrorRate     inactive
+  site /api/options 200
+
+=== BREAK ===
+  ArgoCD auto-sync suspended (selfHeal would restore the policy before the alert could fire)
+networkpolicy.networking.k8s.io "allow-db-egress" deleted from devops-app namespace
+  allow-db-egress deleted at 15:18:09Z
+
+=== OBSERVE (every 30s until VoteballHighErrorRate fires, or 14m) ===
+  TIME       HTTP   ERRORS   AVAIL    HEALTH     ALERT
+  15:18:15Z  500    0        1        404        inactive
+  15:18:51Z  500    0        1        404        inactive
+  15:19:27Z  500    0.01     0.8276   404        inactive
+  15:20:02Z  500    0.00     0.8489   404        pending
+  15:20:38Z  500    0.03     0.5462   404        pending
+  15:21:14Z  500    0.04     0.4400   404        pending
+  15:21:50Z  500    0.04     0.3456   404        pending
+  15:22:20Z  200    0.06     0.2262   404        pending
+  15:22:51Z  200    0.06     0.2201   404        pending
+  15:23:21Z  200    0.06     0.1025   404        pending
+  15:23:53Z  200    0.05     0.7635   404        pending
+  15:24:24Z  200    0.05     0.7545   404        pending
+  15:24:55Z  200    0.05     0.7721   404        firing
+
+RESULT: PASS. VoteballHighErrorRate fired at 15:24:55Z (broken at 15:18:09Z).
+
+  /health stayed answering throughout, by design: it touches no database, so a database outage
+  does not restart every pod via the liveness probe.
+
+=== RESTORE ===
+  ArgoCD auto-sync re-enabled at 15:24:55Z; waiting for it to put allow-db-egress back
+  allow-db-egress is back.
+  recovery poll: 200
+
+=== NOTES ADDED BEFORE COMMIT — two things the table above does not explain by itself ===
+
+1. THE HTTP COLUMN FLIPS BACK TO 200 AT 15:22:20Z, four minutes before the alert fired, and that was
+   NOT this drill restoring anything. `allow-db-egress` was recreated externally at 15:22:03Z
+   (metadata.creationTimestamp) by a second operator working on the same cluster; ArgoCD's selfHeal
+   was suspended for the whole window and so cannot account for it. This drill's own RESTORE block
+   did not run until 15:24:55Z, which is visible above.
+
+   THE ALERT STILL FIRED LEGITIMATELY, and the reason is worth understanding rather than glossing:
+   VoteballHighErrorRate reads a 5-MINUTE rate window, so the error ratio stays elevated for minutes
+   after the errors themselves stop. The outage ran 15:18:09Z-15:22:03Z (~4 minutes), the expression
+   went true at 15:20:02Z, and `for: 5m` elapsed at 15:24:55Z with the window still carrying the
+   outage's errors. So the alert fired on real, recorded errors -- but on their tail, not on a
+   still-broken site.
+
+   What this run therefore does NOT prove is the steady-state case where the break outlasts the
+   alert. Nothing here is falsified; the evidence is just narrower than intended.
+
+2. THE `HEALTH` COLUMN READS 404, NOT 200, AND THE CLOSING LINE ABOVE IS WRONG ABOUT WHY.
+   `/health` is not reachable over the public hostname at all: nginx proxies only `/api/*`, so
+   https://<app_domain>/health is a 404 from the frontend and never reaches the backend. It is the
+   IN-CLUSTER probe target -- which is exactly why scripts/ci/smoke-test.sh deliberately does not
+   test it either.
+
+   The underlying claim is still true and still matters -- the liveness probe does not depend on RDS,
+   which is what stops a database outage from restarting every pod -- but this column was never
+   measuring it. Proving that needs a probe from inside the cluster
+   (`kubectl exec <backend-pod> -- curl localhost:5000/health`), which is what the script now does.
+   The 404s above are the drill measuring the wrong thing, recorded rather than quietly dropped.

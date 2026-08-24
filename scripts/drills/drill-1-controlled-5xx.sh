@@ -93,7 +93,14 @@ END=$(( $(date +%s) + DEADLINE_MIN*60 ))
 fired=""
 while [ "$(date +%s)" -lt "$END" ]; do
   code="$(curl -s -o /dev/null -w '%{http_code}' -m 10 "https://${APP_DOMAIN}/api/options" || echo 000)"
-  hc="$(curl -s -o /dev/null -w '%{http_code}' -m 10 "https://${APP_DOMAIN}/health" || echo 000)"
+  # IN-CLUSTER, deliberately. nginx proxies only /api/*, so https://<app_domain>/health is a 404
+  # from the frontend and never reaches the backend -- the 2026-08-24 run recorded a column of 404s
+  # and drew the wrong conclusion from them. /health is the probe target, so it has to be asked the
+  # way the kubelet asks it.
+  bpod="$(kubectl get pods -n "$NS" -l app=backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+  hc="$(kubectl exec -n "$NS" "$bpod" -- python -c "
+import urllib.request
+print(urllib.request.urlopen('http://localhost:5000/health', timeout=5).status)" 2>/dev/null || echo ERR)"
   st="$(alert_state VoteballHighErrorRate)"
   printf '  %-10s %-6s %-8.4s %-8.6s %-10s %s\n' "$(date -u +%H:%M:%SZ)" "$code" \
     "$(promq 'voteball:journey_errors:rate5m')" "$(promq 'voteball:availability:ratio5m')" "$hc" "$st"
@@ -109,5 +116,6 @@ else
   echo "like a disproved design. That is what happened to drill 5 on 2026-08-18."
 fi
 echo
-echo "  /health stayed answering throughout, by design: it touches no database, so a database outage"
-echo "  does not restart every pod via the liveness probe."
+echo "  The HEALTH column is the backend's own /health, asked from inside the cluster the way the"
+echo "  kubelet asks it. It should stay 200 for the whole outage: /health touches no database, which"
+echo "  is what stops a database outage from restarting every pod through the liveness probe."
