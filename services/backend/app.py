@@ -155,9 +155,15 @@ def health():
 
 @app.route('/api/options', methods=['GET'])
 def options():
+    # try/finally, like every other route that opens a connection. A bare close() on the happy path
+    # leaks the connection whenever the query raises, and this is the endpoint where that matters
+    # most: it is public, unauthenticated, hit by every visitor and by the canary every 30s, so a
+    # leak here exhausts the RDS connection limit far faster than one on an admin route would.
     conn = db.get_db()
-    result = queries.get_options(conn)
-    conn.close()
+    try:
+        result = queries.get_options(conn)
+    finally:
+        conn.close()
     return jsonify(result)
 
 
