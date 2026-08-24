@@ -180,6 +180,14 @@ resources. The steps it performs (kept in step with the script's own numbering â
      load balancer routes, and Jenkins answered. This is the half of step 3c that needs a running
      cluster, which is why the two are separated. A failure here does **not** fail the deploy: the
      site is already up, and only CI is affected.
+11c. Check the **cluster** can resolve the site's own public hostname, and restart CoreDNS if it is
+     serving a stale negative answer. App pods start at step 10 and look the hostname up before
+     external-dns has created the record; because that name already exists in Route53 for other
+     reasons, the answer is "exists, no A record" rather than NXDOMAIN â€” a negative answer cached for
+     the zone's SOA minimum of 24 hours. The visible symptom is not an outage: the site serves the
+     internet normally while the in-cluster canary sends nothing, so availability reports a confident
+     `1` from its no-data fallback. Also non-fatal, and re-runnable as
+     `./scripts/verify-public-dns.sh`.
 
 ### What is actually inside step 6
 
