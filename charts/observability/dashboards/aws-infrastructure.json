@@ -15,7 +15,7 @@
       "id": 1,
       "title": "RDS CPU",
       "type": "timeseries",
-      "description": "Refresh is pinned to 5m deliberately. CloudWatch bills per metric returned; at Grafana's 10s default these 14 metrics cost roughly $12/month instead of $0.05. See docs/design/2026-08-24-grafana-datasources-design.md decision 8.",
+      "description": "Refresh is pinned to 5m deliberately. CloudWatch bills per metric returned; at Grafana's 10s default these 10 metrics cost roughly $8.60/month instead of $0.04. See docs/design/2026-08-24-grafana-datasources-design.md decision 8.",
       "datasource": { "type": "cloudwatch", "uid": "cloudwatch" },
       "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
       "fieldConfig": {

@@ -36,8 +36,17 @@ done
 echo "1. environment variables referenced by $DS"
 vars=$(grep -oE '\$GF_DATASOURCE_[A-Z_]+' "$DS" | sed 's/^\$//' | sort -u)
 [ -n "$vars" ] || fail "no \$GF_DATASOURCE_* references found -- did the interpolation syntax change?"
+# Extract each secretKey's VALUE (not the raw line) and compare for exact equality. An unanchored
+# `grep -q "secretKey: $v"` substring match passes when $v is merely a PREFIX of the real key -- e.g.
+# renaming GF_DATASOURCE_DB_PASSWORD to GF_DATASOURCE_DB_PASSWORD_RENAMED leaves the old name sitting
+# inside the new one, so the check reports the old key as still "produced" when it no longer exists.
+secretkeys=$(grep -oE 'secretKey:[[:space:]]*[A-Za-z0-9_]+' "$ES" | sed -E 's/^secretKey:[[:space:]]*//')
 for v in $vars; do
-  if grep -q "secretKey: $v" "$ES"; then
+  match=0
+  while IFS= read -r sk; do
+    [ "$sk" = "$v" ] && { match=1; break; }
+  done <<< "$secretkeys"
+  if [ "$match" = 1 ]; then
     ok "$v is produced by an ExternalSecret"
   else
     fail "$v is interpolated in $DS but no ExternalSecret in $ES produces it"
