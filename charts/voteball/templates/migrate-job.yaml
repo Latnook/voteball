@@ -77,6 +77,18 @@ spec:
             # load-bearing: this Job is a pre-upgrade Helm hook, so a missing Secret would otherwise
             # block the whole release on a monitoring credential. migrate.py treats an absent value
             # as "skip and carry on" for the same reason.
+            #
+            # CONSEQUENCE, observed 2026-08-24: on the release that first ENABLES the Grafana data
+            # sources, this Secret does not exist yet when the hook runs. ArgoCD executes Helm
+            # pre-upgrade hooks in its PreSync phase -- before it applies normal resources, which is
+            # when the grafana-db-secret ExternalSecret is created and when ESO populates it. So the
+            # Job prints "GRAFANA_DB_PASSWORD not set", exits 0, and grafana_ro is left with no
+            # password. A passwordless role cannot authenticate under scram-sha-256, so the Grafana
+            # PostgreSQL data source fails with SQLSTATE 28P01 until the NEXT sync, by which time the
+            # Secret exists and this hook sets it. That is self-healing, not a fault -- do not "fix"
+            # it by ordering the ExternalSecret into PreSync, which would order the RESOURCE but not
+            # ESO's reconcile, so the Job would read an EMPTY password and write THAT to the role.
+            # See docs/design/2026-08-24-grafana-datasources-design.md's Verification outcome.
             - secretRef: { name: grafana-db-secret, optional: true }
           resources:
             requests: { cpu: 50m, memory: 128Mi }

@@ -232,9 +232,33 @@ charts/voteball/values.yaml       externalSecret.grafanaEnabled: false  ->  true
 charts/observability/values.yaml  externalSecret.enabled: false         ->  true
 ```
 
-Flip both, commit, and push. `application-ci` → `application-cd` promotes the commit to `release`,
-ArgoCD syncs it, and the migrate Job's `post-install,pre-upgrade` hook sets `grafana_ro`'s live
-password from the value you just seeded — on that same sync, not before.
+Flip both, commit, and push. `application-ci` → `application-cd` promotes the commit to `release` and
+ArgoCD syncs it.
+
+**Expect the PostgreSQL data source to fail on that first release, and to start working on the next
+one.** This is phase ordering, not a fault. The migrate Job is a Helm `pre-upgrade` hook, so ArgoCD
+runs it in **PreSync** — before it applies normal resources, which is when the `grafana-db-secret`
+ExternalSecret is created and when ESO populates it. So on the enabling release the Job finds no
+`GRAFANA_DB_PASSWORD` (it mounts that Secret `optional: true`), prints
+
+```
+GRAFANA_DB_PASSWORD not set; leaving grafana_ro without a password
+```
+
+and exits 0. `grafana_ro` then exists with no password, and a passwordless role cannot authenticate
+under `scram-sha-256` — so a Business Analytics panel shows
+
+```
+failed SASL auth: FATAL: password authentication failed for user "grafana_ro" (SQLSTATE 28P01)
+```
+
+Nothing else is affected, and there is nothing to fix or re-run by hand: the Secret exists from that
+point on, so the **next** release's hook sets the password. Any subsequent push will do it. See
+`docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome" for why waiting on ESO
+inside the Job was rejected.
+
+CloudWatch is unaffected by any of this — it authenticates by IRSA and needs no secret, so its
+dashboard works as soon as `terraform apply` has run.
 
 ### What is actually inside step 6
 
