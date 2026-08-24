@@ -97,6 +97,32 @@ resource "helm_release" "kube_prometheus_stack" {
     kubeEtcd              = { enabled = false }
     kubeProxy             = { enabled = false }
 
+    grafana = {
+      serviceAccount = {
+        annotations = {
+          # CloudWatch data source authentication. Grafana carried no AWS role until this change;
+          # this is the same IRSA pattern alertmanager above uses to reach SNS.
+          "eks.amazonaws.com/role-arn" = aws_iam_role.grafana.arn
+        }
+      }
+
+      # The ONLY plugin here, and the only network-fetched component in the whole data source set.
+      # Prometheus, CloudWatch and PostgreSQL are all compiled into grafana/grafana:13.1.1 --
+      # verified at /usr/share/grafana/public/app/plugins/datasource/. This one is downloaded from
+      # grafana.com into /var/lib/grafana, which is an emptyDir, so it is re-fetched on EVERY pod
+      # start -- roughly daily on a 100% Spot node group. If the fetch fails Grafana comes up
+      # healthy and the GitHub panels are simply absent. Nothing load-bearing depends on it.
+      # See docs/design/2026-08-24-grafana-datasources-design.md decision 5.
+      plugins = ["grafana-github-datasource"]
+
+      # Projects every key of the K8s Secret as an environment variable. The data source
+      # provisioning files in charts/observability interpolate $GF_DATASOURCE_DB_PASSWORD and
+      # $GF_DATASOURCE_GITHUB_TOKEN by those exact names -- Grafana expands an UNSET variable to an
+      # empty string rather than erroring, so a typo here is silent-failure #2 in the design doc.
+      # scripts/tests/test-grafana-datasources.sh cross-checks the two sides.
+      envFromSecret = "grafana-datasources"
+    }
+
     alertmanager = {
       serviceAccount = {
         annotations = {

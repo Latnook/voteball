@@ -598,6 +598,30 @@ Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` 
 - **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
   never force-unlocks on its own (see above).
 
+**A failing command whose exit status is swallowed by the thing that printed it — three instances,
+three different mechanisms, one bug.** This is the most-repeated defect shape in this repository, and
+it is worth grepping for before writing anything that shells out:
+
+- **Pipe position.** `terraform apply | tail` reports the exit status of `tail`, so a FAILED apply
+  reads as 0.
+- **A status interpolated into a message that asserts success.** `scripts/drills/`'s first version
+  printed `application-ci triggered (HTTP $code)` — and on 2026-08-24 that line read
+  `application-ci triggered (HTTP 403)`, because a Jenkins CSRF crumb is bound to the session that
+  issued it and the cookie had been discarded. Nothing was triggered. Drill 3 then killed an agent
+  belonging to a build somebody else's push had started, and drill 5 would have watched an empty
+  queue for 22 minutes and reported that `JenkinsQueueStuck` failed to fire — a false negative on an
+  alert this repo has already wrongly written off once.
+- **Measuring the wrong endpoint and reporting the number anyway.** The same day, drill 1 polled
+  `https://<app_domain>/health` and logged a column of `404`s as though they were health checks.
+  nginx proxies only `/api/*`, so that path never reaches the backend — which is also why
+  `scripts/ci/smoke-test.sh` deliberately does not test it.
+
+The common thread is that **the transcript looks MORE complete than a silent failure would.** A bare
+error is visibly an error; a success line with a `403` inside it reads as a logged detail, and
+evidence built on it gets believed. `set -euo pipefail` is necessary and covers none of the three:
+not a pipeline's non-final stage, not a `$(...)` whose output is merely printed, not a request that
+succeeded against the wrong URL. Capture the status into a variable and branch on it.
+
 **AWS CLI v2 pages its output whenever stdout is a terminal, and that hangs deploys.** v1 had no
 pager at all, so nothing noticed until the repo owner upgraded on 2026-08-21. Every script in
 `scripts/` runs at a terminal, so any `aws` call whose output is *not* captured or redirected stops

@@ -1341,3 +1341,27 @@ def test_options_exposes_name_ru(client):
         assert all('name_ru' in row for row in body[key]), f'{key} rows missing name_ru'
     likud = next(p for p in body['previous_parties'] if p['name_en'] == 'Likud')
     assert likud['name_ru'] == 'Ликуд'
+
+
+def test_options_closes_its_connection_when_the_query_raises(client, monkeypatch):
+    """The bare-close regression. /api/options was the only one of the 28 database-touching routes
+    without try/finally, so a raising query leaked its connection -- on the public, unauthenticated
+    endpoint the canary hits every 30 seconds, which is the fastest possible way to exhaust the RDS
+    connection limit."""
+    import pytest  # this module has no top-level imports; keep it that way
+
+    import app as app_module
+
+    closed = []
+
+    class FakeConn:
+        def close(self):
+            closed.append(True)
+
+    monkeypatch.setattr(app_module.db, 'get_db', lambda: FakeConn())
+    monkeypatch.setattr(app_module.queries, 'get_options',
+                        lambda conn: (_ for _ in ()).throw(RuntimeError('boom')))
+
+    with pytest.raises(RuntimeError):
+        client.get('/api/options')
+    assert closed == [True], '/api/options leaked its connection when the query raised'

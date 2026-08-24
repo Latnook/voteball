@@ -39,3 +39,14 @@ serviceCidr: "172.20.0.0/16"
 # (jenkins_queue_{blocked,buildable,pending,stuck}_value) give a natural escalation path later.
 jenkins:
   queueMetric: "jenkins_queue_size_value"
+
+# Grafana data source credentials from AWS Secrets Manager via External Secrets Operator.
+# Gated like everything else in this chart so `helm template` works with no ESO CRDs installed.
+#
+# The region is a literal for the same reason serviceCidr above is: this chart is ArgoCD-synced and
+# cannot receive a Terraform output.
+externalSecret:
+  enabled: true
+  secretName: "voteball/grafana"
+  region: "il-central-1"
+  refreshInterval: "1h"

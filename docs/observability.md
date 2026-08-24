@@ -802,6 +802,24 @@ carries the narrative; these are the artefacts:
 Re-runs after the fixes are in the matching `2026-08-18-rerun-drill-*.txt` files, plus
 [`-4b-settle-fix-proof.txt`](eks/evidence/2026-08-18-rerun-drill-4b-settle-fix-proof.txt).
 
+**Drills 1 and 3 were re-run on 2026-08-24, on the cluster rebuilt that afternoon, and they are now
+scripts rather than a sequence of commands somebody remembered.** `scripts/drills/` holds
+`drill-1-controlled-5xx.sh`, `drill-3-jenkins-agent-loss.sh` and `drill-5-jenkins-queue-stuck.sh`;
+each puts its own restore in a `trap`, which matters most for drill 1 — it suspends ArgoCD's selfHeal
+so the break can outlive a reconcile, and leaving that suspended is a worse state than the outage it
+creates. A drill nobody can re-run is a drill that expires, which is exactly what had happened to the
+August set.
+
+| Drill | 2026-08-24 outcome | Evidence |
+|---|---|---|
+| 1 — controlled 5xx | `VoteballHighErrorRate` fired at 15:24:55Z; availability fell 1.00 → 0.10 as the site served 500s. **Two caveats are written into the transcript**: the outage was ended externally at 15:22:03Z by a second operator, so the alert fired on the tail of a 5-minute rate window rather than against a still-broken site; and the `HEALTH` column was reading the public `/health`, which is a 404 because nginx proxies only `/api/*`. | [`2026-08-24-drill-1-controlled-5xx.txt`](eks/evidence/2026-08-24-drill-1-controlled-5xx.txt) |
+| 3 — Jenkins agent loss | A 9-container build agent was force-deleted mid-build; the site held 200 across every poll and Jenkins provisioned a replacement agent on its own within ~2 minutes. | [`2026-08-24-drill-3-jenkins-agent-loss.txt`](eks/evidence/2026-08-24-drill-3-jenkins-agent-loss.txt) |
+
+The 2026-08-24 run of drill 1 is **narrower** than the August one, and the transcript says so rather
+than presenting a pass as a clean pass. That is the same discipline as drill 5's first attempt below:
+a drill that does not reach its own condition, or reaches it by accident, looks identical to a proof
+unless someone writes down which one happened.
+
 **Drill 5 took two attempts, and the first failure is the more useful half.** The morning run tried to
 reach a stuck queue by killing an agent that already existed — which *aborts* its build rather than
 queueing it, so the queue-length metric never moved. A drill can fail to reach its own condition and

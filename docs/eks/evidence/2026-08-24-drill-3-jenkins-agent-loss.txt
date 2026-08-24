@@ -1,0 +1,152 @@
+# DRILL 3 — Jenkins agent loss, 2026-08-24T18:28:35+03:00
+# HEAD beac014874d46f5a6a75e81e5d867025185fc52a
+
+=== BEFORE ===
+  pods in ci        3
+  queue size        0
+  site /api/options 200
+
+=== TRIGGER A BUILD ===
+  application-ci triggered (HTTP 403); last build before was #8
+  waiting up to 300s for an agent pod to reach Running
+  agent pod Running: voteball-build-rlj9t (buildkit trivy skopeo awscli python postgres hadolint observability jnlp )
+
+=== KILL THE AGENT MID-BUILD ===
+  Warning: Immediate deletion does not wait for confirmation that the running resource has been terminated. The resource may continue to run on the cluster indefinitely.
+  pod "voteball-build-rlj9t" force deleted from ci namespace
+  killed at 15:28:40Z
+
+=== OBSERVE (5 minutes) ===
+  TIME       SITE   QUEUE    CI_PODS  AGENT
+  15:28:40Z  200    0        2        
+  15:28:57Z  200    0        2        
+  15:29:13Z  200    0        2        
+  15:29:30Z  200    0        2        
+  15:29:46Z  200    0        2        
+  15:30:03Z  200    0        2        
+  15:30:19Z  200    0        2        
+  15:30:36Z  200    0        2        
+  15:30:52Z  200    0        3        voteball-build-nsr9b
+  15:31:09Z  200    0        3        voteball-build-nsr9b
+  15:31:25Z  200    0        3        voteball-build-nsr9b
+  15:31:42Z  200    0        3        voteball-build-nsr9b
+  15:31:58Z  200    0        3        voteball-build-nsr9b
+  15:32:14Z  200    0        3        voteball-build-nsr9b
+  15:32:31Z  200    0        4        voteball-build-9tqcv
+  15:32:47Z  200    0        3        voteball-build-9tqcv
+  15:33:03Z  200    0        2        voteball-build-9tqcv
+  15:33:20Z  200    0        2        voteball-build-9tqcv
+  15:33:36Z  200    0        2        voteball-build-9tqcv
+  15:33:52Z  200    0        2        voteball-build-9tqcv
+
+=== AFTER ===
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+    for b in json.load(sys.stdin).get('builds',[]):
+             ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.14/json/__init__.py", line 298, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.14/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.14/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+=== AFTER (re-queried by hand -- the block above failed on a curl bug, see the end) ===
+
+  application-ci builds around the drill:
+
+    #7   SUCCESS    started 15:20:46Z
+    #8   ABORTED    started 15:27:06Z   <-- the build whose agent was force-deleted at 15:28:40Z
+    #9   FAILURE    started 15:30:31Z   <-- see below; NOT a code failure
+    #10  SUCCESS    started 15:32:17Z
+
+  #8 ABORTED is the expected and correct outcome, and it is the whole reason drill 5 exists: killing
+  an agent that already exists aborts its build rather than queueing it, so jenkins_queue_size_value
+  never moves. The QUEUE column above is flat 0 for exactly that reason -- it is this drill's
+  mechanism, not evidence about JenkinsQueueStuck.
+
+=== AN UNPLANNED FINDING: THE BUILD AFTER AN AGENT KILL FAILED SPURIOUSLY ===
+
+  #9 started 1m51s after the agent was force-deleted and failed on an assertion with nothing to do
+  with the change it was building:
+
+    ==> test-aws-pager-guard.sh
+        ok: every script that calls the aws CLI is covered (16 scripts scanned)
+      FAIL: EXEMPT lists 'scripts/tests/test-notify.sh' but it no longer mentions the aws CLI
+
+  IT SCANNED 16 SCRIPTS. The commit it built (653b15d) has 18, and test-notify.sh is one of them.
+  Verified by materialising that exact tree and re-running the same detection:
+
+    $ git archive 653b15d | tar -x -C "$T" && cd "$T"
+    $ (the test's own sed|grep over `find scripts services -name '*.sh'`)
+      matches at 653b15d: 18
+      scripts/tests/test-notify.sh -> matches at lines 43, 72, 81
+
+  Also checked that it was not a grep-implementation difference: this workstation's `grep` is a shell
+  function wrapping ugrep, so the same detection was re-run under /usr/bin/grep (GNU grep 3.12, which
+  is what the python:3.12-slim CI container uses). Both give 18 and both match test-notify.sh.
+
+  So the workspace #9 ran against was INCOMPLETE -- two of eighteen shell scripts were missing or
+  truncated -- 1m51s after its predecessor's agent was force-deleted mid-build. #10, on the same
+  commit range and a settled agent, scanned all of them and passed 21/21.
+
+  WHAT TO TAKE FROM IT: an agent killed mid-build can cost more than its own build. The next build
+  can fail on an assertion that does not reproduce anywhere, which reads as a real regression and
+  sends someone hunting a defect that is not there. This repository has no `ws-cleanup`, so a
+  half-populated workspace is not swept before reuse.
+
+  This is exactly the class of failure the drill is supposed to surface, and it was surfaced by
+  accident rather than by design. It is recorded here rather than quietly re-run into a green build.
+
+=== NOTE ON THE BROKEN BLOCK ABOVE ===
+
+  The script's own AFTER section died with a JSONDecodeError. The cause is curl, not Jenkins: the
+  tree query `builds[number,result,building]{0,4}` contains `{0,4}`, and curl treats `{}` as a glob
+  set unless given -g/--globoff. The request never reached Jenkins in the form intended and the empty
+  body was fed to json.load. The script now passes -g.
+
+=== CORRECTION: THIS DRILL DID NOT START THE BUILD IT KILLED ===
+
+Read line 10 of this file again:
+
+  application-ci triggered (HTTP 403); last build before was #8
+
+HTTP 403 is a failure. The script printed it inside a line that says "triggered" and carried on, so
+the transcript reads as though the drill started a build and then killed its agent. It did not.
+
+The cause is Jenkins CSRF: the crumb is bound to the SESSION that issued it, and the script fetched a
+crumb with one curl invocation and POSTed with another, discarding the cookie in between. Reproduced
+afterwards against the same controller:
+
+  crumb without the session cookie -> HTTP 403
+  crumb with    the session cookie -> HTTP 201
+
+So what actually happened is that build #8 was ALREADY RUNNING -- started 15:27:06Z by a push earlier
+in this session -- and the drill's "wait for an agent pod" loop found #8's agent and killed that.
+
+WHAT SURVIVES, AND WHAT DOES NOT:
+
+  SURVIVES. An agent was force-deleted mid-build. The site held 200 on every poll for five minutes,
+  Jenkins provisioned a replacement agent on its own at 15:30:52Z, and the interrupted build went
+  ABORTED rather than hanging. Those are the properties the drill exists to demonstrate and they were
+  demonstrated -- the ownership of the build does not change what happened to it.
+
+  DOES NOT SURVIVE. The claim that this was a controlled, self-contained drill. It killed a build it
+  did not start, and it did so only because one happened to be running. Had the queue been empty, the
+  script would have waited its 300s and exited 1 -- or worse, on a busy controller, killed a build
+  doing something someone cared about.
+
+The script now fails loudly when the trigger does not return 201, rather than printing the code and
+continuing. A drill that measures whatever it finds lying around is not a drill.
+
+This is the second time today a script here reported a number it had not measured -- the first was
+the HEALTH column in drill 1. Both had the same shape: a command failed, its exit status was folded
+into a string, and the transcript looked complete.
