@@ -264,8 +264,8 @@
       "title": "Alert history, 6h",
       "type": "state-timeline",
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "gridPos": {"x": 0, "y": 13, "w": 16, "h": 8},
-      "description": "From Prometheus' own ALERTS series, not Alertmanager -- Alertmanager only knows what is firing right now and has no history of its own. This is the only way to answer \"was this alert firing during last night's incident?\".",
+      "gridPos": {"x": 0, "y": 13, "w": 24, "h": 8},
+      "description": "From Prometheus' own ALERTS series, not Alertmanager -- Alertmanager only knows what is firing right now and has no history of its own. This is the only way to answer \"was this alert firing during last night's incident?\". For grouping, silences and inhibition -- what was actually delivered, not just what fired -- see docs/observability.md section 6: no dashboard panel can show that (Grafana's Alertmanager data source cannot be queried from a panel), so it lives in Grafana's own Alerting -> Alertmanager page instead.",
       "fieldConfig": {
         "defaults": {"unit": "short"},
         "overrides": []
@@ -284,18 +284,6 @@
           "refId": "A"
         }
       ]
-    },
-    {
-      "id": 10,
-      "title": "Alertmanager -- delivered & silenced",
-      "type": "text",
-      "datasource": {"type": "alertmanager", "uid": "alertmanager"},
-      "gridPos": {"x": 16, "y": 13, "w": 8, "h": 8},
-      "description": "What this adds over the Alert history panel: grouping, silences and inhibition -- i.e. what was actually DELIVERED (grouped into one notification, or suppressed) versus what merely fired in Prometheus' ALERTS series.",
-      "options": {
-        "mode": "markdown",
-        "content": "**Alertmanager -- delivered & silenced**\n\nThis panel wires up the `alertmanager` data source (uid `alertmanager`), provisioned by kube-prometheus-stack since day one and never referenced by any panel until now.\n\nWhat it adds over *Alert history* to the left: **grouping, silences and inhibition** -- i.e. what was actually **delivered** as a notification versus what merely **fired**. Alertmanager has no history of its own, only Prometheus' `ALERTS` series does (see the panel to the left); Alertmanager is the source of truth for *why you did or didn't get an email*.\n\nGrafana's built-in Alertmanager data source cannot be queried from a dashboard panel -- its `query()` is a stub that always returns empty data (confirmed against Grafana 13.1.1's own source, `public/app/plugins/datasource/alertmanager/DataSource.ts`), and the Alert List panel's Alertmanager picker only offers Grafana-managed alert-forwarding targets, not a data source of this plugin type (`grafana/grafana#108531`, closed *not planned*). Only Grafana's own Alerting pages call it, through a resource proxy the panel query model doesn't expose.\n\n**To see it live:** open **Alerting -> Alertmanager** in the Grafana left nav and choose **Alertmanager** from the picker at the top. That page shows active notifications, silences and the notification-policy tree for this cluster's real Alertmanager -- grouped and de-duplicated exactly as delivered."
-      }
     }
   ]
 }

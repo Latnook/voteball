@@ -319,24 +319,28 @@ template.
 | Application Overview | `voteball-app` | 14 | Is the new release hurting users? Request rate, 5xx rate, availability vs SLO, p95 vs SLO, p50/p95/p99, votes cast, results freshness, ballots rejected by reason, DB errors, nginx rate, running `version`/`git_sha`/`release`, request rate **by release**, container CPU and memory. |
 | Kubernetes / Cluster | `voteball-k8s` | 10 | Is the fault in the app or the platform? Nodes ready, pending pods, node CPU/memory, pods by phase, desired vs available replicas, pod restarts, OOMKills, CPU throttling, PVC usage. |
 | Jenkins & Delivery | `voteball-delivery` | 8 | Is delivery healthy and is something stuck? Queue length and wait, executors total vs busy, online agents, build outcomes, build duration, controller JVM heap, last successful release. |
-| Service Health & Alerts | `voteball-alerts` | 10 | Is anything wrong right now, and would I have been told? Critical/warning/pending alert counts, a table of what's firing, availability vs 99% SLO, p95 vs 1s SLO, the canary's journey request and error rate, a 6h alert-firing history from Prometheus' `ALERTS` series, and an Alertmanager panel covering grouping/silences/inhibition — what Prometheus' history can't show. |
+| Service Health & Alerts | `voteball-alerts` | 9 | Is anything wrong right now, and would I have been told? Critical/warning/pending alert counts, a table of what's firing, availability vs 99% SLO, p95 vs 1s SLO, the canary's journey request and error rate, and a 6h alert-firing history from Prometheus' `ALERTS` series. |
 
 Deleting the `observability` ArgoCD Application and re-syncing brings all four back with zero manual
 steps. That round trip is what proves they are provisioned rather than clicked together.
 
-**The Service Health & Alerts dashboard's Alertmanager panel is text, not a live query, and that is a
-deliberate, verified limitation, not an oversight.** Grafana's built-in `alertmanager` data source
-(uid `alertmanager`, provisioned by kube-prometheus-stack since the stack's first deploy and unused by
-any panel until this dashboard) cannot be queried from a dashboard panel — its `query()` method is a
-stub that unconditionally returns empty data (confirmed against Grafana 13.1.1's own source,
-`public/app/plugins/datasource/alertmanager/DataSource.ts`), and the core Alert List panel's
-"Alertmanager" picker offers only Grafana-managed alert-forwarding targets, not a data source of this
-plugin type (`grafana/grafana#108531`, closed *not planned*). Only Grafana's own **Alerting →
-Alertmanager** page reaches it, via a resource-proxy call the panel query model does not expose. The
-panel still carries `"datasource": {"type": "alertmanager", "uid": "alertmanager"}` — so the uid is no
-longer provisioned-and-unreferenced — and its markdown body says exactly where to look instead:
-**Alerting → Alertmanager**, picking **Alertmanager** from the data source selector at the top, which
-shows real grouping, silences and the notification-policy tree.
+**No panel on Service Health & Alerts uses the `alertmanager` data source, and that is a deliberate,
+verified finding, not an oversight.** The data source itself is live and not a dead connection — a
+direct proxy call (`GET /api/datasources/proxy/uid/alertmanager/api/v2/alerts`) returns real alerts
+with full annotations, and Grafana's own **Alerting → Alertmanager** page uses it exactly that way.
+What is unavailable is a *dashboard panel* driven by it: its `query()` method is a stub that
+unconditionally returns empty data (confirmed against Grafana 13.1.1's own source,
+`public/app/plugins/datasource/alertmanager/DataSource.ts`), and the one panel type built to browse
+external alert sources declaratively — Alert List, via its `options.datasource` external-source path —
+rejects it outright: `GET /api/prometheus/alertmanager/api/v1/rules` returns
+`400 {"message":"unexpected datasource type 'alertmanager', expected loki, prometheus, amazon
+prometheus, azure prometheus"}`, live and reproducible against this cluster. That path is for
+data-source-managed alert *rules* (Loki/Prometheus rulers), a different concept from an Alertmanager's
+already-fired *notifications*, and Grafana has no core panel type that reads the latter from an
+arbitrary Alertmanager data source (`grafana/grafana#108531`, "Select Alertmanager Datasource in Alert
+Panel", closed *not planned*). Grouping, silences and inhibition — what was actually **delivered**,
+not just what fired — are visible today, live, at **Alerting → Alertmanager**, picking **Alertmanager**
+from the data source selector at the top; they cannot currently be embedded in a dashboard.
 
 Rendered captures, with live data, live alongside the text evidence:
 [`2026-08-24-grafana-application-overview.png`](eks/evidence/2026-08-24-grafana-application-overview.png),
