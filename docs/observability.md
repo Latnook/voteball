@@ -99,6 +99,15 @@ kube-state-metrics and node-exporter in one release.
 | `retentionSize` | `8GiB` | Byte-based limit, ~80% of the volume. **Both are set on purpose.** Time-based retention alone has no reason to delete anything still inside its window, so a growing series count fills the disk and Prometheus *crashes* rather than dropping old data. Whichever limit binds first does the work. |
 | memory | request `400Mi`, limit `900Mi` | Keeps the two-node Spot RAM budget sane. |
 
+**What it actually consumes**, as opposed to what it is allowed to: the capture script reports both,
+so the number is measured rather than estimated. On the 2026-08-24 cluster, a few hours in, the PVC
+was at **0.19% of 10Gi** with no compacted blocks on disk yet
+([`2026-08-24-observability-post-dns-fix.txt`](eks/evidence/2026-08-24-observability-post-dns-fix.txt)
+section 1). That is the shape to expect here: this stack is destroyed and rebuilt often enough that
+Prometheus rarely lives long enough to approach either limit, which is exactly why `retentionSize`
+matters anyway — the one time it does approach them, the failure without it is a crash, not a
+trim.
+
 **Grafana has no PVC at all, deliberately.** Dashboards come from git; a disk would only preserve
 hand-made ones, which is precisely the thing that must not survive.
 
