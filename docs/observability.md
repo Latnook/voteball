@@ -41,7 +41,7 @@ Alertmanager mails a person only when something is worth interrupting them for.
  pod stdout/stderr ─────────── Fluent Bit ──► CloudWatch Logs                │
  (devops-app only)                            7-day retention               ▼
                                                                         Grafana
-                                                                    3 dashboards
+                                                                    4 dashboards
                                                                      (port-forward)
 ```
 
@@ -68,7 +68,7 @@ Three homes, and which one a change belongs in decides whether it ships as a com
 |---|---|---|
 | `terraform/addon-monitoring.tf` | The stack itself: the Helm release, PVC, retention, resource limits, Alertmanager→SNS routing, the disabled-defaults list | `terraform apply` |
 | `charts/voteball` (ArgoCD) | The app's three ServiceMonitors, the 12 application alerts, the 4 SLI recording rules, the scrape NetworkPolicy, the canary | `git push` |
-| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 3 dashboards, the 4 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
+| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 4 dashboards, the 4 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
 | `charts/jenkins-support` (Terraform) | The Jenkins ServiceMonitor — the one exception, see §4 | `terraform apply` |
 | `terraform/addon-cloudwatch.tf` | Fluent Bit's log pipeline and the three log groups | `terraform apply` |
 
@@ -319,9 +319,28 @@ template.
 | Application Overview | `voteball-app` | 14 | Is the new release hurting users? Request rate, 5xx rate, availability vs SLO, p95 vs SLO, p50/p95/p99, votes cast, results freshness, ballots rejected by reason, DB errors, nginx rate, running `version`/`git_sha`/`release`, request rate **by release**, container CPU and memory. |
 | Kubernetes / Cluster | `voteball-k8s` | 10 | Is the fault in the app or the platform? Nodes ready, pending pods, node CPU/memory, pods by phase, desired vs available replicas, pod restarts, OOMKills, CPU throttling, PVC usage. |
 | Jenkins & Delivery | `voteball-delivery` | 8 | Is delivery healthy and is something stuck? Queue length and wait, executors total vs busy, online agents, build outcomes, build duration, controller JVM heap, last successful release. |
+| Service Health & Alerts | `voteball-alerts` | 9 | Is anything wrong right now, and would I have been told? Critical/warning/pending alert counts, a table of what's firing, availability vs 99% SLO, p95 vs 1s SLO, the canary's journey request and error rate, and a 6h alert-firing history from Prometheus' `ALERTS` series. |
 
-Deleting the `observability` ArgoCD Application and re-syncing brings all three back with zero manual
+Deleting the `observability` ArgoCD Application and re-syncing brings all four back with zero manual
 steps. That round trip is what proves they are provisioned rather than clicked together.
+
+**No panel on Service Health & Alerts uses the `alertmanager` data source, and that is a deliberate,
+verified finding, not an oversight.** The data source itself is live and not a dead connection — a
+direct proxy call (`GET /api/datasources/proxy/uid/alertmanager/api/v2/alerts`) returns real alerts
+with full annotations, and Grafana's own **Alerting → Alertmanager** page uses it exactly that way.
+What is unavailable is a *dashboard panel* driven by it: its `query()` method is a stub that
+unconditionally returns empty data (confirmed against Grafana 13.1.1's own source,
+`public/app/plugins/datasource/alertmanager/DataSource.ts`), and the one panel type built to browse
+external alert sources declaratively — Alert List, via its `options.datasource` external-source path —
+rejects it outright: `GET /api/prometheus/alertmanager/api/v1/rules` returns
+`400 {"message":"unexpected datasource type 'alertmanager', expected loki, prometheus, amazon
+prometheus, azure prometheus"}`, live and reproducible against this cluster. That path is for
+data-source-managed alert *rules* (Loki/Prometheus rulers), a different concept from an Alertmanager's
+already-fired *notifications*, and Grafana has no core panel type that reads the latter from an
+arbitrary Alertmanager data source (`grafana/grafana#108531`, "Select Alertmanager Datasource in Alert
+Panel", closed *not planned*). Grouping, silences and inhibition — what was actually **delivered**,
+not just what fired — are visible today, live, at **Alerting → Alertmanager**, picking **Alertmanager**
+from the data source selector at the top; they cannot currently be embedded in a dashboard.
 
 Rendered captures, with live data, live alongside the text evidence:
 [`2026-08-24-grafana-application-overview.png`](eks/evidence/2026-08-24-grafana-application-overview.png),
@@ -716,7 +735,7 @@ for q in voteball:journey_requests:rate5m voteball:availability:ratio5m voteball
     | python3 -c 'import json,sys; r=json.load(sys.stdin)["data"]["result"]; print(r[0]["value"][1] if r else "ABSENT")'
 done
 
-# 4. All three dashboards are present as ConfigMaps.
+# 4. All four dashboards are present as ConfigMaps.
 kubectl -n observability get cm -l grafana_dashboard=1
 
 # 5. Alertmanager has the SNS receiver and has not failed a notification.
@@ -814,7 +833,47 @@ August set.
 |---|---|---|
 | 1 — controlled 5xx | `VoteballHighErrorRate` fired at 15:24:55Z; availability fell 1.00 → 0.10 as the site served 500s. **Two caveats are written into the transcript**: the outage was ended externally at 15:22:03Z by a second operator, so the alert fired on the tail of a 5-minute rate window rather than against a still-broken site; and the `HEALTH` column was reading the public `/health`, which is a 404 because nginx proxies only `/api/*`. | [`2026-08-24-drill-1-controlled-5xx.txt`](eks/evidence/2026-08-24-drill-1-controlled-5xx.txt) |
 | 3 — Jenkins agent loss | A 9-container build agent was force-deleted mid-build; the site held 200 across every poll and Jenkins provisioned a replacement agent on its own within ~2 minutes. | [`2026-08-24-drill-3-jenkins-agent-loss.txt`](eks/evidence/2026-08-24-drill-3-jenkins-agent-loss.txt) |
+| 4 — monitoring gate | A release with 1.5s injected into `/api/options` passed pods-Ready, ArgoCD Synced and all three smoke-test endpoints, then failed the gate on **p95 2.315s vs the 1.0s SLO with an error ratio of 0.000000**, and was rolled back automatically. Site degraded (slow, never failing) for 2m45s. | [`2026-08-24-drill-4-monitoring-gate.txt`](eks/evidence/2026-08-24-drill-4-monitoring-gate.txt) |
 | 5 — Jenkins queue stuck | `JenkinsQueueStuck` fired at 16:03:10Z, exactly its `for: 15m` after a `ResourceQuota` of `pods=1` blocked agent provisioning at 15:48:10Z. The queue reached 4 and `ci` fell to the controller pod alone, while the site returned 200 on every poll of the window. | [`2026-08-24-drill-5-jenkins-queue-stuck.txt`](eks/evidence/2026-08-24-drill-5-jenkins-queue-stuck.txt) |
+
+**Drill 4's 2026-08-24 run closes a question the August run left open, and it is the rollback half
+that matters.** On 2026-08-18 the gate correctly failed the slow release — and then the ROLLBACK
+failed its own gate too, at p95 2.33s, while production was already serving 0.12s
+([`-4b-settle-fix-proof.txt`](eks/evidence/2026-08-18-rerun-drill-4b-settle-fix-proof.txt)). Every
+SLI here is a rate over `[5m]`, so the rollback inherited a window still full of the slow release it
+had just removed.
+
+**Two guards, for two different halves of that, and naming only one of them tells half the story**
+(`Jenkinsfile-cd`'s comment on the Monitoring Gate stage carries both). `GATE_SETTLE_SECONDS` fixes
+the **measurement**: a rollback build waits 330s — the 5m lookback plus one 30s scrape of margin —
+before measuring, so it no longer inherits the p95 of what it removed. `ROLLBACK_DEPTH` bounds the
+**consequence**: by the time that gate failed, `rollback-target.sh` had resolved the *slow* build as
+the next rollback target, and the depth bound is what stopped production oscillating between the two
+releases. The settle stops the wrong verdict; the depth bound stops the wrong verdict becoming a
+loop.
+
+The settle is deliberately NOT applied to normal deploys: there the window holds the previous
+release's data, and a previous release that passed its own gate was within thresholds by definition,
+so it cannot push this one over. Paying 5 minutes on every deploy to fix a case that only arises
+after a failed one would be the wrong trade.
+
+Today's pair exercises both directions on demand, on identical thresholds:
+
+| Build | Role | p95 | Verdict |
+|---|---|---|---|
+| `application-cd` #9 | control, 30 min earlier, healthy release | 0.0916s | PASS |
+| `application-cd` #12 | +1.5s injected | **2.3150s** | **FAIL → rollback** |
+| `application-cd` #13 | the rollback, after its 330s settle | 0.0822s | PASS |
+
+#13 is the one that was not previously characterised. In August the equivalent build measured
+2.326s and failed; today it measured 0.0822s and passed, from nothing but letting the window clear.
+So the settle fix is not merely believed to work — it has now been observed working against a real
+regression it did not know was coming.
+
+Note also #12's error ratio: **0.000000**. The release that was rejected and rolled back was
+flawless by every error measure, with pods Ready, ArgoCD Synced and all three smoke-test endpoints
+returning 200 seconds earlier. Latency is the only dimension anything in this pipeline objected to,
+and the gate is the only check that looks at it.
 
 The 2026-08-24 run of drill 1 is **narrower** than the August one, and the transcript says so rather
 than presenting a pass as a clean pass. That is the same discipline as drill 5's first attempt below:

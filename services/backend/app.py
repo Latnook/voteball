@@ -159,7 +159,6 @@ def options():
     # leaks the connection whenever the query raises, and this is the endpoint where that matters
     # most: it is public, unauthenticated, hit by every visitor and by the canary every 30s, so a
     # leak here exhausts the RDS connection limit far faster than one on an admin route would.
-    time.sleep(1.5)  # DRILL 4 -- deliberate latency regression, reverted by the drill script
     conn = db.get_db()
     try:
         result = queries.get_options(conn)
