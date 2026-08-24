@@ -127,10 +127,31 @@ Two consequences worth stating:
 
 ### 5. GitHub is the one fragile data source, and nothing important rests on it
 
-`grafana-github-datasource` is a community plugin, and Grafana has no PVC here — deliberately, per
-decision 1. So the plugin is not installed once; it is **re-downloaded from grafana.com on every pod
-start**, which on a 100% Spot node group is roughly daily. If grafana.com is unreachable that
-morning, Grafana comes up healthy and the GitHub panels are simply absent, with the reason in
+**Three of the four data sources need no plugin at all.** Verified against the running container
+(`grafana/grafana:13.1.1`) rather than inferred from the names — every one of these is compiled into
+the binary at `/usr/share/grafana/public/app/plugins/datasource/`:
+
+```
+alertmanager  azuremonitor  cloud-monitoring  cloudwatch  dashboard  grafana
+grafana-postgresql-datasource  grafana-pyroscope-datasource
+grafana-testdata-datasource  graphite  influxdb  jaeger  loki  mixed
+mssql  mysql  opentsdb  parca  prometheus  tempo
+```
+
+So `prometheus`, `cloudwatch` and `grafana-postgresql-datasource` are a provisioning file and nothing
+else. Only `grafana-github-datasource` is fetched.
+
+**The distinction that governs reliability here is image-resident vs network-fetched, not core vs
+plugin.** `/var/lib/grafana` is an `emptyDir`, yet it holds `elasticsearch`, `zipkin` and four
+`*-app` plugins, all timestamped at pod start: Grafana 13 bakes a second tier of plugins into the
+image and its entrypoint copies them into the volume on every boot. Those are as reliable as the
+compiled-in ones despite sitting on ephemeral storage, because they are never downloaded.
+
+A `GF_INSTALL_PLUGINS` entry is different in kind. It downloads into that same `emptyDir`, which is
+wiped and repopulated from the image at every pod start — the image copy restores what it carries,
+and the downloaded plugin is simply gone. So the GitHub plugin is **re-fetched from grafana.com on
+every pod start**, which on a 100% Spot node group is roughly daily. If grafana.com is unreachable
+that morning, Grafana comes up healthy and the GitHub panels are simply absent, with the reason in
 container logs nobody is reading.
 
 There is no clean fix that does not undo decision 1. The mitigation is placement: the two data
