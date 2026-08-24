@@ -97,8 +97,18 @@ the base table is unreadable by `grafana_ro` even though the rows in it are the 
 summarize. `v_grafana_votes` is a view exposing only `id`, `created_at`, `previous_vote_status`,
 `upcoming_vote_status` and `previous_party_id` — enough to drive every time-series panel on the
 Business Analytics dashboard, and nothing that re-identifies a ballot to a person on a poll that
-promises anonymity. `ALTER DEFAULT PRIVILEGES` extends the same `SELECT` grant to any table added
-later, so a new rollup table doesn't silently need a follow-up `GRANT` to stay visible.
+promises anonymity.
+
+**`ALTER DEFAULT PRIVILEGES` is broader than the table above implies, and this is the
+security-relevant part.** It is a standing grant scoped to the whole `public` schema, not to the 13
+objects in the table — `grafana_ro` automatically gets `SELECT` on **every table or view created in
+`public` from that point on**, by anyone, with no review step, not just a future rollup table. A
+future table carrying a voter identifier — the way `votes` does — is readable by the dashboard role
+the day it is added, unless someone remembers to add it to the `REVOKE` list, which is hardcoded to
+four table names and does not grow on its own. `services/backend/tests/test_migration.py` guards
+this: it asserts the exact set of objects `grafana_ro` can `SELECT` across all of `public` equals the
+13-object allowlist above and nothing more, so a new table fails that test loudly instead of leaking
+silently — whoever adds one has to make a deliberate decision about it.
 
 **CloudWatch: IRSA, and an asymmetric grant that is deliberate, not an oversight.** Grafana's
 ServiceAccount authenticates with no stored credential at all — `aws_iam_role.grafana`

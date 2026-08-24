@@ -385,7 +385,13 @@ $$;
 -- rather than column-level grants for two reasons: a reviewer can read one object and know exactly
 -- what the dashboard tool can see, and ALTER DEFAULT PRIVILEGES below does not apply to column
 -- grants.
-CREATE OR REPLACE VIEW v_grafana_votes AS
+-- schema.sql re-runs on EVERY backend pod start (init_db). CREATE OR REPLACE VIEW can change a
+-- view's query but cannot change its column list in place -- if this view's SELECT list is ever
+-- edited to drop or reorder a column, the bare CREATE OR REPLACE below raises InvalidTableDefinition
+-- and aborts init_db, crash-looping every pod. DROP first so a column-list change is a clean
+-- drop-and-recreate instead of an in-place failure that only shows up the day someone edits it.
+DROP VIEW IF EXISTS v_grafana_votes;
+CREATE VIEW v_grafana_votes AS
     SELECT id,
            created_at,
            previous_vote_status,
@@ -406,7 +412,7 @@ BEGIN
     EXECUTE format('GRANT CONNECT ON DATABASE %I TO grafana_ro', current_database());
     GRANT USAGE ON SCHEMA public TO grafana_ro;
 
-    -- The eight rollup tables and the four reference tables.
+    -- The eight rollup tables, the four reference tables, and v_grafana_votes -- 13 objects total.
     GRANT SELECT ON rollup_previous, rollup_upcoming, rollup_previous_upcoming,
                     rollup_national_previous, rollup_national_upcoming,
                     rollup_national_previous_upcoming,
@@ -419,8 +425,24 @@ BEGIN
     -- GRANT ALL away from being wrong; stating it means the intent survives someone else's shortcut.
     REVOKE ALL ON votes, vote_clubs, vote_leagues, vote_upcoming_parties FROM grafana_ro;
 
-    -- Without this, a rollup table added next month is a broken panel next month -- the grant list
-    -- above names tables that exist today and nothing updates it automatically.
+    -- alert_state and party_lineage carry nothing voter-identifying and neither is in any
+    -- dashboard, but PostgreSQL's default-ACL entries are per-role and per-schema, not per-table --
+    -- once ALTER DEFAULT PRIVILEGES below has ever registered grafana_ro's default on this schema
+    -- (i.e. after the first successful boot), any table that is later DROPped and CREATEd again
+    -- picks the grant back up immediately, even though its CREATE TABLE statement sits earlier in
+    -- this file than the ALTER DEFAULT PRIVILEGES that produced the default. Proven for these two.
+    -- REVOKE them explicitly so the allowlist stays exactly the 13 objects above, not 15.
+    REVOKE ALL ON alert_state, party_lineage FROM grafana_ro;
+
+    -- WARNING: this is a STANDING grant, not scoped to the 13 objects above -- it applies to EVERY
+    -- table or view created in `public` from this point forward, by anyone, forever, with no review
+    -- step. Without it, a rollup table added next month is silently unreadable (a broken panel);
+    -- with it, a table added next month that happens to carry a voter identifier -- the way `votes`
+    -- does -- is readable by grafana_ro the same day, unless someone remembers to add it to the
+    -- REVOKE list above. `services/backend/tests/test_migration.py` asserts the exact set of
+    -- objects grafana_ro can currently SELECT (the 13 above, nothing else) specifically so a new
+    -- table fails that test loudly instead of leaking silently -- see docs/security.md's
+    -- "Grafana data sources" section.
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO grafana_ro;
 EXCEPTION WHEN insufficient_privilege OR undefined_object OR others THEN
     RAISE NOTICE 'grafana_ro grants not applied (%): Grafana PostgreSQL data source will see no data', SQLERRM;

@@ -1269,9 +1269,13 @@ def test_grafana_view_hides_voter_identifiers(conn):
     """)
     cols = {r[0] for r in cur.fetchall()}
     assert cols, 'v_grafana_votes does not exist'
-    assert 'cookie_token' not in cols
-    assert 'ip_hash' not in cols
-    assert {'id', 'created_at', 'previous_party_id'} <= cols
+    # Exact-set equality, not a subset check. The ADD direction is the privacy-relevant one here --
+    # a subset check only proves the columns this test already knows about are still present; it
+    # says nothing about a column joining the view later, which is exactly how a future
+    # voter-identifying column would reach the dashboard unnoticed.
+    assert cols == {
+        'id', 'created_at', 'previous_vote_status', 'upcoming_vote_status', 'previous_party_id',
+    }
     cur.close()
 
 
@@ -1285,6 +1289,53 @@ def test_grafana_ro_cannot_read_raw_votes(conn):
     cur.execute("SELECT has_table_privilege('grafana_ro', 'rollup_previous', 'SELECT')")
     assert cur.fetchone()[0] is True
     cur.close()
+
+
+def test_grafana_ro_can_read_exactly_the_allowlist_and_nothing_else(conn):
+    """`ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO grafana_ro` in
+    schema.sql is a STANDING grant scoped to the whole `public` schema, not to the 13 objects
+    schema.sql explicitly names -- it applies to every table or view created in `public` from that
+    point on, by anyone, with no review step. The REVOKE list right above it is hardcoded to four
+    table names and does not grow on its own, so a future table carrying a voter identifier (the
+    way `votes` does) would be readable by grafana_ro the day it is added, unless someone remembers
+    to extend that list by hand.
+
+    This is the guard: assert the exact set of objects grafana_ro can SELECT across ALL of `public`
+    equals the intended allowlist and nothing more. A new table then fails this test loudly instead
+    of leaking silently, and whoever adds it has to make a deliberate decision about grafana_ro's
+    access to it -- see docs/security.md's "Grafana data sources" section.
+    """
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT c.relname
+          FROM pg_class c
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+         WHERE n.nspname = 'public'
+           AND c.relkind IN ('r', 'v')  -- ordinary tables and views only
+           AND has_table_privilege('grafana_ro', quote_ident(n.nspname) || '.' || quote_ident(c.relname), 'SELECT')
+    """)
+    readable = {r[0] for r in cur.fetchall()}
+    cur.close()
+
+    expected = {
+        # The 8 rollup tables.
+        'rollup_previous', 'rollup_upcoming', 'rollup_previous_upcoming',
+        'rollup_national_previous', 'rollup_national_upcoming', 'rollup_national_previous_upcoming',
+        'rollup_vote_switch', 'rollup_national_vote_switch',
+        # The 4 reference tables.
+        'leagues', 'clubs', 'previous_parties', 'upcoming_parties',
+        # The one view.
+        'v_grafana_votes',
+    }
+    extra = readable - expected
+    missing = expected - readable
+    assert not extra, (
+        f'grafana_ro can read {sorted(extra)}, which is NOT on the intended allowlist -- this is '
+        f'the ALTER DEFAULT PRIVILEGES grant reaching a table it should not; add it to the REVOKE '
+        f'list in schema.sql if it carries anything voter-identifying, or to `expected` above with '
+        f'a deliberate note if the exposure is intended'
+    )
+    assert not missing, f'grafana_ro lost SELECT on {sorted(missing)} -- a dashboard panel just broke'
 
 
 def test_grafana_ro_cannot_write(conn):
