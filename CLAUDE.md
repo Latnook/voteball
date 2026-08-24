@@ -653,7 +653,22 @@ The common thread is that **the transcript looks MORE complete than a silent fai
 error is visibly an error; a success line with a `403` inside it reads as a logged detail, and
 evidence built on it gets believed. `set -euo pipefail` is necessary and covers none of the three:
 not a pipeline's non-final stage, not a `$(...)` whose output is merely printed, not a request that
-succeeded against the wrong URL. Capture the status into a variable and branch on it.
+succeeded against the wrong URL. **And the three need different fixes, so "check the exit status" is
+not the lesson:**
+
+| Sub-type | Fix | How it is found |
+|---|---|---|
+| A discarded exit status | capture it into a variable and branch on it | reading the code |
+| A race against state that has not arrived | a completion condition, or a retry | running it twice |
+| A pattern that can never match | feed the check input you KNOW should match, once | **only** by that |
+
+The third is the worst and arrived last (2026-08-24, drill 4: `grep '^gate:'` against Jenkins console
+lines, every one of which carries a timestamp prefix — the anchor could never match, so the section
+was empty and correct). No amount of reading `grep '^gate:'` reveals that, and a retry cannot help.
+Worse, its empty result is not merely indistinguishable from "nothing to report" — it is
+indistinguishable from a **correct negative**, which is a legitimate outcome nobody has any reason to
+investigate. Exercising a check against known-present input at least once is the only defence, and it
+is the same discipline as proving a test can fail before trusting it to pass.
 
 **AWS CLI v2 pages its output whenever stdout is a terminal, and that hangs deploys.** v1 had no
 pager at all, so nothing noticed until the repo owner upgraded on 2026-08-21. Every script in

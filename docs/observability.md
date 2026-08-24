@@ -836,6 +836,31 @@ August set.
 | 4 — monitoring gate | A release with 1.5s injected into `/api/options` passed pods-Ready, ArgoCD Synced and all three smoke-test endpoints, then failed the gate on **p95 2.315s vs the 1.0s SLO with an error ratio of 0.000000**, and was rolled back automatically. Site degraded (slow, never failing) for 2m45s. | [`2026-08-24-drill-4-monitoring-gate.txt`](eks/evidence/2026-08-24-drill-4-monitoring-gate.txt) |
 | 5 — Jenkins queue stuck | `JenkinsQueueStuck` fired at 16:03:10Z, exactly its `for: 15m` after a `ResourceQuota` of `pods=1` blocked agent provisioning at 15:48:10Z. The queue reached 4 and `ci` fell to the controller pod alone, while the site returned 200 on every poll of the window. | [`2026-08-24-drill-5-jenkins-queue-stuck.txt`](eks/evidence/2026-08-24-drill-5-jenkins-queue-stuck.txt) |
 
+**Drill 4's 2026-08-24 run closes a question the August run left open, and it is the rollback half
+that matters.** On 2026-08-18 the gate correctly failed the slow release — and then the ROLLBACK
+failed its own gate too, at p95 2.33s, while production was already serving 0.12s
+([`-4b-settle-fix-proof.txt`](eks/evidence/2026-08-18-rerun-drill-4b-settle-fix-proof.txt)). Every
+SLI here is a rate over `[5m]`, so the rollback inherited a window still full of the slow release it
+had just removed. `GATE_SETTLE_SECONDS` was the fix: a rollback build waits 330s before measuring.
+
+Today's pair exercises both directions on demand, on identical thresholds:
+
+| Build | Role | p95 | Verdict |
+|---|---|---|---|
+| `application-cd` #9 | control, 30 min earlier, healthy release | 0.0916s | PASS |
+| `application-cd` #12 | +1.5s injected | **2.3150s** | **FAIL → rollback** |
+| `application-cd` #13 | the rollback, after its 330s settle | 0.0822s | PASS |
+
+#13 is the one that was not previously characterised. In August the equivalent build measured
+2.326s and failed; today it measured 0.0822s and passed, from nothing but letting the window clear.
+So the settle fix is not merely believed to work — it has now been observed working against a real
+regression it did not know was coming.
+
+Note also #12's error ratio: **0.000000**. The release that was rejected and rolled back was
+flawless by every error measure, with pods Ready, ArgoCD Synced and all three smoke-test endpoints
+returning 200 seconds earlier. Latency is the only dimension anything in this pipeline objected to,
+and the gate is the only check that looks at it.
+
 The 2026-08-24 run of drill 1 is **narrower** than the August one, and the transcript says so rather
 than presenting a pass as a clean pass. That is the same discipline as drill 5's first attempt below:
 a drill that does not reach its own condition, or reaches it by accident, looks identical to a proof
