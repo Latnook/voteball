@@ -28,6 +28,15 @@
 #
 # Requires: aws CLI (logged in), jq (idempotency check), openssl, python3.
 set -euo pipefail
+
+# The token variable is DELIBERATELY namespaced. `GITHUB_TOKEN` is a reserved name: git's credential
+# helper and the `gh` CLI both consume it from the environment automatically. Putting it in deploy.env
+# on 2026-08-24 meant every `git push` and every `gh` call in scripts/deploy.sh authenticated as a
+# read-only, single-repo fine-grained PAT instead of the operator's own credentials -- step 9 failed
+# with "Permission to Latnook/voteball.git denied", step 9's guard then refused to bootstrap ArgoCD,
+# and the rebuild finished with no ArgoCD Applications and charts/observability never deployed.
+# A bare GITHUB_TOKEN is still accepted here for muscle memory, but nothing EXPORTS it.
+: "${GRAFANA_GITHUB_TOKEN:=${GITHUB_TOKEN:-}}"
 cd "$(dirname "$0")/.."   # repo root
 
 # shellcheck source=lib/config.sh disable=SC1091
@@ -88,7 +97,7 @@ fi
 # reasons -- db_password never expires on its own, github_token does (GitHub caps a fine-grained PAT
 # at one year) -- so the common real-world rotation is "the PAT expired, mint a new one", which has
 # nothing to do with db_password. Before ROTATE_WHAT existed, that runbook was
-# `GITHUB_TOKEN=<new> FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh`, which *always* regenerated
+# `GRAFANA_GITHUB_TOKEN=<new> FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh`, which *always* regenerated
 # db_password too -- since the new password only reaches the live grafana_ro role on the NEXT
 # release (migrate.py's ALTER ROLE hook), that silently broke Business Analytics for an unbounded
 # window every time someone rotated an expiring PAT. docs/maintenance.md's runbook now passes
@@ -191,16 +200,16 @@ else
 fi
 
 if [ "$ROTATE_WHAT" = "db_password" ]; then
-  GITHUB_TOKEN="$EXISTING_GITHUB_TOKEN"
+  GRAFANA_GITHUB_TOKEN="$EXISTING_GITHUB_TOKEN"
   echo "ROTATE_WHAT=db_password: leaving github_token exactly as it is."
   echo
 elif [ "$ROTATE_WHAT" = "github_token" ]; then
   # An explicit, deliberate rotation of just this value (docs/maintenance.md's PAT-expiry runbook) --
   # an empty answer here would silently drop the token, so this path stays mandatory.
-  GITHUB_TOKEN="$(ask GITHUB_TOKEN "GitHub fine-grained PAT for Latnook/voteball (not echoed)")"
+  GRAFANA_GITHUB_TOKEN="$(ask GRAFANA_GITHUB_TOKEN "GitHub fine-grained PAT for Latnook/voteball (not echoed)")"
 else
   # ROTATE_WHAT=both, the path deploy.sh's automated seeding step actually takes on a fresh cluster.
-  # GITHUB_TOKEN is OPTIONAL here, unlike db_password (always generated) and unlike the admin/Jenkins
+  # GRAFANA_GITHUB_TOKEN is OPTIONAL here, unlike db_password (always generated) and unlike the admin/Jenkins
   # credentials deploy.sh's own preflight requires: an unattended deploy must not hang on a prompt
   # nobody can answer, and it must not fail over a token that guards nothing load-bearing --
   # docs/design/2026-08-24-grafana-datasources-design.md decision 5 is explicit that no alert, SLI or
@@ -210,15 +219,15 @@ else
   # string -- see the split ExternalSecret this feeds (charts/observability/templates/
   # externalsecret.yaml), which now gates the GitHub token independently of db_password for exactly
   # this reason.
-  if [ -n "${GITHUB_TOKEN:-}" ]; then
+  if [ -n "${GRAFANA_GITHUB_TOKEN:-}" ]; then
     : # already supplied
   elif has_tty; then
-    read -rsp "GitHub fine-grained PAT for Latnook/voteball (optional -- Enter to skip): " GITHUB_TOKEN </dev/tty
+    read -rsp "GitHub fine-grained PAT for Latnook/voteball (optional -- Enter to skip): " GRAFANA_GITHUB_TOKEN </dev/tty
     echo >&2
   else
-    GITHUB_TOKEN=""
+    GRAFANA_GITHUB_TOKEN=""
   fi
-  if [ -z "$GITHUB_TOKEN" ]; then
+  if [ -z "$GRAFANA_GITHUB_TOKEN" ]; then
     # Nothing new was supplied. `put-secret-value` REPLACES the whole SecretString, so simply
     # omitting the key here would DELETE an already-stored token, not merely "not add" one -- this
     # matters on the FORCE_ROTATE=1-alone path (rotating db_password without ROTATE_WHAT=db_password),
@@ -226,16 +235,16 @@ else
     # secret that never had a token (the true first-seed case deploy.sh's automated step actually
     # hits) ends up with none.
     set +e
-    GITHUB_TOKEN="$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$REGION" \
+    GRAFANA_GITHUB_TOKEN="$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$REGION" \
                      --query SecretString --output text 2>/dev/null | jq -r '.github_token // empty' 2>/dev/null)"
     set -e
-    if [ -n "$GITHUB_TOKEN" ]; then
+    if [ -n "$GRAFANA_GITHUB_TOKEN" ]; then
       echo "No new GitHub token supplied -- keeping the one already stored in ${SECRET_ID} unchanged."
     else
       echo "No GitHub token supplied -- seeding db_password only. The GitHub data source provisions with"
       echo "no credential (not an empty one) and its panels stay blank; nothing else is affected. Add it"
       echo "later with:"
-      echo "  GITHUB_TOKEN=... ROTATE_WHAT=github_token FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh"
+      echo "  GRAFANA_GITHUB_TOKEN=... ROTATE_WHAT=github_token FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh"
     fi
     echo
   fi
@@ -248,11 +257,11 @@ trap 'rm -rf "$TMP"' EXIT
 # github_token is included only when non-empty -- writing it as "" would be indistinguishable from a
 # typo'd key to ESO/Grafana (both silently accept an empty string; see the design doc's silent-
 # failure #2), so its ABSENCE is the only way to represent "not provided" without that ambiguity.
-DB_PASSWORD="$DB_PASSWORD" GITHUB_TOKEN="$GITHUB_TOKEN" python3 -c '
+DB_PASSWORD="$DB_PASSWORD" GRAFANA_GITHUB_TOKEN="$GRAFANA_GITHUB_TOKEN" python3 -c '
 import json, os
 payload = {"db_password": os.environ["DB_PASSWORD"]}
-if os.environ.get("GITHUB_TOKEN"):
-    payload.update({"github_token": os.environ["GITHUB_TOKEN"]})
+if os.environ.get("GRAFANA_GITHUB_TOKEN"):
+    payload.update({"github_token": os.environ["GRAFANA_GITHUB_TOKEN"]})
 print(json.dumps(payload))' > "$TMP/payload.json"
 
 # Capture the exit status separately from the output and branch on it explicitly -- never fold a

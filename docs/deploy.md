@@ -281,7 +281,7 @@ with `db_password` never seeded (e.g. `externalSecret.grafanaEnabled`/`dbEnabled
 — it was never something a routine rebuild should do on its own:
 
 ```bash
-GITHUB_TOKEN='...' ROTATE_WHAT=github_token FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh
+GRAFANA_GITHUB_TOKEN='...' ROTATE_WHAT=github_token FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh
 ```
 
 (a fine-grained PAT scoped to `Latnook/voteball` alone — see `docs/security.md`'s "Grafana data
@@ -418,7 +418,7 @@ ADMIN_USERNAME=yourname
 ADMIN_PASSWORD=yoursecret
 JENKINS_ADMIN_USER=yourname
 JENKINS_ADMIN_PASSWORD=yoursecret
-GITHUB_TOKEN=yourfinegrainedpat
+GRAFANA_GITHUB_TOKEN=yourfinegrainedpat
 ```
 
 Plain `KEY=value` lines, no `export` needed and no quotes required. It is **gitignored and holds
