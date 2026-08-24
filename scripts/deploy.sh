@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
 
 # Optional repo-root credentials file (gitignored), the env-var equivalent of terraform/voteball.tfvars:
-# ADMIN_USERNAME / ADMIN_PASSWORD / JENKINS_ADMIN_USER / JENKINS_ADMIN_PASSWORD / GITHUB_TOKEN, so an
+# ADMIN_USERNAME / ADMIN_PASSWORD / JENKINS_ADMIN_USER / JENKINS_ADMIN_PASSWORD / GRAFANA_GITHUB_TOKEN, so an
 # unattended run needs only `VOTEBALL_AUTO_APPROVE=1 ./scripts/deploy.sh`.
 #
 # Two things here are load-bearing, and getting either wrong reproduces the exact symptom this exists
@@ -19,13 +19,13 @@ cd "$(dirname "$0")/.."   # repo root
 #      `ADMIN_PASSWORD=... ./scripts/deploy.sh` -- the override you would reach for precisely when
 #      rotating the value the file still holds. Everything else in this script treats the environment
 #      as the winner (see the `${VAR:-}` guards below and DB_PASS/tfvars); this keeps that consistent.
-#      GITHUB_TOKEN joins this list for the same reason: unlike the other four, it is genuinely
+#      GRAFANA_GITHUB_TOKEN joins this list for the same reason: unlike the other four, it is genuinely
 #      OPTIONAL (see step 3c) -- but an operator rotating it with
-#      `GITHUB_TOKEN=newvalue ./scripts/deploy.sh` still has to win over a stale one sitting in
+#      `GRAFANA_GITHUB_TOKEN=newvalue ./scripts/deploy.sh` still has to win over a stale one sitting in
 #      deploy.env, exactly like ADMIN_PASSWORD does.
 if [ -f deploy.env ]; then
   declare -A _preset=()
-  for _v in ADMIN_USERNAME ADMIN_PASSWORD JENKINS_ADMIN_USER JENKINS_ADMIN_PASSWORD DB_PASS GITHUB_TOKEN; do
+  for _v in ADMIN_USERNAME ADMIN_PASSWORD JENKINS_ADMIN_USER JENKINS_ADMIN_PASSWORD DB_PASS GRAFANA_GITHUB_TOKEN; do
     [ -n "${!_v:-}" ] && _preset["$_v"]="${!_v}"
   done
   set -a; . ./deploy.env; set +a
@@ -222,7 +222,7 @@ step "3c/11 Seeding Grafana data source credentials into Secrets Manager"
 # application fixes. Seeding here, before step 6's full apply creates ArgoCD, closes the gap the same
 # way steps 3/3b already close it for the app and Jenkins secrets.
 #
-# GITHUB_TOKEN is genuinely OPTIONAL -- unlike DB_PASS/ADMIN_PASSWORD/JENKINS_ADMIN_* above, this
+# GRAFANA_GITHUB_TOKEN is genuinely OPTIONAL -- unlike DB_PASS/ADMIN_PASSWORD/JENKINS_ADMIN_* above, this
 # script does not stop to prompt for it and does not fail without it (see
 # scripts/seed-grafana-secret.sh). If it is set (deploy.env or the environment) it is used; if a
 # terminal is attached the script still offers an optional prompt; otherwise it is skipped and only

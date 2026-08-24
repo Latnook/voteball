@@ -90,7 +90,7 @@ with no auto-renewal. Unlike the EKS deadline above, nothing about this fails lo
 
 ```
 GitHub PAT expires   TBD — this token has not been minted yet. Fill in the real date the first
-                      time scripts/seed-grafana-secret.sh is run with a real GITHUB_TOKEN, and set
+                      time scripts/seed-grafana-secret.sh is run with a real GRAFANA_GITHUB_TOKEN, and set
                       a reminder for it — GitHub does not.
 ```
 
