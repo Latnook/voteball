@@ -50,7 +50,7 @@ externalSecret:
   # container voteball/grafana, which only a billed `terraform apply` creates. Shipping it ungated
   # on 2026-08-24 left both ArgoCD Applications Degraded and put application-cd into a
   # deploy-fails-then-rollback loop. Flip to true after the apply AND the seed script have run.
-  enabled: false
+  enabled: true
   secretName: "voteball/grafana"
   region: "il-central-1"
   refreshInterval: "1h"
