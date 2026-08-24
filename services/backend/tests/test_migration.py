@@ -1,4 +1,7 @@
+import os
+
 import psycopg2
+import psycopg2.sql
 import pytest
 
 import db as db_module
@@ -1214,3 +1217,145 @@ def test_party_lineage_is_rebuilt_by_key(conn):
     assert cur.fetchone()[0] == 14
     cur.close()
 
+
+
+def test_grafana_ro_role_exists_after_init(conn):
+    """schema.sql creates the read-only role, so a GRANT naming it never fails."""
+    cur = conn.cursor()
+    cur.execute("SELECT 1 FROM pg_roles WHERE rolname = 'grafana_ro'")
+    assert cur.fetchone() is not None
+    cur.close()
+
+
+def test_grafana_ro_role_has_no_password_from_schema(conn):
+    """schema.sql must NOT set a password. Only migrate.py does, from the environment.
+
+    schema.sql runs on every backend boot (app.py's __main__ guard and gunicorn's on_starting hook,
+    not just the migrate Job), so it can carry no secret and must not depend on one being present.
+    A role with no password cannot authenticate under scram-sha-256, so the intermediate state
+    fails closed.
+
+    grafana_ro is a cluster-level role, not scoped to this test's database, so the `conn` fixture's
+    per-test DROP TABLE/init_db cycle does not reset it -- a password set by a different test (e.g.
+    test_migrate.py's `_set_grafana_password` coverage) survives between tests. Drop the role first
+    so this test proves what schema.sql itself does on a *fresh* CREATE ROLE, not whatever password
+    state a previous test happened to leave behind.
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT 1 FROM pg_roles WHERE rolname = 'grafana_ro'")
+    if cur.fetchone():
+        cur.execute('DROP OWNED BY grafana_ro CASCADE')
+        cur.execute('DROP ROLE grafana_ro')
+        conn.commit()
+    db_module.init_db(conn)  # recreates grafana_ro fresh, via schema.sql's CREATE ROLE
+
+    cur.execute("SELECT rolpassword FROM pg_authid WHERE rolname = 'grafana_ro'")
+    row = cur.fetchone()
+    assert row is not None
+    assert row[0] is None, 'schema.sql set a password on grafana_ro; only migrate.py may do that'
+    cur.close()
+
+
+def test_grafana_view_hides_voter_identifiers(conn):
+    """v_grafana_votes must not expose cookie_token or ip_hash.
+
+    Both link a ballot to a person. The site promises an anonymous poll, and a Grafana query box is
+    exactly where that leaks. See the design doc's decision 3.
+    """
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT column_name FROM information_schema.columns
+        WHERE table_name = 'v_grafana_votes'
+    """)
+    cols = {r[0] for r in cur.fetchall()}
+    assert cols, 'v_grafana_votes does not exist'
+    assert 'cookie_token' not in cols
+    assert 'ip_hash' not in cols
+    assert {'id', 'created_at', 'previous_party_id'} <= cols
+    cur.close()
+
+
+def test_grafana_ro_cannot_read_raw_votes(conn):
+    """The base votes table is REVOKEd; only the view is readable."""
+    cur = conn.cursor()
+    cur.execute("SELECT has_table_privilege('grafana_ro', 'votes', 'SELECT')")
+    assert cur.fetchone()[0] is False, 'grafana_ro can read raw votes -- cookie_token is exposed'
+    cur.execute("SELECT has_table_privilege('grafana_ro', 'v_grafana_votes', 'SELECT')")
+    assert cur.fetchone()[0] is True
+    cur.execute("SELECT has_table_privilege('grafana_ro', 'rollup_previous', 'SELECT')")
+    assert cur.fetchone()[0] is True
+    cur.close()
+
+
+def test_grafana_ro_cannot_write(conn):
+    """Read-only means read-only, on every table it can see."""
+    cur = conn.cursor()
+    for tbl in ('rollup_previous', 'leagues', 'clubs', 'upcoming_parties'):
+        for priv in ('INSERT', 'UPDATE', 'DELETE'):
+            cur.execute('SELECT has_table_privilege(%s, %s, %s)', ('grafana_ro', tbl, priv))
+            assert cur.fetchone()[0] is False, f'grafana_ro has {priv} on {tbl}'
+    cur.close()
+
+
+def test_grafana_ro_creation_degrades_to_notice_without_privilege(conn):
+    """CREATE ROLE is cluster-level and needs superuser or CREATEROLE. schema.sql runs on every
+    backend boot, so a connecting user that ever lacks that privilege must not abort init_db --
+    that would crash-loop every pod over a monitoring nicety, not just skip a dashboard credential.
+
+    Proves the degradation for real: reset grafana_ro to "does not exist" (RDS's master user
+    starts every real database this way too), then re-run the exact grafana block from schema.sql
+    as a role with neither CREATEROLE nor superuser. The DO blocks must not raise, and -- because
+    the failure is real, not swallowed by a broader catch elsewhere -- the role must still not
+    exist afterwards.
+
+    test_unprivileged is granted INHERIT membership in `postgres` -- the same role that owns
+    every table -- so it has the ordinary object-level access schema.sql's other, unguarded
+    statements need (e.g. CREATE OR REPLACE VIEW reading `votes`). Role ATTRIBUTES such as
+    CREATEROLE are never inherited through membership, only privileges granted via GRANT are, so
+    this isolates exactly the property under test: a connecting role that can do everything the
+    app's normal DB user can, except create another role.
+    """
+    cur = conn.cursor()
+    cur.execute('DROP OWNED BY grafana_ro CASCADE')
+    cur.execute('DROP ROLE grafana_ro')
+    cur.execute("SELECT 1 FROM pg_roles WHERE rolname = 'test_unprivileged'")
+    if cur.fetchone():
+        cur.execute('DROP OWNED BY test_unprivileged CASCADE')
+        cur.execute('DROP ROLE test_unprivileged')
+    cur.execute("CREATE ROLE test_unprivileged LOGIN PASSWORD 'test' NOSUPERUSER NOCREATEROLE INHERIT")
+    cur.execute(psycopg2.sql.SQL('GRANT CONNECT ON DATABASE {} TO test_unprivileged')
+                .format(psycopg2.sql.Identifier(db_module.DB_NAME)))
+    cur.execute('GRANT postgres TO test_unprivileged')
+    conn.commit()
+    cur.close()
+
+    base_dir = os.path.dirname(os.path.abspath(db_module.__file__))
+    with open(os.path.join(base_dir, 'schema.sql')) as f:
+        schema_sql = f.read()
+    marker = "-- Grafana's read-only access."
+    assert marker in schema_sql, 'schema.sql no longer carries the grafana block this test exercises'
+    grafana_sql = schema_sql[schema_sql.index(marker):]
+
+    unpriv_conn = psycopg2.connect(
+        host=db_module.DB_HOST, dbname=db_module.DB_NAME,
+        user='test_unprivileged', password='test',
+        sslmode=db_module.DB_SSLMODE,
+    )
+    try:
+        ucur = unpriv_conn.cursor()
+        ucur.execute(grafana_sql)  # must NOT raise -- this is the property under test
+        unpriv_conn.commit()
+        ucur.close()
+    finally:
+        unpriv_conn.close()
+
+    cur = conn.cursor()
+    cur.execute("SELECT 1 FROM pg_roles WHERE rolname = 'grafana_ro'")
+    assert cur.fetchone() is None, (
+        'grafana_ro was created by a role with no CREATEROLE privilege -- '
+        'either the test setup or the degradation guard is broken'
+    )
+    cur.execute('DROP OWNED BY test_unprivileged CASCADE')
+    cur.execute('DROP ROLE test_unprivileged')
+    conn.commit()
+    cur.close()

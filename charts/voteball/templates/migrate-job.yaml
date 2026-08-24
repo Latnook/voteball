@@ -73,6 +73,11 @@ spec:
           envFrom:
             - configMapRef: { name: app-config }
             - secretRef: { name: app-secret }
+            # GRAFANA_DB_PASSWORD, for the grafana_ro ALTER ROLE in migrate.py. `optional: true` is
+            # load-bearing: this Job is a pre-upgrade Helm hook, so a missing Secret would otherwise
+            # block the whole release on a monitoring credential. migrate.py treats an absent value
+            # as "skip and carry on" for the same reason.
+            - secretRef: { name: grafana-db-secret, optional: true }
           resources:
             requests: { cpu: 50m, memory: 128Mi }
             limits: { cpu: 500m, memory: 256Mi }
