@@ -115,25 +115,39 @@ resource "helm_release" "kube_prometheus_stack" {
       # See docs/design/2026-08-24-grafana-datasources-design.md decision 5.
       plugins = ["grafana-github-datasource"]
 
-      # Projects every key of the K8s Secret as an environment variable. The data source
+      # Projects every key of BOTH K8s Secrets as environment variables. The data source
       # provisioning files in charts/observability interpolate $GF_DATASOURCE_DB_PASSWORD and
       # $GF_DATASOURCE_GITHUB_TOKEN by those exact names -- Grafana expands an UNSET variable to an
       # empty string rather than erroring, so a typo here is silent-failure #2 in the design doc.
       # scripts/tests/test-grafana-datasources.sh cross-checks the two sides.
       #
+      # TWO entries, not one -- charts/observability/templates/externalsecret.yaml splits what used
+      # to be a single two-key ExternalSecret into two independent ones (grafana-datasources for
+      # db_password, grafana-datasources-github for github_token), because ESO fails an
+      # ExternalSecret's ENTIRE sync if any one `data` entry cannot be resolved. With one resource, a
+      # deploy with no GitHub token supplied (the normal, unattended case -- the token is optional;
+      # see scripts/seed-grafana-secret.sh) took the PostgreSQL data source down along with it. Each
+      # Secret needs its own list entry so Grafana can start with either present, both present, or
+      # neither.
+      #
       # Deliberately the PLURAL `envFromSecrets` (a list), not the singular `envFromSecret` (a bare
-      # name) -- only the plural form supports `optional`, and `optional: true` here is load-bearing
-      # the same way it is on charts/voteball/templates/migrate-job.yaml:76. The `grafana-datasources`
-      # Secret is created ONLY by charts/observability/templates/externalsecret.yaml, which is
-      # gated `enabled: false` by default (see that chart's values.yaml) -- so on a cluster where the
-      # observability chart hasn't been flipped on yet, this Secret does not exist. The singular form
-      # renders a mandatory secretRef with no `optional` field at all, which would make every Grafana
-      # pod fail to start (`CreateContainerConfigError`) on `terraform apply` alone, before anyone
-      # touches the chart gate -- exactly the "consumer shipped before its producer" failure this
-      # whole feature already fixed once, arriving from the Terraform side instead of the chart side.
+      # name) -- only the plural form supports `optional`, and `optional: true` on EVERY entry here
+      # is load-bearing the same way it is on charts/voteball/templates/migrate-job.yaml:76. Both
+      # Secrets are created ONLY by charts/observability/templates/externalsecret.yaml, which is
+      # gated per-Secret in that chart's values.yaml -- so on a cluster where the observability chart
+      # hasn't synced yet, or where only one of the two credentials has been seeded, one or both
+      # Secrets do not exist. The singular form renders a mandatory secretRef with no `optional`
+      # field at all, which would make every Grafana pod fail to start (`CreateContainerConfigError`)
+      # on `terraform apply` alone, before anyone touches either chart gate -- the "consumer shipped
+      # before its producer" failure this whole feature already fixed once, arriving from the
+      # Terraform side instead of the chart side.
       envFromSecrets = [
         {
           name     = "grafana-datasources"
+          optional = true
+        },
+        {
+          name     = "grafana-datasources-github"
           optional = true
         }
       ]

@@ -59,28 +59,67 @@ for v in $vars; do
   fi
 done
 
-# --- 2. The Secret those keys live in is projected into the pod, as OPTIONAL --------------------
+# --- 2. Both Secrets are projected into the pod, EACH marked OPTIONAL, EACH targeted by its own ---
+# ExternalSecret ------------------------------------------------------------------------------------
 # Must be the PLURAL `envFromSecrets` (a list of objects), not the singular `envFromSecret` (a bare
-# name) -- only the plural form supports `optional`, and this Secret is created only when
-# charts/observability is enabled (gated `enabled: false` by default), so a mandatory projection
-# takes Grafana down on every `terraform apply` before that chart is ever turned on. Deliberately NOT
-# loosened to accept the singular form or a plural block missing `optional: true` -- either of those
-# is the exact regression this check exists to catch.
-echo "2. envFromSecrets wiring (plural, optional)"
+# name) -- only the plural form supports `optional`, and each Secret is created only when its own
+# ExternalSecret is enabled (charts/observability/values.yaml's dbEnabled/githubEnabled), so a
+# mandatory projection takes Grafana down the moment either one is not yet enabled. Deliberately NOT
+# loosened to accept the singular form or an entry missing `optional: true` -- either of those is the
+# exact regression this check exists to catch.
+#
+# TWO Secrets, not one: charts/observability/templates/externalsecret.yaml splits what used to be a
+# single two-key ExternalSecret (grafana-datasources, both db_password and github_token) into two
+# independent ones -- ESO fails an ExternalSecret's ENTIRE sync if any one `data` entry cannot be
+# resolved, so the combined resource took the PostgreSQL data source down on any deploy with no
+# GitHub token supplied (the normal, unattended case -- the token is optional). Checked per-entry
+# (not "optional = true appears somewhere in the block") so one entry missing it cannot hide behind
+# the other having it.
+echo "2. envFromSecrets wiring (plural, optional, one entry per Secret)"
 block=$(awk '/envFromSecrets[[:space:]]*=[[:space:]]*\[/{flag=1} flag{print} flag && /\]/{exit}' "$TF")
 if [ -z "$block" ]; then
   fail "$TF does not set grafana.envFromSecrets (plural) at all"
-elif ! echo "$block" | grep -q 'name[[:space:]]*=[[:space:]]*"grafana-datasources"'; then
-  fail "$TF's envFromSecrets block does not name the grafana-datasources Secret"
-elif ! echo "$block" | grep -q 'optional[[:space:]]*=[[:space:]]*true'; then
-  fail "$TF's envFromSecrets entry for grafana-datasources is missing optional = true -- this takes Grafana down the moment charts/observability is not yet enabled"
 else
-  ok "terraform projects the grafana-datasources Secret via envFromSecrets, marked optional"
+  for secret_name in grafana-datasources grafana-datasources-github; do
+    # The single { ... } object naming this secret -- accumulated between the nearest "{" and the
+    # matching "}", so `optional = true` is checked WITHIN that one entry, never borrowed from the
+    # other entry sitting elsewhere in the same list.
+    # The closing quote in `want` is itself the boundary: "grafana-datasources" (with its trailing
+    # quote) does not match inside "grafana-datasources-github" because a literal `-github` sits
+    # between the prefix and ITS closing quote, so no extra end-of-token anchor is needed -- and none
+    # was used, deliberately, after an anchor of `([ \t]|$)` was tried and failed here: `$` in awk's
+    # ERE anchors the end of the whole (multi-line) `buf` string, not the end of a line within it, so
+    # it never matched the name line at all.
+    entry=$(awk -v want="\"${secret_name}\"" '
+      /\{/ { buf="" }
+      { buf = buf $0 "\n" }
+      /\}/ {
+        if (buf ~ ("name[ \t]*=[ \t]*" want)) { print buf }
+        buf = ""
+      }
+    ' <<<"$block")
+    if [ -z "$entry" ]; then
+      fail "$TF's envFromSecrets block does not name the ${secret_name} Secret"
+    elif ! echo "$entry" | grep -q 'optional[[:space:]]*=[[:space:]]*true'; then
+      fail "$TF's envFromSecrets entry for ${secret_name} is missing optional = true -- this takes Grafana down the moment that Secret's ExternalSecret is not yet enabled"
+    else
+      ok "terraform projects the ${secret_name} Secret via envFromSecrets, marked optional"
+    fi
+  done
 fi
-if grep -q 'name: grafana-datasources' "$ES"; then
-  ok "the ExternalSecret targets that Secret name"
+# Bounded by whitespace/EOL (never a bare substring match) so "grafana-datasources" cannot match the
+# "grafana-datasources-github" target line -- a plain substring check here would report the db target
+# present even if only the github one existed. Allows a trailing inline comment (the target lines
+# carry one) or end of line.
+if grep -qE 'name: grafana-datasources([[:space:]]|$)' "$ES"; then
+  ok "an ExternalSecret targets the grafana-datasources Secret"
 else
-  fail "$ES does not target a Secret named grafana-datasources"
+  fail "$ES has no ExternalSecret targeting a Secret named grafana-datasources"
+fi
+if grep -qE 'name: grafana-datasources-github([[:space:]]|$)' "$ES"; then
+  ok "an ExternalSecret targets the grafana-datasources-github Secret"
+else
+  fail "$ES has no ExternalSecret targeting a Secret named grafana-datasources-github"
 fi
 
 # --- 3. No literal credential anywhere in the ConfigMaps ------------------------------------------

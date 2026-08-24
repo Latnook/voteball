@@ -24,14 +24,17 @@ grep -q 'set -a' "$work/block.sh" || fail "loader no longer uses 'set -a' -- val
 
 cd "$work"
 
-# Print the four credentials as seen by a CHILD process (`env`, not the shell's own variables). The
-# seed scripts in steps 3/3b are children, so an unexported value is useless to them even though it
+# Print the five credentials as seen by a CHILD process (`env`, not the shell's own variables). The
+# seed scripts in steps 3/3b/3c are children, so an unexported value is useless to them even though it
 # would satisfy deploy.sh's own preflight -- testing the shell's variables would hide that.
+# GITHUB_TOKEN joined the other four on 2026-08-24 (step 3c, scripts/seed-grafana-secret.sh) -- it is
+# the one line of the five that's genuinely OPTIONAL downstream, but the loader itself must treat it
+# identically to the mandatory four: loaded, exported, and beaten by an explicit override.
 probe() {
   cat > "$work/probe.sh" <<'EOF'
 set -euo pipefail
 . ./block.sh
-env | grep -E '^(ADMIN_USERNAME|ADMIN_PASSWORD|JENKINS_ADMIN_USER|JENKINS_ADMIN_PASSWORD)=' | sort || true
+env | grep -E '^(ADMIN_USERNAME|ADMIN_PASSWORD|JENKINS_ADMIN_USER|JENKINS_ADMIN_PASSWORD|GITHUB_TOKEN)=' | sort || true
 EOF
   bash "$work/probe.sh" 2>/dev/null
 }
@@ -42,6 +45,7 @@ ADMIN_USERNAME=filename
 ADMIN_PASSWORD=filepass
 JENKINS_ADMIN_USER=filejuser
 JENKINS_ADMIN_PASSWORD=filejpass
+GITHUB_TOKEN=filetoken
 EOF
 }
 
@@ -49,7 +53,8 @@ echo "--- deploy.env is loaded and exported to child processes ---"
 write_env_file
 out="$(probe)"
 for expect in ADMIN_USERNAME=filename ADMIN_PASSWORD=filepass \
-              JENKINS_ADMIN_USER=filejuser JENKINS_ADMIN_PASSWORD=filejpass; do
+              JENKINS_ADMIN_USER=filejuser JENKINS_ADMIN_PASSWORD=filejpass \
+              GITHUB_TOKEN=filetoken; do
   grep -qx "$expect" <<<"$out" || fail "expected $expect in a child's environment; got: $out"
 done
 
@@ -59,6 +64,12 @@ echo "--- an explicit environment value beats the file ---"
 out="$(ADMIN_PASSWORD=envpass probe)"
 grep -qx 'ADMIN_PASSWORD=envpass' <<<"$out" || fail "environment did not win over deploy.env; got: $out"
 grep -qx 'JENKINS_ADMIN_PASSWORD=filejpass' <<<"$out" \
+  || fail "unset vars should still come from the file; got: $out"
+
+echo "--- an explicit GITHUB_TOKEN override beats the file too ---"
+out="$(GITHUB_TOKEN=envtoken probe)"
+grep -qx 'GITHUB_TOKEN=envtoken' <<<"$out" || fail "environment did not win over deploy.env for GITHUB_TOKEN; got: $out"
+grep -qx 'ADMIN_PASSWORD=filepass' <<<"$out" \
   || fail "unset vars should still come from the file; got: $out"
 
 echo "--- no deploy.env is a clean no-op, not an error ---"

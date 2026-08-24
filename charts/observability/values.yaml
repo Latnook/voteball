@@ -46,11 +46,19 @@ jenkins:
 # The region is a literal for the same reason serviceCidr above is: this chart is ArgoCD-synced and
 # cannot receive a Terraform output.
 externalSecret:
-  # FALSE for the same reason charts/voteball's grafanaEnabled is: this reads the Secrets Manager
-  # container voteball/grafana, which only a billed `terraform apply` creates. Shipping it ungated
-  # on 2026-08-24 left both ArgoCD Applications Degraded and put application-cd into a
-  # deploy-fails-then-rollback loop. Flip to true after the apply AND the seed script have run.
+  # `enabled` is the shared kill-switch (keeps `helm template` working with no ESO CRDs installed,
+  # and reads the Secrets Manager container voteball/grafana, which only a billed `terraform apply`
+  # creates). `dbEnabled`/`githubEnabled` gate the two ExternalSecrets INDEPENDENTLY -- see
+  # templates/externalsecret.yaml. They used to be one two-key ExternalSecret; ESO fails the whole
+  # resource if either key is unresolvable, so a deploy with no GitHub token (the normal, unattended
+  # case -- the token is optional) took the PostgreSQL data source down with it. Shipping any of
+  # these true before `terraform apply` AND scripts/seed-grafana-secret.sh have run left both ArgoCD
+  # Applications Degraded and put application-cd into a deploy-fails-then-rollback loop on
+  # 2026-08-24; `deploy.sh` now seeds the secret itself before ArgoCD ever syncs these, so leaving
+  # all three `true` is safe on every rebuild from here on.
   enabled: true
+  dbEnabled: true
+  githubEnabled: true
   secretName: "voteball/grafana"
   region: "il-central-1"
   refreshInterval: "1h"

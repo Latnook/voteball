@@ -351,6 +351,47 @@ It was found by a human noticing that Business Analytics worked from the same Gr
 not — one observation that eliminated the credential, the data source and the backend at once. No
 automated check in this repo would have caught it.
 
+### A fifth finding: gating the chart resources was not enough — a fresh deploy still needed to seed, split and restart
+
+**Found ahead of an actual billed rebuild, before it happened rather than during it, 2026-08-24.**
+
+The first three findings above fixed a *live* cluster that already had a real `db_password` sitting in
+`voteball/grafana` and a Grafana pod a human had already restarted by hand. None of that survives
+`destroy.sh` → `deploy.sh`: Terraform recreates `voteball/grafana` holding only its placeholder, and
+both chart gates (`charts/voteball`'s `externalSecret.grafanaEnabled`, `charts/observability`'s
+`externalSecret.enabled`) are committed **true** — so a fresh deploy would reproduce the exact
+2026-08-24 outage from scratch, on the very first sync. Three fixes, made together because each one
+alone would have left a gap the other closed:
+
+1. **`scripts/deploy.sh` now seeds `voteball/grafana` itself**, at a new step 3c (between the Jenkins
+   secret and the GitHub deploy-key registration, which moved from 3c to 3d), before the billed apply
+   — the same shape as steps 3/3b for the app and Jenkins secrets. `scripts/seed-grafana-secret.sh`'s
+   own idempotency guard makes this safe to re-run.
+2. **`GITHUB_TOKEN` had to become genuinely optional**, not just undocumented. An unattended
+   `deploy.sh` run has no human to prompt, and the token guards nothing load-bearing (decision 5) — so
+   it must never block or fail the seeding step. `seed-grafana-secret.sh` now uses it if supplied,
+   offers an optional prompt only when a terminal is attached, and otherwise seeds `db_password`
+   alone — carrying forward whatever `github_token` a rotation left in place rather than silently
+   deleting it (`put-secret-value` replaces the whole `SecretString`, so omitting the key is
+   destructive, not neutral).
+3. **The single two-key `grafana-datasources` ExternalSecret was the wrong shape once the token
+   became optional.** ESO fails an ExternalSecret's *entire* sync if any one `data` entry is
+   unresolvable, so a deploy with no token (now the common, unattended case) would have taken the
+   PostgreSQL data source down with it — reproducing the original outage through a different door.
+   `charts/observability/templates/externalsecret.yaml` now declares two independent ExternalSecrets
+   (`grafana-datasource-db` → Secret `grafana-datasources`, `grafana-datasource-github` → Secret
+   `grafana-datasources-github`), gated independently (`dbEnabled`/`githubEnabled`), each projected
+   into Grafana via its own entry in `terraform/addon-monitoring.tf`'s `grafana.envFromSecrets` list
+   (both `optional = true`).
+
+**Restarting Grafana (finding 3, above) also had no automated caller.** `scripts/deploy.sh` step 11d
+now runs `scripts/restart-grafana-datasources.sh` after ArgoCD's sync (step 11) — conditional on the
+Secret actually existing and not already projected, so a routine re-run does not churn a healthy pod,
+and non-fatal, so a Grafana hiccup never fails a deploy whose application is otherwise up.
+`scripts/tests/test-restart-grafana-datasources.sh` and an extended
+`scripts/tests/test-grafana-datasources.sh` (checking the split ExternalSecrets and the per-entry
+`optional = true`) cover all of this offline.
+
 ### A second finding: "holding pushes" is meaningless on a shared branch
 
 These commits reached `origin/master` without this session ever running `git push`. A concurrent

@@ -48,8 +48,9 @@ ok "registers, probes, and does not overclaim about the secret"
 echo "== 2b. split-phase modes: deploy.sh registers early and probes late =="
 # These two modes exist to close the deploy-key race (2026-08-03 build 1): deploy.sh pushes
 # values.yaml at step 9, and until the key is on GitHub that push produces a red
-# "Permission denied (publickey)" build. Registration moved to step 3c with SKIP_PROBE=1, and the
-# probe stayed at 11b with PROBE_ONLY=1. If either mode regresses, the split silently collapses --
+# "Permission denied (publickey)" build. Registration moved to step 3c (renumbered 3d on 2026-08-24
+# when a Grafana-secret seeding step was inserted ahead of it) with SKIP_PROBE=1, and the probe
+# stayed at 11b with PROBE_ONLY=1. If either mode regresses, the split silently collapses --
 # SKIP_PROBE failing open would stall the deploy on a probe that cannot pass yet, and PROBE_ONLY
 # failing open would re-delete and re-add a working key mid-deploy.
 out="$(SKIP_PROBE=1 ./scripts/register-github-ci.sh 2>&1)" || fail "SKIP_PROBE run exited non-zero"
