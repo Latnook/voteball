@@ -66,6 +66,10 @@ PYTHON_GROUP=(
   test-smoke-test.sh
   test-sync-values.sh
   test-validate-repo.sh
+  # Needs neither python3 nor git (bash + mktemp, grep, wc; kubectl and the public resolver are both
+  # replaced through PUBDNS_*_CMD) -- confirmed passing with kubectl/aws/terraform/git/helm all off
+  # PATH on 2026-08-24, per the rule above.
+  test-verify-public-dns.sh
   # Needs neither python3 nor git (bash + a fake kubectl on PATH, grep) -- confirmed passing inside a
   # bare python:3.12-slim on 2026-08-23, per the rule above. Never touches a cluster.
   test-verify-deployed-image.sh

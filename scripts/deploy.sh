@@ -540,6 +540,30 @@ if ! PROBE_ONLY=1 ./scripts/register-github-ci.sh; then
   echo "         trigger no build, re-run:  ./scripts/register-github-ci.sh" >&2
 fi
 
+step "11c/11 Verifying the cluster can resolve its own public hostname"
+# The canary hits https://<app_domain> every 30s and IS the denominator for every ratio SLI on this
+# site -- with no organic traffic, an availability ratio with no requests in it falls back to
+# `or vector(1)` and reports a confident, wrong 100%. So the canary being unable to resolve the
+# hostname is not a cosmetic problem; it makes the headline SLI lie.
+#
+# It happens on rebuilds. App pods start at step 10 and resolve <app_domain> before external-dns has
+# created the A record, and because that name already exists in Route53 for other reasons, the answer
+# is NOERROR-with-no-A rather than NXDOMAIN -- a NEGATIVE answer cached against the zone's SOA
+# minimum TTL, 86400 seconds. Observed on 2026-08-24: still unresolved 15 minutes later while the VPC
+# resolver returned both ALB addresses.
+#
+# The script restarts CoreDNS ONLY when the outside world can resolve a name the cluster cannot,
+# which is that cache's signature. NOT FATAL, for the same reason as 11b: the site is already up and
+# serving real users; this affects what the dashboards can see, not what visitors get.
+if ! ./scripts/verify-public-dns.sh; then
+  echo
+  echo "WARNING: the cluster cannot resolve ${APP_DOMAIN}." >&2
+  echo "         The DEPLOY ITSELF SUCCEEDED — the site is up for the internet. But the in-cluster" >&2
+  echo "         canary cannot reach it, so voteball:availability:ratio5m will report 1 while" >&2
+  echo "         measuring nothing, and VoteballJourneyTrafficStopped will fire in ~10 minutes." >&2
+  echo "         Re-run:  ./scripts/verify-public-dns.sh" >&2
+fi
+
 cat <<EOF
 
 Deploy complete.

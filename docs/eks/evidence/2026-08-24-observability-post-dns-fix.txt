@@ -1,0 +1,445 @@
+# Observability evidence, captured 2026-08-24T18:03:00+03:00 against the live cluster.
+# Repository HEAD: f05a684bdc64351dbe26ab73c5146a265544e586  (fix: the canary can resolve nothing and still read as 100% availability)
+# Read-only capture. See the drill transcripts for the deliberate-failure evidence.
+
+=== 1. The stack itself ===
+NAME                                                        READY   STATUS    RESTARTS   AGE   IP            NODE                                           NOMINATED NODE   READINESS GATES
+alertmanager-kube-prometheus-stack-alertmanager-0           2/2     Running   0          28m   10.0.54.252   ip-10-0-52-199.il-central-1.compute.internal   <none>           <none>
+kube-prometheus-stack-grafana-64c444f485-v7rq9              3/3     Running   0          28m   10.0.55.203   ip-10-0-52-199.il-central-1.compute.internal   <none>           <none>
+kube-prometheus-stack-kube-state-metrics-6f664bc8c4-mt4pj   1/1     Running   0          28m   10.0.57.43    ip-10-0-52-199.il-central-1.compute.internal   <none>           <none>
+kube-prometheus-stack-operator-7fff7f5558-qr2nj             1/1     Running   0          28m   10.0.61.237   ip-10-0-52-199.il-central-1.compute.internal   <none>           <none>
+kube-prometheus-stack-prometheus-node-exporter-btq99        1/1     Running   0          28m   10.0.36.102   ip-10-0-36-102.il-central-1.compute.internal   <none>           <none>
+kube-prometheus-stack-prometheus-node-exporter-hnxdg        1/1     Running   0          15m   10.0.47.11    ip-10-0-47-11.il-central-1.compute.internal    <none>           <none>
+kube-prometheus-stack-prometheus-node-exporter-wmkst        1/1     Running   0          28m   10.0.52.199   ip-10-0-52-199.il-central-1.compute.internal   <none>           <none>
+prometheus-kube-prometheus-stack-prometheus-0               2/2     Running   0          28m   10.0.48.28    ip-10-0-52-199.il-central-1.compute.internal   <none>           <none>
+
+NAME                                                                                           STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0   Bound    pvc-65b6da91-3bf7-41e3-a14e-8429a33308db   10Gi       RWO            gp3            <unset>                 28m
+
+--- Prometheus retention and storage, as configured AND as consumed ---
+retention=15d  retentionSize=8GiB  requested=10Gi
+on-disk blocks: 0 bytes (0.0 MiB)
+PVC prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0: 0.35% used
+
+=== 2. Every scrape target, and its health ===
+active targets: 29  (up=29)
+  up   apiserver                                  https://10.0.46.153:443/metrics
+  up   apiserver                                  https://10.0.53.205:443/metrics
+  up   backend                                    http://10.0.63.229:5000/metrics
+  up   backend                                    http://10.0.38.20:5000/metrics
+  up   coredns                                    http://10.0.34.129:9153/metrics
+  up   coredns                                    http://10.0.48.186:9153/metrics
+  up   frontend                                   http://10.0.37.212:9113/metrics
+  up   frontend                                   http://10.0.54.101:9113/metrics
+  up   jenkins                                    http://10.0.49.42:8080/prometheus
+  up   kube-prometheus-stack-alertmanager         http://10.0.54.252:9093/metrics
+  up   kube-prometheus-stack-alertmanager         http://10.0.54.252:8080/metrics
+  up   kube-prometheus-stack-grafana              http://10.0.55.203:3000/metrics
+  up   kube-prometheus-stack-operator             https://10.0.61.237:10250/metrics
+  up   kube-prometheus-stack-prometheus           http://10.0.48.28:9090/metrics
+  up   kube-prometheus-stack-prometheus           http://10.0.48.28:8080/metrics
+  up   kube-state-metrics                         http://10.0.57.43:8080/metrics
+  up   kubelet                                    https://10.0.36.102:10250/metrics
+  up   kubelet                                    https://10.0.52.199:10250/metrics
+  up   kubelet                                    https://10.0.47.11:10250/metrics
+  up   kubelet                                    https://10.0.36.102:10250/metrics/cadvisor
+  up   kubelet                                    https://10.0.52.199:10250/metrics/cadvisor
+  up   kubelet                                    https://10.0.47.11:10250/metrics/cadvisor
+  up   kubelet                                    https://10.0.36.102:10250/metrics/probes
+  up   kubelet                                    https://10.0.52.199:10250/metrics/probes
+  up   kubelet                                    https://10.0.47.11:10250/metrics/probes
+  up   node-exporter                              http://10.0.36.102:9100/metrics
+  up   node-exporter                              http://10.0.52.199:9100/metrics
+  up   node-exporter                              http://10.0.47.11:9100/metrics
+  up   worker                                     http://10.0.38.155:9100/metrics
+
+=== 3. Every rule loaded, and its health ===
+groups: 38  rules: 234  (ok=234)
+  alert  VoteballPodCrashLooping            health=ok  state=inactive
+  alert  VoteballNoBackendAvailable         health=ok  state=inactive
+  alert  VoteballMigrationJobFailed         health=ok  state=inactive
+  alert  VoteballBackupJobFailed            health=ok  state=inactive
+  alert  VoteballBackupMissing              health=ok  state=inactive
+  alert  VoteballContainerOOMKilled         health=ok  state=inactive
+  record voteball:journey_requests:rate5m   health=ok
+  record voteball:journey_errors:rate5m     health=ok
+  record voteball:availability:ratio5m      health=ok
+  record voteball:latency:p95_5m            health=ok
+  alert  VoteballHighErrorRate              health=ok  state=inactive
+  alert  VoteballHighLatencyP95             health=ok  state=inactive
+  alert  VoteballRollupsStale               health=ok  state=inactive
+  alert  VoteballAvailabilitySLOBreach      health=ok  state=inactive
+  alert  VoteballSLIAbsent                  health=ok  state=inactive
+  alert  VoteballJourneyTrafficStopped      health=ok  state=inactive
+  alert  AlertmanagerFailedReload           health=ok  state=inactive
+  alert  AlertmanagerMembersInconsistent    health=ok  state=inactive
+  alert  AlertmanagerFailedToSendAlerts     health=ok  state=inactive
+  alert  AlertmanagerClusterFailedToSendAlerts health=ok  state=inactive
+  alert  AlertmanagerClusterFailedToSendAlerts health=ok  state=inactive
+  alert  AlertmanagerConfigInconsistent     health=ok  state=inactive
+  alert  AlertmanagerClusterDown            health=ok  state=inactive
+  alert  AlertmanagerClusterCrashlooping    health=ok  state=inactive
+  alert  AlertmanagerClusterFailedPeers     health=ok  state=inactive
+  alert  ConfigReloaderSidecarErrors        health=ok  state=inactive
+  alert  Watchdog                           health=ok  state=firing
+  alert  InfoInhibitor                      health=ok  state=firing
+  record node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m health=ok
+  record node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate health=ok
+  record node_namespace_pod_container:container_memory_cache health=ok
+  record node_namespace_pod_container:container_memory_rss health=ok
+  record node_namespace_pod_container:container_memory_swap health=ok
+  record node_namespace_pod_container:container_memory_working_set_bytes health=ok
+  record cluster:namespace:pod_memory:active:kube_pod_container_resource_requests health=ok
+  record namespace_memory:kube_pod_container_resource_requests:sum health=ok
+  record cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests health=ok
+  record namespace_cpu:kube_pod_container_resource_requests:sum health=ok
+  record cluster:namespace:pod_memory:active:kube_pod_container_resource_limits health=ok
+  record namespace_memory:kube_pod_container_resource_limits:sum health=ok
+  record cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits health=ok
+  record namespace_cpu:kube_pod_container_resource_limits:sum health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record namespace_workload_pod:kube_pod_owner:relabel health=ok
+  record code_verb:apiserver_request_total:increase30d health=ok
+  record code:apiserver_request_total:increase30d health=ok
+  record code:apiserver_request_total:increase30d health=ok
+  record cluster_verb_scope_le:apiserver_request_sli_duration_seconds_bucket:increase1h health=ok
+  record cluster_verb_scope_le:apiserver_request_sli_duration_seconds_bucket:increase30d health=ok
+  record cluster_verb_scope:apiserver_request_sli_duration_seconds_count:increase1h health=ok
+  record cluster_verb_scope:apiserver_request_sli_duration_seconds_count:increase30d health=ok
+  record apiserver_request:availability30d  health=ok
+  record apiserver_request:availability30d  health=ok
+  record apiserver_request:availability30d  health=ok
+  record code_resource:apiserver_request_total:rate5m health=ok
+  record code_resource:apiserver_request_total:rate5m health=ok
+  record code_verb:apiserver_request_total:increase1h health=ok
+  record code_verb:apiserver_request_total:increase1h health=ok
+  record code_verb:apiserver_request_total:increase1h health=ok
+  record code_verb:apiserver_request_total:increase1h health=ok
+  record apiserver_request:burnrate1d       health=ok
+  record apiserver_request:burnrate1h       health=ok
+  record apiserver_request:burnrate2h       health=ok
+  record apiserver_request:burnrate30m      health=ok
+  record apiserver_request:burnrate3d       health=ok
+  record apiserver_request:burnrate5m       health=ok
+  record apiserver_request:burnrate6h       health=ok
+  record apiserver_request:burnrate1d       health=ok
+  record apiserver_request:burnrate1h       health=ok
+  record apiserver_request:burnrate2h       health=ok
+  record apiserver_request:burnrate30m      health=ok
+  record apiserver_request:burnrate3d       health=ok
+  record apiserver_request:burnrate5m       health=ok
+  record apiserver_request:burnrate6h       health=ok
+  record cluster_quantile:apiserver_request_sli_duration_seconds:histogram_quantile health=ok
+  record cluster_quantile:apiserver_request_sli_duration_seconds:histogram_quantile health=ok
+  alert  KubeAPIErrorBudgetBurn             health=ok  state=inactive
+  alert  KubeAPIErrorBudgetBurn             health=ok  state=inactive
+  alert  KubeAPIErrorBudgetBurn             health=ok  state=inactive
+  alert  KubeAPIErrorBudgetBurn             health=ok  state=inactive
+  record count:up1                          health=ok
+  record count:up0                          health=ok
+  record instance:node_cpu:rate:sum         health=ok
+  record instance:node_network_receive_bytes:rate:sum health=ok
+  record instance:node_network_transmit_bytes:rate:sum health=ok
+  record instance:node_cpu:ratio            health=ok
+  record cluster:node_cpu:sum_rate5m        health=ok
+  record cluster:node_cpu:ratio             health=ok
+  alert  KubeStateMetricsListErrors         health=ok  state=inactive
+  alert  KubeStateMetricsWatchErrors        health=ok  state=inactive
+  alert  KubeStateMetricsShardingMismatch   health=ok  state=inactive
+  alert  KubeStateMetricsShardsMissing      health=ok  state=inactive
+  record node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile health=ok
+  record node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile health=ok
+  record node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile health=ok
+  alert  KubePodCrashLooping                health=ok  state=inactive
+  alert  KubePodNotReady                    health=ok  state=inactive
+  alert  KubeDeploymentGenerationMismatch   health=ok  state=inactive
+  alert  KubeDeploymentRolloutStuck         health=ok  state=inactive
+  alert  KubeStatefulSetReplicasMismatch    health=ok  state=inactive
+  alert  KubeStatefulSetGenerationMismatch  health=ok  state=inactive
+  alert  KubeStatefulSetUpdateNotRolledOut  health=ok  state=inactive
+  alert  KubeDaemonSetRolloutStuck          health=ok  state=inactive
+  alert  KubeContainerWaiting               health=ok  state=inactive
+  alert  KubeDaemonSetNotScheduled          health=ok  state=inactive
+  alert  KubeDaemonSetMisScheduled          health=ok  state=inactive
+  alert  KubeJobNotCompleted                health=ok  state=inactive
+  alert  KubeJobFailed                      health=ok  state=inactive
+  alert  KubeHpaReplicasMismatch            health=ok  state=inactive
+  alert  KubeHpaMaxedOut                    health=ok  state=inactive
+  alert  KubePdbNotEnoughHealthyPods        health=ok  state=inactive
+  alert  KubeCPUOvercommit                  health=ok  state=inactive
+  alert  KubeMemoryOvercommit               health=ok  state=inactive
+  alert  KubeCPUQuotaOvercommit             health=ok  state=inactive
+  alert  KubeMemoryQuotaOvercommit          health=ok  state=inactive
+  alert  KubeQuotaAlmostFull                health=ok  state=inactive
+  alert  KubeQuotaFullyUsed                 health=ok  state=inactive
+  alert  KubeQuotaExceeded                  health=ok  state=inactive
+  alert  CPUThrottlingHigh                  health=ok  state=pending
+  alert  KubePersistentVolumeFillingUp      health=ok  state=inactive
+  alert  KubePersistentVolumeFillingUp      health=ok  state=inactive
+  alert  KubePersistentVolumeInodesFillingUp health=ok  state=inactive
+  alert  KubePersistentVolumeInodesFillingUp health=ok  state=inactive
+  alert  KubePersistentVolumeErrors         health=ok  state=inactive
+  alert  KubeClientCertificateExpiration    health=ok  state=inactive
+  alert  KubeClientCertificateExpiration    health=ok  state=inactive
+  alert  KubeAggregatedAPIErrors            health=ok  state=inactive
+  alert  KubeAggregatedAPIDown              health=ok  state=inactive
+  alert  KubeAPIDown                        health=ok  state=inactive
+  alert  KubeAPIInstanceUnreachable         health=ok  state=inactive
+  alert  KubeAPITerminatedRequests          health=ok  state=inactive
+  alert  KubeVersionMismatch                health=ok  state=inactive
+  alert  KubeClientErrors                   health=ok  state=inactive
+  alert  KubeletTooManyPods                 health=ok  state=inactive
+  alert  KubeNodeReadinessFlapping          health=ok  state=inactive
+  alert  KubeNodeEviction                   health=ok  state=inactive
+  alert  KubeletPlegDurationHigh            health=ok  state=inactive
+  alert  KubeletPodStartUpLatencyHigh       health=ok  state=inactive
+  alert  KubeletClientCertificateExpiration health=ok  state=inactive
+  alert  KubeletClientCertificateExpiration health=ok  state=inactive
+  alert  KubeletServerCertificateExpiration health=ok  state=inactive
+  alert  KubeletServerCertificateExpiration health=ok  state=inactive
+  alert  KubeletClientCertificateRenewalErrors health=ok  state=inactive
+  alert  KubeletServerCertificateRenewalErrors health=ok  state=inactive
+  alert  KubeletInstanceUnreachable         health=ok  state=inactive
+  alert  KubeletDown                        health=ok  state=inactive
+  alert  NodeFilesystemSpaceFillingUp       health=ok  state=inactive
+  alert  NodeFilesystemSpaceFillingUp       health=ok  state=inactive
+  alert  NodeFilesystemAlmostOutOfSpace     health=ok  state=inactive
+  alert  NodeFilesystemAlmostOutOfSpace     health=ok  state=inactive
+  alert  NodeFilesystemFilesFillingUp       health=ok  state=inactive
+  alert  NodeFilesystemFilesFillingUp       health=ok  state=inactive
+  alert  NodeFilesystemAlmostOutOfFiles     health=ok  state=inactive
+  alert  NodeFilesystemAlmostOutOfFiles     health=ok  state=inactive
+  alert  NodeNetworkReceiveErrs             health=ok  state=inactive
+  alert  NodeNetworkTransmitErrs            health=ok  state=inactive
+  alert  NodeHighNumberConntrackEntriesUsed health=ok  state=inactive
+  alert  NodeTextFileCollectorScrapeError   health=ok  state=inactive
+  alert  NodeClockSkewDetected              health=ok  state=inactive
+  alert  NodeClockNotSynchronising          health=ok  state=inactive
+  alert  NodeRAIDDegraded                   health=ok  state=inactive
+  alert  NodeRAIDDiskFailure                health=ok  state=inactive
+  alert  NodeFileDescriptorLimit            health=ok  state=inactive
+  alert  NodeFileDescriptorLimit            health=ok  state=inactive
+  alert  NodeCPUHighUsage                   health=ok  state=inactive
+  alert  NodeSystemSaturation               health=ok  state=pending
+  alert  NodeMemoryMajorPagesFaults         health=ok  state=inactive
+  alert  NodeMemoryHighUtilization          health=ok  state=inactive
+  alert  NodeDiskIOSaturation               health=ok  state=inactive
+  alert  NodeSystemdServiceFailed           health=ok  state=inactive
+  alert  NodeSystemdServiceCrashlooping     health=ok  state=inactive
+  alert  NodeBondingDegraded                health=ok  state=inactive
+  record instance:node_num_cpu:sum          health=ok
+  record instance:node_cpu_utilisation:rate5m health=ok
+  record instance:node_load1_per_cpu:ratio  health=ok
+  record instance:node_memory_utilisation:ratio health=ok
+  record instance:node_vmstat_pgmajfault:rate5m health=ok
+  record instance_device:node_disk_io_time_seconds:rate5m health=ok
+  record instance_device:node_disk_io_time_weighted_seconds:rate5m health=ok
+  record instance:node_network_receive_bytes_excluding_lo:rate5m health=ok
+  record instance:node_network_transmit_bytes_excluding_lo:rate5m health=ok
+  record instance:node_network_receive_drop_excluding_lo:rate5m health=ok
+  record instance:node_network_transmit_drop_excluding_lo:rate5m health=ok
+  record instance:node_network_receive_bytes_physical:rate5m health=ok
+  record instance:node_network_transmit_bytes_physical:rate5m health=ok
+  record instance:node_network_receive_drop_physical:rate5m health=ok
+  record instance:node_network_transmit_drop_physical:rate5m health=ok
+  alert  NodeNetworkInterfaceFlapping       health=ok  state=inactive
+  record node_namespace_pod:kube_pod_info:  health=ok
+  record node:node_num_cpu:sum              health=ok
+  record :node_memory_MemAvailable_bytes:sum health=ok
+  record node:node_cpu_utilization:ratio_rate5m health=ok
+  record cluster:node_cpu:ratio_rate5m      health=ok
+  alert  PrometheusBadConfig                health=ok  state=inactive
+  alert  PrometheusSDRefreshFailure         health=ok  state=inactive
+  alert  PrometheusKubernetesListWatchFailures health=ok  state=inactive
+  alert  PrometheusNotificationQueueRunningFull health=ok  state=inactive
+  alert  PrometheusErrorSendingAlertsToSomeAlertmanagers health=ok  state=inactive
+  alert  PrometheusNotConnectedToAlertmanagers health=ok  state=inactive
+  alert  PrometheusTSDBReloadsFailing       health=ok  state=inactive
+  alert  PrometheusTSDBCompactionsFailing   health=ok  state=inactive
+  alert  PrometheusNotIngestingSamples      health=ok  state=inactive
+  alert  PrometheusDuplicateTimestamps      health=ok  state=inactive
+  alert  PrometheusOutOfOrderTimestamps     health=ok  state=inactive
+  alert  PrometheusRemoteStorageFailures    health=ok  state=inactive
+  alert  PrometheusRemoteWriteBehind        health=ok  state=inactive
+  alert  PrometheusRemoteWriteDesiredShards health=ok  state=inactive
+  alert  PrometheusRuleFailures             health=ok  state=inactive
+  alert  PrometheusMissingRuleEvaluations   health=ok  state=inactive
+  alert  PrometheusTargetLimitHit           health=ok  state=inactive
+  alert  PrometheusLabelLimitHit            health=ok  state=inactive
+  alert  PrometheusScrapeBodySizeLimitHit   health=ok  state=inactive
+  alert  PrometheusScrapeSampleLimitHit     health=ok  state=inactive
+  alert  PrometheusTargetSyncFailure        health=ok  state=inactive
+  alert  PrometheusHighQueryLoad            health=ok  state=inactive
+  alert  PrometheusErrorSendingAlertsToAnyAlertmanager health=ok  state=inactive
+  alert  PrometheusOperatorListErrors       health=ok  state=inactive
+  alert  PrometheusOperatorWatchErrors      health=ok  state=inactive
+  alert  PrometheusOperatorSyncFailed       health=ok  state=inactive
+  alert  PrometheusOperatorReconcileErrors  health=ok  state=inactive
+  alert  PrometheusOperatorStatusUpdateErrors health=ok  state=inactive
+  alert  PrometheusOperatorNodeLookupErrors health=ok  state=inactive
+  alert  PrometheusOperatorNotReady         health=ok  state=inactive
+  alert  PrometheusOperatorRejectedResources health=ok  state=inactive
+  alert  JenkinsQueueStuck                  health=ok  state=inactive
+  alert  NodeNotReadyOrUnderPressure        health=ok  state=inactive
+  alert  DeploymentReplicasMismatch         health=ok  state=inactive
+  alert  PrometheusTargetDown               health=ok  state=inactive
+
+=== 4. The SLIs return numbers ===
+  voteball:journey_requests:rate5m       0.11691000618480349
+  voteball:journey_errors:rate5m         0
+  voteball:availability:ratio5m          1
+  voteball:latency:p95_5m                0.34945859852118494
+
+=== 5. commit -> image digest -> running Pod -> metric ===
+--- what the chart pins ---
+    digests:
+      backend: "sha256:191de4e1d305db91cb840d9b520ae60d8de8e3e26d52844ef69d93fc24380a67"
+      worker: "sha256:3d3eba3c575869f50d466b82f142130fcd493b1fdd3d6172614791b92aec2ef5"
+      nginx: "sha256:25aaa0c11064ee18aaae15c92ede0a581a6b8f1900d76a6a9273fcff21ed3373"
+      backup: "sha256:cfd6ccaa66be1d187a730fbdc45cee5b615a035fcef0b986d43d8dbf6fd7d96a"
+  
+--- what the Deployment resolved ---
+  backend    590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:6281776debee50f9b1671d10572f9f24646d22b396f90e0a50f5b700681d074c
+  canary     curlimages/curl:8.7.1
+  frontend   590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx@sha256:1f58e6311ba844a0cae82ca51a800ce019728dbdda63f728b926c05a9dd55905
+  worker     590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker@sha256:0a25ba2062529da5eae344f666ec263b0a7650cc7728fe0de61436d909dfd0f1
+--- what the running pod reports as its own identity ---
+  pod=backend-58d55fc8b6-tb9pp version=2356172 git_sha=2356172 release=sha256:6281776debee50f9b1671d10572f9f24646d22b396f90e0a50f5b700681d074c
+  pod=backend-58d55fc8b6-5x64f version=2356172 git_sha=2356172 release=sha256:6281776debee50f9b1671d10572f9f24646d22b396f90e0a50f5b700681d074c
+
+=== 6. Grafana: dashboards registered, datasource healthy ===
+  Alertmanager / Overview            uid=alertmanager-overview
+  Application Overview               uid=voteball-app
+  CoreDNS                            uid=vkQ0UHxik
+  Grafana Overview                   uid=6be0s85Mk
+  Jenkins & Delivery                 uid=voteball-delivery
+  Kubernetes / API server            uid=09ec8aa1e996d6ffcd6817bbaff4db1b
+  Kubernetes / Cluster               uid=voteball-k8s
+  Kubernetes / Compute Resources /  Multi-Cluster uid=b59e6c9f2fcbe2e16d77fc492374cc4f
+  Kubernetes / Compute Resources / Cluster uid=efa86fd1d0c121a26444b636a3f509a8
+  Kubernetes / Compute Resources / Namespace (Pods) uid=85a562078cdf77779eaa1add43ccec1e
+  Kubernetes / Compute Resources / Namespace (Workloads) uid=a87fb0d919ec0ea5f6543124e16c42a5
+  Kubernetes / Compute Resources / Node (Pods) uid=200ac8fdbfbb74b39aff88118e4d1c2c
+  Kubernetes / Compute Resources / Nodes Overview uid=058020e04168bfdea0c52269cb699df2
+  Kubernetes / Compute Resources / Pod uid=6581e46e4e5c7ba40a07646395ef7b23
+  Kubernetes / Compute Resources / Workload uid=a164a7f0339f99e89cea5cb47e9be617
+  Kubernetes / Kubelet               uid=3138fa155d5915769fbded898ac09fd9
+  Kubernetes / Networking / Cluster  uid=ff635a025bcfea7bc3dd4f508990a3e9
+  Kubernetes / Networking / Namespace (Pods) uid=8b7a8b326d7a6f1f04244066368c67af
+  Kubernetes / Networking / Namespace (Workload) uid=bbb2a765a623ae38130206c7d94a160f
+  Kubernetes / Networking / Pod      uid=7a18067ce943a40ae25454675c19ff5c
+  Kubernetes / Networking / Workload uid=728bf77cc1166d2f3133bf25846876cc
+  Kubernetes / Persistent Volumes    uid=919b92a8e8041bd567af9edab12c840c
+  Node Exporter / AIX                uid=7e0a61e486f727d763fb1d86fdd629c2
+  Node Exporter / MacOS              uid=629701ea43bf69291922ea45f4a87d37
+  Node Exporter / Nodes              uid=7d57716318ee0dddbac5a7f451fb7753
+  Node Exporter / USE Method / Cluster uid=3e97d1d02672cdd0861f4c97c64f89b2
+  Node Exporter / USE Method / Node  uid=fac67cfbe174d3ef53eb473d73d9212f
+  Prometheus / Overview              uid=9fa0d141-d019-4ad7-8bc5-42196ee308bd
+--- datasource health (registration proves nothing about whether a panel can query) ---
+  Alertmanager (alertmanager) uid=alertmanager
+  Prometheus (prometheus) uid=prometheus
+  {"details":{"application":"Prometheus","features":{"rulerApiEnabled":false}},"message":"Successfully queried the Prometheus API.","status":"OK"}
+
+--- the ConfigMaps they are provisioned from (no import button was pressed) ---
+  dashboard-application-overview                            1     20m
+  dashboard-jenkins-delivery                                1     20m
+  dashboard-kubernetes-cluster                              1     20m
+  kube-prometheus-stack-alertmanager-overview               1     28m
+  kube-prometheus-stack-apiserver                           1     28m
+  kube-prometheus-stack-cluster-total                       1     28m
+  kube-prometheus-stack-grafana-overview                    1     28m
+  kube-prometheus-stack-k8s-coredns                         1     28m
+  kube-prometheus-stack-k8s-resources-cluster               1     28m
+  kube-prometheus-stack-k8s-resources-multicluster          1     28m
+  kube-prometheus-stack-k8s-resources-namespace             1     28m
+  kube-prometheus-stack-k8s-resources-node                  1     28m
+  kube-prometheus-stack-k8s-resources-nodes-overview        1     28m
+  kube-prometheus-stack-k8s-resources-pod                   1     28m
+  kube-prometheus-stack-k8s-resources-workload              1     28m
+  kube-prometheus-stack-k8s-resources-workloads-namespace   1     28m
+  kube-prometheus-stack-kubelet                             1     28m
+  kube-prometheus-stack-namespace-by-pod                    1     28m
+  kube-prometheus-stack-namespace-by-workload               1     28m
+  kube-prometheus-stack-node-cluster-rsrc-use               1     28m
+  kube-prometheus-stack-node-rsrc-use                       1     28m
+  kube-prometheus-stack-nodes                               1     28m
+  kube-prometheus-stack-nodes-aix                           1     28m
+  kube-prometheus-stack-nodes-darwin                        1     28m
+  kube-prometheus-stack-persistentvolumesusage              1     28m
+  kube-prometheus-stack-pod-total                           1     28m
+  kube-prometheus-stack-prometheus                          1     28m
+  kube-prometheus-stack-workload-total                      1     28m
+
+=== 7. Every panel of every dashboard, queried for real data ===
+  --- Application Overview (uid=voteball-app) ---
+    ok    Request rate                                   series=3   A
+    ok    Error rate (5xx)                               series=1   A
+    ok    Availability vs SLO                            series=1   A
+    ok    p95 vs 1s SLO                                  series=1   A
+    ok    Votes cast                                     series=1   A
+    ok    Results freshness                              series=1   A
+    ok    Latency p50 / p95 / p99                        series=1   A
+    ok    Latency p50 / p95 / p99                        series=1   B
+    ok    Latency p50 / p95 / p99                        series=1   C
+    ok    Ballots rejected by reason                     series=1   A
+    ok    Database errors                                series=1   A
+    ok    Frontend (nginx) request rate                  series=1   A
+    ok    Running build                                  series=2   A
+    ok    Request rate by release                        series=1   A
+    ok    Container CPU                                  series=11  A
+    ok    Container memory (working set)                 series=6   A
+  --- Jenkins & Delivery (uid=voteball-delivery) ---
+    ok    Queue length                                   series=1   A
+    ok    Queue length                                   series=1   B
+    ok    Queue length                                   series=1   C
+    ok    Queue length                                   series=1   D
+    ok    Queue wait time (last build)                   series=2   A
+    ok    Executors: total vs busy                       series=1   A
+    ok    Executors: total vs busy                       series=1   B
+    ok    Online agents                                  series=1   A
+    ok    Build outcomes (1h increase)                   series=1   A
+    ok    Build outcomes (1h increase)                   series=1   B
+    ok    Build outcomes (1h increase)                   series=1   C
+    ok    Build outcomes (1h increase)                   series=1   D
+    ok    Build duration (last build)                    series=2   A
+    ok    Controller JVM heap                            series=1   A
+    ok    Controller JVM heap                            series=1   B
+    ok    Last successful release (currently deployed)   series=2   A
+  --- Kubernetes / Cluster (uid=voteball-k8s) ---
+    ok    Nodes ready                                    series=1   A
+    ok    Pending pods                                   series=1   A
+    ok    Node CPU used                                  series=3   A
+    ok    Node memory used                               series=3   A
+    ok    Pods by phase                                  series=5   A
+    ok    Desired vs available replicas                  series=22  A
+    ok    Desired vs available replicas                  series=22  B
+    EMPTY Pod restarts (1h)                              series=0   A
+    ok    Containers OOMKilled                           series=1   A
+    ok    CPU throttling                                 series=12  A
+    ok    PVC usage                                      series=1   A
+  43 panel queries run, 1 returned no series.
+  NOTE: an empty panel is not automatically a defect -- a counter for an event that has
+  not happened in the window (OOMKills, rejected ballots) is legitimately empty. Read the
+  names above rather than the count.
+
+=== 8. Alertmanager: where an alert actually goes ===
+  receivers: null, sns
+  sns topic: arn:aws:sns:il-central-1:590183895228:voteball-notifications
+  inhibit_rules: 3
+
+--- currently firing (a quiet system firing nothing is the expected steady state) ---
+  2 active alert(s)
+    Watchdog severity=none
+    InfoInhibitor severity=none
+
+--- notification failures since start (0 is the number that matters) ---
+  discord=0; discord=0; discord=0; discord=0; discord=0; email=0; email=0; email=0; email=0; email=0; incidentio=0; incidentio=0; incidentio=0; incidentio=0; incidentio=0; jira=0; jira=0; jira=0; jira=0; jira=0; mattermost=0; mattermost=0; mattermost=0; mattermost=0; mattermost=0; msteams=0; msteams=0; msteams=0; msteams=0; msteams=0; msteamsv2=0; msteamsv2=0; msteamsv2=0; msteamsv2=0; msteamsv2=0; opsgenie=0; opsgenie=0; opsgenie=0; opsgenie=0; opsgenie=0; pagerduty=0; pagerduty=0; pagerduty=0; pagerduty=0; pagerduty=0; pushover=0; pushover=0; pushover=0; pushover=0; pushover=0; rocketchat=0; rocketchat=0; rocketchat=0; rocketchat=0; rocketchat=0; slack=0; slack=0; slack=0; slack=0; slack=0; sns=0; sns=0; sns=0; sns=0; sns=0; telegram=0; telegram=0; telegram=0; telegram=0; telegram=0; victorops=0; victorops=0; victorops=0; victorops=0; victorops=0; webex=0; webex=0; webex=0; webex=0; webex=0; webhook=0; webhook=0; webhook=0; webhook=0; webhook=0; wechat=0; wechat=0; wechat=0; wechat=0; wechat=0
+
+Captured to docs/eks/evidence/2026-08-24-observability-post-dns-fix.txt

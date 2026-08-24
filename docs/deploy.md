@@ -180,6 +180,14 @@ resources. The steps it performs (kept in step with the script's own numbering �
      load balancer routes, and Jenkins answered. This is the half of step 3c that needs a running
      cluster, which is why the two are separated. A failure here does **not** fail the deploy: the
      site is already up, and only CI is affected.
+11c. Check the **cluster** can resolve the site's own public hostname, and restart CoreDNS if it is
+     serving a stale negative answer. App pods start at step 10 and look the hostname up before
+     external-dns has created the record; because that name already exists in Route53 for other
+     reasons, the answer is "exists, no A record" rather than NXDOMAIN — a negative answer cached for
+     the zone's SOA minimum of 24 hours. The visible symptom is not an outage: the site serves the
+     internet normally while the in-cluster canary sends nothing, so availability reports a confident
+     `1` from its no-data fallback. Also non-fatal, and re-runnable as
+     `./scripts/verify-public-dns.sh`.
 
 ### What is actually inside step 6
 
@@ -511,6 +519,21 @@ current one with:
 kubectl get secret kube-prometheus-stack-grafana -n observability \
   -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
+
+**`grafana-cli` runs inside the Grafana pod**, if you need it (checking plugin versions, mostly):
+
+```bash
+kubectl exec -it -n observability deploy/kube-prometheus-stack-grafana -c grafana -- grafana-cli --help
+```
+
+Treat it as **read-only**. Nothing it writes survives: Grafana here has no disk of its own
+(deliberately — see "no PVC" in `docs/observability.md`), so a `grafana-cli plugins install` is gone
+the next time the pod restarts, which on Spot nodes is roughly daily. A plugin that should stay
+belongs in the `helm_release` values in `terraform/addon-monitoring.tf`, and a dashboard belongs in
+`charts/observability/dashboards/` (below) — both survive a rebuild; a CLI call does not.
+`grafana-cli admin reset-admin-password` is worse than useless here: it changes the running password
+without changing the Secret above, so the real password and the one every script reads stop matching,
+and the next pod restart throws your new one away anyway.
 
 Prometheus and Alertmanager have **no login at all**. That is on purpose, not an oversight: the only
 way to reach them is to already hold cluster access, so a second password would protect nothing and

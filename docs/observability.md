@@ -99,6 +99,15 @@ kube-state-metrics and node-exporter in one release.
 | `retentionSize` | `8GiB` | Byte-based limit, ~80% of the volume. **Both are set on purpose.** Time-based retention alone has no reason to delete anything still inside its window, so a growing series count fills the disk and Prometheus *crashes* rather than dropping old data. Whichever limit binds first does the work. |
 | memory | request `400Mi`, limit `900Mi` | Keeps the two-node Spot RAM budget sane. |
 
+**What it actually consumes**, as opposed to what it is allowed to: the capture script reports both,
+so the number is measured rather than estimated. On the 2026-08-24 cluster, a few hours in, the PVC
+was at **0.19% of 10Gi** with no compacted blocks on disk yet
+([`2026-08-24-observability-post-dns-fix.txt`](eks/evidence/2026-08-24-observability-post-dns-fix.txt)
+section 1). That is the shape to expect here: this stack is destroyed and rebuilt often enough that
+Prometheus rarely lives long enough to approach either limit, which is exactly why `retentionSize`
+matters anyway — the one time it does approach them, the failure without it is a crash, not a
+trim.
+
 **Grafana has no PVC at all, deliberately.** Dashboards come from git; a disk would only preserve
 hand-made ones, which is precisely the thing that must not survive.
 
@@ -313,6 +322,16 @@ template.
 
 Deleting the `observability` ArgoCD Application and re-syncing brings all three back with zero manual
 steps. That round trip is what proves they are provisioned rather than clicked together.
+
+Rendered captures, with live data, live alongside the text evidence:
+[`2026-08-24-grafana-application-overview.png`](eks/evidence/2026-08-24-grafana-application-overview.png),
+[`-kubernetes-cluster.png`](eks/evidence/2026-08-24-grafana-kubernetes-cluster.png),
+[`-jenkins-delivery.png`](eks/evidence/2026-08-24-grafana-jenkins-delivery.png). They are the weaker
+half of the proof and are kept anyway: section 7 of
+[`2026-08-24-observability-post-dns-fix.txt`](eks/evidence/2026-08-24-observability-post-dns-fix.txt)
+runs **every panel's own query** and records the series count, which proves a panel *can* query rather
+than showing what it drew at one instant. A screenshot cannot tell you a panel is about to go blank;
+the query count can.
 
 **Application Overview carries three template variables — `Service`, `Pod` and `Release` — and one
 class of panel deliberately ignores them.** The per-pod panels (request rate, 5xx, latency
@@ -658,6 +677,21 @@ The Grafana password is **generated fresh at install time and changes on every r
 deliberately no fixed one anywhere in the repo or in `terraform.tfstate`. Prometheus and Alertmanager
 have no login at all; the only way to reach either is to already hold cluster access.
 
+`grafana-cli` lives inside the Grafana container, if you need to inspect a plugin:
+
+```bash
+kubectl exec -it -n observability deploy/kube-prometheus-stack-grafana -c grafana -- grafana-cli --help
+```
+
+**Use it read-only.** Grafana has no PVC here (§3), so anything it writes — `plugins install` above
+all — is gone at the next pod restart, which on a 100% Spot node group is roughly daily. A plugin
+that has to stay belongs in `helm_release.kube_prometheus_stack`'s values in
+`terraform/addon-monitoring.tf`; a dashboard belongs in `charts/observability/dashboards/` (§6).
+`grafana-cli admin reset-admin-password` is a trap in particular: it rewrites the running password
+but not the `kube-prometheus-stack-grafana` Secret, so the Secret that
+`scripts/capture-observability-evidence.sh` reads silently stops being the real password — and the
+next restart discards the new one regardless.
+
 ---
 
 ## 12. Verifying it works
@@ -720,6 +754,7 @@ lists it, and nothing works.**
 | A ServiceMonitor/PrometheusRule exists but is never scraped or evaluated | Missing `release: kube-prometheus-stack` label | Add it. CI check 1 catches this. |
 | A ServiceMonitor has zero targets | `port:` names a number, or a port name that does not exist on the Service | Name the Service port. CI check 2. |
 | **Availability reads a flat, confident `1` during an outage** | `honorLabels: true` removed from the backend endpoint, so every SLI filters on a label that no longer carries routes | Restore it. CI check 3. |
+| Availability reads `1` after a rebuild, and the canary logs `curl: (6) Could not resolve host` | CoreDNS cached a NOERROR-with-no-A answer from before external-dns created the record; the name already existed (a TXT record), so it was NODATA rather than NXDOMAIN, cached against the zone's SOA minimum of 86400s | `./scripts/verify-public-dns.sh` (deploy.sh step 11c runs it). The tell: **TXT resolves, A does not.** |
 | Availability reads `1` with no traffic at all | The `or vector(1)` fallback, working as designed — with the canary off there is no denominator | `canary.enabled: true`. `VoteballSLIAbsent` and `VoteballJourneyTrafficStopped` exist for this. |
 | A total API outage is invisible; no error counter moves | `psycopg2.connect()` without `connect_timeout` **hangs** rather than failing, so nothing is ever counted | `connect_timeout=5` on both services. **Never remove it.** |
 | Every Grafana panel errors with `dial tcp <clusterIP>:9090: i/o timeout` | The `observability` egress policy lists only 443; the VPC CNI evaluates egress pre-DNAT | Keep 443/9090/9093/3000 in the Service-CIDR egress block. |

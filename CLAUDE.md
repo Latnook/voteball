@@ -209,6 +209,22 @@ the alert would either fire constantly or (worse) be tuned so loose it catches n
 coupled on purpose — see the comment at `VoteballJourneyTrafficStopped` in
 `charts/voteball/templates/prometheusrule.yaml`.
 
+**The canary can be alive, healthy and resolving nothing — and that reads as 100% availability.**
+On a rebuild, app pods start and look up `<app_domain>` *before* external-dns has created its A
+record. Because that name already exists in Route53 for unrelated reasons (a `google-site-verification`
+TXT record), the answer is **NOERROR with no A record**, not NXDOMAIN — a negative answer cached
+against the zone's SOA *minimum* TTL, which for `latnook.com` is **86400 seconds**. CoreDNS then serves
+it long after the record appears (measured 2026-08-24: still empty 15 minutes later, while the VPC
+resolver at `10.0.0.2` answered correctly from the same pod). The canary sends nothing,
+`voteball:journey_requests:rate5m` sits at 0, and `voteball:availability:ratio5m` falls back to
+`or vector(1)` — a confident, wrong 100%, on a site whose users are unaffected because the *public*
+path works fine. The tell is **TXT resolves and A does not**. `deploy.sh` step 11c runs
+`scripts/verify-public-dns.sh`, which restarts CoreDNS **only** when a public resolver can resolve a
+name the cluster cannot; an unconditional restart would be a step nobody could safely remove.
+`VoteballJourneyTrafficStopped` does catch this on its own after 10 minutes — it went `pending` six
+minutes into the 2026-08-24 occurrence — but an alert that fires on every deploy is one people learn
+to ignore.
+
 **Jenkins exposes two Prometheus metric families that are not interchangeable, and picking the wrong
 one for a dashboard panel or alert shows a flat, healthy-looking zero instead of an error.** The
 bundled Metrics plugin's `jenkins_*_value` gauges (`jenkins_queue_size_value`,
@@ -782,7 +798,7 @@ scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; 6 of
 scripts/tests/test-verify-deployed-image.sh # CD Verify: match the DIGEST, not the tag
 ```
 
-**The suite is 23 tests as of 2026-08-23** — read it off `run-ci-suite.sh`'s own final output line
+**The suite is 24 tests as of 2026-08-24** — read it off `run-ci-suite.sh`'s own final output line
 rather than from here. `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` are exhaustive and the runner fails if
 a file in `scripts/tests/` appears in none of them, so the count moves whenever a test is added and
 this sentence will go stale before the runner does.

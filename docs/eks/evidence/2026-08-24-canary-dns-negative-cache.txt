@@ -1,0 +1,132 @@
+# Incident: the canary resolved nothing for 20 minutes, and availability read 100% throughout.
+# 2026-08-24, on the cluster rebuilt the same afternoon. Found by the steady-state evidence capture
+# (scripts/capture-observability-evidence.sh), not by a drill and not by a user report.
+#
+# WHY IT MATTERS: per the root CLAUDE.md, this site has close to no organic traffic, so the synthetic
+# canary IS the denominator of every ratio SLI. With the canary sending nothing,
+# voteball:availability:ratio5m falls back to `or vector(1)` and reports a confident, wrong 1. The
+# PUBLIC site was healthy the whole time -- this was a monitoring outage, not a user-facing one, which
+# is exactly the shape that survives unnoticed.
+
+=== 1. The symptom, from the steady-state capture (docs/eks/evidence/2026-08-24-observability.txt) ===
+
+  === 4. The SLIs return numbers ===
+    voteball:journey_requests:rate5m       0
+    voteball:journey_errors:rate5m         0
+    voteball:availability:ratio5m          1        <-- confident, wrong: no denominator
+    voteball:latency:p95_5m                NaN
+
+  All 29 scrape targets were up and all 234 rules healthy. Nothing was "down".
+
+=== 2. The canary's own logs ===
+
+  $ kubectl logs -n devops-app -l app=canary --tail=6 --timestamps
+  2026-08-24T14:52:10.868571422Z curl: (6) Could not resolve host: voteball.latnook.com
+  2026-08-24T14:52:10.868657876Z 000 GET /
+  2026-08-24T14:52:10.890802539Z curl: (6) Could not resolve host: voteball.latnook.com
+  2026-08-24T14:52:10.890978745Z 000 GET /api/options
+  2026-08-24T14:52:10.907972568Z 000 GET /api/results?by=all
+  2026-08-24T14:52:10.908012969Z curl: (6) Could not resolve host: voteball.latnook.com
+
+  Meanwhile, from OUTSIDE the cluster the site was entirely healthy:
+  $ curl -o /dev/null -w "%{http_code}" https://voteball.latnook.com/          -> 200
+  $ curl -o /dev/null -w "%{http_code}" https://voteball.latnook.com/api/options -> 200
+
+=== 3. Not the canary, and not a NetworkPolicy: the whole cluster, one hostname ===
+
+  $ kubectl exec -n devops-app <backend-pod> -- python -c "socket.gethostbyname(...)"
+    voteball.latnook.com                  -> FAIL [Errno -5] No address associated with hostname
+    google.com                            -> 142.250.75.46
+    kubernetes.default.svc.cluster.local  -> 172.20.0.1
+
+  External resolution worked. Cluster resolution worked. One name failed -- and failed with NODATA
+  ("no address associated"), not NXDOMAIN ("name does not exist"). That distinction is the whole bug.
+
+=== 4. Root cause: a cached NEGATIVE answer, and the record type that gives it away ===
+
+  $ kubectl exec -n devops-app <canary-pod> -- nslookup -type=a voteball.latnook.com 172.20.0.10
+    Server: 172.20.0.10
+    Non-authoritative answer:
+    (empty)
+
+  $ kubectl exec -n devops-app <canary-pod> -- nslookup -type=txt voteball.latnook.com 172.20.0.10
+    voteball.latnook.com  text = "google-site-verification=YA42wzDkd8hX3aJXuZ9Z2f3U4MxuUsT74DQZeoawq9o"
+
+  $ kubectl exec -n devops-app <canary-pod> -- nslookup -type=a voteball.latnook.com 10.0.0.2
+    Name: voteball.latnook.com   Address: 16.164.59.250
+    Name: voteball.latnook.com   Address: 51.84.185.31
+
+  $ kubectl exec -n devops-app <canary-pod> -- nslookup -type=a voteball.latnook.com 1.1.1.1
+    Name: voteball.latnook.com   Address: 51.84.185.31
+    Name: voteball.latnook.com   Address: 16.164.59.250
+
+  TXT RESOLVES AND A DOES NOT. The name exists; CoreDNS believes it has no A record. Both the VPC
+  resolver and a public resolver disagree with it.
+
+  $ dig +short SOA latnook.com
+    ns-2035.awsdns-62.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400
+                                                                             ^^^^^
+                                                    SOA MINIMUM = negative-cache TTL = 24 hours
+
+  The sequence:
+    1. deploy.sh step 10 installs the app; pods start and resolve voteball.latnook.com immediately.
+    2. external-dns has not created the A record yet -- it reconciles after the Ingress exists.
+       (Its own log puts the CREATE at 14:42:06Z; the app pods started at 14:41.)
+    3. voteball.latnook.com ALREADY EXISTS in Route53, because of the google-site-verification TXT
+       record above. So the query returns NOERROR-with-no-answer, NOT NXDOMAIN.
+    4. That negative answer is cached against the SOA minimum -- 86400s.
+    5. CoreDNS keeps serving it. Confirmed stuck, not merely slow to expire:
+
+       $ (queried twice, 35s apart, from the canary pod)
+       coredns=0  vpc=2
+       coredns=0  vpc=2
+
+=== 5. The alert designed for this DID catch it, unaided ===
+
+  $ curl -s localhost:9090/api/v1/rules?type=alert  (filtered)
+    VoteballJourneyTrafficStopped   state=pending  health=ok  activeSince=2026-08-24T14:47:30Z
+
+  expr: voteball:journey_requests:rate5m == 0, for: 10m. Pending at 14:47:30Z, would have fired at
+  14:57:30Z. The alert set is correct; what was missing was anything stopping a DEPLOY from ending in
+  this state and taking ten minutes to say so. An alert that fires on every rebuild is one people
+  learn to ignore.
+
+=== 6. Repair, and the proof ===
+
+  $ kubectl rollout restart deployment coredns -n kube-system
+    deployment.apps/coredns restarted
+    deployment "coredns" successfully rolled out
+
+  $ kubectl exec -n devops-app <canary-pod> -- nslookup -type=a voteball.latnook.com 172.20.0.10
+    Name: voteball.latnook.com   Address: 16.164.59.250
+    Name: voteball.latnook.com   Address: 51.84.185.31
+
+  $ kubectl exec -n devops-app <canary-pod> -- curl -o /dev/null -w "%{http_code}" \
+      -m 10 https://voteball.latnook.com/api/options
+    200
+
+  $ kubectl logs -n devops-app -l app=canary --tail=4 --timestamps
+    2026-08-24T15:01:16.613058449Z 200 GET /api/results?by=all
+    2026-08-24T15:01:46.730021767Z 200 GET /
+    2026-08-24T15:01:46.876342378Z 200 GET /api/options
+    2026-08-24T15:01:47.059497888Z 200 GET /api/results?by=all
+
+  The SLIs, with a real denominator underneath them for the first time on this cluster:
+
+    voteball:journey_requests:rate5m       0.06362560433071687
+    voteball:availability:ratio5m          1                      <-- now a MEASURED 1
+    voteball:latency:p95_5m                0.19031643974787715    <-- was NaN
+
+=== 7. What was changed so a rebuild does not start here again ===
+
+  scripts/verify-public-dns.sh, run by deploy.sh as step 11c. It resolves <app_domain> from inside
+  the cluster and, ONLY if a public resolver can resolve a name the cluster cannot, restarts CoreDNS
+  and re-checks. If the outside world cannot resolve it either, the record genuinely does not exist
+  yet: it says so and refuses to restart anything.
+
+  That condition is the point, and scripts/tests/test-verify-public-dns.sh pins it -- an
+  unconditional restart would repair nothing visible, would run on most deploys, and would become a
+  step nobody could safely remove.
+
+  Not fatal to the deploy, for the same reason step 11b is not: at that point the site is already
+  serving the internet. What is broken is what the dashboards can see.

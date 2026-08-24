@@ -41,6 +41,9 @@ before anything else:
 - **Pod Running but no recent log lines** — the loop is hung, most likely inside a `curl` call that
   never times out. Restart it: `kubectl delete pod -n devops-app -l app=canary` (the Deployment
   replaces it immediately).
+- **`curl: (6) Could not resolve host`** — start here after any rebuild; this is now the most common
+  cause. See "the cluster cannot resolve its own hostname" below. One command settles it:
+  `./scripts/verify-public-dns.sh`.
 - **Log lines show curl failures (exit via `|| true`, so check the line itself) or non-2xx codes on
   every request** — this is a real problem on the request path, not the canary's own health. Move to
   `VoteballHighErrorRate` / `VoteballNoBackendAvailable`'s runbooks, or if nothing is reaching the
@@ -55,6 +58,34 @@ before anything else:
 - **Canary healthy but every request errors** — this is very likely a real outage on the voting
   journey itself. Check `VoteballNoBackendAvailable` and `VoteballHighErrorRate` — if either is also
   firing, follow that runbook instead; this alert is corroborating evidence, not the primary signal.
+- **The cluster cannot resolve its own hostname** (`curl: (6) Could not resolve host`). Run
+  `./scripts/verify-public-dns.sh`; it diagnoses and repairs this case, and refuses to act on any
+  other. What happens, first seen on the 2026-08-24 rebuild:
+
+  1. The app is installed and its pods start resolving `<app_domain>` at once.
+  2. external-dns has not created the A record yet — it reconciles only after the Ingress exists.
+  3. `<app_domain>` **already exists** in Route53 for an unrelated reason (this zone carries a
+     `google-site-verification` TXT record on that exact name), so the query returns
+     **NOERROR with an empty answer**, not NXDOMAIN. That is a negative answer cached against the
+     zone's SOA *minimum* TTL — `dig +short SOA latnook.com` reports **86400**, twenty-four hours.
+  4. CoreDNS keeps serving it. Measured: still empty 15 minutes later, while a direct query to the
+     VPC resolver (`nslookup <app_domain> 10.0.0.2` from the same pod) returned both ALB addresses.
+
+  The tell that distinguishes it from every other cause: **TXT resolves and A does not.**
+
+  ```bash
+  POD=$(kubectl get pods -n devops-app -l app=canary -o jsonpath='{.items[0].metadata.name}')
+  kubectl exec -n devops-app "$POD" -- nslookup -type=a   <app_domain> 172.20.0.10   # empty
+  kubectl exec -n devops-app "$POD" -- nslookup -type=txt <app_domain> 172.20.0.10   # answers
+  kubectl exec -n devops-app "$POD" -- nslookup -type=a   <app_domain> 10.0.0.2      # answers
+  ```
+
+  The repair is a rolling restart of CoreDNS, which drops the cache:
+  `kubectl rollout restart deployment coredns -n kube-system`. Do **not** make that unconditional —
+  if a public resolver also cannot resolve the name, the record genuinely does not exist yet and the
+  answer is to wait for external-dns, not to restart anything. `deploy.sh` step 11c runs this check
+  automatically at the end of every deploy for exactly this reason.
+
 - **Canary's NetworkPolicy egress broken** — confirm `allow-canary-egress` exists and selects
   `app In (...)` (`charts/voteball/templates/networkpolicy.yaml`). A pod outside that list keeps only
   `allow-dns-egress`: DNS resolves, every TCP connection to the public ALB silently drops, and the

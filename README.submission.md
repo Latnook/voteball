@@ -628,6 +628,15 @@ process of adding a dashboard, with no import button and nothing for a human to 
 `observability` ArgoCD Application and re-syncing brings all three back with zero manual steps, which
 is what proves they're provisioned rather than clicked together.
 
+As rendered, with live data:
+[Application Overview](docs/eks/evidence/2026-08-24-grafana-application-overview.png) ·
+[Kubernetes / Cluster](docs/eks/evidence/2026-08-24-grafana-kubernetes-cluster.png) ·
+[Jenkins & Delivery](docs/eks/evidence/2026-08-24-grafana-jenkins-delivery.png). Every panel's own
+query is also run and counted in
+[`2026-08-24-observability-post-dns-fix.txt`](docs/eks/evidence/2026-08-24-observability-post-dns-fix.txt)
+section 7 — 43 queries, 42 returning series, the one empty panel being a pod-restart counter on a
+cluster that had not restarted a pod.
+
 The Application Overview's three template variables answer "which replica, which release" without
 leaving the dashboard. The two SLO panels deliberately ignore them — the SLO is service-wide, and a
 pod filter there would put one replica's number under a panel titled "vs SLO". `Release` reaches the

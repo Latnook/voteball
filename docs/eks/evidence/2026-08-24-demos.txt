@@ -1,0 +1,125 @@
+# Captured 2026-08-24T18:13:00+03:00. Frozen evidence -- do not edit.
+
+### Demo 1 — HTTPS with a valid ACM certificate
+HTTP/2 200 
+issuer=C=US, O=Amazon, CN=Amazon RSA 2048 M04
+subject=CN=voteball.latnook.com
+notBefore=Aug 24 00:00:00 2026 GMT
+notAfter=Mar  9 23:59:59 2027 GMT
+
+### Demo 1b — HTTP is redirected to HTTPS
+HTTP/1.1 301 Moved Permanently
+Server: awselb/2.0
+
+### Demo 2+3 — frontend -> backend -> RDS (/api/options returns seeded DB data)
+{"clubs":[{"domestic_league_id":null,"group_label":null,"id":2858,"league_id":6,"logo_url":"https://upload.wikimedia.org/wikipedia/commons/0/01/1._FC_Koeln_Logo_2014%E2%80%93.svg","name_en":"1. FC K\u
+
+### Demo 3b — vote totals read from the worker-computed rollup tables
+{"previous":[{"count":1,"party_id":null},{"count":8,"party_id":10},{"count":5,"party_id":2},{"count":1,"party_id":5},{"count":3,"party_id":4},{"count":3,"party_id":14},{"count":1,"party_id":1}],"upcoming":[{"count":1,"party_id":null,"weight":1.0},{"count":2,"party_id":13,"weight":0.8333333333333334}
+
+### Demo 4 — S3 via IRSA (the backup CronJob writes to s3://voteball-rollups-590183895228/backups/)
+-- objects before:
+2026-08-24 18:11:10      22914 voteball-2026-08-24T15-11-07Z.sql.gz
+job.batch/evidence-backup created
+job.batch/evidence-backup condition met
+-- objects after:
+2026-08-24 18:11:10      22914 voteball-2026-08-24T15-11-07Z.sql.gz
+2026-08-24 18:13:07      22910 voteball-2026-08-24T15-13-04Z.sql.gz
+
+### Demo 4b — IRSA: only worker and backup carry an AWS role
+NAME       ROLE
+backend    <none>
+backup     arn:aws:iam::590183895228:role/voteball-backup-irsa
+default    <none>
+frontend   <none>
+worker     arn:aws:iam::590183895228:role/voteball-worker-irsa
+
+### Demo 5 — NetworkPolicy isolation, with a control
+-- policies in force:
+NAME                               MATCHLABELS         MATCHEXPR                                                           TYPES
+allow-alb-to-frontend              map[app:frontend]   <none>                                                              [Ingress]
+allow-aws-api-egress               <none>              [map[key:app operator:In values:[worker backup]]]                   [Egress]
+allow-canary-egress                map[app:canary]     <none>                                                              [Egress]
+allow-db-egress                    <none>              [map[key:app operator:In values:[backend worker backup migrate]]]   [Egress]
+allow-dns-egress                   <none>              <none>                                                              [Egress]
+allow-frontend-to-backend          map[app:backend]    <none>                                                              [Ingress]
+allow-frontend-to-backend-egress   map[app:frontend]   <none>                                                              [Egress]
+allow-prometheus-scrape            <none>              [map[key:app operator:In values:[backend worker frontend]]]         [Ingress]
+default-deny                       <none>              <none>                                                              [Ingress Egress]
+-- egress rules, per policy (who may reach what, on which port):
+allow-aws-api-egress
+    -> 0.0.0.0/0   ports: TCP/443 
+allow-canary-egress
+    -> 0.0.0.0/0   ports: TCP/443 
+allow-db-egress
+    -> 10.0.0.0/16   ports: TCP/5432 
+allow-dns-egress
+    ->   ports: UDP/53 TCP/53 
+allow-frontend-to-backend-egress
+    -> 172.20.0.0/16 10.0.0.0/16   ports: TCP/5000 
+-- worker pod age (must be > ~2m for this probe to mean anything):
+NAME                      AGE
+worker-76bf9d8d55-l5t4m   2026-08-24T15:01:27Z
+-- real probe: worker -> backend:5000 (must NOT connect):
+   BLOCKED by NetworkPolicy: TimeoutError
+-- control: worker -> RDS:5432 (must connect — allow-db-egress permits it):
+   RDS REACHABLE (the probe works)
+
+### Demo 5b — the FRONTEND cannot reach the database (Task 3 review T3-1)
+-- resolved RDS host from the ConfigMap: voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com
+-- control A: backend -> RDS:5432 on that host (must connect):
+   RDS REACHABLE from backend (host correct, RDS up)
+-- control B: frontend -> backend:5000 (must connect — allow-frontend-to-backend-egress permits it):
+   BACKEND REACHABLE (nc works in this image)
+-- real probe: frontend -> RDS:5432, same host as control A (must NOT connect):
+   BLOCKED — the frontend has no route to the database
+
+### Demo 5c — no Kubernetes API token is mounted where it is not needed (T3-3)
+frontend   automountServiceAccountToken on the ServiceAccount: false
+frontend   kube-api-access volume present in the pod: 0
+backend    automountServiceAccountToken on the ServiceAccount: false
+backend    kube-api-access volume present in the pod: 0
+
+### Demo 5d — workloads run by DIGEST, not by tag (Task 4 review P2)
+backend	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:6281776debee50f9b1671d10572f9f24646d22b396f90e0a50f5b700681d074c
+canary	curlimages/curl:8.7.1
+frontend	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx@sha256:1f58e6311ba844a0cae82ca51a800ce019728dbdda63f728b926c05a9dd55905 nginx/nginx-prometheus-exporter:1.5.3
+worker	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker@sha256:0a25ba2062529da5eae344f666ec263b0a7650cc7728fe0de61436d909dfd0f1
+voteball-backup	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backup@sha256:86bc98769d0d5f96146d1f9814f9e75d1e83a898cbab886db7ca8a6e5960ffce
+backend-58d55fc8b6-5x64f	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:6281776debee50f9b1671d10572f9f24646d22b396f90e0a50f5b700681d074c
+backend-58d55fc8b6-tb9pp	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backend@sha256:6281776debee50f9b1671d10572f9f24646d22b396f90e0a50f5b700681d074c
+canary-55dd5b9fbc-4kqb4	docker.io/curlimages/curl@sha256:25d29daeb9b14b89e2fa8cc17c70e4b188bca1466086907c2d9a4b56b59d8e21
+evidence-backup-8czwc	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-backup@sha256:86bc98769d0d5f96146d1f9814f9e75d1e83a898cbab886db7ca8a6e5960ffce
+frontend-6fbdd8547c-kvtg8	docker.io/nginx/nginx-prometheus-exporter@sha256:85666e7fde7e253f1c6d978f9a961245df4c9cdb7677e1866d9bb28e8f9ee41d 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx@sha256:1f58e6311ba844a0cae82ca51a800ce019728dbdda63f728b926c05a9dd55905
+frontend-6fbdd8547c-pzzhb	docker.io/nginx/nginx-prometheus-exporter@sha256:85666e7fde7e253f1c6d978f9a961245df4c9cdb7677e1866d9bb28e8f9ee41d 590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-nginx@sha256:1f58e6311ba844a0cae82ca51a800ce019728dbdda63f728b926c05a9dd55905
+worker-76bf9d8d55-l5t4m	590183895228.dkr.ecr.il-central-1.amazonaws.com/voteball-worker@sha256:0a25ba2062529da5eae344f666ec263b0a7650cc7728fe0de61436d909dfd0f1
+
+### Demo 6 — SNS topic, subscriptions and delivery over the last 7 days
+-------------------------------------------
+|           GetTopicAttributes            |
++----------------+---------------+--------+
+|  SubsConfirmed |  SubsPending  | Topic  |
++----------------+---------------+--------+
+|  1             |  0            |        |
++----------------+---------------+--------+
+NumberOfNotificationsDelivered   51.0
+NumberOfNotificationsFailed      0.0
+
+### Demo 7 — alert rules shipped by the app chart (PrometheusRule)
+
+
+
+
+VoteballHighErrorRate
+VoteballHighLatencyP95
+VoteballRollupsStale
+VoteballAvailabilitySLOBreach
+VoteballSLIAbsent
+VoteballJourneyTrafficStopped
+VoteballPodCrashLooping
+VoteballNoBackendAvailable
+VoteballMigrationJobFailed
+VoteballBackupJobFailed
+VoteballBackupMissing
+VoteballContainerOOMKilled
+
