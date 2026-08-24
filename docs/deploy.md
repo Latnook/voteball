@@ -235,27 +235,32 @@ charts/observability/values.yaml  externalSecret.enabled: false         ->  true
 Flip both, commit, and push. `application-ci` → `application-cd` promotes the commit to `release` and
 ArgoCD syncs it.
 
-**Expect the PostgreSQL data source to fail on that first release, and to start working on the next
-one.** This is phase ordering, not a fault. The migrate Job is a Helm `pre-upgrade` hook, so ArgoCD
-runs it in **PreSync** — before it applies normal resources, which is when the `grafana-db-secret`
-ExternalSecret is created and when ESO populates it. So on the enabling release the Job finds no
-`GRAFANA_DB_PASSWORD` (it mounts that Secret `optional: true`), prints
+**Then restart Grafana. This step is not optional and nothing does it for you:**
 
-```
-GRAFANA_DB_PASSWORD not set; leaving grafana_ro without a password
+```bash
+kubectl rollout restart deployment/kube-prometheus-stack-grafana -n observability
 ```
 
-and exits 0. `grafana_ro` then exists with no password, and a passwordless role cannot authenticate
-under `scram-sha-256` — so a Business Analytics panel shows
+`envFromSecret` projects a Secret's keys as environment variables **at pod start and never again**.
+The Grafana pod is already running by the time ArgoCD creates `grafana-datasources` and ESO fills it,
+so without a restart `GF_DATASOURCE_DB_PASSWORD` is simply unset — and Grafana expands an unset
+variable in a provisioning file to an **empty string** rather than failing. It then authenticates with
+an empty password and the panel shows:
 
 ```
 failed SASL auth: FATAL: password authentication failed for user "grafana_ro" (SQLSTATE 28P01)
 ```
 
-Nothing else is affected, and there is nothing to fix or re-run by hand: the Secret exists from that
-point on, so the **next** release's hook sets the password. Any subsequent push will do it. See
-`docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome" for why waiting on ESO
-inside the Job was rejected.
+Nothing else is affected, and no amount of waiting fixes it. (This is the same trap the root
+`CLAUDE.md` records for Jenkins, where a new key in `voteball/jenkins` needs a controller restart for
+the same reason.)
+
+Verify the projection landed rather than assuming:
+
+```bash
+kubectl exec -n observability deploy/kube-prometheus-stack-grafana -c grafana -- \
+  sh -c 'echo "${GF_DATASOURCE_DB_PASSWORD:+set}"'      # prints "set", or nothing at all
+```
 
 CloudWatch is unaffected by any of this — it authenticates by IRSA and needs no secret, so its
 dashboard works as soon as `terraform apply` has run.

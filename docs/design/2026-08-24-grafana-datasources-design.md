@@ -296,43 +296,60 @@ already had this shape and it was not recognised in time: `charts/voteball`'s ow
 ExternalSecret reads a container Terraform creates empty and `seed-eks-secret.sh` fills — the same
 pattern, which had simply always been seeded before anyone looked.
 
-### A third finding: the password lands one sync LATER than the gate
+### A third finding: enabling the gates is not enough — Grafana must be restarted
 
-**Observed on the enabling deploy, 2026-08-24.** Flipping the two gates to `true` and pushing does
-not, on its own, make the PostgreSQL data source work. The first panel load after that release fails
-with:
+**Observed on the enabling deploy, 2026-08-24, and mis-diagnosed twice before being found.**
+
+Flipping the two gates to `true` and pushing does not make the PostgreSQL data source work. The first
+panel load fails with:
 
 ```
 db query error: failed to connect to `user=grafana_ro database=postgres`:
 failed SASL auth: FATAL: password authentication failed for user "grafana_ro" (SQLSTATE 28P01)
 ```
 
-The cause is phase ordering, and it is inherent rather than a bug:
+The cause is not ArgoCD hook ordering, which is what it looks like and what this document claimed for
+an hour. It is **environment-variable projection**, and the evidence is a pair of timestamps:
 
-| Phase | What runs | State of `grafana-db-secret` |
-|---|---|---|
-| ArgoCD **PreSync** | the migrate Job (a Helm `pre-upgrade` hook) | **does not exist yet** |
-| ArgoCD **Sync** | normal resources, including the ExternalSecret | created here |
-| ESO reconcile | ESO populates the Kubernetes Secret | populated here |
+```
+Grafana pod started ................. 18:58:13Z
+grafana-datasources Secret created .. 19:19:09Z   (21 minutes later)
+GF_DATASOURCE_DB_PASSWORD in the running container .. NOT SET
+```
 
-The Job mounts that Secret with `optional: true` (decision 4), so it does not fail — it prints
-`GRAFANA_DB_PASSWORD not set; leaving grafana_ro without a password` and exits 0. The release
-succeeds, `grafana_ro` exists with no password, and a passwordless role cannot authenticate under
-`scram-sha-256`. So the failure is closed, loud at the panel, and harmless to everything else —
-exactly what decisions 3 and 4 were built to guarantee — but it IS a failure, and nothing in the
-runbook said to expect it.
+`envFromSecret` projects a Secret's keys as environment variables **at pod start and never again**.
+The Grafana pod predated its Secret by 21 minutes, so the variable was never set — and Grafana
+expands an unset variable in a provisioning file to an **empty string** rather than erroring
+(silent failure #2 in this document). So Grafana authenticated with an empty password.
 
-**It self-heals on the NEXT sync**, because by then the Secret exists and the hook picks it up. So
-the operational rule is simply:
+**The fix is one command, not a second sync:**
 
-> After flipping the gates, the PostgreSQL data source starts working on the **second** release, not
-> the first. Any subsequent push will do it; there is nothing to fix and nothing to re-run by hand.
+```bash
+kubectl rollout restart deployment/kube-prometheus-stack-grafana -n observability
+```
 
-Rejected: making the ExternalSecret a PreSync hook with a lower weight so it is created before the
-Job. That orders the *resource*, not ESO's reconcile — the Secret would exist and still be empty when
-the Job read it, which is strictly worse: an empty password written to the role rather than no
-password at all. Waiting on ESO inside the Job would drag an external controller's sync latency into
-the release's critical path, which is the same argument decision 4's `optional: true` already makes.
+**This repo already documented this exact trap, for Jenkins**, in the root `CLAUDE.md`: *"`--restart`
+covers a new key in `voteball/jenkins`, which `containerEnvFrom` projects only at pod start."* Same
+mechanism, adjacent component, and it was walked into anyway — which is the more useful half of the
+finding. A rule written for one component does not generalise itself to its neighbour.
+
+### A fourth finding: a CloudWatch panel can be correct on the server and blank in the browser
+
+Every panel on `voteball-aws` returned real data from `/api/ds/query` — 66 points on RDS CPU — while
+the dashboard rendered "No data" in the browser, with no error anywhere.
+
+The ten metric targets lacked `queryMode`, `metricQueryType` and `metricEditorMode`. The backend
+fills defaults for those; the **frontend** dispatches on them to choose a query builder, takes the
+other branch when they are absent, and sends an empty query.
+
+This is the worst verification gap in the whole feature, because **every check built for it went
+through the backend** — the per-panel query sweep, `validate-observability.sh`, the data source health
+probes. All reported green against a blank dashboard. The two consumers of the same stored JSON
+disagree about what a valid query is, and only one of them was ever exercised.
+
+It was found by a human noticing that Business Analytics worked from the same Grafana while these did
+not — one observation that eliminated the credential, the data source and the backend at once. No
+automated check in this repo would have caught it.
 
 ### A second finding: "holding pushes" is meaningless on a shared branch
 
