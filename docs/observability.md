@@ -677,6 +677,21 @@ The Grafana password is **generated fresh at install time and changes on every r
 deliberately no fixed one anywhere in the repo or in `terraform.tfstate`. Prometheus and Alertmanager
 have no login at all; the only way to reach either is to already hold cluster access.
 
+`grafana-cli` lives inside the Grafana container, if you need to inspect a plugin:
+
+```bash
+kubectl exec -it -n observability deploy/kube-prometheus-stack-grafana -c grafana -- grafana-cli --help
+```
+
+**Use it read-only.** Grafana has no PVC here (§3), so anything it writes — `plugins install` above
+all — is gone at the next pod restart, which on a 100% Spot node group is roughly daily. A plugin
+that has to stay belongs in `helm_release.kube_prometheus_stack`'s values in
+`terraform/addon-monitoring.tf`; a dashboard belongs in `charts/observability/dashboards/` (§6).
+`grafana-cli admin reset-admin-password` is a trap in particular: it rewrites the running password
+but not the `kube-prometheus-stack-grafana` Secret, so the Secret that
+`scripts/capture-observability-evidence.sh` reads silently stops being the real password — and the
+next restart discards the new one regardless.
+
 ---
 
 ## 12. Verifying it works
