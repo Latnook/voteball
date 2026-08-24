@@ -841,7 +841,21 @@ that matters.** On 2026-08-18 the gate correctly failed the slow release — and
 failed its own gate too, at p95 2.33s, while production was already serving 0.12s
 ([`-4b-settle-fix-proof.txt`](eks/evidence/2026-08-18-rerun-drill-4b-settle-fix-proof.txt)). Every
 SLI here is a rate over `[5m]`, so the rollback inherited a window still full of the slow release it
-had just removed. `GATE_SETTLE_SECONDS` was the fix: a rollback build waits 330s before measuring.
+had just removed.
+
+**Two guards, for two different halves of that, and naming only one of them tells half the story**
+(`Jenkinsfile-cd`'s comment on the Monitoring Gate stage carries both). `GATE_SETTLE_SECONDS` fixes
+the **measurement**: a rollback build waits 330s — the 5m lookback plus one 30s scrape of margin —
+before measuring, so it no longer inherits the p95 of what it removed. `ROLLBACK_DEPTH` bounds the
+**consequence**: by the time that gate failed, `rollback-target.sh` had resolved the *slow* build as
+the next rollback target, and the depth bound is what stopped production oscillating between the two
+releases. The settle stops the wrong verdict; the depth bound stops the wrong verdict becoming a
+loop.
+
+The settle is deliberately NOT applied to normal deploys: there the window holds the previous
+release's data, and a previous release that passed its own gate was within thresholds by definition,
+so it cannot push this one over. Paying 5 minutes on every deploy to fix a case that only arises
+after a failed one would be the wrong trade.
 
 Today's pair exercises both directions on demand, on identical thresholds:
 
