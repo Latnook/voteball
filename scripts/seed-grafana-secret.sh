@@ -13,6 +13,12 @@
 # and that release landing, the PostgreSQL data source keeps authenticating with the OLD password
 # and starts failing the moment Secrets Manager holds the new one but the role does not yet.
 #
+# FORCE_ROTATE=1 alone rotates BOTH credentials. Pass ROTATE_WHAT=db_password or
+# ROTATE_WHAT=github_token alongside it to rotate just one and carry the other forward unchanged --
+# the two expire on unrelated schedules (github_token within a year, per GitHub; db_password never
+# on its own), so the common case is rotating one without wanting to touch the other. See
+# docs/maintenance.md's GitHub PAT rotation runbook, which is exactly this case.
+#
 # db_password is GENERATED here -- nothing human ever types it. github_token comes from the
 # environment or a silent prompt on /dev/tty: a fine-grained PAT scoped to Latnook/voteball alone,
 # read-only Contents + Metadata + Issues (see docs/design/2026-08-24-grafana-datasources-design.md
@@ -76,12 +82,62 @@ if [ "${FORCE_ROTATE:-0}" != "1" ]; then
   fi
 fi
 
-if [ "${FORCE_ROTATE:-0}" = "1" ]; then
-  echo "FORCE_ROTATE=1: rotating ${SECRET_ID}'s db_password now."
-  echo "The NEW password reaches the live grafana_ro role only on the NEXT release -- migrate.py's"
-  echo "ALTER ROLE grafana_ro runs as a post-install,pre-upgrade Helm hook, not immediately. Until"
-  echo "that release syncs, the PostgreSQL data source keeps using the OLD password and will start"
-  echo "failing to authenticate as soon as Secrets Manager holds this new one."
+# ---- ROTATE_WHAT: rotate one credential without touching the other -----------------------------
+# Default 'both' preserves the original behaviour (a full re-seed / first seed generates and writes
+# both values). The two credentials rotate on completely different schedules and for different
+# reasons -- db_password never expires on its own, github_token does (GitHub caps a fine-grained PAT
+# at one year) -- so the common real-world rotation is "the PAT expired, mint a new one", which has
+# nothing to do with db_password. Before ROTATE_WHAT existed, that runbook was
+# `GITHUB_TOKEN=<new> FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh`, which *always* regenerated
+# db_password too -- since the new password only reaches the live grafana_ro role on the NEXT
+# release (migrate.py's ALTER ROLE hook), that silently broke Business Analytics for an unbounded
+# window every time someone rotated an expiring PAT. docs/maintenance.md's runbook now passes
+# ROTATE_WHAT=github_token specifically to avoid this.
+ROTATE_WHAT="${ROTATE_WHAT:-both}"
+case "$ROTATE_WHAT" in
+  both|db_password|github_token) ;;
+  *)
+    echo "ERROR: ROTATE_WHAT must be 'both', 'db_password' or 'github_token' (got '${ROTATE_WHAT}')." >&2
+    exit 1
+    ;;
+esac
+
+EXISTING_DB_PASSWORD=""
+EXISTING_GITHUB_TOKEN=""
+if [ "${FORCE_ROTATE:-0}" = "1" ] && [ "$ROTATE_WHAT" != "both" ]; then
+  # A partial rotation needs the CURRENT value of whichever credential is NOT being rotated, so it
+  # can be carried forward unchanged instead of silently regenerated/dropped.
+  set +e
+  EXISTING="$(aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --region "$REGION" \
+              --query SecretString --output text 2>&1)"
+  aws_rc=$?
+  set -e
+  if [ "$aws_rc" -ne 0 ]; then
+    echo "ERROR: ROTATE_WHAT=${ROTATE_WHAT} needs to read the CURRENT ${SECRET_ID} to carry forward" >&2
+    echo "the value that isn't being rotated, and that read failed:" >&2
+    printf '%s\n' "$EXISTING" >&2
+    exit 1
+  fi
+  EXISTING_DB_PASSWORD="$(printf '%s' "$EXISTING" | jq -r '.db_password // empty')"
+  EXISTING_GITHUB_TOKEN="$(printf '%s' "$EXISTING" | jq -r '.github_token // empty')"
+  if [ "$ROTATE_WHAT" = "github_token" ] && [ -z "$EXISTING_DB_PASSWORD" ]; then
+    echo "ERROR: ${SECRET_ID} has no existing db_password to carry forward -- run with" >&2
+    echo "ROTATE_WHAT=both (or unset) to seed both values the first time." >&2
+    exit 1
+  fi
+  if [ "$ROTATE_WHAT" = "db_password" ] && [ -z "$EXISTING_GITHUB_TOKEN" ]; then
+    echo "ERROR: ${SECRET_ID} has no existing github_token to carry forward -- run with" >&2
+    echo "ROTATE_WHAT=both (or unset) to seed both values the first time." >&2
+    exit 1
+  fi
+fi
+
+if [ "${FORCE_ROTATE:-0}" = "1" ] && [ "$ROTATE_WHAT" != "github_token" ]; then
+  echo "FORCE_ROTATE=1 (rotating db_password): the NEW password reaches the live grafana_ro role"
+  echo "only on the NEXT release -- migrate.py's ALTER ROLE grafana_ro runs as a"
+  echo "post-install,pre-upgrade Helm hook, not immediately. Until that release syncs, the"
+  echo "PostgreSQL data source keeps using the OLD password and will start failing to authenticate"
+  echo "as soon as Secrets Manager holds this new one."
   echo
 fi
 
@@ -103,10 +159,23 @@ ask() {
   printf '%s' "$val"
 }
 
-# db_password: GENERATED, never prompted for -- nothing human types this value.
-DB_PASSWORD="$(openssl rand -hex 24)"
+if [ "$ROTATE_WHAT" = "github_token" ]; then
+  DB_PASSWORD="$EXISTING_DB_PASSWORD"
+  echo "ROTATE_WHAT=github_token: leaving db_password exactly as it is -- grafana_ro's live"
+  echo "password is untouched, so nothing about the PostgreSQL data source changes."
+  echo
+else
+  # db_password: GENERATED, never prompted for -- nothing human types this value.
+  DB_PASSWORD="$(openssl rand -hex 24)"
+fi
 
-GITHUB_TOKEN="$(ask GITHUB_TOKEN "GitHub fine-grained PAT for Latnook/voteball (not echoed)")"
+if [ "$ROTATE_WHAT" = "db_password" ]; then
+  GITHUB_TOKEN="$EXISTING_GITHUB_TOKEN"
+  echo "ROTATE_WHAT=db_password: leaving github_token exactly as it is."
+  echo
+else
+  GITHUB_TOKEN="$(ask GITHUB_TOKEN "GitHub fine-grained PAT for Latnook/voteball (not echoed)")"
+fi
 
 TMP="$(mktemp -d)"
 chmod 700 "$TMP"

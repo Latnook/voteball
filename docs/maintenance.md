@@ -102,11 +102,18 @@ commit-count widget is not an incident.
 
 **Action:** mint a new fine-grained PAT with the same scope (`Latnook/voteball`, read-only Contents +
 Metadata + Issues) at github.com/settings/tokens, then run
-`GITHUB_TOKEN=<new token> FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh` — `FORCE_ROTATE=1` is
-required here too, for the same reason it's required to rotate `db_password`: the script exits early
-on an already-seeded secret so a routine `deploy.sh` re-run can't silently invalidate a working
-credential. Update the placeholder date above in the same commit as the rotation, or this table rots
-right along with the token it's supposed to be tracking.
+`GITHUB_TOKEN=<new token> FORCE_ROTATE=1 ROTATE_WHAT=github_token ./scripts/seed-grafana-secret.sh`
+— `FORCE_ROTATE=1` is required here too, for the same reason it's required to rotate `db_password`:
+the script exits early on an already-seeded secret so a routine `deploy.sh` re-run can't silently
+invalidate a working credential. **`ROTATE_WHAT=github_token` is load-bearing, not optional** — the
+script always writes both `db_password` and `github_token` together, and without it `FORCE_ROTATE=1`
+also regenerates `db_password`. Since the new password only reaches the live `grafana_ro` role on
+the *next* release (`migrate.py`'s `ALTER ROLE` runs as a post-install,pre-upgrade Helm hook, not
+immediately), an unqualified `FORCE_ROTATE=1` here silently breaks the Business Analytics dashboard
+— a routine PAT renewal takes down an unrelated data source — for however long it takes someone to
+notice and push a release. `ROTATE_WHAT=github_token` carries `db_password` forward unchanged so
+renewing the token touches nothing else. Update the placeholder date above in the same commit as the
+rotation, or this table rots right along with the token it's supposed to be tracking.
 
 ---
 

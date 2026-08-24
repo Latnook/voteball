@@ -191,12 +191,20 @@ resources. The steps it performs (kept in step with the script's own numbering �
 
 ### Optional, manual, not run by `deploy.sh`: Grafana's PostgreSQL and GitHub data sources
 
-`deploy.sh` never calls this, on purpose — **skipping it entirely is fine.** Everything above,
-including the site itself and all six Grafana dashboards, works with no further action. Skip it and
-the only thing that stays non-functional is two of Grafana's five data sources — the PostgreSQL one
-(the Business Analytics dashboard) and the GitHub one (three panels on Jenkins & Delivery). Prometheus,
-Alertmanager and CloudWatch need no credential and work regardless (CloudWatch authenticates via IRSA
-— see `docs/security.md`).
+`deploy.sh` never calls this, on purpose — **skipping it entirely is safe**, because
+`terraform/addon-monitoring.tf` projects the `grafana-datasources` Secret as
+`optional = true`: Grafana starts normally whether or not that Secret exists, it does not wait on
+it, and nothing else in the stack is affected. Everything above, including the site itself, works
+with no further action. Five of the six dashboards render fully with no further action too —
+Application Overview, Kubernetes Cluster, Service Health and AWS Infrastructure are entirely
+Prometheus/CloudWatch (CloudWatch authenticates via IRSA, no credential needed — see
+`docs/security.md`), and Jenkins & Delivery's build-metrics panels are Prometheus as well. Skip it
+and the only thing that stays non-functional is Grafana's two credentialed data sources —
+PostgreSQL (all of the Business Analytics dashboard) and GitHub (three panels on Jenkins &
+Delivery). Both still provision cleanly with an empty credential (Grafana expands an unset
+environment variable to an empty string rather than erroring — see the design doc's silent-failure
+#2), so the failure shows up as a "login failed"/"bad credentials" error the first time a human
+opens one of those panels, not as a startup crash or a missing dashboard.
 
 If you want those two data sources live, do this **after** step 6 above — the secret container these
 credentials go into is created by the main `terraform apply`, not the small targeted one at step 2:
@@ -210,8 +218,9 @@ PAT scoped to `Latnook/voteball` alone — see `docs/security.md`'s "Grafana dat
 why that scope and not a classic PAT), then stores both in the `voteball/grafana` secret Terraform
 just created. Re-running `deploy.sh` never re-runs this step and never rotates the password out from
 under a live `grafana_ro` role — it exits immediately if the secret already holds a real one; pass
-`FORCE_ROTATE=1` if you genuinely mean to rotate (e.g. the GitHub token expired — see
-`docs/maintenance.md`).
+`FORCE_ROTATE=1` if you genuinely mean to rotate — and add `ROTATE_WHAT=github_token` when it's
+specifically the GitHub token expiring (see `docs/maintenance.md`), or `FORCE_ROTATE=1` alone
+silently regenerates `db_password` too and breaks Business Analytics until the next release.
 
 Two chart flags still have to flip before the credentials do anything, both gated off by default for
 the reason `docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome" section

@@ -338,6 +338,22 @@ for dpath in dashboard_files:
     if not d.get("title"):
         fail(f"dashboard {dpath} has no 'title' -- it renders as an unlabelled dashboard in the list.")
 
+    # Each data source type names its "this panel has a real query" field differently -- Prometheus
+    # panels carry `expr`, PostgreSQL panels carry `rawSql`, CloudWatch metric panels carry
+    # `metricName` (alongside `namespace`), CloudWatch Logs panels carry `expression` (alongside
+    # `logGroups`), and GitHub panels carry `queryType` (Commits/Contributors/Issues/...). A panel
+    # counts as having a query if ANY of these recognised fields is non-empty on ANY of its targets;
+    # a panel whose targets carry none of them still fails, same as an empty-`expr` Prometheus panel
+    # always did.
+    QUERY_FIELDS = ("expr", "rawSql", "metricName", "expression", "queryType")
+
+    def target_query(t):
+        for key in QUERY_FIELDS:
+            v = t.get(key)
+            if isinstance(v, str) and v.strip():
+                return v.strip()
+        return ""
+
     def check_panel(panel):
         if panel.get("type") == "row":
             # A row panel itself legitimately carries no query. But a COLLAPSED row nests its child
@@ -348,7 +364,7 @@ for dpath in dashboard_files:
                 check_panel(child)
             return
         targets = panel.get("targets") or []
-        queries = [t.get("expr", "").strip() for t in targets if isinstance(t, dict)]
+        queries = [target_query(t) for t in targets if isinstance(t, dict)]
         if not any(queries):
             fail(
                 f"dashboard {dpath} panel '{panel.get('title', panel.get('id'))}' has no non-empty "
