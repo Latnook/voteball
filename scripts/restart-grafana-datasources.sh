@@ -42,6 +42,31 @@ secret_exists() {
   kubectl get secret "$SECRET" -n "$NS" >/dev/null 2>&1
 }
 
+# WAIT for the Secret rather than checking once, because on a FRESH deploy a single check is always
+# too early. scripts/deploy.sh calls this at step 11d, moments after step 11 bootstraps ArgoCD --
+# at which point ArgoCD has not finished its first sync, the ExternalSecret does not exist, and
+# External Secrets Operator has not reconciled it. Observed on the 2026-08-25 rebuild: 11d reported
+# "nothing to project. Not restarting." and exited 0 while the credential arrived ~90s later, so the
+# deploy finished with Grafana holding no password and both data sources failing on first use.
+#
+# Bounded and non-fatal: if it never appears we fall through to the same "nothing to project"
+# message as before. Waiting cannot make anything worse -- the alternative is a guaranteed miss.
+# GRAFANA_WAIT_SECONDS=0 disables the wait entirely, which is what the offline tests use.
+wait_for_secret() {
+  local budget="${GRAFANA_WAIT_SECONDS:-180}" waited=0 step=5
+  secret_exists && return 0
+  [ "$budget" -eq 0 ] && return 1
+  echo "    ${SECRET} not there yet -- waiting up to ${budget}s for ArgoCD to sync it and ESO to fill it."
+  while [ "$waited" -lt "$budget" ]; do
+    sleep "$step"; waited=$((waited + step))
+    if secret_exists; then
+      echo "    ${SECRET} appeared after ${waited}s."
+      return 0
+    fi
+  done
+  return 1
+}
+
 deployment_exists() {
   if [ -n "${GRAFANA_GET_DEPLOYMENT_CMD:-}" ]; then ( eval "$GRAFANA_GET_DEPLOYMENT_CMD" ); return; fi
   kubectl get deployment "$DEPLOYMENT" -n "$NS" >/dev/null 2>&1
@@ -66,7 +91,7 @@ wait_for_rollout() {
 
 echo "==> Checking whether Grafana needs restarting to pick up ${SECRET}"
 
-if ! secret_exists; then
+if ! wait_for_secret; then
   echo "    ${SECRET} does not exist in ${NS} yet (externalSecret.enabled is probably still false, or"
   echo "    the grafana_ro credential has not been seeded) -- nothing to project. Not restarting."
   exit 0
