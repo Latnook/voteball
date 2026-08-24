@@ -81,6 +81,15 @@ committed-but-unpushed or uncommitted waiting to be asked. Still use judgment
 on grouping related changes into one coherent commit rather than pushing
 every single edit separately, and never force-push.
 
+**A shared working tree makes every writer a publisher of every other writer's committed-but-unpushed
+work.** If a second session (or a second person) is committing to `master` in the same checkout,
+"I am holding pushes" is not something you can offer: `git push` sends the whole ancestor chain, so
+their push carries your commits with it. Proven on 2026-08-24 — three commits reached `origin/master`
+during a window this session believed was closed, because a concurrent session pushed a commit that
+had them as ancestors (`git merge-base --is-ancestor <mine> <theirs>` → true). The only mechanisms
+that actually deliver a hold are a branch per session, a worktree per session, or nobody committing
+to `master`. Do not promise a push hold on a shared branch; say what you can actually guarantee.
+
 **Delete an implementation plan as soon as it is executed — same commit as the last task**
 (per the user's explicit request, 2026-07-28, after finding four stale ones). This is not optional
 cleanup to do later; a plan that outlives its execution reads like pending work to the next person
@@ -401,6 +410,30 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   `scripts/tests/test-sync-values.sh` (runs offline via `SYNC_STUB_*` env vars); **extend it whenever
   you add a managed field** — it is what catches the `backup.roleArn`/`worker.roleArn` cross-assignment
   that a naive `sed` would cause.
+**Any chart resource that references a Terraform-created object must be gated off by default.**
+Chart code reaches the cluster on a `git push` (CI → CD → ArgoCD, minutes, automatic); the Terraform
+object it names reaches AWS only on a billed `terraform apply` that a human runs. Those are two
+different speeds, and shipping the consumer first is a race the consumer wins. The blast radius is
+much larger than the feature involved: External Secrets Operator cannot resolve the reference, so the
+resource is Degraded, so **ArgoCD's whole sync operation reports `phase: Failed`** — and because
+anything failing after `application-cd`'s Promote stage triggers an automatic rollback, every CD run
+becomes *deploy fails → roll production back*. Hit for real on 2026-08-24: four consecutive failed CD
+runs rolling production back to a stale tag while `master` moved ahead, caused by an ExternalSecret
+naming a Secrets Manager container `terraform apply` had not yet created. The gate
+(`.Values.externalSecret.grafanaEnabled`, `.Values.externalSecret.enabled`) is flipped on only after
+the apply *and* the seed script have run — see
+`docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome". The repo already had
+this shape and nobody had named it: `app-secret` reads a container Terraform creates empty and
+`seed-eks-secret.sh` fills, and it never broke only because it had always been seeded before anyone
+looked.
+
+**Read the `release` branch by CONTENT, never by ancestry.** `promote-to-release.sh` builds each
+release commit with `git read-tree`, not a merge, so a `master` commit is *never* an ancestor of the
+release commit that carries it — `git merge-base --is-ancestor <sha> origin/release` returns false
+even when the tip literally reads `release: <sha>`. Use `git show origin/release:<path>` (which is
+what `current-release-tag.sh` and `previous-tag.sh` already do, correctly). Anything that checks
+promotion by ancestry reports "not promoted" forever.
+
 - **Secrets:** `./scripts/seed-eks-secret.sh` takes `ADMIN_USERNAME`/`ADMIN_PASSWORD` from the
   environment or a silent prompt and writes them to Secrets Manager; nothing secret enters git or
   tfstate. `DB_PASS` **must** match `db_password` in `terraform/voteball.tfvars` — so it now defaults
