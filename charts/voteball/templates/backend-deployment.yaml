@@ -56,6 +56,17 @@ spec:
             # is removed; see docs/design/2026-08-17-observability-design.md section 4.
             - name: APP_VERSION
               value: {{ .Values.image.tag | quote }}
+            # The `release` label on voteball_app_info, and the reason a Grafana panel can group by
+            # what actually ran rather than by what someone typed. Mirrors `voteball.image`'s
+            # digest-when-pinned/tag-otherwise fallback deliberately: if the two ever disagreed, the
+            # metric would describe a different artefact than the container. `index` is guarded
+            # because .Values.image.digests is legitimately absent in a fresh fork.
+            - name: APP_RELEASE
+              {{- $digest := "" }}
+              {{- if .Values.image.digests }}
+              {{-   $digest = index .Values.image.digests "backend" | default "" }}
+              {{- end }}
+              value: {{ $digest | default .Values.image.tag | quote }}
           resources:
             requests: { cpu: {{ .Values.backend.resources.requests.cpu }}, memory: {{ .Values.backend.resources.requests.memory }} }
             limits: { cpu: {{ .Values.backend.resources.limits.cpu }}, memory: {{ .Values.backend.resources.limits.memory }} }

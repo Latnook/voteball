@@ -50,9 +50,25 @@ def test_render_latest_exposes_every_declared_metric():
 
 def test_set_app_info_publishes_the_build_identity(monkeypatch):
     monkeypatch.setenv('APP_VERSION', 'abc1234')
+    monkeypatch.setenv('APP_RELEASE', 'sha256:feedface')
     metrics.set_app_info()
     text = metrics.render_latest()[0].decode()
     assert 'abc1234' in text
+    # All three labels, by name: a dashboard variable and every release-filtered panel key on
+    # `release`, and a renamed or dropped label empties them silently rather than failing.
+    for label in ('version="abc1234"', 'git_sha="abc1234"', 'release="sha256:feedface"'):
+        assert label in text, f'{label} missing from voteball_app_info'
+
+
+def test_release_falls_back_to_the_version_when_no_digest_is_pinned(monkeypatch):
+    # A pod with no digest pinned is a supported state (a fresh fork, a rebuild against a new
+    # registry), not an error. The fallback keeps `release` meaningful there instead of putting
+    # 'unknown' -- or an empty string -- into every release-filtered panel.
+    monkeypatch.setenv('APP_VERSION', 'abc1234')
+    monkeypatch.delenv('APP_RELEASE', raising=False)
+    metrics.set_app_info()
+    text = metrics.render_latest()[0].decode()
+    assert 'release="abc1234"' in text
 
 
 def test_importing_metrics_survives_a_multiproc_dir_that_does_not_exist(tmp_path, monkeypatch):

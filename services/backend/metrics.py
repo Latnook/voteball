@@ -89,7 +89,7 @@ LATENCY = Histogram(
 APP_INFO = Gauge(
     'voteball_app_info',
     'Build identity of the running backend. Always 1; the labels carry the information.',
-    ['version', 'git_sha'],
+    ['version', 'git_sha', 'release'],
     # 'max' collapses all workers to one series. The default 'all' would label each series with the
     # worker's PID, and PIDs change on every restart. Info/Enum are unsupported in multiprocess mode,
     # so this Gauge is the only available shape -- do not convert it.
@@ -134,13 +134,27 @@ def method_label(method):
 def set_app_info():
     """Publish the running build's identity.
 
-    APP_VERSION is the image tag, which this project sets to the short git SHA
-    (scripts/sync-values-from-tf.sh and Jenkinsfile-cd's promote step both write it), so version and
-    git_sha carry the same value by construction. Both labels exist because the brief asks for both
-    and a future release scheme may separate them.
+    Three labels, and `release` is the one that is not a duplicate of the other two.
+
+    APP_VERSION is the image TAG, which this project sets to the short git SHA
+    (scripts/sync-values-from-tf.sh and Jenkinsfile-cd's promote step both write it), so `version`
+    and `git_sha` carry the same value by construction. Both exist because a future release scheme
+    may separate them.
+
+    APP_RELEASE is the image DIGEST when the chart pins one, and the tag when it does not (see
+    `voteball.image` in charts/voteball/templates/_helpers.tpl -- the same fallback, so the label
+    always describes what is really running). The tag is a readable label a human chooses; the
+    digest is the identity the container runtime actually resolved. They can disagree: an ECR repo
+    is IMMUTABLE for application images, but the fallback path exists precisely for the cases where
+    no digest is pinned yet, and a dashboard that groups by `release` should group by what ran.
+
+    Falling back to APP_VERSION rather than to 'unknown' is deliberate: a pod with no digest pinned
+    is a normal, supported state (a fresh fork, a rebuild against a new registry), not an error, and
+    an 'unknown' here would put a meaningless value in every release-filtered panel.
     """
     version = os.environ.get('APP_VERSION', 'unknown')
-    APP_INFO.labels(version=version, git_sha=version).set(1)
+    release = os.environ.get('APP_RELEASE') or version
+    APP_INFO.labels(version=version, git_sha=version, release=release).set(1)
 
 
 def render_latest():
