@@ -814,6 +814,7 @@ August set.
 |---|---|---|
 | 1 — controlled 5xx | `VoteballHighErrorRate` fired at 15:24:55Z; availability fell 1.00 → 0.10 as the site served 500s. **Two caveats are written into the transcript**: the outage was ended externally at 15:22:03Z by a second operator, so the alert fired on the tail of a 5-minute rate window rather than against a still-broken site; and the `HEALTH` column was reading the public `/health`, which is a 404 because nginx proxies only `/api/*`. | [`2026-08-24-drill-1-controlled-5xx.txt`](eks/evidence/2026-08-24-drill-1-controlled-5xx.txt) |
 | 3 — Jenkins agent loss | A 9-container build agent was force-deleted mid-build; the site held 200 across every poll and Jenkins provisioned a replacement agent on its own within ~2 minutes. | [`2026-08-24-drill-3-jenkins-agent-loss.txt`](eks/evidence/2026-08-24-drill-3-jenkins-agent-loss.txt) |
+| 5 — Jenkins queue stuck | `JenkinsQueueStuck` fired at 16:03:10Z, exactly its `for: 15m` after a `ResourceQuota` of `pods=1` blocked agent provisioning at 15:48:10Z. The queue reached 4 and `ci` fell to the controller pod alone, while the site returned 200 on every poll of the window. | [`2026-08-24-drill-5-jenkins-queue-stuck.txt`](eks/evidence/2026-08-24-drill-5-jenkins-queue-stuck.txt) |
 
 The 2026-08-24 run of drill 1 is **narrower** than the August one, and the transcript says so rather
 than presenting a pass as a clean pass. That is the same discipline as drill 5's first attempt below:
