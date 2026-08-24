@@ -50,3 +50,20 @@ externalSecret:
   secretName: "voteball/grafana"
   region: "il-central-1"
   refreshInterval: "1h"
+
+# Grafana data sources (templates/datasources.yaml). Prometheus and Alertmanager are NOT here --
+# kube-prometheus-stack provisions those itself.
+#
+# These are literals for the same reason serviceCidr is: this chart is ArgoCD-synced and cannot
+# receive a Terraform output. The RDS host must match charts/voteball/values.yaml's config.DB_HOST,
+# which IS sync-managed -- so on a rebuild, update this one by hand to match.
+datasources:
+  enabled: true
+  postgres:
+    host: "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com:5432"
+    database: "postgres"
+  cloudwatch:
+    region: "il-central-1"
+  github:
+    owner: "Latnook"
+    repository: "voteball"
