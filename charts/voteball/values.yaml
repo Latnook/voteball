@@ -57,7 +57,7 @@ externalSecret:
   # git push; the Terraform container needs a billed apply. Turning this on first puts an
   # ExternalSecret in the cluster with nothing to read, which fails the whole ArgoCD sync and makes
   # every CD run roll production back. Happened on 2026-08-24.
-  grafanaEnabled: false
+  grafanaEnabled: true
   refreshInterval: "1h"
 
 ingress:
