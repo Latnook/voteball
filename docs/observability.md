@@ -314,6 +314,16 @@ template.
 Deleting the `observability` ArgoCD Application and re-syncing brings all three back with zero manual
 steps. That round trip is what proves they are provisioned rather than clicked together.
 
+Rendered captures, with live data, live alongside the text evidence:
+[`2026-08-24-grafana-application-overview.png`](eks/evidence/2026-08-24-grafana-application-overview.png),
+[`-kubernetes-cluster.png`](eks/evidence/2026-08-24-grafana-kubernetes-cluster.png),
+[`-jenkins-delivery.png`](eks/evidence/2026-08-24-grafana-jenkins-delivery.png). They are the weaker
+half of the proof and are kept anyway: section 7 of
+[`2026-08-24-observability-post-dns-fix.txt`](eks/evidence/2026-08-24-observability-post-dns-fix.txt)
+runs **every panel's own query** and records the series count, which proves a panel *can* query rather
+than showing what it drew at one instant. A screenshot cannot tell you a panel is about to go blank;
+the query count can.
+
 **Application Overview carries three template variables — `Service`, `Pod` and `Release` — and one
 class of panel deliberately ignores them.** The per-pod panels (request rate, 5xx, latency
 histogram, votes, rejections, DB errors, nginx, CPU, memory) filter on `$pod`, so a single misbehaving

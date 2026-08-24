@@ -32,6 +32,45 @@ It refuses to write a console log that appears to contain a credential — a run
 argument position gets printed by Jenkins' `set -x`, which put a live ECR token into committed
 evidence on 2026-08-04.
 
+## 2026-08-24 — Observability re-captured, and a defect it found
+
+The observability evidence had been hand-run on 2026-08-18 and was, by this date, the oldest set in
+this directory while describing the newest work. It now has a script:
+
+```bash
+./scripts/capture-observability-evidence.sh                      # read-only steady-state capture
+./scripts/capture-observability-evidence.sh --label post-dns-fix # suffix the filename
+```
+
+It is read-only — no pod deleted, no quota applied, nothing rolled. The failure **drills** are
+deliberately not automated: they break production on purpose and belong to a human who is watching.
+
+| File | What it holds |
+|---|---|
+| [`2026-08-24-observability.txt`](2026-08-24-observability.txt) | The first capture — which caught the cluster in the broken state below. 29/29 targets up, 234/234 rules healthy, and `voteball:availability:ratio5m` reporting a confident `1` over nothing. |
+| [`2026-08-24-canary-dns-negative-cache.txt`](2026-08-24-canary-dns-negative-cache.txt) | The incident: diagnosis, root cause, repair and proof. |
+| [`2026-08-24-observability-post-dns-fix.txt`](2026-08-24-observability-post-dns-fix.txt) | The same capture after the fix, with a real denominator under the SLIs. |
+| [`2026-08-24-grafana-application-overview.png`](2026-08-24-grafana-application-overview.png) | Application Overview as rendered, filtered by Service/Pod/Release. |
+| [`2026-08-24-grafana-kubernetes-cluster.png`](2026-08-24-grafana-kubernetes-cluster.png) | Kubernetes / Cluster as rendered. |
+| [`2026-08-24-grafana-jenkins-delivery.png`](2026-08-24-grafana-jenkins-delivery.png) | Jenkins & Delivery as rendered, including the deployed release. |
+
+**The capture earned its existence on its first run.** The site was serving the internet normally and
+every scrape target was up, but the in-cluster canary could not resolve `voteball.latnook.com`, so
+`voteball:journey_requests:rate5m` was 0 and availability fell back to `or vector(1)` — 100% measured
+over nothing. CoreDNS was serving a cached NEGATIVE answer from before external-dns created the A
+record; because that name already exists in Route53 (a `google-site-verification` TXT record), the
+answer was NOERROR-with-no-A rather than NXDOMAIN, cached against the zone's SOA minimum of 86400s.
+The tell is that **TXT resolved and A did not**. `deploy.sh` step 11c now runs
+`scripts/verify-public-dns.sh` at the end of every deploy.
+
+`VoteballJourneyTrafficStopped` caught it unaided — `pending` six minutes in, and it would have fired
+at ten. That alert doing its job on a defect nobody planted is worth more than the drill that proved
+it could.
+
+The screenshots are taken by [`../../../scripts/capture-grafana-screenshots.js`](../../../scripts/capture-grafana-screenshots.js),
+which needs node and a global playwright — the only capture here that steps outside bash/curl/kubectl,
+which is why it is a separate script rather than part of the shell one.
+
 ## 2026-08-20 — Task 4 re-captured on the rebuilt cluster
 
 The current Task 4 static capture, taken on the cluster rebuilt this morning (Jenkins release
