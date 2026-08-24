@@ -352,9 +352,9 @@ hand. Stage list, in order (from `Jenkinsfile-ci`): **Guard** (refuses a changes
 selects on, and no metric label collides with an operator-owned one) → **Script tests**
 (`run-ci-suite.sh`, the guards protecting the
 pipeline itself — split across two containers because no single container in the agent pod has both
-`python3` and `git`) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (289
-pytest tests against a real, ephemeral Postgres sidecar — 241 backend + 48 worker, as executed by
-`application-ci` build #7 on 2026-08-20; count them with `pytest tests --collect-only -q` rather than
+`python3` and `git`) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (301
+pytest tests against a real, ephemeral Postgres sidecar — 253 backend + 48 worker, verified locally
+on 2026-08-24 via `python -m pytest -q`; count them the same way rather than
 trusting this number) → **Resolve tag and account** → **Already
 built?** (skip if this SHA's images already exist in the immutable ECR repos) → **Build images**
 (rootless BuildKit, four contexts) → **Trivy scan** (blocking on HIGH/CRITICAL for **all four** images — no exemptions) →
@@ -620,19 +620,22 @@ limits set, so a runaway series count fills the disk before it silently outlives
   serve `/prometheus` would page `PrometheusTargetDown`/`TargetDown` every scrape, forever, for a target
   nobody could fix without a separate build.
 
-### Three dashboards, provisioned from git
+### Six dashboards, provisioned from git
 
 Grafana's sidecar watches for ConfigMaps labelled `grafana_dashboard: "1"`; `charts/observability`
 renders one per JSON file under `dashboards/` via `.Files.Glob` — dropping in a new file is the entire
 process of adding a dashboard, with no import button and nothing for a human to click. Deleting the
-`observability` ArgoCD Application and re-syncing brings all three back with zero manual steps, which
-is what proves they're provisioned rather than clicked together.
+`observability` ArgoCD Application and re-syncing brings all six back with zero manual steps, which
+is what proves they're provisioned rather than clicked together. Three (Business Analytics, AWS
+Infrastructure, and the GitHub panels on Jenkins & Delivery) added 2026-08-24 alongside the
+PostgreSQL/CloudWatch/GitHub data sources — see
+[`docs/design/2026-08-24-grafana-datasources-design.md`](docs/design/2026-08-24-grafana-datasources-design.md).
 
-As rendered, with live data:
+As rendered, with live data — captured before that pass, so it shows the original three:
 [Application Overview](docs/eks/evidence/2026-08-24-grafana-application-overview.png) ·
 [Kubernetes / Cluster](docs/eks/evidence/2026-08-24-grafana-kubernetes-cluster.png) ·
 [Jenkins & Delivery](docs/eks/evidence/2026-08-24-grafana-jenkins-delivery.png). Every panel's own
-query is also run and counted in
+query on those three is also run and counted in
 [`2026-08-24-observability-post-dns-fix.txt`](docs/eks/evidence/2026-08-24-observability-post-dns-fix.txt)
 section 7 — 43 queries, 42 returning series, the one empty panel being a pod-restart counter on a
 cluster that had not restarted a pod.
@@ -647,7 +650,10 @@ headline traffic panel never goes blank if that metric stops being scraped.
 |---|---|---|
 | Application Overview | `voteball-app` | Is the new release hurting users? Traffic, 5xx rate, p50/p95/p99, availability against SLO, votes cast, container CPU/memory, running `version`/`git_sha`/`release`, and traffic split **by release**. Filterable by `Service`, `Pod` and `Release`. |
 | Kubernetes / Cluster | `voteball-k8s` | Is the fault in the app or the platform? Node readiness/capacity, pod restarts and OOMKills, CPU throttling, pending pods, replica health, PVC usage. |
-| Jenkins & Delivery | `voteball-delivery` | Is delivery healthy, and is something stuck? Queue length/wait, executors, build outcomes/duration, controller JVM heap, and the last successful release — read from the running app rather than from a build counter, because a green pipeline says the promotion finished, not that the cluster is running it. |
+| Jenkins & Delivery | `voteball-delivery` | Is delivery healthy, and is something stuck? Queue length/wait, executors, build outcomes/duration, controller JVM heap, and the last successful release — read from the running app rather than from a build counter, because a green pipeline says the promotion finished, not that the cluster is running it. Plus commit volume, contributor count and open issues from the GitHub data source. |
+| Service Health & Alerts | `voteball-alerts` | Is anything wrong right now, and would I have been told? Critical/warning/pending alert counts, a table of what's firing, availability vs 99% SLO, p95 vs 1s SLO, the canary's journey request/error rate, and a 6h alert-firing history. |
+| Voteball Business Analytics | `voteball-business` | What is the poll actually saying? Votes per day, total ballots, top previous and upcoming parties, ballots by league, vote switching — read from the rollup tables through `grafana_ro`, a read-only role that cannot see raw `votes` (see `docs/security.md`). |
+| AWS Infrastructure | `voteball-aws` | Is the fault below the cluster? RDS CPU/connections/free storage/freeable memory/latency; ALB request count, ELB and target 5xx, target response time; on-demand pod logs. Authenticates via IRSA — no credential to seed. |
 
 ### SLI / SLO
 
@@ -797,7 +803,7 @@ not a billed Terraform apply:
 |---|---|---|
 | `terraform/addon-monitoring.tf` | The stack itself: PVC, retention, resource limits, Alertmanager→SNS routing, the disabled-defaults list | `terraform apply` |
 | `charts/voteball` (ArgoCD) | The app's ServiceMonitors, app alert rules, the SLI/SLO recording rules, the scrape NetworkPolicy | `git push` |
-| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The three dashboards, the Kubernetes/Jenkins/monitoring-system alert rules, the namespace's default-deny NetworkPolicies | `git push` |
+| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The six dashboards, the three PostgreSQL/CloudWatch/GitHub data sources, the Kubernetes/Jenkins/monitoring-system alert rules, the namespace's default-deny NetworkPolicies | `git push` |
 
 The Jenkins ServiceMonitor is the one exception to that split — it lives in `charts/jenkins-support`
 next to the release it scrapes, for the reason given above.

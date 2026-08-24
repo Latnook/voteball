@@ -68,6 +68,15 @@ datasources:
     database: "postgres"
   cloudwatch:
     region: "il-central-1"
+    # dashboards/*.json are shipped as raw ConfigMap content (see templates/dashboards.yaml's
+    # `.Files.Get`, not `tpl`) -- several existing dashboards use literal Prometheus legend syntax
+    # like "{{pod}}", so switching that loop to `tpl` would break all of them. A dashboard JSON
+    # therefore cannot READ this value; it is recorded here as the single documented place a
+    # forker updates it, the same role datasources.postgres.host plays above. It must match the
+    # literal "voteball-eks-db" baked into aws-infrastructure.json's five RDS panels.
+    # `${cluster_name}-eks-db` -- stable across rebuilds, unlike the ALB's dimension (see
+    # aws-infrastructure.json's ALB panels, which wildcard LoadBalancer instead for that reason).
+    rdsInstanceIdentifier: "voteball-eks-db"
   github:
     owner: "Latnook"
     repository: "voteball"

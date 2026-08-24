@@ -333,9 +333,14 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   **ArgoCD** syncs it from the **`release`** branch (GitOps) — the chart is the single authoring path.
   `release` is written only by `application-cd`; pushing to `master` cannot reach the cluster.
 - **Helm (`charts/observability`)** is dashboards-and-alerts-as-code for the `observability` namespace:
-  the three Grafana dashboards (provisioned as ConfigMaps via `.Files.Glob`, not clicked together), the
-  Kubernetes/Jenkins/monitoring-system `PrometheusRule`s, and that namespace's own default-deny
-  NetworkPolicies. It is a **second ArgoCD Application with its own `AppProject`** (both declared in
+  the six Grafana dashboards (provisioned as ConfigMaps via `.Files.Glob`, not clicked together), the
+  Kubernetes/Jenkins/monitoring-system `PrometheusRule`s, that namespace's own default-deny
+  NetworkPolicies, and — since the 2026-08-24 Grafana data sources pass — the PostgreSQL/CloudWatch/
+  GitHub datasource ConfigMaps (`templates/datasources.yaml`) and the ExternalSecret/SecretStore that
+  project `grafana_ro`'s password and the GitHub PAT into the Grafana pod (`templates/
+  externalsecret.yaml`, gated `enabled: false` by default — see `docs/deploy.md`'s "Optional, manual"
+  section and `docs/design/2026-08-24-grafana-datasources-design.md`). It is a **second ArgoCD
+  Application with its own `AppProject`** (both declared in
   `argocd/voteball-application.yaml.tmpl` alongside `voteball`'s), synced from `release` the same way —
   the app's own ServiceMonitors and SLI/SLO recording rules stay in `charts/voteball` instead, next to
   the Services and alerts they describe. kube-prometheus-stack itself (Prometheus/Grafana/Alertmanager,
@@ -870,7 +875,7 @@ scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; 6 of
 scripts/tests/test-verify-deployed-image.sh # CD Verify: match the DIGEST, not the tag
 ```
 
-**The suite is 24 tests as of 2026-08-24** — read it off `run-ci-suite.sh`'s own final output line
+**The suite is 25 tests as of 2026-08-24** — read it off `run-ci-suite.sh`'s own final output line
 rather than from here. `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` are exhaustive and the runner fails if
 a file in `scripts/tests/` appears in none of them, so the count moves whenever a test is added and
 this sentence will go stale before the runner does.

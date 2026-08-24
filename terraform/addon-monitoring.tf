@@ -120,7 +120,23 @@ resource "helm_release" "kube_prometheus_stack" {
       # $GF_DATASOURCE_GITHUB_TOKEN by those exact names -- Grafana expands an UNSET variable to an
       # empty string rather than erroring, so a typo here is silent-failure #2 in the design doc.
       # scripts/tests/test-grafana-datasources.sh cross-checks the two sides.
-      envFromSecret = "grafana-datasources"
+      #
+      # Deliberately the PLURAL `envFromSecrets` (a list), not the singular `envFromSecret` (a bare
+      # name) -- only the plural form supports `optional`, and `optional: true` here is load-bearing
+      # the same way it is on charts/voteball/templates/migrate-job.yaml:76. The `grafana-datasources`
+      # Secret is created ONLY by charts/observability/templates/externalsecret.yaml, which is
+      # gated `enabled: false` by default (see that chart's values.yaml) -- so on a cluster where the
+      # observability chart hasn't been flipped on yet, this Secret does not exist. The singular form
+      # renders a mandatory secretRef with no `optional` field at all, which would make every Grafana
+      # pod fail to start (`CreateContainerConfigError`) on `terraform apply` alone, before anyone
+      # touches the chart gate -- exactly the "consumer shipped before its producer" failure this
+      # whole feature already fixed once, arriving from the Terraform side instead of the chart side.
+      envFromSecrets = [
+        {
+          name     = "grafana-datasources"
+          optional = true
+        }
+      ]
     }
 
     alertmanager = {

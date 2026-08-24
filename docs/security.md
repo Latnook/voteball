@@ -22,6 +22,7 @@ cluster's OIDC provider. Each role's trust policy is federated to **one specific
 | `worker` | `voteball-worker-irsa` | `sns:Publish` (the topic) + `s3:PutObject` on **`snapshots/`** only |
 | `backup` | `voteball-backup-irsa` | `s3:PutObject` on **`backups/`** only — *no SNS, separate role* |
 | `kube-prometheus-stack-alertmanager` (`observability`) | `voteball-alertmanager-irsa` | `sns:Publish` on the one topic — nothing else |
+| `kube-prometheus-stack-grafana` (`observability`) | `voteball-grafana-irsa` | CloudWatch Logs read, scoped to this cluster's log groups; CloudWatch metrics read, **not** scoped (see "Grafana data sources" below) |
 
 That backend/frontend carry **no role at all** is the concrete least-privilege proof. And the worker and
 backup jobs touch the *same bucket under different prefixes with different roles* — a much stronger
@@ -72,6 +73,77 @@ design has no vault in the deploy path at all (Secrets Manager + ESO, seeded fro
 commits. Any credential that was ever in it should be treated as compromised-on-disclosure and
 **rotated** — which is exactly what a fresh deploy now does, since `db_password` is generated per
 install and the admin password is entered at seed time rather than read from a committed file.
+
+## Grafana data sources
+
+Added 2026-08-24 (`docs/design/2026-08-24-grafana-datasources-design.md`). Grafana reads two things
+it could not read before: production Postgres, and CloudWatch metrics/logs. Both credentials, and the
+CloudWatch grant's own scoping, are stated here explicitly rather than left implicit in Terraform.
+
+**PostgreSQL: a purpose-made role, never the master user.** `charts/voteball/values.yaml` sets
+`DB_USER: postgres` — the RDS **master** account — so pointing Grafana's query box at that credential
+would give it unrestricted write access to production. Instead `schema.sql` creates a read-only
+`grafana_ro` role and grants it:
+
+| Object | Grant |
+|---|---|
+| The 8 rollup tables | `SELECT` |
+| `leagues`, `clubs`, `previous_parties`, `upcoming_parties` | `SELECT` |
+| `v_grafana_votes` | `SELECT` |
+| `votes`, `vote_clubs`, `vote_leagues`, `vote_upcoming_parties` | `REVOKE ALL` |
+
+`votes` carries `cookie_token` (unique per voter) and `ip_hash` — both voter-linking identifiers, so
+the base table is unreadable by `grafana_ro` even though the rows in it are the same rows the rollups
+summarize. `v_grafana_votes` is a view exposing only `id`, `created_at`, `previous_vote_status`,
+`upcoming_vote_status` and `previous_party_id` — enough to drive every time-series panel on the
+Business Analytics dashboard, and nothing that re-identifies a ballot to a person on a poll that
+promises anonymity.
+
+**`ALTER DEFAULT PRIVILEGES` is broader than the table above implies, and this is the
+security-relevant part.** It is a standing grant scoped to the whole `public` schema, not to the 13
+objects in the table — `grafana_ro` automatically gets `SELECT` on **every table or view created in
+`public` from that point on**, by anyone, with no review step, not just a future rollup table. A
+future table carrying a voter identifier — the way `votes` does — is readable by the dashboard role
+the day it is added, unless someone remembers to add it to the `REVOKE` list, which is hardcoded to
+four table names and does not grow on its own. `services/backend/tests/test_migration.py` guards
+this: it asserts the exact set of objects `grafana_ro` can `SELECT` across all of `public` equals the
+13-object allowlist above and nothing more, so a new table fails that test loudly instead of leaking
+silently — whoever adds one has to make a deliberate decision about it.
+
+**CloudWatch: IRSA, and an asymmetric grant that is deliberate, not an oversight.** Grafana's
+ServiceAccount authenticates with no stored credential at all — `aws_iam_role.grafana`
+(`terraform/irsa.tf`) is assumed via IRSA the same way `aws_iam_role.alertmanager` already is. The
+policy has two halves that are scoped differently on purpose:
+
+- **Logs** are resource-scoped to `arn:...:log-group:/aws/containerinsights/${cluster_name}/*` — this
+  cluster's own Fluent Bit log groups, nothing else in the account.
+- **Metrics** (`cloudwatch:GetMetricData`, `GetMetricStatistics`, `ListMetrics`) take `Resource: "*"`,
+  because **AWS publishes no IAM condition key for restricting those actions to a namespace.** There
+  is no tighter policy to write — scoping metrics the way logs are scoped is not an option CloudWatch
+  offers.
+
+The grant is read-only (no `Put*`, no `Delete*`) and this is a single-purpose role trusted only by
+the Grafana ServiceAccount, so the residual risk is bounded. It is recorded here so a later reader
+does not mistake the wide metrics half for a mistake and "fix" it into a policy that breaks the RDS
+and ALB panels on `voteball-aws` — there is nothing to fix; this is the narrowest grant CloudWatch's
+API allows.
+
+**Where the credentials live.** A single Secrets Manager secret, `voteball/grafana`, holds two
+values: `db_password` (the `grafana_ro` password) and `github_token` (a fine-grained PAT scoped to
+`Latnook/voteball` alone, read-only Contents + Metadata + Issues). Like `voteball/app-secret` and
+`voteball/jenkins`, Terraform creates only the empty container
+(`lifecycle { ignore_changes = [secret_string] }`) — neither value ever enters git or tfstate. Seeded
+out-of-band by `scripts/seed-grafana-secret.sh`, which generates `db_password` itself (nothing human
+types it) and takes `github_token` from the environment or a silent prompt.
+
+**The GitHub token never reaches `devops-app`.** Two ExternalSecrets project the one container
+differently: `observability` gets both keys (Grafana needs both to authenticate its two extra data
+sources), while `devops-app` gets `db_password` only — that's the value the migrate Job's
+`ALTER ROLE grafana_ro PASSWORD ...` needs, and the GitHub token has no business being anywhere near
+the application namespace. Both ExternalSecrets ship **gated off by default**
+(`externalSecret.grafanaEnabled` in `charts/voteball`, `externalSecret.enabled` in
+`charts/observability`) — see `docs/deploy.md` for why, and for the two-step process that turns them
+on.
 
 ## What is deliberately public, and why that is safe
 

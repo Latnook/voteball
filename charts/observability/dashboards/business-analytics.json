@@ -1,0 +1,142 @@
+{
+  "uid": "voteball-business",
+  "title": "Voteball Business Analytics",
+  "tags": ["voteball", "business"],
+  "timezone": "browser",
+  "editable": false,
+  "refresh": "5m",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Votes per day",
+      "type": "timeseries",
+      "description": "Read from v_grafana_votes via grafana_ro, which cannot see raw votes (cookie_token, ip_hash) -- see schema.sql decision 3 in docs/design/2026-08-24-grafana-datasources-design.md.",
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT $__timeGroup(created_at, '1d') AS time, count(*) AS \"ballots\" FROM v_grafana_votes WHERE $__timeFilter(created_at) GROUP BY 1 ORDER BY 1",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Total ballots",
+      "type": "stat",
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT count(*) AS \"ballots\" FROM v_grafana_votes",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Top previous parties",
+      "type": "barchart",
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT p.name_en AS \"party\", r.vote_count AS \"ballots\" FROM rollup_national_previous r JOIN previous_parties p ON p.id = r.previous_party_id ORDER BY r.vote_count DESC LIMIT 15",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Top upcoming parties (weighted)",
+      "type": "barchart",
+      "description": "Ordered by weight, not vote_count. vote_count counts PICKS and a ballot may name up to 3 upcoming parties, so ordering on it gives a 3-party ballot triple the say. weight carries SUM(1.0/k) so each ballot totals exactly 1 -- see the comment above rollup_upcoming.weight in schema.sql.",
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT p.name_en AS \"party\", r.weight AS \"weighted ballots\" FROM rollup_national_upcoming r JOIN upcoming_parties p ON p.id = r.upcoming_party_id ORDER BY r.weight DESC LIMIT 15",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Ballots by league",
+      "type": "piechart",
+      "description": "club_id IS NULL selects the LEAGUE-SCOPE row. Each rollup carries one league-scope row per distinct league a ballot touched; summing club-scope rows instead would count a multi-team ballot once per club.",
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 17 },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT l.name_en AS \"league\", sum(r.vote_count) AS \"ballots\" FROM rollup_previous r JOIN leagues l ON l.id = r.league_id WHERE r.club_id IS NULL GROUP BY 1 ORDER BY 2 DESC",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Vote switching",
+      "type": "table",
+      "description": "Party-to-party crosstab from rollup_national_previous_upcoming (previous_party_id, upcoming_party_id, vote_count) -- NOT rollup_national_vote_switch, which only carries a 5-bucket switch_status (new_voter/undecided/stayed/hedging/switched) with no party columns at all. Verified against the live schema.",
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 17 },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT pp.name_en AS \"voted last time\", up.name_en AS \"considering now\", r.vote_count AS \"ballots\" FROM rollup_national_previous_upcoming r JOIN previous_parties pp ON pp.id = r.previous_party_id JOIN upcoming_parties up ON up.id = r.upcoming_party_id ORDER BY r.vote_count DESC LIMIT 50",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "postgres" }
+        }
+      ]
+    }
+  ]
+}

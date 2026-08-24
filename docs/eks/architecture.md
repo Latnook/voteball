@@ -249,7 +249,7 @@ flowchart TD
         validate --> obsval["Observability Validation<br/>helm template + promtool<br/>alert-rule labels, ServiceMonitor ports,<br/>no colliding metric labels"]
         obsval --> scripttests["Script tests<br/>run-ci-suite.sh -- the pipeline's own guards<br/>run TWICE: jnlp (git) + python container"]
         scripttests --> lint["Lint / Static Analysis<br/>ruff + hadolint"]
-        lint --> tests["Tests<br/>289 pytest (241 backend + 48 worker)<br/>Postgres sidecar"]
+        lint --> tests["Tests<br/>301 pytest (253 backend + 48 worker)<br/>Postgres sidecar"]
         tests --> resolve["Resolve tag and account"]
         resolve --> built{"Already built?<br/>tag in ECR?"}
         built -->|"no"| build["Build images<br/>rootless BuildKit x4"]

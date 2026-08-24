@@ -38,9 +38,11 @@ PYTHON_GROUP=(
   test-ci-guards.sh
   test-deploy-env.sh
   test-frontend-seo.sh
-  # Needs neither python3 nor git (bash + grep, sed over the repo's own files) -- confirmed passing
-  # inside a bare python:3.12-slim on 2026-08-24, per the rule above. Placed here rather than in
-  # GIT_GROUP because it keeps company with the other doc/config anti-drift gates.
+  # Needs python3 (its data-source-uid cross-check parses each dashboard's JSON at any depth,
+  # replacing a single-line grep that silently skipped a multi-line "datasource" block -- see
+  # docs/design/2026-08-24-grafana-datasources-design.md and the Task 6 report) and no git. It
+  # already lived here rather than in GIT_GROUP because it keeps company with the other doc/config
+  # anti-drift gates, which happens to be the group that also has python3.
   test-grafana-datasources.sh
   test-i18n-parity.sh
   # Needs neither python3 nor git (bash + grep, awk, sed, comm, cut over the repo's own files) --

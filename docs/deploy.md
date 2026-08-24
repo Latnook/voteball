@@ -189,6 +189,53 @@ resources. The steps it performs (kept in step with the script's own numbering �
      `1` from its no-data fallback. Also non-fatal, and re-runnable as
      `./scripts/verify-public-dns.sh`.
 
+### Optional, manual, not run by `deploy.sh`: Grafana's PostgreSQL and GitHub data sources
+
+`deploy.sh` never calls this, on purpose — **skipping it entirely is safe**, because
+`terraform/addon-monitoring.tf` projects the `grafana-datasources` Secret as
+`optional = true`: Grafana starts normally whether or not that Secret exists, it does not wait on
+it, and nothing else in the stack is affected. Everything above, including the site itself, works
+with no further action. Five of the six dashboards render fully with no further action too —
+Application Overview, Kubernetes Cluster, Service Health and AWS Infrastructure are entirely
+Prometheus/CloudWatch (CloudWatch authenticates via IRSA, no credential needed — see
+`docs/security.md`), and Jenkins & Delivery's build-metrics panels are Prometheus as well. Skip it
+and the only thing that stays non-functional is Grafana's two credentialed data sources —
+PostgreSQL (all of the Business Analytics dashboard) and GitHub (three panels on Jenkins &
+Delivery). Both still provision cleanly with an empty credential (Grafana expands an unset
+environment variable to an empty string rather than erroring — see the design doc's silent-failure
+#2), so the failure shows up as a "login failed"/"bad credentials" error the first time a human
+opens one of those panels, not as a startup crash or a missing dashboard.
+
+If you want those two data sources live, do this **after** step 6 above — the secret container these
+credentials go into is created by the main `terraform apply`, not the small targeted one at step 2:
+
+```bash
+./scripts/seed-grafana-secret.sh
+```
+
+It generates the `grafana_ro` database password itself and asks for a GitHub token (a fine-grained
+PAT scoped to `Latnook/voteball` alone — see `docs/security.md`'s "Grafana data sources" section for
+why that scope and not a classic PAT), then stores both in the `voteball/grafana` secret Terraform
+just created. Re-running `deploy.sh` never re-runs this step and never rotates the password out from
+under a live `grafana_ro` role — it exits immediately if the secret already holds a real one; pass
+`FORCE_ROTATE=1` if you genuinely mean to rotate — and add `ROTATE_WHAT=github_token` when it's
+specifically the GitHub token expiring (see `docs/maintenance.md`), or `FORCE_ROTATE=1` alone
+silently regenerates `db_password` too and breaks Business Analytics until the next release.
+
+Two chart flags still have to flip before the credentials do anything, both gated off by default for
+the reason `docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome" section
+records — shipping the ExternalSecrets ahead of the secret they read put ArgoCD into a
+deploy-fails-then-rollback loop the first time this was tried:
+
+```
+charts/voteball/values.yaml       externalSecret.grafanaEnabled: false  ->  true
+charts/observability/values.yaml  externalSecret.enabled: false         ->  true
+```
+
+Flip both, commit, and push. `application-ci` → `application-cd` promotes the commit to `release`,
+ArgoCD syncs it, and the migrate Job's `post-install,pre-upgrade` hook sets `grafana_ro`'s live
+password from the value you just seeded — on that same sync, not before.
+
 ### What is actually inside step 6
 
 "Build the infrastructure" hides a lot, and step 6 is where nearly all the time goes. It creates:
@@ -541,11 +588,19 @@ would have to be stored somewhere.
 
 Where to look once you're in:
 
-- **Grafana** → Dashboards → three are this project's own, provisioned from git and reachable without
+- **Grafana** → Dashboards → six are this project's own, provisioned from git and reachable without
   digging through a folder: **Application Overview** (`voteball-app` — traffic, error rate, latency,
   votes cast, which build is running), **Kubernetes / Cluster** (`voteball-k8s` — node/pod health,
   restarts, throttling), **Jenkins & Delivery** (`voteball-delivery` — queue, executors, build
-  outcomes). Everything else in that list is a bundled kube-prometheus-stack dashboard, e.g. the
+  outcomes, plus commit/contributor/issue counts from GitHub), **Service Health & Alerts**
+  (`voteball-alerts` — what's firing right now, and the SLOs), **Voteball Business Analytics**
+  (`voteball-business` — votes per day, top parties, vote switching, read through `grafana_ro`),
+  **AWS Infrastructure** (`voteball-aws` — RDS and ALB metrics from CloudWatch). Two of those need the
+  optional credential seeding step above to show real data — **Voteball Business Analytics** (Postgres)
+  fully, and three panels on **Jenkins & Delivery** (GitHub commits/contributors/issues) — without it
+  those panels are empty, not missing. **AWS Infrastructure needs no seeding at all**: CloudWatch
+  authenticates via IRSA (see `docs/security.md`), so it works as soon as `terraform apply` finishes.
+  Everything else in that list is a bundled kube-prometheus-stack dashboard, e.g. the
   `kube-prometheus-stack` folder's *Kubernetes / Compute Resources / Namespace (Pods)*, filtered to
   `devops-app`, for the app's raw CPU and memory use.
 - **Prometheus** → **Status → Rule Health** lists the alert rules. If your rules are missing there,

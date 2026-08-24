@@ -77,6 +77,46 @@ Two things that make this less of a one-liner than it looks:
 
 ---
 
+## The other one with a deadline: the GitHub PAT behind the Grafana GitHub panels
+
+Added 2026-08-24 alongside the Grafana PostgreSQL/CloudWatch/GitHub data sources
+(`docs/design/2026-08-24-grafana-datasources-design.md`). The `jenkins-delivery` dashboard's Commits,
+Contributors and Open issues panels authenticate to `api.github.com` with a **fine-grained** personal
+access token scoped to `Latnook/voteball` alone (read-only Contents + Metadata + Issues) — chosen over
+a classic PAT specifically because a classic one grants *write* to every public repo on the account,
+which is the wrong trade for a credential parked in a monitoring stack (see the design doc's decision
+5). The cost of that choice: **GitHub enforces a maximum lifetime of one year on a fine-grained PAT**,
+with no auto-renewal. Unlike the EKS deadline above, nothing about this fails loudly.
+
+```
+GitHub PAT expires   TBD — this token has not been minted yet. Fill in the real date the first
+                      time scripts/seed-grafana-secret.sh is run with a real GITHUB_TOKEN, and set
+                      a reminder for it — GitHub does not.
+```
+
+**Symptom:** the three GitHub panels on `jenkins-delivery` start erroring (`401`/`403` from the
+`grafana-github-datasource` plugin). Nothing else changes — Postgres and CloudWatch keep working,
+every other dashboard stays green, and **no alert fires**: an expired data-source credential is not
+one of the conditions any `Voteball*`/platform alert watches for, and it shouldn't be — a broken
+commit-count widget is not an incident.
+
+**Action:** mint a new fine-grained PAT with the same scope (`Latnook/voteball`, read-only Contents +
+Metadata + Issues) at github.com/settings/tokens, then run
+`GITHUB_TOKEN=<new token> FORCE_ROTATE=1 ROTATE_WHAT=github_token ./scripts/seed-grafana-secret.sh`
+— `FORCE_ROTATE=1` is required here too, for the same reason it's required to rotate `db_password`:
+the script exits early on an already-seeded secret so a routine `deploy.sh` re-run can't silently
+invalidate a working credential. **`ROTATE_WHAT=github_token` is load-bearing, not optional** — the
+script always writes both `db_password` and `github_token` together, and without it `FORCE_ROTATE=1`
+also regenerates `db_password`. Since the new password only reaches the live `grafana_ro` role on
+the *next* release (`migrate.py`'s `ALTER ROLE` runs as a post-install,pre-upgrade Helm hook, not
+immediately), an unqualified `FORCE_ROTATE=1` here silently breaks the Business Analytics dashboard
+— a routine PAT renewal takes down an unrelated data source — for however long it takes someone to
+notice and push a release. `ROTATE_WHAT=github_token` carries `db_password` forward unchanged so
+renewing the token touches nothing else. Update the placeholder date above in the same commit as the
+rotation, or this table rots right along with the token it's supposed to be tracking.
+
+---
+
 ## Version pins that drift
 
 Eight Helm charts and the EKS add-ons are pinned, all re-verified against the repo on 2026-07-30

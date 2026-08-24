@@ -119,7 +119,7 @@
       "type": "table",
       "datasource": {"type": "prometheus", "uid": "prometheus"},
       "gridPos": {"x": 12, "y": 0, "w": 12, "h": 6},
-      "description": "Every alert currently firing, from Prometheus' own ALERTS series (not Alertmanager -- see the Alertmanager panel in row 3 for what that adds).",
+      "description": "Every alert currently firing, read from Prometheus' own ALERTS series, not Alertmanager. This shows what fired, not what was actually delivered -- Alertmanager's grouping, silences and inhibition can suppress a notification for an alert that still shows up here (see docs/observability.md section 6). No dashboard panel can show that Alertmanager-side view -- its data source cannot be queried from a panel -- so it lives in Grafana's own Alerting -> Alertmanager page instead.",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -265,7 +265,7 @@
       "type": "state-timeline",
       "datasource": {"type": "prometheus", "uid": "prometheus"},
       "gridPos": {"x": 0, "y": 13, "w": 24, "h": 8},
-      "description": "From Prometheus' own ALERTS series, not Alertmanager -- Alertmanager only knows what is firing right now and has no history of its own. This is the only way to answer \"was this alert firing during last night's incident?\". For grouping, silences and inhibition -- what was actually delivered, not just what fired -- see docs/observability.md section 6: no dashboard panel can show that (Grafana's Alertmanager data source cannot be queried from a panel), so it lives in Grafana's own Alerting -> Alertmanager page instead.",
+      "description": "From Prometheus' own ALERTS series, not Alertmanager -- Alertmanager only knows what is firing right now and keeps no history of its own, so this is the only way to answer \"was this alert firing during last night's incident?\". It shows what fired, not what was actually delivered -- Alertmanager's grouping, silences and inhibition can suppress a notification for an alert that still shows up here (see docs/observability.md section 6). No dashboard panel can show that Alertmanager-side view -- its data source cannot be queried from a panel -- so it lives in Grafana's own Alerting -> Alertmanager page instead.",
       "fieldConfig": {
         "defaults": {"unit": "short"},
         "overrides": []

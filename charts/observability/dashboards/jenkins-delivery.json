@@ -246,6 +246,72 @@
           "refId": "A"
         }
       ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Commits",
+      "description": "Commit volume next to the builds it caused -- the reason these panels live on the delivery dashboard rather than a GitHub one of their own.",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 38 },
+      "datasource": {"type": "grafana-github-datasource", "uid": "github"},
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "Commits",
+          "owner": "Latnook",
+          "repository": "voteball",
+          "options": { "ref": "master" },
+          "datasource": {"type": "grafana-github-datasource", "uid": "github"}
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Contributors",
+      "gridPos": { "h": 8, "w": 4, "x": 12, "y": 38 },
+      "datasource": {"type": "grafana-github-datasource", "uid": "github"},
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "Contributors",
+          "owner": "Latnook",
+          "repository": "voteball",
+          "datasource": {"type": "grafana-github-datasource", "uid": "github"}
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "table",
+      "title": "Open issues",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 38 },
+      "datasource": {"type": "grafana-github-datasource", "uid": "github"},
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "Issues",
+          "owner": "Latnook",
+          "repository": "voteball",
+          "options": { "query": "is:open" },
+          "datasource": {"type": "grafana-github-datasource", "uid": "github"}
+        }
+      ]
     }
   ]
 }

@@ -291,6 +291,31 @@ $out"
 echo "$out" | grep -q "all checks passed" || fail "row-panel fixture: missing the pass banner. Output:
 $out"
 
+echo "--- a PostgreSQL panel (rawSql, no expr) is accepted, not misread as query-less ---"
+scaffold
+write_dashboard '{"uid":"test-dash","title":"Test Dashboard","panels":[{"id":1,"title":"Votes per day","type":"timeseries","targets":[{"refId":"A","format":"time_series","rawQuery":true,"rawSql":"select 1"}]}]}'
+out="$(run 2>&1)" || fail "a rawSql panel with a real query should not fail. Output:
+$out"
+echo "$out" | grep -q "all checks passed" || fail "rawSql fixture: missing the pass banner. Output:
+$out"
+
+echo "--- a CloudWatch metric panel (metricName, no expr) is accepted, not misread as query-less ---"
+scaffold
+write_dashboard '{"uid":"test-dash","title":"Test Dashboard","panels":[{"id":1,"title":"RDS CPU","type":"timeseries","targets":[{"refId":"A","namespace":"AWS/RDS","metricName":"CPUUtilization","statistic":"Average"}]}]}'
+out="$(run 2>&1)" || fail "a metricName panel with a real query should not fail. Output:
+$out"
+echo "$out" | grep -q "all checks passed" || fail "metricName fixture: missing the pass banner. Output:
+$out"
+
+echo "--- a PostgreSQL panel with a blank rawSql still fails (no recognised field is actually non-empty) ---"
+scaffold
+write_dashboard '{"uid":"test-dash","title":"Test Dashboard","panels":[{"id":1,"title":"Blank SQL","type":"table","targets":[{"refId":"A","format":"table","rawQuery":true,"rawSql":"   "}]}]}'
+out="$(run 2>&1)" && fail "a panel whose only recognised query field is blank should fail. Output:
+$out"
+echo "$out" | grep -q "panel 'Blank SQL' has no non-empty query" \
+  || fail "wrong/missing error message for a blank rawSql panel. Output:
+$out"
+
 echo "--- promtool is either run or its absence is reported loudly, never silently ---"
 scaffold
 out="$(run 2>&1)" || fail "clean fixture should still pass. Output:

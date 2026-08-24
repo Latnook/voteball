@@ -41,7 +41,7 @@ Alertmanager mails a person only when something is worth interrupting them for.
  pod stdout/stderr ─────────── Fluent Bit ──► CloudWatch Logs                │
  (devops-app only)                            7-day retention               ▼
                                                                         Grafana
-                                                                    4 dashboards
+                                                                    6 dashboards
                                                                      (port-forward)
 ```
 
@@ -68,7 +68,7 @@ Three homes, and which one a change belongs in decides whether it ships as a com
 |---|---|---|
 | `terraform/addon-monitoring.tf` | The stack itself: the Helm release, PVC, retention, resource limits, Alertmanager→SNS routing, the disabled-defaults list | `terraform apply` |
 | `charts/voteball` (ArgoCD) | The app's three ServiceMonitors, the 12 application alerts, the 4 SLI recording rules, the scrape NetworkPolicy, the canary | `git push` |
-| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 4 dashboards, the 4 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
+| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 6 dashboards, the 4 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
 | `charts/jenkins-support` (Terraform) | The Jenkins ServiceMonitor — the one exception, see §4 | `terraform apply` |
 | `terraform/addon-cloudwatch.tf` | Fluent Bit's log pipeline and the three log groups | `terraform apply` |
 
@@ -81,6 +81,26 @@ commit — nobody should have to run Terraform against billed infrastructure to 
 the `voteball` AppProject pins its destination namespace on purpose. Both Applications are declared in
 `argocd/voteball-application.yaml.tmpl`; `./scripts/render-argocd-app.sh --check` fails if anything in
 the cluster disagrees with that file.
+
+Grafana's data sources are the same story: shipped as code (`charts/observability/templates/
+datasources.yaml`), never clicked together. Five exist; only three are declared by this chart —
+Prometheus and Alertmanager come bundled with `kube-prometheus-stack` and need no ConfigMap of their
+own.
+
+| Data source | uid | Auth | Plugin needed |
+|---|---|---|---|
+| Prometheus | `prometheus` | none (in-cluster, provisioned by kube-prometheus-stack) | bundled |
+| Alertmanager | `alertmanager` | none (in-cluster, provisioned by kube-prometheus-stack) | bundled |
+| PostgreSQL | `postgres` | `grafana_ro` role, password from Secrets Manager via ExternalSecrets Operator | bundled |
+| CloudWatch | `cloudwatch` | IRSA (the pod's AWS role) — no credential of any kind | bundled |
+| GitHub | `github` | personal access token from Secrets Manager via ExternalSecrets Operator | **downloaded at pod start** |
+
+**GitHub is the only data source here backed by a plugin that is not built into the Grafana image.**
+`/var/lib/grafana` is an `emptyDir` — nothing here has a persistent volume — so `grafana-github-
+datasource` is re-fetched from grafana.com on every pod start, which on a 100% Spot node group is
+roughly daily. A failed fetch leaves Grafana healthy and every other data source and dashboard
+working; only the three GitHub panels on Jenkins & Delivery go blank, with nothing else to signal it.
+See decision 5 in `docs/design/2026-08-24-grafana-datasources-design.md`.
 
 ---
 
@@ -318,10 +338,12 @@ template.
 |---|---|---|---|
 | Application Overview | `voteball-app` | 14 | Is the new release hurting users? Request rate, 5xx rate, availability vs SLO, p95 vs SLO, p50/p95/p99, votes cast, results freshness, ballots rejected by reason, DB errors, nginx rate, running `version`/`git_sha`/`release`, request rate **by release**, container CPU and memory. |
 | Kubernetes / Cluster | `voteball-k8s` | 10 | Is the fault in the app or the platform? Nodes ready, pending pods, node CPU/memory, pods by phase, desired vs available replicas, pod restarts, OOMKills, CPU throttling, PVC usage. |
-| Jenkins & Delivery | `voteball-delivery` | 8 | Is delivery healthy and is something stuck? Queue length and wait, executors total vs busy, online agents, build outcomes, build duration, controller JVM heap, last successful release. |
+| Jenkins & Delivery | `voteball-delivery` | 11 | Is delivery healthy and is something stuck? Queue length and wait, executors total vs busy, online agents, build outcomes, build duration, controller JVM heap, last successful release, plus commit volume, contributor count and open issues from the GitHub data source. |
 | Service Health & Alerts | `voteball-alerts` | 9 | Is anything wrong right now, and would I have been told? Critical/warning/pending alert counts, a table of what's firing, availability vs 99% SLO, p95 vs 1s SLO, the canary's journey request and error rate, and a 6h alert-firing history from Prometheus' `ALERTS` series. |
+| Voteball Business Analytics | `voteball-business` | 6 | What is the poll actually saying? Votes per day, total ballots, top previous and upcoming parties, ballots by league, vote switching. Read from the rollup tables via `grafana_ro`, which cannot see raw `votes`. |
+| AWS Infrastructure | `voteball-aws` | 10 | Is the fault below the cluster? RDS CPU, connections, free storage, freeable memory and latency; ALB request count, ELB and target 5xx, target response time; on-demand pod logs. Refresh is pinned to 5m because CloudWatch bills per metric returned — at Grafana's 10s default this dashboard alone costs ≈$8.60/month for identical information. |
 
-Deleting the `observability` ArgoCD Application and re-syncing brings all four back with zero manual
+Deleting the `observability` ArgoCD Application and re-syncing brings all six back with zero manual
 steps. That round trip is what proves they are provisioned rather than clicked together.
 
 **No panel on Service Health & Alerts uses the `alertmanager` data source, and that is a deliberate,
@@ -735,7 +757,7 @@ for q in voteball:journey_requests:rate5m voteball:availability:ratio5m voteball
     | python3 -c 'import json,sys; r=json.load(sys.stdin)["data"]["result"]; print(r[0]["value"][1] if r else "ABSENT")'
 done
 
-# 4. All four dashboards are present as ConfigMaps.
+# 4. All six dashboards are present as ConfigMaps.
 kubectl -n observability get cm -l grafana_dashboard=1
 
 # 5. Alertmanager has the SNS receiver and has not failed a notification.

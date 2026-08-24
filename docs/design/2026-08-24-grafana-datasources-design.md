@@ -197,13 +197,13 @@ here, and this section exists so that fact is recorded rather than rediscovered.
 
 ### 8. Dashboard refresh intervals are pinned, because they are billed
 
-CloudWatch metrics bill per metric returned. The `aws-infrastructure` dashboard requests roughly 14
-metrics per refresh:
+CloudWatch metrics bill per metric returned. The `aws-infrastructure` dashboard requests roughly 10
+metrics per refresh (6 RDS + 4 ALB):
 
 | Refresh | Metrics/day | Cost/month |
 |---|---|---|
-| 5 minutes (shipped) | ~4,000 | ≈ $0.05 |
-| 10 seconds (Grafana's default) | ~121,000 | ≈ $12 |
+| 5 minutes (shipped) | ~2,900 | ≈ $0.04 |
+| 10 seconds (Grafana's default) | ~86,000 | ≈ $8.60 |
 
 So the refresh is set explicitly in the dashboard JSON with a comment saying why, rather than
 inherited. CloudWatch **Logs Insights** bills per GB *scanned*, not stored, so an auto-refreshing log

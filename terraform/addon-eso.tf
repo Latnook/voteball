@@ -13,8 +13,9 @@ module "eso_irsa" {
   external_secrets_secrets_manager_arns = [
     "${aws_secretsmanager_secret.app.arn}*",
     "${aws_secretsmanager_secret.jenkins.arn}*",
-    # Omit this and the ExternalSecrets in Task 3 fail while Grafana boots normally with an empty
-    # password -- discovered when a panel loads, not at deploy time.
+    # Omit this and the ExternalSecrets in charts/observability/templates/externalsecret.yaml and
+    # charts/voteball/templates/externalsecret.yaml (the grafana-db-secret entry) fail while Grafana
+    # boots normally with an empty password -- discovered when a panel loads, not at deploy time.
     "${aws_secretsmanager_secret.grafana.arn}*",
   ]
 
