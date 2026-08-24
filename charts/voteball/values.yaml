@@ -49,6 +49,9 @@ config:
 # ESO ExternalSecret: pulls voteball/app-secret from Secrets Manager into K8s Secret app-secret.
 externalSecret:
   secretName: "voteball/app-secret"
+  # The grafana_ro DB password lives in its OWN container so the observability namespace can read it
+  # without also being handed the app's DB and admin credentials.
+  grafanaSecretName: "voteball/grafana"
   refreshInterval: "1h"
 
 ingress:
