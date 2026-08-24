@@ -23,7 +23,7 @@ PROM_PORT=19092
 JENKINS_PORT=18081
 WAIT_AGENT_SEC="${DRILL_WAIT_AGENT_SEC:-300}"
 
-cleanup() { kill ${PF1:-0} ${PF2:-0} 2>/dev/null || true; }
+cleanup() { kill ${PF1:-0} ${PF2:-0} 2>/dev/null || true; rm -f "${COOKIE_JAR:-}"; }
 trap cleanup EXIT INT TERM
 kubectl -n observability port-forward svc/kube-prometheus-stack-prometheus "$PROM_PORT:9090" >/dev/null 2>&1 & PF1=$!
 kubectl -n ci            port-forward svc/jenkins                          "$JENKINS_PORT:8080" >/dev/null 2>&1 & PF2=$!
@@ -33,6 +33,25 @@ for _ in $(seq 1 60); do curl -sf -m 1 "localhost:$JENKINS_PORT/login" >/dev/nul
 J=(-s -u "${JENKINS_ADMIN_USER}:${JENKINS_ADMIN_PASSWORD}")
 promq() { curl -sS -m 10 -G --data-urlencode "query=$1" "localhost:$PROM_PORT/api/v1/query" \
   | python3 -c "import json,sys; r=json.load(sys.stdin)['data']['result']; print(r[0]['value'][1] if r else 'EMPTY')"; }
+# Jenkins CSRF: the crumb is bound to the SESSION that issued it, so the cookie jar has to be carried
+# from the crumbIssuer request into the POST. Fetching a crumb and throwing the cookie away yields a
+# 403 -- which both the 2026-08-24 runs of drills 3 and 5 did, silently: drill 3 then killed an agent
+# belonging to a build somebody else's push had started, and drill 5 measured a queue nothing had been
+# added to. The field name is read from crumbRequestField rather than hardcoded as `Jenkins-Crumb`,
+# because it differs when Jenkins is configured behind a proxy.
+COOKIE_JAR="$(mktemp)"
+trigger_build() { # job [querystring] -> echoes the HTTP code, non-zero exit unless 201
+  local job="$1" qs="${2:-}" cj="$COOKIE_JAR" json field crumb code
+  json="$(curl -s -c "$cj" "${J[@]}" "localhost:$JENKINS_PORT/crumbIssuer/api/json")"
+  field="$(printf '%s' "$json" | python3 -c "import json,sys; print(json.load(sys.stdin)['crumbRequestField'])" 2>/dev/null || echo '')"
+  crumb="$(printf '%s' "$json" | python3 -c "import json,sys; print(json.load(sys.stdin)['crumb'])" 2>/dev/null || echo '')"
+  [ -n "$field" ] && [ -n "$crumb" ] || { echo "000"; return 1; }
+  code="$(curl -s -b "$cj" -o /dev/null -w '%{http_code}' "${J[@]}" -X POST \
+            -H "$field: $crumb" "localhost:$JENKINS_PORT/job/$job/buildWithParameters?$qs")"
+  echo "$code"
+  [ "$code" = "201" ]
+}
+
 agent_pod() { kubectl get pods -n ci --no-headers 2>/dev/null | awk '/^voteball-build/ {print $1; exit}'; }
 
 exec > >(tee "$OUT") 2>&1
@@ -45,10 +64,14 @@ echo "  queue size        $(promq 'jenkins_queue_size_value')"
 echo "  site /api/options $(curl -s -o /dev/null -w '%{http_code}' -m 10 "https://${APP_DOMAIN}/api/options")"
 echo
 echo "=== TRIGGER A BUILD ==="
-CRUMB="$(curl "${J[@]}" "localhost:$JENKINS_PORT/crumbIssuer/api/json" | python3 -c "import json,sys; print(json.load(sys.stdin)['crumb'])" 2>/dev/null || echo '')"
-BEFORE_N="$(curl "${J[@]}" "localhost:$JENKINS_PORT/job/application-ci/api/json" | python3 -c "import json,sys; d=json.load(sys.stdin); print((d.get('lastBuild') or {}).get('number',0))")"
-code="$(curl "${J[@]}" -o /dev/null -w '%{http_code}' -X POST ${CRUMB:+-H "Jenkins-Crumb: $CRUMB"} \
-  "localhost:$JENKINS_PORT/job/application-ci/buildWithParameters?FORCE_BUILD=true")"
+BEFORE_N="$(curl -g "${J[@]}" "localhost:$JENKINS_PORT/job/application-ci/api/json" | python3 -c "import json,sys; d=json.load(sys.stdin); print((d.get('lastBuild') or {}).get('number',0))")"
+code="$(trigger_build application-ci 'FORCE_BUILD=true')" || {
+  echo "  FAILED to trigger application-ci (HTTP $code)." >&2
+  echo "  REFUSING TO CONTINUE. Without its own build, this drill would wait for whatever agent" >&2
+  echo "  happened to be running and kill a build it did not start -- which is what the 2026-08-24" >&2
+  echo "  run did, on a 403 it printed and ignored." >&2
+  exit 1
+}
 echo "  application-ci triggered (HTTP $code); last build before was #$BEFORE_N"
 echo "  waiting up to ${WAIT_AGENT_SEC}s for an agent pod to reach Running"
 POD=""

@@ -35,6 +35,7 @@ cleanup() {
   kubectl delete resourcequota "$QUOTA" -n ci --ignore-not-found
   echo "  quota lifted at $(date -u +%H:%M:%SZ) -- agents can be provisioned again"
   kill ${PF1:-0} ${PF2:-0} 2>/dev/null || true
+  rm -f "${COOKIE_JAR:-}"
 }
 trap cleanup EXIT INT TERM
 
@@ -53,6 +54,25 @@ for g in json.load(sys.stdin)['data']['groups']:
         if r['name']=='JenkinsQueueStuck': print(r.get('state','?')); raise SystemExit
 print('absent')"; }
 
+# Jenkins CSRF: the crumb is bound to the SESSION that issued it, so the cookie jar has to be carried
+# from the crumbIssuer request into the POST. Fetching a crumb and throwing the cookie away yields a
+# 403 -- which both the 2026-08-24 runs of drills 3 and 5 did, silently: drill 3 then killed an agent
+# belonging to a build somebody else's push had started, and drill 5 measured a queue nothing had been
+# added to. The field name is read from crumbRequestField rather than hardcoded as `Jenkins-Crumb`,
+# because it differs when Jenkins is configured behind a proxy.
+COOKIE_JAR="$(mktemp)"
+trigger_build() { # job [querystring] -> echoes the HTTP code, non-zero exit unless 201
+  local job="$1" qs="${2:-}" cj="$COOKIE_JAR" json field crumb code
+  json="$(curl -s -c "$cj" "${J[@]}" "localhost:$JENKINS_PORT/crumbIssuer/api/json")"
+  field="$(printf '%s' "$json" | python3 -c "import json,sys; print(json.load(sys.stdin)['crumbRequestField'])" 2>/dev/null || echo '')"
+  crumb="$(printf '%s' "$json" | python3 -c "import json,sys; print(json.load(sys.stdin)['crumb'])" 2>/dev/null || echo '')"
+  [ -n "$field" ] && [ -n "$crumb" ] || { echo "000"; return 1; }
+  code="$(curl -s -b "$cj" -o /dev/null -w '%{http_code}' "${J[@]}" -X POST \
+            -H "$field: $crumb" "localhost:$JENKINS_PORT/job/$job/buildWithParameters?$qs")"
+  echo "$code"
+  [ "$code" = "201" ]
+}
+
 exec > >(tee "$OUT") 2>&1
 echo "# DRILL 5 — Jenkins queue stuck, $(date -Is)"
 echo "# HEAD $(git rev-parse HEAD)"
@@ -69,10 +89,13 @@ echo "=== BREAK ==="
 kubectl create quota "$QUOTA" -n ci --hard=pods=1
 APPLIED="$(date -u +%H:%M:%SZ)"
 echo "  quota applied at $APPLIED"
-CRUMB="$(curl "${J[@]}" "localhost:$JENKINS_PORT/crumbIssuer/api/json" | python3 -c "import json,sys; print(json.load(sys.stdin)['crumb'])" 2>/dev/null || echo '')"
-code="$(curl "${J[@]}" -o /dev/null -w '%{http_code}' -X POST \
-  ${CRUMB:+-H "Jenkins-Crumb: $CRUMB"} \
-  "localhost:$JENKINS_PORT/job/application-ci/buildWithParameters?FORCE_BUILD=true")"
+code="$(trigger_build application-ci 'FORCE_BUILD=true')" || {
+  echo "  FAILED to trigger application-ci (HTTP $code) -- lifting the quota and stopping." >&2
+  echo "  With nothing queued there is no condition to measure, and the drill would sit for 22" >&2
+  echo "  minutes reporting a flat queue of 0 as though the alert were wrong. That is exactly the" >&2
+  echo "  failure mode this drill exists to avoid mis-reporting." >&2
+  exit 1
+}
 echo "  triggered application-ci with FORCE_BUILD=true (HTTP $code)"
 echo
 echo "=== OBSERVE (every 30s until JenkinsQueueStuck fires, or ${DEADLINE_MIN}m) ==="

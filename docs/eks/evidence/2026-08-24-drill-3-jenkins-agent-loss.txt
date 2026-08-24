@@ -112,3 +112,41 @@ json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
   tree query `builds[number,result,building]{0,4}` contains `{0,4}`, and curl treats `{}` as a glob
   set unless given -g/--globoff. The request never reached Jenkins in the form intended and the empty
   body was fed to json.load. The script now passes -g.
+
+=== CORRECTION: THIS DRILL DID NOT START THE BUILD IT KILLED ===
+
+Read line 10 of this file again:
+
+  application-ci triggered (HTTP 403); last build before was #8
+
+HTTP 403 is a failure. The script printed it inside a line that says "triggered" and carried on, so
+the transcript reads as though the drill started a build and then killed its agent. It did not.
+
+The cause is Jenkins CSRF: the crumb is bound to the SESSION that issued it, and the script fetched a
+crumb with one curl invocation and POSTed with another, discarding the cookie in between. Reproduced
+afterwards against the same controller:
+
+  crumb without the session cookie -> HTTP 403
+  crumb with    the session cookie -> HTTP 201
+
+So what actually happened is that build #8 was ALREADY RUNNING -- started 15:27:06Z by a push earlier
+in this session -- and the drill's "wait for an agent pod" loop found #8's agent and killed that.
+
+WHAT SURVIVES, AND WHAT DOES NOT:
+
+  SURVIVES. An agent was force-deleted mid-build. The site held 200 on every poll for five minutes,
+  Jenkins provisioned a replacement agent on its own at 15:30:52Z, and the interrupted build went
+  ABORTED rather than hanging. Those are the properties the drill exists to demonstrate and they were
+  demonstrated -- the ownership of the build does not change what happened to it.
+
+  DOES NOT SURVIVE. The claim that this was a controlled, self-contained drill. It killed a build it
+  did not start, and it did so only because one happened to be running. Had the queue been empty, the
+  script would have waited its 300s and exited 1 -- or worse, on a busy controller, killed a build
+  doing something someone cared about.
+
+The script now fails loudly when the trigger does not return 201, rather than printing the code and
+continuing. A drill that measures whatever it finds lying around is not a drill.
+
+This is the second time today a script here reported a number it had not measured -- the first was
+the HEALTH column in drill 1. Both had the same shape: a command failed, its exit status was folded
+into a string, and the transcript looked complete.
