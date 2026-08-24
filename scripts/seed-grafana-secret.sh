@@ -102,6 +102,20 @@ case "$ROTATE_WHAT" in
     ;;
 esac
 
+# ---- validate ROTATE_WHAT + FORCE_ROTATE combination -------------------------------------------------
+# ROTATE_WHAT != "both" (i.e., rotating just one credential) requires FORCE_ROTATE=1. Without it, the
+# code that fetches the EXISTING value of whichever credential is NOT being rotated never runs
+# (lines 107-133 check FORCE_ROTATE=1), so both EXISTING_DB_PASSWORD and EXISTING_GITHUB_TOKEN stay
+# empty. The assignment at line 163 or 173 then writes an empty value to Secrets Manager: a silent
+# data loss that looks like success. Reject this unsupported combination loudly before any AWS call.
+if [ "$ROTATE_WHAT" != "both" ] && [ "${FORCE_ROTATE:-0}" != "1" ]; then
+  echo "ERROR: ROTATE_WHAT=${ROTATE_WHAT} requires FORCE_ROTATE=1." >&2
+  echo "Without FORCE_ROTATE=1, this script cannot safely rotate just one credential — the other" >&2
+  echo "value would be silently lost (written as empty to Secrets Manager)." >&2
+  echo "Run with: ROTATE_WHAT=${ROTATE_WHAT} FORCE_ROTATE=1 ./scripts/seed-grafana-secret.sh" >&2
+  exit 1
+fi
+
 EXISTING_DB_PASSWORD=""
 EXISTING_GITHUB_TOKEN=""
 if [ "${FORCE_ROTATE:-0}" = "1" ] && [ "$ROTATE_WHAT" != "both" ]; then
