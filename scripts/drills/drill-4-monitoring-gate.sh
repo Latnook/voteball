@@ -154,7 +154,8 @@ n="$((CD_BEFORE+1))"
 while [ "$n" -le "$CD_NOW" ]; do
   echo "  --- application-cd #$n ---"
   curl -sg "${J[@]}" "localhost:$JENKINS_PORT/job/application-cd/$n/consoleText" 2>/dev/null \
-    | grep -E "^gate:|Monitoring Gate|ROLLBACK|Rolling back|rollback" | head -14 | sed 's/^/    /'
+    | sed 's/^\[[^]]*\] *//' \
+    | grep -E "^gate: |^smoke: all|Rolling back|rollback-target" | head -14 | sed 's/^/    /'
   n=$((n+1))
 done
 echo

@@ -1,0 +1,139 @@
+# DRILL 4 — the Monitoring Gate, 2026-08-24T19:42:56+03:00
+# HEAD before the drill: 26ebe078e0bc0d03e08ef50feaa1602c4954fa11
+# Injects a 1.5s sleep into /api/options. GATE_MAX_P95_SECONDS is 1.0, so p95 breaches while
+# pods stay Healthy, ArgoCD stays Synced and the smoke test still passes. The gate is the only
+# check in the pipeline that can say no to this release.
+
+=== BEFORE ===
+  deployed backend image: 63acddf0caaacd
+  site /api/options:      200 in 0.227072s
+  application-ci last build: #16
+  application-cd last build: #11
+
+=== BREAK: inject 1.5s into /api/options and push to master ===
+  pushed 8216521a7d3ece8a5ade3feba0da0e62bf55da9e at 16:43:00Z
+
+=== OBSERVE ===
+  TIME       SITE_S    CI                 CD                 DEPLOYED
+  16:43:01Z  0.191990  #16  SUCCESS/False  #11  SUCCESS/False  63acddf0caaacd
+  16:43:32Z  0.271392  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:44:04Z  0.218611  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:44:35Z  0.259052  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:45:07Z  0.251983  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:45:38Z  0.273542  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:46:10Z  0.217155  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:46:42Z  0.241533  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:47:14Z  0.452422  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:47:46Z  0.206538  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:48:17Z  0.138577  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:48:49Z  0.249139  #17  None/True      #11  SUCCESS/False  63acddf0caaacd
+  16:49:20Z  0.146356  #17  SUCCESS/False  #11  SUCCESS/False  63acddf0caaacd
+  16:49:52Z  0.204115  #17  SUCCESS/False  #12  None/True      63acddf0caaacd
+  16:50:23Z  0.196958  #17  SUCCESS/False  #12  None/True      94c9f1edcf0852
+  16:50:56Z  1.701681  #17  SUCCESS/False  #12  None/True      94c9f1edcf0852
+  16:51:29Z  1.664676  #17  SUCCESS/False  #12  None/True      94c9f1edcf0852
+  16:52:02Z  1.702694  #17  SUCCESS/False  #12  None/True      94c9f1edcf0852
+  16:52:35Z  1.666860  #17  SUCCESS/False  #12  FAILURE/True   94c9f1edcf0852
+  16:53:08Z  1.695794  #17  SUCCESS/False  #13  None/True      94c9f1edcf0852
+  16:53:41Z  1.670404  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:54:12Z  0.232854  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:54:44Z  0.157866  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:55:15Z  0.204083  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:55:47Z  0.130798  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:56:18Z  0.257823  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:56:50Z  0.184515  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:57:21Z  0.234372  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:57:53Z  0.186180  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:58:24Z  0.183347  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:58:55Z  0.162936  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:59:27Z  0.224707  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  16:59:59Z  0.156684  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  17:00:30Z  0.345887  #17  SUCCESS/False  #13  None/True      63acddf0caaacd
+  17:01:02Z  0.224242  #17  SUCCESS/False  #13  SUCCESS/False  63acddf0caaacd
+  a second application-cd build after ours has finished -- that is the rollback.
+
+=== CD BUILDS AFTER THE DRILL ===
+  #13   SUCCESS    tag dbff601 <- ci #rollback-from-12 (no digest)
+  #12   FAILURE    tag 8216521 <- ci #17 (sha256:94c9f1edcf08) | ROLLED BACK to dbff601
+  #11   SUCCESS    tag dbff601 <- ci #16 (no digest)
+  #10   SUCCESS    tag dbff601 <- ci #15 (sha256:63acddf0caaa)
+  #9    SUCCESS    tag c05bf21 <- ci #rollback-from-8 (no digest)
+  #8    FAILURE    tag 2356172 <- ci #14 (no digest) | ROLLED BACK to c05bf21
+
+=== WHAT THE GATE ACTUALLY SAID ===
+  --- application-cd #12 ---
+    Commit message: "DRILL: inject 1.5s into /api/options to prove the Monitoring Gate rolls back"
+    [Pipeline] { (Monitoring Gate)
+    [2026-08-24T16:52:29.630Z] + scripts/ci/rollback-target.sh dbff601
+    [2026-08-24T16:52:35.063Z] + scripts/ci/notify.sh 'Voteball deploy failed -- rolling back to dbff601' 'application-cd #12 (tag 8216521) failed verification. An automatic rollback to dbff601 has been
+    [2026-08-24T16:52:35.063Z] a successful rollback. You WILL get one if it fails, because the depth guard then
+  --- application-cd #13 ---
+    Commit message: "DRILL: inject 1.5s into /api/options to prove the Monitoring Gate rolls back"
+    [Pipeline] { (Monitoring Gate)
+    [2026-08-24T16:54:07.341Z]     samples served by the previous release (this build is a rollback; the release it replaced
+
+  The SITE_S column is the point: it is a RESPONSE TIME, not a status code. Every request in
+  this drill succeeded. Nothing crashed, nothing 500'd, no pod restarted. A release can be
+  entirely healthy and still be one the SLO says must not ship, and the Monitoring Gate is the
+  only check here that can tell the difference.
+
+=== REVERT ===
+  reverted 8216521a7d3ece8a5ade3feba0da0e62bf55da9e locally
+  revert pushed; CI/CD will redeploy the healthy build.
+
+=== THE GATE'S ACTUAL VERDICT (re-fetched; the section above missed it) ===
+
+The "WHAT THE GATE ACTUALLY SAID" block above captured the rollback plumbing and not the verdict,
+because Jenkins prefixes every console line with a timestamp and the script grepped for `^gate:`.
+An anchored pattern against a prefixed line matches nothing. Re-fetched with the prefix stripped --
+and this is the evidence the drill exists to produce:
+
+  --- application-cd #12, the injected release ---
+    smoke: all checks passed against https://voteball.latnook.com
+    gate: sending 60 requests to https://voteball.latnook.com (journey endpoints) over ~20s
+    gate: OK   -- all scrape targets in devops-app report up (min(up)=1)
+    gate: observed ~82.27 journey requests over the last 300s (rate=0.274/s)
+    gate: OK   -- error ratio 0.000000 is within GATE_MAX_ERROR_RATIO=0.01
+    gate: FAIL -- p95 latency 2.3150130616532696s exceeds GATE_MAX_P95_SECONDS=1.0s
+    gate: FAIL -- see FAIL lines above
+    + scripts/ci/rollback-target.sh dbff601
+
+  --- application-cd #13, the rollback ---
+    gate: observed ~55.56 journey requests over the last 300s (rate=0.185/s)
+    gate: OK   -- error ratio 0.000000 is within GATE_MAX_ERROR_RATIO=0.01
+    gate: OK   -- p95 latency 0.08221809706420077s is within GATE_MAX_P95_SECONDS=1.0s
+    gate: PASS -- all checks within threshold
+
+READ THE ERROR RATIO ON THE FAILING BUILD: 0.000000. The release that was rejected and rolled back
+had a PERFECT error rate. Pods were Ready, ArgoCD reported Synced, and the smoke test passed all
+three journey endpoints immediately before the gate ran. Every single check that existed in this
+pipeline before the Monitoring Gate said ship it. The only thing wrong with that release was that it
+was slow, and latency is the one dimension none of those checks measure.
+
+THE THREE-POINT SERIES, which is what makes this attributable rather than suggestive:
+
+  application-cd #9   p95 0.0916s  PASS   control, taken 30 minutes earlier on a healthy release
+  application-cd #12  p95 2.3150s  FAIL   the same gate, same thresholds, +1.5s injected
+  application-cd #13  p95 0.0822s  PASS   the rollback, back to the pre-drill image
+
+A single red gate proves nothing on a cluster that has had four failed CDs in an hour. A red gate
+between two green ones, on the same thresholds, with the error ratio pinned at zero throughout, can
+only be the injected latency.
+
+ALL THREE JUDGED ON DATA, NOT ON THE WARN-AND-PASS PATH: 52.25, 82.27 and 55.56 observed requests
+against GATE_MIN_SAMPLES=20. That distinction matters and is easy to miss -- the gate deliberately
+PASSES when it has too little data to judge (a post-Promote failure rolls back production, so a gate
+that failed on a quiet minute would be an outage generator). "PASS" and "passed because it could not
+judge" render identically at a glance. These did not take that path.
+
+TIMELINE, from the SITE_S column above -- response times, not status codes:
+
+  16:50:23Z  0.197s   the injected image (94c9f1edcf08) reaches the cluster
+  16:50:56Z  1.702s   the public site is now slow, and still returning 200
+  16:52:35Z  1.667s   application-cd #12 FAILS at the gate; rollback scheduled
+  16:53:41Z  1.670s   deployed image returns to 63acddf0caaa
+  16:54:12Z  0.233s   the site is fast again
+  17:01:02Z  0.224s   application-cd #13 SUCCESS -- rollback verified by the same gate
+
+Degraded window: 2m45s, from the first slow response to the first fast one after rollback. No request
+failed at any point in it.
