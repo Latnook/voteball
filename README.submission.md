@@ -628,11 +628,17 @@ process of adding a dashboard, with no import button and nothing for a human to 
 `observability` ArgoCD Application and re-syncing brings all three back with zero manual steps, which
 is what proves they're provisioned rather than clicked together.
 
+The Application Overview's three template variables answer "which replica, which release" without
+leaving the dashboard. The two SLO panels deliberately ignore them — the SLO is service-wide, and a
+pod filter there would put one replica's number under a panel titled "vs SLO". `Release` reaches the
+traffic panel through a join against `voteball_app_info`, which is kept in its own panel so the
+headline traffic panel never goes blank if that metric stops being scraped.
+
 | Dashboard | uid | Operational question |
 |---|---|---|
-| Application Overview | `voteball-app` | Is the new release hurting users? Traffic, 5xx rate, p50/p95/p99, availability against SLO, votes cast, running `version`/`git_sha`. |
+| Application Overview | `voteball-app` | Is the new release hurting users? Traffic, 5xx rate, p50/p95/p99, availability against SLO, votes cast, container CPU/memory, running `version`/`git_sha`/`release`, and traffic split **by release**. Filterable by `Service`, `Pod` and `Release`. |
 | Kubernetes / Cluster | `voteball-k8s` | Is the fault in the app or the platform? Node readiness/capacity, pod restarts and OOMKills, CPU throttling, pending pods, replica health, PVC usage. |
-| Jenkins & Delivery | `voteball-delivery` | Is delivery healthy, and is something stuck? Queue length/wait, executors, build outcomes/duration, controller JVM heap. |
+| Jenkins & Delivery | `voteball-delivery` | Is delivery healthy, and is something stuck? Queue length/wait, executors, build outcomes/duration, controller JVM heap, and the last successful release — read from the running app rather than from a build counter, because a green pipeline says the promotion finished, not that the cluster is running it. |
 
 ### SLI / SLO
 
@@ -682,14 +688,18 @@ owner confirmed receiving the email, `Runbook:` line included. Both alerts resol
 canary was removed. Full command output in
 [`docs/eks/evidence/2026-08-18-observability-as-code.txt`](docs/eks/evidence/2026-08-18-observability-as-code.txt).
 
-### Two CI/CD gates, and four failure drills
+### Two CI/CD gates, and five failure drills
 
-Two pipeline stages, and four drills exercising them against the live cluster — deliberately not
+Two pipeline stages, and five drills exercising them against the live cluster — deliberately not
 screenshots of a healthy system. Full transcripts:
 [`docs/eks/evidence/2026-08-18-drill-1-controlled-5xx.txt`](docs/eks/evidence/2026-08-18-drill-1-controlled-5xx.txt),
 [`-2-pod-readiness.txt`](docs/eks/evidence/2026-08-18-drill-2-pod-readiness.txt),
 [`-3-jenkins-agent-loss.txt`](docs/eks/evidence/2026-08-18-drill-3-jenkins-agent-loss.txt),
-[`-4-monitoring-gate.txt`](docs/eks/evidence/2026-08-18-drill-4-monitoring-gate.txt).
+[`-4-monitoring-gate.txt`](docs/eks/evidence/2026-08-18-drill-4-monitoring-gate.txt),
+[`-5-jenkins-queue-stuck.txt`](docs/eks/evidence/2026-08-18-drill-5-jenkins-queue-stuck.txt).
+Each drill that needed a fix was **re-run afterwards** and the second transcript kept alongside the
+first (`2026-08-18-rerun-drill-*.txt`), so the record shows the failure and the proof, not a tidied
+summary of either.
 
 - **`application-ci` gains an Observability Validation stage** (`scripts/ci/validate-observability.sh`):
   renders both charts and checks that every ServiceMonitor/PrometheusRule carries the label Prometheus
@@ -731,11 +741,15 @@ the design it was meant to test — a reminder that a drill testing the wrong th
 system that failed.
 
 Drill 3 (killing a Jenkins build agent mid-build) confirmed the property it set out to prove — the
-website stayed at `200` throughout, and Jenkins re-provisioned a fresh agent on its own — but left one
-alert, `JenkinsQueueStuck`, honestly unproven: killing an agent that already exists aborts its build
-rather than queueing it, so the queue-length metric the alert watches never moved. The alert is still
-believed correct; it just was not exercised by this drill, and that gap is recorded rather than papered
-over. The same drill also showed that Jenkins' two Prometheus metric families are not interchangeable —
+website stayed at `200` throughout, and Jenkins re-provisioned a fresh agent on its own — but could not
+reach the condition behind `JenkinsQueueStuck`: killing an agent that already exists *aborts* its build
+rather than queueing it, so the queue-length metric the alert watches never moved. That is what drill 5
+exists for. Reaching a genuinely stuck queue needs agent **provisioning** to fail, so the re-run applied
+a `ResourceQuota` of `pods=1` to the `ci` namespace and triggered a build: the queue held at 1, the
+alert went `pending` at 17:42:50Z and **`FIRING` at 17:55:34Z**, its own `for: 15m` end to end
+([`rerun-drill-5`](docs/eks/evidence/2026-08-18-rerun-drill-5-jenkins-queue-stuck.txt)). The quota was
+scoped to `ci`, so the site was untouched for the whole 17 minutes — which is why that alert is
+`warning` rather than `critical`. Drill 3 also showed that Jenkins' two Prometheus metric families are not interchangeable —
 the bundled Metrics plugin's `jenkins_*_value` gauges read `0` for queue/executor/node even with a
 build running, while the `prometheus` plugin's own `default_jenkins_builds_*` family carried 257
 non-zero series in the same window. Both are truthful; picking the wrong one for a dashboard panel just

@@ -244,7 +244,7 @@ the scrape path.
 | `voteball_votes_cast_total` | Counter | — |
 | `voteball_votes_rejected_total` | Counter | `reason` |
 | `voteball_db_errors_total` | Counter | `operation` |
-| `voteball_app_info` | Gauge (always 1) | `version`, `git_sha` |
+| `voteball_app_info` | Gauge (always 1) | `version`, `git_sha`, `release` |
 
 `voteball_votes_cast_total` is the PDF's required **business metric** — the action this site exists
 for, not a technical proxy for it.
@@ -267,6 +267,15 @@ Three properties that cost real debugging time if changed:
 `voteball_app_info` is a Gauge with `multiprocess_mode='max'` rather than an Info/Enum — those are
 unsupported in multiprocess mode, and the default `'all'` would label each series with the worker's
 PID, which changes on every restart.
+
+**Of its three labels only `release` is not a duplicate.** `version` and `git_sha` are both the image
+tag, which this project sets to the short git SHA, so they carry the same value by construction.
+`release` comes from `APP_RELEASE`, which `backend-deployment.yaml` fills with the image **digest**
+when `image.digests.backend` is pinned and the tag when it is not — deliberately mirroring
+`voteball.image`'s own fallback, because if the two ever diverged the metric would describe a
+different artefact than the container it came from. The tag is a label a human chose; the digest is
+what the container runtime actually resolved, and it is what the Application Overview's `Release`
+variable groups by.
 
 ### Worker (`services/worker/metrics.py`)
 
@@ -298,12 +307,34 @@ template.
 
 | Dashboard | uid | Panels | Answers |
 |---|---|---|---|
-| Application Overview | `voteball-app` | 11 | Is the new release hurting users? Request rate, 5xx rate, availability vs SLO, p95 vs SLO, p50/p95/p99, votes cast, results freshness, ballots rejected by reason, DB errors, nginx rate, running `version`/`git_sha`. |
+| Application Overview | `voteball-app` | 14 | Is the new release hurting users? Request rate, 5xx rate, availability vs SLO, p95 vs SLO, p50/p95/p99, votes cast, results freshness, ballots rejected by reason, DB errors, nginx rate, running `version`/`git_sha`/`release`, request rate **by release**, container CPU and memory. |
 | Kubernetes / Cluster | `voteball-k8s` | 10 | Is the fault in the app or the platform? Nodes ready, pending pods, node CPU/memory, pods by phase, desired vs available replicas, pod restarts, OOMKills, CPU throttling, PVC usage. |
-| Jenkins & Delivery | `voteball-delivery` | 7 | Is delivery healthy and is something stuck? Queue length and wait, executors total vs busy, online agents, build outcomes, build duration, controller JVM heap. |
+| Jenkins & Delivery | `voteball-delivery` | 8 | Is delivery healthy and is something stuck? Queue length and wait, executors total vs busy, online agents, build outcomes, build duration, controller JVM heap, last successful release. |
 
 Deleting the `observability` ArgoCD Application and re-syncing brings all three back with zero manual
 steps. That round trip is what proves they are provisioned rather than clicked together.
+
+**Application Overview carries three template variables — `Service`, `Pod` and `Release` — and one
+class of panel deliberately ignores them.** The per-pod panels (request rate, 5xx, latency
+histogram, votes, rejections, DB errors, nginx, CPU, memory) filter on `$pod`, so a single misbehaving
+replica can be isolated without leaving the dashboard. The two SLO panels (`Availability vs SLO`,
+`p95 vs 1s SLO`) read recording rules and are **not** filtered: the SLO is defined service-wide, and a
+pod filter on them would report one replica's availability under a panel titled "vs SLO" — a wrong
+number under a right label, which is worse than no number.
+
+`Release` works through a join, because a request counter has no release label of its own:
+
+```promql
+sum by (release) (
+  rate(voteball_http_requests_total{namespace="devops-app",pod=~"$pod"}[5m])
+  * on (namespace, pod) group_left (release) voteball_app_info{namespace="devops-app",release=~"$release"}
+)
+```
+
+That join lives in its own panel (`Request rate by release`) rather than in the headline `Request
+rate` panel, and that separation is deliberate: a panel whose query depends on `voteball_app_info`
+goes **blank** rather than red if app_info ever stops being scraped, and a blank traffic panel reads
+as "quiet" instead of "broken". The headline panels stay on the raw counter for that reason.
 
 **Jenkins exposes two metric families that are not interchangeable, and picking the wrong one shows a
 flat, healthy-looking zero.** The bundled Metrics plugin's `jenkins_*_value` gauges read `0` almost all
@@ -731,16 +762,27 @@ carries the narrative; these are the artefacts:
 | 2 — pod readiness | Zero non-200 responses across 60 polls while Kubernetes replaced a pod in 54s, behind a PDB | [`-2-pod-readiness.txt`](eks/evidence/2026-08-18-drill-2-pod-readiness.txt) |
 | 3 — Jenkins agent loss | The site stayed at 200 throughout and Jenkins re-provisioned an agent on its own | [`-3-jenkins-agent-loss.txt`](eks/evidence/2026-08-18-drill-3-jenkins-agent-loss.txt) |
 | 4 — monitoring gate | A 1.5s latency regression passed every pre-existing check and was caught and rolled back by the gate alone | [`-4-monitoring-gate.txt`](eks/evidence/2026-08-18-drill-4-monitoring-gate.txt) |
-| 5 — Jenkins queue stuck | **Did not reach the condition** — see below | [`-5-jenkins-queue-stuck.txt`](eks/evidence/2026-08-18-drill-5-jenkins-queue-stuck.txt) |
+| 5 — Jenkins queue stuck | Alert fired end to end on a genuinely stuck queue, 12m53s after the condition began — see below | [`-5-jenkins-queue-stuck.txt`](eks/evidence/2026-08-18-drill-5-jenkins-queue-stuck.txt), [`rerun-drill-5`](eks/evidence/2026-08-18-rerun-drill-5-jenkins-queue-stuck.txt) |
 
 Re-runs after the fixes are in the matching `2026-08-18-rerun-drill-*.txt` files, plus
 [`-4b-settle-fix-proof.txt`](eks/evidence/2026-08-18-rerun-drill-4b-settle-fix-proof.txt).
 
-**One gap is recorded rather than papered over.** `JenkinsQueueStuck` has never been proven to fire.
-Killing an agent that already exists *aborts* its build rather than queueing it, so the queue-length
-metric never moves — a drill built around that mechanism cannot reach a non-zero queue size. Proving it
-needs a drill where agent *provisioning itself* fails. The alert is still believed correct; it just was
-not exercised.
+**Drill 5 took two attempts, and the first failure is the more useful half.** The morning run tried to
+reach a stuck queue by killing an agent that already existed — which *aborts* its build rather than
+queueing it, so the queue-length metric never moved. A drill can fail to reach its own condition and
+look exactly like a disproved design; that run was recorded as "unproven" rather than as a pass.
+
+Reaching the condition needs agent **provisioning** to fail, not an agent to die. The re-run applied a
+`ResourceQuota` of `pods=1` to the `ci` namespace and triggered a build: Jenkins had nowhere to put an
+agent, `jenkins_queue_size_value` held at `1` for the full window, and `JenkinsQueueStuck` went
+`pending` at 17:42:50Z and **`FIRING` at 17:55:34Z** — the rule's own `for: 15m`, end to end. The
+quota was namespace-scoped to `ci`, so `devops-app` was untouched and the site stayed up throughout,
+which is exactly why that alert is `severity: warning` and its description says the website is
+unaffected.
+
+The re-run was only possible once the Jenkins ServiceMonitor was enabled, which was gated on a
+controller-image rebuild containing `prometheus.jpi` — committing `plugins.txt` alone changes nothing,
+because plugins are baked into the image and Terraform owns the release.
 
 ---
 

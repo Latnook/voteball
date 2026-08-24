@@ -10,6 +10,49 @@
     "from": "now-6h",
     "to": "now"
   },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "label": "Service",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "query": {"query": "label_values(up{namespace=\"devops-app\"}, service)", "refId": "service"},
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {"selected": true, "text": ["All"], "value": ["$__all"]}
+      },
+      {
+        "name": "pod",
+        "label": "Pod",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "query": {"query": "label_values(up{namespace=\"devops-app\",service=~\"$service\"}, pod)", "refId": "pod"},
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {"selected": true, "text": ["All"], "value": ["$__all"]}
+      },
+      {
+        "name": "release",
+        "label": "Release",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "query": {"query": "label_values(voteball_app_info{namespace=\"devops-app\"}, release)", "refId": "release"},
+        "refresh": 1,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {"selected": true, "text": ["All"], "value": ["$__all"]}
+      }
+    ]
+  },
   "panels": [
     {
       "id": 1,
@@ -24,7 +67,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum by (endpoint) (rate(voteball_http_requests_total{namespace=\"devops-app\"}[5m]))",
+          "expr": "sum by (endpoint) (rate(voteball_http_requests_total{namespace=\"devops-app\",pod=~\"$pod\"}[5m]))",
           "legendFormat": "{{endpoint}}",
           "refId": "A"
         }
@@ -43,7 +86,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum(rate(voteball_http_requests_total{namespace=\"devops-app\",status=~\"5..\"}[5m])) or vector(0)",
+          "expr": "sum(rate(voteball_http_requests_total{namespace=\"devops-app\",pod=~\"$pod\",status=~\"5..\"}[5m])) or vector(0)",
           "legendFormat": "5xx",
           "refId": "A"
         }
@@ -133,7 +176,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum(increase(voteball_votes_cast_total{namespace=\"devops-app\"}[24h]))",
+          "expr": "sum(increase(voteball_votes_cast_total{namespace=\"devops-app\",pod=~\"$pod\"}[24h]))",
           "instant": true,
           "legendFormat": "votes (24h)",
           "refId": "A"
@@ -186,19 +229,19 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(voteball_http_request_duration_seconds_bucket{namespace=\"devops-app\"}[5m])))",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(voteball_http_request_duration_seconds_bucket{namespace=\"devops-app\",pod=~\"$pod\"}[5m])))",
           "legendFormat": "p50",
           "refId": "A"
         },
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(voteball_http_request_duration_seconds_bucket{namespace=\"devops-app\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(voteball_http_request_duration_seconds_bucket{namespace=\"devops-app\",pod=~\"$pod\"}[5m])))",
           "legendFormat": "p95",
           "refId": "B"
         },
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(voteball_http_request_duration_seconds_bucket{namespace=\"devops-app\"}[5m])))",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(voteball_http_request_duration_seconds_bucket{namespace=\"devops-app\",pod=~\"$pod\"}[5m])))",
           "legendFormat": "p99",
           "refId": "C"
         }
@@ -217,7 +260,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum by (reason) (rate(voteball_votes_rejected_total{namespace=\"devops-app\"}[15m])) or vector(0)",
+          "expr": "sum by (reason) (rate(voteball_votes_rejected_total{namespace=\"devops-app\",pod=~\"$pod\"}[15m])) or vector(0)",
           "legendFormat": "{{reason}}",
           "refId": "A"
         }
@@ -236,7 +279,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum(rate(voteball_db_errors_total{namespace=\"devops-app\"}[5m])) or vector(0)",
+          "expr": "sum(rate(voteball_db_errors_total{namespace=\"devops-app\",pod=~\"$pod\"}[5m])) or vector(0)",
           "legendFormat": "db errors",
           "refId": "A"
         }
@@ -255,7 +298,7 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "sum(rate(nginx_http_requests_total{namespace=\"devops-app\"}[5m]))",
+          "expr": "sum(rate(nginx_http_requests_total{namespace=\"devops-app\",pod=~\"$pod\"}[5m]))",
           "legendFormat": "nginx",
           "refId": "A"
         }
@@ -295,9 +338,69 @@
       "targets": [
         {
           "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "expr": "voteball_app_info{namespace=\"devops-app\"}",
+          "expr": "voteball_app_info{namespace=\"devops-app\",release=~\"$release\"}",
           "format": "table",
           "instant": true,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Request rate by release",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"x": 0, "y": 36, "w": 24, "h": 8},
+      "description": "Traffic split by the release serving it -- during a rollout both appear, which is what makes 'did the new release hurt users' answerable rather than a before/after guess. The join is what carries the release label onto a request counter that does not have one; it is deliberately NOT applied to the headline Request rate panel above, because a panel that depends on voteball_app_info goes blank rather than red when app_info breaks.",
+      "fieldConfig": {
+        "defaults": {"unit": "reqps"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "expr": "sum by (release) (rate(voteball_http_requests_total{namespace=\"devops-app\",pod=~\"$pod\"}[5m]) * on (namespace, pod) group_left (release) voteball_app_info{namespace=\"devops-app\",release=~\"$release\"})",
+          "legendFormat": "{{release}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Container CPU",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"x": 0, "y": 44, "w": 12, "h": 8},
+      "description": "cAdvisor, via the kubelet. container!=\"\" drops the per-pod rollup series cAdvisor also emits, which would otherwise double every pod's usage.",
+      "fieldConfig": {
+        "defaults": {"unit": "short"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"devops-app\",pod=~\"$pod\",container!=\"\"}[5m]))",
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Container memory (working set)",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"x": 12, "y": 44, "w": 12, "h": 8},
+      "description": "Working set rather than RSS: this is the number the kubelet compares against the memory LIMIT when deciding to OOMKill, so it is the one that predicts VoteballContainerOOMKilled.",
+      "fieldConfig": {
+        "defaults": {"unit": "bytes"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"devops-app\",pod=~\"$pod\",container!=\"\"})",
+          "legendFormat": "{{pod}}",
           "refId": "A"
         }
       ]

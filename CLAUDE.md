@@ -219,10 +219,13 @@ connects between builds — while the `prometheus` plugin's own `default_jenkins
 are correct for what they measure; verify which family a metric actually belongs to by querying it
 live, never by guessing from the name (`docs/design/2026-08-17-observability-design.md`'s "Drill
 outcomes" section and `charts/observability/values.yaml`'s `queueMetric` comment both record this being
-gotten wrong once already). One consequence still open: `JenkinsQueueStuck` (`jenkins_queue_size_value
-> 0` for 15m) has never actually been proven to fire — killing an agent mid-build aborts the build
-rather than queueing it, so a drill built around that mechanism can't reach a non-zero queue size;
-proving it needs a drill where agent *provisioning itself* fails.
+gotten wrong once already). `JenkinsQueueStuck` (`jenkins_queue_size_value > 0` for 15m) is proven,
+but only on the second attempt, and the way it was proven is the point: killing an agent mid-build
+*aborts* the build rather than queueing it, so a drill built around that mechanism can never reach a
+non-zero queue size. Reaching the condition needs agent **provisioning** to fail — a `ResourceQuota`
+of `pods=1` on the `ci` namespace — after which the alert fired end to end
+(`docs/eks/evidence/2026-08-18-rerun-drill-5-jenkins-queue-stuck.txt`). It also depends on the Jenkins
+ServiceMonitor being enabled, which is gated on a controller-image rebuild carrying `prometheus.jpi`.
 
 ### API surface
 
