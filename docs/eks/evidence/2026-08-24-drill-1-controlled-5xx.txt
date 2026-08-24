@@ -70,3 +70,46 @@ RESULT: PASS. VoteballHighErrorRate fired at 15:24:55Z (broken at 15:18:09Z).
    measuring it. Proving that needs a probe from inside the cluster
    (`kubectl exec <backend-pod> -- curl localhost:5000/health`), which is what the script now does.
    The 404s above are the drill measuring the wrong thing, recorded rather than quietly dropped.
+
+=== CORRECTION, same day, after checking the field manager ===
+
+NOTE 1 ABOVE IS WRONG ABOUT WHO ENDED THE OUTAGE, and the real answer is a better finding.
+
+It was not "a second operator". `allow-db-egress` was recreated by ArgoCD, and not by selfHeal
+either -- by an EXPLICIT sync from the CD pipeline:
+
+  $ kubectl get networkpolicy allow-db-egress -n devops-app \
+      -o jsonpath='{.metadata.creationTimestamp}  {range .metadata.managedFields[*]}{.manager}{" "}{end}'
+    2026-08-24T15:22:03Z  argocd-controller controller
+
+  $ kubectl get application voteball -n argocd -o json | jq '.status.history[-2:]'
+    2026-08-24T15:22:40Z  rev=7c9e418c  initiatedBy={"username":"jenkins-cd"}
+    2026-08-24T15:25:35Z  rev=53010087  initiatedBy={"username":"jenkins-cd"}
+
+  $ git log --oneline -1 7c9e418
+    7c9e418 release: 240b470 (image tag 3478075)
+
+The chain: a commit pushed to master earlier in this session went through application-ci, which
+triggered application-cd, which promoted to the `release` branch and ran `argocd app sync` at
+15:22:40Z. That sync restored every object in the chart -- including the NetworkPolicy this drill had
+deliberately deleted three minutes earlier.
+
+WHY THE DRILL'S OWN PRECAUTION DID NOT HELP, which is the part worth keeping:
+
+This script suspends `syncPolicy.automated` before breaking anything, precisely so selfHeal cannot
+undo the break before the alert fires. That is necessary and NOT SUFFICIENT. `syncPolicy.automated`
+governs only ArgoCD's own automatic reconciliation. An explicit `argocd app sync` -- which is exactly
+what Jenkinsfile-cd's Deploy stage issues, authenticated as `jenkins-cd` -- goes through regardless.
+Suspending auto-sync buys protection from the controller and none at all from the pipeline.
+
+So a chaos drill in `devops-app` is safe from ArgoCD only while NO CD DEPLOY IS IN FLIGHT, and CI is
+triggered by any push to master -- including the pushes that carry the drill's own scripts and
+evidence. The mechanism that ended this drill was the drill's own repository activity.
+
+WHAT THAT MEANS FOR THE RESULT ABOVE: unchanged. VoteballHighErrorRate still fired at 15:24:55Z on
+real recorded errors, over a real ~3m54s outage (15:18:09Z -> 15:22:03Z). What is narrower than
+intended is still narrower, and for the reason now correctly identified.
+
+ONE UNPLANNED POSITIVE: this is evidence, not sought, that a hand-deleted NetworkPolicy in
+devops-app is restored by the delivery system within about four minutes -- a property no drill in
+this repository had previously demonstrated.

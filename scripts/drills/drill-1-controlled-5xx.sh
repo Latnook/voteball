@@ -14,6 +14,17 @@
 #
 # ArgoCD's selfHeal would put the NetworkPolicy back within ~3 minutes -- sooner than the alert can
 # fire -- so auto-sync is suspended for the duration and restored by the same trap.
+#
+# SUSPENDING AUTO-SYNC IS NECESSARY AND NOT SUFFICIENT, learned on the 2026-08-24 run. It governs only
+# ArgoCD's own reconciliation. An EXPLICIT `argocd app sync` goes through regardless -- and that is
+# exactly what Jenkinsfile-cd's Deploy stage issues, as user `jenkins-cd`. On that run a deploy landed
+# 3m54s in, restored the deleted NetworkPolicy and ended the outage before the alert fired. The
+# trigger was this drill's own repository activity: pushing the drill scripts to master started CI,
+# which triggered CD, which synced.
+#
+# So the script now refuses to start while a CD deploy is in flight, and records the Application's
+# sync history on both sides of the drill so an interfering sync is visible in the evidence rather
+# than being guessed at afterwards.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 . scripts/lib/config.sh
@@ -81,8 +92,20 @@ echo "  HighErrorRate     $(alert_state VoteballHighErrorRate)"
 echo "  site /api/options $(curl -s -o /dev/null -w '%{http_code}' -m 10 "https://${APP_DOMAIN}/api/options")"
 echo
 echo "=== BREAK ==="
+# Refuse to start under an in-flight deploy: it would end the outage and the evidence would show a
+# short, unexplained recovery. Checked here rather than trusted, because the 2026-08-24 run lost its
+# window to exactly this.
+opphase="$(kubectl get application "$APP" -n argocd -o jsonpath='{.status.operationState.phase}' 2>/dev/null || echo '')"
+if [ "$opphase" = "Running" ] || [ "$opphase" = "Terminating" ]; then
+  echo "REFUSING TO START: an ArgoCD operation is $opphase. A deploy in flight will restore whatever" >&2
+  echo "  this drill deletes, regardless of syncPolicy. Wait for it to finish and re-run." >&2
+  exit 2
+fi
+echo "  ArgoCD sync history before the break:"
+kubectl get application "$APP" -n argocd -o jsonpath='{range .status.history[*]}    {.deployedAt}  {.revision}{"\n"}{end}' | tail -3
 kubectl patch application "$APP" -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":null}}}' >/dev/null
-echo "  ArgoCD auto-sync suspended (selfHeal would restore the policy before the alert could fire)"
+echo "  ArgoCD auto-sync suspended -- this stops selfHeal ONLY. An explicit `argocd app sync` from"
+echo "  application-cd is unaffected by it, so a deploy landing mid-drill will still end the outage."
 kubectl delete networkpolicy "$POLICY" -n "$NS"
 BROKE_AT="$(date -u +%H:%M:%SZ)"
 echo "  $POLICY deleted at $BROKE_AT"
@@ -107,6 +130,9 @@ print(urllib.request.urlopen('http://localhost:5000/health', timeout=5).status)"
   if [ "$st" = firing ]; then fired="$(date -u +%H:%M:%SZ)"; break; fi
   sleep 30
 done
+echo
+echo "  ArgoCD sync history after the break (a new row here means a deploy interfered):"
+kubectl get application "$APP" -n argocd -o jsonpath='{range .status.history[*]}    {.deployedAt}  {.revision}{"\n"}{end}' | tail -3
 echo
 if [ -n "$fired" ]; then
   echo "RESULT: PASS. VoteballHighErrorRate fired at $fired (broken at $BROKE_AT)."

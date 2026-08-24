@@ -78,7 +78,7 @@ for _ in $(seq 1 20); do
 done
 echo
 echo "=== AFTER ==="
-curl "${J[@]}" "localhost:$JENKINS_PORT/job/application-ci/api/json?tree=builds[number,result,building]{0,4}" \
+curl -g "${J[@]}" "localhost:$JENKINS_PORT/job/application-ci/api/json?tree=builds[number,result,building]{0,4}" \
   | python3 -c "
 import json,sys
 for b in json.load(sys.stdin).get('builds',[]):
