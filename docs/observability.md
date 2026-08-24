@@ -41,7 +41,7 @@ Alertmanager mails a person only when something is worth interrupting them for.
  pod stdout/stderr ─────────── Fluent Bit ──► CloudWatch Logs                │
  (devops-app only)                            7-day retention               ▼
                                                                         Grafana
-                                                                    3 dashboards
+                                                                    4 dashboards
                                                                      (port-forward)
 ```
 
@@ -68,7 +68,7 @@ Three homes, and which one a change belongs in decides whether it ships as a com
 |---|---|---|
 | `terraform/addon-monitoring.tf` | The stack itself: the Helm release, PVC, retention, resource limits, Alertmanager→SNS routing, the disabled-defaults list | `terraform apply` |
 | `charts/voteball` (ArgoCD) | The app's three ServiceMonitors, the 12 application alerts, the 4 SLI recording rules, the scrape NetworkPolicy, the canary | `git push` |
-| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 3 dashboards, the 4 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
+| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 4 dashboards, the 4 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
 | `charts/jenkins-support` (Terraform) | The Jenkins ServiceMonitor — the one exception, see §4 | `terraform apply` |
 | `terraform/addon-cloudwatch.tf` | Fluent Bit's log pipeline and the three log groups | `terraform apply` |
 
@@ -319,9 +319,24 @@ template.
 | Application Overview | `voteball-app` | 14 | Is the new release hurting users? Request rate, 5xx rate, availability vs SLO, p95 vs SLO, p50/p95/p99, votes cast, results freshness, ballots rejected by reason, DB errors, nginx rate, running `version`/`git_sha`/`release`, request rate **by release**, container CPU and memory. |
 | Kubernetes / Cluster | `voteball-k8s` | 10 | Is the fault in the app or the platform? Nodes ready, pending pods, node CPU/memory, pods by phase, desired vs available replicas, pod restarts, OOMKills, CPU throttling, PVC usage. |
 | Jenkins & Delivery | `voteball-delivery` | 8 | Is delivery healthy and is something stuck? Queue length and wait, executors total vs busy, online agents, build outcomes, build duration, controller JVM heap, last successful release. |
+| Service Health & Alerts | `voteball-alerts` | 10 | Is anything wrong right now, and would I have been told? Critical/warning/pending alert counts, a table of what's firing, availability vs 99% SLO, p95 vs 1s SLO, the canary's journey request and error rate, a 6h alert-firing history from Prometheus' `ALERTS` series, and an Alertmanager panel covering grouping/silences/inhibition — what Prometheus' history can't show. |
 
-Deleting the `observability` ArgoCD Application and re-syncing brings all three back with zero manual
+Deleting the `observability` ArgoCD Application and re-syncing brings all four back with zero manual
 steps. That round trip is what proves they are provisioned rather than clicked together.
+
+**The Service Health & Alerts dashboard's Alertmanager panel is text, not a live query, and that is a
+deliberate, verified limitation, not an oversight.** Grafana's built-in `alertmanager` data source
+(uid `alertmanager`, provisioned by kube-prometheus-stack since the stack's first deploy and unused by
+any panel until this dashboard) cannot be queried from a dashboard panel — its `query()` method is a
+stub that unconditionally returns empty data (confirmed against Grafana 13.1.1's own source,
+`public/app/plugins/datasource/alertmanager/DataSource.ts`), and the core Alert List panel's
+"Alertmanager" picker offers only Grafana-managed alert-forwarding targets, not a data source of this
+plugin type (`grafana/grafana#108531`, closed *not planned*). Only Grafana's own **Alerting →
+Alertmanager** page reaches it, via a resource-proxy call the panel query model does not expose. The
+panel still carries `"datasource": {"type": "alertmanager", "uid": "alertmanager"}` — so the uid is no
+longer provisioned-and-unreferenced — and its markdown body says exactly where to look instead:
+**Alerting → Alertmanager**, picking **Alertmanager** from the data source selector at the top, which
+shows real grouping, silences and the notification-policy tree.
 
 Rendered captures, with live data, live alongside the text evidence:
 [`2026-08-24-grafana-application-overview.png`](eks/evidence/2026-08-24-grafana-application-overview.png),
@@ -716,7 +731,7 @@ for q in voteball:journey_requests:rate5m voteball:availability:ratio5m voteball
     | python3 -c 'import json,sys; r=json.load(sys.stdin)["data"]["result"]; print(r[0]["value"][1] if r else "ABSENT")'
 done
 
-# 4. All three dashboards are present as ConfigMaps.
+# 4. All four dashboards are present as ConfigMaps.
 kubectl -n observability get cm -l grafana_dashboard=1
 
 # 5. Alertmanager has the SNS receiver and has not failed a notification.
