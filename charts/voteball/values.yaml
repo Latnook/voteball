@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "2356172"
+  tag: "c05bf21"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -19,7 +19,7 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:6281776debee50f9b1671d10572f9f24646d22b396f90e0a50f5b700681d074c"
+    backend: "sha256:63acddf0caaacd52ed16f94792530290c4ca70b5d6847ddc15081c1ed2471757"
     worker: "sha256:0a25ba2062529da5eae344f666ec263b0a7650cc7728fe0de61436d909dfd0f1"
     nginx: "sha256:1f58e6311ba844a0cae82ca51a800ce019728dbdda63f728b926c05a9dd55905"
     backup: "sha256:86bc98769d0d5f96146d1f9814f9e75d1e83a898cbab886db7ca8a6e5960ffce"
@@ -52,6 +52,12 @@ externalSecret:
   # The grafana_ro DB password lives in its OWN container so the observability namespace can read it
   # without also being handed the app's DB and admin credentials.
   grafanaSecretName: "voteball/grafana"
+  # FALSE until `terraform apply` has created the voteball/grafana container AND
+  # scripts/seed-grafana-secret.sh has seeded a real db_password into it. Chart code deploys on a
+  # git push; the Terraform container needs a billed apply. Turning this on first puts an
+  # ExternalSecret in the cluster with nothing to read, which fails the whole ArgoCD sync and makes
+  # every CD run roll production back. Happened on 2026-08-24.
+  grafanaEnabled: false
   refreshInterval: "1h"
 
 ingress:

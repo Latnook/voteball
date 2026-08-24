@@ -253,4 +253,54 @@ scope note from decision 2.
 
 ## Verification outcome
 
-*(To be filled in after execution — what actually broke when the design met the cluster.)*
+### The sequencing defect: a consumer shipped without its producer
+
+**Found live on 2026-08-24, during implementation, at the cost of two production rollbacks.**
+
+Decision 6 puts the Secrets Manager container in Terraform and the ExternalSecrets that read it in
+the Helm charts. That split is correct — it is the same platform-vs-configuration boundary the whole
+repo draws. What the design failed to state is that **the two halves travel at different speeds**:
+
+| Half | Lives in | Reaches the cluster by | Latency |
+|---|---|---|---|
+| The secret container | `terraform/secrets.tf` | a billed `terraform apply` | whenever a human runs it |
+| The ExternalSecrets | `charts/{voteball,observability}` | a `git push` → CI → CD → ArgoCD | minutes, automatically |
+
+So committing the chart half put a consumer in the cluster while its producer did not yet exist.
+`voteball/grafana` was not in Secrets Manager — the account held exactly two secrets, `voteball/app-secret`
+and `voteball/jenkins` — and the failure cascaded further than a missing dashboard credential should:
+
+```
+kubectl get externalsecret -n devops-app     grafana-db-secret    SecretSyncedError  False
+kubectl get externalsecret -n observability  grafana-datasources  SecretSyncedError  False
+kubectl get application -n argocd            voteball       Synced/Degraded  op=Failed
+                                             observability  Synced/Degraded
+```
+
+ESO cannot resolve the reference, so the resource is Degraded, so ArgoCD's **whole sync operation**
+reports `phase: Failed` — and because anything failing after `application-cd`'s Promote stage
+triggers an automatic rollback, every CD run became *deploy fails → roll production back*. It ran
+twice (`application-cd` #4 and #6, both rolling back to `2356172`) before anyone noticed, while
+`master` moved several commits ahead of what was actually serving. A monitoring feature that had not
+been switched on yet was reverting unrelated application fixes.
+
+**The fix is a gate, defaulting off**: `.Values.externalSecret.grafanaEnabled` in `charts/voteball`
+and `.Values.externalSecret.enabled` in `charts/observability`, both `false` until `terraform apply`
+has created the container *and* `scripts/seed-grafana-secret.sh` has seeded it.
+
+### The general rule this produces
+
+**Any chart resource that references a Terraform-created object must be gated off by default.** The
+gate is not defensive style; it is what keeps the two deployment speeds from being a race. The repo
+already had this shape and it was not recognised in time: `charts/voteball`'s own `app-secret`
+ExternalSecret reads a container Terraform creates empty and `seed-eks-secret.sh` fills — the same
+pattern, which had simply always been seeded before anyone looked.
+
+### A second finding: "holding pushes" is meaningless on a shared branch
+
+These commits reached `origin/master` without this session ever running `git push`. A concurrent
+session pushed *its* commit, which sat on top of mine, and git pushes the entire ancestor chain. Any
+agreement to hold pushes on a shared branch is therefore unenforceable by the party holding — it
+only takes effect if every other writer also holds. The isolation that would actually deliver it is
+a branch or a worktree, which this plan explicitly ruled out for unrelated reasons (the gitignored
+`terraform/backend.hcl` exists only in the main tree).
