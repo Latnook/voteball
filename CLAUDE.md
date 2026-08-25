@@ -801,7 +801,7 @@ because getting them wrong destroys data rather than just being wrong:
   used to rename anything** — not a display name. `seed_key IS NULL` means "created through the
   admin UI," so `seed.sql` never touches that row, including on removal. Adding an entity is one row
   in a table's `VALUES` block, regenerated via `scripts/seed/generate-tables.py`, not hand-typed.
-  `seed.sql` is now **608 lines / 47 statements** (from 1,276 lines / 78 statements), with **zero**
+  `seed.sql` is now **611 lines / 47 statements** (from 1,276 lines / 78 statements), with **zero**
   patch statements — verify with `grep -c ';\s*$' services/backend/seed.sql` rather than trusting
   this number, it will drift the next time the file changes.
 - **Restructuring `seed.sql` must be proven data-neutral, now via
