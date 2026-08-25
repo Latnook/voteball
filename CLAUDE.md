@@ -432,6 +432,23 @@ this shape and nobody had named it: `app-secret` reads a container Terraform cre
 `seed-eks-secret.sh` fills, and it never broke only because it had always been seeded before anyone
 looked.
 
+**A gate that is off in git is a rebuild that does not work.** The corollary nobody wrote down until
+a real destroy/deploy cycle on 2026-08-25: gating a chart resource off protects a *running* cluster,
+but if the gate ships `true` and nothing seeds the secret it references, every fresh deploy
+reproduces the outage the gate was added to prevent. So a gated resource needs BOTH halves —
+`scripts/deploy.sh` step 3c seeds `voteball/grafana` **before** the billed apply (alongside the app
+and Jenkins secrets, and for the same reason), and the gates ship `true` because the seed step makes
+that safe. Adding a gated resource without a seeding step is half a change.
+
+**Environment variables are projected into a pod at START and never again.** `envFromSecret` on
+Grafana, `containerEnvFrom` on Jenkins — same mechanism, same trap, hit twice. A pod older than its
+Secret has the variable **unset**, and Grafana expands an unset variable in a provisioning file to an
+**empty string** rather than erroring, so it authenticates with an empty password and fails at panel
+load with `SQLSTATE 28P01`. `scripts/restart-grafana-datasources.sh` (deploy step 11d) handles it:
+it **waits** for the Secret rather than checking once — on a fresh deploy the single check ran ~90
+seconds before ESO filled it — then restarts and **verifies the variable is actually set** rather
+than assuming the restart worked.
+
 **Read the `release` branch by CONTENT, never by ancestry.** `promote-to-release.sh` builds each
 release commit with `git read-tree`, not a merge, so a `master` commit is *never* an ancestor of the
 release commit that carries it — `git merge-base --is-ancestor <sha> origin/release` returns false
@@ -675,6 +692,30 @@ indistinguishable from a **correct negative**, which is a legitimate outcome nob
 investigate. Exercising a check against known-present input at least once is the only defence, and it
 is the same discipline as proving a test can fail before trusting it to pass.
 
+**A NAME that is a silent contract with something off-screen — four instances in one day
+(2026-08-24), all four producing a confident, empty, correct-looking result and no error anywhere.**
+This is the sibling of the swallowed-status family above: there the status was discarded, here the
+receiver simply never recognised the word. Nothing rejects an unknown key; it is ignored, a default
+is used, and the output looks like a legitimate negative.
+
+| The name | Who else reads it | What went wrong |
+|---|---|---|
+| `GITHUB_TOKEN` | **git's credential helper and the `gh` CLI**, automatically | Put in `deploy.env`, which `deploy.sh` sources with `set -a`, so every `git push` and `gh` call in the deploy authenticated as a read-only fine-grained PAT. Step 9 died on `Permission to Latnook/voteball.git denied`, its guard then correctly refused to bootstrap ArgoCD, and the rebuild finished with **no ArgoCD Applications and `charts/observability` never deployed** — while reporting success and serving 200. Now `GRAFANA_GITHUB_TOKEN`. **Never introduce a bare `GITHUB_TOKEN` into any script's environment here.** |
+| `envFromSecret` vs `envFromSecrets` | the Grafana subchart | The singular renders a **mandatory** `secretRef` with no `optional` field; only the plural (a list) supports `optional: true`. The singular pointed at a Secret that only a default-off ExternalSecret creates, so the next `terraform apply` would have `CreateContainerConfigError`d Grafana and taken all six dashboards down. |
+| `queryMode` / `metricQueryType` / `metricEditorMode` | Grafana's CloudWatch **frontend**, not its backend | Absent from all ten metric targets. `/api/ds/query` filled defaults and returned real data, so every server-side check passed; the browser took the other branch and sent an empty query. The dashboard rendered "No data" while every verification said green. |
+| `options.ref` vs `options.gitRef` | `grafana-github-datasource` 2.9.0 | The Commits panel returned 0 rows with `status=ok`. Measured: `gitRef` → 188 commits/7d, `ref` → 0, `gitRef: ""` → 0 (no default-branch fallback). |
+
+**The defence is the same in every case and it is not code review.** Make both sides actually talk,
+once, and count what comes back. Three of these four passed valid-JSON checks, valid-uid checks,
+`helm lint`, `terraform validate` and an HTTP 200. The fourth passed a per-panel query sweep *through
+the wrong code path*. What found them: a rebuild (the first two), and a human noticing that one panel
+worked while its neighbour did not (the last two).
+
+**Corollary — a check that only ever exercises one consumer proves nothing about the other.** The
+per-panel sweep in this repo queries `/api/ds/query`. It cannot see a frontend-only failure, and it
+reported 60/60 healthy against a blank dashboard. If a stored document is read by two different
+consumers, they are two different contracts.
+
 **AWS CLI v2 pages its output whenever stdout is a terminal, and that hangs deploys.** v1 had no
 pager at all, so nothing noticed until the repo owner upgraded on 2026-08-21. Every script in
 `scripts/` runs at a terminal, so any `aws` call whose output is *not* captured or redirected stops
@@ -875,7 +916,7 @@ scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; 6 of
 scripts/tests/test-verify-deployed-image.sh # CD Verify: match the DIGEST, not the tag
 ```
 
-**The suite is 30 tests as of 2026-08-24** — read it off `run-ci-suite.sh`'s own final output line
+**The suite is 26 tests as of 2026-08-25** — read it off `run-ci-suite.sh`'s own final output line
 rather than from here. `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` are exhaustive and the runner fails if
 a file in `scripts/tests/` appears in none of them, so the count moves whenever a test is added and
 this sentence will go stale before the runner does.

@@ -1,0 +1,81 @@
+DESTROY / DEPLOY CYCLE — 2026-08-25, ~00:00-01:15 IDT
+Purpose: prove the Grafana data-source work (2026-08-24) survives a full rebuild.
+This is a DATED RECORD. Do not "correct" it — the failures below are the point.
+
+WHAT WAS UNDER TEST
+  Three data sources added the previous day (PostgreSQL via grafana_ro, CloudWatch via
+  IRSA, GitHub via a plugin), three dashboards, and the deploy-path wiring. All of it
+  worked on the live cluster ONLY because a human had run the seed script and restarted
+  Grafana by hand. Nothing had ever been exercised from a cold start.
+
+TEARDOWN
+  Clean. No EKS / RDS / ALB / VPC / NAT left, and ZERO orphaned aws-K8S-* ENIs.
+  Final snapshot voteball-eks-db-final-20260824141901, SnapshotCreateTime 2026-08-24T20:36:05Z.
+  NOTE the identifier embeds time_static.deploy, NOT the snapshot time — read the timestamp.
+
+REBUILD — three predicted problems, all fixed BEFORE the cycle, all held:
+  step 3c   seeded voteball/grafana before the billed apply     -> "Stored." on first real run
+  split     two independent ExternalSecrets (db / github)       -> both SecretSynced
+  restart   restart-grafana-datasources.sh                      -> detected + verified projection
+
+REBUILD — the bug the cycle actually found (introduced hours earlier, not predicted):
+  GITHUB_TOKEN was added to deploy.env. deploy.sh sources that file with `set -a`, and
+  GITHUB_TOKEN is consumed automatically by git's credential helper and the gh CLI. So
+  every git push and gh call in the deploy authenticated as a READ-ONLY, single-repo
+  fine-grained PAT instead of the operator's own credentials:
+
+    step 9   remote: Permission to Latnook/voteball.git denied to Latnook.
+             fatal: ... The requested URL returned error: 403
+             ERROR: could not push values.yaml.
+             Refusing to bootstrap ArgoCD -- it would sync a stale image tag over this deploy.
+    step 11  SKIPPED — values.yaml is not on master (see the error above).
+    step 11b gh: Resource not accessible by personal access token (HTTP 403)
+
+  CONSEQUENCE: deploy.sh exited 0, the site served HTTP 200, and the cluster had NO ArgoCD
+  Applications at all — charts/observability was never deployed. A successful-looking deploy
+  that silently omitted half the platform.
+
+  Fixed: renamed to GRAFANA_GITHUB_TOKEN (ccad3df). Cannot collide.
+
+OPERATOR ERROR WORTH RECORDING
+  Step 9 printed "Refusing to bootstrap ArgoCD -- it would sync a stale image tag over this
+  deploy." That guard was RIGHT and was overridden by hand. `release` still held the
+  DESTROYED cluster's image tag (2ce865c, absent from the rebuilt ECR), so the migrate
+  PreSync hook went ImagePullBackOff and blocked the whole sync for ~20 minutes. Recovery
+  needed: promote-to-release.sh with correct digests, delete the stuck hook, hard-refresh
+  the Application. All of it was predicted verbatim by the message that was ignored.
+
+SECOND DESIGN FAULT FOUND
+  Step 11d checked for grafana-datasources ONCE and exited 0 with "nothing to project".
+  It runs moments after step 11 bootstraps ArgoCD, ~90s before ESO fills the Secret, so a
+  single check is ALWAYS too early on a fresh deploy. Now waits up to 180s (49ad02d).
+
+FINAL STATE — verified, not assumed
+  both ArgoCD Applications        Synced / Healthy
+  ExternalSecrets                 5/5 SecretSynced (incl. both split Grafana ones)
+  site                            HTTP 200
+  PostgreSQL data source          22 ballots — the same votes, via the restored snapshot
+  CloudWatch data source          69 points via IRSA on a brand-new role
+  dashboards                      6, and ALL 60 PANELS returning data
+  grafana_ro                      reconciled: the role travelled inside the RDS snapshot
+                                  carrying the previous password, the seed script's
+                                  idempotency guard kept the same value in Secrets Manager,
+                                  and the two agreed.
+
+POST-CYCLE, chasing the dashboards
+  GitHub Commits panel returned 0 rows with status=ok. Not auth — Contributors worked from
+  the same data source and token, and the token read commits via both REST and GraphQL
+  (1105 total). The field name was wrong: grafana-github-datasource 2.9.0 reads
+  options.gitRef, and ignores options.ref.
+      options.gitRef "master" -> 188 commits / 7d
+      options.ref    "master" -> 0
+      options.gitRef ""       -> 0   (no default-branch fallback)
+  Fixed (fd6264f) and confirmed live after CD promoted it: 188 rows, authors "Latnook".
+  That change also proved the whole pipeline unaided — push -> webhook -> CI -> CD ->
+  release -> ArgoCD sync -> live ConfigMap in ~6 minutes, the first of the night to need
+  no hand-holding (the webhook had been broken by the same GITHUB_TOKEN collision).
+
+WHAT THE CYCLE WAS WORTH
+  Two real defects that no amount of inspection on a healthy cluster could surface, because
+  neither failing state existed there: one variable collision, one always-too-early check.
+  Both were in code written the same day and reviewed repeatedly.
