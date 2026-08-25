@@ -20,7 +20,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 10
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 216
+    assert cur.fetchone()[0] == 218
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -327,7 +327,7 @@ def test_seed_rerun_survives_league_name_drift(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 10, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 216, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 218, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
@@ -489,10 +489,11 @@ def test_nations_league_divisions_are_fully_populated(conn):
 
 
 # Clubs whose ONLY seeded league is the Europa League -- their domestic leagues (Greek, Belgian,
-# Czech, Ligue 1, Austrian, Primeira Liga, Eredivisie) are not seeded by this app.
+# Czech, Ligue 1, Austrian, Primeira Liga, Eredivisie, Scottish Premiership) are not seeded by this
+# app.
 EUROPA_LEAGUE_ONLY_CLUBS = [
-    'Lech Poznań', 'NEC', 'Olympiacos', 'Olympique de Marseille', 'Sparta Prague', 'Stade Rennais',
-    'Sturm Graz', 'Torreense', 'Union Saint-Gilloise',
+    'Celtic', 'Lech Poznań', 'NEC', 'Olympiacos', 'Olympique de Marseille', 'Sparta Prague',
+    'Stade Rennais', 'Sturm Graz', 'Torreense', 'Union Saint-Gilloise',
 ]
 
 # Clubs already seeded under a domestic league that gain the Europa League as their SECOND league.
@@ -604,14 +605,14 @@ def test_shared_europa_league_clubs_are_linked_not_duplicated(conn):
     cur.close()
 
 
-def test_europa_league_has_19_votable_teams(conn):
+def test_europa_league_has_20_votable_teams(conn):
     cur = conn.cursor()
     cur.execute(
         """SELECT COUNT(*) FROM clubs c
            JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
            WHERE l.name_en = 'UEFA Europa League'"""
     )
-    assert cur.fetchone()[0] == 19
+    assert cur.fetchone()[0] == 20
     cur.close()
 
 
