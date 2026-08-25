@@ -221,15 +221,26 @@ coupled on purpose — see the comment at `VoteballJourneyTrafficStopped` in
 **The canary can be alive, healthy and resolving nothing — and that reads as 100% availability.**
 On a rebuild, app pods start and look up `<app_domain>` *before* external-dns has created its A
 record. Because that name already exists in Route53 for unrelated reasons (a `google-site-verification`
-TXT record), the answer is **NOERROR with no A record**, not NXDOMAIN — a negative answer cached
-against the zone's SOA *minimum* TTL, which for `latnook.com` is **86400 seconds**. CoreDNS then serves
-it long after the record appears (measured 2026-08-24: still empty 15 minutes later, while the VPC
-resolver at `10.0.0.2` answered correctly from the same pod). The canary sends nothing,
+TXT record), the answer is **NOERROR with no A record**, not NXDOMAIN — a negative answer, and
+RFC 2308 caps how long it may be cached at `min(SOA record TTL, SOA MINIMUM)`, which for
+`latnook.com` is `min(900, 86400)` = **15 minutes**. Four live documents said 86400 / twenty-four
+hours (the MINIMUM field alone) until 2026-08-26; `docs/eks/live-cluster-snapshot.md` had the rule
+right the whole time, which is the usual tell — *a doc contradicting another doc*. **Which cache
+holds it decides whether anything you can do helps**: CoreDNS caps a denial at 30s, so restarting it
+clears its copy cheaply, while the **VPC resolver upstream keeps its own for the full 15 minutes and
+no restart in this cluster can touch it** (measured 2026-08-26 mid-rebuild: 19s left on CoreDNS,
+691s left on `10.0.0.2` — so the restart could not have worked, and the script's three retries over
+30s were never going to be enough). The canary sends nothing,
 `voteball:journey_requests:rate5m` sits at 0, and `voteball:availability:ratio5m` falls back to
 `or vector(1)` — a confident, wrong 100%, on a site whose users are unaffected because the *public*
 path works fine. The tell is **TXT resolves and A does not**. `deploy.sh` step 11c runs
 `scripts/verify-public-dns.sh`, which restarts CoreDNS **only** when a public resolver can resolve a
-name the cluster cannot; an unconditional restart would be a step nobody could safely remove.
+name the cluster cannot; an unconditional restart would be a step nobody could safely remove. **That
+"public resolver" must not be the machine's own stub resolver** — it caches the same NODATA for the
+same reason, so `getent` reports "the record does not exist yet" about a record that plainly does and
+the script then refuses to act (2026-08-26: `systemd-resolved` held the negative while `dig @1.1.1.1`
+returned both ALB addresses from the same shell). It now asks the zone's **authoritative**
+nameserver, which has no cache to be wrong.
 `VoteballJourneyTrafficStopped` does catch this on its own after 10 minutes — it went `pending` six
 minutes into the 2026-08-24 occurrence — but an alert that fires on every deploy is one people learn
 to ignore.
