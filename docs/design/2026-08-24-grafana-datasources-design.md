@@ -392,6 +392,51 @@ and non-fatal, so a Grafana hiccup never fails a deploy whose application is oth
 `scripts/tests/test-grafana-datasources.sh` (checking the split ExternalSecrets and the per-entry
 `optional = true`) cover all of this offline.
 
+### A fifth finding: the GitHub Commits panel needs `options.gitRef`, not `options.ref`
+
+The Commits panel returned zero rows with `status=ok` and nothing in the Grafana log. Not auth:
+Contributors returned real data from the same data source and the same token, and the token read
+commits directly via both REST and GraphQL (1,105 total). The field name was simply wrong —
+`grafana-github-datasource` 2.9.0 reads `options.gitRef` and ignores `options.ref`.
+
+```
+options.gitRef "master"  ->  188 commits / 7d
+options.ref    "master"  ->  0
+options.gitRef ""        ->  0        (no fallback to the default branch)
+```
+
+Open issues legitimately shows zero — the repository has none.
+
+### A sixth finding: the whole feature did not survive a rebuild, and two reasons were invisible before one
+
+A destroy/deploy cycle on 2026-08-25 (`docs/eks/evidence/2026-08-25-destroy-deploy-cycle.txt`) found
+two defects that **could not exist on the healthy cluster**, because neither failing state was
+reachable there:
+
+1. **`GITHUB_TOKEN` in `deploy.env`.** `deploy.sh` sources that file with `set -a`, and git's
+   credential helper and the `gh` CLI both consume that variable automatically — so every push and
+   every API call in the deploy authenticated as a read-only, single-repo fine-grained PAT. Step 9
+   could not push `values.yaml`, its guard then correctly refused to bootstrap ArgoCD, and the run
+   exited 0 with the site serving 200 and **no ArgoCD Applications at all**. Renamed to
+   `GRAFANA_GITHUB_TOKEN`.
+2. **Step 11d checked for the Secret once.** It runs moments after ArgoCD is bootstrapped, roughly 90
+   seconds before ESO fills the Secret, so a single check is always too early on a fresh deploy. It
+   now waits.
+
+Three things designed for the rebuild did hold: the step-3c seeding before the billed apply, the
+split ExternalSecrets (each syncing independently), and the restart helper detecting *and verifying*
+the projection. And `grafana_ro` reconciled cleanly — the role travels inside the RDS snapshot
+carrying the old password while the seed script's idempotency guard keeps the same value in Secrets
+Manager, so the two agreed. That was the one piece of state persisting by two independent mechanisms,
+and it was the main thing worth testing.
+
+**The general lesson, which is now in the root `CLAUDE.md`:** four of this feature's bugs were a
+*name* that meant something to a system nobody was thinking about — `GITHUB_TOKEN` to git,
+`envFromSecret` vs `envFromSecrets` to a Helm chart, `queryMode` to a browser but not a server,
+`options.ref` to a plugin. None produced an error. Each produced a confident, empty, correct-looking
+result that passed every structural check. The only reliable way to find a broken contract is to make
+both sides talk once and count what comes back.
+
 ### A second finding: "holding pushes" is meaningless on a shared branch
 
 These commits reached `origin/master` without this session ever running `git push`. A concurrent

@@ -335,6 +335,15 @@ correct for its date.
 | `2026-07-27-post-rebuild-demos.txt` | The same demos, re-run after the rebuild |
 | `2026-07-27-post-rebuild-pod-restart-poll.txt` | 700 probes across a pod deletion on the rebuilt cluster |
 
+## 2026-08-25 — a second destroy → rebuild cycle, to test the Grafana data sources
+
+| File | What it is |
+|---|---|
+| `2026-08-25-destroy-deploy-cycle.txt` | A full teardown and rebuild run to answer one question: does the Grafana data-source work survive a cold start? It found two defects that could not exist on the healthy cluster — a `GITHUB_TOKEN` in `deploy.env` that broke every `git push` in the deploy (git and `gh` consume that name automatically), leaving a "successful" deploy with **no ArgoCD Applications at all**; and a step that checked for a Secret once, ~90 seconds before it existed. It also records an operator error worth keeping: step 9's guard said *"Refusing to bootstrap ArgoCD — it would sync a stale image tag"*, was overridden by hand, and every consequence it predicted then happened. |
+
+Unlike the 2026-07-27 set above, this is a narrative record rather than raw command captures — the
+value is in the sequence of failures and what each one proved, not in the untrimmed output.
+
 ## Checking the pod-restart claim yourself
 
 The claim is "the site stayed up across a pod restart". Verify it rather than believe it:
