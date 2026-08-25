@@ -66,10 +66,15 @@ before anything else:
   2. external-dns has not created the A record yet — it reconciles only after the Ingress exists.
   3. `<app_domain>` **already exists** in Route53 for an unrelated reason (this zone carries a
      `google-site-verification` TXT record on that exact name), so the query returns
-     **NOERROR with an empty answer**, not NXDOMAIN. That is a negative answer cached against the
-     zone's SOA *minimum* TTL — `dig +short SOA latnook.com` reports **86400**, twenty-four hours.
-  4. CoreDNS keeps serving it. Measured: still empty 15 minutes later, while a direct query to the
-     VPC resolver (`nslookup <app_domain> 10.0.0.2` from the same pod) returned both ALB addresses.
+     **NOERROR with an empty answer**, not NXDOMAIN. That is a negative answer, and RFC 2308 caps
+     its lifetime at `min(SOA record TTL, SOA MINIMUM)` = `min(900, 86400)` = **15 minutes**. (This
+     step said 86400 / twenty-four hours until 2026-08-26 — the MINIMUM field alone. It is 15
+     minutes, and that difference is the difference between waiting and escalating.)
+  4. Both caches keep serving it, but for very different lengths of time: CoreDNS caps a denial at
+     30s, the **VPC resolver holds its own copy for the full 15 minutes**, and nothing in the cluster
+     can clear that one. Measured 2026-08-24: a direct query to `10.0.0.2` still answered correctly.
+     Measured 2026-08-26 on the next rebuild: it did **not** — 19s left on CoreDNS's copy against
+     691s on the VPC resolver's, so restarting CoreDNS was powerless and the script said so.
 
   The tell that distinguishes it from every other cause: **TXT resolves and A does not.**
 

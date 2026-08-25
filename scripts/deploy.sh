@@ -602,9 +602,12 @@ step "11c/11 Verifying the cluster can resolve its own public hostname"
 #
 # It happens on rebuilds. App pods start at step 10 and resolve <app_domain> before external-dns has
 # created the A record, and because that name already exists in Route53 for other reasons, the answer
-# is NOERROR-with-no-A rather than NXDOMAIN -- a NEGATIVE answer cached against the zone's SOA
-# minimum TTL, 86400 seconds. Observed on 2026-08-24: still unresolved 15 minutes later while the VPC
-# resolver returned both ALB addresses.
+# is NOERROR-with-no-A rather than NXDOMAIN -- a NEGATIVE answer, which RFC 2308 caps at
+# min(SOA record TTL, SOA MINIMUM) = min(900, 86400) = 15 minutes for this zone. Whichever cache
+# holds it decides whether the restart below can help: CoreDNS caps a denial at 30s, the VPC resolver
+# upstream holds its own for the full 15 and nothing here can clear that. Observed 2026-08-24: the
+# VPC resolver still answered correctly. Observed 2026-08-26: it did not, so this step could only
+# report and wait.
 #
 # The script restarts CoreDNS ONLY when the outside world can resolve a name the cluster cannot,
 # which is that cache's signature. NOT FATAL, for the same reason as 11b: the site is already up and
