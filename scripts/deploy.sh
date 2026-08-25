@@ -142,17 +142,40 @@ fi
 # and time out against a control plane that is quietly dropping this machine's packets. That reads
 # like a broken cluster, not like an access-list miss, and it happens after ~13 billed minutes.
 #
-# Checked here, before anything is created, and it is a WARNING rather than a hard stop: a CI runner
-# or a deliberately open ["0.0.0.0/0"] are both legitimate and neither should block a deploy.
-if ! ./scripts/refresh-api-cidr.sh --check >/dev/null 2>&1; then
+# Checked here, before anything is created, and FIXED rather than merely reported: warning about it
+# and continuing is what happened on 2026-08-26, and the deploy went on to fail every helm_release
+# and kubernetes_* resource in step 6 with `i/o timeout` -- ~13 billed minutes to learn that a home
+# ISP had reassigned an address. The warning was printed. It scrolled past, 500 lines above the
+# errors, which named the cluster and not the allow-list.
+#
+# `--ensure`, not the plain form: it rewrites the list only when this machine is genuinely not
+# covered, and when it does, it keeps every entry broader than a /32 (see that script's header). A
+# deliberately open ["0.0.0.0/0"], a CI runner's range, or a second operator's subnet all survive an
+# unattended deploy untouched -- the only thing it will replace is a stale single-host pin, which is
+# the only thing that goes stale on its own.
+#
+# VOTEBALL_NO_CIDR_FIX=1 keeps the old warn-and-continue behaviour for anyone who wants the file
+# left alone. A failure here (no route to checkip, a missing tfvars) warns and continues either way:
+# an address-lookup outage must not block a deploy that may well be running from inside the allowed
+# range already.
+if [ "${VOTEBALL_NO_CIDR_FIX:-0}" = "1" ]; then
+  if ! ./scripts/refresh-api-cidr.sh --check >/dev/null 2>&1; then
+    echo >&2
+    echo "WARNING: terraform/${TFVARS} does not name this machine's current public address in" >&2
+    echo "         cluster_endpoint_public_access_cidrs. If the list does not cover wherever this" >&2
+    echo "         deploy runs from, every kubectl call after step 7 will TIME OUT rather than be" >&2
+    echo "         refused -- which looks like a dead cluster. Current state:" >&2
+    ./scripts/refresh-api-cidr.sh --check 2>&1 | sed 's/^/         /' >&2 || true
+    echo "         Fix with: ./scripts/refresh-api-cidr.sh   (VOTEBALL_NO_CIDR_FIX=1 is set, so" >&2
+    echo "         this run will not touch the file itself.)" >&2
+    echo >&2
+  fi
+elif ! ./scripts/refresh-api-cidr.sh --ensure; then
   echo >&2
-  echo "WARNING: terraform/${TFVARS} does not name this machine's current public address in" >&2
-  echo "         cluster_endpoint_public_access_cidrs. If the list does not cover wherever this" >&2
-  echo "         deploy runs from, every kubectl call after step 7 will TIME OUT rather than be" >&2
-  echo "         refused -- which looks like a dead cluster. Current state:" >&2
-  ./scripts/refresh-api-cidr.sh --check 2>&1 | sed 's/^/         /' >&2 || true
-  echo "         Fix with: ./scripts/refresh-api-cidr.sh   (then re-run this script)" >&2
-  echo "         Ignore it if the list is deliberately broad, or if you deploy from elsewhere." >&2
+  echo "WARNING: could not confirm this machine is in the EKS API allow-list" >&2
+  echo "         (cluster_endpoint_public_access_cidrs in terraform/${TFVARS}). Continuing." >&2
+  echo "         If step 7 onwards times out against the cluster, that is this: run" >&2
+  echo "         ./scripts/refresh-api-cidr.sh and re-run this script." >&2
   echo >&2
 fi
 

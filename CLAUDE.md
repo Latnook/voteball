@@ -368,6 +368,20 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   a UI edit to sync policy or destination is the one drift GitOps cannot self-correct.
   The `voteball` AppProject pins source repo + destination namespace and sets
   `clusterResourceWhitelist: []`; see `charts/voteball/CLAUDE.md` before adding a cluster-scoped kind.
+**`deploy.sh`'s preflight REPAIRS the EKS API allow-list rather than warning about it**
+(`./scripts/refresh-api-cidr.sh --ensure`, before step 1). `cluster_endpoint_public_access_cidrs`
+names a home ISP address, so it goes stale on its own schedule, and when it does AWS **drops** this
+machine's packets rather than refusing them — so every `helm_release` and `kubernetes_*` resource in
+step 6 fails with `Kubernetes cluster unreachable ... i/o timeout` and the run reads as a dead
+cluster, ~13 billed minutes in. A warning was already printed there and it did not help: it scrolled
+past hundreds of lines above the errors, which named the cluster and not the list (2026-08-26).
+**`--ensure`, never the plain form, is what an unattended run may call**: it acts only when the list
+does not already *cover* this machine (containment, not string equality — `["0.0.0.0/0"]` covers it),
+and when it does act it keeps every entry broader than a `/32` and replaces only stale single-host
+pins. The plain form replaces the whole list with one `/32`, which is correct for a human and would
+silently lock out a CI runner or a second operator here. `VOTEBALL_NO_CIDR_FIX=1` restores
+warn-only.
+
 - **`./scripts/deploy.sh` / `./scripts/destroy.sh`** run the full ordered sequence (both stop for
   confirmation before Terraform touches billed resources; `VOTEBALL_AUTO_APPROVE=1` skips the prompt
   for unattended runs only). **`VOTEBALL_AUTO_APPROVE=1` alone does NOT make `deploy.sh`
@@ -801,7 +815,7 @@ because getting them wrong destroys data rather than just being wrong:
   used to rename anything** — not a display name. `seed_key IS NULL` means "created through the
   admin UI," so `seed.sql` never touches that row, including on removal. Adding an entity is one row
   in a table's `VALUES` block, regenerated via `scripts/seed/generate-tables.py`, not hand-typed.
-  `seed.sql` is now **608 lines / 47 statements** (from 1,276 lines / 78 statements), with **zero**
+  `seed.sql` is now **613 lines / 47 statements** (from 1,276 lines / 78 statements), with **zero**
   patch statements — verify with `grep -c ';\s*$' services/backend/seed.sql` rather than trusting
   this number, it will drift the next time the file changes.
 - **Restructuring `seed.sql` must be proven data-neutral, now via
@@ -912,7 +926,8 @@ scripts/tests/check-jenkinsfile-shell.sh   # see below — not a guard test, a s
 scripts/tests/test-promote-to-release.sh   # the release-branch mechanics; GIT_GROUP, real throwaway repos
 scripts/tests/test-jenkins-plugin-lock.sh  # plugins.txt / plugins.lock.txt / Dockerfile stay in step
 scripts/tests/test-notify.sh               # the SNS notifier can NEVER fail a build
-scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; 6 of its 10 checks are refusals
+scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; its refusals and
+                                           # already-covered no-ops are the point, not the happy path
 scripts/tests/test-verify-deployed-image.sh # CD Verify: match the DIGEST, not the tag
 ```
 

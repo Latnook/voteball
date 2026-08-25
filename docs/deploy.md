@@ -822,6 +822,7 @@ aws logs tail "/aws/containerinsights/$(terraform output -raw cluster_name)/appl
 | What you see | Almost always |
 |---|---|
 | `kubectl` hangs or complains about certificates | The cluster was rebuilt — re-run `aws eks update-kubeconfig` |
+| `kubectl` times out (no error, just waits) | Your home IP changed and is no longer in the cluster's allow-list. AWS drops the packets rather than refusing them, so it looks like a dead cluster. Run `./scripts/refresh-api-cidr.sh`, then `cd terraform && terraform apply -var-file=voteball.tfvars` |
 | Port-forward says the service doesn't exist | A chart upgrade renamed it — run `kubectl get svc -n observability` and use the real name |
 | Grafana rejects the password | It's regenerated on every rebuild — print it again |
 | `localhost:3000` shows nothing | The tunnel closed — it dies with its terminal, silently |
@@ -1035,6 +1036,16 @@ steps 1 and 4.
   (deliberately building work in progress) and it tags the image `<sha>-dirty` forever. A provider
   lock bump is a real change that belongs in git — committing it is the correct outcome, not a
   workaround. Observed 2026-08-17 (`null` 3.3.0→3.3.1, `time` 0.14.0→0.14.1).
+- **Step 6 fails with `Kubernetes cluster unreachable ... i/o timeout` on every `helm_release` and
+  `kubernetes_*` resource at once** → this is almost never the cluster. Your internet provider gave
+  you a new address, and the cluster's API allow-list still names the old one; AWS silently drops the
+  packets instead of refusing them, so it reads as "the cluster is down". **`deploy.sh` now fixes this
+  itself before it starts** — its preflight adds your current address to
+  `terraform/voteball.tfvars` when the list does not already cover you, keeping any broader range
+  that is already there. So if you see this, you are looking at an older run (or at
+  `terraform apply` run by hand): re-run `./scripts/deploy.sh` and it will correct the list and
+  continue. `VOTEBALL_NO_CIDR_FIX=1` turns the fix back into a warning if you would rather edit the
+  file yourself. Hit for real on 2026-08-26, after ~13 billed minutes of apply.
 - **The first `terraform apply` errors part-way through** → just run `terraform apply` again. Some pieces
   can only install after the cluster exists, so a second run finishes them.
 - **The site loads but shows no parties/teams** → this was a bug we already fixed; make sure you're on the

@@ -101,4 +101,77 @@ grep -qE '^\s*default\s*=' <<<"$block" \
   && fail "cluster_endpoint_public_access_cidrs has a default again -- the 0.0.0.0/0 default was removed on 2026-08-23 (Task 3 review T3-2) precisely so a fork cannot inherit an open control plane without deciding to. Remove the default, or delete this test and say why."
 ok "the tfvars variable still has NO default (an open endpoint stays an explicit choice)"
 
+# ---- 10. --ensure leaves a list that ALREADY COVERS this machine alone --------------------------
+# This is the case plain --check gets wrong, and the reason --ensure exists: --check compares the
+# rendered line as text, so any list that is not literally ["<my ip>/32"] reads as drift. An
+# unattended deploy acting on that would replace a deliberately broad list with one host.
+set_list() { printf 'aws_region   = "il-central-1"\ncluster_endpoint_public_access_cidrs = [%s]\ncluster_name = "voteball"\n' "$1" > "$work/tfvars"; }
+
+for covering in '"0.0.0.0/0"' '"203.0.113.0/24"' '"203.0.113.4/32"' '"10.0.0.0/8", "203.0.113.0/24"'; do
+  set_list "$covering"
+  before="$(cat "$work/tfvars")"
+  out="$(run 203.0.113.4 --ensure)" || fail "--ensure must exit 0 when already covered ($covering): $out"
+  [ "$before" = "$(cat "$work/tfvars")" ] || fail "--ensure rewrote a list that already covers the address ($covering)"
+  grep -q "already covers" <<<"$out" || fail "--ensure should say the list already covers it, got: $out"
+done
+ok "--ensure is a no-op when any entry already covers this machine (4 lists, incl. 0.0.0.0/0)"
+
+# ---- 11. --ensure replaces a STALE /32 when the address is not covered --------------------------
+set_list '"198.51.100.7/32"'
+out="$(run 203.0.113.4 --ensure)" || fail "--ensure should succeed when it has to write: $out"
+grep -qE '^cluster_endpoint_public_access_cidrs = \["203\.0\.113\.4/32"\]$' "$work/tfvars" \
+  || fail "--ensure did not replace the stale /32; file is: $(cat "$work/tfvars")"
+ok "--ensure replaces a stale single-host pin with this machine's /32"
+
+# ---- 12. ...but KEEPS every entry broader than a /32 --------------------------------------------
+# The asymmetry is the safety property: a /32 is one machine's ephemeral address, anything broader is
+# a deliberate policy (a CI runner, an office range) that must survive a deploy nobody was watching.
+set_list '"10.0.0.0/8", "198.51.100.7/32", "192.168.0.0/16"'
+out="$(run 203.0.113.4 --ensure)" || fail "--ensure should succeed here: $out"
+grep -qE '^cluster_endpoint_public_access_cidrs = \["10\.0\.0\.0/8", "192\.168\.0\.0/16", "203\.0\.113\.4/32"\]$' "$work/tfvars" \
+  || fail "--ensure did not keep the broad ranges; file is: $(cat "$work/tfvars")"
+ok "--ensure keeps every non-/32 entry, drops the stale /32, appends this machine"
+
+# ---- 13. an entry it cannot parse is kept, not deleted ------------------------------------------
+# Deleting what it cannot read would silently discard something a human put there on purpose; a
+# terraform plan error naming the bad value is the better failure.
+set_list '"not-a-cidr"'
+out="$(run 203.0.113.4 --ensure)" || fail "--ensure should still write here: $out"
+grep -qE '^cluster_endpoint_public_access_cidrs = \["not-a-cidr", "203\.0\.113\.4/32"\]$' "$work/tfvars" \
+  || fail "--ensure dropped an unparseable entry; file is: $(cat "$work/tfvars")"
+ok "--ensure keeps an entry it cannot parse rather than deleting it"
+
+# ---- 14. --ensure refuses explicit CIDR arguments -----------------------------------------------
+set_list '"198.51.100.7/32"'
+before="$(cat "$work/tfvars")"
+out="$(run 203.0.113.4 --ensure 10.0.0.0/8 2>&1)" && fail "--ensure with explicit CIDRs must be refused"
+[ "$before" = "$(cat "$work/tfvars")" ] || fail "the refused --ensure invocation still wrote to the file"
+ok "--ensure refuses explicit CIDR arguments instead of silently picking one intent"
+
+# ---- 15. --ensure inherits the refusals: a garbled lookup never reaches the file ----------------
+before="$(cat "$work/tfvars")"
+for bad in "<html>error</html>" "203.0.113" ""; do
+  out="$(run "$bad" --ensure 2>&1)" && fail "--ensure accepted a non-address lookup result '$bad'"
+  [ "$before" = "$(cat "$work/tfvars")" ] || fail "--ensure wrote a refused lookup result '$bad'"
+done
+ok "--ensure refuses a non-address lookup result exactly like the plain form (3 shapes)"
+
+# ---- 16. deploy.sh actually CALLS --ensure ------------------------------------------------------
+# The other half of the contract, and the half no test of this script can see. deploy.sh used to
+# print a warning and continue; on 2026-08-26 that warning scrolled past and the run died ~13 billed
+# minutes later with every helm_release timing out against a control plane that was dropping its
+# packets. If that call is ever reverted to --check, this file's --ensure coverage proves nothing.
+grep -qE '^\s*elif ! \./scripts/refresh-api-cidr\.sh --ensure; then' scripts/deploy.sh \
+  || fail "scripts/deploy.sh no longer runs refresh-api-cidr.sh --ensure in its preflight"
+ok "scripts/deploy.sh runs the --ensure preflight (not just --check)"
+
+# ---- 17. --help still prints the usage block ----------------------------------------------------
+# The range it prints is derived from where `set -euo pipefail` sits, because the literal 2,16p it
+# used to carry stopped covering the usage lines the moment one was added above them -- with no
+# error, just a help text quietly missing its last flag.
+out="$(bash "$SCRIPT_UNDER_TEST" --help)"
+grep -q -- '--ensure' <<<"$out" || fail "--help does not mention --ensure; got: $out"
+grep -q 'set -euo pipefail' <<<"$out" && fail "--help is printing past the header comment into the code"
+ok "--help prints the whole header comment and stops before the code"
+
 echo "PASS: $(basename "$0") -- $pass checks"
