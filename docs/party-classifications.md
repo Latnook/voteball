@@ -818,9 +818,104 @@ religious funding" as a package, and this row now *does* end a Rabbinate monopol
 while failing the funding test and publishing nothing on marriage. Three rows, three different
 subsets of that band's three criteria, all correctly at −2. The band needs rewriting, not stretching.
 
-**`welfare-state` rejected** — the transfers are conditional, targeted at one population, and
-explicitly deficit-neutral by cutting other transfers. That is a redistribution of priorities, which
-the party says in as many words; it is not social-democratic doctrine.
+~~**`welfare-state` rejected** — the transfers are conditional, targeted at one population, and
+explicitly deficit-neutral by cutting other transfers.~~ **Overturned 2026-08-26 (revision 29) — and
+the old reasoning was not wrong, it was about a different document.** Every clause of it describes
+the servants law, where it still holds. The aging plan defeats all three: the pension re-indexation
+is universal and statutory, no offsetting cut is named anywhere in it, and the plan accepts the cost
+in as many words. See revision 29 below.
+
+**2026-08-26 — revision 29. Two new plans (`הזדקנות-בכבוד`, `women`), corpus 4 → 6. No axis moved;
+one tag and one family added, and one standing rejection overturned.** Both read 2026-08-26 from the
+party's own site:
+[תוכנית לאומית להזדקנות בכבוד](https://be-yahad.org.il/plans/הזדקנות-בכבוד/) ·
+[ביחד נתקן את מעמד הנשים בישראל](https://be-yahad.org.il/plans/women/).
+
+**The `/plans/` index is paginated, and revision 22's "enumerate the index" rule is not enough on
+its own.** That revision found four plans by listing the index and recorded the lesson as *enumerate
+before assuming a corpus is mined*. The index now carries a `page/2` link. It happens to list the
+same six posts, so nothing was missed this time — but a rule that says "read the index" and stops
+there will miss a seventh plan the moment the first page fills up. **Enumerate every page of the
+index, and record the page count, not just the plan count.**
+
+**`gender-equality` added (16 → 17 tags), third holder, on revision 23's line exactly.** That
+revision granted the tag to המפלגה הכלכלית for "a dedicated programme covering pay/promotion equality,
+statutory representation, gender education, הדרת נשים והפרדה מגדרית and עגונות ומסורבות גט",
+and revision 21 *declined* it for ישר as "crime policy in a crime paper". This plan is the granted
+shape and not the declined one: **four of its seven sections are not about violence** — a multi-year
+programme for **50% women** in the senior civil service and in government-company boards, a mandatory
+gender opinion on every bill reaching the ministerial legislation committee, a party-funding
+incentive for women on Knesset lists, daycare subsidy plus paternity leave against the *"קנס
+האמהות"*, enforcement powers for the Equal Opportunities Commissioner and gender targets in
+high-tech. The violence half is the *other* three sections and carries the only costed figure on the
+page, **₪250M a year**, permanent.
+
+**`welfare-state` added to the families (3 → 4), overturning two prior rejections.** The aging plan is
+a different class of document from the servants law those rejections were about. Its headline
+instrument is **re-indexing the old-age pension to the average wage instead of the CPI** — a reversal
+of the 2003 de-indexation, which the plan names as the cause of the erosion it is fixing. That is a
+change to the statutory formula of a universal entitlement, not a budget line: it is the same class
+of act as בית ציוני's public housing 50,000 → 110,000 and its replacement of the 1958 חוק סעד,
+which is what earned *that* row the family in revision 20. Alongside it: a differential rise for
+**~350,000** citizens with income under ₪10,000 with the poorest's pension **doubled**, expanded
+arnona and electricity eligibility, a higher nursing benefit with the Israeli-vs-foreign-worker
+distinction abolished, and an **automatic indexation mechanism** for Holocaust survivors' monthly
+payment. **No funding source and no offsetting cut appear anywhere in the plan** — it argues the
+opposite way, that national spending in the field may double as a share of GDP if nothing is built
+now. Note the family does not follow the axis: בית ציוני is `economic +1` and carries both
+`cost-of-living` and `welfare-state`, so this row is the second such case, not a novel one.
+
+**economic +1 confirmed, and the statist half is now much larger than the liberalizing half.** Both
+new plans are pure state expansion — the only liberalizing sentence in either is increasing the
+supply of foreign care workers. The row still sits at +1 because the +1 definition covers "subsidies,
+targeted spending" and the trade programme (tariff abolition, European standards, one Food Authority)
+is untouched; **0 would assert "no economic doctrine, or a genuinely balanced one"**, and a party
+with a published tariff-abolition programme has a doctrine. **Say what would move it**, since three
+revisions running have now added statist material to this row without moving the number: a withdrawal
+of the liberalizing half, or a transfer programme presented as the party's economic doctrine rather
+than as a sectoral plan, would.
+
+**security NULL re-verified — six documents now, and the trigger the open question named has fired
+once with no result.** That item says to re-check `/plans/` for a security page rather than wait for
+a joint platform. There are two new plans and neither is one. **The sharpening is that the women's
+plan does discuss the IDF** — expanding women's combat roles, and a dedicated body for reservists'
+families — so this list now publishes on the military without publishing a sentence on the conflict,
+the territories, Gaza, borders or statehood. Declining the subject while writing about the army next
+door to it is stronger evidence of the internal contradiction than silence was.
+
+**religiosity −2 confirmed, and the women's plan is the first religion-and-state material on this row
+that is not about education or kashrut.** It commits to **repealing the laws that expanded the
+rabbinical courts' authority**, mandatory legal training for דיינים, preventive measures against
+get-refusal and עגינות, adequate representation for women in the religious councils and in the
+assemblies that elect rabbis, and repeal of the gender-separation-in-academia law. Get-refusal is
+established religiosity evidence, not only gender evidence — revision 15 confirmed הדמוקרטים's −3
+from exactly that third motive. **It does not reach −3 and the reason is the funding criterion
+again**, unchanged: state-haredi education stays funded. **What it does do is add a fourth subset to
+the −3 band's open question from a single row** — this row now rolls back a religious court's
+jurisdiction *and* ends a Rabbinate monopoly outright *and* publishes nothing on civil marriage *and*
+fails the funding test. The band text remains the defect.
+
+**`civil-marriage` still rejected, and this is the document where its absence counts.** A dedicated
+women's-status plan that addresses עגינות and get-refusal by **training דיינים and adding
+preventive measures inside the rabbinical system**, while repealing the courts' *expansion* rather
+than their jurisdiction, is a deliberate choice not to propose civil marriage where the subject
+demanded it. Record that as a position, not as a gap.
+
+**Two further tags rejected.** `religious-pluralism` — the religious content here is women's
+representation inside the existing establishment and a limit on its courts, not recognition of
+non-Orthodox streams, which is what ישר, הדמוקרטים and בית ציוני hold it for.
+`affirmative-action` — the 50% target, the hiring goals and the party-funding incentive are real
+instances of it, but `gender-equality` is already carrying that exact evidence; tagging both records
+one document twice, which is revision 21's reason for refusing `anti-corruption` next to
+`governance-reform`.
+
+**Two notes for the next reader.** The environment sweep filed in Open questions lists this row as a
+likely holder: **six plans, and none of them is environmental** — that is a data point for the sweep,
+not a verdict, since none of the six is the kind of document where it would appear. And the aging
+plan's section 06 contains a drafting error — *"נבטל את נקבע יעדים ממשלתיים לתעסוקת אזרחים
+ותיקים"* — where the summary section above it reads plainly *"נקבע יעדים"*. **Nothing is
+abolished there**; a reader taking the sentence literally would record the opposite of the plan's
+position.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -2649,6 +2744,13 @@ bought nothing here, because the defect was never in the pixels being measured.
   on the conflict** — which is exactly what an unresolvable internal contradiction looks like from
   the outside. The NULL is stronger for it, not weaker. Re-check `/plans/` for a security page as the
   resolution trigger, rather than waiting for a full joint platform that may never come.
+  **Trigger fired once with no result, 2026-08-26 (revision 29):** two new plans (aging, women's
+  status), corpus 4 → 6, neither of them security. The women's plan **does** discuss the IDF —
+  expanding women's combat roles and a body for reservists' families — so the list now publishes on
+  the army while still publishing nothing on the conflict, the territories or statehood. Declining
+  the subject next to a document that touches the military is stronger than silence. Keep the same
+  trigger, and note the index is **paginated** (`/plans/page/2/`): enumerate every page, not just
+  the first.
 - **רע"ם's `security`** should move to −3 if the stronger platform is verified from the party's own
   source. **2026-08-01: it still cannot be.** `idi.org.il` is now reachable and does carry the −3
   language, but undated and reading as pre-2021 Joint List text; no 2026 platform exists from the
@@ -2723,6 +2825,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   reading measures audit coverage, not position. **Resolution: sweep all 18 rows for environmental
   content first, then create the tag (or don't) with membership decided in one pass.** הדמוקרטים and
   ביחד are the likeliest additional holders and neither has been checked for it.
+  **Partial data point, 2026-08-26:** ביחד's `/plans/` corpus is now six documents and **none of them
+  is environmental**. That is not a verdict — none of the six is a document where the subject would
+  appear — but it does mean this row's likely-holder status rests on nothing read so far.
 - **`security 0` now has exactly one holder, יש עתיד `[p]`, and it has never been re-verified.**
   Revision 23 removed the other one after finding a full conflict platform behind it, and the band's
   explanatory note had been built on that wrong example. A `0` asserts a party has genuinely taken no
@@ -2899,5 +3004,6 @@ pass happened, for anyone reading git history.
 | 2026-08-19 | revision 25 — **אל הדגל's two unread documents read, and the row's own record corrected.** The `/our-platform` page links **four** PDFs; two had never been cited anywhere — the drafted Basic Law (`חוק יסוד השירות`, 9pp) and the economic paper (`הכלכלה הציונית`, 7pp, dated **August 2026** and marked *גרסה מתוקנת*, i.e. newer than the pass that last confirmed the axis it speaks to). **No axis moved: 1 / 2 / −2 all confirmed.** **The most consequential finding is about this document, not the party.** The entry asserted that the education-funding condition lived only in the education paper and that the platform showed *שכבת בסיס חובה בכל מוסד מתוקצב* alone; the platform's §2 עיגון חוקי (p. 11) carries the **50/30/20 split the entry credited to the education paper**, the special-majority entrenchment, and *"תנאי לקבלת תקציבים"* verbatim. So the `religiosity 0` held until 2026-08-10 was a misreading of evidence already in hand, not a gap in it — **a second document agreeing with the first is not evidence the first was read.** **A third retrieval trap recorded, inverting the first two: the two documents that went unread longest were the two that extract cleanly** — the image-only pair got read precisely because they announced themselves as hard. **economic +1 declined for the third time on a third document**, now against a fully costed programme; the two planks that argue against +2 are the party's own — periphery tax breaks rejected **on principle** as proven failures, and *"שוויון מיסוי הון ועבודה"* restricting capital tax benefits for the highest earners. Also logged: the paper is unusually self-correcting (ministry-merger savings demoted from ₪8–12B/yr to a long-run ceiling on 1–3% international evidence; the tax-bracket cost revised **down** because the Knesset already enacted part of it), and it **contradicts the platform** on the minister cap — 16 in the platform, 18 statutory with a 12 aspiration in the paper; recorded, not resolved. **The service bill does NOT move religiosity, and that is recorded because it reads like −3 evidence**: §11(c) strips all state support and bans all donations to any institution where >10% of students or graduates breached the service duty, but it conditions on **service**, so Decision 6 keeps it off the axis. **4 tags added (20 → 24), all existing vocabulary**, and **three of the four are earnable from the platform PDF alone** — missed by an earlier pass rather than created by the new documents: `free-trade` and `anti-monopoly` (both p. 22), `public-service-reform` (pp. 19–20, a חוק שירות ציבורי ממלכתי plus a biennial trust index carrying a mandatory Knesset debate — comparable to כחול לבן's צו 8, which founded the tag) and `arab-civil-service` (bill §8 plus its explanatory notes, כחול לבן's founding position in statutory drafting). **Six rejections**, the sharpest being `scholar-exemption-retained` — **third application of revision 21's test and the clearest**: a 2%-of-cohort Torah track under a state administration, subordinated to the IDF's needs being met first, as a 24-month *service* obligation, is strictly narrower than the 3% one-year deferral already declined for ישר. Also refused: `permanent-residency-not-citizenship` (זהות's tag marks a permanent ceiling; this row's השארות track is a conditional **path** to full citizenship), `small-government` (זהות holds it as libertarian doctrine; this row pairs ministry cuts with NIT expansion, a ₪2B guarantee fund and a ~$1.5B/yr AI programme — it would contradict its own economic +1), `tax-cutting` (the 25% bracket *completes* an enacted reform, cost revised down, paired with restricting capital tax benefits), `judicial-overhaul` (the override clause is bounded *מוגבלת בזמן ובנושא* and paired with **strengthening** review of Basic Law implementation and a codified constitution — `constitutionalist`, already held, is the accurate tag; same shape as revision 23's Zelikha rejection), and **a workfare tag and a labour-organization tag**, both clearly earned and both queued behind an 18-row sweep. **That queue now holds four tags** and is flagged as the largest unresolved item on this page. Source accounting corrected throughout: **six** sources, not three, and the website quotes are from `/our-platform` (a fourth body of text) rather than the `/about-us` chapters they were attributed to |
 | 2026-08-20 | revision 26 — **חד"ש-תע"ל and בל"ד merged into הרשימה המשותפת**, the first merge this file has recorded between two *upcoming* rows (העבודה/מרצ → הדמוקרטים was a previous→upcoming lineage link, which is a different operation: both predecessors keep their own rows). One `joint-list` row replaces two; `previous_parties` is untouched and both 2022 rows stay frozen. **The scoring rule was the decision, not the merge**: axes are the **union** of the components' published positions, chosen by the repo owner over two alternatives (carry חד"ש-תע"ל's numbers as a rebrand; or NULL the axes where the components differ). **economic −3** unchanged, **security −2 → −3** and **religiosity NULL → −3**, both carried from בל"ד alone. The cost is recorded in the entry rather than hidden: the list has published **no joint platform**, so every number rests on component text, and בל"ד's programme is the 2018 one. Decided against the ביחד `security` NULL precedent deliberately — ביחד's components *disagree* on the conflict, while חד"ש and בל"ד differ only in degree. **15 tags**, the union deduped, minus two dropped as no longer true of the list: `pro-joint-list` (the goal is achieved; a list tagged with wanting to form itself records nothing) and `program-unchanged-since-2018` (a note about בל"ד's evidence age that would now assert the joint list has a 2018 programme). **רע"ם declined and keeps its own row** — the door is open until the September deadline, so the open question narrows rather than closing. **Two anticipations in this file were wrong and are kept as such**: both the *Renaming* warning and the *Arab bloc may restructure* open question predicted "renaming, not reclassifying", and neither half held. **Mechanically**: `seed.sql` gained a guarded `DELETE` for `upcoming_parties` mirroring the clubs one, and it must clear `party_lineage` first — `party_lineage.upcoming_party_id` has **no** `ON DELETE CASCADE`, so removing a party that still carries a link raises inside `init_db`, which runs on every backend pod boot (a CrashLoopBackOff on startup, not one failed request). Both statements carry the same vote guard, verified by migrating a seeded database with a vote on חד"ש-תע"ל: that row and its lineage link both survived while בל"ד was removed. **No frontend change** — the logo is pure black on transparency and the existing `recolorLogoForDark()` lifts it to white correctly, so it needs no `logos.js` exception entry |
 | 2026-08-20 | revision 27 — **הרשימה המשותפת's logo corrected the same day it shipped, and revision 26's "No frontend change" reasoning is wrong.** That row said the mark needs no `logos.js` entry because `recolorLogoForDark()` lifts every ink pixel to white — which it does, and which was measured before shipping. The measurement was of the wrong thing. What the lift leaves behind is **five enclosed transparent regions, all on the Arabic line** (the closed bowls of ة and م, ~9×10px on the 400px canvas), and transparent means they show the dark card through. That is typographically correct — a counter *is* the background — and it still reads as **black dots punched into white letters** at 3.4rem, because a counter that small stops reading as a counter. **Being right about the typography did not make it look right**; only rendering it at card size catches that, and the pre-ship check rendered it at 400px and judged it clean. Now in a new **`FILL_COUNTERS_PARTIES`** set (mode `recolor-fill`): `fillLogoInteriorForDark()`, the same flood fill ש"ס uses, **composed with the recolour rather than replacing it**. The literal ש"ס treatment was rendered and **rejected** — fill-only leaves the ink black, producing a near-invisible black wordmark on the dark card. Both artworks are "dark ink on transparency" and need opposite things, so the selector is not whether enclosed transparency exists but **what the gap should become**: the page (ש"ס) or the ink (here). `recolorLogoForDark()`/`fillLogoInteriorForDark()` now accept a `<canvas>` as well as an `<img>` so the two can chain. Verified in Chromium against the real `logos.js`, reading the canvas back: **exactly 316 pixels** moved from card-dark to light (the 315 enclosed pixels plus rounding), glyph anti-aliasing untouched, and ש"ס and הליכוד rendering identically to before. **No classification change** |
-| 2026-08-20 | revision 28 — **הרשימה המשותפת's logo moved to a near-white plate (`PLATE_PARTIES`), and both earlier fixes were reverted.** Revision 27 diagnosed the black dots as the five enclosed Arabic bowls and composed the ש"ס flood fill with the recolour; it measured 316 pixels moving from card-dark to light, in Chromium, against the live page, and **the dots were still there**. A screenshot from the repo owner's own browser showed why: the recoloured canvas comes back **speckled with black dots through the glyph bodies**, dense and scattered, unrelated to counters or letterform gaps. The source SVG renders clean at every size (48 unique colours in a magnified crop) and the live canvas read back from headless Chromium holds **zero** pixels darker than the card — it is a rasterisation artefact this repo cannot reproduce, so no measurement taken here could ever have caught it. **Both failed fixes were real measurements of the wrong thing**, which is the finding worth keeping: revision 26 measured the 400px canvas rather than the ~156px it renders at, and revision 27 fixed the enclosed subset and then measured the enclosed subset. The plate refuses the mechanism instead of tuning it — no canvas, no `getImageData`, no `crossOrigin`, no per-logo thresholds — so dark mode reproduces exactly what light mode shows. `FILL_COUNTERS_PARTIES` and `recolorThenFillForDark()` are **removed**, and both pixel functions are back to their original `<img>`-only signatures. **This reopens the no-plate rule for parties**, chosen by the repo owner after seeing all three options rendered at true display size; ש"ס already reads as a white tablet, so a third such party would mean the recolour rule has become the exception. **No classification change** |
+| 2026-08-20 | revision 28
+| 2026-08-26 | revision 29 — **ביחד's corpus 4 → 6**: the `הזדקנות-בכבוד` (aging) and `women` plans read for the first time. **No axis moved.** `gender-equality` added (16 → 17 tags) on revision 23's line — four of the plan's seven sections are non-violence (50% representation in the senior civil service and government boards, a mandatory gender opinion on every bill, a party-funding incentive for women on lists, daycare subsidy plus paternity leave, Equal Opportunities enforcement powers, high-tech targets), which is the shape granted to המפלגה הכלכלית and not the "crime policy in a crime paper" shape declined for ישר. **`welfare-state` added to the families (3 → 4), overturning the rejection recorded in revision 22** — the aging plan re-indexes the old-age pension to the **average wage** instead of the CPI, reversing the 2003 de-indexation, plus a differential rise for ~350,000 under ₪10,000 with the poorest's pension doubled and an automatic indexation mechanism for Holocaust survivors, with **no funding source or offsetting cut named anywhere**. That is a change to the statutory formula of a universal entitlement, the same class of act as בית ציוני's public housing 50,000 → 110,000 (revision 20); the old rejection stands as a correct finding about the *servants law*, which is a different document. **economic +1 confirmed** with a stated move condition, since three revisions running have added statist material without moving it. **security NULL re-verified against six documents**, and sharpened: the women's plan discusses the IDF (combat roles, reservists' families) while the corpus still contains no sentence on the conflict. **religiosity −2 confirmed by the funding criterion**, on this row's first religion-and-state material that is neither education nor kashrut — repealing the laws that expanded the rabbinical courts' authority, דיינים training, preventive measures on get-refusal and עגינות, women in the religious councils and rabbi-electing assemblies, repeal of the academic gender-separation law. **`civil-marriage` rejected, and its absence is now a position**: a women's-status plan that answers עגינות from inside the rabbinical system declined to propose it where the subject demanded it. `religious-pluralism` and `affirmative-action` also rejected (the latter on revision 21's `anti-corruption`-next-to-`governance-reform` reasoning). **Method note: the `/plans/` index is paginated** — revision 22's "enumerate the index" rule stops one page short of being sufficient. Also recorded: the aging plan's section 06 carries a drafting error, *"נבטל את נקבע יעדים…"*, whose literal reading is the opposite of the plan's position — **הרשימה המשותפת's logo moved to a near-white plate (`PLATE_PARTIES`), and both earlier fixes were reverted.** Revision 27 diagnosed the black dots as the five enclosed Arabic bowls and composed the ש"ס flood fill with the recolour; it measured 316 pixels moving from card-dark to light, in Chromium, against the live page, and **the dots were still there**. A screenshot from the repo owner's own browser showed why: the recoloured canvas comes back **speckled with black dots through the glyph bodies**, dense and scattered, unrelated to counters or letterform gaps. The source SVG renders clean at every size (48 unique colours in a magnified crop) and the live canvas read back from headless Chromium holds **zero** pixels darker than the card — it is a rasterisation artefact this repo cannot reproduce, so no measurement taken here could ever have caught it. **Both failed fixes were real measurements of the wrong thing**, which is the finding worth keeping: revision 26 measured the 400px canvas rather than the ~156px it renders at, and revision 27 fixed the enclosed subset and then measured the enclosed subset. The plate refuses the mechanism instead of tuning it — no canvas, no `getImageData`, no `crossOrigin`, no per-logo thresholds — so dark mode reproduces exactly what light mode shows. `FILL_COUNTERS_PARTIES` and `recolorThenFillForDark()` are **removed**, and both pixel functions are back to their original `<img>`-only signatures. **This reopens the no-plate rule for parties**, chosen by the repo owner after seeing all three options rendered at true display size; ש"ס already reads as a white tablet, so a third such party would mean the recolour rule has become the exception. **No classification change** |
 | 2026-08-23 | האחדות (Unity) added — new party, scored from its own site |
