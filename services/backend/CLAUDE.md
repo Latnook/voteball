@@ -189,6 +189,19 @@ because the four are linked from one page under labels that do not match their f
 who has already found "the platform PDF" has no signal that three more exist. `curl` the platform
 page and list every `.pdf` href first; it costs one request.
 
+**Enumerate the SITE, not just the page — `sitemap_index.xml` → `page-sitemap.xml`, one request.**
+The rule above stops at the page you were pointed at, and that is one level too shallow: it finds the
+documents a page links, never the pages nobody linked you to. הציונות הדתית's `/victory/` — the
+party's entire Gaza programme, and the source of three tags — sat unlinked from anything this repo
+had read for eleven months, across two passes over that row. The same one request also surfaced
+`/judaization/`, published **that morning**, and proved three other new URLs were sign-up forms with
+no policy content, which is worth as much: it bounds the corpus instead of leaving it open. `lastmod`
+dates the pages, so it also answers "what changed since the last pass" without fetching anything.
+This is the same defect as the עוצמה יהודית date-window (a sample that reads as a corpus) and the
+אל הדגל link labels (a label that hides a document) — **the third instance, and the one that
+generalises: establish what exists before deciding what to read.** WordPress `wp-json` is often 403
+where the Yoast sitemap is 200; try the sitemap first.
+
 **Retrieval difficulty is a bad proxy for coverage, and it inverts more often than not.** On that
 same row the two documents that went unread longest were the two that `pdftotext` extracts cleanly
 in one command — the image-only pair got read precisely *because* they announced themselves as hard.
@@ -233,6 +246,32 @@ python -m pytest tests/ -v                          # full suite
 python -m pytest tests/test_app.py::test_health -v   # single test
 ```
 
+**`seed.sql` is only valid executed as ONE transaction — `psql -1`, always.** Its staging tables are
+`CREATE TEMP TABLE … ON COMMIT DROP`, and psql defaults to autocommit, so without `-1` each statement
+commits and drops the staging table before the next statement reads it. The result is ~25 lines of
+`relation "seed_leagues" does not exist` that look like a corrupt file or a missing schema, and are
+neither — `db.init_db` runs the file in a single transaction, which is why the app never sees this.
+
+**Drop your throwaway verification database before running the suite.** The line above tells you to
+create one inside the shared container, and leaving it there fails three tests in `test_migrate.py`
+and `test_migration.py` with `DependentObjectsStillExist: 15 objects in database revcheck31` — those
+tests create and drop the `grafana_ro` **role**, which is cluster-wide, so any database still holding
+objects it owns blocks the drop. The failure names your database, but it reads as a `grafana_ro`
+regression in the change you just made. `DROP DATABASE` it, then run. (Third entry in this file's
+"a test run lies to you" family, and unlike the other two it is *caused by following the instructions
+above*.)
+
+**`pgrep -f "python -m pytest"` matches the shell that is running the check.** The concurrency
+check below is sound and its bare form is not: `pgrep -f` matches full command lines, and the shell
+invoking the check has the pattern in its own — so it reports a conflicting suite that does not
+exist, on a machine with no pytest running at all. Measured 2026-08-26: the only PID returned was the
+`/bin/bash -c` wrapper. Use **`pgrep -af`** and read the command lines rather than branching on the
+exit status; a `/bin/bash -c` line is your own check looking at itself.
+
+This is the mirror of the `grep '^gate:'` failure in the root `CLAUDE.md` — there a pattern that
+could never match returned an empty result that read as a correct negative; here a pattern that
+always matches returns a hit that reads as a real conflict. Same defence for both, and it is the only
+one that works: run the check once against input whose answer you already know.
 **`requirements.txt` is the production dependency list and the Dockerfiles install *only* it;
 `requirements-dev.txt` adds pytest on top.** Both services have this split. `tests/test_requirements.py`
 (in each service) fails if a declared package is never imported, or if an imported package is missing

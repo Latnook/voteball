@@ -1499,6 +1499,103 @@ Sources: the *מילואימניקים הביתה* deck (party-circulated, inclu
 text on the strength of the deck's own branding and the direct quotation of Smotrich in Maariv, but
 this row's next revision should confirm it against a party-hosted copy.
 
+**2026-08-26 — the party's own site enumerated for the first time, and it holds two policy pages
+nobody here had read. Three conflict tags added (11 → 14). No axis moved.**
+
+Every previous pass on this row followed links it was handed: thirteen platform PDFs (revision 17),
+thirteen `/hityashvut/` pages (2026-07-27), a circulated מילואים deck (2026-08-14). Nobody had asked
+the site what it contains. `page-sitemap.xml` answers in one request, and it lists **five pages
+published after the last pass looked** — `/victory/` (2025-09-04), `/we_hear_you/` (2026-02-22),
+`/we_hear_you-rehovot/`, `/work/` and `/center/` (both 2026-08-17), plus `/judaization/`, which
+appeared **the same day this entry was written**. Three of the six are volunteer and polling-station
+sign-up forms with no policy content; that is recorded here so the next reader does not re-fetch
+them. Two are policy documents, and one of them is the party's entire Gaza programme.
+
+**הכרעה וניצחון (`/victory/`, אלול תשפ"ה / September 2025) — Smotrich's own Gaza plan, and the
+source of all three new tags.** It had been on the party's website for eleven months, through two
+passes over this row.
+
+- **`territorial-control-gaza`** — *"סיפוח פרימטר ביטחוני מורחב"* immediately on the ultimatum
+  expiring, then *"בכל שבוע שהמלחמה תימשך ללא כניעת חמאס והשבת כל החטופים יסופח מהרצועה שטח נוסף"*,
+  with *"שליטה מבצעית מלאה של צה״ל בכל הרצועה"* among the seven surrender terms and
+  *"רוב שטחי רצועת עזה בריבונות ישראלית"* as the stated end state. **The page's timeline graphic is
+  where this stops being a slogan**: four dated annexations — day 14, 21, 28, 35 — then
+  *"יום 70-90: העברת האוכלוסייה לשטח שמדרום למורג ולקיחת אחריות אזרחית"*. Third holder, after
+  עוצמה יהודית and בית ציוני, and the only one with a schedule.
+- **`hardline-on-gaza`** — *"מצור… סגירה מוחלטת של כלל האספקה"* from the moment the population is
+  moved, humanitarian supply — *"תשתיות חשמל, מים, מזון ורפואה"* — confined to the humanitarian zone
+  *"בלבד"*, and *"מכת אש ותמרון עצים"* in Gaza City and the central camps. Fourth holder.
+- **`voluntary-palestinian-emigration-incentives`** — *"פתיחת שערי עזה להגירה מרצון"*, itemised as
+  *"ריכוז מאמץ מול מדינות קולטות"*, logistics for departure, and *"מענקי תמרוץ ליוצאים ולמדינות
+  הקולטות"*. Fourth holder, and the first whose evidence is a sitting finance minister's own costed
+  plan rather than a bill, a ministerial record or a platform plank.
+
+`opposes-hostage-deals` is **reconfirmed and not re-derived**: the row earned it from צביקה מור's
+primary placement, and this document supplies the party-level position that placement was evidence
+*for* — *"ממשיכים עד הניצחון, בלי עצירות ובלי עסקאות חלקיות"*, with *"שחרור כל החטופים בפעימה
+אחת"*. That is the corroboration-is-not-coverage test in `services/backend/CLAUDE.md` passing rather
+than failing: the tag was already right, and the evidence behind it is now first-party.
+
+**Three rejected, all on this page's existing precedent:**
+
+- **`population-transfer`.** The emigration half is opt-in — *"מרצון"*, incentivised, coordinated
+  with receiving states — which is the exact line drawn for אל הדגל and re-drawn for עוצמה יהודית
+  yesterday: compulsion in the instrument, not in the rhetoric around it. The plan's *compulsory*
+  movement (day 70–90, south of ציר מורג) is displacement **within** the territory paired with
+  Israel *"לקיחת אחריות אזרחית"* for the displaced, which is an occupation-administration claim, not
+  removal from the territory. זהות keeps the tag.
+- **`security-hawk`** — the Otzma rejection of 2026-08-26 applies unchanged: all five holders are
+  centre or centre-right and no far-right row carries it by design.
+- **`no-palestinian-state`** — the document simply does not say it. `anti-two-state`, already on this
+  row from `/hityashvut/`, covers what is written.
+
+**No axis moves, for the fifth consecutive reading of this row, and the reason is the same one.**
+`security` +3 and `religiosity` +3 are at their poles. `economic` stays **0**: the only money here is
+emigration grants and receiving-state payments, which is territorial policy denominated in shekels —
+the category error this entry warned against for ₪9B of settlement budgets and warns against again
+below for חבילת חלוץ. `basis` stays **`record`**; a single-issue campaign document is not a מצע, the
+same call made for the מילואים deck.
+
+**מייהדים את הנגב והגליל (`/judaization/`, published 2026-08-26) — read, and deliberately not
+tagged.** *"מה שעשינו ביו״ש נעשה בנגב ובגליל"* is the banner, and the first of three stated goals is
+*"שינוי דמוגרפי — הגדלת האוכלוסייה היהודית בנגב ובגליל"*, with *"קביעת יעדים מספריים ומדדי ביצוע"*, a
+נגב–גליל cabinet to enforce it, and a *"חבילת חלוץ"* of land discounts, purchase grants, tax relief,
+daycare subsidy and a dedicated track for reservists and career soldiers.
+
+**This is the second instance of the thing the 2026-07-27 entry above left untagged, and it is much
+stronger than the first.** That entry read *"מקסימום שטח תחת ריבונות ישראלית עם מינימום אוכלוסייה
+ערבית"* as sovereignty-line drawing around existing population centres — correctly — and recorded
+that no tag covers demography-driven policy, adding: *"if it is ever worth a tag it should be added
+across rows… not to this row alone."* This page clears that bar in a way the sovereignty page did
+not: it is inside the Green Line, it is a named national programme with numerical demographic
+targets and an execution cabinet, and it moves people rather than borders. **It is still not tagged
+here**, because the instruction that entry left was explicit and it was about scope: ישראל ביתנו's
+population-swap plan and אייזנקוט's anti-annexation case are also demographic arguments pointing
+elsewhere, and a tag invented on one row is how a vocabulary drifts. **Queued as a cross-row sweep**,
+on the same footing as the press-freedom tag queued in revision 24 — not as a follow-up on this row.
+
+Two smaller findings from the same page:
+
+- **`periphery-development` was retired in revision 19 for being near-universal, and the party now
+  says so itself**: *"לא עוד ״חיזוק הפריפריה״. משימה ציונית לאומית"*. A retirement decision confirmed
+  by the party whose document would have carried the tag is worth more than the count that motivated
+  it.
+- **`claims-economically-liberal` gets its third and best evidence base.** Deep land and housing
+  discounts, development-cost subsidy, graduated tax benefits, company grants, business incentives
+  and relocating government units — a finance minister's own party proposing directed subsidy at
+  regional scale. The tag records the gap; the number stays 0 because `basis` is `record`.
+
+**The 2026-08-14 provenance caveat is checked and still open.** That entry asked the next revision to
+confirm *מילואימניקים הביתה* against a party-hosted copy. The full page sitemap carries **no מילואים
+page**, so it remains party-circulated rather than party-published. Recorded as verified-absent
+rather than left as a standing question.
+
+Sources: `zionutdatit.org.il/victory/` and `/judaization/`, both read 2026-08-26, plus
+`sitemap_index.xml` → `page-sitemap.xml` for the enumeration. Both pages are HTML and extract
+cleanly; the `/victory/` **timeline is an image** (`באנר-ראשי-1.png`, 2471×1225) and carries the
+four dated annexations and the day 70–90 relocation, none of which appear in the page text — the
+image-only-content rule in `services/backend/CLAUDE.md` applying to a web page rather than a PDF.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -2659,8 +2756,12 @@ same reasoning as their upcoming counterpart at an earlier stage; only the diffe
   moved to +3 on a record built entirely after November 2022, so this one keeps +2 and its original
   four tags, per the no-back-dating convention.
 - **יש עתיד** `opposition` · 0 / 0 / −2 · secular — strong separationist.
-- **הציונות הדתית** `bibi` · 0 / 3 / 3 · religious_zionist — the four original tags only; the 2026
-  primary findings are **not** back-dated here.
+- **הציונות הדתית** `bibi` · 0 / 3 / 3 · religious_zionist — the three original tags only; neither
+  the 2026 primary findings nor the `/victory/` conflict tags are back-dated here. *(This line read
+  "four" until 2026-08-26. It was right when written and went stale on 2026-08-11, when the
+  vocabulary sweep removed `not-economy-focused` from **both** rows — the sweep's own entry says so;
+  nobody re-counted here. הליכוד's "original four" two lines above **is** still correct, which is why
+  the wrong one survived a read. Verified against a seeded database, not by eye.)*
 - **המחנה הממלכתי** `unaligned` · 1 / NULL / −1 · secular — security NULL with
   `avoids-security-topic`. This pairing is the reference example of "NULL means no stated position,
   and a tag says why", and `test_migration.py` asserts it directly.
@@ -3127,4 +3228,5 @@ pass happened, for anyone reading git history.
 | 2026-08-20 | revision 28
 | 2026-08-26 | revision 29 — **ביחד's corpus 4 → 6**: the `הזדקנות-בכבוד` (aging) and `women` plans read for the first time. **No axis moved.** `gender-equality` added (16 → 17 tags) on revision 23's line — four of the plan's seven sections are non-violence (50% representation in the senior civil service and government boards, a mandatory gender opinion on every bill, a party-funding incentive for women on lists, daycare subsidy plus paternity leave, Equal Opportunities enforcement powers, high-tech targets), which is the shape granted to המפלגה הכלכלית and not the "crime policy in a crime paper" shape declined for ישר. **`welfare-state` added to the families (3 → 4), overturning the rejection recorded in revision 22** — the aging plan re-indexes the old-age pension to the **average wage** instead of the CPI, reversing the 2003 de-indexation, plus a differential rise for ~350,000 under ₪10,000 with the poorest's pension doubled and an automatic indexation mechanism for Holocaust survivors, with **no funding source or offsetting cut named anywhere**. That is a change to the statutory formula of a universal entitlement, the same class of act as בית ציוני's public housing 50,000 → 110,000 (revision 20); the old rejection stands as a correct finding about the *servants law*, which is a different document. **economic +1 confirmed** with a stated move condition, since three revisions running have added statist material without moving it. **security NULL re-verified against six documents**, and sharpened: the women's plan discusses the IDF (combat roles, reservists' families) while the corpus still contains no sentence on the conflict. **religiosity −2 confirmed by the funding criterion**, on this row's first religion-and-state material that is neither education nor kashrut — repealing the laws that expanded the rabbinical courts' authority, דיינים training, preventive measures on get-refusal and עגינות, women in the religious councils and rabbi-electing assemblies, repeal of the academic gender-separation law. **`civil-marriage` rejected, and its absence is now a position**: a women's-status plan that answers עגינות from inside the rabbinical system declined to propose it where the subject demanded it. `religious-pluralism` and `affirmative-action` also rejected (the latter on revision 21's `anti-corruption`-next-to-`governance-reform` reasoning). **Method note: the `/plans/` index is paginated** — revision 22's "enumerate the index" rule stops one page short of being sufficient. Also recorded: the aging plan's section 06 carries a drafting error, *"נבטל את נקבע יעדים…"*, whose literal reading is the opposite of the plan's position — **הרשימה המשותפת's logo moved to a near-white plate (`PLATE_PARTIES`), and both earlier fixes were reverted.** Revision 27 diagnosed the black dots as the five enclosed Arabic bowls and composed the ש"ס flood fill with the recolour; it measured 316 pixels moving from card-dark to light, in Chromium, against the live page, and **the dots were still there**. A screenshot from the repo owner's own browser showed why: the recoloured canvas comes back **speckled with black dots through the glyph bodies**, dense and scattered, unrelated to counters or letterform gaps. The source SVG renders clean at every size (48 unique colours in a magnified crop) and the live canvas read back from headless Chromium holds **zero** pixels darker than the card — it is a rasterisation artefact this repo cannot reproduce, so no measurement taken here could ever have caught it. **Both failed fixes were real measurements of the wrong thing**, which is the finding worth keeping: revision 26 measured the 400px canvas rather than the ~156px it renders at, and revision 27 fixed the enclosed subset and then measured the enclosed subset. The plate refuses the mechanism instead of tuning it — no canvas, no `getImageData`, no `crossOrigin`, no per-logo thresholds — so dark mode reproduces exactly what light mode shows. `FILL_COUNTERS_PARTIES` and `recolorThenFillForDark()` are **removed**, and both pixel functions are back to their original `<img>`-only signatures. **This reopens the no-plate rule for parties**, chosen by the repo owner after seeing all three options rendered at true display size; ש"ס already reads as a white tablet, so a third such party would mean the recolour rule has become the exception. **No classification change** |
 | 2026-08-26 | revision 30 — **עוצמה יהודית: six conflict tags added (11 → 17), every one first-party and every one available at the previous pass.** **No axis moved** (`security +3` and `religiosity +3` are already at the poles; `economic 0` survives a sixth reading). `no-palestinian-state` (*"לא נאפשר אף הסכם כניעה שיכלול אפילו הצהרה על מדינה פלסטינית"*), `anti-two-state` (a whole-faction bill annulling Oslo, Hebron and Wye and restoring the territories transferred under them — **this row is the page's cleanest case for why the two tags are separate**), `hardline-on-gaza` (*"עזה צריכה לספוג גיהנום"*, bombing aid stores, total water/electricity cutoff, explicit mass starvation, a 1 km perimeter with direct fire on any resident inside it), `territorial-control-gaza` (*"החלת ריבונות לצמיתות על שטחים נרחבים ברצועה"*, אליהו's *"עזה היהודית שלנו"*, and Ben Gvir's "settlements throughout Gaza") — **which reaches this document for the first time**, having sat in `seed.sql` on בית ציוני with zero occurrences here, so it had no definition a candidate could be checked against; `voluntary-palestinian-emigration-incentives` (the party's own 2025-02-07 bill, the first holder whose evidence is drafted legislation); `opposes-hostage-deals` (the 2025-01-17 resignation letter, **acted on** — stronger evidence than either existing holder's candidate placement). **The method finding is the point of the pass:** revision 18 read "30 posts, 2026-05-26 to 2026-08-04", a **ten-week window** of a stream running since the party entered government; the entire Gaza programme is Dec 2024 – Nov 2025 and fell outside it. **A date-bounded sample of a continuous stream is not a corpus, and it reads as more thorough than an unread platform** — the site has no index to contradict it. Three subject searches (`עזה`, `מדינה פלסטינית`, `עסקת חטופים`) surfaced all of it. `jewish-supremacist` becomes first-party for the first time (*"אספסוף עזתי צמא דם"* in a bill's explanatory notes; *"they're not even people"* on the podcast). **Three rejections with reasons:** `population-transfer` (the bill is opt-in, and this page's line turns on compulsion in the instrument, not the rhetoric around it — though a citizenship-stripping bill sits beside it), `security-hawk` (all five holders are centre/centre-right and no far-right row carries it; a disposition tag would erase the distinction it exists to draw) and `populist` (the Segal letter is grievance about the author's standing, not a position). Two numbers corrected: 300,000 weapons (was 280,000 licences) and 10,000 demolitions since 2025, the 10,000th in **ג'ואריש, רמלה**, so "mainly in the Negev" no longer holds. The `conscription-by-incentive` family becomes first-party (haredi police recruitment, מג"ב haredi units, 1,400 enlisted). Also recorded: the party holds a **second ministry** (עמיחי אליהו, Heritage) which this entry had never mentioned, and Ben Gvir now reads a campaign to form a unity government **without him** — exclusion pressure from inside his own bloc. **Two retrieval notes:** `timesofisrael.com` 403s a User-Agent alone and 200s with `Accept`/`Accept-Language`/`Referer` — a UA by itself is not browser-shaped enough; and **a summarizer's rendering of a source is not the source**, since WebFetch's summary of that liveblog dropped the single most classification-relevant sentence in it
+| 2026-08-26 | revision 31 — **הציונות הדתית: the party's own site enumerated for the first time.** Every prior pass followed links it was handed — 13 platform PDFs (revision 17), 13 `/hityashvut/` pages, a circulated מילואים deck — and none asked `page-sitemap.xml` what the site holds. It answers in **one request** and lists five pages published since the last pass, one of them **the same day**. Three are sign-up forms; two are policy. **הכרעה וניצחון (`/victory/`, September 2025) is the party's entire Gaza programme and had been public for eleven months** across two passes over this row. **Three tags added (11 → 14), all first-party:** `territorial-control-gaza` (*"סיפוח פרימטר ביטחוני מורחב"*, then a further annexation *"בכל שבוע שהמלחמה תימשך"* — and **the page's timeline image**, not its text, carries four *dated* annexations at days 14/21/28/35 plus *"יום 70-90: העברת האוכלוסייה לשטח שמדרום למורג"*; the image-only-content rule applying to a web page rather than a PDF), `hardline-on-gaza` (*"מצור… סגירה מוחלטת של כלל האספקה"*, aid confined to the humanitarian zone *"בלבד"*) and `voluntary-palestinian-emigration-incentives` (*"מענקי תמרוץ ליוצאים ולמדינות הקולטות"* — the first holder whose evidence is a sitting finance minister's costed plan). `opposes-hostage-deals` **reconfirmed, not re-derived**: it was held on צביקה מור's primary placement and this supplies the party-level position that placement was evidence *for*. **No axis moved — fifth consecutive reading**, `security`/`religiosity` at their poles and `economic` 0 because emigration grants are territorial policy denominated in shekels; `basis` stays `record` (a single-issue document is not a מצע). **מייהדים את הנגב והגליל (`/judaization/`, published that day) read and deliberately NOT tagged** — *"מה שעשינו ביו״ש נעשה בנגב ובגליל"*, *"שינוי דמוגרפי"* with numerical targets and a נגב–גליל cabinet. It is the second and far stronger instance of what the 2026-07-27 entry left untagged, and clears that entry's bar (inside the Green Line, moves people not borders) — but that entry's instruction was about **scope**, so it is **queued as a cross-row sweep**, like the press-freedom tag in revision 24. Same page **confirms revision 19's retirement of `periphery-development` from the party's own mouth** (*"לא עוד ״חיזוק הפריפריה״"*) and gives `claims-economically-liberal` its best evidence yet. **Three rejections:** `population-transfer` (the emigration is opt-in; the compulsory movement is displacement *within* Gaza paired with Israel *"לקיחת אחריות אזרחית"*, an occupation-administration claim), `security-hawk` (revision 30's precedent unchanged) and `no-palestinian-state` (not stated; `anti-two-state` already covers it). **The 2026-08-14 provenance caveat is closed as verified-absent**: the sitemap carries no מילואים page, so that deck stays party-circulated |
 | 2026-08-23 | האחדות (Unity) added — new party, scored from its own site |
