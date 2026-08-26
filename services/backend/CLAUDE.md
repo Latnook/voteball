@@ -145,7 +145,17 @@ concluding a source is unreachable.** `kachollavan.org.il` was recorded here and
 'Mozilla/5.0 …' -H 'Referer: https://kachollavan.org.il/'` fetched its PDFs at **200** on the first
 try. The cost of the wrong belief is not effort, it is coverage: that row sat with four unread
 documents and a wrong `religiosity` partly because the domain was written off as hand-fetch-only.
-Test the block before designing around it.
+Test the block before designing around it. **A User-Agent alone is not browser-shaped enough** —
+`timesofisrael.com` still 403s to one, and returns **200** once `Accept`, `Accept-Language` and
+`Referer` are added (2026-08-26).
+
+**A summarizer's rendering of a source is not the source, and the gap shows up exactly where it
+matters.** WebFetch answers a prompt *about* a page rather than handing you the page. Asked to
+transcribe that Times of Israel entry verbatim, it returned the quotation the headline is built on
+and silently dropped the sentence immediately after it — the one carrying the dehumanizing language
+that is the whole reason the piece bears on a classification. Fetch and read the text before citing
+a source for a tag or an axis; use WebFetch to decide whether a page is worth fetching, not as the
+thing you cite.
 
 **A party PDF that WebFetch calls unreadable is usually readable — use `pdftotext`.** Party platforms
 are frequently Adobe Illustrator exports; WebFetch hands its summarizer the raw binary, which then
