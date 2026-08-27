@@ -1,0 +1,111 @@
+{{- if and .Values.enabled .Values.networkPolicy.enabled }}
+# `logging` is default-deny like every other namespace in this cluster. Exactly four flows are
+# opened and nothing else -- this namespace needs no route to RDS and no route to the AWS APIs.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+# DNS. Without this every outbound name lookup fails and the symptom looks like "no network at all".
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+---
+# Ingest, from Fluent Bit in amazon-cloudwatch.
+#
+# THIS RULE IS THE ONE THAT FAILS SILENTLY. Fluent Bit's forward output buffers and retries on a
+# refused connection while the DaemonSet stays Running and healthy, so a missing rule here looks
+# exactly like "no logs have been written yet". It is why Task 8's verification counts DOCUMENTS
+# rather than checking pod status.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-fluentbit-ingest
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: fluentd
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: amazon-cloudwatch
+      ports:
+        - { protocol: TCP, port: 24224 }
+---
+# Within the namespace: Fluentd -> Elasticsearch, Kibana <-> Elasticsearch, and the ILM Job ->
+# Elasticsearch. Plus the ALB reaching Kibana from the public subnets.
+#
+# The ALB is NOT a pod -- its ENIs sit in the public subnets, outside any namespaceSelector or
+# podSelector a NetworkPolicy can name -- so it needs plain ipBlocks, the same way
+# charts/observability's admission-webhook rule names the VPC CIDR.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-logging-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+    - from:
+        - ipBlock: { cidr: 10.0.0.0/20 }
+        - ipBlock: { cidr: 10.0.16.0/20 }
+      ports:
+        - { protocol: TCP, port: 5601 }
+---
+# Egress: same-namespace only.
+#
+# The AWS VPC CNI evaluates egress policy PRE-DNAT -- against the ClusterIP the client dialled, not
+# the pod IP the Service routes to -- so the Service CIDR needs its own explicit entry per port, not
+# just the same-namespace podSelector. This is the exact trap that left Grafana's datasource health
+# check timing out on 2026-08-18; see charts/observability/templates/networkpolicy.yaml.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-logging-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector: {}
+    - to:
+        - ipBlock: { cidr: 172.20.0.0/16 }
+      ports:
+        - { protocol: TCP, port: 9200 }  # Elasticsearch ClusterIP (Fluentd, Kibana, the ILM Job)
+        - { protocol: TCP, port: 5601 }  # Kibana ClusterIP
+        - { protocol: TCP, port: 443 }   # Kubernetes API (ECK-managed pods do service discovery)
+{{- end }}

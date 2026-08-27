@@ -211,4 +211,72 @@ grep -qE '"number_of_replicas":[[:space:]]*0[[:space:]]*,?[[:space:]]*$' <<<"$il
   || fail "no replica -- single-node ES by design"
 pass "no replica (single-node ES)"
 
+
+# --- NetworkPolicy -------------------------------------------------------------------------------
+# Helm strips only {{/* */}} template comments -- plain YAML `#` comments render straight through,
+# and this template's prose comments mention every one of the strings below (amazon-cloudwatch,
+# allow-dns-egress, the CIDRs, default-deny). Scoping with --show-only AND stripping full-line `#`
+# comments is required, or these assertions pass even with the real policy deleted. Anchoring on
+# STRUCTURE (name:/cidr:/port: values, not bare substrings) is what survives the inline trailing
+# comments (e.g. `port: 9200 }  # Elasticsearch ...`) that full-line stripping does not touch.
+np="$(helm template logging "$CHART" --namespace logging --set enabled=true \
+       --show-only templates/networkpolicy.yaml | grep -vE '^[[:space:]]*#')"
+
+grep -qE '^kind:[[:space:]]*"?NetworkPolicy"?[[:space:]]*$' <<<"$np" \
+  || fail "logging namespace must be default-deny like every other namespace here"
+pass "NetworkPolicies present"
+
+grep -qE '^[[:space:]]*name:[[:space:]]*"?default-deny"?[[:space:]]*$' <<<"$np" \
+  || fail "missing the default-deny policy"
+pass "default-deny"
+
+grep -qE '^[[:space:]]*name:[[:space:]]*"?allow-dns-egress"?[[:space:]]*$' <<<"$np" \
+  || fail "missing DNS egress"
+pass "DNS egress policy present"
+
+# Fluent Bit lives in amazon-cloudwatch. Without this ingress rule it connects, times out, buffers
+# and reports healthy -- shipping nothing. Assert both the policy name and the namespaceSelector
+# VALUE that actually admits it, anchored so a typo'd namespace (e.g. amazon-cloudwatch-x) fails.
+grep -qE '^[[:space:]]*name:[[:space:]]*"?allow-fluentbit-ingest"?[[:space:]]*$' <<<"$np" \
+  || fail "missing the allow-fluentbit-ingest policy"
+pass "allow-fluentbit-ingest policy present"
+
+grep -qE '^[[:space:]]*kubernetes\.io/metadata\.name:[[:space:]]*"?amazon-cloudwatch"?[[:space:]]*$' <<<"$np" \
+  || fail "must admit Fluent Bit from the amazon-cloudwatch namespace"
+pass "admits Fluent Bit from the amazon-cloudwatch namespace"
+
+grep -qE 'port:[[:space:]]*24224[[:space:]]*\}' <<<"$np" \
+  || fail "Fluent Bit ingest must open TCP 24224"
+pass "Fluent Bit ingest opens port 24224"
+
+# The ALB reaches Kibana from the PUBLIC subnets -- both CIDRs, as cidr: values inside an ipBlock,
+# not comment prose.
+grep -qE 'cidr:[[:space:]]*"?10\.0\.0\.0/20"?[[:space:]]*\}' <<<"$np" \
+  || fail "must admit the ALB from public subnet CIDR 10.0.0.0/20"
+pass "admits the ALB from 10.0.0.0/20"
+
+grep -qE 'cidr:[[:space:]]*"?10\.0\.16\.0/20"?[[:space:]]*\}' <<<"$np" \
+  || fail "must admit the ALB from public subnet CIDR 10.0.16.0/20"
+pass "admits the ALB from 10.0.16.0/20"
+
+# Service-CIDR egress: load-bearing because the VPC CNI evaluates egress PRE-DNAT -- against the
+# ClusterIP the client dialled, not the pod IP the Service routes to -- so a same-namespace
+# podSelector rule does not cover pod-to-pod traffic that goes via a ClusterIP. Each port must be
+# individually enumerated; omitting one is a runtime timeout with nothing in any log to point at it.
+grep -qE 'cidr:[[:space:]]*"?172\.20\.0\.0/16"?[[:space:]]*\}' <<<"$np" \
+  || fail "must open egress to the Service CIDR 172.20.0.0/16"
+pass "Service CIDR egress present"
+
+grep -qE 'port:[[:space:]]*9200[[:space:]]*\}' <<<"$np" \
+  || fail "Service-CIDR egress must include TCP 9200 (Elasticsearch) -- omitting it times out silently"
+pass "Service-CIDR egress includes port 9200 (Elasticsearch)"
+
+grep -qE 'port:[[:space:]]*5601[[:space:]]*\}' <<<"$np" \
+  || fail "Service-CIDR egress must include TCP 5601 (Kibana)"
+pass "Service-CIDR egress includes port 5601 (Kibana)"
+
+grep -qE 'port:[[:space:]]*443[[:space:]]*\}' <<<"$np" \
+  || fail "Service-CIDR egress must include TCP 443 (Kubernetes API)"
+pass "Service-CIDR egress includes port 443 (Kubernetes API)"
+
 echo "PASS: charts/logging"
