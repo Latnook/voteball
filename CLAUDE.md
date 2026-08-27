@@ -786,6 +786,20 @@ indistinguishable from a **correct negative**, which is a legitimate outcome nob
 investigate. Exercising a check against known-present input at least once is the only defence, and it
 is the same discipline as proving a test can fail before trusting it to pass.
 
+**A grep used to decide "is this repo clean?" IS one of these checks, and alternation is where it
+hides.** Second instance, 2026-08-28, found by a doc audit rather than by the person who ran the
+grep: sweeping for the superseded "3 clubs per league" cap with
+`grep "at most 3 clubs per league\|up to 3 clubs\|3 clubs per league"` returned nothing for
+`README.md:53`, which read "up to 3 **specific** clubs per league". One intervening word defeated
+**all three alternatives at once**, because all three assumed `3` and `clubs` were adjacent — so they
+were never three chances, they were one, and the zero-match result was indistinguishable from a file
+that was already correct. **Alternation gives the feeling of coverage while sharing a single point of
+failure.** Two defences, both cheap: search the narrowest token that must appear whatever the
+surrounding words (`grep -n '\b3\b' README.md` returns both lines), and run the pattern once against
+a line you KNOW should match before trusting a clean sweep. The same audit discipline applies in
+reverse — the fix pass deliberately left `README.submission.md`'s HTTP `301` alone: same digits,
+unrelated claim, and exactly what a careless sweep "fixes".
+
 **A NAME that is a silent contract with something off-screen — four instances in one day
 (2026-08-24), all four producing a confident, empty, correct-looking result and no error anywhere.**
 This is the sibling of the swallowed-status family above: there the status was discarded, here the
