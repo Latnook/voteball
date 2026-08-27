@@ -352,8 +352,8 @@ hand. Stage list, in order (from `Jenkinsfile-ci`): **Guard** (refuses a changes
 selects on, and no metric label collides with an operator-owned one) → **Script tests**
 (`run-ci-suite.sh`, the guards protecting the
 pipeline itself — split across two containers because no single container in the agent pod has both
-`python3` and `git`) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (301
-pytest tests against a real, ephemeral Postgres sidecar — 253 backend + 48 worker, verified locally
+`python3` and `git`) → **Lint/Static Analysis** (`ruff`, `hadolint`) → **Tests** (314
+pytest tests against a real, ephemeral Postgres sidecar — 266 backend + 48 worker, verified locally
 on 2026-08-24 via `python -m pytest -q`; count them the same way rather than
 trusting this number) → **Resolve tag and account** → **Already
 built?** (skip if this SHA's images already exist in the immutable ECR repos) → **Build images**

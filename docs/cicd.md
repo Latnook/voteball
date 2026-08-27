@@ -322,7 +322,7 @@ versions, are suppressed — the Dockerfiles pin through `requirements.txt`, whi
 
 ### 5. Tests (new)
 
-The 301 tests in `services/{backend,worker}/tests/` (253 backend + 48 worker, verified locally on
+The 314 tests in `services/{backend,worker}/tests/` (266 backend + 48 worker, verified locally on
 2026-08-24 via `python -m pytest -q` in each service — count them the same way rather than trusting
 this number, it drifts every time a test is added), run against a **real** Postgres — both
 `conftest.py` files `DROP TABLE ... CASCADE` and call `init_db()`, and were never sqlite-compatible.
