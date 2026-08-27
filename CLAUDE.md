@@ -43,7 +43,11 @@ before "improving" the SEO), then the 2026-08-04 CI/CD split
 pointer, rather than being edited), then the 2026-08-23 review pass
 (`2026-08-23-release-branch-and-digest-design.md`, which moves ArgoCD off `master` onto a
 CD-only `release` branch and pins workloads by image digest; it supersedes the branch model in
-`2026-08-04-cicd-split-design.md` §4, whose text likewise stays as a dated record).
+`2026-08-04-cicd-split-design.md` §4, whose text likewise stays as a dated record), then the
+2026-08-27 Conference League pass
+(`2026-08-27-conference-league-and-domestic-cap-design.md`, which replaces the per-league-tab
+pick cap with a per-**domestic**-league one and supersedes the "≤3 per `league_id`" rule the
+`voteball-api` skill and `2026-08-12-europa-league-design.md` were written against).
 **Read the relevant one before making architectural changes:** most decisions (and the bugs they
 avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
 justify its shape. Several also carry a "Verification outcome" section recording what actually broke
@@ -146,8 +150,9 @@ introducing a shared module unless the plan says to.
 
 Postgres (RDS) stores: static seed data (`leagues`, `clubs`, `previous_parties`, `upcoming_parties` —
 the two party tables are also admin-editable after seeding), raw votes (`votes`, `vote_clubs`,
-`vote_leagues`, `vote_upcoming_parties` — a ballot can name up to 3 clubs per league across any
-number of leagues, so `votes` itself carries no league/club column; `vote_clubs` records each
+`vote_leagues`, `vote_upcoming_parties` — a ballot can name any number of clubs across any number
+of leagues, capped at 3 clubs from any one **domestic** league, so `votes` itself carries no
+league/club column; `vote_clubs` records each
 specific-club pick with the league tab it was picked under, `vote_leagues` records "just this
 league, no specific club" picks), and worker-computed rollup tables (`rollup_previous`,
 `rollup_upcoming`, `rollup_previous_upcoming` — each carries a league-scope row per distinct league
@@ -176,6 +181,29 @@ a `group_label` — a dual-league club can carry its label into a league that is
 16-nation overlap between the Nations League and the World Cup made exactly this happen), so
 inferring "divided" from the clubs would put division headers on the wrong tab. See
 `docs/design/2026-08-07-nations-league-design.md` decisions 1 and 5.
+
+**`leagues.is_club_cup` is the second boolean of that shape, and it governs which ballots are
+accepted.** `TRUE` for exactly the three UEFA club cups (Champions, Europa, Conference), it means
+two things at once: a cup imposes **no pick cap of its own**, and a cup is **never a club's domestic
+league**, so it is skipped when counting the ≤3-per-domestic-league cap. Two traps:
+
+- **It is `FALSE` for the World Cup and the Nations League**, which are continental competitions but
+  not club cups. A national team has no domestic league to be counted under, so marking either one
+  would leave those tabs with **no cap at all** rather than a domestic-league one — the opposite of
+  what "it's a continental competition too" suggests.
+  `test_only_the_uefa_club_cups_are_marked_is_club_cup` pins the set in both directions.
+- **The cap reads a club's own `{league_id, domestic_league_id}`, never the `league_id` its pick
+  arrived under**, because which column holds the domestic league is *not* consistent: Barcelona is
+  `league_id=Champions League / domestic_league_id=La Liga` and Real Betis is exactly the reverse,
+  both legitimately (the two cups were seeded in opposite directions). The client files each pick
+  under `domestic_league_id ?? tab`, so a label-keyed cap would bind on roughly half the ballots at
+  random. Same reasoning, same fix, as `_VOTE_LEAGUES_TOUCHED_CTE` above.
+
+A club whose domestic league this app does not seed (Lugano and Thun are Swiss; there is no Swiss
+tab) lands in no bucket and is **deliberately uncapped** — the rule binds where a domestic league is
+known. The cap is enforced **twice**, in `services/backend/app.py` and `services/frontend/vote.js`;
+a client looser than the server offers ballots the API then rejects with an error the form cannot
+explain.
 
 ### Backend request-handling pattern
 
