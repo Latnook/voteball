@@ -210,11 +210,28 @@ function renderTeamGrid() {
   // Six columns for a long flat list -- the World Cup's 48 nations are nine ragged rows of five and
   // eight clean rows of six, and the two continental competitions end at 36 apiece, which is six
   // clean rows. Counted, not hardcoded, for the same reason quad is; a divisioned league is
-  // excluded so its 16-per-division rows keep reading as divisions. The threshold is 24 -- four
-  // full rows of six -- which is below both competitions' final size and above every domestic
-  // league here (20 at most), so it does not shrink a league that reads fine at five.
-  // See .card-grid-hex.
-  const hex = !quad && clubCount >= 24;
+  // excluded so its 16-per-division rows keep reading as divisions.
+  //
+  // TWO ways in, and the second is why this is not just a threshold. `>= 24` is the size rule: four
+  // full rows of six, below both competitions' final size, and it must stay a >= rather than an
+  // exact-multiple test so UEL keeps six columns while it grows 24 -> 36 through counts like 25 and
+  // 26. The `% 6` clause is the SHAPE rule: a count that divides evenly into six is precisely the
+  // count that reads worst at five, because auto-fill's ~5 tracks leave a ragged tail. Bundesliga's
+  // 18 is the case in hand -- 5+5+5+3 at five columns versus three clean rows of six.
+  // The `>= 18` floor keeps it off genuinely small leagues, where six tracks would shrink cards
+  // rather than tidy rows.
+  //
+  // Counting CLUBS rather than cards is correct here even though the grid renders one more element:
+  // the "just this league" card carries data-just-league, which style.css spans `grid-column: 1 / -1`
+  // across every column, so it is a full-width bar under the last row and never occupies a track.
+  // Verified in a browser at 1280px and 1000px on 2026-08-27 -- Bundesliga lays out 6+6+6 with the
+  // bar beneath. A row-detection that measures card tops reports that bar as a fourth "row of one";
+  // it is not one, and the count here must not be adjusted for it.
+  //
+  // Every other domestic league is deliberately untouched: 20 (Premier League, La Liga, Serie A)
+  // is 20 % 6 == 2 and 14 (Israeli Premier League) is 14 % 6 == 2, so both stay on auto-fill; 16
+  // (ליגה לאומית) is already quad. See .card-grid-hex.
+  const hex = !quad && (clubCount >= 24 || (clubCount >= 18 && clubCount % 6 === 0));
   grid.classList.toggle('card-grid-quad', quad);
   grid.classList.toggle('card-grid-hex', hex);
 
