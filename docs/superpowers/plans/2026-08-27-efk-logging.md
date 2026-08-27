@@ -533,7 +533,9 @@ grep -q 'voteball-logs-es-elastic-user' <<<"$out" || fail "Fluentd must read the
 pass "Fluentd mounts the ES CA and credentials"
 
 grep -qE 'runAsNonRoot:[[:space:]]*true' <<<"$out" || fail "Fluentd must run as non-root"
-pass "Fluentd runs non-root"
+grep -qE 'readOnlyRootFilesystem:[[:space:]]*true' <<<"$out" \
+  || fail "Fluentd must set readOnlyRootFilesystem: true (emptyDirs cover the two paths it writes)"
+pass "Fluentd runs non-root on a read-only root filesystem"
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -663,9 +665,10 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
-            # NOT readOnlyRootFilesystem: the file buffer below needs a writable path, and the
-            # fluentd image also writes its plugin cache under /home/fluent. The two emptyDirs cover
-            # what is genuinely written, which is the same pattern charts/voteball uses.
+            # readOnlyRootFilesystem with emptyDirs for exactly what is written, which is the
+            # pattern charts/voteball uses everywhere (see docs/eks/ro-fs-writable-paths.md).
+            # Fluentd writes two places: the file buffer, and its own runtime log directory.
+            readOnlyRootFilesystem: true
           volumeMounts:
             - name: certs
               mountPath: /etc/fluentd/certs
@@ -676,6 +679,8 @@ spec:
               readOnly: true
             - name: buffer
               mountPath: /var/log/fluentd
+            - name: runtime-log
+              mountPath: /fluentd/log
           livenessProbe:
             tcpSocket:
               port: 24224
@@ -695,6 +700,8 @@ spec:
           configMap:
             name: fluentd
         - name: buffer
+          emptyDir: {}
+        - name: runtime-log
           emptyDir: {}
 {{- end }}
 ```
@@ -810,9 +817,17 @@ spec:
                 secretKeyRef:
                   name: voteball-logs-es-elastic-user
                   key: elastic
+          # BLOCK form, not the inline `{ cpu: ..., memory: ... }` flow map. Task 1's budget
+          # parser keys on `requests:` followed by indented cpu:/memory: lines; the inline form
+          # would contribute ZERO to the sum, and a budget gate that silently undercounts is
+          # worse than no gate at all.
           resources:
-            requests: { cpu: "50m", memory: "64Mi" }
-            limits:   { cpu: "200m", memory: "128Mi" }
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -1354,31 +1369,49 @@ git push origin master
 
 **Files:**
 - Create: `scripts/logging/verify-efk.sh`
+- Create: `scripts/tests/test-logging-teardown.sh`
 - Modify: `scripts/destroy.sh` (step 1 ArgoCD Application list; step 4 Helm uninstall block)
 - Modify: `scripts/cleanup-stale-dns.sh:32` (the `HOSTS` line)
 - Modify: `scripts/deploy.sh` (new step 11e after 11d)
-- Modify: `scripts/tests/test-logging-chart.sh` (append the teardown-order assertion)
-- Modify: `scripts/tests/run-ci-suite.sh` (register the new test in a group)
+- Modify: `scripts/tests/run-ci-suite.sh` (register BOTH new tests)
 
 **Interfaces:**
 - Consumes: everything from Tasks 1–7.
 - Produces: nothing later tasks reference. This is the last behavioural task.
 
-- [ ] **Step 1: Write the failing teardown-order test**
+- [ ] **Step 1: Write the failing teardown test**
 
-Append to `scripts/tests/test-logging-chart.sh` before the final `echo "PASS"`:
+These assertions read SCRIPT TEXT and need no `helm`, so they must NOT live in
+`test-logging-chart.sh` — that file exits 0 early when helm is missing and is registered in the
+suite's `SKIP` map for exactly that reason. Putting the teardown guard there would mean it never
+runs in CI, and a guard that cannot execute is indistinguishable from one that passes. This is the
+one finding in this plan whose failure only reproduces during a real, billed teardown, so it is the
+last one that should be unenforced.
+
+Create `scripts/tests/test-logging-teardown.sh`:
 
 ```bash
-# --- Teardown ordering ---------------------------------------------------------------------------
+#!/usr/bin/env bash
+# Teardown-ordering and DNS-cleanup guards for the EFK stack.
+#
+# Separate from test-logging-chart.sh ON PURPOSE: everything here greps script text and needs no
+# helm, so it runs in CI's git container while the chart test is skipped for want of helm.
+#
 # The ValidatingWebhookConfiguration the ECK chart installs intercepts writes to *.k8s.elastic.co
-# objects. If the operator is uninstalled BEFORE the Elasticsearch/Kibana CRs are deleted, every CR
-# delete blocks on a webhook with no backend -- the same class as the kubernetes_namespace.ci
-# finalizer hang of 2026-08-04. This asserts the order in the script text, since the failure only
-# reproduces during a real billed teardown.
-echo "==> destroy.sh ordering"
+# objects. If the operator is uninstalled BEFORE the Elasticsearch/Kibana custom resources are
+# deleted, every CR delete blocks on a webhook with no backend alive to answer -- the same class as
+# kubernetes_namespace.ci sitting Terminating forever on 2026-08-04. That failure costs a real
+# teardown to discover, which is why it is asserted here instead.
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+
+fail() { echo "FAIL: $*" >&2; exit 1; }
+pass() { echo "  ok: $*"; }
+
+echo "==> destroy.sh ECK ordering"
 d=scripts/destroy.sh
-grep -q 'kubectl delete elasticsearch' "$d" || fail "destroy.sh must delete the Elasticsearch CR"
-grep -q 'kubectl delete kibana' "$d"        || fail "destroy.sh must delete the Kibana CR"
+grep -q 'kubectl delete elasticsearch' "$d"    || fail "destroy.sh must delete the Elasticsearch CR"
+grep -q 'kubectl delete kibana' "$d"           || fail "destroy.sh must delete the Kibana CR"
 grep -q 'helm uninstall elastic-operator' "$d" || fail "destroy.sh must uninstall the ECK operator"
 
 cr_line="$(grep -n 'kubectl delete elasticsearch' "$d" | head -1 | cut -d: -f1)"
@@ -1387,14 +1420,32 @@ op_line="$(grep -n 'helm uninstall elastic-operator' "$d" | head -1 | cut -d: -f
   || fail "destroy.sh uninstalls the ECK operator (line $op_line) BEFORE deleting its CRs (line $cr_line) -- the webhook will hang the teardown"
 pass "CRs deleted before the operator"
 
-grep -q "kibana\." scripts/cleanup-stale-dns.sh \
-  || fail "cleanup-stale-dns.sh must list the kibana host, or its record strands on a dead ALB"
-pass "cleanup-stale-dns.sh covers the kibana host"
+grep -q 'helm uninstall logging' "$d" || fail "destroy.sh must uninstall the logging release"
+pass "logging release pre-uninstalled"
+
+echo "==> ArgoCD Application removal"
+grep -q 'logging' "$d" || fail "destroy.sh step 1 must delete the logging ArgoCD Application, or selfHeal recreates what step 4 removes"
+pass "logging Application deleted in step 1"
+
+echo "==> cleanup-stale-dns.sh"
+grep -qE 'kibana\.\$\{APP_DOMAIN\}' scripts/cleanup-stale-dns.sh \
+  || fail "cleanup-stale-dns.sh must list kibana.\${APP_DOMAIN}, or its record strands on a dead ALB"
+pass "kibana host covered"
+
+echo "==> deploy.sh enables the gate"
+grep -q '11e' scripts/deploy.sh || fail "deploy.sh must carry step 11e"
+grep -q 'verify-efk.sh' scripts/deploy.sh \
+  || fail "deploy.sh step 11e must run verify-efk.sh -- charts/logging ships gated off and nothing else turns it on"
+pass "deploy.sh step 11e present"
+
+echo "PASS: logging teardown/deploy guards"
 ```
+
+Make it executable: `chmod +x scripts/tests/test-logging-teardown.sh`
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `scripts/tests/test-logging-chart.sh`
+Run: `scripts/tests/test-logging-teardown.sh`
 Expected: FAIL with `destroy.sh must delete the Elasticsearch CR`.
 
 - [ ] **Step 3: Update `scripts/destroy.sh`**
@@ -1586,34 +1637,43 @@ Also update the two `step "11d/11 ..."` and preceding step labels only if the co
 
 - [ ] **Step 7: Register the new test in the CI suite**
 
-`scripts/tests/test-logging-chart.sh` needs `helm`, which the agent images lack — the same reason three tests already sit in `SKIP`. Add it to the `SKIP` map in `scripts/tests/run-ci-suite.sh` alongside the existing helm-dependent entry:
+Two files, two different groups — and this is the point of Ruling P3.
+
+`test-logging-chart.sh` needs `helm`, which neither agent image has, so it joins the `SKIP` map beside the existing helm-dependent entry:
 
 ```bash
   [test-logging-chart.sh]="needs helm, absent from both agent containers"
 ```
 
-**Determine this by running it, not by reading it.** Confirm the skip is correct rather than assumed:
+`test-logging-teardown.sh` greps script text only — no helm, no python — so it goes in `GIT_GROUP`, where it will actually run on every build:
+
+```bash
+  test-logging-teardown.sh
+```
+
+**Determine each group by RUNNING the test in a bare image, never by reading it.** Build #7 established that guessing from source text is how tests land in the wrong container:
 
 ```bash
 docker run --rm -v "$PWD:/w" -w /w python:3.12-slim scripts/tests/test-logging-chart.sh
+docker run --rm -v "$PWD:/w" -w /w alpine:3.21 sh -c 'apk add -q bash grep && bash scripts/tests/test-logging-teardown.sh'
 ```
-Expected: `SKIP: helm not installed` and exit 0 — which is why it belongs in `SKIP` rather than `PYTHON_GROUP`. (Build #7 established that guessing a test's group from its source text is how tests land in the wrong container.)
+Expected: the first prints `SKIP: helm not installed` and exits 0 (hence `SKIP`); the second PASSES with no helm and no python present (hence `GIT_GROUP`).
 
 - [ ] **Step 8: Run the full suite**
 
 Run: `scripts/tests/run-ci-suite.sh`
-Expected: PASS, with the final line's test count one higher than before and `test-logging-chart.sh` listed among the skips.
+Expected: PASS, with the final line's test count TWO higher than before, `test-logging-chart.sh` among the skips, and `test-logging-teardown.sh` actually executing.
 
 - [ ] **Step 9: Run the chart test directly (where helm exists)**
 
-Run: `scripts/tests/test-logging-chart.sh`
-Expected: PASS, all sections including the new teardown-ordering assertions.
+Run: `scripts/tests/test-logging-chart.sh && scripts/tests/test-logging-teardown.sh`
+Expected: both PASS.
 
 - [ ] **Step 10: Commit**
 
 ```bash
-git add scripts/logging/verify-efk.sh scripts/destroy.sh scripts/cleanup-stale-dns.sh \
-        scripts/deploy.sh scripts/tests/test-logging-chart.sh scripts/tests/run-ci-suite.sh
+git add scripts/logging/verify-efk.sh scripts/tests/test-logging-teardown.sh scripts/destroy.sh \
+        scripts/cleanup-stale-dns.sh scripts/deploy.sh scripts/tests/run-ci-suite.sh
 git commit -m "feat(logging): teardown ordering, DNS cleanup and end-to-end verification
 
 destroy.sh deletes the Elasticsearch/Kibana CRs BEFORE uninstalling the ECK
