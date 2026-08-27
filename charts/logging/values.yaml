@@ -52,6 +52,13 @@ kibana:
     # written by scripts/sync-values-from-tf.sh -- update it by hand on a rebuild, the same way
     # charts/observability's datasources.postgres.host is handled.
     host: "kibana.voteball.latnook.com"
+    # DELIBERATELY EMPTY -- and it needs a certificate to exist anyway. With no `certificate-arn`
+    # annotation the AWS Load Balancer Controller falls back to HOST-BASED DISCOVERY and looks up an
+    # ISSUED ACM certificate matching the host above. terraform/addon-eck.tf creates exactly that
+    # certificate (aws_acm_certificate.kibana), so discovery succeeds and no eleventh sync-managed
+    # field is introduced. Do NOT read "empty" as "TLS is optional here": this Ingress joins a GROUP,
+    # and a member whose certificate cannot be resolved fails the whole group's model build --
+    # stalling the ALB that also serves the public site and the Jenkins webhook.
     certificateArn: ""
     # MUST match charts/voteball and ci/jenkins-webhook. A grouped ALB de-provisions only when NO
     # member Ingress remains; a different group here would leave a second ALB billing after teardown.

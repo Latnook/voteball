@@ -221,6 +221,17 @@ Authentication is **ECK's built-in `elastic` user**, whose password the operator
 Kubernetes Secret. No second auth system, no ExternalSecret, nothing new in Secrets Manager. The WAF
 ACL already attached to the ALB covers it. TLS is ACM at the ALB, as for every other host.
 
+**That certificate has to be created, and it was missed on the first pass.** `kibana.<app_domain>` is
+not covered by any certificate in this account — ACM holds `latnook.com`, `voteball.latnook.com` and
+`jenkins.voteball.latnook.com`, with no wildcard — so `terraform/addon-eck.tf` creates its own,
+DNS-validated, mirroring `aws_acm_certificate.jenkins` in `addon-jenkins.tf` (its own certificate, not
+a SAN on the app's, so `ingress.certificateArn` stays out of it and the sync script keeps owning ten
+fields, not eleven). The chart's `certificateArn` stays **empty**: with no annotation the AWS Load
+Balancer Controller discovers an ISSUED certificate matching the Ingress host, which is why this adds
+no sync-managed field. **The failure it prevents is not scoped to Kibana** — a grouped Ingress is
+reconciled as one model per group, so a member whose certificate cannot be resolved fails the group's
+model build and stalls the ALB serving the public site and the Jenkins webhook alongside it.
+
 **Alerting** adds two rules to `charts/observability`, both built on kube-state-metrics — no new
 exporter:
 
