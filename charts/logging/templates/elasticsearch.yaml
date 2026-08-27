@@ -53,6 +53,21 @@ spec:
                 limits:
                   cpu: {{ .Values.elasticsearch.resources.limits.cpu | quote }}
                   memory: {{ .Values.elasticsearch.resources.limits.memory | quote }}
+              # NO readOnlyRootFilesystem HERE, AND THAT IS DELIBERATE -- it is the one place this
+              # chart falls short of CLAUDE.md's "readOnlyRootFilesystem: true on all app containers"
+              # bar, so it is documented rather than silently omitted. The official Elasticsearch
+              # image REQUIRES a writable root: its entrypoint rewrites
+              # /usr/share/elasticsearch/config on every start (ECK injects elasticsearch.yml, the
+              # unicast hosts file and the security config there), regenerates the keystore in the
+              # same tree, and Lucene writes lock/temp files under the install path. With a read-only
+              # root the container fails at startup, not later.
+              #
+              # The exposure this leaves is small and bounded: the pod still runs non-root with
+              # allowPrivilegeEscalation: false and every capability dropped, in a default-deny
+              # namespace with no egress to RDS, to the AWS APIs, or to devops-app. Compare the
+              # BuildKit exception, which is far larger and equally deliberate. Fluentd and the ILM
+              # Job DO set readOnlyRootFilesystem: true -- their images tolerate it with emptyDirs,
+              # so the exception is scoped to the two Elastic images that cannot.
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:

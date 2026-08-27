@@ -1010,10 +1010,19 @@ scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; its 
 scripts/tests/test-verify-deployed-image.sh # CD Verify: match the DIGEST, not the tag
 ```
 
-**The suite is 26 tests as of 2026-08-25** — read it off `run-ci-suite.sh`'s own final output line
-rather than from here. `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` are exhaustive and the runner fails if
-a file in `scripts/tests/` appears in none of them, so the count moves whenever a test is added and
-this sentence will go stale before the runner does.
+**Do not read the suite's size from this file — derive it:**
+
+```bash
+scripts/tests/run-ci-suite.sh | tail -1       # "PASS — all N script tests green [group: all]"
+# N counts the tests it RAN. The SKIP array holds the rest; N + ${#SKIP[@]} + 1 (the runner itself)
+# equals `ls scripts/tests/*.sh | wc -l`, because the three lists are exhaustive.
+```
+
+This sentence used to state a number ("26 tests as of 2026-08-25") and it was wrong within two days —
+the runner printed 27 while this file still said 26, which is precisely the drift the paragraph
+warned about and then committed. `PYTHON_GROUP`, `GIT_GROUP` and `SKIP` are exhaustive and the runner
+fails if a file in `scripts/tests/` appears in none of them, so the count moves whenever a test is
+added and any number written here is stale by construction.
 
 **`Jenkinsfile-ci`'s "Script tests" stage runs `run-ci-suite.sh` in TWO containers, and until
 2026-08-11 nothing ran these tests at all** — CI ran `pytest` for `services/{backend,worker}` and stopped, so every guard
@@ -1023,8 +1032,10 @@ could have been deleted with every build staying green. **`run-ci-suite.sh`'s `P
 whichever group is being run**, so a new test cannot slip through the gap between the two groups, and
 adding one forces a one-line decision. A glob would silently pick up a future helm-dependent test and
 break every build; an unchecked hand-list would silently drop a new test and protect nothing. It also
-fails if a listed test no longer exists. Three are skipped for tools the agent lacks (`helm`, `gh`, `curl`); moving one
-into a group means adding that tool to an image, not loosening the test.
+fails if a listed test no longer exists. Several are skipped for tools the agent lacks (`helm`, `gh`, `curl`) — count the
+`SKIP` array in `run-ci-suite.sh` rather than trusting a number here; it said "three" while the array
+held five. Moving one into a group means adding that tool to an image, not loosening the test. The
+`helm` entries are the widest gap: nothing in CI renders `charts/logging` or `charts/jenkins-support`.
 
 **The split exists because no container in the `voteball-build` pod has both `python3` and `git`** —
 `python:3.12-slim` has python3 and no git; the default `jnlp` container has git (it performs the

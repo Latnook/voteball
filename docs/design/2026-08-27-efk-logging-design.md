@@ -383,6 +383,13 @@ Recorded so a later pass does not "improve" these:
 - **No migration of `ci`/`argocd`/`monitoring` logs into Elasticsearch.** Those were ~95% of the
   original volume and were deliberately dropped in the 2026-08-03 cost pass; re-adding them here
   would quietly undo it and would not fit the sizing in decision 3.
+- **No `readOnlyRootFilesystem: true` on the Elasticsearch and Kibana containers.** Both official
+  images rewrite their own `config/` tree on every start (ECK injects `elasticsearch.yml`/`kibana.yml`
+  and credentials there) and write under the install path, so a read-only root fails the container at
+  startup. This is the chart's one departure from CLAUDE.md's container bar and is called out in a
+  comment on each container rather than left silent. Fluentd and the ILM Job **do** set it — the
+  exception is scoped to the two Elastic images that cannot take it, and everything else still holds:
+  non-root, `allowPrivilegeEscalation: false`, all capabilities dropped, default-deny namespace.
 - **No SSO for Kibana.** The built-in `elastic` user behind WAF is proportionate for a single-operator
   submission project.
 - **`helm` is not added to a CI agent image, so `test-logging-chart.sh` stays in `run-ci-suite.sh`'s

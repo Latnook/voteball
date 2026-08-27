@@ -111,22 +111,41 @@ spec:
         # docs/design/2026-08-27-efk-logging-design.md decision 3), so yellow is its permanent, correct
         # state. An alert that fires forever is one people learn to ignore -- the same reasoning
         # recorded at VoteballJourneyTrafficStopped in charts/voteball.
+        # BOTH OF THESE CARRY an `or absent(...)`, and it is not decoration. A bare `== 0` on a
+        # kube-state-metrics series is blind to the most likely way this stack breaks: the series
+        # VANISHES when the workload is deleted. A `kubectl delete elasticsearch`, an ArgoCD prune, a
+        # chart change that stops rendering the object, or the whole `logging` Application being
+        # removed all take the metric away entirely -- and a comparison against a series that does not
+        # exist matches nothing, so no data means no alert. The absent() half turns "the workload is
+        # gone" into a firing alert instead of silence, which is the same defect shape as
+        # VoteballSLIAbsent ("we can no longer tell" is not "everything is fine").
+        #
+        # `absent()` rather than `or on() vector(0)`: the vector form returns its fallback whenever the
+        # left side is empty, and `X == 0` is empty in the HEALTHY case too, so it would fire
+        # permanently. absent() is empty whenever the series exists at all.
+        #
+        # `for: 15m` covers the benign disappearances -- a Spot reclaim, a rescheduled pod, a rolling
+        # update. A deliberate teardown will fire these; that is correct, and the runbooks say so.
         - alert: ElasticsearchDown
-          expr: kube_pod_status_ready{namespace="logging", condition="true", pod=~"voteball-logs-es-.*"} == 0
+          expr: >-
+            kube_pod_status_ready{namespace="logging", condition="true", pod=~"voteball-logs-es-.*"} == 0
+            or absent(kube_pod_status_ready{namespace="logging", condition="true", pod=~"voteball-logs-es-.*"})
           for: 15m
           labels:
             severity: warning
           annotations:
             summary: "Elasticsearch is not Ready in the logging namespace"
-            description: "Log search is unavailable. CloudWatch still holds the authoritative copy, so this is not a loss of logs."
+            description: "Log search is unavailable, or the Elasticsearch resource no longer exists at all. CloudWatch still holds the authoritative copy, so this is not a loss of logs."
             runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/ElasticsearchDown.md"
         - alert: FluentdDown
-          expr: kube_deployment_status_replicas_available{namespace="logging", deployment="fluentd"} == 0
+          expr: >-
+            kube_deployment_status_replicas_available{namespace="logging", deployment="fluentd"} == 0
+            or absent(kube_deployment_status_replicas_available{namespace="logging", deployment="fluentd"})
           for: 15m
           labels:
             severity: warning
           annotations:
             summary: "The Fluentd aggregator has no available replica"
-            description: "Fluent Bit is buffering and retrying silently; logs are not reaching Elasticsearch. CloudWatch is unaffected."
+            description: "Fluent Bit is buffering and retrying silently, or the Fluentd Deployment no longer exists at all; logs are not reaching Elasticsearch. CloudWatch is unaffected."
             runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/FluentdDown.md"
 {{- end }}

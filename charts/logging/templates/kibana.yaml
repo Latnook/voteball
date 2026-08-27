@@ -40,6 +40,14 @@ spec:
             limits:
               cpu: {{ .Values.kibana.resources.limits.cpu | quote }}
               memory: {{ .Values.kibana.resources.limits.memory | quote }}
+          # NO readOnlyRootFilesystem HERE, for the same reason as the Elasticsearch container in
+          # elasticsearch.yaml -- see the longer note there. The official Kibana image rewrites
+          # /usr/share/kibana/config on start (ECK injects kibana.yml and the Elasticsearch
+          # credentials) and writes its optimizer/data output under the install path, so a read-only
+          # root fails the container at startup. Non-root, no privilege escalation, all capabilities
+          # dropped and a default-deny namespace still apply; the exception is scoped to the two
+          # Elastic images that cannot tolerate it, and is called out rather than left silent because
+          # CLAUDE.md states the bar as universal.
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
