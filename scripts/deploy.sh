@@ -646,6 +646,21 @@ if ! ./scripts/restart-grafana-datasources.sh; then
   echo "           ./scripts/restart-grafana-datasources.sh" >&2
 fi
 
+step "11e/11 Enabling and verifying the EFK logging stack"
+# charts/logging ships enabled: false on purpose -- its objects are custom resources whose CRDs only
+# `terraform apply` installs (step 6), and chart code otherwise reaches the cluster on a git push
+# minutes later. Shipping the consumer first is the 2026-08-24 outage. This step is the OTHER HALF of
+# that gate: a gate that is off in git with nothing to turn it on is a rebuild that does not work.
+#
+# NOT FATAL, for the same reason as 11b/11c/11d: the application is already up and serving. This
+# affects log search only.
+if ! ./scripts/logging/verify-efk.sh; then
+  echo
+  echo "WARNING: the EFK pipeline did not verify. The DEPLOY ITSELF SUCCEEDED — the site is up." >&2
+  echo "         Logs are still reaching CloudWatch (Fluent Bit fans out to both)." >&2
+  echo "         Re-run: ./scripts/logging/verify-efk.sh" >&2
+fi
+
 cat <<EOF
 
 Deploy complete.

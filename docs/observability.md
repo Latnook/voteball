@@ -31,7 +31,7 @@ Alertmanager mails a person only when something is worth interrupting them for.
  frontend   nginx exp :9113 ┘  (charts/voteball)  │
                                                   │
  kube-state-metrics         ┐                     ├─► Prometheus ──► recording rules (4 SLIs)
- node-exporter              ├─ bundled with       │   10Gi gp3 PVC   alert rules   (16 alerts)
+ node-exporter              ├─ bundled with       │   10Gi gp3 PVC   alert rules   (18 alerts)
  kubelet / cAdvisor         │  kube-prometheus-   │   15d / 8GiB           │
  kube-apiserver             ┘  stack              │                        │
                                                   │                        ▼
@@ -68,7 +68,8 @@ Three homes, and which one a change belongs in decides whether it ships as a com
 |---|---|---|
 | `terraform/addon-monitoring.tf` | The stack itself: the Helm release, PVC, retention, resource limits, Alertmanager→SNS routing, the disabled-defaults list | `terraform apply` |
 | `charts/voteball` (ArgoCD) | The app's three ServiceMonitors, the 12 application alerts, the 4 SLI recording rules, the scrape NetworkPolicy, the canary | `git push` |
-| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 6 dashboards, the 4 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
+| `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 6 dashboards, the 6 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
+| `charts/logging` (ArgoCD, a **third** Application with its own AppProject) | The Elasticsearch/Kibana/Fluentd custom resources the two `platform.logging` alerts describe | `git push` |
 | `charts/jenkins-support` (Terraform) | The Jenkins ServiceMonitor — the one exception, see §4 | `terraform apply` |
 | `terraform/addon-cloudwatch.tf` | Fluent Bit's log pipeline and the three log groups | `terraform apply` |
 
@@ -480,7 +481,7 @@ third of the traffic the SLIs depend on.
 
 ## 8. Alerts and routing
 
-**16 alerts, every one carrying `summary`, `description` and a `runbook_url`.** Alertmanager renders
+**18 alerts, every one carrying `summary`, `description` and a `runbook_url`.** Alertmanager renders
 those annotations into the SNS message, so what arrives is *"here's what broke, here's the exact page
 to open"* rather than a bare metric name.
 
@@ -501,7 +502,7 @@ to open"* rather than a bare metric name.
 | `VoteballBackupMissing` | no successful backup in 48h | — | warning |
 | `VoteballContainerOOMKilled` | > 3 restarts in an hour | 5m | warning |
 
-### Platform — `charts/observability/templates/prometheusrule.yaml` (4)
+### Platform — `charts/observability/templates/prometheusrule.yaml` (6)
 
 | Alert | Fires when | For | Severity |
 |---|---|---|---|
@@ -509,10 +510,29 @@ to open"* rather than a bare metric name.
 | `DeploymentReplicasMismatch` | available < desired **and** updated-replica count unchanged for 10m | 15m | warning |
 | `PrometheusTargetDown` | `up == 0` | 5m | critical |
 | `JenkinsQueueStuck` | `jenkins_queue_size_value > 0` | 15m | warning |
+| `ElasticsearchDown` | logging namespace's Elasticsearch pod not Ready | 15m | warning |
+| `FluentdDown` | the Fluentd aggregator Deployment has zero available replicas | 15m | warning |
 
-These four are **cluster-wide on purpose**, matching the scope of the defaults they replace. A rule
-scoped to one namespace cannot replace a cluster-wide default without silently dropping coverage of
-every other namespace.
+The first four are **cluster-wide on purpose**, matching the scope of the defaults they replace. A
+rule scoped to one namespace cannot replace a cluster-wide default without silently dropping coverage
+of every other namespace. The last two are deliberately scoped to `namespace="logging"` instead —
+there is nothing cluster-wide to match, since Elasticsearch and Fluentd exist only there.
+
+**Deliberately not alerting on Elasticsearch cluster health being `yellow`.** This is a single-node
+cluster with no replica shard by design (§9 in
+[`docs/design/2026-08-27-efk-logging-design.md`](design/2026-08-27-efk-logging-design.md), decision 3)
+— `yellow` is its permanent, correct state, not a degradation. An alert built on it would fire forever,
+and an alert that always fires is one people learn to ignore, the same reasoning already recorded for
+`VoteballJourneyTrafficStopped`. `ElasticsearchDown` alerts on pod readiness instead, which is a real
+signal: it is 0 only when the pod itself is gone, not merely under-replicated.
+
+Both new alerts are built on **kube-state-metrics only** — `kube_pod_status_ready` and
+`kube_deployment_status_replicas_available`, the same metrics family every other platform alert here
+already uses — so the EFK pipeline needed no new exporter to be observable. In both cases **CloudWatch
+keeps receiving logs throughout** — Fluent Bit fans out to CloudWatch independently of this pipeline
+(decision 5) — so neither alert can mean the application itself is affected; see their runbooks
+([`ElasticsearchDown`](runbooks/ElasticsearchDown.md), [`FluentdDown`](runbooks/FluentdDown.md)) for
+what is and is not affected in each case.
 
 ### Three alerts that exist because a metric can lie
 

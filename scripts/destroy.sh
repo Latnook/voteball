@@ -39,10 +39,11 @@ step() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 # Kubernetes object dies with the cluster anyway; these steps are best-effort by design.
 if kubectl cluster-info >/dev/null 2>&1; then
   step "1/7  Removing the ArgoCD Applications (stops selfHeal fighting the teardown)"
-  # BOTH Applications, not just voteball's. `argocd/voteball-application.yaml.tmpl` also declares
-  # `observability`, and it carries the same `prune: true, selfHeal: true` -- leaving it running
-  # survives this step and keeps recreating charts/observability's NetworkPolicies (including its
-  # default-deny), dashboard ConfigMaps and PrometheusRule into a namespace mid-teardown.
+  # ALL THREE Applications, not just voteball's. `argocd/voteball-application.yaml.tmpl` also
+  # declares `observability`, and `charts/logging`'s own Application declares `logging` -- both carry
+  # the same `prune: true, selfHeal: true` -- leaving either running survives this step and keeps
+  # recreating its chart's objects (NetworkPolicies including default-deny, dashboard ConfigMaps,
+  # PrometheusRule, or the Elasticsearch/Kibana CRs) into a namespace mid-teardown.
   #
   # Deleted BY NAME, not by rendering the template. Teardown must not depend on `terraform output`
   # being readable: this script runs against half-destroyed stacks, and a render failure here would
@@ -50,6 +51,7 @@ if kubectl cluster-info >/dev/null 2>&1; then
   # and namespace are fixed in the template, so nothing environment-specific is needed to say which.
   kubectl delete application voteball -n argocd --ignore-not-found || true
   kubectl delete application observability -n argocd --ignore-not-found || true
+  kubectl delete application logging -n argocd --ignore-not-found || true
 
   step "2/7  Removing the Ingresses (releases the ALB and the DNS records)"
   # BOTH Ingresses, not just the app's. Since 2026-07-31 they share ALB group "voteball"
@@ -82,9 +84,10 @@ for _ in $(seq 1 60); do
 done
 
 step "4/7  Uninstalling Helm releases while the cluster is still healthy"
-# All FOUR of this stack's OWN helm_release resources -- voteball, jenkins, jenkins-support, and
-# kube-prometheus-stack -- uninstalled explicitly HERE, before `terraform destroy` starts deleting the
-# cluster underneath them. This is the actual fix for the 2026-08-04 hang, not a workaround for it:
+# All SIX of this stack's OWN helm_release resources -- voteball, jenkins, jenkins-support,
+# kube-prometheus-stack, logging, and elastic-operator -- uninstalled explicitly HERE, before
+# `terraform destroy` starts deleting the cluster underneath them. This is the actual fix for the
+# 2026-08-04 hang, not a workaround for it:
 # `terraform destroy` also runs `helm uninstall` internally when it gets to these resources, and THAT is
 # what hung with "context deadline exceeded" -- Helm cannot cleanly uninstall a release from a cluster
 # that is simultaneously being torn down. Doing the uninstall here, while every node and controller is
@@ -106,6 +109,19 @@ step "4/7  Uninstalling Helm releases while the cluster is still healthy"
 # naturally uninstalls consumers before their dependencies) is the safer order; the retry logic in
 # step 7 below is what recovers if it still hangs.
 if kubectl cluster-info >/dev/null 2>&1; then
+  # ECK comes out in a SPECIFIC ORDER: custom resources first, operator second.
+  #
+  # The chart's ValidatingWebhookConfiguration intercepts writes to *.k8s.elastic.co objects. With
+  # the operator already uninstalled there is no backend to answer, so every Elasticsearch/Kibana
+  # delete blocks -- the same class of hang as kubernetes_namespace.ci sitting Terminating forever
+  # on 2026-08-04 with no controller left to clear its children's finalizers.
+  #
+  # ECK's volumeClaimDeletePolicy deletes the Elasticsearch PVC when the CR goes, so unlike the
+  # observability PVCs in step 5 there is no orphaned-EBS cleanup to do here.
+  kubectl delete elasticsearch --all -n logging --ignore-not-found --timeout=120s || true
+  kubectl delete kibana        --all -n logging --ignore-not-found --timeout=120s || true
+  helm uninstall logging          -n logging        --ignore-not-found || true
+  helm uninstall elastic-operator -n elastic-system --ignore-not-found || true
   helm uninstall voteball              -n devops-app    --ignore-not-found || true
   helm uninstall jenkins               -n ci             --ignore-not-found || true
   helm uninstall jenkins-support       -n ci             --ignore-not-found || true

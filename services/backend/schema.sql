@@ -88,6 +88,21 @@ ALTER TABLE leagues ADD COLUMN IF NOT EXISTS sort_order INTEGER;
 -- club to the Nations League, which is a supported case (it renders first, headerless).
 ALTER TABLE leagues ADD COLUMN IF NOT EXISTS has_divisions BOOLEAN NOT NULL DEFAULT FALSE;
 
+-- Whether this league is one of the three UEFA club cups (Champions League, Europa League,
+-- Conference League) -- competitions whose field is drawn FROM the domestic leagues rather than
+-- being one. Two voting rules read it, and both are wrong without it:
+--   * a cup imposes no pick cap of its own. Naming five clubs on the Champions League tab is not
+--     the same claim as naming five rivals from one domestic league, so it is not capped.
+--   * a cup is never a club's DOMESTIC league, so it is skipped when counting how many clubs a
+--     ballot names from any one domestic league -- the cap that replaced the old per-tab one.
+-- A league-level flag for the same reason has_divisions is one: it cannot be inferred from the
+-- clubs. Every cup club also sits in a domestic league and most domestic clubs sit in no cup, so
+-- "the field here is drawn from elsewhere" is not a property the club rows can be asked about.
+-- Deliberately FALSE for the two national-team competitions (World Cup, Nations League). They are
+-- not domestic leagues either, but a national team has no domestic league to fall back on, so
+-- exempting them would leave those tabs with no cap at all rather than a domestic-league one.
+ALTER TABLE leagues ADD COLUMN IF NOT EXISTS is_club_cup BOOLEAN NOT NULL DEFAULT FALSE;
+
 -- Division label within the club's league -- the UEFA Nations League's A/B/C/D tiers, rendered as
 -- headers inside the single Nations League tab (docs/design/2026-08-07-nations-league-design.md
 -- decision 1). Nullable because every other league is undivided, and a club with no label renders

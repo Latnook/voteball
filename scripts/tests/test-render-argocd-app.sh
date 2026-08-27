@@ -54,18 +54,19 @@ check "pins the destination namespace"     "namespace: devops-app"      "$out"
 
 # The AppProject must be applied BEFORE the Application that references it, IN EACH PAIR -- kubectl
 # honours document order in a single stream, so a reordered template leaves an Application in "project
-# does not exist". There are now two pairs (voteball, observability), so this checks the whole
-# top-level kind: sequence is AppProject, Application, AppProject, Application -- not just "one
-# AppProject line precedes one Application line", which a two-pair stream could satisfy by accident
-# (e.g. both AppProjects first) while still landing an Application ahead of its own project.
+# does not exist". This file grows by one pair per chart (voteball, observability, logging, ...), so
+# the check is DERIVED -- alternation, not a fixed list -- rather than a hardcoded sequence. Restating
+# a count here just relocates the breakage to the next chart that gets added (found the hard way: a
+# 2-pair hardcode broke the moment `logging` became the third pair).
 kind_order="$(printf '%s\n' "$out" | grep -E '^kind: ')"
-expected_order=$'kind: AppProject\nkind: Application\nkind: AppProject\nkind: Application'
-if [ "$kind_order" = "$expected_order" ]; then
-  ok "AppProject precedes its Application in both pairs"
+n_kinds="$(printf '%s\n' "$kind_order" | grep -c .)"
+if [ "$n_kinds" -eq 0 ] || [ $((n_kinds % 2)) -ne 0 ]; then
+  bad "expected an even, non-zero number of documents (AppProject/Application pairs), got $n_kinds"
+elif printf '%s\n' "$kind_order" | paste - - | grep -qvE '^kind: AppProject[[:space:]]+kind: Application$'; then
+  bad "documents must alternate AppProject then Application -- an Application whose project has not been applied yet is rejected"
+  echo "       got: $(printf '%s' "$kind_order" | tr '\n' ',')"
 else
-  bad "AppProject precedes its Application in both pairs"
-  echo "       expected: $(printf '%s' "$expected_order" | tr '\n' ',')"
-  echo "       got:      $(printf '%s' "$kind_order" | tr '\n' ',')"
+  ok "$((n_kinds / 2)) AppProject/Application pairs, each project preceding its application"
 fi
 
 # The project's sourceRepos must be the SAME repo the Application pulls from. If they ever diverge --
@@ -136,17 +137,20 @@ else
   ok "rejects an unknown flag"
 fi
 
-# BOTH Applications must watch `release`, and neither may watch `master`. Checked as a count rather
-# than "the string appears somewhere", because the failure this guards against is one of the two
-# being reverted while the other stays -- charts/observability quietly syncing from an ungated branch
-# would be exactly the gap the release branch was introduced to close (2026-08-23, Task 4 review P2),
-# and the other Application looking correct is what would hide it.
+# EVERY Application must watch `release`, and NONE may watch `master`. Checked as a count rather
+# than "the string appears somewhere", because the failure this guards against is one Application
+# being reverted while the others stay -- charts/observability (or now charts/logging) quietly
+# syncing from an ungated branch would be exactly the gap the release branch was introduced to close
+# (2026-08-23, Task 4 review P2), and the other Applications looking correct is what would hide it.
+# The security property is "release, never master" -- NOT a fixed count, which is incidental and
+# grows with every new chart's Application; requiring >=1 keeps the check from passing vacuously on
+# an empty render.
 n_release="$(grep -c 'targetRevision: release' argocd/voteball-application.yaml.tmpl)"
 n_master="$(grep -c 'targetRevision: master' argocd/voteball-application.yaml.tmpl || true)"
-if [ "$n_release" = "2" ] && [ "$n_master" = "0" ]; then
-  ok "both Applications (voteball, observability) target the release branch, neither targets master"
+if [ "$n_release" -ge 1 ] && [ "$n_master" -eq 0 ]; then
+  ok "all $n_release Applications target the release branch, none targets master"
 else
-  bad "expected 2 Applications on 'release' and 0 on 'master', found $n_release and $n_master -- ArgoCD must never sync an ungated branch"
+  bad "expected >=1 Application on 'release' and 0 on 'master', found $n_release and $n_master -- ArgoCD must never sync an ungated branch"
 fi
 
 echo

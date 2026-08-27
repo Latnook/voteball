@@ -1,4 +1,6 @@
-# A ballot can now name up to 3 clubs per league, across any number of leagues. So every rollup
+# A ballot can name any number of clubs per league, across any number of leagues -- capped only
+# at 3 clubs from any one DOMESTIC league (the UEFA club cups are exempt; see
+# leagues.is_club_cup in schema.sql). So every rollup
 # table below (except the rollup_national_* ones) carries TWO kinds of rows per vote:
 #   - one LEAGUE-SCOPE row per distinct league the vote touched (club_id IS NULL), deduped so a
 #     voter who picked 3 clubs in one league is counted once at that league's scope, not 3 times;

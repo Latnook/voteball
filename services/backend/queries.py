@@ -20,13 +20,13 @@ def get_options(conn):
     cur = conn.cursor()
 
     cur.execute(
-        'SELECT id, name_en, name_he, name_ru, logo_url, has_divisions FROM leagues '
+        'SELECT id, name_en, name_he, name_ru, logo_url, has_divisions, is_club_cup FROM leagues '
         'ORDER BY sort_order NULLS LAST, name_en'
     )
     leagues = [
         {
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4],
-            'has_divisions': r[5],
+            'has_divisions': r[5], 'is_club_cup': r[6],
         }
         for r in cur.fetchall()
     ]
@@ -719,6 +719,17 @@ def get_clubs_league_map(conn):
     result = {r[0]: {'league_id': r[1], 'domestic_league_id': r[2]} for r in cur.fetchall()}
     cur.close()
     return result
+
+
+def get_club_cup_league_ids(conn):
+    """The ids of the UEFA club cups -- leagues whose field is drawn FROM the domestic leagues.
+    /api/vote skips them twice: they impose no pick cap of their own, and they are never the
+    domestic league a club is counted under. See the schema.sql comment on leagues.is_club_cup."""
+    cur = conn.cursor()
+    cur.execute('SELECT id FROM leagues WHERE is_club_cup')
+    ids = {r[0] for r in cur.fetchall()}
+    cur.close()
+    return ids
 
 
 def count_votes_for_league(conn, league_id):

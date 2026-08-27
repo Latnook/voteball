@@ -13,7 +13,7 @@ add-ons and the app. See the [Quickstart](#quickstart).
 > **illustrative demo data**, not real survey results — the per-club party mixes were generated to
 > loosely track real fanbase reputations so the analytics have something to show.
 
-**Casting a ballot** — pick up to 3 clubs per league, across any number of leagues:
+**Casting a ballot** — pick as many clubs as you like across any number of leagues, capped at 3 from any one domestic league:
 
 ![Voting form with Israeli Premier League clubs](docs/screenshots/vote-form-clubs.png)
 

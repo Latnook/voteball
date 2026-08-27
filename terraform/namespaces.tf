@@ -44,3 +44,27 @@ resource "kubernetes_namespace" "devops_app" {
     }
   }
 }
+
+# The logging namespace. Terraform creates it for the same reason it creates devops-app: the objects
+# that RUN in it arrive via ArgoCD from charts/logging, but the namespace has to exist before the
+# ECK operator's managedNamespaces setting can name it, and before ArgoCD's CreateNamespace=false
+# Application tries to sync into it.
+#
+# `kubectl create namespace logging` is deliberately NOT used anywhere. A namespace created outside
+# Terraform is not deleted on destroy -- it lingers or sits Terminating, and the next apply collides
+# with it.
+resource "kubernetes_namespace" "logging" {
+  # Same EKS access-entry propagation race as kubernetes_namespace.devops_app above.
+  depends_on = [module.eks]
+
+  metadata {
+    name = "logging"
+
+    labels = {
+      # NetworkPolicy namespaceSelectors match on this, and a selector silently matching nothing is
+      # far harder to spot than a missing namespace. charts/logging's allow-fluentbit-ingest rule
+      # depends on amazon-cloudwatch carrying the equivalent label.
+      "kubernetes.io/metadata.name" = "logging"
+    }
+  }
+}

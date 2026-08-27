@@ -47,6 +47,53 @@ function getOrCreateLeagueEntry(leagueId) {
   return picksByLeague.get(leagueId);
 }
 
+// The pick cap, client side. It must return the same verdict as _validate_team_picks in
+// services/backend/app.py: the rule is enforced in both places independently, and a client that is
+// LOOSER than the server offers ballots the API then rejects with an error the form cannot explain.
+const MAX_CLUBS_PER_DOMESTIC_LEAGUE = 3;
+
+function isClubCup(leagueId) {
+  const league = optionsData.leagues.find(l => l.id === leagueId);
+  return !!(league && league.is_club_cup);
+}
+
+// The DOMESTIC leagues a club is counted under: both of its real league columns, minus the UEFA
+// club cups. Read BOTH columns rather than assuming domestic_league_id is the domestic one -- the
+// seed is not consistent about the direction (Barcelona is league_id=Champions League /
+// domestic_league_id=La Liga, Real Betis is exactly the other way round), so "the column that
+// isn't league_id" names the cup for one of them and the domestic league for the other.
+// A club with no seeded domestic league -- Lugano and Thun are Swiss and there is no Swiss tab --
+// yields an empty list and is deliberately uncapped; the rule binds where a domestic league is known.
+function domesticLeagueIdsForClub(club) {
+  if (!club) return [];
+  return [club.league_id, club.domestic_league_id]
+    .filter(id => id !== null && id !== undefined && !isClubCup(id));
+}
+
+// {domesticLeagueId -> count} across every club currently picked, counted ONCE per club however
+// many league tabs toggleClub has mirrored it into.
+function clubsPerDomesticLeague(excludeClubId) {
+  const counts = new Map();
+  const counted = new Set();
+  picksByLeague.forEach(entry => {
+    entry.clubIds.forEach(clubId => {
+      if (counted.has(clubId) || clubId === excludeClubId) return;
+      counted.add(clubId);
+      const club = optionsData.clubs.find(c => c.id === clubId);
+      domesticLeagueIdsForClub(club).forEach(id => counts.set(id, (counts.get(id) || 0) + 1));
+    });
+  });
+  return counts;
+}
+
+// Would picking this club push any one of its domestic leagues over the cap? A cup tab imposes no
+// cap of its own, so a card is disabled here only because of the domestic leagues behind it.
+function clubWouldExceedCap(club) {
+  const counts = clubsPerDomesticLeague(club.id);
+  return domesticLeagueIdsForClub(club)
+    .some(id => (counts.get(id) || 0) >= MAX_CLUBS_PER_DOMESTIC_LEAGUE);
+}
+
 function hasAnyTeamPick() {
   for (const entry of picksByLeague.values()) {
     if (entry.justLeague || entry.clubIds.size > 0) return true;
@@ -101,16 +148,14 @@ function applyCardState(card, isChecked, disabled) {
   }
 }
 
-// A dual-league club is also blocked once its LINKED league is at cap -- toggleClub's hasRoom check
-// requires room in both leagues for a dual-league club, so a card that looked enabled on this tab
-// alone would click and silently do nothing. Reuse linkedLeagueId rather than reimplementing the
-// lookup; single-league clubs get null back and the linked check is a no-op.
+// The cap is a property of the BALLOT, not of the tab being viewed, so this needs no special case
+// for a dual-league club: clubWouldExceedCap already counts every pick across every tab, once per
+// club. That replaced an explicit "is the linked league at cap" check which existed because the old
+// cap was per-tab and a dual-league club consumed a slot in two of them at once.
 function clubCardState(club) {
   const entry = readLeagueEntry(selectedLeagueId);
   const isChecked = entry.clubIds.has(club.id);
-  const linkedId = linkedLeagueId(club, selectedLeagueId);
-  const linkedAtCap = linkedId !== null && readLeagueEntry(linkedId).clubIds.size >= 3;
-  return { isChecked, disabled: !isChecked && (entry.clubIds.size >= 3 || linkedAtCap) };
+  return { isChecked, disabled: !isChecked && clubWouldExceedCap(club) };
 }
 
 function renderLeagueTabs() {
@@ -175,11 +220,10 @@ function toggleClub(leagueId, clubId) {
     entry.clubIds.delete(clubId);
     if (linkedId !== null) getOrCreateLeagueEntry(linkedId).clubIds.delete(clubId);
   } else {
-    // Selecting -- only allow if this league AND (for a dual-league club) its linked league both
-    // have room; a dual-league club counts against both leagues' independent 3-pick caps.
+    // Selecting -- allowed unless it would push one of the club's domestic leagues over the cap.
+    // Same predicate clubCardState() uses to disable the card, so a card that looks clickable is.
     const linkedEntry = linkedId !== null ? getOrCreateLeagueEntry(linkedId) : null;
-    const hasRoom = entry.clubIds.size < 3 && (!linkedEntry || linkedEntry.clubIds.size < 3);
-    if (hasRoom) {
+    if (!clubWouldExceedCap(club)) {
       entry.clubIds.add(clubId);
       if (linkedEntry) {
         linkedEntry.clubIds.add(clubId);
@@ -218,8 +262,13 @@ function renderTeamGrid() {
   // 26. The `% 6` clause is the SHAPE rule: a count that divides evenly into six is precisely the
   // count that reads worst at five, because auto-fill's ~5 tracks leave a ragged tail. Bundesliga's
   // 18 is the case in hand -- 5+5+5+3 at five columns versus three clean rows of six.
-  // The `>= 18` floor keeps it off genuinely small leagues, where six tracks would shrink cards
-  // rather than tidy rows.
+  // The `>= 12` floor keeps it off genuinely small leagues, where six tracks would shrink cards
+  // rather than tidy rows. It was 18 until the Conference League arrived at 7 clubs and expected to
+  // grow the way UEL grew 16 -> 24: 12 is the first count that fills two clean rows of six, so the
+  // new tab reaches six columns as soon as six columns are the right answer, with no code change.
+  // Lowering only the SHAPE floor and leaving the `>= 24` size rule alone is what keeps every
+  // existing league where it is -- in particular the Israeli Premier League, whose 14 clubs sit
+  // inside the widened 12-17 band but are 14 % 6 == 2 and so stay on auto-fill.
   //
   // Counting CLUBS rather than cards is correct here even though the grid renders one more element:
   // the "just this league" card carries data-just-league, which style.css spans `grid-column: 1 / -1`
@@ -231,7 +280,7 @@ function renderTeamGrid() {
   // Every other domestic league is deliberately untouched: 20 (Premier League, La Liga, Serie A)
   // is 20 % 6 == 2 and 14 (Israeli Premier League) is 14 % 6 == 2, so both stay on auto-fill; 16
   // (ליגה לאומית) is already quad. See .card-grid-hex.
-  const hex = !quad && (clubCount >= 24 || (clubCount >= 18 && clubCount % 6 === 0));
+  const hex = !quad && (clubCount >= 24 || (clubCount >= 12 && clubCount % 6 === 0));
   grid.classList.toggle('card-grid-quad', quad);
   grid.classList.toggle('card-grid-hex', hex);
 

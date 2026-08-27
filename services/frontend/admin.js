@@ -1041,7 +1041,9 @@ function toggleReassignClubForm(sourceClub, data, row) {
 // order. A club carries at most ONE of them: the link lives in the single domestic_league_id column,
 // so attaching to a second is not representable and the buttons say so rather than silently moving
 // the club. Adding a competition here is the whole change -- everything below is parameterised.
-const CONTINENTAL_COMPETITIONS = ['UEFA Champions League', 'UEFA Europa League'];
+const CONTINENTAL_COMPETITIONS = [
+  'UEFA Champions League', 'UEFA Europa League', 'UEFA Conference League',
+];
 
 function renderContinentalToggleButtons(club, data) {
   // A competition that isn't seeded yields no button at all, rather than a hidden one.

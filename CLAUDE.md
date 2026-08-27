@@ -43,7 +43,11 @@ before "improving" the SEO), then the 2026-08-04 CI/CD split
 pointer, rather than being edited), then the 2026-08-23 review pass
 (`2026-08-23-release-branch-and-digest-design.md`, which moves ArgoCD off `master` onto a
 CD-only `release` branch and pins workloads by image digest; it supersedes the branch model in
-`2026-08-04-cicd-split-design.md` §4, whose text likewise stays as a dated record).
+`2026-08-04-cicd-split-design.md` §4, whose text likewise stays as a dated record), then the
+2026-08-27 Conference League pass
+(`2026-08-27-conference-league-and-domestic-cap-design.md`, which replaces the per-league-tab
+pick cap with a per-**domestic**-league one and supersedes the "≤3 per `league_id`" rule the
+`voteball-api` skill and `2026-08-12-europa-league-design.md` were written against).
 **Read the relevant one before making architectural changes:** most decisions (and the bugs they
 avoid) are explained there, not in code comments — `schema.sql` cites three of them directly to
 justify its shape. Several also carry a "Verification outcome" section recording what actually broke
@@ -146,8 +150,9 @@ introducing a shared module unless the plan says to.
 
 Postgres (RDS) stores: static seed data (`leagues`, `clubs`, `previous_parties`, `upcoming_parties` —
 the two party tables are also admin-editable after seeding), raw votes (`votes`, `vote_clubs`,
-`vote_leagues`, `vote_upcoming_parties` — a ballot can name up to 3 clubs per league across any
-number of leagues, so `votes` itself carries no league/club column; `vote_clubs` records each
+`vote_leagues`, `vote_upcoming_parties` — a ballot can name any number of clubs across any number
+of leagues, capped at 3 clubs from any one **domestic** league, so `votes` itself carries no
+league/club column; `vote_clubs` records each
 specific-club pick with the league tab it was picked under, `vote_leagues` records "just this
 league, no specific club" picks), and worker-computed rollup tables (`rollup_previous`,
 `rollup_upcoming`, `rollup_previous_upcoming` — each carries a league-scope row per distinct league
@@ -176,6 +181,29 @@ a `group_label` — a dual-league club can carry its label into a league that is
 16-nation overlap between the Nations League and the World Cup made exactly this happen), so
 inferring "divided" from the clubs would put division headers on the wrong tab. See
 `docs/design/2026-08-07-nations-league-design.md` decisions 1 and 5.
+
+**`leagues.is_club_cup` is the second boolean of that shape, and it governs which ballots are
+accepted.** `TRUE` for exactly the three UEFA club cups (Champions, Europa, Conference), it means
+two things at once: a cup imposes **no pick cap of its own**, and a cup is **never a club's domestic
+league**, so it is skipped when counting the ≤3-per-domestic-league cap. Two traps:
+
+- **It is `FALSE` for the World Cup and the Nations League**, which are continental competitions but
+  not club cups. A national team has no domestic league to be counted under, so marking either one
+  would leave those tabs with **no cap at all** rather than a domestic-league one — the opposite of
+  what "it's a continental competition too" suggests.
+  `test_only_the_uefa_club_cups_are_marked_is_club_cup` pins the set in both directions.
+- **The cap reads a club's own `{league_id, domestic_league_id}`, never the `league_id` its pick
+  arrived under**, because which column holds the domestic league is *not* consistent: Barcelona is
+  `league_id=Champions League / domestic_league_id=La Liga` and Real Betis is exactly the reverse,
+  both legitimately (the two cups were seeded in opposite directions). The client files each pick
+  under `domestic_league_id ?? tab`, so a label-keyed cap would bind on roughly half the ballots at
+  random. Same reasoning, same fix, as `_VOTE_LEAGUES_TOUCHED_CTE` above.
+
+A club whose domestic league this app does not seed (Lugano and Thun are Swiss; there is no Swiss
+tab) lands in no bucket and is **deliberately uncapped** — the rule binds where a domestic league is
+known. The cap is enforced **twice**, in `services/backend/app.py` and `services/frontend/vote.js`;
+a client looser than the server offers ballots the API then rejects with an error the form cannot
+explain.
 
 ### Backend request-handling pattern
 
@@ -325,8 +353,8 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   OIDC/IRSA roles, ECR, ACM, S3, SNS, Secrets Manager (container only), RDS (restored from a pinned
   snapshot), **and every platform add-on** via `helm_release`/`aws_eks_addon` (AWS Load Balancer
   Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
-  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack). Needs
-  `terraform/voteball.tfvars` (gitignored) and `-var-file=voteball.tfvars`.
+  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack, and the ECK operator).
+  Needs `terraform/voteball.tfvars` (gitignored) and `-var-file=voteball.tfvars`.
 
   **The CloudWatch add-on is deliberately cut down to pod logs only, and the parts that are off cost
   money per day when on.** `containerInsights` and `applicationSignals` were both billing this
@@ -379,6 +407,21 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   a UI edit to sync policy or destination is the one drift GitOps cannot self-correct.
   The `voteball` AppProject pins source repo + destination namespace and sets
   `clusterResourceWhitelist: []`; see `charts/voteball/CLAUDE.md` before adding a cluster-scoped kind.
+- **ECK operator (`terraform/addon-eck.tf`) — the ECK add-on, added for EFK logging.** Terraform-owned
+  like ArgoCD itself, and for the identical reason: its chart installs 17 cluster-scoped objects (12
+  CRDs, 3 `ClusterRole`s, 1 `ClusterRoleBinding`, 1 `ValidatingWebhookConfiguration`), and every
+  AppProject's `clusterResourceWhitelist: []` makes ArgoCD structurally unable to manage them. Installs
+  into `elastic-system`; `managedNamespaces` is scoped to `logging` alone so it never reconciles a
+  custom resource anywhere else in the cluster. The namespaced objects it reconciles — `Elasticsearch`,
+  `Kibana`, `Fluentd` — live in **Helm (`charts/logging`)**, delivered by its own third ArgoCD
+  Application/AppProject the same way `charts/observability` is: gated `enabled: false` until the
+  operator's CRDs exist (see the forkability/gating notes below), then flipped on and verified by
+  `scripts/logging/verify-efk.sh` (deploy step 11e). **Teardown order is the reverse of install, and
+  specifically the opposite of what you'd guess**: `destroy.sh` deletes the `Elasticsearch`/`Kibana`
+  custom resources first, then `helm uninstall`s the `logging` release, and only then the operator
+  itself — because the operator's `ValidatingWebhookConfiguration` intercepts every write to
+  `*.k8s.elastic.co` objects, and removing the operator first leaves those deletes with no backend
+  left to answer. See `docs/design/2026-08-27-efk-logging-design.md`.
 **`deploy.sh`'s preflight REPAIRS the EKS API allow-list rather than warning about it**
 (`./scripts/refresh-api-cidr.sh --ensure`, before step 1). `cluster_endpoint_public_access_cidrs`
 names a home ISP address, so it goes stale on its own schedule, and when it does AWS **drops** this
@@ -611,23 +654,34 @@ variables and the bucket name embeds the AWS account id — so `terraform init` 
 `-backend-config=backend.hcl`, and without it fails on incomplete backend configuration rather than
 silently using local state. See `docs/design/2026-07-21-terraform-remote-state-design.md`.
 
-**Teardown order matters** and `./scripts/destroy.sh` encodes it: delete the ArgoCD Application (else
+**Teardown order matters** and `./scripts/destroy.sh` encodes it: delete **all three** ArgoCD
+Applications (`voteball`, `observability`, and — since the EFK logging pass — `logging`; else
 `selfHeal` recreates what you remove), then **both Ingresses** (so the ALB de-provisions and
 external-dns removes its records — a leftover ALB's ENIs block VPC deletion), wait for the ALB to
-disappear, **uninstall this stack's own three Helm releases while the cluster is still healthy**
-(`voteball`, `jenkins`, `jenkins-support` — see below), *then* `terraform destroy`.
+disappear, **uninstall this stack's own SIX Helm releases while the cluster is still healthy**
+(`voteball`, `jenkins`, `jenkins-support`, `kube-prometheus-stack`, `logging`, `elastic-operator` — see
+below), *then* `terraform destroy`. `logging` and `elastic-operator` come out in that specific order —
+custom resources and chart first, operator last — for the same reason given under "ECK operator" above.
 
-**"Both" is load-bearing.** Since 2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share ALB
-group `voteball`, and an ALB is de-provisioned only when its group has **no** members left — deleting
-one leaves it running. The same change renamed the ALB: a grouped one is `k8s-<group>-<hash>`, not
-`k8s-<namespace>-<ingress>-<hash>`, so any check filtering on the old shape reports "ALB gone"
-instantly while it is still there. `scripts/cleanup-stale-dns.sh` likewise cleans **two** hosts now,
-`<app_domain>` and `jenkins.<app_domain>`.
+**"Both" is load-bearing, and is now, as of the EFK logging pass, incomplete on its own.** Since
+2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share ALB group `voteball`, and an ALB is
+de-provisioned only when its group has **no** members left — deleting one leaves it running. The same
+change renamed the ALB: a grouped one is `k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`,
+so any check filtering on the old shape reports "ALB gone" instantly while it is still there.
+`logging/kibana` is now a **third** member of that same group (`charts/logging`'s
+`templates/kibana.yaml`), and `./scripts/cleanup-stale-dns.sh` already cleans the matching **three**
+hosts (`<app_domain>`, `jenkins.<app_domain>`, `kibana.<app_domain>`) — but `destroy.sh`'s own step 2
+still only explicitly deletes the first two Ingresses. The Kibana Ingress is part of the `logging` Helm
+release, which is not uninstalled until step 4 — **after** step 3 already waits for the ALB to
+de-provision — so a fresh teardown can wait on an ALB that cannot go away yet, the exact shape of the
+10-20 minute hang this ordering exists to prevent. This was found while writing this documentation
+pass, not fixed in it — flagged here rather than silently patched, since a live-infrastructure teardown
+script deserves a deliberate fix and a test, not a same-commit-as-the-docs change.
 
 **`terraform destroy` uninstalls `helm_release`s itself when it reaches them, and doing that while the
 cluster is simultaneously being deleted underneath it is what hung with `context deadline exceeded`**
 (observed 2026-08-04, on `helm_release.jenkins`: Helm cannot cleanly uninstall from a cluster that's
-disappearing). `destroy.sh` avoids this for its own three releases by uninstalling them explicitly one
+disappearing). `destroy.sh` avoids this for its own six releases by uninstalling them explicitly one
 step earlier, while every node and controller is still up — the situation Helm actually expects, not a
 workaround for it. `external-secrets` is deliberately left **out** of that pre-uninstall: its
 controller has to stay alive until Terraform deletes the `ci`/`devops-app` namespaces, because the
@@ -638,7 +692,7 @@ and `kubernetes_namespace.ci` then sat `Terminating` forever with no controller 
 children's finalizers.
 
 **If `terraform destroy` still hangs this way — on a `helm_release` it manages that isn't one of the
-three pre-uninstalled above, or on a `kubernetes_*` resource the way `kubernetes_namespace.ci` did —
+six pre-uninstalled above, or on a `kubernetes_*` resource the way `kubernetes_namespace.ci` did —
 `destroy.sh` now recovers automatically, once.** On a failed destroy it drops every remaining
 `helm_release.*` and `kubernetes_*` resource from state — **never an `aws_*` resource**, since that
 would orphan billed infrastructure with nothing left in Terraform's records to find it by — and

@@ -10,18 +10,19 @@ INSERT INTO alert_state (id, last_seen_total) VALUES (1, 0) ON CONFLICT (id) DO 
 -- It is load-bearing because ~36 tests in services/backend/tests/test_app.py and
 -- test_queries.py look leagues up with WHERE name = 'EPL' / 'UCL' and have no name_en fallback.
 -- It is NOT needed by any join in this file: the clubs section below keys on leagues.seed_key.
-CREATE TEMP TABLE seed_leagues (seed_key TEXT PRIMARY KEY, legacy_name TEXT, name_en TEXT, name_he TEXT, name_ru TEXT, logo_url TEXT, sort_order INTEGER, has_divisions BOOLEAN) ON COMMIT DROP;
+CREATE TEMP TABLE seed_leagues (seed_key TEXT PRIMARY KEY, legacy_name TEXT, name_en TEXT, name_he TEXT, name_ru TEXT, logo_url TEXT, sort_order INTEGER, has_divisions BOOLEAN, is_club_cup BOOLEAN) ON COMMIT DROP;
 INSERT INTO seed_leagues VALUES
-    ('israeli-premier-league', 'Israeli Premier League', 'Israeli Premier League', 'ליגת העל', 'Израильская Премьер-лига', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png', 0, FALSE),
-    ('liga-leumit', 'Liga Leumit', 'Liga Leumit', 'ליגה לאומית', 'Лига Леумит', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png', 1, FALSE),
-    ('premier-league', 'EPL', 'Premier League', 'הפרמייר ליג', 'Премьер-лига', 'https://b.fssta.com/uploads/application/soccer/competition-logos/EnglishPremierLeague.png', 2, FALSE),
-    ('la-liga', 'La Liga', 'La Liga', 'לה ליגה', 'Ла Лига', 'https://assets.laliga.com/assets/logos/LL_RGB_h_color/LL_RGB_h_color.png', 3, FALSE),
-    ('bundesliga', 'Bundesliga', 'Bundesliga', 'הבונדסליגה', 'Бундеслига', '/logos/bundesliga.svg', 4, FALSE),
-    ('serie-a', 'Serie A', 'Serie A', 'סרייה A', 'Серия А', '/logos/serie-a.svg', 5, FALSE),
-    ('uefa-champions-league', 'UCL', 'UEFA Champions League', 'ליגת האלופות', 'Лига чемпионов', '/logos/uefa-champions-league.svg', 6, FALSE),
-    ('uefa-europa-league', 'UEFA Europa League', 'UEFA Europa League', 'הליגה האירופית', 'Лига Европы', '/logos/uefa-europa-league.svg', 7, FALSE),
-    ('world-cup-2026', 'World Cup 2026', 'World Cup 2026', 'מונדיאל 2026', 'Чемпионат мира 2026', 'https://upload.wikimedia.org/wikipedia/commons/1/17/2026_FIFA_World_Cup_emblem.svg', 8, FALSE),
-    ('nations-league', 'Nations League', 'Nations League', 'ליגת האומות', 'Лига наций УЕФА', '/logos/uefa-nations-league.svg', 9, TRUE);
+    ('israeli-premier-league', 'Israeli Premier League', 'Israeli Premier League', 'ליגת העל', 'Израильская Премьер-лига', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png', 0, FALSE, FALSE),
+    ('liga-leumit', 'Liga Leumit', 'Liga Leumit', 'ליגה לאומית', 'Лига Леумит', 'https://upload.wikimedia.org/wikipedia/en/1/17/Winnerleague.png', 1, FALSE, FALSE),
+    ('premier-league', 'EPL', 'Premier League', 'הפרמייר ליג', 'Премьер-лига', 'https://b.fssta.com/uploads/application/soccer/competition-logos/EnglishPremierLeague.png', 2, FALSE, FALSE),
+    ('la-liga', 'La Liga', 'La Liga', 'לה ליגה', 'Ла Лига', 'https://assets.laliga.com/assets/logos/LL_RGB_h_color/LL_RGB_h_color.png', 3, FALSE, FALSE),
+    ('bundesliga', 'Bundesliga', 'Bundesliga', 'הבונדסליגה', 'Бундеслига', '/logos/bundesliga.svg', 4, FALSE, FALSE),
+    ('serie-a', 'Serie A', 'Serie A', 'סרייה A', 'Серия А', '/logos/serie-a.svg', 5, FALSE, FALSE),
+    ('uefa-champions-league', 'UCL', 'UEFA Champions League', 'ליגת האלופות', 'Лига чемпионов', '/logos/uefa-champions-league.svg', 6, FALSE, TRUE),
+    ('uefa-europa-league', 'UEFA Europa League', 'UEFA Europa League', 'הליגה האירופית', 'Лига Европы', '/logos/uefa-europa-league.svg', 7, FALSE, TRUE),
+    ('uefa-conference-league', 'UEFA Conference League', 'UEFA Conference League', 'קונפרנס ליג', 'Лига конференций', '/logos/uefa-conference-league.svg', 8, FALSE, TRUE),
+    ('world-cup-2026', 'World Cup 2026', 'World Cup 2026', 'מונדיאל 2026', 'Чемпионат мира 2026', 'https://upload.wikimedia.org/wikipedia/commons/1/17/2026_FIFA_World_Cup_emblem.svg', 9, FALSE, FALSE),
+    ('nations-league', 'Nations League', 'Nations League', 'ליגת האומות', 'Лига наций УЕФА', '/logos/uefa-nations-league.svg', 10, TRUE, FALSE);
 
 -- Adopt rows that predate seed_key, keyed on name_en. Not on the legacy `name` column: the
 -- admin endpoints overwrite it with name_he on any save, and 3 of 10 production leagues already
@@ -53,9 +54,10 @@ END $$;
 -- look leagues up with WHERE name = 'EPL' / 'UCL' and have no name_en fallback (see the header
 -- comment above -- this is not needed by any join in this file). The UPDATE below deliberately
 -- never touches `name`, so an adopted row keeps whatever production holds (Hebrew, on 3 of 10 rows).
-INSERT INTO leagues (seed_key, name, name_en, name_he, name_ru, logo_url, sort_order, has_divisions)
+INSERT INTO leagues (seed_key, name, name_en, name_he, name_ru, logo_url, sort_order, has_divisions,
+                     is_club_cup)
 SELECT s.seed_key, s.legacy_name, s.name_en, s.name_he, s.name_ru, s.logo_url,
-       s.sort_order, s.has_divisions
+       s.sort_order, s.has_divisions, s.is_club_cup
 FROM seed_leagues s
 WHERE NOT EXISTS (SELECT 1 FROM leagues t WHERE t.seed_key = s.seed_key);
 
@@ -66,7 +68,8 @@ UPDATE leagues t SET
     name_ru       = CASE WHEN 'name_ru'  = ANY(t.admin_edited) THEN t.name_ru  ELSE s.name_ru  END,
     logo_url      = CASE WHEN 'logo_url' = ANY(t.admin_edited) THEN t.logo_url ELSE s.logo_url END,
     sort_order    = s.sort_order,
-    has_divisions = s.has_divisions
+    has_divisions = s.has_divisions,
+    is_club_cup   = s.is_club_cup
 FROM seed_leagues s
 WHERE t.seed_key = s.seed_key;
 
@@ -158,7 +161,7 @@ INSERT INTO seed_clubs VALUES
     ('hamburger-sv', 'bundesliga', NULL, 'Hamburger SV', 'המבורג', 'Гамбург', 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Hamburger_SV_logo.svg', NULL),
     ('mainz-05', 'bundesliga', NULL, 'Mainz 05', 'מיינץ 05', 'Майнц 05', 'https://upload.wikimedia.org/wikipedia/commons/1/1b/1._FSV_Mainz_05_logo.svg', NULL),
     ('rb-leipzig', 'bundesliga', 'uefa-champions-league', 'RB Leipzig', 'ר. ב. לייפציג', 'РБ Лейпциг', 'https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg', NULL),
-    ('sc-freiburg', 'bundesliga', NULL, 'SC Freiburg', 'פרייבורג', 'Фрайбург', 'https://upload.wikimedia.org/wikipedia/en/6/6d/SC_Freiburg_logo.svg', NULL),
+    ('sc-freiburg', 'bundesliga', 'uefa-conference-league', 'SC Freiburg', 'פרייבורג', 'Фрайбург', 'https://upload.wikimedia.org/wikipedia/en/6/6d/SC_Freiburg_logo.svg', NULL),
     ('sc-paderborn-07', 'bundesliga', NULL, 'SC Paderborn 07', 'פאדרבורן 07', 'Падерборн 07', 'https://upload.wikimedia.org/wikipedia/commons/6/67/SC_Paderborn_07_Logo_new.svg', NULL),
     ('sv-elversberg', 'bundesliga', NULL, 'SV Elversberg', 'אלוורסברג', 'Эльферсберг', 'https://upload.wikimedia.org/wikipedia/commons/d/d4/SV_Elversberg_Logo_2021.svg', NULL),
     ('tsg-hoffenheim', 'bundesliga', 'uefa-europa-league', 'TSG Hoffenheim', 'הופנהיים', 'Хоффенхайм', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Logo_TSG_Hoffenheim.svg', NULL),
@@ -212,9 +215,11 @@ INSERT INTO seed_clubs VALUES
     ('slovan-bratislava', 'uefa-champions-league', NULL, 'Slovan Bratislava', 'סלובן ברטיסלאבה', 'Слован Братислава', 'https://upload.wikimedia.org/wikipedia/commons/0/01/SK_Slovan_Bratislava_logo.svg', NULL),
     ('sporting-cp', 'uefa-champions-league', NULL, 'Sporting CP', 'ספורטינג ליסבון', 'Спортинг Лиссабон', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Sporting_Clube_de_Portugal_2026.svg', NULL),
     ('viking', 'uefa-champions-league', NULL, 'Viking', 'ויקינג', 'Викинг', 'https://upload.wikimedia.org/wikipedia/en/1/13/Viking_FK_logo_2020.svg', NULL),
+    ('ararat-armenia', 'uefa-europa-league', NULL, 'Ararat-Armenia', 'אררט-ארמניה', 'Арарат-Армения', 'https://upload.wikimedia.org/wikipedia/commons/7/73/FC_Ararat-Armenia_logo.svg', NULL),
     ('celje', 'uefa-europa-league', NULL, 'Celje', 'נ.ק צליה', 'Целе', 'https://upload.wikimedia.org/wikipedia/en/f/fc/NK_Celje.png', NULL),
     ('celtic', 'uefa-europa-league', NULL, 'Celtic', 'סלטיק', 'Селтик', 'https://upload.wikimedia.org/wikipedia/en/7/71/Celtic_FC_crest.svg', NULL),
     ('dinamo-zagreb', 'uefa-europa-league', NULL, 'Dinamo Zagreb', 'דינמו זאגרב', 'Динамо Загреб', 'https://upload.wikimedia.org/wikipedia/commons/5/56/Logo_GNK_Dinamo_Zagreb_(2019).svg', NULL),
+    ('jagiellonia-bialystok', 'uefa-europa-league', NULL, 'Jagiellonia Białystok', 'יגלוניה ביאליסטוק', 'Ягеллония', 'https://upload.wikimedia.org/wikipedia/en/9/90/Jagiellonia_Bia%C5%82ystok_logo.svg', NULL),
     ('lech-poznan', 'uefa-europa-league', NULL, 'Lech Poznań', 'לך פוזנן', 'Лех', 'https://upload.wikimedia.org/wikipedia/en/b/b0/KKS_Lech_Pozna%C5%84.svg', NULL),
     ('levski-sofia', 'uefa-europa-league', NULL, 'Levski Sofia', 'לבסקי סופיה', 'Левски', 'https://upload.wikimedia.org/wikipedia/en/e/e6/Levski_Sofia_crest_(2026).svg', NULL),
     ('lyon', 'uefa-europa-league', NULL, 'Lyon', 'אולימפיק ליון', 'Олимпик Лион', 'https://upload.wikimedia.org/wikipedia/en/1/1c/Olympique_Lyonnais_logo.svg', NULL),
@@ -226,6 +231,12 @@ INSERT INTO seed_clubs VALUES
     ('sturm-graz', 'uefa-europa-league', NULL, 'Sturm Graz', 'שטורם גראץ', 'Штурм', 'https://upload.wikimedia.org/wikipedia/en/9/91/SK_Sturm_Graz_logo.svg', NULL),
     ('torreense', 'uefa-europa-league', NULL, 'Torreense', 'טורנסה', 'Униан Торренсе', 'https://upload.wikimedia.org/wikipedia/en/d/dc/S.C.U._Torreense_logo.svg', NULL),
     ('union-saint-gilloise', 'uefa-europa-league', NULL, 'Union Saint-Gilloise', 'אוניון סן-ז''ילואז', 'Юнион Сент-Жиллуаз', 'https://upload.wikimedia.org/wikipedia/en/1/11/Royale_Union_Saint-Gilloise_logo.svg', NULL),
+    ('hearts', 'uefa-conference-league', NULL, 'Heart of Midlothian', 'הארט אוף מידלות''יאן', 'Харт оф Мидлотиан', 'https://upload.wikimedia.org/wikipedia/en/6/61/Heart_of_Midlothian_FC_logo.svg', NULL),
+    ('iberia-1999', 'uefa-conference-league', NULL, 'Iberia 1999', 'איבריה 1999', 'Иберия 1999', 'https://upload.wikimedia.org/wikipedia/en/9/9e/Saburtalo_Tbilisi_Logo.png', NULL),
+    ('kups', 'uefa-conference-league', NULL, 'KuPS', 'קופס', 'КуПС', 'https://upload.wikimedia.org/wikipedia/en/b/bd/KuPS_logo.svg', NULL),
+    ('lugano', 'uefa-conference-league', NULL, 'Lugano', 'לוגאנו', 'Лугано', 'https://upload.wikimedia.org/wikipedia/commons/1/1c/Logo_FC_Lugano_2025.svg', NULL),
+    ('thun', 'uefa-conference-league', NULL, 'Thun', 'תון', 'Тун', 'https://upload.wikimedia.org/wikipedia/commons/2/24/FC_Thun_Logo_2011.svg', NULL),
+    ('universitatea-craiova', 'uefa-conference-league', NULL, 'Universitatea Craiova', 'CSU קראיובה', 'Университатя Крайова', 'https://upload.wikimedia.org/wikipedia/en/0/02/CS_Universitatea_Craiova_logo.svg', NULL),
     ('algeria', 'world-cup-2026', NULL, 'Algeria', 'אלג''יריה', 'Алжир', 'https://upload.wikimedia.org/wikipedia/en/2/2d/Algerian_NT_%28logo%29.png', NULL),
     ('argentina', 'world-cup-2026', NULL, 'Argentina', 'ארגנטינה', 'Аргентина', 'https://upload.wikimedia.org/wikipedia/en/c/c1/Argentina_national_football_team_logo.svg', NULL),
     ('australia', 'world-cup-2026', NULL, 'Australia', 'אוסטרליה', 'Австралия', 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Australia_national_football_team_badge.svg', NULL),

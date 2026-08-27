@@ -18,9 +18,9 @@ def test_all_seeded_rows_have_both_languages(conn):
 def test_seeded_row_counts(conn):
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 10
+    assert cur.fetchone()[0] == 11
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 226
+    assert cur.fetchone()[0] == 234
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -98,7 +98,7 @@ def test_league_names_survive_name_drift(conn):
     cur.execute("SELECT name_ru FROM leagues WHERE name_en = 'Bundesliga'")
     assert cur.fetchone()[0] == 'Бундеслига'
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 10, 'the OR-match must not create or duplicate rows'
+    assert cur.fetchone()[0] == 11, 'the OR-match must not create or duplicate rows'
     cur.close()
 
 
@@ -325,9 +325,9 @@ def test_seed_rerun_survives_league_name_drift(conn):
 
     cur = conn.cursor()
     cur.execute('SELECT COUNT(*) FROM leagues')
-    assert cur.fetchone()[0] == 10, 'league name drift must not create a phantom duplicate league'
+    assert cur.fetchone()[0] == 11, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 226, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 234, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
@@ -494,9 +494,9 @@ def test_nations_league_divisions_are_fully_populated(conn):
 # used to enumerate the absent domestic leagues instead; it was already missing Poland's when
 # Lech Poznan was added, which is what enumerating rather than stating the rule costs.
 EUROPA_LEAGUE_ONLY_CLUBS = [
-    'Celje', 'Celtic', 'Dinamo Zagreb', 'Lech Poznań', 'Levski Sofia', 'Lyon', 'NEC',
-    'Olympiacos', 'Olympique de Marseille', 'Sparta Prague', 'Stade Rennais', 'Sturm Graz',
-    'Torreense', 'Union Saint-Gilloise',
+    'Ararat-Armenia', 'Celje', 'Celtic', 'Dinamo Zagreb', 'Jagiellonia Białystok', 'Lech Poznań',
+    'Levski Sofia', 'Lyon', 'NEC', 'Olympiacos', 'Olympique de Marseille', 'Sparta Prague',
+    'Stade Rennais', 'Sturm Graz', 'Torreense', 'Union Saint-Gilloise',
 ]
 
 # Clubs already seeded under a domestic league that gain the Europa League as their SECOND league.
@@ -634,6 +634,140 @@ def test_every_europa_league_club_has_a_crest_and_three_names(conn):
              AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
     )
     assert cur.fetchall() == []
+    cur.close()
+
+
+CONFERENCE_LEAGUE_ONLY_CLUBS = [
+    'Heart of Midlothian', 'Iberia 1999', 'KuPS', 'Lugano', 'Thun', 'Universitatea Craiova',
+]
+
+# Clubs already seeded under a domestic league that gain the Conference League as their SECOND
+# league -- the same "reverse direction" link the Europa League block uses.
+LINKED_CONFERENCE_LEAGUE_CLUBS = ['SC Freiburg']
+
+
+def test_conference_league_sits_between_the_europa_league_and_the_world_cup(conn):
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT name, name_he, name_ru, sort_order, logo_url FROM leagues "
+        "WHERE name_en = 'UEFA Conference League'"
+    )
+    row = cur.fetchone()
+    assert row is not None, 'UEFA Conference League league row is missing'
+    name, name_he, name_ru, sort_order, logo_url = row
+    assert (name_he, name_ru) == ('קונפרנס ליג', 'Лига конференций')
+    assert logo_url == '/logos/uefa-conference-league.svg'
+    # Final English name in the legacy `name` column, like the Europa League and unlike UCL's
+    # 'UCL' placeholder -- nothing renames this league, so the INSERT needs no extra identity branch.
+    assert name == 'UEFA Conference League'
+
+    cur.execute(
+        "SELECT name_en, sort_order FROM leagues "
+        "WHERE name_en IN ('UEFA Europa League', 'World Cup 2026')"
+    )
+    orders = dict(cur.fetchall())
+    assert orders['UEFA Europa League'] < sort_order < orders['World Cup 2026']
+    cur.close()
+
+
+def test_conference_league_only_clubs_are_seeded_under_it(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id
+           WHERE l.name_en = 'UEFA Conference League'"""
+    )
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(CONFERENCE_LEAGUE_ONLY_CLUBS)
+    cur.close()
+
+
+def test_shared_conference_league_clubs_are_linked_not_duplicated(conn):
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT name_en, COUNT(*) FROM clubs WHERE name_en = ANY(%s) '
+        'GROUP BY name_en HAVING COUNT(*) > 1',
+        (LINKED_CONFERENCE_LEAGUE_CLUBS,)
+    )
+    assert cur.fetchall() == [], 'a dual-league club was inserted twice instead of linked'
+
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues cl ON cl.id = c.domestic_league_id
+                          AND cl.name_en = 'UEFA Conference League'
+           WHERE c.name_en = ANY(%s)""",
+        (LINKED_CONFERENCE_LEAGUE_CLUBS,)
+    )
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(LINKED_CONFERENCE_LEAGUE_CLUBS)
+    cur.close()
+
+
+def test_conference_league_votable_teams_are_the_two_rosters_combined(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT COUNT(*) FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'UEFA Conference League'"""
+    )
+    expected = len(CONFERENCE_LEAGUE_ONLY_CLUBS) + len(LINKED_CONFERENCE_LEAGUE_CLUBS)
+    assert cur.fetchone()[0] == expected
+    cur.close()
+
+
+def test_every_conference_league_club_has_a_crest_and_three_names(conn):
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'UEFA Conference League'
+             AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
+    )
+    assert cur.fetchall() == []
+    cur.close()
+
+
+# The three UEFA club cups, and nothing else. is_club_cup drives two /api/vote rules at once -- no
+# pick cap of its own, and never a club's domestic league -- so a league gaining or losing the flag
+# silently changes which ballots are accepted. Pinned as an exact set in BOTH directions, because
+# the failure that matters most is the World Cup or the Nations League quietly acquiring it: those
+# tabs would then have no cap at all, since a national team has no domestic league to fall back on.
+CLUB_CUP_LEAGUES = [
+    'UEFA Champions League', 'UEFA Conference League', 'UEFA Europa League',
+]
+
+
+def test_only_the_uefa_club_cups_are_marked_is_club_cup(conn):
+    cur = conn.cursor()
+    cur.execute('SELECT name_en FROM leagues WHERE is_club_cup')
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(CLUB_CUP_LEAGUES)
+
+    cur.execute("SELECT name_en FROM leagues WHERE NOT is_club_cup AND name_en = ANY(%s)",
+                (CLUB_CUP_LEAGUES,))
+    assert cur.fetchall() == [], 'a UEFA club cup lost its is_club_cup flag'
+
+    # Named explicitly rather than left to the set comparison above: these two are continental
+    # competitions too, and marking either one would remove its cap rather than change it.
+    cur.execute("SELECT name_en FROM leagues WHERE is_club_cup "
+                "AND name_en IN ('World Cup 2026', 'Nations League')")
+    assert cur.fetchall() == [], 'a national-team competition must never be a club cup'
+    cur.close()
+
+
+def test_is_club_cup_survives_a_reseed_of_an_already_seeded_database(conn):
+    # The flag is seed-owned and written unconditionally, like sort_order and has_divisions -- it is
+    # absent from both admin league endpoints, so nothing in the app can drift it legitimately.
+    cur = conn.cursor()
+    cur.execute('UPDATE leagues SET is_club_cup = NOT is_club_cup')
+    conn.commit()
+    cur.close()
+
+    db_module.init_db(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT name_en FROM leagues WHERE is_club_cup')
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(CLUB_CUP_LEAGUES)
     cur.close()
 
 

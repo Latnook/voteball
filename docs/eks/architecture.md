@@ -48,14 +48,15 @@ flowchart LR
 - **Private:** every pod. Reachable only via the ALB, and only the frontend is a target.
 - **Isolated:** RDS. No route in from the internet and no route out — not even through the NAT.
 
-**There is one ALB, shared by two Ingresses.** `devops-app/voteball` (the site) and
-`ci/jenkins-webhook` (the CI webhook path only, diagram 4) both carry
-`alb.ingress.kubernetes.io/group.name: voteball`, so the load balancer controller puts them behind a
-single load balancer instead of billing for two. This matters at teardown: an ALB is de-provisioned
-only when its group has **no** members left, so deleting one Ingress leaves it running and its ENIs
-pinning the VPC — which is why `scripts/destroy.sh` deletes both. A grouped ALB is also named
-`k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`, so any check filtering on the old shape
-reports "ALB gone" while it is still there.
+**There is one ALB, shared by three Ingresses.** `devops-app/voteball` (the site),
+`ci/jenkins-webhook` (the CI webhook path only, diagram 4) and, since the EFK logging pass,
+`logging/kibana` (Kibana's public route) all carry `alb.ingress.kubernetes.io/group.name: voteball`,
+so the load balancer controller puts them behind a single load balancer instead of billing for three.
+This matters at teardown: an ALB is de-provisioned only when its group has **no** members left, so
+deleting one Ingress and leaving another leaves it running and its ENIs pinning the VPC — which is why
+`scripts/destroy.sh` deletes ALB-group Ingresses explicitly rather than relying on `helm uninstall`
+alone. A grouped ALB is also named `k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`, so
+any check filtering on the old shape reports "ALB gone" while it is still there.
 
 ---
 
@@ -340,6 +341,16 @@ flowchart LR
                     be["backend x2<br/>Flask"]
                     wk["worker x1"]
                 end
+
+                subgraph nslogging["namespace: logging"]
+                    es[("Elasticsearch x1<br/>gp3 PVC, no replica -- yellow by design")]
+                    kb["Kibana x1<br/>ALB group: voteball, plain HTTP"]
+                    fl["Fluentd x1<br/>aggregator, buffers + retries"]
+                end
+
+                subgraph nseck["namespace: elastic-system"]
+                    eck["ECK operator<br/>Terraform-owned -- installs cluster-scoped CRDs<br/>ArgoCD's clusterResourceWhitelist:[] forbids it"]
+                end
             end
 
             subgraph iso["INTERNAL / isolated DB subnets -- no route out at all"]
@@ -359,8 +370,14 @@ flowchart LR
 
     internet -->|"HTTPS voteball.latnook.com"| alb
     internet -->|"HTTPS jenkins.voteball.latnook.com/github-webhook ONLY"| alb
+    internet -->|"HTTPS kibana.voteball.latnook.com"| alb
     alb --> fe
     alb -->|"webhook path only -- the UI has no ALB rule"| svc --> jc
+    alb -->|"third ALB-group member"| kb
+
+    fl -.->|"writes indexed docs"| es
+    kb -.->|"queries"| es
+    eck -.->|"reconciles -- Elasticsearch/Kibana CRs"| nslogging
 
     jcasc -.->|"controller.JCasC.configScripts"| jc
     jc -.->|"creates both jobs, plugins,<br/>credentials -- no click-ops"| jobs
@@ -389,10 +406,20 @@ flowchart LR
 
 **Boundaries that matter:**
 
-- **Only two paths from the internet exist**: the app on `voteball.latnook.com`, and exactly one path,
-  `/github-webhook`, on `jenkins.voteball.latnook.com`. The Jenkins UI, script console and credential
-  store have no ALB rule reaching them and are unreachable from outside the cluster; operators use
-  `kubectl port-forward -n ci svc/jenkins 8080:8080`.
+- **Only three paths from the internet exist**: the app on `voteball.latnook.com`, exactly one path,
+  `/github-webhook`, on `jenkins.voteball.latnook.com`, and Kibana on `kibana.voteball.latnook.com`.
+  The Jenkins UI, script console and credential store have no ALB rule reaching them and are
+  unreachable from outside the cluster; operators use `kubectl port-forward -n ci svc/jenkins
+  8080:8080`. Kibana's own auth is ECK's built-in `elastic` user, not a second app-level login — see
+  `docs/design/2026-08-27-efk-logging-design.md` decision 9.
+- **The ECK operator (`namespace: elastic-system`) is Terraform-owned, like ArgoCD itself.** Its chart
+  installs 12 CRDs, 3 ClusterRoles, 1 ClusterRoleBinding and a `ValidatingWebhookConfiguration` — all
+  cluster-scoped — and both ArgoCD AppProjects set `clusterResourceWhitelist: []`, so ArgoCD is
+  structurally unable to manage it. The namespaced Elasticsearch/Kibana/Fluentd objects it reconciles
+  *are* ArgoCD-eligible and live in `charts/logging`, deployed by its own `logging` Application.
+- **The `logging` namespace cannot reach RDS or `devops-app` either** — its NetworkPolicy is
+  default-deny the same way `ci`'s is, for the same reason: nothing in the log pipeline has any
+  legitimate reason to talk to the application or its database.
 - **The `ci` namespace cannot reach RDS or `devops-app`** — its egress NetworkPolicy allows the
   internet but excludes the VPC's own CIDR ranges, so it is enforced structurally, not by convention.
 - **The double arrow is the only write into `devops-app`.** Jenkins' CD agent (`jenkins-cd-agent`)
@@ -426,10 +453,17 @@ flowchart LR
 - **Terraform (`terraform/`):** the VPC, EKS cluster + node group, RDS (7-day PITR), ECR, ACM, WAF, S3,
   SNS, Secrets Manager (container only), IRSA roles, and every platform add-on — AWS Load Balancer
   Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
-  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack, **and Jenkins**
-  (`terraform/addon-jenkins.tf`). State lives in a versioned, locked S3 bucket owned by no stack.
+  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack, Jenkins
+  (`terraform/addon-jenkins.tf`), **and the ECK operator** (`terraform/addon-eck.tf`, namespace
+  `elastic-system`) — Terraform-owned, structurally, because its chart installs cluster-scoped CRDs
+  and RBAC that both ArgoCD AppProjects' `clusterResourceWhitelist: []` forbids ArgoCD from touching.
+  State lives in a versioned, locked S3 bucket owned by no stack.
 - **Helm chart (`charts/voteball`), delivered by ArgoCD:** everything in the `devops-app` box —
   diagrams 2 and 3.
+- **Helm chart (`charts/logging`), delivered by ArgoCD as its own `logging` Application:** the
+  namespaced `Elasticsearch`/`Kibana`/`Fluentd` objects the ECK operator above reconciles — diagram 6.
+  Ships `enabled: false` until a human flips it after the ECK operator's CRDs exist, the same gate
+  shape as every other Terraform-created-object reference in this repo.
 - **Jenkins (namespace `ci`):** builds, scans and pushes the four images, then commits the new image tag
   to `charts/voteball/values.yaml`. It is a **platform add-on, installed by `terraform apply` like the
   rest of this list — not by ArgoCD, and not by committing to `master`.** Its controller is still
