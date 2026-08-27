@@ -94,14 +94,16 @@ pass "Kibana references Elasticsearch"
 # The ALB group name is the teardown-critical field. A grouped ALB is de-provisioned only when NO
 # member Ingress remains; a typo here leaves a second ALB billing after destroy, and its ENIs then
 # block VPC deletion.
-grep -qE 'alb\.ingress\.kubernetes\.io/group\.name:[[:space:]]*voteball' <<<"$out" \
+grep -qE 'alb\.ingress\.kubernetes\.io/group\.name:[[:space:]]*"?voteball"?' <<<"$out" \
   || fail "Kibana Ingress must join ALB group 'voteball' (same group as charts/voteball and ci/jenkins-webhook)"
 pass "Kibana Ingress joins ALB group voteball"
 
 # ALB terminates real ACM TLS, so Kibana itself must serve plain HTTP -- otherwise the ALB health
 # check hits a self-signed HTTPS listener and the target never goes healthy.
 grep -qE 'selfSignedCertificate:' <<<"$out" || fail "Kibana must disable its self-signed certificate (ALB terminates TLS)"
-grep -A2 'selfSignedCertificate:' <<<"$out" | grep -qE 'disabled:[[:space:]]*true' \
+# Unanchored on purpose: `disabled:` appears exactly once in this whole chart, so this is
+# unambiguous -- and unlike a `-A2` window it does not dictate where comments may sit.
+grep -qE '^[[:space:]]*disabled:[[:space:]]*true' <<<"$out" \
   || fail "Kibana selfSignedCertificate.disabled must be true"
 pass "Kibana self-signed TLS disabled (ALB terminates)"
 
