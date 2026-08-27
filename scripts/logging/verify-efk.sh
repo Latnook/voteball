@@ -18,6 +18,7 @@ NS=logging
 ES_SVC=voteball-logs-es-http
 ALIAS=voteball-logs
 TIMEOUT_SECS="${EFK_VERIFY_TIMEOUT:-180}"
+ALIAS_WAIT_SECS="${EFK_VERIFY_ALIAS_WAIT:-60}"
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
 
@@ -37,6 +38,21 @@ kubectl wait --for=condition=Available deployment/fluentd -n "$NS" --timeout=300
 PASS="$(kubectl get secret voteball-logs-es-elastic-user -n "$NS" -o go-template='{{.data.elastic | base64decode}}')"
 [ -n "$PASS" ] || fail "could not read the elastic user password"
 
+# --- Credential handling ---------------------------------------------------------------------------
+# NEVER pass the password as `curl -u elastic:$PASS`. That puts it in curl's own argv for the entire
+# duration of every call, readable via `ps`/`/proc/*/cmdline` inside the pod for as long as the
+# process runs -- the same defect shape as the live ECR token this repo leaked into CI evidence on
+# 2026-08-04, and the same one already fixed in Task 4's ILM Job (charts/logging/templates/ilm.yaml)
+# before this script existed. Use the identical remedy: write a curl config file INSIDE the pod with
+# the shell BUILTIN `printf` (a builtin forks no process, so nothing puts the secret in a process
+# table entry of its own), then pass every request through `-K` instead of `-u`. The Elasticsearch
+# container's filesystem is writable at /tmp (readOnlyRootFilesystem does not cover it), so this has
+# somewhere to land.
+echo "--> writing a curl credential file inside the Elasticsearch pod (never on curl's argv)"
+kubectl exec -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default -c elasticsearch -- \
+  sh -c "umask 077; printf 'user = \"elastic:%s\"\n' '$PASS' > /tmp/efk-curlrc" \
+  || fail "could not write the curl credential file in the Elasticsearch pod"
+
 # A marker unique to this run. Passed in rather than generated with $RANDOM so a re-run after a
 # failure can search for the previous one.
 MARKER="${EFK_VERIFY_MARKER:-efk-verify-$(date -u +%Y%m%d%H%M%S)}"
@@ -54,35 +70,69 @@ POD="$(kubectl get pods -n devops-app -l app=backend -o jsonpath='{.items[0].met
 #
 # /proc/1/fd/1 is PID 1's stdout. The backend container runs as uid 1000 and so does PID 1, so the
 # write is permitted; readOnlyRootFilesystem does not apply to /proc.
-kubectl exec -n devops-app "$POD" -- sh -c "echo '$MARKER' > /proc/1/fd/1" \
+kubectl exec -n devops-app --request-timeout=30s "$POD" -- sh -c "echo '$MARKER' > /proc/1/fd/1" \
   || fail "could not write a log line to PID 1's stdout in $POD"
 
-# --- The self-check ------------------------------------------------------------------------------
-# Run the query ONCE against a term that MUST be present (match_all over the alias) before trusting
-# any zero from the real query. If this returns 0, the query itself is broken and every subsequent
-# "not found" would be a false negative rather than a real one.
 # $1 = path, $2 = optional JSON body.
 #
 # The two forms are separate branches rather than one call with `${2:+...}`: an unquoted expansion
 # word-splits on spaces, so `-H 'Content-Type: application/json'` would arrive as three arguments
 # with literal quote characters, and curl would reject the header rather than send it.
+#
+# --max-time 30 on every curl AND --request-timeout=30s on every kubectl exec: the deadline loops
+# below only re-check their budget BETWEEN iterations, so one unresponsive Elasticsearch or one hung
+# `kubectl exec` would otherwise block indefinitely and defeat the bounded design this script
+# advertises. Both timeouts are load-bearing -- do not remove either as noise.
 es() {
   local path="$1" body="${2:-}"
   if [ -n "$body" ]; then
-    kubectl exec -n "$NS" statefulset/voteball-logs-es-default -c elasticsearch -- \
-      curl -sf -u "elastic:$PASS" --cacert /usr/share/elasticsearch/config/http-certs/ca.crt \
+    kubectl exec -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default -c elasticsearch -- \
+      curl -sf --max-time 30 -K /tmp/efk-curlrc --cacert /usr/share/elasticsearch/config/http-certs/ca.crt \
       -H 'Content-Type: application/json' -d "$body" "https://localhost:9200/$path"
   else
-    kubectl exec -n "$NS" statefulset/voteball-logs-es-default -c elasticsearch -- \
-      curl -sf -u "elastic:$PASS" --cacert /usr/share/elasticsearch/config/http-certs/ca.crt \
+    kubectl exec -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default -c elasticsearch -- \
+      curl -sf --max-time 30 -K /tmp/efk-curlrc --cacert /usr/share/elasticsearch/config/http-certs/ca.crt \
       "https://localhost:9200/$path"
   fi
 }
 
-echo "--> self-check: the query path can return a non-zero count"
-if ! es "_alias/$ALIAS" >/dev/null 2>&1; then
-  fail "the write alias '$ALIAS' does not exist -- the ILM bootstrap Job did not complete"
-fi
+# --- Wait for the write alias to exist -------------------------------------------------------------
+# A real first deploy can reach here before the ILM bootstrap Job has finished creating the alias --
+# Elasticsearch/Kibana going Ready says nothing about that Job's own completion. So this WAITS for the
+# alias inside the same bounded-deadline pattern the marker check below uses, rather than asserting it
+# once and failing a deploy that only needed a few more seconds.
+echo "--> waiting up to ${ALIAS_WAIT_SECS}s for the write alias '$ALIAS' to exist"
+alias_deadline=$(( $(date +%s) + ALIAS_WAIT_SECS ))
+alias_found=0
+while [ "$(date +%s)" -lt "$alias_deadline" ]; do
+  if es "_alias/$ALIAS" >/dev/null 2>&1; then
+    alias_found=1
+    break
+  fi
+  sleep 5
+done
+[ "$alias_found" -eq 1 ] \
+  || fail "the write alias '$ALIAS' does not exist after ${ALIAS_WAIT_SECS}s -- the ILM bootstrap Job did not complete"
+
+# --- The self-check ------------------------------------------------------------------------------
+# Exercise the EXACT SAME query path the real check uses ($ALIAS/_count with a query_string body),
+# against a document known to exist, before trusting any zero from it. A self-check that calls a
+# different endpoint (e.g. a plain alias-metadata lookup) proves nothing about the query mechanism
+# itself -- a bad JSON escape, a wrong field name, or a malformed body would sail straight past it and
+# only surface as "the pipeline is broken" after a full timeout, which is exactly the
+# false-negative-indistinguishable-from-a-real-negative failure this script's header warns about.
+#
+# The canary is indexed DIRECTLY into the alias, bypassing Fluent Bit/Fluentd entirely -- this proves
+# the query works, not that ingestion works (that is what the real check below is for).
+CANARY="efk-selfcheck-${MARKER}"
+echo "--> self-check: indexing a canary directly into $ALIAS and querying it back"
+es "$ALIAS/_doc?refresh=true" "{\"log\":\"$CANARY\"}" >/dev/null \
+  || fail "could not index a canary document -- Elasticsearch is not accepting writes to the alias '$ALIAS'"
+self_count="$(es "$ALIAS/_count" "{\"query\":{\"query_string\":{\"query\":\"\\\"$CANARY\\\"\"}}}" \
+              | sed -n 's/.*"count":\([0-9]*\).*/\1/p')"
+[ "${self_count:-0}" -gt 0 ] \
+  || fail "SELF-CHECK FAILED: a document indexed directly cannot be found by the same query the real check uses.
+  The query path itself is broken -- do NOT read a later zero as 'the pipeline is not delivering'."
 
 # --- The real check -------------------------------------------------------------------------------
 echo "--> waiting up to ${TIMEOUT_SECS}s for the marker to reach Elasticsearch"
@@ -92,7 +142,7 @@ while [ "$(date +%s)" -lt "$deadline" ]; do
   # query_string across ALL fields, not match_phrase on a guessed field name. Fluent Bit's
   # kubernetes filter puts the line in `log` or, with Merge_Log On, in `log_processed` -- and which
   # one depends on whether the line parsed as JSON. Naming the wrong field returns 0 with status
-  # 200, which is indistinguishable from a correct negative.
+  # 200, which is indistinguishable from a correct negative -- ruled out above by the self-check.
   count="$(es "$ALIAS/_count" "{\"query\":{\"query_string\":{\"query\":\"\\\"$MARKER\\\"\"}}}" \
             | sed -n 's/.*"count":\([0-9]*\).*/\1/p')"
   count="${count:-0}"
