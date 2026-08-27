@@ -1,0 +1,75 @@
+{{- if .Values.enabled }}
+# Elasticsearch, reconciled by the ECK operator that terraform/addon-eck.tf installs.
+#
+# ONE NODE, NO REPLICA. Cluster health is therefore permanently YELLOW, and that is the designed
+# state -- charts/observability alerts on the pod being NotReady, never on cluster colour, because an
+# alert that fires forever is one people learn to ignore (spec decisions 3 and 9).
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: voteball-logs
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+spec:
+  version: {{ .Values.elasticsearch.version | quote }}
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.roles: ["master", "data", "ingest"]
+        # THE LOAD-BEARING LINE. Elasticsearch wants vm.max_map_count at 262144, above the EKS AMI
+        # default, and ECK's DEFAULT remedy is a PRIVILEGED init container that sets the sysctl on
+        # the host. Disabling mmap makes Lucene use niofs instead of mmapfs and removes the
+        # requirement entirely, so every container here keeps allowPrivilegeEscalation: false.
+        #
+        # The cost is real but small at this size: niofs reads go through syscalls rather than
+        # page-cache-backed memory maps. At ~1 GB of index it is not observable. If the index ever
+        # grows to several GB, revisit THIS before revisiting the node count.
+        node.store.allow_mmap: false
+      podTemplate:
+        spec:
+          # Spread from Kibana. Both on one node would leave the other node holding the whole CI
+          # build spike (~3 GiB, BuildKit alone is 2Gi) with nothing left, and Cluster Autoscaler
+          # would quietly add the third node this design exists to avoid.
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchLabels:
+                        common.k8s.elastic.co/type: kibana
+          containers:
+            - name: elasticsearch
+              env:
+                - name: ES_JAVA_OPTS
+                  value: "-Xms{{ .Values.elasticsearch.heapSize }} -Xmx{{ .Values.elasticsearch.heapSize }}"
+              resources:
+                requests:
+                  cpu: {{ .Values.elasticsearch.resources.requests.cpu | quote }}
+                  memory: {{ .Values.elasticsearch.resources.requests.memory | quote }}
+                limits:
+                  cpu: {{ .Values.elasticsearch.resources.limits.cpu | quote }}
+                  memory: {{ .Values.elasticsearch.resources.limits.memory | quote }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: {{ .Values.elasticsearch.storage.size | quote }}
+            # gp3 is WaitForFirstConsumer, so the volume is created in whichever AZ the pod first
+            # lands. From then on the PV carries nodeAffinity on topology.ebs.csi.aws.com/zone and
+            # the scheduler HONOURS it -- after a Spot reclaim the pod returns to that AZ. It goes
+            # Pending only if that AZ has no schedulable node at that moment. EFS is NOT an option
+            # here (Elastic does not support NFS data paths), which is why this differs from the
+            # JENKINS_HOME decision. See spec decision 6.
+            storageClassName: {{ .Values.elasticsearch.storage.storageClassName }}
+{{- end }}

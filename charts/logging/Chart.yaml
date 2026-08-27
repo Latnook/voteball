@@ -1,0 +1,6 @@
+apiVersion: v2
+name: logging
+description: Elasticsearch, Fluentd and Kibana custom resources for the logging namespace. The ECK operator that reconciles them is installed by Terraform (terraform/addon-eck.tf).
+type: application
+version: 0.1.0
+appVersion: "1.0"
