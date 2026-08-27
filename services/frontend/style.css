@@ -443,14 +443,14 @@ button { font-family: inherit; }
 
 /* The opposite problem to card-grid-quad: a long flat league (the World Cup's 48 nations) lays out
    9 rows of five plus a ragged 3, and scrolls for it. Six columns makes 48 exactly eight rows, and
-   the two continental competitions -- UEFA Champions League and UEFA Europa League, 36 clubs each
-   once their fields are complete -- exactly six.
+   the UEFA club cups -- Champions League and Europa League at 36 clubs each once their fields are
+   complete, the Conference League still filling up -- exactly six.
    The tracks barely shrink -- auto-fill's 150px minimum gives five columns in the 920px page, and
    six explicit tracks are ~145px each -- so this is a row-count change, not a smaller-card change.
    Gated at 900px rather than 481px because that is where six tracks are still ~135px wide; under
    it the grid falls back to auto-fill and behaves exactly as before. vote.js decides who gets the
-   class (>= 24 clubs, and never a divisioned league, which keeps card-grid-quad); see
-   renderTeamGrid(). */
+   class (>= 24 clubs, or >= 12 that divide evenly into six, and never a divisioned league, which
+   keeps card-grid-quad); see renderTeamGrid(). */
 @media (min-width: 900px) {
   .card-grid.card-grid-hex { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }

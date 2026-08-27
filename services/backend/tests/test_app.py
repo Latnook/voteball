@@ -136,22 +136,113 @@ def test_vote_endpoint_accepts_multi_league_multi_club_ballot(client, conn):
     assert resp.status_code == 201
 
 
-def test_vote_endpoint_rejects_more_than_three_clubs_in_one_league(client, conn):
+def _league_id(conn, name):
     cur = conn.cursor()
-    cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
-    epl_id = cur.fetchone()[0]
+    cur.execute("SELECT id FROM leagues WHERE name_en = %s", (name,))
+    row = cur.fetchone()
+    cur.close()
+    assert row, name
+    return row[0]
+
+
+def _club_ids(conn, names):
+    cur = conn.cursor()
+    cur.execute("SELECT name_en, id FROM clubs WHERE name_en = ANY(%s)", (list(names),))
+    found = dict(cur.fetchall())
+    cur.close()
+    missing = [n for n in names if n not in found]
+    assert not missing, f'unseeded clubs: {missing}'
+    return [found[n] for n in names]
+
+
+def _post_ballot(client, picks):
+    return client.post('/api/vote', json={
+        'team_picks': picks,
+        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
+        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
+    })
+
+
+DOMESTIC_CAP_ERROR = {'error': 'select at most 3 clubs from any one domestic league'}
+
+
+def test_vote_endpoint_rejects_more_than_three_clubs_in_one_league(client, conn):
+    epl_id = _league_id(conn, 'Premier League')
+    cur = conn.cursor()
     cur.execute("SELECT id FROM clubs WHERE league_id = %s LIMIT 4", (epl_id,))
     club_ids = [r[0] for r in cur.fetchall()]
     cur.close()
     assert len(club_ids) == 4
 
-    resp = client.post('/api/vote', json={
-        'team_picks': [{'league_id': epl_id, 'club_id': c} for c in club_ids],
-        'previous_vote_status': 'did_not_vote', 'previous_party_id': None,
-        'upcoming_vote_status': 'undecided', 'upcoming_party_ids': [],
-    })
+    resp = _post_ballot(client, [{'league_id': epl_id, 'club_id': c} for c in club_ids])
     assert resp.status_code == 400
-    assert resp.get_json() == {'error': 'select at most 3 clubs per league'}
+    assert resp.get_json() == DOMESTIC_CAP_ERROR
+
+
+def test_vote_endpoint_accepts_many_clubs_from_one_cup(client, conn):
+    """The cap this replaced was per league TAB, so six Champions League picks used to be rejected
+    however many different domestic leagues they came from. That is the whole point of the change:
+    the six below are one Spanish, one English, one German, one Italian and two clubs whose
+    domestic league this app does not seed."""
+    ucl_id = _league_id(conn, 'UEFA Champions League')
+    club_ids = _club_ids(conn, ['Barcelona', 'Arsenal', 'Bayern Munich', 'Inter Milan',
+                                'Porto', 'Paris Saint-Germain'])
+
+    resp = _post_ballot(client, [{'league_id': ucl_id, 'club_id': c} for c in club_ids])
+    assert resp.status_code == 201
+
+
+def test_vote_endpoint_rejects_four_clubs_of_one_domestic_league_picked_via_a_cup(client, conn):
+    """The hole the old per-tab cap left open. All four are La Liga clubs that also play in the
+    Champions League, so all four are legitimately votable under the Champions League tab -- and
+    counting picks by the tab they arrived on would have let this through."""
+    ucl_id = _league_id(conn, 'UEFA Champions League')
+    club_ids = _club_ids(conn, ['Barcelona', 'Atlético Madrid', 'Villarreal', 'Real Betis'])
+
+    resp = _post_ballot(client, [{'league_id': ucl_id, 'club_id': c} for c in club_ids])
+    assert resp.status_code == 400
+    assert resp.get_json() == DOMESTIC_CAP_ERROR
+
+
+def test_vote_endpoint_counts_a_domestic_league_across_tabs(client, conn):
+    """Three La Liga clubs picked under the Champions League plus a fourth picked under La Liga
+    itself is still four La Liga clubs. The cap is a property of the ballot, not of one tab."""
+    ucl_id = _league_id(conn, 'UEFA Champions League')
+    la_liga_id = _league_id(conn, 'La Liga')
+    via_cup = _club_ids(conn, ['Barcelona', 'Atlético Madrid', 'Villarreal'])
+    via_domestic = _club_ids(conn, ['Real Sociedad'])[0]
+
+    picks = [{'league_id': ucl_id, 'club_id': c} for c in via_cup]
+    picks.append({'league_id': la_liga_id, 'club_id': via_domestic})
+    resp = _post_ballot(client, picks)
+    assert resp.status_code == 400
+    assert resp.get_json() == DOMESTIC_CAP_ERROR
+
+
+def test_vote_endpoint_still_caps_national_team_competitions(client, conn):
+    """The World Cup and the Nations League are NOT is_club_cup: a national team has no domestic
+    league to be counted under, so exempting them would leave those tabs uncapped entirely."""
+    wc_id = _league_id(conn, 'World Cup 2026')
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM clubs WHERE league_id = %s LIMIT 4", (wc_id,))
+    club_ids = [r[0] for r in cur.fetchall()]
+    cur.close()
+    assert len(club_ids) == 4
+
+    resp = _post_ballot(client, [{'league_id': wc_id, 'club_id': c} for c in club_ids])
+    assert resp.status_code == 400
+    assert resp.get_json() == DOMESTIC_CAP_ERROR
+
+
+def test_vote_endpoint_does_not_cap_clubs_with_no_seeded_domestic_league(client, conn):
+    """Lugano and Thun are both Swiss and KuPS is Finnish, but neither league has a tab here, so
+    all three carry only their cup and land in no domestic bucket. Documented as deliberate: the
+    rule is enforceable exactly where a domestic league is known."""
+    uecl_id = _league_id(conn, 'UEFA Conference League')
+    club_ids = _club_ids(conn, ['Lugano', 'Thun', 'KuPS', 'Heart of Midlothian'])
+
+    resp = _post_ballot(client, [{'league_id': uecl_id, 'club_id': c} for c in club_ids])
+    assert resp.status_code == 201
 
 
 def test_vote_endpoint_rejects_just_league_mixed_with_specific_club(client, conn):

@@ -54,6 +54,13 @@ const OUTLINE_CLUBS = new Set([
   // neighbours Stade Rennais and Sturm Graz are deliberately NOT here -- a gold shield border and a
   // white ring respectively already separate them from the card, so an outline only thickens them.
   'Sparta Prague',
+  // Lugano is the same shape: a black disc on transparency carrying a white LFC monogram. Measured
+  // against the dark card (#161B22) the disc is 1.2:1 -- effectively invisible -- so without the
+  // outline the monogram floats with nothing behind it. Its Conference League neighbours are
+  // deliberately NOT here: KuPS's black shield carries a yellow border that already separates it
+  // (the same reason Stade Rennais is excluded), and Iberia 1999's crimson eagle measures 2.75:1,
+  // dim but plainly a shape.
+  'Lugano',
 ]);
 
 // Clubs/leagues (by name_en) that ship a SECOND artwork file for the dark theme, rather than being
@@ -73,6 +80,19 @@ const DARK_VARIANT_LOGOS = new Map([
   // The starball is one navy silhouette, so the outline treatment it used to get traced its edge
   // without lifting it -- the same reason the Europa League trophy needed a real second file.
   ['UEFA Champions League', '/logos/uefa-champions-league-dark.svg'],
+  // UEFA ships the Conference League mark as two files of its own -- a black trophy for light
+  // backgrounds and a white one for dark, both with the same #00BE14 brackets. They are used as
+  // downloaded except for the trademark glyph, which was a separate <path> and is dropped, and a
+  // viewBox cropped to the artwork's measured bounding box so it fills the logo box like its
+  // neighbours instead of rendering small inside its own padding.
+  ['UEFA Conference League', '/logos/uefa-conference-league-dark.svg'],
+  // A CLUB rather than a competition, and the first one here. Ararat-Armenia's crest is dark line
+  // art -- a #231f20 ring and mountains over a white field, above a solid "ARARAT ARMENIA"
+  // wordmark. The roundel survives the dark card on its own but the wordmark does not, and an
+  // OUTLINE_CLUBS halo cannot lift it for the reason the Europa League trophy needed a real file:
+  // outlining a solid mass traces its edge and leaves the middle dark. The file here is the
+  // upstream artwork with its two flat colours swapped, so it stays inspectable as a file.
+  ['Ararat-Armenia', '/logos/fc-ararat-armenia-dark.svg'],
 ]);
 
 // Clubs/leagues (by name_en) whose artwork file carries transparent padding, and the factor that

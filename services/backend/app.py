@@ -38,6 +38,10 @@ ADMIN_SESSION_SECRET = os.environ['ADMIN_SESSION_SECRET']
 # this counts *successful ballots* over 24h and persists. Keep both: WAF alone would let a patient
 # script vote steadily under the rate limit, and this alone leaves the pods absorbing the flood.
 MAX_VOTES_PER_IP = int(os.environ.get('MAX_VOTES_PER_IP', '5'))
+# How many clubs one ballot may name from a single DOMESTIC league. The UEFA club cups
+# (leagues.is_club_cup) are exempt -- their field is drawn from the domestic leagues, so
+# naming five clubs on the Champions League tab is not the claim this cap is about.
+MAX_CLUBS_PER_DOMESTIC_LEAGUE = 3
 VOTE_IP_WINDOW_HOURS = int(os.environ.get('VOTE_IP_WINDOW_HOURS', '24'))
 # Salt so the stored hashes are useless outside this deployment and cannot be reversed by hashing
 # the IPv4 space. Falls back to the admin secret when unset, which is already required and rotated.
@@ -168,14 +172,16 @@ def options():
 
 
 def _validate_team_picks(conn, team_picks):
-    """Returns an error message string if team_picks is invalid, else None. A ballot names 0-3
-    specific clubs per league (never mixed with a "just this league" pick in that same league),
-    across any number of leagues, with at least one pick required overall."""
+    """Returns an error message string if team_picks is invalid, else None. A ballot names any
+    number of specific clubs per league (never mixed with a "just this league" pick in that same
+    league), across any number of leagues, with at least one pick required overall -- capped only
+    at MAX_CLUBS_PER_DOMESTIC_LEAGUE clubs from any one DOMESTIC league."""
     if not isinstance(team_picks, list) or not team_picks:
         return 'team_picks must be a non-empty list'
 
     league_ids = queries.get_all_league_ids(conn)
     clubs_map = queries.get_clubs_league_map(conn)
+    cup_league_ids = queries.get_club_cup_league_ids(conn)
 
     picks_by_league = {}
     club_id_first_league = {}
@@ -209,10 +215,34 @@ def _validate_team_picks(conn, team_picks):
             return 'a league cannot mix "just this league" with specific club picks'
         if len(club_ids) - len(specific) > 1:
             return 'a league can only have one "just this league" pick'
-        if len(specific) > 3:
-            return 'select at most 3 clubs per league'
         if len(specific) != len(set(specific)):
             return 'duplicate club pick in the same league'
+
+    # The cap counts a club's LEAGUE MEMBERSHIP, never the league_id its pick was filed under.
+    # Which of clubs.league_id / clubs.domestic_league_id holds the domestic league is not
+    # consistent -- Barcelona is (league_id=Champions League, domestic_league_id=La Liga) while
+    # Real Betis is (league_id=La Liga, domestic_league_id=Champions League) -- and the client
+    # files each pick under `domestic_league_id or the tab`, so the label on a pick names the cup
+    # for one of those two clubs and the domestic league for the other. Counting by that label
+    # would enforce this rule on roughly half the ballots at random. Reading BOTH columns and
+    # dropping the cups is what the worker's _VOTE_LEAGUES_TOUCHED_CTE already does for the same
+    # reason (services/worker/rollups.py).
+    #
+    # A club whose domestic league this app does not seed -- Lugano and Thun are both Swiss, and
+    # the Swiss league has no tab -- carries only a cup, so it lands in no bucket and is
+    # deliberately uncapped. The rule is enforceable exactly where a domestic league is known.
+    picked_club_ids = {c for ids in picks_by_league.values() for c in ids if c is not None}
+    clubs_per_domestic_league = {}
+    for club_id in picked_club_ids:
+        club_leagues = clubs_map[club_id]
+        for lid in (club_leagues['league_id'], club_leagues['domestic_league_id']):
+            if lid is None or lid in cup_league_ids:
+                continue
+            clubs_per_domestic_league.setdefault(lid, set()).add(club_id)
+    if any(len(ids) > MAX_CLUBS_PER_DOMESTIC_LEAGUE
+           for ids in clubs_per_domestic_league.values()):
+        return (f'select at most {MAX_CLUBS_PER_DOMESTIC_LEAGUE} clubs '
+                'from any one domestic league')
 
     return None
 
