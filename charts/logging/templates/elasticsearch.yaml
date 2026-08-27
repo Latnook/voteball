@@ -71,5 +71,5 @@ spec:
             # Pending only if that AZ has no schedulable node at that moment. EFS is NOT an option
             # here (Elastic does not support NFS data paths), which is why this differs from the
             # JENKINS_HOME decision. See spec decision 6.
-            storageClassName: {{ .Values.elasticsearch.storage.storageClassName }}
+            storageClassName: {{ .Values.elasticsearch.storage.storageClassName | quote }}
 {{- end }}

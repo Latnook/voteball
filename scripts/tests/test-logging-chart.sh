@@ -45,7 +45,7 @@ if grep -qE 'privileged:[[:space:]]*true|allowPrivilegeEscalation:[[:space:]]*tr
 fi
 pass "no privileged / allowPrivilegeEscalation container"
 
-grep -qE 'storageClassName:[[:space:]]*gp3' <<<"$out" || fail "Elasticsearch volume must use the gp3 StorageClass"
+grep -qE 'storageClassName:[[:space:]]*"?gp3"?' <<<"$out" || fail "Elasticsearch volume must use the gp3 StorageClass"
 pass "gp3 volumeClaimTemplate"
 
 # One node, no replica. A second node would not fit the budget (spec decision 3).
