@@ -137,3 +137,54 @@ spec:
     syncOptions:
       - ServerSideApply=true
       - CreateNamespace=false
+---
+# The logging project. Separate from voteball and observability for the same reason those two are
+# separate from each other: an AppProject's whole purpose is to pin one chart to one namespace, and
+# reusing an existing project would mean widening its destination to two namespaces -- which would
+# let a mistake in either chart deploy into the other's namespace.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: logging
+  namespace: argocd
+spec:
+  description: EFK custom resources. Deploys charts/logging into logging, nothing else.
+  sourceRepos:
+    - ${REPO_URL}
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: logging
+  # Empty = DENY every cluster-scoped resource, same as the other two projects. This chart renders
+  # only Elasticsearch/Kibana CRs, a Deployment, a Service, a ConfigMap, a Job, an Ingress and
+  # NetworkPolicies -- all namespaced. The 12 ECK CRDs are cluster-scoped and are installed by
+  # terraform/addon-eck.tf precisely because this list is empty. Verify with:
+  #     helm template logging charts/logging -n logging --set enabled=true | grep '^kind:' | sort -u
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+---
+# CreateNamespace=false: terraform/namespaces.tf creates `logging`, so it already exists by the time
+# this Application is created at deploy step 11. ServerSideApply for the same reason the other two
+# Applications use it.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: logging
+  namespace: argocd
+spec:
+  project: logging
+  source:
+    repoURL: ${REPO_URL}
+    targetRevision: release
+    path: charts/logging
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: logging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=false
