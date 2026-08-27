@@ -75,12 +75,34 @@ The usual "Elasticsearch wants 4 GiB" figure is a default for real workloads. Th
 ~95% of it, and Fluent Bit is already scoped to `devops-app` alone — so the ingest rate is
 **≈150 MB/day**, and a 7-day index is ~1 GB. One index, one shard, no replica.
 
-| Component | Placement | Requests | Limits |
+| Component | Owner | Placement | Requests | Limits |
+|---|---|---|---|---|
+| `eck-operator` | Terraform | `elastic-system`, either node | 100m / 150Mi | 1 / 1Gi (chart default) |
+| `Elasticsearch` (1 node, 1 GiB heap) | `charts/logging` | pinned to 1a by its EBS volume | 300m / 2Gi | 1 / 2Gi |
+| `Kibana` | `charts/logging` | 1b, anti-affinity from Elasticsearch | 200m / 1Gi | 500m / 1Gi |
+| `Fluentd` aggregator | `charts/logging` | 1b | 100m / 256Mi | 500m / 512Mi |
+| ILM bootstrap Job (transient, post-install hook) | `charts/logging` | either node | 50m / 64Mi | 200m / 128Mi |
+| **Total added** | | | **750m / 3542Mi** | |
+
+**The two halves of that total are measured by different things, and confusing them cost a review
+cycle.** `helm template charts/logging` sees **650m / 3392Mi** — the four chart rows, ILM Job included.
+The `eck-operator`'s 100m / 150Mi is installed by `terraform apply` and is invisible to the chart. An
+earlier version of this table read 700m by including the operator *and* omitting the ILM Job, while
+`scripts/tests/test-logging-chart.sh` compared the chart's own sum against a 700m cap — two different
+sets, the same number, neither checking the other. The test's cap stays where it is (it is the right
+bound for the chart) but now says explicitly that it is the **chart's share**, and prints the feature
+total alongside it.
+
+Re-measured against live node headroom on 2026-08-27 (`kubectl describe node`, allocatable 1930m /
+~7080Mi per node), with Elasticsearch on one node and Kibana + Fluentd + the operator on the other:
+
+| Node | Requests now | With EFK | Free after |
 |---|---|---|---|
-| `eck-operator` | either node | 100m / 150Mi | 1 / 1Gi (chart default) |
-| `Elasticsearch` (1 node, 1 GiB heap) | pinned to 1a by its EBS volume | 300m / 2Gi | 1 / 2Gi |
-| `Kibana` | 1b, anti-affinity from Elasticsearch | 200m / 1Gi | 500m / 1Gi |
-| `Fluentd` aggregator | 1b | 100m / 256Mi | 500m / 512Mi |
+| `ip-10-0-41-153` (1a) | 650m / 1055Mi | 1000m / 3167Mi | ~930m, **~3.8 GiB** |
+| `ip-10-0-58-197` (1b) | 680m / 1887Mi | 1080m / 3317Mi | ~850m, **~3.7 GiB** |
+
+Both stay above the ≥3.5 GiB-per-node line the CI spike needs, so **no third node is implied** — which
+is the property that matters, since requests are what the scheduler and Cluster Autoscaler read.
 
 **The binding constraint is the CI spike, not EFK.** A `voteball-build` agent pod requests ~3 GiB
 (BuildKit alone is 2Gi) and ~1000m on whichever node it lands. EFK is therefore **spread** across both

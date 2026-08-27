@@ -61,11 +61,27 @@ node_count="$(grep -cE '^[[:space:]]+count:[[:space:]]*1' <<<"$out" || true)"
 [ "$node_count" -ge 1 ] || fail "Elasticsearch nodeSet count must be 1"
 pass "single Elasticsearch node"
 
-# --- The no-third-node budget ------------------------------------------------------------------
-# Sum every `requests:` cpu/memory in the rendered output and compare against the budget in the
-# spec. This is arithmetic on the real rendered YAML, not a comment asserting the same thing.
+# --- The no-third-node budget: THIS CHART'S SHARE OF IT ------------------------------------------
+# Sum every `requests:` cpu/memory in the rendered output and compare against a cap. This is
+# arithmetic on the real rendered YAML, not a comment asserting the same thing.
+#
+# WHAT THIS CAP IS AND IS NOT. It bounds the CHART ONLY -- Elasticsearch, Kibana, Fluentd and the ILM
+# bootstrap Job, i.e. everything `helm template` can see. It is NOT the design's whole-feature figure,
+# because `helm template` cannot see either side of that difference:
+#
+#   chart (measured here)                                    650m / 3392Mi
+#   + eck-operator, installed by terraform/addon-eck.tf       100m /  150Mi   <-- outside this chart
+#   -----------------------------------------------------------------------
+#   = total requests EFK adds to the cluster                  750m / 3542Mi
+#
+# The design doc's own numbers were wrong in both directions at once for one review cycle: they
+# included the operator (Terraform's, not this chart's) and omitted the ILM Job (this chart's), so a
+# 700m/3584Mi cap was being compared against a differently-scoped 700m figure. The cap below is
+# unchanged -- it was always the right bound for the chart -- but it is now LABELLED as the chart's
+# share, and the pass message says so, since a number that silently means something other than the
+# document it cites is how the mismatch survived review in the first place.
 budget_cpu_m=700
-budget_mem_mi=3584   # 3.5Gi
+budget_mem_mi=3584   # 3.5Gi -- the chart's share, not the feature total (see above)
 
 sums="$(awk '
   /requests:/ { inreq=1; next }
@@ -79,10 +95,10 @@ sums="$(awk '
 cpu_m="${sums% *}"; mem_mi="${sums#* }"
 
 [ "$cpu_m" -le "$budget_cpu_m" ] \
-  || fail "rendered CPU requests ${cpu_m}m exceed the no-third-node budget of ${budget_cpu_m}m"
+  || fail "rendered CPU requests ${cpu_m}m exceed this CHART's share of the no-third-node budget (${budget_cpu_m}m); add 100m for the eck-operator to compare against the design's feature total"
 [ "$mem_mi" -le "$budget_mem_mi" ] \
-  || fail "rendered memory requests ${mem_mi}Mi exceed the no-third-node budget of ${budget_mem_mi}Mi"
-pass "requests within budget (${cpu_m}m CPU, ${mem_mi}Mi memory)"
+  || fail "rendered memory requests ${mem_mi}Mi exceed this CHART's share of the no-third-node budget (${budget_mem_mi}Mi); add 150Mi for the eck-operator to compare against the design's feature total"
+pass "chart's share of the budget: ${cpu_m}m CPU / ${mem_mi}Mi memory against ${budget_cpu_m}m / ${budget_mem_mi}Mi (eck-operator's 100m/150Mi is Terraform's, outside this chart; feature total $((cpu_m + 100))m / $((mem_mi + 150))Mi)"
 
 # --- validate-repo.sh's empty-list rule ---------------------------------------------------------
 # An empty list literal is normalised away by the API server, so ServerSideApply conflicts on it
