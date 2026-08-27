@@ -20,7 +20,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 10
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 218
+    assert cur.fetchone()[0] == 226
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -327,7 +327,7 @@ def test_seed_rerun_survives_league_name_drift(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 10, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 218, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 226, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
@@ -488,12 +488,15 @@ def test_nations_league_divisions_are_fully_populated(conn):
     cur.close()
 
 
-# Clubs whose ONLY seeded league is the Europa League -- their domestic leagues (Greek, Belgian,
-# Czech, Ligue 1, Austrian, Primeira Liga, Eredivisie, Scottish Premiership) are not seeded by this
-# app.
+# Clubs whose ONLY seeded league is the Europa League -- this app seeds six domestic leagues
+# (Israeli Premier League, Liga Leumit, Premier League, La Liga, Bundesliga, Serie A) and every
+# club here plays in none of them, so the competition is the only place it can be voted for. The list
+# used to enumerate the absent domestic leagues instead; it was already missing Poland's when
+# Lech Poznan was added, which is what enumerating rather than stating the rule costs.
 EUROPA_LEAGUE_ONLY_CLUBS = [
-    'Celtic', 'Lech Poznań', 'NEC', 'Olympiacos', 'Olympique de Marseille', 'Sparta Prague',
-    'Stade Rennais', 'Sturm Graz', 'Torreense', 'Union Saint-Gilloise',
+    'Celje', 'Celtic', 'Dinamo Zagreb', 'Lech Poznań', 'Levski Sofia', 'Lyon', 'NEC',
+    'Olympiacos', 'Olympique de Marseille', 'Sparta Prague', 'Stade Rennais', 'Sturm Graz',
+    'Torreense', 'Union Saint-Gilloise',
 ]
 
 # Clubs already seeded under a domestic league that gain the Europa League as their SECOND league.
@@ -605,14 +608,19 @@ def test_shared_europa_league_clubs_are_linked_not_duplicated(conn):
     cur.close()
 
 
-def test_europa_league_has_20_votable_teams(conn):
+def test_europa_league_votable_teams_are_the_two_rosters_combined(conn):
+    # The number is DERIVED from the two roster lists above, not restated -- those lists are
+    # already pinned exactly by the two tests before this one, so what is left for this one to
+    # prove is that the OR-join counts each club ONCE. A hardcoded total proved the same thing
+    # and went stale on every roster change (it said 20 when the roster reached 24).
     cur = conn.cursor()
     cur.execute(
         """SELECT COUNT(*) FROM clubs c
            JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
            WHERE l.name_en = 'UEFA Europa League'"""
     )
-    assert cur.fetchone()[0] == 20
+    expected = len(EUROPA_LEAGUE_ONLY_CLUBS) + len(LINKED_EUROPA_LEAGUE_CLUBS)
+    assert cur.fetchone()[0] == expected
     cur.close()
 
 
@@ -623,6 +631,23 @@ def test_every_europa_league_club_has_a_crest_and_three_names(conn):
            FROM clubs c
            JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
            WHERE l.name_en = 'UEFA Europa League'
+             AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
+    )
+    assert cur.fetchall() == []
+    cur.close()
+
+
+def test_every_champions_league_club_has_a_crest_and_three_names(conn):
+    # The Europa League, Nations League and World Cup rosters each had this check; the Champions
+    # League did not, so its clubs were the one competition where a missing name_ru or logo_url
+    # would ship silently. Same query as its Europa League twin, so the two rot together or not
+    # at all.
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT c.name_en
+           FROM clubs c
+           JOIN leagues l ON l.id = c.league_id OR l.id = c.domestic_league_id
+           WHERE l.name_en = 'UEFA Champions League'
              AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
     )
     assert cur.fetchall() == []
