@@ -854,13 +854,18 @@ aws logs tail "/aws/containerinsights/$(terraform output -raw cluster_name)/appl
 It removes things in the order that actually works, and **asks you to confirm** before deleting the
 infrastructure. Order matters:
 
-1. **Both ArgoCD Applications first** (`voteball` and `observability`) — otherwise ArgoCD notices what
-   you deleted next and puts it straight back, `observability`'s `NetworkPolicy`/dashboard/alert
-   objects included.
-2. **Both Ingresses next** — the site's and Jenkins' webhook. They share one load balancer, and it is
-   only released when *neither* is left. Deleting just one leaves it running, and a leftover load
-   balancer keeps network interfaces alive that block the network from being deleted. This is the
-   difference between a teardown that takes ten minutes and one that appears to hang for twenty.
+1. **All three ArgoCD Applications first** (`voteball`, `observability` and — since the EFK logging
+   pass — `logging`) — otherwise ArgoCD notices what you deleted next and puts it straight back,
+   `observability`'s `NetworkPolicy`/dashboard/alert objects and `logging`'s Elasticsearch/Kibana
+   custom resources included.
+2. **All three Ingresses next** — the site's, Jenkins' webhook, and (since the EFK logging pass)
+   Kibana's. All three share one load balancer, and it is only released when *none* of them is left.
+   Deleting some and not all of them leaves it running, and a leftover load balancer keeps network
+   interfaces alive that block the network from being deleted. This is the difference between a
+   teardown that takes ten minutes and one that appears to hang for twenty. The Kibana Ingress is
+   deleted here, explicitly, rather than left to step 4's `helm uninstall logging` — that step runs
+   *after* step 3 below already starts waiting for the load balancer, which would reproduce the same
+   hang for the group's third member.
 3. **Wait** for the load balancer to actually disappear.
 4. **Uninstall this stack's own Helm releases — all SIX of them** — the app, Jenkins, Jenkins' support
    chart, kube-prometheus-stack (Prometheus/Grafana/Alertmanager), the EFK logging chart, and the ECK

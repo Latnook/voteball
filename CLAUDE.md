@@ -656,27 +656,28 @@ silently using local state. See `docs/design/2026-07-21-terraform-remote-state-d
 
 **Teardown order matters** and `./scripts/destroy.sh` encodes it: delete **all three** ArgoCD
 Applications (`voteball`, `observability`, and — since the EFK logging pass — `logging`; else
-`selfHeal` recreates what you remove), then **both Ingresses** (so the ALB de-provisions and
+`selfHeal` recreates what you remove), then **all three Ingresses** (so the ALB de-provisions and
 external-dns removes its records — a leftover ALB's ENIs block VPC deletion), wait for the ALB to
 disappear, **uninstall this stack's own SIX Helm releases while the cluster is still healthy**
 (`voteball`, `jenkins`, `jenkins-support`, `kube-prometheus-stack`, `logging`, `elastic-operator` — see
 below), *then* `terraform destroy`. `logging` and `elastic-operator` come out in that specific order —
 custom resources and chart first, operator last — for the same reason given under "ECK operator" above.
 
-**"Both" is load-bearing, and is now, as of the EFK logging pass, incomplete on its own.** Since
-2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share ALB group `voteball`, and an ALB is
-de-provisioned only when its group has **no** members left — deleting one leaves it running. The same
-change renamed the ALB: a grouped one is `k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`,
-so any check filtering on the old shape reports "ALB gone" instantly while it is still there.
-`logging/kibana` is now a **third** member of that same group (`charts/logging`'s
-`templates/kibana.yaml`), and `./scripts/cleanup-stale-dns.sh` already cleans the matching **three**
-hosts (`<app_domain>`, `jenkins.<app_domain>`, `kibana.<app_domain>`) — but `destroy.sh`'s own step 2
-still only explicitly deletes the first two Ingresses. The Kibana Ingress is part of the `logging` Helm
-release, which is not uninstalled until step 4 — **after** step 3 already waits for the ALB to
-de-provision — so a fresh teardown can wait on an ALB that cannot go away yet, the exact shape of the
-10-20 minute hang this ordering exists to prevent. This was found while writing this documentation
-pass, not fixed in it — flagged here rather than silently patched, since a live-infrastructure teardown
-script deserves a deliberate fix and a test, not a same-commit-as-the-docs change.
+**"All three" is load-bearing.** Since 2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share
+ALB group `voteball`, and an ALB is de-provisioned only when its group has **no** members left —
+deleting some and not all of them leaves it running. The same change renamed the ALB: a grouped one is
+`k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`, so any check filtering on the old shape
+reports "ALB gone" instantly while it is still there. `logging/kibana` joined as the group's **third**
+member during the EFK logging pass, and step 2 deletes it explicitly, alongside the other two, rather
+than leaving it to step 4's `helm uninstall logging` — that runs **after** step 3 already starts
+waiting for the ALB, which would reproduce the exact 10-20 minute hang this step exists to prevent, for
+the group's third member. (This was a real gap for one review cycle: step 2 deleted only the first two
+Ingresses while Kibana's joined the group, so a fresh teardown could wait out step 3's full timeout on
+an ALB that could not de-provision yet. Fixed the same day it was found;
+`scripts/tests/test-logging-teardown.sh` asserts both that the delete exists and that it precedes the
+ALB wait, proven by reverting each independently and watching the check name the right failure.)
+`./scripts/cleanup-stale-dns.sh` cleans the matching **three** hosts (`<app_domain>`,
+`jenkins.<app_domain>`, `kibana.<app_domain>`).
 
 **`terraform destroy` uninstalls `helm_release`s itself when it reaches them, and doing that while the
 cluster is simultaneously being deleted underneath it is what hung with `context deadline exceeded`**

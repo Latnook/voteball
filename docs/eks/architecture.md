@@ -53,10 +53,13 @@ flowchart LR
 `logging/kibana` (Kibana's public route) all carry `alb.ingress.kubernetes.io/group.name: voteball`,
 so the load balancer controller puts them behind a single load balancer instead of billing for three.
 This matters at teardown: an ALB is de-provisioned only when its group has **no** members left, so
-deleting one Ingress and leaving another leaves it running and its ENIs pinning the VPC — which is why
-`scripts/destroy.sh` deletes ALB-group Ingresses explicitly rather than relying on `helm uninstall`
-alone. A grouped ALB is also named `k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`, so
-any check filtering on the old shape reports "ALB gone" while it is still there.
+deleting some Ingresses and leaving another leaves it running and its ENIs pinning the VPC — which is
+why `scripts/destroy.sh` deletes all three ALB-group Ingresses explicitly, in its own step 2, rather
+than relying on `helm uninstall` for any of them (the Kibana one in particular is deleted there rather
+than left to the `logging` chart's later `helm uninstall`, which runs only after the ALB-wait step
+already starts polling). A grouped ALB is also named `k8s-<group>-<hash>`, not
+`k8s-<namespace>-<ingress>-<hash>`, so any check filtering on the old shape reports "ALB gone" while it
+is still there.
 
 ---
 

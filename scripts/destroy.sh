@@ -54,13 +54,18 @@ if kubectl cluster-info >/dev/null 2>&1; then
   kubectl delete application logging -n argocd --ignore-not-found || true
 
   step "2/7  Removing the Ingresses (releases the ALB and the DNS records)"
-  # BOTH Ingresses, not just the app's. Since 2026-07-31 they share ALB group "voteball"
-  # (alb.ingress.kubernetes.io/group.name), and an ALB is only de-provisioned when its group has NO
-  # members left. Deleting one and not the other leaves the ALB alive, so step 3 waits forever and
-  # `terraform destroy` then hits DependencyViolation on subnet deletion because the ALB's ENIs are
-  # still attached -- the 10-20 minute hang this script exists to prevent.
+  # ALL THREE Ingresses, not just the app's. Since 2026-07-31 devops-app/voteball and
+  # ci/jenkins-webhook share ALB group "voteball" (alb.ingress.kubernetes.io/group.name), and since
+  # the EFK logging pass logging/kibana joined as the third member -- an ALB is only de-provisioned
+  # when its group has NO members left. Deleting some and not all of them leaves the ALB alive, so
+  # step 3 waits out its full timeout and `terraform destroy` then hits DependencyViolation on subnet
+  # deletion because the ALB's ENIs are still attached -- the 10-20 minute hang this script exists to
+  # prevent. This is why the kibana Ingress is deleted HERE and not left to step 4's
+  # `helm uninstall logging` -- that runs AFTER step 3 already starts waiting, which would be the
+  # exact hang all over again for the group's third member.
   kubectl delete ingress voteball -n devops-app --ignore-not-found || true
   kubectl delete ingress jenkins-webhook -n ci --ignore-not-found || true
+  kubectl delete ingress kibana -n logging --ignore-not-found || true
 else
   step "1-2/7  Cluster unreachable — skipping ArgoCD/Ingress deletion (already gone)"
 fi

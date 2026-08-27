@@ -30,6 +30,15 @@ pass "CRs deleted before the operator"
 grep -q 'helm uninstall logging' "$d" || fail "destroy.sh must uninstall the logging release"
 pass "logging release pre-uninstalled"
 
+echo "==> destroy.sh deletes the kibana Ingress before waiting on the ALB"
+grep -q 'kubectl delete ingress kibana' "$d" \
+  || fail "destroy.sh step 2 must delete the kibana Ingress -- it is the THIRD member of ALB group 'voteball', and the ALB cannot de-provision while any member survives"
+kib_line="$(grep -n 'kubectl delete ingress kibana' "$d" | head -1 | cut -d: -f1)"
+alb_line="$(grep -n 'Waiting for the ALB to de-provision' "$d" | head -1 | cut -d: -f1)"
+[ "$kib_line" -lt "$alb_line" ] \
+  || fail "destroy.sh deletes the kibana Ingress (line $kib_line) AFTER it starts waiting for the ALB (line $alb_line) -- step 3 will wait out its full timeout on an ALB that cannot go away"
+pass "kibana Ingress deleted before the ALB wait"
+
 echo "==> ArgoCD Application removal"
 grep -q 'logging' "$d" || fail "destroy.sh step 1 must delete the logging ArgoCD Application, or selfHeal recreates what step 4 removes"
 pass "logging Application deleted in step 1"
