@@ -156,4 +156,39 @@ grep -qE '^[[:space:]]*readOnlyRootFilesystem:[[:space:]]*true[[:space:]]*$' <<<
   || fail "Fluentd must set readOnlyRootFilesystem: true (emptyDirs cover the two paths it writes)"
 pass "Fluentd runs non-root on a read-only root filesystem"
 
+# --- ILM ---------------------------------------------------------------------------------------
+# Without a retention policy the 20Gi volume fills in ~130 days, Elasticsearch flips the index
+# read-only at its flood-stage watermark, and ingestion stops SILENTLY from the writer's side.
+grep -q 'voteball-logs-7d' <<<"$out" || fail "no ILM policy rendered -- the volume would fill and ingestion would stop silently"
+pass "ILM policy present"
+
+grep -qE 'kind:[[:space:]]*Job' <<<"$out" || fail "ILM must be applied by a Job (StackConfigPolicy needs an Enterprise licence)"
+pass "ILM applied by a Job"
+
+# The delete phase's real ILM key is min_age, not max_age (max_age governs the hot-phase
+# rollover, which is deliberately 1d, not 7d) -- checking max_age here would never match the
+# Job's own delete phase.
+grep -qE '"min_age":[[:space:]]*"7d"|min_age.*7d' <<<"$out" || fail "ILM delete phase must be 7 days"
+pass "7-day retention"
+
+# helm hook weights: the Job must run AFTER the Elasticsearch resource exists, or it curls nothing.
+grep -qE '"?helm\.sh/hook"?:' <<<"$out" || fail "ILM Job must be a post-install/post-upgrade hook"
+pass "ILM Job is a hook"
+
+# Scoped to the ILM template with --show-only, following the Kibana/Fluentd shape above.
+ilm="$(helm template logging "$CHART" --namespace logging --set enabled=true --show-only templates/ilm.yaml)"
+
+grep -qE '"?helm\.sh/hook"?:[[:space:]]*"?post-install,post-upgrade"?[[:space:]]*$' <<<"$ilm" \
+  || fail "ILM Job must be a post-install,post-upgrade hook, never pre-install -- Elasticsearch must exist first"
+pass "ILM Job hooks post-install,post-upgrade"
+
+# Every curl that must succeed uses -f, so a rejected policy FAILS the Job instead of printing an
+# error body and reporting success (the swallowed-exit-status shape CLAUDE.md warns about three
+# times over). Count the -f/-sf occurrences against the curl calls that are supposed to carry it:
+# the health-check wait, the ILM policy PUT, and the index template PUT -- three in total. The
+# fourth curl (the alias bootstrap) deliberately omits it because HTTP 400 is a normal case there.
+curl_f_count="$(grep -cE 'curl[[:space:]].*-s?f' <<<"$ilm" || true)"
+[ "$curl_f_count" -ge 3 ] || fail "expected at least 3 curl calls with -f (health wait, ILM policy, index template); found $curl_f_count -- a curl without -f reports success on an HTTP 400"
+pass "ILM policy and index template curls use -f"
+
 echo "PASS: charts/logging"
