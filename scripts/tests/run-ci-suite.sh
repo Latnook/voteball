@@ -61,8 +61,8 @@ PYTHON_GROUP=(
   test-notify.sh
   # Needs neither python3 nor git (bash + grep, sed, awk, comm over the repo's own files) -- confirmed
   # passing inside a bare python:3.12-slim AND a bare alpine/git on 2026-08-20, per the rule above.
-  # Placed here rather than in GIT_GROUP only because that group runs a two-test container; nothing
-  # about this test prefers one.
+  # Placed here rather than in GIT_GROUP only because that group is the smaller of the two
+  # containers; nothing about this test prefers one over the other.
   test-observability-docs.sh
   # Needs python3 (the script it tests rewrites the tfvars line through a python one-liner) and no
   # git -- confirmed passing inside a bare python:3.12-slim on 2026-08-23, per the rule above. The
@@ -99,12 +99,18 @@ GIT_GROUP=(
   # between git and ECR is the whole point of the test, so it cannot be stubbed without a real repo.
   # Confirmed passing inside a bare alpine/git image (no python3) on 2026-08-17, per the rule above.
   test-rollback-target.sh
+  # Greps script text only (destroy.sh, cleanup-stale-dns.sh, deploy.sh) -- no helm, no python3.
+  # Confirmed passing inside a bare alpine (bash + grep added) image on 2026-08-27, per the rule
+  # above. Placed here rather than PYTHON_GROUP only because GIT_GROUP is the smaller of the two
+  # containers; nothing about this test prefers git specifically.
+  test-logging-teardown.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.
 # Moving one into a group means putting that tool in an image, not loosening the test.
 declare -A SKIP=(
   [test-jenkins-chart.sh]="needs helm (chart template rendering)"
+  [test-logging-chart.sh]="needs helm, absent from both agent containers"
   [test-register-github-ci.sh]="needs the gh CLI"
   [test-validate-observability.sh]="needs helm (chart template rendering); confirmed absent from both python:3.12-slim and jenkins/inbound-agent (jnlp) on 2026-08-18"
   [test-webhook-wait.sh]="needs curl, absent from the agent's slim images"

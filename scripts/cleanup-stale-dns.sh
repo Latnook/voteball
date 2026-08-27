@@ -24,12 +24,13 @@ cd "$(dirname "$0")/.."   # repo root
 . scripts/lib/config.sh
 require_config
 OWNER="$CLUSTER"
-# BOTH hostnames external-dns manages for this cluster. jenkins.<app_domain> was added on
-# 2026-07-31 when CI moved in-cluster; cleaning only the app's host strands the Jenkins A/AAAA
-# records pointing at a deleted ALB -- exactly the failure this script exists to prevent, just for
-# the newer name. Everything else in the zone (apex, MX, DKIM) stays ineligible: a record is only
-# ever removed when a sibling ownership TXT proves external-dns created it for THIS cluster.
-HOSTS="${APP_DOMAIN}. jenkins.${APP_DOMAIN}."
+# All THREE hostnames external-dns manages for this cluster. jenkins.<app_domain> was added on
+# 2026-07-31 when CI moved in-cluster; kibana.<app_domain> was added 2026-08-27 with the EFK
+# logging stack. Cleaning only a subset strands the others' A/AAAA records pointing at a deleted
+# ALB -- exactly the failure this script exists to prevent, just for the newer names. Everything
+# else in the zone (apex, MX, DKIM) stays ineligible: a record is only ever removed when a sibling
+# ownership TXT proves external-dns created it for THIS cluster.
+HOSTS="${APP_DOMAIN}. jenkins.${APP_DOMAIN}. kibana.${APP_DOMAIN}."
 WAIT_SECONDS="${CLEANUP_DNS_WAIT:-90}"
 DRY_RUN=0
 
