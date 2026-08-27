@@ -187,8 +187,28 @@ pass "ILM Job hooks post-install,post-upgrade"
 # times over). Count the -f/-sf occurrences against the curl calls that are supposed to carry it:
 # the health-check wait, the ILM policy PUT, and the index template PUT -- three in total. The
 # fourth curl (the alias bootstrap) deliberately omits it because HTTP 400 is a normal case there.
-curl_f_count="$(grep -cE 'curl[[:space:]].*-s?f' <<<"$ilm" || true)"
+# Restricted to lines that are actual curl invocations against the ES endpoint (they all reference
+# "$ES/"), not a whole-file text grep -- a future comment mentioning "curl ... -f" would otherwise
+# inflate this count without a matching real call.
+# Real invocations reference the ES endpoint ($ES/...); a comment merely mentioning "curl ... -f"
+# does not, so this can't be inflated by prose the way a bare text grep could be.
+curl_f_count="$(grep -vE '^\s*#' <<<"$ilm" | grep -E '\$ES/' | grep -cE -- '-s?f\b')"
 [ "$curl_f_count" -ge 3 ] || fail "expected at least 3 curl calls with -f (health wait, ILM policy, index template); found $curl_f_count -- a curl without -f reports success on an HTTP 400"
 pass "ILM policy and index template curls use -f"
+
+# --- alias / index-template / shard-replica assertions -----------------------------------------
+# The alias voteball-logs is a SUBSTRING of the policy name voteball-logs-7d, so these must be
+# anchored (no bare `grep voteball-logs`) or they assert nothing -- proven by the negative check
+# that renames the rollover alias to voteball-logs-7d and confirms the test still fails.
+grep -qE '"index\.lifecycle\.rollover_alias":[[:space:]]*"voteball-logs"' <<<"$ilm" \
+  || fail "index template must set the ILM rollover alias to voteball-logs"
+pass "index template sets rollover alias voteball-logs"
+
+grep -qE '"number_of_shards":[[:space:]]*1[[:space:]]*,?[[:space:]]*$' <<<"$ilm" || fail "single shard"
+pass "single shard"
+
+grep -qE '"number_of_replicas":[[:space:]]*0[[:space:]]*,?[[:space:]]*$' <<<"$ilm" \
+  || fail "no replica -- single-node ES by design"
+pass "no replica (single-node ES)"
 
 echo "PASS: charts/logging"

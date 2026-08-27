@@ -25,6 +25,9 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   backoffLimit: 10
+  # The hook must FAIL rather than hang. ArgoCD waits on hook completion, so an unbounded wait
+  # for an Elasticsearch that never comes up stalls the whole sync instead of reporting Failed.
+  activeDeadlineSeconds: 600
   template:
     metadata:
       labels:
@@ -77,12 +80,31 @@ spec:
             - |
               set -eu
               ES="https://voteball-logs-es-http:9200"
-              AUTH="elastic:${ELASTIC_PASSWORD}"
               CA="/etc/certs/ca.crt"
+
+              # Credentials via a config file, never `-u` on the command line: argv is world-
+              # readable through /proc/<pid>/cmdline, the same defect shape as the live ECR token
+              # this repo leaked on 2026-08-04 via `set -x`. `printf` is a SHELL BUILTIN in this
+              # image's /bin/sh (BusyBox ash), so it forks no process and the password never
+              # appears in any argv at all -- writing it with an external command would just move
+              # the leak.
+              umask 077
+              printf 'user = "elastic:%s"\n' "$ELASTIC_PASSWORD" > /tmp/curlrc
 
               # Wait for Elasticsearch to answer. The hook ordering guarantees the RESOURCE exists,
               # not that the pod is serving; a fresh cluster takes ~60s to come up.
-              until curl -sf --cacert "$CA" -u "$AUTH" "$ES/_cluster/health" >/dev/null; do
+              #
+              # Bounded on purpose. `backoffLimit` counts container EXITS, so an infinite loop is
+              # invisible to it -- the container simply never exits. ArgoCD waits on hook
+              # completion, so an unbounded wait here stalls the whole sync instead of reporting
+              # Failed -- worse than a fast failure, since this repo's CD design depends on
+              # failures being loud.
+              deadline=$(( $(date +%s) + 540 ))
+              until curl -sf --cacert "$CA" -K /tmp/curlrc "$ES/_cluster/health" >/dev/null; do
+                if [ "$(date +%s)" -ge "$deadline" ]; then
+                  echo "Elasticsearch did not become ready within 540s" >&2
+                  exit 1
+                fi
                 echo "waiting for Elasticsearch..."
                 sleep 5
               done
@@ -91,7 +113,7 @@ spec:
               # than printing an error body and reporting success. This is the swallowed-exit-status
               # shape CLAUDE.md warns about; -f is what closes it.
               echo "applying ILM policy voteball-logs-7d"
-              curl -sf --cacert "$CA" -u "$AUTH" -X PUT "$ES/_ilm/policy/voteball-logs-7d" \
+              curl -sf --cacert "$CA" -K /tmp/curlrc -X PUT "$ES/_ilm/policy/voteball-logs-7d" \
                 -H 'Content-Type: application/json' -d '{
                   "policy": {
                     "phases": {
@@ -112,7 +134,7 @@ spec:
                 }'
 
               echo "applying index template voteball-logs"
-              curl -sf --cacert "$CA" -u "$AUTH" -X PUT "$ES/_index_template/voteball-logs" \
+              curl -sf --cacert "$CA" -K /tmp/curlrc -X PUT "$ES/_index_template/voteball-logs" \
                 -H 'Content-Type: application/json' -d '{
                   "index_patterns": ["voteball-logs-*"],
                   "template": {
@@ -130,7 +152,7 @@ spec:
               # 400 == already exists, which is the normal case on upgrade -- so this one call is
               # deliberately NOT -f, and its status is inspected instead.
               echo "bootstrapping write alias"
-              code="$(curl -s -o /tmp/out -w '%{http_code}' --cacert "$CA" -u "$AUTH" \
+              code="$(curl -s -o /tmp/out -w '%{http_code}' --cacert "$CA" -K /tmp/curlrc \
                 -X PUT "$ES/%3Cvoteball-logs-000001%3E" \
                 -H 'Content-Type: application/json' -d '{
                   "aliases": { "voteball-logs": { "is_write_index": true } }
