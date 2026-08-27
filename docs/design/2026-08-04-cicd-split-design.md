@@ -110,6 +110,11 @@ build job: 'application-cd', wait: false, parameters: [
 ]
 ```
 
+> **Superseded on 2026-08-28 by the amendment at the end of this document.** This three-parameter
+> handoff was incomplete: it named the image but never the commit, so CD had to guess the commit from
+> its own workspace and guessed wrong whenever `master` moved. A fourth parameter, `SOURCE_SHA`, now
+> carries it. The block above is left as the dated record of what was decided here.
+
 `SOURCE_BUILD` exists purely for the brief's traceability requirement: *מתוך build של CD צריך להיות
 אפשר לזהות את ה-build ב-CI, ה-Git commit, ה-image וה-digest שהובילו לפריסה.* The CD build description
 is set from it, so the CD build page names its originating CI build, the commit, the tag and the digest.
@@ -746,3 +751,123 @@ actually was, since none of it had a durable write-up until now.
    value and every command written into that back half of the pipeline is a correctness parameter, not a
    performance one. A too-tight timeout or an over-strict error check doesn't just make the build slower
    or noisier; it fires an automatic, production-affecting rollback of a deploy that was actually fine.
+
+---
+
+## Amendment (2026-08-28): the CI → CD source-commit race
+
+**What this changes:** §1's handoff gains a fourth parameter, `SOURCE_SHA`. §4 of
+`2026-08-23-release-branch-and-digest-design.md` (the `release`-branch promotion) is unaffected in
+mechanism and only gains a correct input. Nothing above is edited; this section is the amendment.
+
+### The defect
+
+`Jenkinsfile-cd`'s Promote stage ran:
+
+```bash
+SOURCE_SHA="$(git rev-parse HEAD)" TAG="$TAG" ... scripts/ci/promote-to-release.sh
+```
+
+CD's parameters were `IMAGE_TAG`, `IMAGE_DIGEST`, `SOURCE_BUILD`, `NAMESPACE` and `ROLLBACK_DEPTH` —
+**no source-commit parameter at all.** So the commit being promoted was whatever CD's own workspace
+checkout had resolved to, while the image tag was what `application-ci` had passed. Two samples of a
+moving target, taken minutes apart:
+
+| Value | Sampled at | By |
+|---|---|---|
+| `IMAGE_TAG` | CI's Trigger CD stage | `application-ci` |
+| the promoted commit | CD's agent pod starting and checking out `master` | `application-cd` |
+
+Any push landing on `master` in between separated them. Observed live: a `release` tip reading
+`release: cfb579a (image tag edd3d9b)` — a commit whose images were never built.
+
+### Why it is worse than a wrong commit message
+
+`promote-to-release.sh` builds each release commit with `git read-tree -u --reset "$SOURCE_SHA"` (§4
+of the 2026-08-23 doc, and for good reasons that still hold). The promotion therefore carries the
+**entire tree** of that commit. So `release` shipped the *newer* commit's **chart** against the
+*older* commit's **image tag**. If the commit that landed in the window touched `charts/**`, its chart
+changes reached production paired with images never built from them — replica counts, probes, resource
+limits, NetworkPolicies, all applied against a different build of the application than the one they
+were written for.
+
+And the `release: <sha> (image tag <tag>)` commits are documented — in the root `CLAUDE.md`, and in
+§8 above — as **the durable record of what was deployed**, the thing that outlives Jenkins build
+history on a Spot-reclaimed controller. That record could be false, with nothing anywhere to
+contradict it.
+
+### The class of defect
+
+This is the **2026-08-21 queued-build race one stage further down the pipeline**. That incident —
+which made `scripts/ci/should-skip-build.sh --subjects` range-aware — was CI's Guard reading only the
+branch *tip* instead of every commit since the last successful build, so a source commit hid behind a
+promotion commit and was never built (reported as `NOT_BUILT`, which reads like a pass). Same shape
+here: **sampling the branch tip instead of the commit the build was triggered for.** Worth naming,
+because it is now twice in this pipeline and the second instance was not found by looking for the
+first.
+
+It also belongs to the family the root `CLAUDE.md` catalogues as *a name that is a silent contract
+with something off-screen*: `git rev-parse HEAD` is a perfectly valid command that answers a perfectly
+sensible question — it is just not the question this stage was asking.
+
+### The fix
+
+`SOURCE_SHA`, threaded end to end:
+
+1. **`application-ci` passes `env.GIT_COMMIT_SHA`** — the full SHA of the commit it checked out and
+   built, already captured in Resolve tag and account (it exists because `amazon/aws-cli` has no git,
+   so Publish Metadata could not shell out for it).
+2. **On the chart-only path it deliberately still passes THIS commit**, while `IMAGE_TAG` is the tag
+   already running on `release`. Those two naming different commits is not a bug there — it is exactly
+   that path's request, *deploy the chart at this commit with the images already running*. Overriding
+   `SOURCE_SHA` to match the tag would redeploy the old chart and make the stage a no-op.
+3. **`application-cd` validates it in Input Validation with the same three checks `IMAGE_TAG` gets** —
+   non-empty, not `latest`, `^[0-9a-f]{7,40}$` — before anything is committed.
+4. **No fallback to `HEAD`.** A manual, parameterless run fails loudly at that check. This is the one
+   decision in the amendment with a real alternative, so it is argued rather than asserted: defaulting
+   to `HEAD` *is* the defect, and its failure mode is silent — a green build, a healthy site, a
+   permanently false `release:` commit and production running a tree nobody chose. A build that
+   refuses to start is recoverable in ten seconds. The cost is that the manual rollback procedure now
+   takes two parameters instead of one, which `docs/cicd.md` documents at both places it appears.
+5. **Promote fetches `master` if the commit is not already present**, so `promote-to-release.sh`'s own
+   `git rev-parse --verify` guard stays the backstop rather than the first line of defence. That guard
+   was already sufficient to *refuse* — it was never reached, because the old code could not produce
+   an unreachable SHA.
+6. **The rollback re-trigger passes it too.** Not optional: without it, the rollback build would be
+   refused by its own Input Validation, so a failed deploy would leave production broken with no
+   rollback at all — strictly worse than the bug being fixed. A rollback therefore re-promotes *this
+   build's tree* at the previous tag: a pure image revert. **Stated plainly: that does not undo a bad
+   chart.** Neither did the old behaviour (which promoted a tree at least as new), so this is more
+   deterministic, not less complete; reverting the chart means a human deploying an older source
+   commit.
+7. **`ci/jenkins/jenkins.yaml` declares the parameter.** JCasC reloads the job definition from scratch
+   on every controller restart — roughly daily on Spot — and drops any parameter that block does not
+   list. This is the `ROLLBACK_DEPTH` miss of 2026-08-04 (I4) wearing a different hat, but with a worse
+   landing: CI would still send `SOURCE_SHA`, Jenkins would discard an undeclared parameter, and CD
+   would refuse *every* deploy.
+
+### Regression cover
+
+`scripts/tests/test-promote-to-release.sh` gains six checks (18 → 24). Three are behavioural against
+throwaway git repositories: with `master` moved past the built commit, the release tree must be the
+built commit's (asserted by a chart file added in the racing commit being **absent** from `release`);
+the commit subject must name the promoted commit, not the tip; and an empty or unset `SOURCE_SHA` must
+refuse and leave `release` untouched.
+
+The other three are **static** assertions on `Jenkinsfile-ci`, `Jenkinsfile-cd` and the JCasC job
+block. That needs justifying, since this repo is otherwise sceptical of grep-shaped tests: the bug
+lived entirely in **what CD passed the script**, and the script itself has always taken `SOURCE_SHA`
+as an input and always refused a bad one — so no behavioural test of the script can reach the defect,
+and all fifteen pre-existing checks passed throughout the period the pipeline was broken. Per this
+repo's own rule that *a check that can never fail proves nothing*, every pattern was run against the
+pre-fix tree first: `SOURCE_SHA="$(git rev-parse` was present and all six positive patterns were
+absent.
+
+### Not verified
+
+The fix has **not** been exercised by a live Jenkins build — doing so means a real production deploy.
+What is proven is the promotion mechanics offline, that both Jenkinsfiles parse
+(`check-jenkinsfile-shell.sh`, 22 `sh` blocks), and that the whole script suite is green. The JCasC
+half in particular only reaches the running controller on a `terraform apply`; until that runs, the
+job keeps its old five-parameter definition and would discard `SOURCE_SHA` — with CD then refusing to
+deploy. **The apply is required, not optional, and it must land before the next CD run.**
