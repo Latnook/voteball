@@ -48,10 +48,18 @@ grep -qE 'kibana\.\$\{APP_DOMAIN\}' scripts/cleanup-stale-dns.sh \
   || fail "cleanup-stale-dns.sh must list kibana.\${APP_DOMAIN}, or its record strands on a dead ALB"
 pass "kibana host covered"
 
-echo "==> deploy.sh enables the gate"
+echo "==> the chart ships enabled, and deploy.sh verifies it"
+# This block used to say "deploy.sh enables the gate" and assert only that verify-efk.sh was
+# referenced -- while charts/logging shipped `enabled: false` and NOTHING anywhere set it to true. The
+# stack was permanently dormant and every check here passed. Assert the actual property instead: the
+# committed values must ship the stack ON, since no script and no ArgoCD helm.parameters flip it.
+grep -qE '^enabled:[[:space:]]*true[[:space:]]*$' charts/logging/values.yaml \
+  || fail "charts/logging/values.yaml must ship 'enabled: true' -- nothing in deploy.sh or the logging ArgoCD Application flips it, so a false gate renders zero objects while ArgoCD reports Synced/Healthy on an empty manifest"
+pass "charts/logging ships enabled: true"
+
 grep -q '11e' scripts/deploy.sh || fail "deploy.sh must carry step 11e"
 grep -q 'verify-efk.sh' scripts/deploy.sh \
-  || fail "deploy.sh step 11e must run verify-efk.sh -- charts/logging ships gated off and nothing else turns it on"
-pass "deploy.sh step 11e present"
+  || fail "deploy.sh step 11e must run verify-efk.sh -- the end-to-end document count is the only check that distinguishes a broken pipeline from a healthy-but-idle one"
+pass "deploy.sh step 11e runs verify-efk.sh"
 
 echo "PASS: logging teardown/deploy guards"

@@ -116,10 +116,17 @@ step "4/7  Uninstalling Helm releases while the cluster is still healthy"
 if kubectl cluster-info >/dev/null 2>&1; then
   # ECK comes out in a SPECIFIC ORDER: custom resources first, operator second.
   #
-  # The chart's ValidatingWebhookConfiguration intercepts writes to *.k8s.elastic.co objects. With
-  # the operator already uninstalled there is no backend to answer, so every Elasticsearch/Kibana
-  # delete blocks -- the same class of hang as kubernetes_namespace.ci sitting Terminating forever
-  # on 2026-08-04 with no controller left to clear its children's finalizers.
+  # FINALIZERS are why. ECK attaches its own finalizers to the Elasticsearch/Kibana resources and to
+  # the Secrets they own, and only the running operator removes them -- it is also what performs the
+  # orderly shutdown that ECK's volumeClaimDeletePolicy depends on. Uninstall the operator first and
+  # every Elasticsearch/Kibana delete sits Terminating with no controller left to clear it: exactly
+  # the hang kubernetes_namespace.ci produced on 2026-08-04 with no ESO left to clear its children.
+  #
+  # It is NOT the ValidatingWebhookConfiguration, which is what this comment used to claim. Rendering
+  # eck-operator 3.5.0 shows all 16 webhooks are `failurePolicy: Ignore` on
+  # `operations: [CREATE, UPDATE]` -- DELETE is not intercepted, and an unreachable webhook is skipped
+  # rather than blocking, so that mechanism cannot fire. The ORDER below is still correct; do not
+  # "simplify" it on the strength of the webhook fact.
   #
   # ECK's volumeClaimDeletePolicy deletes the Elasticsearch PVC when the CR goes, so unlike the
   # observability PVCs in step 5 there is no orphaned-EBS cleanup to do here.

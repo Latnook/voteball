@@ -13,9 +13,17 @@
 #
 # WHY NOT BY HAND: a hand-run `helm install` is invisible to Terraform, so it silently disappears on
 # every rebuild of this cluster -- and scripts/destroy.sh pre-uninstalls a KNOWN list of releases
-# while the cluster is still healthy. An unknown release owning a ValidatingWebhookConfiguration is
-# exactly the shape that hangs teardown: the webhook intercepts deletes of *.k8s.elastic.co objects,
-# and with the operator already gone there is no backend to answer.
+# while the cluster is still healthy. An unknown release owning this operator is exactly the shape
+# that hangs teardown, because the CUSTOM RESOURCES MUST GO FIRST: ECK attaches its own finalizers to
+# the Elasticsearch/Kibana resources and to the Secrets they own, and only the running operator
+# removes them. Uninstall the operator first and every CR sits Terminating with no controller left to
+# clear it -- the same class as kubernetes_namespace.ci on 2026-08-04.
+#
+# NOT the ValidatingWebhookConfiguration, which is the intuitive-but-wrong explanation this comment
+# used to give. Rendering eck-operator 3.5.0 shows all 16 webhooks are `failurePolicy: Ignore` on
+# `operations: [CREATE, UPDATE]`: DELETE is never intercepted at all, and an unreachable webhook is
+# SKIPPED rather than blocking. The stated mechanism cannot occur. The ORDER is still correct; only
+# the reason was wrong.
 resource "helm_release" "eck_operator" {
   name             = "elastic-operator"
   repository       = "https://helm.elastic.co"

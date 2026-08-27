@@ -171,10 +171,20 @@ ECK joins that step, **in a specific order**:
 2. Wait for their pods to go.
 3. `helm uninstall elastic-operator -n elastic-system`.
 
-**Reversed, it hangs.** The `ValidatingWebhookConfiguration` intercepts writes to
-`*.k8s.elastic.co` objects; with the operator already gone there is no backend to answer, so every CR
-delete blocks. That is the same class as the `kubernetes_namespace.ci` finalizer hang of 2026-08-04 —
-no controller left alive to clear its children.
+**Reversed, it hangs — because of FINALIZERS.** ECK attaches its own finalizers to the
+`Elasticsearch`/`Kibana` resources and to the Secrets they own, and only the running operator removes
+them; the operator is also what performs the orderly shutdown that `volumeClaimDeletePolicy` (below)
+depends on. Uninstall it first and every CR delete sits `Terminating` with no controller left to clear
+it — the same class as the `kubernetes_namespace.ci` finalizer hang of 2026-08-04.
+
+**As designed this said the `ValidatingWebhookConfiguration` was the mechanism, and that is wrong.**
+Rendering `eck-operator` 3.5.0 shows all 16 validating webhooks are `failurePolicy: Ignore` on
+`operations: [CREATE, UPDATE]` — DELETE is never intercepted, and an unreachable webhook is *skipped*
+rather than blocking, so the stated mechanism cannot occur at all. The wrong explanation had
+propagated to `terraform/addon-eck.tf`, `scripts/destroy.sh` and root `CLAUDE.md`; all four now name
+the finalizers. **The ORDER was never in question and does not change** — a plausible mechanism
+attached to a correct conclusion is the harder kind of error to catch, since nothing misbehaves until
+someone reasons from it.
 
 ECK's `volumeClaimDeletePolicy` defaults to deleting the PVC when the Elasticsearch resource is
 deleted, so the Elasticsearch volume needs no equivalent of the step-5 observability-PVC cleanup. This
