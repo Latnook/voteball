@@ -66,6 +66,18 @@ live seeded database and prints its `VALUES` block; that is how all four blocks 
 it's how a new club or party belongs too, rather than hand-typing into a 212-row block — exactly the
 kind of retyping that produces a silent homoglyph or a dropped field.
 
+**But NEVER paste the regenerated block back wholesale — diff it first and take only the new rows.**
+`generate-tables.py` derives `seed_key` from `name_en` via `slug()`, while several rows carry a
+seed_key that was assigned by hand and does **not** equal that slug. Regenerating rewrites those:
+`joint-list` → `the-joint-list` and `the-reservists` → `zionist-home-the-reservists`, measured
+2026-08-27. Since seed_key is identity and is never changed once assigned, the rewritten file no
+longer matches production by key — the adoption `UPDATE` skips those rows (their seed_key is not
+NULL), and the guard immediately below it then finds a row whose *name* matches while its *key* does
+not and hits `RAISE EXCEPTION`. That runs inside `init_db`, i.e. **CrashLoopBackOff on every backend
+pod boot**, not one failed request. The clubs blocks never exposed this because all 226 club keys
+happen to equal their derived slugs; the parties blocks do. So the workflow is: regenerate, `diff`
+against the block in the file, and confirm the only change is the row(s) you meant to add.
+
 **Removal now sticks, guarded on votes.** A seeded row this file no longer names is deleted outright
 — no guarded link statement re-applying it on the next boot, the way `domestic_league_id` used to.
 Two guards, both load-bearing: `seed_key IS NOT NULL` (this file must never delete a row it doesn't

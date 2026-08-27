@@ -11,6 +11,22 @@
 # not respond by unpinning. Run ./scripts/refresh-base-digests.sh, which re-resolves every base in
 # this repo, and commit the result; the policy and cadence are in docs/security.md.
 FROM nginxinc/nginx-unprivileged:alpine@sha256:c3fed6436b61d2bf2201ec032c35c000871f7ed062dea5d586bc6bf4d0fdd140
+
+# CVE-2026-14456 (HIGH): openssl DoS via unbounded memory growth in the QUIC server.
+# libcrypto3/libssl3 3.5.7-r0 -> fixed in 3.5.8-r0.
+#
+# THE PRESCRIBED REMEDY ABOVE DOES NOT FIX THIS ONE, and that is why this block exists rather than a
+# digest bump. ./scripts/refresh-base-digests.sh re-resolves the tag, and measured 2026-08-27 the tag
+# HAS moved (c3fed643 -> 901e944d) while still shipping 3.5.7-r0: nginxinc rebuilt without picking up
+# the Alpine security update. So refreshing the pin gets a newer base that is equally vulnerable, and
+# the Trivy gate stays red. Alpine v3.24/main already carries 3.5.8-r0, so patch it here instead.
+#
+# REMOVE THIS BLOCK once nginxinc/nginx-unprivileged:alpine ships libssl3 >= 3.5.8-r0 -- check with
+#   docker run --rm --user 0 --entrypoint sh nginxinc/nginx-unprivileged:alpine -c 'apk info -v | grep libssl3'
+# Leaving it in place after that costs a layer and silently pins nothing; it is not load-bearing then.
+USER 0
+RUN apk upgrade --no-cache libssl3 libcrypto3
+USER 101
 COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
 # SEO assets. robots.txt and sitemap.xml carry a literal __SITE_URL__ that nginx rewrites from the
 # request Host (see nginx.conf); og-card.png is the 1200x630 link-preview image.

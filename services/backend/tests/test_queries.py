@@ -40,7 +40,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
         'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Zehut', 'Noam',
-        'Unity',
+        'Unity', 'Amcha Yisrael',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {
@@ -48,7 +48,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
         'המפלגה הכלכלית', 'אל הדגל', 'בית ציוני - המילואימניקים', 'זהות', 'נעם',
-        'האחדות',
+        'האחדות', 'עמך ישראל',
     }
 
 
@@ -980,7 +980,14 @@ def test_get_clubs_breakdown_includes_upcoming_and_upcoming_only_clubs(conn):
 # row from בל"ד's published text under the union rule (see docs/party-classifications.md). Do not
 # "fix" this by adding 'הרשימה המשותפת' here -- that would assert the merged list has no stated
 # position, which is the opposite of what the union scoring decided.
-RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל'}
+# Two DIFFERENT reasons put a party here, and the difference decides whether an entry may ever be
+# removed. רע"ם and חד"ש-תע"ל are permanent: this axis is scoped to JEWISH religion-and-state, so it
+# does not apply to them at all. עמך ישראל is a PLACEHOLDER -- launched 2026-08-25 with no website and
+# no platform, and a keyword sweep of five sources found nothing on Sabbath, kashrut, civil marriage,
+# the rabbinate or halakha. That is an absence as of 2026-08-27, not a property of the party, so this
+# entry must be revisited the moment it states a position; Walla already predicts its messaging will
+# turn to שינוי המדיניות סביב שירות החרדים. When that happens this test fails, which is the point.
+RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'עמך ישראל'}
 
 
 def test_every_seeded_party_is_classified(conn):

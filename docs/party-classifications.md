@@ -2652,6 +2652,95 @@ of a person).
 **Not added to `previous_parties`** — the party did not exist at the previous election, so there is
 no lineage link to draw either.
 
+### עמך ישראל — Amcha Yisrael · `bibi` · NULL / 3 / NULL · secular
+
+New party, launched **2026-08-25** at the Shalva Center in Jerusalem by
+**תא"ל במיל' עופר וינטר** (Brig. Gen. (res.) Ofer Winter), former Givati brigade commander. Slate:
+**יוסף חדאד** at #2 — a hasbara activist, Arab-Israeli **Christian** and IDF-disabled Golani combat
+commander wounded at Bint Jbeil — then נטעלי שם טוב (news anchor), עו"ד ערן בן ארי (opposition chair
+in the Bar Association), ללי דרעי (bereaved mother), סיגל קראוניק (Be'eri widow), דוידי בן ציון
+(deputy head, Samaria Regional Council), אל"ם במיל' אלי ג'ינו, אביב עזרא (chair of the reservists'
+movement דור הניצחון), פלר חסן-נחום, and the economist רונן בודנרו. **No sitting MK and no defector
+from any existing party.**
+
+**The corpus is one launch event.** No website, no platform, no manifesto — scored 2026-08-27 from
+same-day reporting of what Winter said on stage. Two of the three axes are therefore NULL, and they
+are NULL as *positive findings of absence* verified by keyword sweep across five independently
+fetched sources, not as gaps in the search.
+
+security **+3**, and it is the only axis with evidence. Winter, at his own launch, on the record, in
+front of cameras: *"לעולם לא תהיה פה מדינה פלסטינית. הפיתרון בעזה הוא אחד - הגירה"*, and
+*"אויב שיפתח נגדנו במלחמה ישלם מחיר טריטוריאלי כבד"*. Carried by Ynet, i24, מקור ראשון and הארץ
+(whose headline is literally the Gaza line); no retraction or qualification in the two days since.
+**Record the verbatim word.** He said **הגירה** (emigration), *not* **טרנספר** — the "transfer" gloss
+adds a compulsion the Hebrew leaves open, and that distinction decides two tags below.
+
+economic **NULL** and religiosity **NULL** — *not* 0. Nothing on tax, cost of living or budgets;
+nothing on שבת, כשרות, נישואין אזרחיים, הרבנות or הלכה. A 0 on either would assert a confirmed
+centrist position this party has not taken. religiosity is additionally listed in
+`RELIGIOSITY_NULL_BY_DESIGN` in `test_queries.py` as a **placeholder, not a permanent exemption** —
+unlike רע"ם and חד"ש-תע"ל, where the axis genuinely does not apply. Walla already predicts the
+messaging will turn to *שינוי המדיניות סביב שירות החרדים*; when it does, that test fails, which is
+the intended trigger to revisit this row.
+
+**⚠ Two widely-repeated claims about this launch are false.** That Winter's speech addressed **haredi
+conscription / IDF integration** and **judicial reform** (*"שינוי משמעותי במערכת המשפט"*) were both
+**refuted 0–3** in adversarial verification against the מעריב source they trace to. A third,
+attributing a conscription position to אביב עזרא's prior *חוק גיוס אפקטיבי* campaigning, was refuted
+the same way — his membership of the list is confirmed, the inference from it is not. Do **not**
+score religiosity from any of them.
+
+**`bibi`, on declared camp rather than any endorsement — the weakest field on this row.** For:
+*"אנחנו חלק ברור ומובהק במחנה הימין"*, *"נעשה הכל כדי להקים ממשלת ימין רחבה ככל הניתן"*, and an
+explicit refusal to have גדי איזנקוט as prime minister; Ynet assigns him to the bloc
+(*"מזוהה כמי שמעדיף את נתניהו"*) and reports his seats come from coalition voters. Against, and it
+is substantial: **Winter has never named נתניהו**, refused both merger and a שיריון, and Netanyahu is
+publicly campaigning against him (*"שלוש פטריות אחרי הגשם... פייגלין, מעוז ו-וינטר"*); N12 reports
+Netanyahu privately expects him to cross over, and the pollster מנחם לזר places him in a "third
+bloc". The reading taken here is that the counter-evidence concerns his relationship with *Netanyahu
+personally*, while ruling out the other camp's candidate for PM is a bloc declaration.
+`hard-to-classify-bloc` carries the hedge, as it does on כחול לבן.
+
+`secular`, on the party's own framing — *"עם רוב חילוני"*, and an explicit attempt
+*"לבדל את המפלגה מהמפלגות הציוניות-דתיות והימין הקיימות"*. **Held with reservations**: it is a party
+self-description relayed through unnamed sources in all three outlets that carry it, deployed
+strategically to rebuff a merge-with-Smotrich demand, and hedged by Walla itself
+(*"בשלב זה מסתמן כי"*). Winter is religious, דוידי בן ציון of אלון מורה is on the list, and a launch
+attendee told the Times of Israel *"Ofer Winter is the old National Religious Party."* `traditional`
+is a defensible alternative; `religious`/`haredi` are not.
+
+**Tags deliberately NOT applied**, each on this page's own founding-case test:
+
+- **`voluntary-palestinian-emigration-incentives` AND `population-transfer` — neither fits, which is
+  the interesting result.** This page draws the line at opt-in: every holder of the first has an
+  explicit *מרצון* plus an instrument (גמליאל's costed plan, עוצמה יהודית's 2025-02-07 bill,
+  סמוטריץ' costed grants), and `population-transfer` requires **compulsion in the instrument**, which
+  is why it stays with זהות alone. Winter supplied a bare noun — *"הפיתרון בעזה הוא אחד: הגירה"* —
+  with no *מרצון*, no incentive, and **no instrument at all**. It is rhetorically stronger than the
+  first tag and weaker than the second, and sits in the gap between them. Adding either would dilute
+  it with a weaker *kind* of evidence.
+- **`security-hawk`** — the revision 30/31 precedent, unchanged: all five holders are
+  centre/centre-right and no far-right row carries it, so a +3 row taking it would erase the
+  distinction the tag exists to draw.
+- **`anti-two-state`** — not stated. `no-palestinian-state` is, verbatim; annulling-Oslo-type
+  evidence is what separates the two, and there is none.
+- **`sovereignty-annexation` / `territorial-control-gaza` / `hardline-on-gaza`** — verified absent.
+  Nothing on West Bank sovereignty. The Gaza line is a demographic *outcome*, where every
+  `hardline-on-gaza` holder's evidence is siege-and-supply *conduct*: a different kind of claim.
+- **`reservist-movement`** (as a tag) — אביב עזרא chairs דור הניצחון and Winter and ג'ינו are senior
+  reservist officers, but that is list composition against holders whose whole identity is the
+  movement. It is carried as a *family* only where it is honest, and it is not carried here at all.
+
+**⚠ This row is expected to be unstable, more than any other on this page.** List submission closes
+roughly two weeks after launch; Netanyahu is publicly demanding Winter, פייגלין and מעוז withdraw or
+merge, and בן גביר has renewed contacts. Polling is one day old, one pollster, and the outlets
+disagree — Walla/לזר reports 6 seats, i24 reports 8 with הליכוד −5, and a same-day הארץ headline put
+the new right-wing party *below* threshold. **The party may not reach the ballot as an independent
+list.**
+
+**Not added to `previous_parties`** — it did not exist at the previous election, so there is no
+lineage link to draw either.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -2803,10 +2892,10 @@ wrong:
   keeps the 2022 logo, because that row is the current Knesset faction, and the two tables carry
   independent `logo_url` columns. Scoping the statement to one table is what enforces that.
 
-### Two logos are self-hosted under `/logos/`, and neither is a matter of taste
+### Three logos are self-hosted under `/logos/`, and none is a matter of taste
 
 `services/frontend/logos/` is copied into the frontend image as a whole directory, so adding a file
-there is a data change. Both party logos that live there had to leave Wikimedia/CDN hosting:
+there is a data change. All three party logos that live there had to leave Wikimedia/CDN hosting:
 
 - **בית ציוני - המילואימניקים** (`beit-tzioni-miluimnikim.png`) — the list's only artwork is on
   `*.fbcdn.net`, whose URLs are signed and expire, and which tracker blockers drop in the browser.
@@ -2827,6 +2916,23 @@ there is a data change. Both party logos that live there had to leave Wikimedia/
   threshold and the teal bar (0.518) just above it, so the bar keeps white-on-teal in both themes.
   **That split is luck, not design** — re-exporting the file with a slightly darker teal would send
   the bar below 0.5, lift it, and put white text on a light background.
+- **עמך ישראל** (`amcha-yisrael.png`) — the party is days old and has no artwork anywhere but inside a
+  **Ynet news photo**, served through a `cdn-cgi/image` transform URL. Those rewrite and expire, and
+  a news CDN is the same hotlinking exposure as `*.fbcdn.net` above. The file is the mark keyed out
+  of that JPEG and self-hosted. **How the background was removed matters, because two obvious methods
+  both fail here and fail invisibly on the light card**: keying on HSL *saturation* is degenerate on
+  a near-white ground — measured, the empty gap between the two glyph lines reads **55% saturation,
+  higher than the blue stroke itself**, because tiny chroma at L≈0.98 computes as huge S — and keying
+  on darkness picks up the JPEG's ringing as a grey halo. Both produce a file that looks perfect on
+  white and shows a blocky halo only once the dark card is behind it. What works is measuring the
+  ground (a uniform neutral **#F2F2F2**, from the four corners) and **unpremultiplying** it:
+  `alpha = 1 - min(R,G,B)/bg`, floored at 0.10 to drop the compression noise, with the colour
+  unpremultiplied back out. Background then sits at α≈0.02 and ink at α≈0.72–0.81, a gap wide enough
+  to threshold safely. Kept **lossless** (`oxipng`, never `pngquant`): the mark's two rules fade to
+  transparent, and quantising 35,490 colours to 256 is the og-card banding failure. It takes the
+  normal dark-mode recolour — blue and purple both sit below the 0.5 luminance threshold and lift to
+  lighter versions of the same hue, so the two-tone survives; it needs no entry in
+  `SKIP_RECOLOR_PARTIES`.
 
 Both were verified by rendering the real `logos.js` and `style.css` in headless Chromium over HTTP
 in both themes, not by inspecting the files. Both use `oxipng` lossless and **not** `pngquant` —
@@ -3230,3 +3336,4 @@ pass happened, for anyone reading git history.
 | 2026-08-26 | revision 30 — **עוצמה יהודית: six conflict tags added (11 → 17), every one first-party and every one available at the previous pass.** **No axis moved** (`security +3` and `religiosity +3` are already at the poles; `economic 0` survives a sixth reading). `no-palestinian-state` (*"לא נאפשר אף הסכם כניעה שיכלול אפילו הצהרה על מדינה פלסטינית"*), `anti-two-state` (a whole-faction bill annulling Oslo, Hebron and Wye and restoring the territories transferred under them — **this row is the page's cleanest case for why the two tags are separate**), `hardline-on-gaza` (*"עזה צריכה לספוג גיהנום"*, bombing aid stores, total water/electricity cutoff, explicit mass starvation, a 1 km perimeter with direct fire on any resident inside it), `territorial-control-gaza` (*"החלת ריבונות לצמיתות על שטחים נרחבים ברצועה"*, אליהו's *"עזה היהודית שלנו"*, and Ben Gvir's "settlements throughout Gaza") — **which reaches this document for the first time**, having sat in `seed.sql` on בית ציוני with zero occurrences here, so it had no definition a candidate could be checked against; `voluntary-palestinian-emigration-incentives` (the party's own 2025-02-07 bill, the first holder whose evidence is drafted legislation); `opposes-hostage-deals` (the 2025-01-17 resignation letter, **acted on** — stronger evidence than either existing holder's candidate placement). **The method finding is the point of the pass:** revision 18 read "30 posts, 2026-05-26 to 2026-08-04", a **ten-week window** of a stream running since the party entered government; the entire Gaza programme is Dec 2024 – Nov 2025 and fell outside it. **A date-bounded sample of a continuous stream is not a corpus, and it reads as more thorough than an unread platform** — the site has no index to contradict it. Three subject searches (`עזה`, `מדינה פלסטינית`, `עסקת חטופים`) surfaced all of it. `jewish-supremacist` becomes first-party for the first time (*"אספסוף עזתי צמא דם"* in a bill's explanatory notes; *"they're not even people"* on the podcast). **Three rejections with reasons:** `population-transfer` (the bill is opt-in, and this page's line turns on compulsion in the instrument, not the rhetoric around it — though a citizenship-stripping bill sits beside it), `security-hawk` (all five holders are centre/centre-right and no far-right row carries it; a disposition tag would erase the distinction it exists to draw) and `populist` (the Segal letter is grievance about the author's standing, not a position). Two numbers corrected: 300,000 weapons (was 280,000 licences) and 10,000 demolitions since 2025, the 10,000th in **ג'ואריש, רמלה**, so "mainly in the Negev" no longer holds. The `conscription-by-incentive` family becomes first-party (haredi police recruitment, מג"ב haredi units, 1,400 enlisted). Also recorded: the party holds a **second ministry** (עמיחי אליהו, Heritage) which this entry had never mentioned, and Ben Gvir now reads a campaign to form a unity government **without him** — exclusion pressure from inside his own bloc. **Two retrieval notes:** `timesofisrael.com` 403s a User-Agent alone and 200s with `Accept`/`Accept-Language`/`Referer` — a UA by itself is not browser-shaped enough; and **a summarizer's rendering of a source is not the source**, since WebFetch's summary of that liveblog dropped the single most classification-relevant sentence in it
 | 2026-08-26 | revision 31 — **הציונות הדתית: the party's own site enumerated for the first time.** Every prior pass followed links it was handed — 13 platform PDFs (revision 17), 13 `/hityashvut/` pages, a circulated מילואים deck — and none asked `page-sitemap.xml` what the site holds. It answers in **one request** and lists five pages published since the last pass, one of them **the same day**. Three are sign-up forms; two are policy. **הכרעה וניצחון (`/victory/`, September 2025) is the party's entire Gaza programme and had been public for eleven months** across two passes over this row. **Three tags added (11 → 14), all first-party:** `territorial-control-gaza` (*"סיפוח פרימטר ביטחוני מורחב"*, then a further annexation *"בכל שבוע שהמלחמה תימשך"* — and **the page's timeline image**, not its text, carries four *dated* annexations at days 14/21/28/35 plus *"יום 70-90: העברת האוכלוסייה לשטח שמדרום למורג"*; the image-only-content rule applying to a web page rather than a PDF), `hardline-on-gaza` (*"מצור… סגירה מוחלטת של כלל האספקה"*, aid confined to the humanitarian zone *"בלבד"*) and `voluntary-palestinian-emigration-incentives` (*"מענקי תמרוץ ליוצאים ולמדינות הקולטות"* — the first holder whose evidence is a sitting finance minister's costed plan). `opposes-hostage-deals` **reconfirmed, not re-derived**: it was held on צביקה מור's primary placement and this supplies the party-level position that placement was evidence *for*. **No axis moved — fifth consecutive reading**, `security`/`religiosity` at their poles and `economic` 0 because emigration grants are territorial policy denominated in shekels; `basis` stays `record` (a single-issue document is not a מצע). **מייהדים את הנגב והגליל (`/judaization/`, published that day) read and deliberately NOT tagged** — *"מה שעשינו ביו״ש נעשה בנגב ובגליל"*, *"שינוי דמוגרפי"* with numerical targets and a נגב–גליל cabinet. It is the second and far stronger instance of what the 2026-07-27 entry left untagged, and clears that entry's bar (inside the Green Line, moves people not borders) — but that entry's instruction was about **scope**, so it is **queued as a cross-row sweep**, like the press-freedom tag in revision 24. Same page **confirms revision 19's retirement of `periphery-development` from the party's own mouth** (*"לא עוד ״חיזוק הפריפריה״"*) and gives `claims-economically-liberal` its best evidence yet. **Three rejections:** `population-transfer` (the emigration is opt-in; the compulsory movement is displacement *within* Gaza paired with Israel *"לקיחת אחריות אזרחית"*, an occupation-administration claim), `security-hawk` (revision 30's precedent unchanged) and `no-palestinian-state` (not stated; `anti-two-state` already covers it). **The 2026-08-14 provenance caveat is closed as verified-absent**: the sitemap carries no מילואים page, so that deck stays party-circulated |
 | 2026-08-23 | האחדות (Unity) added — new party, scored from its own site |
+| 2026-08-27 | revision 32 — **עמך ישראל added**, the page's first row scored from a single launch event: the party is two days old, has no site and no platform, and the corpus is same-day reporting of what וינטר said on stage. **`security` +3 on two verbatim quotes** (*"לעולם לא תהיה פה מדינה פלסטינית"*, *"הפיתרון בעזה הוא אחד - הגירה"*, *"מחיר טריטוריאלי כבד"*); **`economic` and `religiosity` both NULL as positive findings of absence**, verified by keyword sweep across five independently fetched sources rather than left blank for want of looking. **The row's most useful output is a tag gap, not a tag**: `voluntary-palestinian-emigration-incentives` and `population-transfer` BOTH refused, because this page's line is opt-in-with-an-instrument versus compulsion-in-the-instrument, and a bare *הגירה* with no mechanism sits between them — the first time the two tags' founding cases have been shown to leave a hole. Also refused: `security-hawk` (revision 30/31 precedent), `anti-two-state`, `sovereignty-annexation`, `territorial-control-gaza`, `hardline-on-gaza` (a demographic outcome is not siege conduct) and `reservist-movement` as a tag. **Three claims refuted 0–3 and recorded as such** — that the speech covered haredi conscription, that it covered judicial reform, and that אביב עזרא's prior conscription campaigning transfers to the party — all traceable to one מעריב piece, and all of them the kind of plausible detail that would have moved `religiosity` off NULL wrongly. `bloc` `bibi` is flagged as the weakest field on the row (declared camp and a refusal of איזנקוט, but no Netanyahu endorsement, refused merger, and Netanyahu campaigning against him). **A third self-hosted logo**, and the keying method is written down because two obvious approaches fail *only* on the dark card: HSL saturation is degenerate on a near-white ground (the empty gap between glyph lines measured **higher** saturation than the blue stroke) and darkness-keying lifts JPEG ringing; unpremultiplying a measured #F2F2F2 ground is what works. Row flagged **expected-unstable**: list submission closes in ~2 weeks, Netanyahu is demanding withdrawal or merger, and the first three polls disagree (6 seats / 8 seats / below threshold) |

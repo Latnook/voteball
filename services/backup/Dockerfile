@@ -12,12 +12,18 @@
 FROM postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
 # Unpinned deliberately -- see the hadolint --ignore DL3018 comment in Jenkinsfile-ci for why a
 # pinned Alpine package version is a time bomb, not a reproducibility win, in this project.
+# The apk upgrade is CVE-2026-14456 (HIGH, openssl DoS via unbounded memory growth in the QUIC
+# server): this base ships libcrypto3/libssl3 3.5.7-r0 and Alpine v3.24/main has the fixed 3.5.8-r0.
+# ./scripts/refresh-base-digests.sh does NOT fix it -- measured 2026-08-27 on the frontend's Alpine
+# base, whose tag had moved while still shipping 3.5.7-r0. services/frontend/Dockerfile carries the
+# same upgrade and the same removal condition; when upstream ships >= 3.5.8-r0, drop BOTH.
 # Combined into ONE RUN with the gosu removal below, not because layer count matters here but
 # because hadolint's DL3059 (consecutive RUN instructions) is info-level and hadolint's DEFAULT
 # FAILURE THRESHOLD IS info -- so a second RUN fails the Lint stage outright. Learned on CI build #1,
 # 2026-08-23: the local script suite was green because it does not run hadolint, and Lint runs before
 # Tests, so the whole build died before a single test executed.
-RUN apk add --no-cache aws-cli \
+RUN apk upgrade --no-cache libssl3 libcrypto3 \
+ && apk add --no-cache aws-cli \
  && rm -f /usr/local/bin/gosu
 
 # THE gosu REMOVAL ABOVE. It is the ONLY source of HIGH/CRITICAL findings in this image -- all 22 of them

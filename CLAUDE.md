@@ -500,7 +500,10 @@ promotion by ancestry reports "not promoted" forever.
   `application-cd`'s `ROLLBACK_DEPTH` bounds rollback recursion — without it, a rollback that itself
   fails would trigger another rollback, which could fail the same way, forever, pushing a commit each
   cycle. `./scripts/build-push-ecr.sh` does
-  the build/scan/push part by hand, and is the **only** way to build while the cluster is destroyed
+  the build and push by hand -- **it does NOT scan; it contains no Trivy call at all** (verified
+  2026-08-27, and the images this repo ships to production on a rebuild therefore reach ECR
+  unscanned: `application-ci` is the only thing that runs the Trivy gate). It is the **only** way to
+  build while the cluster is destroyed
   (there is no CI without a cluster). Agent pods authenticate to AWS via **IRSA** — CI's
   `jenkins-agent` ServiceAccount gets ECR push, CD's `jenkins-cd-agent` gets ECR read-only, and the
   controller itself carries no AWS role at all. Region, cluster name, GitHub repo and app domain
