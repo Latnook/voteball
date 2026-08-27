@@ -131,6 +131,8 @@ spec:
               mountPath: /var/log/fluentd
             - name: runtime-log
               mountPath: /fluentd/log
+            - name: tmp
+              mountPath: /tmp
           livenessProbe:
             tcpSocket:
               port: 24224
@@ -152,5 +154,12 @@ spec:
         - name: buffer
           emptyDir: {}
         - name: runtime-log
+          emptyDir: {}
+        # Ruby's Dir.mktmpdir writes a lock file under /tmp on every start (fluentd/lib/fluent/
+        # supervisor.rb `before_run`) regardless of config content -- confirmed by running the
+        # exact image under these exact securityContext constraints (docker, offline, no cluster):
+        # without this mount the container dies immediately on
+        # "Unexpected error Read-only file system @ dir_s_mkdir - /tmp/fluentd-lock-...".
+        - name: tmp
           emptyDir: {}
 {{- end }}

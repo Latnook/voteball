@@ -109,26 +109,50 @@ grep -qE '^[[:space:]]*disabled:[[:space:]]*true' <<<"$kb" || fail "Kibana selfS
 pass "Kibana self-signed TLS disabled (ALB terminates)"
 
 # --- Fluentd -----------------------------------------------------------------------------------
-grep -qE 'name:[[:space:]]*fluentd' <<<"$out" || fail "no fluentd objects rendered"
+# Scoped to the Fluentd template with --show-only, and every check below anchored at end of line --
+# the same rigor the Kibana block above already applies. Unanchored / whole-output checks would
+# pass on a renamed object (fluentd-aggregator), a substring match (the ES host name is itself a
+# substring of the CA secret name mounted a few lines below), or another template landing the same
+# field name later (Task 4's ILM Job carries the same runAsNonRoot/readOnlyRootFilesystem keys).
+fd="$(helm template logging "$CHART" --namespace logging --set enabled=true --show-only templates/fluentd.yaml)"
+
+grep -qE '^[[:space:]]*name:[[:space:]]*"?fluentd"?[[:space:]]*$' <<<"$fd" || fail "no fluentd objects rendered"
 pass "Fluentd present"
+
+# The Service and Deployment must each be named EXACTLY fluentd (global constraint) -- Task 6's
+# Fluent Bit targets fluentd.logging.svc.cluster.local by that name. Scoped to each object's own
+# metadata block (from `kind: X` to that object's own top-level `spec:`, a structural boundary, not
+# a fixed line count) so the Deployment's container -- itself also named "fluentd" -- cannot
+# satisfy a check meant to verify the OBJECT's name if only the object's metadata.name were renamed.
+svc_meta="$(sed -n '/^kind: Service$/,/^spec:$/p' <<<"$fd")"
+grep -qE '^[[:space:]]*name:[[:space:]]*"?fluentd"?[[:space:]]*$' <<<"$svc_meta" || fail "Fluentd Service must be named fluentd"
+deploy_meta="$(sed -n '/^kind: Deployment$/,/^spec:$/p' <<<"$fd")"
+grep -qE '^[[:space:]]*name:[[:space:]]*"?fluentd"?[[:space:]]*$' <<<"$deploy_meta" || fail "Fluentd Deployment must be named fluentd"
+pass "Fluentd Service and Deployment named fluentd"
 
 # Port 24224 is Fluent Bit's `forward` output target. A mismatch here means Fluent Bit reports
 # healthy and ships nothing -- the exact silent-failure shape addon-cloudwatch.tf warns about.
-grep -qE 'containerPort:[[:space:]]*24224' <<<"$out" || fail "Fluentd must listen on 24224 (forward protocol)"
-grep -qE 'port:[[:space:]]*24224' <<<"$out" || fail "Fluentd Service must expose 24224"
+grep -qE '^[[:space:]]*containerPort:[[:space:]]*24224[[:space:]]*$' <<<"$fd" || fail "Fluentd must listen on 24224 (forward protocol)"
+grep -qE '^[[:space:]]*port:[[:space:]]*24224[[:space:]]*$' <<<"$fd" || fail "Fluentd Service must expose 24224"
 pass "Fluentd forward port 24224"
 
-grep -q 'voteball-logs-es-http' <<<"$out" || fail "Fluentd must point at the Elasticsearch Service voteball-logs-es-http"
+# Matches the fluent.conf `host` DIRECTIVE specifically. A plain substring grep for
+# voteball-logs-es-http would ALSO match voteball-logs-es-http-certs-public (the CA secret name
+# mounted a few lines below) and would still pass with the host line deleted entirely.
+grep -qE '^[[:space:]]*host[[:space:]]+voteball-logs-es-http[[:space:]]*$' <<<"$fd" \
+  || fail "fluent.conf must point at the Elasticsearch Service voteball-logs-es-http"
 pass "Fluentd targets Elasticsearch"
 
 # ES keeps ECK's self-signed HTTP TLS, so Fluentd must mount the operator-generated public CA.
 # Without it Fluentd retries forever on certificate verification and logs never arrive.
-grep -q 'voteball-logs-es-http-certs-public' <<<"$out" || fail "Fluentd must mount the Elasticsearch CA secret"
-grep -q 'voteball-logs-es-elastic-user' <<<"$out" || fail "Fluentd must read the elastic user password secret"
+grep -qE 'secretName:[[:space:]]*"?voteball-logs-es-http-certs-public"?[[:space:]]*$' <<<"$fd" \
+  || fail "Fluentd must mount the Elasticsearch CA secret"
+grep -qE 'name:[[:space:]]*"?voteball-logs-es-elastic-user"?[[:space:]]*$' <<<"$fd" \
+  || fail "Fluentd must read the elastic user password secret"
 pass "Fluentd mounts the ES CA and credentials"
 
-grep -qE 'runAsNonRoot:[[:space:]]*true' <<<"$out" || fail "Fluentd must run as non-root"
-grep -qE 'readOnlyRootFilesystem:[[:space:]]*true' <<<"$out" \
+grep -qE '^[[:space:]]*runAsNonRoot:[[:space:]]*true[[:space:]]*$' <<<"$fd" || fail "Fluentd must run as non-root"
+grep -qE '^[[:space:]]*readOnlyRootFilesystem:[[:space:]]*true[[:space:]]*$' <<<"$fd" \
   || fail "Fluentd must set readOnlyRootFilesystem: true (emptyDirs cover the two paths it writes)"
 pass "Fluentd runs non-root on a read-only root filesystem"
 
