@@ -108,4 +108,28 @@ grep -qE 'selfSignedCertificate:' <<<"$kb" || fail "Kibana must disable its self
 grep -qE '^[[:space:]]*disabled:[[:space:]]*true' <<<"$kb" || fail "Kibana selfSignedCertificate.disabled must be true"
 pass "Kibana self-signed TLS disabled (ALB terminates)"
 
+# --- Fluentd -----------------------------------------------------------------------------------
+grep -qE 'name:[[:space:]]*fluentd' <<<"$out" || fail "no fluentd objects rendered"
+pass "Fluentd present"
+
+# Port 24224 is Fluent Bit's `forward` output target. A mismatch here means Fluent Bit reports
+# healthy and ships nothing -- the exact silent-failure shape addon-cloudwatch.tf warns about.
+grep -qE 'containerPort:[[:space:]]*24224' <<<"$out" || fail "Fluentd must listen on 24224 (forward protocol)"
+grep -qE 'port:[[:space:]]*24224' <<<"$out" || fail "Fluentd Service must expose 24224"
+pass "Fluentd forward port 24224"
+
+grep -q 'voteball-logs-es-http' <<<"$out" || fail "Fluentd must point at the Elasticsearch Service voteball-logs-es-http"
+pass "Fluentd targets Elasticsearch"
+
+# ES keeps ECK's self-signed HTTP TLS, so Fluentd must mount the operator-generated public CA.
+# Without it Fluentd retries forever on certificate verification and logs never arrive.
+grep -q 'voteball-logs-es-http-certs-public' <<<"$out" || fail "Fluentd must mount the Elasticsearch CA secret"
+grep -q 'voteball-logs-es-elastic-user' <<<"$out" || fail "Fluentd must read the elastic user password secret"
+pass "Fluentd mounts the ES CA and credentials"
+
+grep -qE 'runAsNonRoot:[[:space:]]*true' <<<"$out" || fail "Fluentd must run as non-root"
+grep -qE 'readOnlyRootFilesystem:[[:space:]]*true' <<<"$out" \
+  || fail "Fluentd must set readOnlyRootFilesystem: true (emptyDirs cover the two paths it writes)"
+pass "Fluentd runs non-root on a read-only root filesystem"
+
 echo "PASS: charts/logging"
