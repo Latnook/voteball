@@ -414,14 +414,24 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   into `elastic-system`; `managedNamespaces` is scoped to `logging` alone so it never reconciles a
   custom resource anywhere else in the cluster. The namespaced objects it reconciles — `Elasticsearch`,
   `Kibana`, `Fluentd` — live in **Helm (`charts/logging`)**, delivered by its own third ArgoCD
-  Application/AppProject the same way `charts/observability` is: gated `enabled: false` until the
-  operator's CRDs exist (see the forkability/gating notes below), then flipped on and verified by
-  `scripts/logging/verify-efk.sh` (deploy step 11e). **Teardown order is the reverse of install, and
+  Application/AppProject the same way `charts/observability` is. **That chart ships `enabled: true`,
+  and nothing anywhere flips it** — the deploy *ordering* is what makes it safe, the same shape as the
+  Grafana gates ("the gates ship `true` because the seed step makes that safe"): the CRDs arrive with
+  `terraform apply` at step 6 and the `logging` Application is not created until step 11, so a git
+  push can never land the consumer ahead of its dependency. Deploy **step 11e verifies** the pipeline
+  end to end (`scripts/logging/verify-efk.sh`); it does not enable it. Shipping `enabled: false` here
+  would be the 2026-08-25 corollary with no second half: zero objects rendered, ArgoCD Synced/Healthy
+  on an empty manifest, deploy reports success. **Teardown order is the reverse of install, and
   specifically the opposite of what you'd guess**: `destroy.sh` deletes the `Elasticsearch`/`Kibana`
   custom resources first, then `helm uninstall`s the `logging` release, and only then the operator
-  itself — because the operator's `ValidatingWebhookConfiguration` intercepts every write to
-  `*.k8s.elastic.co` objects, and removing the operator first leaves those deletes with no backend
-  left to answer. See `docs/design/2026-08-27-efk-logging-design.md`.
+  itself — because **ECK attaches finalizers** to those custom resources and to the Secrets they own,
+  and only the running operator clears them. Remove the operator first and every CR sits `Terminating`
+  with no controller left, the same hang `kubernetes_namespace.ci` produced on 2026-08-04. It is **not**
+  the `ValidatingWebhookConfiguration` — all 16 of its webhooks are `failurePolicy: Ignore` on
+  `operations: [CREATE, UPDATE]`, so a DELETE is never intercepted and an unreachable webhook is
+  skipped rather than blocking (verified by rendering `eck-operator` 3.5.0). The order is right; that
+  explanation was not, and it stood in four places at once. See
+  `docs/design/2026-08-27-efk-logging-design.md`.
 **`deploy.sh`'s preflight REPAIRS the EKS API allow-list rather than warning about it**
 (`./scripts/refresh-api-cidr.sh --ensure`, before step 1). `cluster_endpoint_public_access_cidrs`
 names a home ISP address, so it goes stale on its own schedule, and when it does AWS **drops** this

@@ -137,7 +137,41 @@ done
 #
 # The canary is indexed DIRECTLY into the alias, bypassing Fluent Bit/Fluentd entirely -- this proves
 # the query works, not that ingestion works (that is what the real check below is for).
-CANARY="efk-selfcheck-${MARKER}"
+#
+# THE CANARY MUST NOT SATISFY THE MARKER QUERY. This was a real defect, and it inverted the whole
+# point of the script. The canary used to be "efk-selfcheck-${MARKER}", and Elasticsearch's standard
+# analyzer SPLITS ON HYPHENS: with MARKER=efk-verify-20260827120000 that canary tokenizes to
+# [efk, selfcheck, efk, verify, 20260827120000], which CONTAINS the marker's own token sequence
+# [efk, verify, 20260827120000] as a phrase. Indexing the canary therefore made the real check below
+# return >=1 the instant the self-check ran -- so the script PASSED with Fluentd dead, with the
+# allow-fluentbit-ingest NetworkPolicy missing, or with the [OUTPUT] forward block dropped from
+# terraform/addon-cloudwatch.tf. A check that cannot fail is worse than no check.
+#
+# The remedy is in the CANARY, not in the query: strip every punctuation character so the analyzer
+# sees ONE opaque term that shares no token with the marker. Measured against a throwaway
+# elasticsearch:9.1.4 container, `_analyze` with the standard analyzer:
+#
+#   efk-verify-20260827120000                -> [efk, verify, 20260827120000]
+#   efk-selfcheck-efk-verify-20260827120000  -> [efk, selfcheck, efk, verify, 20260827120000]   (OLD)
+#   selfcheckefkverify20260827120000         -> [selfcheckefkverify20260827120000]              (NEW)
+#
+# and the counts that matter, with ONLY the canary indexed and the real marker query run against it:
+# OLD canary -> 1 (the defect), NEW canary -> 0. With a marker-bearing document added, the same query
+# returns 1. UAX#29 word segmentation does not break between letters and digits, so the concatenated
+# form stays a single term.
+CANARY="selfcheck$(printf '%s' "$MARKER" | tr -d '[:punct:]')"
+
+# Structural guard on the property above, not on the query. If a future edit reintroduces a separator
+# the canary's tokens can overlap the marker's again, and the failure is SILENT -- a self-check that
+# poisons the real check reads as a pass. `[:punct:]` covers hyphen and underscore and everything else
+# the standard tokenizer breaks on.
+case "$CANARY" in
+  *[![:alnum:]]*) fail "the self-check canary must be a single alphanumeric token (it is '$CANARY') -- a separator lets it satisfy the marker query and the real check can then never fail" ;;
+esac
+case "$CANARY" in
+  *"$MARKER"*) fail "the self-check canary contains the marker verbatim -- it would satisfy the real check on its own" ;;
+esac
+
 echo "--> self-check: indexing a canary directly into $ALIAS and querying it back"
 es "$ALIAS/_doc?refresh=true" "{\"log\":\"$CANARY\"}" >/dev/null \
   || fail "could not index a canary document -- Elasticsearch is not accepting writes to the alias '$ALIAS'"
