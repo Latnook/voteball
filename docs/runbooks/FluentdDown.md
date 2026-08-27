@@ -18,6 +18,30 @@ aggregator separately (decision 5, "Fluent Bit fans out; it does not switch"), s
 receiving every log line the entire time this alert is firing. `devops-app` has no dependency on
 Fluentd at all.
 
+**This alert also fires if the Fluentd Deployment no longer EXISTS.** The rule is
+`kube_deployment_status_replicas_available{...} == 0 or absent(...)`, and the `absent()` half is
+deliberate: a deleted Deployment takes its kube-state-metrics series with it, and a bare `== 0`
+against a series that does not exist matches nothing — no data, no alert, on a pipeline that is
+completely gone. So check *existence* first (`kubectl get deploy -n logging fluentd`) before debugging
+a pod that may not be there. A deliberate teardown, an ArgoCD prune, or a chart change that stops
+rendering the object will all fire this after 15 minutes, and that is the intended behaviour.
+
+## What this alert CANNOT tell you
+
+**It does not fire when Fluentd is Ready and shipping zero records.** This alert watches *readiness*
+only. A Fluentd pod authenticating with a stale `ELASTIC_PASSWORD`, retrying every write against a
+stale CA, or receiving nothing because the `[OUTPUT] forward` block was dropped from
+`terraform/addon-cloudwatch.tf` stays Ready and looks entirely healthy — the same
+healthy-and-doing-nothing shape as the Fluent Bit case below. Closing that gap properly would need an
+exporter (Fluentd's metrics plugin, or `elasticsearch-exporter`), and the EFK design deliberately
+excludes one: a metrics exporter for a 1 GB index is more moving parts than the thing it watches.
+
+**`scripts/logging/verify-efk.sh` is the only check anywhere that catches it**, and it runs at deploy
+time (step 11e) and on demand — not continuously. Between deploys, a silently idle pipeline pages
+nobody; the first symptom is an empty Kibana search. If you are here because Kibana looks stale but
+this alert is *not* firing, run that script rather than trusting pod status. CloudWatch keeps
+receiving every log line regardless, which is what makes the trade acceptable.
+
 **Fluent Bit itself reports healthy throughout this alert.** Its `forward` output buffers and retries
 against a refused TCP connection on port 24224 exactly the way it would sit quietly if there were
 simply no new log lines to ship — from `kubectl get pods` alone, "Fluentd is down and logs are being

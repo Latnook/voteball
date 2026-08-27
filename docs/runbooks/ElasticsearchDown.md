@@ -18,6 +18,13 @@ receiving every log line the whole time Elasticsearch is down. Nothing in `devop
 Elasticsearch at all — `frontend`/`backend`/`worker` have no dependency on it, so this alert can never
 be the cause of a user-facing outage.
 
+**This alert also fires if the Elasticsearch resource no longer EXISTS.** The rule is
+`kube_pod_status_ready{...} == 0 or absent(...)`, and the `absent()` half is deliberate: a deleted
+`Elasticsearch` custom resource takes its kube-state-metrics series with it, and a bare `== 0` against
+a series that does not exist matches nothing — no data, no alert, on a stack that is completely gone.
+Check *existence* first (`kubectl get elasticsearch -n logging`) before debugging a pod that may not
+be there. A deliberate teardown or an ArgoCD prune will fire this after 15 minutes; that is intended.
+
 ## What to check first
 
 ```bash

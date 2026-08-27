@@ -510,8 +510,8 @@ to open"* rather than a bare metric name.
 | `DeploymentReplicasMismatch` | available < desired **and** updated-replica count unchanged for 10m | 15m | warning |
 | `PrometheusTargetDown` | `up == 0` | 5m | critical |
 | `JenkinsQueueStuck` | `jenkins_queue_size_value > 0` | 15m | warning |
-| `ElasticsearchDown` | logging namespace's Elasticsearch pod not Ready | 15m | warning |
-| `FluentdDown` | the Fluentd aggregator Deployment has zero available replicas | 15m | warning |
+| `ElasticsearchDown` | logging namespace's Elasticsearch pod not Ready **or its metric absent** | 15m | warning |
+| `FluentdDown` | the Fluentd aggregator Deployment has zero available replicas **or its metric absent** | 15m | warning |
 
 The first four are **cluster-wide on purpose**, matching the scope of the defaults they replace. A
 rule scoped to one namespace cannot replace a cluster-wide default without silently dropping coverage
@@ -533,6 +533,36 @@ keeps receiving logs throughout** — Fluent Bit fans out to CloudWatch independ
 (decision 5) — so neither alert can mean the application itself is affected; see their runbooks
 ([`ElasticsearchDown`](runbooks/ElasticsearchDown.md), [`FluentdDown`](runbooks/FluentdDown.md)) for
 what is and is not affected in each case.
+
+**Both carry `or absent(...)`, and that half is the one that catches deletion.** A bare `== 0` against
+a kube-state-metrics series is blind to the most likely way this stack breaks: the series *vanishes*
+when the workload does. A `kubectl delete elasticsearch`, an ArgoCD prune, a chart change that stops
+rendering the object, the `logging` Application being removed — each takes the metric away entirely,
+and a comparison against a series that does not exist matches nothing. **No data, no alert**, on a
+stack that is now completely gone. `absent()` turns that into a firing alert, exactly as
+`VoteballSLIAbsent` does for the SLIs: *"we can no longer tell"* is not *"everything is fine."*
+`or on() vector(0)` would not work here — its fallback fires whenever the left side is empty, which
+includes the healthy case, so it would alert permanently. A deliberate teardown does fire these; that
+is correct, and both runbooks say so.
+
+### The gap these two alerts do NOT cover
+
+**Nothing alerts on "Fluentd is healthy and shipping zero records."** Both rules watch *readiness*, and
+a Fluentd pod whose Elasticsearch credentials went stale, whose output plugin is silently retrying, or
+whose upstream `[OUTPUT] forward` block was dropped from `terraform/addon-cloudwatch.tf` stays Ready
+and reports nothing wrong — the same healthy-and-doing-nothing shape this repo has been bitten by
+three times. Closing it properly needs an `elasticsearch-exporter` (or Fluentd's own metrics plugin),
+and the EFK design
+([`2026-08-27-efk-logging-design.md`](design/2026-08-27-efk-logging-design.md), "Deliberately not
+done") **excludes that on purpose**: a metrics exporter for a 1 GB index is more moving parts than the
+thing it watches.
+
+So the honest statement is: **`scripts/logging/verify-efk.sh`, run at deploy step 11e, is the only
+check anywhere that catches a silently-idle pipeline** — it writes a known marker to a `devops-app`
+pod's stdout and counts that exact line back out of Elasticsearch. It runs at deploy time and on
+demand, not continuously. Between deploys, a pipeline that stops delivering while every pod stays
+Ready will not page anyone; the first symptom is an empty Kibana search. CloudWatch is unaffected
+throughout, which is what makes that trade acceptable.
 
 ### Three alerts that exist because a metric can lie
 
