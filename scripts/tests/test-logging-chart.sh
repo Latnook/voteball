@@ -45,7 +45,7 @@ if grep -qE 'privileged:[[:space:]]*true|allowPrivilegeEscalation:[[:space:]]*tr
 fi
 pass "no privileged / allowPrivilegeEscalation container"
 
-grep -qE 'storageClassName:[[:space:]]*"?gp3"?' <<<"$out" || fail "Elasticsearch volume must use the gp3 StorageClass"
+grep -qE 'storageClassName:[[:space:]]*"?gp3"?[[:space:]]*$' <<<"$out" || fail "Elasticsearch volume must use the gp3 StorageClass"
 pass "gp3 volumeClaimTemplate"
 
 # One node, no replica. A second node would not fit the budget (spec decision 3).
@@ -94,17 +94,18 @@ pass "Kibana references Elasticsearch"
 # The ALB group name is the teardown-critical field. A grouped ALB is de-provisioned only when NO
 # member Ingress remains; a typo here leaves a second ALB billing after destroy, and its ENIs then
 # block VPC deletion.
-grep -qE 'alb\.ingress\.kubernetes\.io/group\.name:[[:space:]]*"?voteball"?' <<<"$out" \
-  || fail "Kibana Ingress must join ALB group 'voteball' (same group as charts/voteball and ci/jenkins-webhook)"
+grep -qE 'alb\.ingress\.kubernetes\.io/group\.name:[[:space:]]*"?voteball"?[[:space:]]*$' <<<"$out" \
+  || fail "Kibana Ingress must join ALB group 'voteball' exactly (a substring match like voteball-kibana is a DIFFERENT ALB group)"
 pass "Kibana Ingress joins ALB group voteball"
 
 # ALB terminates real ACM TLS, so Kibana itself must serve plain HTTP -- otherwise the ALB health
 # check hits a self-signed HTTPS listener and the target never goes healthy.
-grep -qE 'selfSignedCertificate:' <<<"$out" || fail "Kibana must disable its self-signed certificate (ALB terminates TLS)"
-# Unanchored on purpose: `disabled:` appears exactly once in this whole chart, so this is
-# unambiguous -- and unlike a `-A2` window it does not dictate where comments may sit.
-grep -qE '^[[:space:]]*disabled:[[:space:]]*true' <<<"$out" \
-  || fail "Kibana selfSignedCertificate.disabled must be true"
+# Scoped to the Kibana template with --show-only, NOT with a positional window on $out. This is
+# immune to comment placement AND to another template later adding an unrelated `disabled:` field
+# -- a chart-wide grep for `disabled: true` holds only while that string happens to be unique.
+kb="$(helm template logging "$CHART" --namespace logging --set enabled=true --show-only templates/kibana.yaml)"
+grep -qE 'selfSignedCertificate:' <<<"$kb" || fail "Kibana must disable its self-signed certificate (ALB terminates TLS)"
+grep -qE '^[[:space:]]*disabled:[[:space:]]*true' <<<"$kb" || fail "Kibana selfSignedCertificate.disabled must be true"
 pass "Kibana self-signed TLS disabled (ALB terminates)"
 
 echo "PASS: charts/logging"
