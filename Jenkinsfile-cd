@@ -33,6 +33,15 @@ pipeline {
 
   parameters {
     string(name: 'IMAGE_TAG',    defaultValue: '', description: 'Short commit SHA to deploy. Must already exist in ECR.')
+    // The commit whose TREE gets promoted. Added 2026-08-28 -- until then Promote derived it from
+    // `git rev-parse HEAD` in this pipeline's own workspace, which is not the commit the images were
+    // built from. IMAGE_TAG arrives from application-ci at trigger time; the workspace checkout
+    // happens later, so any push landing on master in between made the two name different commits.
+    // Observed live: `release: cfb579a (image tag edd3d9b)`. Because promote-to-release.sh does
+    // `git read-tree -u --reset "$SOURCE_SHA"`, that is not merely a wrong commit message -- the
+    // release branch shipped the NEWER commit's chart against the OLDER commit's images. Required,
+    // with no fallback: defaulting to HEAD is precisely the defect.
+    string(name: 'SOURCE_SHA',   defaultValue: '', description: 'Full SHA of the master commit to promote. Set by application-ci; required.')
     string(name: 'IMAGE_DIGEST', defaultValue: '', description: 'Backend image digest, recorded for traceability.')
     string(name: 'SOURCE_BUILD', defaultValue: '', description: 'The application-ci build number this came from.')
     string(name: 'NAMESPACE',    defaultValue: 'devops-app', description: 'Target namespace. Allowlisted.')
@@ -50,8 +59,13 @@ pipeline {
         script {
           // Traceability, per the brief: a CD build must identify the CI build, commit, image and
           // digest that led to the deployment.
+          // The commit is named explicitly, not inferred from the tag. They are the same string on
+          // an ordinary deploy and DIFFERENT on the two paths that matter most -- a chart-only
+          // redeploy (new commit, tag already on release) and a rollback (old tag, this build's
+          // tree) -- which is exactly when someone reading the build list needs to see both.
           currentBuild.description =
             "tag ${params.IMAGE_TAG} <- ci #${params.SOURCE_BUILD ?: '?'} " +
+            "src ${params.SOURCE_SHA ? params.SOURCE_SHA.take(7) : '?'} " +
             "(${params.IMAGE_DIGEST ? params.IMAGE_DIGEST.take(19) : 'no digest'})"
         }
       }
@@ -71,6 +85,28 @@ pipeline {
           if (!(params.IMAGE_TAG ==~ /^[0-9a-f]{7,40}$/)) {
             error("IMAGE_TAG '${params.IMAGE_TAG}' is not a commit SHA. Refusing to deploy.")
           }
+          // Same three shapes as IMAGE_TAG above, deliberately -- empty, "latest", not-a-SHA -- and
+          // checked HERE, before anything is committed, for the same reason: a bad SOURCE_SHA caught
+          // in Promote has already had the release branch checked out under it.
+          //
+          // NO FALLBACK TO HEAD. A manual, parameterless run of this job fails right here with the
+          // message below rather than promoting the branch tip, because promoting the branch tip is
+          // the exact defect this parameter was added to remove -- and it fails SILENTLY, producing a
+          // green build, a healthy site and a permanently false `release:` commit. Look the tag up in
+          // application-ci (or in the release branch history) and pass the commit it was built from.
+          if (!params.SOURCE_SHA?.trim()) {
+            error('SOURCE_SHA is required: the master commit whose tree should be promoted. ' +
+                  'application-ci passes it automatically; a manual run must supply it, because ' +
+                  'defaulting to this workspace HEAD is what pairs a new chart with old images. ' +
+                  'For a rollback, pass the source commit of the release you are returning to.')
+          }
+          if (params.SOURCE_SHA == 'latest') {
+            error('Refusing to promote the tree of "latest". SOURCE_SHA is a commit SHA.')
+          }
+          if (!(params.SOURCE_SHA ==~ /^[0-9a-f]{7,40}$/)) {
+            error("SOURCE_SHA '${params.SOURCE_SHA}' is not a commit SHA. Refusing to promote.")
+          }
+          env.SOURCE_SHA = params.SOURCE_SHA
           // Allowlist of exactly one. Single-environment by design; this exists so a typo or an
           // injected parameter cannot aim a deploy at kube-system.
           if (!(params.NAMESPACE in ['devops-app'])) {
@@ -204,6 +240,16 @@ pipeline {
         // silently unrewritten file means ArgoCD syncs the OLD version while Verify and Smoke Test
         // pass, because that old version is healthy. A green build that deployed nothing.
         //
+        // WHICH COMMIT IS PROMOTED: params.SOURCE_SHA, validated in Input Validation. NOT
+        // `git rev-parse HEAD`, which is what this stage used until 2026-08-28. IMAGE_TAG is sampled
+        // by application-ci at trigger time and the workspace checkout happens later, so a push
+        // landing on master in between separated the two -- and since the promotion is built with
+        // `git read-tree -u --reset "$SOURCE_SHA"`, the release branch then carried the LATER
+        // commit's whole tree, chart included, pinned to images that were never built from it.
+        // Observed live as `release: cfb579a (image tag edd3d9b)`. This is the 2026-08-21 queued-
+        // build race one stage further down the pipeline: sampling the branch tip instead of the
+        // commit the build was triggered for.
+        //
         // [skip ci] is no longer written into the message and is no longer needed here: this commit
         // does not land on the branch the CI webhook watches. Jenkinsfile-ci's Guard stage stays
         // regardless -- deploy.sh step 9 still commits to master, and a guard that is only correct
@@ -225,8 +271,18 @@ pipeline {
             printf '%s\n' 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
             chmod 600 ~/.ssh/known_hosts
 
+            # The commit application-ci built, passed as a parameter and validated in Input
+            # Validation -- NOT git rev-parse HEAD. See the Groovy comment above this sh block.
+            #
+            # The default SCM checkout resolves master when this build STARTS, so an ancestor commit
+            # is normally already here. Fetch master if it is not: a queued build whose checkout was
+            # shallow, or one racing a rewritten base, would otherwise reach the guard inside
+            # promote-to-release.sh with the commit genuinely absent. That guard is the backstop and
+            # it fails loudly; this just keeps it from firing on a case a fetch can fix.
+            git rev-parse --verify --quiet "$SOURCE_SHA^{commit}" >/dev/null 2>&1 || git fetch --quiet origin master || true
+
             # Redirect, never pipe -- see the Groovy comment above this sh block.
-            SOURCE_SHA="$(git rev-parse HEAD)" \
+            SOURCE_SHA="$SOURCE_SHA" \
             TAG="$TAG" \
             DIGESTS="$IMAGE_DIGESTS" \
               scripts/ci/promote-to-release.sh > /tmp/promote-out
@@ -667,6 +723,19 @@ pipeline {
                    "Build log: ${env.BUILD_URL ?: '(port-forward svc/jenkins -n ci)'}")
             build job: 'application-cd', wait: false, parameters: [
               string(name: 'IMAGE_TAG',     value: previous),
+              // The SAME tree this build promoted, re-pinned to the previous tag -- so a rollback is
+              // a pure image revert and nothing else moves. Required now (Input Validation refuses an
+              // empty SOURCE_SHA), and it must not be re-derived from HEAD here either: the rollback
+              // build would then pick up whatever landed on master since, which is the same defect
+              // wearing a different hat. env.SOURCE_SHA is guaranteed set on this path -- Input
+              // Validation sets it, and this block only runs once PROMOTE_SHA exists.
+              //
+              // KNOWN LIMITATION, stated rather than papered over: if the failure was caused by the
+              // CHART in this commit, reverting the tag alone does not undo it. The old
+              // `git rev-parse HEAD` behaviour did not undo it either (it promoted a tree at least as
+              // new), so this is strictly more deterministic, not less complete. Reverting the chart
+              // too means a human deploying an older source commit -- docs/cicd.md, Rollback.
+              string(name: 'SOURCE_SHA',    value: env.SOURCE_SHA ?: ''),
               string(name: 'IMAGE_DIGEST',  value: ''),
               string(name: 'SOURCE_BUILD',  value: "rollback-from-${env.BUILD_NUMBER}"),
               string(name: 'ROLLBACK_DEPTH', value: "${depth + 1}"),

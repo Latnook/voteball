@@ -187,4 +187,104 @@ out="$(SOURCE_SHA="$src" TAG="iiiiiii" DIGESTS="backend=sha256:zzz" bash "$SUT" 
 grep -q "did not land" <<<"$out" || fail "the error should say the digest did not land, got: $out"
 ok "a requested digest that cannot be written fails loudly rather than shipping tags"
 
+# ---- 9. THE CI -> CD SOURCE-COMMIT RACE (2026-08-28) --------------------------------------------
+# Jenkinsfile-cd's Promote stage used to run `SOURCE_SHA="$(git rev-parse HEAD)"` in its OWN
+# workspace. IMAGE_TAG is sampled by application-ci when it triggers CD; the CD workspace checkout
+# happens later. Any push landing on master in that gap made the two name different commits, and
+# because promotion is a `git read-tree -u --reset` of SOURCE_SHA, the release branch then carried
+# the LATER commit's ENTIRE TREE -- chart included -- pinned to images that were never built from it.
+# Observed live: `release: cfb579a (image tag edd3d9b)`.
+#
+# This is the 2026-08-21 queued-build race (which made should-skip-build.sh range-aware) one stage
+# further down: sampling the branch tip instead of the commit the build was triggered for.
+#
+# 9a is the CONSEQUENCE, pinned as a contract on the script: given a source commit and a master that
+# has moved past it, the release tree must be the source commit's.
+setup
+git checkout -q master
+built="$(git rev-parse HEAD)"                       # what application-ci built and tagged
+printf 'print("v1")\n'   > app.py                   # unchanged, for clarity
+printf 'replicas: 99\n'  > charts/voteball/racer.yaml   # the chart change that raced in AFTER the build
+printf 'print("later")\n' > later.py
+git add -A && git commit -q -m "chart: a commit that landed while CI was busy"
+git push -q origin master
+tip="$(git rev-parse HEAD)"
+[ "$built" != "$tip" ] || fail "the fixture did not actually advance master"
+
+SOURCE_SHA="$built" TAG="3333333" bash "$SUT" >/dev/null 2>&1 || fail "promoting the built commit failed"
+[ -f charts/voteball/racer.yaml ] && \
+  fail "release carries the CHART of a commit whose images were never built -- promote used the branch tip, not the source commit"
+[ -f later.py ] && fail "release carries the tree of the branch tip rather than the promoted commit"
+git diff --quiet "$built" HEAD -- app.py || fail "release content does not match the promoted commit"
+ok "promotion takes the tree of the PASSED commit, not the branch tip, when master has moved on"
+
+# ...and the commit message must name the commit that was promoted, not the tip. `release: <tip>
+# (image tag <built>)` is the exact live signature of the defect.
+subject="$(git log -1 --format=%s)"
+[ "$subject" = "release: $(git rev-parse --short "$built") (image tag 3333333)" ] \
+  || fail "the release commit names the wrong source commit: $subject"
+ok "the release commit message names the promoted commit, not the workspace tip"
+
+# 9b. An ABSENT source commit must stop the promotion, never fall back to the tip. Both shapes:
+# unset, and set to something that is not a commit here (the latter is case 8 above; this asserts the
+# extra property that release is left untouched).
+before="$(git rev-parse origin/release)"
+out="$(SOURCE_SHA="" TAG="4444444" bash "$SUT" 2>&1)" && fail "an empty SOURCE_SHA must fail, not default to HEAD"
+grep -q "SOURCE_SHA" <<<"$out" || fail "the error should name SOURCE_SHA, got: $out"
+out="$(TAG="4444444" bash "$SUT" 2>&1)" && fail "an unset SOURCE_SHA must fail, not default to HEAD"
+grep -q "SOURCE_SHA" <<<"$out" || fail "the error should name SOURCE_SHA, got: $out"
+git fetch -q origin release
+[ "$(git rev-parse origin/release)" = "$before" ] \
+  || fail "a refused promotion still moved the release branch"
+ok "an empty or unset SOURCE_SHA refuses to promote and leaves release untouched"
+
+# ---- 10. THE PIPELINE SIDE of the same defect -----------------------------------------------------
+# The script above has always taken SOURCE_SHA as an input and has always refused a bad one. The bug
+# was entirely in what Jenkinsfile-cd PASSED it, which no behavioural test of this script can reach --
+# so these are static assertions on the two Jenkinsfiles and on the JCasC job definition. They are the
+# checks that actually failed before the 2026-08-28 fix.
+#
+# Static-grep checks earn their keep only if they can fail, so each pattern below was confirmed
+# against the pre-fix files: `SOURCE_SHA="$(git rev-parse` was present, and all four positive
+# patterns were absent.
+CD="$ROOT/Jenkinsfile-cd"
+CI="$ROOT/Jenkinsfile-ci"
+JC="$ROOT/ci/jenkins/jenkins.yaml"
+
+grep -qF 'SOURCE_SHA="$(git rev-parse' "$CD" \
+  && fail "Jenkinsfile-cd derives SOURCE_SHA from its own workspace HEAD again -- that is the CI->CD race"
+ok "Jenkinsfile-cd does not derive SOURCE_SHA from git rev-parse HEAD"
+
+grep -qF "string(name: 'SOURCE_SHA'" "$CD" \
+  || fail "Jenkinsfile-cd declares no SOURCE_SHA parameter"
+ok "Jenkinsfile-cd declares a SOURCE_SHA parameter"
+
+# Validated the way IMAGE_TAG is: rejected empty, and required to look like a commit SHA. Without
+# both, an absent parameter would reach promote-to-release.sh and only be caught there -- after the
+# release branch has been checked out under it.
+grep -qF 'params.SOURCE_SHA?.trim()' "$CD" \
+  || fail "Jenkinsfile-cd does not reject an empty SOURCE_SHA in Input Validation"
+grep -qF 'params.SOURCE_SHA ==~ /^[0-9a-f]{7,40}$/' "$CD" \
+  || fail "Jenkinsfile-cd does not check SOURCE_SHA's shape the way it checks IMAGE_TAG's"
+ok "Jenkinsfile-cd validates SOURCE_SHA in Input Validation, exactly as it validates IMAGE_TAG"
+
+grep -qF "string(name: 'SOURCE_SHA'," "$CI" \
+  || fail "Jenkinsfile-ci does not pass SOURCE_SHA to application-cd -- CD would refuse every deploy"
+grep -qF 'value: env.GIT_COMMIT_SHA' "$CI" \
+  || fail "Jenkinsfile-ci passes something other than the commit it built as SOURCE_SHA"
+ok "Jenkinsfile-ci passes the commit it built (GIT_COMMIT_SHA) as SOURCE_SHA"
+
+# The rollback re-trigger is a THIRD caller of application-cd and needs the parameter too: without it
+# the rollback build fails Input Validation, so a failed deploy would leave production broken with no
+# rollback at all -- a strictly worse outcome than the bug being fixed.
+grep -qF "value: env.SOURCE_SHA" "$CD" \
+  || fail "Jenkinsfile-cd's rollback re-trigger does not pass SOURCE_SHA -- every rollback would be refused"
+ok "the rollback re-trigger passes SOURCE_SHA too"
+
+# JCasC reloads the job definition from scratch on every controller restart (roughly daily on Spot)
+# and drops any parameter this block does not declare. Missed once already with ROLLBACK_DEPTH.
+grep -qF "stringParam('SOURCE_SHA'" "$JC" \
+  || fail "ci/jenkins/jenkins.yaml does not declare SOURCE_SHA for application-cd -- a JCasC reload would drop it"
+ok "the JCasC application-cd job declares SOURCE_SHA, so a reload cannot drop it"
+
 echo "PASS: $(basename "$0") -- $pass checks"

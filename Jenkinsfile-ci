@@ -701,8 +701,26 @@ pipeline {
         expression { env.CHART_ONLY == 'true' }   // G4, above
       } }
       steps {
+        // SOURCE_SHA is the commit THIS build checked out and built (env.GIT_COMMIT_SHA, captured in
+        // 'Resolve tag and account'), and it is what CD promotes the tree of. Added 2026-08-28: CD's
+        // Promote stage used to call `git rev-parse HEAD` in its OWN workspace instead, which is
+        // sampled minutes later than IMAGE_TAG is sampled here. Any push landing on master in the gap
+        // separated the two, and because promotion is a `git read-tree` of that commit, the release
+        // branch shipped the newer commit's chart against images built from the older one. Live
+        // evidence: `release: cfb579a (image tag edd3d9b)`.
+        //
+        // It is passed on the CHART-ONLY path too, and there it is deliberately NOT the same commit
+        // as the tag: env.TAG has been overridden to the tag already running on release, while
+        // GIT_COMMIT_SHA stays this chart-only commit -- which is precisely the request, "deploy the
+        // chart at THIS commit with the images that are already running". Overriding it to match the
+        // tag would redeploy the old chart and make the whole stage a no-op.
+        //
+        // env.GIT_COMMIT_SHA is set unconditionally in 'Resolve tag and account' (no `when` guard),
+        // which every path into this stage passes through. Sending an empty string would not fail
+        // quietly: CD's Input Validation refuses it before promoting anything.
         build job: 'application-cd', wait: false, parameters: [
           string(name: 'IMAGE_TAG',    value: env.TAG),
+          string(name: 'SOURCE_SHA',   value: env.GIT_COMMIT_SHA ?: ''),
           string(name: 'IMAGE_DIGEST', value: env.BACKEND_DIGEST ?: ''),
           string(name: 'SOURCE_BUILD', value: env.BUILD_NUMBER),
         ]
