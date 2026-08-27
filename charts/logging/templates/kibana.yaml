@@ -1,0 +1,90 @@
+{{- if .Values.enabled }}
+# Kibana. ECK wires its Elasticsearch connection and service-account credentials from the
+# elasticsearchRef below -- there is no password to seed and nothing new in Secrets Manager.
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: voteball-kibana
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+spec:
+  version: {{ .Values.kibana.version | quote }}
+  count: 1
+  elasticsearchRef:
+    name: voteball-logs
+  # The ALB terminates real ACM TLS in front of this, exactly as it does for services/frontend.
+  # Leaving ECK's self-signed cert on would make the ALB health check hit an HTTPS listener it
+  # cannot validate, and the target group would never go healthy.
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  podTemplate:
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    common.k8s.elastic.co/type: elasticsearch
+      containers:
+        - name: kibana
+          resources:
+            requests:
+              cpu: {{ .Values.kibana.resources.requests.cpu | quote }}
+              memory: {{ .Values.kibana.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.kibana.resources.limits.cpu | quote }}
+              memory: {{ .Values.kibana.resources.limits.memory | quote }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+{{- if .Values.kibana.ingress.enabled }}
+---
+# Kibana's public route. THIS IS THE THIRD MEMBER of ALB group `voteball`, alongside
+# devops-app/voteball and ci/jenkins-webhook.
+#
+# The group name is load-bearing for TEARDOWN, not just for cost: an ALB is de-provisioned only when
+# its group has no members left, and its leftover ENIs block VPC deletion for 10-20 minutes. Getting
+# this wrong creates a SECOND ALB that destroy.sh does not wait on.
+#
+# scripts/cleanup-stale-dns.sh must also list this host -- external-dns only reconciles on a timer
+# and can be destroyed before it notices the deleted Ingress.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: {{ .Values.kibana.ingress.group }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    {{- with .Values.kibana.ingress.certificateArn }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ . | quote }}
+    {{- end }}
+    alb.ingress.kubernetes.io/healthcheck-path: /api/status
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.kibana.ingress.host | quote }}
+spec:
+  ingressClassName: alb
+  rules:
+    - host: {{ .Values.kibana.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: voteball-kibana-kb-http
+                port:
+                  number: 5601
+{{- end }}
+{{- end }}
