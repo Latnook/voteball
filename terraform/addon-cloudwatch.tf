@@ -83,6 +83,26 @@ locals {
       auto_create_group   true
       extra_user_agent    container-insights
       add_entity          true
+
+    # CHANGE 3 (2026-08-27): a SECOND output, fanning the same records out to the Fluentd aggregator
+    #   in the logging namespace as well as to CloudWatch. CloudWatch keeps receiving everything --
+    #   the Grafana CloudWatch datasource built on 2026-08-24 is unaffected and CloudWatch remains
+    #   the authoritative copy, with Elasticsearch holding a 7-day search surface on top of it.
+    #
+    #   THIS BLOCK FAILS SILENTLY IF IT IS WRONG. Per the warning at the top of this local: the
+    #   string REPLACES the add-on's default application-log.conf rather than merging into it, and
+    #   Fluent Bit's forward output buffers and retries on a refused connection while the DaemonSet
+    #   stays Running and healthy. Neither a pod check nor a Fluent Bit log line will tell you this
+    #   is broken. scripts/logging/verify-efk.sh counts documents in Elasticsearch instead.
+    [OUTPUT]
+      Name                forward
+      Match               application.*
+      Host                fluentd.logging.svc.cluster.local
+      Port                24224
+      # Do NOT let a full buffer here block the CloudWatch output. Retry_Limit False would retry
+      # forever and back-pressure the shared input; a bounded retry drops records to Elasticsearch
+      # while CloudWatch -- the authoritative copy -- keeps receiving them.
+      Retry_Limit         3
   EOT
 }
 
