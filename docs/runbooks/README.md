@@ -27,6 +27,8 @@ first, how to fix it, and when to stop diagnosing and roll back instead.
 | [DeploymentReplicasMismatch](DeploymentReplicasMismatch.md) | Any Deployment cluster-wide short of ready replicas for 10m | warning |
 | [PrometheusTargetDown](PrometheusTargetDown.md) | Prometheus can't scrape a target for 5m — that target's metrics/alerts are now blind | critical |
 | [JenkinsQueueStuck](JenkinsQueueStuck.md) | Jenkins build queue non-empty for 15m; site itself is unaffected | warning |
+| [ElasticsearchDown](ElasticsearchDown.md) | Elasticsearch pod not Ready for 15m; log search unavailable, CloudWatch unaffected | warning |
+| [FluentdDown](FluentdDown.md) | Fluentd aggregator has no available replica for 15m; Fluent Bit reports healthy, CloudWatch unaffected | warning |
 
 ## Useful for every runbook here
 

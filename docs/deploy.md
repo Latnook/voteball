@@ -208,6 +208,18 @@ resources. The steps it performs (kept in step with the script's own numbering �
      to PostgreSQL with an empty password. The script checks first: no restart if the Secret does not
      exist yet, none if the pod already has the credential projected (a routine re-run). Non-fatal,
      same as 11b/11c, and re-runnable as `./scripts/restart-grafana-datasources.sh`.
+11e. Verify the EFK logging pipeline carries a log line end to end, via
+     `./scripts/logging/verify-efk.sh`. `charts/logging` ships `enabled: false` by construction — its
+     objects (the `Elasticsearch`/`Kibana`/`Fluentd` custom resources) reference CRDs that only step
+     6's `terraform apply` installs (`terraform/addon-eck.tf`), so shipping them enabled ahead of that
+     apply is the same 2026-08-24 outage shape as every other Terraform-gated chart resource in this
+     repo. This step deliberately does not check pod status alone: Fluent Bit reports Running whether
+     or not it can actually reach the Fluentd aggregator, so `verify-efk.sh` writes a known marker line
+     to a `devops-app` pod's stdout and confirms that exact line comes back out of an Elasticsearch
+     query — the only check in the pipeline that distinguishes "broken" from "healthy but idle." Also
+     **non-fatal**, same as 11b/11c/11d: the application is already up and serving, and this affects
+     log search only — CloudWatch keeps receiving every log line regardless, since Fluent Bit fans out
+     to both destinations independently. Re-runnable as `./scripts/logging/verify-efk.sh`.
 
 ### Grafana's PostgreSQL and GitHub data sources — automatic since 2026-08-24
 
@@ -306,10 +318,10 @@ dashboard works as soon as `terraform apply` has run.
 | Node group | the Spot machines that run the containers |
 | Certificates | two ACM certs (site + Jenkins webhook), validated through Route53 |
 | Supporting | WAF (rate-limits `/api/vote`), SNS alert topic, S3 bucket, EKS add-ons (VPC CNI, CloudWatch) |
-| **Ten Helm add-ons** | the platform layer — roughly a third of the step |
+| **Eleven Helm add-ons** | the platform layer — roughly a third of the step |
 
-Those ten add-ons are the part people don't expect to find here. **None of them are the application** —
-they are what the application needs in order to exist:
+Those eleven add-ons are the part people don't expect to find here. **None of them are the
+application** — they are what the application needs in order to exist:
 
 | Add-on | Why it has to exist before the app |
 |---|---|
@@ -322,6 +334,7 @@ they are what the application needs in order to exist:
 | kube-prometheus-stack | Prometheus, Grafana, Alertmanager |
 | ArgoCD | the GitOps controller that deploys the app in step 11 |
 | Jenkins + jenkins-support | CI, in-cluster |
+| ECK operator | reconciles the `Elasticsearch`/`Kibana` custom resources in `charts/logging` — a platform add-on for the same reason ArgoCD can't own it: see [`README.submission.md`'s EFK section](../README.submission.md#efk-logging) |
 
 **Why this is one command rather than several you could watch.** The EKS control plane and the RDS
 restore each take about eight minutes — but together they take about *eight*, not sixteen, because
@@ -849,10 +862,19 @@ infrastructure. Order matters:
    balancer keeps network interfaces alive that block the network from being deleted. This is the
    difference between a teardown that takes ten minutes and one that appears to hang for twenty.
 3. **Wait** for the load balancer to actually disappear.
-4. **Uninstall this stack's own Helm releases** — the app, Jenkins, Jenkins' support chart, and
-   kube-prometheus-stack (Prometheus/Grafana/Alertmanager) — while the cluster is still healthy.
-   Removing kube-prometheus-stack here matters for the next step: it deletes the Prometheus and
-   Alertmanager custom resources, so the operator that watches them has nothing left to act on.
+4. **Uninstall this stack's own Helm releases — all SIX of them** — the app, Jenkins, Jenkins' support
+   chart, kube-prometheus-stack (Prometheus/Grafana/Alertmanager), the EFK logging chart, and the ECK
+   operator — while the cluster is still healthy. Removing kube-prometheus-stack here matters for the
+   next step: it deletes the Prometheus and Alertmanager custom resources, so the operator that watches
+   them has nothing left to act on. **ECK comes out in a specific order, and it's the reverse of what
+   you'd guess**: the `Elasticsearch`/`Kibana` custom resources are deleted first, then the `logging`
+   chart, and the ECK operator itself comes out last. Deleting the operator first would leave those
+   deletes stuck — its `ValidatingWebhookConfiguration` intercepts every write to `*.k8s.elastic.co`
+   objects, and with no operator left to answer it the delete just hangs, the same class of hang as
+   `kubernetes_namespace.ci` sitting `Terminating` forever with no ESO controller left to clear its
+   finalizers. One side-effect worth knowing: ECK's `volumeClaimDeletePolicy` deletes the Elasticsearch
+   PVC when its custom resource goes, so — unlike step 5 below for the observability PVCs — there is no
+   separate orphaned-EBS cleanup needed for EFK's volume.
 5. **Delete the observability PVCs.** A StatefulSet's volume claim survives `helm uninstall`, by
    design — Kubernetes keeps it so a recreated StatefulSet can rebind its data. Left behind it's an
    orphaned EBS volume that bills forever and blocks nothing, so the teardown would report success

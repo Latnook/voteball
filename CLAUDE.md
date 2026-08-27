@@ -325,8 +325,8 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   OIDC/IRSA roles, ECR, ACM, S3, SNS, Secrets Manager (container only), RDS (restored from a pinned
   snapshot), **and every platform add-on** via `helm_release`/`aws_eks_addon` (AWS Load Balancer
   Controller, External Secrets Operator, Cluster Autoscaler, Node Termination Handler, CloudWatch
-  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack). Needs
-  `terraform/voteball.tfvars` (gitignored) and `-var-file=voteball.tfvars`.
+  pod logging, metrics-server, external-dns, ArgoCD, kube-prometheus-stack, and the ECK operator).
+  Needs `terraform/voteball.tfvars` (gitignored) and `-var-file=voteball.tfvars`.
 
   **The CloudWatch add-on is deliberately cut down to pod logs only, and the parts that are off cost
   money per day when on.** `containerInsights` and `applicationSignals` were both billing this
@@ -379,6 +379,21 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   a UI edit to sync policy or destination is the one drift GitOps cannot self-correct.
   The `voteball` AppProject pins source repo + destination namespace and sets
   `clusterResourceWhitelist: []`; see `charts/voteball/CLAUDE.md` before adding a cluster-scoped kind.
+- **ECK operator (`terraform/addon-eck.tf`) — the ECK add-on, added for EFK logging.** Terraform-owned
+  like ArgoCD itself, and for the identical reason: its chart installs 17 cluster-scoped objects (12
+  CRDs, 3 `ClusterRole`s, 1 `ClusterRoleBinding`, 1 `ValidatingWebhookConfiguration`), and every
+  AppProject's `clusterResourceWhitelist: []` makes ArgoCD structurally unable to manage them. Installs
+  into `elastic-system`; `managedNamespaces` is scoped to `logging` alone so it never reconciles a
+  custom resource anywhere else in the cluster. The namespaced objects it reconciles — `Elasticsearch`,
+  `Kibana`, `Fluentd` — live in **Helm (`charts/logging`)**, delivered by its own third ArgoCD
+  Application/AppProject the same way `charts/observability` is: gated `enabled: false` until the
+  operator's CRDs exist (see the forkability/gating notes below), then flipped on and verified by
+  `scripts/logging/verify-efk.sh` (deploy step 11e). **Teardown order is the reverse of install, and
+  specifically the opposite of what you'd guess**: `destroy.sh` deletes the `Elasticsearch`/`Kibana`
+  custom resources first, then `helm uninstall`s the `logging` release, and only then the operator
+  itself — because the operator's `ValidatingWebhookConfiguration` intercepts every write to
+  `*.k8s.elastic.co` objects, and removing the operator first leaves those deletes with no backend
+  left to answer. See `docs/design/2026-08-27-efk-logging-design.md`.
 **`deploy.sh`'s preflight REPAIRS the EKS API allow-list rather than warning about it**
 (`./scripts/refresh-api-cidr.sh --ensure`, before step 1). `cluster_endpoint_public_access_cidrs`
 names a home ISP address, so it goes stale on its own schedule, and when it does AWS **drops** this
@@ -611,23 +626,34 @@ variables and the bucket name embeds the AWS account id — so `terraform init` 
 `-backend-config=backend.hcl`, and without it fails on incomplete backend configuration rather than
 silently using local state. See `docs/design/2026-07-21-terraform-remote-state-design.md`.
 
-**Teardown order matters** and `./scripts/destroy.sh` encodes it: delete the ArgoCD Application (else
+**Teardown order matters** and `./scripts/destroy.sh` encodes it: delete **all three** ArgoCD
+Applications (`voteball`, `observability`, and — since the EFK logging pass — `logging`; else
 `selfHeal` recreates what you remove), then **both Ingresses** (so the ALB de-provisions and
 external-dns removes its records — a leftover ALB's ENIs block VPC deletion), wait for the ALB to
-disappear, **uninstall this stack's own three Helm releases while the cluster is still healthy**
-(`voteball`, `jenkins`, `jenkins-support` — see below), *then* `terraform destroy`.
+disappear, **uninstall this stack's own SIX Helm releases while the cluster is still healthy**
+(`voteball`, `jenkins`, `jenkins-support`, `kube-prometheus-stack`, `logging`, `elastic-operator` — see
+below), *then* `terraform destroy`. `logging` and `elastic-operator` come out in that specific order —
+custom resources and chart first, operator last — for the same reason given under "ECK operator" above.
 
-**"Both" is load-bearing.** Since 2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share ALB
-group `voteball`, and an ALB is de-provisioned only when its group has **no** members left — deleting
-one leaves it running. The same change renamed the ALB: a grouped one is `k8s-<group>-<hash>`, not
-`k8s-<namespace>-<ingress>-<hash>`, so any check filtering on the old shape reports "ALB gone"
-instantly while it is still there. `scripts/cleanup-stale-dns.sh` likewise cleans **two** hosts now,
-`<app_domain>` and `jenkins.<app_domain>`.
+**"Both" is load-bearing, and is now, as of the EFK logging pass, incomplete on its own.** Since
+2026-07-31 `devops-app/voteball` and `ci/jenkins-webhook` share ALB group `voteball`, and an ALB is
+de-provisioned only when its group has **no** members left — deleting one leaves it running. The same
+change renamed the ALB: a grouped one is `k8s-<group>-<hash>`, not `k8s-<namespace>-<ingress>-<hash>`,
+so any check filtering on the old shape reports "ALB gone" instantly while it is still there.
+`logging/kibana` is now a **third** member of that same group (`charts/logging`'s
+`templates/kibana.yaml`), and `./scripts/cleanup-stale-dns.sh` already cleans the matching **three**
+hosts (`<app_domain>`, `jenkins.<app_domain>`, `kibana.<app_domain>`) — but `destroy.sh`'s own step 2
+still only explicitly deletes the first two Ingresses. The Kibana Ingress is part of the `logging` Helm
+release, which is not uninstalled until step 4 — **after** step 3 already waits for the ALB to
+de-provision — so a fresh teardown can wait on an ALB that cannot go away yet, the exact shape of the
+10-20 minute hang this ordering exists to prevent. This was found while writing this documentation
+pass, not fixed in it — flagged here rather than silently patched, since a live-infrastructure teardown
+script deserves a deliberate fix and a test, not a same-commit-as-the-docs change.
 
 **`terraform destroy` uninstalls `helm_release`s itself when it reaches them, and doing that while the
 cluster is simultaneously being deleted underneath it is what hung with `context deadline exceeded`**
 (observed 2026-08-04, on `helm_release.jenkins`: Helm cannot cleanly uninstall from a cluster that's
-disappearing). `destroy.sh` avoids this for its own three releases by uninstalling them explicitly one
+disappearing). `destroy.sh` avoids this for its own six releases by uninstalling them explicitly one
 step earlier, while every node and controller is still up — the situation Helm actually expects, not a
 workaround for it. `external-secrets` is deliberately left **out** of that pre-uninstall: its
 controller has to stay alive until Terraform deletes the `ci`/`devops-app` namespaces, because the
@@ -638,7 +664,7 @@ and `kubernetes_namespace.ci` then sat `Terminating` forever with no controller 
 children's finalizers.
 
 **If `terraform destroy` still hangs this way — on a `helm_release` it manages that isn't one of the
-three pre-uninstalled above, or on a `kubernetes_*` resource the way `kubernetes_namespace.ci` did —
+six pre-uninstalled above, or on a `kubernetes_*` resource the way `kubernetes_namespace.ci` did —
 `destroy.sh` now recovers automatically, once.** On a failed destroy it drops every remaining
 `helm_release.*` and `kubernetes_*` resource from state — **never an `aws_*` resource**, since that
 would orphan billed infrastructure with nothing left in Terraform's records to find it by — and

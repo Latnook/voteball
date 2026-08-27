@@ -103,4 +103,30 @@ spec:
             summary: "Jenkins build queue has been non-empty for 15 minutes"
             description: "Builds are queued with nothing draining them. Usually no agent can be scheduled; the website is unaffected."
             runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/JenkinsQueueStuck.md"
+
+    - name: platform.logging
+      rules:
+        # The EFK pipeline. Deliberately NOT alerting on Elasticsearch cluster health being `yellow`:
+        # this is a single-node cluster with no replica shard by design (see
+        # docs/design/2026-08-27-efk-logging-design.md decision 3), so yellow is its permanent, correct
+        # state. An alert that fires forever is one people learn to ignore -- the same reasoning
+        # recorded at VoteballJourneyTrafficStopped in charts/voteball.
+        - alert: ElasticsearchDown
+          expr: kube_pod_status_ready{namespace="logging", condition="true", pod=~"voteball-logs-es-.*"} == 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Elasticsearch is not Ready in the logging namespace"
+            description: "Log search is unavailable. CloudWatch still holds the authoritative copy, so this is not a loss of logs."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/ElasticsearchDown.md"
+        - alert: FluentdDown
+          expr: kube_deployment_status_replicas_available{namespace="logging", deployment="fluentd"} == 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The Fluentd aggregator has no available replica"
+            description: "Fluent Bit is buffering and retrying silently; logs are not reaching Elasticsearch. CloudWatch is unaffected."
+            runbook_url: "https://github.com/Latnook/voteball/blob/master/docs/runbooks/FluentdDown.md"
 {{- end }}

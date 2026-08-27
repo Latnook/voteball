@@ -808,6 +808,90 @@ not a billed Terraform apply:
 The Jenkins ServiceMonitor is the one exception to that split — it lives in `charts/jenkins-support`
 next to the release it scrapes, for the reason given above.
 
+## EFK Logging
+
+A second, independent log path alongside CloudWatch — Elasticsearch, Fluentd and Kibana, giving the
+cluster its own searchable log UI. **CloudWatch remains the authoritative copy in both directions**:
+Fluent Bit (the DaemonSet already tailing every node for CloudWatch) fans out to this pipeline as a
+second destination rather than switching to it, so nothing here can cause a log to be lost, only to be
+briefly unsearchable in Kibana. Full design rationale, including the sizing arithmetic that avoids
+adding a third node, is in
+[`docs/design/2026-08-27-efk-logging-design.md`](docs/design/2026-08-27-efk-logging-design.md); this
+section is the graded, self-contained answer.
+
+### What runs where
+
+| Component | Namespace | Count | Notes |
+|---|---|---|---|
+| ECK operator | `elastic-system` | 1 | Installed by `terraform apply` (`terraform/addon-eck.tf`), not ArgoCD — see below. |
+| Elasticsearch | `logging` | 1, no replica | `gp3` PVC, 1 GiB heap. Cluster health is `yellow` permanently, by design — see "Alerting" below. |
+| Kibana | `logging` | 1 | Public route on the existing ALB group, plain HTTP behind it (see "TLS" below). |
+| Fluentd | `logging` | 1 | The aggregator tier — buffers and retries, writes into Elasticsearch through a write alias an ILM policy rolls over every 7 days. |
+| Fluent Bit | `amazon-cloudwatch` | DaemonSet, unchanged | The same process already shipping logs to CloudWatch now also forwards to Fluentd. A **different project** from Fluentd (C, no Ruby plugin ecosystem) — shipping it alone under the name "EFK" would be the same silent substitution as calling OpenSearch Dashboards "Kibana". |
+
+`charts/logging` ships `enabled: false` by construction and is flipped on only after the ECK operator's
+CRDs exist — the same gate shape (`.Values.externalSecret.grafanaEnabled`, and every other
+Terraform-created-object reference in this repo) that a 2026-08-24 outage exists to prevent: shipping
+the chart's custom resources before their CRDs arrive fails ArgoCD's sync outright.
+`./scripts/logging/verify-efk.sh` (run at deploy step 11e) is the actual proof the pipeline works — it
+writes a known marker line to a `devops-app` pod's stdout and confirms that exact line comes back out
+of an Elasticsearch query, rather than trusting that every pod merely looks Running. A healthy-looking
+Fluent Bit proves nothing on its own: its forward output buffers and retries silently on a refused
+connection, which is indistinguishable from "no new logs yet" from `kubectl get pods` alone.
+
+### Why the operator is Terraform-owned, not ArgoCD-owned
+
+The ECK operator's chart installs **17 cluster-scoped objects** — 12 CRDs, 3 `ClusterRole`s, 1
+`ClusterRoleBinding`, 1 `ValidatingWebhookConfiguration`. Both ArgoCD `AppProject`s in this repo
+(`voteball` and `observability`, joined by a third, `logging`) set `clusterResourceWhitelist: []` as a
+deliberate blast-radius limit — the same limit that stops a compromised or careless chart change from
+ever reaching outside its own namespace. ArgoCD is therefore **structurally** unable to manage the
+operator, not merely configured not to. The namespaced objects the operator reconciles — the
+`Elasticsearch`, `Kibana` and `Fluentd` resources themselves — *are* eligible and live in
+`charts/logging`, delivered by its own `logging` ArgoCD Application, the same split every other
+platform-add-on-vs-application boundary in this repo already draws (ArgoCD owns `charts/voteball` and
+`charts/observability`; Terraform owns Jenkins, ArgoCD itself, and now the ECK operator).
+
+### TLS
+
+Elasticsearch keeps ECK's default self-signed HTTP TLS, and Fluentd mounts the operator-generated CA
+(`voteball-logs-es-http-certs-public`) to verify it — there is no public path to Elasticsearch, so a
+self-signed cert costs nothing. Kibana is different: it is reachable from the internet, and the ALB in
+front of it already terminates real ACM TLS, exactly as it does for `services/frontend`. Kibana
+therefore sets `selfSignedCertificate.disabled: true` so it serves plain HTTP behind the ALB — leaving
+ECK's self-signed cert on would make the ALB's health check hit an HTTPS listener it cannot validate,
+and the target group would never go healthy.
+
+### Reaching Kibana
+
+Kibana is public, unlike Prometheus/Grafana/Alertmanager/ArgoCD/Jenkins — no tunnel needed:
+
+```
+https://kibana.<app_domain>
+```
+
+Authentication is ECK's built-in `elastic` user; the operator generates its password into a Kubernetes
+Secret and nothing new was added to Secrets Manager or the admin login system:
+
+```bash
+kubectl get secret voteball-logs-es-elastic-user -n logging -o go-template='{{.data.elastic | base64decode}}'; echo
+```
+
+The existing WAF ACL on the shared ALB group already covers this third member.
+
+### Alerting
+
+Two alerts in `charts/observability/templates/prometheusrule.yaml`, both built on kube-state-metrics —
+no new exporter: `ElasticsearchDown` (the Elasticsearch pod not Ready for 15m) and `FluentdDown` (the
+Fluentd Deployment with zero available replicas for 15m). Neither alerts on Elasticsearch cluster
+health being `yellow` — a single-node cluster with no replica shard is permanently and correctly
+`yellow` by design, so an alert on that colour would fire forever, the same reasoning already recorded
+for `VoteballJourneyTrafficStopped`. Runbooks:
+[`docs/runbooks/ElasticsearchDown.md`](docs/runbooks/ElasticsearchDown.md),
+[`docs/runbooks/FluentdDown.md`](docs/runbooks/FluentdDown.md) — both state plainly that CloudWatch is
+unaffected either way, and the Fluentd runbook states explicitly that Fluent Bit reports healthy
+throughout its own outage, so `verify-efk.sh` is the check that actually tells broken apart from idle.
+
 ## How to verify
 
 Live outputs captured from the running cluster are in

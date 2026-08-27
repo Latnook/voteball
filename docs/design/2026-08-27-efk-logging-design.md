@@ -217,6 +217,19 @@ Deliberately **not** alerting on cluster health `yellow`: a single-node Elastics
 yellow (decision 3), so that alert would fire forever and teach people to ignore the whole family —
 the same reasoning already recorded for `VoteballJourneyTrafficStopped`.
 
+**TLS split, settled during implementation.** Elasticsearch and Kibana ended up on opposite sides of
+this decision, for opposite reasons. Elasticsearch keeps ECK's default self-signed HTTP TLS —
+nothing outside the cluster ever talks to it, so a self-signed cert costs nothing, and Fluentd
+verifies it properly (`ssl_verify true`) by mounting the CA ECK generates alongside the resource
+(`voteball-logs-es-http-certs-public`), rather than disabling verification to make the connection
+work. Kibana is the opposite case: it is the one component in this chart with a public route, and the
+ALB in front of it already terminates real ACM TLS — the same shape `services/frontend` uses. Kibana
+therefore sets `selfSignedCertificate.disabled: true` and serves plain HTTP behind the ALB. Leaving
+ECK's self-signed cert on instead would put an HTTPS listener in front of the ALB's health check with
+no CA it can validate — the same reason `services/frontend` runs plain nginx behind the ALB rather
+than terminating TLS twice — so the target group would never go healthy and Kibana would be
+unreachable even though the pod itself is fine.
+
 ### 10. Verification must count documents, not check pods
 
 Three of this repo's most expensive defects share one shape: a check that passes against a component
