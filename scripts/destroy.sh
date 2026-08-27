@@ -97,7 +97,7 @@ step "4/7  Uninstalling Helm releases while the cluster is still healthy"
 # what hung with "context deadline exceeded" -- Helm cannot cleanly uninstall a release from a cluster
 # that is simultaneously being torn down. Doing the uninstall here, while every node and controller is
 # still up, is the situation Helm actually expects; letting Terraform attempt it mid-deletion is the
-# workaround, and this avoids needing one for these four releases.
+# workaround, and this avoids needing one for these six releases.
 #
 # kube-prometheus-stack MUST be uninstalled HERE, before the PVC delete in the next step, not after.
 # Uninstalling it removes the Prometheus and Alertmanager CUSTOM RESOURCES the prometheus-operator

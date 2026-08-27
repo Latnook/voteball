@@ -740,8 +740,9 @@ Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` 
 - **An orphaned-ENI reaper** runs in the background during destroy. The VPC CNI leaves detached
   `aws-K8S-*` interfaces when nodes terminate, and they make Terraform retry `DeleteSubnet` against a
   `DependencyViolation` for 10–20 minutes. See `docs/deploy.md` troubleshooting for the manual command.
-- **Pre-uninstalling `voteball`/`jenkins`/`jenkins-support` via Helm while the cluster is still
-  healthy**, and **one bounded automatic retry** (state-rm on `helm_release.*`/`kubernetes_*` only,
+- **Pre-uninstalling all six of this stack's own Helm releases while the cluster is still healthy**
+  (`voteball`, `jenkins`, `jenkins-support`, `kube-prometheus-stack`, `logging`, `elastic-operator`
+  — count them in `scripts/destroy.sh` step 4 rather than trusting this list), and **one bounded automatic retry** (state-rm on `helm_release.*`/`kubernetes_*` only,
   never `aws_*`) if `terraform destroy` still hangs — see above for both.
 - **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
   never force-unlocks on its own (see above).

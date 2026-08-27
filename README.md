@@ -50,7 +50,7 @@ are concentrated in Bnei Sakhnin, the mirror image of the Beitar result:
 
 A visitor casts one ballot with three parts:
 
-1. **Your teams** — pick the football club(s) you support: up to 3 specific clubs per league, across any
+1. **Your teams** — pick the football club(s) you support: as many as you like, capped at 3 from any one domestic league, across any
    number of leagues (or just "this league, no specific club").
 2. **Last election** — did you vote, and for which party?
 3. **Next election** — who are you considering (up to 3 parties), or undecided?
