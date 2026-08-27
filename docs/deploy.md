@@ -209,11 +209,15 @@ resources. The steps it performs (kept in step with the script's own numbering �
      exist yet, none if the pod already has the credential projected (a routine re-run). Non-fatal,
      same as 11b/11c, and re-runnable as `./scripts/restart-grafana-datasources.sh`.
 11e. Verify the EFK logging pipeline carries a log line end to end, via
-     `./scripts/logging/verify-efk.sh`. `charts/logging` ships `enabled: false` by construction — its
-     objects (the `Elasticsearch`/`Kibana`/`Fluentd` custom resources) reference CRDs that only step
-     6's `terraform apply` installs (`terraform/addon-eck.tf`), so shipping them enabled ahead of that
-     apply is the same 2026-08-24 outage shape as every other Terraform-gated chart resource in this
-     repo. This step deliberately does not check pod status alone: Fluent Bit reports Running whether
+     `./scripts/logging/verify-efk.sh`. **This step verifies; it does not enable anything.**
+     `charts/logging` ships `enabled: true`, and the deploy *ordering* is what makes that safe: its
+     objects (the `Elasticsearch`/`Kibana`/`Fluentd` custom resources) reference CRDs that step 6's
+     `terraform apply` installs (`terraform/addon-eck.tf`), and the `logging` ArgoCD Application that
+     syncs the chart is not created until step 11 — so the CRDs always exist first without a flag to
+     flip, and a git push on its own can never reach the cluster ahead of the apply. Shipping
+     `enabled: false` instead would be the 2026-08-25 corollary: a gate that is off in git with
+     nothing to turn it on renders zero objects while ArgoCD reports Synced/Healthy on an empty
+     manifest. This step deliberately does not check pod status alone: Fluent Bit reports Running whether
      or not it can actually reach the Fluentd aggregator, so `verify-efk.sh` writes a known marker line
      to a `devops-app` pod's stdout and confirms that exact line comes back out of an Elasticsearch
      query — the only check in the pipeline that distinguishes "broken" from "healthy but idle." Also

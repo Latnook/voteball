@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Offline assertions on charts/logging. Everything here renders with `helm template` -- no cluster,
-# no ECK CRDs installed. The chart is gated off by default, so the "enabled" cases pass --set.
+# no ECK CRDs installed. The chart ships `enabled: true` (the deploy ordering makes that safe -- see
+# charts/logging/values.yaml), so the main body renders with plain defaults and the kill-switch case
+# is the one that passes --set.
 #
 # The point of this file is NOT that the YAML parses. It is the three properties that, if broken,
 # fail silently in production:
@@ -18,17 +20,23 @@ command -v helm >/dev/null 2>&1 || { echo "SKIP: helm not installed"; exit 0; }
 
 echo "==> charts/logging"
 
-# Rendering with the chart gated OFF must produce no objects at all. This is the property that keeps
-# a push-before-apply from failing an ArgoCD sync (spec decision 8).
-out_off="$(helm template logging "$CHART" --namespace logging 2>&1)"
-if grep -qE '^kind:' <<<"$out_off"; then
-  fail "chart is gated off by default but rendered objects: $(grep -E '^kind:' <<<"$out_off" | sort -u | tr '\n' ' ')"
-fi
-pass "gated off by default, renders nothing"
+# The chart must ship ENABLED. A gate that is off in git with nothing to turn it on is a rebuild that
+# renders zero objects while ArgoCD reports Synced/Healthy on an empty manifest and the deploy reports
+# success -- and nothing in scripts/deploy.sh or the logging ArgoCD Application ever sets this field.
+# Assert the SHIPPED default renders the stack, not just that --set enabled=true can.
+out="$(helm template logging "$CHART" --namespace logging 2>&1)" \
+  || fail "helm template failed with the shipped defaults:\n$out"
+grep -qE '^kind:' <<<"$out" \
+  || fail "the chart renders NOTHING with its shipped values -- charts/logging/values.yaml must ship enabled: true (nothing else flips it)"
+pass "ships enabled, renders the stack with no --set"
 
-out="$(helm template logging "$CHART" --namespace logging --set enabled=true 2>&1)" \
-  || fail "helm template failed with enabled=true:\n$out"
-pass "renders with enabled=true"
+# The kill switch still works: enabled=false must produce no objects at all, so the whole stack can be
+# taken down deliberately without deleting templates.
+out_off="$(helm template logging "$CHART" --namespace logging --set enabled=false 2>&1)"
+if grep -qE '^kind:' <<<"$out_off"; then
+  fail "enabled=false must render nothing but produced: $(grep -E '^kind:' <<<"$out_off" | sort -u | tr '\n' ' ')"
+fi
+pass "kill switch (enabled=false) renders nothing"
 
 # --- Elasticsearch -----------------------------------------------------------------------------
 grep -q 'kind: Elasticsearch' <<<"$out" || fail "no Elasticsearch resource rendered"
@@ -103,7 +111,7 @@ pass "Kibana Ingress joins ALB group voteball"
 # Scoped to the Kibana template with --show-only, NOT with a positional window on $out. This is
 # immune to comment placement AND to another template later adding an unrelated `disabled:` field
 # -- a chart-wide grep for `disabled: true` holds only while that string happens to be unique.
-kb="$(helm template logging "$CHART" --namespace logging --set enabled=true --show-only templates/kibana.yaml)"
+kb="$(helm template logging "$CHART" --namespace logging --show-only templates/kibana.yaml)"
 grep -qE 'selfSignedCertificate:' <<<"$kb" || fail "Kibana must disable its self-signed certificate (ALB terminates TLS)"
 grep -qE '^[[:space:]]*disabled:[[:space:]]*true' <<<"$kb" || fail "Kibana selfSignedCertificate.disabled must be true"
 pass "Kibana self-signed TLS disabled (ALB terminates)"
@@ -114,7 +122,7 @@ pass "Kibana self-signed TLS disabled (ALB terminates)"
 # pass on a renamed object (fluentd-aggregator), a substring match (the ES host name is itself a
 # substring of the CA secret name mounted a few lines below), or another template landing the same
 # field name later (Task 4's ILM Job carries the same runAsNonRoot/readOnlyRootFilesystem keys).
-fd="$(helm template logging "$CHART" --namespace logging --set enabled=true --show-only templates/fluentd.yaml)"
+fd="$(helm template logging "$CHART" --namespace logging --show-only templates/fluentd.yaml)"
 
 grep -qE '^[[:space:]]*name:[[:space:]]*"?fluentd"?[[:space:]]*$' <<<"$fd" || fail "no fluentd objects rendered"
 pass "Fluentd present"
@@ -176,7 +184,7 @@ grep -qE '"?helm\.sh/hook"?:' <<<"$out" || fail "ILM Job must be a post-install/
 pass "ILM Job is a hook"
 
 # Scoped to the ILM template with --show-only, following the Kibana/Fluentd shape above.
-ilm="$(helm template logging "$CHART" --namespace logging --set enabled=true --show-only templates/ilm.yaml)"
+ilm="$(helm template logging "$CHART" --namespace logging --show-only templates/ilm.yaml)"
 
 grep -qE '"?helm\.sh/hook"?:[[:space:]]*"?post-install,post-upgrade"?[[:space:]]*$' <<<"$ilm" \
   || fail "ILM Job must be a post-install,post-upgrade hook, never pre-install -- Elasticsearch must exist first"
@@ -219,7 +227,7 @@ pass "no replica (single-node ES)"
 # comments is required, or these assertions pass even with the real policy deleted. Anchoring on
 # STRUCTURE (name:/cidr:/port: values, not bare substrings) is what survives the inline trailing
 # comments (e.g. `port: 9200 }  # Elasticsearch ...`) that full-line stripping does not touch.
-np="$(helm template logging "$CHART" --namespace logging --set enabled=true \
+np="$(helm template logging "$CHART" --namespace logging \
        --show-only templates/networkpolicy.yaml | grep -vE '^[[:space:]]*#')"
 
 grep -qE '^kind:[[:space:]]*"?NetworkPolicy"?[[:space:]]*$' <<<"$np" \

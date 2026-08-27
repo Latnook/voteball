@@ -829,10 +829,15 @@ section is the graded, self-contained answer.
 | Fluentd | `logging` | 1 | The aggregator tier — buffers and retries, writes into Elasticsearch through a write alias an ILM policy rolls over every 7 days. |
 | Fluent Bit | `amazon-cloudwatch` | DaemonSet, unchanged | The same process already shipping logs to CloudWatch now also forwards to Fluentd. A **different project** from Fluentd (C, no Ruby plugin ecosystem) — shipping it alone under the name "EFK" would be the same silent substitution as calling OpenSearch Dashboards "Kibana". |
 
-`charts/logging` ships `enabled: false` by construction and is flipped on only after the ECK operator's
-CRDs exist — the same gate shape (`.Values.externalSecret.grafanaEnabled`, and every other
-Terraform-created-object reference in this repo) that a 2026-08-24 outage exists to prevent: shipping
-the chart's custom resources before their CRDs arrive fails ArgoCD's sync outright.
+`charts/logging` ships `enabled: true`, and the deploy **ordering** — not a flag anyone flips — is what
+keeps that safe. The chart's custom resources reference CRDs installed by `terraform apply` (deploy
+step 6), and the `logging` ArgoCD Application that syncs the chart is not created until step 11, so the
+CRDs always exist before anything is handed to the API server and a git push cannot outrun the apply.
+That is the same hazard `.Values.externalSecret.grafanaEnabled` exists for — shipping a chart resource
+before the Terraform object it names fails ArgoCD's sync outright (the 2026-08-24 outage) — solved here
+by ordering rather than by a gate. The gates in this repo that *are* off in git each have a seeding
+step that turns them on; a gate with no second half would instead render zero objects while ArgoCD
+reported Synced/Healthy on an empty manifest.
 `./scripts/logging/verify-efk.sh` (run at deploy step 11e) is the actual proof the pipeline works — it
 writes a known marker line to a `devops-app` pod's stdout and confirms that exact line comes back out
 of an Elasticsearch query, rather than trusting that every pod merely looks Running. A healthy-looking

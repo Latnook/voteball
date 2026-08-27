@@ -180,21 +180,35 @@ ECK's `volumeClaimDeletePolicy` defaults to deleting the PVC when the Elasticsea
 deleted, so the Elasticsearch volume needs no equivalent of the step-5 observability-PVC cleanup. This
 is asserted by the teardown test rather than assumed.
 
-### 8. Gating and deploy ordering
+### 8. Deploy ordering instead of a gate
 
-`charts/logging` ships **`enabled: false`**, and `scripts/deploy.sh` flips it after the billed apply.
+`charts/logging` ships **`enabled: true`**. Nothing flips it — not `scripts/deploy.sh`, not the
+`logging` ArgoCD Application (which passes no `helm.parameters`).
 
-The rule this follows is already written down: a chart resource that references a Terraform-created
-object must be gated off, because chart code reaches the cluster on a `git push` (minutes, automatic)
-while the object it names arrives only on an apply a human runs. Here the `Elasticsearch`/`Kibana` CRs
-reference CRDs that only `terraform apply` installs. Pushing the consumer first is the 2026-08-24
-outage exactly — ESO could not resolve a reference, the resource went Degraded, the whole ArgoCD sync
-reported `phase: Failed`, and four consecutive CD runs rolled production back.
+**As designed this shipped `enabled: false` with `deploy.sh` flipping it, and that was wrong twice
+over.** No code was ever written to do the flipping, so the stack shipped permanently dormant: a fresh
+deploy rendered zero objects, ArgoCD reported Synced/Healthy on an empty manifest, and the deploy
+reported success — the same confident-and-empty failure shape this repo documents elsewhere. And the
+gate was not needed in the first place.
 
-The corollary from 2026-08-25 applies too: **a gate that is off in git is a rebuild that does not
-work**, so the enable step ships in the same change as the gate, not as follow-up. Because the CRDs
-arrive in the same apply that creates everything else (step 6) and the ArgoCD Applications are created
-at step 11, the ordering holds naturally on a fresh deploy.
+The hazard the gate rule addresses is real: a chart resource that references a Terraform-created object
+must not reach the cluster first, because chart code arrives on a `git push` (minutes, automatic) while
+the object it names arrives only on an apply a human runs. That is the 2026-08-24 outage exactly — ESO
+could not resolve a reference, the resource went Degraded, the whole ArgoCD sync reported
+`phase: Failed`, and four consecutive CD runs rolled production back.
+
+**Here the ordering already forecloses it, structurally.** The `Elasticsearch`/`Kibana` CRs reference
+CRDs that `terraform apply` installs at deploy step 6, and the ArgoCD Application that syncs this chart
+is not created until step 11. On a fresh cluster the CRDs always exist first. On an existing cluster
+there is no `logging` Application at all until a deploy that ran both halves, so a push to `master`
+cannot deliver the chart ahead of the apply even in principle.
+
+So this follows the precedent CLAUDE.md already records for the Grafana datasource gates — *"the gates
+ship `true` because the seed step makes that safe"* — with the deploy ordering playing the seed step's
+role. The 2026-08-25 corollary is what rules out the alternative: **a gate that is off in git with
+nothing to turn it on is a rebuild that does not work.** `values.yaml` still honours `enabled: false`
+as a deliberate kill switch, and `scripts/tests/test-logging-chart.sh` asserts both directions — that
+the shipped defaults render the stack, and that `--set enabled=false` renders nothing.
 
 ### 9. Exposure, access control and alerting
 

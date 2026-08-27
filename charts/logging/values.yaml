@@ -1,14 +1,28 @@
 # EFK logging. See docs/design/2026-08-27-efk-logging-design.md.
 #
-# `enabled` is the master gate and ships FALSE deliberately. Every object in this chart is a custom
-# resource whose CRD is installed by `terraform apply` (terraform/addon-eck.tf), and chart code
-# reaches the cluster on a git push -- minutes, automatic -- while the CRD arrives only on a billed
-# apply a human runs. Shipping the consumer first is the 2026-08-24 outage: ArgoCD cannot resolve the
-# kind, the sync reports phase: Failed, and application-cd rolls production back.
+# `enabled` is the master gate and ships TRUE. The DEPLOY ORDERING is what makes that safe, and it is
+# the same precedent CLAUDE.md already records for the Grafana datasource gates -- "the gates ship
+# `true` because the seed step makes that safe":
 #
-# scripts/deploy.sh step 11e flips this to true AFTER the apply. Do not hand-edit it to true and
-# push; run a deploy.
-enabled: false
+#   * Every object in this chart is a custom resource whose CRD is installed by `terraform apply`
+#     (terraform/addon-eck.tf), which is deploy step 6.
+#   * The `logging` ArgoCD Application that syncs this chart is not created until deploy step 11.
+#
+# So on a fresh cluster the CRDs always exist before anything here is ever handed to the API server,
+# and on an existing cluster there is NO `logging` Application at all until a deploy that ran both
+# halves -- a git push on its own cannot reach the cluster ahead of the apply. That is what removes
+# the 2026-08-24 failure mode (consumer pushed before its Terraform-created dependency exists: ArgoCD
+# cannot resolve the kind, the sync reports phase: Failed, and application-cd rolls production back).
+#
+# NOTHING FLIPS THIS FIELD. `scripts/deploy.sh` step 11e VERIFIES the pipeline end to end
+# (scripts/logging/verify-efk.sh); it does not enable it, and no ArgoCD `helm.parameters` override it.
+# Shipping `false` here would be the 2026-08-25 corollary in reverse -- a gate that is off in git with
+# nothing to turn it on is a rebuild that renders zero objects while ArgoCD reports Synced/Healthy on
+# an empty manifest and the deploy reports success.
+#
+# Set it to false only to take the whole stack down deliberately; `helm template` and
+# scripts/tests/test-logging-chart.sh exercise that kill-switch path with --set enabled=false.
+enabled: true
 
 # Elasticsearch. One node, no replica -- cluster health is YELLOW BY DESIGN and nothing should alert
 # on it (spec decision 3 and 9).

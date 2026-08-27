@@ -414,9 +414,14 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   into `elastic-system`; `managedNamespaces` is scoped to `logging` alone so it never reconciles a
   custom resource anywhere else in the cluster. The namespaced objects it reconciles — `Elasticsearch`,
   `Kibana`, `Fluentd` — live in **Helm (`charts/logging`)**, delivered by its own third ArgoCD
-  Application/AppProject the same way `charts/observability` is: gated `enabled: false` until the
-  operator's CRDs exist (see the forkability/gating notes below), then flipped on and verified by
-  `scripts/logging/verify-efk.sh` (deploy step 11e). **Teardown order is the reverse of install, and
+  Application/AppProject the same way `charts/observability` is. **That chart ships `enabled: true`,
+  and nothing anywhere flips it** — the deploy *ordering* is what makes it safe, the same shape as the
+  Grafana gates ("the gates ship `true` because the seed step makes that safe"): the CRDs arrive with
+  `terraform apply` at step 6 and the `logging` Application is not created until step 11, so a git
+  push can never land the consumer ahead of its dependency. Deploy **step 11e verifies** the pipeline
+  end to end (`scripts/logging/verify-efk.sh`); it does not enable it. Shipping `enabled: false` here
+  would be the 2026-08-25 corollary with no second half: zero objects rendered, ArgoCD Synced/Healthy
+  on an empty manifest, deploy reports success. **Teardown order is the reverse of install, and
   specifically the opposite of what you'd guess**: `destroy.sh` deletes the `Elasticsearch`/`Kibana`
   custom resources first, then `helm uninstall`s the `logging` release, and only then the operator
   itself — because the operator's `ValidatingWebhookConfiguration` intercepts every write to
