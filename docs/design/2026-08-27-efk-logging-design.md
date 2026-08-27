@@ -337,13 +337,24 @@ namespace gets no egress to RDS and no egress to the AWS APIs — it needs neith
 
 ## Testing
 
-| Test | Kind | Where |
-|---|---|---|
-| `helm lint` / `helm template charts/logging` | offline | `scripts/ci/validate-repo.sh` (existing sweep) |
-| Elasticsearch CR renders with `allow_mmap: false` and no privileged init container | offline | new `scripts/tests/test-logging-chart.sh` |
-| Requests sum leaves ≥3 GiB free per node (the no-third-node budget) | offline, arithmetic on rendered YAML | same |
-| Teardown deletes CRs *before* the operator | offline, order assertion on `destroy.sh` | same |
-| End-to-end document count (decision 10) | live cluster | `scripts/logging/verify-efk.sh`, new deploy sub-step **11e**, after 11d |
+| Test | Kind | Where | Runs in CI? |
+|---|---|---|---|
+| Empty-list-literal sweep over `charts/*/templates` | offline, `grep` only | `scripts/ci/validate-repo.sh` | **yes** — it globs every chart, so `charts/logging` is covered automatically |
+| Elasticsearch CR renders with `allow_mmap: false` and no privileged init container | offline | `scripts/tests/test-logging-chart.sh` | **no** — see below |
+| The chart ships `enabled: true`, and `--set enabled=false` renders nothing | offline | same | **no** |
+| The chart's share of the no-third-node budget | offline, arithmetic on rendered YAML | same | **no** |
+| Teardown deletes CRs *before* the operator | offline, order assertion on `destroy.sh` | `scripts/tests/test-logging-teardown.sh` | **yes** — `grep` only, no helm |
+| End-to-end document count (decision 10) | live cluster | `scripts/logging/verify-efk.sh`, deploy sub-step **11e**, after 11d | no (deploy-time) |
+
+**`helm lint` and `helm template charts/logging` are run by NO automated check**, and the row above
+that once claimed `scripts/ci/validate-repo.sh` does it was wrong: that script states in its own
+comments that it is *"deliberately grep/awk only, no helm and no python3"*, because it runs in the CI
+Validation stage before any tooling image is available. Its one relevant sweep — empty list literals
+across `charts/*/templates` — does cover this chart, but it never renders it.
+`scripts/tests/test-logging-chart.sh` is the file that renders the chart, and it sits in
+`run-ci-suite.sh`'s **`SKIP`** list ("needs helm, absent from both agent containers"). So every
+assertion it makes runs **only when a human invokes it**. See "Deliberately not done" for why that is
+not closed here.
 
 The new offline test joins `run-ci-suite.sh`. Its group must be decided by **running it in a bare
 image**, not by reading it — the suite's `PYTHON_GROUP`/`GIT_GROUP`/`SKIP` lists are exhaustive and the
@@ -374,3 +385,12 @@ Recorded so a later pass does not "improve" these:
   would quietly undo it and would not fit the sizing in decision 3.
 - **No SSO for Kibana.** The built-in `elastic` user behind WAF is proportionate for a single-operator
   submission project.
+- **`helm` is not added to a CI agent image, so `test-logging-chart.sh` stays in `run-ci-suite.sh`'s
+  `SKIP` list.** This is a real, open gap: every chart-rendering assertion above — the privileged-init
+  container check, `allow_mmap: false`, the shipped `enabled: true`, the budget arithmetic, the ALB
+  group name — can be broken with every CI build staying green. Closing it means baking `helm` into an
+  agent image (`ci/jenkins/`) and moving the test out of `SKIP`, which is an infrastructure change to
+  the pipeline's own images, not a change to this feature; it is being surfaced to the repo owner
+  separately rather than smuggled in here. `SKIP` already holds `test-jenkins-chart.sh` and
+  `test-validate-observability.sh` for the same missing `helm`, so this adds no new *class* of hole —
+  it makes the existing one wider by one chart.
