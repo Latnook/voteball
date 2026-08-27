@@ -48,9 +48,22 @@ PASS="$(kubectl get secret voteball-logs-es-elastic-user -n "$NS" -o go-template
 # table entry of its own), then pass every request through `-K` instead of `-u`. The Elasticsearch
 # container's filesystem is writable at /tmp (readOnlyRootFilesystem does not cover it), so this has
 # somewhere to land.
-echo "--> writing a curl credential file inside the Elasticsearch pod (never on curl's argv)"
-kubectl exec -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default -c elasticsearch -- \
-  sh -c "umask 077; printf 'user = \"elastic:%s\"\n' '$PASS' > /tmp/efk-curlrc" \
+#
+# The password reaches the pod over STDIN, never as an argument. `kubectl exec` sends its command
+# line to the Kubernetes API server, where it can be recorded in the audit log -- a durable copy, not
+# just a `ps` race on this machine. The local `printf` is a bash builtin (no forked process, so
+# nothing lands in local argv either), and inside the pod `cat` reads the value from stdin rather than
+# receiving it as a parameter.
+#
+# `-i` is REQUIRED. Without it, stdin is not forwarded, `cat` reads nothing, and the file is written
+# with an EMPTY password -- silently (exit 0) -- which then fails authentication looking like a wrong
+# credential rather than a plumbing bug. Confirmed both directions against a throwaway container
+# before trusting this: piped correctly, the file holds the exact password; without `-i`, it holds
+# `user = "elastic:"` and nothing else.
+echo "--> writing a curl credential file inside the Elasticsearch pod (via stdin, never on curl's argv)"
+printf '%s' "$PASS" | kubectl exec -i -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default \
+  -c elasticsearch -- sh -c \
+  'umask 077; { printf "user = \"elastic:"; cat; printf "\"\n"; } > /tmp/efk-curlrc' \
   || fail "could not write the curl credential file in the Elasticsearch pod"
 
 # A marker unique to this run. Passed in rather than generated with $RANDOM so a re-run after a
