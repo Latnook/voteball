@@ -96,16 +96,22 @@ kubectl exec -n devops-app --request-timeout=30s "$POD" -- sh -c "echo '$MARKER'
 # below only re-check their budget BETWEEN iterations, so one unresponsive Elasticsearch or one hung
 # `kubectl exec` would otherwise block indefinitely and defeat the bounded design this script
 # advertises. Both timeouts are load-bearing -- do not remove either as noise.
+# Addressed by SERVICE DNS NAME, not localhost, even though these curls run INSIDE the Elasticsearch
+# pod. ECK issues the HTTP certificate for the service name, so `https://localhost:9200` fails
+# hostname verification with curl exit 60 -- and `curl -sf` then returns non-zero exactly as it would
+# if the resource were missing. That made a TLS misconfiguration indistinguishable from "the alias
+# does not exist", which is the failure this whole script exists to tell apart. Verified 2026-08-28:
+# --cacert against localhost = rc 60; against the service name = verifies.
 es() {
   local path="$1" body="${2:-}"
   if [ -n "$body" ]; then
     kubectl exec -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default -c elasticsearch -- \
       curl -sf --max-time 30 -K /tmp/efk-curlrc --cacert /usr/share/elasticsearch/config/http-certs/ca.crt \
-      -H 'Content-Type: application/json' -d "$body" "https://localhost:9200/$path"
+      -H 'Content-Type: application/json' -d "$body" "https://voteball-logs-es-http.logging.svc:9200/$path"
   else
     kubectl exec -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default -c elasticsearch -- \
       curl -sf --max-time 30 -K /tmp/efk-curlrc --cacert /usr/share/elasticsearch/config/http-certs/ca.crt \
-      "https://localhost:9200/$path"
+      "https://voteball-logs-es-http.logging.svc:9200/$path"
   fi
 }
 
