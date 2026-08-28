@@ -103,6 +103,21 @@ locals {
       # forever and back-pressure the shared input; a bounded retry drops records to Elasticsearch
       # while CloudWatch -- the authoritative copy -- keeps receiving them.
       Retry_Limit         3
+      # MANDATORY, not a tuning knob. Fluent Bit 3.x sends Forward-protocol entries as
+      # [[time, metadata], record], and fluentd 1.17's in_forward calls .to_i on what it assumes is
+      # a bare timestamp -- so every record is rejected with
+      #   undefined method `to_i' for [2026-08-28 00:35:18 +0000, {}]:Array
+      # and NOTHING is delivered. Time_as_Integer makes Fluent Bit send the flat integer form
+      # fluentd's in_forward can read.
+      #
+      # Measured against the exact versions in play (aws-for-fluent-bit 3.4.3 -> fluentd 1.17):
+      # Off = 8 parse errors and 0 records delivered; On = 11 records delivered, no errors.
+      #
+      # The failure this prevents is silent from every angle that matters: Fluent Bit reports the
+      # records as SENT, its own log is clean, the CloudWatch output is unaffected, and only
+      # fluentd's log shows the rejection. Found on the live cluster 2026-08-28, after both pods
+      # were Running and healthy.
+      Time_as_Integer     On
   EOT
 }
 

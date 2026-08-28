@@ -518,7 +518,7 @@ rule scoped to one namespace cannot replace a cluster-wide default without silen
 of every other namespace. The last two are deliberately scoped to `namespace="logging"` instead —
 there is nothing cluster-wide to match, since Elasticsearch and Fluentd exist only there.
 
-**Deliberately not alerting on Elasticsearch cluster health being `yellow`.** This is a single-node
+**Deliberately not alerting on Elasticsearch cluster health at all.** This is a single-node
 cluster with no replica shard by design (§9 in
 [`docs/design/2026-08-27-efk-logging-design.md`](design/2026-08-27-efk-logging-design.md), decision 3)
 — `yellow` is its permanent, correct state, not a degradation. An alert built on it would fire forever,
