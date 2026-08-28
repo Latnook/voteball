@@ -61,6 +61,18 @@ const OUTLINE_CLUBS = new Set([
   // (the same reason Stade Rennais is excluded), and Iberia 1999's crimson eagle measures 2.75:1,
   // dim but plainly a shape.
   'Lugano',
+  // The 2026-08-28 Europa/Conference League intake, measured against the dark card (#161B22) rather
+  // than eyeballed. Each of these four is a dark CONTAINER holding a legible mark -- a disc, an oval
+  // or a shield -- so the outline restores the boundary the card swallowed and the mark inside was
+  // never the problem: OFI a black disc under white rings (1.21:1), Lillestrøm a black disc under a
+  // yellow LSK lens (1.12:1), Trabzonspor a #5a0e27 shield (1.26:1), Mjällby a black oval inside a
+  // yellow wreath (1.13:1). The other 31 crests in that intake measured 2.1:1 or better and are
+  // deliberately absent -- Copenhagen at 2.30 and Riga at 2.13 are the closest, both dim but plainly
+  // shapes, the same call that keeps Iberia 1999 out.
+  'OFI',
+  'Lillestrøm SK',
+  'Trabzonspor',
+  'Mjällby',
 ]);
 
 // Clubs/leagues (by name_en) that ship a SECOND artwork file for the dark theme, rather than being
@@ -93,6 +105,12 @@ const DARK_VARIANT_LOGOS = new Map([
   // outlining a solid mass traces its edge and leaves the middle dark. The file here is the
   // upstream artwork with its two flat colours swapped, so it stays inspectable as a file.
   ['Ararat-Armenia', '/logos/fc-ararat-armenia-dark.svg'],
+  // Jablonec is the one crest in the 2026-08-28 intake an outline could not have saved, and the
+  // colour census is what says so rather than how it looks: all seven of its paths are #01311F and
+  // nothing else. There is no container to bound -- the dark IS the mark -- which is the same test
+  // that separated Ararat-Armenia's wordmark from Lugano's disc. Single flat colour, so the dark
+  // file is that one fill swapped to white and stays reviewable as a file.
+  ['Jablonec', '/logos/fk-jablonec-dark.svg'],
 ]);
 
 // Clubs/leagues (by name_en) whose artwork file carries transparent padding, and the factor that
