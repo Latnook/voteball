@@ -322,7 +322,7 @@ versions, are suppressed — the Dockerfiles pin through `requirements.txt`, whi
 
 ### 5. Tests (new)
 
-The 301 tests in `services/{backend,worker}/tests/` (253 backend + 48 worker, verified locally on
+The 314 tests in `services/{backend,worker}/tests/` (266 backend + 48 worker, verified locally on
 2026-08-24 via `python -m pytest -q` in each service — count them the same way rather than trusting
 this number, it drifts every time a test is added), run against a **real** Postgres — both
 `conftest.py` files `DROP TABLE ... CASCADE` and call `init_db()`, and were never sqlite-compatible.
@@ -424,10 +424,21 @@ run has not happened, failing here would make a docs-and-chart commit look broke
 ```groovy
 build job: 'application-cd', wait: false, parameters: [
   string(name: 'IMAGE_TAG',    value: env.TAG),
+  string(name: 'SOURCE_SHA',   value: env.GIT_COMMIT_SHA ?: ''),
   string(name: 'IMAGE_DIGEST', value: env.BACKEND_DIGEST ?: ''),
   string(name: 'SOURCE_BUILD', value: env.BUILD_NUMBER),
 ]
 ```
+
+**`SOURCE_SHA` is the commit this build checked out and built** (`env.GIT_COMMIT_SHA`, captured in
+Resolve tag and account), and it is what CD promotes the *tree* of. It was added on 2026-08-28,
+because CD's Promote stage used to call `git rev-parse HEAD` in its own workspace instead — see
+[Failure mode: the CI to CD source-commit race](#failure-mode-the-ci-to-cd-source-commit-race) below,
+and design doc [§4a](design/2026-08-04-cicd-split-design.md).
+
+On the **chart-only** path it is deliberately *not* the same commit as the tag: `env.TAG` has been
+overridden to the tag already running on `release`, while `GIT_COMMIT_SHA` stays this chart-only
+commit. That pairing is precisely the request that path makes — *this chart, those images*.
 
 `wait: false` so a slow rollout does not hold a CI executor, and so a CD failure is reported against
 the CD build where its own logs live, not as a confusing CI failure. This is **not** a deploy stage —
@@ -452,9 +463,9 @@ is sent (**G7**, unchanged — see "Deferred, on purpose").
 ## `application-cd`, stage by stage
 
 The pipeline lives in [`Jenkinsfile-cd`](../Jenkinsfile-cd), same Job-DSL/Pipeline-script-from-SCM
-pattern as CI, **never created through the UI**. It is parameterized (`IMAGE_TAG`, `IMAGE_DIGEST`,
-`SOURCE_BUILD`, `NAMESPACE` default `devops-app`, `ROLLBACK_DEPTH` default `0` — internal, see
-Rollback below) and carries no `githubPush()` trigger: a push-triggered CD would deploy on every
+pattern as CI, **never created through the UI**. It is parameterized (`IMAGE_TAG`, `SOURCE_SHA`,
+`IMAGE_DIGEST`, `SOURCE_BUILD`, `NAMESPACE` default `devops-app`, `ROLLBACK_DEPTH` default `0` —
+internal, see Rollback below) and carries no `githubPush()` trigger: a push-triggered CD would deploy on every
 commit regardless of whether CI passed, which is exactly the gate this split exists to create. It
 starts only from `application-ci`'s Trigger CD stage, or by hand.
 
@@ -467,15 +478,21 @@ not. See design doc §7 for the full ownership table (also reproduced in `README
 ### 1. Checkout
 
 Sets the build description for traceability:
-`tag <TAG> <- ci #<SOURCE_BUILD> (<digest prefix>)` — so a CD build page names the CI build, commit,
-tag and digest that produced it without opening a second window.
+`tag <TAG> <- ci #<SOURCE_BUILD> src <SOURCE_SHA prefix> (<digest prefix>)` — so a CD build page names
+the CI build, commit, tag and digest that produced it without opening a second window. The commit is
+printed explicitly rather than inferred from the tag: they are the same string on an ordinary deploy
+and *different* on the two paths where it matters most — a chart-only redeploy (new commit, tag
+already on `release`) and a rollback (old tag, this build's tree).
 
 ### 2. Input Validation
 
 Nothing is committed to `master` until the request is known to be valid — a bad tag caught here costs
 nothing; caught after the promote commit it has already fired a webhook. Checks, in order: `IMAGE_TAG`
 non-empty; not `latest`; matches `^[0-9a-f]{7,40}$` (a commit SHA, not an arbitrary string);
-`NAMESPACE` in an allowlist of exactly one (`devops-app`); `AWS_REGION`/`CLUSTER_NAME`/`APP_DOMAIN`
+**`SOURCE_SHA` put through those same three checks, with no fallback to `HEAD`** — a manual,
+parameterless run fails *here* rather than promoting the branch tip, because promoting the branch tip
+is the defect the parameter exists to remove (see the source-commit race below); `NAMESPACE` in an
+allowlist of exactly one (`devops-app`); `AWS_REGION`/`CLUSTER_NAME`/`APP_DOMAIN`
 are all set as Jenkins global environment variables (checked *here*, not left to fail inside Smoke
 Test's `set -eu`, because by Smoke Test `PROMOTE_SHA` is already set and an "unbound variable" there
 would trigger the automatic rollback against a deploy that actually worked). Finally,
@@ -513,9 +530,11 @@ The deploy decision, expressed as a commit **on the `release` branch** — the o
 to a shared system before ArgoCD is asked to act:
 
 ```bash
-SOURCE_SHA="$(git rev-parse HEAD)" TAG="$TAG" DIGESTS="$IMAGE_DIGESTS" \
+SOURCE_SHA="$SOURCE_SHA" TAG="$TAG" DIGESTS="$IMAGE_DIGESTS" \
   scripts/ci/promote-to-release.sh
 ```
+
+`$SOURCE_SHA` is the validated **parameter**, not `git rev-parse HEAD` — see the race below.
 
 which does, in `scripts/ci/promote-to-release.sh`:
 
@@ -550,6 +569,46 @@ history it reads), and every release commit's tree is a real master tree plus th
 `git diff master release` shows the image block and nothing else. It also handles **deletions**,
 which `git checkout <sha> -- .` does not: that leaves a file removed on master present on release
 forever.
+
+**Which commit gets promoted — the source-commit race (fixed 2026-08-28).** <a id="failure-mode-the-ci-to-cd-source-commit-race"></a>
+`SOURCE_SHA` is a **required build parameter**, passed by `application-ci` from the commit it actually
+built. Until 2026-08-28 this stage derived it from `git rev-parse HEAD` in CD's own workspace, and
+that is a different sample of a moving target:
+
+| Value | Sampled | By |
+|---|---|---|
+| `IMAGE_TAG` | when CI finished building and triggered CD | `application-ci` |
+| the promoted commit (old behaviour) | when CD's agent pod started and checked out `master` | `application-cd` |
+
+Any push landing on `master` in that gap separated the two. **It is not merely a wrong commit
+message.** `promote-to-release.sh` builds the release commit with `git read-tree -u --reset
+"$SOURCE_SHA"`, so `release` then carried the *later* commit's **entire tree — chart included —**
+pinned to images that were never built from it. If that commit touched `charts/**`, its chart changes
+reached production paired with images nobody had ever built from them. And the `release: <sha> (image
+tag <tag>)` commits are this repo's durable record of what was deployed, so the record itself could be
+false. Observed live: a `release` tip reading `release: cfb579a (image tag edd3d9b)`.
+
+This is the **2026-08-21 queued-build race one stage further down the pipeline** — the same defect
+that made `scripts/ci/should-skip-build.sh --subjects` range-aware: sampling the branch *tip* instead
+of the commit the build was triggered *for*.
+
+The fix threads the commit through as a parameter and validates it exactly as `IMAGE_TAG` is
+validated, **with no fallback to `HEAD`** — because falling back to `HEAD` *is* the bug, and it fails
+silently, producing a green build, a healthy site and a permanently false `release:` commit. A manual
+run therefore has to supply the commit. Promote also fetches `master` first if the commit is not
+already in the workspace, so the `git rev-parse --verify` guard inside `promote-to-release.sh` stays
+the backstop rather than the first line of defence.
+
+`ci/jenkins/jenkins.yaml` declares the parameter too. It must: JCasC reloads the job definition from
+scratch on every controller restart (roughly daily on Spot) and silently drops any parameter that
+block does not list — the `ROLLBACK_DEPTH` miss of 2026-08-04 wearing a different hat, but with a
+worse landing, since CD would then refuse *every* deploy for want of a `SOURCE_SHA` it was in fact
+being sent.
+
+Regression cover: `scripts/tests/test-promote-to-release.sh` (six checks — three behavioural against
+throwaway repos, three static against `Jenkinsfile-ci`, `Jenkinsfile-cd` and the JCasC job, because
+the bug lived entirely in what CD *passed* the script and no behavioural test of the script can reach
+that).
 
 **Digests.** The four image digests are resolved from ECR in Input Validation
 (`scripts/ci/resolve-digests.sh`, in the `deploy` container, which has `aws`) and handed to this
@@ -749,6 +808,15 @@ failed. The `post { failure }` block then re-runs `application-cd` against that 
 (Promote → Deploy → Rollout → Verify → Smoke Test → Monitoring Gate) rather than two different
 mechanisms that could drift apart.
 
+**A rollback re-promotes the same tree at the previous tag** — it passes its own `SOURCE_SHA` down to
+the rollback build (required since 2026-08-28; without it the rollback build would be refused by its
+own Input Validation, which is a worse failure than the race that parameter fixes). So an automatic
+rollback is a **pure image revert**: nothing else about the deployed tree moves. Stated plainly rather
+than papered over — **if the failure was caused by the chart in that commit, reverting the tag alone
+does not undo it.** The old `git rev-parse HEAD` behaviour did not undo it either (it promoted a tree
+at least as new), so this is strictly more deterministic, not less complete. Reverting the chart too
+means a human deploying an older source commit — see the manual procedure below.
+
 **Bounded to one retry.** `ROLLBACK_DEPTH >= 1` on entry to `post { failure }` means this build is
 *itself* a rollback and it *also* failed verification — the second failure in a row means the problem
 is not "which tag", so the pipeline stops, reports "**NEEDS A HUMAN**", and leaves production running
@@ -798,8 +866,15 @@ Promote stage's commit actually lands.
 
 **The manual rollback procedure is the same machinery, not a separate runbook:**
 
-> Run `application-cd` with `IMAGE_TAG` set to any older commit SHA. That is the whole procedure; it
-> is the same machinery the automatic rollback uses.
+> Run `application-cd` with `IMAGE_TAG` set to any older commit SHA **and `SOURCE_SHA` set to the
+> commit whose tree you want deployed** — usually the full SHA of that same older commit, which
+> reverts chart and images together. That is the whole procedure; it is the same machinery the
+> automatic rollback uses.
+
+`SOURCE_SHA` has no default and the build **fails in Input Validation** without it. That is
+deliberate: the value it would otherwise default to is CD's own workspace `HEAD`, which is exactly the
+2026-08-28 defect (see Promote above). A build that refuses to start is recoverable in ten seconds; a
+build that promotes the wrong tree reports success and leaves a false record.
 
 Why not `argocd app rollback` (reverting to a previous ArgoCD history entry without touching git)?
 Rejected in the design (§8) because it leaves `master` asserting a version the cluster is not
@@ -987,6 +1062,7 @@ original 2026-07-20 design predicted and remain accurate, now labelled against `
 | **G4** — `application-cd`'s Promote stage: `git push` denied | Deploy key missing or read-only, or an HTTPS (not SSH) job SCM URL | Deploy key with **write** access + SSH SCM URL, on **both** jobs |
 | **G6** — a parameter checkbox/field is missing on a job | The job has never run, so Jenkins has not fully read its `Jenkinsfile` yet | Run the job once |
 | **G7** — a build failed and nobody noticed | Jenkins sends no email without SMTP | Accepted, see "Deferred, on purpose". Check the Jenkins UI, or `kubectl get application voteball -n argocd` |
+| A hand-started `application-cd` build fails immediately with *SOURCE_SHA is required* | There is no default, on purpose. The only value it could default to is CD's own workspace `HEAD`, which is the 2026-08-28 source-commit race (see Promote): it would promote the tree of whatever landed on `master` since, pinned to the requested tag, and report success | Pass `SOURCE_SHA` — the full SHA of the commit whose tree you want deployed. For a rollback that is normally the same older commit `IMAGE_TAG` names. `git show origin/release:charts/voteball/values.yaml` and the `release:` commit subjects say what is deployed now |
 | `application-cd` is triggered (by hand, usually) with a tag that is not in ECR | Someone passed a made-up or mistyped `IMAGE_TAG`, or a tag from before a `force_delete`d ECR repo | Input Validation's `images-exist.sh` check refuses it before anything is committed — the build fails at stage 2, `master` is untouched, nothing to roll back |
 | `application-cd`'s `Deploy`/`Rollout`/`Verify` stages fail with an auth error against ArgoCD | The `jenkins-cd` ArgoCD account's token expired or was rotated without updating Secrets Manager, or the controller was never restarted after the token was added (see runbook step 5) | Re-mint with `argocd account generate-token --account jenkins-cd`, merge into `voteball/jenkins`, then `kubectl rollout restart statefulset jenkins -n ci` — env vars only reach a controller at pod start |
 | `application-cd`'s Deploy stage fails immediately with `FailedPrecondition desc = another operation is already in progress`, and CD rolls back a deploy that was working | A race with ArgoCD's **own** automated sync, not a deploy failure. `syncPolicy.automated` means the tag-bump commit Promote just pushed can make ArgoCD start syncing seconds before the pipeline's explicit `argocd app sync` lands, and ArgoCD refuses a second concurrent operation. Hit for real by `application-cd` #3 (2026-08-10): pushed 12:40:17, refused 12:40:20, and that build's own event dump shows ArgoCD had already created the migrate Job for that build's image | Already handled — the Deploy stage treats **only** this error string as success and continues, since Rollout waits for the in-flight operation and Verify asserts the landed revision. Do not "clean this up" into a blanket `\|\| true`; every other sync error must still fail. If a deploy was already rolled back by this, re-promote the tag by hand (see Rollback) — but note `git pull --rebase` will silently **drop** that re-promote, because rolling a tag forward and back leaves two upstream commits whose patches are exact inverses, so the re-promote has the same patch-id as the original and rebase discards it as already applied, reporting only a `skippedCherryPicks` hint |

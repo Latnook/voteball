@@ -20,7 +20,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 11
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 234
+    assert cur.fetchone()[0] == 270
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
@@ -327,7 +327,7 @@ def test_seed_rerun_survives_league_name_drift(conn):
     cur.execute('SELECT COUNT(*) FROM leagues')
     assert cur.fetchone()[0] == 11, 'league name drift must not create a phantom duplicate league'
     cur.execute('SELECT COUNT(*) FROM clubs')
-    assert cur.fetchone()[0] == 234, 'league name drift must not duplicate that league\'s clubs'
+    assert cur.fetchone()[0] == 270, 'league name drift must not duplicate that league\'s clubs'
     cur.execute("SELECT COUNT(*) FROM clubs WHERE name_en = 'Paris Saint-Germain'")
     assert cur.fetchone()[0] == 1
     cur.close()
@@ -494,9 +494,11 @@ def test_nations_league_divisions_are_fully_populated(conn):
 # used to enumerate the absent domestic leagues instead; it was already missing Poland's when
 # Lech Poznan was added, which is what enumerating rather than stating the rule costs.
 EUROPA_LEAGUE_ONLY_CLUBS = [
-    'Ararat-Armenia', 'Celje', 'Celtic', 'Dinamo Zagreb', 'Jagiellonia Białystok', 'Lech Poznań',
-    'Levski Sofia', 'Lyon', 'NEC', 'Olympiacos', 'Olympique de Marseille', 'Sparta Prague',
-    'Stade Rennais', 'Sturm Graz', 'Torreense', 'Union Saint-Gilloise',
+    'AZ', 'Anderlecht', 'Ararat-Armenia', 'Benfica', 'Beşiktaş', 'Celje', 'Celtic',
+    'Dinamo Zagreb', 'Ferencváros', 'Jagiellonia Białystok', 'Lech Poznań', 'Levski Sofia',
+    'Lillestrøm SK', 'Lyon', 'NEC', 'OFI', 'Olympiacos', 'Olympique de Marseille', 'Omonoia',
+    'Red Bull Salzburg', 'Sparta Prague', 'Stade Rennais', 'Sturm Graz', 'Torreense',
+    'Union Saint-Gilloise', 'Viktoria Plzeň',
 ]
 
 # Clubs already seeded under a domestic league that gain the Europa League as their SECOND league.
@@ -638,12 +640,17 @@ def test_every_europa_league_club_has_a_crest_and_three_names(conn):
 
 
 CONFERENCE_LEAGUE_ONLY_CLUBS = [
-    'Heart of Midlothian', 'Iberia 1999', 'KuPS', 'Lugano', 'Thun', 'Universitatea Craiova',
+    'AGF', 'AS Monaco', 'Ajax', 'Borac Banja Luka', 'Braga', 'Brann', 'CSKA Sofia', 'Copenhagen',
+    'Egnatia', 'Hajduk Split', 'Heart of Midlothian', 'Iberia 1999', "Inter Club d'Escaldes",
+    'Jablonec', 'KAA Gent', 'KuPS', 'Kairat Almaty', 'Kauno Žalgiris', 'Lincoln Red Imps',
+    'Lugano', 'Midtjylland', 'Mjällby', 'Nordsjælland', 'Pafos', 'Panathinaikos',
+    'Red Star Belgrade', 'Riga', 'Sint-Truidense', 'Thun', 'Trabzonspor', 'Twente',
+    'Universitatea Craiova',
 ]
 
 # Clubs already seeded under a domestic league that gain the Conference League as their SECOND
 # league -- the same "reverse direction" link the Europa League block uses.
-LINKED_CONFERENCE_LEAGUE_CLUBS = ['SC Freiburg']
+LINKED_CONFERENCE_LEAGUE_CLUBS = ['Atalanta', 'Brighton & Hove Albion', 'Getafe', 'SC Freiburg']
 
 
 def test_conference_league_sits_between_the_europa_league_and_the_world_cup(conn):
@@ -715,6 +722,18 @@ def test_conference_league_votable_teams_are_the_two_rosters_combined(conn):
     cur.close()
 
 
+# Clubs deliberately seeded WITHOUT a crest, so logos.js renders its monogram fallback. An entry
+# here is a claim that no correct artwork exists, not that nobody got round to it -- keep the reason
+# with the name, and delete the entry the moment a real crest turns up.
+#
+# FK Kauno Žalgiris: every Wikipedia language edition puts File:BC Žalgiris 2023.png on the FOOTBALL
+# club's article, and that file is the BASKETBALL club's crest -- it shows a basketball and the year
+# 1944, which is BC Žalgiris's founding year (the football club was founded in 2004). Commons holds
+# no other candidate. Shipping it would put a basketball on a football poll, which is worse than a
+# monogram. Verified 2026-08-28 against commons, en.wikipedia and lt.wikipedia.
+CLUBS_WITHOUT_A_CREST = ['Kauno Žalgiris']
+
+
 def test_every_conference_league_club_has_a_crest_and_three_names(conn):
     cur = conn.cursor()
     cur.execute(
@@ -724,7 +743,21 @@ def test_every_conference_league_club_has_a_crest_and_three_names(conn):
            WHERE l.name_en = 'UEFA Conference League'
              AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
     )
-    assert cur.fetchall() == []
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(CLUBS_WITHOUT_A_CREST)
+    cur.close()
+
+
+def test_the_crest_exemption_list_is_not_a_dumping_ground(conn):
+    """The exemption above is only safe while it stays exact in BOTH directions: every name on it
+    must really be crest-less (a stale entry hides a crest that silently went missing), and the three
+    NAME columns are never exempt -- only logo_url is."""
+    cur = conn.cursor()
+    cur.execute('SELECT name_en FROM clubs WHERE logo_url IS NULL')
+    assert sorted(r[0] for r in cur.fetchall()) == sorted(CLUBS_WITHOUT_A_CREST), \
+        'a club lost its crest, or an exemption outlived the gap it documented'
+
+    cur.execute('SELECT name_en FROM clubs WHERE name_he IS NULL OR name_ru IS NULL')
+    assert cur.fetchall() == [], 'the crest exemption must never extend to a missing name'
     cur.close()
 
 
