@@ -151,6 +151,32 @@ spec:
               # Fluentd's first write auto-creates a plain index that ILM never manages.
               # 400 == already exists, which is the normal case on upgrade -- so this one call is
               # deliberately NOT -f, and its status is inspected instead.
+              # CLEAR A CONCRETE INDEX SQUATTING ON THE ALIAS NAME, if there is one.
+              #
+              # This Job is a post-install hook, which ArgoCD maps to PostSync -- so it runs AFTER
+              # the Fluentd Deployment, not before it. Fluentd therefore wins the race on a fresh
+              # install: its first write auto-creates a plain INDEX named `voteball-logs`, and
+              # Elasticsearch then refuses the alias with
+              #   invalid_alias_name_exception: an index or data stream exists with the same name
+              # leaving every log unmanaged by ILM and the Job failing its whole backoffLimit.
+              # Observed on the first real deploy, 2026-08-28.
+              #
+              # Deleting it is safe and is the reason retention is only 7 days here: CloudWatch has
+              # the authoritative copy of every one of these records (Fluent Bit fans out to both),
+              # so what is discarded is a few minutes of a SEARCH INDEX, never the logs themselves.
+              # The count is printed rather than swallowed, so the cost is visible in the Job log.
+              if curl -sf --cacert "$CA" -K /tmp/curlrc -o /dev/null \
+                   "$ES/voteball-logs/_alias/voteball-logs"; then
+                echo "alias voteball-logs already exists -- nothing to clear"
+              elif curl -sf --cacert "$CA" -K /tmp/curlrc -o /tmp/squat \
+                   "$ES/_cat/indices/voteball-logs?h=index,docs.count" 2>/dev/null && [ -s /tmp/squat ]; then
+                echo "WARNING: a concrete index is squatting on the alias name -- Fluentd started"
+                echo "         before this Job ran. Deleting it; CloudWatch keeps these records."
+                echo "         discarding: $(cat /tmp/squat)"
+                curl -sf --cacert "$CA" -K /tmp/curlrc -X DELETE "$ES/voteball-logs" >/dev/null \
+                  || { echo "could not delete the squatting index" >&2; exit 1; }
+              fi
+
               echo "bootstrapping write alias"
               code="$(curl -s -o /tmp/out -w '%{http_code}' --cacert "$CA" -K /tmp/curlrc \
                 -X PUT "$ES/%3Cvoteball-logs-000001%3E" \
