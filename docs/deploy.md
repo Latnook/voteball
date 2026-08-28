@@ -736,6 +736,69 @@ kind of drift GitOps cannot self-correct.
 Settings under `argocd-cm` are a softer case — the Helm release owns that ConfigMap, so the next
 `terraform apply` reverts a UI change to it regardless. The check makes it visible; Terraform undoes it.
 
+### Kibana, Elasticsearch and Fluentd (the log search stack)
+
+**Kibana is the only one of the three with a UI, and it is on the public internet** — unlike Grafana,
+ArgoCD and Jenkins above, you do not need `port-forward`:
+
+```
+https://kibana.voteball.latnook.com
+```
+
+That host is the **third member of ALB group `voteball`**, so it shares one load balancer with the
+website and the Jenkins webhook, and its certificate comes from ACM the same way theirs do. The
+username is **`elastic`** — ECK generates the password when it creates the Elasticsearch resource, so
+like Grafana's it is **different after every rebuild** and is not written down anywhere. Print the
+current one with:
+
+```bash
+kubectl get secret voteball-logs-es-elastic-user -n logging \
+  -o go-template='{{.data.elastic | base64decode}}{{"\n"}}'
+```
+
+First time in, Kibana asks for a **data view** before it will show anything: create one on the index
+pattern `voteball-logs-*` with `@timestamp` as the time field. There is one index behind a write
+alias, rolled over daily and **deleted after 7 days** — see below for why that is not a mistake.
+
+**Elasticsearch has no public route, deliberately.** Nothing outside the cluster should reach it, so
+it is reached the same way Prometheus is:
+
+```bash
+kubectl port-forward -n logging svc/voteball-logs-es-http 9200:9200
+# then, in a second terminal -- `-k` because ECK's certificate is self-signed INSIDE the cluster
+# (the real ACM certificate lives on the ALB in front of Kibana, not here):
+curl -k -u elastic:<password> https://localhost:9200/_cat/indices?v
+curl -k -u elastic:<password> https://localhost:9200/voteball-logs/_count
+```
+
+**Fluentd has no interface at all** and never will — it is a pipe, not a service. You observe it:
+
+```bash
+kubectl logs -n logging deploy/fluentd -f        # what it is doing
+kubectl get pods -n logging                      # whether it is up
+```
+
+**But "up" is not "working", and this is the one that matters.** Fluent Bit forwards to Fluentd and
+buffers silently when it cannot — so a broken ingest path looks exactly like a quiet site with nothing
+to log. The only check that tells them apart asks the product itself:
+
+```bash
+./scripts/logging/verify-efk.sh
+```
+
+It writes a marker into a real `devops-app` pod's log and confirms that document arrives in the index,
+which is also what deploy step 11e runs. Reading the ArgoCD Application's colour, or the pods' status,
+answers a different and easier question.
+
+**Three things that look wrong and are not:**
+
+- **Cluster health is `yellow`, permanently.** One Elasticsearch node, no replica shard, by design —
+  nothing alerts on it, because an alert that fires forever is one people learn to ignore.
+- **Logs older than 7 days are gone from Kibana.** CloudWatch Logs holds the authoritative copy;
+  Elasticsearch is the *search* surface, not the archive. Reaching further back means Logs Insights.
+- **Only `devops-app` logs are here.** Fluent Bit is scoped to that namespace on purpose — `ci`,
+  `argocd` and `monitoring` were about 95% of the volume and were dropped in the 2026-08-03 cost pass.
+
 ### Jenkins (the build server)
 
 Jenkins runs **inside the cluster** now (namespace `ci`) — there is no separate machine, nothing to

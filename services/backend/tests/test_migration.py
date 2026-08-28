@@ -722,18 +722,6 @@ def test_conference_league_votable_teams_are_the_two_rosters_combined(conn):
     cur.close()
 
 
-# Clubs deliberately seeded WITHOUT a crest, so logos.js renders its monogram fallback. An entry
-# here is a claim that no correct artwork exists, not that nobody got round to it -- keep the reason
-# with the name, and delete the entry the moment a real crest turns up.
-#
-# FK Kauno Žalgiris: every Wikipedia language edition puts File:BC Žalgiris 2023.png on the FOOTBALL
-# club's article, and that file is the BASKETBALL club's crest -- it shows a basketball and the year
-# 1944, which is BC Žalgiris's founding year (the football club was founded in 2004). Commons holds
-# no other candidate. Shipping it would put a basketball on a football poll, which is worse than a
-# monogram. Verified 2026-08-28 against commons, en.wikipedia and lt.wikipedia.
-CLUBS_WITHOUT_A_CREST = ['Kauno Žalgiris']
-
-
 def test_every_conference_league_club_has_a_crest_and_three_names(conn):
     cur = conn.cursor()
     cur.execute(
@@ -743,21 +731,21 @@ def test_every_conference_league_club_has_a_crest_and_three_names(conn):
            WHERE l.name_en = 'UEFA Conference League'
              AND (c.logo_url IS NULL OR c.name_he IS NULL OR c.name_ru IS NULL)"""
     )
-    assert sorted(r[0] for r in cur.fetchall()) == sorted(CLUBS_WITHOUT_A_CREST)
+    assert cur.fetchall() == []
     cur.close()
 
 
-def test_the_crest_exemption_list_is_not_a_dumping_ground(conn):
-    """The exemption above is only safe while it stays exact in BOTH directions: every name on it
-    must really be crest-less (a stale entry hides a crest that silently went missing), and the three
-    NAME columns are never exempt -- only logo_url is."""
+def test_every_club_has_a_crest_and_three_names(conn):
+    """The per-competition versions of this check only cover the league they name, so a club in a
+    league nobody wrote a test for could lose its crest silently. This one has no WHERE clause on
+    the league, which is the point: it holds for all 270 rows and needs no edit when a league is
+    added. Kept deliberately free of exemptions -- an allowlist here would be indistinguishable
+    from rot, since a crest that went missing and a crest nobody could source look identical."""
     cur = conn.cursor()
     cur.execute('SELECT name_en FROM clubs WHERE logo_url IS NULL')
-    assert sorted(r[0] for r in cur.fetchall()) == sorted(CLUBS_WITHOUT_A_CREST), \
-        'a club lost its crest, or an exemption outlived the gap it documented'
-
+    assert cur.fetchall() == [], 'a club is missing its crest'
     cur.execute('SELECT name_en FROM clubs WHERE name_he IS NULL OR name_ru IS NULL')
-    assert cur.fetchall() == [], 'the crest exemption must never extend to a missing name'
+    assert cur.fetchall() == [], 'a club is missing a Hebrew or Russian name'
     cur.close()
 
 
