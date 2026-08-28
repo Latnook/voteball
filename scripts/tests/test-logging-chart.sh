@@ -295,6 +295,15 @@ grep -qE 'cidr:[[:space:]]*"?10\.0\.16\.0/20"?[[:space:]]*\}' <<<"$np" \
   || fail "must admit the ALB from public subnet CIDR 10.0.16.0/20"
 pass "admits the ALB from 10.0.16.0/20"
 
+# The ECK operator lives in elastic-system, NOT in this namespace, and must reach Elasticsearch:9200
+# to read cluster health. Omitting it crashes nothing: the CR sits health=unknown / ApplyingChanges
+# with its pod 1/1 Running, and ArgoCD's sync then blocks forever on "waiting for healthy state" --
+# so every later resource in that sync, the Fluentd Deployment included, silently stops updating.
+# Hit live on 2026-08-28; the only visible symptom was a timeout in the operator's own log.
+grep -qE 'kubernetes\.io/metadata\.name:[[:space:]]*"?elastic-system"?[[:space:]]*$' <<<"$np" \
+  || fail "must admit the ECK operator from elastic-system -- without it Elasticsearch never reports healthy and the ArgoCD sync blocks"
+pass "admits the ECK operator from elastic-system"
+
 # Service-CIDR egress: load-bearing because the VPC CNI evaluates egress PRE-DNAT -- against the
 # ClusterIP the client dialled, not the pod IP the Service routes to -- so a same-namespace
 # podSelector rule does not cover pod-to-pod traffic that goes via a ClusterIP. Each port must be

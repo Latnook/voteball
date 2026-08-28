@@ -77,6 +77,24 @@ spec:
   ingress:
     - from:
         - podSelector: {}
+    # THE ECK OPERATOR, which lives in elastic-system and is NOT a pod in this namespace.
+    #
+    # Without this the operator cannot reach Elasticsearch's HTTP API, so it cannot read cluster
+    # health or manage security. The failure is not a crash: the Elasticsearch resource sits at
+    # `health: unknown` / `phase: ApplyingChanges` indefinitely while its POD is 1/1 Running, and
+    # ArgoCD's sync then blocks forever on "waiting for healthy state of .../Elasticsearch" -- so
+    # every LATER resource in the sync (the Fluentd Deployment among them) silently stops updating.
+    # Observed live 2026-08-28: `dial tcp <es-pod-ip>:9200: connect: connection timed out` in the
+    # operator log, with every pod Running and nothing in this namespace reporting an error.
+    #
+    # 9200 is the API the operator drives; 5601 lets it manage the Kibana association the same way.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: elastic-system
+      ports:
+        - { protocol: TCP, port: 9200 }
+        - { protocol: TCP, port: 5601 }
     - from:
         - ipBlock: { cidr: 10.0.0.0/20 }
         - ipBlock: { cidr: 10.0.16.0/20 }
