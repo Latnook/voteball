@@ -257,7 +257,7 @@ INSERT INTO seed_clubs VALUES
     ('jablonec', 'uefa-conference-league', NULL, 'Jablonec', 'פ.ק. יבלונץ', 'Яблонец', 'https://upload.wikimedia.org/wikipedia/en/8/85/FK_Jablonec%2C_logo_2026.svg', NULL),
     ('kaa-gent', 'uefa-conference-league', NULL, 'KAA Gent', 'גנט', 'Гент', 'https://upload.wikimedia.org/wikipedia/en/f/f4/KAA_Gent_logo.svg', NULL),
     ('kairat-almaty', 'uefa-conference-league', NULL, 'Kairat Almaty', 'קאיראט אלמטי', 'Кайрат', 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FCKairat_logo.png', NULL),
-    ('kauno-zalgiris', 'uefa-conference-league', NULL, 'Kauno Žalgiris', 'ז''לגיריס קובנה', 'Кауно Жальгирис', NULL, NULL),
+    ('kauno-zalgiris', 'uefa-conference-league', NULL, 'Kauno Žalgiris', 'ז''לגיריס קובנה', 'Кауно Жальгирис', 'https://upload.wikimedia.org/wikipedia/commons/b/b8/BC_%C5%BDalgiris_2023.png', NULL),
     ('kups', 'uefa-conference-league', NULL, 'KuPS', 'קופס', 'КуПС', 'https://upload.wikimedia.org/wikipedia/en/b/bd/KuPS_logo.svg', NULL),
     ('lincoln-red-imps', 'uefa-conference-league', NULL, 'Lincoln Red Imps', 'לינקולן רד אימפס', 'Линкольн Ред Импс', 'https://upload.wikimedia.org/wikipedia/en/6/6e/Lincoln_Red_Imps_FC_logo.svg', NULL),
     ('lugano', 'uefa-conference-league', NULL, 'Lugano', 'לוגאנו', 'Лугано', 'https://upload.wikimedia.org/wikipedia/commons/1/1c/Logo_FC_Lugano_2025.svg', NULL),
