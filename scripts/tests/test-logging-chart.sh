@@ -180,6 +180,18 @@ grep -qE '^[[:space:]]*readOnlyRootFilesystem:[[:space:]]*true[[:space:]]*$' <<<
   || fail "Fluentd must set readOnlyRootFilesystem: true (emptyDirs cover the two paths it writes)"
 pass "Fluentd runs non-root on a read-only root filesystem"
 
+# Ruby's Dir.tmpdir refuses a world-writable dir without the sticky bit, and a Kubernetes emptyDir
+# is 0777 with no sticky bit -- so fluentd dies at startup before reading any config. Verified on
+# the live cluster 2026-08-28. `docker run --tmpfs /tmp` mounts 1777 and CANNOT reproduce it, which
+# is why this is asserted here rather than left to the container test.
+grep -qE 'name:[[:space:]]*TMPDIR[[:space:]]*$' <<<"$fd" \
+  || fail "Fluentd must set TMPDIR -- a bare emptyDir at /tmp is world-writable and Ruby rejects it"
+grep -qE 'value:[[:space:]]*"?/tmp/fluentd"?[[:space:]]*$' <<<"$fd" \
+  || fail "TMPDIR must point at the private 0700 subdirectory, not at /tmp itself"
+grep -q 'initContainers:' <<<"$fd" \
+  || fail "Fluentd needs the init container that creates the 0700 TMPDIR"
+pass "Fluentd has a private TMPDIR and the init container that creates it"
+
 # --- ILM ---------------------------------------------------------------------------------------
 # Without a retention policy the 20Gi volume fills in ~130 days, Elasticsearch flips the index
 # read-only at its flood-stage watermark, and ingestion stops SILENTLY from the writer's side.
