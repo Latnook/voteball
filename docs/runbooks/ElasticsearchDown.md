@@ -4,8 +4,8 @@
 
 ## What this means
 
-This is **not** the same thing as cluster health being `yellow` — this cluster is a single node with
-no replica shard by design (see `docs/design/2026-08-27-efk-logging-design.md` decision 3), so `yellow`
+This is **not** the same thing as cluster health colour. This cluster is a single node with
+`number_of_replicas: 0` by design (see `docs/design/2026-08-27-efk-logging-design.md` decision 3), so it reports `green`
 is its permanent, correct state and nothing alerts on it. This alert fires only when the pod itself
 stops being Ready — the whole search backend is gone, not just under-replicated.
 

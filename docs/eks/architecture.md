@@ -346,7 +346,7 @@ flowchart LR
                 end
 
                 subgraph nslogging["namespace: logging"]
-                    es[("Elasticsearch x1<br/>gp3 PVC, no replica -- yellow by design")]
+                    es[("Elasticsearch x1<br/>gp3 PVC, number_of_replicas: 0")]
                     kb["Kibana x1<br/>ALB group: voteball, plain HTTP"]
                     fl["Fluentd x1<br/>aggregator, buffers + retries"]
                 end

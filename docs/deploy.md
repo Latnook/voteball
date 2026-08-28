@@ -792,7 +792,7 @@ answers a different and easier question.
 
 **Three things that look wrong and are not:**
 
-- **Cluster health is `yellow`, permanently.** One Elasticsearch node, no replica shard, by design —
+- **Do not read cluster health as a health check.** One Elasticsearch node with `number_of_replicas: 0` reports **green** (measured 2026-08-28) because every shard is assigned — but a single node that has lost its data would report green too, and adding a replica would make it permanently yellow. Colour describes shard allocation, not whether logs are arriving, so nothing here alerts on it —
   nothing alerts on it, because an alert that fires forever is one people learn to ignore.
 - **Logs older than 7 days are gone from Kibana.** CloudWatch Logs holds the authoritative copy;
   Elasticsearch is the *search* surface, not the archive. Reaching further back means Logs Insights.

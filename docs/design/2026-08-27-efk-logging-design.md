@@ -110,7 +110,7 @@ nodes rather than stacked, leaving ≥3.5 GiB free on each. This is enforceable 
 requests are what both the scheduler and Cluster Autoscaler read, so keeping the sum under that line
 is what stops CA quietly adding the node we said we would not add.
 
-**Downside:** a single Elasticsearch node means no replica shard, so the cluster health is **yellow by
+**Downside:** a single Elasticsearch node means no replica shard. Measured on the first real deploy (2026-08-28) it reports **green**, not yellow, because `number_of_replicas: 0` leaves nothing unassigned — but colour describes shard allocation, not whether the pipeline works, so it is not a health signal either way. Written here as **yellow by
 design, never green**, and a lost volume loses the logs. Both are acceptable — the logs are a
 convenience copy, CloudWatch still holds the authoritative one (decision 5), and alerting must
 therefore not page on "not green" (decision 9).
@@ -270,7 +270,7 @@ exporter:
 - `ElasticsearchDown` — the Elasticsearch pod not Ready for 15m.
 - `FluentdDown` — the Fluentd aggregator not Ready for 15m.
 
-Deliberately **not** alerting on cluster health `yellow`: a single-node Elasticsearch is permanently
+Deliberately **not** alerting on cluster health at all. The original reasoning said a single-node Elasticsearch is permanently
 yellow (decision 3), so that alert would fire forever and teach people to ignore the whole family —
 the same reasoning already recorded for `VoteballJourneyTrafficStopped`.
 
@@ -375,7 +375,7 @@ how tests land in the wrong container.
 
 Recorded so a later pass does not "improve" these:
 
-- **No replica shard, no second Elasticsearch node.** Yellow health is the designed state.
+- **No replica shard, no second Elasticsearch node.** With `number_of_replicas: 0` that reports green, not yellow — see decision 3; either way the colour is not a health signal.
 - **No `elasticsearch-exporter`.** Two kube-state-metrics alerts are the whole monitoring surface;
   a metrics exporter for a 1 GB index is more moving parts than the thing it watches.
 - **No Filebeat**, though ECK ships the CRD. The brief says Fluentd.
