@@ -88,6 +88,39 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
+      # Ruby's Dir.tmpdir REFUSES a world-writable directory unless it also carries the sticky
+      # bit, and a Kubernetes emptyDir is mounted 0777 with NO sticky bit. So fluentd's supervisor
+      # dies at startup with "could not find a temporary directory" before it reads any config --
+      # /tmp is rejected as world-writable, and its fallback (`.` = /home/fluent) is read-only.
+      #
+      # Verified against the real image: 0777 without sticky FAILS, 1777 works, and a writable
+      # /home/fluent does NOT help (it is world-writable too, so Ruby rejects it for the same
+      # reason). Kubernetes cannot set the sticky bit on an emptyDir, so this init container makes
+      # a 0700 subdirectory inside it and TMPDIR below points at that. A non-root uid can create
+      # it because the emptyDir itself is 0777.
+      #
+      # This is the SECOND path this container needs that a read-only root filesystem does not
+      # provide, after the file buffer -- and it only appears on a real cluster, because `docker
+      # run --tmpfs /tmp` mounts 1777 and therefore cannot reproduce it.
+      initContainers:
+        - name: tmpdir
+          image: {{ .Values.fluentd.image | quote }}
+          command: ["sh", "-c", "mkdir -p -m 0700 /tmp/fluentd && chmod 0700 /tmp/fluentd"]
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "32Mi"
+            limits:
+              cpu: "100m"
+              memory: "64Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
       containers:
         - name: fluentd
           image: {{ .Values.fluentd.image | quote }}
@@ -104,6 +137,10 @@ spec:
                   key: elastic
             - name: FLUENT_UID
               value: "1000"
+            # Points at the 0700 directory the init container above creates. Without this fluentd
+            # never starts -- see that comment for why /tmp itself is not acceptable to Ruby.
+            - name: TMPDIR
+              value: "/tmp/fluentd"
           resources:
             requests:
               cpu: {{ .Values.fluentd.resources.requests.cpu | quote }}
