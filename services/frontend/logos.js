@@ -113,10 +113,11 @@ const DARK_VARIANT_LOGOS = new Map([
   ['Jablonec', '/logos/fk-jablonec-dark.svg'],
 ]);
 
-// Clubs/leagues (by name_en) whose artwork file carries transparent padding, and the factor that
-// cancels it out. Every logo renders object-fit: contain inside a fixed 3.4rem box, so a file that
-// pads itself renders a visibly smaller crest than its neighbours -- the box is identical, the file
-// is the variable.
+// Entities (by name_en) whose artwork file carries transparent padding, and the factor that
+// cancels it out. Clubs, leagues and parties alike -- padding is a property of the FILE, so it is
+// independent of which of the other sets above an entity does or does not belong to. Every logo
+// renders object-fit: contain inside a fixed 3.4rem box, so a file that pads itself renders a
+// visibly smaller crest than its neighbours -- the box is identical, the file is the variable.
 //
 // The factor is a MEASUREMENT, not a taste setting: it is 1 / (fraction of the file's own canvas the
 // artwork actually spans), so the crest ends up filling the box like an unpadded one. Measure it,
@@ -134,6 +135,14 @@ const DARK_VARIANT_LOGOS = new Map([
 // or the two corrections multiply.
 const PADDED_CRESTS = new Map([
   ['Brighton & Hove Albion', 1.4],
+  // The first PARTY here, and the reason the factor has to be measured rather than eyeballed: every
+  // other party wordmark in the grid spans 1.000 of its own canvas (Shas 0.984 and El HaDegel 0.937
+  // are the only ones under it), so ביחד's file at 0.906 wide x 0.781 tall would have been the one
+  // logo rendering visibly smaller than all fourteen of its neighbours. .logo-wide is far wider than
+  // it is tall and this wordmark is wider still (3.11:1 file, 3.61:1 artwork), so object-fit fits it
+  // by WIDTH -- which is why the horizontal span is the one that decides the factor here and the
+  // vertical padding rides along. Same formula as Brighton's, same way of measuring it.
+  ['Together', 1.1],
 ]);
 
 // Parties (by name_en) whose artwork is dark ink on a TRANSPARENT interior, which the recolour below
