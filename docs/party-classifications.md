@@ -1045,8 +1045,79 @@ moved; two tags added.**
   paper's defunding language. Two documents now lean on this boundary. **If a third does, re-open
   the −1.**
 
-Sources: the ten papers below, the first eight read 2026-08-01 and the last two 2026-08-11, all
-first-party (`democrats-media.s3.us-east-1.amazonaws.com`):
+**2026-08-31 — the eleventh paper (חברה ערבית) read, and the August platform booklet proven to be a
+re-package. No axis moved and no tag was added; `seed.sql` is unchanged by this pass.**
+
+The party published a dedicated Arab-society paper — five steps: a national task force to destroy the
+criminal organisations; statutory master plans for the Arab, Druze and Bedouin localities with
+*"נבטל את חוק קמיניץ"*; a new five-year plan for gap closure with full budget execution and oversight;
+equal per-pupil education funding *"נשים סוף לאפליה התקציבית בין זרמי החינוך"* by uniform criteria,
+plus Arab teachers into the Hebrew system and strengthened Hebrew and English in Arab education; and
+*"נעגן את עקרון השוויון בחוק יסוד ונתקן את חוק הלאום"* with adequate representation of Arab citizens
+in the ministries, the government companies and the decision-making centres.
+
+- **All three axes hold.** economic **−2**: distributive spending — five-year plan, infrastructure,
+  employment, transport, industrial zones, equal per-pupil funding — with no tax rate, no
+  nationalization and no privatization anywhere in the document, which is the same social-democratic
+  shape the economic paper set. security **−1**: מדינה פלסטינית, פלסטינ, כיבוש and שתי מדינות each
+  occur **0 times**. Revision 15 left the standing instruction *"two documents now lean on this
+  boundary — if a third does, re-open the −1"*; **this is not that third document**, it presses on
+  the boundary in neither direction, so the −1 stands at eleven papers. religiosity **−3**
+  untouched — the paper carries no religion-and-state content, and the axis is scoped to *Jewish*
+  religion-and-state regardless.
+- **`jewish-arab-partnership` is already held as both a tag and a family, and this paper is now its
+  strongest first-party evidence.** Until today the row earned it from the realized list (בשיר at
+  #10) and from scattered lines in other papers; it now rests on a dedicated programme.
+- **`affirmative-action` considered and rejected, and the precedent forces it.** The paper asks for
+  *"ייצוג הולם"* with no target, no mechanism and no enforcement. Revision 29 refused this same tag
+  to ביחד on a **50% representation target plus a party-funding incentive** — strictly stronger
+  evidence than a bare adequacy clause. Granting it here would silently lower a bar set five days
+  ago.
+- **`arab-representation` and `focuses-on-arab-israeli-civil-issues` rejected on the
+  `reservist-movement` distinction this row already carries.** Both record what a party *is*
+  (הרשימה המשותפת, רע"ם), not that a Jewish-Zionist party has a policy about Arab citizens. Note the
+  adjacent trap: **`arab-civil-service` is not about civil-service employment.** It marks a
+  *national-service track for Arab citizens* (כחול לבן's founding position, אל הדגל's bill §8), which
+  is conscription policy, not representation policy. The name invites exactly the wrong match.
+- **`sectoral-budgeting` rejected, but the tension is real and is recorded rather than tagged.** The
+  party's own economic paper opens its first step with *"במקום תקציבים מגזריים, נשקיע בתעסוקה
+  ובשירותים החברתיים"*, and this paper demands a תוכנית חומש, which is a sectoral instrument. The tag
+  is held by הליכוד, הציונות הדתית, ש"ס and יהדות התורה for coalition funds; a gap-closing five-year
+  plan of the 922/550 kind is not that, and stretching the tag to cover both would erase the
+  distinction it exists to draw.
+- **The finding is a silence.** גיוס, שירות לאומי and שירות אזרחי occur **0 times** in the paper.
+  Revision 15 left open who *"הרחבת גיוס של אוכלוסיות נוספות"* means on a row carrying
+  `jewish-arab-partnership`. A dedicated Arab-society paper — published after that clause, covering
+  crime, planning, budget, education and legal status — is the most natural place a clarification
+  would have appeared, and it is not there. That does not prove the vagueness is deliberate; it
+  removes the reading that it was merely an unfinished sentence. The question stays open and narrows.
+- **A tag is missing from the vocabulary and is deliberately not created here.** Nothing among the
+  135 tags covers **repeal of the Kaminitz Law and statutory planning for Arab, Druze and Bedouin
+  localities**, which is this paper's most specific and least universal plank — the opposite of the
+  near-universal rhetoric that got `periphery-development` retired. הרשימה המשותפת and רע"ם very
+  likely hold the same position, so revision 19's rule applies: **read the content first, then create
+  the tag with membership decided in one pass.** Filed under Open questions rather than half-created
+  on one row.
+
+**`plan-8-26-he.pdf` — the 16-page booklet the homepage links as the platform — adds nothing, and
+proving that was the larger half of this pass.** It is dated 2026-08-11 and looks like a major new
+platform; it is a consolidation of eight papers this file has already read. Measured by sentence-level
+containment: **מדיני-ביטחוני 48/48, דמוקרטיה ומשפט 44/44, חברתי-כלכלי 36/36, דת ומדינה 39/39,
+חינוך 39/39 and סביבה 40/40 are verbatim.** The crime and להט"ב chapters showed apparent divergence
+(17/26 and 9/36) and **that divergence was an artifact, not a finding** — every distinctive token
+(*חברת ביטוח ממשלתית*, *ועדה קרואה*, *עוצרים את הדימום*, *קבינט פשיעה*, *טיפולי המרה*, *פונדקאות*,
+the ₪100M departmental budget) is present in both, and the chapters match the papers in length to
+within 4%; `pdftotext` reorders the bulleted columns, so whole-sentence equality fails on text that is
+identical. **Checking the tokens before believing the sentence diff is the point** — the same
+discipline as running a `grep` against input you know should match. The booklet **omits** מילואימניקים,
+שיווין מגדרי and this Arab-society paper entirely (0 of its 34 sentences appear in it), so it is a
+strict subset of the corpus and is listed below as a convenience copy, not an eleventh source.
+Enumerating the site is what surfaced it: the S3 bucket refuses `ListObjectsV2`, and no page on
+`democrats.org.il` links the topic PDFs at all — the booklet is reachable only from the homepage.
+
+Sources: the eleven papers below — the first eight read 2026-08-01, מילואימניקים and שיווין מגדרי
+2026-08-11, and חברה ערבית 2026-08-31 — all first-party
+(`democrats-media.s3.us-east-1.amazonaws.com`):
 [מדיני־ביטחוני](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%93%D7%99%D7%A0%D7%99+%D7%91%D7%99%D7%98%D7%97%D7%95%D7%A0%D7%99+(1).pdf),
 [כלכלי־חברתי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+(2).pdf),
 [דת ומדינה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%AA+%D7%95%D7%9E%D7%93%D7%99%D7%A0%D7%94.pdf),
@@ -1056,7 +1127,13 @@ first-party (`democrats-media.s3.us-east-1.amazonaws.com`):
 [חיסול הפשע המאורגן](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A1%D7%95%D7%9C+%D7%94%D7%A4%D7%A9%D7%A2+%D7%94%D7%9E%D7%90%D7%95%D7%A8%D7%92%D7%9F.pdf),
 [סביבה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%A6%D7%A2+%D7%A1%D7%91%D7%99%D7%91%D7%94.pdf),
 [מילואימניקים](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D.pdf),
-[שיווין מגדרי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%A9%D7%99%D7%95%D7%95%D7%99%D7%95%D7%9F+%D7%9E%D7%92%D7%93%D7%A8%D7%99.pdf).
+[שיווין מגדרי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%A9%D7%99%D7%95%D7%95%D7%99%D7%95%D7%9F+%D7%9E%D7%92%D7%93%D7%A8%D7%99.pdf),
+[חברה ערבית](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%91%D7%A8%D7%94+%D7%A2%D7%A8%D7%91%D7%99%D7%AA.pdf).
+Plus the consolidated booklet
+[תוכנית הדמוקרטים, אוגוסט 2026](https://democrats.org.il/wp-content/uploads/2026/08/plan-8-26-he.pdf)
+(16pp, on the party site rather than the S3 bucket), which is **a re-package of eight of the above
+and carries no text of its own** — see the measurement in the 2026-08-31 block. It is listed so the
+next pass recognises it instead of re-reading it.
 These are Illustrator exports with **no usable text layer for WebFetch** — its summarizer receives
 binary and reports the document as unreadable. `pdftotext` extracts them cleanly. Reach for it
 before concluding a party PDF is inaccessible.
@@ -3545,6 +3622,14 @@ bought nothing here, because the defect was never in the pixels being measured.
   is the best-supported version). **None of it changes a tag** — every tag rests on a candidate's
   record, not on their precise slot — but the realized list quoted in that entry should be reconciled
   against the certified filing, and the "eight reserved slots" claim confirmed, once it exists.
+- **The vocabulary has no tag for Arab, Druze and Bedouin land-use planning, and one may be earned.**
+  הדמוקרטים's חברה ערבית paper (2026-08-31) demands statutory master plans for those localities and
+  *"נבטל את חוק קמיניץ"* — a named statute, not a sentiment, which is the opposite of the
+  near-universal rhetoric that got `periphery-development` retired in revision 19. It was **not**
+  created on that row alone, because הרשימה המשותפת and רע"ם almost certainly hold the same position
+  and revision 19's rule is to read the content first and decide membership in one pass. The trigger
+  is a pass over the two Arab-list rows' own platforms; if both carry it, a three-holder tag spanning
+  `opposition` and `arab-representation` records something the axes cannot.
 - Election date is **2026-10-27**; lists are not final, so more revisions should be expected.
 
 ---
@@ -3684,3 +3769,4 @@ pass happened, for anyone reading git history.
 | 2026-08-30 | revision 33 — **הציונות הדתית: `/judaization/` re-read and found REWRITTEN.** `page-sitemap.xml` puts its `lastmod` at 2026-08-27, one day after revision 31 read it, and not one of the four strings that entry quotes survives in the current HTML or its images; the Internet Archive has no snapshot of the URL, so the earlier text is unrecoverable and those quotations can no longer be checked. Revision 31 stands as a dated record. **The rule this produces**: `lastmod` already dates every page on a site enumerated the revision-31 way, so re-checking a page already read costs the same single request as discovering a new one. The current version is a three-pillar programme (אדמה / אדם / ביטחון) whose banner **״כן. מייהדים.״** is image-only — the `/victory/` trap a second time on the same row — and whose **third pillar has no counterpart in revision 31's account**: a national הוראת שעה against organised crime aimed at *"לפרק את האוטונומיה הערבית החמושה"*, with weapons possession defined as terrorism, שב"כ deployment, administrative detention, evidentiary presumptions and *"מודל ג׳וליאני"* enforcement. The security paragraph appears twice with different adjectives (*"ודרקוניים"* / *"ממוקדים ומפוקחים משפטית"*), both party text. **No axis moved** — sixth consecutive reading; +3/+3 at their poles and the incentive package is regional subsidy denominated in shekels, `claims-economically-liberal`'s fourth and best evidence base. **No tag added.** Two dimensions queued behind the 18-row sweep instead — demography (queued since revision 31 but never filed in Open questions until now, the same mechanism that stalled the `religiosity −3` band) and domestic policing of Arab citizens, which no tag covers and which עוצמה יהודית visibly earns too. Queue 4 → 6 |
 | 2026-08-30 | revision 34 — **ש"ס and יהדות התורה split into two entries and evidenced for the first time.** The two rows had shared one four-line block scoring them identically on every column, with only `religiosity` argued — the exact collapse the "axis records direction, tag records motive" convention exists to prevent, and the thinnest entry on a 3,400-line page. **No axis moved**: `religiosity` +2 confirmed by **חוק שיפוט בתי דין דתיים (בוררות), תשפ"ו-2026** (Gafni, Yaakov Asher, Yinon Azoulay; 65–41, 24 March 2026), which lets religious courts arbitrate civil matters **by the religious law they apply** but only on both parties' signature — a parallel jurisdiction, not a halakhic state, so the same +2 as זהות, which only proposed it; `economic` −2 confirmed for ש"ס by the food-voucher criteria its own Welfare Ministry wrote (per-capita income **without** a מיצוי כושר השתכרות test) and **knowingly retained as the page's weakest number** for יהדות התורה, which has no economic doctrine on record at all; `security` +1 confirmed by both factions **supporting** the hostage deals on פדיון שבויים grounds, against `opposes-hostage-deals` on the three far-right rows; `bloc` bibi **kept on both and now the most contestable cell on the page**, with the evidence both ways written out and an explicit move condition in Open questions. **Twelve tags added, 2 → 8 on each row.** `scholar-exemption-retained` is the correction that most needed making — it sat on four parties that merely tolerate the yeshiva exemption and on neither of the two organised around it. `rabbinic-authority-led` moves from a נעם singleton to its paradigm case; `jewish-law-parallel-jurisdiction` from a Zehut singleton to the parties that legislated it; `judicial-overhaul` from the record (the reasonableness repeal passed **64–0** with the opposition boycotting, and 64 was the whole coalition, so the arithmetic settles it), reinforced by Basic Law: Torah Study (63–52) and the arrest-freeze law (58–54, frozen by the High Court). Two new tags, both deliberate singletons or near: `opposes-core-curriculum` (the mirror of `core-curriculum`'s seven holders, resting on the 55% funding architecture and the 25 December 2025 government decision to introduce גפ"ן **"ללא תלות בלימודי ליבה"**) and, on יהדות התורה alone, `two-faction-list` — **whose justification was wrong as written and was corrected the same day, see revision 35**. `mizrahi-representation` on ש"ס alone, since `sector: haredi` is what made the two rows look identical. `judicial-restraint` added to both families, 3 → 4. **Method note, and the reason this row is worth reading twice: the platform is genuinely absent and that was tested, not assumed** — `shas.org.il` returns `ECONNREFUSED` to two independent fetchers and its newest Wayback snapshot is 2022-11-01, and no דגל/אגודה host resolves at all. **The headline of the record is that four years of maximal leverage produced no exemption statute** (79,000+ conscription orders → ~2,100 enlistments; 17 proactive arrests in a year) **while the budget delivered almost completely** (~₪2.4bn sectoral education budgets in 2026, a ₪942m/+32.5% rise, ₪1.1bn already paid before the Knesset approved it) |
 | 2026-08-30 | revision 35 — **יהדות התורה's faction split is a ritual, not an event, and revision 34 read it as news.** The repo owner flagged it within the hour: אגודת ישראל and דגל התורה have run together and sat as independent parties since **1992**, and he.wikipedia states the base rate exactly — the faction has split into its components **at the end of every Knesset term up to the 25th except the 15th, 18th and 19th**, and **every single time** the reopened joint-run negotiation succeeded and the two ran again on one list. So the **16 July 2026** split carried no information, the Kikar HaShabbat briefing about דגל weighing an independent run is what that negotiation looks like from outside every cycle, and Maklev's *"אנחנו לא מתגרשים אלא מתחדשים ונפרדים לתקופה"* describes a procedure rather than hedging about a breakup. **`two-faction-list` is kept and its justification replaced**: it now records the standing structure — a joint list of two independent parties with **separate מועצות גדולי תורה that rarely convene together** — which is also *why* `conscription-split` is the right family, since two councils holding two lines is not one party failing to hold one. The **"will it be on the ballot as one list" open question is closed the day it was opened**, and **`bloc: bibi` is closed too, by the owner** (~99% that UTJ goes with Netanyahu); the evidence both ways stays under ש"ס, and the move trigger stays a *positive* signal. **The method lesson is the durable half, and it is a new shape for this page: every source in revision 34's corpus was accurate, correctly dated and correctly quoted, and the conclusion was still wrong, because the error was in the baseline the facts were read against.** Worse, the disconfirming sentence was **already in the research output** — "UTJ has split at the end of most Knesset terms since the 13th and reunited each time" — and was read and under-weighted, which no amount of further sourcing would have fixed. This is the sibling of the "reachable is not current" and "corroboration is not coverage" rules in `services/backend/CLAUDE.md`: **for any fact about a recurring institution, establish the base rate before deciding the fact is a development.** No axis, bloc, sector, tag or family value changed |
+| 2026-08-31 | revision 36 — **הדמוקרטים's corpus 10 → 11 (חברה ערבית), and the August platform booklet proven to be a re-package.** **No axis moved and no tag was added; `seed.sql` is unchanged** — the first pass on this page to end that way, which is the outcome worth recording rather than hiding. The new paper is the row's strongest first-party evidence for `jewish-arab-partnership`, held until now off the realized list. **Four tags considered and rejected**, each on a precedent rather than on taste: `affirmative-action` (the paper asks for *"ייצוג הולם"* with no target and no mechanism, while revision 29 refused the same tag to ביחד on a **50% target plus a party-funding incentive** — granting it here would lower a bar set five days earlier), `arab-representation` and `focuses-on-arab-israeli-civil-issues` (both record what a party *is*, the `reservist-movement` distinction this row already carries), and `sectoral-budgeting` (held for coalition funds; a gap-closing חומש is not that, and the row's own economic paper runs *"במקום תקציבים מגזריים"*, so the tension is recorded in prose instead). **A name trap logged**: `arab-civil-service` is a national-service track for Arab citizens, not civil-service employment — it invites exactly the wrong match on a paper about representation in the ministries. **security −1 held at eleven papers**: revision 15's standing instruction was to re-open it if a *third* document leaned on the −1/−2 boundary, and this one leans in neither direction (מדינה פלסטינית, פלסטינ, כיבוש, שתי מדינות = 0 each). **The finding is a silence**: גיוס, שירות לאומי and שירות אזרחי are also 0, so the dedicated Arab-society paper is the most natural place revision 15's *"אוכלוסיות נוספות"* ambiguity would have been clarified and it was not — the open question narrows toward deliberate rather than unfinished. **`plan-8-26-he.pdf` (16pp, 2026-08-11, linked from the homepage as the platform) contributes nothing**: six chapters are verbatim at 48/48, 44/44, 39/39, 40/40, 39/39 and 36/36 sentences, and the crime and להט"ב chapters' apparent 17/26 and 9/36 divergence was **a `pdftotext` bullet-column artifact, not a finding** — every distinctive token is in both and the chapters match in length to within 4%. It omits מילואימניקים, שיווין מגדרי and חברה ערבית entirely (0 of the latter's 34 sentences), so it is a strict subset. **Checking tokens before believing a sentence diff** is the reusable half; the mirror of it is that the S3 bucket refuses `ListObjectsV2` and no page on `democrats.org.il` links the topic PDFs at all, so the booklet was reachable only by enumerating the site — revision 31's rule finding a document that then turned out to be worth nothing, which is still the rule working. **A tag gap filed rather than filled**: nothing covers the Kaminitz-Law repeal and Arab/Druze/Bedouin master planning, and it is queued behind a pass over the two Arab-list rows |
