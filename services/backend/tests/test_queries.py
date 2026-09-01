@@ -39,7 +39,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Likud', 'Yashar', 'Together', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
         'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
-        'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Zehut', 'Noam',
+        'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Noam',
         'Unity', 'Amcha Yisrael',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
@@ -47,7 +47,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
         'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
-        'המפלגה הכלכלית', 'אל הדגל', 'בית ציוני - המילואימניקים', 'זהות', 'נעם',
+        'המפלגה הכלכלית', 'אל הדגל', 'בית ציוני - המילואימניקים', 'נעם',
         'האחדות', 'עמך ישראל',
     }
 
@@ -1012,7 +1012,7 @@ def test_every_seeded_party_is_classified(conn):
 FAMILY_VOCABULARY = {
     'universal-conscription', 'conscription-exemption', 'conscription-split',
     'conscription-by-incentive', 'constitutional-reform', 'judicial-restraint',
-    'welfare-state', 'cost-of-living', 'sectoral-budgeting', 'market-liberal',
+    'welfare-state', 'cost-of-living', 'sectoral-budgeting',
     'not-economy-focused', 'arab-representation', 'jewish-arab-partnership',
     'reservist-movement',
 }

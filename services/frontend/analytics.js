@@ -299,7 +299,6 @@ const FAMILY_LABEL_KEYS = {
   'welfare-state': 'familyWelfareState',
   'cost-of-living': 'familyCostOfLiving',
   'sectoral-budgeting': 'familySectoralBudgeting',
-  'market-liberal': 'familyMarketLiberal',
   'not-economy-focused': 'familyNotEconomyFocused',
   'arab-representation': 'familyArabRepresentation',
   'jewish-arab-partnership': 'familyJewishArabPartnership',
