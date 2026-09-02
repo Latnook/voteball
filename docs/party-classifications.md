@@ -473,7 +473,9 @@ but the gap is the reason a future revision may find the parliamentary party div
 Gadi Eisenkot's party, founded 2025-09-16. Co-founders include Matan Kahana (former Religious
 Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief), Nir Zohar (Wix).
 Source: the party's own site `yasharwitheisenkot.com` — the registered party goals, the 10-step
-brochure and all nine principles papers, listed in full under revision 21 below.
+brochure and all **eleven** principles papers: nine listed under revision 21 below, the last two
+under revision 39. `principles-sitemap.xml` enumerates the papers (and their `lastmod` dates) in one
+request; the goals and the brochure are not in it, so *papers* and *documents* are separate counts.
 
 This row previously read `new-party` + `undefined-ideology` at a default `0/0/NULL`. That was honest
 when written — the party had no platform. It has one now, and polls ahead of Likud, so the
@@ -491,8 +493,9 @@ registered goals (`/topic/missions/`, *"כפי שאושרו ע"י רשם המפ�
 *"הבטחת רוב יהודי מוצק"* alongside *"נחתור לשלום"* and, in the brochure, *"הרחבת מעגל השלום"*. That
 is the premise Eisenkot's anti-annexation argument runs on, stated in a document the Registrar of
 Parties approved — so `anti-annexation` no longer rests *entirely* on his personal statements. The
-inference from it does: eleven documents contain no sentence on a Palestinian state, the
-territories or sovereignty. **Do not upgrade the tag's basis past what the text says.**
+inference from it does: **thirteen** documents contain no sentence on a Palestinian state, the
+territories or sovereignty — eleven as of revision 21, and the two papers revision 39 added, one of
+them about the northern border. **Do not upgrade the tag's basis past what the text says.**
 
 Not +2, which is the interesting call. Every +2 party *that vetoes statehood* pairs that veto with a
 territorial claim. Eisenkot has the first half and explicitly refuses the second — his objection to
@@ -649,8 +652,13 @@ evidenced, and do not select by filename.**
   `governance-reform` and `public-service-reform`, both of which this row holds.
 - `gender-equality` — the violence-against-women programme is crime policy in a crime paper.
   הדמוקרטים earned this tag from a dedicated equality paper; the standard should not slip.
-- `welfare-state` — this row runs the opposite doctrine, restated verbatim: *"נבטיח שהעבודה תשתלם
-  תמיד יותר מקצבה"*.
+- ~~`welfare-state` — this row runs the opposite doctrine, restated verbatim: *"נבטיח שהעבודה תשתלם
+  תמיד יותר מקצבה"*.~~ **Reason struck 2026-09-02 (revision 39) — the conclusion survives, the
+  argument does not.** Revision 29 granted the tag to ביחד while leaving that row's identical
+  workfare finding standing, holding that an aging plan *"is a different class of document"* from an
+  economics paper. That bars quoting one document to reject a tag earned in another, which is
+  precisely what this line does. Re-rejected on the aging paper alone, and narrowly; see revision 39
+  below for the margin and for the line that would earn it.
 
 **economic +1 re-verified and unmoved**, now with the deciding line quoted from the party's own
 economics paper rather than from press coverage. Both directions grew: *liberalizing* gains
@@ -675,6 +683,132 @@ not "a million olim in a decade" but **a million in the first decade and two mil
 state's centenary, which is the frame the whole corpus is built around. And the economics page is
 **still carrying Hebrew lorem ipsum** in its body (*"לורם איפסום דולור סיט אמט…"*) — the corpus is
 published but not finished, so treat absences on that page as unwritten rather than as positions.
+
+
+**2026-09-02 — revision 39. The corpus grew 11 → 13 documents; two new principles papers read. No
+axis moved, no tag was added, and `seed.sql` is unchanged** — the second pass on this page to end
+that way (after revision 36), and again the outcome is the record rather than something to hide.
+Both read 2026-09-02:
+[ישר! לשיקום ושגשוג הצפון](https://yasharwitheisenkot.com/principles/north-reconstruction-and-prosperity/)
+(published 2026-08-17) ·
+[ישר! לגיל השלישי](https://yasharwitheisenkot.com/principles/senior-citizens/) (published 2026-09-01).
+
+**The corpus is enumerable in one request, and the `lastmod` dates matter more than the count.**
+`https://yasharwitheisenkot.com/principles-sitemap.xml` lists **11 principles papers plus the
+`/principles/` index** — the technique revision 31 established for הציונות הדתית, and it answers
+three questions the party's own menu cannot. First, **revision 21 was not incomplete**: it read nine
+papers, and the two new ones are dated *after* it (2026-08-17, the day after; 2026-09-01). A pass
+that reads a corpus and misses nothing still needs a way to prove that, and "nine" alone never
+could. Second, it surfaces the **twelfth and thirteenth documents** — the brochure and the registered
+goals are not in this sitemap, so the count of *papers* and the count of *documents* are different
+numbers and must be stated separately. Third, and the reason to record dates at all:
+**`aliyah-and-integration` was modified 2026-08-18, two days after revision 21 read it** — the single
+page every religion-and-state finding on this row rests on. Re-checked against the live page: all four
+cited phrases (מעמד אישי, זוגיות אזרחית, גיור מכבד, המרחב הציבורי והשבת) are still present, so
+religiosity −2 stands on the same text it always did. **A `lastmod` after the read is a re-read
+trigger of the same class as revision 22's moved URL**, and it is cheaper — it arrives with the
+enumeration instead of waiting for a redirect to be noticed.
+
+**A fourteenth document is cross-referenced and does not exist.** The north paper closes its
+execution section with *"להרחבה על מנגנון חוזה פיתוח אזורי בתכנית ישר! לחיזוק הפריפריה הגאוגרפית
+ופיתוח אזורי"*. That title is on **no** page in the sitemap, and the near-miss is genuinely
+misleading: `inlocation-and-aliya` is titled *ישר! לעליית המיליונים, לשיבה הביתה וIn-location* —
+immigration, not periphery. So it is announced but unpublished, and an absence there is unwritten
+rather than a position, the same reading the economics page's lorem ipsum already forces. It changes
+nothing about `periphery-development`, **retired in revision 19 and still retired**: this corpus now
+contains a costed 15-billion-shekel regional programme *and* forward-references a dedicated periphery
+plan, which is the third pass running to strengthen the retirement rather than challenge it. A tag
+that the best-documented party on the subject would earn from three separate documents, while other
+rows hold it on nothing, is measuring audit depth.
+
+**`welfare-state` — rejected for a second time, and revision 21's stated reason has been struck,
+because a later pass on a neighbouring row invalidated it.** Revision 21 declined the tag on the
+ground that *"this row runs the opposite doctrine"*, quoting the economics paper's
+*"נבטיח שהעבודה תשתלם תמיד יותר מקצבה"*. **Revision 29 then bars exactly that move**: it added the
+tag to ביחד while leaving the servants law's identical workfare finding standing, on the explicit
+holding that the aging plan *"is a different class of document"* and the old reasoning *"was not
+wrong, it was about a different document."* ישר's economics paper and its aging paper are two
+documents in the same way. So the rejection has to be re-earned on the aging paper alone — and it is,
+but narrowly, and the margin is worth stating because this is the closest this row has come:
+
+- **What it has.** *"נעלה את קצבאות הזקנה למי שהכנסתם נמוכה"*, naming Holocaust survivors, olim who
+  worked from arrival but accrued a low pension, and lifelong welfare recipients — **and, separately,
+  *"נייצר מנגנון קבע לשימור ערך הקצבאות"***, which is not restricted to that cohort. A permanent
+  value-preservation mechanism is structurally the same act as re-indexation. No funding source and
+  no offsetting cut appear anywhere on the page, which defeats the third clause of revision 21's
+  reasoning too.
+- **What decides it.** Revision 29's standard is *a change to the statutory formula of a universal
+  entitlement, not a budget line* — and ביחד met it by **naming the formula**: the average wage
+  instead of the CPI, identifying the 2003 de-indexation it reverses, with ~350,000 people and a
+  doubling attached. ישר promises to *build* a mechanism and names neither formula, baseline nor
+  scope. That is a commitment to the class of act without the act.
+- **The countable discriminator, and it is stark.** **The senior-citizens paper carries no shekel
+  figure anywhere** — its only numerals are the 13% population share and two uses of אחוז. It is the
+  **one paper in this corpus with no costed measure in it**, against a north paper published two weeks
+  earlier that carries ₪15B, ₪6B, ₪3B, ₪250M, ₪225M, ₪7,000 per pupil, ₪2,000/₪3,000 childcare and two
+  new corporate-tax brackets. Revision 19's earning standard for `reservist-focused` — **a costed
+  benefits package, not rhetoric** — is the one this page fails.
+- **The line that would earn it**, recorded so the next pass tests rather than re-argues: name the
+  formula or the baseline (indexation to the average wage, to the CPI, or to any stated series), or
+  extend the rise past the low-income cohort. Either one and the tag is earned.
+
+Note also the verb. *"נבחן הטלת חובת ביטוח סיעודי לכלל האוכלוסייה"* is the page's most universal
+measure and its verb is **נבחן** — *we will examine* — against נפעל ×8, נקדם ×6 and נבטיח ×2
+elsewhere on the same page. **Do not score an examination as a commitment**; a mandatory insurance
+obligation is in any case a duty imposed on citizens rather than a state transfer, so it would be
+weak evidence for this family even as a commitment.
+
+**economic +1 confirmed, sixth reading, and both new papers pull the same way the corpus always
+has.** North grows *both* halves again, which is this band's definition rather than evidence against
+it: liberalizing gains two new corporate-tax brackets (2.5% on the confrontation line, 5% for the
+northern district), accelerated depreciation on the Eilat model, an arnona cut for businesses
+2026–2028, a "green track" clearing planning and licensing barriers, and private players admitted to
+the electricity transmission network; expanding gains ₪15B over five years with ₪6B of it in
+fortification, ₪3B of education funding over a decade, ₪250M of tourism budget, ₪225M of informal
+education, state-guaranteed loans, matching grants, direct war compensation to farmers, and a
+national-priority **law** for the northern confrontation line modelled on מנהלת תקומה. The
+senior-citizens paper is the corpus's **first purely expansionary document — not one liberalizing
+sentence in it** — which is worth recording precisely because it does *not* move the axis: the +1
+band already covers "subsidies, targeted spending", and 0 would assert no doctrine or a balanced one.
+The workfare doctrine that decided +1 against 0 is not contradicted by either paper and is arguably
+restated in the aging one, *"נבחן אמצעים שיאפשרו לבני 67 ומעלה להמשיך לעבוד"*.
+
+**`service-conditioned-citizenship` gains its sharpest instance in the corpus, and it is in a
+childcare line.** North subsidises daycare for 0–3 in the 0–9 km border strip at **₪2,000 per child
+where a parent has completed military service, and ₪3,000 where a parent is an active reservist** —
+with no rate at all for a parent who has not served. Every prior instance of this tag on this row is
+welfare doctrine ("aid to משרתי מילואים ולמשפחות עובדות ויצרניות"); this one differentiates a
+universal child benefit by the parent's service status, in a region whose population is partly Arab.
+The tourism chapter does the same in miniature with *"מסלולי 'פייטר' לצפון לחיילים ולמילואימניקים"*.
+The tag already sits on this row and no change follows — but if the tag's meaning is ever audited,
+this is its strongest single sentence anywhere in the table.
+
+**security +1 unmoved, and the north paper is the second URL on this row that invites the wrong
+axis.** A paper about the northern border, published while the confrontation line is still the
+subject, contains **nothing** on Lebanon, Hezbollah, doctrine, statehood, the territories or
+sovereignty: its "ביטחון" is מיגון — fortification of homes, kindergartens, schools and clinics,
+2035 pulled forward to 2030 — plus a 300-officer district enforcement unit against organised crime.
+That is the `homeland-security` trap in a new costume, and the count is now **thirteen documents with
+no sentence on the conflict**, which continues to make the deliberate-omission reading the right one
+and continues to leave the score resting on Eisenkot's own statements.
+
+The paper also supplies a **fourth** instance of the התיישבות homograph flagged in revisions 15 and
+21 — *"חבל ארץ של חלוציות, התיישבות, ערבות הדדית"* — Galilee pioneering, not the West Bank, and it
+must not be read as `pro-settlement`. And it is the first document in which the party attaches
+*"עדיפות לאומית"* to a **named** region (*"חוק עדיפות לאומית לקו העימות הצפוני"*, the northern
+confrontation line). That is a data point, **not** a resolution of revision 21's open note:
+`inlocation-and-aliya`'s unnamed *"אזורי עדיפות לאומית"* is still unnamed, and unstated is still not
+stated.
+
+**religiosity −2 untouched — and the search that established it very nearly lied.** Neither paper
+contains any religion-and-state material. The word-level check for רבנות/כשרות/שבת/גיור/נישואין/
+זוגיות/חרדי/ליבה/דתי returned hits on both pages, and **every one of them is a locality name in the
+contact form's dropdown** — בר גיורא, כפר הנוער הדתי, כפר עזה, מחנה יהודית — as was the sole hit for
+עזה on the territorial check. A page-wide grep on a WordPress form page searches a settlement list of
+several hundred entries; on this site that list alone can produce apparent evidence for religion,
+Gaza and the territories at once. **Read the hit, not the count** — this is the mirror of the
+grep failures recorded in the root `CLAUDE.md`: there a pattern could never match, here it matched
+something that means nothing, and both look like findings.
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -3925,3 +4059,4 @@ pass happened, for anyone reading git history.
 | 2026-08-31 | revision 36 — **הדמוקרטים's corpus 10 → 11 (חברה ערבית), and the August platform booklet proven to be a re-package.** **No axis moved and no tag was added; `seed.sql` is unchanged** — the first pass on this page to end that way, which is the outcome worth recording rather than hiding. The new paper is the row's strongest first-party evidence for `jewish-arab-partnership`, held until now off the realized list. **Four tags considered and rejected**, each on a precedent rather than on taste: `affirmative-action` (the paper asks for *"ייצוג הולם"* with no target and no mechanism, while revision 29 refused the same tag to ביחד on a **50% target plus a party-funding incentive** — granting it here would lower a bar set five days earlier), `arab-representation` and `focuses-on-arab-israeli-civil-issues` (both record what a party *is*, the `reservist-movement` distinction this row already carries), and `sectoral-budgeting` (held for coalition funds; a gap-closing חומש is not that, and the row's own economic paper runs *"במקום תקציבים מגזריים"*, so the tension is recorded in prose instead). **A name trap logged**: `arab-civil-service` is a national-service track for Arab citizens, not civil-service employment — it invites exactly the wrong match on a paper about representation in the ministries. **security −1 held at eleven papers**: revision 15's standing instruction was to re-open it if a *third* document leaned on the −1/−2 boundary, and this one leans in neither direction (מדינה פלסטינית, פלסטינ, כיבוש, שתי מדינות = 0 each). **The finding is a silence**: גיוס, שירות לאומי and שירות אזרחי are also 0, so the dedicated Arab-society paper is the most natural place revision 15's *"אוכלוסיות נוספות"* ambiguity would have been clarified and it was not — the open question narrows toward deliberate rather than unfinished. **`plan-8-26-he.pdf` (16pp, 2026-08-11, linked from the homepage as the platform) contributes nothing**: six chapters are verbatim at 48/48, 44/44, 39/39, 40/40, 39/39 and 36/36 sentences, and the crime and להט"ב chapters' apparent 17/26 and 9/36 divergence was **a `pdftotext` bullet-column artifact, not a finding** — every distinctive token is in both and the chapters match in length to within 4%. It omits מילואימניקים, שיווין מגדרי and חברה ערבית entirely (0 of the latter's 34 sentences), so it is a strict subset. **Checking tokens before believing a sentence diff** is the reusable half; the mirror of it is that the S3 bucket refuses `ListObjectsV2` and no page on `democrats.org.il` links the topic PDFs at all, so the booklet was reachable only by enumerating the site — revision 31's rule finding a document that then turned out to be worth nothing, which is still the rule working. **A tag gap filed rather than filled**: nothing covers the Kaminitz-Law repeal and Arab/Druze/Bedouin master planning, and it is queued behind a pass over the two Arab-list rows |
 | 2026-09-01 | revision 37 — **הציונות הדתית and זהות merged into one ballot line**, the second merge between two `upcoming_parties` rows (after חד"ש-תע"ל + בל"ד → הרשימה המשותפת) and the first where the components **contradict each other**. Signed the same evening as a **technical bloc** (בלוק טכני) that may split once seated, each party keeping its own identity and principles; פייגלין at **#2**, זהות holding slots 2, 8, 10 and 11 of thirteen; וינטר invited by both סמוטריץ' and בן גביר and declining the same evening. **One row, not two** — a voter sees one line, the יהדות התורה precedent, so the row takes `two-faction-list` (1 → 2 holders) and the `zehut` row is removed under `seed.sql`'s guarded delete. **The decision was the `economic` axis, not the merge.** הרשימה המשותפת's union rule was adopted on the express condition that components *"differ only in degree, with direction not in dispute"*; here direction **is** in dispute — 0 against +3, a finance minister running sectoral budgeting against the axis's only doctrinal libertarian — so the rule's own precondition excludes it. **`economic` held at 0** (repo owner's call, over NULL on the ביחד precedent and over +3 on the union rule read literally): RZP holds nine of thirteen slots including #1 and the portfolio. **`security` and `religiosity` unchanged at +3** — the first because both components were already at the pole, the second because there the components *do* differ only in degree, so the union rule applies and takes the pole. **Tag rule stated for the first time: carry what the list adds, refuse what would contradict a number or a family on the same row.** Of זהות's nineteen, 2 dedupe, **7 carried** (`gun-rights`, `temple-mount-centred`, `population-transfer`, `cannabis-legalization`, `permanent-residency-not-citizenship`, `communitarian-devolution`, `jewish-law-parallel-jurisdiction`) and **10 refused** — six economic-liberal tags plus `ends-state-religious-funding` (the opposite of `sectoral-budgeting`), `professional-army` (the opposite of `conscription-split`), `state-institutions-bound-to-halakha` (subsumed by `halakhic-state`) and `extra-parliamentary` (no longer true; #2 is realistic). Row 14 → **22 tags**. **Eight tags leave the vocabulary with the row** — `libertarian`, `flat-tax`, `small-government`, `privatization`, `state-institutions-bound-to-halakha`, `ends-state-religious-funding`, `professional-army`, `extra-parliamentary` — and the `economic` **+3 band is now empty**. **And a FAMILY was retired that the tag accounting did not predict: `market-liberal`** — its only two holders were ישראל ביתנו (+2) and זהות (+3), so the merge left it naming one party, which `test_every_family_value_is_shared_by_at_least_two_parties` rejects. Retired rather than back-filled: the only candidates (אל הדגל, המפלגה הכלכלית) are economic **+1**, and this family's test is *actually withdraws the state*, so admitting them would lower a bar revision 25 already refused. Removed from `i18n.js` (all three languages), `analytics.js` and `docs/i18n/family-strings.csv`; ישראל ביתנו keeps two families. **The pre-flight check that missed it asked whether the family still had *a* holder — the invariant is two**, and the test is what caught it. **זהות's 89-line entry is kept in full as a `####` faction subsection of הציונות הדתית**, not deleted: seven of the merged row's tags are sourced there and nowhere else, and a technical bloc can split — if it does, that is the scoring a restored row starts from. **One open question resolved by removal rather than by reading**: זהות was the only `judicial-restraint` family member without `judicial-overhaul`, and the family is now unanimous because the surviving row already carried it — the platform check it was queued for is still owed if the bloc splits. **No brand was announced** (every outlet says *"הרשימה המאוחדת"*), so the row keeps RZP's name and logo rather than an invented one. `previous_parties` untouched — זהות was extra-parliamentary in 2022 and has no row there, so no `party_lineage` link changes. Row flagged **expected-unstable**: סמוטריץ' called it *"החיבור הראשון ולא האחרון"* and list submission closes the week of 2026-09-07 |
 | 2026-09-02 | revision 38 — **נעם's logo replaced; the old Wikimedia file now 404s.** A dead source, not a preference, so the note describing the old artwork (navy wordmark between cyan bars, 45.3% dark pixels, lifted by `recolorLogoForDark()`) is struck through and kept as a record — none of it applies to the replacement, which is the **opposite kind of artwork**: a fully opaque dark-navy tile carrying a light wordmark. **No `logos.js` change, and specifically no `SKIP_RECOLOR_PARTIES` entry — verified by simulating the function's own first gate on the real file**, which measures `opaque / total` = **1.0000** against its `> 0.9` solid-tile threshold and returns `null` before touching a pixel. An entry would have asserted a rule the code already applies. **The same guard, the opposite outcome**: הציונות הדתית's PNG trips this identical check and that is exactly why it was unusable, because its baked-in tile is *white* and renders as a plate on the dark cards — so "the solid-tile guard fires" is neither good nor bad news by itself, it means the artwork is shown as drawn, which is right only when it was drawn for a ground close to the card's. **Cropped at the repo owner's request** because the wordmark was 13% of a 1600×1600 square: bright-pixel rows measured into three bands (wordmark 666–877, rule 893–904, בראשות אבי מעוז 946–992) over columns 288–1395, cropped with 28px padding and scaled to **900×296, 3.04:1** — the wordmark now ~59% of the tile height, and the aspect deliberately matches ביחד's 3.11:1, the shape `.logo-wide` already fits by width. **No `PADDED_CRESTS` entry**: that factor corrects transparent artwork that fails to span its own canvas, and a tile spans its canvas by definition. Self-hosted as the **fourth** file in `logos/` — a cropped file is no longer the file at the URL — and `oxipng` lossless only, never `pngquant`, because the background is a gradient (the `og-card.png` trap) |
+| 2026-09-02 | revision 39 — **ישר's corpus 11 → 13 documents**: two new principles papers read ([שיקום ושגשוג הצפון](https://yasharwitheisenkot.com/principles/north-reconstruction-and-prosperity/), published 2026-08-17; [הגיל השלישי](https://yasharwitheisenkot.com/principles/senior-citizens/), published 2026-09-01). **No axis moved, no tag added, `seed.sql` unchanged** — the second pass on this page to end that way, after revision 36. **`principles-sitemap.xml` enumerates the corpus in one request** (11 papers plus the index), which is revision 31's technique applied to a second row, and its value here is the `lastmod` column rather than the count: it **proves revision 21 was not incomplete** (both new papers postdate it), it forces *papers* and *documents* to be counted separately (the brochure and the registered goals are not in it), and it flags that **`aliyah-and-integration` was modified 2026-08-18, two days after revision 21 read it** — the one page every religion-and-state finding on this row rests on. Re-checked live: all four cited phrases still present, religiosity −2 stands. **A `lastmod` after the read is a re-read trigger of the same class as revision 22's moved URL, and it arrives earlier.** **`welfare-state` re-rejected, and revision 21's stated reason struck through** — that reason quoted the economics paper's *"העבודה תשתלם תמיד יותר מקצבה"*, and **revision 29 bars the move**, having granted the tag to ביחד while leaving that row's identical workfare finding standing on the holding that an aging plan is *"a different class of document"*. Re-earned on the aging paper alone and **narrowly**: it has an unrestricted *"מנגנון קבע לשימור ערך הקצבאות"* and names no funding source, but it names **no formula, baseline or scope**, where ביחד named the average wage against the CPI and the 2003 de-indexation it reverses. The countable discriminator is stark — **the senior-citizens paper carries no shekel figure anywhere** (its only numerals are a 13% population share and two uses of אחוז), the sole paper in this corpus with no costed measure, against a north paper two weeks older carrying ₪15B/₪6B/₪3B/₪250M/₪225M and two new tax brackets; revision 19's standard is *a costed package, not rhetoric*. **The earning line is recorded** so the next pass tests instead of re-arguing: name the formula or baseline, or extend the rise past the low-income cohort. Also flagged: the page's most universal measure, mandatory LTC insurance, uses **נבחן** against נפעל ×8 / נקדם ×6 — **do not score an examination as a commitment**. **economic +1 confirmed (sixth reading)**: north grows both halves again (2.5%/5% corporate-tax brackets, Eilat-model depreciation, a business-arnona cut and a planning "green track" against ₪15B over five years and a national-priority law for the confrontation line), while senior-citizens is the corpus's **first purely expansionary document, without one liberalizing sentence** — recorded because it does *not* move the axis. **security +1 unmoved**, and the north paper is the **second URL on this row that invites the wrong axis**: a paper on the northern border with nothing on Lebanon, Hezbollah, doctrine, statehood or the territories — its ביטחון is מיגון and organised crime — bringing the count to **thirteen documents with no sentence on the conflict**. Fourth instance of the התיישבות homograph (Galilee pioneering, not the West Bank), and the first time *"עדיפות לאומית"* is attached to a **named** region (the northern confrontation line) — a data point, **not** a resolution of `inlocation-and-aliya`'s unnamed one. **`service-conditioned-citizenship` gains its sharpest sentence in the table**: north's 0–3 daycare subsidy pays **₪2,000 where a parent completed military service and ₪3,000 for an active reservist**, with no rate for a parent who did not serve — a universal child benefit differentiated by service status, where every prior instance on this row was welfare doctrine. **A fourteenth document is cross-referenced and does not exist** — north forward-references *"תכנית ישר! לחיזוק הפריפריה הגאוגרפית ופיתוח אזורי"*, which is on no page in the sitemap (`inlocation-and-aliya` is *לעליית המיליונים… In-location*, immigration); absences there are unwritten, not positions. `periphery-development` **stays retired** — a costed ₪15B regional programme plus a forward-referenced periphery plan is the third pass running to strengthen revision 19, not to challenge it. **Method note: religiosity −2 was confirmed by a search that nearly lied.** Word-level hits for גיור/דתי/יהודי and for עזה on both pages are **all locality names in the contact form's dropdown** (בר גיורא, כפר הנוער הדתי, כפר עזה, מחנה יהודית) — a WordPress settlement list of several hundred entries can manufacture apparent evidence for religion, Gaza and the territories at once. **Read the hit, not the count** |
