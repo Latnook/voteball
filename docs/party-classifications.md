@@ -1438,8 +1438,9 @@ one applied on top:
 - **one ballot naming זהות** — the row **survives** (19 rows), its ballot intact, and this row still
   updates to 22 tags. That is the vote guard failing safe by design, and it is the operational
   consequence to watch: **if production holds any vote for זהות, both it and the merged list stay on
-  the ballot** until an admin reassigns that vote. The cluster was down when this was written, so the
-  live count is unchecked — check it before the next deploy.
+  the ballot** until an admin reassigns that vote. **Checked against production on 2026-09-02**, on
+  the rebuild that shipped this change: the restored snapshot carried no vote for זהות, so the row
+  was removed cleanly — `/api/options` returns 18 upcoming rows, no זהות, and this row at 22 tags.
 
 The first run of the second case proved nothing and looked like it had: the ballot insert violated
 `votes_upcoming_vote_status_check` (the allowed values are `considering`/`undecided`, not `voted`),
