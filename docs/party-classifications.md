@@ -78,7 +78,7 @@ Negative is left (more state), positive is right (less state).
 
 | | meaning | parties |
 |---|---|---|
-| **+3** | Libertarian: shrink the state as a matter of principle, not just policy | זהות `[u]` |
+| **+3** | Libertarian: shrink the state as a matter of principle, not just policy | *(none — זהות was the only holder and merged into הציונות הדתית on 2026-09-01, which did not take the number)* |
 | **+2** | Privatizing: actually withdraws the state — sell Ashdod Port and Haifa Airport, end child allowances from the fifth child | ישראל ביתנו |
 | **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, האחדות `[u]`, המחנה הממלכתי `[p]` |
 | **0** | No economic doctrine, or a genuinely balanced one | כחול לבן `[u]`, הציונות הדתית, עוצמה יהודית `[u]`, רע"ם, יש עתיד `[p]` |
@@ -97,7 +97,7 @@ Negative is dovish, positive is hawkish.
 
 | | meaning | parties |
 |---|---|---|
-| **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, זהות `[u]`, נעם `[u]`, הליכוד `[u]` |
+| **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]`, הליכוד `[u]` |
 | **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המפלגה הכלכלית `[u]`, האחדות `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]` |
@@ -128,7 +128,7 @@ Negative reduces religious authority.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
-| **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה, זהות `[u]` |
+| **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה |
 | **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
 | **0** | Status quo — no active religion-state agenda in either direction | *(none)* |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
@@ -222,6 +222,11 @@ these rows.
   warning's underlying point held anyway — the merge was done while both rows had **zero** votes, so
   nothing was orphaned, and `seed.sql`'s removal is guarded on votes precisely so that a roster
   change can never destroy a ballot. The frozen `previous_parties` rows keep their 2022 names.
+- **The 2026-09-01 הציונות הדתית + זהות merge took a third shape again**, so neither earlier case is
+  the template: one component was already the lead party and the registered list, so the surviving
+  row is **kept, not created** — no rename, no new `seed_key`, and `זהות`'s row removed by the same
+  guarded delete. Which shape a merge takes turns on whether either brand survives, and no merge on
+  this page has yet resolved the way the preceding one did.
 
 ---
 
@@ -399,7 +404,8 @@ conscripted — dissent, not the line.
   emigration. It is deliberately **not** narrowed to Gaza, because אל הדגל's plank is a benefits
   basket for "Palestinians choosing to leave" with no geographic limit, and גמליאל has extended the
   same logic to the West Bank. Naming a place the evidence does not support is the התיישבות homograph
-  failure in reverse. `population-transfer` stays with זהות: opt-in is a different claim, and the
+  failure in reverse. `population-transfer` stays with הציונות הדתית (carried in from the זהות faction, 2026-09-01):
+   opt-in is a different claim, and the
   standing warning under בית ציוני about attributing transfer to a party that has not stated it applies
   here in the direction of restraint.
 
@@ -1353,6 +1359,98 @@ This is currently the only party row on the page verified against a live primary
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
+**Merged with זהות into one ballot line, 2026-09-01.** Smotrich and משה פייגלין signed an agreement
+that evening to run as a **technical bloc** (בלוק טכני) — one slate on the ballot, which may split
+back into two factions once seated. The agreement's own framing is that each party keeps its
+identity, its path and its principles. The motive on both sides is the threshold: RZP has polled at
+or below it since עופר וינטר entered the race, and זהות (~1 seat) has not crossed it since 2019.
+Reported slate — 1 סמוטריץ', 2 **משה פייגלין**, 3 אורית סטרוק, 4 שריון סמוטריץ' (צביקה מור),
+5 שמחה רוטמן, 6 צבי סוכות, 7 אוהד טל, 8 יצחק זאגה (זהות), 9 עומר רחמים — thirteen slots in all, of
+which זהות holds **2, 8, 10 and 11**. וינטר was invited by both סמוטריץ' and בן גביר and **declined
+the same evening** (*"חייב לקום משהו חדש"*).
+
+**One row, not two.** A voter sees one line, exactly as with יהדות התורה's permanent technical bloc
+— which is why this row now also carries `two-faction-list`, the tag that until now had a single
+holder. זהות's row is removed under `seed.sql`'s guarded delete (votes checked, `party_lineage`
+cleared first); it had no `previous_parties` row to freeze, having been extra-parliamentary in 2022,
+so no lineage link changes. **No brand was announced** — every outlet calls it descriptively
+(*"הרשימה המאוחדת"*), RZP is the registered list, and the row keeps its name and logo rather than
+carrying an invented one.
+
+**The הרשימה המשותפת union rule does not apply to `economic` here, and the reason is the rule's own
+precondition.** That rule — axes are the union of the components' published positions — was adopted
+on the express condition that the components "differ only in degree, with direction not in dispute".
+On economics the direction *is* in dispute: this row is **0**, with `claims-economically-liberal`
+carrying the gap between its rhetoric and a finance ministry that runs sectoral budgeting, while
+זהות is **+3**, the axis's only doctrinal libertarian. Taking the union would put the list at +3 —
+asserting it wants to shrink the state as a matter of principle, which its own #1 spends his working
+days contradicting.
+
+- **`economic` 0, unchanged.** RZP holds nine of the thirteen slots including #1 and the finance
+  portfolio; a voter choosing this line gets its budgets. The repo owner's call, 2026-09-01, taken
+  over NULL (the ביחד precedent for components that genuinely disagree) and over +3 (the union rule
+  read literally).
+- **`security` +3, unchanged** — both components were already at the pole.
+- **`religiosity` +3, unchanged.** Here the components *do* differ only in degree, so the union rule
+  applies and takes the pole, which this row already held. See the faction entry below for why
+  זהות's +2 is a different mechanism rather than a milder version of the same one.
+
+**Tags: carry what the list adds, refuse what would contradict a number or a family on this same
+row.** Of זהות's nineteen, two dedupe away (`sovereignty-annexation`, `anti-two-state`), **seven are
+carried** — `gun-rights`, `temple-mount-centred`, `population-transfer`, `cannabis-legalization`,
+`permanent-residency-not-citizenship`, `communitarian-devolution`, `jewish-law-parallel-jurisdiction`
+— because the delegation a voter elects genuinely contains members who hold them and nothing on the
+row says otherwise. **Ten are refused, and the refusals are the informative half:**
+
+- `libertarian`, `flat-tax`, `small-government`, `privatization`, `deregulation`, `anti-monopoly` —
+  all six contradict `economic 0` and the `sectoral-budgeting` family entry on this row. A row
+  cannot be scored 0 and tagged libertarian.
+- `ends-state-religious-funding` — the direct opposite of `sectoral-budgeting`, which stays.
+- `professional-army` — contradicts `conscription-split`, which stays.
+- `state-institutions-bound-to-halakha` — subsumed by `halakhic-state`, the stronger claim, already here.
+- `extra-parliamentary` — no longer true of anybody on this list; #2 is a realistic slot.
+
+Eight of those ten had זהות as their only holder anywhere in either table and leave the vocabulary
+with it — every one above except `deregulation` (3 holders) and `anti-monopoly` (7). The row now
+carries **22 tags**; its own `families` and `family_evidence` are untouched, and `family_evidence`
+stays `record` because a technical bloc publishes no joint platform to read.
+
+**And one FAMILY was retired, which the tag accounting did not predict.** `market-liberal` had
+exactly two holders — ישראל ביתנו at economic +2 and זהות at +3 — so removing זהות left it naming a
+single party, and `test_every_family_value_is_shared_by_at_least_two_parties` fails on that by
+design: a family that groups one row groups nothing and merely duplicates the row. **It was retired
+rather than back-filled.** The obvious back-fill candidates are אל הדגל and המפלגה הכלכלית, and both
+are economic **+1** — the band table's whole point is that +1 liberalizes *while* expanding the
+state, whereas this family's test is "actually withdraws" it, so admitting either would lower a bar
+this page has refused to lower before. ישראל ביתנו keeps `universal-conscription` and
+`constitutional-reform`; the string is gone from `i18n.js` in all three languages, from
+`analytics.js`'s map and from `docs/i18n/family-strings.csv`. **The check that missed this was
+mine**: "does `market-liberal` still have a holder?" is the wrong question, and it returned a
+reassuring yes. The invariant is two.
+
+**Verified on an already-seeded database, both branches, 2026-09-01.** A fresh install only proves
+the literal is spelled right. Two databases were seeded with the *previous* `seed.sql` and the new
+one applied on top:
+
+- **no ballot naming זהות** — 19 → 18 rows, `zehut` gone, this row 14 → 22 tags, axes still 0/3/3,
+  `two-faction-list` and `cannabis-legalization` present, `libertarian` absent, ישראל ביתנו down to
+  two families.
+- **one ballot naming זהות** — the row **survives** (19 rows), its ballot intact, and this row still
+  updates to 22 tags. That is the vote guard failing safe by design, and it is the operational
+  consequence to watch: **if production holds any vote for זהות, both it and the merged list stay on
+  the ballot** until an admin reassigns that vote. The cluster was down when this was written, so the
+  live count is unchecked — check it before the next deploy.
+
+The first run of the second case proved nothing and looked like it had: the ballot insert violated
+`votes_upcoming_vote_status_check` (the allowed values are `considering`/`undecided`, not `voted`),
+so the guard was exercised against **zero** ballots and reported the same clean removal as the first
+database. The tell was `ballots preserved: 0` in *both*. Assert the ballot exists **before**
+migrating — this page's own rule about feeding a check input you know should match.
+
+**Flagged expected-unstable.** Smotrich called this *"החיבור הראשון ולא האחרון"* and list submission
+closes the week of 2026-09-07; a further merger would renumber the slate and could change what this
+row means again.
+
 Primary held 2026-07-26. Realized list: 1 בצלאל סמוטריץ', 2 אורית סטרוק, 3 צביקה מור,
 4 שמחה רוטמן, 5 צבי סוכות, 6 אוהד טל, 7 עומר רחמים, 8 מיכל וולדיגר.
 
@@ -1761,6 +1859,105 @@ browser-shaped request; `page-sitemap.xml` for `lastmod`; `web.archive.org` CDX 
 snapshot. `wp-json/wp/v2/pages/6992` is linked from the page and returns **403**, so the WordPress
 `modified` field could not be read directly — the Yoast `lastmod` is the evidence for the edit date.
 
+#### זהות — the Zehut faction · merged into this row 2026-09-01
+
+Kept in full because seven of this row's tags are sourced here and nowhere else, and because a
+technical bloc can split: if it does, this is the scoring that a restored `זהות` row starts from.
+The three numbers below are what זהות carried **while it had its own row** — the merged row is
+0 / 3 / 3, and the block above says which of these transferred and which were refused.
+
+Source: the party's own full platform, *מחזירים את המדינה לעם — מצע מפלגת זהות תשפ"ו – 2026*
+(188pp, `zehut.org.il/docs/zehut-platform-full-he.pdf`, first edition May 2026, written under Moshe
+Feiglin). Scored entirely from the primary text — no secondary sources were needed or used.
+
+economic **+3** — the only +3 the axis has ever carried, and **not transferred** to the merged row. This is not
+right-of-centre economics, it is a doctrinal libertarian programme: a **flat tax** at a single low
+rate on all income types, "no brackets, no credit points, no reliefs for cronies", with a one-page
+return; government ministries cut **31 → 11** and entrenched in a Basic Law so the count can no
+longer be set by coalition bargaining; the presidency abolished outright; a standing commitment to
+vote *against* any bill without demonstrated necessity and to repeal existing ones; broad
+deregulation; corporate-tax cuts; privatisation of state transport companies; budgetary pensions
+curtailed. Switzerland and Hong Kong are named as the models, alongside Argentina's eight-ministry
+reduction, with Reagan and PragerU quoted approvingly. Yisrael Beiteinu's +2 `free-market` is a
+different order of claim from this.
+
+security **+3**, the same pole the merged row already held. Cancellation of the Oslo accords and sovereignty over Judea, Samaria **and Gaza**,
+which the platform states in its own words is to be reached "by conquest, expulsion and settlement"
+(`מביטול הסכמי אוסלו – להחלת ריבונות על חלקי ארצנו על ידי כיבוש, גירוש והתיישבות`). It budgets a
+funded emigration programme for the Arab population of Judea and Samaria — real-estate purchase plus
+a financial package, assistance locating receiving states and jobs — and devotes a section to
+precedents it considers analogous (the post-1945 German expulsions, Partition, Cyprus 1974, Kuwait
+1991, Kosovo 1999). Those who accept Israeli sovereignty receive **permanent residency, not
+citizenship**; full civil rights come only individually, to those who "truly bind their fate to the
+state and the Jewish people". A Palestinian state is rejected in principle ("the peace trap"), and
+the Defence Ministry is renamed the **Ministry of War**. `population-transfer` is recorded because
+the platform argues for it explicitly and at length; recording it is not endorsing it, and the
+convention here is that the number and tags track the party's stated position.
+
+religiosity **+2**, and this was the interesting row in the table — it is where the axis and `sector`
+diverge in an unusual direction, and where the naive reading from Zehut's 2019 libertarian
+reputation is simply wrong. The platform is explicitly **not** separationist. Its chapter *מוסדות
+מדינת העם היהודי* opens with "מחויבות ממלכתית להלכה" — a **state commitment to halakha**: every
+state institution and government body is to keep Shabbat, the festivals and kashrut, described as
+"a basic and simple national principle, not a compromise" made to accommodate religious employees.
+The Knesset cafeteria must be kosher; Israel Railways and the Electric Company must observe Shabbat
+for as long as they are state arms; in the IDF food is kosher-only, non-operational Shabbat activity
+is barred, and an order to desecrate Shabbat without operational need is "manifestly illegal",
+justifying refusal. The **Chief Rabbinate keeps** the who-is-a-Jew determination for the Law of
+Return, endorsed as rightly placed there. And Jewish civil law (*משפט עברי*) is to be recognised as
+a **parallel state jurisdiction** autonomous from Knesset legislation, whose rulings the authorities
+must enforce exactly as they enforce civil-court judgments.
+
+Held **below +3** by a genuinely different mechanism, not by moderation. Coercion of the individual
+is removed: the citizen's "Shabbat, marriage, food, culture, education and religion" are declared
+private and communal matters; public transport is to be privatised precisely so Shabbat operation
+becomes a community question rather than national law; the Ministry of Religious Services is
+abolished into the Interior Ministry; the Hebrew courts are **voluntary**, civil-only, and require
+both parties' consent; and direct state funding of yeshivas is to **end** — even-handedly with
+humanities funding, on the argument that the funding weapon buys ideological conformity. So the
+state *qua* state is thoroughly halakhic while the citizen is left alone. Religious Zionism and
+Otzma hold +3 for wanting halakha to reach the citizen; Zehut explicitly does not. **That is why the
+merged row stays at +3 rather than moving**: the two differ in degree on a shared direction, which is
+exactly the condition the הרשימה המשותפת union rule was adopted for, and the union takes the pole.
+
+This is exactly the direction-versus-motive split of Decision 5 in the religiosity design doc.
+`state-institutions-bound-to-halakha`, `ends-state-religious-funding`,
+`jewish-law-parallel-jurisdiction` and `communitarian-devolution` carry the shape of the position
+that the single number +2 cannot — of those four the merged row keeps the last two, and refuses the
+first as subsumed by `halakhic-state` and the second as the direct opposite of `sectoral-budgeting`. **`instrumentally-clerical` deliberately does not apply** — unlike
+Likud there is no gap between claim and record to flag; Zehut is sincerely clerical about the state
+and sincerely libertarian about the person.
+
+`sector` **religious_zionist** describes the movement's identity and leadership — Feiglin, the
+Manhigut Yehudit lineage, Temple Mount centrality, and a text that reasons from Rambam and Rav Kook
+throughout — not its actual 2019 electorate, which skewed young and secular. That divergence is real
+and is what `libertarian` and `cannabis-legalization` are doing in the tag list. Worth noting for
+anyone revisiting: Feiglin states in the platform's own preface that he has **no operative plans
+regarding the Temple** and that the platform contains no chapter on building it, so
+`temple-mount-centred` records sovereignty and national symbolism, not a construction programme.
+
+`bloc` **bibi**. Zehut sits in the Netanyahu-led right-wing camp: on sovereignty, the judiciary and
+the conflict there is no alternative bloc it could recommend, and Feiglin's own history runs through
+Likud (Manhigut Yehudit) and the 2019 withdrawal deal with Netanyahu.
+
+**זהות was first committed as `unaligned` and corrected the same day — the mistaken reasoning is
+worth recording, because it is easy to repeat.** The platform criticises Netanyahu by name more than
+once (the 2017 magnetometer withdrawal from the Temple Mount, the policy of transferring
+responsibility for Gaza), and that was read as ruling out the bibi bloc. It does not. **`bloc` tracks
+which camp a party would sit with and recommend for PM, not whether it criticises the incumbent** —
+several bibi-bloc parties attack Netanyahu's record freely. The Reservists' `unaligned` looks similar
+but rests on something different in kind: Hendel's explicit commitment never to complete Netanyahu
+to 61. Absent a refusal of that sort, right-wing criticism is just criticism. Being
+extra-parliamentary is likewise not evidence of non-alignment.
+
+Conscription is **not** scored here, per Decision 6. Zehut's model is its own: a short universal
+enlistment and training for everyone **including haredim** (adapted to their way of life and
+scheduled in *בין הזמנים*), feeding a well-paid professional volunteer army; women are not
+obligated to serve but may volunteer; Arabs may volunteer for civilian service only. That closes the
+haredi exemption by shrinking the obligation for everyone rather than extending it — which is why
+`professional-army`, not `universal-conscription`, was the accurate tag. It is **refused on the
+merged row**: RZP's `conscription-split` says the opposite, and the bloc has agreed no joint position.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -1916,7 +2113,7 @@ best-evidenced untagged position on the page.
   faction has a bill stripping citizenship or residency from anyone who chooses to live in Gaza, and
   the podcast pairs emigration with *"for the terrorists, no emigration, nothing, just to kill them
   one by one."* The line holds because the tag turns on compulsion in the *instrument*, not on the
-  rhetoric around it. זהות stays the sole holder.
+  rhetoric around it. הציונות הדתית stays the sole holder — via the זהות faction since 2026-09-01.
 - **`security-hawk`** — its five holders are all centre or centre-right rows, and none of the four
   far-right rows carries it. That is not an oversight: on a row with `sovereignty-annexation`,
   `anti-two-state` and `hardline-on-gaza`, a general-disposition tag adds nothing and would erase
@@ -2260,7 +2457,7 @@ Basic Law **protections for a sitting PM** (`pm-immunity-protections`); a standi
 **territorial price** for attacks on the state (`territorial-price-doctrine`); and the demographic
 chapter's haredi and Arab labour-market integration track, *"היעד איננו 'לגייר' אף קהילה"*
 (`workforce-integration`). From the platform PDF: a **voluntary-emigration** benefits basket for
-Palestinians choosing to leave, held distinct from זהות's `population-transfer` because it is
+Palestinians choosing to leave, held distinct from `population-transfer` (זהות's, and הציונות הדתית's since the 2026-09-01 merge) because it is
 opt-in (`voluntary-palestinian-emigration-incentives`).
 
 **Those first two planks point opposite ways, and that is the finding, not a defect.** Demanding a
@@ -2301,10 +2498,10 @@ earlier pass, not created by the new documents.
 - `permanent-residency-not-citizenship` — the השארות track grants permanent residency with Palestinian
   citizenship, but it is explicitly a **path**: after years, conditional on rejecting terror, civic
   integration and identification with the state's founding principles, a resident *"לבקש אזרחות
-  ישראלית מלאה"*, so that *"ההצטרפות לאזרחות הופכת לביטוי של שותפות ולא למניפולציה פוליטית"*. זהות's
-  tag records a permanent ceiling. A conditional path and a ceiling are not the same position.
-- `small-government` — the 32→12 ministry ambition is real, but זהות holds this tag as libertarian
-  doctrine, and this row pairs the cuts with NIT expansion, a ₪2B guarantee fund, a ~$1.5B/yr AI
+  ישראלית מלאה"*, so that *"ההצטרפות לאזרחות הופכת לביטוי של שותפות ולא למניפולציה פוליטית"*. The
+  זהות tag (on הציונות הדתית since 2026-09-01) records a permanent ceiling. A conditional path and a ceiling are not the same position.
+- `small-government` — the 32→12 ministry ambition is real, but זהות held this tag as libertarian
+  doctrine (and the tag left the vocabulary with it on 2026-09-01, refused by the merged row), and this row pairs the cuts with NIT expansion, a ₪2B guarantee fund, a ~$1.5B/yr AI
   programme and a national rail commitment. Applying it would contradict the `economic +1` reading
   three paragraphs above. `deregulation` and `public-service-reform` carry the institutional half
   correctly.
@@ -2463,7 +2660,8 @@ funds every community's institutions equally is not defending a monopoly, yet th
 written scores it as though it were. That did not change the outcome here — the devolution reading
 decides it on its own — so the band is left as it stands. If a second party ever arrives with civil
 marriage, broken monopolies *and* equal pluralist funding, the criterion should be rewritten rather
-than stretched. Compare `communitarian-devolution`'s only other holder, זהות at **+2**: the same
+than stretched. Compare `communitarian-devolution`'s only other holder — the זהות faction at **+2** on its own
+platform, the tag now sitting on הציונות הדתית's **+3** row since the 2026-09-01 merge: the same
 mechanism, run in the opposite direction, which is the clearest evidence that devolution is
 axis-neutral on its own and that the direction of travel has to be read off the content.
 
@@ -2526,96 +2724,6 @@ One note against over-reading the merger: Gantz said of Trooper's departure in a
 week, *"אני לא מצליח לשמוע משפט אחד שהוא אומר אחרת ממני"* — he cannot hear one sentence Trooper says
 differently from his own. Take it as an interested party's framing, but it does mean this list and
 כחול לבן are competing for one position rather than occupying two.
-
-### זהות — Zehut · `bibi` · 3 / 3 / 2 · religious_zionist
-
-Source: the party's own full platform, *מחזירים את המדינה לעם — מצע מפלגת זהות תשפ"ו – 2026*
-(188pp, `zehut.org.il/docs/zehut-platform-full-he.pdf`, first edition May 2026, written under Moshe
-Feiglin). Scored entirely from the primary text — no secondary sources were needed or used.
-
-economic **+3**, the only +3 on the axis and the clearest case in the table. This is not
-right-of-centre economics, it is a doctrinal libertarian programme: a **flat tax** at a single low
-rate on all income types, "no brackets, no credit points, no reliefs for cronies", with a one-page
-return; government ministries cut **31 → 11** and entrenched in a Basic Law so the count can no
-longer be set by coalition bargaining; the presidency abolished outright; a standing commitment to
-vote *against* any bill without demonstrated necessity and to repeal existing ones; broad
-deregulation; corporate-tax cuts; privatisation of state transport companies; budgetary pensions
-curtailed. Switzerland and Hong Kong are named as the models, alongside Argentina's eight-ministry
-reduction, with Reagan and PragerU quoted approvingly. Yisrael Beiteinu's +2 `free-market` is a
-different order of claim from this.
-
-security **+3**. Cancellation of the Oslo accords and sovereignty over Judea, Samaria **and Gaza**,
-which the platform states in its own words is to be reached "by conquest, expulsion and settlement"
-(`מביטול הסכמי אוסלו – להחלת ריבונות על חלקי ארצנו על ידי כיבוש, גירוש והתיישבות`). It budgets a
-funded emigration programme for the Arab population of Judea and Samaria — real-estate purchase plus
-a financial package, assistance locating receiving states and jobs — and devotes a section to
-precedents it considers analogous (the post-1945 German expulsions, Partition, Cyprus 1974, Kuwait
-1991, Kosovo 1999). Those who accept Israeli sovereignty receive **permanent residency, not
-citizenship**; full civil rights come only individually, to those who "truly bind their fate to the
-state and the Jewish people". A Palestinian state is rejected in principle ("the peace trap"), and
-the Defence Ministry is renamed the **Ministry of War**. `population-transfer` is recorded because
-the platform argues for it explicitly and at length; recording it is not endorsing it, and the
-convention here is that the number and tags track the party's stated position.
-
-religiosity **+2**, and this is the interesting row in the table — it is where the axis and `sector`
-diverge in an unusual direction, and where the naive reading from Zehut's 2019 libertarian
-reputation is simply wrong. The platform is explicitly **not** separationist. Its chapter *מוסדות
-מדינת העם היהודי* opens with "מחויבות ממלכתית להלכה" — a **state commitment to halakha**: every
-state institution and government body is to keep Shabbat, the festivals and kashrut, described as
-"a basic and simple national principle, not a compromise" made to accommodate religious employees.
-The Knesset cafeteria must be kosher; Israel Railways and the Electric Company must observe Shabbat
-for as long as they are state arms; in the IDF food is kosher-only, non-operational Shabbat activity
-is barred, and an order to desecrate Shabbat without operational need is "manifestly illegal",
-justifying refusal. The **Chief Rabbinate keeps** the who-is-a-Jew determination for the Law of
-Return, endorsed as rightly placed there. And Jewish civil law (*משפט עברי*) is to be recognised as
-a **parallel state jurisdiction** autonomous from Knesset legislation, whose rulings the authorities
-must enforce exactly as they enforce civil-court judgments.
-
-Held **below +3** by a genuinely different mechanism, not by moderation. Coercion of the individual
-is removed: the citizen's "Shabbat, marriage, food, culture, education and religion" are declared
-private and communal matters; public transport is to be privatised precisely so Shabbat operation
-becomes a community question rather than national law; the Ministry of Religious Services is
-abolished into the Interior Ministry; the Hebrew courts are **voluntary**, civil-only, and require
-both parties' consent; and direct state funding of yeshivas is to **end** — even-handedly with
-humanities funding, on the argument that the funding weapon buys ideological conformity. So the
-state *qua* state is thoroughly halakhic while the citizen is left alone. Religious Zionism and
-Otzma hold +3 for wanting halakha to reach the citizen; Zehut explicitly does not.
-
-This is exactly the direction-versus-motive split of Decision 5 in the religiosity design doc.
-`state-institutions-bound-to-halakha`, `ends-state-religious-funding`,
-`jewish-law-parallel-jurisdiction` and `communitarian-devolution` carry the shape of the position
-that the single number +2 cannot. **`instrumentally-clerical` deliberately does not apply** — unlike
-Likud there is no gap between claim and record to flag; Zehut is sincerely clerical about the state
-and sincerely libertarian about the person.
-
-`sector` **religious_zionist** describes the movement's identity and leadership — Feiglin, the
-Manhigut Yehudit lineage, Temple Mount centrality, and a text that reasons from Rambam and Rav Kook
-throughout — not its actual 2019 electorate, which skewed young and secular. That divergence is real
-and is what `libertarian` and `cannabis-legalization` are doing in the tag list. Worth noting for
-anyone revisiting: Feiglin states in the platform's own preface that he has **no operative plans
-regarding the Temple** and that the platform contains no chapter on building it, so
-`temple-mount-centred` records sovereignty and national symbolism, not a construction programme.
-
-`bloc` **bibi**. Zehut sits in the Netanyahu-led right-wing camp: on sovereignty, the judiciary and
-the conflict there is no alternative bloc it could recommend, and Feiglin's own history runs through
-Likud (Manhigut Yehudit) and the 2019 withdrawal deal with Netanyahu.
-
-**This row was first committed as `unaligned` and corrected the same day — the mistaken reasoning is
-worth recording, because it is easy to repeat.** The platform criticises Netanyahu by name more than
-once (the 2017 magnetometer withdrawal from the Temple Mount, the policy of transferring
-responsibility for Gaza), and that was read as ruling out the bibi bloc. It does not. **`bloc` tracks
-which camp a party would sit with and recommend for PM, not whether it criticises the incumbent** —
-several bibi-bloc parties attack Netanyahu's record freely. The Reservists' `unaligned` looks similar
-but rests on something different in kind: Hendel's explicit commitment never to complete Netanyahu
-to 61. Absent a refusal of that sort, right-wing criticism is just criticism. Being
-extra-parliamentary is likewise not evidence of non-alignment.
-
-Conscription is **not** scored here, per Decision 6. Zehut's model is its own: a short universal
-enlistment and training for everyone **including haredim** (adapted to their way of life and
-scheduled in *בין הזמנים*), feeding a well-paid professional volunteer army; women are not
-obligated to serve but may volunteer; Arabs may volunteer for civilian service only. That closes the
-haredi exemption by shrinking the obligation for everyone rather than extending it — which is why
-`professional-army`, not `universal-conscription`, is the accurate tag.
 
 ### נעם — Noam · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -2880,7 +2988,8 @@ is a defensible alternative; `religious`/`haredi` are not.
   the interesting result.** This page draws the line at opt-in: every holder of the first has an
   explicit *מרצון* plus an instrument (גמליאל's costed plan, עוצמה יהודית's 2025-02-07 bill,
   סמוטריץ' costed grants), and `population-transfer` requires **compulsion in the instrument**, which
-  is why it stays with זהות alone. Winter supplied a bare noun — *"הפיתרון בעזה הוא אחד: הגירה"* —
+  is why it stays with הציונות הדתית alone — זהות's tag, carried in by the 2026-09-01 merge.
+  Winter supplied a bare noun — *"הפיתרון בעזה הוא אחד: הגירה"* —
   with no *מרצון*, no incentive, and **no instrument at all**. It is rhetorically stronger than the
   first tag and weaker than the second, and sits in the gap between them. Adding either would dilute
   it with a weaker *kind* of evidence.
@@ -3024,7 +3133,8 @@ earlier. That is a parallel jurisdiction, not a halakhic state: §2(a)(1) requir
 an arbitration form, and the statute excludes criminal, administrative, spousal, state-party,
 most labour and disciplinary matters, and carves out substantive rights under חוק שיווי זכויות
 האישה 1951, protective labour law, disability rights and חוק החוזים האחידים. **The citizen who does
-not sign is untouched** — which is exactly the Zehut distinction at the head of that entry, and it is
+not sign is untouched** — which is exactly the Zehut distinction at the head of that block (a subsection of
+הציונות הדתית since the 2026-09-01 merge), and it is
 why this legislating party sits at the same +2 as the party that only proposed it.
 The second test is **חוק החמץ**, an amendment to the Patient's Rights Law empowering a hospital
 director to restrict chametz on Passover, passed **48–43**: religious restriction extended into a
@@ -3344,7 +3454,9 @@ into the recolour path.**
 revision.** It is easy to copy one from a file-history page and reasonable to assume it is current.
 The canonical URL has neither.
 
-**זהות's logo is dark artwork and needs no special handling — verified, not assumed.** The Wikimedia
+**זהות's logo is dark artwork and needs no special handling — verified, not assumed.** *(Kept as
+the reference case for נעם below; זהות itself stopped being a row on 2026-09-01 and the merged
+הציונות הדתית row keeps its own self-hosted logo.)* The Wikimedia
 SVG is a `#163651` navy wordmark plus a `#6ac6de` cyan flag; 62% of its opaque pixels are
 perceptually dark, and the wordmark is close to invisible on the `#161B22` cards if shown untouched.
 `recolorLogoForDark()` in `logos.js` handles it with no code change: the navy lifts to `#b2d0ea`
@@ -3610,12 +3722,12 @@ bought nothing here, because the defect was never in the pixels being measured.
   the territories, Gaza, the judiciary or religion. **Resolution: sweep all 18 rows for internal
   security and policing content — הליכוד, ישראל ביתנו, אל הדגל and בית ציוני are the other likely
   holders and none has been checked — then decide membership in one pass.**
-- **זהות is now the only `judicial-restraint` family member without the `judicial-overhaul` tag.**
-  Revision 24 gave the tag to הליכוד, which was the largest gap; the family covers הליכוד,
-  הציונות הדתית, עוצמה יהודית, זהות and נעם, and four of the five now carry it. That is the same
-  shape of gap revision 16 closed for עוצמה יהודית and revision 18 for נעם. Check זהות's 2026
-  platform against the tag's membership test before assuming it belongs — the row was scored from a
-  real platform, so the evidence either exists or its absence is meaningful.
+- ~~**זהות is the only `judicial-restraint` family member without the `judicial-overhaul` tag.**~~
+  **Resolved by removal, 2026-09-01** — and it did not resolve the way the question expected. זהות
+  merged into הציונות הדתית, which already carries `judicial-overhaul`, so the family's members
+  (הליכוד, הציונות הדתית, עוצמה יהודית, נעם) now carry it unanimously and the gap closed without
+  anyone reading the platform against the membership test. The reading is still owed if the technical
+  bloc splits and a זהות row is restored; the faction entry under הציונות הדתית is where it starts.
 - **הליכוד's 2026 list was not certified when revision 24 read it.** The 21–23 ordering
   (קרעי/ביסמוט/ביטן versus the reverse) and the 16–17 ordering are disputed between counts, and the
   exact set of Netanyahu's reserved slots is reported inconsistently (eight, at 3/5/9/11/15/18/26/29,
@@ -3687,8 +3799,8 @@ and covers the sovereignty-supporting right exactly.
 
 Held by נעם alone, while its two bloc partners held `judicial-overhaul` for the same programme. Two
 things decided the fold rather than a sweep. First, the anti-court grouping **already exists one
-layer up**: the `judicial-restraint` *family* covers הליכוד, הציונות הדתית, עוצמה יהודית, זהות and
-נעם, so the tag was grouping nothing the family did not. Second, נעם itself now carries
+layer up**: at the time of the fold the `judicial-restraint` *family* covered הליכוד,
+הציונות הדתית, עוצמה יהודית, זהות and נעם, so the tag was grouping nothing the family did not. Second, נעם itself now carries
 `judicial-overhaul`, so the tag was a footnote on a row that already had the general position.
 
 The nuance it carried — that נעם's objection is specifically to High Court intervention in *religious*
@@ -3770,3 +3882,4 @@ pass happened, for anyone reading git history.
 | 2026-08-30 | revision 34 — **ש"ס and יהדות התורה split into two entries and evidenced for the first time.** The two rows had shared one four-line block scoring them identically on every column, with only `religiosity` argued — the exact collapse the "axis records direction, tag records motive" convention exists to prevent, and the thinnest entry on a 3,400-line page. **No axis moved**: `religiosity` +2 confirmed by **חוק שיפוט בתי דין דתיים (בוררות), תשפ"ו-2026** (Gafni, Yaakov Asher, Yinon Azoulay; 65–41, 24 March 2026), which lets religious courts arbitrate civil matters **by the religious law they apply** but only on both parties' signature — a parallel jurisdiction, not a halakhic state, so the same +2 as זהות, which only proposed it; `economic` −2 confirmed for ש"ס by the food-voucher criteria its own Welfare Ministry wrote (per-capita income **without** a מיצוי כושר השתכרות test) and **knowingly retained as the page's weakest number** for יהדות התורה, which has no economic doctrine on record at all; `security` +1 confirmed by both factions **supporting** the hostage deals on פדיון שבויים grounds, against `opposes-hostage-deals` on the three far-right rows; `bloc` bibi **kept on both and now the most contestable cell on the page**, with the evidence both ways written out and an explicit move condition in Open questions. **Twelve tags added, 2 → 8 on each row.** `scholar-exemption-retained` is the correction that most needed making — it sat on four parties that merely tolerate the yeshiva exemption and on neither of the two organised around it. `rabbinic-authority-led` moves from a נעם singleton to its paradigm case; `jewish-law-parallel-jurisdiction` from a Zehut singleton to the parties that legislated it; `judicial-overhaul` from the record (the reasonableness repeal passed **64–0** with the opposition boycotting, and 64 was the whole coalition, so the arithmetic settles it), reinforced by Basic Law: Torah Study (63–52) and the arrest-freeze law (58–54, frozen by the High Court). Two new tags, both deliberate singletons or near: `opposes-core-curriculum` (the mirror of `core-curriculum`'s seven holders, resting on the 55% funding architecture and the 25 December 2025 government decision to introduce גפ"ן **"ללא תלות בלימודי ליבה"**) and, on יהדות התורה alone, `two-faction-list` — **whose justification was wrong as written and was corrected the same day, see revision 35**. `mizrahi-representation` on ש"ס alone, since `sector: haredi` is what made the two rows look identical. `judicial-restraint` added to both families, 3 → 4. **Method note, and the reason this row is worth reading twice: the platform is genuinely absent and that was tested, not assumed** — `shas.org.il` returns `ECONNREFUSED` to two independent fetchers and its newest Wayback snapshot is 2022-11-01, and no דגל/אגודה host resolves at all. **The headline of the record is that four years of maximal leverage produced no exemption statute** (79,000+ conscription orders → ~2,100 enlistments; 17 proactive arrests in a year) **while the budget delivered almost completely** (~₪2.4bn sectoral education budgets in 2026, a ₪942m/+32.5% rise, ₪1.1bn already paid before the Knesset approved it) |
 | 2026-08-30 | revision 35 — **יהדות התורה's faction split is a ritual, not an event, and revision 34 read it as news.** The repo owner flagged it within the hour: אגודת ישראל and דגל התורה have run together and sat as independent parties since **1992**, and he.wikipedia states the base rate exactly — the faction has split into its components **at the end of every Knesset term up to the 25th except the 15th, 18th and 19th**, and **every single time** the reopened joint-run negotiation succeeded and the two ran again on one list. So the **16 July 2026** split carried no information, the Kikar HaShabbat briefing about דגל weighing an independent run is what that negotiation looks like from outside every cycle, and Maklev's *"אנחנו לא מתגרשים אלא מתחדשים ונפרדים לתקופה"* describes a procedure rather than hedging about a breakup. **`two-faction-list` is kept and its justification replaced**: it now records the standing structure — a joint list of two independent parties with **separate מועצות גדולי תורה that rarely convene together** — which is also *why* `conscription-split` is the right family, since two councils holding two lines is not one party failing to hold one. The **"will it be on the ballot as one list" open question is closed the day it was opened**, and **`bloc: bibi` is closed too, by the owner** (~99% that UTJ goes with Netanyahu); the evidence both ways stays under ש"ס, and the move trigger stays a *positive* signal. **The method lesson is the durable half, and it is a new shape for this page: every source in revision 34's corpus was accurate, correctly dated and correctly quoted, and the conclusion was still wrong, because the error was in the baseline the facts were read against.** Worse, the disconfirming sentence was **already in the research output** — "UTJ has split at the end of most Knesset terms since the 13th and reunited each time" — and was read and under-weighted, which no amount of further sourcing would have fixed. This is the sibling of the "reachable is not current" and "corroboration is not coverage" rules in `services/backend/CLAUDE.md`: **for any fact about a recurring institution, establish the base rate before deciding the fact is a development.** No axis, bloc, sector, tag or family value changed |
 | 2026-08-31 | revision 36 — **הדמוקרטים's corpus 10 → 11 (חברה ערבית), and the August platform booklet proven to be a re-package.** **No axis moved and no tag was added; `seed.sql` is unchanged** — the first pass on this page to end that way, which is the outcome worth recording rather than hiding. The new paper is the row's strongest first-party evidence for `jewish-arab-partnership`, held until now off the realized list. **Four tags considered and rejected**, each on a precedent rather than on taste: `affirmative-action` (the paper asks for *"ייצוג הולם"* with no target and no mechanism, while revision 29 refused the same tag to ביחד on a **50% target plus a party-funding incentive** — granting it here would lower a bar set five days earlier), `arab-representation` and `focuses-on-arab-israeli-civil-issues` (both record what a party *is*, the `reservist-movement` distinction this row already carries), and `sectoral-budgeting` (held for coalition funds; a gap-closing חומש is not that, and the row's own economic paper runs *"במקום תקציבים מגזריים"*, so the tension is recorded in prose instead). **A name trap logged**: `arab-civil-service` is a national-service track for Arab citizens, not civil-service employment — it invites exactly the wrong match on a paper about representation in the ministries. **security −1 held at eleven papers**: revision 15's standing instruction was to re-open it if a *third* document leaned on the −1/−2 boundary, and this one leans in neither direction (מדינה פלסטינית, פלסטינ, כיבוש, שתי מדינות = 0 each). **The finding is a silence**: גיוס, שירות לאומי and שירות אזרחי are also 0, so the dedicated Arab-society paper is the most natural place revision 15's *"אוכלוסיות נוספות"* ambiguity would have been clarified and it was not — the open question narrows toward deliberate rather than unfinished. **`plan-8-26-he.pdf` (16pp, 2026-08-11, linked from the homepage as the platform) contributes nothing**: six chapters are verbatim at 48/48, 44/44, 39/39, 40/40, 39/39 and 36/36 sentences, and the crime and להט"ב chapters' apparent 17/26 and 9/36 divergence was **a `pdftotext` bullet-column artifact, not a finding** — every distinctive token is in both and the chapters match in length to within 4%. It omits מילואימניקים, שיווין מגדרי and חברה ערבית entirely (0 of the latter's 34 sentences), so it is a strict subset. **Checking tokens before believing a sentence diff** is the reusable half; the mirror of it is that the S3 bucket refuses `ListObjectsV2` and no page on `democrats.org.il` links the topic PDFs at all, so the booklet was reachable only by enumerating the site — revision 31's rule finding a document that then turned out to be worth nothing, which is still the rule working. **A tag gap filed rather than filled**: nothing covers the Kaminitz-Law repeal and Arab/Druze/Bedouin master planning, and it is queued behind a pass over the two Arab-list rows |
+| 2026-09-01 | revision 37 — **הציונות הדתית and זהות merged into one ballot line**, the second merge between two `upcoming_parties` rows (after חד"ש-תע"ל + בל"ד → הרשימה המשותפת) and the first where the components **contradict each other**. Signed the same evening as a **technical bloc** (בלוק טכני) that may split once seated, each party keeping its own identity and principles; פייגלין at **#2**, זהות holding slots 2, 8, 10 and 11 of thirteen; וינטר invited by both סמוטריץ' and בן גביר and declining the same evening. **One row, not two** — a voter sees one line, the יהדות התורה precedent, so the row takes `two-faction-list` (1 → 2 holders) and the `zehut` row is removed under `seed.sql`'s guarded delete. **The decision was the `economic` axis, not the merge.** הרשימה המשותפת's union rule was adopted on the express condition that components *"differ only in degree, with direction not in dispute"*; here direction **is** in dispute — 0 against +3, a finance minister running sectoral budgeting against the axis's only doctrinal libertarian — so the rule's own precondition excludes it. **`economic` held at 0** (repo owner's call, over NULL on the ביחד precedent and over +3 on the union rule read literally): RZP holds nine of thirteen slots including #1 and the portfolio. **`security` and `religiosity` unchanged at +3** — the first because both components were already at the pole, the second because there the components *do* differ only in degree, so the union rule applies and takes the pole. **Tag rule stated for the first time: carry what the list adds, refuse what would contradict a number or a family on the same row.** Of זהות's nineteen, 2 dedupe, **7 carried** (`gun-rights`, `temple-mount-centred`, `population-transfer`, `cannabis-legalization`, `permanent-residency-not-citizenship`, `communitarian-devolution`, `jewish-law-parallel-jurisdiction`) and **10 refused** — six economic-liberal tags plus `ends-state-religious-funding` (the opposite of `sectoral-budgeting`), `professional-army` (the opposite of `conscription-split`), `state-institutions-bound-to-halakha` (subsumed by `halakhic-state`) and `extra-parliamentary` (no longer true; #2 is realistic). Row 14 → **22 tags**. **Eight tags leave the vocabulary with the row** — `libertarian`, `flat-tax`, `small-government`, `privatization`, `state-institutions-bound-to-halakha`, `ends-state-religious-funding`, `professional-army`, `extra-parliamentary` — and the `economic` **+3 band is now empty**. **And a FAMILY was retired that the tag accounting did not predict: `market-liberal`** — its only two holders were ישראל ביתנו (+2) and זהות (+3), so the merge left it naming one party, which `test_every_family_value_is_shared_by_at_least_two_parties` rejects. Retired rather than back-filled: the only candidates (אל הדגל, המפלגה הכלכלית) are economic **+1**, and this family's test is *actually withdraws the state*, so admitting them would lower a bar revision 25 already refused. Removed from `i18n.js` (all three languages), `analytics.js` and `docs/i18n/family-strings.csv`; ישראל ביתנו keeps two families. **The pre-flight check that missed it asked whether the family still had *a* holder — the invariant is two**, and the test is what caught it. **זהות's 89-line entry is kept in full as a `####` faction subsection of הציונות הדתית**, not deleted: seven of the merged row's tags are sourced there and nowhere else, and a technical bloc can split — if it does, that is the scoring a restored row starts from. **One open question resolved by removal rather than by reading**: זהות was the only `judicial-restraint` family member without `judicial-overhaul`, and the family is now unanimous because the surviving row already carried it — the platform check it was queued for is still owed if the bloc splits. **No brand was announced** (every outlet says *"הרשימה המאוחדת"*), so the row keeps RZP's name and logo rather than an invented one. `previous_parties` untouched — זהות was extra-parliamentary in 2022 and has no row there, so no `party_lineage` link changes. Row flagged **expected-unstable**: סמוטריץ' called it *"החיבור הראשון ולא האחרון"* and list submission closes the week of 2026-09-07 |
