@@ -101,5 +101,48 @@ grep -q "TAG=${sha}-dirty$" <<<"$out" \
   || fail "override must suffix the tag so it cannot claim to be a commit, got: $out"
 ok "override builds and tags '${sha}-dirty' rather than a bare SHA"
 
+echo "--- the terraform lock file alone does NOT block (deploy.sh step 2 rewrites it) ---"
+# deploy.sh runs `terraform init -upgrade` at step 2, which rewrites this file whenever a provider
+# moves, and step 5 then hit its own guard -- the deploy dirtying the tree it is about to check.
+# Exempt because it is in no docker build context and so cannot change any image.
+git -C "$work/repo" checkout -q -- tracked.txt
+mkdir -p "$work/repo/terraform"
+echo 'provider "x" { version = "1.0.0" }' > "$work/repo/terraform/.terraform.lock.hcl"
+git -C "$work/repo" add terraform/.terraform.lock.hcl
+git -C "$work/repo" commit -qm lockfile
+sha="$(git -C "$work/repo" rev-parse --short HEAD)"
+echo 'provider "x" { version = "1.1.0" }' > "$work/repo/terraform/.terraform.lock.hcl"
+out="$(probe)"
+grep -q "EXIT=0" <<<"$out" || fail "lock file alone wrongly blocked the build: $out $(cat "$work/err")"
+grep -q "TAG=${sha}$" <<<"$out" \
+  || fail "an exempt-only tree must keep the plain SHA, not a -dirty tag, got: $out"
+ok "modified terraform/.terraform.lock.hcl alone does not block, and keeps tag '${sha}'"
+
+echo "--- but a source file alongside it STILL blocks (the exemption is not a hole) ---"
+# The regression that matters: if the exemption were written as a broad filter, a real change
+# hiding behind the lock file would ship under a tag that does not contain it. Feed the check the
+# input it MUST reject, rather than trusting that the narrow case passing means the guard survived.
+echo four > "$work/repo/tracked.txt"
+out="$(probe)"
+grep -q "EXIT=1" <<<"$out" || fail "a dirty source file hid behind the lock-file exemption: $out"
+grep -q "tracked.txt" "$work/err" \
+  || fail "the refusal must name the offending file, not the exempt one, got: $(cat "$work/err")"
+grep -q "terraform/.terraform.lock.hcl" "$work/err" \
+  && fail "the refusal listed the exempt lock file as a reason, which it is not"
+ok "a modified source file still blocks, and the message names it and not the lock file"
+
+echo "--- a DIFFERENT file under terraform/ still blocks (the exemption is one path, not a dir) ---"
+# Found by mutation-testing this file: widening the pathspec to ':(exclude,top)terraform/*' left
+# every check above green, so the two cases before this one pin that the exemption WORKS without
+# pinning how narrow it is. A .tf change is not in a build context either, but that has never been
+# argued or tested here, and an exemption nobody has to justify is how one path becomes a directory.
+git -C "$work/repo" checkout -q -- tracked.txt
+git -C "$work/repo" checkout -q -- terraform/.terraform.lock.hcl
+echo 'resource "null_resource" "x" {}' > "$work/repo/terraform/main.tf"
+out="$(probe)"
+grep -q "EXIT=1" <<<"$out" \
+  || fail "a change to terraform/main.tf was exempted -- the pathspec has been widened past the one file: $out"
+ok "terraform/main.tf still blocks -- only the lock file is exempt"
+
 echo
 echo "PASS ($pass checks)"
