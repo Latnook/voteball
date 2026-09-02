@@ -32,7 +32,22 @@ TAG="$(git rev-parse --short HEAD)"
 #
 # Untracked files count: they are not in HEAD but docker build DOES put them in the build context,
 # so they can reach the image. Gitignored files are excluded by git status and cannot.
-if [ -n "$(git status --porcelain)" ]; then
+#
+# terraform/.terraform.lock.hcl is the ONE exemption, and it is here because the deploy dirties its
+# own tree: deploy.sh step 2 runs `terraform init -upgrade`, which rewrites that file whenever a
+# provider has a newer version (hashicorp/tls 4.3.0 -> 4.4.0 on 2026-09-02), and step 5 then
+# refuses to build -- killing the deploy ~4 minutes in and forcing a manual commit plus a restart
+# from step 1. The exemption is safe for one specific reason, and it is the only reason: the docker
+# build contexts are services/{backend,worker,frontend,backup}/ and ci/jenkins/, so this file is in
+# none of them and cannot change a byte of any image. It therefore cannot produce the lying tag
+# this guard exists to prevent. Do NOT widen it to terraform/ as a whole -- nothing else here has
+# that property established, and the guard's value is that its exceptions are argued individually.
+#
+# Filtered with a git PATHSPEC rather than a grep over the output: git does the matching, so a path
+# containing a space, or a rename's ` -> ` arrow, cannot slip past a regex. `top` makes the path
+# repo-root-relative regardless of the caller's working directory.
+DIRTY="$(git status --porcelain -- ':/' ':(exclude,top)terraform/.terraform.lock.hcl')"
+if [ -n "$DIRTY" ]; then
   if [ "${ALLOW_DIRTY_BUILD:-}" = "1" ]; then
     TAG="${TAG}-dirty"
     echo "WARNING: working tree is dirty -- tagging ${TAG} so the tag cannot claim to be a commit." >&2
@@ -43,7 +58,7 @@ if [ -n "$(git status --porcelain)" ]; then
     echo "       Images are tagged '${TAG}' from git, so this build would publish an image whose" >&2
     echo "       tag does not describe its contents, and no later stage would notice." >&2
     echo "       Commit or stash first, or re-run with ALLOW_DIRTY_BUILD=1 to tag '${TAG}-dirty'." >&2
-    git status --short >&2
+    printf '%s\n' "$DIRTY" >&2
     exit 1
   fi
 fi

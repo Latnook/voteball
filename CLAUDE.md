@@ -1069,7 +1069,14 @@ image step and would have shipped as `b9e3054`. The guard runs **before** the te
 and the ECR login, so it costs no network and fails at deploy step 5 — ahead of the billed apply at
 step 6. `ALLOW_DIRTY_BUILD=1` overrides it but suffixes the tag `-dirty`, so the escape hatch cannot
 produce a lying tag either. Untracked files count (docker's build context includes them);
-gitignored files do not.
+gitignored files do not. **`terraform/.terraform.lock.hcl` is the one exemption**, added 2026-09-02
+because the deploy dirties its own tree: step 2's `terraform init -upgrade` rewrites that file
+whenever a provider moves (`hashicorp/tls` 4.3.0 → 4.4.0), and step 5 then refused, killing the run
+~4 minutes in and forcing a manual commit plus a restart from step 1. It is safe for exactly one
+reason — the file is in none of the docker build contexts, so it cannot change a byte of any image
+and cannot produce the lying tag the guard exists to prevent. **Do not widen it to `terraform/`**:
+`test-build-push-ecr.sh` now fails if you do, a check added only because mutation-testing showed the
+first version of that test passed happily against the widened pathspec.
 
 Same offline-stub pattern throughout. **Extend the matching test whenever you change a script** —
 pipeline logic that can only be tested by running the pipeline is exactly what this project refuses

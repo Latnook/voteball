@@ -1438,8 +1438,9 @@ one applied on top:
 - **one ballot naming זהות** — the row **survives** (19 rows), its ballot intact, and this row still
   updates to 22 tags. That is the vote guard failing safe by design, and it is the operational
   consequence to watch: **if production holds any vote for זהות, both it and the merged list stay on
-  the ballot** until an admin reassigns that vote. The cluster was down when this was written, so the
-  live count is unchecked — check it before the next deploy.
+  the ballot** until an admin reassigns that vote. **Checked against production on 2026-09-02**, on
+  the rebuild that shipped this change: the restored snapshot carried no vote for זהות, so the row
+  was removed cleanly — `/api/options` returns 18 upcoming rows, no זהות, and this row at 22 tags.
 
 The first run of the second case proved nothing and looked like it had: the ballot insert violated
 `votes_upcoming_vote_status_check` (the allowed values are `considering`/`undecided`, not `voted`),
@@ -3371,10 +3372,10 @@ wrong:
   keeps the 2022 logo, because that row is the current Knesset faction, and the two tables carry
   independent `logo_url` columns. Scoping the statement to one table is what enforces that.
 
-### Three logos are self-hosted under `/logos/`, and none is a matter of taste
+### Four logos are self-hosted under `/logos/`, and none is a matter of taste
 
 `services/frontend/logos/` is copied into the frontend image as a whole directory, so adding a file
-there is a data change. All three party logos that live there had to leave Wikimedia/CDN hosting:
+there is a data change. All four party logos that live there had to leave Wikimedia/CDN hosting:
 
 - **בית ציוני - המילואימניקים** (`beit-tzioni-miluimnikim.png`) — the list's only artwork is on
   `*.fbcdn.net`, whose URLs are signed and expire, and which tracker blockers drop in the browser.
@@ -3416,6 +3417,14 @@ there is a data change. All three party logos that live there had to leave Wikim
 Both were verified by rendering the real `logos.js` and `style.css` in headless Chromium over HTTP
 in both themes, not by inspecting the files. Both use `oxipng` lossless and **not** `pngquant` —
 the blue in each is faceted and bands.
+- **נעם** (`noam.png`) — **the only one of the four that is here because its source disappeared**,
+  not because the source was unusable. The row pointed at a Wikimedia file that now returns **404**;
+  the replacement the repo owner supplied is a 1600×1600 dark-navy tile whose wordmark occupies 13%
+  of the square, so it is cropped to the measured text block (900×296, 3.04:1) and self-hosted
+  because a cropped file is no longer the file at the URL. Shown **unchanged in both themes** — see
+  the נעם note below for why the recolour's own solid-tile guard already handles it and why no
+  `SKIP_RECOLOR_PARTIES` entry belongs there.
+
 
 ### A knockout cannot be recoloured, and it defeats every check based on brightness
 
@@ -3468,17 +3477,49 @@ dark navy with no error anywhere. `upload.wikimedia.org` sends `access-control-a
 it does not taint. **Do not add it to `OUTLINE_CLUBS`** — that set is for clubs and leagues, and the
 recolour already covers parties.
 
-**נעם's logo is the same case as זהות's and likewise needs no code change — also verified, not
-assumed.** The Wikimedia SVG is a `#003369` navy wordmark between two `#00b2ef` cyan bars, and
-**45.3% of its opaque pixels are perceptually dark**, so the wordmark would be close to invisible on
-the `#161B22` cards if shown untouched. Measured in a real Chromium against the live URL:
-`recolorLogoForDark()` lifts the navy to `#a7d2ff` (luminance 0.17 → 0.80, hue preserved) and leaves
-the cyan alone (0.567, already above the threshold), taking the dark fraction to **0%**. The
-cross-origin load with `crossOrigin="anonymous"` did **not** taint the canvas — that is the half
-worth re-checking on any new host, because a tainted canvas throws, `logoEl` swallows it, and the
-logo renders dark with no error anywhere. Note this file lives under `/wikipedia/he/` rather than
-`/wikipedia/commons/`, like most of the party logos here — same host, same
-`access-control-allow-origin: *`. **Do not add it to `OUTLINE_CLUBS`**, for the reason given above.
+~~**נעם's logo is the same case as זהות's**~~ — **that artwork is gone.** The Wikimedia file the
+row pointed at (`/commons/6/6e/…_j%2Cul.jpg`) now returns **404**, so the description below it is
+kept only as the record of what used to be there: a `#003369` navy wordmark between two `#00b2ef`
+cyan bars, 45.3% perceptually-dark pixels, lifted to `#a7d2ff` by `recolorLogoForDark()`. None of
+that applies to the replacement, and reasoning from it would be wrong in every particular.
+
+The replacement (2026-09-02, supplied by the repo owner) is
+`/wikipedia/he/e/e8/סמל_מפלגת_נעם.jpeg`, self-hosted as `noam.png` — see the self-hosted section
+above. It is the **opposite kind of artwork**: a 1600×1600 dark-navy **tile** carrying a
+light wordmark (white לישראל, cyan נעם) over a faint Star-of-David gradient, with a
+בראשות אבי מעוז sub-line. Where the old file was dark ink needing to be lifted, this one is already
+light-on-dark and must not be touched at all.
+
+**It needs no `logos.js` change, and specifically no `SKIP_RECOLOR_PARTIES` entry — verified, not
+assumed.** `recolorLogoForDark()`'s own first gate returns `null` for it: the file is fully opaque,
+so `opaque / total` measures **1.0000** against a `> 0.9` threshold, and the function bails at its
+"solid-tile logo -- leave as-is" line before touching a pixel. Simulating that gate on the actual
+cropped file is what established this; an entry in `SKIP_RECOLOR_PARTIES` would be dead weight
+asserting a rule the code already applies.
+
+**The same guard, the opposite outcome — and the tile's colour is the whole difference.**
+הציונות הדתית's published PNG trips this identical `> 0.9` check and that is precisely why it could
+not be used: its baked-in background is **white**, so the untouched tile renders as a white plate on
+the dark cards. נעם's tile is `#1B3A5C`-ish navy against a `#161B22` card, so the same bail-out
+yields the correct result on both grounds. Do not read "the solid-tile guard fires" as either good
+or bad news on its own — it means *the artwork is shown as drawn*, which is right only when the
+artwork was drawn for a ground close to the card's.
+
+**Cropped, at the repo owner's request, because the wordmark was 13% of a square.** The band the
+text occupies was measured, not eyeballed — bright-pixel rows fall in three groups (main wordmark
+666–877, the rule 893–904, the sub-line 946–992) across columns 288–1395. Cropping to that block
+with 28px of padding and scaling to 900px wide gives **900×296, aspect 3.04:1**, which puts the
+wordmark at ~59% of the tile's height instead of 13%. That aspect is deliberate: ביחד's file is
+3.11:1 and `.logo-wide` is the shape this grid already fits by width. **No `PADDED_CRESTS` entry** —
+that factor corrects transparent artwork that fails to span its own canvas, and a tile spans its
+canvas by definition.
+
+**PNG, and losslessly optimised only (`oxipng`, never `pngquant`).** The background is a gradient,
+which is the `og-card.png` trap: `pngquant` bands a gradient visibly. At 130KB it is the largest file in
+`logos/` — just above `uefa-nations-league.svg`'s 117KB — which is accepted because it is fetched
+once and the alternative is a lossy gradient.
+
+**Do not add it to `OUTLINE_CLUBS`**, for the reason given above.
 
 **Do not hotlink social-media CDNs.** Those URLs are signed and expire, the CDN may refuse hotlinks,
 and — the one that actually bit, on F.C. Kiryat Yam — tracker blockers drop `*.fbcdn.net` in the
@@ -3883,3 +3924,4 @@ pass happened, for anyone reading git history.
 | 2026-08-30 | revision 35 — **יהדות התורה's faction split is a ritual, not an event, and revision 34 read it as news.** The repo owner flagged it within the hour: אגודת ישראל and דגל התורה have run together and sat as independent parties since **1992**, and he.wikipedia states the base rate exactly — the faction has split into its components **at the end of every Knesset term up to the 25th except the 15th, 18th and 19th**, and **every single time** the reopened joint-run negotiation succeeded and the two ran again on one list. So the **16 July 2026** split carried no information, the Kikar HaShabbat briefing about דגל weighing an independent run is what that negotiation looks like from outside every cycle, and Maklev's *"אנחנו לא מתגרשים אלא מתחדשים ונפרדים לתקופה"* describes a procedure rather than hedging about a breakup. **`two-faction-list` is kept and its justification replaced**: it now records the standing structure — a joint list of two independent parties with **separate מועצות גדולי תורה that rarely convene together** — which is also *why* `conscription-split` is the right family, since two councils holding two lines is not one party failing to hold one. The **"will it be on the ballot as one list" open question is closed the day it was opened**, and **`bloc: bibi` is closed too, by the owner** (~99% that UTJ goes with Netanyahu); the evidence both ways stays under ש"ס, and the move trigger stays a *positive* signal. **The method lesson is the durable half, and it is a new shape for this page: every source in revision 34's corpus was accurate, correctly dated and correctly quoted, and the conclusion was still wrong, because the error was in the baseline the facts were read against.** Worse, the disconfirming sentence was **already in the research output** — "UTJ has split at the end of most Knesset terms since the 13th and reunited each time" — and was read and under-weighted, which no amount of further sourcing would have fixed. This is the sibling of the "reachable is not current" and "corroboration is not coverage" rules in `services/backend/CLAUDE.md`: **for any fact about a recurring institution, establish the base rate before deciding the fact is a development.** No axis, bloc, sector, tag or family value changed |
 | 2026-08-31 | revision 36 — **הדמוקרטים's corpus 10 → 11 (חברה ערבית), and the August platform booklet proven to be a re-package.** **No axis moved and no tag was added; `seed.sql` is unchanged** — the first pass on this page to end that way, which is the outcome worth recording rather than hiding. The new paper is the row's strongest first-party evidence for `jewish-arab-partnership`, held until now off the realized list. **Four tags considered and rejected**, each on a precedent rather than on taste: `affirmative-action` (the paper asks for *"ייצוג הולם"* with no target and no mechanism, while revision 29 refused the same tag to ביחד on a **50% target plus a party-funding incentive** — granting it here would lower a bar set five days earlier), `arab-representation` and `focuses-on-arab-israeli-civil-issues` (both record what a party *is*, the `reservist-movement` distinction this row already carries), and `sectoral-budgeting` (held for coalition funds; a gap-closing חומש is not that, and the row's own economic paper runs *"במקום תקציבים מגזריים"*, so the tension is recorded in prose instead). **A name trap logged**: `arab-civil-service` is a national-service track for Arab citizens, not civil-service employment — it invites exactly the wrong match on a paper about representation in the ministries. **security −1 held at eleven papers**: revision 15's standing instruction was to re-open it if a *third* document leaned on the −1/−2 boundary, and this one leans in neither direction (מדינה פלסטינית, פלסטינ, כיבוש, שתי מדינות = 0 each). **The finding is a silence**: גיוס, שירות לאומי and שירות אזרחי are also 0, so the dedicated Arab-society paper is the most natural place revision 15's *"אוכלוסיות נוספות"* ambiguity would have been clarified and it was not — the open question narrows toward deliberate rather than unfinished. **`plan-8-26-he.pdf` (16pp, 2026-08-11, linked from the homepage as the platform) contributes nothing**: six chapters are verbatim at 48/48, 44/44, 39/39, 40/40, 39/39 and 36/36 sentences, and the crime and להט"ב chapters' apparent 17/26 and 9/36 divergence was **a `pdftotext` bullet-column artifact, not a finding** — every distinctive token is in both and the chapters match in length to within 4%. It omits מילואימניקים, שיווין מגדרי and חברה ערבית entirely (0 of the latter's 34 sentences), so it is a strict subset. **Checking tokens before believing a sentence diff** is the reusable half; the mirror of it is that the S3 bucket refuses `ListObjectsV2` and no page on `democrats.org.il` links the topic PDFs at all, so the booklet was reachable only by enumerating the site — revision 31's rule finding a document that then turned out to be worth nothing, which is still the rule working. **A tag gap filed rather than filled**: nothing covers the Kaminitz-Law repeal and Arab/Druze/Bedouin master planning, and it is queued behind a pass over the two Arab-list rows |
 | 2026-09-01 | revision 37 — **הציונות הדתית and זהות merged into one ballot line**, the second merge between two `upcoming_parties` rows (after חד"ש-תע"ל + בל"ד → הרשימה המשותפת) and the first where the components **contradict each other**. Signed the same evening as a **technical bloc** (בלוק טכני) that may split once seated, each party keeping its own identity and principles; פייגלין at **#2**, זהות holding slots 2, 8, 10 and 11 of thirteen; וינטר invited by both סמוטריץ' and בן גביר and declining the same evening. **One row, not two** — a voter sees one line, the יהדות התורה precedent, so the row takes `two-faction-list` (1 → 2 holders) and the `zehut` row is removed under `seed.sql`'s guarded delete. **The decision was the `economic` axis, not the merge.** הרשימה המשותפת's union rule was adopted on the express condition that components *"differ only in degree, with direction not in dispute"*; here direction **is** in dispute — 0 against +3, a finance minister running sectoral budgeting against the axis's only doctrinal libertarian — so the rule's own precondition excludes it. **`economic` held at 0** (repo owner's call, over NULL on the ביחד precedent and over +3 on the union rule read literally): RZP holds nine of thirteen slots including #1 and the portfolio. **`security` and `religiosity` unchanged at +3** — the first because both components were already at the pole, the second because there the components *do* differ only in degree, so the union rule applies and takes the pole. **Tag rule stated for the first time: carry what the list adds, refuse what would contradict a number or a family on the same row.** Of זהות's nineteen, 2 dedupe, **7 carried** (`gun-rights`, `temple-mount-centred`, `population-transfer`, `cannabis-legalization`, `permanent-residency-not-citizenship`, `communitarian-devolution`, `jewish-law-parallel-jurisdiction`) and **10 refused** — six economic-liberal tags plus `ends-state-religious-funding` (the opposite of `sectoral-budgeting`), `professional-army` (the opposite of `conscription-split`), `state-institutions-bound-to-halakha` (subsumed by `halakhic-state`) and `extra-parliamentary` (no longer true; #2 is realistic). Row 14 → **22 tags**. **Eight tags leave the vocabulary with the row** — `libertarian`, `flat-tax`, `small-government`, `privatization`, `state-institutions-bound-to-halakha`, `ends-state-religious-funding`, `professional-army`, `extra-parliamentary` — and the `economic` **+3 band is now empty**. **And a FAMILY was retired that the tag accounting did not predict: `market-liberal`** — its only two holders were ישראל ביתנו (+2) and זהות (+3), so the merge left it naming one party, which `test_every_family_value_is_shared_by_at_least_two_parties` rejects. Retired rather than back-filled: the only candidates (אל הדגל, המפלגה הכלכלית) are economic **+1**, and this family's test is *actually withdraws the state*, so admitting them would lower a bar revision 25 already refused. Removed from `i18n.js` (all three languages), `analytics.js` and `docs/i18n/family-strings.csv`; ישראל ביתנו keeps two families. **The pre-flight check that missed it asked whether the family still had *a* holder — the invariant is two**, and the test is what caught it. **זהות's 89-line entry is kept in full as a `####` faction subsection of הציונות הדתית**, not deleted: seven of the merged row's tags are sourced there and nowhere else, and a technical bloc can split — if it does, that is the scoring a restored row starts from. **One open question resolved by removal rather than by reading**: זהות was the only `judicial-restraint` family member without `judicial-overhaul`, and the family is now unanimous because the surviving row already carried it — the platform check it was queued for is still owed if the bloc splits. **No brand was announced** (every outlet says *"הרשימה המאוחדת"*), so the row keeps RZP's name and logo rather than an invented one. `previous_parties` untouched — זהות was extra-parliamentary in 2022 and has no row there, so no `party_lineage` link changes. Row flagged **expected-unstable**: סמוטריץ' called it *"החיבור הראשון ולא האחרון"* and list submission closes the week of 2026-09-07 |
+| 2026-09-02 | revision 38 — **נעם's logo replaced; the old Wikimedia file now 404s.** A dead source, not a preference, so the note describing the old artwork (navy wordmark between cyan bars, 45.3% dark pixels, lifted by `recolorLogoForDark()`) is struck through and kept as a record — none of it applies to the replacement, which is the **opposite kind of artwork**: a fully opaque dark-navy tile carrying a light wordmark. **No `logos.js` change, and specifically no `SKIP_RECOLOR_PARTIES` entry — verified by simulating the function's own first gate on the real file**, which measures `opaque / total` = **1.0000** against its `> 0.9` solid-tile threshold and returns `null` before touching a pixel. An entry would have asserted a rule the code already applies. **The same guard, the opposite outcome**: הציונות הדתית's PNG trips this identical check and that is exactly why it was unusable, because its baked-in tile is *white* and renders as a plate on the dark cards — so "the solid-tile guard fires" is neither good nor bad news by itself, it means the artwork is shown as drawn, which is right only when it was drawn for a ground close to the card's. **Cropped at the repo owner's request** because the wordmark was 13% of a 1600×1600 square: bright-pixel rows measured into three bands (wordmark 666–877, rule 893–904, בראשות אבי מעוז 946–992) over columns 288–1395, cropped with 28px padding and scaled to **900×296, 3.04:1** — the wordmark now ~59% of the tile height, and the aspect deliberately matches ביחד's 3.11:1, the shape `.logo-wide` already fits by width. **No `PADDED_CRESTS` entry**: that factor corrects transparent artwork that fails to span its own canvas, and a tile spans its canvas by definition. Self-hosted as the **fourth** file in `logos/` — a cropped file is no longer the file at the URL — and `oxipng` lossless only, never `pngquant`, because the background is a gradient (the `og-card.png` trap) |
