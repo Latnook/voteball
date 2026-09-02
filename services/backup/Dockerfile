@@ -22,8 +22,16 @@ FROM postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c87
 # FAILURE THRESHOLD IS info -- so a second RUN fails the Lint stage outright. Learned on CI build #1,
 # 2026-08-23: the local script suite was green because it does not run hadolint, and Lint runs before
 # Tests, so the whole build died before a single test executed.
+# The libexpat upgrade (CVE-2026-66046 + CVE-2026-76641, both HIGH, 2.8.3-r0 -> 2.8.4-r0) must come
+# AFTER the aws-cli install, not alongside the openssl pair above: libexpat is NOT in this base at
+# all -- aws-cli is what pulls it in -- so upgrading it first is a no-op on a package that does not
+# exist yet, and the image still scans dirty. Found 2026-09-02 by scanning this image locally after
+# the same two CVEs turned the frontend red; CI had never reached it, because Trivy scans the four
+# images in one `set -e` shell and stops at the first failure, so a second image with the same CVE
+# stays invisible until the first is fixed. Still ONE RUN, for the DL3059 reason above.
 RUN apk upgrade --no-cache libssl3 libcrypto3 \
  && apk add --no-cache aws-cli \
+ && apk upgrade --no-cache libexpat \
  && rm -f /usr/local/bin/gosu
 
 # THE gosu REMOVAL ABOVE. It is the ONLY source of HIGH/CRITICAL findings in this image -- all 22 of them
