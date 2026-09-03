@@ -132,7 +132,7 @@ Negative reduces religious authority.
 | **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
 | **0** | Status quo — no active religion-state agenda in either direction | *(none)* |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, האחדות `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, האחדות `[u]`, עמך ישראל `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
 
@@ -3158,7 +3158,7 @@ of a person).
 **Not added to `previous_parties`** — the party did not exist at the previous election, so there is
 no lineage link to draw either.
 
-### עמך ישראל — Amcha Yisrael · `bibi` · NULL / 3 / NULL · secular
+### עמך ישראל — Amcha Yisrael · `bibi` · NULL / 3 / −2 · secular
 
 New party, launched **2026-08-25** at the Shalva Center in Jerusalem by
 **תא"ל במיל' עופר וינטר** (Brig. Gen. (res.) Ofer Winter), former Givati brigade commander. Slate:
@@ -3169,10 +3169,13 @@ in the Bar Association), ללי דרעי (bereaved mother), סיגל קראונ�
 movement דור הניצחון), פלר חסן-נחום, and the economist רונן בודנרו. **No sitting MK and no defector
 from any existing party.**
 
-**The corpus is one launch event.** No website, no platform, no manifesto — scored 2026-08-27 from
-same-day reporting of what Winter said on stage. Two of the three axes are therefore NULL, and they
-are NULL as *positive findings of absence* verified by keyword sweep across five independently
-fetched sources, not as gaps in the search.
+**The corpus is two events and no document.** Still no website, no platform and no manifesto. The row
+was first scored 2026-08-27 from same-day reporting of the launch, where two of the three axes came
+out NULL as *positive findings of absence* — verified by keyword sweep across five independently
+fetched sources, not left blank for want of looking. A press conference on **2026-09-02** added the
+party's first substantive policy statements and moved `religiosity` off NULL; `economic` is still NULL
+on the same basis. `basis` stays `record`, since on-the-record statements are not a published
+platform.
 
 security **+3**, and it is the only axis with evidence. Winter, at his own launch, on the record, in
 front of cameras: *"לעולם לא תהיה פה מדינה פלסטינית. הפיתרון בעזה הוא אחד - הגירה"*, and
@@ -3181,13 +3184,18 @@ front of cameras: *"לעולם לא תהיה פה מדינה פלסטינית. �
 **Record the verbatim word.** He said **הגירה** (emigration), *not* **טרנספר** — the "transfer" gloss
 adds a compulsion the Hebrew leaves open, and that distinction decides two tags below.
 
-economic **NULL** and religiosity **NULL** — *not* 0. Nothing on tax, cost of living or budgets;
-nothing on שבת, כשרות, נישואין אזרחיים, הרבנות or הלכה. A 0 on either would assert a confirmed
-centrist position this party has not taken. religiosity is additionally listed in
-`RELIGIOSITY_NULL_BY_DESIGN` in `test_queries.py` as a **placeholder, not a permanent exemption** —
-unlike רע"ם and חד"ש-תע"ל, where the axis genuinely does not apply. Walla already predicts the
-messaging will turn to *שינוי המדיניות סביב שירות החרדים*; when it does, that test fails, which is
-the intended trigger to revisit this row.
+economic **NULL** — *not* 0. Nothing on tax, cost of living or budgets; a 0 would assert a
+confirmed centrist position this party has not taken. It is still NULL after the 2026-09-02 press
+conference, whose only spending line of any kind is חדאד's demand for a hasbara ministry
+*"עם תקציב עתק"*.
+
+religiosity **was NULL and is now −2** — see the 2026-09-03 block below. It was NULL as a *positive
+finding of absence* on 2026-08-27 (nothing on שבת, כשרות, נישואין אזרחיים, הרבנות or הלכה), and it
+was listed in `RELIGIOSITY_NULL_BY_DESIGN` in `test_queries.py` as a **placeholder, not a permanent
+exemption** — unlike רע"ם and חד"ש-תע"ל, where the axis genuinely does not apply — with Walla's
+prediction that the messaging would turn to *שינוי המדיניות סביב שירות החרדים* written down as the
+trigger. It did, six days later, and the entry was removed from that set. **The placeholder worked as
+designed; it is not a correction.**
 
 **⚠ Two widely-repeated claims about this launch are false.** That Winter's speech addressed **haredi
 conscription / IDF integration** and **judicial reform** (*"שינוי משמעותי במערכת המשפט"*) were both
@@ -3196,7 +3204,23 @@ attributing a conscription position to אביב עזרא's prior *חוק גיו�
 the same way — his membership of the list is confirmed, the inference from it is not. Do **not**
 score religiosity from any of them.
 
-**`bibi`, on declared camp rather than any endorsement — the weakest field on this row.** For:
+*(Amended 2026-09-03: the refutations stand as statements about the **launch speech**, which is what
+they were checked against, and the third — the inference from עזרא's prior campaigning — is still
+refuted. But haredi conscription is now the party's own headline position, stated first-party a week
+later. "The launch speech did not say X" and "the party has no position on X" are different
+propositions, and only the first was ever verified. The warning is kept because that distinction is
+the useful part.)*
+
+**`bibi` — resolved 2026-09-02, and no longer the weakest field on this row.** Winter has now named
+Netanyahu himself: *"'עמך ישראל' היא חלק ממחנה הימין ותמליץ על נתניהו כראש הממשלה"*, restated at his
+own press conference alongside an explicit refusal of the other camp
+(*"ברור שלא נלך עם ליברמן, בנט ואחרים"*). `hard-to-classify-bloc` is **removed** — see the 2026-09-03
+block. The reasoning it was carried on is kept below, because the counter-evidence has not gone away;
+it has been shown to be about the relationship rather than the bloc, which is exactly the reading
+revision 32 took.
+
+The original 2026-08-27 assessment, kept as the record: **`bibi`, on declared camp rather than any
+endorsement — then the weakest field on this row.** For:
 *"אנחנו חלק ברור ומובהק במחנה הימין"*, *"נעשה הכל כדי להקים ממשלת ימין רחבה ככל הניתן"*, and an
 explicit refusal to have גדי איזנקוט as prime minister; Ynet assigns him to the bloc
 (*"מזוהה כמי שמעדיף את נתניהו"*) and reports his seats come from coalition voters. Against, and it
@@ -3205,7 +3229,7 @@ publicly campaigning against him (*"שלוש פטריות אחרי הגשם... �
 Netanyahu privately expects him to cross over, and the pollster מנחם לזר places him in a "third
 bloc". The reading taken here is that the counter-evidence concerns his relationship with *Netanyahu
 personally*, while ruling out the other camp's candidate for PM is a bloc declaration.
-`hard-to-classify-bloc` carries the hedge, as it does on כחול לבן.
+`hard-to-classify-bloc` carried the hedge, as it still does on כחול לבן.
 
 `secular`, on the party's own framing — *"עם רוב חילוני"*, and an explicit attempt
 *"לבדל את המפלגה מהמפלגות הציוניות-דתיות והימין הקיימות"*. **Held with reservations**: it is a party
@@ -3244,6 +3268,117 @@ merge, and בן גביר has renewed contacts. Polling is one day old, one polls
 disagree — Walla/לזר reports 6 seats, i24 reports 8 with הליכוד −5, and a same-day הארץ headline put
 the new right-wing party *below* threshold. **The party may not reach the ballot as an independent
 list.**
+
+**2026-09-03 — the party's first substantive policy statements, from a press conference on
+2026-09-02. religiosity NULL → −2, the first axis to move on this row; `bibi` resolved; three tags
+added and one removed.**
+
+Corpus: four independently fetched outlets covering the same press conference —
+[כאן חדשות](https://www.kan.org.il/content/kan-news/politic/1095484/),
+[דבר](https://www.davar1.co.il/695768/),
+[ynet](https://www.ynet.co.il/news/article/r1q1jabdgx) and
+[מעריב](https://www.maariv.co.il/news/elections-2026/article-1362429). Still no website and no
+written platform, so `basis` stays `record`; these are on-the-record statements by the chairman and
+the deputy chairman at their own event, quoted at length and consistently across all four, which is
+a long way above the single launch report revision 32 had.
+
+- **religiosity NULL → −2, and the score is settled by membership rather than by the band prose.**
+  Winter: *"אנחנו מתכוונים להביא לשילוב הציבור החרדי בצה"ל בלי פשרות ובלי דחיות"*, *"כל צעיר בגיל
+  שירות יתייצב בפני המדינה. אין מגזר מעל החוק"*, and — the operative part —
+  *"לא ניכנס לממשלה שלא תעביר לפני הקמתה חוק ששם סוף להשתמטות ומחייב את כולם להתייצב ולתרום. אם זה
+  לא יקרה לא נהיה בממשלה. חד וחלק"*, with *"חוק השירות יעבור לפני השבעת הממשלה. לא הבטחה, לא סעיף
+  בהסכם קואליציוני"*. **This row satisfies exactly one of the −2 band's three criteria** — universal
+  conscription — and is silent on the other two (no core-curriculum funding condition, nothing on the
+  Rabbinate's monopolies). What decides it anyway is the vocabulary's own membership: **all nine
+  holders of `universal-conscription` sit at religiosity −2 or −3, and not one is NULL, 0 or −1.**
+  In this table the conscription criterion has never once co-existed with a non-negative score, so it
+  is already worth −2 on its own. −1 was considered and is wrong *in kind*, not in degree — that band
+  is "soften the monopolies without disestablishing", and this party softens no monopoly and is not
+  pluralist. This is also the axis's own warning working as written: *"read the education and
+  conscription material too; the religion-and-state chapter alone will systematically under-score a
+  party."* Here there is no religion-and-state chapter at all, and the whole score comes from the
+  conscription half.
+- **A fourth row satisfying a fourth different subset of the −2 band.** Revisions 20, 21 and 22 each
+  recorded a row clearing that band on a different combination of its criteria; this one clears it on
+  the narrowest combination yet — one criterion of three. The band text is now the most-cited
+  unresolved item on this page by some distance, and this row is the strongest argument yet that it
+  should be rewritten as "reduces the haredi sectoral settlement **or** the religious monopolies"
+  rather than as a bundle. Filed under Open questions rather than rewritten here on one row.
+- **`bibi` resolved, and `hard-to-classify-bloc` removed** (2 holders → 1, כחול לבן alone; rarity is
+  not a defect, revision 19). The hedge was carried for one stated reason — *"Winter has never named
+  נתניהו"* — and he has now named him twice on the record, first in a statement a week earlier and
+  again here: *"בשבוע שעבר אמרתי בקולי ש'עמך ישראל' היא חלק ממחנה הימין ותמליץ על נתניהו כראש
+  הממשלה"*, plus *"ברור שלא נלך עם ליברמן, בנט ואחרים שכבר הקימו ממשלה עם תנועת האחים המוסלמים"*.
+  **The conditionality is real and does not touch the bloc**: he conditions *entering the coalition*
+  on the service law passing before the swearing-in, and he apologised to supporters who were
+  disappointed by the recommendation (*"אני מבקש להתנצל בפני מי שהתאכזב"*). Recommending a candidate
+  for PM is what this field records; joining his government is not.
+- **`universal-conscription` added, as a tag and as the row's second family**, and it is the
+  **strongest form any holder states**. The three enforcement models revision 22 catalogued (ביחד
+  sanctions-only, ישר criminal penalty, כחול לבן coercion plus fines) are all about what happens to
+  non-servers; this one is about *when the law passes* — a precondition to the government being
+  sworn in, explicitly not a coalition-agreement clause. A fourth mechanism, and the only one whose
+  instrument is the party's own coalition leverage.
+- **`anti-conscription-exemption` added** (3 → 4). *"חוק ששם סוף להשתמטות"* is the tag's content
+  verbatim; *"אין מגזר מעל החוק"* and *"לא עוד מאותו דבר. מה שהיה לא יהיה"* remove any reading of it
+  as a negotiating position.
+- **`arab-civil-service` added** (3 → 4), and this is the *correct* match on the name revision 36
+  flagged as inviting the wrong one. The tag marks a national-service track for Arab citizens.
+  חדאד, the deputy chairman, states it outright: *"תהיה פה שותפות בנטל - לא משנה אם מדובר על יהודים
+  או ערבים, חילונים, דתיים או חרדים"*, against Winter's *"כל צעיר בגיל שירות"* and *"אין מגזר מעל
+  החוק"*. **Note the cross-row irony and do not let it pass unrecorded**: revision 15's open question
+  on הדמוקרטים — does *"הרחבת גיוס של אוכלוסיות נוספות"* include Arab citizens? — has now been
+  answered explicitly by a *different* party, from the opposite bloc, through its Arab deputy
+  chairman. It does not resolve the question on that row, but it disposes of the reading that the
+  vagueness there is merely awkward to write down.
+- **`service-conditioned-citizenship` considered and REJECTED, on the name-trap discipline.** Winter
+  does say *"מי שישרת, יקבל. מי שיתרום יותר, יקבל הרבה יותר. לוחמים ומשרתי מילואים יהיו בראש סדר
+  העדיפויות הלאומי"*. But this tag's founding case is Hendel's **franchise** clause — revision 20
+  recorded that the tag "rests on" it even after בית ציוני's own platform declined to restate it —
+  and a graduated benefits ladder is not a claim about citizenship. Granting it here would repeat the
+  `arab-civil-service` error in the other direction: matching a name instead of a position. **Logged
+  as a vocabulary problem rather than settled on this row**: five holders now sit under a label whose
+  founding case only one of them meets.
+- **`sanctions-on-non-servers` REJECTED** on the revision 15 line. All seven holders name a concrete
+  penalty — a fine, a withdrawn entitlement, a criminal charge. This programme names only rewards,
+  graduated by contribution. A reward ladder and a penalty schedule are not the same instrument, and
+  the tag was created to record the second.
+- **`reservist-focused` REJECTED** on the revision 13 standard, which is a costed benefits package
+  rather than rhetoric. *"בראש סדר העדיפויות הלאומי"* is a priority claim with no benefit, no number
+  and no instrument attached.
+- **The Arab-society campaign is recorded in prose and earns no partnership tag.** חדאד is confirmed
+  as **deputy chairman** (*"בהובלת עופר וינטר, כשאני סגנו"* — revision 32 had him only as #2), sets an
+  explicit target of *"שני מנדטים מהחברה הערבית"*, argues *"בחברה הערבית הסוגיה הפלסטינית נמצאת
+  בתחתית סדר העדיפויות"*, and commits the party to *"להעצים את הזהות הערבית-ישראלית במקום
+  הפלסטינית בכל מוסדות החינוך הערביים-ישראליים"* alongside a crime-and-protection campaign. That
+  last clause is why **`jewish-arab-partnership` is refused**: partnership as this page uses it is
+  shared-society equality, and replacing one national identity with another in the state's Arab
+  schools is a different position — arguably the opposite one. `arab-representation` and
+  `focuses-on-arab-israeli-civil-issues` are refused on revision 36's distinction, which this row
+  tests from the other side: both record what a party **is**, and a right-wing Zionist list running an
+  Arab-society campaign through an Arab deputy chairman is a striking fact about Israeli politics and
+  still not an Arab party.
+- **security +3 and economic NULL both held, with nothing new either way.** Neither the press
+  conference nor any of the four reports contains a sentence on sovereignty, annexation, the West
+  Bank or borders; the security content is Winter's ambition to be defence minister and a claim that
+  the current government cannot deliver *"הכרעה ברורה בעזה"*. The +3 continues to rest entirely on
+  the two launch quotes, which is worth restating rather than letting a second corpus imply
+  corroboration it does not supply.
+- **The instability warning is sharper, not softer.** Netanyahu's people offered Winter **all five
+  remaining reserved slots on the Likud list, four of them above #30, in exchange for withdrawing**;
+  Winter refused to take the call at all (*"אין על מה לדבר"*). סמוטריץ' appealed publicly —
+  *"אני קורא לווינטר... עופר, אל תיקח סיכונים"* — and the הציונות הדתית/זהות technical bloc signed the
+  previous day (revision 37) is expected to try to add him. Winter's answer is categorical:
+  *"אנחנו לא מתכוונים להיכנע. לא ניפול, לא נתפרק... אנחנו לא מחפשים סידור עבודה"*, with the door left
+  open only to *"אנשים חדשים ונקיים"* individually. **The row is still expected-unstable**, but the
+  instability now has a documented price attached to it.
+- **A source-access correction with a rule behind it.** `services/backend/CLAUDE.md` recorded
+  `davar1.co.il` as returning **403**. It returned **200** on the first try today with a browser
+  User-Agent plus `Accept`, `Accept-Language` and `Referer` — the same shape that fixed
+  `kachollavan.org.il` (2026-08-11) and `timesofisrael.com` (2026-08-26). That is the **third**
+  instance, and the note has been corrected. A domain written off as blocked costs coverage, not
+  effort: this row's whole religiosity score comes from a press conference that דבר covers more fully
+  than any of the other three.
 
 **Not added to `previous_parties`** — it did not exist at the previous election, so there is no
 lineage link to draw either.
@@ -3925,6 +4060,17 @@ bought nothing here, because the defect was never in the pixels being measured.
   nothing on marriage, and fails the funding test. Three rows at −2, three different subsets of the
   −3 band's three criteria, every one scored consistently. The band text is the defect, not any of
   the rows, and it is now the single most-cited unresolved item on this page.
+  **Fourth instance, 2026-09-03 (revision 41): עמך ישראל, and it is the narrowest case yet.** This
+  row clears the **−2** band on **one** of that band's own three criteria — universal conscription —
+  with no core-curriculum funding condition and nothing whatever on the monopolies, because it has
+  published no religion-and-state material at all. What justified the score was not the band prose
+  but the vocabulary's membership: **all nine `universal-conscription` holders are at −2 or −3, none
+  at NULL, 0 or −1.** So the criterion is *already* treated as sufficient in practice while the band
+  is written as a bundle, and the two have now visibly diverged. **The proposed rewrite is
+  disjunctive**: a row sits at −2 if it reduces the haredi sectoral settlement (conscription, or
+  core-curriculum funding) **or** the religious monopolies — the funding criterion of the −3 band
+  staying decisive between −2 and −3, per the three instances above. Recorded, not applied: rewriting
+  the axis from one row is what revision 15 refused for tags, and the same reasoning holds here.
 - **No environment/climate tag exists, and one row now clearly earns one.** המפלגה הכלכלית publishes
   a full programme (100% renewable electricity by 2050, a ₪10B climate fund, closing the Haifa Bay
   refineries, refusing to renew the Dead Sea concession, live-export ban, cage-free hens). Creating
@@ -3935,6 +4081,14 @@ bought nothing here, because the defect was never in the pixels being measured.
   **Partial data point, 2026-08-26:** ביחד's `/plans/` corpus is now six documents and **none of them
   is environmental**. That is not a verdict — none of the six is a document where the subject would
   appear — but it does mean this row's likely-holder status rests on nothing read so far.
+  **Correction and a second data point, 2026-09-03 (revision 40):** the sentence above is wrong about
+  הדמוקרטים — its *מצע סביבה* paper has been read since 2026-08-01 and is listed in that entry's
+  sources; what has not happened is the *sweep*, which is a different thing, and the two were
+  conflated. The row's rural paper adds more (accelerated renewable transition and storage,
+  agrivoltaics with continued cultivation required, integrated national energy planning against
+  *"פעילות בלתי מתואמת"*), so this is now a **second** row with a clearly qualifying programme and the
+  tag still does not exist. That strengthens the case for doing the sweep, and it does not change the
+  reason for refusing to create the tag from one row at a time.
 - **`security 0` now has exactly one holder, יש עתיד `[p]`, and it has never been re-verified.**
   Revision 23 removed the other one after finding a full conflict platform behind it, and the band's
   explanatory note had been built on that wrong example. A `0` asserts a party has genuinely taken no
@@ -4162,3 +4316,4 @@ pass happened, for anyone reading git history.
 | 2026-09-02 | revision 38 — **נעם's logo replaced; the old Wikimedia file now 404s.** A dead source, not a preference, so the note describing the old artwork (navy wordmark between cyan bars, 45.3% dark pixels, lifted by `recolorLogoForDark()`) is struck through and kept as a record — none of it applies to the replacement, which is the **opposite kind of artwork**: a fully opaque dark-navy tile carrying a light wordmark. **No `logos.js` change, and specifically no `SKIP_RECOLOR_PARTIES` entry — verified by simulating the function's own first gate on the real file**, which measures `opaque / total` = **1.0000** against its `> 0.9` solid-tile threshold and returns `null` before touching a pixel. An entry would have asserted a rule the code already applies. **The same guard, the opposite outcome**: הציונות הדתית's PNG trips this identical check and that is exactly why it was unusable, because its baked-in tile is *white* and renders as a plate on the dark cards — so "the solid-tile guard fires" is neither good nor bad news by itself, it means the artwork is shown as drawn, which is right only when it was drawn for a ground close to the card's. **Cropped at the repo owner's request** because the wordmark was 13% of a 1600×1600 square: bright-pixel rows measured into three bands (wordmark 666–877, rule 893–904, בראשות אבי מעוז 946–992) over columns 288–1395, cropped with 28px padding and scaled to **900×296, 3.04:1** — the wordmark now ~59% of the tile height, and the aspect deliberately matches ביחד's 3.11:1, the shape `.logo-wide` already fits by width. **No `PADDED_CRESTS` entry**: that factor corrects transparent artwork that fails to span its own canvas, and a tile spans its canvas by definition. Self-hosted as the **fourth** file in `logos/` — a cropped file is no longer the file at the URL — and `oxipng` lossless only, never `pngquant`, because the background is a gradient (the `og-card.png` trap) |
 | 2026-09-02 | revision 39 — **ישר's corpus 11 → 13 documents**: two new principles papers read ([שיקום ושגשוג הצפון](https://yasharwitheisenkot.com/principles/north-reconstruction-and-prosperity/), published 2026-08-17; [הגיל השלישי](https://yasharwitheisenkot.com/principles/senior-citizens/), published 2026-09-01). **No axis moved, no tag added, `seed.sql` unchanged** — the second pass on this page to end that way, after revision 36. **`principles-sitemap.xml` enumerates the corpus in one request** (11 papers plus the index), which is revision 31's technique applied to a second row, and its value here is the `lastmod` column rather than the count: it **proves revision 21 was not incomplete** (both new papers postdate it), it forces *papers* and *documents* to be counted separately (the brochure and the registered goals are not in it), and it flags that **`aliyah-and-integration` was modified 2026-08-18, two days after revision 21 read it** — the one page every religion-and-state finding on this row rests on. Re-checked live: all four cited phrases still present, religiosity −2 stands. **A `lastmod` after the read is a re-read trigger of the same class as revision 22's moved URL, and it arrives earlier.** **`welfare-state` re-rejected, and revision 21's stated reason struck through** — that reason quoted the economics paper's *"העבודה תשתלם תמיד יותר מקצבה"*, and **revision 29 bars the move**, having granted the tag to ביחד while leaving that row's identical workfare finding standing on the holding that an aging plan is *"a different class of document"*. Re-earned on the aging paper alone and **narrowly**: it has an unrestricted *"מנגנון קבע לשימור ערך הקצבאות"* and names no funding source, but it names **no formula, baseline or scope**, where ביחד named the average wage against the CPI and the 2003 de-indexation it reverses. The countable discriminator is stark — **the senior-citizens paper carries no shekel figure anywhere** (its only numerals are a 13% population share and two uses of אחוז), the sole paper in this corpus with no costed measure, against a north paper two weeks older carrying ₪15B/₪6B/₪3B/₪250M/₪225M and two new tax brackets; revision 19's standard is *a costed package, not rhetoric*. **The earning line is recorded** so the next pass tests instead of re-arguing: name the formula or baseline, or extend the rise past the low-income cohort. Also flagged: the page's most universal measure, mandatory LTC insurance, uses **נבחן** against נפעל ×8 / נקדם ×6 — **do not score an examination as a commitment**. **economic +1 confirmed (sixth reading)**: north grows both halves again (2.5%/5% corporate-tax brackets, Eilat-model depreciation, a business-arnona cut and a planning "green track" against ₪15B over five years and a national-priority law for the confrontation line), while senior-citizens is the corpus's **first purely expansionary document, without one liberalizing sentence** — recorded because it does *not* move the axis. **security +1 unmoved**, and the north paper is the **second URL on this row that invites the wrong axis**: a paper on the northern border with nothing on Lebanon, Hezbollah, doctrine, statehood or the territories — its ביטחון is מיגון and organised crime — bringing the count to **thirteen documents with no sentence on the conflict**. Fourth instance of the התיישבות homograph (Galilee pioneering, not the West Bank), and the first time *"עדיפות לאומית"* is attached to a **named** region (the northern confrontation line) — a data point, **not** a resolution of `inlocation-and-aliya`'s unnamed one. **`service-conditioned-citizenship` gains its sharpest sentence in the table**: north's 0–3 daycare subsidy pays **₪2,000 where a parent completed military service and ₪3,000 for an active reservist**, with no rate for a parent who did not serve — a universal child benefit differentiated by service status, where every prior instance on this row was welfare doctrine. **A fourteenth document is cross-referenced and does not exist** — north forward-references *"תכנית ישר! לחיזוק הפריפריה הגאוגרפית ופיתוח אזורי"*, which is on no page in the sitemap (`inlocation-and-aliya` is *לעליית המיליונים… In-location*, immigration); absences there are unwritten, not positions. `periphery-development` **stays retired** — a costed ₪15B regional programme plus a forward-referenced periphery plan is the third pass running to strengthen revision 19, not to challenge it. **Method note: religiosity −2 was confirmed by a search that nearly lied.** Word-level hits for גיור/דתי/יהודי and for עזה on both pages are **all locality names in the contact form's dropdown** (בר גיורא, כפר הנוער הדתי, כפר עזה, מחנה יהודית) — a WordPress settlement list of several hundred entries can manufacture apparent evidence for religion, Gaza and the territories at once. **Read the hit, not the count** |
 | 2026-09-03 | revision 40 — **הדמוקרטים's corpus 11 → 13 documents**: two new topic papers read ([תוכנית פיתוח הצפון והדרום](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%9C%D7%A4%D7%99%D7%AA%D7%95%D7%97+%D7%94%D7%A6%D7%A4%D7%95%D7%9F+%D7%95%D7%94%D7%93%D7%A8%D7%95%D7%9D.pdf), [המרחב הכפרי ושמירה על החקלאות הישראלית](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%94%D7%9E%D7%A8%D7%97%D7%91+%D7%94%D7%9B%D7%A4%D7%A8%D7%99+%D7%95%D7%A9%D7%9E%D7%99%D7%A8%D7%94+%D7%A2%D7%9C+%D7%94%D7%97%D7%A7%D7%9C%D7%90%D7%95%D7%AA+%D7%94%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99%D7%AA.pdf)), supplied by the repo owner — re-enumerating the site confirmed revision 36's finding that **no page on `democrats.org.il` links the topic PDFs and the bucket refuses `ListObjectsV2`**, so this corpus can only grow by someone handing over a URL, which is a bound on the enumeration rule rather than a failure of it. **No axis moved.** **4 tags added** (17 → 21), all existing vocabulary: `agricultural-protectionism` (**loses single-holder status**, ישר was alone — and the tag now spans +1 and −2, so agricultural protection is shown not to be an artefact of the economic axis; granted on the *rejection* standard, since revision 23 refused it to המפלגה הכלכלית for abolishing tariffs in favour of direct subsidy while this paper manages trade *"כך שתגן על הייצור המקומי"*, and it clears ישר's national-production-targets and water-management elements outright), `cost-of-living` (a step titled *"נוריד את יוקר המחיה"* — **but the economic paper already supported it on 2026-08-01**, so the new paper found a membership gap rather than creating one), `municipal-devolution` and `communitarian-devolution` (both, on the ישר precedent that wording naming both levels earns both: resourced powers expansion plus energy-siting decisions taken *"בשיתוף ובהסכמה עם הרשויות המקומיות והיישובים הנוגעים בדבר"* — agreement, not consultation). **Four candidates rejected**: `statist` (its four holders are all economic 0/+1, where the axis hides state expansion; on a −2 the axis already says it — and `statist` is logged as one of the few tags this page never defines in prose), `anti-monopoly` (*"פערי התיווך"* is intermediation margin, not market structure; the economic paper may earn it, but that is a different pass), `periphery-development` (**retired revision 19 — this is the fifth documented programme, which strengthens the retirement**; the retirement section is amended rather than left stale) and an environment tag (declined revision 23, second qualifying corpus, same reasoning). **security −1 held on a stronger footing than revision 36's**: the four boundary tokens are 0 in both papers as they were in חברה ערבית, but that paper had *no* security content while this one's first step is a full war-termination and regional-arrangement programme — writing that much about ending the war and still naming neither the state nor the occupation is declining the subject, not omitting it for space; revision 15's "if a third document leans on the boundary" is **not** triggered. **`anti-annexation` became fiscal and was found under the wrong-looking heading** — *"במקום תקציבי עתק למאחזים ולסיפוח והטבות מס למתנחלים"* sits in a regional-development paper, the mirror of ישר's `aliyah-and-integration` concealing religion-and-state policy. **Two homographs logged, the second a live trap**: `התיישבות` ×4 in the rural paper is kibbutzim/moshavim/border localities (the page's **fourth** instance, and the sharpest, on a row that carries `anti-annexation` and defunds מאחזים in its other new paper), and `גיוס` ×1 in the north–south paper is **recruitment of municipal staff, not conscription** — the token revision 15's open question is tracked by, returning a hit that bears on it not at all, the same shape as this repo's `pgrep -f` and `grep '^gate:'` failures. Open question unchanged; the party constitution PDF logged as seen and deliberately skipped |
+| 2026-09-03 | revision 41 — **עמך ישראל's first substantive policy statements** (press conference 2026-09-02, four independently fetched outlets: כאן, דבר, ynet, מעריב). **religiosity NULL → −2 — the first axis to move on this row, and the placeholder mechanism working exactly as written rather than a correction.** Revision 32 put the row in `RELIGIOSITY_NULL_BY_DESIGN` as a **placeholder with a stated trigger** ("Walla predicts the messaging will turn to שירות החרדים; when it does, that test fails, which is the point"). It did, six days later: Winter made *"חוק ששם סוף להשתמטות"* passing **before the government is sworn in** a precondition for entering any coalition — *"לא סעיף בהסכם קואליציוני"* — plus *"שילוב הציבור החרדי בצה"ל בלי פשרות ובלי דחיות"* and *"אין מגזר מעל החוק"*. **The score was settled by membership, not by the band prose**: this row satisfies exactly ONE of the −2 band's three criteria and is silent on the other two, but **all nine `universal-conscription` holders sit at −2 or −3 and not one is NULL, 0 or −1**, so the criterion is already treated as sufficient in practice; −1 was rejected as wrong *in kind* (that band is "soften the monopolies", and this row softens none). Logged as the **fourth** instance of the −2/−3 band defect, and the narrowest, with a disjunctive rewrite proposed in Open questions. **`bibi` resolved and `hard-to-classify-bloc` REMOVED** (2 → 1 holder): the hedge was carried on one stated reason — "Winter has never named נתניהו" — and he now has, twice on the record, alongside *"ברור שלא נלך עם ליברמן, בנט ואחרים"*. His condition binds *coalition entry*, not the recommendation, and the two are different fields. **3 tags added**: `universal-conscription` (also the row's second family, and the **strongest form any holder states** — a fourth enforcement model, one whose instrument is the party's own coalition leverage rather than a penalty on non-servers), `anti-conscription-exemption` (3 → 4) and `arab-civil-service` (3 → 4). **`arab-civil-service` is the *correct* match on the name revision 36 flagged as inviting the wrong one**, stated by the Arab deputy chairman: *"שותפות בנטל - לא משנה אם מדובר על יהודים או ערבים"* — and the cross-row irony is recorded, since revision 15's open question about whether הדמוקרטים's *"אוכלוסיות נוספות"* includes Arab citizens has now been answered explicitly by a party from the opposite bloc. **Three tags rejected on their founding cases**: `service-conditioned-citizenship` (this tag rests on Hendel's **franchise** clause; a graduated benefits ladder is not a claim about citizenship, and granting it would repeat the `arab-civil-service` name trap in the other direction — **logged as a vocabulary problem**, five holders under a label only one of them meets), `sanctions-on-non-servers` (all seven holders name a concrete penalty; this programme names only rewards — a reward ladder and a penalty schedule are different instruments) and `reservist-focused` (revision 13's costed-package standard; *"בראש סדר העדיפויות הלאומי"* has no benefit, number or instrument attached). **The Arab-society campaign earns no partnership tag and is recorded in prose**: חדאד confirmed as **deputy chairman** (revision 32 had him only at #2), targeting *"שני מנדטים מהחברה הערבית"* — but `jewish-arab-partnership` is refused because *"להעצים את הזהות הערבית-ישראלית במקום הפלסטינית בכל מוסדות החינוך הערביים-ישראליים"* is identity replacement, not shared-society equality, and `arab-representation`/`focuses-on-arab-israeli-civil-issues` on revision 36's what-a-party-**is** distinction, tested here from the other side. **security +3 and economic NULL both held with nothing new either way** — no sentence on sovereignty, annexation, the West Bank or borders in any of the four reports, so the +3 still rests entirely on the two launch quotes, restated rather than left to look corroborated. **Revision 32's "two false claims" warning is amended, not deleted**: its refutations were checked against the **launch speech** and stand as such, but "the launch speech did not say X" and "the party has no position on X" are different propositions and only the first was verified. **Row still expected-unstable, now with a price on it**: Netanyahu offered all five remaining Likud reserved slots, four above #30, for withdrawal, and Winter refused to take the call (*"אין על מה לדבר"*); סמוטריץ' appealed publicly. **Source-access correction — third instance of the same rule**: `davar1.co.il` is recorded in `services/backend/CLAUDE.md` as 403 and returned **200** on the first try with browser-shaped headers, as `kachollavan.org.il` and `timesofisrael.com` did before it; the note is fixed, and the cost of the wrong belief was coverage, since דבר covers this press conference more fully than the other three outlets |

@@ -981,13 +981,18 @@ def test_get_clubs_breakdown_includes_upcoming_and_upcoming_only_clubs(conn):
 # "fix" this by adding 'הרשימה המשותפת' here -- that would assert the merged list has no stated
 # position, which is the opposite of what the union scoring decided.
 # Two DIFFERENT reasons put a party here, and the difference decides whether an entry may ever be
-# removed. רע"ם and חד"ש-תע"ל are permanent: this axis is scoped to JEWISH religion-and-state, so it
-# does not apply to them at all. עמך ישראל is a PLACEHOLDER -- launched 2026-08-25 with no website and
-# no platform, and a keyword sweep of five sources found nothing on Sabbath, kashrut, civil marriage,
-# the rabbinate or halakha. That is an absence as of 2026-08-27, not a property of the party, so this
-# entry must be revisited the moment it states a position; Walla already predicts its messaging will
-# turn to שינוי המדיניות סביב שירות החרדים. When that happens this test fails, which is the point.
-RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל', 'עמך ישראל'}
+# removed. רע"ם and חד"ש-תע"ל are PERMANENT: this axis is scoped to JEWISH religion-and-state, so it
+# does not apply to them at all. Only a permanent entry belongs in this set.
+#
+# עמך ישראל was here from 2026-08-27 as a PLACEHOLDER and was removed 2026-09-03 (revision 41), which
+# is the mechanism working rather than a correction. It was added because a keyword sweep of five
+# sources found nothing on Sabbath, kashrut, civil marriage, the rabbinate or halakha -- an absence
+# as of that date, not a property of the party -- with the note that Walla predicted the messaging
+# would turn to שינוי המדיניות סביב שירות החרדים and that this test would then fail, which was the
+# point. It did: on 2026-09-02 Winter made an end-to-exemption service law a precondition for
+# entering any coalition, and the row is now religiosity -2. If you add a placeholder here, write
+# down its trigger the same way.
+RELIGIOSITY_NULL_BY_DESIGN = {'רע"ם', 'חד"ש-תע"ל'}
 
 
 def test_every_seeded_party_is_classified(conn):
