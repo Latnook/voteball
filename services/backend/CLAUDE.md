@@ -146,7 +146,9 @@ classify every differing row and show each one is the intended change, rather th
 count.
 
 Researching party positions: `kachollavan.org.il` returns **403** to WebFetch (the whole domain — the
-`/8ps/` page and every PDF), `israelhayom.co.il` returns **403**, and `davar1.co.il` returns **403**.
+`/8ps/` page and every PDF) and `israelhayom.co.il` returns **403**. `davar1.co.il` was recorded here
+as 403 and **is not** — it returned 200 on the first try on 2026-09-03 with the browser-shaped request
+described below, which is the third domain to fall to it.
 `idi.org.il` intermittently returns **504** but was reachable on 2026-08-01. Party official sites and
 `he.wikipedia.org` work. When only a blocked source supports the stronger claim, score the weaker one
 and say so (see רע"ם in `docs/party-classifications.md`).
