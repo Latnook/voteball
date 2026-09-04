@@ -2211,6 +2211,9 @@ two-line entry because it was scored from general knowledge of the party, never 
 it publishes **no platform**, so earlier passes had nothing to read. It does publish a continuous
 stream of ministerial-action posts, which is a *record* source, not a platform one. `basis` therefore
 stays **`record`** — correctly, and now far better evidenced than when it was a placeholder.
+*(**"No platform" stopped being true on 2026-09-04**, when the party published a costed twelve-principle
+flagship programme — see the התנתקות 710 section below. `family_evidence` stays `record` anyway, and the
+reason that is not a contradiction is set out there.)*
 
 - **`gun-rights` added — the single best-documented position here**, in 8 of the 30 posts, with
   first-party numbers: 6 localities approved in 2021, none in 2019/2020/2022, 23 in 2023, 21 in
@@ -2393,6 +2396,89 @@ published **2024-05-22 to 2026-08-24**, reached through the site's own search ra
 plus the [Times of Israel liveblog entry](https://www.timesofisrael.com/liveblog_entry/ben-gvir-calls-for-killing-30-40-people-in-gaza-daily-in-comments-widely-shared-in-arab-media/)
 of 2026-08-16 quoting the *"October 8"* podcast. Ordinary WordPress pages — no retrieval trap,
 `.elementor-widget-theme-post-content` carries the body text, and `?s=<term>` searches the archive.
+
+**2026-09-04 — ״התנתקות 710״, the row's first published programme. No axis moved, no tag added, no
+tag removed, `seed.sql` unchanged.**
+
+Ben Gvir launched what the party itself calls *"תוכנית הדגל של עוצמה יהודית לקראת הבחירות"* — a
+government programme for **voluntary emigration of Gaza residents**, published on the party's own site
+([post](https://www.ozma-yeudit.co.il/יו״ר-עוצמה-יהודית-השר-בן-גביר-מציג-את-תו/), 2026-09-04) as the
+product of a standing staff team working since 7 October. Twelve principles; a dedicated **Ministry of
+Voluntary Emigration** with a minister, a director-general, its own budget and an international
+negotiating team; per-person case files, destination-state agreements conditioned on consent and
+regularized legal status, security screening, a reception package of up to 24 months, and
+**payment-on-performance** to receiving states. Targets: **250,000 in the first year, 1.11 million
+within three, 1.86 million within seven**. Cost: **₪10bn** to stand the system up, within an Israeli
+framework of **up to ₪50bn**, subject to international participation. Candidate destinations named:
+Turkey, Ethiopia, Congo and Arab states. And a coalition demand, stated as such:
+*"בממשלה הבאה, הקמת משרד הגירה, עם שר בראשו, תקציבים וסמכויות, תהיה בראש הדרישות הקואליציוניות שלנו"*.
+
+- **`security` is already +3 and there is nowhere for it to go.** This is the row at its own pole,
+  restated at unprecedented scale, which is worth saying explicitly: a document can be the most
+  significant thing a party has ever published and still move nothing, because the axis was already
+  right. Note also what the programme does **not** contain — no sovereignty claim, no annexation
+  language, no resettlement of the Strip. `territorial-control-gaza` is held on other evidence and
+  gains nothing here; this plan is about the population, not the land.
+- **`voluntary-palestinian-emigration-incentives` — the evidence is upgraded, the tag is not.**
+  Revision 30 recorded this row as "the first whose evidence is drafted legislation". It is now the
+  first whose evidence is a **costed government programme presented as the party's flagship**, which is
+  a step up again from a bill.
+- **`population-transfer` REJECTED for the fourth time, and this is the hardest instance the line has
+  faced.** Principle 1 is *"הגירה מרצון בלבד – יציאה של מי שבוחר בכך ללא כפייה"* and principle 2 forbids
+  any exit without a consenting destination state, so the **instrument** contains no compulsion — and
+  compulsion in the instrument is what this page has said the tag turns on, three times before.
+  **What is new is scale, and scale is not the test**: 1.86 million is approximately the whole
+  population of the Strip, so the programme's own success condition is the Strip substantially
+  emptied. **The rhetoric points the same way and is likewise not the test** — Ben Gvir closes by
+  endorsing רחבעם זאבי (גנדי), whose politics were transfer in as many words:
+  *"כמה חבל שלא הקשיבו לגנדי... זה הזמן להודות: גנדי צדק!"*. That is the second time this row has paired
+  the opt-in instrument with transfer-adjacent rhetoric (revision 30 recorded the first), which
+  **strengthens** the instrument test rather than weakening it: the page would have tagged this row
+  twice over by now if rhetoric counted. **Recorded honestly**: at this scale the opt-in/transfer
+  distinction rests entirely on the programme's own description of itself, which is the weakest ground
+  a line on this page stands on. **Trigger — tag it the moment either appears:** a coercive clause in
+  the instrument (a penalty, a withdrawal of status or aid, a deadline) or a party statement that
+  those who decline to leave will be made to.
+- **economic `0` and `not-economy-focused` confirmed a THIRD time, on the largest number this row has
+  ever published.** ₪10bn plus a ₪50bn framework dwarfs every figure in the previous two passes, and it
+  is still a security instrument denominated in shekels — the same distinction that discharged the
+  emigration bill's *"סל סיוע כלכלי"* (revision 30) and נעם's teacher-salary floor (revision 18). There
+  is no tax, market, welfare or cost-of-living position in the document.
+- **`family_evidence` stays `record`, and the temptation to flip it is the finding.** The row now has a
+  platform-type document, so the preamble's "it publishes no platform" is amended above. But this field
+  records what the row's **families** rest on — `judicial-restraint`, `not-economy-focused`,
+  `conscription-by-incentive` — and התנתקות 710 evidences none of the three. Flipping it would assert
+  that the family assignments had been re-based on a document that does not mention them.
+- **No tag for the coalition demand.** *"בראש הדרישות הקואליציוניות שלנו"* is the second row this month
+  to make a specific demand a precondition of joining a government (עמך ישראל's conscription law,
+  revision 41). Nothing in the vocabulary covers it, and minting a tag for it now would produce a
+  two-holder tag whose two instances are about entirely different policies. Recorded in prose on both
+  rows instead.
+
+**Four other posts published since revision 30's cutoff were read and change nothing.** Enumerated
+through the site's **WordPress REST API** (`/wp-json/wp/v2/posts?after=…`), which returns the archive
+by date in one request — a cleaner instrument than revision 30's site search, and the one to use next
+time.
+
+- **A Druze-sector campaign HQ** (2026-08-31), headed by גסוב חסון ("אבו דני"), on housing, planning
+  and תיקון 116. **No tag**, on the precedent set for עמך ישראל eight days earlier: a campaign aimed at
+  a minority records what a party *does*, not what it **is**, and this row is not a Druze-representation
+  party. Ben Gvir's formulation — *"מי שנאמן למדינה ב-100% – מגיע לו 100% מהמדינה"* — is
+  **loyalty-conditioned entitlement**, and it is refused `service-conditioned-citizenship` for exactly
+  the reason revision 41 refused it to עמך ישראל: that tag's founding case is Hendel's **franchise**
+  clause, and a benefits claim is not a claim about citizenship. **Third instance of the same
+  vocabulary problem**, now logged from a third row.
+- **Beit Shemesh declared weapons-eligible except named Neturei Karta streets** (2026-08-31) —
+  `gun-rights` reinforced, with the figures moved on again: **126 localities in 2026**, 200+ in total,
+  ~**300,000** personal licences. The exclusion is listed street by street, which is an unusually
+  concrete instance of this row drawing a line **inside** the Jewish public by anti-Zionist
+  affiliation. Recorded; no tag covers it and one row does not make a tag.
+- **Damon Prison visit** (2026-08-30, *"נגמרו הקייטנות בבתי הכלא"*) and **a Palestinian-Authority-linked
+  event blocked in the Old City** (2026-08-26). Both reinforce `jewish-supremacist` and the row's
+  sovereignty-in-Jerusalem posture; neither adds anything the row does not already carry.
+
+Sources for this pass: the party's own site, five posts dated 2026-08-26 to 2026-09-04, enumerated via
+`/wp-json/wp/v2/posts` and read in full.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -4476,3 +4562,4 @@ pass happened, for anyone reading git history.
 | 2026-09-04 | revision 42 — **האחדות withdrew from the election and its row was removed**, the first roster change on this page that is neither a rename nor a merge. גלעד ארדן announced it on Friday 2026-09-04, hours after merger talks with כחול לבן collapsed, on the threshold and not on policy: *"התמיכה עד כה... אינה מבטיחה בסבירות גבוהה את מעבר אחוז החסימה, וגם אפשרויות החיבור עם מפלגות נוספות בגוש האחדות אינן מתממשות"*. **`upcoming_parties` 18 → 17 rows** via the same guarded delete revisions 26 and 37 used — `seed_key IS NOT NULL` plus the vote guard — with **no `party_lineage` statement involved at all**, the one respect in which a withdrawal is cheaper than a merge: there is no successor to link to and the row never had a `previous_parties` predecessor either. **The tag and family accounting came out empty, and it was still worth running**: all 21 tags survive on other rows and all three families keep two holders, so unlike revision 37 nothing leaves `i18n.js`, `analytics.js` or `family-strings.csv`. Two tags fall to a single holder — `unity-government` (כחול לבן) and `deregulation` (אל הדגל) — which is fine for a tag and would not be for a family; `statist` 4 → 3 holders, so revision 40's rejection passage is amended from *"all four"* to *"all three"* rather than left asserting a membership that has moved. **The 89-line entry is kept in full**, marked withdrawn at the heading, on the זהות precedent: list submission does not close until the week of 2026-09-07 and Erdan withdrew the candidacy explicitly and not the project. Band tables amended in three places (economic +1, security +2, religiosity −2); no surviving row's axes moved. **Expect more of these before submission closes** — איזנקוט's response was *"ראוי שכל מפלגה על גבול אחוז החסימה תעשה כך"* plus *"אנחנו מכינים הפתעות לשלושת הימים הקרובים"*, aimed at גנץ and טרופר |
 | 2026-09-04 | revision 43 — **ש"ס read against a six-outlet corpus of one radio interview** (קול ברמה, 3 September 2026: N12, i24, מעריב, כיפה, ערוץ 14, וואלה). **No axis moved, no tag added, no tag removed, `seed.sql` unchanged** — the third pass on this page to end that way, and the reason is worth recording: everything Deri said was already scored, so the pass converted two tags from inference to first-party statement rather than changing anything. `opposes-core-curriculum` had rested on the funding architecture and a committee bill; it now rests on Deri's own account of ממ"ח as a supervision slippery slope (*"מחר בבוקר יבוא מפקח של משרד החינוך ולאט לאט יכתיבו לך את תוכנית הלימודים, מה ילמדו, מה האידיאולוגיה"*) and on *"זו מלחמת קודש"* to the teachers, so revision 34's *"rather than on rhetoric"* clause is amended in place rather than deleted. `rabbinic-authority-led` gets *"כשהרבנים יחליטו... הם גם יחליטו"*. **`opposes-state-haredi-education` considered and refused** — Deri collapses ממ"ח into לימודי ליבה himself (*"זה נהיה פתאום לימודי ליבה"*), so it would name a mechanism `opposes-core-curriculum` already names and enter as a singleton; **and it is deliberately not extended to יהדות התורה** on Deri's *"גדולי ישראל"*, which would be the classify-from-the-party's-own-sources violation recorded under בית ציוני. **The conscription half goes further than any tag on the row and still earns none**: refusing to call *non-learners* to enlist (*"אני לא צריך לקרוא לזה... שיתמודד"*, *"הצבא לא רוצה חיילים חרדים"*, *"כל השנים זה היה אחיזת עיניים"*, and *"אני לא בדקתי את זה"* about חטיבת החשמונאים) is broader than `scholar-exemption-retained`, but a learners/non-learners split would be a singleton and the `conscription-exemption` family already carries the shape. **religiosity held at +2** — refusing the state's inspector inside your own schools is not a claim on the law of the state, and +3 needs one. **`bloc` bibi held and left closed** although בנט, איזנקוט and ליברמן all responded by excluding Deri from a future government: exclusion by others is not a positive signal from this row, which is the trigger this question was closed with. **Fetching note**: `mako.co.il` returns **400** to WebFetch and `i24news.tv` returns a JavaScript app shell (WebFetch reports the page as having no article text at all); both return the full article to a browser-shaped `curl`, so neither is a missing source |
 | 2026-09-04 | revision 44 — **רע"ם: `jewish-arab-partnership` added as tag and family (2 → 3 holders each), no axis moved.** יואב סגלוביץ' — former ניצב, founder of לה"ב 433, head of the police investigations and intelligence branch, then יש עתיד MK and **Deputy Minister of Public Security in the Bennett–Lapid government** — took the **second slot** on Ra'am's list at a Nazareth press conference on **2026-08-31**, the first Jewish candidate in the party's history. **Earned on the standard revision 36 used for הדמוקרטים** ("from the realized list, בשיר at #10") by a stronger instance of it — #2 rather than #10 — plus the leader's own framing: *"כדי לייצר שינוי, צריך שותפות. שותפות אזרחית"*, *"אני לא מחפש מי שדומה לי"*, *"זו לא טובה לערבים"*, and the shared-society argument addressed to Jewish citizens (*"הנשק שיורה היום בטמרה יירה מחר בעפולה... זאת בעיה של המדינה"*). **The counter-argument is recorded because it nearly won**: the linkage is technical and personal (*"אני לא מתחבר לרשימת רע"ם עם סיעה, אני אישית מצטרף"*) with both sides keeping their positions, LGBTQ included. Tagged anyway because **the family's test is shared-society equality, not shared ideology** — which is how הרשימה המשותפת holds it — and because עמך ישראל's refusal three days earlier was for **identity replacement**, a different position rather than a weaker version of the same one. **`sector` stays `arab`** and `focuses-on-arab-israeli-civil-issues` is only reinforced: a Jewish #2 does not change whose constituency a row is. **security −2 held, and a lead deliberately left unscored** — the only statehood content in the corpus is הליכוד's attack, which is a rival's characterisation; a research pass reported Abbas saying at the **2026-08-22** list conference that the State of Palestine exists and calling to end *"the occupation"*, which would be the dated first-party text this entry has wanted since the IDI page was set aside — **it could not be verified** (search budget exhausted) and is not scored on the report. It likely would not reach −3 anyway: −3 needs withdrawal **plus** right of return **plus** dismantling settlements. **A cited source that does not exist**: the JPost article the research pass listed as corroboration returns **404**, so the row rests on ynet, וואלה and דבר. **Two debts restated rather than paid**: the civil-service tag trigger is still undated, and no tag covers crime and personal security in Arab society — not created here because holders would need the הרשימה המשותפת and הדמוקרטים corpora, so it joins the Kaminitz-Law gap queued behind a pass over the two Arab-list rows. **This pass covered one of those two** |
+| 2026-09-04 | revision 45 — **עוצמה יהודית published its first programme, ״התנתקות 710״, and nothing moved.** A costed twelve-principle government plan for **voluntary emigration from Gaza** — a dedicated ministry with its own budget and negotiating team, destination-state agreements paid on performance, targets of **250k in year one, 1.11m in three years, 1.86m in seven**, **₪10bn** to stand up inside a **₪50bn** framework — announced as the party's flagship and as *"בראש הדרישות הקואליציוניות שלנו"*. **`security` is already +3, so the most significant document this row has ever published moves no axis** — worth stating rather than hiding, and note what the plan omits: no sovereignty claim, no annexation, no resettlement, so `territorial-control-gaza` gains nothing (this is about the population, not the land). `voluntary-palestinian-emigration-incentives` **held with its evidence upgraded** from drafted legislation (revision 30's "first whose evidence is a bill") to a costed flagship programme. **`population-transfer` refused a fourth time, against the hardest instance yet**: the instrument contains no compulsion (*"הגירה מרצון בלבד... ללא כפייה"*, plus a consenting-destination requirement), and **scale is not the test** even though 1.86m is approximately the whole Strip, nor is rhetoric even though Ben Gvir closes by endorsing גנדי (*"גנדי צדק!"*) — the second opt-in-instrument/transfer-rhetoric pairing on this row, which **strengthens** the instrument test rather than eroding it. Recorded honestly: at this scale the line rests on the programme's own self-description, and a **trigger** is written for the tag — any coercive clause, or a statement that non-leavers will be made to. **economic 0 and `not-economy-focused` confirmed a third time on the largest figure this row has ever published**, a security instrument denominated in shekels (the revision 30 / revision 18 distinction). **`family_evidence` stays `record` and the temptation to flip it is the finding** — the field records what the row's three FAMILIES rest on, and this document evidences none of them; the preamble's "it publishes no platform" is amended in place instead. **Four other posts since revision 30's cutoff read and changed nothing**: a **Druze-sector HQ** (no tag, on the עמך ישראל precedent that a campaign at a minority is what a party *does*, not what it **is**; and `service-conditioned-citizenship` refused a third time — *"מי שנאמן למדינה ב-100%"* is loyalty-conditioned **entitlement**, not a franchise claim), Beit Shemesh weapons-eligibility excluding named נטורי קרתא streets (`gun-rights` figures now 126 localities in 2026 and ~300,000 licences), a Damon Prison visit and a blocked PA event. **Retrieval note**: the site's **WordPress REST API** (`/wp-json/wp/v2/posts?after=…`) enumerates the archive by date in one request — cleaner than revision 30's site search, and the instrument to use next time |
