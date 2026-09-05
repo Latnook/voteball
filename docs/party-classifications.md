@@ -3672,8 +3672,9 @@ than a caveat, and **−2 stands**. Do not move this row on the IDI page.
 One genuinely current item, recorded here but **not** scored: Abbas has publicly backed civilian
 national service for Arab citizens — *"קידום מתווה שירות אזרחי יענה על הצרכים של הצעירים הערבים"* —
 which is the opposite of בל"ד's `opposes-arab-conscription` and would be a real distinction between
-the two rows. It is not tagged because the interview carries no publication date; date it and it
-earns a tag. Note also that Abbas's "ריבונות" quote in the same interview is about **crime
+the two rows. It is not tagged because the interview carries no publication date. ~~Date it and it
+earns a tag.~~ **That instruction was wrong and is struck: dated 2026 sources arrived on 2026-09-05
+and they REFUSE the tag rather than earning it — see the block at the end of this entry.** Note also that Abbas's "ריבונות" quote in the same interview is about **crime
 organisations and the state's monopoly on force inside Israel**, not territory — it is not a
 security-axis input, and reads like one at a glance.
 
@@ -3734,12 +3735,91 @@ page's −3 needs withdrawal **plus** right of return **plus** dismantling the s
 clause is not three. **Trigger:** find the 2026-08-22 conference in a datable first-party source and
 re-read the security axis against it.
 
-**Two things still owed on this row.** The civil-service item above is *still* undated — nothing in
+**Two things still owed on this row.** ~~The civil-service item above is *still* undated~~ — **paid 2026-09-05, and it refused the tag rather than earning it; see the block below.** Nothing in
 this announcement restates it, so the "date it and it earns a tag" trigger stands. And no tag covers
 **crime and personal security in Arab society**, which is the substance of both speeches; it is not
 created here because it would need the הרשימה המשותפת and הדמוקרטים corpora read for holders, and it
 joins the Kaminitz-Law gap already queued behind a pass over the two Arab-list rows. **This pass
 covered one of those two rows, not both.**
+
+**2026-09-05 — the Shura Council split confirmed, and the standing civil-service instruction turned
+out to be backwards. No axis moved; `seed.sql` unchanged.**
+
+**רע"ם formally disengaged from the Islamic Movement's Shura Council, and its 2026 list was chosen
+without it.** [דבר](https://www.davar1.co.il/694057/), reporting the party conference of
+**2026-08-22**: *"לאחרונה התנתקה המפלגה פורמלית ממועצת השורא של התנועה האסלאמית. הבחירות הפעם
+התקיימו בנפרד ממועצת השורא ועל בסיס אזורי, כלומר הנציגים מייצגים את אזורי הבחירה השונים במפלגה"*.
+מעריב had reported the intention on **2025-12-06** (*"הודיע כי מפלגתו תיפרד ממועצת השורא ומהאחים
+המוסלמים"*) — an announced intention then, a completed fact now.
+
+- **`islamist` is KEPT, and its basis is narrowed rather than removed.** What ended is an
+  *institutional* arrangement: the Shura Council no longer selects or approves the list. The tag
+  records what the party **is** — its origin in, and identification with, the southern Islamic
+  Movement, and its religiously observant leadership — and no source has it renouncing that. Removing
+  a tag because a committee stopped meeting would confuse governance with ideology. **But the tag was
+  inherited from general knowledge and has never rested on a Ra'am document**, which is now the more
+  honest thing to say about it, and it is the second-weakest basis of any tag on this row.
+- **The list order was set before סגלוביץ' existed on it.** The primaries produced 1 עבאס,
+  2 **טאהא**, 3 **אלהואשלה**, 4 **ח'טיב-יאסין**, 5 **חוג'יראת**; the same conference authorised Abbas
+  to alter the list and add candidates **בשריון**, and slot #2 was filled by appointment nine days
+  later, pushing all four elected candidates down one. Abbas was already negotiating publicly on
+  2026-08-22 — *"אנחנו באמצע הדרך"*, calling Segalovich *"ראוי להיות השר לביטחון הפנים"* — so
+  revision 44's implication that the arrangement was settled on the 31st is corrected: announced then,
+  negotiated earlier, and still incomplete in between (Abbas on the LGBTQ terms: *"את הפרטים האלו
+  אנחנו נשלים"*).
+
+**`arab-civil-service` — the trigger fired, the sources arrived dated, and the tag is REFUSED.** This
+is the finding of the pass. The instruction left above said "date it and it earns a tag"; dated 2026
+material says the opposite of what that note assumed. In his Arabic post of **2026-08-26**, as
+reported by [ynet](https://www.ynet.co.il/news/elections2026/article/rjnwqfhwzg): *"רע"מ תומכת
+ביוזמה ערבית התנדבותית שאינה צבאית או ביטחונית, אך **מתנגדת לשירות הלאומי-אזרחי במתכונתו
+הנוכחית**"*. In Arabic on **2026-07-11** (كل العرب): *"طرحنا خدمة مجتمعية تطوعية مدنية بحتة لمجتمعنا،
+ولا علاقة لها بالأمن أو العسكر إطلاقاً"* — a purely civilian voluntary community service with no
+connection whatsoever to security or the military. **This tag means a national-service track for Arab
+citizens** (כחול לבן's founding position, אל הדגל's bill §8). A voluntary communal initiative
+proposed *against* the existing national-service framework is not that — it is closer to its refusal.
+**Note the shape of the error that was avoided**: a note written by an earlier pass predicted the
+conclusion and only left the date open, so dating the claim would have looked like completing the
+work. The prediction was the thing that was wrong.
+
+**security −2 HELD, now on a dated first-party 2026 basis for the first time.** The entry has said
+since 2026-08-01 that −2 stands and that the row would move only on the party's own current material,
+not on the undated IDI page. That material now exists: at the 2026-08-22 conference Abbas said the
+State of Palestine exists and is recognised by most of the world, that רע"ם works for Israel and the
+US to recognise it, and *"אנו פועלים להשגת שלום ופיוס ולסיום הכיבוש והסכסוך"*
+([mako](https://www.mako.co.il/news-politics/2026_q3/Article-6db9307149620a1027.htm)), and the
+2026-08-26 post restates *"זכותו של העם הפלסטיני להגדרה עצמית ולהכרה במדינה פלסטינית לצד מדינת
+ישראל"*. **That is two-state at the −2 band, not −3**: no right of return, no dismantling of
+settlements, no full withdrawal — the three things בל"ד's −3 is built on. The **trigger written into
+this entry on 2026-09-04 is therefore discharged**, and the answer is that the number does not move.
+
+**The Arabic/Hebrew seam is real, and it is a seam in TIME as much as in audience.** On 2026-08-26,
+in Arabic, Abbas called the state's Jewishness imposed: *"יהודיות המדינה זהו מצב קיים שנכפה עלינו ולא
+אנחנו שבחרנו בו... המפלגות הערביות נאלצו לקבל זאת מבחינה מעשית, שאם לא כן הן עלולות להיפסל"*. ynet
+sets that against his own 2021 formulation at the Globes conference — *"מדינת ישראל נולדה כמדינה
+יהודית וככה תישאר. זאת החלטתו של העם היהודי. נקודה"*. **Three qualifications keep this from being
+scored as a two-faced-messaging finding**, and all three matter:
+1. The Arabic post was **published in Hebrew within hours** by N12 and ynet, so it was never an
+   audience-only message; it was a reaction to Hebrew-language backlash over an Amit Segal interview
+   days earlier, which is the opposite of a hidden channel.
+2. The contrast is **2021 against 2026**, not Hebrew against Arabic on the same day. A five-year shift
+   in a leader's formulation is ordinary politics.
+3. Abbas describes the change himself as one of **formulation, not position** — *"אני מנסח את
+   התבטאויותיי... בצורה אחרת, אין פירוש הדבר שאני מכחיש את הנכבה, העקירה או הנרטיב הפלסטיני"*.
+
+No tag is minted for it. `claims-economically-liberal` is this page's instrument for a rhetoric/record
+gap, and it exists because a *number* would otherwise misreport the row; nothing here misreports a
+number. Recorded in prose, which is what the entry text is for.
+
+**Method note, because it nearly produced a wrong answer.** The research harness returned "refuted
+0-3" on nearly every claim sourced to an **Arabic-language** domain (`kul-alarab.com`, `arabi21.com`,
+`bldtna.co.il`) while confirming the *same substance* 3-0 from `mako.co.il`. It also refuted a ynet
+claim whose identical content it had confirmed from mako, and refuted the שריון mechanism that is
+stated verbatim in the דבר text. Those are **fetch failures reported as refutations** — the
+swallowed-status family in `CLAUDE.md`, in the sub-type that is worst: a confident negative that looks
+like a finding. Every claim above was re-verified by fetching the source directly with a
+browser-shaped `curl`. **Do not accept a "refuted" verdict from that harness on a source it may
+simply have failed to open.**
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
@@ -4700,3 +4780,4 @@ pass happened, for anyone reading git history.
 | 2026-09-04 | revision 45 — **עוצמה יהודית published its first programme, ״התנתקות 710״, and nothing moved.** A costed twelve-principle government plan for **voluntary emigration from Gaza** — a dedicated ministry with its own budget and negotiating team, destination-state agreements paid on performance, targets of **250k in year one, 1.11m in three years, 1.86m in seven**, **₪10bn** to stand up inside a **₪50bn** framework — announced as the party's flagship and as *"בראש הדרישות הקואליציוניות שלנו"*. **`security` is already +3, so the most significant document this row has ever published moves no axis** — worth stating rather than hiding, and note what the plan omits: no sovereignty claim, no annexation, no resettlement, so `territorial-control-gaza` gains nothing (this is about the population, not the land). `voluntary-palestinian-emigration-incentives` **held with its evidence upgraded** from drafted legislation (revision 30's "first whose evidence is a bill") to a costed flagship programme. **`population-transfer` refused a fourth time, against the hardest instance yet**: the instrument contains no compulsion (*"הגירה מרצון בלבד... ללא כפייה"*, plus a consenting-destination requirement), and **scale is not the test** even though 1.86m is approximately the whole Strip, nor is rhetoric even though Ben Gvir closes by endorsing גנדי (*"גנדי צדק!"*) — the second opt-in-instrument/transfer-rhetoric pairing on this row, which **strengthens** the instrument test rather than eroding it. Recorded honestly: at this scale the line rests on the programme's own self-description, and a **trigger** is written for the tag — any coercive clause, or a statement that non-leavers will be made to. **economic 0 and `not-economy-focused` confirmed a third time on the largest figure this row has ever published**, a security instrument denominated in shekels (the revision 30 / revision 18 distinction). **`family_evidence` stays `record` and the temptation to flip it is the finding** — the field records what the row's three FAMILIES rest on, and this document evidences none of them; the preamble's "it publishes no platform" is amended in place instead. **Four other posts since revision 30's cutoff read and changed nothing**: a **Druze-sector HQ** (no tag, on the עמך ישראל precedent that a campaign at a minority is what a party *does*, not what it **is**; and `service-conditioned-citizenship` refused a third time — *"מי שנאמן למדינה ב-100%"* is loyalty-conditioned **entitlement**, not a franchise claim), Beit Shemesh weapons-eligibility excluding named נטורי קרתא streets (`gun-rights` figures now 126 localities in 2026 and ~300,000 licences), a Damon Prison visit and a blocked PA event. **Retrieval note**: the site's **WordPress REST API** (`/wp-json/wp/v2/posts?after=…`) enumerates the archive by date in one request — cleaner than revision 30's site search, and the instrument to use next time |
 | 2026-09-04 | revision 46 — **ישראל ביתנו: two new documents read, and the pass turned into a gap audit.** **Four tags added (8 → 12)** — `core-curriculum` (6 → 7), `sanctions-on-non-servers` (6 → 7), `arab-civil-service` (4 → 5) and `cost-of-living` (tag 3 → 4, **family 5 → 6**) — **all four sourced from the platform this entry has cited since 2026-07-27**, three of them from the party's own seven קווי יסוד. **The lesson is about the instrument, not the row**: the 2026-08-02 re-verification checked the fifteen claims the entry already made, found one wrong, and could not find what the entry never said. A verification pass and an audit pass are different instruments, and this row had had the first twice and the second never. `core-curriculum` is the sharpest miss — *"חובת לימודי ליבה בכל מוסד חינוך כתנאי לקבלת תמיכה ממשלתית"* is the **funding condition** the −2 band is written around, sitting unrecorded on the row that anchors −3. **`family_evidence` corrected `record` → `platform`**, a plain data error on a row described here as the only one verified against a live primary source; עוצמה יהודית keeps `record` correctly, so the two rows now demonstrate both values for the right reasons. **economic +2 CHALLENGED AND HELD — the closest call on the page.** [ליברמן's economic programme](https://beytenu.org.il/התכנית-הכלכלית-של-אביגדור-ליברמן/) (2026-03-04, modified 2026-06-23, never read before today) is state expansion nearly throughout — 90% LTV mortgages over 40 years, daycare credits, an **expanded negative income tax**, ~30 infrastructure projects on a legislated green track, state guarantees routing institutional money into startups, defence at **8% of GDP** — i.e. the +1 band verbatim, and moving the row would empty +2 above an already-empty +3. Held on ביחד's net-it-out precedent: the withdrawal half is unchanged and current (*"המשך מדיניות ההפרטות... נמל אשדוד ושדה התעופה בחיפה"*, *"צמצום משרדי הממשלה והמגזר הציבורי"*, *"ביטול קצבאות הילדים החל מהילד החמישי"*), the expansion is **service-conditioned and sectoral** rather than universal (*"במקום להמשיך להוציא סכומים עצומים על מגזרים שלא לוקחים חלק בשוק העבודה"*), and the +2 band's text is defined **by this row's own planks**, so moving it would leave the band citing an example no row holds. **Move condition written into the entry.** **religiosity −3 and security +2 unmoved.** **Two refusals**: `service-conditioned-citizenship` — refused for the **fourth** time and from a fourth row, even though the platform conditions *"זכאות לעבודה בשירות המדינה"* on service, because the founding case is Hendel's **franchise** clause; and `state-haredi-education`, since abolishing מוסדות פטור status is a funding condition, not a stream conversion. **The education paper (2026-08-26, written with מועצת התלמידים) was the smallest half** — class sizes, statutory funding for non-formal education, mental-health provision, transport, statutory standing for student councils, and **no religion-and-state content at all**, which is notable precisely because on this page the education paper is normally where the religiosity number lives |
 | 2026-09-04 | revision 47 — **זהות's campaign site read (8 pages), and it closes an open question revision 37 explicitly left owed. Docs only; `seed.sql` unchanged.** `zehut.org.il` now carries a compact public layer over the 188pp platform — five קווי הכרעה plus security, governance, economy and education pages, a Feiglin page, transparency and an FAQ. **It is a restatement, not a new corpus**, which is itself the finding: a merged faction quietly rewriting its programme before the list deadline is exactly what a re-read is for. **`judicial-overhaul`: זהות holds it, and the gap was in this page's reading, not in the party** — *"היום הדמוקרטיה נחטפה בידי מערכת משפטית שאינה נבחרת ומבטלת פעם אחר פעם את הכרעת העם. נחזיר את הכוח לנבחרי הציבור"*. Revision 19's open question had been marked *resolved by removal* when the merge closed it accidentally; it is now **resolved on the merits**, so the `judicial-restraint` family's unanimity is substantive and a restored `זהות` row starts with the tag. **Nothing changes in `seed.sql`** — the surviving הציונות הדתית row already carries it, and the merged row's `economic 0` is untouched for revision 37's reason (0 against +3 is a difference in **direction**, which the union rule excludes). **economic +3 restated with the page's cleanest illustration of the band**: *"הפתרון לדיור הוא לא עוד סבסוד שמנציח את היוקר, אלא שחרור קרקעות"* plus dismantling רשות מקרקעי ישראל — read against revision 46's ישראל ביתנו programme the same day (90% mortgages, daycare credits), the two rows propose **opposite instruments for the identical problem**, which is what +3 and +2 exist to distinguish and rarely get to demonstrate side by side. **A school voucher** (*"התקציב הולך אחרי התלמיד"*) earns no tag — nothing in the vocabulary names school choice and one holder does not make a tag. **One distinctive position left untagged**: weaning off American aid (*"גמילה הדרגתית ועצמאות"*), a singleton and the exact opposite of ישראל ביתנו's plank to extend the MOU past 2028 — recorded on both rows, since a disagreement that sharp is worth a comparator before it is worth a tag |
+| 2026-09-05 | revision 48 — **רע"ם: the Shura Council split confirmed, and a standing instruction in this entry turned out to be BACKWARDS. No axis moved; `seed.sql` unchanged.** דבר's report of the 2026-08-22 party conference states it plainly — *"לאחרונה התנתקה המפלגה פורמלית ממועצת השורא של התנועה האסלאמית. הבחירות הפעם התקיימו בנפרד ממועצת השורא ועל בסיס אזורי"* — with מעריב having reported the intention on 2025-12-06. **`islamist` kept, its basis narrowed**: what ended is an institutional arrangement (the Shura Council no longer selects the list), not the party's identification with the southern Islamic Movement; but the tag has never rested on a Ra'am document and that is now said out loud. **`arab-civil-service` REFUSED, and this is the pass's finding.** The entry's own note said *"date it and it earns a tag"*; dated 2026 material says the reverse — *"רע"מ תומכת ביוזמה ערבית התנדבותית שאינה צבאית או ביטחונית, אך **מתנגדת לשירות הלאומי-אזרחי במתכונתו הנוכחית**"* (ynet, 2026-08-26) and, in Arabic, *"خدمة مجتمعية تطوعية مدنية بحتة... ولا علاقة لها بالأمن أو العسكر إطلاقاً"* (كل العرب, 2026-07-11). The tag names a **national-service track**; a voluntary communal initiative proposed against the existing framework is closer to its refusal. **The error shape is the lesson**: an earlier pass wrote a note that predicted the conclusion and left only the date open, so dating it would have looked like completing the work. **security −2 HELD and the 2026-09-04 trigger DISCHARGED** — the dated first-party statehood material finally exists (*"אנו פועלים... לסיום הכיבוש והסכסוך"*, 2026-08-22; *"הכרה במדינה פלסטינית לצד מדינת ישראל"*, 2026-08-26) and it is two-state at −2, not בל"ד's −3, which needs right of return, dismantling settlements and full withdrawal. **The list order predates סגלוביץ'**: the primaries elected טאהא/אלהואשלה/ח'טיב-יאסין/חוג'יראת at 2–5 and the same conference authorised Abbas to add candidates **בשריון**, so #2 was an appointment that pushed all four down — revision 44's implied timing is corrected. **The Arabic/Hebrew seam is real but is a seam in TIME**: the *"יהודיות המדינה... נכפה עלינו"* post (2026-08-26) contrasts with his **2021** Globes formulation, was republished in Hebrew by N12 and ynet within hours (so never audience-only), and Abbas calls the change one of formulation, not position. No tag minted. **Method note**: the research harness returned *refuted 0-3* on nearly every Arabic-domain source while confirming the same substance from mako, and refuted a fact stated verbatim in the דבר text — **fetch failures reported as refutations**, the `CLAUDE.md` swallowed-status family in its worst sub-type. Every claim here was re-verified by direct browser-shaped `curl` |
