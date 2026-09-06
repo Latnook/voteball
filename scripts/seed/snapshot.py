@@ -40,10 +40,17 @@ TABLES = {
     'previous_parties': ('name_he',
                          ['name', 'name_en', 'name_he', 'name_ru', 'logo_url', 'bloc',
                           'economic', 'security', 'religiosity', 'sector', 'tags']),
+    # `on_ballot` is compared like any other seed-owned column. It is listed here rather
+    # than left to --include because a column absent from this list is silently NOT
+    # compared: the harness would then diff every column except the one a restructure
+    # changed and report a clean result. Columns missing from a database are dropped per
+    # connection below, so an OLD schema that predates a column still snapshots fine --
+    # in that case the newer side simply carries an extra key, which is a visible,
+    # classifiable difference rather than a hidden one.
     'upcoming_parties': ('name_he',
                          ['name', 'name_en', 'name_he', 'name_ru', 'logo_url', 'bloc',
                           'economic', 'security', 'religiosity', 'sector', 'tags',
-                          'families', 'family_evidence']),
+                          'families', 'family_evidence', 'on_ballot']),
 }
 
 
@@ -64,6 +71,9 @@ def snapshot(dsn, include=(), exclude=()):
     with psycopg2.connect(dsn) as conn:
         for table, (key, columns) in TABLES.items():
             cols = [c for c in columns if c not in exclude or c == key]
+            # Drop columns this database does not have, so a snapshot of an OLD schema
+            # (verify-neutrality.sh's C branch) does not die on a column added later.
+            cols = [c for c in cols if c == key or _has_column(conn, table, c)]
             for extra in include:
                 if extra not in cols and _has_column(conn, table, extra):
                     cols.append(extra)

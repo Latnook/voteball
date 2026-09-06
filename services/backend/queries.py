@@ -16,6 +16,20 @@ def _duplicate_party_language(err):
     return 'he'
 
 
+def off_ballot_party_ids(conn, party_ids):
+    """Of the given upcoming-party ids, those no longer standing. Empty list -> no query."""
+    if not party_ids:
+        return []
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT id FROM upcoming_parties WHERE id = ANY(%s) AND NOT on_ballot',
+        (list(party_ids),),
+    )
+    rows = [r[0] for r in cur.fetchall()]
+    cur.close()
+    return rows
+
+
 def get_options(conn):
     cur = conn.cursor()
 
@@ -60,7 +74,11 @@ def get_options(conn):
 
     cur.execute(
         'SELECT id, name_en, name_he, name_ru, logo_url, bloc, economic, security, sector, religiosity, tags, '
-        'families, family_evidence '
+        'families, family_evidence, on_ballot '
+        # Deliberately UNFILTERED. admin.js reads this same endpoint, and filtering here would
+        # hide a withdrawn party from the only screen that can manage or restore it. The voting
+        # form filters on on_ballot instead, and /api/vote rejects an off-ballot id -- the same
+        # validate-twice shape as every other ballot rule.
         'FROM upcoming_parties ORDER BY name_en'
     )
     upcoming_parties = [
@@ -68,7 +86,7 @@ def get_options(conn):
             'id': r[0], 'name_en': r[1], 'name_he': r[2], 'name_ru': r[3], 'logo_url': r[4],
             'bloc': r[5], 'economic': r[6], 'security': r[7], 'sector': r[8],
             'religiosity': r[9], 'tags': r[10] or [],
-            'families': r[11] or [], 'family_evidence': r[12],
+            'families': r[11] or [], 'family_evidence': r[12], 'on_ballot': r[13],
         }
         for r in cur.fetchall()
     ]

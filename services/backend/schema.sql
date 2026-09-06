@@ -103,6 +103,21 @@ ALTER TABLE leagues ADD COLUMN IF NOT EXISTS has_divisions BOOLEAN NOT NULL DEFA
 -- exempting them would leave those tabs with no cap at all rather than a domestic-league one.
 ALTER TABLE leagues ADD COLUMN IF NOT EXISTS is_club_cup BOOLEAN NOT NULL DEFAULT FALSE;
 
+-- Whether this party is standing in the upcoming election, i.e. whether the voting form should
+-- still offer it. DEFAULT TRUE, so every existing and future party is offered unless it is
+-- explicitly withdrawn -- an omission can never silently hide a party from the ballot.
+-- This exists because DELETING a party that already has votes is not an option: seed.sql's removal
+-- statement is vote-guarded (a party anyone voted for stays), and the admin DELETE cascades through
+-- vote_upcoming_parties and destroys those ballots. Neither preserves "somebody voted for this, and
+-- it is no longer running", which is the actual state a party leaves behind when it withdraws,
+-- merges or splits between one election and the next.
+-- A MERGE could be handled without this flag, by reassigning votes to the successor (that is what
+-- the admin vote-reassignment flow is for, and what the Hadash-Ta'al + Balad -> Joint List pass
+-- used). A SPLIT cannot: when a party's people leave for two different lists there is no successor
+-- to reassign to, and picking one invents data. See docs/party-classifications.md, the
+-- בית ציוני - המילואימניקים entry (2026-09-06).
+ALTER TABLE upcoming_parties ADD COLUMN IF NOT EXISTS on_ballot BOOLEAN NOT NULL DEFAULT TRUE;
+
 -- Division label within the club's league -- the UEFA Nations League's A/B/C/D tiers, rendered as
 -- headers inside the single Nations League tab (docs/design/2026-08-07-nations-league-design.md
 -- decision 1). Nullable because every other league is undivided, and a club with no label renders

@@ -273,6 +273,15 @@ def vote():
             metrics.VOTES_REJECTED.labels(reason='invalid-team-picks').inc()
             return jsonify({'error': picks_error}), 400
 
+        # A party that withdrew, merged or split is still returned by /api/options (admin.js needs
+        # it) but must not be accepted on a ballot. vote.js already hides it; this is the server
+        # half of the same rule, because a client looser than the server is the failure mode this
+        # endpoint's validation is written twice to avoid.
+        withdrawn = queries.off_ballot_party_ids(conn, body.get('upcoming_party_ids') or [])
+        if withdrawn:
+            metrics.VOTES_REJECTED.labels(reason='party-not-on-ballot').inc()
+            return jsonify({'error': 'one or more selected parties are no longer standing'}), 400
+
         # Second line of defence behind the cookie: cap ballots per source address. Checked before
         # the insert so a blocked attempt writes nothing.
         if queries.count_recent_votes_by_ip(conn, ip_hash, VOTE_IP_WINDOW_HOURS) >= MAX_VOTES_PER_IP:

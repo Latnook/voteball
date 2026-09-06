@@ -1329,3 +1329,65 @@ def test_league_id_change_is_recorded_as_provenance(conn):
     cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
     assert cur.fetchone()[0] == ['league_id']
     cur.close()
+
+
+def test_withdrawn_party_is_absent_from_the_ballot_but_present_in_options(conn):
+    """on_ballot=FALSE removes a party from the voting form WITHOUT deleting it or its votes.
+
+    /api/options must keep returning it -- admin.js reads that same endpoint and is the only screen
+    that can restore it. The ballot filter lives in vote.js and in /api/vote, not in this query.
+    """
+    options = queries.get_options(conn)
+    by_key = {p['name_he']: p for p in options['upcoming_parties']}
+
+    withdrawn = by_key['בית ציוני - המילואימניקים']
+    assert withdrawn['on_ballot'] is False, 'the split party must be off the ballot'
+
+    standing = [p for p in options['upcoming_parties'] if p['on_ballot']]
+    assert len(standing) == len(options['upcoming_parties']) - 1
+    assert all('on_ballot' in p for p in options['upcoming_parties']), \
+        'every party must carry the flag, so the client can filter on it'
+
+
+def test_off_ballot_party_ids_flags_only_withdrawn_parties(conn):
+    options = queries.get_options(conn)
+    ids = {p['name_he']: p['id'] for p in options['upcoming_parties']}
+    withdrawn_id = ids['בית ציוני - המילואימניקים']
+    standing_id = ids['ביחד']
+
+    assert queries.off_ballot_party_ids(conn, []) == []
+    assert queries.off_ballot_party_ids(conn, [standing_id]) == []
+    assert queries.off_ballot_party_ids(conn, [withdrawn_id]) == [withdrawn_id]
+    assert queries.off_ballot_party_ids(conn, [standing_id, withdrawn_id]) == [withdrawn_id]
+
+
+def test_a_voted_for_party_survives_being_taken_off_the_ballot(conn):
+    """The whole point of the flag: a split has no correct vote reassignment, so the votes stay.
+
+    insert_vote is used deliberately rather than hand-written SQL -- it is the path a real ballot
+    takes, so this also proves the write side is not blocked by the party being off the ballot
+    (the rejection lives in /api/vote, above this layer).
+    """
+    league_id, _ = _epl_and_liverpool(conn)
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM upcoming_parties WHERE seed_key = 'the-reservists'")
+    party_id = cur.fetchone()[0]
+
+    vote_id = queries.insert_vote(
+        conn,
+        team_picks=[_pick(league_id)],
+        previous_vote_status='did_not_vote', previous_party_id=None,
+        upcoming_vote_status='considering', upcoming_party_ids=[party_id],
+        cookie_token='ballot-flag-test',
+    )
+    assert vote_id > 0
+
+    cur.execute(
+        'SELECT COUNT(*) FROM vote_upcoming_parties WHERE upcoming_party_id = %s', (party_id,)
+    )
+    assert cur.fetchone()[0] == 1, 'the ballot must survive the party leaving the ballot'
+
+    # and the party itself is still there to be restored
+    cur.execute("SELECT on_ballot FROM upcoming_parties WHERE id = %s", (party_id,))
+    assert cur.fetchone()[0] is False
+    cur.close()
