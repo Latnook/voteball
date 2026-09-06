@@ -5054,6 +5054,26 @@ bought nothing here, because the defect was never in the pixels being measured.
   core-curriculum funding) **or** the religious monopolies — the funding criterion of the −3 band
   staying decisive between −2 and −3, per the three instances above. Recorded, not applied: rewriting
   the axis from one row is what revision 15 refused for tags, and the same reasoning holds here.
+- **`excludes-haredi-and-arab-parties` is an UNDOCUMENTED tag with one holder, and at least two more
+  rows have first-party evidence for half of it.** The tag sits on בית ציוני - המילואימניקים in
+  `seed.sql` and appears **zero times in this document** — no definition, no evidence, no reasoning,
+  which is precisely what this page's founding rule forbids (*`seed.sql` holds the values; this file
+  holds the reasoning*). It cannot be applied to another row until someone writes down what it means.
+  **The evidence that raises the question, verified from primary sources rather than from the
+  compilation that prompted it:** ישראל ביתנו's platform states *"היא תורכב **אך ורק ממפלגות
+  ציוניות**"* (read live 2026-09-06), and Bennett said at ביחד's launch that *"המפלגות הערביות אינן
+  ציוניות ולכן לא נסתמך עליהן"* ([Haaretz](https://www.haaretz.co.il/news/elections/2026-04-26/ty-article/0000019d-cac7-d95a-afbd-ebcfca080000),
+  2026-04-26).
+  **The blocker is that the tag is a CONJUNCTION and only the Arab half is stated.** Both rows exclude
+  Arab parties explicitly. Neither says *haredi*. Whether "Zionist parties only" entails excluding
+  ש"ס and יהדות התורה is an **inference about how those parties are classified**, not something either
+  document states — and inferring it would be the same move revision 52 refused when it declined to
+  read a יו״ש forum as a territorial claim. **Resolution: sweep every row for coalition-exclusion
+  statements, decide the conjunction question once (or split the tag into an Arab half and a haredi
+  half), and — the part that matters most — WRITE THE DEFINITION DOWN.** A third candidate is flagged
+  and unverified: ישר is reported to have adopted the same line, which has not been checked against a
+  first-party source. **This is the fourth item in the sweep queue**, and the only one whose first
+  step is documenting a tag that already exists rather than deciding whether to create one.
 - **The internal-security dimension is unlabelled across the whole vocabulary, and it now has a
   CENTRIST holder — which is what turns it from a far-right descriptor into a vocabulary hole.**
   The gap was first recorded on הציונות הדתית: *"domestic emergency policing directed at Arab
