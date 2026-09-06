@@ -29,7 +29,13 @@ FROM postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c87
 # the same two CVEs turned the frontend red; CI had never reached it, because Trivy scans the four
 # images in one `set -e` shell and stops at the first failure, so a second image with the same CVE
 # stays invisible until the first is fixed. Still ONE RUN, for the DL3059 reason above.
-RUN apk upgrade --no-cache libssl3 libcrypto3 \
+# libuuid (2026-09-06) is that comment coming true a second time, in the same direction: seven
+# HIGH util-linux CVEs turned the FRONTEND red, the run stopped there, and this image was never
+# scanned -- but it ships the identical libuuid-2.42.1-r0 from postgres:17-alpine, confirmed by
+# scanning it directly. Fixed here in the same commit rather than waiting for the next red build.
+# Unlike libexpat, libuuid IS in this base already, so it belongs in the FIRST upgrade, not after
+# the aws-cli install. Needs >= 2.42.3-r1 (six of the seven are fixed in r0; CVE-2026-78408 is not).
+RUN apk upgrade --no-cache libssl3 libcrypto3 libuuid \
  && apk add --no-cache aws-cli \
  && apk upgrade --no-cache libexpat \
  && rm -f /usr/local/bin/gosu

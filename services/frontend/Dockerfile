@@ -27,12 +27,19 @@ FROM nginxinc/nginx-unprivileged:alpine@sha256:c3fed6436b61d2bf2201ec032c35c0008
 # the Alpine security update. So refreshing the pin gets a newer base that is equally vulnerable, and
 # the Trivy gate stays red. Alpine v3.24/main already carries 3.5.8-r0, so patch it here instead.
 #
+# libuuid added 2026-09-06: SEVEN HIGH CVEs in util-linux 2.42.1-r0 (CVE-2026-53612/53613/53614,
+# -76642, -78408, -78409, -78410 -- TOCTOU and privilege issues in mount/nsenter). Alpine v3.24/main
+# carries 2.42.3-r1. Note the required version is not uniform: six are fixed in 2.42.3-r0 but
+# CVE-2026-78408 needs 2.42.3-r1, so upgrading to r0 would clear six of seven and leave the gate red.
+# services/backup/Dockerfile ships the same package from a different base and gets the same upgrade.
+#
 # REMOVE THIS BLOCK once nginxinc/nginx-unprivileged:alpine ships libssl3 >= 3.5.8-r0 AND
-# libexpat >= 2.8.4-r0 -- BOTH, or removing it re-opens whichever half the base has not caught up on:
-#   docker run --rm --user 0 --entrypoint sh nginxinc/nginx-unprivileged:alpine -c 'apk info -v | grep -E "libssl3|libexpat"'
+# libexpat >= 2.8.4-r0 AND libuuid >= 2.42.3-r1 -- ALL THREE, or removing it re-opens whichever part
+# the base has not caught up on:
+#   docker run --rm --user 0 --entrypoint sh nginxinc/nginx-unprivileged:alpine -c 'apk info -v | grep -E "libssl3|libexpat|libuuid"'
 # Leaving it in place after that costs a layer and silently pins nothing; it is not load-bearing then.
 USER 0
-RUN apk upgrade --no-cache libssl3 libcrypto3 libexpat
+RUN apk upgrade --no-cache libssl3 libcrypto3 libexpat libuuid
 USER 101
 COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
 # SEO assets. robots.txt and sitemap.xml carry a literal __SITE_URL__ that nginx rewrites from the
