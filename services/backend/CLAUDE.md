@@ -110,6 +110,20 @@ apply the new one on top, and confirm the value actually moves on the already-se
 against a fresh database only proves the literal is spelled right, not that an existing row's stale
 value gets overwritten.
 
+**`upcoming_parties.on_ballot` is a BALLOT flag, not a classification** (added 2026-09-06, default
+`TRUE`, seed-owned and written unconditionally by the same `UPDATE` as the ideology columns). `FALSE`
+means the party withdrew, merged or split and must not be offered on the voting form; its axes, tags
+and doc entry all stay live and correct. It exists because a **split** has no correct vote
+reassignment — a merge can move votes to the single successor (the admin reassign flow, used for
+חד"ש-תע"ל + בל"ד → הרשימה המשותפת), but when a party's people leave for two different lists there is
+no successor and picking one invents data. Deleting is not the alternative: `seed.sql`'s removal is
+vote-guarded and would refuse, and the admin `DELETE` cascades through `vote_upcoming_parties` and
+destroys the ballots. **Enforced twice** (`vote.js` hides, `/api/vote` rejects) and deliberately NOT
+filtered in `get_options`, because `admin.js` reads that endpoint and is the only screen that can
+restore a row. **If you add another such column, add it to `TABLES` in `scripts/seed/snapshot.py`** —
+a column missing from that list is silently not compared, so the neutrality harness would diff every
+column except the one a restructure changed and report a clean result.
+
 **Adding a new axis? Update `services/backend/tests/test_migration.py` too.** It is the reference
 test that round-trips the ideology columns and asserts the `CHECK` bounds. The religiosity pass
 missed it entirely and shipped an untested constraint; only the final review caught it.

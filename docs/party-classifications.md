@@ -3233,11 +3233,28 @@ arrival alone. Hendel–זליכה is a **joint list** — both men claim first 
 שרירותי. אנחנו שנינו במקום הראשון"*) — which is ביחד's `two-faction-list` shape, and would need the
 union rule and a check for a genuine disagreement of the kind that holds ביחד's `security` at NULL.
 
-**Nothing is changed in `seed.sql` yet, deliberately.** Lists are filed Tuesday; what is on the
-ballot is decided then, not by an announcement two days out, and this page has been wrong before by
-treating a reported intention as a fact. **Action date: 2026-09-08**, against the filed lists —
-at which point this row is removed (the removal is vote-guarded, so a row anyone has voted for
-survives regardless) and המפלגה הכלכלית is reassessed as a two-party list.
+**Taken off the ballot the same day, on the repo owner's instruction — but NOT deleted, and the
+axes are untouched.** `upcoming_parties.on_ballot` was added for this (`schema.sql`, default `TRUE`),
+and this row is the only `FALSE`. It is a **ballot** flag, not a classification: every value on this
+row still stands and this entry is still live.
+
+**Why a flag and not a deletion.** The row has **2 votes**. `seed.sql`'s removal statement is
+vote-guarded, so it would refuse to delete it; the admin `DELETE` cascades through
+`vote_upcoming_parties` and destroys those ballots. Neither expresses *"somebody voted for this, and
+it is no longer running"* — which is the actual state a party leaves behind. **A merge would not have
+needed this**: reassigning votes to the single successor is what the admin vote-reassignment flow is
+for, and what the חד"ש-תע"ל + בל"ד → הרשימה המשותפת pass used. **A split cannot use it** — this
+party's people left for two different lists, both of which already have votes of their own
+(ישר 9, המפלגה הכלכלית 1), so there is no successor to reassign to and picking one invents data.
+
+**Enforced twice, like every other ballot rule**: `vote.js` filters on `on_ballot`, and `/api/vote`
+rejects an off-ballot id (`party-not-on-ballot`). `/api/options` deliberately still returns the row —
+`admin.js` reads that same endpoint and is the only screen that could restore it, so filtering
+server-side would have hidden a withdrawn party from the only place able to bring it back.
+
+**Still to do on 2026-09-08, against the filed lists:** confirm the split actually happened, and
+reassess המפלגה הכלכלית as a two-party list. **If the deal collapses and this party files after all,
+flip the flag back to `TRUE`** — that is the whole point of a flag over a deletion.
 
 **One fact worth carrying into that pass:** זליכה ran in **2021 and 2022 and failed the threshold
 both times**, and הנדל concedes the path is *"רחוק מלהיות בטוחה"*, having turned down *"הצעות נוחות

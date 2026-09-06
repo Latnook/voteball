@@ -455,7 +455,11 @@ function renderUpcomingGrid() {
   grid.innerHTML = '';
   const atCap = selectedUpcomingIds.size >= 3;
 
-  sortByLocalizedName(optionsData.upcoming_parties).forEach(p => {
+  // on_ballot === false means the party withdrew, merged or split and is no longer standing.
+  // /api/options deliberately still returns it (admin.js needs it); the ballot must not offer
+  // it, and /api/vote rejects it server-side too.
+  const standing = optionsData.upcoming_parties.filter(p => p.on_ballot !== false);
+  sortByLocalizedName(standing).forEach(p => {
     const isChecked = selectedUpcomingIds.has(p.id);
     const card = document.createElement('button');
     card.type = 'button';
