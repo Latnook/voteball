@@ -91,7 +91,7 @@ CREATE TEMP TABLE seed_clubs (seed_key TEXT PRIMARY KEY, league TEXT, also_in TE
 INSERT INTO seed_clubs VALUES
     ('beitar-jerusalem', 'israeli-premier-league', NULL, 'Beitar Jerusalem', 'בית"ר ירושלים', 'Бейтар Иерусалим', 'https://upload.wikimedia.org/wikipedia/en/6/61/Beitar_Jerusalem.png', NULL),
     ('bnei-sakhnin', 'israeli-premier-league', NULL, 'Bnei Sakhnin', 'בני סכנין', 'Бней Сахнин', 'https://upload.wikimedia.org/wikipedia/he/b/bb/Hapo%C3%83%C2%ABl_Bnei_Sakhnin.png', NULL),
-    ('hapoel-be-er-sheva', 'israeli-premier-league', 'uefa-europa-league', 'Hapoel Be''er Sheva', 'הפועל באר שבע', 'Хапоэль Беэр-Шева', 'https://upload.wikimedia.org/wikipedia/en/8/85/Logo-hapoel-positive.svg', NULL),
+    ('hapoel-be-er-sheva', 'israeli-premier-league', 'uefa-europa-league', 'Hapoel Be''er Sheva', 'הפועל באר שבע', 'Хапоэль Беэр-Шева', 'https://hbsfc.co.il/wp-content/uploads/2025/01/hapoel-beer-sheva-color.svg', NULL),
     ('hapoel-haifa', 'israeli-premier-league', NULL, 'Hapoel Haifa', 'הפועל חיפה', 'Хапоэль Хайфа', 'https://upload.wikimedia.org/wikipedia/en/e/e4/Hapoel_Haifa_New_Logo.png', NULL),
     ('hapoel-jerusalem', 'israeli-premier-league', NULL, 'Hapoel Jerusalem', 'הפועל ירושלים', 'Хапоэль Иерусалим', 'https://upload.wikimedia.org/wikipedia/en/5/5d/FC_Hapoel_Jerusalem_2021.png', NULL),
     ('hapoel-petah-tikva', 'israeli-premier-league', NULL, 'Hapoel Petah Tikva', 'הפועל פתח תקווה', 'Хапоэль Петах-Тиква', 'https://upload.wikimedia.org/wikipedia/he/6/63/Hapoel_Petach_Tikva_logo.png', NULL),
