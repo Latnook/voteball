@@ -30,3 +30,18 @@ module "storage" {
 
   node_security_group_id = module.eks.node_security_group_id
 }
+
+module "iam" {
+  source = "./modules/iam"
+
+  cluster_name      = var.cluster_name
+  aws_region        = var.aws_region
+  account_id        = data.aws_caller_identity.current.account_id
+  oidc_provider     = module.eks.oidc_provider
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
+  # Least privilege is expressed by what is NOT passed: the roles get one bucket and one topic,
+  # and scope themselves to a single prefix within the bucket.
+  bucket_arn    = module.storage.bucket_arn
+  sns_topic_arn = module.notifications.sns_topic_arn
+}

@@ -45,12 +45,12 @@ output "oidc_provider_arn" {
 
 output "worker_role_arn" {
   description = "IRSA role ARN to annotate onto the devops-app:worker service account (Plan 3)."
-  value       = aws_iam_role.worker.arn
+  value       = module.iam.worker_role_arn
 }
 
 output "backup_role_arn" {
   description = "IRSA role ARN to annotate onto the devops-app:backup service account (Plan 3)."
-  value       = aws_iam_role.backup.arn
+  value       = module.iam.backup_role_arn
 }
 
 output "rds_endpoint" {

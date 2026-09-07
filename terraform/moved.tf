@@ -90,3 +90,67 @@ moved {
   from = aws_vpc_security_group_ingress_rule.efs_nfs
   to   = module.storage.aws_vpc_security_group_ingress_rule.efs_nfs
 }
+
+# ---- modules/iam ----
+# The last four came from addon-jenkins.tf, not irsa.tf: all hand-rolled IRSA now lives in one
+# module. module.jenkins_cd_irsa (community) deliberately stayed behind -- design doc section 3a.
+
+moved {
+  from = aws_iam_role.worker
+  to   = module.iam.aws_iam_role.worker
+}
+
+moved {
+  from = aws_iam_role_policy.worker
+  to   = module.iam.aws_iam_role_policy.worker
+}
+
+moved {
+  from = aws_iam_role.backup
+  to   = module.iam.aws_iam_role.backup
+}
+
+moved {
+  from = aws_iam_role_policy.backup
+  to   = module.iam.aws_iam_role_policy.backup
+}
+
+moved {
+  from = aws_iam_role.grafana
+  to   = module.iam.aws_iam_role.grafana
+}
+
+moved {
+  from = aws_iam_role_policy.grafana
+  to   = module.iam.aws_iam_role_policy.grafana
+}
+
+moved {
+  from = aws_iam_role.alertmanager
+  to   = module.iam.aws_iam_role.alertmanager
+}
+
+moved {
+  from = aws_iam_role_policy.alertmanager
+  to   = module.iam.aws_iam_role_policy.alertmanager
+}
+
+moved {
+  from = aws_iam_role.jenkins
+  to   = module.iam.aws_iam_role.jenkins
+}
+
+moved {
+  from = aws_iam_role_policy.jenkins
+  to   = module.iam.aws_iam_role_policy.jenkins
+}
+
+moved {
+  from = aws_iam_policy.jenkins_cd_ecr_read
+  to   = module.iam.aws_iam_policy.jenkins_cd_ecr_read
+}
+
+moved {
+  from = aws_iam_policy.jenkins_cd_notify
+  to   = module.iam.aws_iam_policy.jenkins_cd_notify
+}

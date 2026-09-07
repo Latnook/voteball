@@ -32,138 +32,6 @@ resource "kubernetes_namespace" "ci" {
   }
 }
 
-# ---- IRSA: ECR push for the AGENTS. The controller gets no AWS role at all. ----
-# Narrower than the EC2 instance profile it replaces, which held ECR push AND Secrets Manager read on
-# one identity. Secrets Manager access now belongs to ESO alone.
-#
-# Bound to the chart's AGENT service account (system:serviceaccount:ci:jenkins-agent), NOT the
-# controller's "jenkins". The Jenkins chart's `serviceAccount` block is the CONTROLLER's SA; putting
-# the role-arn annotation there (an earlier version of this file did) gave the controller itself ECR
-# push to every voteball-* repo, contradicting design doc section 7 ("Jenkins controller: none"). The
-# agent pod template in ci/jenkins/jenkins.yaml runs as `serviceAccountName: jenkins-agent` to pick
-# this role up via IRSA; the controller's own SA carries no annotation at all.
-data "aws_iam_policy_document" "jenkins_trust" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    principals {
-      type        = "Federated"
-      identifiers = [module.eks.oidc_provider_arn]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "${module.eks.oidc_provider}:sub"
-      values   = ["system:serviceaccount:ci:jenkins-agent"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "${module.eks.oidc_provider}:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "jenkins_permissions" {
-  statement {
-    sid       = "EcrAuth"
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"] # GetAuthorizationToken is account-wide by design
-  }
-  statement {
-    sid    = "EcrPushPull"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability", "ecr:InitiateLayerUpload", "ecr:UploadLayerPart",
-      "ecr:CompleteLayerUpload", "ecr:PutImage", "ecr:BatchGetImage", "ecr:DescribeImages",
-      # GetDownloadUrlForLayer is required to IMPORT the BuildKit layer cache and to pull the
-      # mirrored Trivy DB. The EC2 instance profile never needed it because that host only pushed.
-      "ecr:GetDownloadUrlForLayer",
-    ]
-    # An ARN PATTERN, not references to the repositories. Lifted from the retired stack, where it
-    # removed a cross-stack dependency; here it means the buildcache and trivy-db repos added in
-    # Task 1 are already covered with no widening.
-    resources = [
-      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.cluster_name}-*"
-    ]
-  }
-}
-
-resource "aws_iam_role" "jenkins" {
-  name               = "${var.cluster_name}-jenkins-irsa"
-  assume_role_policy = data.aws_iam_policy_document.jenkins_trust.json
-}
-
-resource "aws_iam_role_policy" "jenkins" {
-  name   = "${var.cluster_name}-jenkins-permissions"
-  role   = aws_iam_role.jenkins.id
-  policy = data.aws_iam_policy_document.jenkins_permissions.json
-}
-
-# ---- IRSA: ECR read-only for the CD AGENT. ----
-#
-# The CD pipeline's AWS identity. READ-ONLY on the four application repositories, and nothing else.
-#
-# Its single purpose is the Input Validation stage proving a requested tag really is in ECR before
-# anything is committed to master. It cannot push, cannot delete, and holds no other AWS permission.
-data "aws_iam_policy_document" "jenkins_cd_ecr_read" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "ecr:DescribeImages",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-    ]
-    # The FOUR APP REPOS ONLY -- deliberately not local.ecr_repos, which also contains
-    # "jenkins" (the controller image). CD validates application image tags and has no
-    # business reading the controller's repository. Keep this list in step with the
-    # ECR_REPOS value in Jenkinsfile-ci and Jenkinsfile-cd.
-    resources = [
-      for r in ["backend", "worker", "nginx", "backup"] :
-      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.cluster_name}-${r}"
-    ]
-  }
-  statement {
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"] # This action does not support resource-level permissions.
-  }
-}
-
-resource "aws_iam_policy" "jenkins_cd_ecr_read" {
-  name   = "${var.cluster_name}-jenkins-cd-ecr-read"
-  policy = data.aws_iam_policy_document.jenkins_cd_ecr_read.json
-}
-
-# ---- CD failure notifications ----
-# Task 4 review finding P3: "a rollback action is not a reliable notification mechanism by itself".
-# It is exactly right. The pipeline's worst outcome is the NEEDS A HUMAN branch -- a deploy failed,
-# the automatic rollback was refused because this build IS already a rollback (ROLLBACK_DEPTH >= 1),
-# and production is left running a version nobody chose. That state was announced only by a red build
-# in a UI reachable through `kubectl port-forward`, on a controller that is reclaimed by Spot roughly
-# daily. Nothing pushed it anywhere a person would see.
-#
-# sns:Publish on the EXISTING notifications topic, and nothing else. Deliberately not a second topic:
-# the email subscription on this one is already confirmed (docs/eks/evidence), so reusing it means the
-# alert path is proven the moment this applies, rather than being one more thing that has never
-# actually delivered a message.
-#
-# This is the ONLY write permission the CD agent has anywhere in AWS. Its ECR access stays read-only
-# and its Kubernetes Role stays read-only -- ArgoCD is still the only thing that can change the
-# cluster. Publishing a message to a topic cannot deploy, delete or modify anything.
-data "aws_iam_policy_document" "jenkins_cd_notify" {
-  statement {
-    effect    = "Allow"
-    actions   = ["sns:Publish"]
-    resources = [module.notifications.sns_topic_arn]
-  }
-}
-
-resource "aws_iam_policy" "jenkins_cd_notify" {
-  name   = "${var.cluster_name}-jenkins-cd-notify"
-  policy = data.aws_iam_policy_document.jenkins_cd_notify.json
-}
-
 module "jenkins_cd_irsa" {
   # Submodule path, matching every other IRSA role in this stack (addon-alb.tf,
   # addon-eso.tf, addon-external-dns.tf ...). The registry-root form
@@ -175,8 +43,8 @@ module "jenkins_cd_irsa" {
   role_name = "${var.cluster_name}-jenkins-cd"
 
   role_policy_arns = {
-    read   = aws_iam_policy.jenkins_cd_ecr_read.arn
-    notify = aws_iam_policy.jenkins_cd_notify.arn
+    read   = module.iam.jenkins_cd_ecr_read_policy_arn
+    notify = module.iam.jenkins_cd_notify_policy_arn
   }
 
   oidc_providers = {
@@ -401,7 +269,7 @@ resource "helm_release" "jenkins" {
       create = true
       name   = "jenkins-agent"
       annotations = {
-        "eks.amazonaws.com/role-arn" = aws_iam_role.jenkins.arn
+        "eks.amazonaws.com/role-arn" = module.iam.jenkins_role_arn
       }
     }
 

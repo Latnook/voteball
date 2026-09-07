@@ -102,7 +102,7 @@ resource "helm_release" "kube_prometheus_stack" {
         annotations = {
           # CloudWatch data source authentication. Grafana carried no AWS role until this change;
           # this is the same IRSA pattern alertmanager above uses to reach SNS.
-          "eks.amazonaws.com/role-arn" = aws_iam_role.grafana.arn
+          "eks.amazonaws.com/role-arn" = module.iam.grafana_role_arn
         }
       }
 
@@ -156,7 +156,7 @@ resource "helm_release" "kube_prometheus_stack" {
     alertmanager = {
       serviceAccount = {
         annotations = {
-          "eks.amazonaws.com/role-arn" = aws_iam_role.alertmanager.arn
+          "eks.amazonaws.com/role-arn" = module.iam.alertmanager_role_arn
         }
       }
       config = {
