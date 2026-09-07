@@ -15,7 +15,7 @@ terraform {
     helm = {
       source = "hashicorp/helm"
       # v3 moved this provider from SDKv2 to the Plugin Framework, which turned BLOCKS into
-      # ATTRIBUTES: `kubernetes {}` -> `kubernetes = {}` in providers-k8s.tf, and every
+      # ATTRIBUTES: `kubernetes {}` -> `kubernetes = {}` in providers.tf, and every
       # `set {}` -> a `set = [{...}]` list on each helm_release. Both were converted on 2026-07-30.
       # Do not reintroduce block syntax; it fails validation against the v3 schema.
       version = "~> 3.0"

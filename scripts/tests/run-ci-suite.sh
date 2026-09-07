@@ -112,6 +112,12 @@ GIT_GROUP=(
   # above. Placed here rather than PYTHON_GROUP only because GIT_GROUP is the smaller of the two
   # containers; nothing about this test prefers git specifically.
   test-logging-teardown.sh
+  # Greps script text and terraform/*.tf only -- no terraform binary, no AWS, no python3. Asserts
+  # every `-target=<addr>` a script passes still names a resource that exists, which the 2026-09-07
+  # module refactor could silently have invalidated: a stale -target makes terraform WARN and apply
+  # nothing, so the script exits 0 having done none of its work. Here rather than PYTHON_GROUP for
+  # the same reason as test-logging-teardown.sh above -- nothing about it prefers git.
+  test-terraform-targets.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.

@@ -63,7 +63,7 @@ still in *standard* support. Expect to bump some add-on chart versions with it.
 
 Two things that make this less of a one-liner than it looks:
 
-- **Do not upgrade from the AWS console.** Terraform owns `cluster_version` (`terraform/eks.tf:10`).
+- **Do not upgrade from the AWS console.** Terraform owns `cluster_version` (`terraform/modules/compute/main.tf`).
   A console upgrade leaves the real cluster ahead of the config, so the next `terraform plan` tries
   to *downgrade* — which EKS rejects — and every later apply fails until you reconcile by hand.
 - **EKS cannot skip a minor version.** 1.34 → 1.36 is two sequential applies, each upgrading the
@@ -171,10 +171,10 @@ that appears in every plan.
 
 `helm` was moved **2.17 → ~> 3.0 (3.2.0) on 2026-07-30**. v3 rebuilt the provider on the Plugin
 Framework, which turned blocks into attributes: `kubernetes {}` → `kubernetes = {}` in
-`providers-k8s.tf`, and all 25 `set {}` blocks → `set = [{...}]` lists across the six add-on files.
+`providers.tf`, and all 25 `set {}` blocks → `set = [{...}]` lists across the six add-on files.
 **Do not reintroduce block syntax** — it fails `validate` against the v3 schema. Note the `kubernetes`
 provider is still SDKv2 (`~> 2.31`) and keeps block syntax, so the two provider blocks in
-`providers-k8s.tf` look nearly identical and are deliberately different.
+`providers.tf` look nearly identical and are deliberately different.
 
 The migration was **in place**: plan and apply both reported `0 added, 8 changed, 0 destroyed`, the
 diff was purely state reshaping (`set`/`set_list`/`set_sensitive`/`postrender` emptied, a new

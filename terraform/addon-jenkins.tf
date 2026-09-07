@@ -21,7 +21,7 @@ resource "kubernetes_namespace" "ci" {
   # -- after ~13 minutes of applying, with every helm_release add-on already installed, so it reads
   # like a permissions bug rather than a race. Waiting on the whole module covers the access entry
   # and its policy association.
-  depends_on = [module.eks]
+  depends_on = [module.compute]
 
   metadata {
     name = "ci"
@@ -30,138 +30,6 @@ resource "kubernetes_namespace" "ci" {
       "kubernetes.io/metadata.name" = "ci"
     }
   }
-}
-
-# ---- IRSA: ECR push for the AGENTS. The controller gets no AWS role at all. ----
-# Narrower than the EC2 instance profile it replaces, which held ECR push AND Secrets Manager read on
-# one identity. Secrets Manager access now belongs to ESO alone.
-#
-# Bound to the chart's AGENT service account (system:serviceaccount:ci:jenkins-agent), NOT the
-# controller's "jenkins". The Jenkins chart's `serviceAccount` block is the CONTROLLER's SA; putting
-# the role-arn annotation there (an earlier version of this file did) gave the controller itself ECR
-# push to every voteball-* repo, contradicting design doc section 7 ("Jenkins controller: none"). The
-# agent pod template in ci/jenkins/jenkins.yaml runs as `serviceAccountName: jenkins-agent` to pick
-# this role up via IRSA; the controller's own SA carries no annotation at all.
-data "aws_iam_policy_document" "jenkins_trust" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    principals {
-      type        = "Federated"
-      identifiers = [module.eks.oidc_provider_arn]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "${module.eks.oidc_provider}:sub"
-      values   = ["system:serviceaccount:ci:jenkins-agent"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "${module.eks.oidc_provider}:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "jenkins_permissions" {
-  statement {
-    sid       = "EcrAuth"
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"] # GetAuthorizationToken is account-wide by design
-  }
-  statement {
-    sid    = "EcrPushPull"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability", "ecr:InitiateLayerUpload", "ecr:UploadLayerPart",
-      "ecr:CompleteLayerUpload", "ecr:PutImage", "ecr:BatchGetImage", "ecr:DescribeImages",
-      # GetDownloadUrlForLayer is required to IMPORT the BuildKit layer cache and to pull the
-      # mirrored Trivy DB. The EC2 instance profile never needed it because that host only pushed.
-      "ecr:GetDownloadUrlForLayer",
-    ]
-    # An ARN PATTERN, not references to the repositories. Lifted from the retired stack, where it
-    # removed a cross-stack dependency; here it means the buildcache and trivy-db repos added in
-    # Task 1 are already covered with no widening.
-    resources = [
-      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.cluster_name}-*"
-    ]
-  }
-}
-
-resource "aws_iam_role" "jenkins" {
-  name               = "${var.cluster_name}-jenkins-irsa"
-  assume_role_policy = data.aws_iam_policy_document.jenkins_trust.json
-}
-
-resource "aws_iam_role_policy" "jenkins" {
-  name   = "${var.cluster_name}-jenkins-permissions"
-  role   = aws_iam_role.jenkins.id
-  policy = data.aws_iam_policy_document.jenkins_permissions.json
-}
-
-# ---- IRSA: ECR read-only for the CD AGENT. ----
-#
-# The CD pipeline's AWS identity. READ-ONLY on the four application repositories, and nothing else.
-#
-# Its single purpose is the Input Validation stage proving a requested tag really is in ECR before
-# anything is committed to master. It cannot push, cannot delete, and holds no other AWS permission.
-data "aws_iam_policy_document" "jenkins_cd_ecr_read" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "ecr:DescribeImages",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-    ]
-    # The FOUR APP REPOS ONLY -- deliberately not local.ecr_repos, which also contains
-    # "jenkins" (the controller image). CD validates application image tags and has no
-    # business reading the controller's repository. Keep this list in step with the
-    # ECR_REPOS value in Jenkinsfile-ci and Jenkinsfile-cd.
-    resources = [
-      for r in ["backend", "worker", "nginx", "backup"] :
-      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.cluster_name}-${r}"
-    ]
-  }
-  statement {
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"] # This action does not support resource-level permissions.
-  }
-}
-
-resource "aws_iam_policy" "jenkins_cd_ecr_read" {
-  name   = "${var.cluster_name}-jenkins-cd-ecr-read"
-  policy = data.aws_iam_policy_document.jenkins_cd_ecr_read.json
-}
-
-# ---- CD failure notifications ----
-# Task 4 review finding P3: "a rollback action is not a reliable notification mechanism by itself".
-# It is exactly right. The pipeline's worst outcome is the NEEDS A HUMAN branch -- a deploy failed,
-# the automatic rollback was refused because this build IS already a rollback (ROLLBACK_DEPTH >= 1),
-# and production is left running a version nobody chose. That state was announced only by a red build
-# in a UI reachable through `kubectl port-forward`, on a controller that is reclaimed by Spot roughly
-# daily. Nothing pushed it anywhere a person would see.
-#
-# sns:Publish on the EXISTING notifications topic, and nothing else. Deliberately not a second topic:
-# the email subscription on this one is already confirmed (docs/eks/evidence), so reusing it means the
-# alert path is proven the moment this applies, rather than being one more thing that has never
-# actually delivered a message.
-#
-# This is the ONLY write permission the CD agent has anywhere in AWS. Its ECR access stays read-only
-# and its Kubernetes Role stays read-only -- ArgoCD is still the only thing that can change the
-# cluster. Publishing a message to a topic cannot deploy, delete or modify anything.
-data "aws_iam_policy_document" "jenkins_cd_notify" {
-  statement {
-    effect    = "Allow"
-    actions   = ["sns:Publish"]
-    resources = [aws_sns_topic.notifications.arn]
-  }
-}
-
-resource "aws_iam_policy" "jenkins_cd_notify" {
-  name   = "${var.cluster_name}-jenkins-cd-notify"
-  policy = data.aws_iam_policy_document.jenkins_cd_notify.json
 }
 
 module "jenkins_cd_irsa" {
@@ -175,51 +43,18 @@ module "jenkins_cd_irsa" {
   role_name = "${var.cluster_name}-jenkins-cd"
 
   role_policy_arns = {
-    read   = aws_iam_policy.jenkins_cd_ecr_read.arn
-    notify = aws_iam_policy.jenkins_cd_notify.arn
+    read   = module.iam.jenkins_cd_ecr_read_policy_arn
+    notify = module.iam.jenkins_cd_notify_policy_arn
   }
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn               = module.compute.oidc_provider_arn
       namespace_service_accounts = ["ci:jenkins-cd-agent"]
     }
   }
 }
 
-# ---- TLS for the webhook endpoint ----
-# Its own certificate, NOT a SAN added to the app's. Keeping them separate means this never touches
-# ingress.certificateArn, so scripts/sync-values-from-tf.sh stays at ten managed fields.
-resource "aws_acm_certificate" "jenkins" {
-  domain_name       = "jenkins.${var.app_domain}"
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_route53_record" "jenkins_cert_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.jenkins.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  zone_id         = data.aws_route53_zone.primary.zone_id
-  name            = each.value.name
-  type            = each.value.type
-  records         = [each.value.record]
-  ttl             = 60
-  allow_overwrite = true
-}
-
-resource "aws_acm_certificate_validation" "jenkins" {
-  certificate_arn         = aws_acm_certificate.jenkins.arn
-  validation_record_fqdns = [for r in aws_route53_record.jenkins_cert_validation : r.fqdn]
-}
 
 # ---- Supporting cluster resources (ExternalSecret + NetworkPolicies) ----
 resource "helm_release" "jenkins_support" {
@@ -232,12 +67,12 @@ resource "helm_release" "jenkins_support" {
     { name = "secretName", value = aws_secretsmanager_secret.jenkins.name },
     # This VPC's real CIDR, not the 10.0.0.0/16 default baked into the chart for offline `helm
     # template` runs -- see charts/jenkins-support/values.yaml.
-    { name = "vpcCidr", value = module.vpc.vpc_cidr_block },
+    { name = "vpcCidr", value = module.networking.vpc_cidr_block },
     # The EKS cluster's Service CIDR, not this VPC's -- a separate, cluster-internal range the API
     # server's ClusterIP lives on. Read from the module rather than hardcoded in the chart, so a
     # fork (or a future cluster with a non-default service CIDR) is not silently broken by a value
     # baked into charts/jenkins-support/values.yaml only as an offline-`helm template` default.
-    { name = "serviceCidr", value = module.eks.cluster_service_cidr },
+    { name = "serviceCidr", value = module.compute.cluster_service_cidr },
     # charts/jenkins-support/values.yaml states every value comes from Terraform; its own default
     # exists only so `helm template` runs offline. Passing this explicitly, rather than relying on
     # that default, keeps it from drifting silently if the chart's default ever changes.
@@ -260,8 +95,8 @@ resource "helm_release" "jenkins_support" {
     # The PUBLIC subnet CIDRs, where the ALB's ENIs live. The ingress rule that admits the load
     # balancer is scoped to these rather than to the whole VPC -- pods get VPC addresses from the
     # PRIVATE subnets, so the old vpcCidr rule admitted every pod in the cluster to the controller.
-    { name = "albSubnetCidrs[0]", value = module.vpc.public_subnets_cidr_blocks[0] },
-    { name = "albSubnetCidrs[1]", value = module.vpc.public_subnets_cidr_blocks[1] },
+    { name = "albSubnetCidrs[0]", value = module.networking.public_subnets_cidr_blocks[0] },
+    { name = "albSubnetCidrs[1]", value = module.networking.public_subnets_cidr_blocks[1] },
     # TRUE now that the controller image serves /prometheus. The `prometheus` plugin ships in a
     # controller image rebuilt from ci/jenkins/plugins.txt, and jenkins_image_tag (in the gitignored
     # terraform/voteball.tfvars) now points at that rebuilt image -- confirmed to contain
@@ -341,7 +176,7 @@ resource "helm_release" "jenkins" {
         # variable, like the four above, for the same reason: a hardcoded topic ARN in a Jenkinsfile
         # would be a per-account value baked into a forkable repo, which the root CLAUDE.md calls a
         # bug. Empty is handled -- the notify step skips rather than failing a build over it.
-        { name = "SNS_TOPIC", value = aws_sns_topic.notifications.arn },
+        { name = "SNS_TOPIC", value = module.notifications.sns_topic_arn },
       ]
 
       JCasC = {
@@ -401,7 +236,7 @@ resource "helm_release" "jenkins" {
       create = true
       name   = "jenkins-agent"
       annotations = {
-        "eks.amazonaws.com/role-arn" = aws_iam_role.jenkins.arn
+        "eks.amazonaws.com/role-arn" = module.iam.jenkins_role_arn
       }
     }
 

@@ -1,11 +1,11 @@
 output "cluster_name" {
   description = "EKS cluster name (for aws eks update-kubeconfig)."
-  value       = module.eks.cluster_name
+  value       = module.compute.cluster_name
 }
 
 output "cluster_endpoint" {
   description = "EKS API server endpoint."
-  value       = module.eks.cluster_endpoint
+  value       = module.compute.cluster_endpoint
 }
 
 output "region" {
@@ -15,7 +15,7 @@ output "region" {
 
 output "ecr_repository_urls" {
   description = "ECR repo URLs by component (push target for the CI/deploy pipeline)."
-  value       = { for k, r in aws_ecr_repository.app : k => r.repository_url }
+  value       = module.storage.ecr_repository_urls
 }
 
 output "acm_certificate_arn" {
@@ -30,7 +30,7 @@ output "waf_web_acl_arn" {
 
 output "s3_bucket" {
   description = "Rollups/backups bucket name."
-  value       = aws_s3_bucket.rollups.id
+  value       = module.storage.bucket_id
 }
 
 output "secret_arn" {
@@ -40,22 +40,22 @@ output "secret_arn" {
 
 output "oidc_provider_arn" {
   description = "Cluster OIDC provider ARN (for add-on IRSA roles in Plan 2b)."
-  value       = module.eks.oidc_provider_arn
+  value       = module.compute.oidc_provider_arn
 }
 
 output "worker_role_arn" {
   description = "IRSA role ARN to annotate onto the devops-app:worker service account (Plan 3)."
-  value       = aws_iam_role.worker.arn
+  value       = module.iam.worker_role_arn
 }
 
 output "backup_role_arn" {
   description = "IRSA role ARN to annotate onto the devops-app:backup service account (Plan 3)."
-  value       = aws_iam_role.backup.arn
+  value       = module.iam.backup_role_arn
 }
 
 output "rds_endpoint" {
   description = "EKS RDS endpoint host (for the app ConfigMap DB_HOST)."
-  value       = aws_db_instance.app.address
+  value       = module.database.endpoint
 }
 
 output "ecr_registry" {
@@ -70,7 +70,7 @@ output "app_domain" {
 
 output "sns_topic_arn" {
   description = "SNS topic the worker publishes milestone alerts to (config.SNS_TOPIC in the chart)."
-  value       = aws_sns_topic.notifications.arn
+  value       = module.notifications.sns_topic_arn
 }
 
 output "github_repo" {

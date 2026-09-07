@@ -27,7 +27,7 @@ cluster's OIDC provider. Each role's trust policy is federated to **one specific
 That backend/frontend carry **no role at all** is the concrete least-privilege proof. And the worker and
 backup jobs touch the *same bucket under different prefixes with different roles* — a much stronger
 answer to "are all services on the same permissions?" than one shared bucket-wide role. The IAM policy
-JSON is hand-written (not a module default) in `terraform/irsa.tf` precisely so it's auditable.
+JSON is hand-written (not a module default) in `terraform/modules/iam/main.tf` precisely so it's auditable.
 
 Alertmanager was added on 2026-07-21 so operational alerts can leave the cluster. It uses Alertmanager's
 native `sns_configs`, which signs with the AWS SDK credential chain — so IRSA is sufficient and **no SMTP
@@ -112,7 +112,7 @@ silently — whoever adds one has to make a deliberate decision about it.
 
 **CloudWatch: IRSA, and an asymmetric grant that is deliberate, not an oversight.** Grafana's
 ServiceAccount authenticates with no stored credential at all — `aws_iam_role.grafana`
-(`terraform/irsa.tf`) is assumed via IRSA the same way `aws_iam_role.alertmanager` already is. The
+(`terraform/modules/iam/main.tf`) is assumed via IRSA the same way `aws_iam_role.alertmanager` already is. The
 policy has two halves that are scoped differently on purpose:
 
 - **Logs** are resource-scoped to `arn:...:log-group:/aws/containerinsights/${cluster_name}/*` — this

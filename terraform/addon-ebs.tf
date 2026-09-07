@@ -1,7 +1,7 @@
 # EBS CSI driver + a gp3 StorageClass, for the Prometheus PVC in addon-monitoring.tf.
 #
 # WHY EBS HERE AND EFS FOR JENKINS -- opposite choices from the same constraint, deliberately.
-# addon-efs.tf chose EFS for JENKINS_HOME because an EBS volume is locked to a single Availability
+# modules/storage/main.tf chose EFS for JENKINS_HOME because an EBS volume is locked to a single Availability
 # Zone and this node group is 100% Spot. That reasoning does not transfer: Prometheus' TSDB is
 # explicitly unsupported on network filesystems, where its memory-mapped, fsync-ordered writes can
 # corrupt the database. The price is the AZ lock-in -- if the node holding the volume is reclaimed
@@ -19,14 +19,14 @@ module "ebs_csi_irsa" {
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn               = module.compute.oidc_provider_arn
       namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
     }
   }
 }
 
 resource "aws_eks_addon" "ebs_csi" {
-  cluster_name             = module.eks.cluster_name
+  cluster_name             = module.compute.cluster_name
   addon_name               = "aws-ebs-csi-driver"
   service_account_role_arn = module.ebs_csi_irsa.iam_role_arn
 }

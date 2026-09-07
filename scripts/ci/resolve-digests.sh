@@ -2,7 +2,7 @@
 # Print `name<TAB>sha256:...` for each of this project's four application images at a given TAG.
 #
 # WHY THIS IS SAFE TO DO BY LOOKUP rather than by plumbing digests between pipeline jobs:
-# terraform/ecr.tf sets image_tag_mutability = "IMMUTABLE" on the four application repositories, so a
+# terraform/modules/storage/main.tf sets image_tag_mutability = "IMMUTABLE" on the four application repositories, so a
 # tag names exactly one manifest for the lifetime of the repository. Resolving a tag to a digest is
 # therefore repeatable and authoritative -- the answer cannot change under us, which is the whole
 # property digest-pinning is trying to buy.

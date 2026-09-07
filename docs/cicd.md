@@ -613,7 +613,7 @@ that).
 **Digests.** The four image digests are resolved from ECR in Input Validation
 (`scripts/ci/resolve-digests.sh`, in the `deploy` container, which has `aws`) and handed to this
 stage through a file, because `jnlp` has git and no `aws`. They are looked up rather than passed down
-from CI because `terraform/ecr.tf` makes the app repositories `IMMUTABLE` — a tag names one manifest
+from CI because `terraform/modules/storage/main.tf` makes the app repositories `IMMUTABLE` — a tag names one manifest
 forever, so the lookup is authoritative. That also answers the two cases a build parameter could not:
 a chart-only promotion has no upstream CI build, and a rollback re-resolving the previous tag gets
 exactly the digests that tag always had.
@@ -905,7 +905,8 @@ Prints a deploy public key to add to GitHub (with write access) and the webhook 
 
 **2. `terraform apply -var-file=voteball.tfvars`** from `terraform/`. This is the **main** stack — no
 separate `jenkins.tfvars`, no second `terraform init`. It creates the `ci` namespace, both agents'
-IRSA roles, the EFS filesystem and its StorageClass (`terraform/addon-efs.tf`), the webhook's ACM
+IRSA roles, the EFS filesystem (`terraform/modules/storage/main.tf`) and its StorageClass
+(`terraform/addon-efs.tf`), the webhook's ACM
 certificate, `charts/jenkins-support` (ExternalSecret, RBAC, NetworkPolicies), and the two
 `helm_release`s (`jenkins`, `jenkins_support`).
 
@@ -997,8 +998,9 @@ see `docs/design/2026-07-30-jenkins-on-eks-design.md` §2), and an **EBS volume 
 Availability Zone**, so an EBS-backed PVC would need every reschedule to land back in the same AZ or
 the pod hangs `Pending` — the one failure mode that needs a human. **EFS is a network filesystem
 reachable from a mount target in every AZ**, so it carries none of that AZ-lock risk. See
-`terraform/addon-efs.tf` for the filesystem, mount targets, security group (TCP 2049 from the node
-security group only) and the `aws-efs-csi-driver` add-on; cost is roughly $1–2/month at this size.
+`terraform/modules/storage/main.tf` for the filesystem, mount targets and security group (TCP 2049
+from the node security group only), and `terraform/addon-efs.tf` for the `aws-efs-csi-driver` add-on
+and the StorageClass; cost is roughly $1–2/month at this size.
 
 **What this changes and what it does not.** Build history (build numbers, the last 20 logs) now
 survives a routine Spot reclaim — the PVC rebinds to the same EFS data. What does **not** change: JCasC

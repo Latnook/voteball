@@ -125,7 +125,7 @@ second in the last week rather than "the last nightly dump".
 **Deliberately NOT done: `deletion_protection`.** It is free and correct for a server that stays up, and
 wrong here — it makes `terraform destroy` fail outright and would wedge `scripts/destroy.sh` on every
 rebuild cycle. Turn it on only alongside retiring the destroy/rebuild workflow. The reasoning is in
-`database.tf` next to the setting.
+`terraform/modules/database/main.tf` next to the setting.
 
 **Multi-AZ remains open** — a deliberate cost decision (~+$12/mo), not an oversight.
 
@@ -140,7 +140,7 @@ before/after API responses in `docs/eks/evidence/`. That closes the
 ### ⚠️ The nightly `pg_dump` is NOT teardown insurance
 
 The line above lists the S3 `pg_dump` alongside the final snapshot as if both protect the data. They
-do not protect against the same thing. `terraform/s3.tf:9` sets `force_destroy = true`, so
+do not protect against the same thing. `terraform/modules/storage/main.tf` sets `force_destroy = true`, so
 `terraform destroy` deletes the rollups bucket **and every backup object in it** — in the same
 operation the dump would supposedly be insuring against. Verified on the 2026-07-27 teardown:
 `head-bucket` returned 404 and the `backups/` prefix went from 5 objects to 0.

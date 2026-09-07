@@ -322,7 +322,7 @@ pipeline {
           // moved to an EFS-backed PVC (terraform/addon-jenkins.tf), which now survives ordinary
           // pod/node reclaims along with build history. The guard is still needed for a narrower
           // reason: a full `destroy.sh` + `deploy.sh` rebuild provisions a brand-new EFS filesystem
-          // (terraform/addon-efs.tf), so the controller's build history -- and with it every job's
+          // (terraform/modules/storage/main.tf), so the controller's build history -- and with it every job's
           // changelog -- genuinely starts empty again after one of those, the same way it did after
           // every daily reclaim before EFS. Without this flag the first webhook build after such a
           // rebuild skips build, scan, push and tag bump, and reports SUCCESS -- observed 2026-08-03,

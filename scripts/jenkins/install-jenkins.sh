@@ -15,8 +15,8 @@ echo "==> Jenkins is installed by Terraform. Applying only the Jenkins-related r
 echo "    Anything else that has drifted will NOT be corrected by this run."
 
 terraform apply -var-file=voteball.tfvars \
-  -target=aws_efs_file_system.jenkins \
-  -target=aws_efs_mount_target.jenkins \
+  -target=module.storage.aws_efs_file_system.jenkins \
+  -target=module.storage.aws_efs_mount_target.jenkins \
   -target=aws_eks_addon.efs_csi \
   -target=kubernetes_storage_class.efs \
   -target=helm_release.jenkins_support \
