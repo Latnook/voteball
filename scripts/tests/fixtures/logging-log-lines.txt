@@ -1,0 +1,44 @@
+# Real log lines, copied verbatim out of the live Elasticsearch index on 2026-09-07, plus the
+# handful of shapes that exist in production but happened not to be in the sample window (a POST to
+# /api/vote, a 404, a 5xx). Format: <expected-pattern>[ field=value,...]<TAB><the line>
+#
+# These are the INPUT THAT MUST MATCH. CLAUDE.md's rule is that a check which can never match is
+# found only by feeding it something you know should match, once -- this file is that "once", kept
+# runnable. Do not thin it out and do not paraphrase the lines: the trailing "$http_x_forwarded_for"
+# field, the "-" placeholders and the exact quoting are all things the nginx pattern depends on.
+#
+# --- nginx: `combined` + the trailing "$http_x_forwarded_for" ------------------------------------
+nginx http_path=/,http_status=200,http_user_agent=ELB-HealthChecker/2.0	10.0.28.30 - - [06/Sep/2026:17:01:04 +0000] "GET / HTTP/1.1" 200 7652 "-" "ELB-HealthChecker/2.0" "-"
+nginx http_path=/style.css,http_status=200,client_ip=89.138.2.64	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "GET /style.css HTTP/1.1" 200 32870 "https://voteball.latnook.com/" "Mozilla/5.0 (X11; Linux x86_64; rv:154.0) Gecko/20100101 Firefox/154.0" "89.138.2.64"
+nginx http_path=/fonts/heebo-latin-var.woff2,http_status=200	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "GET /fonts/heebo-latin-var.woff2 HTTP/1.1" 200 30116 "https://voteball.latnook.com/style.css" "Mozilla/5.0 (X11; Linux x86_64; rv:154.0) Gecko/20100101 Firefox/154.0" "89.138.2.64"
+# The query string must land in http_query, NOT in http_path: /api/results?by=all and ?by=club are
+# one endpoint, and folding the query into the path scatters it across a bucket per parameter.
+nginx http_path=/api/results,http_query=by=all,http_status=200	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "GET /api/results?by=all HTTP/1.1" 200 900 "-" "curl/8.0" "1.2.3.4"
+nginx http_method=POST,http_path=/api/vote,http_status=201	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "POST /api/vote HTTP/1.1" 201 45 "https://voteball.latnook.com/" "Mozilla/5.0" "1.2.3.4"
+nginx http_status=404,http_path=/nope	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "GET /nope HTTP/1.1" 404 153 "-" "-" "-"
+# A 5xx is the single most important line the dashboard exists to surface. If the pattern ever stops
+# matching this one, the "top 5xx endpoints" panel goes empty and reads exactly like "no errors".
+nginx http_status=500,http_path=/api/vote	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "POST /api/vote HTTP/1.1" 500 27 "-" "Mozilla/5.0" "1.2.3.4"
+# An HTTP/2 request and one with no x-forwarded-for field at all -- both legal against this ALB.
+nginx http_status=200,http_version=2.0	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "GET /results.html HTTP/2.0" 200 4211 "-" "Mozilla/5.0" "-"
+nginx http_status=200,http_path=/api/options	10.0.28.30 - - [06/Sep/2026:17:00:55 +0000] "GET /api/options HTTP/1.1" 200 8123 "-" "Mozilla/5.0"
+#
+# --- gunicorn / Flask, from the backend container ------------------------------------------------
+gunicorn log_level=INFO,pid=1	[2026-09-06 18:14:20 +0000] [1] [INFO] Starting gunicorn 23.0.0
+gunicorn log_level=INFO,pid=1	[2026-09-06 18:14:20 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+gunicorn log_level=INFO,pid=7	[2026-09-06 18:14:20 +0000] [7] [INFO] Booting worker with pid: 7
+gunicorn log_level=ERROR,pid=8	[2026-09-06 18:14:21 +0000] [8] [ERROR] Exception on /api/vote [POST]
+#
+# --- the synthetic canary's own line -------------------------------------------------------------
+canary http_status=200,http_method=GET,http_path=/	200 GET /
+canary http_status=200,http_path=/api/options	200 GET /api/options
+canary http_status=200,http_path=/api/results,http_query=by=all	200 GET /api/results?by=all
+canary http_status=503,http_path=/api/vote	503 POST /api/vote
+#
+# --- everything else: the catch-all, which must NEVER drop a line --------------------------------
+# The worker's entire log output is this one sentence. It matches no pattern above, which is exactly
+# why `format none` and `reserve_data true` are load-bearing rather than defensive.
+none	Rollups recomputed, milestones checked.
+none	efk-verify-20260906170319
+none	Traceback (most recent call last):
+none	  File "/app/app.py", line 412, in vote

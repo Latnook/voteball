@@ -414,7 +414,29 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   into `elastic-system`; `managedNamespaces` is scoped to `logging` alone so it never reconciles a
   custom resource anywhere else in the cluster. The namespaced objects it reconciles — `Elasticsearch`,
   `Kibana`, `Fluentd` — live in **Helm (`charts/logging`)**, delivered by its own third ArgoCD
-  Application/AppProject the same way `charts/observability` is. **That chart ships `enabled: true`,
+  Application/AppProject the same way `charts/observability` is.
+
+  **That chart also ships Kibana's CONTENT, and it is not decoration.** `charts/logging/kibana/*.json`
+  holds the `voteball-logs` data view, three saved searches and the `Voteball service health`
+  dashboard, imported by a `post-install,post-upgrade` hook (weight 10, strictly after the ILM
+  bootstrap's 5). Without them the stack passes every check and is unusable -- measured 2026-09-07,
+  before they existed: 59,926 documents indexed, 223 Kibana saved objects, **every one an Elastic
+  built-in**, so anyone opening `kibana.<app_domain>` got an onboarding screen and could not see a log
+  line without clicking through setup first. Two traps, both proven against the live Kibana 9.1.4
+  rather than read from docs: a saved object with no **`typeMigrationVersion`** makes
+  `/api/saved_objects/_import` run the entire migration chain and answer **HTTP 500** with the reason
+  only in the Kibana server log; and `_import` answers **200 for an import that saved nothing** (the
+  per-object failures come back in the *body*), so the Job compares `successCount` against the object
+  count and then reads the dashboard back through a *different* call -- a dangling panel reference
+  imports cleanly and renders as an error card. The matching half is the log line itself:
+  **`templates/fluentd.yaml` parses it** into `http_status`/`http_path`/`log_level`, and
+  `reserve_data true` plus the trailing `format none` catch-all are what stop `filter_parser` from
+  silently DROPPING every record matching no pattern (the worker's entire output matches none). It
+  also drops `ELB-HealthChecker` lines, which were **37.2% of the index**, from Elasticsearch only --
+  CloudWatch is upstream of the fan-out and keeps the authoritative copy. See
+  `docs/design/2026-08-27-efk-logging-design.md` decisions 11 and 12.
+
+  **That chart ships `enabled: true`,
   and nothing anywhere flips it** — the deploy *ordering* is what makes it safe, the same shape as the
   Grafana gates ("the gates ship `true` because the seed step makes that safe"): the CRDs arrive with
   `terraform apply` at step 6 and the `logging` Application is not created until step 11, so a git

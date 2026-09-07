@@ -1,0 +1,832 @@
+[
+  {
+    "id": "voteball-logs",
+    "type": "index-pattern",
+    "typeMigrationVersion": "8.0.0",
+    "attributes": {
+      "title": "voteball-logs-*",
+      "timeFieldName": "time",
+      "name": "Voteball logs",
+      "fieldAttrs": "{}",
+      "runtimeFieldMap": "{}",
+      "sourceFilters": "[]",
+      "fieldFormatMap": "{\"http_bytes\": {\"id\": \"bytes\"}}"
+    },
+    "references": []
+  },
+  {
+    "id": "voteball-logs-requests-by-status",
+    "type": "lens",
+    "typeMigrationVersion": "8.9.0",
+    "attributes": {
+      "title": "Requests over time by status class",
+      "description": "Every parsed HTTP line bucketed by response class. A red band appearing is the whole point of this panel; the rest of the dashboard tells you which endpoint it came from.",
+      "visualizationType": "lnsXY",
+      "state": {
+        "datasourceStates": {
+          "formBased": {
+            "layers": {
+              "layer1": {
+                "columns": {
+                  "c": {
+                    "label": "Requests",
+                    "dataType": "number",
+                    "operationType": "count",
+                    "sourceField": "___records___",
+                    "isBucketed": false,
+                    "scale": "ratio",
+                    "params": {
+                      "emptyAsNull": false
+                    }
+                  },
+                  "d": {
+                    "label": "time",
+                    "dataType": "date",
+                    "operationType": "date_histogram",
+                    "sourceField": "time",
+                    "isBucketed": true,
+                    "scale": "interval",
+                    "params": {
+                      "interval": "auto",
+                      "includeEmptyRows": true,
+                      "dropPartials": false
+                    }
+                  },
+                  "s": {
+                    "label": "Status class",
+                    "dataType": "string",
+                    "operationType": "filters",
+                    "isBucketed": true,
+                    "scale": "ordinal",
+                    "params": {
+                      "filters": [
+                        {
+                          "input": {
+                            "query": "http_status >= 200 and http_status < 300",
+                            "language": "kuery"
+                          },
+                          "label": "2xx success"
+                        },
+                        {
+                          "input": {
+                            "query": "http_status >= 300 and http_status < 400",
+                            "language": "kuery"
+                          },
+                          "label": "3xx redirect"
+                        },
+                        {
+                          "input": {
+                            "query": "http_status >= 400 and http_status < 500",
+                            "language": "kuery"
+                          },
+                          "label": "4xx client error"
+                        },
+                        {
+                          "input": {
+                            "query": "http_status >= 500",
+                            "language": "kuery"
+                          },
+                          "label": "5xx server error"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "columnOrder": [
+                  "d",
+                  "s",
+                  "c"
+                ],
+                "sampling": 1,
+                "ignoreGlobalFilters": false,
+                "incompleteColumns": {}
+              }
+            }
+          }
+        },
+        "internalReferences": [],
+        "filters": [],
+        "query": {
+          "query": "",
+          "language": "kuery"
+        },
+        "visualization": {
+          "legend": {
+            "isVisible": true,
+            "position": "right"
+          },
+          "valueLabels": "hide",
+          "fittingFunction": "None",
+          "preferredSeriesType": "bar_stacked",
+          "axisTitlesVisibilitySettings": {
+            "x": false,
+            "yLeft": false,
+            "yRight": true
+          },
+          "layers": [
+            {
+              "layerId": "layer1",
+              "accessors": [
+                "c"
+              ],
+              "position": "top",
+              "seriesType": "bar_stacked",
+              "showGridlines": false,
+              "layerType": "data",
+              "xAccessor": "d",
+              "splitAccessor": "s"
+            }
+          ]
+        },
+        "adHocDataViews": {}
+      }
+    },
+    "references": [
+      {
+        "type": "index-pattern",
+        "id": "voteball-logs",
+        "name": "indexpattern-datasource-layer-layer1"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-error-count",
+    "type": "lens",
+    "typeMigrationVersion": "8.9.0",
+    "attributes": {
+      "title": "HTTP errors (4xx + 5xx)",
+      "description": "Failed requests in the selected range. Zero here with a non-zero Requests panel is the healthy state; zero in BOTH means no traffic is being parsed, which is a different problem.",
+      "visualizationType": "lnsMetric",
+      "state": {
+        "datasourceStates": {
+          "formBased": {
+            "layers": {
+              "layer1": {
+                "columns": {
+                  "c": {
+                    "label": "Errors",
+                    "dataType": "number",
+                    "operationType": "count",
+                    "sourceField": "___records___",
+                    "isBucketed": false,
+                    "scale": "ratio",
+                    "params": {
+                      "emptyAsNull": false
+                    }
+                  }
+                },
+                "columnOrder": [
+                  "c"
+                ],
+                "sampling": 1,
+                "ignoreGlobalFilters": false,
+                "incompleteColumns": {}
+              }
+            }
+          }
+        },
+        "internalReferences": [],
+        "filters": [],
+        "query": {
+          "query": "http_status >= 400",
+          "language": "kuery"
+        },
+        "visualization": {
+          "layerId": "layer1",
+          "layerType": "data",
+          "metricAccessor": "c",
+          "color": "#a71627",
+          "showBar": false
+        },
+        "adHocDataViews": {}
+      }
+    },
+    "references": [
+      {
+        "type": "index-pattern",
+        "id": "voteball-logs",
+        "name": "indexpattern-datasource-layer-layer1"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-top-endpoints",
+    "type": "lens",
+    "typeMigrationVersion": "8.9.0",
+    "attributes": {
+      "title": "Top endpoints",
+      "description": "Busiest request paths. The query string is parsed into its own http_query field, so /api/results is one row rather than one row per ?by= value.",
+      "visualizationType": "lnsDatatable",
+      "state": {
+        "datasourceStates": {
+          "formBased": {
+            "layers": {
+              "layer1": {
+                "columns": {
+                  "c": {
+                    "label": "Requests",
+                    "dataType": "number",
+                    "operationType": "count",
+                    "sourceField": "___records___",
+                    "isBucketed": false,
+                    "scale": "ratio",
+                    "params": {
+                      "emptyAsNull": false
+                    }
+                  },
+                  "p": {
+                    "label": "Path",
+                    "dataType": "string",
+                    "operationType": "terms",
+                    "sourceField": "http_path.keyword",
+                    "isBucketed": true,
+                    "scale": "ordinal",
+                    "params": {
+                      "size": 15,
+                      "orderBy": {
+                        "type": "column",
+                        "columnId": "c"
+                      },
+                      "orderDirection": "desc",
+                      "otherBucket": false,
+                      "missingBucket": false,
+                      "parentFormat": {
+                        "id": "terms"
+                      },
+                      "include": [],
+                      "exclude": [],
+                      "includeIsRegex": false,
+                      "excludeIsRegex": false
+                    }
+                  }
+                },
+                "columnOrder": [
+                  "p",
+                  "c"
+                ],
+                "sampling": 1,
+                "ignoreGlobalFilters": false,
+                "incompleteColumns": {}
+              }
+            }
+          }
+        },
+        "internalReferences": [],
+        "filters": [],
+        "query": {
+          "query": "",
+          "language": "kuery"
+        },
+        "visualization": {
+          "layerId": "layer1",
+          "layerType": "data",
+          "columns": [
+            {
+              "columnId": "p",
+              "isTransposed": false
+            },
+            {
+              "columnId": "c",
+              "isTransposed": false,
+              "alignment": "right"
+            }
+          ]
+        },
+        "adHocDataViews": {}
+      }
+    },
+    "references": [
+      {
+        "type": "index-pattern",
+        "id": "voteball-logs",
+        "name": "indexpattern-datasource-layer-layer1"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-top-error-endpoints",
+    "type": "lens",
+    "typeMigrationVersion": "8.9.0",
+    "attributes": {
+      "title": "Endpoints returning 4xx / 5xx",
+      "description": "Which endpoint is broken, not merely that something is. Empty is the normal state.",
+      "visualizationType": "lnsDatatable",
+      "state": {
+        "datasourceStates": {
+          "formBased": {
+            "layers": {
+              "layer1": {
+                "columns": {
+                  "c": {
+                    "label": "Errors",
+                    "dataType": "number",
+                    "operationType": "count",
+                    "sourceField": "___records___",
+                    "isBucketed": false,
+                    "scale": "ratio",
+                    "params": {
+                      "emptyAsNull": false
+                    }
+                  },
+                  "p": {
+                    "label": "Path",
+                    "dataType": "string",
+                    "operationType": "terms",
+                    "sourceField": "http_path.keyword",
+                    "isBucketed": true,
+                    "scale": "ordinal",
+                    "params": {
+                      "size": 15,
+                      "orderBy": {
+                        "type": "column",
+                        "columnId": "c"
+                      },
+                      "orderDirection": "desc",
+                      "otherBucket": false,
+                      "missingBucket": false,
+                      "parentFormat": {
+                        "id": "terms"
+                      },
+                      "include": [],
+                      "exclude": [],
+                      "includeIsRegex": false,
+                      "excludeIsRegex": false
+                    }
+                  },
+                  "s": {
+                    "label": "Status",
+                    "dataType": "string",
+                    "operationType": "terms",
+                    "sourceField": "http_status",
+                    "isBucketed": true,
+                    "scale": "ordinal",
+                    "params": {
+                      "size": 5,
+                      "orderBy": {
+                        "type": "column",
+                        "columnId": "c"
+                      },
+                      "orderDirection": "desc",
+                      "otherBucket": false,
+                      "missingBucket": false,
+                      "parentFormat": {
+                        "id": "terms"
+                      },
+                      "include": [],
+                      "exclude": [],
+                      "includeIsRegex": false,
+                      "excludeIsRegex": false
+                    }
+                  }
+                },
+                "columnOrder": [
+                  "p",
+                  "s",
+                  "c"
+                ],
+                "sampling": 1,
+                "ignoreGlobalFilters": false,
+                "incompleteColumns": {}
+              }
+            }
+          }
+        },
+        "internalReferences": [],
+        "filters": [],
+        "query": {
+          "query": "http_status >= 400",
+          "language": "kuery"
+        },
+        "visualization": {
+          "layerId": "layer1",
+          "layerType": "data",
+          "columns": [
+            {
+              "columnId": "p",
+              "isTransposed": false
+            },
+            {
+              "columnId": "s",
+              "isTransposed": false
+            },
+            {
+              "columnId": "c",
+              "isTransposed": false,
+              "alignment": "right"
+            }
+          ]
+        },
+        "adHocDataViews": {}
+      }
+    },
+    "references": [
+      {
+        "type": "index-pattern",
+        "id": "voteball-logs",
+        "name": "indexpattern-datasource-layer-layer1"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-volume-by-container",
+    "type": "lens",
+    "typeMigrationVersion": "8.9.0",
+    "attributes": {
+      "title": "Log volume by container",
+      "description": "All log lines, not only HTTP ones. A container dropping to zero here is a signal in itself -- it is how you notice the worker has stopped without anything reporting an error.",
+      "visualizationType": "lnsXY",
+      "state": {
+        "datasourceStates": {
+          "formBased": {
+            "layers": {
+              "layer1": {
+                "columns": {
+                  "c": {
+                    "label": "Lines",
+                    "dataType": "number",
+                    "operationType": "count",
+                    "sourceField": "___records___",
+                    "isBucketed": false,
+                    "scale": "ratio",
+                    "params": {
+                      "emptyAsNull": false
+                    }
+                  },
+                  "d": {
+                    "label": "time",
+                    "dataType": "date",
+                    "operationType": "date_histogram",
+                    "sourceField": "time",
+                    "isBucketed": true,
+                    "scale": "interval",
+                    "params": {
+                      "interval": "auto",
+                      "includeEmptyRows": true,
+                      "dropPartials": false
+                    }
+                  },
+                  "k": {
+                    "label": "Container",
+                    "dataType": "string",
+                    "operationType": "terms",
+                    "sourceField": "kubernetes.container_name.keyword",
+                    "isBucketed": true,
+                    "scale": "ordinal",
+                    "params": {
+                      "size": 8,
+                      "orderBy": {
+                        "type": "column",
+                        "columnId": "c"
+                      },
+                      "orderDirection": "desc",
+                      "otherBucket": false,
+                      "missingBucket": false,
+                      "parentFormat": {
+                        "id": "terms"
+                      },
+                      "include": [],
+                      "exclude": [],
+                      "includeIsRegex": false,
+                      "excludeIsRegex": false
+                    }
+                  }
+                },
+                "columnOrder": [
+                  "d",
+                  "k",
+                  "c"
+                ],
+                "sampling": 1,
+                "ignoreGlobalFilters": false,
+                "incompleteColumns": {}
+              }
+            }
+          }
+        },
+        "internalReferences": [],
+        "filters": [],
+        "query": {
+          "query": "",
+          "language": "kuery"
+        },
+        "visualization": {
+          "legend": {
+            "isVisible": true,
+            "position": "right"
+          },
+          "valueLabels": "hide",
+          "fittingFunction": "None",
+          "preferredSeriesType": "bar_stacked",
+          "axisTitlesVisibilitySettings": {
+            "x": false,
+            "yLeft": false,
+            "yRight": true
+          },
+          "layers": [
+            {
+              "layerId": "layer1",
+              "accessors": [
+                "c"
+              ],
+              "position": "top",
+              "seriesType": "bar_stacked",
+              "showGridlines": false,
+              "layerType": "data",
+              "xAccessor": "d",
+              "splitAccessor": "k"
+            }
+          ]
+        },
+        "adHocDataViews": {}
+      }
+    },
+    "references": [
+      {
+        "type": "index-pattern",
+        "id": "voteball-logs",
+        "name": "indexpattern-datasource-layer-layer1"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-traffic-source",
+    "type": "lens",
+    "typeMigrationVersion": "8.9.0",
+    "attributes": {
+      "title": "Requests: real visitors vs the canary",
+      "description": "The canary hits the public journey every 30s to keep the availability SLI's denominator non-zero. Separating it here is what stops it being read as organic traffic.",
+      "visualizationType": "lnsXY",
+      "state": {
+        "datasourceStates": {
+          "formBased": {
+            "layers": {
+              "layer1": {
+                "columns": {
+                  "c": {
+                    "label": "Requests",
+                    "dataType": "number",
+                    "operationType": "count",
+                    "sourceField": "___records___",
+                    "isBucketed": false,
+                    "scale": "ratio",
+                    "params": {
+                      "emptyAsNull": false
+                    }
+                  },
+                  "d": {
+                    "label": "time",
+                    "dataType": "date",
+                    "operationType": "date_histogram",
+                    "sourceField": "time",
+                    "isBucketed": true,
+                    "scale": "interval",
+                    "params": {
+                      "interval": "auto",
+                      "includeEmptyRows": true,
+                      "dropPartials": false
+                    }
+                  },
+                  "s": {
+                    "label": "Source",
+                    "dataType": "string",
+                    "operationType": "filters",
+                    "isBucketed": true,
+                    "scale": "ordinal",
+                    "params": {
+                      "filters": [
+                        {
+                          "input": {
+                            "query": "kubernetes.container_name : \"canary\"",
+                            "language": "kuery"
+                          },
+                          "label": "Canary"
+                        },
+                        {
+                          "input": {
+                            "query": "kubernetes.container_name : \"frontend\"",
+                            "language": "kuery"
+                          },
+                          "label": "Real visitors"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "columnOrder": [
+                  "d",
+                  "s",
+                  "c"
+                ],
+                "sampling": 1,
+                "ignoreGlobalFilters": false,
+                "incompleteColumns": {}
+              }
+            }
+          }
+        },
+        "internalReferences": [],
+        "filters": [],
+        "query": {
+          "query": "",
+          "language": "kuery"
+        },
+        "visualization": {
+          "legend": {
+            "isVisible": true,
+            "position": "right"
+          },
+          "valueLabels": "hide",
+          "fittingFunction": "None",
+          "preferredSeriesType": "bar_stacked",
+          "axisTitlesVisibilitySettings": {
+            "x": false,
+            "yLeft": false,
+            "yRight": true
+          },
+          "layers": [
+            {
+              "layerId": "layer1",
+              "accessors": [
+                "c"
+              ],
+              "position": "top",
+              "seriesType": "bar_stacked",
+              "showGridlines": false,
+              "layerType": "data",
+              "xAccessor": "d",
+              "splitAccessor": "s"
+            }
+          ]
+        },
+        "adHocDataViews": {}
+      }
+    },
+    "references": [
+      {
+        "type": "index-pattern",
+        "id": "voteball-logs",
+        "name": "indexpattern-datasource-layer-layer1"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-errors",
+    "type": "search",
+    "typeMigrationVersion": "10.5.0",
+    "attributes": {
+      "title": "Voteball: backend and worker errors",
+      "description": "Application-level failures. gunicorn writes [time] [pid] [LEVEL], which the Fluentd parser turns into log_level -- this search is the reason that pattern exists.",
+      "columns": [
+        "kubernetes.container_name",
+        "log_level",
+        "message"
+      ],
+      "sort": [
+        [
+          "time",
+          "desc"
+        ]
+      ],
+      "grid": {},
+      "hideChart": false,
+      "isTextBasedQuery": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\": {\"query\": \"log_level : (ERROR or CRITICAL)\", \"language\": \"kuery\"}, \"filter\": [], \"indexRefName\": \"kibanaSavedObjectMeta.searchSourceJSON.index\"}"
+      }
+    },
+    "references": [
+      {
+        "name": "kibanaSavedObjectMeta.searchSourceJSON.index",
+        "type": "index-pattern",
+        "id": "voteball-logs"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-http-errors",
+    "type": "search",
+    "typeMigrationVersion": "10.5.0",
+    "attributes": {
+      "title": "Voteball: failed HTTP requests",
+      "description": "Every 4xx and 5xx with the client that caused it. Pair with the Top endpoints panel: that one says WHICH path, this one says which request.",
+      "columns": [
+        "http_status",
+        "http_method",
+        "http_path",
+        "client_ip",
+        "http_user_agent"
+      ],
+      "sort": [
+        [
+          "time",
+          "desc"
+        ]
+      ],
+      "grid": {},
+      "hideChart": false,
+      "isTextBasedQuery": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\": {\"query\": \"http_status >= 400\", \"language\": \"kuery\"}, \"filter\": [], \"indexRefName\": \"kibanaSavedObjectMeta.searchSourceJSON.index\"}"
+      }
+    },
+    "references": [
+      {
+        "name": "kibanaSavedObjectMeta.searchSourceJSON.index",
+        "type": "index-pattern",
+        "id": "voteball-logs"
+      }
+    ]
+  },
+  {
+    "id": "voteball-logs-votes",
+    "type": "search",
+    "typeMigrationVersion": "10.5.0",
+    "attributes": {
+      "title": "Voteball: ballots submitted",
+      "description": "POSTs to /api/vote. The nearest thing this stack has to a business event stream -- one row per ballot the public actually cast.",
+      "columns": [
+        "http_status",
+        "client_ip",
+        "http_user_agent",
+        "log"
+      ],
+      "sort": [
+        [
+          "time",
+          "desc"
+        ]
+      ],
+      "grid": {},
+      "hideChart": false,
+      "isTextBasedQuery": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\": {\"query\": \"http_method : \\\"POST\\\" and http_path : \\\"/api/vote\\\"\", \"language\": \"kuery\"}, \"filter\": [], \"indexRefName\": \"kibanaSavedObjectMeta.searchSourceJSON.index\"}"
+      }
+    },
+    "references": [
+      {
+        "name": "kibanaSavedObjectMeta.searchSourceJSON.index",
+        "type": "index-pattern",
+        "id": "voteball-logs"
+      }
+    ]
+  },
+  {
+    "id": "voteball-service-health",
+    "type": "dashboard",
+    "typeMigrationVersion": "10.3.0",
+    "attributes": {
+      "title": "Voteball service health",
+      "description": "Where you land when Grafana says something is wrong and you need the actual requests. Grafana answers how much and how fast; this answers which request, from whom, with what message.",
+      "panelsJSON": "[{\"version\": \"9.1.4\", \"type\": \"lens\", \"gridData\": {\"x\": 0, \"y\": 0, \"w\": 10, \"h\": 11, \"i\": \"p1\"}, \"panelIndex\": \"p1\", \"embeddableConfig\": {\"enhancements\": {}}, \"panelRefName\": \"panel_p1\"}, {\"version\": \"9.1.4\", \"type\": \"lens\", \"gridData\": {\"x\": 10, \"y\": 0, \"w\": 38, \"h\": 11, \"i\": \"p2\"}, \"panelIndex\": \"p2\", \"embeddableConfig\": {\"enhancements\": {}}, \"panelRefName\": \"panel_p2\"}, {\"version\": \"9.1.4\", \"type\": \"lens\", \"gridData\": {\"x\": 0, \"y\": 11, \"w\": 24, \"h\": 15, \"i\": \"p3\"}, \"panelIndex\": \"p3\", \"embeddableConfig\": {\"enhancements\": {}}, \"panelRefName\": \"panel_p3\"}, {\"version\": \"9.1.4\", \"type\": \"lens\", \"gridData\": {\"x\": 24, \"y\": 11, \"w\": 24, \"h\": 15, \"i\": \"p4\"}, \"panelIndex\": \"p4\", \"embeddableConfig\": {\"enhancements\": {}}, \"panelRefName\": \"panel_p4\"}, {\"version\": \"9.1.4\", \"type\": \"lens\", \"gridData\": {\"x\": 0, \"y\": 26, \"w\": 24, \"h\": 13, \"i\": \"p5\"}, \"panelIndex\": \"p5\", \"embeddableConfig\": {\"enhancements\": {}}, \"panelRefName\": \"panel_p5\"}, {\"version\": \"9.1.4\", \"type\": \"lens\", \"gridData\": {\"x\": 24, \"y\": 26, \"w\": 24, \"h\": 13, \"i\": \"p6\"}, \"panelIndex\": \"p6\", \"embeddableConfig\": {\"enhancements\": {}}, \"panelRefName\": \"panel_p6\"}, {\"version\": \"9.1.4\", \"type\": \"search\", \"gridData\": {\"x\": 0, \"y\": 39, \"w\": 48, \"h\": 14, \"i\": \"p7\"}, \"panelIndex\": \"p7\", \"embeddableConfig\": {\"enhancements\": {}}, \"panelRefName\": \"panel_p7\"}]",
+      "optionsJSON": "{\"useMargins\": true, \"syncColors\": false, \"syncCursor\": true, \"syncTooltips\": false, \"hidePanelTitles\": false}",
+      "timeRestore": true,
+      "timeFrom": "now-24h",
+      "timeTo": "now",
+      "refreshInterval": {
+        "pause": false,
+        "value": 60000
+      },
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\": {\"query\": \"\", \"language\": \"kuery\"}, \"filter\": []}"
+      }
+    },
+    "references": [
+      {
+        "name": "p1:panel_p1",
+        "type": "lens",
+        "id": "voteball-logs-error-count"
+      },
+      {
+        "name": "p2:panel_p2",
+        "type": "lens",
+        "id": "voteball-logs-requests-by-status"
+      },
+      {
+        "name": "p3:panel_p3",
+        "type": "lens",
+        "id": "voteball-logs-top-endpoints"
+      },
+      {
+        "name": "p4:panel_p4",
+        "type": "lens",
+        "id": "voteball-logs-top-error-endpoints"
+      },
+      {
+        "name": "p5:panel_p5",
+        "type": "lens",
+        "id": "voteball-logs-volume-by-container"
+      },
+      {
+        "name": "p6:panel_p6",
+        "type": "lens",
+        "id": "voteball-logs-traffic-source"
+      },
+      {
+        "name": "p7:panel_p7",
+        "type": "search",
+        "id": "voteball-logs-errors"
+      }
+    ]
+  }
+]

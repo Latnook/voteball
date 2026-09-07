@@ -298,6 +298,108 @@ then query the Elasticsearch index for it and assert a non-zero hit. Per the rep
 is first exercised against input known to match, once, to prove it *can* pass — a `grep` that can never
 match returns empty and reads identically to a correct negative.
 
+### 11. Parse the line, or the whole stack is a slower `grep` (2026-09-07)
+
+Ten days of running proved decision 10 right and insufficient. `verify-efk.sh` passed on every
+check, the index held **59,926 documents / 11.4 MB**, every pod was Ready — and Kibana could not
+answer a single operational question, because every document was
+`{time, stream, log, kubernetes.*}` with the entire request crammed into one `log` string:
+
+```
+10.0.28.30 - - [06/Sep/2026:17:01:04 +0000] "GET / HTTP/1.1" 200 7652 "-" "ELB-HealthChecker/2.0" "-"
+```
+
+That is full-text searchable and nothing more. "How many 5xx in the last hour" needs an
+`http_status` you can range-query; "which endpoint errors most" needs an `http_path` you can bucket.
+Neither existed. Fluentd now parses the line in the aggregator, using `multi_format` with four
+patterns: nginx `combined` + the trailing `"$http_x_forwarded_for"`, gunicorn's
+`[time] [pid] [LEVEL]`, the canary's own `200 GET /api/options`, and **a `format none` catch-all**.
+
+Three properties are load-bearing, and each one fails silently if removed:
+
+- **`reserve_data true`.** `filter_parser` *drops* a record whose `key_name` is missing or whose
+  pattern does not match, unless this is set. Verified against the plugin's own source **inside the
+  running image**, not from memory: both the nil-key and the not-matched paths return
+  `handle_parsed(tag, record, time, {})` — the record, unchanged — only when it is true. Delete the
+  line and the filter becomes a log shredder that reports nothing.
+- **The trailing `format none`.** The worker's entire log output is `Rollups recomputed, milestones
+  checked.`, which matches no other pattern. Without a catch-all it would be unmatched on every line.
+- **`types http_status:integer`, on every pattern that captures it.** Elasticsearch types a dynamic
+  field from the *first* value it sees, so one pattern emitting a string maps `http_status` as text
+  permanently and every `http_status >= 500` filter then returns nothing, with no error anywhere.
+
+**No explicit index-template mapping for the new fields, deliberately.** An index template applies
+only to indices created *after* it, so for the length of the 7-day retention window the data view
+would span two differently-mapped indices and Kibana would mark exactly these fields `conflict` —
+unaggregatable, in the exact panels this pass exists to build. Dynamic mapping gives `long` for the
+coerced numerics and `text` + `.keyword` for the rest, which is what the saved objects aggregate on,
+and it is consistent from the first document.
+
+**The query string is split into its own `http_query` field.** `/api/results?by=all` and `?by=club`
+are one endpoint; folding the query into the path scatters a single endpoint across one bucket per
+parameter combination and makes "top endpoints" meaningless.
+
+**ALB health checks are dropped before indexing** (`fluentd.dropHealthChecks`, ships on). Measured
+2026-09-07: **22,363 of 60,112 documents — 37.2% of the index** — were `GET / … "ELB-HealthChecker/2.0"`.
+This discards nothing from CloudWatch: Fluent Bit fans out to both sinks *upstream* of this
+aggregator, so the authoritative copy keeps receiving them and what is trimmed is a search-index row,
+the same trade already made for the 7-day retention in decision 6b. **The canary is deliberately not
+dropped** — it is the synthetic journey every ratio-based SLI on this site depends on, so it is the
+one kind of generated traffic that carries signal, and a panel separates it from organic requests
+rather than discarding it.
+
+### 12. Kibana content is code, and its absence is invisible (2026-09-07)
+
+The same audit found **223 Kibana saved objects, every one an Elastic built-in** — zero data views,
+zero saved searches, zero dashboards. A person opening `kibana.<app_domain>` landed on the
+onboarding screen and could not see one log line without clicking through setup first, on a stack
+whose verification was green.
+
+This is decision 10's lesson one notch further along, and it is the same split CLAUDE.md already
+records for Grafana: a per-panel sweep through `/api/ds/query` reported 60/60 healthy against a blank
+dashboard. **"The documents exist" and "the documents answer a question" are two different
+contracts.** So `charts/logging/kibana/*.json` now ships a data view, three saved searches and a
+seven-panel dashboard, imported by a `post-install,post-upgrade` hook at weight 10 — strictly after
+the ILM bootstrap's 5, which creates the index the data view points at.
+
+Four things about the mechanism, each learned by trying it against the live Kibana 9.1.4 rather than
+by reading the docs:
+
+- **Objects must carry `typeMigrationVersion`.** Without it `/api/saved_objects/_import` runs the
+  *entire* migration chain from the beginning and answers **HTTP 500**, with the reason
+  (`Cannot read properties of undefined (reading 'currentIndexPatternId')` — a migration predating
+  Lens' rename of its datasource to `formBased`) appearing **only in the Kibana server log**. The
+  correct stamps were read back off objects Kibana created itself, not guessed: `index-pattern`
+  8.0.0, `lens` 8.9.0, `search` 10.5.0, `dashboard` 10.3.0.
+- **`_import` answers 200 for an import that saved nothing.** Per-object failures come back in the
+  *body* as `{"success":false,"errors":[…]}` with a successful HTTP status. This is the
+  swallowed-exit-status family CLAUDE.md lists three instances of, in its purest form — so the Job
+  parses `successCount` out of the response and compares it against the number of objects in the
+  file. `"success":true` alone would still pass on a file emptied to zero objects.
+- **The dashboard is read back through a different call than the one that wrote it.** A dangling
+  panel reference imports *cleanly* and renders as an error card, so the import's own result cannot
+  see it. `verify-efk.sh` makes the same check at deploy time and fails with the three commands that
+  diagnose it.
+- **Committed pretty, converted at render time.** The import API takes NDJSON — one object per
+  physical line, unreviewable in a diff. Helm's `fromJsonArray`/`toJson` flattens the committed
+  array in the ConfigMap template, so git holds the readable form and the API gets what it wants.
+  `test-kibana-objects.sh` asserts that round trip is lossless, because a re-encode through Go's
+  `json` package is exactly where a grid `{"w":24}` could become `{"w":2.4e+01}`.
+
+**The cross-file check is the one worth keeping.** The parser config and the saved objects are edited
+independently and nothing at runtime connects them: a panel aggregating on a field no pattern emits
+returns zero rows with `status: ok`, indistinguishable from "no errors in the last 24 hours" — a
+legitimate result nobody investigates. So `test-kibana-objects.sh` extracts every capture-group name
+from the rendered `fluent.conf` and fails if any panel, saved search or KQL query names a field
+outside that set (plus the fields Fluent Bit attaches, which come from outside this chart).
+
+**Both new tests read the chart's source files rather than `helm template` output, and therefore run
+in CI** — `run-ci-suite.sh`'s `PYTHON_GROUP`, not `SKIP`. Three chart tests already sit in `SKIP` for
+want of a `helm` binary; the parse pipeline and the dashboard are the two pieces of this chart whose
+breakage is completely silent, and adding them to that list would have protected nothing. When `helm`
+*is* on `PATH` each test additionally verifies the render, and when it is not it says which check it
+skipped instead of passing quietly.
+
 ## Component layout
 
 | Piece | Location | Owner | Reaches cluster via |
@@ -308,6 +410,7 @@ match returns empty and reads identically to a correct negative.
 | `Kibana` CR + Ingress | `charts/logging/templates/kibana.yaml` | ArgoCD | same |
 | Fluentd Deployment + ConfigMap + Service | `charts/logging/templates/fluentd.yaml` | ArgoCD | same |
 | ILM policy + index template + write alias | `charts/logging/templates/ilm.yaml` | ArgoCD | same |
+| Data view, 3 saved searches, dashboard | `charts/logging/kibana/*.json` + `templates/kibana-objects.yaml` | ArgoCD | same |
 | NetworkPolicies (default-deny) | `charts/logging/templates/networkpolicy.yaml` | ArgoCD | same |
 | Third Application + AppProject | `argocd/voteball-application.yaml.tmpl` | `render-argocd-app.sh` | `kubectl apply` at deploy step 11 |
 | Fluent Bit second `[OUTPUT]` | `terraform/addon-cloudwatch.tf` | Terraform | `terraform apply` |
@@ -324,11 +427,16 @@ pod stdout (devops-app only)
   → /var/log/containers/*.log on the node
     → Fluent Bit DaemonSet  [tail + kubernetes metadata filter]   (unchanged, amazon-cloudwatch ns)
       ├─ [OUTPUT] cloudwatch_logs  → CloudWatch Logs   (unchanged; Grafana datasource)
-      └─ [OUTPUT] forward          → Fluentd Service   (NEW, logging ns)
+      └─ [OUTPUT] forward          → Fluentd Service   (logging ns)
+                                       ↓  drop ELB health checks (37.2% of volume)
+                                       ↓  parse: nginx / gunicorn / canary / catch-all  (decision 11)
                                        ↓  buffer, retry, index routing, ILM alias
                                      Elasticsearch (1 node, 1 GiB heap, 20Gi gp3)
                                        ↑
                                      Kibana → ALB group `voteball` → kibana.<app_domain>
+                                       ↑
+                                     data view + saved searches + dashboard (decision 12),
+                                     imported by a post-install hook from charts/logging/kibana/
 ```
 
 Network is default-deny in `logging`, mirroring `charts/observability`. Three flows are opened and
@@ -344,7 +452,10 @@ namespace gets no egress to RDS and no egress to the AWS APIs — it needs neith
 | The chart ships `enabled: true`, and `--set enabled=false` renders nothing | offline | same | **no** |
 | The chart's share of the no-third-node budget | offline, arithmetic on rendered YAML | same | **no** |
 | Teardown deletes CRs *before* the operator | offline, order assertion on `destroy.sh` | `scripts/tests/test-logging-teardown.sh` | **yes** — `grep` only, no helm |
+| Parse patterns against real captured log lines, both engines | offline | `scripts/tests/test-logging-parsers.sh` | **yes** — reads the template file, not `helm template` |
+| Saved objects: references, version stamps, grid, and the field cross-check against the parser | offline | `scripts/tests/test-kibana-objects.sh` | **yes** — same reason |
 | End-to-end document count (decision 10) | live cluster | `scripts/logging/verify-efk.sh`, deploy sub-step **11e**, after 11d | no (deploy-time) |
+| Kibana serves the data view **and** the dashboard, by id | live cluster | same script, same step | no (deploy-time) |
 
 **`helm lint` and `helm template charts/logging` are run by NO automated check**, and the row above
 that once claimed `scripts/ci/validate-repo.sh` does it was wrong: that script states in its own
@@ -392,6 +503,17 @@ Recorded so a later pass does not "improve" these:
   non-root, `allowPrivilegeEscalation: false`, all capabilities dropped, default-deny namespace.
 - **No SSO for Kibana.** The built-in `elastic` user behind WAF is proportionate for a single-operator
   submission project.
+- **No explicit Elasticsearch mapping for the parsed fields.** Dynamic mapping is used on purpose —
+  see decision 11 for why an index template would create a 7-day window of `conflict` fields in the
+  exact panels this is for.
+- **No log-based alerting in Kibana or Elasticsearch.** Prometheus and Alertmanager own alerting here
+  and already carry `ElasticsearchDown`/`FluentdDown`; a second alerting system with its own routing
+  and its own silences is precisely the "more moving parts than the thing it watches" this document
+  rejected an exporter for.
+- **The health-check drop is not applied to CloudWatch.** It could be — Fluent Bit could filter
+  before the fan-out — but CloudWatch is the authoritative copy and cheap per-GB at this volume,
+  while Elasticsearch is a 20Gi search surface on a 7-day window. Trimming the copy that is *not*
+  the archive is the whole point.
 - **`helm` is not added to a CI agent image, so `test-logging-chart.sh` stays in `run-ci-suite.sh`'s
   `SKIP` list.** This is a real, open gap: every chart-rendering assertion above — the privileged-init
   container check, `allow_mmap: false`, the shipped `enabled: true`, the budget arithmetic, the ALB
@@ -401,3 +523,12 @@ Recorded so a later pass does not "improve" these:
   separately rather than smuggled in here. `SKIP` already holds `test-jenkins-chart.sh` and
   `test-validate-observability.sh` for the same missing `helm`, so this adds no new *class* of hole —
   it makes the existing one wider by one chart.
+
+  **The 2026-09-07 pass declined to widen it further** (decision 12). `test-logging-parsers.sh` and
+  `test-kibana-objects.sh` both read the chart's *source files* — the `expression /…/` lines and the
+  `kibana/*.json` objects are literal text that no Helm action touches — so they run in
+  `PYTHON_GROUP` and execute on every build. Where `helm` is present they *additionally* assert the
+  render matches; where it is absent they print which check did not run rather than passing
+  silently. That does not close the gap for `test-logging-chart.sh`'s own assertions, which still
+  need a real render, but it keeps the two pieces of this chart with completely silent failure modes
+  out of the hole.

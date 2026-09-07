@@ -213,6 +213,46 @@ done
        (it needs a terraform apply -- a git push does NOT deploy it)"
 
 echo "PASS: marker found in Elasticsearch ($count document(s))"
+
+# --- and that somebody can SEE it ----------------------------------------------------------------
+# The check above proves the pipeline carries a line. It says nothing about whether Kibana can show
+# it -- and until 2026-09-07 it could not: 59,926 documents indexed, 223 Kibana saved objects, every
+# one an Elastic built-in, so anyone opening the URL printed below landed on an onboarding screen
+# with no data view. That is this repo's own lesson one notch further along, the same shape as a
+# Grafana panel sweep passing through /api/ds/query against a blank dashboard: "the documents exist"
+# and "the documents answer a question" are two different contracts.
+#
+# So the data view and the dashboard are checked too, by ID, through Kibana's own API rather than by
+# looking at the pod.
+KB_SVC=voteball-kibana-kb-http
+DASHBOARD_ID="${EFK_VERIFY_DASHBOARD:-voteball-service-health}"
+DATA_VIEW_ID="${EFK_VERIFY_DATA_VIEW:-voteball-logs}"
+
+# Reuses the credential file this script already wrote INSIDE the Elasticsearch pod, for the same
+# reason `es()` does: a password passed as `-u` sits in argv, which is world-readable through
+# /proc/<pid>/cmdline. Kibana serves plain HTTP here (the ALB terminates TLS), so no CA is involved.
+kb() {
+  kubectl exec -n "$NS" --request-timeout=30s statefulset/voteball-logs-es-default -c elasticsearch -- \
+    curl -s --max-time 30 -o /dev/null -w '%{http_code}' -K /tmp/efk-curlrc \
+      "http://${KB_SVC}.${NS}.svc:5601/api/saved_objects/$1" 2>/dev/null
+}
+
+missing=""
+[ "$(kb "index-pattern/$DATA_VIEW_ID")" = "200" ] || missing="data view $DATA_VIEW_ID"
+[ "$(kb "dashboard/$DASHBOARD_ID")"    = "200" ] || missing="${missing:+$missing and }dashboard $DASHBOARD_ID"
+
+if [ -n "$missing" ]; then
+  fail "the pipeline works but Kibana has no $missing.
+  Every log line is being indexed and nobody can see one without clicking through setup first.
+  Check, in order:
+    1. kubectl get job -n $NS kibana-objects-import     (did the import hook run?)
+    2. kubectl logs -n $NS job/kibana-objects-import    (it prints imported N/N per file)
+    3. kubectl get cm -n $NS kibana-saved-objects -o yaml | head
+       (an empty data: block means .Files.Glob found nothing under charts/logging/kibana/)"
+fi
+echo "PASS: Kibana serves the '$DATA_VIEW_ID' data view and the '$DASHBOARD_ID' dashboard"
+
 echo
-echo "  Kibana: https://kibana.${APP_DOMAIN}"
+echo "  Kibana:    https://kibana.${APP_DOMAIN}"
+echo "  Dashboard: https://kibana.${APP_DOMAIN}/app/dashboards#/view/${DASHBOARD_ID}"
 echo "  Index pattern: ${ALIAS}-*"
