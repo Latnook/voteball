@@ -433,6 +433,10 @@ conscripted — dissent, not the line.
 - **`far-right`** — Haaretz ("Likud… is the far right") and Ben-Dror Yemini ("Ben-Gvir did not move
   closer to Likud. Likud moved closer to Ben-Gvir") are journalists' characterisations, and a position
   that appears in a summary but not in a party source does not move this page. The strongest datum
+  **⚠ 2026-09-06: the traffic now runs both ways — טלי גוטליב, #20 on this audited list, has left
+  for עוצמה יהודית's #2 (see that row, revision 53). A party losing its most prominent
+  conspiracy-amplifier TO the far-right party is evidence against this tag, not for it, so the
+  trigger below is pushed further away rather than tripped.**
   *for* it is recorded instead: **אלמוג כהן at #14 is a confirmed עוצמה יהודית defector for whom
   Netanyahu personally waived Likud's membership cooling-off rule**, and who placed 8th among elected
   candidates. Trigger for revisiting: a second such absorption, or the position entering a party
@@ -1984,7 +1988,8 @@ taken.
 **2026-09-06 — revision 52. The realized list audited candidate by candidate, and the entry's
 best-known claim — that this party makes NO territorial claim — is true of the platform and FALSE of
 the party's own campaign material.** *(Audited against the top 21 as first supplied; the list runs
-**at least to #22** — see the recruitment note at the end of this revision. Do not treat 21 as the
+**exactly 25** — the party published the official list that night; see the official-list note at
+the end of this revision. Do not treat 21 as the
 length.)* One tag added (13 → 14): `pro-settlement`. No axis moved.
 
 **The evidence is first-party and it is not one stray line.** `beytenu.org.il` publishes a joining
@@ -2056,109 +2061,46 @@ exist; he has a Hebrew Wikipedia article (דוד אזולאי (מטולה)), dis
 same name. And ישראל בן שטרית #15 is a **captain**, not a major. Neither error changes a score; both
 are recorded because a list audit that invents a candidate is worse than one that skips him.
 
-**~~Three candidates could not be sourced~~ — TWO, and the third was my own spelling.** Corrected
-the same day. **אלוירה קוליחמן #9** writes for the party site: *[זאת הדרך להחזיר את הביטחון לרחובות
-לוד](https://beytenu.org.il/lod-crime-violence-israel-beytenu-solution/)* (2025-09-13), a column on
-Lod's crime wave — 40+ murders since the start of that year — arguing for a revival of the
-*עיר ללא אלימות* programme Lieberman launched as Public Security Minister with Yitzhak Aharonovitch,
-via dedicated police and courts plus investment in education, *"יד ברזל לצד חינוך וחברה"*. Her
-portfolio is **personal security and organised crime**.
+**The official list closed every gap the same night** — [רשימת מפלגת ישראל ביתנו לכנסת
+הבאה](https://beytenu.org.il/רשימת-מפלגת-ישראל-ביתנו-לכנסת-הבאה/), published 2026-09-06 21:38Z after
+a launch event at Expo Tel Aviv. **It is exactly 25 names, and that settles the length.**
 
-**Two search failures produced that wrong "not found", and both are worth carrying.**
-**(a) I searched the sitemap for `קוליכמן` (with כ); the party spells it `קוליחמן` (with ח).** One
-letter, zero hits, and a zero-hit result is indistinguishable from absence — the transliteration in
-the source list ("Kolihman") does not settle which Hebrew letter is used, so **a name guessed back
-into Hebrew is not a search term, it is a hypothesis**.
-**(b) Even with the right spelling, slug-matching could never have found her**, because that post's
-slug is **English** (`lod-crime-violence-israel-beytenu-solution`) and her name appears nowhere in it.
-Roughly a quarter of this site's posts are English-slugged (`dan-illouz-joins-…`,
-`david-azoulay-joins-…`, `lili-ben-ami-joins-…`). **Searching URLs for a Hebrew name silently skips
-every English-slugged post.** The instrument that works is the site's own full-text search
-(`/?s=<name>`); the sitemap is for *enumeration*, not for *lookup*, and revision 52 used it for the
-wrong one of the two.
+**The three unsourced candidates, resolved:** **#20 רס״ן (מיל׳) יעקב (יענקי) מוזס** — a **יוצא
+בשאלה** who volunteers at **הלל**, the organisation supporting people leaving the haredi community,
+and who led IDF projects in casualties, emergency, service and digital; **#21 עמי קור** — cyber
+entrepreneur, **co-founder of Sygnia**, specialising in attack response and organisational
+resilience; **#25 עו״ד סתו בויאנג׳ו מצא** — **chair of the party's קהילת הנשים**.
 
-**A trap for whoever next audits the sovereignty question on this row**: that Lod article carries
-`ריבונות` in its WordPress **keyword metadata** while its body contains no sovereignty content at
-all. Keyword-searching this domain for ריבונות returns it. The count that matters is in the platform
-text, not in article tags.
+**Four corrections the official page forces, none of which moves a score.** **#9 אלוירה קוליחמן is
+the DEPUTY MAYOR OF LOD** — which is why she wrote the Lod crime column this page found her by; the
+column was her portfolio, not a byline. **#3 טליה לנקרי** was *סגנית ראש המל״ל למדיניות לוט״ר,
+ביטחון פנים ועורף*, more senior than the "head of the home-front division" this entry had from
+Wikipedia. **#12 ד״ר יעל בנבנישתי is a gerontologist**, which explains the senior-citizens HQ better
+than the InsurTech role her joining announcement led with. And **#2 רפי בן שטרית is labelled
+"איש הליכוד" by the party itself** — the recruitment pattern recorded above is not this page's
+inference, it is the party's own description.
 
-**The recruitment pattern is the clearest thing on this list, and the party says it out loud:
-Lieberman is taking the centre-right that walked out of Likud and Gantz.** Four of the names audited
-here come from the Likud orbit and two of them frame the move as *inheritance* rather than defection —
-**שרעבי #6**: *"גדלתי על ערכי הליכוד – הליכוד של פעם: לאומי, ממלכתי וביטחוני. היום, **'הליכוד של פעם'
-זה ישראל ביתנו**"*; **אילוז #10**: *"הליכוד הפך להיות קבלן ביצוע של דרעי וגולדקנופף… אני קורא לכל
-הליכודניקים – מי שרוצה ימין אמיתי צריך להצביע לישראל ביתנו"*. **רפי בן שטרית #2** ran Beit She'an's
-Likud branch before Kulanu and תקווה חדשה. **מאיה פלומבוים #22** sits on Ramat Gan council for
-כרמל שאמה הכהן's faction, and he is a former Likud MK. This is a party campaigning **at** Likud
-voters, in the vocabulary of Likud's own past — which is a strategic fact, not a classification one,
-and moves nothing.
+**The party distinguishes ח״כ from חכ״ל and the supplied list did not: there are FIVE sitting MKs on
+it, not nine.** ח״כ: ליברמן #1, פורר #4, מלינובסקי #5, עמאר #7, סובה #8. **חכ״ל (former MK): אילוז
+#10** (consistent with his 11 August resignation), **מגן תלם #14** and **רופא אופיר #16**, both of
+whom served in the 24th Knesset via the Norwegian law and did not return in the 25th. Any Knesset
+history read off this row must use the party's own labels, not the seat count.
 
-**מאיה פלומבוים #22** ([announcement](https://beytenu.org.il/maya-flomboim-joins-yisrael-beiteinu/),
-2026-08-20): Ramat Gan council member holding the **aliyah-and-absorption** portfolio, formerly an
-officer in the **Defence Ministry's Budgets Division** and **economic adviser to Israel's ambassador
-to the OECD**; now in hi-tech business development, deploying AI in hospital systems. Her stated
-priorities are security, *"שוויון אמיתי בנטל"* and a *"מדינה ציונית וליברלית המקדמת מצוינות, קדמה
-וחדשנות"*.
+**Two candidate-level data points that corroborate without moving anything.** מוזס #20 is the
+sharpest `religiosity −3` corroboration this row has from a person rather than a document — a
+candidate whose public identity is helping people *leave* ultra-Orthodoxy — and it is candidate
+biography, so it changes no score. And בויאנג׳ו מצא #25 chairing קהילת הנשים does **not** revive
+`gender-equality`, refused in revision 51: a women's community with a chair on the list is an
+**outreach structure**, which is exactly what מטה הסרוגים and עוצמה יהודית's Druze HQ were held to be.
+Refusing a יו״ש forum as evidence of territory while accepting a women's community as evidence of a
+gender programme would be the same inconsistency, in the other direction.
 
-**#23 עו"ד אדי מורדכייב** — **Deputy Mayor of Ramla**, previously on that council for
-**תקווה חדשה** ([announcement](https://beytenu.org.il/אדי-מורדכייב-ישראל-ביתנו/), 2026-07-01).
-**#24 מיכל אורון עזאני** — Binyamina council member, and her piece for the party
-([core studies](https://beytenu.org.il/core-studies-israel-education-future/), 2025-09-15) argues
-core curriculum is *"אינטרס לאומי וקיומי"* and that its absence is *"איום אסטרטגי על המדינה"* —
-a candidate restating this row's `core-curriculum` in the party's own publication. **#25 סתיו
-בויאנג'ו מצא is unsourced** (see the gap note below).
-
-**The religious-Zionist intake is ORGANISED, and the party describes it as such — which sharpens the
-territorial question rather than settling it.** The Gur-Arieh announcement carries a paragraph in the
-party's own voice naming *"מגמה רחבה של אנשי הציונות הדתית שהצטרפו למפלגת ישראל ביתנו"*, and two of
-the structures it names are standing party bodies, not individuals:
-
-- **מטה הסרוגים**, headed by **יוסי ברודני, ראש עיריית גבעת שמואל** — a sitting mayor running the
-  party's religious-Zionist desk.
-- **פורום יו״ש ביתנו** — a **Judea-and-Samaria forum** — headed by **ליאור זברג, תושב יצהר**.
-
-Named alongside them: **ראובן גור-אריה**, former deputy head of the **Shomron Regional Council** for
-**הבית היהודי**, who frames his move as *"לאחר תהליך ארוך של **התפכחות פוליטית וערכית**"*; plus
-בן שטרית #2 and #15 and שרעבי #6, all described here as religious-Zionist, and
-**סא״ל (מיל׳) שמוליק ברזילי**, a reserve battalion commander and former senior prosecutor in the
-Jerusalem District Attorney's office.
-
-**`sovereignty-annexation` stays REFUSED, and this material is why the refusal needed a fourth
-ground.** A forum is **outreach to a constituency, not a claim about territory** — which is exactly
-the precedent this page set for עוצמה יהודית's **Druze-sector HQ** (revision 45): *a campaign at a
-minority is what a party DOES, not what it IS*. Revision 51 applied the identical reasoning to
-**מטה הסרוגים** on this same row a few hours earlier — an outreach desk aimed at knitted-kippah
-voters contradicts nothing on a `religiosity −3` row that scores the *programme*. **Treating a
-יו״ש forum differently from a Druze HQ and a סרוגים desk would be reading the constituency's politics
-into the party's, which is the error all three precedents exist to prevent.** The platform's zero
-count is unchanged. **What this does do is make `pro-settlement` — added above on the Sharabi text —
-substantially better evidenced than it was when it went in.**
-
-**The recruitment pattern widens: it is not a Likud story, it is an EVERYWHERE-ELSE story.** The
-intake now spans **הליכוד** (אילוז #10, בן שטרית #2, פלומבוים #22 via שאמה הכהן's faction),
-**המחנה הממלכתי** (יעקובוביץ), **תקווה חדשה** (מורדכייב #23, and בן שטרית #2 again), **הבית היהודי**
-(גור-אריה) and **יש עתיד** (מיקי פישמן, former head of its Russian-speakers HQ). Lieberman is
-assembling a list out of defectors from five different parties across the whole non-haredi spectrum,
-and publishing each one as a trend rather than a one-off.
-
-**At least four further recruits have joining announcements and no confirmed slot** — עו"ד יונתן
-יעקובוביץ (2026-08-19), ענבר סמובסקי (Ra'anana council), שלי שמיר קינן, and תא״ל (מיל׳) דני שחר.
-**יעקובוביץ came from המחנה הממלכתי**, where he sat on Herzliya council, so the intake is not only
-from Likud; his stated basis is *"ביטחון ללא פשרות, שוויון אמיתי בנטל"* plus *"'חיה ותן לחיות' –
-מדינה יהודית שמכבדת את המסורת, לצד החופש של כל אדם לחיות על פי דרכו, **בלי כפייה**"* — an
-unusually crisp restatement of this row's `religiosity −3` from a candidate rather than the platform.
-**One data point for the environment sweep** filed in Open questions: יעקובוביץ leads
-*עיר ללא פלסטיק* and represents the surfing community on national planning committees. That is
-candidate advocacy, not a party position, and this row's platform still has no environmental
-chapter — but the sweep lists likely holders, and nobody had checked this one.
-
-**Two candidates remain genuinely unsourced** and are logged as gaps rather than guessed:
-
-**Three candidates remain genuinely unsourced** and are logged as gaps rather than guessed:
-**יעקב (ינקי) מוזס #20**, **עמי קור #21** and **סתיו בויאנג'ו מצא #25** — no Hebrew Wikipedia page,
-and the party's own full-text search returns nothing for any of them (searched on stems, not full
-names, after the קוליחמן lesson: `מוז`, `קור`, `ינקי`, `בויאנג`, `סתיו`). **List finality is also unverified** — lists are filed
-2026-09-08 and no source obtained confirms this order as submitted.
+**A note on the earlier "not found", because the two failures were NOT the same.** קוליחמן #9 was a
+**method** failure — wrong Hebrew spelling, and slug-matching that could not see an English-slugged
+post. מוזס #20, קור #21 and בויאנג׳ו מצא #25 were a **timing** result: this page did not exist when
+the sitemap was enumerated a few hours earlier. The first was worth a lesson; the second was
+correct at the time and needed only for someone to look again. **Distinguishing them matters,
+because only one of them implies the instrument was wrong.**
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -3085,6 +3027,32 @@ time.
 
 Sources for this pass: the party's own site, five posts dated 2026-08-26 to 2026-09-04, enumerated via
 `/wp-json/wp/v2/posts` and read in full.
+
+**2026-09-06 — revision 53. The 2026 list begins to take shape, and NOTHING MOVES — for the sixth
+consecutive reading of this row, and for the reason revision 45 already gave.** No `seed.sql` change.
+
+The order as announced: **#2 ח"כ טלי גוטליב**, arriving **from הליכוד**; **#3 השר יצחק וסרלאוף**, who
+gave up #2 for her (*"טלי גוטליב מגיעה? תן לה את המקום השני, שים אותי בשלישי"*, per Ben Gvir);
+**#5 ח"כ לימור סון הר-מלך**; **#6 ח"כ יצחק קרויזר**; **#4 unannounced**. **יו"ר הוועדה לביטחון לאומי
+צביקה פוגל is OUT** — pushed down and declining to run (*"הדרך לבצע את המשך פעילותי… לא מתאפשרת כפי
+שתכננתי"*). מאי גולן, who missed a realistic Likud slot, was not committed to (*"חכו בהמשך"*).
+
+**Why a realigned top six moves nothing.** `security` **+3** and `religiosity` **+3** are at their
+poles — there is no band above either — and `economic` **0** is held by `not-economy-focused`, which
+a list of national-security politicians does not disturb. גוטליב is a leading judicial-overhaul
+advocate who co-sponsored splitting the Attorney General's role, and **`judicial-overhaul` is already
+on this row**, so the most consequential recruit available corroborates a tag rather than adding one.
+**A ranked list is evidence about priority** (revision 2026-08-26's reading of צביקה מור at #3), and
+here the priority it states — judicial confrontation and national security at the top — is what this
+row already records.
+
+**The Likud traffic now runs BOTH ways, and that is the finding worth carrying to the other row.**
+Revision 24 audited הליכוד's list and recorded **אלמוג כהן at #14 as a confirmed עוצמה יהודית
+defector for whom Netanyahu waived the membership rule** — logged as evidence *for* a `far-right`
+tag that was nonetheless refused. **גוטליב was #20 on that same audited list, and is now leaving in
+the opposite direction.** A party whose most prominent conspiracy-amplifier departs for the far-right
+party is, if anything, evidence *against* the tag revision 24 declined — so the trigger recorded there
+is not tripped by this, it is pushed further away. Both movements are now recorded on both rows.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -5054,6 +5022,26 @@ bought nothing here, because the defect was never in the pixels being measured.
   core-curriculum funding) **or** the religious monopolies — the funding criterion of the −3 band
   staying decisive between −2 and −3, per the three instances above. Recorded, not applied: rewriting
   the axis from one row is what revision 15 refused for tags, and the same reasoning holds here.
+- **`excludes-haredi-and-arab-parties` is an UNDOCUMENTED tag with one holder, and at least two more
+  rows have first-party evidence for half of it.** The tag sits on בית ציוני - המילואימניקים in
+  `seed.sql` and appears **zero times in this document** — no definition, no evidence, no reasoning,
+  which is precisely what this page's founding rule forbids (*`seed.sql` holds the values; this file
+  holds the reasoning*). It cannot be applied to another row until someone writes down what it means.
+  **The evidence that raises the question, verified from primary sources rather than from the
+  compilation that prompted it:** ישראל ביתנו's platform states *"היא תורכב **אך ורק ממפלגות
+  ציוניות**"* (read live 2026-09-06), and Bennett said at ביחד's launch that *"המפלגות הערביות אינן
+  ציוניות ולכן לא נסתמך עליהן"* ([Haaretz](https://www.haaretz.co.il/news/elections/2026-04-26/ty-article/0000019d-cac7-d95a-afbd-ebcfca080000),
+  2026-04-26).
+  **The blocker is that the tag is a CONJUNCTION and only the Arab half is stated.** Both rows exclude
+  Arab parties explicitly. Neither says *haredi*. Whether "Zionist parties only" entails excluding
+  ש"ס and יהדות התורה is an **inference about how those parties are classified**, not something either
+  document states — and inferring it would be the same move revision 52 refused when it declined to
+  read a יו״ש forum as a territorial claim. **Resolution: sweep every row for coalition-exclusion
+  statements, decide the conjunction question once (or split the tag into an Arab half and a haredi
+  half), and — the part that matters most — WRITE THE DEFINITION DOWN.** A third candidate is flagged
+  and unverified: ישר is reported to have adopted the same line, which has not been checked against a
+  first-party source. **This is the fourth item in the sweep queue**, and the only one whose first
+  step is documenting a tag that already exists rather than deciding whether to create one.
 - **The internal-security dimension is unlabelled across the whole vocabulary, and it now has a
   CENTRIST holder — which is what turns it from a far-right descriptor into a vocabulary hole.**
   The gap was first recorded on הציונות הדתית: *"domestic emergency policing directed at Arab
@@ -5329,4 +5317,6 @@ pass happened, for anyone reading git history.
 | 2026-09-06 | revision 49 — **ביחד: the corpus is TWELVE, not six, and this entry's central factual claim was false.** **One tag added (17 → 18)** — `regional-normalization`, whose other holder is הדמוקרטים at `security` **−1**, so it demonstrably crosses this axis. **`security-hawk` was added and REMOVED the same day, on challenge, and the removal is the more useful half**: the axis is *the conflict and the territory* and its bands are all statehood-and-territory, so a plan hawkish about Iran and Qatar is arguably orthogonal to it — but the test that settles it is **co-occurrence, and it was not run before the tag was added**. All four prior holders are scored (ישר +1, כחול לבן +2, המפלגה הכלכלית +2, הליכוד +3); **not one sits at NULL or 0**, so in practice the tag has only ever marked a position *inside* the axis. Adding it here would have made ביחד the only row where it is the sole security signal, would have leaned on a standing decision that is itself a band-position rule (*"all holders are centre or centre-right"*), and would have supplied through the side door the direction this entry's own bolded instruction withholds (*"Do not 'fix' this NULL by averaging the two"*). **Generalised and filed: before putting a directional tag on a row whose axis is NULL, check what that tag co-occurs with everywhere else** — **and the mechanical form of that rule OVER-FIRES**, which is the more useful half. Run across all 30 classified rows, inferring direction from sign-clustering alone produced **nine** hits, all ביחד on `security`, for tags like `free-trade`, `anti-monopoly` and `kashrut-liberalization` — none of them security tags; they flag only because ביחד is the sole NULL-`security` row among their holders and free-traders in a 30-row set happen to be centre-right on the conflict. **The test is meaningful only conditional on the tag being SEMANTICALLY on that axis.** Restricted that way the page is clean: the sole hits are `regional-normalization` on ביחד (kept — its only scored holder is a **dove** at −1, so it is not a hawk marker) and `not-economy-focused` on נעם/עמך ישראל, which names the absence of an economic position and belongs on a NULL. **`security-hawk` on ביחד was the single genuine instance.** Six refused in total. **The retrieval lesson is the third refinement and the first not about the index**: revision 22 said *enumerate `/plans/`*, revision 29 refined it to *enumerate every page*, and both instruments are the **rendered index, which is a view, not the data**. The site exposes a `plans` **custom post type** (`/wp-json/wp/v2/types`, which also lists the candidate roster `hanivharat`) holding **49 entries, 19 Hebrew**. **Neither number is the corpus** — the API over-reports and the index under-reports; intersect them by **status-checking every URL**, since seven of the nineteen `302` to `/plans/` as a single retired 22–25 June batch. Twelve serve 200. **Two traps that produce confident wrong text rather than an error**: `content.rendered` is EMPTY for Elementor pages and WordPress substitutes a shared template body, so three different retired plans return **byte-identical** bodies and a page titled *מעמד ישראל בעולם* serves the *personal-security* text — title, slug and body disagree with nothing saying so; and **`grep להט` matches `להטבות`**, so four plans 'mention LGBT' and none does — the alternation trap in its worst direction, a pattern that **always** matches and returns a false positive reading as coverage. **`security` stays NULL and the reason INVERTS.** The entry rested since 2026-08-01 on *"no joint platform published"*; the list published [ביחד נתקן את הביטחון הלאומי](https://be-yahad.org.il/plans/national-sec/) on 2026-08-23, superseding a June plan that now 302s — so the row was citing an absence **through a supersession**. The NULL is now affirmative: a full doctrine (Qatar an enemy state, Turkey/Qatar out of Gaza and Egypt in, the Iran equation reversed to *"כל ירי של חיזבאללה יביא לתקיפות שלנו באיראן"* plus regime change, +20k soldiers with no exemptions, Saudi and Indonesian normalization, a hasbara *"8300"*) that **says nothing about statehood**. `internally-split-on-conflict` confirmed and **narrowed** — not silent on security, silent on *statehood*. **economic +1 HELD but its stated reason was FALSE and is corrected**: *"the party's own document contains not one rate"* — [חוק קרית שמונה](https://be-yahad.org.il/plans/kiryat-shmona/) is nothing but rates (full corporate-tax exemption, **0% income tax to ₪1m/yr**, 50% arnona discount, ₪400k loans converting to grants), and it predates the sentence denying it. The decision survives on the **instrument**: a Free Tax Zone bounded to three border towns, time-limited by הוראת שעה, funded by diverting תנופה — place-based development, not broad-based tax cutting. `tax-cutting` refused on that ground, distinct from אל הדגל's. **`lgbt-rights` REFUSED, and the refusal is the pass's most interesting half**: the list carries **Israel's first openly gay mayor** (גינזבורג #8, ₪20m LGBT budget line, Equality Law amendments) and the **LGBTQ+ caucus chair** (להב הרצנו #18, *הורה 1/הורה 2*), and twelve published plans contain **not one word** on the subject. Not הליכוד's split-row refusal — nothing contradicts the advocates, the party is **silent**, and Bennett's own record cuts the other way (הבית היהודי opposed the 2018 surrogacy law; his later move is distancing from conversion therapy, not advocacy). **Candidate advocacy is not a party position.** Trigger written. Also refused: `state-commission-of-inquiry` (**fourth** time, despite a day-one joint commitment), `deregulation` (audit coverage) and `preemptive-security-doctrine` (retaliatory escalation and regime change are not preemption). **A vocabulary gap gains a centrist holder**: the unlabelled internal-policing dimension recorded on הציונות הדתית and עוצמה יהודית now has a **third** holder in ביחד's [חוק וסדר בנגב](https://be-yahad.org.il/plans/negev/) — שב"כ into civilian policing, agricultural crime as statutory nationalist terror, minimum sentences **without judicial discretion** — so it is a vocabulary hole, not a far-right descriptor. Filed to Open questions as the **third** sweep-queue item. **The realized top 20 audited candidate by candidate** on the Democrats' precedent: 11 Bennett slots / 9 Yesh Atid, recruited by different logics (executive technocrats + October-7 reservist-activists vs eight sitting MKs), with **five of twenty being the burden-sharing movement itself** — corroborating `universal-conscription` from the recruitment side. **Four candidate portfolios read from the party's own `hanivharat` pages** (live HTML; the API returns empty for all nine), closing gaps news coverage did not — including that הראל's Likud past is **liberal-wing family heritage** (grandfather a founder of the Liberal Party) rather than a Netanyahu-camp defection. **None of the four yields a tag, which is the expected result** |
 | 2026-09-06 | revision 50 — **בית ציוני - המילואימניקים is splitting in two, recorded and deliberately NOT actioned.** ([ynet](https://www.ynet.co.il/news/elections2026/article/skuwxxiuml), 13:58Z.) חילי טרופר joins **ישר!** at **#6** (with שירה שפירא #10, אליסף פרץ, שלומי יחיאב), while **יועז הנדל** — who co-led that party with him — refuses Eisenkot and agrees a **joint run with פרופ׳ ירון זליכה** (המפלגה הכלכלית). **The two halves are different shapes and must not be modelled alike**: Trooper's move is an **absorption** (*"החיבור אינו בבלוק טכני — והמשמעות היא שטרופר לא יוכל לפצל את הסיעה לאחר הבחירות"*), so ישר stays one row and its four values are untouched by the arrival alone; הנדל–זליכה is a **joint list**, both claiming first place, which is ביחד's `two-faction-list` shape and needs the union rule plus a check for the kind of genuine disagreement that holds ביחד's `security` at NULL. **No `seed.sql` change: lists are filed Tuesday 2026-09-08, and what is on the ballot is decided then, not by an announcement two days out** — this page has been wrong before by treating a reported intention as a fact. Action date written into all three entries; the removal is vote-guarded either way, so a row anyone has voted for survives regardless. **ynet's *"שנמוגה למעשה"* is the reporter's characterisation, not a legal dissolution, and is recorded as such** rather than restated as fact. Carried forward for the Tuesday pass: זליכה **failed the threshold in both 2021 and 2022** and הנדל concedes the path is *"רחוק מלהיות בטוחה"* having refused *"הצעות נוחות שמבטיחות לנו כיסא"*; their stated basis for merging is that conscription/שוויון בנטל and יוקר המחיה are **one constituency** (*"אותו מילואימניק שיוצא שוב לשירות חוזר הביתה למשכנתא ולחשבון בסופר"*) — a claim about voters, not a position, minting nothing. Bloc context for ביחד, no axis effect: בנט and איזנקוט **fought over טרופר**, and neither ביחד nor ליברמן automatically accepts Eisenkot's leadership of the bloc |
 | 2026-09-06 | revision 51 — **ישראל ביתנו's live platform re-read two days after revision 46 read it, and that pass's refusal rested on the sentence BEFORE the evidence.** **One tag added (12 → 13)**, `service-conditioned-citizenship`, **reversing a refusal that was four revisions deep.** Revision 46 quoted *"השתמטות משירות תוביל לשלילת זכויות, ובהן קצבאות, הנחות בדיור ובארנונה וזכאות לעבודה בשירות המדינה"* **twice** — once to ADD `sanctions-on-non-servers` and once to REFUSE this tag for containing no franchise claim. **The next sentence is the franchise claim**: *"עריקים יהיו צפויים לרישום פלילי, למניעת יציאה מהארץ **ולשלילת זכות ההצבעה**"*. The page's `dateModified` is **2026-09-03** and revision 46 read it **2026-09-04**, so nothing changed — this is revision 25's rule with a new corollary: **a sentence you quoted is not evidence you read the one after it.** **The distinction is recorded rather than smoothed**: משתמטים lose entitlements, עריקים lose the vote, so the franchise penalty attaches to desertion (already criminal) rather than to non-enlistment — scored as meeting the tag because it is imposed as a **service** consequence under the conscription plank. **This makes the row the tag's best-evidenced holder**: the refusal's own complaint was that holders sit under a label only one meets, and that one (בית ציוני) holds it on **Hendel's personal statement** while its own platform *"declines to write it down"*. ישראל ביתנו is the only holder whose live platform states it in writing. **`gender-equality` REFUSED** despite two candidates who make it look earned — לילי בן עמי #11 founded פורום מיכל סלה after her sister's murder, שרון רופא אופיר #16 ran the party's מטה הנשים. The platform carries **representation only** (three clauses), against revision 23's five-part standard; `מגדר` appears **0** times and `רצח נשים` **0**. Candidate advocacy is not a party position — revision 49's `lgbt-rights` line, applied to the opposite kind of party. **`state-commission-of-inquiry` refused a FIFTH time**, against the strongest form of the temptation yet: it is the **first** of the seven קווי יסוד and written as *"החלטת הממשלה הראשונה"*. Being first in a list does not fix a tag that fails to discriminate. **Zero-count re-verified on the live text** — ריבונות **0**, סיפוח **0**, התנחל **0**, יהודה ושומרון **5** — so the 2026-07-27 finding that this row's +2 rests on doctrine rather than territory holds. Two observations logged without tags: the party runs a **מטה הסרוגים** religious-Zionist desk (which contradicts nothing on a `religiosity −3` row scoring the *programme*), and the platform restricts partners to *"מפלגות ציוניות"* — the same formula ביחד used, from the other side of the bloc |
-| 2026-09-06 | revision 52 — **ישראל ביתנו's 21-name list audited candidate by candidate, and this row's best-known claim — that it makes NO territorial claim — is true of the PLATFORM and false of the party's own campaign material.** **One tag added (13 → 14): `pro-settlement`.** `beytenu.org.il` publishes a joining announcement per recruit in the party's own editorial voice, enumerable via `post-sitemap.xml` (370 posts; the REST API is **401**, so the sitemap is the way in). Two carry territorial content: **אילוז #10**'s announcement credits him with *"הצעת ההחלטה שעברה **להחלת הריבונות הישראלית ביהודה ושומרון**, שהוביל יחד עם **ח״כ עודד פורר**"* — a passed sovereignty resolution co-led by this party's **#4** — and **שרעבי #6**'s says *"כתושב אלפי מנשה… מחויבות עמוקה **לחיזוק ההתיישבות**"*, with his own *"אפעל לחיזוק ההתיישבות היהודית"*. **The tag went on the Sharabi text, not the Iluz text, and that distinction is the pass**: Sharabi's is a forward-looking commitment the party publishes about its own candidate; Iluz's is a past credential described admiringly. **`sovereignty-annexation` REFUSED on three independent grounds** — the live platform still counts ריבונות/סיפוח/התנחל at **0**; a passed הצעת החלטה is declaratory, and revision 24 moved הליכוד to +3 on the *government's record* (Security Cabinet, E1, 54 settlements), so scoring a non-binding resolution the same way would make +3 cheap; and **Lieberman's own quote in that same announcement praises only the draft-law fight and שוויון בנטל, omitting the sovereignty resolution the paragraph above it advertises** — leadership declining to adopt a plank is evidence against a party line, the mirror of revision 24's Kotel-bill reasoning. Trigger written. **`security` +2 HELD**; the summary sentence is amended to scope the no-territorial-claim finding to the platform. **The list is front-loaded with October-7 accountability**: #2 רפי בן שטרית (bereaved father, founded מועצת אוקטובר and co-initiated the civilian commission of inquiry), #3 טליה לנקרי (Col. res., ex-NSC home-front chief, on the 2025 team auditing the IDF's own investigations), #6 שרעבי (brother of יוסי, killed in captivity, and אלי, released after 491 days). `state-commission-of-inquiry` refused a fifth time in revision 51 stands here against a *list* too. **Two corrections to this page's own working notes**: דוד אזולאי #13 **is** the Metula council head (an earlier reading hunted for a separate reserve officer who does not exist), and ישראל בן שטרית #15 is a **captain**, not a major. Neither changes a score; both are recorded because a list audit that invents a candidate is worse than one that skips him. **The list runs to at least #25, so 21 is not its length** — מאיה פלומבוים #22 (Ramat Gan council, aliyah-and-absorption portfolio; ex-Defence Ministry Budgets Division officer and economic adviser to Israel's ambassador to the OECD), plus at least four more recruits with announcements and no confirmed slot (יעקובוביץ, סמובסקי, שמיר קינן, תא״ל דני שחר). **The recruitment pattern is the clearest thing on this list and the party says it out loud**: Lieberman is taking the centre-right that walked out of Likud and Gantz, and two recruits frame it as inheritance — שרעבי #6 (*"גדלתי על ערכי הליכוד – הליכוד של פעם… היום 'הליכוד של פעם' זה ישראל ביתנו"*) and אילוז #10 (*"אני קורא לכל הליכודניקים – מי שרוצה ימין אמיתי צריך להצביע לישראל ביתנו"*); רפי בן שטרית #2 ran Beit She'an's Likud branch, פלומבוים #22 sits for a former Likud MK's municipal faction, while יעקובוביץ came from **המחנה הממלכתי**. Strategic, not classificatory — moves nothing. **The religious-Zionist intake is ORGANISED and the party says so**: the Gur-Arieh announcement names *"מגמה רחבה של אנשי הציונות הדתית"* and two **standing party bodies** — **מטה הסרוגים** headed by יוסי ברודני, mayor of Givat Shmuel, and **פורום יו״ש ביתנו** headed by **ליאור זברג, תושב יצהר** — plus גור-אריה himself, ex-deputy head of the **Shomron Regional Council** for **הבית היהודי**. **`sovereignty-annexation` stays REFUSED and this is its fourth ground**: a forum is **outreach to a constituency, not a claim about territory**, which is precisely revision 45's Druze-HQ precedent (*a campaign at a minority is what a party DOES, not what it IS*) and revision 51's own reading of מטה הסרוגים on this row hours earlier. Treating a יו״ש forum differently would read the constituency's politics into the party's — the error all three precedents exist to prevent. It does make **`pro-settlement` better evidenced** than when it went in. **+#23 אדי מורדכייב** (Deputy Mayor of Ramla, ex-תקווה חדשה) and **+#24 מיכל אורון עזאני** (Binyamina council; her party column calls core studies *"אינטרס לאומי וקיומי"*, corroborating `core-curriculum`). **The pattern widens from a Likud story to an everywhere-else story** — the intake now spans הליכוד, המחנה הממלכתי, תקווה חדשה, הבית היהודי and יש עתיד (מיקי פישמן, ex-head of its Russian-speakers HQ). **Corrected within the hour: the unsourced count is THREE — מוזס #20, עמי קור #21, סתיו בויאנג'ו מצא #25 — and קוליחמן #9 was my own spelling, not an absence.** **אלוירה קוליחמן #9** (I searched `קוליכמן`, with כ; the party spells it `קוליחמן`, with ח) writes for the party site on **Lod crime and personal security**. **Two search failures produced that wrong "not found", and both generalise**: a name guessed back into Hebrew from a transliteration is a hypothesis, not a search term, and a zero-hit result cannot tell you which; and **slug-matching could never have found her anyway**, because ~a quarter of this site's posts are English-slugged (`dan-illouz-joins-…`, `lod-crime-violence-…`) so searching URLs for a Hebrew name silently skips them. **The sitemap is for enumeration, not lookup** — the instrument for lookup is the site's own `/?s=` full-text search. Logged trap for the next sovereignty audit on this row: that Lod article carries `ריבונות` in its WordPress **keyword metadata** while its body contains none. **יעקב מוזס #20 and עמי קור #21 remain genuinely unsourced**, and **list finality is unverified**, filing being 2026-09-08 |
+| 2026-09-06 | revision 52 — **ישראל ביתנו's list audited candidate by candidate against the top 21 as then supplied** (the official list, published that night, is **25** — revision 54)**, and this row's best-known claim — that it makes NO territorial claim — is true of the PLATFORM and false of the party's own campaign material.** **One tag added (13 → 14): `pro-settlement`.** `beytenu.org.il` publishes a joining announcement per recruit in the party's own editorial voice, enumerable via `post-sitemap.xml` (370 posts; the REST API is **401**, so the sitemap is the way in). Two carry territorial content: **אילוז #10**'s announcement credits him with *"הצעת ההחלטה שעברה **להחלת הריבונות הישראלית ביהודה ושומרון**, שהוביל יחד עם **ח״כ עודד פורר**"* — a passed sovereignty resolution co-led by this party's **#4** — and **שרעבי #6**'s says *"כתושב אלפי מנשה… מחויבות עמוקה **לחיזוק ההתיישבות**"*, with his own *"אפעל לחיזוק ההתיישבות היהודית"*. **The tag went on the Sharabi text, not the Iluz text, and that distinction is the pass**: Sharabi's is a forward-looking commitment the party publishes about its own candidate; Iluz's is a past credential described admiringly. **`sovereignty-annexation` REFUSED on three independent grounds** — the live platform still counts ריבונות/סיפוח/התנחל at **0**; a passed הצעת החלטה is declaratory, and revision 24 moved הליכוד to +3 on the *government's record* (Security Cabinet, E1, 54 settlements), so scoring a non-binding resolution the same way would make +3 cheap; and **Lieberman's own quote in that same announcement praises only the draft-law fight and שוויון בנטל, omitting the sovereignty resolution the paragraph above it advertises** — leadership declining to adopt a plank is evidence against a party line, the mirror of revision 24's Kotel-bill reasoning. Trigger written. **`security` +2 HELD**; the summary sentence is amended to scope the no-territorial-claim finding to the platform. **The list is front-loaded with October-7 accountability**: #2 רפי בן שטרית (bereaved father, founded מועצת אוקטובר and co-initiated the civilian commission of inquiry), #3 טליה לנקרי (Col. res., ex-NSC home-front chief, on the 2025 team auditing the IDF's own investigations), #6 שרעבי (brother of יוסי, killed in captivity, and אלי, released after 491 days). `state-commission-of-inquiry` refused a fifth time in revision 51 stands here against a *list* too. **Two corrections to this page's own working notes**: דוד אזולאי #13 **is** the Metula council head (an earlier reading hunted for a separate reserve officer who does not exist), and ישראל בן שטרית #15 is a **captain**, not a major. Neither changes a score; both are recorded because a list audit that invents a candidate is worse than one that skips him. **The list runs to at least #25, so 21 is not its length** — מאיה פלומבוים #22 (Ramat Gan council, aliyah-and-absorption portfolio; ex-Defence Ministry Budgets Division officer and economic adviser to Israel's ambassador to the OECD), plus at least four more recruits with announcements and no confirmed slot (יעקובוביץ, סמובסקי, שמיר קינן, תא״ל דני שחר). **The recruitment pattern is the clearest thing on this list and the party says it out loud**: Lieberman is taking the centre-right that walked out of Likud and Gantz, and two recruits frame it as inheritance — שרעבי #6 (*"גדלתי על ערכי הליכוד – הליכוד של פעם… היום 'הליכוד של פעם' זה ישראל ביתנו"*) and אילוז #10 (*"אני קורא לכל הליכודניקים – מי שרוצה ימין אמיתי צריך להצביע לישראל ביתנו"*); רפי בן שטרית #2 ran Beit She'an's Likud branch, פלומבוים #22 sits for a former Likud MK's municipal faction, while יעקובוביץ came from **המחנה הממלכתי**. Strategic, not classificatory — moves nothing. **The religious-Zionist intake is ORGANISED and the party says so**: the Gur-Arieh announcement names *"מגמה רחבה של אנשי הציונות הדתית"* and two **standing party bodies** — **מטה הסרוגים** headed by יוסי ברודני, mayor of Givat Shmuel, and **פורום יו״ש ביתנו** headed by **ליאור זברג, תושב יצהר** — plus גור-אריה himself, ex-deputy head of the **Shomron Regional Council** for **הבית היהודי**. **`sovereignty-annexation` stays REFUSED and this is its fourth ground**: a forum is **outreach to a constituency, not a claim about territory**, which is precisely revision 45's Druze-HQ precedent (*a campaign at a minority is what a party DOES, not what it IS*) and revision 51's own reading of מטה הסרוגים on this row hours earlier. Treating a יו״ש forum differently would read the constituency's politics into the party's — the error all three precedents exist to prevent. It does make **`pro-settlement` better evidenced** than when it went in. **+#23 אדי מורדכייב** (Deputy Mayor of Ramla, ex-תקווה חדשה) and **+#24 מיכל אורון עזאני** (Binyamina council; her party column calls core studies *"אינטרס לאומי וקיומי"*, corroborating `core-curriculum`). **The pattern widens from a Likud story to an everywhere-else story** — the intake now spans הליכוד, המחנה הממלכתי, תקווה חדשה, הבית היהודי and יש עתיד (מיקי פישמן, ex-head of its Russian-speakers HQ). **Corrected within the hour: the unsourced count is THREE — מוזס #20, עמי קור #21, סתיו בויאנג'ו מצא #25 — and קוליחמן #9 was my own spelling, not an absence.** **אלוירה קוליחמן #9** (I searched `קוליכמן`, with כ; the party spells it `קוליחמן`, with ח) writes for the party site on **Lod crime and personal security**. **Two search failures produced that wrong "not found", and both generalise**: a name guessed back into Hebrew from a transliteration is a hypothesis, not a search term, and a zero-hit result cannot tell you which; and **slug-matching could never have found her anyway**, because ~a quarter of this site's posts are English-slugged (`dan-illouz-joins-…`, `lod-crime-violence-…`) so searching URLs for a Hebrew name silently skips them. **The sitemap is for enumeration, not lookup** — the instrument for lookup is the site's own `/?s=` full-text search. Logged trap for the next sovereignty audit on this row: that Lod article carries `ריבונות` in its WordPress **keyword metadata** while its body contains none. **יעקב מוזס #20 and עמי קור #21 remain genuinely unsourced**, and **list finality is unverified**, filing being 2026-09-08 |
+| 2026-09-06 | revision 53 — **עוצמה יהודית's 2026 list begins to take shape and NOTHING MOVES, for the sixth consecutive reading.** Announced order: **#2 ח"כ טלי גוטליב arriving from הליכוד**; **#3 השר יצחק וסרלאוף**, who gave up #2 for her (*"טלי גוטליב מגיעה? תן לה את המקום השני, שים אותי בשלישי"*); #5 סון הר-מלך; #6 קרויזר; #4 unannounced. **יו"ר הוועדה לביטחון לאומי צביקה פוגל is OUT**, pushed down and declining to run. **A realigned top six moves nothing because `security` +3 and `religiosity` +3 are at their poles** — there is no band above either — and `economic` 0 is held by `not-economy-focused`, which a list of national-security politicians does not disturb. גוטליב is a leading judicial-overhaul advocate who co-sponsored splitting the AG's role, and **`judicial-overhaul` is already on this row**: the most consequential recruit available **corroborates a tag rather than adding one**. **The finding is on the OTHER row.** Revision 24 audited הליכוד's list and logged **אלמוג כהן at #14 as an עוצמה יהודית defector for whom Netanyahu waived the membership rule** — evidence *for* a `far-right` tag it then refused, with a trigger. **גוטליב was #20 on that same list and is now leaving in the opposite direction.** A party losing its most prominent conspiracy-amplifier **to** the far-right party is evidence *against* that tag, so revision 24's trigger is **pushed further away, not tripped**. Both movements are now recorded on both rows. No `seed.sql` change |
+| 2026-09-07 | revision 54 — **ישראל ביתנו published its official list and it closes every gap revision 52 left open. Exactly 25 names.** [רשימת מפלגת ישראל ביתנו לכנסת הבאה](https://beytenu.org.il/רשימת-מפלגת-ישראל-ביתנו-לכנסת-הבאה/), 2026-09-06 21:38Z, after a launch at Expo Tel Aviv. **The three unsourced candidates resolved**: **#20 יעקב (יענקי) מוזס** — a **יוצא בשאלה** volunteering at **הלל**, which supports people leaving the haredi community; **#21 עמי קור** — **co-founder of Sygnia**, cyber-attack response; **#25 עו״ד סתו בויאנג׳ו מצא** — chair of the party's **קהילת הנשים**. **Four corrections, none moving a score**: **#9 קוליחמן is the DEPUTY MAYOR OF LOD** (the Lod crime column was her portfolio, not a byline); **#3 לנקרי** was *סגנית ראש המל״ל* למדיניות לוט״ר, more senior than Wikipedia's "head of the home-front division"; **#12 בנבנישתי is a gerontologist**, which explains the senior-citizens HQ; and **#2 בן שטרית is labelled "איש הליכוד" by the party itself**, so revision 52's recruitment pattern is the party's own description rather than this page's inference. **The party distinguishes ח״כ from חכ״ל and the supplied list did not — FIVE sitting MKs, not nine**: ח״כ ליברמן/פורר/מלינובסקי/עמאר/סובה; **חכ״ל אילוז #10, מגן תלם #14, רופא אופיר #16**, the last two having served in the 24th via the Norwegian law and not returned. **Two corroborations that move nothing**: מוזס #20 is this row's sharpest `religiosity −3` corroboration from a *person* rather than a document, and **בויאנג׳ו מצא #25 does NOT revive `gender-equality`** — a women's community with a chair on the list is an **outreach structure**, exactly what מטה הסרוגים and עוצמה יהודית's Druze HQ were held to be; accepting it here while refusing a יו״ש forum as territorial evidence would be the same inconsistency inverted. **Method note — the two earlier "not found"s were NOT the same failure.** קוליחמן was a **method** failure (wrong Hebrew spelling, plus slug-matching blind to English slugs); מוזס/קור/בויאנג׳ו מצא were a **timing** result — this page did not exist when the sitemap was enumerated hours earlier. Only one of the two implies the instrument was wrong |
