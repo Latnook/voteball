@@ -82,3 +82,16 @@ module "iam" {
   bucket_arn    = module.storage.bucket_arn
   sns_topic_arn = module.notifications.sns_topic_arn
 }
+
+module "database" {
+  source = "./modules/database"
+
+  cluster_name           = var.cluster_name
+  vpc_id                 = module.networking.vpc_id
+  database_subnets       = module.networking.database_subnets
+  node_security_group_id = module.compute.node_security_group_id
+
+  db_username            = var.db_username
+  db_password            = var.db_password
+  db_snapshot_identifier = var.db_snapshot_identifier
+}

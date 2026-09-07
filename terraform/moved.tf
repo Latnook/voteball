@@ -171,3 +171,27 @@ moved {
   from = module.eks
   to   = module.compute.module.eks
 }
+
+# ---- modules/database ----
+# The most expensive block in this file to get wrong: without it Terraform plans
+# "aws_db_instance.app will be destroyed" alongside a create, and reports that as an ordinary plan.
+
+moved {
+  from = aws_db_subnet_group.app
+  to   = module.database.aws_db_subnet_group.app
+}
+
+moved {
+  from = aws_security_group.rds
+  to   = module.database.aws_security_group.rds
+}
+
+moved {
+  from = time_static.deploy
+  to   = module.database.time_static.deploy
+}
+
+moved {
+  from = aws_db_instance.app
+  to   = module.database.aws_db_instance.app
+}

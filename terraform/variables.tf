@@ -137,7 +137,7 @@ variable "monthly_budget_usd" {
 
 variable "db_username" {
   # Only applied when creating a fresh database. RDS does not allow changing the master username on a
-  # snapshot restore, so aws_db_instance.app ignores changes to it (see database.tf).
+  # snapshot restore, so aws_db_instance.app ignores changes to it (see modules/database/main.tf).
   description = "RDS master username (fresh databases only; ignored when restoring from a snapshot)."
   type        = string
   default     = "postgres"

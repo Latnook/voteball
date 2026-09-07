@@ -55,7 +55,7 @@ output "backup_role_arn" {
 
 output "rds_endpoint" {
   description = "EKS RDS endpoint host (for the app ConfigMap DB_HOST)."
-  value       = aws_db_instance.app.address
+  value       = module.database.endpoint
 }
 
 output "ecr_registry" {
