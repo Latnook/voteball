@@ -46,6 +46,15 @@ kibana:
   resources:
     requests: { cpu: "200m", memory: "1Gi" }
     limits:   { cpu: "500m", memory: "1Gi" }
+  # The data view, saved searches and dashboard, imported by a post-install/post-upgrade hook from
+  # the reviewable JSON under charts/logging/kibana/. Ships ON: without it Kibana is a healthy,
+  # empty onboarding screen -- see the long note in templates/kibana-objects.yaml.
+  savedObjects:
+    enabled: true
+    # Read back after the import through a DIFFERENT API call than the one that wrote it, so a
+    # dangling panel reference (which imports cleanly and renders as an error card) fails the Job.
+    verifyDashboardId: "voteball-service-health"
+
   ingress:
     enabled: true
     # Rewritten per-cluster. Unlike charts/voteball's ten sync-managed fields, this one is NOT
@@ -70,6 +79,11 @@ fluentd:
   resources:
     requests: { cpu: "100m", memory: "256Mi" }
     limits:   { cpu: "500m", memory: "512Mi" }
+  # Discard `"ELB-HealthChecker/2.0"` lines before they reach Elasticsearch. Measured 2026-09-07 they
+  # were 37.2% of the whole index (22,363 / 60,112 documents). CloudWatch -- the authoritative copy --
+  # still gets them: Fluent Bit fans out upstream of this aggregator, so this only trims the SEARCH
+  # surface. Set false to keep them, e.g. while debugging an ALB target-group failure.
+  dropHealthChecks: true
 
 # Index lifecycle. 7 days, because CloudWatch holds the authoritative copy -- Elasticsearch is the
 # SEARCH surface, not the archive (spec decision 6b).

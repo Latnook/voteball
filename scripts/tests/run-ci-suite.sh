@@ -45,6 +45,14 @@ PYTHON_GROUP=(
   # anti-drift gates, which happens to be the group that also has python3.
   test-grafana-datasources.sh
   test-i18n-parity.sh
+  # Needs python3 and no git. BOTH are deliberately written to read the chart's SOURCE files rather
+  # than `helm template` output, which is what keeps them out of SKIP: three chart tests already sit
+  # there for want of a helm binary, and the parse pipeline plus the Kibana saved objects are the two
+  # things in charts/logging whose breakage is completely silent -- an unparsed field and an empty
+  # dashboard both look exactly like "nothing happened". When helm IS on PATH each one additionally
+  # verifies its render; when it is not, they say which check was skipped instead of passing quietly.
+  test-kibana-objects.sh
+  test-logging-parsers.sh
   # Needs neither python3 nor git (bash + grep, awk, sed, comm, cut over the repo's own files) --
   # confirmed passing inside a bare python:3.12-slim on 2026-08-23, per the rule above. It compares
   # ci/jenkins/plugins.txt, plugins.lock.txt and the Dockerfile; regenerating the lock needs docker

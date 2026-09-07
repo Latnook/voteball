@@ -1,0 +1,179 @@
+{{- if and .Values.enabled .Values.kibana.savedObjects.enabled }}
+# WHAT KIBANA IS FOR, SHIPPED AS CODE.
+#
+# Without this file the stack is complete and useless: Elasticsearch holds the documents, Kibana
+# starts healthy, `verify-efk.sh` counts a non-zero document total and passes -- and a person opening
+# kibana.<app_domain> lands on the onboarding screen with no data view, no saved search and no
+# dashboard, unable to see a single log line without clicking through setup first. Measured on the
+# live cluster 2026-09-07: 59,926 documents indexed, 223 Kibana saved objects, every one of them an
+# Elastic built-in. Zero dashboards, zero data views.
+#
+# That gap is this repo's own recurring defect one notch further along. Decision 10 of the design doc
+# insisted verification count DOCUMENTS rather than check pods, and it does, correctly -- but
+# "documents exist" and "documents answer a question" are two different contracts, the same split
+# CLAUDE.md records for Grafana's /api/ds/query passing against a blank dashboard. A healthy pipeline
+# nobody can query is still a component that is alive and doing nothing.
+#
+# The layout mirrors charts/observability: the content is a reviewable JSON file under kibana/, and
+# `.Files.Glob` means ADDING A DASHBOARD IS ADDING A FILE. Do not add a per-dashboard template.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-saved-objects
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+data:
+  # Committed as a pretty-printed JSON ARRAY and converted to NDJSON here, at render time.
+  #
+  # Kibana's import API takes NDJSON -- one saved object per physical line -- which is unreviewable:
+  # a diff on a 16 KB single line tells you nothing, and this is a file whose whole value is that a
+  # human can read what the dashboard claims. Helm does the flattening instead, so git holds the
+  # readable form and the API gets the form it wants. Same trade as charts/observability's Grafana
+  # JSON, which is likewise committed pretty and consumed by a machine.
+{{- range $path, $bytes := .Files.Glob "kibana/*.json" }}
+  {{ base $path | trimSuffix ".json" }}.ndjson: |
+  {{- range $obj := $.Files.Get $path | fromJsonArray }}
+    {{ toJson $obj }}
+  {{- end }}
+{{- end }}
+---
+# The importer.
+#
+# post-install AND post-upgrade, weight 10 -- strictly after the ILM bootstrap (weight 5), which
+# creates the index the data view points at. Both are idempotent; `overwrite=true` means a dashboard
+# somebody edited in the UI is reverted on the next sync, which is the same posture as ArgoCD's
+# selfHeal and is deliberate: the file in git is the dashboard.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kibana-objects-import
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "logging.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 10
+  # Must FAIL rather than hang: ArgoCD waits on hook completion, so an unbounded wait for a Kibana
+  # that never comes up stalls the whole sync instead of reporting Failed. Longer than the ILM Job's
+  # 600s because Kibana migrates its own saved-object indices on a cold start, well after
+  # Elasticsearch is already answering.
+  activeDeadlineSeconds: 900
+  template:
+    metadata:
+      labels:
+        app: kibana-objects-import
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: import
+          image: curlimages/curl:8.11.1
+          env:
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: voteball-logs-es-elastic-user
+                  key: elastic
+          # BLOCK form, not the inline flow map -- test-logging-chart.sh's budget parser keys on
+          # `requests:` followed by indented cpu:/memory: lines and the inline form sums to ZERO.
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: objects
+              mountPath: /etc/kibana-objects
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              KB="http://voteball-kibana-kb-http:5601"
+
+              # Credentials through a config file, never `-u` on the command line: argv is world-
+              # readable via /proc/<pid>/cmdline. `printf` is a BusyBox ash builtin, so it forks
+              # nothing and the password never reaches any argv at all. Same shape as the ILM Job.
+              umask 077
+              printf 'user = "elastic:%s"\n' "$ELASTIC_PASSWORD" > /tmp/curlrc
+
+              # Kibana answers 503 until it has finished migrating its own saved-object indices, so
+              # -f keeps the loop going. Bounded: backoffLimit counts container EXITS, and a
+              # container spinning forever never exits, so an unbounded loop is invisible to it.
+              deadline=$(( $(date +%s) + 840 ))
+              until curl -sf -K /tmp/curlrc "$KB/api/status" -o /tmp/status \
+                    && grep -q '"level":"available"' /tmp/status; do
+                if [ "$(date +%s)" -ge "$deadline" ]; then
+                  echo "Kibana did not become available within 840s" >&2
+                  exit 1
+                fi
+                echo "waiting for Kibana..."
+                sleep 5
+              done
+
+              rc=0
+              for f in /etc/kibana-objects/*.ndjson; do
+                want="$(grep -c . "$f")"
+                echo "importing $(basename "$f") ($want objects)"
+
+                # -f is NOT enough here, and that is the whole point of the next twenty lines.
+                #
+                # /api/saved_objects/_import answers 200 OK for a request that imported NOTHING:
+                # per-object failures come back in the body as {"success":false,"errors":[...]} with
+                # a successful HTTP status. Trusting the exit code would print "imported" over an
+                # empty Kibana -- the exact swallowed-status shape CLAUDE.md lists three instances
+                # of, and the sub-type that is only ever found by checking what came back.
+                #
+                # So the body is parsed and the COUNT is compared. `"success":true` alone would also
+                # pass on a file that had been emptied to zero objects.
+                code="$(curl -s -o /tmp/out -w '%{http_code}' -K /tmp/curlrc \
+                  -H 'kbn-xsrf: true' -F "file=@$f" \
+                  "$KB/api/saved_objects/_import?overwrite=true")"
+                got="$(sed -n 's/.*"successCount":[[:space:]]*\([0-9][0-9]*\).*/\1/p' /tmp/out)"
+
+                if [ "$code" != "200" ] || [ "${got:-0}" != "$want" ]; then
+                  echo "IMPORT FAILED for $(basename "$f"): HTTP $code, imported ${got:-0} of $want" >&2
+                  # The body names the offending object and why. Printing it is the difference
+                  # between a fixable failure and "the dashboard is missing".
+                  cat /tmp/out >&2; echo >&2
+                  rc=1
+                  continue
+                fi
+                echo "  imported $got/$want"
+              done
+              [ "$rc" -eq 0 ] || exit 1
+
+              # PROVE THE DASHBOARD IS ACTUALLY THERE, by reading it back through a different call
+              # than the one that wrote it. An import that reports success and a Kibana that can
+              # resolve the object are two different contracts -- a dangling panel reference imports
+              # cleanly and renders as an error card.
+              curl -sf -K /tmp/curlrc -o /tmp/dash \
+                "$KB/api/saved_objects/dashboard/{{ .Values.kibana.savedObjects.verifyDashboardId }}" \
+                || { echo "dashboard {{ .Values.kibana.savedObjects.verifyDashboardId }} is not readable after import" >&2; exit 1; }
+              grep -q '"error"' /tmp/dash \
+                && { echo "dashboard resolved with errors:" >&2; cat /tmp/dash >&2; exit 1; }
+
+              echo "Kibana saved objects imported and verified"
+      volumes:
+        - name: objects
+          configMap:
+            name: kibana-saved-objects
+        - name: tmp
+          emptyDir: {}
+{{- end }}

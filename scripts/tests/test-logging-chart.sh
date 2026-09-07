@@ -69,10 +69,15 @@ pass "single Elasticsearch node"
 # bootstrap Job, i.e. everything `helm template` can see. It is NOT the design's whole-feature figure,
 # because `helm template` cannot see either side of that difference:
 #
-#   chart (measured here)                                    650m / 3392Mi
+#   chart (measured here)                                    685m / 3488Mi
 #   + eck-operator, installed by terraform/addon-eck.tf       100m /  150Mi   <-- outside this chart
 #   -----------------------------------------------------------------------
-#   = total requests EFK adds to the cluster                  750m / 3542Mi
+#   = total requests EFK adds to the cluster                  785m / 3638Mi
+#
+# Those figures were 650m / 3392Mi here and had drifted from the real render by 10m / 32Mi before
+# the 2026-09-07 saved-objects pass measured them again -- which is the point of computing the sum
+# from the rendered YAML rather than reading it off this comment. The pass itself added the Kibana
+# import Job at 25m / 64Mi (the rest of the difference was already there).
 #
 # The design doc's own numbers were wrong in both directions at once for one review cycle: they
 # included the operator (Terraform's, not this chart's) and omitted the ILM Job (this chart's), so a
@@ -247,6 +252,39 @@ grep -qE '"number_of_replicas":[[:space:]]*0[[:space:]]*,?[[:space:]]*$' <<<"$il
   || fail "no replica -- single-node ES by design"
 pass "no replica (single-node ES)"
 
+
+# --- Kibana saved objects ------------------------------------------------------------------------
+# Without these the stack is complete and useless: a healthy pipeline, a non-zero document count, and
+# an onboarding screen with no data view for anyone who opens it. Measured on the live cluster
+# 2026-09-07 before this existed -- 59,926 documents, 0 dashboards, 0 data views.
+ko="$(helm template logging "$CHART" --namespace logging --show-only templates/kibana-objects.yaml)"
+
+grep -qE '^[[:space:]]*name:[[:space:]]*"?kibana-saved-objects"?[[:space:]]*$' <<<"$ko" \
+  || fail "no kibana-saved-objects ConfigMap rendered"
+grep -qE '^[[:space:]]*name:[[:space:]]*"?kibana-objects-import"?[[:space:]]*$' <<<"$ko" \
+  || fail "no kibana-objects-import Job rendered -- the ConfigMap alone imports nothing"
+pass "saved-objects ConfigMap and import Job present"
+
+# The NDJSON must actually be in the ConfigMap. `.Files.Glob` silently renders an EMPTY data block
+# if the directory is renamed or the objects are moved -- the Job then imports zero objects, and
+# without the count check inside it that would report success.
+obj_lines="$(grep -cE '^[[:space:]]+\{".*"\}$' <<<"$ko" || true)"
+[ "$obj_lines" -ge 5 ] \
+  || fail "the ConfigMap holds $obj_lines NDJSON object lines -- .Files.Glob found nothing under charts/logging/kibana/"
+pass "ConfigMap carries $obj_lines saved objects as NDJSON"
+
+# Hook ordering. The data view points at an index the ILM Job (weight 5) bootstraps; importing
+# first is harmless today but is exactly the kind of ordering that silently stops being true.
+grep -qE 'hook-weight":[[:space:]]*"10"' <<<"$ko" \
+  || fail "the import Job must carry hook-weight 10, i.e. strictly after the ILM bootstrap's 5"
+pass "import Job runs after the ILM bootstrap"
+
+# THE IMPORT API ANSWERS 200 FOR A REQUEST THAT IMPORTED NOTHING. Per-object failures come back in
+# the body as {"success":false,...} with a successful HTTP status, so a Job that trusts `curl -f`
+# prints "imported" over an empty Kibana. Assert the count comparison is actually in there.
+grep -q 'successCount' <<<"$ko" \
+  || fail "the import Job does not parse successCount out of the response body -- /api/saved_objects/_import returns HTTP 200 for a wholly failed import, so the exit status proves nothing"
+pass "import Job compares successCount against the object count, not just the HTTP status"
 
 # --- NetworkPolicy -------------------------------------------------------------------------------
 # Helm strips only {{/* */}} template comments -- plain YAML `#` comments render straight through,

@@ -69,7 +69,7 @@ Three homes, and which one a change belongs in decides whether it ships as a com
 | `terraform/addon-monitoring.tf` | The stack itself: the Helm release, PVC, retention, resource limits, Alertmanager→SNS routing, the disabled-defaults list | `terraform apply` |
 | `charts/voteball` (ArgoCD) | The app's three ServiceMonitors, the 12 application alerts, the 4 SLI recording rules, the scrape NetworkPolicy, the canary | `git push` |
 | `charts/observability` (ArgoCD, a **second** Application with its own AppProject) | The 6 dashboards, the 6 platform alerts, that namespace's default-deny NetworkPolicies | `git push` |
-| `charts/logging` (ArgoCD, a **third** Application with its own AppProject) | The Elasticsearch/Kibana/Fluentd custom resources the two `platform.logging` alerts describe | `git push` |
+| `charts/logging` (ArgoCD, a **third** Application with its own AppProject) | The Elasticsearch/Kibana/Fluentd custom resources the two `platform.logging` alerts describe, **and Kibana's own content** — the `voteball-logs` data view, 3 saved searches and the `Voteball service health` dashboard (`charts/logging/kibana/*.json`) | `git push` |
 | `charts/jenkins-support` (Terraform) | The Jenkins ServiceMonitor — the one exception, see §4 | `terraform apply` |
 | `terraform/addon-cloudwatch.tf` | Fluent Bit's log pipeline and the three log groups | `terraform apply` |
 
@@ -559,8 +559,11 @@ thing it watches.
 
 So the honest statement is: **`scripts/logging/verify-efk.sh`, run at deploy step 11e, is the only
 check anywhere that catches a silently-idle pipeline** — it writes a known marker to a `devops-app`
-pod's stdout and counts that exact line back out of Elasticsearch. It runs at deploy time and on
-demand, not continuously. Between deploys, a pipeline that stops delivering while every pod stays
+pod's stdout and counts that exact line back out of Elasticsearch, and then confirms Kibana actually
+serves the `voteball-logs` data view and the `Voteball service health` dashboard by id. That second
+half was added on 2026-09-07 after an audit found the first half passing over a Kibana with **zero
+data views and zero dashboards**: a healthy pipeline whose contents nobody could reach still counts
+its marker perfectly. It runs at deploy time and on demand, not continuously. Between deploys, a pipeline that stops delivering while every pod stays
 Ready will not page anyone; the first symptom is an empty Kibana search. CloudWatch is unaffected
 throughout, which is what makes that trade acceptable.
 
