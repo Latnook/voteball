@@ -1988,7 +1988,8 @@ taken.
 **2026-09-06 — revision 52. The realized list audited candidate by candidate, and the entry's
 best-known claim — that this party makes NO territorial claim — is true of the platform and FALSE of
 the party's own campaign material.** *(Audited against the top 21 as first supplied; the list runs
-**at least to #22** — see the recruitment note at the end of this revision. Do not treat 21 as the
+**exactly 25** — the party published the official list that night; see the official-list note at
+the end of this revision. Do not treat 21 as the
 length.)* One tag added (13 → 14): `pro-settlement`. No axis moved.
 
 **The evidence is first-party and it is not one stray line.** `beytenu.org.il` publishes a joining
