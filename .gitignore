@@ -45,7 +45,11 @@ __pycache__/
 .claude/settings.local.json
 
 # Personal notes (not part of the submission)
+# EXPLAINER.md is the defense drill book; REFERENCE.md is the deep material it draws on. Neither is
+# graded, and both name live account identifiers (registry, bucket, SNS ARN) that the repo's
+# forkability rule keeps out of tracked files.
 EXPLAINER.md
+REFERENCE.md
 PROJECT-QA.md
 
 # Teacher's review documents. Received 2026-08-23 as .docx for Task 3 (Kubernetes/Docker) and Task 4
