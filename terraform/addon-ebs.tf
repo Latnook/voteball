@@ -1,7 +1,7 @@
 # EBS CSI driver + a gp3 StorageClass, for the Prometheus PVC in addon-monitoring.tf.
 #
 # WHY EBS HERE AND EFS FOR JENKINS -- opposite choices from the same constraint, deliberately.
-# addon-efs.tf chose EFS for JENKINS_HOME because an EBS volume is locked to a single Availability
+# modules/storage/main.tf chose EFS for JENKINS_HOME because an EBS volume is locked to a single Availability
 # Zone and this node group is 100% Spot. That reasoning does not transfer: Prometheus' TSDB is
 # explicitly unsupported on network filesystems, where its memory-mapped, fsync-ordered writes can
 # corrupt the database. The price is the AZ lock-in -- if the node holding the volume is reclaimed

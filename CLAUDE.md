@@ -608,7 +608,7 @@ promotion by ancestry reports "not promoted" forever.
   holds: an EBS volume is locked to one Availability Zone, so it would need every reschedule to land
   back in the same AZ or the pod hangs `Pending` forever. **EFS has a mount target in every AZ**, so
   it carries none of that lock-in — a rescheduled controller pod rebinds the same volume regardless of
-  which AZ it lands in. That is why the fix is EFS (`terraform/addon-efs.tf`), not an EBS PVC pinned
+  which AZ it lands in. That is why the fix is EFS (`terraform/modules/storage/main.tf`), not an EBS PVC pinned
   to one AZ, and not staying on `emptyDir` — the course brief for the 2026-08-04 CI/CD split lists
   persistent Jenkins-home storage as a mandatory component. Build history (last 20 builds) now
   survives a routine Spot reclaim. Removing the Jenkins release (`scripts/jenkins/uninstall-jenkins.sh`
@@ -645,7 +645,7 @@ promotion by ancestry reports "not promoted" forever.
   once already.
 
   **Both build caches live in ECR** (`${cluster_name}-buildcache`, `${cluster_name}-trivy-db`), and
-  both repos **must stay `MUTABLE` and outside `local.ecr_repos`** in `terraform/ecr.tf`. That set is
+  both repos **must stay `MUTABLE` and outside `local.ecr_repos`** in `terraform/modules/storage/main.tf`. That set is
   `IMMUTABLE` because a git-SHA tag must never be silently overwritten; a cache tag is *rewritten on
   every build* by design, so adding either repo to that set fails every build's cache export with
   "cannot overwrite immutable tag" — at the end of a long build, not the start.
@@ -757,7 +757,7 @@ around this, both hit for real on the 2026-07-27 rebuild (see `docs/production-r
   `time_static.deploy`, so a snapshot created today is named after the day the stack was *deployed*.
   A fresh snapshot called `voteball-eks-db-final-20260722065933` on 2026-07-27 looks five days stale;
   concluding "the final snapshot failed" from the name is the natural — and wrong — reading.
-- **The nightly `pg_dump` in S3 is not teardown insurance.** `terraform/s3.tf:9` sets
+- **The nightly `pg_dump` in S3 is not teardown insurance.** `terraform/modules/storage/main.tf` sets
   `force_destroy = true`, so `terraform destroy` deletes the rollups bucket and every backup in it,
   during the same run it would supposedly be insuring. The layers that do survive are the final
   snapshot and **retained automated backups** (`delete_automated_backups = false`). Don't count the
@@ -911,7 +911,7 @@ minutes cannot be broken down further, so don't add a probe trying to. The node 
 by the EKS-managed ASG, not Terraform, so the provider's `default_tags` never reach them: filter on
 `tag:eks:cluster-name`, not `Project`.
 
-**Do not add `ignore_changes` to `final_snapshot_identifier`** in `database.tf` — the provider reads it
+**Do not add `ignore_changes` to `final_snapshot_identifier`** in `modules/database/main.tf` — the provider reads it
 from state at destroy time, so that silently disables the final snapshot *and* wedges the VPC teardown.
 There's a comment there explaining why; keep it.
 

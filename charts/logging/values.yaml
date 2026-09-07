@@ -5,7 +5,7 @@
 # `true` because the seed step makes that safe":
 #
 #   * Every object in this chart is a custom resource whose CRD is installed by `terraform apply`
-#     (terraform/addon-eck.tf), which is deploy step 6.
+#     (terraform/dns.tf), which is deploy step 6.
 #   * The `logging` ArgoCD Application that syncs this chart is not created until deploy step 11.
 #
 # So on a fresh cluster the CRDs always exist before anything here is ever handed to the API server,
@@ -63,7 +63,7 @@ kibana:
     host: "kibana.voteball.latnook.com"
     # DELIBERATELY EMPTY -- and it needs a certificate to exist anyway. With no `certificate-arn`
     # annotation the AWS Load Balancer Controller falls back to HOST-BASED DISCOVERY and looks up an
-    # ISSUED ACM certificate matching the host above. terraform/addon-eck.tf creates exactly that
+    # ISSUED ACM certificate matching the host above. terraform/dns.tf creates exactly that
     # certificate (aws_acm_certificate.kibana), so discovery succeeds and no eleventh sync-managed
     # field is introduced. Do NOT read "empty" as "TLS is optional here": this Ingress joins a GROUP,
     # and a member whose certificate cannot be resolved fails the whole group's model build --

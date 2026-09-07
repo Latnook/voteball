@@ -441,7 +441,8 @@ flowchart LR
   committing to `master`.
 - **`JENKINS_HOME` is a PersistentVolumeClaim on EFS, not an `emptyDir`.** EFS has a mount target in
   every AZ, so a rescheduled controller pod is never stuck waiting for a volume to follow it back to
-  one AZ the way an EBS-backed PVC would be — see `terraform/addon-efs.tf`. The storage class reclaim
+  one AZ the way an EBS-backed PVC would be — see `terraform/modules/storage/main.tf`. The storage
+  class (`terraform/addon-efs.tf`) reclaim
   policy is `Retain`, but that protects the *data*, not build history end-to-end: the PVC carries no
   `helm.sh/resource-policy: keep` annotation (there is none anywhere in this repo), so a
   `helm uninstall` — or the targeted `terraform destroy -target=helm_release.jenkins` that

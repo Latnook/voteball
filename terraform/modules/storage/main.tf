@@ -1,5 +1,5 @@
 # Rollup snapshots + nightly backups bucket. The worker writes snapshots/ (Plan 1 code, gated on
-# S3_BUCKET), the backup CronJob writes backups/ (Plan 3) -- two prefixes, two IRSA roles (irsa.tf).
+# S3_BUCKET), the backup CronJob writes backups/ (Plan 3) -- two prefixes, two IRSA roles (modules/iam).
 # Fully private; the app reaches it via IRSA, never public.
 resource "aws_s3_bucket" "rollups" {
   bucket = "${var.cluster_name}-rollups-${var.account_id}"

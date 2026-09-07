@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# G1 -- terraform/ecr.tf sets image_tag_mutability = "IMMUTABLE", so pushing an existing tag is
+# G1 -- terraform/modules/storage/main.tf sets image_tag_mutability = "IMMUTABLE", so pushing an existing tag is
 # rejected. Because tags are the commit SHA, re-running a build (routine in Jenkins) would fail at
 # the push step for no real reason.
 #

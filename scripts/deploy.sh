@@ -185,7 +185,7 @@ step "1/11  Resolving the newest DB snapshot"
 step "2/11  Creating ECR repositories and secret containers (targeted apply)"
 # helm_release.jenkins in step 6's full apply pulls ${CLUSTER}-jenkins:<tag> immediately -- Helm
 # waits for that pull to succeed before the release is considered done. After a fresh
-# destroy/rebuild the ECR repos are gone (ecr.tf sets force_delete = true), so without this the
+# destroy/rebuild the ECR repos are gone (modules/storage sets force_delete = true), so without this the
 # image does not exist yet and the full apply fails several minutes in, mid-bill. A targeted apply
 # of just the repositories first means step 5 has somewhere to push the Jenkins image into before
 # step 6 needs it there.

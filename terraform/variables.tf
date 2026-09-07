@@ -129,7 +129,7 @@ variable "monthly_budget_usd" {
   # (EKS control plane + NAT + Spot nodes + RDS + ALB is roughly $290/mo -- measured 2026-08-04 from
   # Cost Explorer, after the CloudWatch add-on cuts; it was ~$200 in the docs and never in the bill),
   # so the alert means
-  # "something is wrong", not "the stack is running". Nothing enforces it -- see budget.tf.
+  # "something is wrong", not "the stack is running". Nothing enforces it -- see modules/notifications/main.tf.
   description = "Monthly account spend, in USD, above which budget alert emails are sent."
   type        = string
   default     = "230"

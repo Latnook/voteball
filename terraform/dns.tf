@@ -99,8 +99,8 @@ resource "aws_acm_certificate_validation" "jenkins" {
 # stalling the ALB that also serves the public site (devops-app/voteball) and the Jenkins webhook
 # (ci/jenkins-webhook). One un-certificated Ingress can therefore freeze the other two.
 #
-# ITS OWN CERTIFICATE, NOT A SAN ON THE APP'S -- the same call as aws_acm_certificate.jenkins in
-# addon-jenkins.tf, and for the same reason: adding a SAN would change the app certificate's ARN on
+# ITS OWN CERTIFICATE, NOT A SAN ON THE APP'S -- the same call as aws_acm_certificate.jenkins above,
+# and for the same reason: adding a SAN would change the app certificate's ARN on
 # every rebuild and drag `ingress.certificateArn` (one of the ten fields scripts/sync-values-from-tf.sh
 # owns) along with it. Keeping it separate leaves that field untouched.
 #
@@ -110,10 +110,12 @@ resource "aws_acm_certificate_validation" "jenkins" {
 # `logging` ArgoCD Application is not created until step 11, so the certificate is already ISSUED
 # (aws_acm_certificate_validation below blocks the apply until it is) before the Ingress exists.
 #
-# It lives HERE rather than in acm.tf or a new acm-kibana.tf because addon-jenkins.tf sets the
-# precedent: a host's certificate belongs in its feature's own add-on file, with the rest of that
-# feature's Terraform surface. acm.tf is the app's own certificate; there is no per-host acm-*.tf
-# convention in this repo to follow.
+# It lives in this file with the other two. Until the 2026-09-07 module refactor each certificate sat
+# in its feature's own add-on file, on the argument that a host's certificate belongs with the rest of
+# that feature's Terraform surface. The three were collected here instead because the opposite
+# property turned out to matter more: they are the same resource shape solving the same problem
+# three times, and a per-host acm-*.tf convention would have meant a fourth file for a fourth host.
+# Everything else about the Kibana feature still lives in addon-eck.tf.
 resource "aws_acm_certificate" "kibana" {
   domain_name       = "kibana.${var.app_domain}"
   validation_method = "DNS"

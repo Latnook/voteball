@@ -5,7 +5,7 @@
 # WHY THIS IS NOT JUST previous-tag.sh. That script answers "what did values.yaml say before this
 # deploy?" from git history alone, which is the right question but not a sufficient one. Git history
 # survives a teardown; ECR does not. `terraform destroy` deletes the ECR repositories
-# (terraform/ecr.tf sets force_delete = true) and the next `deploy.sh` pushes exactly ONE tag, so
+# (terraform/modules/storage/main.tf sets force_delete = true) and the next `deploy.sh` pushes exactly ONE tag, so
 # between a rebuild and the first successful CD promote, the tag git names as "previous" is a tag
 # from the PREVIOUS cluster's registry and is not present in this one at all.
 #

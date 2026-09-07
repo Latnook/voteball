@@ -990,7 +990,7 @@ instead of wondering whether the teardown has died. `VOTEBALL_NO_WATCH=1` turns 
 | **Database snapshots** | They are the restore point for the next deploy. Prune old ones by hand, keeping the newest. |
 
 **What is NOT kept, and catches people out: the nightly database dumps in S3.** The bucket holding them
-is deleted by `terraform destroy`, during the same run it would supposedly be insuring — `terraform/s3.tf`
+is deleted by `terraform destroy`, during the same run it would supposedly be insuring — `terraform/modules/storage/main.tf`
 sets `force_destroy = true`, which means "delete this bucket even though it still has files in it".
 **The nightly dumps are not teardown insurance.** What actually carries your votes across a rebuild is
 the final snapshot, plus retained automated backups. If you want the dumps too, copy them off first:

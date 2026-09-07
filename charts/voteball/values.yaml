@@ -24,10 +24,12 @@ image:
     nginx: "sha256:f45039a4f55bf15b9acabebd341a4878232932d9fb561dccef2f4d974e33d8c3"
     backup: "sha256:63318b1a02b72763ded68fd15c0fc93b16e29b5abc2eadd06e1e2d6636c54bdc"
 
-# The two PUBLIC subnet CIDRs from terraform/vpc.tf. Used by the frontend ingress policy to admit the
+# The two PUBLIC subnet CIDRs from terraform/main.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
 #
-# These are not sync-managed and change only if someone edits terraform/vpc.tf's `public_subnets`.
+# These are not sync-managed and change only if someone edits `local.public_subnet_cidrs` in
+# terraform/main.tf. That list is a ROOT local rather than an argument inside modules/networking
+# because two modules read the private one -- see the comment above it.
 # A mismatch fails loudly and immediately -- the ALB's health checks are dropped and the target group
 # goes unhealthy -- rather than silently.
 network:

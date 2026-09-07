@@ -1,6 +1,6 @@
 # IRSA for Cluster Autoscaler, scoped (via the helper's cluster_autoscaler policy) to autoscaling
 # actions on THIS cluster's ASG only -- discovered through the k8s.io/cluster-autoscaler/<name>=owned
-# tag set on the node group in Plan 2's eks.tf.
+# tag set on the node group in Plan 2's modules/compute/main.tf.
 module "autoscaler_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 5.0"
@@ -19,7 +19,7 @@ module "autoscaler_irsa" {
 
 # Cluster Autoscaler (Kubernetes autoscaler SIG, official): scales the managed node group 2->4 when
 # pods can't schedule and back down when nodes are underused. autoDiscovery finds the ASG by the tag
-# set in eks.tf. CA is the one add-on whose APP version tracks the Kubernetes minor, so re-check it
+# set in modules/compute/main.tf. CA is the one add-on whose APP version tracks the Kubernetes minor, so re-check it
 # before any cluster_version bump -- and note it declares no `kubeVersion`, so the usual chart
 # compatibility check cannot catch a mismatch. Read the app column instead:
 #   helm search repo autoscaler/cluster-autoscaler --versions

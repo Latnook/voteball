@@ -123,7 +123,7 @@ helm template jenkins jenkins/jenkins --namespace ci \
 check "no ClusterRole is created"          "! grep -q '^kind: ClusterRole$' '$rendered'"
 check "no ClusterRoleBinding is created"   "! grep -q '^kind: ClusterRoleBinding$' '$rendered'"
 check "a namespaced Role is created"       "grep -q '^kind: Role$' '$rendered'"
-# JENKINS_HOME is on an EFS-backed PVC since 2026-08-04 -- see terraform/addon-efs.tf for why EFS
+# JENKINS_HOME is on an EFS-backed PVC since 2026-08-04 -- see terraform/modules/storage/main.tf for why EFS
 # and not EBS. These two lines must track terraform/addon-jenkins.tf's persistence block; if that
 # block changes and these do not, the test goes on describing a release that no longer exists.
 check "a PersistentVolumeClaim is created" "grep -q '^kind: PersistentVolumeClaim$' '$rendered'"

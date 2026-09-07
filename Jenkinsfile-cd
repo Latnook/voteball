@@ -143,7 +143,7 @@ pipeline {
           // voteball-deploy pod is proven to have both -- the same split, for the same reason, as
           // rollback-target.sh's two forms.
           //
-          // Resolved from ECR rather than passed down from CI as build parameters: terraform/ecr.tf
+          // Resolved from ECR rather than passed down from CI as build parameters: terraform/modules/storage/main.tf
           // makes the application repositories IMMUTABLE, so a tag names one manifest forever and a
           // lookup is authoritative. That also gives the two cases a parameter would have no answer
           // for -- a chart-only promotion (no upstream CI build) and a rollback (re-resolving the
