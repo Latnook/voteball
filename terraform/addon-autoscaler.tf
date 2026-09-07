@@ -7,11 +7,11 @@ module "autoscaler_irsa" {
 
   role_name                        = "${var.cluster_name}-cluster-autoscaler-irsa"
   attach_cluster_autoscaler_policy = true
-  cluster_autoscaler_cluster_names = [module.eks.cluster_name]
+  cluster_autoscaler_cluster_names = [module.compute.cluster_name]
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn               = module.compute.oidc_provider_arn
       namespace_service_accounts = ["kube-system:cluster-autoscaler"]
     }
   }
@@ -48,7 +48,7 @@ resource "helm_release" "cluster_autoscaler" {
     },
     {
       name  = "autoDiscovery.clusterName"
-      value = module.eks.cluster_name
+      value = module.compute.cluster_name
     },
     {
       name  = "awsRegion"

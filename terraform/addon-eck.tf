@@ -48,7 +48,7 @@ resource "helm_release" "eck_operator" {
     },
   ]
 
-  depends_on = [module.eks]
+  depends_on = [module.compute]
 }
 
 # ---- TLS for the Kibana route ----

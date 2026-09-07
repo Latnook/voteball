@@ -13,7 +13,7 @@ module "cloudwatch_irsa" {
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn               = module.compute.oidc_provider_arn
       namespace_service_accounts = ["amazon-cloudwatch:cloudwatch-agent"]
     }
   }
@@ -144,7 +144,7 @@ locals {
 # back on to "get more observability" without checking Grafana first -- it is almost certainly
 # already there. See docs/production-readiness.md and the alert rules in charts/voteball.
 resource "aws_eks_addon" "cloudwatch" {
-  cluster_name             = module.eks.cluster_name
+  cluster_name             = module.compute.cluster_name
   addon_name               = "amazon-cloudwatch-observability"
   addon_version            = "v6.3.0-eksbuild.1" # verified for K8s 1.34 via aws eks describe-addon-versions (2026-07-19)
   service_account_role_arn = module.cloudwatch_irsa.iam_role_arn

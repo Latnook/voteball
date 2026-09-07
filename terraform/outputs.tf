@@ -1,11 +1,11 @@
 output "cluster_name" {
   description = "EKS cluster name (for aws eks update-kubeconfig)."
-  value       = module.eks.cluster_name
+  value       = module.compute.cluster_name
 }
 
 output "cluster_endpoint" {
   description = "EKS API server endpoint."
-  value       = module.eks.cluster_endpoint
+  value       = module.compute.cluster_endpoint
 }
 
 output "region" {
@@ -40,7 +40,7 @@ output "secret_arn" {
 
 output "oidc_provider_arn" {
   description = "Cluster OIDC provider ARN (for add-on IRSA roles in Plan 2b)."
-  value       = module.eks.oidc_provider_arn
+  value       = module.compute.oidc_provider_arn
 }
 
 output "worker_role_arn" {

@@ -31,7 +31,7 @@
 resource "kubernetes_namespace" "devops_app" {
   # Same EKS access-entry propagation race as kubernetes_namespace.ci -- see the comment there for
   # what it looks like when it bites (a permissions error ~13 minutes into an apply).
-  depends_on = [module.eks]
+  depends_on = [module.compute]
 
   metadata {
     name = "devops-app"
@@ -55,7 +55,7 @@ resource "kubernetes_namespace" "devops_app" {
 # with it.
 resource "kubernetes_namespace" "logging" {
   # Same EKS access-entry propagation race as kubernetes_namespace.devops_app above.
-  depends_on = [module.eks]
+  depends_on = [module.compute]
 
   metadata {
     name = "logging"

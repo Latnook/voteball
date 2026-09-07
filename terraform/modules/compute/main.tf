@@ -1,7 +1,8 @@
-# EKS cluster + a single managed node group on Spot. enable_irsa creates the OIDC provider that the
-# hand-rolled IRSA roles (irsa.tf) federate against. enable_cluster_creator_admin_permissions grants
+# EKS cluster + a single managed node group on Spot. enable_irsa creates the OIDC provider that
+# modules/iam's hand-rolled roles federate against. enable_cluster_creator_admin_permissions grants
 # the Terraform caller cluster-admin via an EKS access entry, so `kubectl get nodes` works right
 # after apply without hand-editing aws-auth (the v20 module uses access entries, not the configmap).
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
@@ -30,8 +31,8 @@ module "eks" {
     }
   }
 
-  vpc_id     = module.networking.vpc_id
-  subnet_ids = module.networking.private_subnets
+  vpc_id     = var.vpc_id
+  subnet_ids = var.subnet_ids
 
   eks_managed_node_groups = {
     default = {

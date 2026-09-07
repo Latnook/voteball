@@ -2,20 +2,20 @@
 # (aws eks get-token) -- no long-lived kubeconfig in state. These providers can only initialize once
 # the cluster exists (Plan 2), which is why add-ons are a separate plan applied after it.
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_name
+  name = module.compute.cluster_name
 }
 
 locals {
   eks_exec = {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", var.aws_region]
+    args        = ["eks", "get-token", "--cluster-name", module.compute.cluster_name, "--region", var.aws_region]
   }
 }
 
 provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  host                   = module.compute.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.compute.cluster_certificate_authority_data)
   exec {
     api_version = local.eks_exec.api_version
     command     = local.eks_exec.command
@@ -28,8 +28,8 @@ provider "kubernetes" {
 # -- the two look almost identical and are deliberately different. See versions.tf.
 provider "helm" {
   kubernetes = {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    host                   = module.compute.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.compute.cluster_certificate_authority_data)
     exec = {
       api_version = local.eks_exec.api_version
       command     = local.eks_exec.command

@@ -27,6 +27,22 @@ module "networking" {
   database_subnet_cidrs = local.database_subnet_cidrs
 }
 
+module "compute" {
+  source = "./modules/compute"
+
+  cluster_name                         = var.cluster_name
+  cluster_version                      = var.cluster_version
+  cluster_endpoint_public_access_cidrs = var.cluster_endpoint_public_access_cidrs
+
+  vpc_id     = module.networking.vpc_id
+  subnet_ids = module.networking.private_subnets
+
+  node_instance_types = var.node_instance_types
+  node_min_size       = var.node_min_size
+  node_max_size       = var.node_max_size
+  node_desired_size   = var.node_desired_size
+}
+
 module "notifications" {
   source = "./modules/notifications"
 
@@ -49,7 +65,7 @@ module "storage" {
   private_subnet_cidrs = local.private_subnet_cidrs
   private_subnet_ids   = module.networking.private_subnets
 
-  node_security_group_id = module.eks.node_security_group_id
+  node_security_group_id = module.compute.node_security_group_id
 }
 
 module "iam" {
@@ -58,8 +74,8 @@ module "iam" {
   cluster_name      = var.cluster_name
   aws_region        = var.aws_region
   account_id        = data.aws_caller_identity.current.account_id
-  oidc_provider     = module.eks.oidc_provider
-  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider     = module.compute.oidc_provider
+  oidc_provider_arn = module.compute.oidc_provider_arn
 
   # Least privilege is expressed by what is NOT passed: the roles get one bucket and one topic,
   # and scope themselves to a single prefix within the bucket.

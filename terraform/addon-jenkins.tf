@@ -21,7 +21,7 @@ resource "kubernetes_namespace" "ci" {
   # -- after ~13 minutes of applying, with every helm_release add-on already installed, so it reads
   # like a permissions bug rather than a race. Waiting on the whole module covers the access entry
   # and its policy association.
-  depends_on = [module.eks]
+  depends_on = [module.compute]
 
   metadata {
     name = "ci"
@@ -49,7 +49,7 @@ module "jenkins_cd_irsa" {
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn               = module.compute.oidc_provider_arn
       namespace_service_accounts = ["ci:jenkins-cd-agent"]
     }
   }
@@ -105,7 +105,7 @@ resource "helm_release" "jenkins_support" {
     # server's ClusterIP lives on. Read from the module rather than hardcoded in the chart, so a
     # fork (or a future cluster with a non-default service CIDR) is not silently broken by a value
     # baked into charts/jenkins-support/values.yaml only as an offline-`helm template` default.
-    { name = "serviceCidr", value = module.eks.cluster_service_cidr },
+    { name = "serviceCidr", value = module.compute.cluster_service_cidr },
     # charts/jenkins-support/values.yaml states every value comes from Terraform; its own default
     # exists only so `helm template` runs offline. Passing this explicitly, rather than relying on
     # that default, keeps it from drifting silently if the chart's default ever changes.

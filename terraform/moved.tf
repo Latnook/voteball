@@ -163,3 +163,11 @@ moved {
   from = module.vpc
   to   = module.networking.module.vpc
 }
+
+# ---- modules/compute ----
+# ONE block, 49 state entries -- same whole-subtree rule as module.vpc above.
+
+moved {
+  from = module.eks
+  to   = module.compute.module.eks
+}

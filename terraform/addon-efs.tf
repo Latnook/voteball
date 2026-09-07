@@ -18,14 +18,14 @@ module "efs_csi_irsa" {
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn               = module.compute.oidc_provider_arn
       namespace_service_accounts = ["kube-system:efs-csi-controller-sa"]
     }
   }
 }
 
 resource "aws_eks_addon" "efs_csi" {
-  cluster_name             = module.eks.cluster_name
+  cluster_name             = module.compute.cluster_name
   addon_name               = "aws-efs-csi-driver"
   service_account_role_arn = module.efs_csi_irsa.iam_role_arn
 
