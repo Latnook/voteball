@@ -183,27 +183,22 @@ const PLATE_PARTIES = new Set([
 // Parties whose artwork is used UNCHANGED in both themes -- the recolour is skipped entirely.
 //
 // This exists for logos built around a KNOCKOUT. בית ציוני's Star of David is not drawn: it is a
-// hole in the swoosh that lets the background show through, so in the file the star's interior and
-// the empty space outside the artwork are the same transparent pixels. That is the defect
-// fillLogoInteriorForDark() documents for Shas above, and it has the same consequence here --
-// recolouring lifts the swoosh but cannot lift a hole, so the dark card shows through the star as
-// black triangles. A knockout can only be correct against the background it is actually drawn on,
-// and it is: white shows through on the light card, the card colour on the dark one.
+// Parties whose artwork must be shown UNCHANGED in both themes, skipping the dark-mode recolour.
 //
-// So the artwork is left alone and its colours are chosen to clear WCAG's 3:1 graphical-object
-// minimum on BOTH grounds -- the secondary elements use the brighter of the logo's own two blues
-// (#418AB8: 4.57:1 on the dark card, 3.78:1 on white). The darker #326B9F reads better on white but
-// falls to 3.08:1 on the dark card, which is the floor with nothing spare; the small
-// בראשות טרופר והנדל line is what pays for that first. This was a visual call by the repo owner
-// after seeing all three options rendered, not only a contrast calculation.
+// EMPTY since 2026-09-07, and deliberately kept as a registration point rather than deleted. Its one
+// entry was 'Zionist Home – The Reservists', for a blue lockup with a KNOCKOUT star -- a hole, not
+// ink, so recolouring lifted the swoosh and could not lift the hole, and the dark card showed
+// through the star as black triangles. That row merged into המילואימניקים והכלכלית and now runs on
+// הכלכלית's own SVG, which recolours normally, so the entry had to GO rather than be renamed:
+// carrying it across would have skipped the recolour on artwork that needs it.
 //
-// Skipping the recolour is what makes dark match light. Without this the blues would be lifted and
-// the two themes would drift apart again.
+// The general lesson (a knockout can only be correct against the ground it is drawn on, and defeats
+// every check based on brightness) is recorded in docs/party-classifications.md, not here.
 //
-// Keyed by name_en so one entry covers a party in both previous_parties and upcoming_parties.
-const SKIP_RECOLOR_PARTIES = new Set([
-  'Zionist Home – The Reservists',
-]);
+// Keyed by name_en so one entry covers a party in both previous_parties and upcoming_parties --
+// which is also why a rename in seed.sql silently unregisters a party from this set with no error
+// anywhere. If you rename a party, grep this file for its old name_en.
+const SKIP_RECOLOR_PARTIES = new Set([]);
 
 // Near-white, close to the theme's --ink (#F5F7FA). This started at the dark theme's --muted
 // (#8B95A3) to keep the filled tablet from outweighing the thin wordmarks on the neighbouring cards,
