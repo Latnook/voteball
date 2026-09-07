@@ -41,6 +41,20 @@ resource "kubernetes_namespace" "devops_app" {
       # kubernetes_namespace.ci declares it: NetworkPolicy namespaceSelectors match on it, and a
       # selector silently matching nothing is far harder to spot than a missing namespace.
       "kubernetes.io/metadata.name" = "devops-app"
+
+      # Vestigial, and declared anyway. This namespace predates Terraform owning it -- until
+      # 2026-08-05 it was created by `helm upgrade --install --create-namespace` in deploy.sh (see
+      # the history above), which left this label behind. Terraform adopted the namespace but never
+      # declared the label, so it sat as live drift: `terraform plan` proposed removing it on every
+      # run, and the 2026-09-07 module refactor had to be gated against that one known change rather
+      # than against a clean plan.
+      #
+      # NOTHING SELECTS ON IT -- every namespaceSelector in this repo matches
+      # kubernetes.io/metadata.name above, and neither `logging` nor `ci` carries it. It is declared
+      # purely so config and cluster agree, which also means a destroy/rebuild reproduces the
+      # namespace exactly as it is today. Deleting this line is safe; letting an apply delete it
+      # silently was not.
+      "name" = "devops-app"
     }
   }
 }

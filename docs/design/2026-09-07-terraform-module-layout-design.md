@@ -283,12 +283,38 @@ It also ran two checks this design had not asked for, both worth keeping:
   measuring: targeted plan `1 to add`, untargeted `3 to add`. Terraform prunes correctly; the step
   stays cheap.
 
-**Two findings left deliberately unfixed**, both pre-existing and out of this pass's scope:
+**Both pre-existing findings were then fixed, on the repo owner's call, and the plan is now
+genuinely `0 to add, 0 to change, 0 to destroy`** — the first clean plan this stack has produced in
+the course of this work:
 
-- The `kubernetes_namespace.devops_app` label drift above. The next apply will silently remove it.
-  Adding it to `charts/voteball` would make config and cluster agree.
-- `data.aws_eks_cluster_auth.this` (`terraform/providers.tf`) is declared and referenced nowhere —
-  both providers authenticate via `exec`. Dead since before this refactor.
+- **The `devops-app` label is now declared** in `terraform/namespaces.tf`, not in
+  `charts/voteball`. The chart is the wrong owner: `argocd/voteball-application.yaml.tmpl:89` sets
+  `CreateNamespace=false` precisely because Terraform creates this namespace, and adding a
+  `Namespace` object to the chart would give one object two managers. The label's origin is visible
+  in the evidence — `logging` and `ci`, both Terraform-created from the start, do **not** carry it,
+  while `devops-app` does, because until 2026-08-05 it was created by
+  `helm upgrade --install --create-namespace` (see the history comment in that file). Terraform
+  adopted the namespace without declaring the label, which is why it read as drift. Nothing selects
+  on it — every `namespaceSelector` in the repo matches `kubernetes.io/metadata.name` — so it is
+  declared purely so that config and cluster agree, and so that a destroy/rebuild reproduces the
+  namespace exactly as it stands.
+- **`data.aws_eks_cluster_auth.this` is removed** from `terraform/providers.tf`. Both providers
+  authenticate through `exec`, which shells out to `aws eks get-token` per call, so the data
+  source's token was fetched on every plan and discarded. A comment in its place records that its
+  absence is deliberate, so it is not "helpfully" restored.
+
+### Deleting `terraform/moved.tf` — when, and not before
+
+The blocks are still pending: no apply has consumed them, so **state holds the OLD addresses and the
+config holds the new ones.** `moved.tf` is the only thing connecting the two.
+
+- **Through a destroy/rebuild cycle it must stay.** `terraform destroy` reads the same state, so
+  without the blocks it would fail to match half the configuration against what exists.
+- **After the rebuild it is inert.** A fresh apply creates everything at the new addresses, and a
+  `moved` block whose `from` is absent from state is a silent no-op, not an error. That is the point
+  at which the file can be deleted.
+- The header comment in `terraform/moved.tf` says the same thing, so this does not depend on anyone
+  reading this document.
 
 **A third correction, to this document's own section 5.** It listed 8 live files needing a citation
 update. An independent sweep found **37 across 26 files**, including five `terraform/*.tf` files
