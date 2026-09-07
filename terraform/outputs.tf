@@ -15,7 +15,7 @@ output "region" {
 
 output "ecr_repository_urls" {
   description = "ECR repo URLs by component (push target for the CI/deploy pipeline)."
-  value       = { for k, r in aws_ecr_repository.app : k => r.repository_url }
+  value       = module.storage.ecr_repository_urls
 }
 
 output "acm_certificate_arn" {
@@ -30,7 +30,7 @@ output "waf_web_acl_arn" {
 
 output "s3_bucket" {
   description = "Rollups/backups bucket name."
-  value       = aws_s3_bucket.rollups.id
+  value       = module.storage.bucket_id
 }
 
 output "secret_arn" {

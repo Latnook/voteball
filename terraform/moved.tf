@@ -31,3 +31,62 @@ moved {
   from = aws_budgets_budget.monthly
   to   = module.notifications.aws_budgets_budget.monthly
 }
+
+# ---- modules/storage ----
+# One block per address covers every for_each instance, so the 5 app repos, 2 cache repos and
+# 2 mount targets need one block each rather than nine.
+
+moved {
+  from = aws_s3_bucket.rollups
+  to   = module.storage.aws_s3_bucket.rollups
+}
+
+moved {
+  from = aws_s3_bucket_public_access_block.rollups
+  to   = module.storage.aws_s3_bucket_public_access_block.rollups
+}
+
+moved {
+  from = aws_s3_bucket_versioning.rollups
+  to   = module.storage.aws_s3_bucket_versioning.rollups
+}
+
+moved {
+  from = aws_ecr_repository.app
+  to   = module.storage.aws_ecr_repository.app
+}
+
+moved {
+  from = aws_ecr_repository.cache
+  to   = module.storage.aws_ecr_repository.cache
+}
+
+moved {
+  from = aws_ecr_lifecycle_policy.app
+  to   = module.storage.aws_ecr_lifecycle_policy.app
+}
+
+moved {
+  from = aws_ecr_lifecycle_policy.cache
+  to   = module.storage.aws_ecr_lifecycle_policy.cache
+}
+
+moved {
+  from = aws_efs_file_system.jenkins
+  to   = module.storage.aws_efs_file_system.jenkins
+}
+
+moved {
+  from = aws_efs_mount_target.jenkins
+  to   = module.storage.aws_efs_mount_target.jenkins
+}
+
+moved {
+  from = aws_security_group.efs
+  to   = module.storage.aws_security_group.efs
+}
+
+moved {
+  from = aws_vpc_security_group_ingress_rule.efs_nfs
+  to   = module.storage.aws_vpc_security_group_ingress_rule.efs_nfs
+}

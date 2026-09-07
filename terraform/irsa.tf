@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "worker_permissions" {
     sid       = "WriteSnapshots"
     effect    = "Allow"
     actions   = ["s3:PutObject"]
-    resources = ["${aws_s3_bucket.rollups.arn}/snapshots/*"] # write-only, snapshots/ prefix only
+    resources = ["${module.storage.bucket_arn}/snapshots/*"] # write-only, snapshots/ prefix only
   }
 }
 
@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "backup_permissions" {
     sid       = "WriteNightlyBackups"
     effect    = "Allow"
     actions   = ["s3:PutObject"]
-    resources = ["${aws_s3_bucket.rollups.arn}/backups/*"] # write-only, backups/ prefix only, no SNS
+    resources = ["${module.storage.bucket_arn}/backups/*"] # write-only, backups/ prefix only, no SNS
   }
 }
 

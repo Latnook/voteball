@@ -13,3 +13,20 @@ module "notifications" {
   notification_email = var.notification_email
   monthly_budget_usd = var.monthly_budget_usd
 }
+
+module "storage" {
+  source = "./modules/storage"
+
+  cluster_name = var.cluster_name
+  account_id   = data.aws_caller_identity.current.account_id
+  vpc_id       = module.vpc.vpc_id
+  azs          = var.azs
+
+  # Two lists describing the same subnets on purpose -- the CIDRs are static and safe as for_each
+  # KEYS, the ids come from the VPC module and are only safe as VALUES. See the comment above
+  # aws_efs_mount_target.jenkins in the module.
+  private_subnet_cidrs = local.private_subnet_cidrs
+  private_subnet_ids   = module.vpc.private_subnets
+
+  node_security_group_id = module.eks.node_security_group_id
+}
