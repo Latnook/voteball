@@ -208,7 +208,7 @@ step "2/11  Creating ECR repositories and secret containers (targeted apply)"
 ./scripts/bootstrap-tf-backend.sh
 terraform -chdir=terraform init -upgrade -backend-config=backend.hcl
 terraform -chdir=terraform apply -var-file="$TFVARS" \
-  -target=aws_ecr_repository.app -target=aws_ecr_repository.cache \
+  -target=module.storage.aws_ecr_repository.app -target=module.storage.aws_ecr_repository.cache \
   -target=aws_secretsmanager_secret_version.app_placeholder \
   -target=aws_secretsmanager_secret_version.jenkins_placeholder \
   -target=aws_secretsmanager_secret_version.grafana_placeholder \
