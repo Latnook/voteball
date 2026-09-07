@@ -348,6 +348,46 @@ dropped** — it is the synthetic journey every ratio-based SLI on this site dep
 one kind of generated traffic that carries signal, and a panel separates it from organic requests
 rather than discarding it.
 
+### 13. A ConfigMap change does not restart anything (2026-09-07, found by deploying)
+
+Decision 11 shipped, `application-cd` promoted it, ArgoCD reported **Synced/Healthy**, and both
+PostSync hooks reported **Succeeded**. Every signal this repo has said the parse pipeline was live.
+It was not:
+
+```
+$ kubectl get pods -n logging -l app=fluentd
+fluentd-57d896444c-67fkg   1/1   Running   24h          <-- 24 HOURS old
+$ kubectl exec -n logging deploy/fluentd -- grep -c multi_format /fluentd/etc/fluent.conf
+0
+```
+
+The ConfigMap in the cluster was the new one. The pod was not restarted, because **nothing in a
+Deployment's pod spec changed** — a ConfigMap is not part of it. And this ConfigMap is mounted with
+`subPath`, which kubelet **never** refreshes: not on the usual ~60s cycle, not ever. So the config
+would have stayed stale until something unrelated happened to reschedule the pod, which on a 100%
+Spot node group means "within about a day, by luck".
+
+This is the same defect family as everything else in this document, arriving from a new direction:
+the failure was not in the thing that was built, it was in the assumption that applying it deployed
+it. `verify-efk.sh` did not catch it either — it counts a marker *document*, and an unparsed
+document still counts.
+
+**The fix is a `checksum/config` annotation on the pod template**, hashing the config text, which is
+the standard Helm idiom for exactly this. To hash it, the config had to move into a named template
+(`logging.fluentConf`) rather than sitting inline in the ConfigMap: hashing the file that *contains*
+the annotation recurses, and a second template file would break `--show-only templates/fluentd.yaml`
+for every existing assertion. The `define` sits above the `enabled` gate because Go templates reject
+a `define` nested inside another action.
+
+`test-logging-chart.sh` now asserts both halves — that the annotation is there, **and that its value
+changes when the config does**. The second assertion is not redundant: a constant satisfies the
+first while restoring the bug exactly, which is what mutation-testing it demonstrated.
+
+**The Kibana import Job needs no equivalent** — it is a hook with
+`hook-delete-policy: before-hook-creation`, so ArgoCD recreates the pod on every sync and it always
+reads the current ConfigMap. The trap is specific to long-lived pods, which in this chart is Fluentd
+alone.
+
 ### 12. Kibana content is code, and its absence is invisible (2026-09-07)
 
 The same audit found **223 Kibana saved objects, every one an Elastic built-in** — zero data views,

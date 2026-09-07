@@ -431,7 +431,15 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   imports cleanly and renders as an error card. The matching half is the log line itself:
   **`templates/fluentd.yaml` parses it** into `http_status`/`http_path`/`log_level`, and
   `reserve_data true` plus the trailing `format none` catch-all are what stop `filter_parser` from
-  silently DROPPING every record matching no pattern (the worker's entire output matches none). It
+  silently DROPPING every record matching no pattern (the worker's entire output matches none).
+  **That config reaches the running pod ONLY because of the `checksum/config` pod annotation.** A
+  ConfigMap change restarts nothing, and this one is mounted with `subPath`, which kubelet never
+  refreshes -- so without the annotation a new `fluent.conf` lands in the cluster, ArgoCD reports
+  Synced/Healthy, `application-cd` reports success, and Fluentd runs the old config until something
+  unrelated reschedules the pod. Hit for real the day the parser shipped: both PostSync hooks
+  Succeeded, every check green, and `grep -c multi_format /fluentd/etc/fluent.conf` in the running
+  pod returned 0 against a pod 24 hours old. `verify-efk.sh` does not catch it either -- an unparsed
+  document still counts. It
   also drops `ELB-HealthChecker` lines, which were **37.2% of the index**, from Elasticsearch only --
   CloudWatch is upstream of the fan-out and keeps the authoritative copy. See
   `docs/design/2026-08-27-efk-logging-design.md` decisions 11 and 12.

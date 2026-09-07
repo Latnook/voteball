@@ -1,3 +1,160 @@
+{{/*
+The Fluentd pipeline, as a named template rather than written inline in the ConfigMap below.
+
+WHY IT IS FACTORED OUT: the Deployment hashes it into a `checksum/config` pod annotation, which is
+the only thing that makes a config change actually take effect. A ConfigMap edit does NOT restart
+the pods that mount it, and this one is mounted with `subPath`, which kubelet never refreshes at
+all -- not slowly, never. Without the annotation the sequence is: ArgoCD applies the new ConfigMap,
+reports Synced/Healthy, application-cd reports success, and Fluentd goes on running the old config
+indefinitely. Observed live 2026-09-07: the parse pipeline shipped, both PostSync hooks Succeeded,
+every check was green, and `grep -c multi_format /fluentd/etc/fluent.conf` inside the running pod
+returned 0 -- against a pod 24 hours old.
+
+It is a `define` rather than a second template file so `--show-only templates/fluentd.yaml` still
+renders the whole component, and so the hash covers EXACTLY the config text: hashing the file that
+contains the annotation would recurse. It sits ABOVE the `enabled` gate because Go templates reject
+a `define` nested inside another action.
+*/}}
+{{- define "logging.fluentConf" -}}
+<source>
+  @type forward
+  bind 0.0.0.0
+  port 24224
+</source>
+
+{{- if .Values.fluentd.dropHealthChecks }}
+# DROP THE ALB HEALTH CHECKS. Measured on the live index 2026-09-07: 22,363 of 60,112 documents
+# -- 37.2% of everything stored -- were `GET / ... "ELB-HealthChecker/2.0"`, a line nobody will
+# ever search and which no panel counts. Dropping it is a third of the retention window bought
+# back for real traffic.
+#
+# THIS DROPS NOTHING FROM CLOUDWATCH. Fluent Bit fans out to both sinks (addon-cloudwatch.tf) and
+# this filter runs in the Fluentd aggregator, downstream of that split -- so CloudWatch, which is
+# the authoritative copy, keeps receiving every health check. What is discarded is a search-index
+# row, which is the same trade already recorded for the 7-day retention (spec decision 6b).
+#
+# Keyed on the RAW `log` line and placed BEFORE the parser, not on the parsed http_user_agent:
+# there is no point spending a regexp on a record that is about to be thrown away.
+#
+# The canary is deliberately NOT dropped. It is the synthetic journey every ratio-based SLI on
+# this site depends on (see CLAUDE.md, "the canary is not a nice-to-have"), so its requests are
+# the one kind of generated traffic that carries signal.
+<filter **>
+  @type grep
+  <exclude>
+    key log
+    pattern /ELB-HealthChecker/
+  </exclude>
+</filter>
+{{- end }}
+
+# PARSE THE LINE INTO FIELDS. Without this every document is `{time, stream, log, kubernetes.*}`
+# with the whole request crammed into one `log` string -- full-text searchable, but impossible to
+# aggregate. "How many 5xx in the last hour" and "which endpoint errors most" need an
+# http_status you can range-query and an http_path you can bucket, and neither exists until here.
+#
+# THE CATCH-ALL PATTERN IS LOAD-BEARING, AND SO IS `reserve_data`. filter_parser DROPS a record
+# whose key_name is missing when reserve_data is false, and multi_format tries each pattern in
+# order and gives up on the last one -- so a config without the trailing `format none` would
+# silently shred every worker line (`Rollups recomputed, milestones checked.` matches nothing
+# above it). Verified against the plugin's own source in this exact image, not from memory:
+# filter_parser.rb returns `handle_parsed(tag, record, time, {})` -- the record, unchanged -- on
+# BOTH the nil-key and the pattern-not-matched paths, but only when reserve_data is true.
+# Deleting that one line turns this filter into a log shredder that reports nothing.
+#
+# Every expression below was proven against real lines pulled out of the live index before it was
+# written here, per CLAUDE.md's rule that a pattern which can never match reads exactly like a
+# correct negative. scripts/tests/test-logging-parsers.sh keeps that proof runnable.
+<filter **>
+  @type parser
+  key_name log
+  # Keep the raw line AND the Kubernetes metadata alongside the parsed fields. See above: this
+  # is also the only thing standing between an unmatched record and silent deletion.
+  reserve_data true
+  # The event time comes from Fluent Bit, which read it from the container runtime. The
+  # timestamps inside these lines are the application's own idea of the time and are strictly
+  # worse -- gunicorn's has no sub-second precision at all.
+  reserve_time true
+  # reserve_data true already guarantees the record survives, so an error event here would be
+  # noise rather than a signal.
+  emit_invalid_record_to_error false
+  <parse>
+    @type multi_format
+    # 1. nginx `combined` plus the trailing "$http_x_forwarded_for" the frontend appends.
+    #    This is the ONLY source of per-endpoint data in the whole stack: gunicorn's access log
+    #    is off, so the backend container emits no request lines at all -- every /api/* row in
+    #    Kibana arrives here, through the proxy, not from Flask.
+    #
+    #    QUERY STRING SPLIT OFF `http_path` ON PURPOSE. /api/results?by=all and ?by=club are one
+    #    endpoint; keeping the query in the path would scatter a single endpoint across as many
+    #    buckets as it has parameter combinations and make "top endpoints" meaningless.
+    <pattern>
+      format regexp
+      expression /^(?<remote_addr>\S+) \S+ \S+ \[(?<nginx_time>[^\]]*)\] "(?<http_method>[A-Z]+) (?<http_path>[^ ?"]*)(?:\?(?<http_query>[^ "]*))? HTTP\/(?<http_version>[\d.]+)" (?<http_status>\d{3}) (?<http_bytes>\d+|-) "(?<http_referer>[^"]*)" "(?<http_user_agent>[^"]*)"(?: "(?<client_ip>[^"]*)")?$/
+      types http_status:integer,http_bytes:integer
+    </pattern>
+    # 2. gunicorn / Flask: [time] [pid] [LEVEL] message. `log_level` is what makes an
+    #    errors-only saved search possible.
+    <pattern>
+      format regexp
+      expression /^\[(?<gunicorn_time>[^\]]*)\] \[(?<pid>\d+)\] \[(?<log_level>[A-Z]+)\] (?<message>.*)$/
+      types pid:integer
+    </pattern>
+    # 3. The synthetic canary's own line: `200 GET /api/options`. Same three fields as nginx, so
+    #    it lands in the same buckets and the journey is visible next to the traffic it imitates.
+    <pattern>
+      format regexp
+      expression /^(?<http_status>\d{3}) (?<http_method>[A-Z]+) (?<http_path>[^ ?]*)(?:\?(?<http_query>\S*))?$/
+      types http_status:integer
+    </pattern>
+    # 4. THE CATCH-ALL. Everything else -- worker lines, tracebacks, the verify script's token --
+    #    keeps its raw text under `message` and is never dropped. Do not remove this.
+    <pattern>
+      format none
+      message_key message
+    </pattern>
+  </parse>
+</filter>
+
+# Fluent Bit's kubernetes filter has already attached pod/namespace/container metadata, so there
+# is nothing to enrich here. Everything lands in one time-based index behind a write alias the
+# ILM policy rolls over -- one index, one shard, no replica (spec decision 3).
+#
+# NO EXPLICIT MAPPING for the parsed fields above, deliberately. Elasticsearch's dynamic mapping
+# gives http_status/http_bytes/pid `long` (the `types` directives make them real JSON numbers)
+# and everything else `text` + `.keyword`, which is what the saved objects aggregate on. An
+# explicit mapping in the index template would apply only to indices created AFTER it, so for
+# the length of the retention window the data view would span two differently-mapped indices and
+# Kibana would mark those fields `conflict` -- unaggregatable, in the exact panels this is for.
+<match **>
+  @type elasticsearch
+  host voteball-logs-es-http
+  port 9200
+  scheme https
+  # ECK generates a self-signed CA and mounts it below. verify is ON -- the CA is real, it is
+  # just not publicly rooted.
+  ssl_verify true
+  ca_file /etc/fluentd/certs/ca.crt
+  user elastic
+  password "#{ENV['ELASTIC_PASSWORD']}"
+
+  # Write through the alias, never a concrete index name: ILM rolls the backing index over and
+  # repoints the alias, and a hardcoded index name would silently bypass the whole lifecycle.
+  index_name voteball-logs
+  # Required for ILM rollover to work through an alias.
+  suppress_type_name true
+
+  <buffer>
+    @type file
+    path /var/log/fluentd/buffer
+    flush_interval 10s
+    retry_forever true
+    chunk_limit_size 8MB
+    total_limit_size 512MB
+  </buffer>
+</match>
+{{- end }}
+
 {{- if .Values.enabled }}
 # The AGGREGATOR tier. Fluent Bit (the DaemonSet in amazon-cloudwatch, unchanged) tails every node
 # and forwards here; this buffers, retries and routes into the Elasticsearch write alias.
@@ -14,143 +171,7 @@ metadata:
     {{- include "logging.labels" . | nindent 4 }}
 data:
   fluent.conf: |
-    <source>
-      @type forward
-      bind 0.0.0.0
-      port 24224
-    </source>
-
-{{- if .Values.fluentd.dropHealthChecks }}
-    # DROP THE ALB HEALTH CHECKS. Measured on the live index 2026-09-07: 22,363 of 60,112 documents
-    # -- 37.2% of everything stored -- were `GET / ... "ELB-HealthChecker/2.0"`, a line nobody will
-    # ever search and which no panel counts. Dropping it is a third of the retention window bought
-    # back for real traffic.
-    #
-    # THIS DROPS NOTHING FROM CLOUDWATCH. Fluent Bit fans out to both sinks (addon-cloudwatch.tf) and
-    # this filter runs in the Fluentd aggregator, downstream of that split -- so CloudWatch, which is
-    # the authoritative copy, keeps receiving every health check. What is discarded is a search-index
-    # row, which is the same trade already recorded for the 7-day retention (spec decision 6b).
-    #
-    # Keyed on the RAW `log` line and placed BEFORE the parser, not on the parsed http_user_agent:
-    # there is no point spending a regexp on a record that is about to be thrown away.
-    #
-    # The canary is deliberately NOT dropped. It is the synthetic journey every ratio-based SLI on
-    # this site depends on (see CLAUDE.md, "the canary is not a nice-to-have"), so its requests are
-    # the one kind of generated traffic that carries signal.
-    <filter **>
-      @type grep
-      <exclude>
-        key log
-        pattern /ELB-HealthChecker/
-      </exclude>
-    </filter>
-{{- end }}
-
-    # PARSE THE LINE INTO FIELDS. Without this every document is `{time, stream, log, kubernetes.*}`
-    # with the whole request crammed into one `log` string -- full-text searchable, but impossible to
-    # aggregate. "How many 5xx in the last hour" and "which endpoint errors most" need an
-    # http_status you can range-query and an http_path you can bucket, and neither exists until here.
-    #
-    # THE CATCH-ALL PATTERN IS LOAD-BEARING, AND SO IS `reserve_data`. filter_parser DROPS a record
-    # whose key_name is missing when reserve_data is false, and multi_format tries each pattern in
-    # order and gives up on the last one -- so a config without the trailing `format none` would
-    # silently shred every worker line (`Rollups recomputed, milestones checked.` matches nothing
-    # above it). Verified against the plugin's own source in this exact image, not from memory:
-    # filter_parser.rb returns `handle_parsed(tag, record, time, {})` -- the record, unchanged -- on
-    # BOTH the nil-key and the pattern-not-matched paths, but only when reserve_data is true.
-    # Deleting that one line turns this filter into a log shredder that reports nothing.
-    #
-    # Every expression below was proven against real lines pulled out of the live index before it was
-    # written here, per CLAUDE.md's rule that a pattern which can never match reads exactly like a
-    # correct negative. scripts/tests/test-logging-parsers.sh keeps that proof runnable.
-    <filter **>
-      @type parser
-      key_name log
-      # Keep the raw line AND the Kubernetes metadata alongside the parsed fields. See above: this
-      # is also the only thing standing between an unmatched record and silent deletion.
-      reserve_data true
-      # The event time comes from Fluent Bit, which read it from the container runtime. The
-      # timestamps inside these lines are the application's own idea of the time and are strictly
-      # worse -- gunicorn's has no sub-second precision at all.
-      reserve_time true
-      # reserve_data true already guarantees the record survives, so an error event here would be
-      # noise rather than a signal.
-      emit_invalid_record_to_error false
-      <parse>
-        @type multi_format
-        # 1. nginx `combined` plus the trailing "$http_x_forwarded_for" the frontend appends.
-        #    This is the ONLY source of per-endpoint data in the whole stack: gunicorn's access log
-        #    is off, so the backend container emits no request lines at all -- every /api/* row in
-        #    Kibana arrives here, through the proxy, not from Flask.
-        #
-        #    QUERY STRING SPLIT OFF `http_path` ON PURPOSE. /api/results?by=all and ?by=club are one
-        #    endpoint; keeping the query in the path would scatter a single endpoint across as many
-        #    buckets as it has parameter combinations and make "top endpoints" meaningless.
-        <pattern>
-          format regexp
-          expression /^(?<remote_addr>\S+) \S+ \S+ \[(?<nginx_time>[^\]]*)\] "(?<http_method>[A-Z]+) (?<http_path>[^ ?"]*)(?:\?(?<http_query>[^ "]*))? HTTP\/(?<http_version>[\d.]+)" (?<http_status>\d{3}) (?<http_bytes>\d+|-) "(?<http_referer>[^"]*)" "(?<http_user_agent>[^"]*)"(?: "(?<client_ip>[^"]*)")?$/
-          types http_status:integer,http_bytes:integer
-        </pattern>
-        # 2. gunicorn / Flask: [time] [pid] [LEVEL] message. `log_level` is what makes an
-        #    errors-only saved search possible.
-        <pattern>
-          format regexp
-          expression /^\[(?<gunicorn_time>[^\]]*)\] \[(?<pid>\d+)\] \[(?<log_level>[A-Z]+)\] (?<message>.*)$/
-          types pid:integer
-        </pattern>
-        # 3. The synthetic canary's own line: `200 GET /api/options`. Same three fields as nginx, so
-        #    it lands in the same buckets and the journey is visible next to the traffic it imitates.
-        <pattern>
-          format regexp
-          expression /^(?<http_status>\d{3}) (?<http_method>[A-Z]+) (?<http_path>[^ ?]*)(?:\?(?<http_query>\S*))?$/
-          types http_status:integer
-        </pattern>
-        # 4. THE CATCH-ALL. Everything else -- worker lines, tracebacks, the verify script's token --
-        #    keeps its raw text under `message` and is never dropped. Do not remove this.
-        <pattern>
-          format none
-          message_key message
-        </pattern>
-      </parse>
-    </filter>
-
-    # Fluent Bit's kubernetes filter has already attached pod/namespace/container metadata, so there
-    # is nothing to enrich here. Everything lands in one time-based index behind a write alias the
-    # ILM policy rolls over -- one index, one shard, no replica (spec decision 3).
-    #
-    # NO EXPLICIT MAPPING for the parsed fields above, deliberately. Elasticsearch's dynamic mapping
-    # gives http_status/http_bytes/pid `long` (the `types` directives make them real JSON numbers)
-    # and everything else `text` + `.keyword`, which is what the saved objects aggregate on. An
-    # explicit mapping in the index template would apply only to indices created AFTER it, so for
-    # the length of the retention window the data view would span two differently-mapped indices and
-    # Kibana would mark those fields `conflict` -- unaggregatable, in the exact panels this is for.
-    <match **>
-      @type elasticsearch
-      host voteball-logs-es-http
-      port 9200
-      scheme https
-      # ECK generates a self-signed CA and mounts it below. verify is ON -- the CA is real, it is
-      # just not publicly rooted.
-      ssl_verify true
-      ca_file /etc/fluentd/certs/ca.crt
-      user elastic
-      password "#{ENV['ELASTIC_PASSWORD']}"
-
-      # Write through the alias, never a concrete index name: ILM rolls the backing index over and
-      # repoints the alias, and a hardcoded index name would silently bypass the whole lifecycle.
-      index_name voteball-logs
-      # Required for ILM rollover to work through an alias.
-      suppress_type_name true
-
-      <buffer>
-        @type file
-        path /var/log/fluentd/buffer
-        flush_interval 10s
-        retry_forever true
-        chunk_limit_size 8MB
-        total_limit_size 512MB
-      </buffer>
-    </match>
+{{- include "logging.fluentConf" . | nindent 4 }}
 ---
 apiVersion: v1
 kind: Service
@@ -184,6 +205,12 @@ spec:
     metadata:
       labels:
         app: fluentd
+      annotations:
+        # THE ONLY THING THAT MAKES A CONFIG CHANGE TAKE EFFECT -- see the note on the
+        # `logging.fluentConf` define at the top of this file. Changing this value changes the pod
+        # spec, which is what makes Kubernetes roll the Deployment; without it a new fluent.conf
+        # sits in the ConfigMap, unread, while ArgoCD and the pipeline both report success.
+        checksum/config: {{ include "logging.fluentConf" . | sha256sum }}
     spec:
       securityContext:
         runAsNonRoot: true
