@@ -225,4 +225,74 @@ which is precisely why the gate is "the plan says *no changes*", not "the plan l
 
 ## Verification outcome
 
-*(to be filled in once the migration runs)*
+Executed 2026-09-07 against the live stack (EKS `ACTIVE`, RDS `available`, 228 resources in state).
+**`terraform apply` was never run**, and the `moved` blocks are therefore still pending — do not
+delete `terraform/moved.tf` until an apply has consumed them.
+
+**The gate had to be corrected twice before it was worth trusting**, which is the most useful thing
+this pass produced:
+
+1. **`No changes.` was never achievable.** This stack carries one pre-existing drift, applied
+   outside Terraform: `kubernetes_namespace.devops_app` has a stray `name: devops-app` label, so a
+   clean plan reads `0 to add, 1 to change, 0 to destroy`. Established by stashing the work and
+   re-planning *before* trusting any result. Without that baseline every gate would have shown
+   "1 to change" and been read as either alarming or ignorable, both wrong.
+2. **Diffing the text plan measured the wrong thing.** Terraform interleaves parallel refresh lines
+   in a different order on every run, so a text diff reported hundreds of differences on an
+   *identical* config. The gate reads `terraform show -json` instead and asserts the set of non-no-op
+   resource changes equals exactly the one known drift. Mutation-tested — fed a deliberately wrong
+   expectation and confirmed it failed — before being trusted to pass.
+
+Per-task results, gate run after every one of the seven refactor commits:
+
+| Task | Module | Cumulative resources recognised as moved |
+|---|---|---|
+| 1 | `notifications` | 3 |
+| 2 | `storage` | 25 |
+| 3 | `iam` | 37 |
+| 4 | `networking` | 61 |
+| 5 | `compute` | 97 |
+| 6 | `database` | 101 |
+| 7 | root reshuffle (`dns.tf`, providers merge) | 101 — unchanged, which is the confirmation: moving a resource between two ROOT files changes no state address |
+
+101 reconciles exactly as `3 + 22 + 12 + 24 + 36`. The gap to the 110 a naive count predicts is
+`module.eks`'s 13 data sources, which are re-read rather than migrated and so carry no
+`previous_address`.
+
+**Operator-facing checks, the actual acceptance criterion:**
+
+- All 16 root outputs byte-identical before and after (`diff` of `terraform output -json`, jq-sorted).
+- `./scripts/sync-values-from-tf.sh --check` → `values.yaml is in sync with terraform`.
+- `scripts/tests/run-ci-suite.sh` → 30 green (29 before; the new one is task 8's).
+- Live stack unaffected: EKS `ACTIVE`, RDS `available`, 5 app pods Running, `GET /` and
+  `GET /api/results?by=all` both 200.
+- Every command an operator types is unchanged, including `-var-file=voteball.tfvars`.
+
+**What an independent audit found afterwards.** A fresh reader was given the pre-refactor state list
+and asked to break `moved.tf`. Completeness, destination correctness, duplicates, orphans, carried
+comments and variable plumbing all came back clean, by set arithmetic over the 228-entry state list.
+It also ran two checks this design had not asked for, both worth keeping:
+
+- **Attribute drift.** A `moved` block fixes the address but not the body, and a changed `for_each`
+  KEY still forces destroy+create. Every moved resource body was diffed against the pre-refactor
+  baseline: 20 of 32 byte-identical, the rest pure reference re-plumbing with identical resolved
+  values, and every `for_each` key unchanged.
+- **`-target=` blast radius.** Whether targeting a resource *inside* a module drags in that module's
+  other inputs — which would turn `deploy.sh` step 5's cheap pre-apply into a full VPC+EKS apply —
+  could not be settled by reading. It was settled by building a synthetic two-module repro and
+  measuring: targeted plan `1 to add`, untargeted `3 to add`. Terraform prunes correctly; the step
+  stays cheap.
+
+**Two findings left deliberately unfixed**, both pre-existing and out of this pass's scope:
+
+- The `kubernetes_namespace.devops_app` label drift above. The next apply will silently remove it.
+  Adding it to `charts/voteball` would make config and cluster agree.
+- `data.aws_eks_cluster_auth.this` (`terraform/providers.tf`) is declared and referenced nowhere —
+  both providers authenticate via `exec`. Dead since before this refactor.
+
+**A third correction, to this document's own section 5.** It listed 8 live files needing a citation
+update. An independent sweep found **37 across 26 files**, including five `terraform/*.tf` files
+whose own comments pointed at files this refactor had just deleted. Enumerating callers by hand does
+not find them; the sweep that did is recorded in the commit that fixed them (`424ef3b`), and it had
+to be self-tested against known-present input twice after two of its own patterns silently matched
+nothing.
