@@ -189,6 +189,27 @@ pass "Fluentd runs non-root on a read-only root filesystem"
 # is 0777 with no sticky bit -- so fluentd dies at startup before reading any config. Verified on
 # the live cluster 2026-08-28. `docker run --tmpfs /tmp` mounts 1777 and CANNOT reproduce it, which
 # is why this is asserted here rather than left to the container test.
+# A CONFIGMAP CHANGE DOES NOT RESTART THE PODS THAT MOUNT IT, and this one is mounted with
+# `subPath`, which kubelet never refreshes -- not slowly, never. Without a checksum annotation on the
+# pod template, a new fluent.conf reaches the cluster, ArgoCD reports Synced/Healthy, application-cd
+# reports success, and Fluentd keeps running the previous config indefinitely. That is not
+# hypothetical: it happened on 2026-09-07 with the parse pipeline itself -- both PostSync hooks
+# Succeeded, every check green, and `grep -c multi_format /fluentd/etc/fluent.conf` in the running
+# pod returned 0 against a pod 24 hours old.
+grep -qE '^[[:space:]]*checksum/config:[[:space:]]*[0-9a-f]{64}[[:space:]]*$' <<<"$fd" \
+  || fail "the Fluentd pod template has no checksum/config annotation -- a changed fluent.conf would reach the ConfigMap and never reach the running pod, with every status green"
+pass "pod template carries a checksum/config annotation (config changes roll the Deployment)"
+
+# And it must actually TRACK the config: a constant, or a hash of something else, satisfies the grep
+# above while restoring the exact bug. Render with one config-affecting value flipped and require a
+# different digest.
+sum_a="$(grep -oE 'checksum/config:[[:space:]]*[0-9a-f]{64}' <<<"$fd")"
+sum_b="$(helm template logging "$CHART" --namespace logging --set fluentd.dropHealthChecks=false \
+          --show-only templates/fluentd.yaml | grep -oE 'checksum/config:[[:space:]]*[0-9a-f]{64}')"
+[ -n "$sum_a" ] && [ -n "$sum_b" ] && [ "$sum_a" != "$sum_b" ] \
+  || fail "checksum/config does not change when the Fluentd config does -- it is not hashing the config, so the Deployment would not roll"
+pass "checksum/config changes with the config, not just present"
+
 grep -qE 'name:[[:space:]]*TMPDIR[[:space:]]*$' <<<"$fd" \
   || fail "Fluentd must set TMPDIR -- a bare emptyDir at /tmp is world-writable and Ruby rejects it"
 grep -qE 'value:[[:space:]]*"?/tmp/fluentd"?[[:space:]]*$' <<<"$fd" \
