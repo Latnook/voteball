@@ -459,7 +459,14 @@ function renderUpcomingGrid() {
   // /api/options deliberately still returns it (admin.js needs it); the ballot must not offer
   // it, and /api/vote rejects it server-side too.
   const standing = optionsData.upcoming_parties.filter(p => p.on_ballot !== false);
-  sortByLocalizedName(standing).forEach(p => {
+
+  // 'Other' is a catch-all with no real logo, exactly as in renderPreviousGrid -- pulled out of the
+  // alphabetical run and rendered as a plain text utility card next to "undecided". It is still a
+  // REAL pick: it keeps data-upcoming-id, so syncUpcomingGrid's cap handling and toggleUpcoming
+  // treat it like any other party, and it counts toward the 3-pick cap. Only its rendering differs.
+  const otherParty = standing.find(p => p.name_en === 'Other');
+
+  sortByLocalizedName(standing.filter(p => p !== otherParty)).forEach(p => {
     const isChecked = selectedUpcomingIds.has(p.id);
     const card = document.createElement('button');
     card.type = 'button';
@@ -474,6 +481,21 @@ function renderUpcomingGrid() {
     card.addEventListener('click', () => toggleUpcoming(p.id));
     grid.appendChild(card);
   });
+
+  if (otherParty) {
+    const isChecked = selectedUpcomingIds.has(otherParty.id);
+    const otherCard = document.createElement('button');
+    otherCard.type = 'button';
+    otherCard.className = 'pick-card utility-card';
+    otherCard.dataset.upcomingId = otherParty.id;
+    applyCardState(otherCard, isChecked, !isChecked && atCap);
+    const otherName = document.createElement('span');
+    otherName.className = 'card-name';
+    otherName.textContent = localizedName(otherParty);
+    otherCard.appendChild(otherName);
+    otherCard.addEventListener('click', () => toggleUpcoming(otherParty.id));
+    grid.appendChild(otherCard);
+  }
 
   const undecidedCard = document.createElement('button');
   undecidedCard.type = 'button';

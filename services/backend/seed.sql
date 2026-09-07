@@ -537,6 +537,15 @@ WHERE t.seed_key = s.seed_key;
 -- Same unconditional-ideology rule as previous_parties (families/family_evidence included, since
 -- neither is admin-writable -- see docs/design/2026-07-30-party-families-club-traits-design.md).
 -- Independent from previous_parties even where a lineage link exists (design spec Decision 1).
+--
+-- 'אחר' (Other) is a catch-all ballot option, not a party -- NULL on every ideology column, on
+-- families/family_evidence too, and on_ballot TRUE because it IS a ballot choice. Same row as the
+-- one in previous_parties above, and it carries NO party_lineage link in either direction: a
+-- catch-all has no continuity, so ('other','other') would assert that whoever picked Other in 2022
+-- is the same voter picking it in 2026. get_options coalesces NULL tags/families to [], and both
+-- analytics aggregations already skip a NULL bloc/axis rather than bucketing it -- so a NULL-
+-- everything row is excluded from the percentages instead of counted as 'unaligned'.
+-- test_migration.py::test_other_has_no_ideology asserts it on BOTH tables.
 CREATE TEMP TABLE seed_upcoming_parties (seed_key TEXT PRIMARY KEY, name_he TEXT, name_en TEXT, name_ru TEXT, logo_url TEXT, bloc TEXT, economic INTEGER, security INTEGER, religiosity INTEGER, sector TEXT, tags TEXT[], families TEXT[], family_evidence TEXT, on_ballot BOOLEAN) ON COMMIT DROP;
 INSERT INTO seed_upcoming_parties VALUES
     ('likud', 'הליכוד', 'Likud', 'Ликуд', 'https://upload.wikimedia.org/wikipedia/commons/5/50/Likud_Logo.svg', 'bibi', 1, 3, 2, 'traditional', ARRAY['claims-economically-liberal', 'populist', 'nationalist', 'instrumentally-clerical', 'judicial-overhaul', 'no-palestinian-state', 'anti-two-state', 'security-hawk', 'pro-settlement', 'sovereignty-annexation', 'hardline-on-gaza', 'preemptive-security-doctrine', 'scholar-exemption-retained', 'voluntary-palestinian-emigration-incentives']::text[], ARRAY['conscription-exemption', 'judicial-restraint', 'sectoral-budgeting']::text[], 'record', TRUE),
@@ -555,7 +564,8 @@ INSERT INTO seed_upcoming_parties VALUES
     ('el-hadegel', 'אל הדגל', 'El HaDegel', 'Эль ха-Дегель', 'https://cdn.prod.website-files.com/674ed46d57366b6a64400c3c/67501afebb4a91b0d0b7c6b9_el-hadegel-webclip.svg', 'unaligned', 1, 2, -2, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'arab-civil-service', 'core-curriculum', 'sovereignty-annexation', 'preemptive-security-doctrine', 'territorial-price-doctrine', 'anti-two-state', 'voluntary-palestinian-emigration-incentives', 'constitutionalist', 'governance-reform', 'public-service-reform', 'term-limits', 'state-commission-of-inquiry', 'pm-immunity-protections', 'municipal-devolution', 'deregulation', 'free-trade', 'anti-monopoly', 'cost-of-living', 'workforce-integration']::text[], ARRAY['universal-conscription', 'reservist-movement', 'constitutional-reform', 'cost-of-living']::text[], 'platform', TRUE),
     ('the-reservists', 'בית ציוני - המילואימניקים', 'Zionist Home – The Reservists', 'Сионистский дом – Резервисты', '/logos/beit-tzioni-miluimnikim.png', 'unaligned', 1, 2, -2, 'secular', ARRAY['reservist-focused', 'anti-conscription-exemption', 'universal-conscription', 'service-conditioned-citizenship', 'sanctions-on-non-servers', 'scholar-exemption-retained', 'core-curriculum', 'state-haredi-education', 'civil-marriage', 'kashrut-liberalization', 'religious-pluralism', 'municipal-devolution', 'communitarian-devolution', 'lgbt-rights', 'anti-netanyahu', 'territorial-control-gaza', 'anti-two-state', 'pro-settlement', 'anti-monopoly', 'free-trade', 'workforce-integration', 'cost-of-living', 'constitutionalist', 'governance-reform', 'term-limits', 'statist', 'excludes-haredi-and-arab-parties']::text[], ARRAY['universal-conscription', 'reservist-movement', 'constitutional-reform', 'cost-of-living', 'welfare-state']::text[], 'platform', FALSE),
     ('noam', 'נעם', 'Noam', 'Ноам', '/logos/noam.png', 'bibi', NULL, 3, 3, 'religious_zionist', ARRAY['hardal', 'religious-fundamentalist', 'single-issue-jewish-identity', 'not-economy-focused', 'halakhic-state', 'rabbinate-as-fourth-branch', 'rabbinic-authority-led', 'anti-lgbt', 'anti-progressive', 'family-values', 'opposes-western-wall-compromise', 'education-system-focused', 'judicial-overhaul', 'opposes-hostage-deals', 'sovereignty-annexation', 'anti-two-state']::text[], ARRAY['judicial-restraint', 'conscription-by-incentive', 'not-economy-focused']::text[], 'record', TRUE),
-    ('amcha-yisrael', 'עמך ישראל', 'Amcha Yisrael', 'Амха Исраэль', '/logos/amcha-yisrael.png', 'bibi', NULL, 3, -2, 'secular', ARRAY['new-party', 'no-palestinian-state', 'territorial-price-doctrine', 'not-economy-focused', 'universal-conscription', 'anti-conscription-exemption', 'arab-civil-service']::text[], ARRAY['not-economy-focused', 'universal-conscription']::text[], 'record', TRUE);
+    ('amcha-yisrael', 'עמך ישראל', 'Amcha Yisrael', 'Амха Исраэль', '/logos/amcha-yisrael.png', 'bibi', NULL, 3, -2, 'secular', ARRAY['new-party', 'no-palestinian-state', 'territorial-price-doctrine', 'not-economy-focused', 'universal-conscription', 'anti-conscription-exemption', 'arab-civil-service']::text[], ARRAY['not-economy-focused', 'universal-conscription']::text[], 'record', TRUE),
+    ('other', 'אחר', 'Other', 'Другое', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TRUE);
 
 -- Adopt rows that predate seed_key, keyed on name_he.
 UPDATE upcoming_parties t SET seed_key = s.seed_key
@@ -639,7 +649,8 @@ WHERE u.seed_key IS NOT NULL
 -- Continuity between previous and upcoming parties (identity, splits, merges). Resolved through
 -- both tables' seed_key, so this must run after both sections above have adopted/inserted their
 -- rows. See design spec Appendix -- Yashar, The Economic Party, El HaDegel, The Reservists, and Blue
--- and White (as an independent brand) have no seeded predecessor; 'אחר' has no successor.
+-- and White (as an independent brand) have no seeded predecessor; 'אחר' now exists in BOTH
+-- tables and is still deliberately unlinked -- see the note above seed_upcoming_parties.
 CREATE TEMP TABLE seed_party_lineage (previous_key TEXT, upcoming_key TEXT) ON COMMIT DROP;
 -- Generated from production 2026-08-12; 14 links. Religious Zionism splits three ways, and both
 -- Labor/Meretz and חד"ש-תע"ל/בל"ד merge into one successor each, so neither column is unique -- do

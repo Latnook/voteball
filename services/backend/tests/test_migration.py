@@ -24,7 +24,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
-    assert cur.fetchone()[0] == 17
+    assert cur.fetchone()[0] == 18  # 17 parties + the 'אחר' catch-all
     cur.close()
 
 
@@ -296,10 +296,13 @@ def test_seeded_parties_have_ideology_classification(conn):
     cur.execute("SELECT bloc, economic, security, sector, religiosity FROM previous_parties WHERE name_he = 'אחר'")
     assert cur.fetchone() == (None, None, None, None, None)
 
-    cur.execute('SELECT name_en, bloc, sector FROM upcoming_parties')
+    cur.execute("SELECT name_en, bloc, sector FROM upcoming_parties WHERE name_he != 'אחר'")
     for name_en, bloc, sector in cur.fetchall():
         assert bloc is not None, f'{name_en} (upcoming) missing bloc'
         assert sector is not None, f'{name_en} (upcoming) missing sector'
+
+    cur.execute("SELECT bloc, economic, security, sector, religiosity FROM upcoming_parties WHERE name_he = 'אחר'")
+    assert cur.fetchone() == (None, None, None, None, None)
 
     cur.execute("SELECT economic, security, tags FROM previous_parties WHERE name_he = 'המחנה הממלכתי'")
     economic, security, tags = cur.fetchone()
@@ -1362,11 +1365,31 @@ def test_club_seed_overwrites_a_column_the_admin_never_touched(conn):
 
 
 def test_other_has_no_ideology(conn):
-    """'אחר' is a catch-all ballot option, not a party -- every axis stays NULL."""
+    """'אחר' is a catch-all ballot option, not a party -- every axis stays NULL.
+
+    Asserted on BOTH tables. upcoming_parties gained its own 'אחר' row on 2026-09-07;
+    it additionally carries NULL families/family_evidence (a catch-all has no policy
+    family either) and on_ballot TRUE, because it IS a ballot choice.
+    """
     cur = conn.cursor()
     cur.execute("SELECT bloc, economic, security, religiosity, sector "
                 "FROM previous_parties WHERE name_he = 'אחר'")
     assert all(v is None for v in cur.fetchone())
+
+    cur.execute("SELECT bloc, economic, security, religiosity, sector, tags, "
+                "families, family_evidence FROM upcoming_parties WHERE name_he = 'אחר'")
+    assert all(v is None for v in cur.fetchone())
+
+    cur.execute("SELECT on_ballot FROM upcoming_parties WHERE name_he = 'אחר'")
+    assert cur.fetchone()[0] is True
+
+    # A catch-all has no continuity in either direction -- see the note above
+    # seed_upcoming_parties in seed.sql.
+    cur.execute("SELECT count(*) FROM party_lineage l "
+                "JOIN previous_parties p ON p.id = l.previous_party_id "
+                "JOIN upcoming_parties u ON u.id = l.upcoming_party_id "
+                "WHERE p.name_he = 'אחר' OR u.name_he = 'אחר'")
+    assert cur.fetchone()[0] == 0
     cur.close()
 
 

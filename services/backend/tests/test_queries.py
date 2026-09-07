@@ -40,7 +40,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
         'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Noam',
-        'Amcha Yisrael',
+        'Amcha Yisrael', 'Other',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {
@@ -48,7 +48,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
         'המפלגה הכלכלית', 'אל הדגל', 'בית ציוני - המילואימניקים', 'נעם',
-        'עמך ישראל',
+        'עמך ישראל', 'אחר',
     }
 
 
@@ -1026,6 +1026,11 @@ FAMILY_VOCABULARY = {
 def test_every_upcoming_party_has_families_and_evidence(conn):
     for party in queries.get_options(conn)['upcoming_parties']:
         name = party['name_he']
+        # 'אחר' is a catch-all ballot option, not a party -- it has no policy family for the
+        # same reason it has no axes, and test_migration.py::test_other_has_no_ideology
+        # asserts that NULL rather than leaving it merely unchecked here.
+        if name == 'אחר':
+            continue
         assert party['families'], f'{name} has no families'
         assert party['family_evidence'] in ('record', 'platform'), \
             f'{name} has family_evidence {party["family_evidence"]!r}'
