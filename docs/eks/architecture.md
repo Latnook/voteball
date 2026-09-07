@@ -1,9 +1,12 @@
 # Architecture
 
-Voteball on EKS, in four views. Each answers one question; together they cover the whole system.
+Voteball on EKS, in six views. Each answers one question; together they cover the whole system.
 One large combined diagram was tried first and was unreadable — this is the same content, split.
 
-**Arrow conventions (all four diagrams):**
+Views 5 and 6 — **Pipeline Flow** and **Deployment View** — are the two the course brief names
+explicitly; they were added after the original four and are why this count is six rather than four.
+
+**Arrow conventions (all six diagrams):**
 
 | Arrow | Meaning |
 |---|---|
