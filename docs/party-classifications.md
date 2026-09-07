@@ -2220,6 +2220,14 @@ migrating — this page's own rule about feeding a check input you know should m
 closes the week of 2026-09-07; a further merger would renumber the slate and could change what this
 row means again.
 
+**Half-discharged 2026-09-07: the one merger that was actually on the table is refused, in both
+directions.** Netanyahu publicly pressed הציונות הדתית and עוצמה יהודית to run together; Ben Gvir
+refused, his party calling the decision final and absolute, and Smotrich separately said he did not
+regard Ben Gvir as a partner for a joint run. עוצמה יהודית then filed independently (see that row,
+revision 57). This closes the *largest* candidate merger and leaves the flag standing for any other —
+the threshold pressure that produced the זהות bloc is unrelieved, and this row has polled at or below
+it throughout. Recorded on both rows, per revision 53's rule.
+
 Primary held 2026-07-26. Realized list: 1 בצלאל סמוטריץ', 2 אורית סטרוק, 3 צביקה מור,
 4 שמחה רוטמן, 5 צבי סוכות, 6 אוהד טל, 7 עומר רחמים, 8 מיכל וולדיגר.
 
@@ -3076,6 +3084,146 @@ tag that was nonetheless refused. **גוטליב was #20 on that same audited li
 the opposite direction.** A party whose most prominent conspiracy-amplifier departs for the far-right
 party is, if anything, evidence *against* the tag revision 24 declined — so the trigger recorded there
 is not tripped by this, it is pushed further away. Both movements are now recorded on both rows.
+
+**2026-09-07 — revision 57. The list is FILED and final at twelve names. Seventh consecutive reading
+of this row with no axis, no tag and no `seed.sql` change — and this pass finally cites `kahanist`.**
+
+The party's own statement on filing
+([post](https://www.ozma-yeudit.co.il/דברי-יו״ר-עוצמה-יהודית-השר-איתמר-בן-גבי/), 2026-09-07 18:04,
+via the WordPress REST API revision 45 recommended). Filed independently: Ben Gvir refused
+Netanyahu's push to re-merge with הציונות הדתית, the party calling the decision final and absolute,
+so the 2022 joint slate is not repeated and `two-faction-list` does not arise. The full list:
+
+1 בן גביר · 2 **טלי גוטליב** · 3 השר וסרלאוף · 4 השר עמיחי אליהו · 5 סון הר-מלך · 6 קרויזר ·
+7 **חנמאל דורפמן** · 8 **צחי אליהו** · 9 **יוסי גולדברגר** · 10 איתיאל ניימן · 11 דוד בבלי ·
+12 ישי פליישר.
+
+Revision 53 read the top six while they were still being announced and its reasoning holds unchanged:
+`security` +3 and `religiosity` +3 have no band above them, and `economic` 0 is held by
+`not-economy-focused`, which a slate of national-security politicians does not disturb. **צביקה פוגל
+left the PARTY, not merely the list** — revision 53 recorded him as pushed down and declining to run;
+he resigned from עוצמה יהודית outright on 2026-09-06.
+
+**Three things in the filing statement bear on the classification, and only one of them is new.**
+
+- **The voluntary-emigration programme now covers the WEST BANK, not only Gaza** — *"בין יתר הדברים
+  שאנחנו רוצים לקדם – זה עידוד הגירה מרצון. גם בעזה גם ביהודה ושומרון"*. התנתקות 710 (revision 45) is
+  a Gaza document end to end; פוגל's extension to ג'נין (revision 30) was one member's framing. This
+  is the chairman, at filing, naming both theatres. **`voluntary-palestinian-emigration-incentives`
+  is unchanged** — the tag was never scoped to Gaza — but the row's evidence for it now spans both.
+- **`population-transfer` REFUSED A FIFTH TIME, and the reason is worth stating precisely because the
+  refusal gets harder each pass.** The word is still *מרצון*, and **geography is not compulsion**:
+  widening where an opt-in instrument operates says nothing about whether it is opt-in. The trigger
+  written at revision 45 is unchanged and **untripped** — a coercive clause in the instrument (a
+  penalty, a withdrawal of status or aid, a deadline), or a statement that those who decline will be
+  made to. Neither has appeared. This is the **third** pairing of an opt-in instrument with
+  transfer-adjacent surroundings on this row (revision 30's citizenship-stripping bill, revision 45's
+  *"גנדי צדק!"*, now the West Bank extension), and as at revision 45 the pattern **strengthens** the
+  instrument test: a page that tagged on proximity would have tagged this row three times over.
+- **`conscription-by-incentive` is reinforced first-party, from an unexpected direction.** Ben Gvir
+  describes the list as *"חילונים, דתיים, מסורתיים, **חרדי ששירת בצבא**"* — the haredi slot is
+  introduced by the holder's army service. The family became first-party at revision 30 on haredi
+  police recruitment; the same logic is now applied to a candidacy, which is the model stated as
+  identity rather than as a programme.
+
+**Declined: `populist` for *"מאבק בדיפ-סטייט"*.** It is the campaign's stated priority alongside
+emigration, and it is refused on the same ground revision 30 refused `populist` for the Segal letter —
+this page does not tag style, and a frame is not an instrument. The substance is already carried
+twice over: `judicial-overhaul` on the row, and the standing coalition precondition that the Attorney
+General be dismissed. **Also declined**: *"הרשימה הכי מגוונת בישראל"* and *"שתי נשים בחמישייה
+הראשונה"* are self-description, not position.
+
+**`kahanist` has been on this row since the original 2026-07-16 classification with NO evidence ever
+cited on this page, and #8 is the first.** Revision 30 noticed exactly this gap for
+`jewish-supremacist` — *"carried on general knowledge until now"* — fixed it, and did not look at the
+tag sitting immediately beside it in the same two-word preamble. Grep the document: `kahanist`
+appears three times, once as that bare preamble, once as a cross-reference from another row, once in
+the vocabulary sweep. **The row's most distinctive tag was its least evidenced, and it stayed that
+way through two passes that were specifically about evidencing tags.** The generalisable form: *a tag
+audit that fixes the tag it came for will not look at the one next to it* — the same shape as the
+date-window and the link-label findings, one level up.
+
+- **צחי אליהו (#8) carries a large tattoo of the כך movement emblem on his right forearm**, reported
+  by [סרוגים](https://www.srugim.co.il/779915) and **confirmed by him in his own words** — he dates it
+  to the evening of the שרונה attack, after seeing a Kahane quotation about Arab citizens. He is a
+  twelve-year party activist from מושב עין יעקב, co-led the עמונה evacuation struggle in 2017, and ran
+  at #17 in 2022. **The evidence is not the tattoo; it is the party's decision about it.** When a seat
+  fell vacant under the Norwegian Law in 2023 he was next in line and Ben Gvir **blocked him**, on
+  reporting that the tattoo and his association with the previous *"דור כ״ך"* would damage the party's
+  image. Nothing about him changed. In 2026 the same chairman placed him at **#8**, inside the range
+  of every poll. A party that once treated the emblem as disqualifying now slots its wearer — which
+  evidences `kahanist` far better than any quotation would, because it is a revealed preference and
+  this page scores revealed positions.
+- **Tier note, stated rather than glossed:** the placement is the party's own act, announced by the
+  chairman; the tattoo is press-reported and self-confirmed by the candidate, **not** published by the
+  party. That is weaker than revision 30's first-party citations and stronger than the general
+  knowledge `kahanist` rested on for eight weeks. Recorded at that tier.
+
+**#9 יוסי גולדברגר is the first haredi slot this party has ever reserved, and it changes no field.**
+39, Chabad, co-founder of the גבעת ליובאוויטש community in כפר חב"ד and לוד, career as an עסקן
+advising ministers and MKs. **No policy positions exist to record** — no platform, no interview, no
+stated legislative agenda in Hebrew press, haredi outlets or Chabad media. That is a finding about
+what the slot is for, not a gap in the search: Ben Gvir's own citation is access
+(*"יודע לפתוח דלתות, לעזור לאנשים ולהביא תוצאות"*). **`sector` stays `religious_zionist`** on the
+precedent revision 45 applied to the Druze campaign HQ and revision 41 to עמך ישראל — a slot aimed at
+a community records what a party *does*, not what it **is**. Third instance, third row.
+
+- **The alliance behind the slot is older and better evidenced than the slot**, and is what makes it
+  worth recording at all: [Shomrim](https://www.shomrim.news/hebrew/chabad-bengvir) puts Chabad at
+  **2–3 seats** with ~**1,300** centres as a ground network, **56% for עוצמה יהודית in כפר חב"ד**
+  against 19% דגל התורה and 12% ש"ס, joint Chabad–עוצמה slates in רחובות and קרית גת at the 2024
+  municipals, and a 2022 coalition clause funding כפר חב"ד expansion and a heritage centre at up to
+  **₪12m/yr**. The bloc was already voting for the party without a candidate.
+- **The Chabad rabbinical court moved against it a day before the announcement.** A letter signed by
+  **22** senior Chabad rabbis (motzei Shabbat 2026-09-05/06) states the movement is non-partisan, that
+  nobody may speak in Chabad's name, and — operatively — *"אסור לחסיד חב"ד לשמש כח"כ באף מפלגה (ללא
+  אישור בכתב מבית הדין)"*, while still urging a vote for *"הרשימה הכי חרדית לדבר ה'"*. **Whether
+  גולדברגר holds that permission is unreported in either direction**; senior Chabad figures say he
+  acted against the ruling. Recorded because the row's own logic makes it interesting rather than
+  gossip: the slot's purpose is to consolidate a bloc, and it produced the first public statement from
+  that bloc's authority that its holder does not represent them.
+
+**#7 חנמאל דורפמן is under a live recommendation to indict, and it is deliberately NOT tagged.**
+31, Ben Gvir's chief of staff for four years, an attorney whom Ben Gvir had represented at 15 as a
+נער גבעות, resigned July 2026 to run. **מח"ש recommended indicting him, subject to a hearing, on
+2026-04-28**, in the פרשת מקורבי בן גביר alongside ניצב-משנה אבישי מועלם; the Attorney General
+separately decided to indict נציב שב"ס קובי יעקובי. Sixteen months on, no decision either way is
+reported. The alleged conduct: instructing a district commander not to confiscate the weapon of a
+settler who shot a resident of חווארה, seeking police information about why licences were refused to
+right-wing extremists on Shin Bet intelligence, intervening on a detainee's custody conditions, and
+pushing מועלם's promotion. A phone seizure and a conditional arrest warrant were reported.
+
+- **Why no tag.** An allegation against a candidate is not a position of the party — the same line
+  that keeps `populist` off this row for rhetoric. This page tags what a party *advocates*, and an
+  indictment recommendation is a fact about a person.
+- **What it does corroborate, in prose.** Two things already on the row. The alleged conduct is
+  steering police away from Jewish-terrorism enforcement, which is the same subject matter as
+  `jewish-supremacist` and the ministerial record the row is scored from. And Ben Gvir's response —
+  attacking the Attorney General for fabricating charges out of policy disagreement, on the parallel
+  יעקובי indictment — is the **same** AG confrontation the row already carries as a stated coalition
+  precondition (revisions 18 and 30). The affair is where that precondition acquires a motive.
+
+**Retrieval note — `gov.il` answers HTTP 200 with a Cloudflare interstitial, and this is a new member
+of the swallowed-status family.** Revision 55 cited `gov.il/he/pages/<party>_list<n>` for four filed
+lists. Today WebFetch gets **403** on both the index and the chapter view, and a browser-shaped
+`curl` gets **200** — whose body is `<title>Just a moment...</title>`. The tell was not the status and
+not the HTML: it was that **every** slug returned exactly **8,734 bytes**, including
+`otzma_yehudit_list1`, `ozma_list1` and `otzma_list2`, which are inventions. A challenge page is a
+fixed-size response to any path, so a slug-guessing sweep against it returns a uniform, confident
+"found" for every guess. **Check the byte count before the status code**, the same discipline the
+image-only-PDF rule uses. `data.gov.il`'s CKAN dataset is reachable and carries the 19th–23rd Knesset
+lists only, nothing for the 26th. **The party's own WordPress REST API worked on the first request**
+and had the filing statement — the instrument revision 45 recommended, vindicated against an official
+source that was unreachable.
+
+Sources for this pass: the party's own filing statement (2026-09-07, WP REST API); the list as
+published by [ערוץ 7](https://www.inn.co.il/news/705828) and [חרדים10](https://ch10.co.il/news/1100262/);
+[סרוגים](https://www.srugim.co.il/779915) and [ynet 2022](https://www.ynet.co.il/news/election2022/article/hyux4pi4s)
+on צחי אליהו; [Shomrim](https://www.shomrim.news/hebrew/chabad-bengvir) and
+[חרדים10](https://ch10.co.il/news/1099745/) on Chabad; [חדשות 13](https://13tv.co.il/item/news/domestic/crime-and-justice/k2m9i-905119731/)
+and [ynet](https://www.ynet.co.il/news/elections2026/article/bkrz6xn00gl) on דורפמן. **Every source
+below the filing statement is press, not party** — flagged per this page's own convention, which is
+why none of them moves a number.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -5345,3 +5493,4 @@ pass happened, for anyone reading git history.
 | 2026-09-07 | revision 54 — **ישראל ביתנו published its official list and it closes every gap revision 52 left open. Exactly 25 names.** [רשימת מפלגת ישראל ביתנו לכנסת הבאה](https://beytenu.org.il/רשימת-מפלגת-ישראל-ביתנו-לכנסת-הבאה/), 2026-09-06 21:38Z, after a launch at Expo Tel Aviv. **The three unsourced candidates resolved**: **#20 יעקב (יענקי) מוזס** — a **יוצא בשאלה** volunteering at **הלל**, which supports people leaving the haredi community; **#21 עמי קור** — **co-founder of Sygnia**, cyber-attack response; **#25 עו״ד סתו בויאנג׳ו מצא** — chair of the party's **קהילת הנשים**. **Four corrections, none moving a score**: **#9 קוליחמן is the DEPUTY MAYOR OF LOD** (the Lod crime column was her portfolio, not a byline); **#3 לנקרי** was *סגנית ראש המל״ל* למדיניות לוט״ר, more senior than Wikipedia's "head of the home-front division"; **#12 בנבנישתי is a gerontologist**, which explains the senior-citizens HQ; and **#2 בן שטרית is labelled "איש הליכוד" by the party itself**, so revision 52's recruitment pattern is the party's own description rather than this page's inference. **The party distinguishes ח״כ from חכ״ל and the supplied list did not — FIVE sitting MKs, not nine**: ח״כ ליברמן/פורר/מלינובסקי/עמאר/סובה; **חכ״ל אילוז #10, מגן תלם #14, רופא אופיר #16**, the last two having served in the 24th via the Norwegian law and not returned. **Two corroborations that move nothing**: מוזס #20 is this row's sharpest `religiosity −3` corroboration from a *person* rather than a document, and **בויאנג׳ו מצא #25 does NOT revive `gender-equality`** — a women's community with a chair on the list is an **outreach structure**, exactly what מטה הסרוגים and עוצמה יהודית's Druze HQ were held to be; accepting it here while refusing a יו״ש forum as territorial evidence would be the same inconsistency inverted. **Method note — the two earlier "not found"s were NOT the same failure.** קוליחמן was a **method** failure (wrong Hebrew spelling, plus slug-matching blind to English slugs); מוזס/קור/בויאנג׳ו מצא were a **timing** result — this page did not exist when the sitemap was enumerated hours earlier. Only one of the two implies the instrument was wrong |
 | 2026-09-07 | revision 55 — **ביחד takes `two-faction-list` (18 → 19 tags), on the first four official candidate lists filed with the CEC — and the tag was proposed for the WRONG ROW first.** ([ישר!](https://www.gov.il/he/pages/yashar_list_2) · [ביחד](https://www.gov.il/he/pages/beyahad_list1) · [index](https://www.gov.il/he/pages/candidates-lists-26), all published 07.09.2026.) **No axis, bloc, sector or family value moved on any row; ישר is unchanged entirely.** ישר!'s filing shows 120 names split **116 מפלגת ישר לישראל עם איזנקוט / 4 מפלגת יסודות ישראל** (טרופר #6, שפירא #10, פרץ #20, יחיאב #35) — which reads as a two-party list on the form and was put forward as one. **The repo owner refused it on weight** (*"it's just 4 guys who aren't Yashar"*), and the refusal is right on the tag's own founding cases: both existing holders keep an **independent decision structure** — יהדות התורה's separate מועצות גדולי תורה (revision 35 moved the tag onto exactly that standing structure), and הציונות הדתית–זהות's technical bloc that **may split**, זהות holding 4 of 13 realistic slots including **#2**. יסודות ישראל keeps neither: top slot **#6 of 120**, and *"החיבור אינו בבלוק טכני"* means it explicitly cannot split afterwards. Tagging it would have pushed the tag below its own narrowest founding case. **The base-rate check is what saved the finding, and it was nearly skipped.** *"מטעם מפלגת X"* was read as evidence of two-party structure before anyone asked what that field looks like on a list nobody disputes — and שרשר לאהבה ואחדות העם, a single undisputed party, carries the **same annotation on all 12 of its candidates**. It is the CEC form's standard field, evidence of nothing. Same shape as revision 35 (UTJ's routine split read as news against a missing baseline) and the root `CLAUDE.md`'s *establish what exists before deciding what to read* — **the third instance, and the first where the baseline was one request away.** **The same fetch found the row that does qualify**: ביחד filed **62 מפלגת ביחד בראשות בנט מחזירים את התקווה / 58 מפלגת יש עתיד - בראשות יאיר לפיד**, zippered from the top with **לפיד at #2** — 58 slots and #2 sits *above* the UTJ founding case, so the tag gains discrimination rather than losing it. **This row had been the page's own reference standard for the shape while not carrying it**: two entries (המפלגה הכלכלית and בית ציוני - המילואימניקים) cite *"ביחד's `two-faction-list` shape"* as the test הנדל–זליכה would have to meet. The ביחד entry has described the structure correctly since it was written — a **doc-vs-`seed.sql` gap, not a research gap**, and the kind a tag-holder count finds and a re-read does not. Second-order: **יש עתיד still exists as a registered party**, so `party_lineage`'s `yesh-atid → together` is right as lineage and must not be read as a dissolution. **Only four lists are filed** (the other two are שרשר and השותפות לכולם, both new and both out of scope on the owner's instruction), so הנדל–זליכה, עוצמה יהודית and the rest keep their **2026-09-08** action dates |
 | 2026-09-07 | revision 56 — **`upcoming_parties` gains an 'אחר' (Other) catch-all, mirroring the one `previous_parties` has always had.** Repo owner's call, and the timing is the argument: lists are still being filed, so the 2026 ballot on this site cannot be complete, and until now a voter whose party was missing had only *undecided* — which means something different and poisons the intended-vote analytics by absorbing decided voters. **It is not a party and carries no classification**: NULL on bloc, all three axes, sector, tags, families and family_evidence, `on_ballot TRUE` because it is a ballot choice, and **no `party_lineage` link in either direction** — ('other','other') would assert that whoever picked Other in 2022 is the same voter picking it in 2026. **Nothing needed changing in the aggregations, which is the point**: `compositionPercentages` skips a falsy `bloc` and `weightedAxisAverage` skips a NULL axis, so the row is excluded from every percentage rather than bucketed as `unaligned` — the same handling that already carries ביחד's NULL `security` and the previous-table Other. `get_options` coalesces NULL tags/families to `[]`. On the form it renders as a plain text utility card beside *undecided* (`renderPreviousGrid`'s existing shape), but it keeps `data-upcoming-id`, so it is a **real pick** that counts toward the 3-pick cap. **Two tests failed exactly as they should have and were the design review**: `test_seeded_row_counts` (17 → 18) and `test_every_upcoming_party_has_families_and_evidence`, which forced the question of whether a catch-all has a policy family — it does not, and that is now asserted as NULL in `test_other_has_no_ideology` (extended to both tables, plus the on_ballot and no-lineage properties) rather than merely skipped. No axis, bloc, tag or family moved on any existing row |
+| 2026-09-07 | revision 57 — **עוצמה יהודית FILED its final twelve-name list and nothing moved, for the seventh consecutive reading — but the pass finally cites `kahanist`.** First-party source: the party's own statement on filing (2026-09-07, WP REST API). Filed **independently** — Ben Gvir refused Netanyahu's push to re-merge with הציונות הדתית ("final and absolute"), so no `two-faction-list`; recorded on that row too, half-discharging its expected-unstable flag. **`kahanist` had been on this row since 2026-07-16 with no evidence ever cited on this page** — revision 30 noticed exactly that gap for `jewish-supremacist`, fixed it, and never looked at the tag beside it in the same two-word preamble (*a tag audit that fixes the tag it came for will not look at the one next to it*). **#8 צחי אליהו** is the first citable evidence: a large **כך emblem tattoo** on his forearm, self-confirmed, for which **Ben Gvir BLOCKED him from a Norwegian-Law seat in 2023** — and who is now slotted at #8, inside every poll. The evidence is the party's reversal, not the tattoo; a revealed preference, which is what this page scores. Tier flagged: the placement is the party's act, the tattoo is press-reported and self-confirmed, not party-published. **The filing statement widens voluntary emigration to the WEST BANK** (*"גם בעזה גם ביהודה ושומרון"*) — `voluntary-palestinian-emigration-incentives` unchanged (never Gaza-scoped), and **`population-transfer` refused a FIFTH time: geography is not compulsion**, revision 45's trigger untripped, and this is the third opt-in/transfer-adjacent pairing, which strengthens the instrument test rather than eroding it. `conscription-by-incentive` reinforced first-party from a new direction — the haredi slot introduced as *"חרדי ששירת בצבא"*. `populist` declined again for *"מאבק בדיפ-סטייט"* (a frame is not an instrument; substance already carried by `judicial-overhaul` and the AG-dismissal precondition). **#9 יוסי גולדברגר, the first haredi slot the party has reserved, changes no field**: `sector` stays `religious_zionist` on the Druze-HQ/עמך ישראל precedent (third instance, third row), and **no policy positions exist to record** — the slot is access, not doctrine. The alliance behind it is the substance: Chabad at **2–3 seats**, ~1,300 centres, **56% in כפר חב"ד** vs 19% דגל התורה, joint municipal slates 2024, a ₪12m/yr coalition clause — and **22 Chabad rabbis** ruled a day earlier that no חסיד may sit as an MK without the beit din's written permission, which גולדברגר is not reported to hold. **#7 חנמאל דורפמן carries a live מח"ש recommendation to indict (2026-04-28, פרשת מקורבי בן גביר), undecided sixteen months on — deliberately NOT tagged**: an allegation against a candidate is not a party position, the same line that keeps `populist` off this row. Recorded in prose because the alleged conduct (steering police off Jewish-terrorism enforcement) is the row's own subject matter, and Ben Gvir's "the AG fabricates charges" response is where the recorded AG-dismissal precondition acquires a motive. **צביקה פוגל left the PARTY**, not merely the list (revision 53 had him only declining to run). **Retrieval note, a new member of the swallowed-status family:** `gov.il` 403s WebFetch and answers a browser-shaped `curl` with **HTTP 200 whose body is a Cloudflare "Just a moment..." challenge** — and every slug returned exactly **8,734 bytes**, including invented ones, so a slug-guessing sweep reports a confident "found" for every guess. **Check the byte count before the status code.** `data.gov.il` CKAN has the 19th–23rd Knessets only. The party's own WP REST API worked first try — revision 45's instrument, vindicated against an unreachable official source. **`seed.sql` unchanged** — 0/3/3, `bibi`, `religious_zionist`, 17 tags, 3 families, `record`, `on_ballot TRUE`, verified column by column |
