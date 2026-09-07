@@ -53,6 +53,7 @@ stack. Under `platform` every one of them is rewritten while the cluster serves 
 ```
 terraform/
 ├── main.tf              # the six module calls, and the locals they share
+├── moved.tf             # all 32 moved blocks (see 3c — they cannot live in the modules)
 ├── dns.tf               # data.aws_route53_zone.primary + all 3 ACM certs + validations
 ├── providers.tf         # aws + kubernetes + helm (providers-k8s.tf merged in)
 ├── versions.tf
@@ -75,12 +76,12 @@ terraform/
 ├── addon-jenkins.tf     │
 ├── addon-monitoring.tf  ┘
 └── modules/
-    ├── compute/       main.tf outputs.tf variables.tf moved.tf
-    ├── database/      main.tf outputs.tf variables.tf moved.tf
-    ├── iam/           main.tf outputs.tf variables.tf moved.tf
-    ├── networking/    main.tf outputs.tf variables.tf moved.tf
-    ├── notifications/ main.tf outputs.tf variables.tf moved.tf
-    └── storage/       main.tf outputs.tf variables.tf moved.tf
+    ├── compute/       main.tf outputs.tf variables.tf
+    ├── database/      main.tf outputs.tf variables.tf
+    ├── iam/           main.tf outputs.tf variables.tf
+    ├── networking/    main.tf outputs.tf variables.tf
+    ├── notifications/ main.tf outputs.tf variables.tf
+    └── storage/       main.tf outputs.tf variables.tf
 ```
 
 `voteball.tfvars` keeps its name. An explicit `-var-file` is safer than the auto-loaded

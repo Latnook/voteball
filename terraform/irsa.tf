@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "worker_permissions" {
     sid       = "PublishMilestones"
     effect    = "Allow"
     actions   = ["sns:Publish"]
-    resources = [aws_sns_topic.notifications.arn]
+    resources = [module.notifications.sns_topic_arn]
   }
   statement {
     sid       = "WriteSnapshots"
@@ -130,7 +130,7 @@ data "aws_iam_policy_document" "alertmanager_permissions" {
     sid       = "PublishAlerts"
     effect    = "Allow"
     actions   = ["sns:Publish"]
-    resources = [aws_sns_topic.notifications.arn]
+    resources = [module.notifications.sns_topic_arn]
   }
 }
 

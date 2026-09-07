@@ -155,7 +155,7 @@ data "aws_iam_policy_document" "jenkins_cd_notify" {
   statement {
     effect    = "Allow"
     actions   = ["sns:Publish"]
-    resources = [aws_sns_topic.notifications.arn]
+    resources = [module.notifications.sns_topic_arn]
   }
 }
 
@@ -341,7 +341,7 @@ resource "helm_release" "jenkins" {
         # variable, like the four above, for the same reason: a hardcoded topic ARN in a Jenkinsfile
         # would be a per-account value baked into a forkable repo, which the root CLAUDE.md calls a
         # bug. Empty is handled -- the notify step skips rather than failing a build over it.
-        { name = "SNS_TOPIC", value = aws_sns_topic.notifications.arn },
+        { name = "SNS_TOPIC", value = module.notifications.sns_topic_arn },
       ]
 
       JCasC = {

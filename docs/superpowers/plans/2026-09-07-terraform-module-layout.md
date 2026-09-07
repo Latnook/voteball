@@ -22,8 +22,12 @@
   cd .. && scripts/tests/run-ci-suite.sh                      # 3. scripts still green
   ```
 
-  Gate 2's pass condition is the literal line `No changes. Your infrastructure matches the
-  configuration.` — not "the plan looks reasonable."
+  Gate 2's pass condition is **not** `No changes.` — this stack has one pre-existing drift, measured
+  before the refactor began: `kubernetes_namespace.devops_app` carries a stray `name` label applied
+  outside Terraform, so a clean plan reads `0 to add, 1 to change, 0 to destroy`. The gate is that
+  the plan contains **exactly that one change and nothing else**, checked mechanically against the
+  machine-readable plan (`terraform show -json`), never by reading the text plan — whose parallel
+  refresh lines come out in a different order every run.
 
   Gate 3 exists because gates 1 and 2 say nothing about `scripts/`. A refactor can leave Terraform
   perfectly happy and still break the next `./scripts/deploy.sh`, which nobody discovers until a
@@ -47,15 +51,15 @@
 **Created — six modules, four files each:**
 
 ```
-terraform/modules/networking/{main,variables,outputs,moved}.tf   module.vpc
-terraform/modules/compute/{main,variables,outputs,moved}.tf      module.eks
-terraform/modules/database/{main,variables,outputs,moved}.tf     RDS + SG + subnet group + time_static
-terraform/modules/iam/{main,variables,outputs,moved}.tf          5 hand-rolled IRSA roles
-terraform/modules/storage/{main,variables,outputs,moved}.tf      S3 + ECR + EFS
-terraform/modules/notifications/{main,variables,outputs,moved}.tf SNS + budget
+terraform/modules/networking/{main,variables,outputs}.tf   module.vpc
+terraform/modules/compute/{main,variables,outputs}.tf      module.eks
+terraform/modules/database/{main,variables,outputs}.tf     RDS + SG + subnet group + time_static
+terraform/modules/iam/{main,variables,outputs}.tf          5 hand-rolled IRSA roles
+terraform/modules/storage/{main,variables,outputs}.tf      S3 + ECR + EFS
+terraform/modules/notifications/{main,variables,outputs}.tf SNS + budget
 ```
 
-**Created — root:** `terraform/main.tf` (the six module calls), `terraform/dns.tf` (from `acm.tf` + the two certs currently in add-on files).
+**Created — root:** `terraform/main.tf` (the six module calls), `terraform/moved.tf` (ALL 32 moved blocks — they cannot live inside the modules, see Task 1), `terraform/dns.tf` (from `acm.tf` + the two certs currently in add-on files).
 
 **Created — test:** `scripts/tests/test-terraform-targets.sh`.
 
@@ -70,7 +74,7 @@ terraform/modules/notifications/{main,variables,outputs,moved}.tf SNS + budget
 Three inputs, three resources, two consumers. If the `moved`-block mechanism is wrong, it is cheapest to discover here.
 
 **Files:**
-- Create: `terraform/modules/notifications/{main,variables,outputs,moved}.tf`
+- Create: `terraform/modules/notifications/{main,variables,outputs}.tf`
 - Delete: `terraform/sns.tf`, `terraform/budget.tf`
 - Modify: `terraform/main.tf` (create it), `terraform/outputs.tf`, `terraform/irsa.tf`, `terraform/addon-jenkins.tf`, `terraform/addon-monitoring.tf`
 
@@ -137,7 +141,7 @@ moved {
 }
 ```
 
-**Note the direction:** `moved` blocks live in the module that RECEIVES the resources, and `from` is written as the address was at the ROOT. Terraform resolves `from` relative to the module the block is written in, so this is only correct because the block sits inside `modules/notifications/`. Writing them at the root instead needs `from = aws_sns_topic.notifications` / `to = module.notifications.aws_sns_topic.notifications` — the same text, different resolution. Keep them in the module; the spec's layout assumes that.
+**Direction — this was wrong in the first draft of this plan and Terraform rejected it.** `moved` blocks for a root→child move MUST live in the CALLING module (the root), in a single `terraform/moved.tf`. `from` is resolved relative to the module the block is written in, so a block inside `modules/notifications/` saying `from = aws_sns_topic.notifications` means `module.notifications.aws_sns_topic.notifications` — the destination, not the source — and fails with `Error: Moved object still exists`. A `moved.tf` inside a module is still correct for moves WITHIN that module; there are none in this pass.
 
 - [ ] **Step 3: Create `terraform/main.tf` with the first module call**
 
@@ -197,7 +201,7 @@ git push origin master
 ### Task 2: `modules/storage`
 
 **Files:**
-- Create: `terraform/modules/storage/{main,variables,outputs,moved}.tf`
+- Create: `terraform/modules/storage/{main,variables,outputs}.tf`
 - Delete: `terraform/s3.tf`, `terraform/ecr.tf`
 - Modify: `terraform/addon-efs.tf` (EFS resources leave; the CSI add-on, its IRSA module and the StorageClass stay), `terraform/main.tf`, `terraform/outputs.tf`, `terraform/irsa.tf`, `terraform/addon-jenkins.tf`
 
@@ -303,7 +307,7 @@ Same five commands as Task 1 steps 5-7. `terraform plan` must print `No changes.
 Includes the Jenkins IAM currently living in `addon-jenkins.tf` (spec §3b). The eight community `module.*_irsa` instances do **not** move (spec §3a).
 
 **Files:**
-- Create: `terraform/modules/iam/{main,variables,outputs,moved}.tf`
+- Create: `terraform/modules/iam/{main,variables,outputs}.tf`
 - Delete: `terraform/irsa.tf`
 - Modify: `terraform/addon-jenkins.tf` (IAM block leaves; `module.jenkins_cd_irsa` stays), `terraform/main.tf`, `terraform/outputs.tf`, `terraform/addon-monitoring.tf`
 
@@ -400,7 +404,7 @@ Verify: `grep -rn 'module\.vpc\.' terraform/*.tf` returns nothing (references in
 ### Task 5: `modules/compute`
 
 **Files:**
-- Create: `terraform/modules/compute/{main,variables,outputs,moved}.tf`
+- Create: `terraform/modules/compute/{main,variables,outputs}.tf`
 - Delete: `terraform/eks.tf`
 - Modify: `terraform/main.tf`, `terraform/providers.tf`, `terraform/providers-k8s.tf`, `terraform/database.tf`, `terraform/namespaces.tf`, all 11 `addon-*.tf`, `terraform/outputs.tf`
 
@@ -438,7 +442,7 @@ Verify: `grep -rn 'module\.eks\.' terraform/*.tf` returns nothing.
 ### Task 6: `modules/database`
 
 **Files:**
-- Create: `terraform/modules/database/{main,variables,outputs,moved}.tf`
+- Create: `terraform/modules/database/{main,variables,outputs}.tf`
 - Delete: `terraform/database.tf`
 - Modify: `terraform/main.tf`, `terraform/outputs.tf`
 
