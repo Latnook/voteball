@@ -30,6 +30,7 @@
                 "columns": {
                   "c": {
                     "label": "Requests",
+                    "customLabel": true,
                     "dataType": "number",
                     "operationType": "count",
                     "sourceField": "___records___",
@@ -40,7 +41,8 @@
                     }
                   },
                   "d": {
-                    "label": "time",
+                    "label": "Time",
+                    "customLabel": true,
                     "dataType": "date",
                     "operationType": "date_histogram",
                     "sourceField": "time",
@@ -54,6 +56,7 @@
                   },
                   "s": {
                     "label": "Status class",
+                    "customLabel": true,
                     "dataType": "string",
                     "operationType": "filters",
                     "isBucketed": true,
@@ -165,6 +168,7 @@
                 "columns": {
                   "c": {
                     "label": "Errors",
+                    "customLabel": true,
                     "dataType": "number",
                     "operationType": "count",
                     "sourceField": "___records___",
@@ -225,6 +229,7 @@
                 "columns": {
                   "c": {
                     "label": "Requests",
+                    "customLabel": true,
                     "dataType": "number",
                     "operationType": "count",
                     "sourceField": "___records___",
@@ -236,6 +241,7 @@
                   },
                   "p": {
                     "label": "Path",
+                    "customLabel": true,
                     "dataType": "string",
                     "operationType": "terms",
                     "sourceField": "http_path.keyword",
@@ -319,6 +325,7 @@
                 "columns": {
                   "c": {
                     "label": "Errors",
+                    "customLabel": true,
                     "dataType": "number",
                     "operationType": "count",
                     "sourceField": "___records___",
@@ -330,6 +337,7 @@
                   },
                   "p": {
                     "label": "Path",
+                    "customLabel": true,
                     "dataType": "string",
                     "operationType": "terms",
                     "sourceField": "http_path.keyword",
@@ -355,6 +363,7 @@
                   },
                   "s": {
                     "label": "Status",
+                    "customLabel": true,
                     "dataType": "string",
                     "operationType": "terms",
                     "sourceField": "http_status",
@@ -443,6 +452,7 @@
                 "columns": {
                   "c": {
                     "label": "Lines",
+                    "customLabel": true,
                     "dataType": "number",
                     "operationType": "count",
                     "sourceField": "___records___",
@@ -453,7 +463,8 @@
                     }
                   },
                   "d": {
-                    "label": "time",
+                    "label": "Time",
+                    "customLabel": true,
                     "dataType": "date",
                     "operationType": "date_histogram",
                     "sourceField": "time",
@@ -467,6 +478,7 @@
                   },
                   "k": {
                     "label": "Container",
+                    "customLabel": true,
                     "dataType": "string",
                     "operationType": "terms",
                     "sourceField": "kubernetes.container_name.keyword",
@@ -564,6 +576,7 @@
                 "columns": {
                   "c": {
                     "label": "Requests",
+                    "customLabel": true,
                     "dataType": "number",
                     "operationType": "count",
                     "sourceField": "___records___",
@@ -574,7 +587,8 @@
                     }
                   },
                   "d": {
-                    "label": "time",
+                    "label": "Time",
+                    "customLabel": true,
                     "dataType": "date",
                     "operationType": "date_histogram",
                     "sourceField": "time",
@@ -588,6 +602,7 @@
                   },
                   "s": {
                     "label": "Source",
+                    "customLabel": true,
                     "dataType": "string",
                     "operationType": "filters",
                     "isBucketed": true,
