@@ -39,7 +39,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Likud', 'Yashar', 'Together', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
         'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
-        'The Economic Party', 'El HaDegel', 'Zionist Home – The Reservists', 'Noam',
+        'The Economic Party', 'El HaDegel', 'The Reservists and the Economic Party', 'Noam',
         'Amcha Yisrael', 'Other',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
@@ -47,7 +47,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
         'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
-        'המפלגה הכלכלית', 'אל הדגל', 'בית ציוני - המילואימניקים', 'נעם',
+        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים והכלכלית', 'נעם',
         'עמך ישראל', 'אחר',
     }
 
@@ -1341,12 +1341,20 @@ def test_withdrawn_party_is_absent_from_the_ballot_but_present_in_options(conn):
 
     /api/options must keep returning it -- admin.js reads that same endpoint and is the only screen
     that can restore it. The ballot filter lives in vote.js and in /api/vote, not in this query.
+
+    The party this pins changed on 2026-09-07 (revision 58) and so did the REASON. It was
+    בית ציוני - המילואימניקים, off the ballot because a SPLIT has no correct vote reassignment;
+    that row merged into המילואימניקים והכלכלית and went back on. It is now המפלגה הכלכלית, which
+    is off the ballot because it was ABSORBED into that same list -- an interim, not an end state:
+    a merge does have a single successor, so the votes should be reassigned and the row then
+    deleted. Until that happens the flag is what keeps one ballot line instead of two. If you
+    reassign and delete, this test needs a new subject or the invariant below needs rewriting.
     """
     options = queries.get_options(conn)
     by_key = {p['name_he']: p for p in options['upcoming_parties']}
 
-    withdrawn = by_key['בית ציוני - המילואימניקים']
-    assert withdrawn['on_ballot'] is False, 'the split party must be off the ballot'
+    withdrawn = by_key['המפלגה הכלכלית']
+    assert withdrawn['on_ballot'] is False, 'the absorbed party must be off the ballot'
 
     standing = [p for p in options['upcoming_parties'] if p['on_ballot']]
     assert len(standing) == len(options['upcoming_parties']) - 1
@@ -1357,7 +1365,7 @@ def test_withdrawn_party_is_absent_from_the_ballot_but_present_in_options(conn):
 def test_off_ballot_party_ids_flags_only_withdrawn_parties(conn):
     options = queries.get_options(conn)
     ids = {p['name_he']: p['id'] for p in options['upcoming_parties']}
-    withdrawn_id = ids['בית ציוני - המילואימניקים']
+    withdrawn_id = ids['המפלגה הכלכלית']
     standing_id = ids['ביחד']
 
     assert queries.off_ballot_party_ids(conn, []) == []
@@ -1367,7 +1375,7 @@ def test_off_ballot_party_ids_flags_only_withdrawn_parties(conn):
 
 
 def test_a_voted_for_party_survives_being_taken_off_the_ballot(conn):
-    """The whole point of the flag: a split has no correct vote reassignment, so the votes stay.
+    """The whole point of the flag: a vote outlives its party leaving the ballot.
 
     insert_vote is used deliberately rather than hand-written SQL -- it is the path a real ballot
     takes, so this also proves the write side is not blocked by the party being off the ballot
@@ -1375,7 +1383,7 @@ def test_a_voted_for_party_survives_being_taken_off_the_ballot(conn):
     """
     league_id, _ = _epl_and_liverpool(conn)
     cur = conn.cursor()
-    cur.execute("SELECT id FROM upcoming_parties WHERE seed_key = 'the-reservists'")
+    cur.execute("SELECT id FROM upcoming_parties WHERE seed_key = 'the-economic-party'")
     party_id = cur.fetchone()[0]
 
     vote_id = queries.insert_vote(
