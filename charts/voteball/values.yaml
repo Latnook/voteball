@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "c8e7082"
+  tag: "9604493"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -19,7 +19,7 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:eed4c6c0873ce086563cf4f6721a6d8cb2f1c78ce00ca8ea32b3a3260ec1ae43"
+    backend: "sha256:03610c152c2d20cf01b000f990b4dff24d6a749b18adf7997b716d2e7848db67"
     worker: "sha256:62db79bd31e82b7935e70664b911c8e38c6db95d0bf0ec3cd19e00b6c87829a0"
     nginx: "sha256:4571cb7fcec52273d067751fb6dff94a697179991c890f30a7647d3465d87539"
     backup: "sha256:7a4d2fe9491bb2378f0fcef52107cb58e4249e7135b59098294bbb17ad1ffcd3"

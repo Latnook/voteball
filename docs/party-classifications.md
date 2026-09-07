@@ -80,7 +80,7 @@ Negative is left (more state), positive is right (less state).
 |---|---|---|
 | **+3** | Libertarian: shrink the state as a matter of principle, not just policy | *(none — זהות was the only holder and merged into הציונות הדתית on 2026-09-01, which did not take the number)* |
 | **+2** | Privatizing: actually withdraws the state — sell Ashdod Port and Haifa Airport, end child allowances from the fifth child | ישראל ביתנו |
-| **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המחנה הממלכתי `[p]` |
+| **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המחנה הממלכתי `[p]` |
 | **0** | No economic doctrine, or a genuinely balanced one | כחול לבן `[u]`, הציונות הדתית, עוצמה יהודית `[u]`, רע"ם, יש עתיד `[p]` |
 | **−1** | *(none)* | — |
 | **−2** | Social-democratic | הדמוקרטים `[u]`, בל"ד, ש"ס, יהדות התורה, העבודה `[p]`, מרצ `[p]` |
@@ -98,7 +98,7 @@ Negative is dovish, positive is hawkish.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]`, הליכוד `[u]` |
-| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, המפלגה הכלכלית `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המפלגה הכלכלית `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]` |
 | **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
@@ -132,7 +132,7 @@ Negative reduces religious authority.
 | **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
 | **0** | Status quo — no active religion-state agenda in either direction | *(none)* |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, בית ציוני - המילואימניקים `[u]`, עמך ישראל `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, עמך ישראל `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
 
@@ -2220,6 +2220,14 @@ migrating — this page's own rule about feeding a check input you know should m
 closes the week of 2026-09-07; a further merger would renumber the slate and could change what this
 row means again.
 
+**Half-discharged 2026-09-07: the one merger that was actually on the table is refused, in both
+directions.** Netanyahu publicly pressed הציונות הדתית and עוצמה יהודית to run together; Ben Gvir
+refused, his party calling the decision final and absolute, and Smotrich separately said he did not
+regard Ben Gvir as a partner for a joint run. עוצמה יהודית then filed independently (see that row,
+revision 57). This closes the *largest* candidate merger and leaves the flag standing for any other —
+the threshold pressure that produced the זהות bloc is unrelieved, and this row has polled at or below
+it throughout. Recorded on both rows, per revision 53's rule.
+
 Primary held 2026-07-26. Realized list: 1 בצלאל סמוטריץ', 2 אורית סטרוק, 3 צביקה מור,
 4 שמחה רוטמן, 5 צבי סוכות, 6 אוהד טל, 7 עומר רחמים, 8 מיכל וולדיגר.
 
@@ -3077,9 +3085,170 @@ the opposite direction.** A party whose most prominent conspiracy-amplifier depa
 party is, if anything, evidence *against* the tag revision 24 declined — so the trigger recorded there
 is not tripped by this, it is pushed further away. Both movements are now recorded on both rows.
 
+**2026-09-07 — revision 57. The list is FILED and final at twelve names. Seventh consecutive reading
+of this row with no axis, no tag and no `seed.sql` change — and this pass finally cites `kahanist`.**
+
+The party's own statement on filing
+([post](https://www.ozma-yeudit.co.il/דברי-יו״ר-עוצמה-יהודית-השר-איתמר-בן-גבי/), 2026-09-07 18:04,
+via the WordPress REST API revision 45 recommended). Filed independently: Ben Gvir refused
+Netanyahu's push to re-merge with הציונות הדתית, the party calling the decision final and absolute,
+so the 2022 joint slate is not repeated and `two-faction-list` does not arise. The full list:
+
+1 בן גביר · 2 **טלי גוטליב** · 3 השר וסרלאוף · 4 השר עמיחי אליהו · 5 סון הר-מלך · 6 קרויזר ·
+7 **חנמאל דורפמן** · 8 **צחי אליהו** · 9 **יוסי גולדברגר** · 10 איתיאל ניימן · 11 דוד בבלי ·
+12 ישי פליישר.
+
+Revision 53 read the top six while they were still being announced and its reasoning holds unchanged:
+`security` +3 and `religiosity` +3 have no band above them, and `economic` 0 is held by
+`not-economy-focused`, which a slate of national-security politicians does not disturb. **צביקה פוגל
+left the PARTY, not merely the list** — revision 53 recorded him as pushed down and declining to run;
+he resigned from עוצמה יהודית outright on 2026-09-06.
+
+**Three things in the filing statement bear on the classification, and only one of them is new.**
+
+- **The voluntary-emigration programme now covers the WEST BANK, not only Gaza** — *"בין יתר הדברים
+  שאנחנו רוצים לקדם – זה עידוד הגירה מרצון. גם בעזה גם ביהודה ושומרון"*. התנתקות 710 (revision 45) is
+  a Gaza document end to end; פוגל's extension to ג'נין (revision 30) was one member's framing. This
+  is the chairman, at filing, naming both theatres. **`voluntary-palestinian-emigration-incentives`
+  is unchanged** — the tag was never scoped to Gaza — but the row's evidence for it now spans both.
+- **`population-transfer` REFUSED A FIFTH TIME, and the reason is worth stating precisely because the
+  refusal gets harder each pass.** The word is still *מרצון*, and **geography is not compulsion**:
+  widening where an opt-in instrument operates says nothing about whether it is opt-in. The trigger
+  written at revision 45 is unchanged and **untripped** — a coercive clause in the instrument (a
+  penalty, a withdrawal of status or aid, a deadline), or a statement that those who decline will be
+  made to. Neither has appeared. This is the **third** pairing of an opt-in instrument with
+  transfer-adjacent surroundings on this row (revision 30's citizenship-stripping bill, revision 45's
+  *"גנדי צדק!"*, now the West Bank extension), and as at revision 45 the pattern **strengthens** the
+  instrument test: a page that tagged on proximity would have tagged this row three times over.
+- **`conscription-by-incentive` is reinforced first-party, from an unexpected direction.** Ben Gvir
+  describes the list as *"חילונים, דתיים, מסורתיים, **חרדי ששירת בצבא**"* — the haredi slot is
+  introduced by the holder's army service. The family became first-party at revision 30 on haredi
+  police recruitment; the same logic is now applied to a candidacy, which is the model stated as
+  identity rather than as a programme.
+
+**Declined: `populist` for *"מאבק בדיפ-סטייט"*.** It is the campaign's stated priority alongside
+emigration, and it is refused on the same ground revision 30 refused `populist` for the Segal letter —
+this page does not tag style, and a frame is not an instrument. The substance is already carried
+twice over: `judicial-overhaul` on the row, and the standing coalition precondition that the Attorney
+General be dismissed. **Also declined**: *"הרשימה הכי מגוונת בישראל"* and *"שתי נשים בחמישייה
+הראשונה"* are self-description, not position.
+
+**`kahanist` has been on this row since the original 2026-07-16 classification with NO evidence ever
+cited on this page, and #8 is the first.** Revision 30 noticed exactly this gap for
+`jewish-supremacist` — *"carried on general knowledge until now"* — fixed it, and did not look at the
+tag sitting immediately beside it in the same two-word preamble. Grep the document: `kahanist`
+appears three times, once as that bare preamble, once as a cross-reference from another row, once in
+the vocabulary sweep. **The row's most distinctive tag was its least evidenced, and it stayed that
+way through two passes that were specifically about evidencing tags.** The generalisable form: *a tag
+audit that fixes the tag it came for will not look at the one next to it* — the same shape as the
+date-window and the link-label findings, one level up.
+
+- **צחי אליהו (#8) carries a large tattoo of the כך movement emblem on his right forearm**, reported
+  by [סרוגים](https://www.srugim.co.il/779915) and **confirmed by him in his own words** — he dates it
+  to the evening of the שרונה attack, after seeing a Kahane quotation about Arab citizens. He is a
+  twelve-year party activist from מושב עין יעקב, co-led the עמונה evacuation struggle in 2017, and ran
+  at #17 in 2022. **The evidence is not the tattoo; it is the party's decision about it.** When a seat
+  fell vacant under the Norwegian Law in 2023 he was next in line and Ben Gvir **blocked him**, on
+  reporting that the tattoo and his association with the previous *"דור כ״ך"* would damage the party's
+  image. Nothing about him changed. In 2026 the same chairman placed him at **#8**, inside the range
+  of every poll. A party that once treated the emblem as disqualifying now slots its wearer — which
+  evidences `kahanist` far better than any quotation would, because it is a revealed preference and
+  this page scores revealed positions.
+- **Tier note, stated rather than glossed:** the placement is the party's own act, announced by the
+  chairman; the tattoo is press-reported and self-confirmed by the candidate, **not** published by the
+  party. That is weaker than revision 30's first-party citations and stronger than the general
+  knowledge `kahanist` rested on for eight weeks. Recorded at that tier.
+
+**#9 יוסי גולדברגר is the first haredi slot this party has ever reserved, and it changes no field.**
+39, Chabad, co-founder of the גבעת ליובאוויטש community in כפר חב"ד and לוד, career as an עסקן
+advising ministers and MKs. **No policy positions exist to record** — no platform, no interview, no
+stated legislative agenda in Hebrew press, haredi outlets or Chabad media. That is a finding about
+what the slot is for, not a gap in the search: Ben Gvir's own citation is access
+(*"יודע לפתוח דלתות, לעזור לאנשים ולהביא תוצאות"*). **`sector` stays `religious_zionist`** on the
+precedent revision 45 applied to the Druze campaign HQ and revision 41 to עמך ישראל — a slot aimed at
+a community records what a party *does*, not what it **is**. Third instance, third row.
+
+- **The alliance behind the slot is older and better evidenced than the slot**, and is what makes it
+  worth recording at all: [Shomrim](https://www.shomrim.news/hebrew/chabad-bengvir) puts Chabad at
+  **2–3 seats** with ~**1,300** centres as a ground network, **56% for עוצמה יהודית in כפר חב"ד**
+  against 19% דגל התורה and 12% ש"ס, joint Chabad–עוצמה slates in רחובות and קרית גת at the 2024
+  municipals, and a 2022 coalition clause funding כפר חב"ד expansion and a heritage centre at up to
+  **₪12m/yr**. The bloc was already voting for the party without a candidate.
+- **The Chabad rabbinical court moved against it a day before the announcement.** A letter signed by
+  **22** senior Chabad rabbis (motzei Shabbat 2026-09-05/06) states the movement is non-partisan, that
+  nobody may speak in Chabad's name, and — operatively — *"אסור לחסיד חב"ד לשמש כח"כ באף מפלגה (ללא
+  אישור בכתב מבית הדין)"*, while still urging a vote for *"הרשימה הכי חרדית לדבר ה'"*. **Whether
+  גולדברגר holds that permission is unreported in either direction**; senior Chabad figures say he
+  acted against the ruling. Recorded because the row's own logic makes it interesting rather than
+  gossip: the slot's purpose is to consolidate a bloc, and it produced the first public statement from
+  that bloc's authority that its holder does not represent them.
+
+**#7 חנמאל דורפמן is under a live recommendation to indict, and it is deliberately NOT tagged.**
+31, Ben Gvir's chief of staff for four years, an attorney whom Ben Gvir had represented at 15 as a
+נער גבעות, resigned July 2026 to run. **מח"ש recommended indicting him, subject to a hearing, on
+2026-04-28**, in the פרשת מקורבי בן גביר alongside ניצב-משנה אבישי מועלם; the Attorney General
+separately decided to indict נציב שב"ס קובי יעקובי. Sixteen months on, no decision either way is
+reported. The alleged conduct: instructing a district commander not to confiscate the weapon of a
+settler who shot a resident of חווארה, seeking police information about why licences were refused to
+right-wing extremists on Shin Bet intelligence, intervening on a detainee's custody conditions, and
+pushing מועלם's promotion. A phone seizure and a conditional arrest warrant were reported.
+
+- **Why no tag.** An allegation against a candidate is not a position of the party — the same line
+  that keeps `populist` off this row for rhetoric. This page tags what a party *advocates*, and an
+  indictment recommendation is a fact about a person.
+- **What it does corroborate, in prose.** Two things already on the row. The alleged conduct is
+  steering police away from Jewish-terrorism enforcement, which is the same subject matter as
+  `jewish-supremacist` and the ministerial record the row is scored from. And Ben Gvir's response —
+  attacking the Attorney General for fabricating charges out of policy disagreement, on the parallel
+  יעקובי indictment — is the **same** AG confrontation the row already carries as a stated coalition
+  precondition (revisions 18 and 30). The affair is where that precondition acquires a motive.
+
+**Retrieval note — `gov.il` answers HTTP 200 with a fixed-size generic page, and this is a new member
+of the swallowed-status family.** *(Corrected the same day: the interstitial is not always a Cloudflare
+challenge. The first sweep returned `<title>Just a moment...</title>`; a sweep hours later returned
+`<title>HomePage</title>`, the Angular shell's own fallback — **same 8,734 bytes either way**. The
+mechanism is whichever of the two you happen to hit; the durable tell is the constant size, so do not
+go hunting for Cloudflare specifically.)* Revision 55 cited `gov.il/he/pages/<party>_list<n>` for four filed
+lists. Today WebFetch gets **403** on both the index and the chapter view, and a browser-shaped
+`curl` gets **200** — whose body is `<title>Just a moment...</title>`. The tell was not the status and
+not the HTML: it was that **every** slug returned exactly **8,734 bytes**, including
+`otzma_yehudit_list1`, `ozma_list1` and `otzma_list2`, which are inventions. A challenge page is a
+fixed-size response to any path, so a slug-guessing sweep against it returns a uniform, confident
+"found" for every guess. **Check the byte count before the status code**, the same discipline the
+image-only-PDF rule uses. `data.gov.il`'s CKAN dataset is reachable and carries the 19th–23rd Knesset
+lists only, nothing for the 26th. **The party's own WordPress REST API worked on the first request**
+and had the filing statement — the instrument revision 45 recommended, vindicated against an official
+source that was unreachable.
+
+Sources for this pass: the party's own filing statement (2026-09-07, WP REST API); the list as
+published by [ערוץ 7](https://www.inn.co.il/news/705828) and [חרדים10](https://ch10.co.il/news/1100262/);
+[סרוגים](https://www.srugim.co.il/779915) and [ynet 2022](https://www.ynet.co.il/news/election2022/article/hyux4pi4s)
+on צחי אליהו; [Shomrim](https://www.shomrim.news/hebrew/chabad-bengvir) and
+[חרדים10](https://ch10.co.il/news/1099745/) on Chabad; [חדשות 13](https://13tv.co.il/item/news/domestic/crime-and-justice/k2m9i-905119731/)
+and [ynet](https://www.ynet.co.il/news/elections2026/article/bkrz6xn00gl) on דורפמן. **Every source
+below the filing statement is press, not party** — flagged per this page's own convention, which is
+why none of them moves a number.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
-**⚠ 2026-09-06 — this row is reportedly becoming a TWO-PARTY LIST with יועז הנדל.**
+**RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
+filed as the junior half of **המילואימניקים והכלכלית** (CEC list 16), holding #2, #4, #6 and #8 of a
+strict 5:4 zipper under its filed faction name **הכלכלית החדשה**. Its four values were carried into
+that row by the union rule, which had nothing to resolve — both rows were already `unaligned` /
+`secular` / **+1 / +2 / −2** — and eight of its seventeen tags went with them. **`on_ballot` is now
+`FALSE` here** so the ballot shows one line, not two.
+
+**This is NOT the end state and must not be left as one.** A merge has a single successor, so this
+page's rule is *reassign the votes, then delete the row* — the חד"ש-תע"ל + בל"ד path — and that
+remains correct here. The blocker is mechanical: **this row holds 1 vote**, `seed.sql`'s removal
+statement is vote-guarded, and deleting it from the `VALUES` block before the reassignment would
+silently no-op and leave the row in production unwritten by any statement in this file. Run the admin
+vote-reassignment flow to המילואימניקים והכלכלית, *then* remove the row in a follow-up commit.
+**Everything below stays live and correct** — `on_ballot` is a ballot flag, not a classification, and
+this row's reasoning is now also the junior half of the merged row's.
+
+**⚠ 2026-09-06 — this row is reportedly becoming a TWO-PARTY LIST with יועז הנדל.** *(Superseded by
+the block above; left as the dated record.)*
 ([ynet](https://www.ynet.co.il/news/elections2026/article/skuwxxiuml).) הנדל, who co-led
 בית ציוני - המילואימניקים, refused Eisenkot and agreed a joint run with זליכה, both claiming first
 place (*"אנחנו שנינו במקום הראשון"*) — which is **ביחד's `two-faction-list` shape, not an
@@ -3455,7 +3624,139 @@ earlier pass, not created by the new documents.
   ישר's near-identical *"העבודה תשתלם תמיד יותר מקצבה"* — the very sentence that got `welfare-state`
   rejected there — is the immediate proof that the workfare sweep would find more than one holder.
 
-### בית ציוני - המילואימניקים — Zionist Home – The Reservists · `unaligned` · 1 / 2 / −2 · secular
+### המילואימניקים והכלכלית — The Reservists and the Economic Party · `unaligned` · 1 / 2 / −2 · secular
+
+*(Was **בית ציוני - המילואימניקים** until 2026-09-07. `seed_key` is still `the-reservists` — identity is
+assigned once and is never a rename mechanism. Everything below the revision 58 entry predates the
+merge and is left as the dated record it is.)*
+
+**2026-09-07 — revision 58. The pre-registered 2026-09-08 pass, executed a day early against the
+FILED list. Both halves confirmed: the split happened, and the Hendel–זליכה joint run is real.
+This row is renamed, put back on the ballot, and takes `two-faction-list`; tags 27 → 36; NO AXIS
+MOVES.**
+
+Filed with the CEC as **המילואימניקים והכלכלית**, list 16, בראשות יועז הנדל וירון זליכה (ballot
+letters requested: ד׳, צ׳ or י׳). The filed order, **with each candidate's party of origin as the
+CEC prints it**:
+
+| # | candidate | faction |
+|---|---|---|
+| 1 | הנדל יועז | המילואימניקים |
+| 2 | זליכה ירון | הכלכלית החדשה |
+| 3 | וילף עינת | המילואימניקים |
+| 4 | ווליבוביץ חביב | הכלכלית החדשה |
+| 5 | אדומי יואב שלמה | המילואימניקים |
+| 6 | לנגמן אופיר שי | הכלכלית החדשה |
+| 7 | דמרי שלומי | המילואימניקים |
+| 8 | גלבוע ליאור | הכלכלית החדשה |
+| 9 | פרץ תהילה | המילואימניקים |
+
+**The structure is a strict zipper, and it is the most balanced two-faction list this page has
+recorded** — 5:4 across the top nine, alternating without exception. הציונות הדתית + זהות gave one
+component **9 of 13** including #1 and the portfolio, which is why that merge needed a ruling on whose
+`economic` survived. Here neither side subordinates the other, and both men claimed first place
+before filing (*"המקום הראשון שרירותי. אנחנו שנינו במקום הראשון"*). **זליכה states the form
+outright — *"מדובר בחיבור טכני בלבד"*** — so this is a **בלוק טכני** on the יהדות התורה / RZP-זהות
+model, and `two-faction-list` is taken on the stated form, not inferred from the ballot line.
+
+**בית ציוני is out of the name because it is out of the list.** The ⚠ block above recorded the split
+as reported and not actioned; it happened. חילי טרופר's faction went to **ישר** as an *absorption*
+(*"החיבור אינו בבלוק טכני"*), and **no candidate on the filed list is attributed to בית ציוני** —
+which is the confirmation the ⚠ block asked for, and a stronger one than any report, because the CEC
+prints the faction beside every name.
+
+**The union rule is TRIVIAL here, and that is the finding of the pass.** Both components were already
+scored, independently, from their own platforms — and they land on **the same four values**:
+
+| | המילואימניקים (this row) | הכלכלית החדשה | merged |
+|---|---|---|---|
+| `economic` | +1 | +1 | **+1** |
+| `security` | +2 | +2 | **+2** |
+| `religiosity` | −2 | −2 | **−2** |
+| `bloc` / `sector` | `unaligned` / `secular` | `unaligned` / `secular` | **unchanged** |
+
+**This is the first merge on this page where the union rule has nothing to resolve.** הרשימה המשותפת
+needed it to carry בל"ד's −3 religiosity across; הציונות הדתית + זהות could not use it at all, because
+its precondition — components *"differ only in degree, with direction not in dispute"* — failed on a
+0-versus-+3 `economic`. Here the two rows were **already identical on every axis**, having been scored
+eleven weeks apart from unrelated documents. Worth stating plainly rather than passing over: the
+cleanest possible merge produces no number to argue about, and the page should not manufacture one.
+
+It also retro-validates the two scores. `economic +1` on **both** rows was set for the *same stated
+reason* on each — liberalizing fused with real state expansion, and explicitly **not** +2 — by two
+separate passes that were not comparing notes (revision 20 here, revision 23 there). The parties then
+merged on the claim that their two flagship issues are one constituency
+(*"אותו מילואימניק שיוצא שוב לשירות חוזר הביתה למשכנתא ולחשבון בסופר"*). The classification had
+already put them in the same cell.
+
+**Tags: 27 → 36.** Nine of הכלכלית החדשה's seventeen dedupe against tags this row already held
+(`anti-monopoly`, `free-trade`, `kashrut-liberalization`, `pro-settlement`, `universal-conscription`,
+`sanctions-on-non-servers`, `scholar-exemption-retained`, `state-haredi-education`,
+`workforce-integration`) — itself a measure of how close the two rows already were. **Eight carried**:
+`populist`, `anti-corruption`, `tax-cutting`, `consumer-protection`, `anti-clerical`,
+`no-palestinian-state`, `security-hawk`, `gender-equality`. Plus `two-faction-list`. **None refused**
+— the RZP-זהות pass refused ten of nineteen because they contradicted a number or a family on the
+surviving row; nothing here does.
+
+**Two carried tags sit in visible tension with what this row already holds, and both are kept
+deliberately.** State them rather than let a later reader find them and assume an error:
+
+- **`tax-cutting` beside the `welfare-state` family and `statist`.** Not a contradiction, because
+  `economic +1` is *defined* on this page as the fusion band — the score exists precisely to hold a
+  large tax cut (VAT 18→12, marginal 50→40) and real state expansion (public housing 50,000 → 110,000
+  here, a state-co-funded bank there) on one row. A row that could not carry both would be misfiled at
+  +1.
+- **`anti-clerical` beside `religious-pluralism`.** The Conventions section introduces these as
+  **different motives for the same score** — ישראל ביתנו's animus against הדמוקרטים's pluralism, both
+  at −3. Carrying both on one row asserts two motives at once, which on a single-party row would be
+  incoherent and on a **technical bloc is simply accurate**: two parties reached −2 by different
+  routes and are running on one line without resolving that. **First application of the motive
+  distinction to a two-faction row**, and the general rule it suggests: a `two-faction-list` row may
+  hold two motives for one number, because that is what a technical bloc *is*.
+
+**`on_ballot` FALSE → TRUE, which is the flag doing exactly what it was added for.** This row was the
+schema's only `FALSE`, set on 2026-09-06 with the note *"If the deal collapses and this party files
+after all, flip the flag back to TRUE — that is the whole point of a flag over a deletion."* The deal
+did not collapse; it filed under a different name and a different partner. **Two votes survived the
+round trip untouched**, which a deletion would have destroyed and which the admin `DELETE` still
+would.
+
+**המפלגה הכלכלית goes `on_ballot = FALSE`, and this is an INTERIM state, not the end state — say so
+loudly.** It is absorbed into this row and must not appear as a separate ballot line. But **this page's
+own rule is that a merge reassigns votes to the successor and then deletes**, and that is still the
+correct end state here: there *is* a single successor, which is what distinguishes this from the
+2026-09-06 split. The blocker is mechanical — **the row holds 1 vote**, `seed.sql`'s removal statement
+is vote-guarded, and dropping the row from the `VALUES` block today would be **worse than leaving it**:
+the guarded delete would silently no-op, and the row would then sit in production no longer written by
+any statement in this file. So the flag holds the ballot correct until someone runs the admin
+vote-reassignment flow; **removing the row from `seed.sql` is a follow-up commit that must come after
+that reassignment, not before it.**
+
+**`seed_key` stays `the-reservists`, and it now names only one of the row's two factions.** That is
+correct and it will look like a bug to the next reader: identity is assigned once and is never a
+rename mechanism (`services/backend/CLAUDE.md`), so a row that changes its display name keeps its key.
+Regenerating the block would rewrite it to a slug derived from the new `name_en` and break the
+adoption `UPDATE` — the exact `joint-list` → `the-joint-list` failure that file warns about, which
+ends in `RAISE EXCEPTION` inside `init_db` and CrashLoopBackOff on every backend pod.
+
+**⚠ The logo is now stale and I could not fix it.** `/logos/beit-tzioni-miluimnikim.png` is a crop of
+the *previous* rebrand's artwork (2026-08-08), for a list that no longer exists under that name or that
+composition. It is self-hosted because the only source artwork lives on `*.fbcdn.net` with signed,
+expiring URLs that tracker blockers drop — so this cannot be fixed by repointing a URL, only by
+obtaining and cropping new artwork. **Left in place deliberately**: a stale logo is a visible cosmetic
+defect, a broken one is a hole in the ballot. Flagged for the repo owner.
+
+**Not attempted, and why.** The rest of the filed list beyond #9 was not available to me — see the
+retrieval note under revision 57 — so the extent recorded here is *the top nine as filed*, not the whole
+list. Nothing below #9 could move an axis on a row whose components already agreed on all three, but the
+tail is unread and this entry does not pretend otherwise.
+
+Sources: the CEC's filed list for **המילואימניקים והכלכלית** (list 16), read from
+`gov.il/he/pages/hamiluimnikim-vehakalkalit_list16` and supplied to this pass verbatim;
+[ערוץ 7](https://www.inn.co.il/news/705730) and [ynet](https://www.ynet.co.il/news/elections2026/article/skuwxxiuml)
+on the split and the joint run; [ynet's all-lists round-up](https://www.ynet.co.il/news/elections2026/article/hkqbeu3dgx)
+for the filed name and requested letters.
+
 
 **⚠ 2026-09-06 — the row is splitting, TWO DAYS before the list-submission deadline (Tuesday
 2026-09-08). Recorded, not actioned.**
@@ -4709,6 +5010,11 @@ wrong:
   replaced URL was `Logo_המילואימניקים_-_דור_הניצחון.png`, the logo of **Gilad Ach's movement** (see
   the name-collision warning). We were showing one organisation's mark on another organisation's row.
   Repointed again on 2026-08-08 to `/logos/beit-tzioni-miluimnikim.png` for the joint list's rebrand.
+  **⚠ STALE since 2026-09-07**: the list rebranded again, to **המילואימניקים והכלכלית**, and this file
+  is the *previous* rebrand's artwork. It cannot be fixed by repointing a URL — the reason it is
+  self-hosted at all is that the source artwork lives on signed, expiring `*.fbcdn.net` URLs that
+  tracker blockers drop — so it needs new artwork obtained and cropped. Left in place deliberately: a
+  stale logo is a cosmetic defect, a broken one is a hole in the ballot.
 - **הציונות הדתית**, `upcoming_parties` **only** — the 2026 rebrand. `previous_parties` deliberately
   keeps the 2022 logo, because that row is the current Knesset faction, and the two tables carry
   independent `logo_url` columns. Scoping the statement to one table is what enforces that.
@@ -5345,3 +5651,5 @@ pass happened, for anyone reading git history.
 | 2026-09-07 | revision 54 — **ישראל ביתנו published its official list and it closes every gap revision 52 left open. Exactly 25 names.** [רשימת מפלגת ישראל ביתנו לכנסת הבאה](https://beytenu.org.il/רשימת-מפלגת-ישראל-ביתנו-לכנסת-הבאה/), 2026-09-06 21:38Z, after a launch at Expo Tel Aviv. **The three unsourced candidates resolved**: **#20 יעקב (יענקי) מוזס** — a **יוצא בשאלה** volunteering at **הלל**, which supports people leaving the haredi community; **#21 עמי קור** — **co-founder of Sygnia**, cyber-attack response; **#25 עו״ד סתו בויאנג׳ו מצא** — chair of the party's **קהילת הנשים**. **Four corrections, none moving a score**: **#9 קוליחמן is the DEPUTY MAYOR OF LOD** (the Lod crime column was her portfolio, not a byline); **#3 לנקרי** was *סגנית ראש המל״ל* למדיניות לוט״ר, more senior than Wikipedia's "head of the home-front division"; **#12 בנבנישתי is a gerontologist**, which explains the senior-citizens HQ; and **#2 בן שטרית is labelled "איש הליכוד" by the party itself**, so revision 52's recruitment pattern is the party's own description rather than this page's inference. **The party distinguishes ח״כ from חכ״ל and the supplied list did not — FIVE sitting MKs, not nine**: ח״כ ליברמן/פורר/מלינובסקי/עמאר/סובה; **חכ״ל אילוז #10, מגן תלם #14, רופא אופיר #16**, the last two having served in the 24th via the Norwegian law and not returned. **Two corroborations that move nothing**: מוזס #20 is this row's sharpest `religiosity −3` corroboration from a *person* rather than a document, and **בויאנג׳ו מצא #25 does NOT revive `gender-equality`** — a women's community with a chair on the list is an **outreach structure**, exactly what מטה הסרוגים and עוצמה יהודית's Druze HQ were held to be; accepting it here while refusing a יו״ש forum as territorial evidence would be the same inconsistency inverted. **Method note — the two earlier "not found"s were NOT the same failure.** קוליחמן was a **method** failure (wrong Hebrew spelling, plus slug-matching blind to English slugs); מוזס/קור/בויאנג׳ו מצא were a **timing** result — this page did not exist when the sitemap was enumerated hours earlier. Only one of the two implies the instrument was wrong |
 | 2026-09-07 | revision 55 — **ביחד takes `two-faction-list` (18 → 19 tags), on the first four official candidate lists filed with the CEC — and the tag was proposed for the WRONG ROW first.** ([ישר!](https://www.gov.il/he/pages/yashar_list_2) · [ביחד](https://www.gov.il/he/pages/beyahad_list1) · [index](https://www.gov.il/he/pages/candidates-lists-26), all published 07.09.2026.) **No axis, bloc, sector or family value moved on any row; ישר is unchanged entirely.** ישר!'s filing shows 120 names split **116 מפלגת ישר לישראל עם איזנקוט / 4 מפלגת יסודות ישראל** (טרופר #6, שפירא #10, פרץ #20, יחיאב #35) — which reads as a two-party list on the form and was put forward as one. **The repo owner refused it on weight** (*"it's just 4 guys who aren't Yashar"*), and the refusal is right on the tag's own founding cases: both existing holders keep an **independent decision structure** — יהדות התורה's separate מועצות גדולי תורה (revision 35 moved the tag onto exactly that standing structure), and הציונות הדתית–זהות's technical bloc that **may split**, זהות holding 4 of 13 realistic slots including **#2**. יסודות ישראל keeps neither: top slot **#6 of 120**, and *"החיבור אינו בבלוק טכני"* means it explicitly cannot split afterwards. Tagging it would have pushed the tag below its own narrowest founding case. **The base-rate check is what saved the finding, and it was nearly skipped.** *"מטעם מפלגת X"* was read as evidence of two-party structure before anyone asked what that field looks like on a list nobody disputes — and שרשר לאהבה ואחדות העם, a single undisputed party, carries the **same annotation on all 12 of its candidates**. It is the CEC form's standard field, evidence of nothing. Same shape as revision 35 (UTJ's routine split read as news against a missing baseline) and the root `CLAUDE.md`'s *establish what exists before deciding what to read* — **the third instance, and the first where the baseline was one request away.** **The same fetch found the row that does qualify**: ביחד filed **62 מפלגת ביחד בראשות בנט מחזירים את התקווה / 58 מפלגת יש עתיד - בראשות יאיר לפיד**, zippered from the top with **לפיד at #2** — 58 slots and #2 sits *above* the UTJ founding case, so the tag gains discrimination rather than losing it. **This row had been the page's own reference standard for the shape while not carrying it**: two entries (המפלגה הכלכלית and בית ציוני - המילואימניקים) cite *"ביחד's `two-faction-list` shape"* as the test הנדל–זליכה would have to meet. The ביחד entry has described the structure correctly since it was written — a **doc-vs-`seed.sql` gap, not a research gap**, and the kind a tag-holder count finds and a re-read does not. Second-order: **יש עתיד still exists as a registered party**, so `party_lineage`'s `yesh-atid → together` is right as lineage and must not be read as a dissolution. **Only four lists are filed** (the other two are שרשר and השותפות לכולם, both new and both out of scope on the owner's instruction), so הנדל–זליכה, עוצמה יהודית and the rest keep their **2026-09-08** action dates |
 | 2026-09-07 | revision 56 — **`upcoming_parties` gains an 'אחר' (Other) catch-all, mirroring the one `previous_parties` has always had.** Repo owner's call, and the timing is the argument: lists are still being filed, so the 2026 ballot on this site cannot be complete, and until now a voter whose party was missing had only *undecided* — which means something different and poisons the intended-vote analytics by absorbing decided voters. **It is not a party and carries no classification**: NULL on bloc, all three axes, sector, tags, families and family_evidence, `on_ballot TRUE` because it is a ballot choice, and **no `party_lineage` link in either direction** — ('other','other') would assert that whoever picked Other in 2022 is the same voter picking it in 2026. **Nothing needed changing in the aggregations, which is the point**: `compositionPercentages` skips a falsy `bloc` and `weightedAxisAverage` skips a NULL axis, so the row is excluded from every percentage rather than bucketed as `unaligned` — the same handling that already carries ביחד's NULL `security` and the previous-table Other. `get_options` coalesces NULL tags/families to `[]`. On the form it renders as a plain text utility card beside *undecided* (`renderPreviousGrid`'s existing shape), but it keeps `data-upcoming-id`, so it is a **real pick** that counts toward the 3-pick cap. **Two tests failed exactly as they should have and were the design review**: `test_seeded_row_counts` (17 → 18) and `test_every_upcoming_party_has_families_and_evidence`, which forced the question of whether a catch-all has a policy family — it does not, and that is now asserted as NULL in `test_other_has_no_ideology` (extended to both tables, plus the on_ballot and no-lineage properties) rather than merely skipped. No axis, bloc, tag or family moved on any existing row |
+| 2026-09-07 | revision 57 — **עוצמה יהודית FILED its final twelve-name list and nothing moved, for the seventh consecutive reading — but the pass finally cites `kahanist`.** First-party source: the party's own statement on filing (2026-09-07, WP REST API). Filed **independently** — Ben Gvir refused Netanyahu's push to re-merge with הציונות הדתית ("final and absolute"), so no `two-faction-list`; recorded on that row too, half-discharging its expected-unstable flag. **`kahanist` had been on this row since 2026-07-16 with no evidence ever cited on this page** — revision 30 noticed exactly that gap for `jewish-supremacist`, fixed it, and never looked at the tag beside it in the same two-word preamble (*a tag audit that fixes the tag it came for will not look at the one next to it*). **#8 צחי אליהו** is the first citable evidence: a large **כך emblem tattoo** on his forearm, self-confirmed, for which **Ben Gvir BLOCKED him from a Norwegian-Law seat in 2023** — and who is now slotted at #8, inside every poll. The evidence is the party's reversal, not the tattoo; a revealed preference, which is what this page scores. Tier flagged: the placement is the party's act, the tattoo is press-reported and self-confirmed, not party-published. **The filing statement widens voluntary emigration to the WEST BANK** (*"גם בעזה גם ביהודה ושומרון"*) — `voluntary-palestinian-emigration-incentives` unchanged (never Gaza-scoped), and **`population-transfer` refused a FIFTH time: geography is not compulsion**, revision 45's trigger untripped, and this is the third opt-in/transfer-adjacent pairing, which strengthens the instrument test rather than eroding it. `conscription-by-incentive` reinforced first-party from a new direction — the haredi slot introduced as *"חרדי ששירת בצבא"*. `populist` declined again for *"מאבק בדיפ-סטייט"* (a frame is not an instrument; substance already carried by `judicial-overhaul` and the AG-dismissal precondition). **#9 יוסי גולדברגר, the first haredi slot the party has reserved, changes no field**: `sector` stays `religious_zionist` on the Druze-HQ/עמך ישראל precedent (third instance, third row), and **no policy positions exist to record** — the slot is access, not doctrine. The alliance behind it is the substance: Chabad at **2–3 seats**, ~1,300 centres, **56% in כפר חב"ד** vs 19% דגל התורה, joint municipal slates 2024, a ₪12m/yr coalition clause — and **22 Chabad rabbis** ruled a day earlier that no חסיד may sit as an MK without the beit din's written permission, which גולדברגר is not reported to hold. **#7 חנמאל דורפמן carries a live מח"ש recommendation to indict (2026-04-28, פרשת מקורבי בן גביר), undecided sixteen months on — deliberately NOT tagged**: an allegation against a candidate is not a party position, the same line that keeps `populist` off this row. Recorded in prose because the alleged conduct (steering police off Jewish-terrorism enforcement) is the row's own subject matter, and Ben Gvir's "the AG fabricates charges" response is where the recorded AG-dismissal precondition acquires a motive. **צביקה פוגל left the PARTY**, not merely the list (revision 53 had him only declining to run). **Retrieval note, a new member of the swallowed-status family:** `gov.il` 403s WebFetch and answers a browser-shaped `curl` with **HTTP 200 whose body is a Cloudflare "Just a moment..." challenge** — and every slug returned exactly **8,734 bytes**, including invented ones, so a slug-guessing sweep reports a confident "found" for every guess. **Check the byte count before the status code.** `data.gov.il` CKAN has the 19th–23rd Knessets only. The party's own WP REST API worked first try — revision 45's instrument, vindicated against an unreachable official source. **`seed.sql` unchanged** — 0/3/3, `bibi`, `religious_zionist`, 17 tags, 3 families, `record`, `on_ballot TRUE`, verified column by column |
+| 2026-09-07 | revision 58 — **בית ציוני - המילואימניקים + המפלגה הכלכלית → המילואימניקים והכלכלית, the third `upcoming_parties` merge and the FIRST where the union rule has nothing to resolve.** Executed a day early against the CEC-filed list (list 16, ד׳/צ׳/י׳ requested), which the repo owner supplied verbatim after gov.il proved unreachable. **Both halves of the 2026-09-06 ⚠ block confirmed**: טרופר's faction is absorbed into ישר and **no filed candidate is attributed to בית ציוני** — the CEC prints the faction beside every name, which is a stronger confirmation than any report; and the הנדל–זליכה joint run is real, with זליכה stating the form outright (*"חיבור טכני בלבד"*), so `two-faction-list` is taken on the **stated** form rather than inferred from the ballot line. **A strict 5:4 zipper across the top nine, alternating without exception — the most balanced two-faction list on this page**, against הציונות הדתית + זהות's 9-of-13; neither side subordinates the other and both claimed #1 before filing. **The finding is that the merge produced no number to argue about.** Both components were already `unaligned` / `secular` / **+1 / +2 / −2**, scored eleven weeks apart from unrelated platforms — so unlike הרשימה המשותפת (which needed the rule to carry בל"ד's −3) and unlike RZP+זהות (where the rule's own precondition failed on 0-vs-+3 `economic`), there was nothing to reconcile. It retro-validates both scores: `economic +1` was set on each row for the *same stated reason* — liberalizing fused with real state expansion, explicitly not +2 — by two passes not comparing notes, and the parties then merged claiming their flagship issues are one constituency. **NO AXIS MOVES.** **Tags 27 → 36**: nine of seventeen dedupe (itself a measure of how close the rows already were), **eight carried** (`populist`, `anti-corruption`, `tax-cutting`, `consumer-protection`, `anti-clerical`, `no-palestinian-state`, `security-hawk`, `gender-equality`), plus `two-faction-list`, and **none refused** — RZP+זהות refused ten because they contradicted a number or family, nothing here does. **Two tensions kept deliberately and stated rather than hidden**: `tax-cutting` beside `statist`/the `welfare-state` family (the `economic +1` band *is* the fusion band — a row that could not hold both would be misfiled), and `anti-clerical` beside `religious-pluralism`, which the Conventions section defines as **different motives for the same score**. **First application of the motive distinction to a two-faction row**, and the rule it suggests: such a row may carry two motives for one number, because that is what a technical bloc is. **`on_ballot` FALSE → TRUE on the surviving row** — the flag doing exactly what 2026-09-06 added it for, with **2 votes surviving the round trip** that a deletion would have destroyed. **המפלגה הכלכלית → `on_ballot = FALSE` as an explicit INTERIM**: a merge has a single successor so the correct end state is still reassign-then-delete, but the row holds **1 vote**, the removal statement is vote-guarded, and dropping it from the `VALUES` block first would **silently no-op** and leave it unwritten by any statement in the file. Reassignment, then a follow-up commit. **`seed_key` stays `the-reservists`** and now names only one of two factions — correct, and flagged because it reads as a bug: regenerating the block would rewrite it from the new `name_en` and reproduce the `joint-list` → `the-joint-list` failure, i.e. `RAISE EXCEPTION` in `init_db` and CrashLoopBackOff. **⚠ Logo left STALE and flagged for the owner** — `/logos/beit-tzioni-miluimnikim.png` is the previous rebrand's artwork and cannot be fixed by repointing (the source is on signed, expiring fbcdn URLs, which is why it is self-hosted); new artwork needed. **Revision 57's gov.il note corrected**: the 8,734-byte response is *sometimes* a Cloudflare challenge and *sometimes* the Angular shell's `<title>HomePage</title>` fallback — the mechanism varies, **the constant byte count is the durable tell**. **`test_queries.py` changed SUBJECT and REASON**: three tests pinned בית ציוני as the schema's only off-ballot row: that row is back on the ballot and המפלגה הכלכלית is off, so the rule survives while the instance moved — and the docstring saying *"a split has no correct vote reassignment"* was rewritten, because the new subject is off the ballot for the opposite reason (absorbed, reassignment pending). Verified by the documented round trip on a throwaway database: previous seed → planted ballot **asserted present before migrating** (the trap this page records — the first attempt hit the NOT NULL `previous_vote_status` and reported `ballots preserved: 0`, which proves nothing) → new seed applied → renamed, `on_ballot` flipped, 27→36 tags, axes unmoved, **ballot preserved**, idempotent on a second application. 270 backend + 48 worker + 29 script tests green, ruff clean |
