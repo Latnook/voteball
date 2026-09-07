@@ -17,9 +17,42 @@ provider "aws" {
 # Account + partition lookups reused by ARN construction (S3 bucket name, IRSA policies).
 data "aws_caller_identity" "current" {}
 
-# The existing public hosted zone (created outside this stack) -- used for ACM DNS validation and the
-# ALB alias record. You must already own this zone in Route53; this stack never creates it.
-data "aws_route53_zone" "primary" {
-  name         = var.route53_zone_name
-  private_zone = false
+# Authenticate the helm + kubernetes providers to the live cluster using short-lived exec tokens
+# (aws eks get-token) -- no long-lived kubeconfig in state. These providers can only initialize once
+# the cluster exists (Plan 2), which is why add-ons are a separate plan applied after it.
+data "aws_eks_cluster_auth" "this" {
+  name = module.compute.cluster_name
+}
+
+locals {
+  eks_exec = {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", module.compute.cluster_name, "--region", var.aws_region]
+  }
+}
+
+provider "kubernetes" {
+  host                   = module.compute.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.compute.cluster_certificate_authority_data)
+  exec {
+    api_version = local.eks_exec.api_version
+    command     = local.eks_exec.command
+    args        = local.eks_exec.args
+  }
+}
+
+# NOTE the `=` on kubernetes/exec below: the helm provider is v3 (Plugin Framework), where these are
+# object ATTRIBUTES, not blocks. The kubernetes provider above is still SDKv2 and keeps block syntax
+# -- the two look almost identical and are deliberately different. See versions.tf.
+provider "helm" {
+  kubernetes = {
+    host                   = module.compute.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.compute.cluster_certificate_authority_data)
+    exec = {
+      api_version = local.eks_exec.api_version
+      command     = local.eks_exec.command
+      args        = local.eks_exec.args
+    }
+  }
 }

@@ -55,39 +55,6 @@ module "jenkins_cd_irsa" {
   }
 }
 
-# ---- TLS for the webhook endpoint ----
-# Its own certificate, NOT a SAN added to the app's. Keeping them separate means this never touches
-# ingress.certificateArn, so scripts/sync-values-from-tf.sh stays at ten managed fields.
-resource "aws_acm_certificate" "jenkins" {
-  domain_name       = "jenkins.${var.app_domain}"
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_route53_record" "jenkins_cert_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.jenkins.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  zone_id         = data.aws_route53_zone.primary.zone_id
-  name            = each.value.name
-  type            = each.value.type
-  records         = [each.value.record]
-  ttl             = 60
-  allow_overwrite = true
-}
-
-resource "aws_acm_certificate_validation" "jenkins" {
-  certificate_arn         = aws_acm_certificate.jenkins.arn
-  validation_record_fqdns = [for r in aws_route53_record.jenkins_cert_validation : r.fqdn]
-}
 
 # ---- Supporting cluster resources (ExternalSecret + NetworkPolicies) ----
 resource "helm_release" "jenkins_support" {
