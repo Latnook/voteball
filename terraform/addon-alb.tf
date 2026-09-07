@@ -37,7 +37,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     },
     {
       name  = "vpcId"
-      value = module.vpc.vpc_id
+      value = module.networking.vpc_id
     },
     # Let the chart create the SA, annotated with the IRSA role ARN.
     {

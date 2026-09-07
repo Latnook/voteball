@@ -154,3 +154,12 @@ moved {
   from = aws_iam_policy.jenkins_cd_notify
   to   = module.iam.aws_iam_policy.jenkins_cd_notify
 }
+
+# ---- modules/networking ----
+# ONE block moves the entire 24-entry subtree. A moved block naming a module carries everything
+# inside it; writing 24 individual blocks would be wrong as well as tedious.
+
+moved {
+  from = module.vpc
+  to   = module.networking.module.vpc
+}

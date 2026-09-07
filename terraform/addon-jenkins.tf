@@ -100,7 +100,7 @@ resource "helm_release" "jenkins_support" {
     { name = "secretName", value = aws_secretsmanager_secret.jenkins.name },
     # This VPC's real CIDR, not the 10.0.0.0/16 default baked into the chart for offline `helm
     # template` runs -- see charts/jenkins-support/values.yaml.
-    { name = "vpcCidr", value = module.vpc.vpc_cidr_block },
+    { name = "vpcCidr", value = module.networking.vpc_cidr_block },
     # The EKS cluster's Service CIDR, not this VPC's -- a separate, cluster-internal range the API
     # server's ClusterIP lives on. Read from the module rather than hardcoded in the chart, so a
     # fork (or a future cluster with a non-default service CIDR) is not silently broken by a value
@@ -128,8 +128,8 @@ resource "helm_release" "jenkins_support" {
     # The PUBLIC subnet CIDRs, where the ALB's ENIs live. The ingress rule that admits the load
     # balancer is scoped to these rather than to the whole VPC -- pods get VPC addresses from the
     # PRIVATE subnets, so the old vpcCidr rule admitted every pod in the cluster to the controller.
-    { name = "albSubnetCidrs[0]", value = module.vpc.public_subnets_cidr_blocks[0] },
-    { name = "albSubnetCidrs[1]", value = module.vpc.public_subnets_cidr_blocks[1] },
+    { name = "albSubnetCidrs[0]", value = module.networking.public_subnets_cidr_blocks[0] },
+    { name = "albSubnetCidrs[1]", value = module.networking.public_subnets_cidr_blocks[1] },
     # TRUE now that the controller image serves /prometheus. The `prometheus` plugin ships in a
     # controller image rebuilt from ci/jenkins/plugins.txt, and jenkins_image_tag (in the gitignored
     # terraform/voteball.tfvars) now points at that rebuilt image -- confirmed to contain

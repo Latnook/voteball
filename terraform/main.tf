@@ -6,6 +6,27 @@
 # a module whose job needs the word "and" to state is a boundary drawn in the wrong place.
 # See docs/design/2026-09-07-terraform-module-layout-design.md section 1.
 
+# The subnet CIDRs live here, not inside modules/networking, because TWO modules read the private
+# list: networking turns it into subnets, and storage keys its EFS mount-target for_each on it.
+# A for_each KEY may not be unknown at plan time, so both must read one static list rather than the
+# VPC module's outputs -- see the comment above aws_efs_mount_target.jenkins in modules/storage.
+locals {
+  public_subnet_cidrs   = ["10.0.0.0/20", "10.0.16.0/20"]
+  private_subnet_cidrs  = ["10.0.32.0/20", "10.0.48.0/20"]
+  database_subnet_cidrs = ["10.0.64.0/24", "10.0.65.0/24"]
+}
+
+module "networking" {
+  source = "./modules/networking"
+
+  cluster_name          = var.cluster_name
+  vpc_cidr              = var.vpc_cidr
+  azs                   = var.azs
+  public_subnet_cidrs   = local.public_subnet_cidrs
+  private_subnet_cidrs  = local.private_subnet_cidrs
+  database_subnet_cidrs = local.database_subnet_cidrs
+}
+
 module "notifications" {
   source = "./modules/notifications"
 
@@ -19,14 +40,14 @@ module "storage" {
 
   cluster_name = var.cluster_name
   account_id   = data.aws_caller_identity.current.account_id
-  vpc_id       = module.vpc.vpc_id
+  vpc_id       = module.networking.vpc_id
   azs          = var.azs
 
   # Two lists describing the same subnets on purpose -- the CIDRs are static and safe as for_each
   # KEYS, the ids come from the VPC module and are only safe as VALUES. See the comment above
   # aws_efs_mount_target.jenkins in the module.
   private_subnet_cidrs = local.private_subnet_cidrs
-  private_subnet_ids   = module.vpc.private_subnets
+  private_subnet_ids   = module.networking.private_subnets
 
   node_security_group_id = module.eks.node_security_group_id
 }
