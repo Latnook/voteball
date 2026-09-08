@@ -183,10 +183,24 @@ case "$rc" in
 esac
 
 # 2. Anything ArgoCD is managing that this repo never declared was created by hand.
-#    `default` is the AppProject the argo-cd chart ships and cannot be removed; everything else in
-#    both lists should be exactly what the template above renders.
-for pair in "applications:voteball observability" "appprojects:voteball observability default"; do
-  kind="${pair%%:*}"; allowed=" ${pair#*:} "
+#    `default` is the AppProject the argo-cd chart ships and cannot be removed.
+#
+#    The allow-lists are DERIVED FROM $RENDERED, not hand-written. They used to be the literals
+#    "voteball observability" -- and when the 2026-08-27 EFK pass added a third Application and
+#    AppProject to the template (commit 6f45e41), nobody updated them. From then until 2026-09-08
+#    this check reported the repo's OWN `logging` Application as hand-created drift, telling you to
+#    reconcile something that was already reconciled. A hand-maintained list of what the template
+#    contains will always drift from the template; reading the template cannot.
+declared_names() {
+  printf '%s\n' "$RENDERED" | awk -v want="$1" '
+    /^kind:[[:space:]]/      { k = $2 }
+    /^[[:space:]]+name:[[:space:]]/ && k == want && !seen[$2]++ { print $2 }
+  '
+}
+for pair in "applications:Application" "appprojects:AppProject"; do
+  kind="${pair%%:*}"
+  allowed=" $(declared_names "${pair#*:}" | tr '\n' ' ')"
+  [ "$kind" = "appprojects" ] && allowed="${allowed}default "
   found="$(kubectl get "$kind" -n argocd -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
   for name in $found; do
     case "$allowed" in

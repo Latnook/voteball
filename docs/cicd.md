@@ -200,7 +200,7 @@ A push to `master` sends a webhook to `https://jenkins.<app_domain>/github-webho
 the HMAC signature GitHub attaches using a shared secret, so a random request cannot start builds.
 
 Only app-source changes rebuild images: the build/scan/push stages carry
-`when { anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }; expression { env.NO_CHANGELOG } } }`
+`when { anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }; expression { env.NO_CHANGELOG } } }`
 (**G3**). Editing `README.md`, `terraform/` or `docs/` triggers the job but builds nothing (Publish
 Metadata and Trigger CD share the same guard, so a docs-only push does not hand CD a tag with no
 images behind it).
@@ -218,6 +218,26 @@ that SHA are already in ECR, `ALREADY_BUILT` short-circuits everything anyway.
 > changelog.`, wrote a 0-byte changelog, skipped build/scan/push, and reported **SUCCESS** while ECR
 > held no images for that SHA. `scripts/tests/test-ci-guards.sh` now asserts every `changeset` gate
 > keeps its G3b branch.
+
+**`env.SERVICES_CHANGED`, not Jenkins' `changeset` directive (G3c, 2026-09-08).** `changeset` diffs
+against the **previous build**, not the previous *successful* one — so a build that **fails**
+consumes its changeset. Whatever that build was carrying falls behind the next build's range base,
+and no later `changeset` can ever see it again: the next green build skips Build, Push and Trigger
+CD, and the change never reaches production. `SERVICES_CHANGED` and `CHARTS_CHANGED` are computed in
+*Resolve tag and account* by `scripts/ci/changed-paths.sh` from **`GIT_PREVIOUS_SUCCESSFUL_COMMIT`**,
+which a failed build does not advance, so the change stays in view until something actually ships it.
+An absent or rewritten base prints `true` — "cannot tell what changed" must build, the same
+fail-safe direction as G3b and `images-exist.sh`.
+
+> **Also a real failure.** 2026-09-08: `seed.sql` took a party off the ballot; that build failed on
+> an unrelated broken test; the follow-up commit fixed only `scripts/tests/**`; the next build was
+> green and shipped nothing, leaving the party on a live public ballot. This is the **same trap the
+> Guard (G2) was hardened against on 2026-08-23** — a commit that "sits behind the tip and so falls
+> outside every subsequent changeset" — reappearing in the `when` conditions, which had not been
+> given the same base. When you fix a range base in one place, grep for every other consumer of the
+> same range. Regression test: `scripts/tests/test-changed-paths.sh`, which pins the answer from
+> both bases in both directions.
+
 
 `FORCE_BUILD` is a checkbox on "Build with Parameters". It exists because a **manually** triggered
 build has an empty changeset and would otherwise skip every stage, making "Build Now" a silent no-op.
@@ -1060,6 +1080,7 @@ original 2026-07-20 design predicted and remain accurate, now labelled against `
 | A commit you expected to build finishes `NOT_BUILT` immediately | The commit's **subject line** contains the skip marker. Since 2026-08-11 the body is *not* matched — it used to be, and that misfired: two commits whose bodies described the guard skipped themselves, so two CI changes shipped without CI ever running and reported `NOT_BUILT`, which reads like a pass | Expected only if the marker really is in the subject. Amend the subject and push again |
 | A commit is on `master`, CI shows `NOT_BUILT`, and the site keeps serving the previous image — with no failure anywhere | **FIXED 2026-08-23 — kept here as the record of a live incident and of what the two fixes are protecting; if you see this symptom again, one of them has regressed.** Originally: **pushed while a CI build was already running.** Jenkins queues the second build but checks out the branch **tip at start time**, not the commit that triggered it. If the first build's `application-cd` run pushes its `ci: image tag <sha> [skip ci]` commit in that window, the queued build checks out *that* tip, the Guard (G2) matches the marker, and the commit that actually triggered the build is skipped along with it — it is behind the tip, so no later build's changeset contains it either. Happened for real 2026-08-21: CI #1 built `b09a05d` 15:35–15:44, `a558113` was pushed at 15:39 and queued, CD pushed `e9e5c7a` at 15:45:59, and CI #2 started its checkout at 15:46:46 — 45 seconds too late. Both #2 and #3 reported `NOT_BUILT`, which reads as a pass | `FORCE_BUILD` cannot rescue it — the Guard runs first and unconditionally, by design. Push a new commit so the tip no longer carries the marker, then *Build with Parameters* → `FORCE_BUILD` (the new commit alone is not enough: the changeset spans only commits after the last checked-out revision, so a `services/**`-free commit skips Build images under G3). Verify with `git log --oneline origin/master` against the last `ci: image tag` commit — any commit older than it that never got its own tag-bump was never built | **How it was fixed, both halves:** (1) `application-cd` no longer pushes to `master` at all — it promotes to the `release` branch, which ArgoCD watches, so CD's commit can never become the tip a queued CI build checks out. (2) The Guard is range-aware: `should-skip-build.sh --subjects` reads every commit since `GIT_PREVIOUS_SUCCESSFUL_COMMIT` (which a `NOT_BUILT` run does not advance, so a missed commit stays in range) and skips only if *every* one carries the marker. Either fix alone would close this; both are in place because the Guard must not depend on the branch model staying as it is. Regression test: `test-ci-guards.sh`, "THE 2026-08-21 RACE".
 | **G3** — "Build Now" on `application-ci` does nothing | The changeset contains commits, but none touch `services/**` | *Build with Parameters*, tick `FORCE_BUILD` |
+| **G3c** — CI is green, but Build/Push/Trigger CD all say `skipped due to when conditional`, and the change never reaches the site | A **previous build failed** while carrying that change. Jenkins' `changeset` diffs against the previous build, so the failed build consumed it and it now sits behind every later range | Fixed 2026-09-08 by basing `env.SERVICES_CHANGED` on `GIT_PREVIOUS_SUCCESSFUL_COMMIT` (`scripts/ci/changed-paths.sh`). To recover a change already stranded **behind a successful build**, `FORCE_BUILD` is the only route — no later push can bring it back into range |
 | **G3b** — a **webhook** `application-ci` build reports SUCCESS but ECR gained no image | First build after the controller was recreated has no changelog to diff against | `scripts/tests/test-ci-guards.sh` fails if the `NO_CHANGELOG` branch is gone; re-run with `FORCE_BUILD` |
 | **G4** — `application-cd`'s Promote stage: `git push` denied | Deploy key missing or read-only, or an HTTPS (not SSH) job SCM URL | Deploy key with **write** access + SSH SCM URL, on **both** jobs |
 | **G6** — a parameter checkbox/field is missing on a job | The job has never run, so Jenkins has not fully read its `Jenkinsfile` yet | Run the job once |

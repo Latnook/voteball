@@ -1342,22 +1342,34 @@ def test_withdrawn_party_is_absent_from_the_ballot_but_present_in_options(conn):
     /api/options must keep returning it -- admin.js reads that same endpoint and is the only screen
     that can restore it. The ballot filter lives in vote.js and in /api/vote, not in this query.
 
-    The party this pins changed on 2026-09-07 (revision 58) and so did the REASON. It was
-    בית ציוני - המילואימניקים, off the ballot because a SPLIT has no correct vote reassignment;
-    that row merged into המילואימניקים והכלכלית and went back on. It is now המפלגה הכלכלית, which
-    is off the ballot because it was ABSORBED into that same list -- an interim, not an end state:
-    a merge does have a single successor, so the votes should be reassigned and the row then
-    deleted. Until that happens the flag is what keeps one ballot line instead of two. If you
-    reassign and delete, this test needs a new subject or the invariant below needs rewriting.
+    The set this pins has changed twice and the REASONS differ, which is why it is asserted as a
+    whole set rather than as one subject plus a count. It was בית ציוני - המילואימניקים alone, off
+    the ballot because a SPLIT has no correct vote reassignment; that row merged into
+    המילואימניקים והכלכלית and went back on (2026-09-07, revision 58). Today it is two rows for two
+    different reasons:
+
+      המפלגה הכלכלית  -- ABSORBED into המילואימניקים והכלכלית. An interim, not an end state: a
+                         merge does have a single successor, so the votes should be reassigned and
+                         the row then deleted.
+      אל הדגל          -- WITHDREW from the election (2026-09-08, revision 59). This one IS the end
+                         state; the row stays off the ballot and is not deleted, so that its votes
+                         and its classification both survive.
+
+    An earlier version asserted one name and `len(standing) == len(all) - 1`, which passes for any
+    single off-ballot row whatever its name -- so adding a second one failed on the count and told
+    you nothing about which row it was. Assert the set.
     """
     options = queries.get_options(conn)
     by_key = {p['name_he']: p for p in options['upcoming_parties']}
 
-    withdrawn = by_key['המפלגה הכלכלית']
-    assert withdrawn['on_ballot'] is False, 'the absorbed party must be off the ballot'
+    off_ballot = {p['name_he'] for p in options['upcoming_parties'] if not p['on_ballot']}
+    assert off_ballot == {'המפלגה הכלכלית', 'אל הדגל'}, \
+        f'unexpected off-ballot set: {off_ballot}'
+
+    assert by_key['ביחד']['on_ballot'] is True, 'a standing party must stay on the ballot'
 
     standing = [p for p in options['upcoming_parties'] if p['on_ballot']]
-    assert len(standing) == len(options['upcoming_parties']) - 1
+    assert len(standing) == len(options['upcoming_parties']) - len(off_ballot)
     assert all('on_ballot' in p for p in options['upcoming_parties']), \
         'every party must carry the flag, so the client can filter on it'
 

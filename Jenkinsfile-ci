@@ -30,6 +30,10 @@ pipeline {
   parameters {
     // G3 -- a build whose changeset misses services/** would otherwise skip everything. This is the
     // manual override for "rebuild anyway".
+    // It is also the ONLY way to recover a change stranded behind a SUCCESSFUL build: G3c below
+    // rebases the gate onto GIT_PREVIOUS_SUCCESSFUL_COMMIT, which rescues changes swallowed by a
+    // FAILED build, but nothing can pull a change back into range once a green build has passed
+    // over it.
     // G6 -- this checkbox does not appear until the job has run once. That first run no longer does
     // nothing, though: it has no changelog, which G3b (see 'Resolve tag and account') now treats as
     // "cannot tell what changed" and builds. See the runbook in docs/cicd.md.
@@ -339,6 +343,24 @@ pipeline {
             echo 'No changelog for this build (first build since the controller was recreated) -- ' +
                  'treating it as "cannot determine what changed" and building rather than skipping.'
           }
+          // G3c -- `changeset` diffs against the PREVIOUS build, not the previous SUCCESSFUL one, so a
+          // build that FAILS consumes its changeset: whatever it was carrying falls behind the next
+          // build's range base and no later `changeset` can see it again. Green pipeline, nothing
+          // shipped. Exactly the trap G2's Guard was hardened against above (and for the same reason
+          // it cites: a commit "sits BEHIND the tip and so falls outside every subsequent
+          // changeset") -- the Guard got GIT_PREVIOUS_SUCCESSFUL_COMMIT, these conditions did not,
+          // so the same trap fired a second time on 2026-09-08. The decision lives in a script so it
+          // can be tested without triggering a build; scripts/ci/changed-paths.sh carries the
+          // fail-safe (cannot tell -> build).
+          withEnv(["PREV_SUCCESS=${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: ''}"]) {
+            env.SERVICES_CHANGED = sh(script: 'scripts/ci/changed-paths.sh "$PREV_SUCCESS" services/',
+                                      returnStdout: true).trim()
+            env.CHARTS_CHANGED   = sh(script: 'scripts/ci/changed-paths.sh "$PREV_SUCCESS" charts/',
+                                      returnStdout: true).trim()
+          }
+          echo "Changed since the last SUCCESSFUL build (${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'none'}): " +
+               "services=${env.SERVICES_CHANGED} charts=${env.CHARTS_CHANGED}"
+
           echo "Building ${env.TAG} into ${env.ECR_REGISTRY}"
 
           // The brief requires branch, commit SHA and build number to be visible on the build.
@@ -367,8 +389,8 @@ pipeline {
     stage('Build images') {
       when { allOf {
         expression { env.ALREADY_BUILT != 'present' }
-        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
-                expression { env.NO_CHANGELOG == 'true' } }   // G3
+        anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
+                expression { env.NO_CHANGELOG == 'true' } }   // G3, G3c
       } }
       steps {
         // BuildKit needs ECR credentials of its own: --import-cache/--export-cache talk to the
@@ -470,7 +492,7 @@ pipeline {
     stage('Trivy scan') {
       when { allOf {
         expression { env.ALREADY_BUILT != 'present' }
-        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
+        anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
                 expression { env.NO_CHANGELOG == 'true' } }
       } }
       steps {
@@ -504,7 +526,7 @@ pipeline {
     stage('Push to ECR') {
       when { allOf {
         expression { env.ALREADY_BUILT != 'present' }
-        anyOf { changeset 'services/**'; expression { params.FORCE_BUILD }
+        anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
                 expression { env.NO_CHANGELOG == 'true' } }
       } }
       steps {
@@ -561,7 +583,7 @@ pipeline {
       // the digest lookups return None and the metadata file would record nothing.
       when { anyOf {
         expression { env.ALREADY_BUILT == 'present' }
-        changeset 'services/**'
+        expression { env.SERVICES_CHANGED == 'true' }
         expression { params.FORCE_BUILD }
         expression { env.NO_CHANGELOG == 'true' }
       } }
@@ -648,7 +670,7 @@ pipeline {
     // G4 -- chart changes must reach CD too, and they need a tag they do not have.
     //
     // Until 2026-08-23 ArgoCD watched `master`, so a chart-only commit deployed itself: it skipped
-    // every stage in this file (all gated on `changeset 'services/**'`) and was auto-synced straight
+    // every stage in this file (all gated on env.SERVICES_CHANGED, G3c) and was auto-synced straight
     // to the cluster, bypassing Manifest Validation, the smoke test, the monitoring gate and
     // rollback. Task 4 review finding P2. ArgoCD now watches `release`, which only application-cd
     // writes -- so the bypass is gone, but a chart-only commit would now deploy NEVER instead of
@@ -659,13 +681,13 @@ pipeline {
     // What is actually wanted is "deploy the chart at this commit with the images already running",
     // so the tag is read off the release branch.
     //
-    // Deliberately NOT `not { changeset 'services/**' }` alone: FORCE_BUILD and NO_CHANGELOG both
+    // Deliberately NOT `not { SERVICES_CHANGED }` alone: FORCE_BUILD and NO_CHANGELOG both
     // mean "treat this as a real build", and in both cases the normal path already produces a tag.
     // Overriding env.TAG there would deploy the OLD images over a fresh build.
     stage('Chart-only change') {
       when { allOf {
-        changeset 'charts/**'
-        not { changeset 'services/**' }
+        expression { env.CHARTS_CHANGED == 'true' }
+        not { expression { env.SERVICES_CHANGED == 'true' } }
         not { expression { params.FORCE_BUILD } }
         not { expression { env.NO_CHANGELOG == 'true' } }
         not { expression { env.ALREADY_BUILT == 'present' } }
@@ -695,7 +717,7 @@ pipeline {
     stage('Trigger CD') {
       when { anyOf {
         expression { env.ALREADY_BUILT == 'present' }
-        changeset 'services/**'
+        expression { env.SERVICES_CHANGED == 'true' }
         expression { params.FORCE_BUILD }
         expression { env.NO_CHANGELOG == 'true' }
         expression { env.CHART_ONLY == 'true' }   // G4, above

@@ -118,6 +118,10 @@ GIT_GROUP=(
   # nothing, so the script exits 0 having done none of its work. Here rather than PYTHON_GROUP for
   # the same reason as test-logging-teardown.sh above -- nothing about it prefers git.
   test-terraform-targets.sh
+  # Builds throwaway git repositories: the property under test IS a git range -- that a change made
+  # in a build which FAILED is still visible from the last SUCCESSFUL build's base, and invisible
+  # from the previous build's. Stubbing git would assert nothing at all here.
+  test-changed-paths.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.
