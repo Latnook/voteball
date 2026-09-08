@@ -1316,7 +1316,106 @@ there. Likewise no Hebrew source uses the given name *הילרי* for הראל �
 them is environmental"* as a data point for that sweep. The corpus is twelve and **still none of them
 is environmental**, which makes the data point twice as strong as it was; and אורלי הראל at #17
 campaigns on the environment personally, which is the same candidate-vs-party line drawn for
-`lgbt-rights` above.
+`lgbt-rights` above. **This is FALSE as of 2026-09-08 and was false when written — see revision 60.**
+The corpus was never twelve; `plans-sitemap.xml` lists fifteen Hebrew plans, one of them a full
+environment programme. The data point that got twice as strong was twice as wrong, and it got that
+way by being restated rather than re-derived — the count came from the page index, which is the same
+instrument revision 22 had already caught under-reporting this corpus four-to-one.
+
+**2026-09-08 — revision 60. The corpus is FIFTEEN, not twelve, and this row's environmental status
+is settled by reading rather than by inference. No axis moved; no tag added.** Three Hebrew plans
+this page had never read: [התכנית להגנה על הסביבה](https://be-yahad.org.il/plans/enviroment/),
+[ביחד נתקן את מערכת הבריאות](https://be-yahad.org.il/plans/health/) and
+[ביחד נתקן את מצב העסקים הקטנים](https://be-yahad.org.il/plans/smb/) — the last cited by revision 51
+but only for its deregulatory half, which is why it is counted here as read for the first time in
+full. All three found by `sitemap_index.xml` → `plans-sitemap.xml`, one request, the instrument this
+repo's own rule prescribes and the third row on which it has paid.
+
+- **The environment plan exists and it is a serious programme**, so revision 49's data point does not
+  get stronger — it is retired. A **binding, budgeted climate law** establishing a national
+  climate-risk management array (information, vulnerability mapping, early warning, sectoral targets
+  in energy, transport, industry and construction); an advanced **waste law** with an economic
+  regulator for the waste sector on the OECD treatment hierarchy, plus a מתפ״ש-led budgeted campaign
+  against the Judea-and-Samaria waste fires; ending routine operation of **Orot Rabin units 1–4**
+  (a 2018 cabinet decision due June 2022 and repeatedly deferred); evacuating the **Haifa Bay**
+  petrochemical industry; restoring *"אפס תוספת סיכון"* for the **Gulf of Eilat**; statutory
+  ecological corridors, a budgeted national river-restoration programme, an oil-pollution-at-sea law
+  and a national biodiversity plan; and a **Dead Sea** concession that shrinks the lease area,
+  **charges for water extraction** and obliges rehabilitation of past damage.
+- **This row is now the THIRD with a clearly qualifying environmental corpus, and it is the one Open
+  questions named as the likeliest additional holder "resting on nothing read so far."** It now rests
+  on a full programme. **The tag is still not created**, and three holders is the reason to say why
+  out loud rather than quietly relent: the refusal was never "one row is too few holders", it was
+  that *a tag whose membership is decided by which rows got read measures reading*. Three audited
+  rows out of eighteen changes the count, not the defect — the tag would land on exactly the three
+  parties this page happened to audit, which is the artefact itself, not evidence against it. What
+  three holders *does* change is the cost of the delay: the sweep is now the only thing standing
+  between the page and a genuine cross-bloc tag (`unaligned` +1, `opposition` −2, `opposition` +1
+  — so it would not be an artefact of the economic axis either). **Escalated in Open questions from
+  "likeliest additional holder, unchecked" to "third confirmed holder, sweep overdue."**
+- **A Shabbat clause was found inside an environment plan**, and it is the sharpest instance this page
+  has of its own standing warning that religion-and-state policy hides under other headings (the
+  כחול לבן education paper, אל הדגל's funding clause on p. 11, הדמוקרטים's `anti-annexation` in a
+  regional-development paper). The transport plank ends: *"נחוקק את חוק רשויות התחבורה המטרופוליניות
+  … תחבורה ציבורית יעילה ונגישה, שעובדת גם בסופי שבוע ברשויות שיבחרו בכך"* — **weekend public
+  transport, opt-in by municipality.** It is the first Shabbat position this row has ever had on
+  record.
+  **religiosity −2 unmoved, and the clause is why the band table's own wording holds up**: opt-in
+  municipal weekend transport is precisely כחול לבן's devolution, which the axis section calls *mild*
+  on religion in public life, and −3 requires ending the monopolies outright. The band here was
+  reached by the funding criterion (revision 22's core-curriculum condition) and is untouched by
+  this. It is a fresh instance of `municipal-devolution`, already on the row, and of `anti-clerical`.
+- **`security` stays NULL, and the waste plank is the closest this row has come to testing that.**
+  The Judea-and-Samaria half names יהודה ושומרון, הקו הירוק, מתפ״ש, המינהל האזרחי as the enforcement
+  arm, and coordination *"מול הרשות הפלסטינית להבטחת איסוף וטיפול מוסדר בפסולת"*. That is four
+  boundary tokens and an operational relationship with the PA — and it takes **no position on the
+  territory's status**, treating the existing administration as the given machinery for a
+  public-health problem affecting *"מאות אלפי תושבים לאורך הקו הירוק"*. Scoring the axis from it
+  would be the הדמוקרטים boundary-token error in reverse: there the question was whether writing a
+  war-termination programme while naming neither the state nor the occupation is *declining* the
+  subject; here the subject is never raised. `internally-split-on-conflict` is still what this row's
+  NULL is made of.
+- **economic +1 confirmed a third time in one pass, and the fusion is now visible inside single
+  documents rather than across them.** The health plan is heavy state expansion — dozens of community
+  health centres nationwide within five years, a **national body for long-term medical-workforce
+  planning** setting doctor ratios to the OECD average and closing the nursing gap, a *"דסק חוזרים"*
+  to repatriate the 3,700+ Israeli doctors abroad, **doubling** preventive-medicine investment and
+  paying HMOs for prevention rather than treatment alone — while its AI plank is deregulatory in the
+  same breath (privacy-protected national data platform on the Singapore model, **regulatory
+  sandboxes** with *"רגולציה רזה"* for fast pilots). The SMB plan reads the same way: cutting forms
+  and reporting, extending the *עוסק זעיר* reform and small-business-proportionate regulation, next
+  to **statutory social rights for the self-employed** (sickness, bereavement, cessation of activity)
+  and a **permanent, automatic compensation mechanism for businesses and employees in national
+  emergencies**. **+1 is the fusion band and both new plans are it in miniature.**
+- **`periphery-development` — the SIXTH documented programme against its retirement.** The health
+  plan prioritises the periphery explicitly (a northern resident travels ~20 km to the nearest
+  hospital against 3–4 km in Tel Aviv; leading medical centres to operate branches in the north and
+  south). Revision 19's argument for retiring the tag was that the honest end state is a tag on most
+  of the table; the fifth programme strengthened that and so does this one. The retirement section is
+  left as it stands and the count is recorded here.
+- **The URL move — the second on this row.** `plans/servant-law-new/`, cited by revision 22, now
+  **301s to [`plans/meshartim-law/`](https://be-yahad.org.il/plans/meshartim-law/)**; the page's
+  content is unchanged in substance and adds the costing (**₪8.8bn** from abolishing coalition funds,
+  אברך stipends and *"משרדי ממשלה מיותרים"*, with no deficit increase) plus free public transport for
+  discharged soldiers and a state-funded MA for discharged combat soldiers. All fresh instances of
+  `sanctions-on-non-servers`, `service-conditioned-citizenship` and `reservist-focused`, all already
+  held. Revision 22's citation is left as the dated record it is; **this is the second `be-yahad`
+  URL to move under a live citation** (revision 29 logged `plans/yoker` → `plans/yokermichya`), which
+  makes URL rot a property of this site rather than an accident, and re-enumerating the sitemap the
+  cheap way to catch it.
+- **Four refusals.** An environment/climate tag (above). `deregulation` — refused for the third time
+  on this row, on audit-coverage grounds, now with both the SMB and the health sandboxes behind it;
+  `pro-competition` and `free-trade` already carry the substance. A health tag — same reasoning as
+  environment, and it would be a **single**-holder tag born from a single document, which is the
+  weaker case, so it is not even queued. `self-employed-protections` — the SMB plan's social rights
+  are real and unlabelled, but `welfare-state` in `families` is what the page uses for exactly this,
+  and minting a tag for one clause of one plan is the defect the environment refusal is about.
+
+Sources for this pass: [התכנית להגנה על הסביבה](https://be-yahad.org.il/plans/enviroment/) ·
+[מערכת הבריאות](https://be-yahad.org.il/plans/health/) ·
+[מצב העסקים הקטנים](https://be-yahad.org.il/plans/smb/) ·
+[חוק המשרתים](https://be-yahad.org.il/plans/meshartim-law/) — all party-published, all 200 to a
+browser-shaped `curl`, all enumerated from `plans-sitemap.xml` rather than from the `/plans/` index.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -3228,6 +3327,72 @@ on צחי אליהו; [Shomrim](https://www.shomrim.news/hebrew/chabad-bengvir) 
 and [ynet](https://www.ynet.co.il/news/elections2026/article/bkrz6xn00gl) on דורפמן. **Every source
 below the filing statement is press, not party** — flagged per this page's own convention, which is
 why none of them moves a number.
+
+**2026-09-08 — revision 60. Two acts against Palestinian Authority presence in Jerusalem, three weeks
+apart. No axis moved; no tag added; a fourth item filed to the sweep queue.**
+
+**Corpus bound first, because this row's own history is the reason to.** Revision 30's window closed
+at 2026-08-04; the party's WP REST API reports **17 posts since** (`x-wp-total: 17`, one request).
+Four are already cited here (התנתקות 710, the filing statement, the Druze campaign HQ, the Segal
+letter), two are further `gun-rights` locality approvals (בית שמש 2026-08-31, כפר חב״ד and eight
+more 2026-08-19) and one an implementation step for `death-penalty-for-terrorists` (the death-row
+wing and execution facility, 2026-08-18) — all three tags already held, none of them new evidence for
+a field. The two below are what bears on something not already recorded. **Eight remain unread**,
+stated so the next reader knows this pass was a targeted read and not a sweep — the same date-window
+discipline revision 30 had to learn when a 30-post sample was mistaken for the corpus.
+
+- **The demand, 2026-09-08** ([party post](https://www.ozma-yeudit.co.il/%d7%91%d7%a2%d7%a7%d7%91%d7%95%d7%aa-%d7%94%d7%a1%d7%a0%d7%a7%d7%a6%d7%99%d7%95%d7%aa-%d7%94%d7%a9%d7%a8-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%9c%d7%a0%d7%aa%d7%a0%d7%99%d7%94%d7%95-%d7%9c/)).
+  Responding to Britain's announced sanctions on Israel, Ben Gvir writes to Netanyahu and Foreign
+  Minister Sa'ar demanding **closure of the British consulate in East Jerusalem**, **revocation of
+  British diplomats' work visas**, and closure of the **British Council** and every other body
+  operating for PA residents on the consulate's behalf. The grounds are sovereignty, not the
+  sanctions: *"באופן בלתי נתפס, ישראל מאפשרת עשרות שנים לבריטניה להחזיק בבירה, ירושלים המאוחדת,
+  'שגרירות' לרשות הפלסטינית תומכת הטרור"*, and *"המנדט מזמן הסתיים וישראל היא מדינה ריבונית
+  עצמאית"*. He also objects to Britain funding a Palestinian heritage-preservation fund and
+  programmes documenting Palestinian history.
+- **The act, 2026-08-26** ([party post](https://www.ozma-yeudit.co.il/wp-json/wp/v2/posts?after=2026-08-25T00:00:00&before=2026-08-27T00:00:00)).
+  As National Security Minister he **signed an order** prohibiting a PA-identified ceremony inside the
+  Old City under **חוק היישום**, acted on by the Jerusalem District central unit after intelligence
+  work, with the police commissioner and district commander in the chain. The post states the
+  district's standing objective in the party's own voice: *"חיזוק הריבונות והמשילות בירושלים בכלל
+  ומזרח העיר בפרט"* — and lists *"סיכול כנסים ואירועים המזוהים עם הרשות הפלסטינית"* alongside
+  counter-terrorism as routine district activity.
+
+- **The second one is the stronger evidence, and that ordering is the point.** The consulate letter is
+  a demand on two ministries this party does not hold — a stated position, no more. The Old City ban
+  is **this minister's own signature, executed**. This page scores revealed positions over stated
+  ones (`claims-economically-liberal` exists on this very row for that reason), so a pass that had
+  read only the letter the repo owner supplied would have recorded the weaker half of the finding and
+  called it new. It is not new: it is a **policy with a record**, and the record was one sitemap-free
+  API call away.
+- **`sovereignty-annexation` acquires East Jerusalem, and every prior citation for it on this row was
+  יהודה ושומרון.** *"ריבונות ומשילות … מזרח העיר בפרט"* is the tag's own vocabulary applied to a
+  different territory, and — unlike the West Bank citations — it is applied to territory Israel has
+  already annexed, where the contested act is not extending sovereignty but **enforcing it against
+  foreign and PA institutional presence**. Recorded as an extension of an existing tag rather than a
+  new one, the same way revision 24 handled `pro-settlement` gaining an explicit ביהודה ושומרון
+  citation. `no-palestinian-state` and `anti-two-state` also gain instances: a consulate serving PA
+  residents and PA-identified public ceremonies are the institutional infrastructure of the claim
+  both tags deny.
+- **No tag minted, and this is the FOURTH item in the sweep queue.** Nothing in the 126-entry
+  vocabulary is about posture toward **third states or foreign institutional presence** —
+  `regional-normalization` is the nearest and it is about relations with Arab states, its inverse.
+  The gap is real and it is not this row's alone: הליכוד (the Sa'ar foreign ministry's own conduct
+  toward European missions), הציונות הדתית and נעם are all plausible holders and **none has been
+  checked**, while הדמוקרטים, ביחד and רע"ם would plausibly sit on the other side of it, which is
+  what makes it a candidate axis-adjacent tag rather than a far-right descriptor. **This is the same
+  finding shape as the internal-policing gap filed for this row and ביחד** — a dimension no existing
+  tag covers, visible only once someone read outside the usual chapters. **Resolution: sweep all 18
+  rows for foreign-relations content, then create the tag (or don't) with membership decided in one
+  pass.** Minting it here from two posts on one row is exactly what revision 15's reasoning forbids.
+- **Also declined**: `far-right` is already held, so the letter adds nothing; and the *"המנדט מזמן
+  הסתיים"* framing is rhetoric, refused on the same ground revision 30 refused `populist` for the
+  Segal letter — this page does not tag style.
+
+**All three axes are at a band edge (0 / 3 / 3), which is worth saying plainly rather than leaving
+implicit**: `security 3` and `religiosity 3` cannot move upward, so on this row *no* quantity of
+further hardline evidence can move a number, and every future pass here will be about tags,
+evidence tiers and vocabulary gaps. That is a property of the row, not a thin result.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -5437,6 +5602,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   content, then create the tag (or don't) with membership decided in one pass** — the same discipline
   as the environment sweep below and for revision 15's reason. This is now the **third** item in the
   sweep queue, alongside the environment tag and the workfare/labour-organization pair.
+  *(A **fourth** was added 2026-09-08 — the foreign-relations gap, below. Count the `Resolution: sweep
+  all 18 rows` lines in this section rather than trusting an ordinal written into a bullet; three of
+  them have already had to be amended.)*
 - **No environment/climate tag exists, and one row now clearly earns one.** המפלגה הכלכלית publishes
   a full programme (100% renewable electricity by 2050, a ₪10B climate fund, closing the Haifa Bay
   refineries, refusing to renew the Dead Sea concession, live-export ban, cage-free hens). Creating
@@ -5455,6 +5623,35 @@ bought nothing here, because the defect was never in the pixels being measured.
   *"פעילות בלתי מתואמת"*), so this is now a **second** row with a clearly qualifying programme and the
   tag still does not exist. That strengthens the case for doing the sweep, and it does not change the
   reason for refusing to create the tag from one row at a time.
+  **THIRD confirmed holder and the ביחד data point RETRACTED, 2026-09-08 (revision 60):** ביחד
+  publishes [a full environment programme](https://be-yahad.org.il/plans/enviroment/) — a binding
+  budgeted climate law with a national climate-risk array, an advanced waste law with an economic
+  regulator, ending routine operation of Orot Rabin units 1–4, evacuating Haifa Bay petrochemicals,
+  *"אפס תוספת סיכון"* restored for the Gulf of Eilat, statutory ecological corridors and river
+  restoration, and a Dead Sea concession that charges for extraction and obliges rehabilitation.
+  **So "twelve documents and none of them environmental" was wrong**: the corpus is fifteen and one of
+  them is exactly that. The wrong count came from the `/plans/` index, the same instrument revision 22
+  caught under-reporting this corpus four-to-one, and it survived two passes by being *restated*
+  rather than re-derived — `plans-sitemap.xml` answers it in one request. **The three holders now span
+  `unaligned` +1, `opposition` −2 and `opposition` +1**, so the tag would not be an artefact of the
+  economic axis. **It is still not created**, and three holders is not a reason to relent: the
+  refusal was never about holder count, it is that membership decided by which rows got read measures
+  reading — three audited rows out of eighteen changes the count, not the defect. What changes is the
+  urgency. **Status: no longer "likeliest holders unchecked" but "three confirmed, fifteen unchecked,
+  sweep overdue."**
+- **No foreign-relations tag exists, and the gap surfaced from the far right — FOURTH item in the
+  sweep queue (2026-09-08, revision 60).** Nothing in the 126-entry vocabulary describes a party's
+  posture toward **third states or foreign institutional presence in Israel**;
+  `regional-normalization` is the nearest and is about relations with Arab states, its inverse.
+  עוצמה יהודית supplies two instances three weeks apart — Ben Gvir demanding closure of the British
+  consulate in East Jerusalem, British diplomats' work visas revoked and the British Council closed
+  (2026-09-08), and a signed ministerial order under חוק היישום banning a PA-identified ceremony in
+  the Old City, executed (2026-08-26). **Plausible holders on both sides and none checked**: הליכוד
+  (the foreign ministry's own conduct toward European missions), הציונות הדתית and נעם on one side;
+  הדמוקרטים, ביחד and רע"ם on the other. A gap with holders on both sides is a vocabulary hole, not a
+  far-right descriptor — the same finding shape as the internal-policing item above. **Resolution:
+  sweep all 18 rows for foreign-relations content, then create the tag (or don't) with membership
+  decided in one pass.**
 - **`security 0` now has exactly one holder, יש עתיד `[p]`, and it has never been re-verified.**
   Revision 23 removed the other one after finding a full conflict platform behind it, and the band's
   explanatory note had been built on that wrong example. A `0` asserts a party has genuinely taken no
@@ -5706,3 +5903,4 @@ pass happened, for anyone reading git history.
 | 2026-09-07 | revision 58 — **בית ציוני - המילואימניקים + המפלגה הכלכלית → המילואימניקים והכלכלית, the third `upcoming_parties` merge and the FIRST where the union rule has nothing to resolve.** Executed a day early against the CEC-filed list (list 16, ד׳/צ׳/י׳ requested), which the repo owner supplied verbatim after gov.il proved unreachable. **Both halves of the 2026-09-06 ⚠ block confirmed**: טרופר's faction is absorbed into ישר and **no filed candidate is attributed to בית ציוני** — the CEC prints the faction beside every name, which is a stronger confirmation than any report; and the הנדל–זליכה joint run is real, with זליכה stating the form outright (*"חיבור טכני בלבד"*), so `two-faction-list` is taken on the **stated** form rather than inferred from the ballot line. **A strict 5:4 zipper across the top nine, alternating without exception — the most balanced two-faction list on this page**, against הציונות הדתית + זהות's 9-of-13; neither side subordinates the other and both claimed #1 before filing. **The finding is that the merge produced no number to argue about.** Both components were already `unaligned` / `secular` / **+1 / +2 / −2**, scored eleven weeks apart from unrelated platforms — so unlike הרשימה המשותפת (which needed the rule to carry בל"ד's −3) and unlike RZP+זהות (where the rule's own precondition failed on 0-vs-+3 `economic`), there was nothing to reconcile. It retro-validates both scores: `economic +1` was set on each row for the *same stated reason* — liberalizing fused with real state expansion, explicitly not +2 — by two passes not comparing notes, and the parties then merged claiming their flagship issues are one constituency. **NO AXIS MOVES.** **Tags 27 → 36**: nine of seventeen dedupe (itself a measure of how close the rows already were), **eight carried** (`populist`, `anti-corruption`, `tax-cutting`, `consumer-protection`, `anti-clerical`, `no-palestinian-state`, `security-hawk`, `gender-equality`), plus `two-faction-list`, and **none refused** — RZP+זהות refused ten because they contradicted a number or family, nothing here does. **Two tensions kept deliberately and stated rather than hidden**: `tax-cutting` beside `statist`/the `welfare-state` family (the `economic +1` band *is* the fusion band — a row that could not hold both would be misfiled), and `anti-clerical` beside `religious-pluralism`, which the Conventions section defines as **different motives for the same score**. **First application of the motive distinction to a two-faction row**, and the rule it suggests: such a row may carry two motives for one number, because that is what a technical bloc is. **`on_ballot` FALSE → TRUE on the surviving row** — the flag doing exactly what 2026-09-06 added it for, with **2 votes surviving the round trip** that a deletion would have destroyed. **המפלגה הכלכלית → `on_ballot = FALSE` as an explicit INTERIM**: a merge has a single successor so the correct end state is still reassign-then-delete, but the row holds **1 vote**, the removal statement is vote-guarded, and dropping it from the `VALUES` block first would **silently no-op** and leave it unwritten by any statement in the file. Reassignment, then a follow-up commit. **`seed_key` stays `the-reservists`** and now names only one of two factions — correct, and flagged because it reads as a bug: regenerating the block would rewrite it from the new `name_en` and reproduce the `joint-list` → `the-joint-list` failure, i.e. `RAISE EXCEPTION` in `init_db` and CrashLoopBackOff. **⚠ Logo left STALE and flagged for the owner** — `/logos/beit-tzioni-miluimnikim.png` is the previous rebrand's artwork and cannot be fixed by repointing (the source is on signed, expiring fbcdn URLs, which is why it is self-hosted); new artwork needed. **Revision 57's gov.il note corrected**: the 8,734-byte response is *sometimes* a Cloudflare challenge and *sometimes* the Angular shell's `<title>HomePage</title>` fallback — the mechanism varies, **the constant byte count is the durable tell**. **`test_queries.py` changed SUBJECT and REASON**: three tests pinned בית ציוני as the schema's only off-ballot row: that row is back on the ballot and המפלגה הכלכלית is off, so the rule survives while the instance moved — and the docstring saying *"a split has no correct vote reassignment"* was rewritten, because the new subject is off the ballot for the opposite reason (absorbed, reassignment pending). Verified by the documented round trip on a throwaway database: previous seed → planted ballot **asserted present before migrating** (the trap this page records — the first attempt hit the NOT NULL `previous_vote_status` and reported `ballots preserved: 0`, which proves nothing) → new seed applied → renamed, `on_ballot` flipped, 27→36 tags, axes unmoved, **ballot preserved**, idempotent on a second application. 270 backend + 48 worker + 29 script tests green, ruff clean |
 | 2026-09-07 | revision 58a — **the merged row takes הכלכלית's logo, on the repo owner's call, and the fix exposed a defect revision 58 had introduced.** A joint list in Israel runs on one component's **registered** party identity; the veteran registration here is זליכה's (contested 2021 and 2022) while הנדל's המילואימניקים is new — כיפה's *"הנדל מתאחד עם המפלגה הוותיקה"* says the same — so the ballot symbol was never going to be the בית ציוני lockup. `logo_url` repointed to the Wikimedia SVG `the-economic-party` already used (verified live, HTTP 200, `image/svg+xml`); the self-hosted PNG **deleted** and the logos section's count corrected **four → three**, its bullet kept and marked RETIRED because the fbcdn-hotlinking reasoning is cited elsewhere on this page. **The defect: `SKIP_RECOLOR_PARTIES` in `logos.js` is keyed by `name_en`, held exactly one entry — `'Zionist Home – The Reservists'` — and revision 58's rename SILENTLY UNREGISTERED it.** No failing test, no console warning, no server-side signal; the only symptom would have been dark-mode rendering changing for one party. **First instance inside this repo's own frontend of the `envFromSecret` / `options.ref` family from the root `CLAUDE.md`: a name that is a silent contract with something off-screen.** The entry is **removed rather than renamed** — it existed for a *knockout star* in the retired artwork, a hole that recolouring lifts around but cannot fill, and הכלכלית's SVG has no such hole and needs the normal recolour, so carrying it across would have been worse than the rename that dropped it. The set is kept as an empty registration point carrying that warning. **Standing rule recorded:** `logos.js` keys **five** collections by `name_en` (`OUTLINE_CLUBS`, `DARK_VARIANT_LOGOS`, `PADDED_CRESTS`, `FILL_INTERIOR_PARTIES`, `SKIP_RECOLOR_PARTIES`), so a rename in `seed.sql` is never only a `seed.sql` change — grep that file for the old `name_en` before committing one. Round trip re-run: `beit-tzioni-miluimnikim.png` → the הכלכלית SVG on an already-seeded row. 270 backend + 48 worker tests green |
 | 2026-09-08 | revision 59 — **אל הדגל withdrew hours before list submission closed, and it is the first withdrawal this page can record WITHOUT touching the row.** Chairman מתן יפה announced it on his own account, so the source is first-party rather than a report: *"החלטנו לא להתמודד בבחירות הקרובות"*, on the **threshold** and explicitly not on policy — the same reason האחדות gave four days earlier, and the same reason the offers to join existing lists at *"מקומות גבוהים מאוד"* were refused. **`on_ballot` TRUE → FALSE; the row, its four values and its 24 tags all stay.** The contrast with revision 42 is the whole entry: האחדות was *deleted*, which was only available because the flag did not exist yet (2026-09-06) and that row held no votes — and the delete forced a full tag-and-family accounting, which is where `deregulation` was found to have fallen to אל הדגל alone. Doing the same here would have taken `deregulation` to **zero** holders and cascaded through `vote_upcoming_parties`. **The flag makes the accounting empty by construction**, which is the argument for preferring it to a delete for every future withdrawal, not merely for rows that happen to carry votes: a withdrawal is a ballot fact, and this page scores parties, not ballots. **No axis, bloc, sector, tag or family moved on any row, and no band table was amended** — revision 42 amended three, because a deletion is a different operation. `upcoming_parties` stays at **18 rows**, of which **16 are now standing** (המפלגה הכלכלית is the other `FALSE`, an interim pending vote reassignment per revision 58). Corroborated by סרוגים, which reports **three** withdrawals in the same window — ברית אחים (the Druze list, ג'די סרחאן) and מקום לכולנו are the other two, and **neither is seeded here**, so no further row is affected. יפה's closing prediction is logged rather than acted on: he expects the next election *"כבר במהלך 2027"* and says the movement continues, which is why the entry is kept in full on the זהות/האחדות precedent |
+| 2026-09-08 | revision 60 — **two rows read against new party-published material supplied by the repo owner; no axis moved, no tag added, and the pass's main product is a retracted claim plus a fourth sweep-queue item.** **ביחד's corpus is FIFTEEN, not twelve**, and revision 49's *"the corpus is twelve and still none of them is environmental"* — asserted in the row, in a "note for the next reader" and in Open questions — **is false and was false when written.** `plans-sitemap.xml` (one request) lists three unread Hebrew plans: [הגנה על הסביבה](https://be-yahad.org.il/plans/enviroment/), [מערכת הבריאות](https://be-yahad.org.il/plans/health/) and [העסקים הקטנים](https://be-yahad.org.il/plans/smb/) read in full for the first time. The wrong count came from the `/plans/` **index** — the same instrument revision 22 caught under-reporting this corpus four-to-one — and survived two passes by being **restated rather than re-derived**, which is this page's own "a doc contradicting another doc" tell operating on a *count* instead of a sentence. **ביחד is therefore the THIRD confirmed environment holder** (after המפלגה הכלכלית rev 23 and הדמוקרטים rev 40), spanning `unaligned` +1 / `opposition` −2 / `opposition` +1 so the tag would not be an economic-axis artefact — **and the tag is still not created**, because the refusal was never about holder count but about membership decided by which rows got read; three of eighteen changes the count, not the defect. Open questions escalated from "likeliest holders unchecked" to "three confirmed, fifteen unchecked, sweep overdue". **A Shabbat clause was found inside the environment plan** — *"תחבורה ציבורית … שעובדת גם בסופי שבוע ברשויות שיבחרו בכך"*, the first Shabbat position this row has ever had on record, and the sharpest instance yet of the standing warning that religion-and-state policy hides under other headings; **religiosity −2 unmoved**, since opt-in municipal weekend transport is כחול לבן's devolution, which the band table itself calls *mild*, and the band is held by the funding criterion regardless. **`security` NULL held** against four boundary tokens and an operational PA relationship in the waste plank — the plan uses מתפ״ש/המינהל האזרחי as existing machinery for a public-health problem and takes no position on status, the הדמוקרטים boundary-token test in reverse. **economic +1 confirmed a third time, now visible *inside* single documents**: the health plan pairs a national medical-workforce planning body, dozens of community health centres and doubled preventive spending with regulatory sandboxes and *"רגולציה רזה"*; the SMB plan pairs cutting forms and extending *עוסק זעיר* with statutory social rights for the self-employed and an automatic emergency compensation mechanism. `periphery-development` gains a **sixth** documented programme against its retirement. **URL rot logged as a site property, not an accident** — `plans/servant-law-new/` **301s** to `plans/meshartim-law/`, the second live `be-yahad` citation to move (rev 29 logged `plans/yoker`). Four refusals: the environment tag, `deregulation` (third time, audit coverage), a health tag (single-holder, single-document — not even queued) and `self-employed-protections` (`welfare-state` in `families` already carries it). **עוצמה יהודית: two acts against PA presence in Jerusalem, three weeks apart.** The **demand** (2026-09-08) — Ben Gvir to Netanyahu and Sa'ar, close the British consulate in East Jerusalem, revoke British diplomats' work visas, close the British Council, on sovereignty grounds (*"'שגרירות' לרשות הפלסטינית"*, *"המנדט מזמן הסתיים"*) — and the **act** (2026-08-26), a signed ministerial order under **חוק היישום** banning a PA-identified Old City ceremony, executed, with the district's objective stated as *"חיזוק הריבונות והמשילות בירושלים בכלל ומזרח העיר בפרט"*. **The act is the stronger evidence and it was not the material supplied** — a pass reading only the letter would have recorded a stated position and called it new, when it is a policy with a record one API call away; this page scores revealed positions. **`sovereignty-annexation` acquires East Jerusalem**, where every prior citation on the row was יהודה ושומרון and where the contested act is enforcing annexation rather than extending it; `no-palestinian-state`/`anti-two-state` gain instances. **Corpus bounded before reading, per this row's own date-window history**: `x-wp-total: 17` posts since revision 30's window closed — 4 already cited, 2 further `gun-rights` approvals, 1 `death-penalty-for-terrorists` implementation step, the 2 above, **8 left unread and said so**. **No tag minted; the foreign-relations gap is filed as the FOURTH sweep-queue item** — nothing in the 126-entry vocabulary describes posture toward third states or foreign institutional presence, `regional-normalization` is its inverse, and plausible holders sit on **both** sides (הליכוד/הציונות הדתית/נעם vs הדמוקרטים/ביחד/רע"ם), which is what makes it a vocabulary hole rather than a far-right descriptor. `far-right` already held; the mandate-era framing refused as style on revision 30's Segal precedent. **All three עוצמה יהודית axes sit at a band edge (0 / 3 / 3)**, recorded plainly: no quantity of further hardline evidence can move a number there, so every future pass on that row is about tags, evidence tiers and vocabulary gaps |
