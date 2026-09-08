@@ -170,6 +170,18 @@ and `i24news.tv` serves a JavaScript app shell, so WebFetch summarizes the empty
 page contains no article — the one failure mode that looks like a correct negative rather than an error. When only a blocked source supports the stronger claim, score the weaker one
 and say so (see רע"ם in `docs/party-classifications.md`).
 
+**`gov.il` is an Angular shell, and the CEC candidate lists come from a separate API whose
+credential the page publishes itself.** `www.gov.il/he/pages/<slug>` returns a Cloudflare challenge
+or an empty `<div id="root">`; neither contains a list. `curl -s
+https://www.gov.il/ContentpageWebApi/client-config.js` gives the API base
+(`openapi-gc.digital.gov.il/pub/cio/govil/rest/contentpage/v1`) and a `clientId`, and the route is
+`/api/content-pages/<slug>?culture=he` with header **`x-client-id`** plus
+`Origin: https://www.gov.il`. **A wrong header name returns 500 with a generic body, not 401**, so it
+reads as a broken API rather than as bad auth. This page recorded gov.il as unreachable in three
+separate revisions (55, 61, 62) on tests that were rigorous about the **HTML shell** and never asked
+what the shell fetches. **When a 200 returns an empty root div, the endpoint you want is in the
+JavaScript, not behind the block.**
+
 **A 403 usually blocks *default tooling*, not you — retry with a browser-shaped request before
 concluding a source is unreachable.** `kachollavan.org.il` was recorded here and in
 `docs/party-classifications.md` as needing manual download; on 2026-08-11 a plain `curl -A
