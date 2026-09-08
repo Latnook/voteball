@@ -558,7 +558,15 @@ if kubectl get application voteball -n argocd >/dev/null 2>&1; then
   ./scripts/wait-for-argocd-sync.sh
 else
   echo "No ArgoCD Application yet — installing with Helm (fresh cluster; step 11 hands over)."
-  helm upgrade --install voteball charts/voteball -n devops-app --create-namespace
+  # -f the SAME nine values ArgoCD will inject at step 11. charts/voteball/values.yaml carries
+  # placeholders for them on purpose (this is a public repo; see
+  # docs/design/2026-09-08-argocd-helm-parameters-design.md), so a bare `helm install` here renders
+  # "REPLACED-BY-ARGOCD" and the API server rejects the Ingress host outright. Hit on the 2026-09-08
+  # 11:44 deploy, which failed at exactly this line with the infrastructure already built.
+  HELM_VALUES="$(mktemp)"; trap 'rm -f "$HELM_VALUES"' RETURN 2>/dev/null || true
+  ./scripts/render-argocd-app.sh --helm-values > "$HELM_VALUES"
+  helm upgrade --install voteball charts/voteball -n devops-app --create-namespace -f "$HELM_VALUES"
+  rm -f "$HELM_VALUES"
 fi
 kubectl rollout status deployment/backend  -n devops-app --timeout=300s
 kubectl rollout status deployment/frontend -n devops-app --timeout=300s
