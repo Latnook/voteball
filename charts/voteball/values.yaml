@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "47d7009"
+  tag: "19fd663"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -19,10 +19,10 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:5be57cc371322a9269ffb6dd904dc1d14044c8b7ba5a7414d7a099163fef882b"
-    worker: "sha256:c70688b803c7c8a6f736c9de67dd7c5a09356f3ca3d354a993a72a1686a0a5ba"
-    nginx: "sha256:a25b8a7e3e6330f93e925ddce6ab973834595dbe2659e4a0b0f5609ed06d0e32"
-    backup: "sha256:5a479f2879bd21eb0994db0db2e4e5069e0ae466b062ef2870deeb0936eea7cb"
+    backend: "sha256:800c67317c4c3486ef1d272deb8d58e2a15135bac264f5403d58d8a8b0448aa1"
+    worker: "sha256:7765e935172780761008934f93c9cd0fe10ed71020c8d6973a0a32a63c4afcc7"
+    nginx: "sha256:ba68f97ea43094a15f76eb24f4fbbae27f8622bcafb3fa63430c6cfd0639b990"
+    backup: "sha256:1016d0ffe847d4e814ab3b4dde95130b76a7f980810c44857e5765bed2b79ad9"
 
 # The two PUBLIC subnet CIDRs from terraform/main.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
