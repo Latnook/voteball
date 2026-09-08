@@ -27,6 +27,37 @@ spec:
         # page-cache-backed memory maps. At ~1 GB of index it is not observable. If the index ever
         # grows to several GB, revisit THIS before revisiting the node count.
         node.store.allow_mmap: false
+
+        # THE OTHER LOAD-BEARING LINE, and the one whose absence DEADLOCKED a fresh install.
+        #
+        # Refuses to auto-create an index literally named `voteball-logs`. That name must only ever
+        # be the ILM WRITE ALIAS, created by the logging-ilm-bootstrap Job.
+        #
+        # Without this, a rebuild from empty state cannot recover on its own:
+        #   1. The bootstrap Job is a post-install hook, which ArgoCD maps to PostSync -- so it runs
+        #      AFTER the Fluentd Deployment, and Fluentd wins the race.
+        #   2. Fluentd's first write auto-creates a plain INDEX `voteball-logs` with the DEFAULT one
+        #      replica. The template below sets number_of_replicas: 0, but it matches
+        #      `voteball-logs-*`, not the bare name -- so it does not apply to the squatter.
+        #   3. One unassigned replica on a single-node cluster makes Elasticsearch YELLOW.
+        #   4. ArgoCD blocks: "waiting for healthy state of .../Elasticsearch/voteball-logs".
+        #   5. PostSync therefore never fires, so the Job that contains the squatter-DELETING code
+        #      never runs -- and step 2 becomes permanent.
+        #
+        # The Job has handled the squatter since 2026-08-28. Nobody noticed that its own fix was
+        # locked behind the condition it fixes. Measured on the 2026-09-08 rebuild: 136 documents,
+        # one unassigned shard, `logging` stuck Synced/Progressing indefinitely while every other
+        # ArgoCD Application was Healthy and the site served 200 throughout.
+        #
+        # With this set, Fluentd's early writes are REFUSED rather than silently creating a squatter.
+        # It retries with backoff, Elasticsearch stays green, the app reaches Healthy, PostSync runs,
+        # the alias is created, and the retries then land. Nothing is lost: CloudWatch is upstream of
+        # the fan-out and holds the authoritative copy regardless.
+        #
+        # `+*` must stay last -- it re-permits everything else, including Kibana's own system
+        # indices and the ILM rollover targets `voteball-logs-00000N`, which this pattern does not
+        # match (it is an exact name, not a prefix).
+        action.auto_create_index: "-voteball-logs,+*"
       podTemplate:
         spec:
           # Spread from Kibana. Both on one node would leave the other node holding the whole CI
