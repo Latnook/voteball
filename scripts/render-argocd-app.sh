@@ -27,8 +27,22 @@ TEMPLATE="argocd/voteball-application.yaml.tmpl"
 MODE="render"
 case "${1:-}" in
   --check) MODE="check" ;;
+  # Emit the nine environment-identity values as a Helm VALUES FILE on stdout.
+  #
+  # deploy.sh step 10 helm-installs the chart directly on a fresh cluster, BEFORE ArgoCD exists to
+  # inject them -- so without this it renders the placeholders and Kubernetes rejects the Ingress
+  # ("spec.rules[0].host: Invalid value: REPLACED-BY-ARGOCD"). Observed for real on the 2026-09-08
+  # 11:44 deploy, which is what this mode exists to prevent recurring.
+  #
+  # A values file, not --set flags: --set applies its own escaping rules to commas and dots, and
+  # these values are ARNs and hostnames. A file has no such parsing.
+  #
+  # Emitted from THIS script so the nine have one definition. Duplicating them into deploy.sh would
+  # mean a field added to the Application silently missing from the fresh-install path -- which is
+  # exactly the class of bug this whole change was cleaning up.
+  --helm-values) MODE="helm-values" ;;
   "")      ;;
-  *)       echo "usage: $0 [--check]" >&2; exit 2 ;;
+  *)       echo "usage: $0 [--check|--helm-values]" >&2; exit 2 ;;
 esac
 
 # Same stub convention as scripts/sync-values-from-tf.sh: ARGOCD_STUB_<output> lets the test suite run
@@ -118,6 +132,26 @@ fi
 
 if [ "$MODE" = "render" ]; then
   printf '%s\n' "$RENDERED"
+  exit 0
+fi
+
+if [ "$MODE" = "helm-values" ]; then
+  cat <<VALUES
+image:
+  registry: "${REGISTRY}"
+config:
+  DB_HOST: "${DB_HOST}"
+  S3_BUCKET: "${S3_BUCKET}"
+  SNS_TOPIC: "${SNS_TOPIC}"
+ingress:
+  host: "${APP_DOMAIN}"
+  certificateArn: "${CERT_ARN}"
+  wafAclArn: "${WAF_ARN}"
+backup:
+  roleArn: "${BACKUP_ROLE}"
+worker:
+  roleArn: "${WORKER_ROLE}"
+VALUES
   exit 0
 fi
 
