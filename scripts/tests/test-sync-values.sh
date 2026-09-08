@@ -56,14 +56,29 @@ fi
 # --- 2. a real run rewrites every managed value ---
 ./scripts/sync-values-from-tf.sh --tag NEWTAG --values "$FIXTURE"
 
-grep -q 'tag: "NEWTAG"'                  "$FIXTURE" || fail "image.tag not updated"
-grep -q 'DB_HOST: "new-db.example.com"'  "$FIXTURE" || fail "config.DB_HOST not updated"
-grep -q 'S3_BUCKET: "new-bucket"'        "$FIXTURE" || fail "config.S3_BUCKET not updated"
-grep -q 'certificateArn: ".*NEW"'        "$FIXTURE" || fail "ingress.certificateArn not updated"
-grep -q 'registry: "new.dkr.ecr.example.com"' "$FIXTURE" || fail "image.registry not updated"
-grep -q 'host: "new.example.com"'       "$FIXTURE" || fail "ingress.host not updated"
-grep -q 'SNS_TOPIC: "arn:aws:sns:NEWTOPIC"' "$FIXTURE" || fail "config.SNS_TOPIC not updated"
-grep -q 'wafAclArn: ".*NEWACL.*"'        "$FIXTURE" || fail "ingress.wafAclArn not updated"
+grep -q 'tag: "NEWTAG"' "$FIXTURE" || fail "image.tag not updated"
+
+# The INVERSE assertions, and they are the point of this block since 2026-09-08. Those nine fields
+# moved into the ArgoCD Application's helm.parameters so this account's ARNs stop being committed to
+# a public repo, and this script must now leave them ALONE. Asserting "still old" rather than
+# "updated" is what catches someone re-adding one to the `managed` dict -- which would silently
+# reintroduce the leak, since a committed real value looks exactly like a correct one.
+# See docs/design/2026-09-08-argocd-helm-parameters-design.md.
+grep -q 'DB_HOST: "old-db.example.com"' "$FIXTURE" || fail "config.DB_HOST was rewritten; it belongs to the ArgoCD Application now"
+grep -q 'S3_BUCKET: "old-bucket"'       "$FIXTURE" || fail "config.S3_BUCKET was rewritten; it belongs to the ArgoCD Application now"
+grep -q 'SNS_TOPIC: "arn:aws:sns:old"'  "$FIXTURE" || fail "config.SNS_TOPIC was rewritten; it belongs to the ArgoCD Application now"
+
+# And the REAL values.yaml must never carry one. This is the check that would have caught the
+# original problem: it reads the actual chart file, not a fixture.
+#
+# The working tree, deliberately, not `git show HEAD:` -- in CI the working tree IS the commit under
+# test, and reading HEAD would lag by one commit and reject the very commit that removes a leak.
+REAL_VALUES="$(cat charts/voteball/values.yaml)"
+for field in DB_HOST S3_BUCKET SNS_TOPIC certificateArn wafAclArn roleArn host; do
+  if printf '%s' "$REAL_VALUES" | grep -E "^\\s*${field}: " | grep -qE 'arn:aws|amazonaws\\.com|[0-9]{12}'; then
+    fail "committed values.yaml carries a real value for ${field} -- it belongs in the ArgoCD Application"
+  fi
+done
 
 # wafAclArn and certificateArn are both ARNs under `ingress:` -- a naive rewrite that matched on
 # value shape rather than key name would swap them, which fails at deploy time with an unhelpful
@@ -71,11 +86,20 @@ grep -q 'wafAclArn: ".*NEWACL.*"'        "$FIXTURE" || fail "ingress.wafAclArn n
 grep -q 'certificateArn: "arn:aws:acm:' "$FIXTURE" || fail "certificateArn overwritten with the wrong ARN"
 grep -q 'wafAclArn: "arn:aws:wafv2:'    "$FIXTURE" || fail "wafAclArn overwritten with the wrong ARN"
 
-# --- 3. the two same-named roleArn keys must NOT be cross-assigned ---
-grep -q 'roleArn: "arn:aws:iam::590183895228:role/NEW-backup"' "$FIXTURE" || fail "backup.roleArn wrong"
-grep -q 'roleArn: "arn:aws:iam::590183895228:role/NEW-worker"' "$FIXTURE" || fail "worker.roleArn wrong"
-[ "$(grep -c 'NEW-backup' "$FIXTURE")" -eq 1 ] || fail "backup role leaked into another section"
-[ "$(grep -c 'NEW-worker' "$FIXTURE")" -eq 1 ] || fail "worker role leaked into another section"
+# --- 3. the two same-named roleArn keys must be left ALONE ---
+#
+# This block used to assert the opposite: that a naive anchored sed had not cross-assigned the backup
+# ARN to the worker service account, since `roleArn` appears under BOTH `backup:` and `worker:` at
+# the same indent. That hazard is gone by construction -- since 2026-09-08 this script does not write
+# either one, and the ArgoCD Application addresses them as `backup.roleArn` and `worker.roleArn`,
+# which are distinct parameter names that cannot collide the way two identical YAML keys could.
+#
+# Kept, inverted, rather than deleted: the section-aware rewriter is still in the script, so if a
+# field with a duplicated key name is ever added back to `managed`, this is where it gets caught.
+grep -q 'roleArn: "arn:aws:iam::590183895228:role/OLD-backup"' "$FIXTURE" || fail "backup.roleArn was rewritten; it belongs to the ArgoCD Application now"
+grep -q 'roleArn: "arn:aws:iam::590183895228:role/OLD-worker"' "$FIXTURE" || fail "worker.roleArn was rewritten; it belongs to the ArgoCD Application now"
+[ "$(grep -c 'NEW-backup' "$FIXTURE")" -eq 0 ] || fail "the script wrote a roleArn at all; it no longer manages either"
+[ "$(grep -c 'NEW-worker' "$FIXTURE")" -eq 0 ] || fail "the script wrote a roleArn at all; it no longer manages either"
 
 # --- 4. unmanaged keys and comments survive ---
 grep -q 'DB_NAME: "postgres"'   "$FIXTURE" || fail "unmanaged key DB_NAME was clobbered"

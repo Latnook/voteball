@@ -43,15 +43,15 @@ tf_output() {
   fi
 }
 
-DB_HOST="$(tf_output rds_endpoint)"
-CERT_ARN="$(tf_output acm_certificate_arn)"
-S3_BUCKET="$(tf_output s3_bucket)"
-BACKUP_ROLE="$(tf_output backup_role_arn)"
-WORKER_ROLE="$(tf_output worker_role_arn)"
-REGISTRY="$(tf_output ecr_registry)"
-APP_DOMAIN_V="$(tf_output app_domain)"
-SNS_TOPIC="$(tf_output sns_topic_arn)"
-WAF_ARN="$(tf_output waf_web_acl_arn)"
+# ONE managed field, not ten. The other nine -- image.registry, config.DB_HOST/S3_BUCKET/SNS_TOPIC,
+# ingress.host/certificateArn/wafAclArn and both roleArns -- moved into the ArgoCD Application's
+# helm.parameters on 2026-09-08, so that this account's ARNs stop being committed to a public repo.
+# scripts/render-argocd-app.sh reads them now. See
+# docs/design/2026-09-08-argocd-helm-parameters-design.md.
+#
+# image.tag stays HERE and in git on purpose: scripts/ci/previous-tag.sh recovers the rollback target
+# with `git log -p` over values.yaml, so that file's history IS the rollback mechanism. A git SHA of a
+# public repo leaks nothing.
 
 # Section-aware rewrite. `roleArn` exists under BOTH `backup:` and `worker:` at the same indent, so a
 # plain anchored sed would assign the same ARN to both. Track the current top-level section instead.
@@ -67,32 +67,34 @@ else
 fi
 
 CHECK_ONLY="$CHECK_ONLY" VALUES="$VALUES" TF_DIR="$TF_DIR" CHECK_SKIP_TAG="$CHECK_SKIP_TAG" \
-TAG="$TAG" DB_HOST="$DB_HOST" CERT_ARN="$CERT_ARN" S3_BUCKET="$S3_BUCKET" \
-BACKUP_ROLE="$BACKUP_ROLE" WORKER_ROLE="$WORKER_ROLE" \
-REGISTRY="$REGISTRY" APP_DOMAIN_V="$APP_DOMAIN_V" SNS_TOPIC="$SNS_TOPIC" \
-WAF_ARN="$WAF_ARN" \
+TAG="$TAG" \
 python3 <<'PY'
 import os, re, sys
 
 values_path = os.environ["VALUES"]
 check_only  = os.environ["CHECK_ONLY"] == "1"
 
+# ONE managed field since 2026-09-08, not ten. The other nine are injected by the ArgoCD
+# Application's helm.parameters instead -- see the header comment above.
 managed = {
-    ("image",   "tag"):            os.environ["TAG"],
-    ("config",  "DB_HOST"):        os.environ["DB_HOST"],
+    ("image", "tag"): os.environ["TAG"],
 }
 if os.environ.get("CHECK_SKIP_TAG") == "1":
     del managed[("image", "tag")]
-managed.update({
-    ("config",  "S3_BUCKET"):      os.environ["S3_BUCKET"],
-    ("ingress", "certificateArn"): os.environ["CERT_ARN"],
-    ("backup",  "roleArn"):        os.environ["BACKUP_ROLE"],
-    ("worker",  "roleArn"):        os.environ["WORKER_ROLE"],
-    ("image",   "registry"):       os.environ["REGISTRY"],
-    ("ingress", "host"):           os.environ["APP_DOMAIN_V"],
-    ("config",  "SNS_TOPIC"):      os.environ["SNS_TOPIC"],
-    ("ingress", "wafAclArn"):      os.environ["WAF_ARN"],
-})
+
+# image.tag is now the ONLY field this script manages, so CHECK_SKIP_TAG empties `managed`
+# completely -- and a comparison loop over an empty dict passes unconditionally. That is the
+# "a check that can never fail" shape CLAUDE.md catalogues, and it would be invisible: --check
+# would print nothing and exit 0 forever.
+#
+# It is not actually vacuous -- the caller still verifies separately that image.tag names an image
+# that EXISTS in ECR, which is the invariant that matters -- but silence is the wrong way to say so.
+# Say it out loud instead, so a reader of the output knows which check ran and which did not.
+if not managed:
+    print("--check: no committed field to compare "
+          "(image.tag is skipped unless --tag was given; the other nine live in the ArgoCD "
+          "Application, not in values.yaml). The ECR existence check below still runs.")
+    raise SystemExit(0)
 
 top_re = re.compile(r'^([A-Za-z_][\w-]*):\s*$')
 kv_re  = re.compile(r'^(  )([A-Za-z_][\w-]*): (")([^"]*)(")(.*)$')

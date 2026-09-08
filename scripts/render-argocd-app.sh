@@ -75,8 +75,36 @@ esac
 
 REPO_URL="https://github.com/${GITHUB_REPO}"
 
-# `|` as the delimiter because the replacement is a URL full of slashes.
-RENDERED="$(sed "s|\${REPO_URL}|${REPO_URL}|g" "$TEMPLATE")"
+# The nine environment-identity values the voteball Application injects as helm parameters, so that
+# charts/voteball/values.yaml does not have to carry this account's ARNs in a public repo. See the
+# comment on the helm.parameters block in the template, and
+# docs/design/2026-09-08-argocd-helm-parameters-design.md.
+#
+# Read here rather than in sync-values-from-tf.sh because ArgoCD -- not the chart -- is what needs
+# them now. sync-values-from-tf.sh still owns image.tag, which stays in git as the rollback record.
+REGISTRY="$(tf_output ecr_registry)"
+DB_HOST="$(tf_output rds_endpoint)"
+S3_BUCKET="$(tf_output s3_bucket)"
+SNS_TOPIC="$(tf_output sns_topic_arn)"
+APP_DOMAIN="$(tf_output app_domain)"
+CERT_ARN="$(tf_output acm_certificate_arn)"
+WAF_ARN="$(tf_output waf_web_acl_arn)"
+BACKUP_ROLE="$(tf_output backup_role_arn)"
+WORKER_ROLE="$(tf_output worker_role_arn)"
+
+# `|` as the delimiter because the replacements are URLs and ARNs full of slashes and colons.
+RENDERED="$(sed \
+  -e "s|\${REPO_URL}|${REPO_URL}|g" \
+  -e "s|\${REGISTRY}|${REGISTRY}|g" \
+  -e "s|\${DB_HOST}|${DB_HOST}|g" \
+  -e "s|\${S3_BUCKET}|${S3_BUCKET}|g" \
+  -e "s|\${SNS_TOPIC}|${SNS_TOPIC}|g" \
+  -e "s|\${APP_DOMAIN}|${APP_DOMAIN}|g" \
+  -e "s|\${CERT_ARN}|${CERT_ARN}|g" \
+  -e "s|\${WAF_ARN}|${WAF_ARN}|g" \
+  -e "s|\${BACKUP_ROLE}|${BACKUP_ROLE}|g" \
+  -e "s|\${WORKER_ROLE}|${WORKER_ROLE}|g" \
+  "$TEMPLATE")"
 
 # Fail closed on any placeholder the template gained that this script does not know about. Without
 # this, a new ${...} would reach kubectl verbatim: ArgoCD would accept the Application and then behave

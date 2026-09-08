@@ -14,7 +14,20 @@ code. Identity lives in exactly two places — `terraform/voteball.tfvars` (pre-
 fields of `charts/voteball/values.yaml` are written by `scripts/sync-values-from-tf.sh`. **If you add
 a hardcoded ARN, bucket, registry or domain anywhere, that is a bug.**
 
-**The one deliberate exception is `charts/voteball/values.yaml` itself, and it is not optional.**
+**Until 2026-09-08 `charts/voteball/values.yaml` was a deliberate exception carrying REAL values, and
+it no longer is.** Nine environment-identity fields — `image.registry`, `config.DB_HOST/S3_BUCKET/
+SNS_TOPIC`, `ingress.host/certificateArn/wafAclArn` and both `roleArn`s — moved into the **ArgoCD
+Application's `helm.parameters`**, which `scripts/render-argocd-app.sh` renders from Terraform
+outputs and `kubectl apply`s: the template is in git, the values never are. This is a **public**
+repo, and those fields published the AWS account id seven times plus the RDS endpoint and four ARNs.
+`image.tag` and `image.digests` deliberately STAY committed — `scripts/ci/previous-tag.sh` recovers
+the rollback target with `git log -p` over that file, so its history *is* the rollback mechanism, and
+a git SHA leaks nothing. `sync-values-from-tf.sh` therefore manages **one** field, not ten. See
+`docs/design/2026-09-08-argocd-helm-parameters-design.md`. The paragraph below is the pre-2026-09-08
+rationale, kept because the failure it describes is still what happens if the Application is applied
+WITHOUT rendering:
+
+**The former exception, and why it existed.**
 ArgoCD deploys what is on the **`release` branch** (not `master`, and not what is on your disk —
 since 2026-08-23, see `docs/design/2026-08-23-release-branch-and-digest-design.md`), so those ten
 fields must be committed with **real** values — this account's ECR registry, RDS endpoint, ACM/WAF/IRSA ARNs and domain are

@@ -1,7 +1,18 @@
 image:
-  # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
-  # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
-  registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
+  # registry is a PLACEHOLDER and is meant to stay one. Since 2026-09-08 the ArgoCD Application
+  # overrides it (and eight other environment-identity fields) via helm.parameters, rendered from
+  # Terraform outputs by scripts/render-argocd-app.sh and never committed -- so this account's ECR
+  # registry, RDS endpoint and ARNs are no longer published in a public repo. See
+  # docs/design/2026-09-08-argocd-helm-parameters-design.md.
+  #
+  # A `helm install` of this chart WITHOUT those parameters renders the placeholder and fails to
+  # pull. That is deliberate: an obviously fake value fails loudly, where a stale real one would
+  # fail confusingly.
+  registry: "REPLACED-BY-ARGOCD.dkr.ecr.REGION.amazonaws.com"
+  # tag and the digests below DO stay in git, and are the exception: scripts/ci/previous-tag.sh
+  # recovers the rollback target with `git log -p` over this file, so its history IS the rollback
+  # mechanism. Written by scripts/sync-values-from-tf.sh and application-cd. A git SHA of a public
+  # repo leaks nothing.
   tag: "219e8c4"
   pullPolicy: IfNotPresent
 
@@ -39,13 +50,13 @@ network:
 
 # Non-secret config -> ConfigMap app-config. DB_HOST is the Plan-3a RDS endpoint (set in Task 1/7).
 config:
-  DB_HOST: "voteball-eks-db.cfew0a2ywspq.il-central-1.rds.amazonaws.com"
+  DB_HOST: "REPLACED-BY-ARGOCD"
   DB_NAME: "postgres"
   DB_USER: "postgres"
   DB_SSLMODE: "require"
   AWS_REGION: "il-central-1" # matches aws_region in your tfvars
-  SNS_TOPIC: "arn:aws:sns:il-central-1:590183895228:voteball-notifications"
-  S3_BUCKET: "voteball-rollups-590183895228"
+  SNS_TOPIC: "REPLACED-BY-ARGOCD"
+  S3_BUCKET: "REPLACED-BY-ARGOCD"
   S3_SNAPSHOT_PREFIX: "snapshots"
 
 # ESO ExternalSecret: pulls voteball/app-secret from Secrets Manager into K8s Secret app-secret.
@@ -63,9 +74,9 @@ externalSecret:
   refreshInterval: "1h"
 
 ingress:
-  host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/2478c78f-93db-4b15-9af3-71e03cf201ed"
-  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/5955a409-5b48-46dc-ad7f-80a6e74d97e0"
+  host: "REPLACED-BY-ARGOCD"
+  certificateArn: "REPLACED-BY-ARGOCD"
+  wafAclArn: "REPLACED-BY-ARGOCD"
 
 # Alert rules (charts/voteball/templates/prometheusrule.yaml). Requires kube-prometheus-stack's
 # PrometheusRule CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart
@@ -82,7 +93,7 @@ serviceMonitors:
   enabled: true
 
 backup:
-  roleArn: "arn:aws:iam::590183895228:role/voteball-backup-irsa"
+  roleArn: "REPLACED-BY-ARGOCD"
   schedule: "0 2 * * *"
 
 backend:
@@ -121,7 +132,7 @@ worker:
   # Singleton poller, not a request-serving tier — 2 replicas would just be
   # 2 processes independently polling and computing identical rollups.
   replicas: 1
-  roleArn: "arn:aws:iam::590183895228:role/voteball-worker-irsa"
+  roleArn: "REPLACED-BY-ARGOCD"
   # CPU limit doubled 2026-08-18: CPUThrottlingHigh measured ~8% throttled periods here too, from the
   # bursty rollups.recompute() triggered by NOTIFY votes_changed -- a wholesale rebuild of all eight
   # rollup tables in one shot, not steady load. Average usage (~1.6m core) stayed far under even the

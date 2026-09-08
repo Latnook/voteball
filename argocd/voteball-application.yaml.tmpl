@@ -77,6 +77,43 @@ spec:
     repoURL: ${REPO_URL}
     targetRevision: release
     path: charts/voteball
+
+    # THIS ACCOUNT'S IDENTITY, AND THE REASON IT IS NOT IN charts/voteball/values.yaml.
+    #
+    # ArgoCD renders the chart from git and cannot read `terraform output`, so something has to carry
+    # these nine values. Until 2026-09-08 that something was the committed values.yaml, which put an
+    # AWS account id, an RDS endpoint and four ARNs into a PUBLIC repository. This manifest is the
+    # better carrier: it is RENDERED from Terraform outputs by scripts/render-argocd-app.sh and
+    # applied with kubectl, so the template is in git and the real values never are.
+    #
+    # image.tag and image.digests deliberately STAY in values.yaml. They are the deployment record --
+    # scripts/ci/previous-tag.sh recovers the rollback target with `git log -p` over that file, so its
+    # history IS the rollback mechanism. They also leak nothing: a git SHA of a public repo, and
+    # content addresses. See docs/design/2026-09-08-argocd-helm-parameters-design.md section 3.
+    #
+    # A missing substitution cannot ship silently: render-argocd-app.sh greps the rendered output for
+    # any leftover placeholder and exits non-zero. (That grep is why this comment does not spell one
+    # out -- writing the pattern here makes the file fail its own check, which it did on first try.)
+    helm:
+      parameters:
+        - name: image.registry
+          value: "${REGISTRY}"
+        - name: config.DB_HOST
+          value: "${DB_HOST}"
+        - name: config.S3_BUCKET
+          value: "${S3_BUCKET}"
+        - name: config.SNS_TOPIC
+          value: "${SNS_TOPIC}"
+        - name: ingress.host
+          value: "${APP_DOMAIN}"
+        - name: ingress.certificateArn
+          value: "${CERT_ARN}"
+        - name: ingress.wafAclArn
+          value: "${WAF_ARN}"
+        - name: backup.roleArn
+          value: "${BACKUP_ROLE}"
+        - name: worker.roleArn
+          value: "${WORKER_ROLE}"
   destination:
     server: https://kubernetes.default.svc
     namespace: devops-app
