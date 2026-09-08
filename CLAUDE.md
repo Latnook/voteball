@@ -712,6 +712,27 @@ the tip is what let the 2026-08-21 queued-build race hide a source commit behind
 so that nothing ever built it — reported as `NOT_BUILT`, which reads like a pass.
 `test-ci-guards.sh` pins the incident as a regression case.
 
+**Every consumer of that range needed the same fix, and only the Guard got it — so the identical
+trap fired again on 2026-09-08 (G3c).** Jenkins' `when { changeset 'services/**' }` diffs against
+the **previous build**, not the previous *successful* one, so **a build that FAILS consumes its
+changeset**: whatever it was carrying falls behind the next build's range base and no later
+`changeset` can see it again. Observed end to end — `seed.sql` took a party off the ballot, that
+build failed on an unrelated broken test, the follow-up commit touched only `scripts/tests/**`, and
+the next build went **green while skipping Build, Push and Trigger CD**, leaving the party on a live
+public ballot. The Jenkinsfile's own Guard comment had already named the mechanism (*"it sits BEHIND
+the tip and so falls outside every subsequent changeset"*) fifteen months' worth of context earlier
+in the same file. **When you fix a range base in one place, grep for every other consumer of that
+range** — the fix and the unfixed copy look equally correct in review, and the unfixed one fails
+silently and green. The gates now read `env.SERVICES_CHANGED`/`env.CHARTS_CHANGED`, computed in
+*Resolve tag and account* by `scripts/ci/changed-paths.sh` from `GIT_PREVIOUS_SUCCESSFUL_COMMIT`
+(absent or rewritten base → `true`, the same fail-safe as G3b and `images-exist.sh`).
+`test-changed-paths.sh` pins the answer from **both** bases in both directions, and
+`test-ci-guards.sh` fails if a raw `changeset` directive returns or if the base is changed to
+anything else. **Asymmetry worth knowing before you go looking for a cleverer fix:** this rescues a
+change swallowed by a **failed** build, and nothing can rescue one a **successful** build has
+already passed over — no later push brings it back into range, so `FORCE_BUILD` is the only route.
+That is why the escape hatch cannot be removed as redundant.
+
 **Jenkins is configured by JCasC, not by clicking — but the mechanism is `terraform apply`, not a
 reboot of a hand-managed host.** `ci/jenkins/jenkins.yaml` is loaded into the Helm release's
 `controller.JCasC.configScripts` and applied by the chart's config-reload sidecar (plugins, admin
@@ -850,8 +871,8 @@ Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` 
 - **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
   never force-unlocks on its own (see above).
 
-**A failing command whose exit status is swallowed by the thing that printed it — three instances,
-three different mechanisms, one bug.** This is the most-repeated defect shape in this repository, and
+**A failing command whose exit status is swallowed by the thing that printed it — four mechanisms,
+one bug.** This is the most-repeated defect shape in this repository, and
 it is worth grepping for before writing anything that shells out:
 
 - **Pipe position.** `terraform apply | tail` reports the exit status of `tail`, so a FAILED apply
@@ -870,9 +891,10 @@ it is worth grepping for before writing anything that shells out:
 
 The common thread is that **the transcript looks MORE complete than a silent failure would.** A bare
 error is visibly an error; a success line with a `403` inside it reads as a logged detail, and
-evidence built on it gets believed. `set -euo pipefail` is necessary and covers none of the three:
+evidence built on it gets believed. `set -euo pipefail` is necessary and covers none of them:
 not a pipeline's non-final stage, not a `$(...)` whose output is merely printed, not a request that
-succeeded against the wrong URL. **And the three need different fixes, so "check the exit status" is
+succeeded against the wrong URL, not a lookup that quietly found real data it should never have had
+access to. **And each needs a different fix, so "check the exit status" is
 not the lesson:**
 
 | Sub-type | Fix | How it is found |
@@ -880,6 +902,7 @@ not the lesson:**
 | A discarded exit status | capture it into a variable and branch on it | reading the code |
 | A race against state that has not arrived | a completion condition, or a retry | running it twice |
 | A pattern that can never match | feed the check input you KNOW should match, once | **only** by that |
+| A check that passes only where it ran | make its precondition real — deny the tool, unset the variable | **only** running it elsewhere |
 
 The third is the worst and arrived last (2026-08-24, drill 4: `grep '^gate:'` against Jenkins console
 lines, every one of which carries a timestamp prefix — the anchor could never match, so the section
@@ -888,6 +911,24 @@ Worse, its empty result is not merely indistinguishable from "nothing to report"
 indistinguishable from a **correct negative**, which is a legitimate outcome nobody has any reason to
 investigate. Exercising a check against known-present input at least once is the only defence, and it
 is the same discipline as proving a test can fail before trusting it to pass.
+
+**A FOURTH sub-type, and the one this repo is most exposed to: a check that passes only because of
+where it happened to run.** 2026-09-08 — `scripts/tests/` is *offline by contract*, and
+`test-render-argocd-app.sh` stubbed one of the ten Terraform outputs `render-argocd-app.sh` reads
+(the helm.parameters pass took it from one to ten and the test was not extended). On a developer
+machine the other nine resolved against real S3 state, so the suite reported **30/30 green**; in
+Jenkins, which has no AWS, the first unstubbed one hard-failed the build. **The test was offline by
+accident, not by contract, and nothing in it said so.** This is *not* the "run it twice" sub-type —
+it reproduces perfectly, every time, on the machine you are on. It also cannot be found by reading
+the test, because the missing stub is invisible: the code that needs it is in the *other* file.
+**The fix is to make the precondition real rather than assumed** — the test now puts a `terraform`
+shim that exits 1 on `PATH`, so both environments are identical and the next output added fails for
+whoever adds it. Generalise it: **a test that depends on something being absent must make it absent
+itself.** Two more defects were sitting behind that one in the same file, both invisible until it
+was fixed — a `2>/dev/null` around a whole pipeline reporting a failed assertion as "PyYAML not
+installed" (it *is* installed), and the assertion itself pinned to four rendered documents when the
+template has produced six since `logging` became the third Application. A dead check and a lying
+skip line, protecting each other.
 
 **A grep used to decide "is this repo clean?" IS one of these checks, and alternation is where it
 hides.** Second instance, 2026-08-28, found by a doc audit rather than by the person who ran the
@@ -1085,10 +1126,10 @@ There is nothing to start or stop — it runs whenever the cluster does, and goe
 
 ### CI/CD scripts (`scripts/ci/`, `scripts/jenkins/`)
 
-**Thirteen scripts** (count them: `ls scripts/ci/*.sh | wc -l` — this number has been wrong twice
-now: it said "Five" while the directory held eight, and was corrected to "Twelve" only to be stale
-again within the same session, because `verify-deployed-image.sh` landed an hour later. Derive it,
-do not read it from here), each one pipeline decision point extracted so it can be tested without
+**Fourteen scripts** (count them: `ls scripts/ci/*.sh | wc -l` — this number has been wrong three
+times now: it said "Five" while the directory held eight, was corrected to "Twelve" only to be stale
+again within the same session because `verify-deployed-image.sh` landed an hour later, and said
+"Thirteen" until `changed-paths.sh` landed on 2026-09-08. Derive it, do not read it from here), each one pipeline decision point extracted so it can be tested without
 triggering a real build. Five were added on 2026-08-23 by the review pass:
 `promote-to-release.sh` (builds each `release` commit with `git read-tree`, never a merge — see the
 design doc), `resolve-digests.sh` (tag → the four image digests, authoritative because the ECR repos

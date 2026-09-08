@@ -85,21 +85,34 @@ got="$(scripts/ci/images-exist.sh)"
 # (Jenkinsfile-ci, not Jenkinsfile -- the single pipeline was split into Jenkinsfile-ci/-cd on
 # 2026-08-04; the build/scan/push gates this section checks all stayed on the CI side.)
 
-# Every gate that keys on `changeset 'services/**'` must also accept "no changelog at all".
+# Every gate that keys on "did services/ change" must also accept "no changelog at all".
 # Match the gate form specifically -- the plain `env.NO_CHANGELOG == 'true'` also appears in the
 # echo that announces the fallback, which is not a gate and must not be counted.
-# COMMENTS STRIPPED FIRST. Jenkinsfile-ci's own prose quotes `changeset 'services/**'` while
-# explaining these gates, and counting those lines makes the two totals disagree for a reason that
-# has nothing to do with the code -- which is exactly the sort of false alarm that gets a real check
-# deleted. (Same trap, same fix, as the egress-coverage check in scripts/ci/validate-repo.sh, which
-# would otherwise have been satisfied by a label mentioned only in a comment.)
+# COMMENTS STRIPPED FIRST. Jenkinsfile-ci's own prose quotes these gates while explaining them, and
+# counting those lines makes the two totals disagree for a reason that has nothing to do with the
+# code -- which is exactly the sort of false alarm that gets a real check deleted. (Same trap, same
+# fix, as the egress-coverage check in scripts/ci/validate-repo.sh, which would otherwise have been
+# satisfied by a label mentioned only in a comment.)
+#
+# The gate MOVED on 2026-09-08 (G3c) from Jenkins' `changeset 'services/**'` directive to
+# env.SERVICES_CHANGED, because `changeset` diffs against the previous build rather than the
+# previous SUCCESSFUL one -- see scripts/ci/changed-paths.sh. This check follows the gate rather
+# than the directive: what it protects is "every services-gate has the NO_CHANGELOG hatch", which is
+# true of whichever mechanism expresses the gate.
 uncommented="$(sed -e 's|^[[:space:]]*//.*$||' Jenkinsfile-ci)"
-gates="$(printf '%s\n' "$uncommented" | grep -c "changeset 'services/\*\*'")"
+gates="$(printf '%s\n' "$uncommented" | grep -c "expression { env.SERVICES_CHANGED == 'true' }")"
 hatches="$(printf '%s\n' "$uncommented" | grep -c "expression { env.NO_CHANGELOG == 'true' }")"
-[ "$gates" -gt 0 ] || fail "expected at least one changeset gate in Jenkinsfile-ci, found none"
+[ "$gates" -gt 0 ] || fail "expected at least one services-changed gate in Jenkinsfile-ci, found none"
 pass=$((pass+1))
 [ "$gates" = "$hatches" ] || \
-  fail "every 'changeset services/**' gate needs the NO_CHANGELOG escape hatch: $gates gates, $hatches hatches"
+  fail "every SERVICES_CHANGED gate needs the NO_CHANGELOG escape hatch: $gates gates, $hatches hatches"
+pass=$((pass+1))
+
+# The retired directive must not come back alongside the flag. Two mechanisms answering the same
+# question is how the 2026-09-08 incident would return on whichever stage kept the old one -- and it
+# would look correct, since the stages that kept the flag would still behave.
+printf '%s\n' "$uncommented" | grep -q "changeset '" && \
+  fail "Jenkinsfile-ci still uses a raw \`changeset\` directive: it diffs against the previous BUILD, not the previous SUCCESSFUL build (G3c)"
 pass=$((pass+1))
 
 # ...and NO_CHANGELOG must actually be assigned from the build's changeSets, not left undefined --
@@ -108,10 +121,22 @@ grep -q 'env.NO_CHANGELOG = currentBuild.changeSets.isEmpty()' Jenkinsfile-ci ||
   fail "NO_CHANGELOG is referenced but never assigned from currentBuild.changeSets"
 pass=$((pass+1))
 
-# The gates must stay OR-ed with the changeset check, never replace it: a normal build with real
-# commits that miss services/** still has to skip.
-grep -q "anyOf { changeset 'services/\*\*'" Jenkinsfile-ci || \
-  fail "changeset gate must remain inside an anyOf, or unrelated commits will rebuild every time"
+# ---- G3c: the gate's INPUT must come from the last SUCCESSFUL build ------------------------------
+# env.SERVICES_CHANGED comparing false when unset is the same silent-skip hazard as NO_CHANGELOG, so
+# assert it is assigned at all -- and assigned from GIT_PREVIOUS_SUCCESSFUL_COMMIT specifically.
+# Basing it on any other ref (GIT_PREVIOUS_COMMIT, HEAD~1) reintroduces the exact bug: a build that
+# FAILS consumes its changeset and its changes are never seen again.
+grep -q 'env.SERVICES_CHANGED = sh(script: .scripts/ci/changed-paths.sh' Jenkinsfile-ci || \
+  fail "SERVICES_CHANGED is referenced but never assigned from scripts/ci/changed-paths.sh"
+pass=$((pass+1))
+grep -q 'PREV_SUCCESS=${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT' Jenkinsfile-ci || \
+  fail "changed-paths.sh must be based on GIT_PREVIOUS_SUCCESSFUL_COMMIT -- any other base lets a failed build strand its changes (G3c)"
+pass=$((pass+1))
+
+# The gates must stay OR-ed, never replace the whole condition: a normal build with real commits
+# that miss services/** still has to skip.
+grep -q "anyOf { expression { env.SERVICES_CHANGED == 'true' }" Jenkinsfile-ci || \
+  fail "the services-changed gate must remain inside an anyOf, or unrelated commits will rebuild every time"
 pass=$((pass+1))
 
 # ---- G2, range form: the 2026-08-21 queued-build race -------------------------------------------
