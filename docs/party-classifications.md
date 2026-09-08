@@ -584,20 +584,6 @@ under ש"ס for how the API was reached.
   candidate-recruitment pattern, the same line revision 52 drew for ישראל ביתנו's cross-party intake
   (*"strategic, not classificatory"*). **Trigger:** a stated coalition position, not another recruit.
 
-**2026-09-08 — revision 65. Filed list read at the realistic range (30 of 120), and this row has a
-JOINT filing the page did not know about. No axis moved; `two-faction-list` refused.** Filed
-*"מטעם מפלגת ישר לישראל עם איזנקוט ומטעם מפלגת יסודות ישראל"* — **116 / 4 across 120, and 3 / 30
-inside the range** (10%), which is below every holder of the tag by a factor of four and above only
-הליכוד and הדמוקרטים. **חילי טרופר sits at #6 under `יסודות ישראל`**, with שירה שפירא #10 and
-אליסף פרץ #20. Press reported that Trupper's people would run *"כחלק ממפלגת ישר"* after the
-בית ציוני–המילואימניקים partnership dissolved on 2026-09-06; **the filing shows a second registered
-party rather than an absorption**, which is a third structure again and is why the attribution field
-is worth reading even when reporting sounds settled. **Whether `יסודות ישראל` is בית ציוני
-re-registered is NOT established here and must not be assumed** — the names differ, this page has
-already been burned once by a name collision (see the ⚠ block), and confirming it needs the
-registrar, not an inference. Recorded as an open thread. **The realistic range is 30, the largest on
-the page**, so this row's audits have the most room and the least excuse for stopping at ten.
-
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -961,14 +947,24 @@ Gaza and the territories at once. **Read the hit, not the count** — this is th
 grep failures recorded in the root `CLAUDE.md`: there a pattern could never match, here it matched
 something that means nothing, and both look like findings.
 
-**2026-09-08 — revision 65. The filed list CONFIRMS revision 29's slot map exactly, against the
-primary source it never had. No change.** Filed jointly by *ביחד בראשות בנט מחזירים את התקווה* and
-*יש עתיד*; **62 / 58 across 120 and 11 / 9 inside the realistic 20**. Revision 29 reconstructed
-Bennett's slots as **1, 3, 5, 7, 8, 10, 11, 13, 15, 17, 19** from his own internal list and noted the
-two orders "interleave exactly" — **the CEC filing attributes precisely those slots to ביחד** and the
-rest to יש עתיד. A reconstruction from a party-internal document, checked ten days later against the
-registrar and found exact. **`two-faction-list` is held, and at 45% of the realistic range it is now
-the second-best-evidenced instance of that tag on the page** (see the measure in Conventions).
+**⚠ 2026-09-09 — revision 66 RETRACTS revision 65's block for this row, which was also FILED UNDER
+הליכוד.** Two defects in one block. It announced *"a JOINT filing the page did not know about"*,
+flagged whether `יסודות ישראל` is בית ציוני re-registered as "NOT established and must not be
+assumed", and refused `two-faction-list` as if for the first time — **all three were already in this
+entry**, written 2026-09-06/07: the filing, the 116/4 split, טרופר **#6**, שפירא **#10**, פרץ
+**#20**, יחיאב **#35**, the registered vehicle named, and the refusal argued at greater length. And
+it was inserted before this row's own header rather than the next row's, so it rendered at the end of
+**הליכוד**. **Nothing about this row was new.** The one thing that block added is the range framing —
+3 of 30 rather than 4 of 120 — which lives in the Conventions measure and needs no entry here.
+
+**Both defects have the same cause and it is this page's own rule, inverted.** Revision 65 read
+eleven filings and wrote them up **without reading the target sections first**: the corpus was
+enumerated, the destination was not. The page already carries the general form — *"a second document
+agreeing with the first is not evidence the first was read"* — and a false claim of novelty is worse
+than duplication, because it **misattributes**: it credits a filing with a finding that came from
+press coverage two days earlier, and invites the next reader to reopen a settled question. The
+misfiling is the same failure in the mechanical register — an anchor chosen without looking at what
+sits above it. **Check what the row already says, and check where the text lands.**
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -1545,17 +1541,14 @@ Sources for this pass: [התכנית להגנה על הסביבה](https://be-ya
 [חוק המשרתים](https://be-yahad.org.il/plans/meshartim-law/) — all party-published, all 200 to a
 browser-shaped `curl`, all enumerated from `plans-sitemap.xml` rather than from the `/plans/` index.
 
-**2026-09-08 — revision 65. Filed list read at the realistic range (13 of 120). No change.** Filed
-*"מטעם מפלגת הדמוקרטים מיסודה של תנועת העבודה ומטעם מפלגת מרצ"* — and **מרצ holds ONE slot in the
-entire 120**, גבריאלה לסקי שוץ at **#6**. `two-faction-list` is correctly absent and is now
-positively evidenced rather than merely unclaimed: at 1 in 13 this is a nameplate, not a faction, and
-the party that was half of this row's name in 2022 has less realistic representation on it than
-תקווה חדשה has on הליכוד's. **Recorded because the row's own tags (`social-democrat`,
-`religious-pluralism`) descend from both predecessors** — the *positions* merged even where the
-*organisation* did not survive, which is exactly what `party_lineage` is for and why the ratio moves
-no axis. Top 13 otherwise as expected: גולן, לזימי, קריב, רייטן, פינק, לסקי שוץ, רונן, רוזין, רדמן,
-**בשיר סומיה #10** (revision 36 cited her at #10 for `jewish-arab-partnership` — confirmed against
-the filing), שפר, זר קצנשטיין, דאבוש.
+**2026-09-08 — revision 65. The filed list CONFIRMS revision 29's slot map exactly, against the
+primary source it never had. No change.** Filed jointly by *ביחד בראשות בנט מחזירים את התקווה* and
+*יש עתיד*; **62 / 58 across 120 and 11 / 9 inside the realistic 20**. Revision 29 reconstructed
+Bennett's slots as **1, 3, 5, 7, 8, 10, 11, 13, 15, 17, 19** from his own internal list and noted the
+two orders "interleave exactly" — **the CEC filing attributes precisely those slots to ביחד** and the
+rest to יש עתיד. A reconstruction from a party-internal document, checked ten days later against the
+registrar and found exact. **`two-faction-list` is held, and at 45% of the realistic range it is now
+the second-best-evidenced instance of that tag on the page** (see the measure in Conventions).
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -1988,9 +1981,17 @@ as read** — otherwise the next reader supplies the URL again.
 sixteen supplied plus the five counterpart editions probed here). The bucket still refuses listing,
 so this is a floor, not a total.
 
-**2026-09-08 — revision 65. Filed list confirmed at 41 candidates, single registered party
-(*כחול לבן חוסן לישראל*).** No joint attribution, so the measure above does not apply. Revision 63's
-reading stands unchanged.
+**2026-09-08 — revision 65. Filed list read at the realistic range (13 of 120). No change.** Filed
+*"מטעם מפלגת הדמוקרטים מיסודה של תנועת העבודה ומטעם מפלגת מרצ"* — and **מרצ holds ONE slot in the
+entire 120**, גבריאלה לסקי שוץ at **#6**. `two-faction-list` is correctly absent and is now
+positively evidenced rather than merely unclaimed: at 1 in 13 this is a nameplate, not a faction, and
+the party that was half of this row's name in 2022 has less realistic representation on it than
+תקווה חדשה has on הליכוד's. **Recorded because the row's own tags (`social-democrat`,
+`religious-pluralism`) descend from both predecessors** — the *positions* merged even where the
+*organisation* did not survive, which is exactly what `party_lineage` is for and why the ratio moves
+no axis. Top 13 otherwise as expected: גולן, לזימי, קריב, רייטן, פינק, לסקי שוץ, רונן, רוזין, רדמן,
+**בשיר סומיה #10** (revision 36 cited her at #10 for `jewish-arab-partnership` — confirmed against
+the filing), שפר, זר קצנשטיין, דאבוש.
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -2186,6 +2187,10 @@ owner puts the realistic range at **the top 6**: גנץ, פנינה תמנו־ש
   and a candidate list is not platform text. **מיכאל ביטון is not on the list** — he announced he
   would not run — which removes an MK but no evidence, on revision 61's ש"ס reasoning that an axis
   resting on a record does not move when the person leaves.
+
+**2026-09-08 — revision 65. Filed list confirmed at 41 candidates, single registered party
+(*כחול לבן חוסן לישראל*).** No joint attribution, so the measure above does not apply. Revision 63's
+reading stands unchanged.
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
@@ -3715,11 +3720,16 @@ written down rather than glossed so the next pass argues with a number.
 **Revision 55's audit is confirmed exactly against the filing**: דורפמן #7, צחי אליהו #8,
 גולדברגר #9, all three in the slots that entry put them in and all three inside the realistic range —
 which is what makes its `kahanist` and haredi-slot findings load-bearing rather than decorative.
-**New inside the range and unaudited**: רויטל טלי גוטליב **#2**, עמיחי אליהו #4, לימור סון הר-מלך #5,
-איתיאל ניימן #10. **No tag from any of them** — this row's `basis` is `record` and a slate is not a
-record. **Trigger:** גוטליב at #2 is a former הליכוד MK, which makes her the second cross-party
-intake this page has logged on a far-right row after אלמוג כהן's move in the other direction
-(revision 24); a second instance is a pattern worth naming, a first is not.
+**⚠ Corrected 2026-09-09 (revision 66): the names inside the range were NOT new.** This block first
+called גוטליב **#2**, עמיחי אליהו #4, סון הר-מלך #5 and ניימן #10 *"new inside the range and
+unaudited"*, and offered גוטליב's arrival from הליכוד as a trigger. **The announced order was already
+here**, including גוטליב coming from הליכוד and וסרלאוף giving up #2 for her in Ben Gvir's own words
+(*"טלי גוטליב מגיעה? תן לה את המקום השני, שים אותי בשלישי"*) — that entry's own summary is *"the list
+begins to take shape, and NOTHING MOVES — for the sixth consecutive reading of this row"*. **What the
+filing genuinely adds is the attribution, and only that**: an announced order cannot show that
+**וסרלאוף and קרויטור are filed under `ארץ ישראל שלנו` rather than under חזית יהודית לאומית**, so a
+sitting minister at #3 sits on the junior partner's registration. That is the 2/10 above, and it is
+the only line in this block that press coverage could not have produced.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -4829,17 +4839,6 @@ of a person).
 **Not added to `previous_parties`** — the party did not exist at the previous election, so there is
 no lineage link to draw either.
 
-**2026-09-08 — revision 65. Filed list read at the realistic range (6 of 18). No axis moved; no tag
-added.** **The registered party is `עמי חי לעד`, not `עמך ישראל`** — the display name and the
-registration differ, which is the ישר case (*"ישר! עם איזנקוט"*) recorded in the ⚠ block, and the
-reason that block says not to rename rows from a ballot brand. Single-party filing, so the
-joint-filing measure does not apply. **#2 is יוסף חדאד**, the Arab-Israeli advocate, on a row whose
-`sector` is `secular` and whose entry was written from ווינטר's own material. **No tag and no
-`sector` change**, on the Druze-HQ and Bukharan-slot precedents — a candidate is not a constituency
-claim — but it is the sharpest test that line has had, because #2 is inside a range of 6 rather than
-being a tail gesture. **Trigger:** any עמך ישראל document on Arab citizens. Also inside the range:
-נטעלי שם טוב #3, ערן בן ארי #4, פלר חסון-נחום #5, **ללי דרעי #6**.
-
 ### עמך ישראל — Amcha Yisrael · `bibi` · NULL / 3 / −2 · secular
 
 New party, launched **2026-08-25** at the Shalva Center in Jerusalem by
@@ -5064,6 +5063,19 @@ a long way above the single launch report revision 32 had.
 
 **Not added to `previous_parties`** — it did not exist at the previous election, so there is no
 lineage link to draw either.
+
+**2026-09-08 — revision 65. Filed list read at the realistic range (6 of 18). No axis moved; no tag
+added.** **The registered party is `עמי חי לעד`, not `עמך ישראל`** — the display name and the
+registration differ, which is the ישר case (*"ישר! עם איזנקוט"*) recorded in the ⚠ block, and the
+reason that block says not to rename rows from a ballot brand. Single-party filing, so the
+joint-filing measure does not apply. **The slate itself was already audited in full** — חדאד #2, שם טוב, בן ארי, דרעי, קראוניק,
+בן ציון, ג'ינו, עזרא, חסן-נחום and בודנרו are all named in this entry, with
+`voluntary-palestinian-emigration-incentives` and `population-transfer` both refused on the opt-in
+test and the judicial-reform reading of בן ארי refuted 0–3. **This block adds the registration and
+the cut, and nothing else.** The cut is worth one line: **דוידי בן ציון sits outside the realistic
+6**, so the `pro-settlement` reading his Alon Moreh residency and Shomron Council role would invite
+is not merely refused on the candidate-is-not-a-position rule — it is refused on a slot that does not
+reach the Knesset. The two grounds are independent and the second is the cheaper one.
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
@@ -6490,3 +6502,4 @@ pass happened, for anyone reading git history.
 | 2026-09-08 | revision 63 — **`gov.il` IS reachable, and the three revisions that said otherwise were wrong. הליכוד and כחול לבן read in full from the CEC's own API; no axis moved, no tag added, `seed.sql` unchanged.** **The correction first, because it invalidates a claim this page made three times today.** Revisions 61 and 62 concluded gov.il was unreachable "in all three modes" and rested three filed lists on the repo owner's verbatim copies plus press. That test was rigorous and aimed at the wrong endpoint: `www.gov.il` serves an **Angular shell**, and the list is fetched client-side from `openapi-gc.digital.gov.il` using a base URL and a **client id published in the page's own `client-config.js`** — no login, no secret. Route: `${contentPageWebApi}/api/content-pages/${slug}?culture=he`, header **`x-client-id`**. **A rigorous negative about the wrong endpoint is still a wrong answer**, and the failure mode is specific: `client-id`, `ClientId`, `apikey` and `Authorization: Bearer` all return **500 with a generic body** rather than 401, so a wrong header reads as a broken API rather than as bad auth; `Origin: https://www.gov.il` is required or the same request intermittently 500s. Verified against רע"ם list 18, whose first twelve names were already in hand: exact match, **and the list is 73 names**, superseding revision 61's "#7–12 unsourced" and its guess that the list "may run past 12". Revision 55's byte-count tell and revision 61's control-slug method are both retained as dated records of correct reasoning about the shell. **הליכוד: the "merger" with תקווה חדשה is an ABSORPTION.** The list is filed *"מטעם מפלגת הליכוד … ומטעם מפלגת תקווה חדשה הימין הממלכתי"* and across **120 candidates תקווה חדשה is named exactly twice** — טלי גואילי **#9** and אופיר סבאן **#88** — while **גדעון סער himself, at #7, is filed under הליכוד**. **Restricted to the realistic top 25 (repo owner) the finding sharpens rather than weakens**: the junior partner's entire realistic representation is **one seat in twenty-five**, and it is not its leader; the raw 118/120 *understates* it, because a tail slot costs nothing to give. **`two-faction-list` REFUSED** — its three holders are lists where both organisations retain standing, and **a joint filing is not a joint list**. **The same election produced the opposite structure**: המילואימניקים והכלכלית filed a strict 6–6 zipper holding parity slot by slot *through* its realistic range (revision 61). **Two "mergers" days apart, same field of the same document, opposite poles — and press coverage gives both the same word.** Generalisable test recorded: **read the attribution field, inside the realistic range**, since a zipper and an absorption look identical in a list's tail. **The row is NOT renamed and no `seed_key` is created**, on the הציונות הדתית + זהות precedent — and this is a **fifth merge shape**, absorption of a party this database never carried a row for, so nothing to remove, no `party_lineage` to write, no vote to orphan; **five merges, five shapes, still no template.** `unity-government` considered and refused: recruitment pattern, not a stated coalition position (revision 52's *"strategic, not classificatory"*). Consistency check against revision 24 passes — ברקת #24 and תדמור #27 are where that entry put them. Slug note: **`halikud-tikvahadasha_iist29` is gov.il's own typo and the only form that resolves**; reproduced verbatim. **כחול לבן: 41 candidates, one registered party, realistic top 6.** The party's **50%-women claim is TRUE and survives restriction to the realistic range** — slots 2, 3, 5, 8, 10 confirmed against the filing, which is 3 of 6 inside the cut, so the parity is not a tail effect; recorded because a verifiable self-description is rare here. **`gender-equality` REFUSED**: the tag was granted to המפלגה הכלכלית for a dedicated programme and declined to ישר for violence policy in a crime paper — **a list is neither, being the party doing something to itself rather than a position it proposes**, the same line as the Druze HQ, מטה הסרוגים and the Bukharan slot, and it has to hold in the direction that *costs* a row a tag or it is not a rule. **The advertised Druze representative sits at #7, one slot outside the realistic range**, as do the two northerners, three עוטף עזה residents, two kibbutzniks and the moshavnikit named in the same release — **composition claims are made about the list and read as being about the leadership**, and this is the first time the gap is measurable. **`state-commission-of-inquiry` refused a SIXTH time, and the tag now reports the OPPOSITE of the truth**: Gantz names it as one of four coalition conditions on filing, first-party and dated; refused on revisions 15, 20, 24, 51 and 52's sound reasoning — but **the sole holder is אל הדגל, which withdrew from the race the same day** (revision 59), so the page asserts that the only party seeking a state commission of inquiry is one that is not running, while at least four running parties have said they want one. **A tag refused to everyone who qualifies is worse than a tag that does not exist, because a reader cannot see the refusals** — escalated to Open questions with two admissible outcomes, sweep and populate, or retire it on the `periphery-development` precedent. מיכאל ביטון's departure removes an MK but no evidence, on revision 61's ש"ס reasoning |
 | 2026-09-08 | revision 64 — **realistic ranges supplied by the repo owner for all 14 live rows, recorded in Conventions as dated evidence, and three of the same day's findings amended under them. No axis moved, no tag added, `seed.sql` unchanged.** The ranges (ישר 30; הליכוד 25; ביחד 20; הדמוקרטים 13; ש"ס / יהדות התורה / ישראל ביתנו / הרשימה המשותפת / עוצמה יהודית / הציונות הדתית / רע"ם 10; עמך ישראל / המילואימניקים והכלכלית / כחול לבן / נעם 6) are **deliberately generous — they total ~176 against 120 seats — so they are a ceiling on what could matter, not a seat projection**, and they are poll-derived estimates with a date rather than facts. **The rule they enable: read a filed list inside its realistic range, and use the range to scope a reading, never to score one** — every composition refusal on this page (the Druze HQ, מטה הסרוגים, the Bukharan slot, כחול לבן's 50% list) stands unweakened. What the ranges retire is the phrase *"unsourced beyond the filing"* for slots that were never realistic. **Three amendments, all to entries written hours earlier.** **ש"ס — the "named community slots" pattern SPLITS at the cut**: on a 13-name list with a range of 10, דרור עמוס's army slot at **#6 is inside** while **אלנתנוב #11 (Bukharan) and מושיאשוילי #13 (Georgian) are both outside** — so revision 61 was right that the council allocates named community slots and wrong to read them as one pattern with the army slot; **the military slot was given a seat, the two community slots were given a place on the paper**, and `mizrahi-representation` is not "better evidenced" by them. **רע"ם — a range was INVENTED from a fact about reporting.** Revision 63 wrote that press coverage stops at #6 "because that is the party's realistic range"; the range is **10**, so **אל-טורי איברהים #7 sits inside it** and the Negev slot is a real seat rather than a courtesy — **a stopping point in reporting is a fact about reporting**, and the `negev-bedouin-representation` question is live rather than deferrable. **המילואימניקים והכלכלית — the zipper is exactly 3–3 inside the cut**, so the parity is not a tail artefact and holds precisely where the seats are, which is what makes הליכוד's one-junior-slot-in-twenty-five legible as its opposite. **נעם is the entry worth reading twice**: it was omitted from the first table, and the tempting inference — a party running alone for the first time (independently now as **נעם לישראל**, having sat inside הציונות הדתית's list in the 25th) and left out of a range table is below threshold — was declined per this page's rule against inferring from absence, and **the answer came back as 6, the same as three other rows.** Recorded because that rule usually costs nothing to follow and is therefore easy to treat as ceremony; here it would have put a wrong number into the table that scopes every future list audit |
 | 2026-09-08 | revision 65 — **all eleven filed lists read from the CEC API, each at its realistic range. No axis moved, no tag added, `seed.sql` unchanged — and the pass produced a MEASURE the page did not have.** **`two-faction-list` now has a quantitative footing: the junior partner's share of the realistic range.** Every CEC list attributes each slot to a registered party, and reading that field inside the range separates cleanly — המילואימניקים והכלכלית **3/6 (50%)** and ביחד **9/20 (45%)** both hold the tag; עוצמה יהודית **2/10 (20%)**, ישר **3/30 (10%)**, הדמוקרטים **1/13 (8%)** and הליכוד **1/25 (4%)** do not. **No row sits in the gap between 45% and 20%.** The measure was derived from the filings rather than asserted and ratifies every judgement the page had already made on other grounds; it is *necessary, not sufficient* (two nameplates of one organisation could split evenly), and **two of the tag's four holders cannot be tested yet** — הציונות הדתית and יהדות התורה had not filed, the latter mid-split. **Two audits confirmed against the registrar, which is the pass's best result.** **ביחד**: revision 29 reconstructed Bennett's slots as 1, 3, 5, 7, 8, 10, 11, 13, 15, 17, 19 from his own internal list and said the two orders "interleave exactly" — **the filing attributes precisely those slots to ביחד**. **ישראל ביתנו**: revision 52's positions hold slot for slot, including the spelling it had to correct itself on (**קוליחמן #9**, with ח), and `pro-settlement` rests on שרעבי **#6, inside the range**; its two "genuinely unsourced" names sit at #20 and #21, **outside** the realistic 10 — precisely the class of gap the ranges retire. **עוצמה יהודית's list WAS up, under a slug that names its junior partner**: `yehudit-meuhedet_list14` is a joint filing with *ארץ ישראל שלנו – מפלגה יהודית מאוחדת…*, not יהדות התורה, and this pass briefly filed it as UTJ by matching the slug by eye. Revision 55's audit is confirmed exactly — דורפמן #7, צחי אליהו #8, גולדברגר #9, all inside the range. **ישר has a joint filing the page did not know about**: *ישר לישראל עם איזנקוט* + **יסודות ישראל**, with **חילי טרופר at #6** under the junior party; press said his people would run *"כחלק ממפלגת ישר"* after the בית ציוני partnership dissolved, and the filing shows a **second registered party rather than an absorption** — a third structure again. **Whether יסודות ישראל is בית ציוני re-registered is NOT established and must not be assumed**, the names differ and this page has been burned by a name collision before. **הדמוקרטים: מרצ holds ONE slot in 120** (#6), less realistic representation than תקווה חדשה has on הליכוד's list — the positions merged where the organisation did not, which is what `party_lineage` is for. **עמך ישראל's registered party is `עמי חי לעד`**, not the ballot brand, the ישר case again; **#2 is יוסף חדאד**, inside a range of 6, which is the sharpest test the candidate-is-not-a-constituency-claim line has had — refused, with a trigger. **Correction to revision 61: ש"ס filed 120 candidates, not thirteen.** Thirteen is what the party *published* and all three outlets reported; **a press-reported list length is the party's publication, not its filing**, and the two differ by two orders of magnitude. Nothing in the reading changes — the range is 10 — but the claim was stated as a fact about the filing. **Correction to revisions 63–64: רע"ם filed 73, not 72** (off-by-one in an ad-hoc parse, fixed by re-parsing). Remaining unfiled at time of writing: הרשימה המשותפת, הציונות הדתית, יהדות התורה, נעם |
+| 2026-09-09 | revision 66 — **corrects revision 65, which had two defects: four of its seven blocks were FILED UNDER THE WRONG ROW, and two claimed novelty that was not there. No axis moved, no tag added, `seed.sql` unchanged.** **The misfiling.** This page's convention is to append a revision block immediately before the *next* row's header; revision 65 anchored four blocks on the row's *own* header, so each rendered at the end of the preceding section — the ישר block under **הליכוד**, ביחד's under **ישר**, הדמוקרטים's under **ביחד**, כחול לבן's under **הדמוקרטים**, and עמך ישראל's under **האחדות**, a withdrawn party. Five of seven landed one row early and the error is invisible to any check that reads a block's text rather than its position. All five moved; the two that were correct (ישראל ביתנו, עוצמה יהודית) left alone. **The false novelty, which is the worse half.** The **ישר** block is **RETRACTED entirely**: it announced *"a JOINT filing the page did not know about"*, flagged whether `יסודות ישראל` is בית ציוני re-registered as *"NOT established and must not be assumed"*, and refused `two-faction-list` as if for the first time — **all three were already in that entry**, written 2026-09-06/07, complete with the 116/4 split and טרופר #6 / שפירא #10 / פרץ #20 / יחיאב #35. Nothing about that row was new. The **עוצמה יהודית** block called גוטליב #2, עמיחי אליהו #4, סון הר-מלך #5 and ניימן #10 *"new inside the range and unaudited"* and offered גוטליב's arrival from הליכוד as a trigger; the announced order was already recorded, Ben Gvir's own quote included, under the heading *"NOTHING MOVES — for the sixth consecutive reading of this row"*. **What survives there is one line the press could not have produced**: וסרלאוף and קרויטור are filed under `ארץ ישראל שלנו`, so a sitting minister at #3 sits on the junior partner's registration. **Cause, and it is this page's own rule inverted.** Revision 65 enumerated eleven filings and wrote them up **without reading the target sections first** — the corpus was enumerated, the *destination* was not. **A false claim of novelty is worse than duplication, because it misattributes**: it credits a filing with a finding that came from press coverage two days earlier and invites the next reader to reopen a settled question. The misfiling is the same failure in the mechanical register — an anchor chosen without looking at what sits above it. **Check what the row already says, and check where the text lands.** Also corrected: the **עמך ישראל** block claimed that row lacked a candidate audit; it has had a full one since revision 41, naming the whole slate with `voluntary-palestinian-emigration-incentives` and `population-transfer` both refused on the opt-in test and the judicial-reform reading of בן ארי refuted 0–3. That block is reduced to what it actually adds — the registered party is **`עמי חי לעד`**, not the ballot brand, and **דוידי בן ציון sits outside the realistic 6**, so the `pro-settlement` reading his Alon Moreh residency would invite fails on a second, cheaper ground than the candidate-is-not-a-position rule. **`יסודות ישראל` is now positively confirmed as טרופר's own registered party** ([סרוגים](https://www.srugim.co.il/newsflash/133837), [זמן ישראל](https://www.zman.co.il/live/701873/)) — registered under that name before the Hendel partnership, which ran as *בית ציוני - המילואימניקים* until it dissolved 2026-09-06. Revision 65 was right to refuse to assume it and wrong to present the question as open on this page |
