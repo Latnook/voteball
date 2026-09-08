@@ -31,7 +31,19 @@
 resource "kubernetes_namespace" "devops_app" {
   # Same EKS access-entry propagation race as kubernetes_namespace.ci -- see the comment there for
   # what it looks like when it bites (a permissions error ~13 minutes into an apply).
-  depends_on = [module.compute]
+  # AND on helm_release.external_secrets, which is a DESTROY-order constraint, not a create-order
+  # one. Terraform destroys dependents before their dependencies, so naming ESO here is what makes
+  # this namespace go FIRST and the ESO controller outlive it.
+  #
+  # That requirement was documented long before it was enforced. The ExternalSecret and SecretStore
+  # inside this namespace carry finalizers only the ESO controller can clear, which is exactly why
+  # ESO is deliberately excluded from destroy.sh's pre-uninstall list. But nothing expressed the
+  # ordering to Terraform, so it scheduled both in the SAME parallel batch: on the 2026-09-07
+  # teardown `helm_release.external_secrets: Destroying...` was printed one line BEFORE the
+  # namespaces started, and the run failed with "context deadline exceeded".
+  #
+  # A documented invariant with no mechanism is not an invariant. This is the mechanism.
+  depends_on = [module.compute, helm_release.external_secrets]
 
   metadata {
     name = "devops-app"
@@ -41,6 +53,20 @@ resource "kubernetes_namespace" "devops_app" {
       # kubernetes_namespace.ci declares it: NetworkPolicy namespaceSelectors match on it, and a
       # selector silently matching nothing is far harder to spot than a missing namespace.
       "kubernetes.io/metadata.name" = "devops-app"
+
+      # Vestigial, and declared anyway. This namespace predates Terraform owning it -- until
+      # 2026-08-05 it was created by `helm upgrade --install --create-namespace` in deploy.sh (see
+      # the history above), which left this label behind. Terraform adopted the namespace but never
+      # declared the label, so it sat as live drift: `terraform plan` proposed removing it on every
+      # run, and the 2026-09-07 module refactor had to be gated against that one known change rather
+      # than against a clean plan.
+      #
+      # NOTHING SELECTS ON IT -- every namespaceSelector in this repo matches
+      # kubernetes.io/metadata.name above, and neither `logging` nor `ci` carries it. It is declared
+      # purely so config and cluster agree, which also means a destroy/rebuild reproduces the
+      # namespace exactly as it is today. Deleting this line is safe; letting an apply delete it
+      # silently was not.
+      "name" = "devops-app"
     }
   }
 }

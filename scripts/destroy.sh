@@ -133,6 +133,27 @@ if kubectl cluster-info >/dev/null 2>&1; then
   kubectl delete elasticsearch --all -n logging --ignore-not-found --timeout=120s || true
   kubectl delete kibana        --all -n logging --ignore-not-found --timeout=120s || true
   helm uninstall logging          -n logging        --ignore-not-found || true
+
+  # Delete the NAMESPACE here too, while the operator is still running -- not later, and not by
+  # leaving it to Terraform's kubernetes_namespace.logging.
+  #
+  # Deleting the two custom resources above is not sufficient. ECK attaches finalizers to the
+  # Secrets its resources own as well as to the resources themselves, and only the running operator
+  # clears them. Terraform reaches kubernetes_namespace.logging minutes later, by which time
+  # `helm uninstall elastic-operator` below has removed the only controller that could -- so the
+  # namespace sits Terminating until the destroy times out.
+  #
+  # Measured on the 2026-09-07 teardown, the first full destroy since the EFK pass added this
+  # namespace: kubernetes_namespace.logging was still "Still destroying... 01m40s elapsed" when the
+  # run failed, and the automatic retry only succeeded because the recovery path had dropped the
+  # namespace from state. That recovery is a safety net, not the design -- it costs a second full
+  # terraform destroy.
+  #
+  # --wait=false deliberately: the namespace only has to be ASKED to go while the operator lives.
+  # Kubernetes then finalizes it in the background, and Terraform's own delete is a no-op (a 404 on
+  # destroy is success). Blocking here would just move the wait, not remove it.
+  kubectl delete namespace logging --ignore-not-found --wait=false || true
+
   helm uninstall elastic-operator -n elastic-system --ignore-not-found || true
   helm uninstall voteball              -n devops-app    --ignore-not-found || true
   helm uninstall jenkins               -n ci             --ignore-not-found || true

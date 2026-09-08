@@ -19,10 +19,12 @@ data "aws_caller_identity" "current" {}
 
 # Authenticate the helm + kubernetes providers to the live cluster using short-lived exec tokens
 # (aws eks get-token) -- no long-lived kubeconfig in state. These providers can only initialize once
-# the cluster exists (Plan 2), which is why add-ons are a separate plan applied after it.
-data "aws_eks_cluster_auth" "this" {
-  name = module.compute.cluster_name
-}
+# the cluster exists, which is why add-ons are applied after it.
+#
+# There is deliberately NO `data "aws_eks_cluster_auth"` here. One was declared from the start and
+# referenced by nothing -- both providers below authenticate through `exec`, which shells out to
+# `aws eks get-token` on every call, so the data source's token was fetched and thrown away. Removed
+# 2026-09-07.
 
 locals {
   eks_exec = {

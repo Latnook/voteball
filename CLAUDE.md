@@ -462,6 +462,19 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   skipped rather than blocking (verified by rendering `eck-operator` 3.5.0). The order is right; that
   explanation was not, and it stood in four places at once. See
   `docs/design/2026-08-27-efk-logging-design.md`.
+
+  **Deleting the two custom resources is NOT enough — the `logging` NAMESPACE has to be deleted in
+  that same window, while the operator still lives.** ECK finalizes the Secrets its resources own as
+  well as the resources themselves, so once `helm uninstall elastic-operator` has run there is no
+  controller left to clear them, and Terraform reaches `kubernetes_namespace.logging` minutes later
+  to find it un-deletable. Measured on the 2026-09-07 teardown — the first full destroy since the EFK
+  pass added this namespace — it was still `Still destroying... 01m40s elapsed` when the run failed,
+  and only the automatic state-rm retry got the teardown home, at the cost of a second full
+  `terraform destroy`. `destroy.sh` step 4 therefore runs
+  `kubectl delete namespace logging --wait=false` between `helm uninstall logging` and
+  `helm uninstall elastic-operator`. `--wait=false` is deliberate: the namespace only has to be
+  *asked* to go while the operator is alive, and Terraform's own delete is then a no-op, since a 404
+  on destroy is success.
 **`deploy.sh`'s preflight REPAIRS the EKS API allow-list rather than warning about it**
 (`./scripts/refresh-api-cidr.sh --ensure`, before step 1). `cluster_endpoint_public_access_cidrs`
 names a home ISP address, so it goes stale on its own schedule, and when it does AWS **drops** this
@@ -731,6 +744,20 @@ clear. Pulling it out early just relocates the same hang one step earlier — wh
 happened by hand on 2026-08-04: `helm_release.external_secrets` was dropped from state pre-emptively,
 and `kubernetes_namespace.ci` then sat `Terminating` forever with no controller left to clear its
 children's finalizers.
+
+**That ordering is now ENFORCED, and until 2026-09-07 it was only described.** Leaving ESO out of the
+pre-uninstall list does not by itself tell Terraform anything, so Terraform scheduled
+`helm_release.external_secrets` and the namespaces in the *same parallel batch* — on the 2026-09-07
+teardown `helm_release.external_secrets: Destroying...` printed one line **before** the namespaces
+started, and the run died on `context deadline exceeded`. The mechanism is
+`depends_on = [module.compute, helm_release.external_secrets]` on `kubernetes_namespace.devops_app`
+and `kubernetes_namespace.ci`, which is a **destroy**-order constraint: Terraform destroys dependents
+before their dependencies, so naming ESO there is what makes the namespaces go first and the
+controller outlive them. `kubernetes_namespace.logging` deliberately does **not** carry it —
+`charts/logging` ships no ExternalSecret, and its hang is a different problem with a different fix
+(see the ECK note below). Verify the edges with
+`terraform graph | grep 'kubernetes_namespace.* -> "helm_release.external_secrets"'`; a documented
+invariant with no mechanism is not an invariant.
 
 **If `terraform destroy` still hangs this way — on a `helm_release` it manages that isn't one of the
 six pre-uninstalled above, or on a `kubernetes_*` resource the way `kubernetes_namespace.ci` did —

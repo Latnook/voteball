@@ -2,7 +2,7 @@ image:
   # All values marked FILLED-BY-SYNC are written by scripts/sync-values-from-tf.sh from Terraform
   # outputs on every deploy. Do not hand-edit them; they change whenever the stack is rebuilt.
   registry: "590183895228.dkr.ecr.il-central-1.amazonaws.com"
-  tag: "a3ab947"
+  tag: "47d7009"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -19,10 +19,10 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:be1e4e9293c2f079051579ea78cd86299b48a5ade3b8ce83b1f01978bfad5b2f"
-    worker: "sha256:62db79bd31e82b7935e70664b911c8e38c6db95d0bf0ec3cd19e00b6c87829a0"
-    nginx: "sha256:b93e4cc5e2e7b3b2a8a064626dc627eb178badd930c48c6b06138367164005d6"
-    backup: "sha256:7a4d2fe9491bb2378f0fcef52107cb58e4249e7135b59098294bbb17ad1ffcd3"
+    backend: "sha256:5be57cc371322a9269ffb6dd904dc1d14044c8b7ba5a7414d7a099163fef882b"
+    worker: "sha256:c70688b803c7c8a6f736c9de67dd7c5a09356f3ca3d354a993a72a1686a0a5ba"
+    nginx: "sha256:a25b8a7e3e6330f93e925ddce6ab973834595dbe2659e4a0b0f5609ed06d0e32"
+    backup: "sha256:5a479f2879bd21eb0994db0db2e4e5069e0ae466b062ef2870deeb0936eea7cb"
 
 # The two PUBLIC subnet CIDRs from terraform/main.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
@@ -64,8 +64,8 @@ externalSecret:
 
 ingress:
   host: "voteball.latnook.com"
-  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/56a7ab27-e3e9-4439-ba51-73f635982975"
-  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/e46cc27e-1084-4419-a200-e29846afc4ac"
+  certificateArn: "arn:aws:acm:il-central-1:590183895228:certificate/484a0e23-4795-4e12-9312-64463389e7b2"
+  wafAclArn: "arn:aws:wafv2:il-central-1:590183895228:regional/webacl/voteball-alb/9fe791d0-bdb9-44b3-ad2d-eff7062509d3"
 
 # Alert rules (charts/voteball/templates/prometheusrule.yaml). Requires kube-prometheus-stack's
 # PrometheusRule CRD, which terraform/addon-monitoring.tf installs. Set false to render the chart

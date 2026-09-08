@@ -21,7 +21,19 @@ resource "kubernetes_namespace" "ci" {
   # -- after ~13 minutes of applying, with every helm_release add-on already installed, so it reads
   # like a permissions bug rather than a race. Waiting on the whole module covers the access entry
   # and its policy association.
-  depends_on = [module.compute]
+  # AND on helm_release.external_secrets, which is a DESTROY-order constraint, not a create-order
+  # one. Terraform destroys dependents before their dependencies, so naming ESO here is what makes
+  # this namespace go FIRST and the ESO controller outlive it.
+  #
+  # That requirement was documented long before it was enforced. The ExternalSecret and SecretStore
+  # inside this namespace carry finalizers only the ESO controller can clear, which is exactly why
+  # ESO is deliberately excluded from destroy.sh's pre-uninstall list. But nothing expressed the
+  # ordering to Terraform, so it scheduled both in the SAME parallel batch: on the 2026-09-07
+  # teardown `helm_release.external_secrets: Destroying...` was printed one line BEFORE the
+  # namespaces started, and the run failed with "context deadline exceeded".
+  #
+  # A documented invariant with no mechanism is not an invariant. This is the mechanism.
+  depends_on = [module.compute, helm_release.external_secrets]
 
   metadata {
     name = "ci"
