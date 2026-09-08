@@ -149,16 +149,44 @@ if kubectl cluster-info >/dev/null 2>&1; then
   # namespace from state. That recovery is a safety net, not the design -- it costs a second full
   # terraform destroy.
   #
-  # --wait=false deliberately: the namespace only has to be ASKED to go while the operator lives.
-  # Kubernetes then finalizes it in the background, and Terraform's own delete is a no-op (a 404 on
-  # destroy is success). Blocking here would just move the wait, not remove it.
-  kubectl delete namespace logging --ignore-not-found --wait=false || true
+  # WAIT for it. The first version of this line used --wait=false, on the reasoning that the
+  # namespace only had to be ASKED to go while the operator was alive. That reasoning is wrong and
+  # the 2026-09-08 10:19 teardown disproved it: `namespace "logging" deleted` was printed, then
+  # `release "elastic-operator" uninstalled` on the very next line, and Terraform still found the
+  # namespace Terminating minutes later. The operator has to survive the whole FINALIZATION, not
+  # just the request -- a delete is accepted instantly and finalizers are cleared afterwards.
+  kubectl delete namespace logging --ignore-not-found --timeout=180s || true
 
   helm uninstall elastic-operator -n elastic-system --ignore-not-found || true
   helm uninstall voteball              -n devops-app    --ignore-not-found || true
   helm uninstall jenkins               -n ci             --ignore-not-found || true
   helm uninstall jenkins-support       -n ci             --ignore-not-found || true
   helm uninstall kube-prometheus-stack -n observability  --ignore-not-found || true
+
+  # Clear every ExternalSecret/SecretStore in the CLUSTER, while the ESO controller is still alive
+  # to release its finalizers -- and note this runs AFTER the uninstalls above, which is what makes
+  # it a sweep rather than a duplicate of them.
+  #
+  # WHY A CLUSTER-WIDE SWEEP AND NOT JUST THE TWO APP NAMESPACES. devops-app and ci are handled by
+  # `depends_on = [..., helm_release.external_secrets]` on their kubernetes_namespace resources, so
+  # Terraform destroys them before ESO. `observability` is NOT: it is created by the
+  # kube-prometheus-stack release, no Terraform resource owns it, and charts/observability puts an
+  # ExternalSecret in it. So an ESO object outlives ESO's own uninstall.
+  #
+  # That matters because the external-secrets chart ships its CRDs as ordinary TEMPLATES, so
+  # `helm uninstall` tries to delete the CRD -- which blocks on every surviving custom resource's
+  # finalizer, with no controller left to clear them. Measured on the 2026-09-08 10:19 teardown:
+  # helm_release.external_secrets ran for exactly 05m00s (Helm's default timeout) and failed with
+  # "uninstallation completed with 1 error(s): context deadline exceeded", even though the ordering
+  # fix had already worked and both app namespaces had completed cleanly 12-13s in.
+  #
+  # A sweep is correct regardless of WHICH namespace holds a straggler, which is the point: the
+  # per-namespace ordering fix has to be repeated for every future namespace, this does not.
+  # Namespaced kinds take --all-namespaces; ClusterSecretStore is cluster-scoped and must not.
+  for kind in externalsecrets secretstores; do
+    kubectl delete "$kind" --all --all-namespaces --ignore-not-found --timeout=60s 2>/dev/null || true
+  done
+  kubectl delete clustersecretstores --all --ignore-not-found --timeout=60s 2>/dev/null || true
 else
   echo "Cluster unreachable — skipping (these releases die with the cluster)."
 fi
