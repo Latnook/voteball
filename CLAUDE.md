@@ -432,6 +432,23 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   **`templates/fluentd.yaml` parses it** into `http_status`/`http_path`/`log_level`, and
   `reserve_data true` plus the trailing `format none` catch-all are what stop `filter_parser` from
   silently DROPPING every record matching no pattern (the worker's entire output matches none).
+  **A fresh install DEADLOCKS without `action.auto_create_index` on the Elasticsearch CR, and the
+  deadlock is invisible because everything else stays green.** The bootstrap Job is a `post-install`
+  hook, which ArgoCD maps to **PostSync** — so it runs *after* the Fluentd Deployment and Fluentd
+  wins the race. Fluentd's first write auto-creates a plain INDEX named `voteball-logs` carrying the
+  DEFAULT one replica (the `number_of_replicas: 0` template matches `voteball-logs-*`, **not** the
+  bare name), one unassigned replica turns a single-node cluster YELLOW, and ArgoCD then blocks on
+  `waiting for healthy state of .../Elasticsearch/voteball-logs` — so PostSync never fires, so the
+  Job **whose own code deletes that squatting index** never runs. The Job has handled the squatter
+  since 2026-08-28; nobody noticed its fix was locked behind the condition it fixes. Measured on the
+  2026-09-08 rebuild: 136 documents, 1 unassigned shard, `logging` stuck Synced/**Progressing**
+  indefinitely while `voteball` and `observability` were Healthy, the site served 200 throughout, and
+  `deploy.sh` exited 0 — it treats EFK verification as a WARNING on purpose, since CloudWatch keeps
+  the authoritative copy. `action.auto_create_index: "-voteball-logs,+*"` refuses the squatter, so
+  Fluentd's early writes are retried instead of poisoning the health signal. Verified live that the
+  guard does **not** block writes through the alias once it exists (HTTP 201, routed to
+  `voteball-logs-000001`) — it governs auto-creation only, and `+*` must stay last.
+
   **That config reaches the running pod ONLY because of the `checksum/config` pod annotation.** A
   ConfigMap change restarts nothing, and this one is mounted with `subPath`, which kubelet never
   refreshes -- so without the annotation a new `fluent.conf` lands in the cluster, ArgoCD reports

@@ -572,3 +572,52 @@ Recorded so a later pass does not "improve" these:
   silently. That does not close the gap for `test-logging-chart.sh`'s own assertions, which still
   need a real render, but it keeps the two pieces of this chart with completely silent failure modes
   out of the hole.
+
+## Decision 13 — `action.auto_create_index` (added 2026-09-08, after a rebuild deadlocked)
+
+The first destroy/deploy cycle after the Kibana-content pass did not produce a working EFK stack, and
+the way it failed is worth recording because every individual signal looked fine.
+
+`deploy.sh` step 11e printed `FAIL: the write alias 'voteball-logs' does not exist after 60s` and
+then exited **0** — correctly, since it downgrades an EFK failure to a warning on the grounds that
+Fluent Bit fans out to CloudWatch, which holds the authoritative copy. The site served 200, the
+`voteball` and `observability` Applications were Healthy, every pod in `logging` was Running, and
+Elasticsearch reported `PHASE: Ready`.
+
+The chain:
+
+1. `logging-ilm-bootstrap` is a `helm.sh/hook: post-install`, which ArgoCD maps to **PostSync** — it
+   runs *after* the Fluentd Deployment.
+2. Fluentd's first write auto-creates a concrete index `voteball-logs` with the **default one
+   replica**. The `number_of_replicas: 0` index template applies to `voteball-logs-*` and does not
+   match the bare name.
+3. One unassigned replica on a single-node cluster ⇒ cluster health **yellow**.
+4. ArgoCD's health check for `Elasticsearch` blocks the operation:
+   `waiting for healthy state of elasticsearch.k8s.elastic.co/Elasticsearch/voteball-logs`.
+5. PostSync therefore never fires — so the Job containing the squatter-**deleting** code from
+   decision 11 never runs, and step 2 becomes permanent.
+
+**The fix for the first-order problem was locked behind the problem it fixes.** Decision 11 (added
+2026-08-28) correctly anticipated the squatting index and deletes it; what it could not anticipate
+was that the squatter also disables the trigger for its own removal.
+
+`action.auto_create_index: "-voteball-logs,+*"` on the Elasticsearch node config refuses the
+auto-creation outright. Fluentd's early writes are then *rejected and retried* rather than silently
+creating a poisoned index; Elasticsearch stays green; the app reaches Healthy; PostSync runs; the
+alias is created; the retries land.
+
+Two properties verified against the live cluster rather than reasoned about:
+
+- **The guard does not block writes through the alias once it exists.** With the setting active as a
+  transient cluster setting, `POST /voteball-logs/_doc` returned **HTTP 201** and the response named
+  `_index: voteball-logs-000001` — auto-creation is governed, routing through an existing alias is
+  not. `+*` must stay last so Kibana's system indices and the ILM rollover targets stay permitted.
+- **Breaking the deadlock needs no deletion.** Setting `number_of_replicas: 0` on the squatter was
+  enough to turn the cluster green, after which ArgoCD went Healthy, both PostSync hooks ran to
+  completion in seconds, and `verify-efk.sh` passed end to end. That is the recovery to use on a
+  cluster already in this state; the chart change is what stops it recurring.
+
+**Still unverified:** the fresh-install path itself. This was diagnosed and fixed on a running
+cluster, so the guard's behaviour during the first thirty seconds of a rebuild — when Fluentd is
+retrying against an index that does not exist yet — has not been observed. The next destroy/deploy
+cycle is the test, and `deploy.sh` step 11e is what reports it.
