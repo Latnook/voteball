@@ -15,7 +15,7 @@
 # you got. The review found the drift already present in this repo's own evidence: the Helm release
 # reports app version 2.568.1 while the controller's plugin inventory reported 2.568.2.
 #
-# The version tag and the digest resolve to the same image today (verified 2026-08-23), and both are
+# The version tag and the digest resolve to the same image today (verified 2026-09-09), and both are
 # written on purpose: the digest is what actually pins, and the version is what makes the pin
 # readable to a human deciding whether it is stale. A bare digest tells you nothing about how far
 # behind you are.
@@ -23,7 +23,7 @@
 # BUMPING IT: change both halves together, then regenerate the plugin lock in the SAME commit with
 # ./scripts/jenkins/lock-plugins.sh -- plugin resolution depends on the core version, so a new base
 # with an old lock is a combination that was never tested.
-FROM jenkins/jenkins:2.568.2-jdk21@sha256:8547df3b0db2803d158ecc9499207a056bb30c23fddc18bb5b4a4dc14e77dd09
+FROM jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
 
 # Installs the RESOLVED LOCK, not the human list. plugins.txt names top-level plugins and no versions
 # -- it is where the justifications live and is meant to stay readable. plugins.lock.txt is generated

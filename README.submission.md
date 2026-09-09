@@ -238,7 +238,9 @@ optional, only needed for manual verification or the runbook steps below — the
 server v3.4.5 (the CD pipeline carries its own copy inside the agent pod, so this is only for a human
 running commands from a laptop) and `jq`. Pinned component versions, so the same run of `terraform
 apply` is reproducible: EKS **1.36** (standard support until 2027-08-02, `terraform/variables.tf`),
-Jenkins Helm chart **5.9.45** (app v2.568.1), ArgoCD Helm chart **10.2.1** (app v3.4.5),
+Jenkins Helm chart **5.9.45** (its declared app v2.568.1 is *not* what runs — `controller.image`
+is overridden with this repo's own controller image, Jenkins LTS **2.568.3**, pinned by version
+and digest in `ci/jenkins/Dockerfile`), ArgoCD Helm chart **10.2.1** (app v3.4.5),
 `moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.58.1`, `alpine/k8s:1.31.3` for the CD agent's
 `deploy` container. No component pulls `latest`, checked mechanically by `application-ci`'s Validation
 stage.

@@ -22,21 +22,21 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-08-23 against jenkins/jenkins:2.568.2-jdk21@sha256:8547df3b0db2803d158ecc9499207a056bb30c23fddc18bb5b4a4dc14e77dd09
+# Generated 2026-09-09 against jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
 asm-api:9.10.1-216.va_9256d3b_844b_
 authentication-tokens:1.144.v5ff4a_5ec5c33
 bootstrap5-api:5.3.8-1048.va_c299057e35c
-bouncycastle-api:2.30.1.84-291.v9f17b_21896e2
+bouncycastle-api:2.30.1.85.2-304.v4b_5b_62e59a_a_7
 branch-api:2.1280.v0d4e5b_b_460ef
 caffeine-api:3.2.4-208.v7e2da_a_7db_82b_
-checks-api:415.vf022234a_931d
+checks-api:422.vc7e8b_51488c6
 cloudbees-folder:6.1106.v3a_d9a_6d2465e
 commons-lang3-api:3.20.0-109.ve43756e2d2b_4
 commons-text-api:1.15.0-218.va_61573470393
-configuration-as-code:2117.vc05a_0b_e6b_f4e
+configuration-as-code:2121.v86fe99d4b_b_a_b_
 credentials:1511.v2e3cb_0008ef0
 credentials-binding:728.v902a_273b_8947
 dark-theme:652.vea_da_dfea_e769
@@ -64,7 +64,7 @@ joda-time-api:2.14.3-200.v65623733c99f
 jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
-junit:1424.vc64a_edde7777
+junit:1425.v9c7318dca_96d
 kubernetes:4547.v52f3080db_8cd
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
@@ -73,9 +73,9 @@ metrics:4.2.37-494.v06f9a_939d33a_
 mina-sshd-api-common:2.19.0-192.v2b_a_7b_2c1dc71
 mina-sshd-api-core:2.19.0-192.v2b_a_7b_2c1dc71
 okhttp-api:5.3.2-200.vedb_720a_cf1f8
-pipeline-build-step:599.v4b_67ea_11b_152
+pipeline-build-step:601.v6d4c6d1a_9dc7
 pipeline-graph-analysis:254.v0f63a_a_447dca_
-pipeline-groovy-lib:798.v5cc688825312
+pipeline-groovy-lib:805.va_fc79344957d
 pipeline-input-step:560.v56198a_642157
 pipeline-milestone-step:152.v6e22b_8cfc66c
 pipeline-model-api:2.2293.v6e7193cec599
@@ -89,10 +89,10 @@ plugin-util-api:7.1341.v039f146993d9
 prism-api:1.30.0-741.v034eb_0b_0a_a_fa_
 prometheus:860.v532442b_44e9a_
 scm-api:728.vc30dcf7a_0df5
-script-security:1412.v7737b_3405f86
+script-security:1415.v9a_f9b_3a_c253d
 snakeyaml-api:2.5-149.v72471e9c6371
 snakeyaml-engine-api:3.1.1-12.v4320c7d6f89c
-ssh-agent:424.vfc0ff25503b_4
+ssh-agent:432.v122f1207432b_
 ssh-credentials:372.va_250881b_08cd
 structs:362.va_b_695ef4fdf9
 theme-manager:346.v06cca_64c6a_37
@@ -103,10 +103,10 @@ woodstox-core-api:7.2.2-10.vcb_629759b_2c2
 workflow-aggregator:608.v67378e9d3db_1
 workflow-api:1413.v2ff1a_5e720fa_
 workflow-basic-steps:1098.v808b_fd7f8cf4
-workflow-cps:4370.v49a_6937566b_6
+workflow-cps:4378.v7a_08f1b_b_f8f4
 workflow-durable-task-step:1479.v56e587f413a_7
-workflow-job:1590.v49101d088542
+workflow-job:1600.v6f36ed83529d
 workflow-multibranch:841.vec5b_9e1806ec
-workflow-scm-step:466.va_d69e602552b_
+workflow-scm-step:487.v41313a_96b_65d
 workflow-step-api:724.v538c2362b_dfb_
 workflow-support:1015.v785e5a_b_b_8b_22
