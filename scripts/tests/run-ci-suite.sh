@@ -122,6 +122,12 @@ GIT_GROUP=(
   # in a build which FAILED is still visible from the last SUCCESSFUL build's base, and invisible
   # from the previous build's. Stubbing git would assert nothing at all here.
   test-changed-paths.sh
+  # Sources deploy.sh's values_commit_message block and feeds it file CONTENT, so it needs no git
+  # repo, no cluster and no AWS -- bash + awk, sed, grep only. Confirmed passing on 2026-09-09 with
+  # python3, git, helm, kubectl, aws and terraform ALL shimmed to exit 127, per the rule above.
+  # Here rather than PYTHON_GROUP for the same reason as test-rollback-target.sh -- nothing about it
+  # prefers git; GIT_GROUP is simply the smaller container.
+  test-values-commit-msg.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.

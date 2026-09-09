@@ -104,7 +104,10 @@ ok "deploy.sh calls the wait before pushing"
 
 # The call must sit BETWEEN the commit and the push. Before the commit there is nothing to push
 # yet; after the push the wait is pointless, which is precisely the bug it exists to prevent.
-commit_ln="$(grep -n 'git commit -m "Deploy: sync values.yaml' scripts/deploy.sh | cut -d: -f1)"
+# Anchored on the `git commit -m` call itself, not on its message text: deploy.sh has exactly one,
+# and the message became computed (values_commit_message) on 2026-09-09. A literal-message anchor
+# would have silently stopped matching and left commit_ln empty.
+commit_ln="$(grep -n '^  git commit -m ' scripts/deploy.sh | cut -d: -f1)"
 wait_ln="$(grep -n 'wait-for-webhook\.sh' scripts/deploy.sh | head -1 | cut -d: -f1)"
 push_ln="$(grep -n 'elif ! git push; then' scripts/deploy.sh | cut -d: -f1)"
 [ -n "$commit_ln" ] && [ -n "$wait_ln" ] && [ -n "$push_ln" ] || fail "could not locate commit/wait/push in deploy.sh"
