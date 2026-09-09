@@ -986,6 +986,80 @@ press coverage two days earlier, and invites the next reader to reopen a settled
 misfiling is the same failure in the mechanical register — an anchor chosen without looking at what
 sits above it. **Check what the row already says, and check where the text lands.**
 
+**2026-09-09 — revision 69. The first candidate-by-candidate audit of this row, at its realistic
+range of 30 — the largest range on the page and, until now, the thinnest candidate coverage on it.
+No axis moved; no tag added; `seed.sql` unchanged.** Sources: the CEC filing plus
+[ice](https://www.ice.co.il/local-news/news/article/1128972) and
+[כיפה](https://www.kipa.co.il/חדשות/1231179-0/), which carry per-candidate descriptions.
+
+**The composition in one sentence: this is a slate of the state's own former administrators.** Of the
+top 13, **nine** have run a national institution — a Chief of Staff (#1), a Shin Bet director (#2),
+an Electricity Authority chair and twice-minister (#3), a Religious Services Minister (#5), a Culture
+Minister (#6), a **Budget Division head** (#7), a **Labour Ministry DG** (#8), an **IDF Manpower
+Directorate head and Intelligence Minister** (#12) and a **former COGAT coordinator** (#13). The
+party says so itself — *"נבחרת שנועדה לשמש בסיס לממשלה הבאה"*. `statist` and `public-service-reform`,
+both already held, are what that composition corroborates; it states no new position.
+
+- **`religiosity −2` HELD, and the most on-point candidate on the list is the reason it is not −3.**
+  **מתן כהנא #5** is the former Religious Services Minister who authored the kashrut reform (opening
+  certification to competing bodies) and the conversion reform (devolving giyur to municipal
+  rabbis) — that is `kashrut-liberalization` and `religious-pluralism`, both already on this row,
+  and it is **reform of the Rabbinate, not disestablishment of it**, which is exactly the funding
+  criterion revision 21 used to hold the band. **A row whose religion-and-state portfolio candidate
+  is a religious Zionist who personally opposes civil marriage is not a −3**, whatever its platform
+  says about *"מיסוד זוגיות אזרחית"*. **The party–candidate tension is recorded, not resolved**: the
+  platform demands civil marriage and #5 does not, and this page scores the platform.
+- **The conscription cluster gains its two operational experts, and moves nothing.**
+  **ענבר הרוש גיטי #11** directs the **מתווה השירות at the Defense Ministry** and previously headed
+  the administration for **haredi integration in the IDF**; **אלעזר שטרן #12** ran the IDF's Manpower
+  Directorate. On a row whose signature fight is the draft law, two of the top twelve are the state's
+  own conscription administrators. `universal-conscription`, `sanctions-on-non-servers`,
+  `service-conditioned-citizenship`, `workforce-integration` and `state-haredi-education` are all
+  already held and all better evidenced; **the 3%-deferral distinction revision 21 drew stands
+  untouched**, because none of this is a document.
+- **`anti-annexation` + `no-palestinian-state` and the strongest trigger this row has ever had.**
+  **כמיל אבו רוקן #13** is a Maj-Gen (res.) and **former COGAT** — the officer who ran the
+  government's civil administration of the territories. Revision 21 found that **eleven documents
+  contain no sentence on statehood, the territories or sovereignty**, leaving the security inference
+  resting on Eisenkot's own statements. **A career administrator is not a policy statement and the
+  axis does not move** — the same refusal applied to the Druze HQ and the Bukharan slot. **But he is
+  where a position would come from if one ever appears**, and that is worth writing down: *trigger —
+  any ישר document on the territories, or any אבו רוקן statement made in the party's name.*
+  **`sector` stays `secular`**: he is Druze, and revision 45's precedent is that a minority slot
+  records what a party does, not what it is.
+- **`economic +1` corroborated by the fusion in the personnel.** **שאול מרידור #7** ran the Finance
+  Ministry's Budget Division; **תאיר איפרגן #8** was DG of the Labour Ministry and head of its
+  labour arm; **ענבר יחזקאלי #16** was chief of staff to the Labour and Welfare Minister. A budget
+  chief and two labour administrators in the top sixteen is the +1 band's two impulses staffed
+  simultaneously. `tax-cutting` and `anti-monopoly` are held and unaffected.
+- **`gender-equality` REFUSED for the second time on this row, and now against a much stronger
+  fact.** Revision 21 declined it because the evidence was violence policy inside a crime paper.
+  Eisenkot presented the list as reflecting *"התחייבות המפלגה לשוויון בין גברים לנשים"* and **14 of
+  the top 30 are women** — nearly half, at the range. **It is still a list, not a programme**, which
+  is the כחול לבן line drawn hours earlier and the Bukharan-slot line before that. **This refusal is
+  the one that shows the rule is not selective**: it costs a row a tag on the best composition
+  evidence the page has seen.
+- **A fourth representation gap, logged not minted.** **אלקס ריף #15** founded **לובי המיליון**, which
+  campaigns for FSU immigrants. The vocabulary has `mizrahi-representation`,
+  `negev-bedouin-representation` and `arab-representation` and **no Russian-speaking equivalent** —
+  but this is a candidate's own organisation, not a party position, so it earns nothing here. Noted
+  because ישראל ביתנו is the row where such a tag would have to be decided, and it does not carry one
+  either.
+- **Three October-7 bereaved in the top 22** — **שירה שפירא #10**, mother of ענר שפירא; **אליסף פרץ
+  #20**, son of מרים פרץ and brother of אוריאל and אלירז; **ניר חג'בי #22**, Col. (res.), IDF
+  disabled, father of יונתן. The same front-loading revision 52 recorded on ישראל ביתנו, on a
+  different row and a different bloc. **`state-commission-of-inquiry` is not reached by it** —
+  bereavement is not a position on an inquiry, and stretching the two together is how a tag with six
+  refusals would acquire a seventh bad holder.
+- **#24–#30 carry no classificatory content**: שי פישר, ליאן פולק דוד, רועי כהן, זיו רוזן, ג'וסלין
+  בש, אלון פוטרמן, טלי מולנר — lawyers, strategists, business and local-government figures, described
+  in press only as a group. Recorded as read, so the next pass does not re-open them.
+
+**Nothing in thirty candidates moved a number, and that is the finding to carry forward.** This is the
+seventh row audited candidate by candidate and the seventh where the answer was corroboration. **The
+page's own rule — a candidate is not a position — has now been tested against a list built almost
+entirely of people who ran the institutions the axes describe, and it held.**
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -2211,6 +2285,35 @@ owner puts the realistic range at **the top 6**: גנץ, פנינה תמנו־ש
 **2026-09-08 — revision 65. Filed list confirmed at 41 candidates, single registered party
 (*כחול לבן חוסן לישראל*).** No joint attribution, so the measure above does not apply. Revision 63's
 reading stands unchanged.
+
+
+**2026-09-09 — revision 69. First candidate-by-candidate audit of this row, at its realistic range of
+6. No axis moved; no tag added; `seed.sql` unchanged.**
+
+**1 גנץ · 2 פנינה תמנו־שטה · 3 ד"ר גאולה עליזה בלוך · 4 רועי קונקול · 5 עו"ד רתם אבידר צאליק ·
+6 אלון שוסטר.** Four of the six are new to the row; only גנץ and תמנו־שטה sat in the outgoing
+Knesset.
+
+- **בלוך #3 is the first candidate-level consequence of a withdrawal this page has tracked.** She was
+  to have run with **האחדות**, whose withdrawal on 2026-09-04 this page recorded as *"the fourth
+  shape … the only one with no successor"* — and its candidate landed here. **That entry's reasoning
+  is unaffected**: a withdrawal still offers a voter no successor line, and a *candidate* moving
+  parties is not a *vote* moving parties. But it is worth recording that the two rows are connected
+  by a person, since the next reader will meet her on this list and not on that one. Former mayor of
+  Beit Shemesh.
+- **קונקול #4 has now been in three parties in one cycle** — a reservist and formerly יאיר לפיד's
+  spokesman, he went to הנדל and then to גנץ. Recorded as movement, not as position: this page has
+  refused to read cross-party intake as classificatory since revision 52's *"strategic, not
+  classificatory"*, and a row cannot be scored from where its recruits used to be.
+- **אבידר צאליק #5 is a reservists'-rights advocate** and **שוסטר #6** an MK, former head of the
+  Sha'ar HaNegev council and former deputy defence minister. `reservist-focused` is already held and
+  `security-hawk`/`statist` are argued from the platform; neither is touched.
+- **The 50%-women finding from revision 63 is unchanged and so is its refusal.** Women hold 2, 3 and
+  5 of the realistic six. `gender-equality` stays off the row, on the same line applied to ישר hours
+  later at fourteen of thirty.
+- **The advertised Druze representative מופיד מרעי remains #7, outside the range** — recorded in
+  revision 63 and repeated here because it is the row's clearest instance of a composition claim made
+  about the list and read as being about the leadership.
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
@@ -4647,6 +4750,27 @@ under ש"ס below. Corroborated by [דבר](https://www.davar1.co.il/696351/) fo
   בורנשטיין הילה — דבר stops at 8), and the list may run past 12; the repo owner's excerpt is not
   proof of length. Stated rather than glossed, per revision 52's "21 is not its length".
 
+
+**2026-09-09 — revision 69. Candidate audit completed at the realistic range of 6. No axis moved; no
+tag added; `seed.sql` unchanged.** #1–#3 were covered by revision 61 (הנדל, זליכה, and וילף's
+personal accession); this completes #4–#6.
+
+- **#4 חביב ווליבוביץ is the Economic Party's CEO** — a CPA with an MBA — which makes the 3–3 zipper
+  inside the range read differently than a name list suggests: the junior partner's realistic slots
+  are its **leader and its chief executive**, i.e. the organisation itself rather than three
+  individuals it supplied. That is a further argument for `two-faction-list` on this row, which it
+  already holds.
+- **#5 יואב אדומי is a deputy battalion commander in the reserves**, one of the five who contested
+  המילואימניקים's 2026-06-08 primary named in the ⚠ block above — so the party's own primary result
+  survives into a realistic slot, which is the cheapest available check that the row's `reservist-`
+  `focused` and `reservist-movement` tags describe a live organisation rather than a founding story.
+- **#6 אופיר שי לנגמן is unsourced beyond the filing.** Hebrew press names him in list order and
+  nowhere else. Stated rather than glossed, on revision 52's precedent for genuinely unsourced names
+   — and note this one sits **inside** the range, unlike ישראל ביתנו's #20 and #21, so it is a real
+  gap rather than one the ranges retire.
+- **Nothing moves.** `economic +1`, `security +2`, `religiosity −2` are argued from two platforms;
+  a CEO, a battalion officer and an unsourced name are not platform text.
+
 ### נעם — Noam · `bibi` · NULL / 3 / 3 · religious_zionist
 
 Sources: the party's own site (`noam.org.il`) — its self-description, its sovereignty statement of
@@ -5361,6 +5485,29 @@ supplied verbatim by the repo owner. Slots 1–6 corroborated by
   `negev-bedouin-representation` question is therefore live rather than deferrable.
 - **`jewish-arab-partnership` is unchanged and better-founded**: #2 survived from announcement to
   filing, which is not something a symbolic slot always does.
+
+
+**2026-09-09 — revision 69. Candidate audit completed at the realistic range of 10, and the bottom
+half of that range is a genuine documentary gap. No axis moved; no tag added; `seed.sql`
+unchanged.**
+
+- **#1–#6 are already covered**: עבאס, סגלוביץ (revision 44), and the four primary winners
+  טאהא / אל-הואשלה / ח'טיב-יאסין / חוג'יראת, whose displacement from 2–5 to 3–6 revision 48 predicted
+  and revision 61 confirmed against the filing. ח'טיב-יאסין #5's Shura Council office and its bearing
+  on `islamist` is set out in revision 61 and is unchanged.
+- **#7–#10 — איברהים אל-טורי, עבד אל-כרים מסרי, עבד אל-כרים עזאם, אבראהים אבו לבן — return NOTHING
+  in Hebrew press beyond the filing itself.** Four names inside a realistic range, in list order and
+  nowhere else. **Revision 64 corrected revision 63 for inventing a range from press coverage
+  stopping at #6; the corrected range makes this a real gap rather than an artefact**, and the gap is
+  a property of Hebrew-language coverage of this row rather than of the candidates. **Arabic-language
+  sources are the obvious next instrument and were not used here** — flagged explicitly, because
+  revision 48 records the research harness returning *refuted 0–3* on nearly every Arabic-domain
+  source while confirming the same substance from Hebrew media, which means this gap needs
+  browser-shaped fetches by hand and not a search pass.
+- **אל-טורי #7 keeps `negev-bedouin-representation` live rather than deferrable**, per revision 64 —
+  and the tag is a deliberate singleton on this row, so a second Negev name at #26 and a third at
+  #67 (revision 63) do not add to it. **No tag follows from a name**; what would move it is a
+  document.
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
@@ -6666,3 +6813,4 @@ pass happened, for anyone reading git history.
 | 2026-09-09 | revision 66 — **corrects revision 65, which had two defects: four of its seven blocks were FILED UNDER THE WRONG ROW, and two claimed novelty that was not there. No axis moved, no tag added, `seed.sql` unchanged.** **The misfiling.** This page's convention is to append a revision block immediately before the *next* row's header; revision 65 anchored four blocks on the row's *own* header, so each rendered at the end of the preceding section — the ישר block under **הליכוד**, ביחד's under **ישר**, הדמוקרטים's under **ביחד**, כחול לבן's under **הדמוקרטים**, and עמך ישראל's under **האחדות**, a withdrawn party. Five of seven landed one row early and the error is invisible to any check that reads a block's text rather than its position. All five moved; the two that were correct (ישראל ביתנו, עוצמה יהודית) left alone. **The false novelty, which is the worse half.** The **ישר** block is **RETRACTED entirely**: it announced *"a JOINT filing the page did not know about"*, flagged whether `יסודות ישראל` is בית ציוני re-registered as *"NOT established and must not be assumed"*, and refused `two-faction-list` as if for the first time — **all three were already in that entry**, written 2026-09-06/07, complete with the 116/4 split and טרופר #6 / שפירא #10 / פרץ #20 / יחיאב #35. Nothing about that row was new. The **עוצמה יהודית** block called גוטליב #2, עמיחי אליהו #4, סון הר-מלך #5 and ניימן #10 *"new inside the range and unaudited"* and offered גוטליב's arrival from הליכוד as a trigger; the announced order was already recorded, Ben Gvir's own quote included, under the heading *"NOTHING MOVES — for the sixth consecutive reading of this row"*. **What survives there is one line the press could not have produced**: וסרלאוף and קרויטור are filed under `ארץ ישראל שלנו`, so a sitting minister at #3 sits on the junior partner's registration. **Cause, and it is this page's own rule inverted.** Revision 65 enumerated eleven filings and wrote them up **without reading the target sections first** — the corpus was enumerated, the *destination* was not. **A false claim of novelty is worse than duplication, because it misattributes**: it credits a filing with a finding that came from press coverage two days earlier and invites the next reader to reopen a settled question. The misfiling is the same failure in the mechanical register — an anchor chosen without looking at what sits above it. **Check what the row already says, and check where the text lands.** Also corrected: the **עמך ישראל** block claimed that row lacked a candidate audit; it has had a full one since revision 41, naming the whole slate with `voluntary-palestinian-emigration-incentives` and `population-transfer` both refused on the opt-in test and the judicial-reform reading of בן ארי refuted 0–3. That block is reduced to what it actually adds — the registered party is **`עמי חי לעד`**, not the ballot brand, and **דוידי בן ציון sits outside the realistic 6**, so the `pro-settlement` reading his Alon Moreh residency would invite fails on a second, cheaper ground than the candidate-is-not-a-position rule. **`יסודות ישראל` is now positively confirmed as טרופר's own registered party** ([סרוגים](https://www.srugim.co.il/newsflash/133837), [זמן ישראל](https://www.zman.co.il/live/701873/)) — registered under that name before the Hendel partnership, which ran as *בית ציוני - המילואימניקים* until it dissolved 2026-09-06. Revision 65 was right to refuse to assume it and wrong to present the question as open on this page |
 | 2026-09-09 | revision 67 — **הרשימה המשותפת's filing is up and it is the page's first THREE-party list. All three axes unchanged, no tag added, `seed.sql` unchanged — and it broke the measure written nineteen hours earlier.** Filed *"מטעם מפלגת המפלגה הקומוניסטית הישראלית ומטעם מפלגת אלתג'מוע אלווטני אלדמוקרטי ומטעם מפלגת התנועה הערבית להתחדשות"* — Maki, בל"ד and תע"ל — **67 / 34 / 19 across 120 and 5 / 3 / 2 inside the realistic 10**, with #1 ג'בארין, #2 טיבי and #3 אבו שחאדה exactly as this entry recorded them from the 2026-08-20 agreement report. **The union rule is vindicated in the one way that was checkable**: all three components really are parties to the filing, so carrying axes from each describes the thing rather than averaging over it. **The measure is restated on the SENIOR partner's share**, because revision 65 built it as the *junior* share and that is undefined when there are two junior partners: המילואימניקים והכלכלית 50%, **הרשימה המשותפת 50%**, ביחד 55% — against עוצמה יהודית 80%, ישר 90%, הדמוקרטים 92%, הליכוד 96%. **The band moves from "45%+ junior" to "≤55% senior" and every prior judgement survives unchanged**; a statistic derived from six examples of one shape held exactly until the seventh shape arrived. **`two-faction-list` still not added, and the obstacle is now the tag's NAME rather than its substance** — this row qualifies on every ground except that it has three components and the tag says two. Adding it would be false; renaming touches five rows. **Filed to Open questions beside the `two-state`/`pro-two-state` pair, as the same class of defect: a tag whose name rather than whose evidence decides its membership.** **איימן עודה is at #110, עאידה תומא סלימאן at #111, דב חנין at #105** — eleven times past the cut. Odeh **stepped down from the חד"ש chairmanship in May 2026**, losing the leadership contest to ג'בארין, so these are farewell placements and **no inference about a purge is available**. The point is what the range does to the reading: without it, *"Odeh is on the list"* reads as continuity, and the list's actual leadership is a generation this page had not looked at. **עופר כסיף #6 is inside the range**, so `jewish-arab-partnership` — carried into this row as a union of its predecessors' families — now stands on the filing at a realistic slot, the standard revision 44 used for רע"ם's #2 and revision 36 for הדמוקרטים's #10. **Women hold 3 of the realistic 10** (ג'טאס #4, כרכבי סבאח #8, וישאחי #10) and **no tag follows**, on the כחול לבן precedent set hours earlier — recorded so the refusal is visible rather than silent. **Resolved: רע"ם did not join**; it filed separately as list 18, closing this entry's standing conditional |
 | 2026-09-09 | revision 68 — **the last three filings read (נעם, יהדות התורה, הציונות הדתית), completing all fourteen live rows. No axis moved, no tag added, `seed.sql` unchanged — and the pass found the measure's failure mode by finding the case that looked like it would break a tag and instead confirmed it.** **יהדות התורה: revision 61's trigger DISCHARGED.** גפני and מקלב are **not on the list**; #1 is **יעקב אשר** (דגל), #2 גולדקנופ (אגודת ישראל), #3 פינדרוס (דגל) — the reported deposition of two sitting MKs by Rabbi Lando is confirmed at the registrar, so revision 61's contrast between `rabbinic-authority-led` conserving at ש"ס and purging here now rests on a primary source at both ends. **The list files under THREE registered parties, its first third party since 1992** — דגל 62, אגודת ישראל 56, **חומת תורת ישראל** 2 — and **that third registration is a split INSIDE אגודת ישראל**: שלומי אמונים and בעלזא breaking from Gur's control of the faction and its budget transfers, with פרוש **#4** and שטארק **#6** filing under it in a move their own side calls *"פרוצדורלי בלבד"*. **Three registrations, two factions — so `two-faction-list` is CONFIRMED, not broken**, and is better evidenced than when it was assigned. **This is the measure's first documented failure mode**: the Conventions statistic reads the `מטעם מפלגת` field, which counts *registrations*, while the tag names *factions*; a purely mechanical reading would have called this row a three-faction list and been wrong. **Read the field, then ask what the third registration is for.** **הציונות הדתית: the 2026-09-01 זהות merge confirmed at the registrar**, פייגלין at **#2** under זהות's own registration and both leaders in the ballot name, so that entry's decision to keep this row rather than create a new one holds. **זהות holds MORE slots than תקומה across the whole list (17 to 16) and fewer inside the range (3 to 6)** — both true, only the second describes the deal, and it is the clearest instance yet of why the range exists: whole-list share reports a merger of equals, the top ten reports a two-to-one senior partner. **אורית סטרוק sits at #3 on `עתיד אחד - עתיד טוב לישראל`, a registration carrying exactly one slot** — a sitting minister on a one-seat vehicle, the same shape as וסרלאוף under ארץ ישראל שלנו — and after the חומת תורת ישראל finding **whether it is a faction or a device is explicitly NOT assumed**. **נעם: ballot name `נעם לישראל`**, running independently for the first time after sitting inside הציונות הדתית's list in the 25th; two registrations (**לזוז** 12, אחריות לאומית 2), **14 names, the shortest list on the page**, and a **67% senior share — the first row to land in the measure's gap**, on the refusal side. `two-faction-list` not added. ליבמן #3 (father of אלקנה ליבמן) and חיימוב #5 (sister of the ש"ב head) are recorded and **neither is a position**, on the same line drawn for כחול לבן's list and עמך ישראל's בן ציון. **The measure now covers all ten joint filings and the gap has NARROWED from 25 points to 7** (holders ≤60%, refusals ≥67%) — it shrank every time data arrived, which is what a real but weak separation does, and is why it is written up as a first thing to check rather than a test. **The `two-faction-list` naming defect is correspondingly narrower than revision 67 stated**: not several rows with wrong counts, but **הרשימה המשותפת alone**, whose three components have separate histories, leaders and programmes and two of which this page scores differently on its own axes |
+| 2026-09-09 | revision 69 — **the four rows lacking a candidate audit are audited: ישר (30), כחול לבן (6), המילואימניקים והכלכלית (#4–6) and רע"ם (#3–10). Every live row on the page has now been read candidate by candidate at its realistic range. No axis moved, no tag added, `seed.sql` unchanged.** **ישר was the largest gap on the page** — the biggest range and the thinnest coverage — and the composition is a slate of the state's own former administrators: **nine of the top thirteen have run a national institution**, including a Chief of Staff, a Shin Bet director, an Electricity Authority chair, a Religious Services Minister, a **Budget Division head**, a **Labour Ministry DG**, an **IDF Manpower Directorate head** and a **former COGAT coordinator**. The party says so itself (*"נבחרת שנועדה לשמש בסיס לממשלה הבאה"*), and `statist`/`public-service-reform` are what that corroborates. **`religiosity −2` HELD, and the most on-point candidate is the reason it is not −3**: **מתן כהנא #5** authored the kashrut and conversion reforms — `kashrut-liberalization` and `religious-pluralism`, both already held — which are **reform of the Rabbinate, not disestablishment**, exactly the funding criterion revision 21 used. The platform demands civil marriage and #5 personally opposes it; **the tension is recorded, not resolved, and this page scores the platform.** **The conscription cluster gains its two operational experts and moves nothing**: **ענבר הרוש גיטי #11** directs the Defense Ministry's מתווה השירות and formerly headed haredi IDF integration, **אלעזר שטרן #12** ran the Manpower Directorate. **The strongest trigger this row has ever had**: **כמיל אבו רוקן #13**, former **COGAT**, on a row whose eleven documents contain no sentence on statehood, the territories or sovereignty — *a career administrator is not a policy statement*, so nothing moves, but he is where a position would come from; `sector` stays `secular` on revision 45's Druze precedent. **`gender-equality` REFUSED a second time on this row and the refusal is the point**: Eisenkot presented the list as a commitment to gender equality and **14 of the top 30 are women**, and it is still a list rather than a programme — **the rule is shown not to be selective, because here it costs a row a tag on the best composition evidence the page has seen**. A **fourth representation gap** logged not minted (**אלקס ריף #15**, founder of לובי המיליון; the vocabulary has Mizrahi, Negev-Bedouin and Arab representation tags and no Russian-speaking equivalent). Three October-7 bereaved in the top 22, and **`state-commission-of-inquiry` is deliberately not reached by it** — bereavement is not a position on an inquiry, and stretching them together is how a tag with six refusals acquires a seventh bad holder. **#24–30 read and recorded as carrying no classificatory content**, so the next pass does not reopen them. **כחול לבן: בלוך #3 is the first candidate-level consequence of a withdrawal this page has tracked** — she was to have run with האחדות — and **that entry's reasoning is unaffected: a candidate moving parties is not a vote moving parties**. קונקול #4 has been in three parties in one cycle (לפיד → הנדל → גנץ), recorded as movement not position. **המילואימניקים והכלכלית: #4 ווליבוביץ is the Economic Party's CEO**, so the junior partner's three realistic slots are its **leader and its chief executive** — a further argument for the `two-faction-list` it already holds; #5 אדומי carries the 2026 primary result into a realistic slot; **#6 לנגמן is unsourced beyond the filing and sits INSIDE the range**, so unlike ישראל ביתנו's #20–21 it is a real gap rather than one the ranges retire. **רע"ם: #7–#10 return NOTHING in Hebrew press beyond the filing** — four names inside a realistic range, in list order and nowhere else. Revision 64 corrected revision 63 for inventing a range out of where press coverage stopped; **the corrected range makes this a genuine documentary gap**, and it is a property of Hebrew-language coverage rather than of the candidates. **Arabic sources are the next instrument and were deliberately not used here**, because revision 48 records the research harness returning *refuted 0–3* on nearly every Arabic-domain source while confirming the same substance from Hebrew media — this needs browser-shaped fetches by hand, not a search pass. **Seven rows audited candidate by candidate, seven times the answer was corroboration.** The rule *a candidate is not a position* has now been tested against a list built almost entirely of people who ran the institutions the axes describe, and it held |
