@@ -217,20 +217,35 @@ the range across the eleven lists filed by 2026-09-08 produces a clean separatio
 first quantitative footing `two-faction-list` has ever had:
 
 **Stated as the SENIOR partner's share** (revision 67), which is the form that survives a list with
-more than two components — the first version of this table used the *junior* share and could not
-express a three-way filing at all:
+more than two components — the first version used the *junior* share and could not express a
+three-way filing at all. All **ten** joint filings of 2026, measured inside the range:
 
 | list | components in range | senior share | `two-faction-list` |
 |---|---|---|---|
 | המילואימניקים והכלכלית | 3 / 3 | **50%** | **held** |
-| הרשימה המשותפת | 5 / 3 / 2 | **50%** | *see below* |
+| הרשימה המשותפת | 5 / 3 / 2 | **50%** | *qualifies; name blocks it* |
 | ביחד | 11 / 9 | **55%** | **held** |
+| יהדות התורה | 6 / 2 / 2 | **60%** | **held** |
+| הציונות הדתית | 6 / 3 / 1 | **60%** | **held** |
+| נעם | 4 / 2 | 67% | *not held* |
 | עוצמה יהודית | 8 / 2 | 80% | *not held* |
 | ישר | 27 / 3 | 90% | *not held* |
 | הדמוקרטים | 12 / 1 | 92% | *not held* |
 | הליכוד | 24 / 1 | 96% | *not held* |
 
-**The gap between 55% and 80% is where the tag lives**, and no row sits in it. The measure was
+**The boundary sits between 60% and 67%**, and no row is inside it. **Note the trajectory, and
+distrust the measure accordingly**: revision 65 built it from six lists and reported a 25-point gap
+(45→20 on the junior share); five more filings arrived within a day and the gap is now **7 points**.
+It narrowed every time data was added, which is what a real but weak separation does — and is the
+reason it is a first thing to check rather than a test.
+
+**⚠ It counts REGISTRATIONS; the tag names FACTIONS; these are not the same, and יהדות התורה is the
+proven case.** That list files under three registered parties, and the third —
+**חומת תורת ישראל** — is שלומי אמונים and בעלזא splitting *out of* אגודת ישראל over Gur's control of
+the faction, in a move its own participants call *"פרוצדורלי בלבד"*. Three registrations, **two
+factions**, and the Degel–Agudah axis the tag names is untouched. A purely mechanical reading of the
+`מטעם מפלגת` field would have called that row a three-faction list and been wrong. **Read the field,
+then ask what the third registration is for.** The measure was
 derived from the filings rather than asserted, and it happens to ratify every judgement the page had
 already made on other grounds — which is the useful direction for a new instrument to point.
 **Two caveats.** It is a *necessary* condition, not a sufficient one: a list could split its slots
@@ -3194,6 +3209,34 @@ haredi exemption by shrinking the obligation for everyone rather than extending 
 `professional-army`, not `universal-conscription`, was the accurate tag. It is **refused on the
 merged row**: RZP's `conscription-split` says the opposite, and the bloc has agreed no joint position.
 
+
+**2026-09-09 — revision 68. The filing confirms the 2026-09-01 זהות merge and adds a THIRD
+registration the page did not know about. No axis moved; no tag added; `seed.sql` unchanged.**
+Source:
+[`gov.il/he/pages/tzionutdatit-zehut_list31`](https://www.gov.il/he/pages/tzionutdatit-zehut_list31),
+34 names, ballot name **הציונות הדתית בראשות בצלאל סמוטריץ' וזהות בראשות משה פייגלין**, range 10.
+
+- **Three registrations**: האיחוד הלאומי - תקומה (16 slots), **זהות** (17) and
+  **עתיד אחד - עתיד טוב לישראל** (1). Inside the range: **תקומה 6 / זהות 3 / עתיד אחד 1**.
+- **The merge is confirmed at the registrar**: פייגלין at **#2** under זהות's own registration, which
+  is what the 2026-09-01 entry recorded from the announcement. That entry kept this row rather than
+  creating a new one, on the ground that one component was already the lead party and the registered
+  list — **the ballot name puts both leaders in it**, so the reasoning holds and the row still should
+  not be renamed.
+- **זהות holds MORE slots than תקומה across the whole list (17 to 16) and fewer inside the range
+  (3 to 6).** Both numbers are true and only the second describes the deal. This is the clearest
+  instance yet of why the realistic range exists: whole-list share here would report a merger of
+  equals, and the top ten reports a two-to-one senior partner.
+- **אורית סטרוק sits at #3 under `עתיד אחד - עתיד טוב לישראל`**, a registration carrying exactly one
+  slot — a sitting minister on a one-seat vehicle, the same shape as וסרלאוף under
+  ארץ ישראל שלנו on עוצמה יהודית. **Whether עתיד אחד is a genuine third faction or a procedural
+  device is NOT established here**, and after the יהדות התורה finding below it must not be assumed
+  either way; the חומת תורת ישראל case shows a third registration can be intra-factional plumbing.
+  Logged as an open thread rather than counted.
+- **`two-faction-list` stays** on the same reasoning as יהדות התורה's: registrations are not
+  factions, and nothing yet shows a third faction here. No axis moved — `0 / 3 / 3` are argued from
+  the party's own documents, and a slate is not a document.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -4739,6 +4782,27 @@ on the Religious Zionism joint slate (as it did in the 24th), and is running ind
 structurally the same split Otzma made, so a 2022 הציונות הדתית voter switching to נעם is a real
 transition the vote-switch rollups should be able to see.
 
+
+**2026-09-09 — revision 68. Filed list read at the realistic range (6 of 14). No axis moved; no tag
+added; `seed.sql` unchanged.** Source:
+[`gov.il/he/pages/noam_list38`](https://www.gov.il/he/pages/noam_list38). **Ballot name נעם לישראל**,
+confirming the rename recorded in Conventions, and the row runs **independently** for the first time
+— it sat inside הציונות הדתית's list in the 25th.
+
+- **Two registrations**: **לזוז** (12 slots), Maoz's own vehicle, and
+  **אחריות לאומית - למען עתיד ילדינו** (2). Inside the range: **לזוז 4 / אחריות לאומית 2**, a
+  **67%** senior share — above every list holding `two-faction-list` and below every list refused it,
+  which is the first row to land in the measure's gap. **The tag is not added**: 67% sits on the
+  refusal side of the only boundary the data supports, and this row has never been described as a
+  two-faction list by anyone.
+- **#1 אביגדור מעוז** (לזוז), **#2 שמעון טבול**, **#3 אליהו שלום ליבמן** and **#4 ליאורה אלון** (both
+  under אחריות לאומית), **#5 יסכה חיימוב**, **#6 ישראל יאיר אביטן**.
+- **No tag from the slate, and one refusal worth naming.** ליבמן #3 is the father of אלקנה ליבמן,
+  killed at the Nova festival and held in Gaza, and חיימוב #5 is the sister of the ש"ב head
+  דוד זיני. Neither is a position, and this row's `security 3` and `religiosity 3` are argued from
+  the party's own material — the same line drawn for כחול לבן's list composition and עמך ישראל's
+  בן ציון. **The list is 14 names**, the shortest on the page.
+
 ### האחדות — Unity · **withdrew 2026-09-04, removed from the ballot** · was `unaligned` · 1 / 2 / −2 · traditional
 
 **גלעד ארדן announced on Friday 2026-09-04 that האחדות will not contest the election, and the row
@@ -5837,6 +5901,39 @@ wrong:
   keeps the 2022 logo, because that row is the current Knesset faction, and the two tables carry
   independent `logo_url` columns. Scoping the statement to one table is what enforces that.
 
+
+**2026-09-09 — revision 68. The filing is up, revision 61's trigger is discharged, and
+`two-faction-list` is CONFIRMED by the very fact that looked like it would break it. No axis moved;
+`seed.sql` unchanged.** Source:
+[`gov.il/he/pages/yahadut-degel_list37`](https://www.gov.il/he/pages/yahadut-degel_list37), 120
+names, ballot name **יהדות התורה והשבת אגודת ישראל - דגל התורה**, realistic range 10.
+
+- **THREE registered parties, the first third party on a UTJ list since 1992**
+  ([דבר](https://www.davar1.co.il/696518/)): אגודת החרדים - דגל התורה (62 slots), הסתדרות אגודת
+  ישראל (56) and **חומת תורת ישראל** (2). Inside the range: **דגל 6 / אגודת ישראל 2 / חומת תורת
+  ישראל 2**.
+- **The third registration is a split INSIDE אגודת ישראל, not a third faction — and that distinction
+  is what saves this row's tag.** שלומי אמונים and מחזיקי הדת (בעלזא) broke from אגודת ישראל over
+  Gur's control of the faction and its budget transfers; מאיר פרוש **#4** and אלי שטארק **#6** filed
+  under the new registration, and the move is reported as *"פרוצדורלי בלבד"* — a device to free them
+  from decisions taken under Gur's influence *within* Agudah
+  ([חרדים10](https://ch10.co.il/news/1100602/), [המחדש](https://hm-news.co.il/654727/)). **The
+  Degel–Agudah axis the tag names is intact.** `two-faction-list` stays, and is now better evidenced
+  than when it was assigned.
+- **This is the case that separates a REGISTRATION from a FACTION, and the measure in Conventions
+  counts the wrong one.** That measure reads the `מטעם מפלגת` field, which is registrations; the tag
+  names factions. On this row the two disagree — three registrations, two factions — and the tag is
+  right where a purely mechanical reading would have been wrong. **Recorded as the measure's first
+  documented failure mode**, and the reason it is described there as a first thing to check rather
+  than a test.
+- **Revision 61's trigger is discharged.** **גפני is not on the list** and **מקלב is not on the
+  list**; **#1 is יעקב אשר** (דגל), **#2 גולדקנופ** (אגודת ישראל), **#3 פינדרוס** (דגל). The
+  reported deposition of two sitting MKs by Rabbi Lando is confirmed by the filing, and the contrast
+  revision 61 drew with ש"ס — the same `rabbinic-authority-led` tag used to conserve there and to
+  purge here — now rests on a primary source at both ends.
+- **No axis moved and no tag added.** `−2 / 1 / 2` are argued from the record; a slate is not a
+  record, and the leadership turnover changes who states the positions rather than what they are.
+
 ### Three logos are self-hosted under `/logos/`, and none is a matter of taste
 
 `services/frontend/logos/` is copied into the frontend image as a whole directory, so adding a file
@@ -6272,7 +6369,17 @@ bought nothing here, because the defect was never in the pixels being measured.
   nameable (2026-09-09, revision 67).** הרשימה המשותפת files as Maki + בל"ד + תע"ל and sits at a 50%
   senior share, level with המילואימניקים והכלכלית and inside the band the tag's holders occupy — it
   meets every substantive test and the word *two* excludes it. **Adding the tag would be false and
-  renaming it touches five rows**, so neither was done on one filing. Candidates: a count-agnostic
+  renaming it touches five rows**, so neither was done on one filing.
+  **Narrowed 2026-09-09 (revision 68), and the narrowing is the useful part.** יהדות התורה also files
+  under three registrations and **keeps the tag correctly**, because its third — חומת תורת ישראל — is
+  שלומי אמונים and בעלזא splitting out of אגודת ישראל in a move reported as *"פרוצדורלי בלבד"*: three
+  registrations, two factions. **So the name is only wrong where the components are genuinely
+  distinct parties, which on the evidence is הרשימה המשותפת alone** — Maki, בל"ד and תע"ל have
+  separate histories, leaders and programmes, and this page scores two of them differently on its own
+  axes. הציונות הדתית's third registration (עתיד אחד, one slot, carrying סטרוק) is **unresolved** and
+  must not be counted either way until someone checks what it is for. **The open question is therefore
+  narrower than revision 67 stated**: not "rename a tag whose count is wrong on several rows", but
+  "one row is a three-faction list and the vocabulary cannot say so". Candidates: a count-agnostic
   name (`multi-party-list`, `coalition-list`), or keeping the tag and accepting that it under-reports.
   **Resolve alongside the `two-state`/`pro-two-state` pair below** — both are vocabulary defects of
   the same kind, a tag whose name rather than whose evidence decides its membership.
@@ -6558,3 +6665,4 @@ pass happened, for anyone reading git history.
 | 2026-09-08 | revision 65 — **all eleven filed lists read from the CEC API, each at its realistic range. No axis moved, no tag added, `seed.sql` unchanged — and the pass produced a MEASURE the page did not have.** **`two-faction-list` now has a quantitative footing: the junior partner's share of the realistic range.** Every CEC list attributes each slot to a registered party, and reading that field inside the range separates cleanly — המילואימניקים והכלכלית **3/6 (50%)** and ביחד **9/20 (45%)** both hold the tag; עוצמה יהודית **2/10 (20%)**, ישר **3/30 (10%)**, הדמוקרטים **1/13 (8%)** and הליכוד **1/25 (4%)** do not. **No row sits in the gap between 45% and 20%.** The measure was derived from the filings rather than asserted and ratifies every judgement the page had already made on other grounds; it is *necessary, not sufficient* (two nameplates of one organisation could split evenly), and **two of the tag's four holders cannot be tested yet** — הציונות הדתית and יהדות התורה had not filed, the latter mid-split. **Two audits confirmed against the registrar, which is the pass's best result.** **ביחד**: revision 29 reconstructed Bennett's slots as 1, 3, 5, 7, 8, 10, 11, 13, 15, 17, 19 from his own internal list and said the two orders "interleave exactly" — **the filing attributes precisely those slots to ביחד**. **ישראל ביתנו**: revision 52's positions hold slot for slot, including the spelling it had to correct itself on (**קוליחמן #9**, with ח), and `pro-settlement` rests on שרעבי **#6, inside the range**; its two "genuinely unsourced" names sit at #20 and #21, **outside** the realistic 10 — precisely the class of gap the ranges retire. **עוצמה יהודית's list WAS up, under a slug that names its junior partner**: `yehudit-meuhedet_list14` is a joint filing with *ארץ ישראל שלנו – מפלגה יהודית מאוחדת…*, not יהדות התורה, and this pass briefly filed it as UTJ by matching the slug by eye. Revision 55's audit is confirmed exactly — דורפמן #7, צחי אליהו #8, גולדברגר #9, all inside the range. **ישר has a joint filing the page did not know about**: *ישר לישראל עם איזנקוט* + **יסודות ישראל**, with **חילי טרופר at #6** under the junior party; press said his people would run *"כחלק ממפלגת ישר"* after the בית ציוני partnership dissolved, and the filing shows a **second registered party rather than an absorption** — a third structure again. **Whether יסודות ישראל is בית ציוני re-registered is NOT established and must not be assumed**, the names differ and this page has been burned by a name collision before. **הדמוקרטים: מרצ holds ONE slot in 120** (#6), less realistic representation than תקווה חדשה has on הליכוד's list — the positions merged where the organisation did not, which is what `party_lineage` is for. **עמך ישראל's registered party is `עמי חי לעד`**, not the ballot brand, the ישר case again; **#2 is יוסף חדאד**, inside a range of 6, which is the sharpest test the candidate-is-not-a-constituency-claim line has had — refused, with a trigger. **Correction to revision 61: ש"ס filed 120 candidates, not thirteen.** Thirteen is what the party *published* and all three outlets reported; **a press-reported list length is the party's publication, not its filing**, and the two differ by two orders of magnitude. Nothing in the reading changes — the range is 10 — but the claim was stated as a fact about the filing. **Correction to revisions 63–64: רע"ם filed 73, not 72** (off-by-one in an ad-hoc parse, fixed by re-parsing). Remaining unfiled at time of writing: הרשימה המשותפת, הציונות הדתית, יהדות התורה, נעם |
 | 2026-09-09 | revision 66 — **corrects revision 65, which had two defects: four of its seven blocks were FILED UNDER THE WRONG ROW, and two claimed novelty that was not there. No axis moved, no tag added, `seed.sql` unchanged.** **The misfiling.** This page's convention is to append a revision block immediately before the *next* row's header; revision 65 anchored four blocks on the row's *own* header, so each rendered at the end of the preceding section — the ישר block under **הליכוד**, ביחד's under **ישר**, הדמוקרטים's under **ביחד**, כחול לבן's under **הדמוקרטים**, and עמך ישראל's under **האחדות**, a withdrawn party. Five of seven landed one row early and the error is invisible to any check that reads a block's text rather than its position. All five moved; the two that were correct (ישראל ביתנו, עוצמה יהודית) left alone. **The false novelty, which is the worse half.** The **ישר** block is **RETRACTED entirely**: it announced *"a JOINT filing the page did not know about"*, flagged whether `יסודות ישראל` is בית ציוני re-registered as *"NOT established and must not be assumed"*, and refused `two-faction-list` as if for the first time — **all three were already in that entry**, written 2026-09-06/07, complete with the 116/4 split and טרופר #6 / שפירא #10 / פרץ #20 / יחיאב #35. Nothing about that row was new. The **עוצמה יהודית** block called גוטליב #2, עמיחי אליהו #4, סון הר-מלך #5 and ניימן #10 *"new inside the range and unaudited"* and offered גוטליב's arrival from הליכוד as a trigger; the announced order was already recorded, Ben Gvir's own quote included, under the heading *"NOTHING MOVES — for the sixth consecutive reading of this row"*. **What survives there is one line the press could not have produced**: וסרלאוף and קרויטור are filed under `ארץ ישראל שלנו`, so a sitting minister at #3 sits on the junior partner's registration. **Cause, and it is this page's own rule inverted.** Revision 65 enumerated eleven filings and wrote them up **without reading the target sections first** — the corpus was enumerated, the *destination* was not. **A false claim of novelty is worse than duplication, because it misattributes**: it credits a filing with a finding that came from press coverage two days earlier and invites the next reader to reopen a settled question. The misfiling is the same failure in the mechanical register — an anchor chosen without looking at what sits above it. **Check what the row already says, and check where the text lands.** Also corrected: the **עמך ישראל** block claimed that row lacked a candidate audit; it has had a full one since revision 41, naming the whole slate with `voluntary-palestinian-emigration-incentives` and `population-transfer` both refused on the opt-in test and the judicial-reform reading of בן ארי refuted 0–3. That block is reduced to what it actually adds — the registered party is **`עמי חי לעד`**, not the ballot brand, and **דוידי בן ציון sits outside the realistic 6**, so the `pro-settlement` reading his Alon Moreh residency would invite fails on a second, cheaper ground than the candidate-is-not-a-position rule. **`יסודות ישראל` is now positively confirmed as טרופר's own registered party** ([סרוגים](https://www.srugim.co.il/newsflash/133837), [זמן ישראל](https://www.zman.co.il/live/701873/)) — registered under that name before the Hendel partnership, which ran as *בית ציוני - המילואימניקים* until it dissolved 2026-09-06. Revision 65 was right to refuse to assume it and wrong to present the question as open on this page |
 | 2026-09-09 | revision 67 — **הרשימה המשותפת's filing is up and it is the page's first THREE-party list. All three axes unchanged, no tag added, `seed.sql` unchanged — and it broke the measure written nineteen hours earlier.** Filed *"מטעם מפלגת המפלגה הקומוניסטית הישראלית ומטעם מפלגת אלתג'מוע אלווטני אלדמוקרטי ומטעם מפלגת התנועה הערבית להתחדשות"* — Maki, בל"ד and תע"ל — **67 / 34 / 19 across 120 and 5 / 3 / 2 inside the realistic 10**, with #1 ג'בארין, #2 טיבי and #3 אבו שחאדה exactly as this entry recorded them from the 2026-08-20 agreement report. **The union rule is vindicated in the one way that was checkable**: all three components really are parties to the filing, so carrying axes from each describes the thing rather than averaging over it. **The measure is restated on the SENIOR partner's share**, because revision 65 built it as the *junior* share and that is undefined when there are two junior partners: המילואימניקים והכלכלית 50%, **הרשימה המשותפת 50%**, ביחד 55% — against עוצמה יהודית 80%, ישר 90%, הדמוקרטים 92%, הליכוד 96%. **The band moves from "45%+ junior" to "≤55% senior" and every prior judgement survives unchanged**; a statistic derived from six examples of one shape held exactly until the seventh shape arrived. **`two-faction-list` still not added, and the obstacle is now the tag's NAME rather than its substance** — this row qualifies on every ground except that it has three components and the tag says two. Adding it would be false; renaming touches five rows. **Filed to Open questions beside the `two-state`/`pro-two-state` pair, as the same class of defect: a tag whose name rather than whose evidence decides its membership.** **איימן עודה is at #110, עאידה תומא סלימאן at #111, דב חנין at #105** — eleven times past the cut. Odeh **stepped down from the חד"ש chairmanship in May 2026**, losing the leadership contest to ג'בארין, so these are farewell placements and **no inference about a purge is available**. The point is what the range does to the reading: without it, *"Odeh is on the list"* reads as continuity, and the list's actual leadership is a generation this page had not looked at. **עופר כסיף #6 is inside the range**, so `jewish-arab-partnership` — carried into this row as a union of its predecessors' families — now stands on the filing at a realistic slot, the standard revision 44 used for רע"ם's #2 and revision 36 for הדמוקרטים's #10. **Women hold 3 of the realistic 10** (ג'טאס #4, כרכבי סבאח #8, וישאחי #10) and **no tag follows**, on the כחול לבן precedent set hours earlier — recorded so the refusal is visible rather than silent. **Resolved: רע"ם did not join**; it filed separately as list 18, closing this entry's standing conditional |
+| 2026-09-09 | revision 68 — **the last three filings read (נעם, יהדות התורה, הציונות הדתית), completing all fourteen live rows. No axis moved, no tag added, `seed.sql` unchanged — and the pass found the measure's failure mode by finding the case that looked like it would break a tag and instead confirmed it.** **יהדות התורה: revision 61's trigger DISCHARGED.** גפני and מקלב are **not on the list**; #1 is **יעקב אשר** (דגל), #2 גולדקנופ (אגודת ישראל), #3 פינדרוס (דגל) — the reported deposition of two sitting MKs by Rabbi Lando is confirmed at the registrar, so revision 61's contrast between `rabbinic-authority-led` conserving at ש"ס and purging here now rests on a primary source at both ends. **The list files under THREE registered parties, its first third party since 1992** — דגל 62, אגודת ישראל 56, **חומת תורת ישראל** 2 — and **that third registration is a split INSIDE אגודת ישראל**: שלומי אמונים and בעלזא breaking from Gur's control of the faction and its budget transfers, with פרוש **#4** and שטארק **#6** filing under it in a move their own side calls *"פרוצדורלי בלבד"*. **Three registrations, two factions — so `two-faction-list` is CONFIRMED, not broken**, and is better evidenced than when it was assigned. **This is the measure's first documented failure mode**: the Conventions statistic reads the `מטעם מפלגת` field, which counts *registrations*, while the tag names *factions*; a purely mechanical reading would have called this row a three-faction list and been wrong. **Read the field, then ask what the third registration is for.** **הציונות הדתית: the 2026-09-01 זהות merge confirmed at the registrar**, פייגלין at **#2** under זהות's own registration and both leaders in the ballot name, so that entry's decision to keep this row rather than create a new one holds. **זהות holds MORE slots than תקומה across the whole list (17 to 16) and fewer inside the range (3 to 6)** — both true, only the second describes the deal, and it is the clearest instance yet of why the range exists: whole-list share reports a merger of equals, the top ten reports a two-to-one senior partner. **אורית סטרוק sits at #3 on `עתיד אחד - עתיד טוב לישראל`, a registration carrying exactly one slot** — a sitting minister on a one-seat vehicle, the same shape as וסרלאוף under ארץ ישראל שלנו — and after the חומת תורת ישראל finding **whether it is a faction or a device is explicitly NOT assumed**. **נעם: ballot name `נעם לישראל`**, running independently for the first time after sitting inside הציונות הדתית's list in the 25th; two registrations (**לזוז** 12, אחריות לאומית 2), **14 names, the shortest list on the page**, and a **67% senior share — the first row to land in the measure's gap**, on the refusal side. `two-faction-list` not added. ליבמן #3 (father of אלקנה ליבמן) and חיימוב #5 (sister of the ש"ב head) are recorded and **neither is a position**, on the same line drawn for כחול לבן's list and עמך ישראל's בן ציון. **The measure now covers all ten joint filings and the gap has NARROWED from 25 points to 7** (holders ≤60%, refusals ≥67%) — it shrank every time data arrived, which is what a real but weak separation does, and is why it is written up as a first thing to check rather than a test. **The `two-faction-list` naming defect is correspondingly narrower than revision 67 stated**: not several rows with wrong counts, but **הרשימה המשותפת alone**, whose three components have separate histories, leaders and programmes and two of which this page scores differently on its own axes |
