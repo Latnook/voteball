@@ -986,7 +986,7 @@ instead of wondering whether the teardown has died. `VOTEBALL_NO_WATCH=1` turns 
 | Kept | Why |
 |---|---|
 | The Terraform **state bucket** | It holds the record of what is being deleted. Removing it mid-teardown would orphan anything left behind. |
-| **Database snapshots** | They are the restore point for the next deploy. Prune old ones by hand, keeping the newest. |
+| **Database snapshots** | They are the restore point for the next deploy. The newest is never deleted. Older ones are pruned automatically — see below. |
 
 **What is NOT kept, and catches people out: the nightly database dumps in S3.** The bucket holding them
 is deleted by `terraform destroy`, during the same run it would supposedly be insuring — `terraform/modules/storage/main.tf`
@@ -997,6 +997,23 @@ the final snapshot, plus retained automated backups. If you want the dumps too, 
 ```bash
 aws s3 sync "s3://$(terraform -chdir=terraform output -raw s3_bucket)/backups/" ~/voteball-backups/
 ```
+
+**Old snapshots are now pruned for you, as the last step of `destroy.sh`.** It runs
+`./scripts/prune-db-snapshots.sh --apply`, which keeps the newest **7** (`SNAPSHOT_RETAIN` overrides)
+and refuses to delete the newest whatever that number says. Run it by hand any time to see the plan —
+**it is dry-run by default**, so this prints what it would delete and touches nothing:
+
+```bash
+./scripts/prune-db-snapshots.sh            # dry run
+./scripts/prune-db-snapshots.sh --apply    # actually delete
+./scripts/prune-db-snapshots.sh --retain 3 --apply
+```
+
+This exists because snapshots accumulated one per teardown and never left: 52 of them by 2026-09-09,
+at which point RDS **backup storage cost more than the database instance itself** ($2.00 vs $1.06 in
+the first nine days of September). AWS gives free backup storage up to 100% of your allocated storage
+(20 GB here), so the bill stays at zero until the total crosses it — which is why this was invisible
+until August.
 
 **Prune snapshots by date, never by name — the names lie.** A snapshot's identifier embeds the date the
 *stack was deployed*, not the date the snapshot was taken. On a teardown today of a stack built three

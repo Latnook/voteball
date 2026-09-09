@@ -881,7 +881,7 @@ around this, both hit for real on the 2026-07-27 rebuild (see `docs/production-r
   snapshot and **retained automated backups** (`delete_automated_backups = false`). Don't count the
   dumps when deciding whether a teardown is safe.
 
-Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
+Five teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
 - **`./scripts/cleanup-stale-dns.sh`** removes this cluster's Route53 records if external-dns didn't get
   to it first (it only reconciles on a timer and can be destroyed before noticing the deleted Ingress).
   Gated on the ownership TXT (`external-dns/owner=voteball`), so apex/MX/DKIM records are never eligible.
@@ -894,6 +894,18 @@ Four teardown behaviours `destroy.sh` handles that a manual `terraform destroy` 
   never `aws_*`) if `terraform destroy` still hangs — see above for both.
 - **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
   never force-unlocks on its own (see above).
+- **Pruning old DB snapshots** (`scripts/prune-db-snapshots.sh --apply`, last step, non-fatal). Every
+  teardown takes a final snapshot and nothing ever deleted one, so by 2026-09-09 there were **52**
+  going back to 2026-07-19 and RDS backup storage had become the **largest RDS line item on the
+  bill** — `ChargedBackupUsage` went $0.19 (Jul) → $4.21 (Aug) → $2.00 in the first nine days of
+  September, against $1.06 of instance time in the same window. AWS gives free backup storage up to
+  100% of allocated storage (20 GB here), which is why July was nearly free: the total crossed the
+  allowance in August. Retaining **7** puts it back under. **Two rules the script must keep**: order
+  by `SnapshotCreateTime` and never by identifier (the name embeds `time_static.deploy` — see the
+  trap below), and use the **same predicate as `find-latest-snapshot.sh`**, which restores the newest
+  match on the next deploy. A narrower predicate here would delete the snapshot the next apply is
+  about to restore from. On top of `--retain` there is a hard floor: the newest is never deleted,
+  whatever the number says. Dry-run by default; `destroy.sh` passes `--apply`.
 
 **A failing command whose exit status is swallowed by the thing that printed it — four mechanisms,
 one bug.** This is the most-repeated defect shape in this repository, and
