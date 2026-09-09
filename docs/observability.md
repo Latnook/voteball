@@ -13,8 +13,8 @@ Two neighbouring documents deliberately hold other things, and neither is a dupl
   Alertmanager puts the link in the email.
 
 The course requirement this satisfies is *DevOps on AWS — Final Project, Task 5* (`DevOps_on_AWS_Final_Project_Task_5.pdf`
-at the repo root). [`README.submission.md` § Task 5](../README.submission.md#task-5--monitoring--observability)
-is the graded standalone answer; this document is the depth behind it.
+at the repo root). The standalone answer that used to live in `README.submission.md` was removed on
+2026-09-09; this document is now the whole of it.
 
 ---
 

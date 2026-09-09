@@ -206,7 +206,7 @@ echo
 # must NOT be "corrected" -- a design doc recording that an alert existed under an older name, or a
 # snapshot of a cluster as it was, is accurate precisely because it still says the old thing.
 echo "7. no live document cites a non-existent alert"
-LIVE_DOCS=$(find docs README.md README.submission.md -name '*.md' 2>/dev/null \
+LIVE_DOCS=$(find docs README.md -name '*.md' 2>/dev/null \
   | grep -v '^docs/design/' | grep -v '^docs/eks/live-cluster-snapshot.md' | grep -v '^docs/eks/evidence/' \
   | sort)
 [ -n "$LIVE_DOCS" ] || { echo "FAIL: found no live documents to scan" >&2; exit 1; }
