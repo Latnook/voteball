@@ -71,6 +71,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 101 # nginx-unprivileged
             allowPrivilegeEscalation: false
+            seccompProfile: { type: RuntimeDefault }
             readOnlyRootFilesystem: true
             capabilities: { drop: ["ALL"] }
           volumeMounts:
@@ -93,6 +94,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 101
             allowPrivilegeEscalation: false
+            seccompProfile: { type: RuntimeDefault }
             readOnlyRootFilesystem: true
             capabilities: { drop: ["ALL"] }
       volumes:

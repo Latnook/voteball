@@ -76,6 +76,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 100 # curlimages/curl's built-in unprivileged "curl_user"
             allowPrivilegeEscalation: false
+            seccompProfile: { type: RuntimeDefault }
             readOnlyRootFilesystem: true
             capabilities: { drop: ["ALL"] }
           volumeMounts:

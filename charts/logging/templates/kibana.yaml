@@ -76,6 +76,9 @@ metadata:
     alb.ingress.kubernetes.io/group.name: {{ .Values.kibana.ingress.group | quote }}
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
+    # Must equal charts/voteball/templates/ingress.yaml's ssl-policy EXACTLY: it is an Exclusive
+    # annotation across the shared ALB group, and a mismatch fails the whole group.
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09
     {{- with .Values.kibana.ingress.certificateArn }}
     alb.ingress.kubernetes.io/certificate-arn: {{ . | quote }}
     {{- end }}

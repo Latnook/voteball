@@ -116,3 +116,15 @@ ArgoCD fault rather than a missing whitelist entry. Whitelist the kind in
 `argocd/voteball-application.yaml.tmpl` first. That friction is the point: cluster scope should be a
 deliberate, reviewable act.
 
+## seccomp and the ALB TLS policy (2026-09-09)
+
+Every container `securityContext` here carries `seccompProfile: { type: RuntimeDefault }` alongside
+`allowPrivilegeEscalation: false`; `scripts/tests/test-hardening.sh` counts the two and fails the build
+when they differ, so **a new container needs both lines**. It completes the Pod Security Standards
+"restricted" set the chart already met otherwise.
+
+`ingress.yaml` sets `alb.ingress.kubernetes.io/ssl-policy`. It is an **Exclusive** annotation across
+the shared `voteball` ALB group (`charts/jenkins-support` and `charts/logging` are the other two
+members): the values must be byte-identical or the controller errors the whole group and stops
+reconciling all three. Change it in all three files in one commit; the test asserts they match.
+

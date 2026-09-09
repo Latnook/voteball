@@ -50,3 +50,6 @@ COPY fonts/ /usr/share/nginx/html/fonts/
 # above: these are data, not code, and adding one should not require editing the Dockerfile.
 COPY logos/ /usr/share/nginx/html/logos/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Under snippets/, NOT conf.d/: the image's main nginx.conf globs conf.d/*.conf into the http
+# context, which would define these headers a second time one level up.
+COPY security-headers.conf /etc/nginx/snippets/security-headers.conf

@@ -47,3 +47,24 @@ are signed and expire, the CDN may refuse hotlinks, and (the one that actually b
 tracker blockers drop `*.fbcdn.net` in the browser, so the crest is invisible to many visitors while
 `curl` fetches it happily. That class of bug is undetectable server-side.
 
+## Security headers and the strict CSP (2026-09-09)
+
+`security-headers.conf` is the frontend's browser-hardening header set and **it is in the Dockerfile
+`COPY` line under `/etc/nginx/snippets/`** -- the same COPY-by-name rule as every other file here,
+and the same failure if it is missed: image builds, nginx starts, headers absent, nothing says so.
+`nginx.conf` includes it twice (server level and inside `location /api/`) because `add_header` is not
+inherited into a block that has its own; **any new `location` that sets an `add_header` must
+`include` the snippet too**, or that path serves none of the headers. `scripts/tests/test-hardening.sh`
+walks every location block and fails the build otherwise.
+
+The Content-Security-Policy is `style-src 'self'; script-src 'self'` with **no `'unsafe-inline'`**,
+which means: **no `<style>` blocks, no `style=""` attributes, no `on*=""` handlers, no `<script>`
+without `src`, and no `setAttribute('style', …)` / `.cssText` in JS.** Setting `element.style.x`
+from JS is fine (CSSOM is not inline style). `type="application/ld+json"` blocks are data, not code.
+The browser enforces this silently -- the page simply loses its styling -- so the test greps for
+each pattern. The admin page's tab styles live at the bottom of `style.css` for exactly this reason,
+and `#admin-content` is toggled with the `hidden` attribute, not `style.display`.
+
+`img-src` is the one directive wider than `'self'` (`'self' data: https:`), because `logo_url`
+values are hotlinked; the no-hotlinking rule above is about which hosts, not about CSP.
+
