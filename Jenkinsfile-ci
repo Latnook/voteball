@@ -19,7 +19,7 @@ pipeline {
     timestamps()
     // Added 2026-08-04: without a pipeline-level timeout, a hung buildkit build (a stalled layer
     // pull, a wedged rootless user-namespace build -- see the buildkit privilege-carveout notes in
-    // README.submission.md) pins this job's executor indefinitely, and disableConcurrentBuilds()
+    // CLAUDE.md and docs/security.md) pins this job's executor indefinitely, and disableConcurrentBuilds()
     // above then queues every subsequent push behind it forever. 45 minutes covers four sequential
     // buildctl builds plus lint/tests/three Trivy scans/push with cold caches and room to spare;
     // Jenkinsfile-cd's own budget is 30 minutes for a much shorter pipeline (see the arithmetic at

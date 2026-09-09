@@ -338,7 +338,7 @@ application** — they are what the application needs in order to exist:
 | kube-prometheus-stack | Prometheus, Grafana, Alertmanager |
 | ArgoCD | the GitOps controller that deploys the app in step 11 |
 | Jenkins + jenkins-support | CI, in-cluster |
-| ECK operator | reconciles the `Elasticsearch`/`Kibana` custom resources in `charts/logging` — a platform add-on for the same reason ArgoCD can't own it: see [`README.submission.md`'s EFK section](../README.submission.md#efk-logging) |
+| ECK operator | reconciles the `Elasticsearch`/`Kibana` custom resources in `charts/logging` — a platform add-on for the same reason ArgoCD can't own it: see [the EFK logging design doc](design/2026-08-27-efk-logging-design.md) |
 
 **Why this is one command rather than several you could watch.** The EKS control plane and the RDS
 restore each take about eight minutes — but together they take about *eight*, not sixteen, because

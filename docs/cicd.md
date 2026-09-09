@@ -60,8 +60,8 @@ git push (services/**) → webhook → application-ci → application-cd → Arg
 permission to `devops-app` — CI's ServiceAccount has zero Kubernetes RBAC at all, and CD's
 ServiceAccount holds a strictly read-only Role (`get`/`list`/`watch`, nothing that changes state).
 Every byte that reaches a running pod gets there through ArgoCD's own server-side apply. See §7 of
-the design doc for why, and the [ownership table](README.submission.md#why-argocd-is-the-applier-and-jenkins-cd-is-not)
-reproduced in the submission README.
+[the CI/CD split design doc](design/2026-08-04-cicd-split-design.md) for why, and for the full
+ownership table.
 
 **Jenkins is a platform add-on, not the application.** Changes to the Jenkins release (the Helm
 values in `terraform/addon-jenkins.tf`, or JCasC in `ci/jenkins/jenkins.yaml`) reach the cluster by
@@ -493,7 +493,7 @@ starts only from `application-ci`'s Trigger CD stage, or by hand.
 Deploy, rollout-waiting and health assessment are all delegated to ArgoCD CLI calls; what lives in
 this Jenkinsfile is only what a reconciler structurally cannot do — reject an invalid request, choose
 which tag git should name, ask the live site over HTTPS whether it works, and revert git when it does
-not. See design doc §7 for the full ownership table (also reproduced in `README.submission.md`).
+not. See design doc §7 for the full ownership table.
 
 ### 1. Checkout
 

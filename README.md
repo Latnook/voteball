@@ -202,7 +202,6 @@ deployment; it is the ballot-stuffing defence.
 
 ## Documentation
 
-- **[`README.submission.md`](README.submission.md)** — the turn-in doc: architecture, run/verify/delete, security, trade-offs.
 - **[`docs/deploy.md`](docs/deploy.md)** — plain-language deploy/verify/teardown guide.
 - **[`docs/cicd.md`](docs/cicd.md)** — the CI/CD pipeline: push → build → Trivy → ECR → ArgoCD, how the in-cluster Jenkins configures itself (JCasC), and its failure modes.
 - **[`docs/security.md`](docs/security.md)** — security design (IRSA, secrets, network, images, trade-offs).
