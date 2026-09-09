@@ -1,3 +1,0 @@
-ok    Application/AppProject match argocd/voteball-application.yaml.tmpl
-ok    no hand-registered repository or cluster credentials
-ArgoCD matches the repo — no GUI configuration.

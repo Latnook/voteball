@@ -202,12 +202,17 @@ echo
 # and CRD kinds that documents legitimately discuss.
 #
 # DATED RECORDS ARE EXEMPT, and that is not an oversight. The root CLAUDE.md is explicit that
-# docs/design/*, docs/eks/live-cluster-snapshot.md and docs/eks/evidence/* are frozen evidence which
-# must NOT be "corrected" -- a design doc recording that an alert existed under an older name, or a
-# snapshot of a cluster as it was, is accurate precisely because it still says the old thing.
+# docs/design/* and docs/eks/live-cluster-snapshot.md are frozen evidence which must NOT be
+# "corrected" -- a design doc recording that an alert existed under an older name, or a snapshot of a
+# cluster as it was, is accurate precisely because it still says the old thing.
+#
+# docs/eks/evidence/* was a third exemption until 2026-09-09, when the directory was deleted (the
+# project is no longer submitted anywhere). The filter is dropped rather than left in place: a filter
+# matching nothing is indistinguishable from a filter that works, which is the failure shape this
+# repo catalogues. If raw captures are ever committed again, re-add it -- do not "fix" them.
 echo "7. no live document cites a non-existent alert"
 LIVE_DOCS=$(find docs README.md -name '*.md' 2>/dev/null \
-  | grep -v '^docs/design/' | grep -v '^docs/eks/live-cluster-snapshot.md' | grep -v '^docs/eks/evidence/' \
+  | grep -v '^docs/design/' | grep -v '^docs/eks/live-cluster-snapshot.md' \
   | sort)
 [ -n "$LIVE_DOCS" ] || { echo "FAIL: found no live documents to scan" >&2; exit 1; }
 

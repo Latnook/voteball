@@ -33,7 +33,12 @@ NS=devops-app
 POLICY=allow-db-egress
 APP=voteball
 DATE="$(date +%Y-%m-%d)"
-OUT="docs/eks/evidence/${DATE}-drill-1-controlled-5xx.txt"
+OUT="${DRILL_OUT_DIR:-drill-output}/${DATE}-drill-1-controlled-5xx.txt"
+# The output directory is gitignored and no longer tracked: the drill transcripts used to
+# land in docs/eks/evidence/, which was deleted on 2026-09-09 along with the rest of the
+# submission evidence. Raw kubectl/terraform output carries ARNs and registry hostnames, so
+# a drill run must not silently re-publish them into a public repo.
+mkdir -p "$(dirname "$OUT")"
 DEADLINE_MIN="${DRILL_DEADLINE_MIN:-14}"
 PROM_PORT=19090
 

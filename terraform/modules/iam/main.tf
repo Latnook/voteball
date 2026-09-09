@@ -336,7 +336,8 @@ resource "aws_iam_policy" "jenkins_cd_ecr_read" {
 # daily. Nothing pushed it anywhere a person would see.
 #
 # sns:Publish on the EXISTING notifications topic, and nothing else. Deliberately not a second topic:
-# the email subscription on this one is already confirmed (docs/eks/evidence), so reusing it means the
+# the email subscription on this one is already confirmed (proven by a delivered alert on 2026-08-18),
+# so reusing it means the
 # alert path is proven the moment this applies, rather than being one more thing that has never
 # actually delivered a message.
 #

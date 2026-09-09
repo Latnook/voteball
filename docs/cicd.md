@@ -699,8 +699,9 @@ Nothing here is unsafe — Rollout and Verify are still the real gates, and they
 revision correctly — but when reading a slow rollback, **do not take that message as evidence of the
 benign race.** Check the Application instead: `kubectl get app voteball -n argocd -o json | jq
 '.status.history, .status.operationState'`. In this incident the sync history jumped straight from
-`e7421e1` to `a509871`, proving the broken revision never landed once. Full timeline:
-[`docs/eks/evidence/2026-08-20-task4-rollback.txt`](eks/evidence/2026-08-20-task4-rollback.txt).
+`e7421e1` to `a509871`, proving the broken revision never landed once. The full 2026-08-20 timeline
+was captured in `docs/eks/evidence/`, deleted 2026-09-09 — the `jq` command above is how you get the
+same view from a live cluster, which is the durable half anyway.
 
 ### 6. Rollout
 
@@ -776,7 +777,8 @@ unconditionally regardless of sample count. The one condition this does **not** 
 being **absent** rather than merely low-sample — that is the exact condition `VoteballSLIAbsent` pages
 on, and it means the measurement pipeline itself is broken, not that traffic is quiet.
 
-**Proved live by drill 4** (`docs/eks/evidence/2026-08-18-drill-4-monitoring-gate.txt`): a release with
+**Proved live by drill 4** (`scripts/drills/drill-4-monitoring-gate.sh`, re-runnable; its 2026-08-18
+transcript was deleted with `docs/eks/evidence/` on 2026-09-09): a release with
 a 1.5s sleep injected into `GET /api/options` passed Rollout, Verify and Smoke Test — healthy pods,
 `Synced`, 200 responses — and was caught only by the Monitoring Gate, which failed on
 `GATE_MAX_P95_SECONDS=1.0` and triggered the existing rollback path automatically. None of the checks

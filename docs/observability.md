@@ -122,9 +122,9 @@ kube-state-metrics and node-exporter in one release.
 
 **What it actually consumes**, as opposed to what it is allowed to: the capture script reports both,
 so the number is measured rather than estimated. On the 2026-08-24 cluster, a few hours in, the PVC
-was at **0.19% of 10Gi** with no compacted blocks on disk yet
-([`2026-08-24-observability-post-dns-fix.txt`](eks/evidence/2026-08-24-observability-post-dns-fix.txt)
-section 1). That is the shape to expect here: this stack is destroyed and rebuilt often enough that
+was at **0.19% of 10Gi** with no compacted blocks on disk yet (measured by the evidence-capture
+script, section 1 of its 2026-08-24 run; that capture tooling was deleted 2026-09-09 — the number
+stands, the transcript is in git history). That is the shape to expect here: this stack is destroyed and rebuilt often enough that
 Prometheus rarely lives long enough to approach either limit, which is exactly why `retentionSize`
 matters anyway — the one time it does approach them, the failure without it is a crash, not a
 trim.
@@ -365,15 +365,14 @@ Panel", closed *not planned*). Grouping, silences and inhibition — what was ac
 not just what fired — are visible today, live, at **Alerting → Alertmanager**, picking **Alertmanager**
 from the data source selector at the top; they cannot currently be embedded in a dashboard.
 
-Rendered captures, with live data, live alongside the text evidence:
-[`2026-08-24-grafana-application-overview.png`](eks/evidence/2026-08-24-grafana-application-overview.png),
-[`-kubernetes-cluster.png`](eks/evidence/2026-08-24-grafana-kubernetes-cluster.png),
-[`-jenkins-delivery.png`](eks/evidence/2026-08-24-grafana-jenkins-delivery.png). They are the weaker
-half of the proof and are kept anyway: section 7 of
-[`2026-08-24-observability-post-dns-fix.txt`](eks/evidence/2026-08-24-observability-post-dns-fix.txt)
-runs **every panel's own query** and records the series count, which proves a panel *can* query rather
-than showing what it drew at one instant. A screenshot cannot tell you a panel is about to go blank;
-the query count can.
+Rendered PNG captures of three dashboards used to sit alongside the text evidence; both were deleted
+on 2026-09-09 with `docs/eks/evidence/`. The reasoning they recorded is worth keeping, because it
+decides what to capture next time: the screenshots were always the **weaker** half of the proof, and
+the stronger half was a section that ran **every panel's own query** and recorded the series count.
+That proves a panel *can* query. A screenshot cannot tell you a panel is about to go blank; the query
+count can — which is also why the per-panel sweep is not sufficient on its own (see the
+frontend-vs-backend corollary in `CLAUDE.md`: it queries `/api/ds/query` and cannot see a
+frontend-only failure).
 
 **Application Overview carries three template variables — `Service`, `Pod` and `Release` — and one
 class of panel deliberately ignores them.** The per-pod panels (request rate, 5xx, latency
@@ -782,9 +781,8 @@ all — is gone at the next pod restart, which on a 100% Spot node group is roug
 that has to stay belongs in `helm_release.kube_prometheus_stack`'s values in
 `terraform/addon-monitoring.tf`; a dashboard belongs in `charts/observability/dashboards/` (§6).
 `grafana-cli admin reset-admin-password` is a trap in particular: it rewrites the running password
-but not the `kube-prometheus-stack-grafana` Secret, so the Secret that
-`scripts/capture-observability-evidence.sh` reads silently stops being the real password — and the
-next restart discards the new one regardless.
+but not the `kube-prometheus-stack-grafana` Secret, so the Secret that anything scripted reads
+silently stops being the real password — and the next restart discards the new one regardless.
 
 ---
 
@@ -833,8 +831,9 @@ scripts/ci/validate-observability.sh           # the validator itself, against t
 **An alert that fires and is never delivered is the exact silent failure this design exists to catch**,
 so the acceptance test was a real alert all the way to a received email — not a screenshot of a healthy
 system. An unschedulable canary Deployment tripped `DeploymentReplicasMismatch`; Alertmanager published
-to SNS with zero failed notifications, and the email arrived with its `Runbook:` line. Full output in
-[`docs/eks/evidence/2026-08-18-observability-as-code.txt`](eks/evidence/2026-08-18-observability-as-code.txt).
+to SNS with zero failed notifications, and the email arrived with its `Runbook:` line. The full
+2026-08-18 transcript was deleted with `docs/eks/evidence/` on 2026-09-09; re-prove it by making a
+Deployment unschedulable rather than by reading a log.
 
 ---
 
@@ -882,19 +881,21 @@ for a second copy of what Prometheus already collects.
 
 ## 15. Failure drills
 
-The design was tested by breaking things, and the transcripts are committed. `docs/design/2026-08-17-observability-design.md`
-carries the narrative; these are the artefacts:
+The design was tested by breaking things. `docs/design/2026-08-17-observability-design.md` carries the
+narrative. The raw transcripts lived in `docs/eks/evidence/` and were **deleted on 2026-09-09** with
+the rest of the submission tooling — recoverable from git history, but no longer linked, because a
+link that 404s is worse than a sentence that stands on its own:
 
-| Drill | What it proved | Evidence |
-|---|---|---|
-| 1 — controlled 5xx | **Found two real defects** (the `connect_timeout` hang and the ratio-with-no-denominator blind spot) before either could matter in production | [`2026-08-18-drill-1-controlled-5xx.txt`](eks/evidence/2026-08-18-drill-1-controlled-5xx.txt) |
-| 2 — pod readiness | Zero non-200 responses across 60 polls while Kubernetes replaced a pod in 54s, behind a PDB | [`-2-pod-readiness.txt`](eks/evidence/2026-08-18-drill-2-pod-readiness.txt) |
-| 3 — Jenkins agent loss | The site stayed at 200 throughout and Jenkins re-provisioned an agent on its own | [`-3-jenkins-agent-loss.txt`](eks/evidence/2026-08-18-drill-3-jenkins-agent-loss.txt) |
-| 4 — monitoring gate | A 1.5s latency regression passed every pre-existing check and was caught and rolled back by the gate alone | [`-4-monitoring-gate.txt`](eks/evidence/2026-08-18-drill-4-monitoring-gate.txt) |
-| 5 — Jenkins queue stuck | Alert fired end to end on a genuinely stuck queue, 12m53s after the condition began — see below | [`-5-jenkins-queue-stuck.txt`](eks/evidence/2026-08-18-drill-5-jenkins-queue-stuck.txt), [`rerun-drill-5`](eks/evidence/2026-08-18-rerun-drill-5-jenkins-queue-stuck.txt) |
+| Drill | What it proved |
+|---|---|
+| 1 — controlled 5xx | **Found two real defects** (the `connect_timeout` hang and the ratio-with-no-denominator blind spot) before either could matter in production |
+| 2 — pod readiness | Zero non-200 responses across 60 polls while Kubernetes replaced a pod in 54s, behind a PDB |
+| 3 — Jenkins agent loss | The site stayed at 200 throughout and Jenkins re-provisioned an agent on its own |
+| 4 — monitoring gate | A 1.5s latency regression passed every pre-existing check and was caught and rolled back by the gate alone |
+| 5 — Jenkins queue stuck | Alert fired end to end on a genuinely stuck queue, 12m53s after the condition began — see below |
 
-Re-runs after the fixes are in the matching `2026-08-18-rerun-drill-*.txt` files, plus
-[`-4b-settle-fix-proof.txt`](eks/evidence/2026-08-18-rerun-drill-4b-settle-fix-proof.txt).
+Re-runs after the fixes were captured in matching `2026-08-18-rerun-drill-*.txt` files, including a
+settle-fix proof for drill 4b — deleted 2026-09-09 with the rest of `docs/eks/evidence/`.
 
 **Drills 1 and 3 were re-run on 2026-08-24, on the cluster rebuilt that afternoon, and they are now
 scripts rather than a sequence of commands somebody remembered.** `scripts/drills/` holds
@@ -904,17 +905,17 @@ so the break can outlive a reconcile, and leaving that suspended is a worse stat
 creates. A drill nobody can re-run is a drill that expires, which is exactly what had happened to the
 August set.
 
-| Drill | 2026-08-24 outcome | Evidence |
-|---|---|---|
-| 1 — controlled 5xx | `VoteballHighErrorRate` fired at 15:24:55Z; availability fell 1.00 → 0.10 as the site served 500s. **Two caveats are written into the transcript**: the outage was ended externally at 15:22:03Z by a second operator, so the alert fired on the tail of a 5-minute rate window rather than against a still-broken site; and the `HEALTH` column was reading the public `/health`, which is a 404 because nginx proxies only `/api/*`. | [`2026-08-24-drill-1-controlled-5xx.txt`](eks/evidence/2026-08-24-drill-1-controlled-5xx.txt) |
-| 3 — Jenkins agent loss | A 9-container build agent was force-deleted mid-build; the site held 200 across every poll and Jenkins provisioned a replacement agent on its own within ~2 minutes. | [`2026-08-24-drill-3-jenkins-agent-loss.txt`](eks/evidence/2026-08-24-drill-3-jenkins-agent-loss.txt) |
-| 4 — monitoring gate | A release with 1.5s injected into `/api/options` passed pods-Ready, ArgoCD Synced and all three smoke-test endpoints, then failed the gate on **p95 2.315s vs the 1.0s SLO with an error ratio of 0.000000**, and was rolled back automatically. Site degraded (slow, never failing) for 2m45s. | [`2026-08-24-drill-4-monitoring-gate.txt`](eks/evidence/2026-08-24-drill-4-monitoring-gate.txt) |
-| 5 — Jenkins queue stuck | `JenkinsQueueStuck` fired at 16:03:10Z, exactly its `for: 15m` after a `ResourceQuota` of `pods=1` blocked agent provisioning at 15:48:10Z. The queue reached 4 and `ci` fell to the controller pod alone, while the site returned 200 on every poll of the window. | [`2026-08-24-drill-5-jenkins-queue-stuck.txt`](eks/evidence/2026-08-24-drill-5-jenkins-queue-stuck.txt) |
+| Drill | 2026-08-24 outcome |
+|---|---|
+| 1 — controlled 5xx | `VoteballHighErrorRate` fired at 15:24:55Z; availability fell 1.00 → 0.10 as the site served 500s. **Two caveats are written into the transcript**: the outage was ended externally at 15:22:03Z by a second operator, so the alert fired on the tail of a 5-minute rate window rather than against a still-broken site; and the `HEALTH` column was reading the public `/health`, which is a 404 because nginx proxies only `/api/*`. |
+| 3 — Jenkins agent loss | A 9-container build agent was force-deleted mid-build; the site held 200 across every poll and Jenkins provisioned a replacement agent on its own within ~2 minutes. |
+| 4 — monitoring gate | A release with 1.5s injected into `/api/options` passed pods-Ready, ArgoCD Synced and all three smoke-test endpoints, then failed the gate on **p95 2.315s vs the 1.0s SLO with an error ratio of 0.000000**, and was rolled back automatically. Site degraded (slow, never failing) for 2m45s. |
+| 5 — Jenkins queue stuck | `JenkinsQueueStuck` fired at 16:03:10Z, exactly its `for: 15m` after a `ResourceQuota` of `pods=1` blocked agent provisioning at 15:48:10Z. The queue reached 4 and `ci` fell to the controller pod alone, while the site returned 200 on every poll of the window. |
 
 **Drill 4's 2026-08-24 run closes a question the August run left open, and it is the rollback half
 that matters.** On 2026-08-18 the gate correctly failed the slow release — and then the ROLLBACK
 failed its own gate too, at p95 2.33s, while production was already serving 0.12s
-([`-4b-settle-fix-proof.txt`](eks/evidence/2026-08-18-rerun-drill-4b-settle-fix-proof.txt)). Every
+(drill 4b's settle-fix proof). Every
 SLI here is a rate over `[5m]`, so the rollback inherited a window still full of the slow release it
 had just removed.
 

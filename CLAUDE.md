@@ -80,6 +80,29 @@ CloudWatch, the SLIs, every alert and its runbook, the two pipeline gates),
 `docs/party-classifications.md` (why each party carries the ideology values it does — the reasoning
 that used to live in `seed.sql` comments).
 
+**`docs/eks/evidence/` is GONE (deleted 2026-09-09) and must not come back.** It held 110 raw
+`kubectl`/`terraform`/Jenkins captures, 4.6 MB, produced by four `scripts/capture-*` scripts that were
+deleted with it — the project is no longer submitted anywhere, so nothing consumed them. Two
+consequences worth knowing before you "restore the evidence for a claim":
+
+- **The captures were unedited on purpose, and that is why they carried ~1,400 occurrences of the AWS
+  account id** — far more than the seven in `values.yaml` that the 2026-09-08 helm.parameters pass was
+  written to remove. Deleting them un-published nothing (git history is permanent, an account id
+  cannot be rotated); it stops the pile growing. `docs/security.md`'s "What is deliberately public"
+  section carries the full reasoning **plus a measured 2026-09-09 check** that the id is inert — no
+  publicly shared EBS snapshot, AMI, RDS snapshot, bucket or ECR repository in the account. Re-run
+  that check after anything that shares a snapshot or an image; do not re-argue it from first
+  principles.
+- **The chaos drills survive and are the durable half.** `scripts/drills/drill-{1,3,4,5}-*.sh` still
+  run and still write transcripts — to a gitignored `drill-output/` (`DRILL_OUT_DIR` overrides), never
+  into the repo. A re-runnable drill outlives a transcript: the August set expired precisely because
+  it was a sequence of commands somebody remembered, and the transcripts proved nothing once the
+  commands were lost. Cite the script, not a capture.
+
+Live docs therefore state drill outcomes as prose with no link. That is deliberate — **a link that
+404s is worse than a sentence that stands on its own**, and it is the same reasoning that deleted
+`README.submission.md` rather than leaving it stale.
+
 ## Workflow
 
 **Never put a `Claude-Session:` trailer (or any `claude.ai/code/session_...` URL) in a commit message
@@ -240,8 +263,9 @@ vars). Reuse this decorator for any new admin route — don't hand-roll the chec
 problem, RDS itself unreachable) makes the connect call **hang** instead of failing. A hung request
 never completes, so nothing gets counted — not even the error counter — and the request-ratio SLIs
 (`voteball:availability:ratio5m` and friends) simply have no data point to include it in. This was a
-real, live defect (found by the 2026-08-18 drills, `docs/eks/evidence/2026-08-18-drill-1-controlled-
-5xx.txt`): a two-hour total API outage rendered as `availability = 1`, perfect, because every failing
+real, live defect (found by the 2026-08-18 drills; re-runnable via
+`scripts/drills/drill-1-controlled-5xx.sh`): a two-hour total API outage rendered as
+`availability = 1`, perfect, because every failing
 request was still in-flight, not failed. `connect_timeout=5` is what turns "the database is
 unreachable" into a fast, countable error instead of an invisible one.
 
@@ -301,7 +325,7 @@ but only on the second attempt, and the way it was proven is the point: killing 
 *aborts* the build rather than queueing it, so a drill built around that mechanism can never reach a
 non-zero queue size. Reaching the condition needs agent **provisioning** to fail — a `ResourceQuota`
 of `pods=1` on the `ci` namespace — after which the alert fired end to end
-(`docs/eks/evidence/2026-08-18-rerun-drill-5-jenkins-queue-stuck.txt`). It also depends on the Jenkins
+(re-runnable via `scripts/drills/drill-5-jenkins-queue-stuck.sh`). It also depends on the Jenkins
 ServiceMonitor being enabled, which is gated on a controller-image rebuild carrying `prometheus.jpi`.
 
 ### API surface
@@ -986,7 +1010,8 @@ note the redirect must NOT go to `/dev/null` or there is no terminal and nothing
 
 The real hang sites are therefore the `--output text`/`--output table` calls in the seed and evidence
 scripts — `deploy.sh` step 3b (`seed-jenkins-secret.sh`) and step 7b (`seed-argocd-token.sh`), both
-`put-secret-value … --output text`, plus two in `capture-evidence.sh`. Steps 3b and 7b are the
+`put-secret-value … --output text`. (Two more lived in `capture-evidence.sh`, deleted 2026-09-09.)
+Steps 3b and 7b are the
 expensive ones: 7b lands **after** the billed ~13-minute apply, so hanging there costs a rebuild
 rather than a retry. (`deploy.sh`'s own `aws eks update-kubeconfig` at step 7 was originally listed
 here and is **not** a hang site, per the `BasicCommand` rule above.) The fix is `export AWS_PAGER=""`, set once in
@@ -1324,7 +1349,7 @@ Two audit passes on 2026-07-26 found seven stale claims; every one was mechanica
   `VoteballDeploymentDegraded` was found on 2026-08-20, still cited in `docs/production-readiness.md`
   and `docs/eks/architecture.md` three days after being renamed to `DeploymentReplicasMismatch` and
   moved to `charts/observability`. **Dated records are deliberately exempt** from that scan
-  (`docs/design/*`, `docs/eks/live-cluster-snapshot.md`, `docs/eks/evidence/*`) — those still say the
+  (`docs/design/*`, `docs/eks/live-cluster-snapshot.md`) — those still say the
   old name correctly, and "fixing" them would destroy the record. So: when you change an alert, a
   dashboard or a recording rule, update `docs/observability.md` in the same commit; the build will
   tell you if you didn't, but only for the countable half — it cannot check whether a sentence is

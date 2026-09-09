@@ -11,8 +11,10 @@ cluster. Nothing is overwritten when a new one is added — the older layers are
 | 4 | *2026-07-27 — post-rebuild capture* | the cluster `deploy.sh` rebuilt minutes later |
 
 Layers 3 and 4 are a **matched pair either side of one teardown/rebuild cycle**, and comparing them is
-the point: the vote count is identical across it. Their raw, untrimmed command output is in
-[`evidence/`](evidence/).
+the point: the vote count is identical across it. Their raw, untrimmed command output was in
+`docs/eks/evidence/`, deleted 2026-09-09 (recoverable from git history). Delinked rather than
+rewritten: this page is a dated record, so the claim stands as written and only the dead pointer
+goes.
 
 > **This is dated evidence, not a description of the cluster as it stands now.** Every value here was
 > true when captured and is deliberately left frozen. The cluster has been destroyed and rebuilt
