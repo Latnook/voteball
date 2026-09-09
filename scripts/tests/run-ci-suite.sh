@@ -134,6 +134,10 @@ GIT_GROUP=(
   # Here rather than PYTHON_GROUP for the same reason as test-rollback-target.sh -- nothing about it
   # prefers git; GIT_GROUP is simply the smaller container.
   test-values-commit-msg.sh
+  # Greps nginx.conf, the HTML/JS, the Ingress templates and charts/voteball for the 2026-09-09
+  # hardening (security headers, strict CSP, ALB TLS policy, seccomp). bash + grep/awk only --
+  # confirmed with python3, git, helm, aws, terraform, docker all shimmed to exit 127.
+  test-hardening.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.

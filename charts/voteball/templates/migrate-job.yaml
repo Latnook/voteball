@@ -95,6 +95,7 @@ spec:
             limits: { cpu: 500m, memory: 256Mi }
           securityContext:
             allowPrivilegeEscalation: false
+            seccompProfile: { type: RuntimeDefault }
             readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]

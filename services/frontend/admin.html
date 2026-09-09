@@ -14,31 +14,6 @@
   <script src="theme.js"></script>
   <title data-i18n="adminTitle">Voteball — Admin</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .tab-button { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
-    .tab-button.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-    #logout-button { margin-inline-start: auto; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.85rem; cursor: pointer; }
-    .tab-section { display: none; }
-    .tab-section.active { display: block; }
-    .party-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
-    .party-row .logo { width: 1.8rem; height: 1.8rem; }
-    .party-row .party-name { flex: 1; min-width: 120px; font-weight: 600; }
-    .party-row button, .reassign-form button { font-size: 0.8rem; padding: 0.4rem 0.7rem; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-    .reassign-form { margin: 0.4rem 0 0.4rem 1.5rem; padding: 0.6rem; border: 1px solid var(--line); border-radius: var(--radius-sm); width: 100%; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-    .league-group { border: 1px solid var(--line); border-radius: var(--radius); padding: 0.8rem; margin: 0.8rem 0; background: var(--surface); }
-    .league-header { font-weight: bold; }
-    .club-list { margin: 0.4rem 0 0.4rem 1.5rem; }
-    .club-row { font-weight: normal; }
-    .row-note { color: var(--muted); font-size: 0.85rem; }
-    .add-form-row, .add-club-form { display: flex; gap: 0.5rem; align-items: center; margin: 0.6rem 0 0.4rem 0; flex-wrap: wrap; }
-    .add-club-form { margin-inline-start: 1.5rem; }
-    table.votes-table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
-    table.votes-table th, table.votes-table td { border: 1px solid var(--line); padding: 0.5rem; text-align: start; }
-    table.votes-table th { background: var(--surface-raised); }
-    .row-error { color: var(--danger); font-size: 0.85rem; width: 100%; }
-    .logo-url-input { min-width: 220px; }
-  </style>
 </head>
 <body>
   <div class="topbar">
@@ -72,7 +47,7 @@
       </form>
     </div>
 
-    <div id="admin-content" style="display:none">
+    <div id="admin-content" hidden>
       <div class="tab-bar">
         <button type="button" class="tab-button" data-tab="teams" data-i18n="adminTabTeams">Teams</button>
         <button type="button" class="tab-button active" data-tab="previous" data-i18n="adminTabPrevious">Previous Parties</button>

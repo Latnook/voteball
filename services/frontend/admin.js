@@ -19,15 +19,19 @@ async function adminFetch(url, options = {}) {
   return res;
 }
 
+// Toggle with the `hidden` attribute, not style.display. style.css has [hidden] { display:none
+// !important }, so a style.display = 'block' on an element that still carries `hidden` would lose
+// to it and the panel would never appear. (Setting element.style from JS is CSSOM and allowed under
+// the strict style-src CSP; this is about the !important rule, not the policy.)
 function showGate(message) {
-  document.getElementById('admin-content').style.display = 'none';
-  document.getElementById('secret-gate').style.display = 'block';
+  document.getElementById('admin-content').hidden = true;
+  document.getElementById('secret-gate').hidden = false;
   document.getElementById('secret-error').textContent = message || '';
 }
 
 function showContent() {
-  document.getElementById('secret-gate').style.display = 'none';
-  document.getElementById('admin-content').style.display = 'block';
+  document.getElementById('secret-gate').hidden = true;
+  document.getElementById('admin-content').hidden = false;
 }
 
 async function getOptionsData() {

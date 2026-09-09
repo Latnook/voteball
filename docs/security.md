@@ -234,6 +234,63 @@ even a partial exception: nine of its ten environment fields are supplied by the
 `helm.parameters` at render time, and the tenth (`image.tag`) is a git SHA. A fork sets
 `terraform/voteball.tfvars` and runs the deploy; there is nothing to hand-edit.
 
+## Browser and transport hardening (2026-09-09)
+
+Three layers, each pinned by `scripts/tests/test-hardening.sh` so they cannot rot silently:
+
+**Response headers.** `services/frontend/security-headers.conf` sets HSTS (`max-age=63072000;
+includeSubDomains`, no `preload` -- that is a near-irreversible list submission and does nothing on
+a subdomain without the apex), a **strict Content-Security-Policy with no `'unsafe-inline'`**,
+`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` (plus `frame-ancestors 'none'` in the
+CSP), `Referrer-Policy: strict-origin-when-cross-origin`, a `Permissions-Policy` that denies camera,
+microphone, geolocation, payment and USB, and `Cross-Origin-Opener-Policy: same-origin`.
+`server_tokens off` drops the nginx version from `Server:` and error pages.
+
+Two things about the CSP that a reader could reasonably get wrong:
+
+- **`img-src` allows `https:`**, not just `'self'`. `seed.sql`'s `logo_url` values are hotlinked from
+  roughly 300 origins, and `services/frontend/CLAUDE.md` records which of those are tolerated. Every
+  other directive is `'self'`; nothing on the site loads a script, style, font or XHR target from
+  anywhere else.
+- **It holds only because the pages were made to hold it.** The one inline `<style>` and the one
+  `style=""` attribute in the site (both on `admin.html`) moved to `style.css` and the `hidden`
+  attribute. A browser enforces CSP silently -- a new inline style just does not apply, and only the
+  devtools console says why -- so the test fails the build on any inline `<style>`, `style=""`,
+  `on*=""` or `<script>` without `src`, and on `setAttribute('style', …)` in JS.
+
+**The snippet is included twice in `nginx.conf` on purpose** -- at server level and again inside
+`location /api/`. nginx's `add_header` is not inherited into a block that declares an `add_header`
+of its own, and `/api/` sets `X-Robots-Tag`; without the second include every API response would
+carry none of the headers, and nothing would report it. The test walks every `location` block and
+requires the include wherever there is an `add_header`.
+
+**TLS at the load balancer.** Every Ingress in the shared `voteball` ALB group sets
+`alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09` -- TLS 1.2 and
+1.3 only, seven cipher suites, hybrid post-quantum key exchange; AWS's current recommendation and
+the console default (verified available in `il-central-1`). Without the annotation the controller
+uses `ELBSecurityPolicy-2016-08`, which still negotiates TLS 1.0 and 1.1. It is an **Exclusive**
+annotation: a mismatch between any two Ingresses in the group errors the whole group, so the test
+asserts all three carry the identical value. `charts/jenkins-support` is Terraform-owned, so its copy
+lands on the next `terraform apply`, not on a `git push` -- in between, one Ingress setting the policy
+and two not setting it is not a conflict.
+
+**Runtime.** Every container in `charts/voteball` runs with `seccompProfile: RuntimeDefault`, the
+last field the Pod Security Standards "restricted" profile asks for that the chart did not already
+set (non-root, no privilege escalation, all capabilities dropped and a read-only root filesystem were
+already there). Counted against `allowPrivilegeEscalation: false` so a new container without it fails
+the build.
+
+**What was checked and deliberately left alone.** `trivy config` flags the two `MUTABLE` ECR
+repositories and `scan_on_push = false` on them -- both are the build caches, and both are documented
+in `CLAUDE.md` as required (a cache tag is rewritten on every build). It also flags the S3 buckets for
+using SSE-S3 rather than a customer-managed KMS key; a CMK would add a per-request KMS charge for no
+threat this project has. `hadolint` wants `apk add aws-cli` version-pinned in the backup image;
+Alpine removes superseded package versions from its index, so a pin there breaks the build on Alpine's
+schedule rather than ours, and the base image is already digest-pinned. `gitleaks` over all 1,340
+commits reports 38 hits: 32 are plugin checksums in `ci/jenkins/plugins.lock.txt`, one is a
+`REPLACE_ME` placeholder key in a deleted plan, and five are the 2026-08-04 ECR login token in deleted
+evidence files -- a 12-hour token, expired thirteen months of context ago and analysed in `CLAUDE.md`.
+
 ## Vote integrity
 
 One ballot per visitor is enforced in two layers, because neither is sufficient alone:
