@@ -4,7 +4,8 @@
 **Status:** **implemented.** `scripts/deploy.sh` (8 steps) and `scripts/destroy.sh` (6 steps) encode
 the ordering described here, including the orphaned-ENI reaper and `scripts/cleanup-stale-dns.sh`.
 Exercised across the 2026-07-21 and 2026-07-27 destroy→rebuild cycles; the 2026-07-27 run is captured
-in [`../eks/evidence/`](../eks/evidence/) (112 destroyed → 112 added, votes intact).
+in `docs/eks/evidence/` (112 destroyed → 112 added, votes intact) — that directory was deleted on
+2026-09-09; the link is gone, the record of what it showed is not.
 
 > **Historical record.** CI moved from GitHub Actions to Jenkins on 2026-07-20; every
 > `.github/workflows/ci.yml` reference below describes the pipeline as it was at the time. See

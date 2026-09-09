@@ -133,8 +133,8 @@ rebuild cycle. Turn it on only alongside retiring the destroy/rebuild workflow. 
 restores from the previous teardown's final snapshot, and the 2026-07-21 rebuild brought the votes and
 seed data back intact. **Re-verified with counted evidence on 2026-07-27** — 5 votes recorded before
 teardown (party 10 with two votes; parties 5, 4 and 14 with one each), then re-queried on the rebuilt
-cluster and found byte-identical. Captured in `docs/eks/live-cluster-snapshot.md`, with the raw
-before/after API responses in `docs/eks/evidence/`. That closes the
+cluster and found byte-identical. Captured in `docs/eks/live-cluster-snapshot.md`; the raw
+before/after API responses were in `docs/eks/evidence/`, deleted 2026-09-09. That closes the
 "backups that have never been restored are a hypothesis" item above with a number rather than a claim.
 
 ### ⚠️ The nightly `pg_dump` is NOT teardown insurance

@@ -18,7 +18,12 @@ cd "$(dirname "$0")/../.."
 : "${JENKINS_ADMIN_PASSWORD:?set JENKINS_ADMIN_PASSWORD (deploy.env)}"
 
 DATE="$(date +%Y-%m-%d)"
-OUT="docs/eks/evidence/${DATE}-drill-3-jenkins-agent-loss.txt"
+OUT="${DRILL_OUT_DIR:-drill-output}/${DATE}-drill-3-jenkins-agent-loss.txt"
+# The output directory is gitignored and no longer tracked: the drill transcripts used to
+# land in docs/eks/evidence/, which was deleted on 2026-09-09 along with the rest of the
+# submission evidence. Raw kubectl/terraform output carries ARNs and registry hostnames, so
+# a drill run must not silently re-publish them into a public repo.
+mkdir -p "$(dirname "$OUT")"
 PROM_PORT=19092
 JENKINS_PORT=18081
 WAIT_AGENT_SEC="${DRILL_WAIT_AGENT_SEC:-300}"

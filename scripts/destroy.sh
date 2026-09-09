@@ -378,6 +378,18 @@ EOF
   fi
 fi
 
+# Prune old snapshots LAST, and only here -- after terraform destroy has taken this teardown's final
+# snapshot, so the newest one this deletes toward is guaranteed to exist. Running it earlier would
+# prune against a stale "newest".
+#
+# Deliberately non-fatal. The teardown has already succeeded by this point; a snapshot that will not
+# delete is a cost problem, not a correctness one, and failing the script here would make a clean
+# teardown look broken. SNAPSHOT_RETAIN overrides the default of 7; the pruner refuses to delete the
+# newest whatever that number says.
+step "Pruning old DB snapshots (backup storage had become the largest RDS line item)"
+"$(dirname "$0")/prune-db-snapshots.sh" --apply || \
+  echo "WARNING: snapshot pruning did not fully succeed -- see above. The teardown itself is fine." >&2
+
 cat <<'EOF'
 
 Teardown complete. A final DB snapshot was taken -- the next deploy restores from it automatically.

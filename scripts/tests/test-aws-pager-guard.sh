@@ -19,7 +19,6 @@
 #   deploy.sh step 3b   put-secret-value --output text   (seed-jenkins-secret.sh)
 #   deploy.sh step 7b   put-secret-value --output text   (seed-argocd-token.sh) -- AFTER the billed
 #                                                         ~13-minute apply, so a hang costs a rebuild
-#   capture-evidence.sh sns get-topic-attributes --output table, cloudwatch get-metric-statistics
 #
 # CI never saw it: Jenkins captures stdout, so it is not a terminal there, and the agents have run
 # amazon/aws-cli:2.x all along. That asymmetry is exactly why this needs a test -- a green pipeline
@@ -93,7 +92,11 @@ ok "every exemption still exists and is still needed"
 # ---- 5. the call sites that actually hang are guarded --------------------------------------------
 # Named individually because seed-argocd-token.sh runs at deploy step 7b, AFTER the billed
 # ~13-minute apply: hanging there costs a rebuild, not just a retry.
-for f in scripts/seed-argocd-token.sh scripts/seed-jenkins-secret.sh scripts/capture-evidence.sh; do
+# capture-evidence.sh was the third named site until 2026-09-09, when it was deleted along with
+# docs/eks/evidence/ (the project is no longer being submitted, so nothing consumes the captures).
+# The exhaustiveness check in section 4 above is what protects the general case; this list only
+# names the sites whose hang is expensive.
+for f in scripts/seed-argocd-token.sh scripts/seed-jenkins-secret.sh; do
   grep -q 'lib/config.sh' "$f" || fail "$f no longer sources config.sh -- its unredirected aws calls would hang"
 done
 ok "the known hang sites still inherit the guard"

@@ -38,6 +38,12 @@ PYTHON_GROUP=(
   test-ci-guards.sh
   test-deploy-env.sh
   test-frontend-seo.sh
+  # Needs python3 -- its fake `aws` is a python script that actually honours the --query's sort key
+  # and Status predicate, which is what makes the ordering assertions non-vacuous (the first two
+  # versions of that fake ignored --query and could not fail). No git, no AWS, no terraform:
+  # confirmed passing on 2026-09-09 with git, helm, kubectl, aws, terraform and docker all shimmed
+  # to exit 127, per the rule above.
+  test-prune-db-snapshots.sh
   # Needs python3 (its data-source-uid cross-check parses each dashboard's JSON at any depth,
   # replacing a single-line grep that silently skipped a multi-line "datasource" block -- see
   # docs/design/2026-08-24-grafana-datasources-design.md and the Task 6 report) and no git. It
@@ -122,6 +128,12 @@ GIT_GROUP=(
   # in a build which FAILED is still visible from the last SUCCESSFUL build's base, and invisible
   # from the previous build's. Stubbing git would assert nothing at all here.
   test-changed-paths.sh
+  # Sources deploy.sh's values_commit_message block and feeds it file CONTENT, so it needs no git
+  # repo, no cluster and no AWS -- bash + awk, sed, grep only. Confirmed passing on 2026-09-09 with
+  # python3, git, helm, kubectl, aws and terraform ALL shimmed to exit 127, per the rule above.
+  # Here rather than PYTHON_GROUP for the same reason as test-rollback-target.sh -- nothing about it
+  # prefers git; GIT_GROUP is simply the smaller container.
+  test-values-commit-msg.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.

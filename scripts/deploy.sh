@@ -412,7 +412,8 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   git add charts/voteball/values.yaml
   # Deliberately NO [skip ci] here, though it looks like it belongs. This commit touches only
   # charts/voteball/values.yaml, and the Jenkinsfile gates every build stage on
-  # `changeset 'services/**'` (G3), so it rebuilds nothing -- the marker would buy nothing.
+  # env.SERVICES_CHANGED (G3/G3c -- a `changeset` directive until 2026-09-08), so it rebuilds
+  # nothing -- the marker would buy nothing.
   # (After a controller restart G3b makes this push run the pipeline rather than skip it, because
   # there is no changelog to judge by. That is still not a rebuild: step 8 has already pushed the
   # images for this SHA, so G1 short-circuits build/scan/push, and the tag bump finds values.yaml
@@ -421,7 +422,41 @@ if ! git diff --quiet -- charts/voteball/values.yaml; then
   # aborts the WHOLE build, while `changeset` spans every commit since the last build. If an app-code
   # commit and this one land in the same build window, the marker would abort the build that was
   # supposed to build the app-code commit, and nothing would retry it.
-  git commit -m "Deploy: sync values.yaml from Terraform outputs"
+
+  # --- values-commit-message: BEGIN (extracted verbatim by scripts/tests/test-values-commit-msg.sh) ---
+  # Every one of these commits used to carry the same fixed sentence, so `git log --oneline` recorded
+  # that a deploy happened and nothing about WHAT it deployed -- and this file's history IS the
+  # rollback mechanism (scripts/ci/previous-tag.sh). The subject now names the change, mirroring the
+  # release branch's own "release: <sha> (image tag <tag>)" shape.
+  #
+  # Only two things in this file ever change here: image.tag (sync-values-from-tf.sh manages exactly
+  # one field since 2026-09-08) and the four image.digests pinned above. Hence exactly two subjects.
+  #
+  # The tag regex is the QUOTED form shared with previous-tag.sh and current-release-tag.sh. An
+  # unquoted `tag: abc1234` is the 2026-08-04 escaping bug's signature; matching it here would let a
+  # malformed values.yaml produce a confident, wrong subject, so it falls through to the generic one
+  # instead of guessing.
+  values_commit_message() {
+    # $1 = values.yaml content BEFORE this deploy, $2 = content after. Content, not paths, so the
+    # test can exercise both branches without a git repo.
+    local prev new
+    prev="$(printf '%s\n' "$1" | sed -nE 's/^  tag: "([^"]*)".*/\1/p' | head -1 || true)"
+    new="$(printf '%s\n' "$2" | sed -nE 's/^  tag: "([^"]*)".*/\1/p' | head -1 || true)"
+    if [ -z "$new" ]; then
+      echo "deploy: sync values.yaml from Terraform outputs"
+    elif [ -z "$prev" ]; then
+      echo "deploy: image tag $new"
+    elif [ "$prev" = "$new" ]; then
+      echo "deploy: pin image digests for $new"
+    else
+      echo "deploy: image tag $prev -> $new"
+    fi
+  }
+  # --- values-commit-message: END ---
+
+  git commit -m "$(values_commit_message \
+                     "$(git show HEAD:charts/voteball/values.yaml 2>/dev/null || true)" \
+                     "$(cat charts/voteball/values.yaml)")"
 
   # Wait for Jenkins to be able to RECEIVE the webhook before pushing, because GitHub does not retry
   # a failed push delivery -- it fires once and the build is gone.
