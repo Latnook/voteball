@@ -290,6 +290,11 @@ schedule rather than ours, and the base image is already digest-pinned. `gitleak
 commits reports 38 hits: 32 are plugin checksums in `ci/jenkins/plugins.lock.txt`, one is a
 `REPLACE_ME` placeholder key in a deleted plan, and five are the 2026-08-04 ECR login token in deleted
 evidence files -- a 12-hour token, expired thirteen months of context ago and analysed in `CLAUDE.md`.
+**EKS control-plane logging** (`cluster_enabled_log_types`) is deliberately off, decided by the repo
+owner on 2026-09-09: it bills per GB of CloudWatch ingestion on a project that has already cut
+CloudWatch to pod logs only (`terraform/addon-cloudwatch.tf`), the API endpoint is CIDR-locked and
+IAM-authenticated, and nothing here consumes an API audit trail. Re-raise it only if a second operator
+or an external principal ever gets cluster access.
 
 ## Vote integrity
 
