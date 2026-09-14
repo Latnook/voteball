@@ -40,7 +40,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
         'The Economic Party', 'El HaDegel', 'The Reservists and the Economic Party', 'Noam',
-        'Amcha Yisrael', 'Other',
+        'Amcha Yisrael', 'Haredi Public', 'Israel First', 'Other',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
     assert upcoming_names_he == {
@@ -48,7 +48,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
         'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים והכלכלית', 'נעם',
-        'עמך ישראל', 'אחר',
+        'עמך ישראל', 'הציבור החרדי', 'ישראל תחילה', 'אחר',
     }
 
 

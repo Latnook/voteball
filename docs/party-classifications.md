@@ -79,11 +79,11 @@ Negative is left (more state), positive is right (less state).
 | | meaning | parties |
 |---|---|---|
 | **+3** | Libertarian: shrink the state as a matter of principle, not just policy | *(none — זהות was the only holder and merged into הציונות הדתית on 2026-09-01, which did not take the number)* |
-| **+2** | Privatizing: actually withdraws the state — sell Ashdod Port and Haifa Airport, end child allowances from the fifth child | ישראל ביתנו |
+| **+2** | Privatizing: actually withdraws the state — sell Ashdod Port and Haifa Airport, end child allowances from the fifth child, replace state school provision with vouchers | ישראל ביתנו, ישראל תחילה `[u]` |
 | **+1** | Liberalizing *fused with* real state expansion — trust-busting, subsidies, targeted spending | הליכוד, ישר `[u]`, ביחד `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המחנה הממלכתי `[p]` |
 | **0** | No economic doctrine, or a genuinely balanced one | כחול לבן `[u]`, הציונות הדתית, עוצמה יהודית `[u]`, רע"ם, יש עתיד `[p]` |
 | **−1** | *(none)* | — |
-| **−2** | Social-democratic | הדמוקרטים `[u]`, בל"ד, ש"ס, יהדות התורה, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Social-democratic | הדמוקרטים `[u]`, בל"ד, ש"ס, יהדות התורה, הציבור החרדי `[u]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Self-defined communist | חד"ש-תע"ל |
 | **NULL** | No stated position — see the NULL rule above | נעם `[u]` |
 
@@ -98,13 +98,13 @@ Negative is dovish, positive is hawkish.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]`, הליכוד `[u]` |
-| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המפלגה הכלכלית `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המפלגה הכלכלית `[u]`, ישראל תחילה `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]` |
 | **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
 | **−2** | Two-state with an end to the occupation | חד"ש-תע"ל, רע"ם `[u]` |
 | **−3** | Full withdrawal, right of return, dismantling settlements | בל"ד |
-| **NULL** | No stated position — see the NULL rule above | המחנה הממלכתי `[p]`, רע"ם `[p]`, ביחד `[u]` |
+| **NULL** | No stated position — see the NULL rule above | המחנה הממלכתי `[p]`, רע"ם `[p]`, ביחד `[u]`, הציבור החרדי `[u]` |
 
 Note **0 and NULL are different claims** here: `0` asserts a party has genuinely taken no side on the
 conflict, `NULL` says none is on record. ביחד is the `NULL` case — its component parties have not
@@ -129,10 +129,10 @@ Negative reduces religious authority.
 |---|---|---|
 | **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
 | **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה |
-| **+1** | Preserve and modestly strengthen the state's Jewish character | *(none)* |
+| **+1** | Preserve and modestly strengthen the state's Jewish character; or keep the haredi sectoral settlement and expand state religious funding **while defending none of the monopolies and narrowing the exemption it keeps** | הציבור החרדי `[u]` |
 | **0** | Status quo — no active religion-state agenda in either direction | *(none)* |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, עמך ישראל `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, ביחד, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר and בית ציוני both demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, עמך ישראל `[u]`, ישראל תחילה `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
 | **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
 
@@ -5982,6 +5982,180 @@ Lando personally, not to the מועצת גדולי התורה as a body. `rabbin
 
 ---
 
+### הציבור החרדי — Haredi Public · `unaligned` · −2 / NULL / +1 · haredi
+
+New party, added 2026-09-14. Registered with the registrar of parties on **2026-07-05** under the
+legal name **למען אחיי מפלגת כלל ישראל**; chaired by **מוטי לייטנר** (33), deputy mayor of Beit
+Shemesh and chair of the ׳דרך׳ faction on its council, which ran independently in the 2024 municipal
+elections and took two seats. Rachmastrivka hasidut, yeshiva-educated, then a software/DevOps career.
+Ten public figures on the מי אנחנו page, including **ד״ר נחומי יפה** of Tel Aviv University, who
+researches the haredi community. **This is a haredi revolt against the haredi PARTIES, not against
+the haredi settlement**: the founding act was a written demand for representation sent to
+**אריה דרעי, משה גפני and יצחק גולדקנופף on 2026-08-04**, with a deadline for a reply.
+
+**The corpus is a complete eight-chapter platform** at `hatzibur-haharedi.org/מצע` — עולם התורה,
+שירות חרדים, החינוך החרדי, תופעת הנשירה, פרנסה בכבוד, דיור בר השגה, המאבק באפליה, עלייה וקליטה —
+plus the אודות page, the אימות-עובדות page, a dated timeline (יומן הדרך) and ~40 campaign items. The
+site was enumerated from `sitemap.xml` (66 URLs, incl. `/en` and `/fr` mirrors of every page) before
+anything was read, per this page's own rule; there are no PDFs. `family_evidence: platform`.
+
+**security NULL, and it is a MEASURED absence, not an unread corpus.** A keyword sweep over the
+concatenated text of all eight platform chapters, the אודות page, the fact-check page and four
+campaign items returns **zero** occurrences of עזה, פלסטינ, ריבונות, התנחל, חמאס, איראן, חיזבאללה,
+"שתי מדינות", "יהודה ושומרון", מלחמה, צה"ל, נתניהו, קואליציה, גוש or ציונ. The only two hits for
+ימין are the idioms ״ימין מקרבת״ (a pedagogical phrase) and ״לא יסורו ימין ושמאל״. The single
+security-adjacent line in the platform is `שירות/7`, which promotes haredi towns and hesder yeshivas
+**באזורי הגבול המזרחי** — settlement inside the state's own border region, packaged with housing and
+employment, not a conflict doctrine. A `0` would assert this party has taken a side and landed in the
+centre. It has not taken one.
+
+**bloc `unaligned` with `hard-to-classify-bloc`, and it is the weakest field on the row.** There is
+no first-party coalition statement of any kind — that is the same sweep as above, and it is why the
+two findings have to be read together. What does exist: a campaign item of 2026-08-04 —
+*"מחזיקי עולם התורה לצד אנשי ימין מובהקים, הם התומכים המרכזיים שלנו"*, which describes **supporters**
+and not partners; the demand letter, which is a bid to join the representation whose parties sit with
+Netanyahu; and the אודות page's argument that
+*"המשך ההתנגשות עם חלקים נרחבים בעם ישראל מסכן את עתידו של הציבור החרדי כולו"*, which is a case
+against the last term's bloc politics rather than a declaration about the next one. **Scoring `bibi`
+off `sector: haredi` would be an inference from category** — the exact move this page refused when it
+replaced the Arab-party exclusion on the religiosity axis with a per-party evidence test.
+**Trigger: the CEC filing.** A PM recommendation, or a joint list, resolves it.
+
+economic **−2**, on the same reading as ש"ס and יהדות התורה, plus a caveat neither of them carries.
+The instruments are state provision throughout: a national housing plan multiplying haredi building
+starts **fivefold**, dedicated budgets for hi-tech and high-productivity training tracks with
+separate men's and women's frameworks, government subsidy of seminary graduates' professional
+certification, **אפליה מתקנת בשירות המדינה**, employer incentives in the private market, enlarged
+aliyah-absorption budgets, and direct budgeting of non-discriminating institutions with budget
+sanctions on the rest. There is no tax, competition, privatization or cost-of-living content
+anywhere in the eight chapters. **The caveat is that the party's own rhetoric points the other
+way**: `עולם התורה/3` wants yeshiva budgets rebased on ״הסכם יששכר וזבולון״ so the Torah world is
+*"מבלי להיות סמוכים על שולחן אחרים"*, and `פרנסה` opens on the prayer
+*"שלא יצטרכו עמך בית ישראל זה לזה ולא לעם אחר"*. That is an aspiration to depend on the state less,
+delivered by a platform that asks it for more of everything — **revealed position, not claimed
+position**, and the axis takes the instruments.
+
+religiosity **+1 — the first holder this band has ever had**, and the band was extended to say what
+this party does rather than the row being rounded to a neighbour. Against **+2** (ש"ס, יהדות התורה,
+הליכוד): that band's content is defending the marriage, kashrut and Shabbat monopolies, and this
+platform contains **nothing** on any of them, on the Rabbinate, or on Shabbat in the public sphere.
+Against **−2**: that band's criterion is core curriculum *as a funding condition* on somebody else's
+schools plus universal conscription, and this party demands English and mathematics **inside** haredi
+education for its own children, while its conscription position keeps a full exemption. What it
+actually does is keep the sectoral settlement and expand state religious funding — protection of
+״תורתו אומנותו״ from arrest and sanctions as *"תנאי יסודי ובלתי מתפשר"*, strengthening the
+state-haredi (ממ״ח) stream, government encouragement of haredi hesder yeshivas — while narrowing the
+exemption it keeps and guarding haredi educational autonomy rather than extending religious authority
+over anyone else. **Read the education and conscription chapters, not a religion-and-state chapter**
+— there isn't one, which is precisely the failure mode this axis's own warning describes.
+
+**`service-for-non-learners` is a new tag and it is the row's discriminating claim.** *"כל צעיר חרדי
+שאינו מקדיש את חייו ללימוד תורה, צריך לשרת שירות ביטחון ככל אזרח ישראלי אחר"*, with seven
+implementing clauses — tracks built on ״נכנס חרדי - יוצא חרדי״, rabbinic accompaniment, funding for
+haredi hesder yeshivas, compulsory-service routes in the Shin Bet, Mossad and police alongside
+national and civil service, a support administration for serving haredim and one for haredi reservist
+families. No existing tag says this: `universal-conscription` overstates it (the learner exemption is
+absolute and non-negotiable here), `anti-conscription-exemption` inverts it, and
+`scholar-exemption-retained` — which the row also carries — is shared with ש"ס, יהדות התורה, הליכוד
+and כחול לבן and so cannot be what separates it from them. Note also that this row carries
+`core-curriculum` where both of its sector-mates carry `opposes-core-curriculum`; that pair is the
+cleanest single contrast on the page.
+
+**families `conscription-exemption` + `sectoral-budgeting` + `welfare-state`, and the first of those
+is a compromise worth naming.** The vocabulary is closed by `test_queries.py` (a family must sit on
+≥2 parties, and every value must be used), so a fourth conscription family cannot be minted for one
+row. Of the three that exist, `conscription-split` means a list whose **components** vote opposite
+ways (הציונות הדתית, יהדות התורה) and does not apply to a party with one line;
+`conscription-by-incentive` rejects coercion and sanctions, which this party does not —
+it makes service compulsory for non-learners. `conscription-exemption` is right about the
+non-negotiable (the ״תורתו אומנותו״ exemption is the platform's stated precondition for any
+cooperation at all) and silent about the other half. The tag carries the half the family cannot.
+
+`sector: haredi` is the party's own name and self-description. `rabbinic-authority-led` on the אודות
+page's *"המפלגה מלווה ונתמכת בידי רבנים גדולי תורה, אשר מנחים את דרכה"*.
+`anti-discrimination-in-admissions` is a whole chapter (המאבק באפליה) with real instruments —
+budget cuts to institutions running ״מסננות״, an inter-communal placement committee, suspension of
+offending ממ״ח principals. **`mizrahi-representation` was considered and refused**: the chapter
+frames the harm as crossing communities — *"מזרחים ואשכנזים, משפחות של חוזרים בתשובה, בני תורה
+ומשפחות עובדות"* — so the ש"ס tag would narrow a broader claim to the one group that already has a
+party named for it.
+
+### ישראל תחילה — Israel First · `unaligned` · +2 / +2 / −2 · secular
+
+New party, added 2026-09-14. Chaired by **שרן השכל** (Sharren Haskel) — MK and former deputy foreign
+minister, per the party's own biography page, which credits her with the legislation ending UNRWA's
+activity in Israel. Founders listed on the same page: **פיני בינו** (national field-HQ chief of
+הימין החדש, 2018–2021, under Bennett), **ארז זגייה** and **דוד יערי**; **רועי דנינו**, a reserve
+lieutenant colonel and businessman, joined subsequently. Self-description:
+*"תנועת ימין ליברלית וממלכתית"*.
+
+**The corpus is bounded, and bounding it is the finding.** `wp-sitemap.xml` lists nine URLs: the home
+page, `work-plan`, a privacy page, an accessibility page, and **five posts titled `x` through `x-5`
+carrying no content at all** (they render the site's founder bios and nothing else). So the home
+page's מי אנחנו / עם מי נשב / מטרות blocks plus the four-chapter **תוכנית עבודה** — א ביטחון לאומי
+והכרעה, ב כלכלה חופשית וצמיחה, ג חינוך מבוסס מצוינות, ד חירות אזרחית ולגליזציה — are the entire
+published record. There is no fifth chapter hiding behind a link label.
+`family_evidence: platform`.
+
+**bloc `unaligned`, and for once that value is the party's actual product rather than a gap.** It has
+a section headed **עם מי נשב?**: *"נשב עם כל מפלגה ציונית במטרה לכפות אחדות לאומית רחבה… ללא התמיכה
+שלנו, לאף גוש לא תהיה קואליציה עם הגורמים הקיצוניים והאנטי-ציוניים. 'ישראל תחילה' תהיה המפלגה שתכפה
+את האחדות על המערכת הפוליטית"*, and *"לא ניתן יד לממשלה הנשענת על כוחות אנטי-ציונים. נקודה."*
+**`hard-to-classify-bloc` is deliberately NOT carried.** That tag exists for rows where the evidence
+conflicts (כחול לבן); here the evidence is single-voiced and says *neither bloc*, which is what
+`unaligned` is for. Note it is also not `anti-netanyahu`: Netanyahu is not named anywhere on the site.
+
+**`excludes-anti-zionist-parties` is a new tag, and the existing
+`excludes-haredi-and-arab-parties` was considered and refused.** The refusal on anti-Zionist parties
+is categorical and verbatim. The haredi half is not the same claim: the party says it will not be
+*"תלויה במפלגות סקטוריאליות כלשון מאזניים"* and that they *"סוחטות את הממשלה"* — a refusal to be held
+hostage by them as kingmakers, not a refusal to sit with them. המילואימניקים והכלכלית's tag asserts
+exclusion of both. Reusing it here would have manufactured half a position.
+
+economic **+2**. The +2 band requires the state actually withdrawing, and three chapters do it:
+**school vouchers** — *"המדינה תקצה לכל הורה 'שובר חינוך' שנתי אישי בשווי כ-60,000 שקלים"* with the
+budget flowing to whichever school the parent picks, principals hiring their own teachers and paying
+performance-based rather than seniority-based salaries; **closing and merging ministries** and
+abolishing the שר ללא תיק office, benchmarked against 15–20 ministries in the US and UK against 30+
+here; and a *"הורדה דרסטית"* of corporation tax, argued explicitly as tax competition against Dubai,
+the US and Monaco. Cartel- and monopoly-breaking and bureaucratic-barrier removal sit on top.
+**+3 was tested and refused.** The doctrinal sentence is there —
+*"ההיסטוריה מוכיחה שרק מדיניות של שוק חופשי מייצרת צמיחה מהירה ורווחה"* — but +3 is shrinking the
+state **as a principle across the board**, and this programme simultaneously *expands* it where it
+approves of the recipient: welfare packages, grants and absolute priority in state institutions for
+combat and active reserve personnel, a new hasbara corps in the IDF, new consciousness departments in
+two ministries, and state development of the defence industry. That is reallocation, not withdrawal.
+
+security **+2**. *"לא יהיו ויתורים טריטוריאליים"* plus *"אנו מאמינים באחיזה בקרקע ההיסטורית כמגן
+ביטחוני"*; **formal cancellation of the Oslo accords** as *"נטול כל תוקף משפטי, ביטחוני או מוסרי"*;
+an offensive doctrine stated as *"מעבר מהגנה להתקפה מוחצת והכרעה"* and *"מעבר מניהול סכסוך להסרת
+איום"*, quoting Jabotinsky's *"שקט הוא רפש"*; complete disarmament of Hezbollah, destruction of
+Hamas's governing and terror capability, and **active support for internal opposition forces in
+Iran**. **+3 was tested and refused, and the test is narrow**: that band is annexation or the
+application of sovereignty over Judea and Samaria, and the phrase the party uses — ריבונות
+טריטוריאלית — is glossed in its own text as *"שמירה על שטחי מדינת ישראל וביטחון אזרחיה"*, the
+protection of what the state holds. Neither יהודה ושומרון nor החלת ריבונות appears. Note likewise
+that the row carries `no-territorial-concessions` and `anti-oslo`, both verbatim, and **not**
+`no-palestinian-state` or `anti-two-state` — cancelling Oslo implies rejecting its framework, but
+this page does not convert an implication into a stated position.
+
+religiosity **−2**, and the evidence is entirely in the service and liberty chapters, exactly as this
+axis's warning predicts. **חוק שירות ישראלי שוויוני**: compulsory service for every citizen, national
+or civil service for whoever does not serve in the IDF, and named sanctions on evaders — loss of
+state benefits, special allowances, housing assistance and affirmative-action preferences — plus the
+mirror-image rewards for servers. On top of that, the principle
+*"צמצום מעורבות המדינה בחיי האזרח. המדינה לא צריכה להכתיב לאזרחיה כיצד לנהל את חייהם הפרטיים"*,
+carried into a concrete policy in **full cannabis legalization** (*"אין זה מתפקידה של המדינה להתערב
+בבחירותיו של אזרח בגיר בזמנו הפרטי"*), and the refusal to let sectoral parties extract from the
+budget. **−3 is refused for a specific reason**: nothing is published on civil marriage, kashrut,
+Shabbat or the Rabbinate's monopolies, and −3 is disestablishment. **The vouchers cut the other way
+and are worth flagging** — money follows the parent with no curriculum condition attached, so the
+policy that earns this row its +2 economic would fund separate haredi schooling more readily than
+כחול לבן's or ביחד's defunding-by-condition does. The −2 here rests on conscription and on private
+life, not on the school-funding criterion that carries most of the band.
+
+---
+
 ## Previous parties
 
 These describe each party **as it stood at the previous election** and are frozen. Most carry the
@@ -6814,3 +6988,4 @@ pass happened, for anyone reading git history.
 | 2026-09-09 | revision 67 — **הרשימה המשותפת's filing is up and it is the page's first THREE-party list. All three axes unchanged, no tag added, `seed.sql` unchanged — and it broke the measure written nineteen hours earlier.** Filed *"מטעם מפלגת המפלגה הקומוניסטית הישראלית ומטעם מפלגת אלתג'מוע אלווטני אלדמוקרטי ומטעם מפלגת התנועה הערבית להתחדשות"* — Maki, בל"ד and תע"ל — **67 / 34 / 19 across 120 and 5 / 3 / 2 inside the realistic 10**, with #1 ג'בארין, #2 טיבי and #3 אבו שחאדה exactly as this entry recorded them from the 2026-08-20 agreement report. **The union rule is vindicated in the one way that was checkable**: all three components really are parties to the filing, so carrying axes from each describes the thing rather than averaging over it. **The measure is restated on the SENIOR partner's share**, because revision 65 built it as the *junior* share and that is undefined when there are two junior partners: המילואימניקים והכלכלית 50%, **הרשימה המשותפת 50%**, ביחד 55% — against עוצמה יהודית 80%, ישר 90%, הדמוקרטים 92%, הליכוד 96%. **The band moves from "45%+ junior" to "≤55% senior" and every prior judgement survives unchanged**; a statistic derived from six examples of one shape held exactly until the seventh shape arrived. **`two-faction-list` still not added, and the obstacle is now the tag's NAME rather than its substance** — this row qualifies on every ground except that it has three components and the tag says two. Adding it would be false; renaming touches five rows. **Filed to Open questions beside the `two-state`/`pro-two-state` pair, as the same class of defect: a tag whose name rather than whose evidence decides its membership.** **איימן עודה is at #110, עאידה תומא סלימאן at #111, דב חנין at #105** — eleven times past the cut. Odeh **stepped down from the חד"ש chairmanship in May 2026**, losing the leadership contest to ג'בארין, so these are farewell placements and **no inference about a purge is available**. The point is what the range does to the reading: without it, *"Odeh is on the list"* reads as continuity, and the list's actual leadership is a generation this page had not looked at. **עופר כסיף #6 is inside the range**, so `jewish-arab-partnership` — carried into this row as a union of its predecessors' families — now stands on the filing at a realistic slot, the standard revision 44 used for רע"ם's #2 and revision 36 for הדמוקרטים's #10. **Women hold 3 of the realistic 10** (ג'טאס #4, כרכבי סבאח #8, וישאחי #10) and **no tag follows**, on the כחול לבן precedent set hours earlier — recorded so the refusal is visible rather than silent. **Resolved: רע"ם did not join**; it filed separately as list 18, closing this entry's standing conditional |
 | 2026-09-09 | revision 68 — **the last three filings read (נעם, יהדות התורה, הציונות הדתית), completing all fourteen live rows. No axis moved, no tag added, `seed.sql` unchanged — and the pass found the measure's failure mode by finding the case that looked like it would break a tag and instead confirmed it.** **יהדות התורה: revision 61's trigger DISCHARGED.** גפני and מקלב are **not on the list**; #1 is **יעקב אשר** (דגל), #2 גולדקנופ (אגודת ישראל), #3 פינדרוס (דגל) — the reported deposition of two sitting MKs by Rabbi Lando is confirmed at the registrar, so revision 61's contrast between `rabbinic-authority-led` conserving at ש"ס and purging here now rests on a primary source at both ends. **The list files under THREE registered parties, its first third party since 1992** — דגל 62, אגודת ישראל 56, **חומת תורת ישראל** 2 — and **that third registration is a split INSIDE אגודת ישראל**: שלומי אמונים and בעלזא breaking from Gur's control of the faction and its budget transfers, with פרוש **#4** and שטארק **#6** filing under it in a move their own side calls *"פרוצדורלי בלבד"*. **Three registrations, two factions — so `two-faction-list` is CONFIRMED, not broken**, and is better evidenced than when it was assigned. **This is the measure's first documented failure mode**: the Conventions statistic reads the `מטעם מפלגת` field, which counts *registrations*, while the tag names *factions*; a purely mechanical reading would have called this row a three-faction list and been wrong. **Read the field, then ask what the third registration is for.** **הציונות הדתית: the 2026-09-01 זהות merge confirmed at the registrar**, פייגלין at **#2** under זהות's own registration and both leaders in the ballot name, so that entry's decision to keep this row rather than create a new one holds. **זהות holds MORE slots than תקומה across the whole list (17 to 16) and fewer inside the range (3 to 6)** — both true, only the second describes the deal, and it is the clearest instance yet of why the range exists: whole-list share reports a merger of equals, the top ten reports a two-to-one senior partner. **אורית סטרוק sits at #3 on `עתיד אחד - עתיד טוב לישראל`, a registration carrying exactly one slot** — a sitting minister on a one-seat vehicle, the same shape as וסרלאוף under ארץ ישראל שלנו — and after the חומת תורת ישראל finding **whether it is a faction or a device is explicitly NOT assumed**. **נעם: ballot name `נעם לישראל`**, running independently for the first time after sitting inside הציונות הדתית's list in the 25th; two registrations (**לזוז** 12, אחריות לאומית 2), **14 names, the shortest list on the page**, and a **67% senior share — the first row to land in the measure's gap**, on the refusal side. `two-faction-list` not added. ליבמן #3 (father of אלקנה ליבמן) and חיימוב #5 (sister of the ש"ב head) are recorded and **neither is a position**, on the same line drawn for כחול לבן's list and עמך ישראל's בן ציון. **The measure now covers all ten joint filings and the gap has NARROWED from 25 points to 7** (holders ≤60%, refusals ≥67%) — it shrank every time data arrived, which is what a real but weak separation does, and is why it is written up as a first thing to check rather than a test. **The `two-faction-list` naming defect is correspondingly narrower than revision 67 stated**: not several rows with wrong counts, but **הרשימה המשותפת alone**, whose three components have separate histories, leaders and programmes and two of which this page scores differently on its own axes |
 | 2026-09-09 | revision 69 — **the four rows lacking a candidate audit are audited: ישר (30), כחול לבן (6), המילואימניקים והכלכלית (#4–6) and רע"ם (#3–10). Every live row on the page has now been read candidate by candidate at its realistic range. No axis moved, no tag added, `seed.sql` unchanged.** **ישר was the largest gap on the page** — the biggest range and the thinnest coverage — and the composition is a slate of the state's own former administrators: **nine of the top thirteen have run a national institution**, including a Chief of Staff, a Shin Bet director, an Electricity Authority chair, a Religious Services Minister, a **Budget Division head**, a **Labour Ministry DG**, an **IDF Manpower Directorate head** and a **former COGAT coordinator**. The party says so itself (*"נבחרת שנועדה לשמש בסיס לממשלה הבאה"*), and `statist`/`public-service-reform` are what that corroborates. **`religiosity −2` HELD, and the most on-point candidate is the reason it is not −3**: **מתן כהנא #5** authored the kashrut and conversion reforms — `kashrut-liberalization` and `religious-pluralism`, both already held — which are **reform of the Rabbinate, not disestablishment**, exactly the funding criterion revision 21 used. The platform demands civil marriage and #5 personally opposes it; **the tension is recorded, not resolved, and this page scores the platform.** **The conscription cluster gains its two operational experts and moves nothing**: **ענבר הרוש גיטי #11** directs the Defense Ministry's מתווה השירות and formerly headed haredi IDF integration, **אלעזר שטרן #12** ran the Manpower Directorate. **The strongest trigger this row has ever had**: **כמיל אבו רוקן #13**, former **COGAT**, on a row whose eleven documents contain no sentence on statehood, the territories or sovereignty — *a career administrator is not a policy statement*, so nothing moves, but he is where a position would come from; `sector` stays `secular` on revision 45's Druze precedent. **`gender-equality` REFUSED a second time on this row and the refusal is the point**: Eisenkot presented the list as a commitment to gender equality and **14 of the top 30 are women**, and it is still a list rather than a programme — **the rule is shown not to be selective, because here it costs a row a tag on the best composition evidence the page has seen**. A **fourth representation gap** logged not minted (**אלקס ריף #15**, founder of לובי המיליון; the vocabulary has Mizrahi, Negev-Bedouin and Arab representation tags and no Russian-speaking equivalent). Three October-7 bereaved in the top 22, and **`state-commission-of-inquiry` is deliberately not reached by it** — bereavement is not a position on an inquiry, and stretching them together is how a tag with six refusals acquires a seventh bad holder. **#24–30 read and recorded as carrying no classificatory content**, so the next pass does not reopen them. **כחול לבן: בלוך #3 is the first candidate-level consequence of a withdrawal this page has tracked** — she was to have run with האחדות — and **that entry's reasoning is unaffected: a candidate moving parties is not a vote moving parties**. קונקול #4 has been in three parties in one cycle (לפיד → הנדל → גנץ), recorded as movement not position. **המילואימניקים והכלכלית: #4 ווליבוביץ is the Economic Party's CEO**, so the junior partner's three realistic slots are its **leader and its chief executive** — a further argument for the `two-faction-list` it already holds; #5 אדומי carries the 2026 primary result into a realistic slot; **#6 לנגמן is unsourced beyond the filing and sits INSIDE the range**, so unlike ישראל ביתנו's #20–21 it is a real gap rather than one the ranges retire. **רע"ם: #7–#10 return NOTHING in Hebrew press beyond the filing** — four names inside a realistic range, in list order and nowhere else. Revision 64 corrected revision 63 for inventing a range out of where press coverage stopped; **the corrected range makes this a genuine documentary gap**, and it is a property of Hebrew-language coverage rather than of the candidates. **Arabic sources are the next instrument and were deliberately not used here**, because revision 48 records the research harness returning *refuted 0–3* on nearly every Arabic-domain source while confirming the same substance from Hebrew media — this needs browser-shaped fetches by hand, not a search pass. **Seven rows audited candidate by candidate, seven times the answer was corroboration.** The rule *a candidate is not a position* has now been tested against a list built almost entirely of people who ran the institutions the axes describe, and it held |
+| 2026-09-14 | revision 70 — **two new parties added to `upcoming_parties`: הציבור החרדי (`unaligned` · −2 / NULL / +1 · haredi) and ישראל תחילה (`unaligned` · +2 / +2 / −2 · secular), both scored from a complete published platform.** הציבור החרדי's `security` NULL is a **measured** absence — a keyword sweep over all eight platform chapters plus the אודות, fact-check and four campaign pages returns zero hits for עזה, פלסטינ, ריבונות, חמאס, איראן, מלחמה, נתניהו, קואליציה, גוש and ציונ — and the same sweep is why its `bloc` carries `hard-to-classify-bloc`: there is no coalition statement of any kind, and reading `bibi` off `sector: haredi` would be the inference-from-category this page refused for the Arab parties. It is the **first holder of the religiosity +1 band**, whose meaning was extended rather than the row rounded to a neighbour. ישראל תחילה is the opposite case on `bloc`: `unaligned` is its product (*"נשב עם כל מפלגה ציונית"*, *"לא ניתן יד לממשלה הנשענת על כוחות אנטי-ציונים. נקודה."*), so `hard-to-classify-bloc` is deliberately absent. Both rows' +3 bands were tested and refused with the test written down. Nine new tags, each on a verbatim first-party clause; `excludes-haredi-and-arab-parties` and `mizrahi-representation` were both considered for reuse and **refused** as half-claims. `seed.sql` +2 rows; `services/frontend/logos/israel-first.png` self-hosted, cropped to drop the *יש לך בית* tagline. |
