@@ -24,7 +24,7 @@ def test_seeded_row_counts(conn):
     cur.execute('SELECT COUNT(*) FROM previous_parties')
     assert cur.fetchone()[0] == 13
     cur.execute('SELECT COUNT(*) FROM upcoming_parties')
-    assert cur.fetchone()[0] == 18  # 17 parties + the 'אחר' catch-all
+    assert cur.fetchone()[0] == 20  # 19 parties + the 'אחר' catch-all
     cur.close()
 
 
