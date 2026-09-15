@@ -5751,8 +5751,11 @@ claim that the joint list itself has a 2018 programme. The remaining 15 tags are
 rows, deduped. `families` is likewise the union (`arab-representation`, `jewish-arab-partnership`,
 `welfare-state`), and `family_evidence` stays `record` — there is no joint platform to read.
 
-**Logo**: the 2019 Joint List mark, pure black artwork on transparency, in `PLATE_PARTIES` — shown
-unchanged on a near-white plate in dark mode, like ש"ס. See "The logo that could not be recoloured"
+**Logo** *(replaced 2026-09-15)*: now the 2026 mark, white lettering on a solid teal tile, self-hosted
+as `/logos/joint-list-2026.png` and cropped to the wordmark. An opaque tile is skipped by the dark-mode
+recolour, so it shows unchanged in both themes, and `PLATE_PARTIES` is empty (the plate had framed the
+new tile in a white box). What follows is the record for the 2019 mark: pure black artwork on
+transparency, in `PLATE_PARTIES`, shown unchanged on a near-white plate in dark mode, like ש"ס. See "The logo that could not be recoloured"
 under Logos; it took three attempts and the first two were both verified clean by automation while
 still looking wrong on the actual site.
 
@@ -6803,7 +6806,8 @@ textbook input for `recolorLogoForDark()`. It took three attempts:
    the five enclosed bowls of ة and م on the Arabic line, showing the dark card through. Measured
    again — 316 pixels moved from card-dark to light, in Chromium, against the live page. Reported as
    verified. The repo owner saw black dots.
-3. **Near-white plate, artwork unchanged** (`PLATE_PARTIES`) — what ships.
+3. **Near-white plate, artwork unchanged** (`PLATE_PARTIES`) — what shipped, until the 2026 logo
+   (a solid teal tile, which needs no treatment at all) replaced the 2019 mark on 2026-09-15.
 
 **Both failed verifications were real measurements of the wrong thing.** The first measured the
 400px canvas, where the Hebrew letters' gaps are open channels that register as clean; the browser
