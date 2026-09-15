@@ -39,7 +39,7 @@ resource "aws_eks_addon" "ebs_csi" {
   service_account_role_arn = module.ebs_csi_irsa.arn
 }
 
-resource "kubernetes_storage_class" "gp3" {
+resource "kubernetes_storage_class_v1" "gp3" {
   metadata { name = "gp3" }
 
   storage_provisioner = "ebs.csi.aws.com"

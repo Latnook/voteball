@@ -42,7 +42,7 @@ resource "aws_eks_addon" "efs_csi" {
   depends_on = [module.storage]
 }
 
-resource "kubernetes_storage_class" "efs" {
+resource "kubernetes_storage_class_v1" "efs" {
   metadata { name = "efs-sc" }
 
   storage_provisioner = "efs.csi.aws.com"

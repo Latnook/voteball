@@ -17,7 +17,7 @@
 # that hangs teardown, because the CUSTOM RESOURCES MUST GO FIRST: ECK attaches its own finalizers to
 # the Elasticsearch/Kibana resources and to the Secrets they own, and only the running operator
 # removes them. Uninstall the operator first and every CR sits Terminating with no controller left to
-# clear it -- the same class as kubernetes_namespace.ci on 2026-08-04.
+# clear it -- the same class as kubernetes_namespace_v1.ci on 2026-08-04.
 #
 # NOT the ValidatingWebhookConfiguration, which is the intuitive-but-wrong explanation this comment
 # used to give. Rendering eck-operator 3.5.0 shows all 16 webhooks are `failurePolicy: Ignore` on

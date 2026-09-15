@@ -28,8 +28,8 @@
 # argocd/voteball-application.yaml.tmpl stays correct -- the namespace really does already exist by
 # the time the Application is created. `terraform destroy` now deletes this namespace explicitly,
 # which is what CLAUDE.md's teardown notes already described it as doing.
-resource "kubernetes_namespace" "devops_app" {
-  # Same EKS access-entry propagation race as kubernetes_namespace.ci -- see the comment there for
+resource "kubernetes_namespace_v1" "devops_app" {
+  # Same EKS access-entry propagation race as kubernetes_namespace_v1.ci -- see the comment there for
   # what it looks like when it bites (a permissions error ~13 minutes into an apply).
   # AND on helm_release.external_secrets, which is a DESTROY-order constraint, not a create-order
   # one. Terraform destroys dependents before their dependencies, so naming ESO here is what makes
@@ -50,7 +50,7 @@ resource "kubernetes_namespace" "devops_app" {
 
     labels = {
       # Kubernetes has set this automatically since 1.21, and it is declared here for the same reason
-      # kubernetes_namespace.ci declares it: NetworkPolicy namespaceSelectors match on it, and a
+      # kubernetes_namespace_v1.ci declares it: NetworkPolicy namespaceSelectors match on it, and a
       # selector silently matching nothing is far harder to spot than a missing namespace.
       "kubernetes.io/metadata.name" = "devops-app"
 
@@ -79,8 +79,8 @@ resource "kubernetes_namespace" "devops_app" {
 # `kubectl create namespace logging` is deliberately NOT used anywhere. A namespace created outside
 # Terraform is not deleted on destroy -- it lingers or sits Terminating, and the next apply collides
 # with it.
-resource "kubernetes_namespace" "logging" {
-  # Same EKS access-entry propagation race as kubernetes_namespace.devops_app above.
+resource "kubernetes_namespace_v1" "logging" {
+  # Same EKS access-entry propagation race as kubernetes_namespace_v1.devops_app above.
   depends_on = [module.compute]
 
   metadata {

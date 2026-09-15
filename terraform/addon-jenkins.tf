@@ -11,7 +11,7 @@
 # those live here any more: credentials are in Secrets Manager, configuration is in git (JCasC), and
 # build history is deliberately disposable (design doc section 2).
 
-resource "kubernetes_namespace" "ci" {
+resource "kubernetes_namespace_v1" "ci" {
   # This is the FIRST kubernetes-provider resource to touch a brand-new cluster -- every other
   # in-cluster object here arrives via helm_release, which lands later in the graph. Without an
   # explicit dependency its only ordering constraint is the provider config, so Terraform schedules
@@ -74,7 +74,7 @@ module "jenkins_cd_irsa" {
 resource "helm_release" "jenkins_support" {
   name      = "jenkins-support"
   chart     = "${path.module}/../charts/jenkins-support"
-  namespace = kubernetes_namespace.ci.metadata[0].name
+  namespace = kubernetes_namespace_v1.ci.metadata[0].name
 
   set = [
     { name = "awsRegion", value = var.aws_region },
@@ -105,7 +105,7 @@ resource "helm_release" "jenkins_support" {
     # resource makes Terraform order the two itself, so the constraint cannot be lost to a later edit
     # the way an explicit depends_on entry can.
     { name = "cdRoleArn", value = module.jenkins_cd_irsa.arn },
-    { name = "appNamespace", value = kubernetes_namespace.devops_app.metadata[0].name },
+    { name = "appNamespace", value = kubernetes_namespace_v1.devops_app.metadata[0].name },
     # The PUBLIC subnet CIDRs, where the ALB's ENIs live. The ingress rule that admits the load
     # balancer is scoped to these rather than to the whole VPC -- pods get VPC addresses from the
     # PRIVATE subnets, so the old vpcCidr rule admitted every pod in the cluster to the controller.
@@ -157,7 +157,7 @@ resource "helm_release" "jenkins" {
   repository = "https://charts.jenkins.io"
   chart      = "jenkins"
   version    = local.jenkins_chart_version
-  namespace  = kubernetes_namespace.ci.metadata[0].name
+  namespace  = kubernetes_namespace_v1.ci.metadata[0].name
 
   # The image tag is the one input that changes between applies on a live cluster, so it lives in
   # `set`, not in the values document below. Terraform cannot diff inside a changed list element:
@@ -286,7 +286,7 @@ resource "helm_release" "jenkins" {
     # reclaim; it is not a dependency. JCasC rebuilds everything else from code.
     persistence = {
       enabled      = true
-      storageClass = kubernetes_storage_class.efs.metadata[0].name
+      storageClass = kubernetes_storage_class_v1.efs.metadata[0].name
       size         = "8Gi"
       accessMode   = "ReadWriteOnce"
     }
@@ -301,7 +301,7 @@ resource "helm_release" "jenkins" {
   depends_on = [
     helm_release.jenkins_support,
     aws_acm_certificate_validation.jenkins,
-    kubernetes_storage_class.efs,
+    kubernetes_storage_class_v1.efs,
     # The init sidecar LISTs labelled ConfigMaps once at boot, so the JCasC file must exist first.
     kubernetes_config_map_v1.jenkins_casc,
   ]
@@ -319,7 +319,7 @@ resource "helm_release" "jenkins" {
 resource "kubernetes_config_map_v1" "jenkins_casc" {
   metadata {
     name      = "jenkins-casc-voteball"
-    namespace = kubernetes_namespace.ci.metadata[0].name
+    namespace = kubernetes_namespace_v1.ci.metadata[0].name
     labels = {
       "jenkins-jenkins-config" = "true"
     }

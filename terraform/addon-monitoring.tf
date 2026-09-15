@@ -43,7 +43,7 @@ resource "helm_release" "kube_prometheus_stack" {
     # the step added there.
     {
       name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
-      value = kubernetes_storage_class.gp3.metadata[0].name
+      value = kubernetes_storage_class_v1.gp3.metadata[0].name
     },
     {
       name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
@@ -241,6 +241,6 @@ resource "helm_release" "kube_prometheus_stack" {
     helm_release.aws_load_balancer_controller,
     # The PVC names this StorageClass; without the ordering, a from-scratch apply can create the
     # release first and leave Prometheus Pending on a class that does not exist yet.
-    kubernetes_storage_class.gp3,
+    kubernetes_storage_class_v1.gp3,
   ]
 }

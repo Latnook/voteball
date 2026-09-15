@@ -18,7 +18,7 @@ terraform apply -compact-warnings -var-file=voteball.tfvars \
   -target=module.storage.aws_efs_file_system.jenkins \
   -target=module.storage.aws_efs_mount_target.jenkins \
   -target=aws_eks_addon.efs_csi \
-  -target=kubernetes_storage_class.efs \
+  -target=kubernetes_storage_class_v1.efs \
   -target=helm_release.jenkins_support \
   -target=helm_release.jenkins \
   "$@"
