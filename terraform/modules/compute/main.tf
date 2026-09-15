@@ -23,14 +23,33 @@ module "eks" {
 
   # Turn on the VPC CNI network-policy agent so Kubernetes NetworkPolicies (Plan 3b) are ENFORCED,
   # not just accepted-and-ignored. OVERWRITE adopts the EKS-default vpc-cni addon already running.
+  #
+  # ALL THREE networking add-ons are declared, and vpc-cni + kube-proxy are `before_compute`. That is
+  # not optional under eks v21: it hardcodes bootstrap_self_managed_addons = false, so a NEW cluster
+  # gets no CNI, no kube-proxy and no CoreDNS unless they are listed here -- and an add-on without
+  # before_compute is created AFTER the node group, which waits for its nodes to be Ready, which
+  # they never are without a CNI ("cni plugin not initialized"). The 2026-09-15 rebuild, the first on
+  # v21, sat 26+ minutes in that deadlock. The in-place upgrade earlier the same day could not show
+  # it: the existing cluster already had all three, and the flag sits in the module's ignore_changes.
   addons = {
     vpc-cni = {
+      before_compute              = true
       resolve_conflicts_on_create = "OVERWRITE"
       resolve_conflicts_on_update = "OVERWRITE"
       configuration_values        = jsonencode({ enableNetworkPolicy = "true" })
       # v21 defaults this to true, which would upgrade the running CNI as a side effect of a module
       # upgrade. An add-on version change should be its own decision, not a default.
       most_recent = false
+    }
+    kube-proxy = {
+      before_compute              = true
+      resolve_conflicts_on_create = "OVERWRITE"
+      most_recent                 = false
+    }
+    # After compute: CoreDNS is a Deployment and needs Ready nodes to schedule onto.
+    coredns = {
+      resolve_conflicts_on_create = "OVERWRITE"
+      most_recent                 = false
     }
   }
 

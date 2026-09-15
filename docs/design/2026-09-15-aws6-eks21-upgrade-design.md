@@ -72,6 +72,15 @@ After all phases: `terraform validate` prints no warnings, a full plan reports *
 warnings, all nodes Ready, vpc-cni unchanged (v1.22.4-eksbuild.3), all ExternalSecrets synced, the
 site served 200 throughout.
 
-**Not yet exercised: a from-scratch deploy.** Every phase was proven against an existing cluster
+**The first from-scratch deploy on these versions (the same evening) failed exactly where warned.**
+eks v21 hardcodes `bootstrap_self_managed_addons = false`, so a new cluster gets no VPC CNI, kube-proxy
+or CoreDNS unless they are declared as add-ons -- and v20's config declared only vpc-cni, without
+`before_compute`, which v21 creates after the node group. The node group then waited for nodes that
+could never become Ready (`cni plugin not initialized`), 26+ minutes in. The in-place upgrade could
+not reveal it: the old cluster already had all three add-ons and the flag is in `ignore_changes`.
+Fix: all three declared, vpc-cni and kube-proxy `before_compute`. **Lesson: a module upgrade's
+create path is a separate contract from its update path; verify both before calling it done.**
+
+**Superseded note, kept as written:** *Not yet exercised: a from-scratch deploy.* Every phase was proven against an existing cluster
 only. The first rebuild on these versions is the real test of the create path, and is where a v21
 or IAM v6 ordering issue that an in-place upgrade cannot show would surface.
