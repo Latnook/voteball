@@ -67,7 +67,14 @@ fi
 REGISTRY="$(tf_out ecr_registry)"
 
 echo "Logging in to ECR ${REGISTRY}"
-aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$REGISTRY"
+# Output is captured and shown only on failure. docker login prints a two-line "credentials are
+# stored unencrypted" warning on every success, which is true of any config.json login and says
+# nothing about this run. The token still travels only through the pipe, never as an argument.
+if ! login_out="$(aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$REGISTRY" 2>&1)"; then
+  printf '%s\n' "$login_out" >&2
+  echo "ERROR: docker login to ${REGISTRY} failed." >&2
+  exit 1
+fi
 
 build_push() {
   local repo="$1" ctx="$2" tag="${3:-$TAG}"

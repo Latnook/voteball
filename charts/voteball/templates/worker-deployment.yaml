@@ -43,14 +43,16 @@ spec:
           startupProbe:
             # Owns the whole boot window: while this is pending, the liveness and readiness probes
             # below do not run at all, and the container is NotReady. Passing once means the loop
-            # completed its first iteration and touched /tmp/heartbeat (`stat` on a missing file exits
-            # non-zero, so this cannot pass before then); after that it never runs again.
+            # completed its first iteration and touched /tmp/heartbeat (`test -f` fails on a missing file, so
+            # this cannot pass before then); after that it never runs again. The `test -f` guard is what
+            # keeps a missing file a quiet non-zero exit: without it, `stat` printed nothing and the
+            # arithmetic became `$(( now - ))`, a shell syntax error in every boot's probe events.
             # Budget is failureThreshold * periodSeconds = 90s, and it is a hard wall -- exceed it and
             # the kubelet kills the container. 90s is far beyond the ~1s the real boot takes, because
             # the cost of being wrong differs wildly in the two directions: too generous only delays
             # a rollout, too tight is a crash loop with 10s..5min backoff on a cold or throttled node.
             exec:
-              command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
+              command: ["sh", "-c", "test -f /tmp/heartbeat && test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
             periodSeconds: 5
             failureThreshold: 18
             timeoutSeconds: 3
@@ -63,7 +65,7 @@ spec:
             # container whose startup probe has not yet passed is NotReady by definition -- which is
             # also why this one needs no initialDelaySeconds: it cannot run before then.
             exec:
-              command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
+              command: ["sh", "-c", "test -f /tmp/heartbeat && test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
             periodSeconds: 15
             failureThreshold: 3
             timeoutSeconds: 3
@@ -75,7 +77,7 @@ spec:
             # No initialDelaySeconds: the startup probe above already owns boot, and this probe is not
             # scheduled until that one has passed.
             exec:
-              command: ["sh", "-c", "test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
+              command: ["sh", "-c", "test -f /tmp/heartbeat && test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120"]
             periodSeconds: 30
             timeoutSeconds: 3
           securityContext:

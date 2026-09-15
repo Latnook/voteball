@@ -61,7 +61,7 @@ cd "$REPO_ROOT/terraform"
 echo "==> Applying the Jenkins release (JCasC, plugins, credentials, agent templates, both jobs)."
 echo "    Committing ci/jenkins/jenkins.yaml alone does NOT reach the cluster -- this step does."
 
-terraform apply -var-file=voteball.tfvars \
+terraform apply -compact-warnings -var-file=voteball.tfvars \
   -target=helm_release.jenkins_support \
   -target=helm_release.jenkins \
   "${ARGS[@]+"${ARGS[@]}"}"

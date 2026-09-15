@@ -3,3 +3,4 @@ name: jenkins-support
 description: Cluster resources the official Jenkins chart does not provide - the ExternalSecret that feeds JCasC, and the NetworkPolicy that keeps CI away from the app and its database.
 type: application
 version: 0.1.0
+icon: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiMxZjc3YjQiLz48L3N2Zz4=
