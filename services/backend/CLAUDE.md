@@ -245,6 +245,39 @@ This is the same defect as the עוצמה יהודית date-window (a sample tha
 generalises: establish what exists before deciding what to read.** WordPress `wp-json` is often 403
 where the Yoast sitemap is 200; try the sitemap first.
 
+**A site enumeration bounds the SITE, not what the party has SAID — search the party's name and its
+leader's in the press too, and do it before writing down a measured absence.** This is the rule above
+taken one level further out, and it cost a wrong `bloc` on a brand-new row. הציבור החרדי was scored
+from a complete `sitemap.xml` sweep (66 URLs, all eight platform chapters, every campaign item) that
+returned **zero** hits for נתניהו, קואליציה and גוש, and the row was committed `unaligned` +
+`hard-to-classify-bloc` on the strength of it. The sweep was correct — the site still does not say it.
+The chairman had said it on camera in **two** studio interviews, **fourteen and twelve days earlier**
+(ערוץ 7 31.08.26, כיכר השבת 02.09.26): asked *"אני הולך רק עם נתניהו"?*, *"חד-משמעית!"*.
+**First-party speech is not confined to first-party pages**, and a brand-new party's entire public
+record may live in interviews, because it has not had time to write anything down — the newer the row,
+the worse this gets, which is the opposite of the intuition that a new party is a small corpus. The
+failure mode is the dangerous one from the root `CLAUDE.md`'s table: the empty sweep is
+indistinguishable from a correct negative, so nobody has any reason to look again, and re-running it
+never helps. One outlet search on the party name and on the chairman's name is the whole cost. See
+revision 72 in `docs/party-classifications.md`.
+
+**Corollary, and it is a second rule rather than a restatement: ONE interview is not the interview
+corpus either, and the later one is not the better one.** The same pass read כיכר first and drafted
+a finding on *"מסיר את כל הסנקציות"* — the party removes all conscription sanctions — which refuted a
+refusal this page had recorded. It is the closing clause of a sentence about **לומדי תורה**, and the
+ערוץ 7 interview two days *earlier* says the other half outright (*"מי שלא יעשה זאת ייתקל בתמריצים
+הפוכים"*). The draft finding was wrong and would have shipped. **Read every interview you find before
+concluding from any of them, and read a decisive quote in its own paragraph before letting it
+overturn a written reason.** Interviews are not versions of one document; two outlets ask different
+questions and get answers that only reconcile when both are on the table.
+
+**Corollary: an interview is a first-party source, but only if you read the interview.** The same
+page's rule about summarizers applies with full force — WebFetch's rendering of the כיכר page
+reported "commits to supporting only Benjamin Netanyahu" and dropped both the *"חד-משמעית!"* exchange
+and the אייזנקוט refusal, which are the two lines that actually settle the field. Both
+**`kikar.co.il` and `inn.co.il` return 200 to a browser-shaped `curl` and carry the full article text
+in the HTML** (no `__NEXT_DATA__` blob on either); strip the tags and read it.
+
 **Retrieval difficulty is a bad proxy for coverage, and it inverts more often than not.** On that
 same row the two documents that went unread longest were the two that `pdftotext` extracts cleanly
 in one command — the image-only pair got read precisely *because* they announced themselves as hard.
