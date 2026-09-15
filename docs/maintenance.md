@@ -164,10 +164,15 @@ native `use_lockfile` locking rather than the deprecated `dynamodb_table` argume
 1.11 breaks `init`. There is only the one stack now — the separate Jenkins EC2 stack and its own
 version floor were retired on 2026-07-31 when Jenkins moved in-cluster.
 
-**Provider pins** (`terraform/versions.tf`): `aws ~> 5.0` is capped by `terraform-aws-modules/eks`
-v20, which requires `< 6.0`. Moving to AWS provider v6 means upgrading that module first — that pair
-is still outstanding, and it is also what would clear the `resolve_conflicts` deprecation warning
-that appears in every plan.
+**Provider pins** (`terraform/versions.tf`): `aws ~> 6.0` with `terraform-aws-modules/eks ~> 21.0`,
+moved together on **2026-09-15** (5.100.0 / 20.37.2 → 6.64.0 / 21.25.0), in place on the live cluster:
+2 added, 2 changed, 4 destroyed, no cluster, node group, RDS or IRSA role replaced. That cleared the
+`resolve_conflicts` deprecation warning. **v21 changed three node-group defaults** (IMDS hop limit
+2 → 1, `use_latest_ami_release_version` false → true, `enable_monitoring` true → false) and the first
+two replace every node, so `terraform/modules/compute/main.tf` pins the v20 values. Adopting hop
+limit 1 is still worth doing, as its own planned node rollout. The v20 cluster role's
+`AmazonEKSVPCResourceController` attachment and Auto Mode `custom` policy were dropped by v21; this
+cluster uses neither per-pod security groups nor Auto Mode.
 
 `helm` was moved **2.17 → ~> 3.0 (3.2.0) on 2026-07-30**. v3 rebuilt the provider on the Plugin
 Framework, which turned blocks into attributes: `kubernetes {}` → `kubernetes = {}` in

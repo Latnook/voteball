@@ -1151,8 +1151,10 @@ terraform plan  -var-file=voteball.tfvars
 ```
 
 `terraform apply` creates real, billed AWS resources (EKS control plane, NAT, nodes, RDS, ALB ≈
-**≈$8.50/day** while up — a measured full 24h, 2026-08-07, ≈$256/mo continuous; July 2026 actually billed $285.07 at ~63% uptime; ≈$0.19/day torn down) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
-(the EKS module v20 caps the provider at `< 6.0`) and
+**≈$8.50/day** while up — a measured full 24h, 2026-08-07, ≈$256/mo continuous; July 2026 actually billed $285.07 at ~63% uptime; ≈$0.19/day torn down) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 6.0`**
+with **`terraform-aws-modules/eks ~> 21.0`** (moved together from 5.0 / v20 on 2026-09-15; v21
+changed node-group defaults that would replace every node, so `modules/compute` pins the v20
+behaviour explicitly — read the comment there before removing it) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
 (pinned at **1.36** since the 2026-07-30 in-place upgrade; **standard support ends 2027-08-02**; see
 `docs/maintenance.md`)

@@ -7,10 +7,10 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-      # ~> 5.0 (NOT the k3s stack's ~> 6.0): terraform-aws-modules/eks v20 caps the AWS provider at
-      # < 6.0.0, so v5 is required here. Independent stack = independent lock, so the version skew
-      # with the k3s stack is harmless. v5 covers everything this stack + Plan 2b/3 use.
-      version = "~> 5.0"
+      # ~> 6.0 since 2026-09-15, together with terraform-aws-modules/eks v21 (which requires it).
+      # It was ~> 5.0 until then because eks v20 capped the provider at < 6.0.0. See
+      # docs/design/2026-09-15-aws6-eks21-upgrade-design.md for what was pinned to avoid replacement.
+      version = "~> 6.0"
     }
     helm = {
       source = "hashicorp/helm"
