@@ -298,6 +298,12 @@ fi
 step "6/11  Building AWS infrastructure (Terraform will ask you to confirm)"
 echo "This creates real, billed resources (~\$200/month while up)."
 
+# A previous run that died mid-apply can leave Helm releases whose first install failed and that
+# Terraform never recorded; this apply would then fail on "cannot re-use a name". Only a re-run onto
+# a surviving cluster can hit it, and the script is a no-op when there is no cluster yet. Its
+# eligibility rules are deliberately narrow -- see the header of the script. Never fatal.
+./scripts/clean-failed-helm-installs.sh || true
+
 # --- BEGIN aws progress watcher ---
 # Terraform prints `Still creating... [6m20s elapsed]` against opaque resource addresses for ~13
 # minutes and never says what AWS is doing underneath. This narrates it: the EKS control plane and

@@ -1154,12 +1154,33 @@ terraform plan  -var-file=voteball.tfvars
 **≈$8.50/day** while up — a measured full 24h, 2026-08-07, ≈$256/mo continuous; July 2026 actually billed $285.07 at ~63% uptime; ≈$0.19/day torn down) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 6.0`**
 with **`terraform-aws-modules/eks ~> 21.0`** (moved together from 5.0 / v20 on 2026-09-15; v21
 changed node-group defaults that would replace every node, so `modules/compute` pins the v20
-behaviour explicitly — read the comment there before removing it) and
+behaviour explicitly — read the comment there before removing it;
+**a module or provider upgrade is not done until a FROM-SCRATCH deploy has passed** — see below) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
 (pinned at **1.36** since the 2026-07-30 in-place upgrade; **standard support ends 2027-08-02**; see
 `docs/maintenance.md`)
 (`aws eks describe-cluster-versions --region <your region>`). Community chart/add-on versions drift fast;
 verify with `helm search repo <chart> --versions` before pinning.
+
+**An infrastructure module or provider upgrade has TWO contracts, and an in-place apply proves only
+one.** On 2026-09-15 the EKS v21 upgrade applied cleanly to the running cluster, every health check
+passed, and the very next rebuild deadlocked for 31 minutes: v21 stopped bootstrapping the VPC CNI,
+kube-proxy and CoreDNS on NEW clusters (`bootstrap_self_managed_addons` hardcoded false, and in
+`ignore_changes`, so the existing cluster could never show it). The node group waited for nodes that
+could not become Ready, every Helm release waiting on it timed out, and six half-installed releases
+then blocked the re-run. So:
+
+- **Read an upgrade guide for defaults that only a new resource sees** — bootstrap/add-on flags,
+  `create`-time-only arguments, anything in the module's `ignore_changes` — not just renamed inputs.
+- **Do not call the upgrade finished until a destroy → deploy cycle has passed on it.** Say so
+  explicitly when handing it over, rather than reporting the in-place result as the whole answer.
+- **Three guards now exist for this specific failure**, each for a different half of it:
+  `scripts/tests/test-eks-addons.sh` (CI) fails if the three add-ons stop being declared with
+  vpc-cni and kube-proxy `before_compute`; `watch-aws-progress.sh` prints a `DIAGNOSIS:` after five
+  minutes of nodes NotReady on `cni plugin not initialized`; and `scripts/clean-failed-helm-installs.sh`
+  (deploy step 6, non-fatal) uninstalls Helm releases whose **first** install failed and that
+  Terraform declares but does not track, so a re-run does not die on `cannot re-use a name`. The
+  test only covers this one mistake — the rebuild rule above is what covers the next one.
 
 ### Jenkins (`ci` namespace — installed by the main Terraform stack)
 
