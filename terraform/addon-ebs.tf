@@ -10,11 +10,13 @@
 # days of votes. Recovery is deleting the PVC and losing history. Do not "make these consistent".
 module "ebs_csi_irsa" {
   # Submodule path, matching every other IRSA role in this stack. The registry-root form
-  # "terraform-aws-modules/iam-role-for-service-accounts-eks/aws" does not exist and fails at init.
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
+  # "terraform-aws-modules/iam-role-for-service-accounts/aws" does not exist and fails at init.
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name             = "${var.cluster_name}-ebs-csi"
+  name = "${var.cluster_name}-ebs-csi"
+
+  use_name_prefix       = false
   attach_ebs_csi_policy = true
 
   oidc_providers = {
@@ -28,7 +30,7 @@ module "ebs_csi_irsa" {
 resource "aws_eks_addon" "ebs_csi" {
   cluster_name             = module.compute.cluster_name
   addon_name               = "aws-ebs-csi-driver"
-  service_account_role_arn = module.ebs_csi_irsa.iam_role_arn
+  service_account_role_arn = module.ebs_csi_irsa.arn
 }
 
 resource "kubernetes_storage_class" "gp3" {

@@ -2,10 +2,12 @@
 # actions on THIS cluster's ASG only -- discovered through the k8s.io/cluster-autoscaler/<name>=owned
 # tag set on the node group in Plan 2's modules/compute/main.tf.
 module "autoscaler_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name                        = "${var.cluster_name}-cluster-autoscaler-irsa"
+  name = "${var.cluster_name}-cluster-autoscaler-irsa"
+
+  use_name_prefix                  = false
   attach_cluster_autoscaler_policy = true
   cluster_autoscaler_cluster_names = [module.compute.cluster_name]
 
@@ -60,7 +62,7 @@ resource "helm_release" "cluster_autoscaler" {
     },
     {
       name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.autoscaler_irsa.iam_role_arn
+      value = module.autoscaler_irsa.arn
     },
   ]
 }
