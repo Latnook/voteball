@@ -9,7 +9,7 @@
 #
 # WHY IT IS terraform apply AND NOT A REST CALL OR A UI CLICK:
 #
-#   ci/jenkins/jenkins.yaml is loaded into the Helm release as controller.JCasC.configScripts and
+#   ci/jenkins/jenkins.yaml is delivered as the Terraform-managed ConfigMap jenkins-casc-voteball and
 #   applied by the chart's config-reload sidecar. Editing that file and COMMITTING IT CHANGES
 #   NOTHING on its own -- Jenkins is a platform add-on owned by Terraform, the opposite of
 #   charts/voteball, which ArgoCD syncs from master. Committing a JCasC change and walking away is

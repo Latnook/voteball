@@ -6,7 +6,7 @@
 # `create-jobs.sh`, and section 5 requires the jobs to be created FROM CODE (Job DSL / seed job /
 # CLI / API -- "יצירה ידנית של jobs דרך Jenkins UI אינה עומדת בדרישות המשימה"). This repo satisfies
 # that with the `jobs:` block of ci/jenkins/jenkins.yaml, which uses the Job DSL plugin's
-# pipelineJob(...) syntax and is applied by the Helm release's controller.JCasC.configScripts at
+# pipelineJob(...) syntax and is applied from the jenkins-casc-voteball ConfigMap (Terraform) at
 # EVERY controller boot.
 #
 # So there is deliberately nothing here that creates a job. Anything that did would be a second,

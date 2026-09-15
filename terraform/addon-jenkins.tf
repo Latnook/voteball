@@ -215,6 +215,14 @@ resource "helm_release" "jenkins" {
         # No configScripts here: ci/jenkins/jenkins.yaml reaches the controller through
         # kubernetes_config_map_v1.jenkins_casc below, which the chart's config-reload sidecar picks up
         # by label exactly as it picked up the chart-rendered one.
+        #
+        # EMPTY, and they must stay empty. The chart (5.9.45, templates/jcasc-config.yaml) renders its
+        # own `securityRealm` and `authorizationStrategy` ConfigMaps unless configScripts contains
+        # those strings -- a text check, which our file passed silently while it lived in configScripts.
+        # Once it moved out, both defaults rendered, collided with the same keys in jenkins.yaml, and
+        # JCasC refused to boot: ConfiguratorConflictException, CrashLoopBackOff (2026-09-15).
+        securityRealm         = ""
+        authorizationStrategy = ""
       }
 
       # The Ingress is defined in Task 7, not here, because it must join the app's ALB group and
