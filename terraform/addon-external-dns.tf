@@ -1,10 +1,18 @@
 # IRSA for external-dns, scoped to the configured hosted zone only (the helper's external_dns policy
 # grants route53:ChangeResourceRecordSets on the given zone ARNs + the read actions it needs).
 module "external_dns_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name                     = "${var.cluster_name}-external-dns-irsa"
+  name = "${var.cluster_name}-external-dns-irsa"
+
+  use_name_prefix = false
+
+  # Prefixed like every other resource here: IAM policy names are unique per ACCOUNT, and v6's
+
+  # default ("External_DNS", "EBS_CSI", ...) would collide with a fork or a second cluster.
+
+  policy_name                   = "${var.cluster_name}-external-dns"
   attach_external_dns_policy    = true
   external_dns_hosted_zone_arns = ["arn:aws:route53:::hostedzone/${data.aws_route53_zone.primary.zone_id}"]
 
@@ -28,7 +36,9 @@ resource "helm_release" "external_dns" {
 
   set = [
     {
-      name  = "provider"
+      # `provider.name`, not the legacy string `provider`: chart 1.21.1 prints a DEPRECATED notice in
+      # every plan and destroy for the string form, and says support will be removed.
+      name  = "provider.name"
       value = "aws"
     },
     {
@@ -75,7 +85,7 @@ resource "helm_release" "external_dns" {
     },
     {
       name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.external_dns_irsa.iam_role_arn
+      value = module.external_dns_irsa.arn
     },
   ]
 }

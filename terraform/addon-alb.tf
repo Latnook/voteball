@@ -3,10 +3,18 @@
 # (attach_load_balancer_controller_policy) -- the authoritative least-privilege definition for this
 # controller, tracked across controller versions so we don't hand-transcribe ~150 lines of JSON.
 module "alb_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name                              = "${var.cluster_name}-alb-controller-irsa"
+  name = "${var.cluster_name}-alb-controller-irsa"
+
+  use_name_prefix = false
+
+  # Prefixed like every other resource here: IAM policy names are unique per ACCOUNT, and v6's
+
+  # default ("External_DNS", "EBS_CSI", ...) would collide with a fork or a second cluster.
+
+  policy_name                            = "${var.cluster_name}-alb-controller"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
@@ -50,7 +58,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     },
     {
       name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.alb_irsa.iam_role_arn
+      value = module.alb_irsa.arn
     },
 
     # The service mutator webhook exists ONLY to make this controller the default for new Services of

@@ -8,12 +8,20 @@
 module "efs_csi_irsa" {
   # Submodule path, matching every other IRSA role in this stack (addon-alb.tf,
   # addon-eso.tf, addon-external-dns.tf ...). The registry-root form
-  # "terraform-aws-modules/iam-role-for-service-accounts-eks/aws" does not exist and fails
+  # "terraform-aws-modules/iam-role-for-service-accounts/aws" does not exist and fails
   # at `terraform init`.
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name             = "${var.cluster_name}-efs-csi"
+  name = "${var.cluster_name}-efs-csi"
+
+  use_name_prefix = false
+
+  # Prefixed like every other resource here: IAM policy names are unique per ACCOUNT, and v6's
+
+  # default ("External_DNS", "EBS_CSI", ...) would collide with a fork or a second cluster.
+
+  policy_name           = "${var.cluster_name}-efs-csi"
   attach_efs_csi_policy = true
 
   oidc_providers = {
@@ -27,14 +35,14 @@ module "efs_csi_irsa" {
 resource "aws_eks_addon" "efs_csi" {
   cluster_name             = module.compute.cluster_name
   addon_name               = "aws-efs-csi-driver"
-  service_account_role_arn = module.efs_csi_irsa.iam_role_arn
+  service_account_role_arn = module.efs_csi_irsa.arn
 
   # The mount targets must exist before the driver tries to use the filesystem. They live in
   # modules/storage, so this depends on the module as a whole.
   depends_on = [module.storage]
 }
 
-resource "kubernetes_storage_class" "efs" {
+resource "kubernetes_storage_class_v1" "efs" {
   metadata { name = "efs-sc" }
 
   storage_provisioner = "efs.csi.aws.com"

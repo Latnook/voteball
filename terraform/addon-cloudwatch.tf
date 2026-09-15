@@ -3,11 +3,13 @@
 # CreateLogGroup + cloudwatch:PutMetricData) via role_policy_arns. The add-on's SA is
 # amazon-cloudwatch:cloudwatch-agent.
 module "cloudwatch_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name = "${var.cluster_name}-cloudwatch-irsa"
-  role_policy_arns = {
+  name = "${var.cluster_name}-cloudwatch-irsa"
+
+  use_name_prefix = false
+  policies = {
     cloudwatch = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
   }
 
@@ -147,7 +149,7 @@ resource "aws_eks_addon" "cloudwatch" {
   cluster_name             = module.compute.cluster_name
   addon_name               = "amazon-cloudwatch-observability"
   addon_version            = "v6.3.0-eksbuild.1" # verified for K8s 1.34 via aws eks describe-addon-versions (2026-07-19)
-  service_account_role_arn = module.cloudwatch_irsa.iam_role_arn
+  service_account_role_arn = module.cloudwatch_irsa.arn
 
   configuration_values = jsonencode({
     containerInsights  = { enabled = false }
@@ -214,4 +216,12 @@ resource "aws_cloudwatch_log_group" "fluent_bit" {
 
   name              = "/aws/containerinsights/${var.cluster_name}/${each.key}"
   retention_in_days = 7
+}
+
+# IAM module v6 (2026-09-15) keeps caller-supplied policy ARNs under `additional` rather than `this`.
+# Same role, same AWS-managed policy -- the move keeps Terraform from detaching and re-attaching it,
+# which would leave the CloudWatch agent without permissions for the seconds in between.
+moved {
+  from = module.cloudwatch_irsa.aws_iam_role_policy_attachment.this["cloudwatch"]
+  to   = module.cloudwatch_irsa.aws_iam_role_policy_attachment.additional["cloudwatch"]
 }

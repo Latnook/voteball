@@ -520,7 +520,7 @@ Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.
   **Deleting the two custom resources is NOT enough — the `logging` NAMESPACE has to be deleted in
   that same window, while the operator still lives.** ECK finalizes the Secrets its resources own as
   well as the resources themselves, so once `helm uninstall elastic-operator` has run there is no
-  controller left to clear them, and Terraform reaches `kubernetes_namespace.logging` minutes later
+  controller left to clear them, and Terraform reaches `kubernetes_namespace_v1.logging` minutes later
   to find it un-deletable. Measured on the 2026-09-07 teardown — the first full destroy since the EFK
   pass added this namespace — it was still `Still destroying... 01m40s elapsed` when the run failed,
   and only the automatic state-rm retry got the teardown home, at the cost of a second full
@@ -837,10 +837,10 @@ pre-uninstall list does not by itself tell Terraform anything, so Terraform sche
 `helm_release.external_secrets` and the namespaces in the *same parallel batch* — on the 2026-09-07
 teardown `helm_release.external_secrets: Destroying...` printed one line **before** the namespaces
 started, and the run died on `context deadline exceeded`. The mechanism is
-`depends_on = [module.compute, helm_release.external_secrets]` on `kubernetes_namespace.devops_app`
-and `kubernetes_namespace.ci`, which is a **destroy**-order constraint: Terraform destroys dependents
+`depends_on = [module.compute, helm_release.external_secrets]` on `kubernetes_namespace_v1.devops_app`
+and `kubernetes_namespace_v1.ci` (plain `kubernetes_namespace` until the 2026-09-15 provider v3 move), which is a **destroy**-order constraint: Terraform destroys dependents
 before their dependencies, so naming ESO there is what makes the namespaces go first and the
-controller outlive them. `kubernetes_namespace.logging` deliberately does **not** carry it —
+controller outlive them. `kubernetes_namespace_v1.logging` deliberately does **not** carry it —
 `charts/logging` ships no ExternalSecret, and its hang is a different problem with a different fix
 (see the ECK note below). Verify the edges with
 `terraform graph | grep 'kubernetes_namespace.* -> "helm_release.external_secrets"'`; a documented
@@ -1151,8 +1151,10 @@ terraform plan  -var-file=voteball.tfvars
 ```
 
 `terraform apply` creates real, billed AWS resources (EKS control plane, NAT, nodes, RDS, ALB ≈
-**≈$8.50/day** while up — a measured full 24h, 2026-08-07, ≈$256/mo continuous; July 2026 actually billed $285.07 at ~63% uptime; ≈$0.19/day torn down) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 5.0`**
-(the EKS module v20 caps the provider at `< 6.0`) and
+**≈$8.50/day** while up — a measured full 24h, 2026-08-07, ≈$256/mo continuous; July 2026 actually billed $285.07 at ~63% uptime; ≈$0.19/day torn down) — treat it as a confirm-before-running step, never automatic. Pins that matter: **`aws ~> 6.0`**
+with **`terraform-aws-modules/eks ~> 21.0`** (moved together from 5.0 / v20 on 2026-09-15; v21
+changed node-group defaults that would replace every node, so `modules/compute` pins the v20
+behaviour explicitly — read the comment there before removing it) and
 **`cluster_version`** — keep it on a *standard-support* EKS release or the control plane costs 5×
 (pinned at **1.36** since the 2026-07-30 in-place upgrade; **standard support ends 2027-08-02**; see
 `docs/maintenance.md`)

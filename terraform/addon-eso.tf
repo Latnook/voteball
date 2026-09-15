@@ -2,10 +2,18 @@
 # helper's external_secrets policy grants secretsmanager:GetSecretValue/DescribeSecret on the given
 # ARNs only.
 module "eso_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "~> 6.0"
 
-  role_name                      = "${var.cluster_name}-eso-irsa"
+  name = "${var.cluster_name}-eso-irsa"
+
+  use_name_prefix = false
+
+  # Prefixed like every other resource here: IAM policy names are unique per ACCOUNT, and v6's
+
+  # default ("External_DNS", "EBS_CSI", ...) would collide with a fork or a second cluster.
+
+  policy_name                    = "${var.cluster_name}-eso"
   attach_external_secrets_policy = true
   # Scope to exactly the two secrets ESO syncs (+ their 6-char random suffixes) -- least privilege.
   # The jenkins secret was added 2026-07-30 when CI moved into the cluster; without it the Jenkins
@@ -40,7 +48,7 @@ resource "helm_release" "external_secrets" {
   set = [
     {
       name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.eso_irsa.iam_role_arn
+      value = module.eso_irsa.arn
     },
   ]
 }
