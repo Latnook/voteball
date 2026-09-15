@@ -176,9 +176,13 @@ const FILL_INTERIOR_PARTIES = new Set([
 // recolour, clubs get an outline): the repo owner chose it on 2026-08-20 after seeing all three
 // options rendered, because no recolour-based option could be made to look right on their machine.
 // Keyed by name_en like the sets above.
-const PLATE_PARTIES = new Set([
-  'The Joint List',
-]);
+//
+// EMPTY since 2026-09-15, and kept as a registration point like SKIP_RECOLOR_PARTIES below. Its one
+// entry was 'The Joint List', whose logo changed that day to the 2026 mark: white lettering on a
+// solid teal tile. On that artwork the plate framed the tile in a white box, and it is not needed --
+// recolorLogoForDark() already returns null for an opaque tile, so the artwork shows unchanged in
+// both themes with no canvas in play.
+const PLATE_PARTIES = new Set([]);
 
 // Parties whose artwork is used UNCHANGED in both themes -- the recolour is skipped entirely.
 //

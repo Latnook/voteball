@@ -70,6 +70,58 @@ echo "--- an unreachable site fails rather than hanging ---"
 SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/down" SMOKE_RETRIES=2 SMOKE_DELAY=0 \
   "$ROOT/scripts/ci/smoke-test.sh" >/dev/null 2>&1 && fail "transport failure must fail the smoke test"
 
+# Transport failures must name curl's exit code. On 2026-09-15 CD #1 logged 25 bare "transport
+# failure" lines, and telling "could not resolve" (6) from "could not connect" (7) took an hour of
+# external-dns and load-balancer log archaeology instead of one log line.
+cat > "$work/nxhost" <<'STUB'
+#!/usr/bin/env bash
+exit 6
+STUB
+
+# Resolves only after a few tries -- a negative DNS answer expiring from a cache. COUNT_FILE holds
+# how many calls have failed so far; FAIL_TIMES and EXIT_CODE shape the stub per case.
+cat > "$work/flaky" <<'STUB'
+#!/usr/bin/env bash
+n="$(cat "$COUNT_FILE" 2>/dev/null || echo 0)"
+if [ "$n" -lt "$FAIL_TIMES" ]; then echo $((n + 1)) > "$COUNT_FILE"; exit "$EXIT_CODE"; fi
+case "$1" in
+  */api/options)       echo '200 {"clubs":[],"leagues":[]}' ;;
+  */api/results\?by=all) echo '200 {"previous":[],"upcoming":[]}' ;;
+  *)                   echo '200 <!doctype html>' ;;
+esac
+STUB
+chmod +x "$work"/nxhost "$work"/flaky
+
+echo "--- a transport failure names curl's exit code ---"
+out="$(SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/nxhost" SMOKE_RETRIES=1 SMOKE_DELAY=0 \
+  SMOKE_DNS_WAIT=0 "$ROOT/scripts/ci/smoke-test.sh" 2>&1)" && fail "exit 6 must fail when there is no DNS budget"
+printf '%s' "$out" | grep -q 'curl exit 6' || fail "exit 6 not named in output: $out"
+printf '%s' "$out" | grep -q 'could not resolve host' || fail "exit 6 not described: $out"
+out="$(SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/down" SMOKE_RETRIES=1 SMOKE_DELAY=0 \
+  "$ROOT/scripts/ci/smoke-test.sh" 2>&1)" && fail "exit 7 must fail"
+printf '%s' "$out" | grep -q 'curl exit 7' || fail "exit 7 not named in output: $out"
+
+echo "--- an unresolvable host is waited out (cached negative DNS answer), not rolled back ---"
+rm -f "$work/count"
+COUNT_FILE="$work/count" FAIL_TIMES=4 EXIT_CODE=6 \
+  SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/flaky" SMOKE_RETRIES=1 SMOKE_DELAY=0 \
+  SMOKE_DNS_WAIT=10 "$ROOT/scripts/ci/smoke-test.sh" >/dev/null 2>&1 \
+  || fail "exit 6 that clears inside SMOKE_DNS_WAIT must pass even with SMOKE_RETRIES=1"
+
+echo "--- the DNS wait is bounded: a host that never resolves still fails, and terminates ---"
+rc=0
+timeout 20 env SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/nxhost" SMOKE_RETRIES=1 \
+  SMOKE_DELAY=0 SMOKE_DNS_WAIT=3 "$ROOT/scripts/ci/smoke-test.sh" >/dev/null 2>&1 || rc=$?
+[ "$rc" -ne 124 ] || fail "the DNS wait did not terminate (timeout fired)"
+[ "$rc" -ne 0 ] || fail "a host that never resolves must fail once SMOKE_DNS_WAIT is spent"
+
+echo "--- the DNS wait is specific to exit 6: a connect failure gets no extra time ---"
+rm -f "$work/count"
+COUNT_FILE="$work/count" FAIL_TIMES=4 EXIT_CODE=7 \
+  SMOKE_BASE_URL=https://example.test SMOKE_STUB_CURL="$work/flaky" SMOKE_RETRIES=1 SMOKE_DELAY=0 \
+  SMOKE_DNS_WAIT=100 "$ROOT/scripts/ci/smoke-test.sh" >/dev/null 2>&1 \
+  && fail "exit 7 must consume normal retries, not the DNS budget"
+
 echo "--- a missing base URL fails loudly ---"
 SMOKE_STUB_CURL="$work/ok" "$ROOT/scripts/ci/smoke-test.sh" >/dev/null 2>&1 \
   && fail "missing SMOKE_BASE_URL must fail"

@@ -13,6 +13,14 @@ set -uo pipefail
 : "${SMOKE_BASE_URL:?SMOKE_BASE_URL must be set (e.g. https://voteball.example.com)}"
 retries="${SMOKE_RETRIES:-10}"
 delay="${SMOKE_DELAY:-6}"
+# Extra time allowed ONLY while the host does not resolve (curl exit 6), shared by all three checks.
+# After a rebuild, a lookup made before external-dns created the A record is cached as "no address"
+# for up to min(SOA TTL, SOA MINIMUM) = 900s on the VPC resolver, and nothing in the cluster can
+# clear it. 2026-09-15: CD #1 failed its smoke test at 17:41, rolled production back, and the host
+# resolved at 17:42:43 -- 15m24s after the record was created. A rollback changes the image, never
+# DNS, so failing sooner only buys a pointless rollback. Every other failure keeps the normal budget.
+dns_wait="${SMOKE_DNS_WAIT:-900}"
+dns_waited=0
 
 # Tests override this to run offline; production uses the real curl.
 stub="${SMOKE_STUB_CURL:-}"
@@ -32,11 +40,36 @@ fetch() {
   fi
 }
 
+# Name curl's exit code. A bare "transport failure" hid whether the host did not resolve, refused the
+# connection or timed out -- the one fact needed to tell a DNS cache from a broken deploy.
+curl_reason() {
+  case "$1" in
+    6)  echo "could not resolve host" ;;
+    7)  echo "could not connect" ;;
+    28) echo "timed out" ;;
+    35) echo "TLS handshake failed" ;;
+    52) echo "empty reply from server" ;;
+    56) echo "connection reset" ;;
+    60) echo "TLS certificate not trusted" ;;
+    *)  echo "see man curl, EXIT CODES" ;;
+  esac
+}
+
 check() {
   local path="$1" want="$2" description="$3"
-  local attempt=1 out code
+  local attempt=1 out code rc step
   while [ "$attempt" -le "$retries" ]; do
-    if out="$(fetch "${SMOKE_BASE_URL}${path}" 2>/dev/null)"; then
+    rc=0
+    out="$(fetch "${SMOKE_BASE_URL}${path}" 2>/dev/null)" || rc=$?
+    if [ "$rc" -eq 6 ] && [ "$dns_waited" -lt "$dns_wait" ]; then
+      # Does not consume an attempt. Counted as at least 1s so SMOKE_DELAY=0 cannot loop forever.
+      step=$(( delay > 0 ? delay : 1 ))
+      dns_waited=$((dns_waited + step))
+      echo "smoke: ${path} -> curl exit 6 (could not resolve host); likely a cached negative DNS answer, waiting (${dns_waited}s of ${dns_wait}s)"
+      sleep "$delay"
+      continue
+    fi
+    if [ "$rc" -eq 0 ]; then
       # NR==1 only -- $out is "<code> <body...>" and a real page body is multi-line (nginx's
       # index.html, for one). Without this guard, awk prints field 1 of EVERY line joined by
       # newlines, "code" becomes "200\n<html>\n...", the comparison against "200" always fails, and
@@ -52,7 +85,7 @@ check() {
       fi
       echo "smoke: attempt ${attempt}/${retries} on ${path} -> ${code:-no-status}"
     else
-      echo "smoke: attempt ${attempt}/${retries} on ${path} -> transport failure"
+      echo "smoke: attempt ${attempt}/${retries} on ${path} -> transport failure (curl exit ${rc}: $(curl_reason "$rc"))"
     fi
     attempt=$((attempt + 1))
     [ "$attempt" -le "$retries" ] && sleep "$delay"
