@@ -36,7 +36,9 @@ resource "helm_release" "external_dns" {
 
   set = [
     {
-      name  = "provider"
+      # `provider.name`, not the legacy string `provider`: chart 1.21.1 prints a DEPRECATED notice in
+      # every plan and destroy for the string form, and says support will be removed.
+      name  = "provider.name"
       value = "aws"
     },
     {
