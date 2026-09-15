@@ -5422,6 +5422,20 @@ the cut, and nothing else.** The cut is worth one line: **דוידי בן ציו
 is not merely refused on the candidate-is-not-a-position rule — it is refused on a slot that does not
 reach the Knesset. The two grounds are independent and the second is the cheaper one.
 
+**2026-09-15 — revision 76. A walla column on Netanyahu's Winter problem (ברק סרי, 16:28). `bloc` stays
+`bibi`; nothing moves.** ([walla](https://news.walla.co.il/item/3867945).) This is analysis with
+no party document behind it. It reports a poll putting the list over the threshold at 4 seats, and
+that Netanyahu suspects Winter will go over to ליברמן after the election, citing Winter's ties to שרון
+שלום, a longtime Lieberman associate. It also says Likud's campaign is debating whether to attack him
+below the threshold or let him pass on the strength of his stated commitment to Netanyahu.
+**None of this is new to the row.** Netanyahu's private expectation of a crossover is the N12 report
+already weighed above, and the 2026-09-02 resolution rests on the reverse: Winter naming Netanyahu
+and saying *"ברור שלא נלך עם ליברמן"*. An adviser's past employer is a candidate-is-not-a-position
+question, one step further removed. The column's own framing is that Likud is weighing Winter's
+public commitment against its suspicion, which is the "expected-unstable" warning this row already
+carries. Polls are not a field. **The row's trigger is unchanged: Winter walking back the
+Netanyahu endorsement in his own words.**
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -7311,3 +7325,4 @@ pass happened, for anyone reading git history.
 | 2026-09-15 | revision 73 — **עוצמה יהודית marked its 300,000th gun licence (Ben Gvir visited the holder, a 26-year-old from באר שבע, with a cake). No axis moved, no tag added, `seed.sql` unchanged.** `gun-rights` was already held. The one correction is to figures: revision 30's "300,000 weapons" (2026-08-26) and the Beit Shemesh bullet's "~300,000 licences" (2026-08-31) were both ahead of the count, which the party's own post puts at licence 300,000 on 2026-09-15. Both stay as dated records, and 300,000 as of 2026-09-15 is the current figure. The women-holders figure (~8,300 → 29,000+) is not a separate position and gets no tag |
 | 2026-09-15 | revision 74 — **עמיחי אליהו (עוצמה יהודית #4) at a Tel Aviv school panel: he does not want to draft "someone from Kaplan" for combat, "he won't get up to charge". No axis moved, no tag added, `seed.sql` unchanged.** Press-tier (walla, ynet, ice, ישראל היום — identical quote), not a party post. The Kaplan line is rhetoric against opponents and is declined on revision 30's no-style-tags ground, and it is not a conscription position. The Gaza and hostages quotes the articles attach are **earlier** statements already covered by `territorial-control-gaza` and `opposes-hostage-deals`. The education line ("soul and spirit") is too vague to tag. Gap noted, not filed: no tag covers delegitimising protesters or the opposition. Retrieval: ישראל היום 403s WebFetch and 200s to curl with `Accept`/`Accept-Language`/`Referer`, the same fix as timesofisrael |
 | 2026-09-15 | revision 75 — **seven more links read (mako ×3, Haaretz ×2 of which one paywalled to its opening). No axis moved, no tag added, `seed.sql` unchanged on any row.** **הציונות הדתית**: mako's account of "חוק וצדק 2.0" adds clauses revision 71's sources lacked, including legal advisers as positions of trust, a 50% political-appointment quota and abolishing breach of trust, with Smotrich reportedly leaving retroactivity "up to Netanyahu". `page-sitemap.xml` re-read at ~20:15 IDT still shows no plan page, so revision 71's trigger (publication) is **not tripped** for `pm-immunity-protections` or `governance-reform`. The sources now also **disagree** on the PM-deferral clause, since mako does not report it. The video showing judges and the AG dragged and arrested is recorded as conduct, not tagged (no style tags). The Haaretz Galilee piece is logged as a lead for the internal-policing sweep, not as evidence. **עוצמה יהודית**: public spat with הליכוד over a reported reassurance call and a demand that Netanyahu rule out איזנקוט/לפיד; `bloc` stays `bibi`, same exclusion pressure revision 30 recorded. **ישר**: a Haaretz column on the list is opinion about candidates who have already been audited, so it changes nothing. A mako liveblog (2026-09-14) was analyst commentary and polls and bears on no field |
+| 2026-09-15 | revision 76 — **עמך ישראל: walla column (ברק סרי) on Netanyahu suspecting Winter will cross to ליברמן after the election, citing his ties to שרון שלום. `bloc` stays `bibi`, nothing moves, `seed.sql` unchanged.** Analysis with no party document. Netanyahu's private expectation is the N12 report already weighed against Winter's own 2026-09-02 endorsement and "ברור שלא נלך עם ליברמן". An associate's past employer is a candidate-is-not-a-position question, and the 4-seat poll is not a field. Trigger unchanged: Winter withdrawing the endorsement himself |
