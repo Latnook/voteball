@@ -7,7 +7,13 @@ module "autoscaler_irsa" {
 
   name = "${var.cluster_name}-cluster-autoscaler-irsa"
 
-  use_name_prefix                  = false
+  use_name_prefix = false
+
+  # Prefixed like every other resource here: IAM policy names are unique per ACCOUNT, and v6's
+
+  # default ("External_DNS", "EBS_CSI", ...) would collide with a fork or a second cluster.
+
+  policy_name                      = "${var.cluster_name}-cluster-autoscaler"
   attach_cluster_autoscaler_policy = true
   cluster_autoscaler_cluster_names = [module.compute.cluster_name]
 

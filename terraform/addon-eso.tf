@@ -7,7 +7,13 @@ module "eso_irsa" {
 
   name = "${var.cluster_name}-eso-irsa"
 
-  use_name_prefix                = false
+  use_name_prefix = false
+
+  # Prefixed like every other resource here: IAM policy names are unique per ACCOUNT, and v6's
+
+  # default ("External_DNS", "EBS_CSI", ...) would collide with a fork or a second cluster.
+
+  policy_name                    = "${var.cluster_name}-eso"
   attach_external_secrets_policy = true
   # Scope to exactly the two secrets ESO syncs (+ their 6-char random suffixes) -- least privilege.
   # The jenkins secret was added 2026-07-30 when CI moved into the cluster; without it the Jenkins
