@@ -46,6 +46,10 @@ module "eks" {
       max_size     = var.node_max_size
       desired_size = var.node_desired_size
 
+      # Explicitly empty, not omitted. Omitted, the module sends null, AWS stores {}, and every plan
+      # after a rebuild opened with "Objects have changed outside of Terraform: + labels = {}".
+      labels = {}
+
       # Tag the node group's ASG so the Plan-2b Cluster Autoscaler can discover and manage it.
       tags = {
         "k8s.io/cluster-autoscaler/enabled"             = "true"

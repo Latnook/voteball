@@ -182,7 +182,7 @@ jenkins:
                       # XDG_RUNTIME_DIR itself, so do not override it.
                       - { name: buildkit-state, mountPath: /home/user/.local/share/buildkit }
                   - name: trivy
-                    image: aquasec/trivy:0.58.1
+                    image: aquasec/trivy:0.74.0
                     command: ["cat"]
                     tty: true
                     # HOME=/tmp: the pod runs every container as uid 1000, but these images assume

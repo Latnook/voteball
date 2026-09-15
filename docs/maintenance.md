@@ -252,7 +252,7 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   Plugin updates are the most common source of both security advisories and behaviour changes. After
   bumping the plugin set, **re-test the webhook with a SHA-256 signature** — signed should give `200`,
   unsigned `400`.
-- **`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.58.1`, `quay.io/skopeo/stable:v1.17.0`,
+- **`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.74.0` (bumped from 0.58.1 on 2026-09-15, which predated alpine 3.24 and warned it was not on its EOL list), `quay.io/skopeo/stable:v1.17.0`,
   `amazon/aws-cli:2.22.0`, `python:3.12-slim` (lint/test), `postgres:16-alpine` (ephemeral test DB,
   not the app's own `postgres:17-alpine` base image) and `hadolint/hadolint:2.12.0-alpine`** are
   pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod template (`application-ci`);

@@ -385,7 +385,7 @@ flowchart LR
     kb -.->|"queries"| es
     eck -.->|"reconciles -- Elasticsearch/Kibana CRs"| nslogging
 
-    jcasc -.->|"controller.JCasC.configScripts"| jc
+    jcasc -.->|"ConfigMap jenkins-casc-voteball (Terraform)"| jc
     jc -.->|"creates both jobs, plugins,<br/>credentials -- no click-ops"| jobs
     jc -.->|"provisions"| ab
     jc -.->|"provisions"| ad
@@ -435,9 +435,10 @@ flowchart LR
 - **The controller carries no AWS role at all.** Only the two agent ServiceAccounts do:
   `jenkins-agent` can push to ECR, `jenkins-cd-agent` can only read it.
 - **Both jobs, all plugins and every credential come from `ci/jenkins/jenkins.yaml` (JCasC), applied
-  by `controller.JCasC.configScripts` at every controller boot** — there is no UI job-creation step
-  and nothing configured by clicking survives the next restart. Terraform delivers the file into the
-  Helm release; a change only reaches the running controller via `terraform apply`, never by
+  from the Terraform-managed ConfigMap `jenkins-casc-voteball`, which the chart's config-reload
+  sidecar loads at every controller boot and hot-reloads on change** — there is no UI job-creation step
+  and nothing configured by clicking survives the next restart. Terraform delivers the file as that
+  ConfigMap; a change only reaches the running controller via `terraform apply`, never by
   committing to `master`.
 - **`JENKINS_HOME` is a PersistentVolumeClaim on EFS, not an `emptyDir`.** EFS has a mount target in
   every AZ, so a rescheduled controller pod is never stuck waiting for a volume to follow it back to

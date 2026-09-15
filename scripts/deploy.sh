@@ -207,7 +207,7 @@ step "2/11  Creating ECR repositories and secret containers (targeted apply)"
 # special-cased later targeted apply.
 ./scripts/bootstrap-tf-backend.sh
 terraform -chdir=terraform init -upgrade -backend-config=backend.hcl
-terraform -chdir=terraform apply -var-file="$TFVARS" \
+terraform -chdir=terraform apply -compact-warnings -var-file="$TFVARS" \
   -target=module.storage.aws_ecr_repository.app -target=module.storage.aws_ecr_repository.cache \
   -target=aws_secretsmanager_secret_version.app_placeholder \
   -target=aws_secretsmanager_secret_version.jenkins_placeholder \
@@ -316,7 +316,7 @@ if [ "${VOTEBALL_NO_WATCH:-0}" != "1" ]; then
 fi
 # --- END aws progress watcher ---
 
-terraform -chdir=terraform apply -var-file="$TFVARS" "${APPROVE[@]}"
+terraform -chdir=terraform apply -compact-warnings -var-file="$TFVARS" "${APPROVE[@]}"
 
 if [ -n "$WATCH_PID" ]; then
   kill "$WATCH_PID" 2>/dev/null || true

@@ -758,12 +758,21 @@ already passed over — no later push brings it back into range, so `FORCE_BUILD
 That is why the escape hatch cannot be removed as redundant.
 
 **Jenkins is configured by JCasC, not by clicking — but the mechanism is `terraform apply`, not a
-reboot of a hand-managed host.** `ci/jenkins/jenkins.yaml` is loaded into the Helm release's
-`controller.JCasC.configScripts` and applied by the chart's config-reload sidecar (plugins, admin
+reboot of a hand-managed host.** `ci/jenkins/jenkins.yaml` is delivered as the Terraform-managed
+ConfigMap `kubernetes_config_map_v1.jenkins_casc` (label `jenkins-jenkins-config`) and applied by the
+chart's config-reload sidecar (plugins, admin
 user, authorization, the Kubernetes cloud, both agent pod templates, all credentials, and both jobs —
 `application-ci` and `application-cd`), so **UI changes are lost the next time the controller
 restarts** — which, on Spot, is roughly
-daily whether you touch anything or not. Edit the YAML, commit, then run `terraform apply` to push it
+daily whether you touch anything or not. **It is a ConfigMap, not `controller.JCasC.configScripts`,
+since 2026-09-15**: in the Helm values it made every plan touching the release print the whole
+previous values document (~1,400 lines; the Helm provider echoes it in `metadata` on any update).
+**Keep `JCasC.securityRealm` and `JCasC.authorizationStrategy` set to `""` in `addon-jenkins.tf`.**
+Chart 5.9.45 renders its own defaults for both unless `configScripts` *contains those strings*, a text
+check our file used to pass silently. The move made them render, JCasC hit a
+`ConfiguratorConflictException`, and the controller crash-looped. A failed upgrade also leaves those
+ConfigMaps orphaned, because Helm prunes against the last *deployed* revision, so they had to be
+deleted by hand. Edit the YAML, commit, then run `terraform apply` to push it
 to the running release; committing alone changes nothing (see the platform-add-on note above).
 Secrets come from Secrets Manager (`voteball/jenkins`, seeded by `./scripts/seed-jenkins-secret.sh`),
 synced into a Kubernetes Secret by External Secrets Operator and projected as pod environment

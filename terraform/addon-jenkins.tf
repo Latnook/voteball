@@ -157,12 +157,22 @@ resource "helm_release" "jenkins" {
   version    = local.jenkins_chart_version
   namespace  = kubernetes_namespace.ci.metadata[0].name
 
+  # The image tag is the one input that changes between applies on a live cluster, so it lives in
+  # `set`, not in the values document below. Terraform cannot diff inside a changed list element:
+  # with the tag in `values`, bumping it printed the whole document -- JCasC included, ~1,400 lines
+  # -- as removed and re-added (2026-09-15). As a `set` entry the same bump is a one-line diff.
+  set = [
+    {
+      name  = "controller.image.tag"
+      value = var.jenkins_image_tag
+    },
+  ]
+
   values = [yamlencode({
     controller = {
       image = {
         registry   = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
         repository = "${var.cluster_name}-jenkins"
-        tag        = var.jenkins_image_tag
       }
       # The image already contains every plugin. Leaving this on would make a disposable controller
       # refetch them from updates.jenkins.io on every restart -- roughly daily on Spot.
@@ -202,9 +212,17 @@ resource "helm_release" "jenkins" {
         # controller needs something the default config provided, add it to ci/jenkins/jenkins.yaml --
         # that file is the single source of truth for this controller's configuration.
         defaultConfig = false
-        configScripts = {
-          "voteball" = file("${path.module}/../ci/jenkins/jenkins.yaml")
-        }
+        # No configScripts here: ci/jenkins/jenkins.yaml reaches the controller through
+        # kubernetes_config_map_v1.jenkins_casc below, which the chart's config-reload sidecar picks up
+        # by label exactly as it picked up the chart-rendered one.
+        #
+        # EMPTY, and they must stay empty. The chart (5.9.45, templates/jcasc-config.yaml) renders its
+        # own `securityRealm` and `authorizationStrategy` ConfigMaps unless configScripts contains
+        # those strings -- a text check, which our file passed silently while it lived in configScripts.
+        # Once it moved out, both defaults rendered, collided with the same keys in jenkins.yaml, and
+        # JCasC refused to boot: ConfiguratorConflictException, CrashLoopBackOff (2026-09-15).
+        securityRealm         = ""
+        authorizationStrategy = ""
       }
 
       # The Ingress is defined in Task 7, not here, because it must join the app's ALB group and
@@ -282,5 +300,30 @@ resource "helm_release" "jenkins" {
     helm_release.jenkins_support,
     aws_acm_certificate_validation.jenkins,
     kubernetes_storage_class.efs,
+    # The init sidecar LISTs labelled ConfigMaps once at boot, so the JCasC file must exist first.
+    kubernetes_config_map_v1.jenkins_casc,
   ]
+}
+
+# ci/jenkins/jenkins.yaml, delivered as a ConfigMap the chart's config-reload sidecar watches (it
+# selects on the `jenkins-jenkins-config` label in this namespace and hot-reloads JCasC on change).
+#
+# It used to travel inside helm_release.jenkins's `values` as controller.JCasC.configScripts. That
+# worked, and it made every plan touching the release unreadable: the Helm provider marks its
+# computed `metadata` "known after apply" on ANY update and prints the entire previously deployed
+# values document as removed -- ~1,400 lines for a one-line image-tag bump (2026-09-15, provider
+# 3.3.0, the newest; no release changes it). Out here, a JCasC edit is an ordinary line diff on
+# this resource, and the release's own values are small enough that its metadata echo is too.
+resource "kubernetes_config_map_v1" "jenkins_casc" {
+  metadata {
+    name      = "jenkins-casc-voteball"
+    namespace = kubernetes_namespace.ci.metadata[0].name
+    labels = {
+      "jenkins-jenkins-config" = "true"
+    }
+  }
+
+  data = {
+    "jcasc-voteball.yaml" = file("${path.module}/../ci/jenkins/jenkins.yaml")
+  }
 }
