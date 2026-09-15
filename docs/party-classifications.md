@@ -6513,7 +6513,23 @@ policy that earns this row its +2 economic would fund separate haredi schooling 
 כחול לבן's or ביחד's defunding-by-condition does. The −2 here rests on conscription and on private
 life, not on the school-funding criterion that carries most of the band.
 
----
+**2026-09-15 — revision 78. שרן השכל on 103FM (חמש בערב, 2026-09-14): the state should sue foreign
+media for defamation. No axis moved, no tag added, no `seed.sql` change.**
+([103FM](https://103fm.maariv.co.il/programs/media.aspx?ZrqvnVq=KHEMII&c41t4nzVQ=EF).) The segment is
+titled *"צריך שמדינת ישראל תתבע"*. Discussing a documentary she frames as disinformation, she proposes
+a legal department in the Foreign Ministry that handles only defamation suits against foreign outlets.
+**Evidence tier: the page's own title and description only.** The segment is audio with no
+transcript and was not listened to, so nothing here rests on anything beyond what the station's page
+states. The summary tool labelled her "Tkuma/Israel Beytenu", which is wrong; she chairs this row.
+
+- **It corroborates the platform, and adds no field.** The programme already expands the state for
+  information warfare, with a hasbara corps in the IDF and consciousness departments in two ministries,
+  which is part of why economic +3 was refused above. A litigation unit is one more instance of the
+  same line.
+- **For the foreign-relations sweep (the fourth queue item), this row is a candidate holder.** The
+  item covers posture toward foreign states and institutions. Suing foreign media is that dimension
+  in a different form from עוצמה יהודית's consulate demand. It is logged there as a lead, not decided
+  here, for the reason the queue exists.
 
 ## Previous parties
 
@@ -7355,3 +7371,4 @@ pass happened, for anyone reading git history.
 | 2026-09-15 | revision 75 — **seven more links read (mako ×3, Haaretz ×2 of which one paywalled to its opening). No axis moved, no tag added, `seed.sql` unchanged on any row.** **הציונות הדתית**: mako's account of "חוק וצדק 2.0" adds clauses revision 71's sources lacked, including legal advisers as positions of trust, a 50% political-appointment quota and abolishing breach of trust, with Smotrich reportedly leaving retroactivity "up to Netanyahu". `page-sitemap.xml` re-read at ~20:15 IDT still shows no plan page, so revision 71's trigger (publication) is **not tripped** for `pm-immunity-protections` or `governance-reform`. The sources now also **disagree** on the PM-deferral clause, since mako does not report it. The video showing judges and the AG dragged and arrested is recorded as conduct, not tagged (no style tags). The Haaretz Galilee piece is logged as a lead for the internal-policing sweep, not as evidence. **עוצמה יהודית**: public spat with הליכוד over a reported reassurance call and a demand that Netanyahu rule out איזנקוט/לפיד; `bloc` stays `bibi`, same exclusion pressure revision 30 recorded. **ישר**: a Haaretz column on the list is opinion about candidates who have already been audited, so it changes nothing. A mako liveblog (2026-09-14) was analyst commentary and polls and bears on no field |
 | 2026-09-15 | revision 76 — **עמך ישראל: walla column (ברק סרי) on Netanyahu suspecting Winter will cross to ליברמן after the election, citing his ties to שרון שלום. `bloc` stays `bibi`, nothing moves, `seed.sql` unchanged.** Analysis with no party document. Netanyahu's private expectation is the N12 report already weighed against Winter's own 2026-09-02 endorsement and "ברור שלא נלך עם ליברמן". An associate's past employer is a candidate-is-not-a-position question, and the 4-seat poll is not a field. Trigger unchanged: Winter withdrawing the endorsement himself |
 | 2026-09-15 | revision 77 — **עוצמה יהודית: Ben Gvir vs. the police commissioner (13, ynet, מעריב; Kan unreadable behind Cloudflare). No axis moved, no tag added, `seed.sql` unchanged.** The commissioner held up appointments, and the minister froze equipment funds (333M of 450M shekels for 2026 unreleased, per the commissioner's letter). Ben Gvir says the fight is about promotions the AG favours, not money. Recorded as ministerial record: political control of police appointments, the same subject as the מח"ש file on the row, now acknowledged conduct. No tag covers it, and the AG framing is already `judicial-overhaul`. Noted for the future `governance-reform` decision alongside הציונות הדתית's reported 50% appointment quota (revision 75): the same direction on two bloc partners, one a plan and one a practice. Neither is tagged now |
+| 2026-09-15 | revision 78 — **ישראל תחילה: שרן השכל on 103FM (2026-09-14) proposes a Foreign Ministry legal department that only sues foreign media for defamation. No axis moved, no tag added, `seed.sql` unchanged.** Evidence is the station page's title and description only (audio, no transcript, not listened to). It corroborates the platform's state-funded information-warfare line (hasbara corps, consciousness departments), which is part of why economic +3 was refused, and it adds no field. Logged as a lead for the foreign-relations sweep item alongside עוצמה יהודית's consulate demand. The summary tool mislabelled her party, and this row is hers |
