@@ -4034,6 +4034,34 @@ party supports, and `bloc` records that, not whether the partner wants it. A mak
 previous night (2026-09-14) was also read. It is analyst commentary and polls, and none of it bears
 on a field.
 
+**2026-09-15 — revision 77. Ben Gvir vs. the police commissioner: appointments held, equipment budget
+frozen. No axis moved, no tag added, no `seed.sql` change.**
+([13](https://13tv.co.il/item/news/politics/politics/nvgah-905357236/),
+[ynet](https://www.ynet.co.il/news/article/hyy435hyze),
+[מעריב](https://www.maariv.co.il/news/law/article-1366389); a
+[Kan](https://www.kan.org.il/content/kan-news/local/1098199/) link could not be read, since it sits
+behind a Cloudflare challenge that no header set passes.) The commissioner held up appointments, and
+the minister froze police equipment money. The commissioner's letter says **333M of 450M shekels for
+2026** has not been released, which halts vehicles, station repairs, weapons, vests and helmets.
+Ben Gvir's office answers that the dispute *"אינה קשורה לתקציב"* and is really about promoting
+officers it says the Attorney General favours. It calls a 7M-shekel renovation for Lahav 433 waste by
+the commissioner's circle, and offers to fund urgent repairs directly through the ministry. מעריב
+reports Lahav 433 fighters telling the commissioner not to bring the minister on his next visit.
+
+- **Recorded as ministerial record, not tagged.** Using budget control over police **senior
+  appointments**, framed against the AG, is the same subject as the מח"ש file above (pushing מועלם's
+  promotion), now as the minister's own acknowledged conduct rather than an allegation. The page has
+  no tag for political control of police appointments, and the AG framing is the hostility already
+  covered by `judicial-overhaul`.
+- **It is the second governance-structure item today and on a different row.** הציונות הדתית's plan,
+  as reported (revision 75), would let ministers appoint up to 50% of senior civil-service posts. That
+  item was already refused `governance-reform` pending publication. Two bloc partners now show the
+  same direction, one as a plan and one as a practice, and that is worth writing down for **the tag
+  decision when it comes**. It does not justify tagging either row now: one is unpublished, and the
+  other is a dispute between one minister and one commissioner.
+- **The fighters' remark is about the minister's standing, not a position**, and is recorded for
+  context only.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -7326,3 +7354,4 @@ pass happened, for anyone reading git history.
 | 2026-09-15 | revision 74 — **עמיחי אליהו (עוצמה יהודית #4) at a Tel Aviv school panel: he does not want to draft "someone from Kaplan" for combat, "he won't get up to charge". No axis moved, no tag added, `seed.sql` unchanged.** Press-tier (walla, ynet, ice, ישראל היום — identical quote), not a party post. The Kaplan line is rhetoric against opponents and is declined on revision 30's no-style-tags ground, and it is not a conscription position. The Gaza and hostages quotes the articles attach are **earlier** statements already covered by `territorial-control-gaza` and `opposes-hostage-deals`. The education line ("soul and spirit") is too vague to tag. Gap noted, not filed: no tag covers delegitimising protesters or the opposition. Retrieval: ישראל היום 403s WebFetch and 200s to curl with `Accept`/`Accept-Language`/`Referer`, the same fix as timesofisrael |
 | 2026-09-15 | revision 75 — **seven more links read (mako ×3, Haaretz ×2 of which one paywalled to its opening). No axis moved, no tag added, `seed.sql` unchanged on any row.** **הציונות הדתית**: mako's account of "חוק וצדק 2.0" adds clauses revision 71's sources lacked, including legal advisers as positions of trust, a 50% political-appointment quota and abolishing breach of trust, with Smotrich reportedly leaving retroactivity "up to Netanyahu". `page-sitemap.xml` re-read at ~20:15 IDT still shows no plan page, so revision 71's trigger (publication) is **not tripped** for `pm-immunity-protections` or `governance-reform`. The sources now also **disagree** on the PM-deferral clause, since mako does not report it. The video showing judges and the AG dragged and arrested is recorded as conduct, not tagged (no style tags). The Haaretz Galilee piece is logged as a lead for the internal-policing sweep, not as evidence. **עוצמה יהודית**: public spat with הליכוד over a reported reassurance call and a demand that Netanyahu rule out איזנקוט/לפיד; `bloc` stays `bibi`, same exclusion pressure revision 30 recorded. **ישר**: a Haaretz column on the list is opinion about candidates who have already been audited, so it changes nothing. A mako liveblog (2026-09-14) was analyst commentary and polls and bears on no field |
 | 2026-09-15 | revision 76 — **עמך ישראל: walla column (ברק סרי) on Netanyahu suspecting Winter will cross to ליברמן after the election, citing his ties to שרון שלום. `bloc` stays `bibi`, nothing moves, `seed.sql` unchanged.** Analysis with no party document. Netanyahu's private expectation is the N12 report already weighed against Winter's own 2026-09-02 endorsement and "ברור שלא נלך עם ליברמן". An associate's past employer is a candidate-is-not-a-position question, and the 4-seat poll is not a field. Trigger unchanged: Winter withdrawing the endorsement himself |
+| 2026-09-15 | revision 77 — **עוצמה יהודית: Ben Gvir vs. the police commissioner (13, ynet, מעריב; Kan unreadable behind Cloudflare). No axis moved, no tag added, `seed.sql` unchanged.** The commissioner held up appointments, and the minister froze equipment funds (333M of 450M shekels for 2026 unreleased, per the commissioner's letter). Ben Gvir says the fight is about promotions the AG favours, not money. Recorded as ministerial record: political control of police appointments, the same subject as the מח"ש file on the row, now acknowledged conduct. No tag covers it, and the AG framing is already `judicial-overhaul`. Noted for the future `governance-reform` decision alongside הציונות הדתית's reported 50% appointment quota (revision 75): the same direction on two bloc partners, one a plan and one a practice. Neither is tagged now |
