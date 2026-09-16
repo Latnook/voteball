@@ -73,6 +73,7 @@ make_aws
 cat >"$work/kubectl" <<'STUB'
 #!/usr/bin/env bash
 case "$*" in
+  *jsonpath*)    printf '%s\n' "${NODE_READY_MSG:-kubelet is posting ready status}" ;;
   *"get nodes"*) echo "ip-10-0-1-1   Ready   <none>   5m   v1.36.0" ;;
   *"get pods"*)  echo "devops-app   backend-1   1/1   Running   0   5m" ;;
 esac
@@ -130,6 +131,22 @@ if grep -q "update-kubeconfig" "$ARGV"; then
     && fail "update-kubeconfig must NEVER target the operator's ~/.kube/config"
   ok "update-kubeconfig writes only a throwaway kubeconfig, never ~/.kube/config"
 fi
+
+# ---- 2b. a node stuck NotReady on a missing CNI is diagnosed, once, and only then ----------------
+out="$(NODE_READY_MSG='container runtime network not ready: cni plugin not initialized' \
+  VOTEBALL_WATCH_CNI_STALL_SECS=0 "$SCRIPT" apply --once 2>&1)" || fail "apply --once must exit 0: $out"
+grep -q "DIAGNOSIS: 1 node(s) NotReady" <<<"$out" || fail "a CNI-stalled node must be diagnosed: $out"
+grep -q "before_compute" <<<"$out" || fail "the diagnosis must point at the fix, not just the symptom: $out"
+ok "a node NotReady with 'cni plugin not initialized' is diagnosed"
+out="$(VOTEBALL_WATCH_CNI_STALL_SECS=0 "$SCRIPT" apply --once 2>&1)"
+grep -q "DIAGNOSIS" <<<"$out" && fail "a healthy node must never produce the CNI diagnosis: $out"
+ok "a healthy node produces no CNI diagnosis"
+out="$(NODE_READY_MSG='container runtime network not ready: cni plugin not initialized' \
+  VOTEBALL_WATCH_START_DELAY=0 VOTEBALL_WATCH_POLL_SECS=1 VOTEBALL_WATCH_IDLE_SECS=9999 \
+  VOTEBALL_WATCH_CNI_STALL_SECS=0 timeout 4 "$SCRIPT" apply 2>&1)"
+n="$(grep -c "DIAGNOSIS:" <<<"$out")"
+[ "$n" = 1 ] || fail "the CNI diagnosis must print once across polls, not $n times: $out"
+ok "the CNI diagnosis prints once, not every poll"
 
 # ---- 3. only CHANGES print ----------------------------------------------------------------------
 # Four passes over an unchanging account must report each resource exactly once.

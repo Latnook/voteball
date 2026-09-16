@@ -36,7 +36,9 @@ PYTHON_GROUP=(
   test-aws-pager-guard.sh
   test-bootstrap-backend.sh
   test-ci-guards.sh
+  test-clean-failed-helm-installs.sh  # aws/helm/terraform all faked; python3 + bash (2026-09-15)
   test-deploy-env.sh
+  test-eks-addons.sh          # eks v21 new-cluster add-ons; python3 only (2026-09-15)
   test-frontend-seo.sh
   # Needs python3 -- its fake `aws` is a python script that actually honours the --query's sort key
   # and Status predicate, which is what makes the ordering assertions non-vacuous (the first two

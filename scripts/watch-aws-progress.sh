@@ -259,6 +259,30 @@ probe_nodes() {
   done < <("$KUBECTL_CMD" get nodes --no-headers 2>/dev/null | awk '{print $1, $2}')
 }
 
+# The 2026-09-15 rebuild, the first on terraform-aws-modules/eks v21, sat 31 minutes with the node
+# group "Still creating" while both nodes were NotReady with "cni plugin not initialized": v21 no
+# longer bootstraps the VPC CNI, so nodes can never become Ready and the node group never finishes.
+# Nothing said so -- the watcher printed "nodes CREATING" and Terraform printed elapsed time. Waiting
+# cannot fix it, so after VOTEBALL_WATCH_CNI_STALL_SECS of that exact condition, say so once.
+CNI_STALL="${VOTEBALL_WATCH_CNI_STALL_SECS:-300}"
+CNI_SINCE=""
+CNI_WARNED=""
+probe_cni_stall() {
+  [ "$KUBE" = 1 ] || return 0
+  [ -n "$CNI_WARNED" ] && return 0
+  local stalled
+  stalled="$("$KUBECTL_CMD" get nodes -o 'jsonpath={range .items[*]}{.status.conditions[?(@.type=="Ready")].message}{"\n"}{end}' 2>/dev/null \
+    | grep -c 'cni plugin not initialized' || true)"
+  if [ "${stalled:-0}" -eq 0 ] 2>/dev/null; then CNI_SINCE=""; return 0; fi
+  [ -n "$CNI_SINCE" ] || CNI_SINCE=$SECONDS
+  [ $(( SECONDS - CNI_SINCE )) -ge "$CNI_STALL" ] || return 0
+  CNI_WARNED=1
+  say "DIAGNOSIS: $stalled node(s) NotReady for $(dur $(( SECONDS - CNI_SINCE ))) with 'cni plugin not initialized'."
+  say "           The VPC CNI add-on is missing, so the node group can NEVER finish -- waiting will not fix it."
+  say "           Check: aws eks list-addons --cluster-name $CLUSTER  (vpc-cni and kube-proxy must be"
+  say "           before_compute in terraform/modules/compute/main.tf). See the design doc of 2026-09-15."
+}
+
 probe_helm() {
   [ "$KUBE" = 1 ] || return 0
   local names
@@ -329,6 +353,7 @@ poll_apply() {
   probe_acm
   probe_addons
   probe_nodes
+  probe_cni_stall
   probe_helm
   probe_pods
 }
