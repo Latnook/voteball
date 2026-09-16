@@ -2564,6 +2564,68 @@ Knesset.
   revision 63 and repeated here because it is the row's clearest instance of a composition claim made
   about the list and read as being about the leadership.
 
+**2026-09-16 — revision 90. גנץ's book "אנחנו", read through a hostile review. No axis moved, no tag
+added, no `seed.sql` change — and one scored element of the 2026-08-01 verification is now
+contradicted by the party leader in print.**
+([הארץ, ביקורת ספרים](https://www.haaretz.co.il/literature/study/2026-09-15/ty-article-magazine/.premium/000001a0-a575-de68-a7e0-bf77f6a10000),
+2026-09-15; body supplied by the repo owner. **The book itself has not been read.**)
+
+- **A hostile review that QUOTES its subject delivers first-party text; its surrounding argument does
+  not.** This is the sixth consecutive day of separating a source's characterisation from the words
+  it reports, and the first where the two arrive **inside one article** — previous instances were a
+  rival characterising (44, 82, 87), a friendly outlet transmitting (81, 89) or witnesses disputing
+  (85). The reviewer's verdicts (*"העדר סיפור, מהות ותוכן"*, *"קטנוניות כרונית"*) are worth nothing
+  here; the sentences she quotes from a 300-page book by the party leader are worth a great deal.
+  **The catch is selection**: a hostile reviewer quotes the contradictions, so this is a biased sample
+  of the book in exactly the way the 2026-08-11 עוצמה יהודית corpus was a biased sample of that
+  ministry — **inverted, and no less biased for pointing the other way.**
+- **`security +2` holds and the 2026-08-01 reasoning is REINFORCED, not challenged.** The book adds a
+  guarantee that *"לעולם לא נצטרך לפנות התנחלויות"*. That is stronger than the platform's
+  *"חיזוק והרחבה של ההתיישבות החוקית"* and it still is not **+3**, for the reason that entry already
+  gave: never evacuating is not סיפוח. A promise not to withdraw and a claim of sovereignty are
+  different propositions, and this row is the page's clearest case for why the band needs the second
+  one.
+- **The book CONTRADICTS the platform on voluntary emigration, and that is the pass's real finding.**
+  The 2026-08-01 verification recorded *"the Trump plan's voluntary-emigration track for Gaza"* as
+  part of the hawkish doctrine behind `security +2`. The book now says the plan
+  *"לא היתה פותרת את הבעיה"* — while the review notes that when Trump raised it גנץ called him
+  a *"ידיד אמת"* whose remarks showed *"חשיבה יצירתית, מקורית ומעניינת"*. **No field moves**: the row
+  never carried `voluntary-palestinian-emigration-incentives` as a tag, so the retraction removes
+  nothing, and +2 rests on the whole doctrine rather than that one plank. **But the platform and the
+  leader's book now disagree on a scored element**, which is a first for a `platform`-basis row, and
+  the next pass over this row should read the book rather than the platform alone.
+- **`jewish-arab-partnership` REFUSED, and the refusal is self-evidencing.** The book wants a state in
+  which *"יהודים לגווניהם, חרדים, חילונים, ערבים, דרוזים, בדואים, צ'רקסים ונוצרים, יהיו חלק בלתי נפרד
+  מהמפעל הלאומי"* — while the campaign runs **against** a coalition partnership with רע"ם. That is
+  not עמך ישראל's identity-replacement refusal (revision 41) and not הדמוקרטים's candidate-level case
+  (revision 36); it is inclusion asserted and partnership denied **by the same actor in the same
+  election**. `arab-civil-service` already holds, and it is the narrower, duty-side claim, which is
+  precisely what survives here.
+- **A THIRD coalition-exclusion data point today, and a third SHAPE.** ישראל תחילה excludes a
+  **category** (anti-Zionist parties); ישר excludes on **criteria** (revision 85); this row excludes a
+  named **party** (רע"ם) and then distinguishes between two **people** in the same bloc —
+  *"אני מודאג מהדעות של סמוטריץ' ומעריך את חוכמתו... עם בן גביר לעומת זאת אין לי על מה לדבר"*.
+  **Three shapes in one day is an argument that the sweep item is not one tag**, and that is now the
+  most useful thing known about it: a vocabulary that cannot tell "excludes a category", "excludes on
+  criteria" and "will not talk to a person" apart will file all three identically and mean nothing.
+  Recorded for the sweep; still not minted.
+- **`hard-to-classify-bloc` confirmed first-party for the first time.** The tag has sat on this row as
+  an observation about its behaviour. The book supplies the evidence in the leader's own voice:
+  נתניהו *"פירק את דמותה של החברה הישראלית"* and took no wartime decision risking his own survival —
+  and, pages later, *"כל אלו שמתמקדים ב'רק לא ביבי' עוסקים רק בביבי, ושוכחים שיש כאן מדינה לנהל"*.
+  `unity-government` is the same disposition from the constructive side. Nothing moves; the tag stops
+  being an inference.
+- **Revision 44's Arab-society-crime debt gains a THIRD row.** *"מיגור הפשיעה בחברה הערבית"* appears
+  in the reviewer's summary of his programme, alongside rule of law, civil service, security
+  arrangements and sector integration in the economy. That is a summary, not a quotation, so it is the
+  weakest form the claim has taken — but the debt now spans עוצמה יהודית (as record, revisions 80/89),
+  the two Arab rows it was queued behind, and this one. **The gap is no longer plausibly a
+  single-corpus problem.**
+- **Below the electoral threshold, and that is the one thing polls decide here.** The review describes
+  the row as *"מדשדש זמן רב מתחת לאחוז החסימה בסקרים"*. As in revision 88 for עמך ישראל: this page
+  scores positions and not seats, and the sole consequence is that the row's survival is in question,
+  which matters for `on_ballot` and lineage handling rather than for any tag.
+
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
 The platform confirms every axis rather than moving any: privatizing Ashdod Port and Haifa Airport
@@ -5430,6 +5492,40 @@ personal accession); this completes #4–#6.
 - **Nothing moves.** `economic +1`, `security +2`, `religiosity −2` are argued from two platforms;
   a CEO, a battalion officer and an unsourced name are not platform text.
 
+**2026-09-16 — revision 91 (cross-row). A polling column on the three small right-wing lists. Nothing
+moves on any row, and the entry is short because the marginal value is low.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-16/ty-article/.premium/000001a0-a693-dea8-afe0-e6bf86400000),
+body supplied by the repo owner.) An opinion column: the scored content is poll numbers, and the rest
+is the columnist's characterisation — *"אייקון טרנספר"*, *"תוכנית לביטול הדמוקרטיה"*,
+*"הימין הדוגל בטיהור אתני"*. Revisions 44, 80–82, 85, 87 and 90 have refused that tier seven days
+running and it is refused again here without further argument.
+
+- **The one item that bears on a scored field is the reported SPLIT scenario, and it CORROBORATES
+  `two-faction-list` rather than challenging it.** Per the column, if the list crosses the threshold
+  *"אין לשלול שם תרחיש של פיצול: בעוד שהנדל לא ישלים 61 לנתניהו, סביר להניח שזליכה, הנחוש להיות שר
+  אוצר, ילך עם מי שייתן לו תפקיד בכיר יותר"*. Revision 58 took `two-faction-list` on זליכה's own
+  *"חיבור טכני בלבד"* and recorded a strict 5:4 zipper in which neither side subordinates the other.
+  **A predicted post-election split along exactly the faction line is what that tag asserts**, and
+  `bloc` **`unaligned`** is likewise confirmed rather than moved: the scenario has one half refusing
+  to complete 61 and the other going wherever the portfolio is. This is analysis, not a statement by
+  either principal, so nothing is recorded as fact — but it is the shape the row is already filed
+  under, which is worth knowing when the next report claims the list is really a coalition party.
+  The same source says זליכה draws *"קולות רבים מעומק הביביזם"*, which cuts the other way and is left
+  standing beside it.
+- **Better-sourced poll numbers than revision 88's, and they still decide only survival.** Two
+  institutes, both 2026-09-14, both with method stated: **מדגם/מנו גבע** (502 respondents, ±4.4%) —
+  הציונות הדתית 5, המילואימניקים 4, עמך ישראל 4; **קנטאר** (551, ±4.2%) — הציונות הדתית 6, the other
+  two 4 each. All three sit at or just above the threshold. **This page scores positions, not seats**;
+  the consequence is unchanged from revision 88 — עמך ישראל's expected-unstable flag stays, and
+  המילואימניקים והכלכלית joins it, which matters for `on_ballot` and lineage rather than for any tag.
+  The column's own caveat is worth carrying: a bloc player quoted in it calls the current numbers
+  *"הייפ סביב סגירת הרשימות"* and expects them to need re-checking after the holidays.
+- **One lead for revision 87's outstanding action.** The column asserts that *"חוק וצדק"* is named
+  after Poland's PiS. That is the columnist's reading and is **not** recorded — but whoever fetches
+  the הציונות הדתית plan, which revision 87 named as the highest-value open action on that row,
+  should check whether the party makes that lineage itself. A borrowed name claimed by its borrower
+  is first-party; a resemblance noticed by a critic is not.
+
 ### נעם — Noam · `bibi` · NULL / 3 / 3 · religious_zionist
 
 Sources: the party's own site (`noam.org.il`) — its self-description, its sovereignty statement of
@@ -7910,3 +8006,5 @@ pass happened, for anyone reading git history.
 | 2026-09-16 | revision 87 — **הציונות הדתית: the AI video was the TRAILER for a published plan — "חוק וצדק 2.0" ("משחררים את החסימה") presented the same day by סמוטריץ' and רוטמן (mako). No tag added; revision 83 CORRECTED three hours after it was written.** That entry said the row *"still has nothing published for 2026"* — wrong; the video accompanied a named programme's launch. Its decision not to tag on the video stands, but the sentence is deleted rather than left to be quoted. **The plan's stated content is the appointments half**: *"בקדנציה הבאה נשלים את 'ארגון המגרש'... נחליף את האנשים"* and *"למנות אנשים שיפעלו לפי כללי המשחק החדשים"*. **`governance-reform`: revision 77's trigger is TRIPPED and the tag is still not added, deliberately** — revision 75 refused it *"pending publication"*, publication has happened, and this pass has a press account of a launch rather than the text, against a row whose standard has been first-party documents since revision 17. **Do not resolve it from this entry; fetch the plan** — the highest-value open action on this row, and it decides `governance-reform` for two rows at once. **Every reaction quoted is a rival's** (איזנקוט, יאיר גולן, בנט, קריב) and none is recorded — fifth straight day of refusing this tier; it does confirm that revision 83's anonymous *"שר בכיר בממשלה"* remains the only intra-coalition signal and remains unusable. סמוטריץ' did not retreat |
 | 2026-09-16 | revision 88 — **cross-row: three stories about who will sit with whom inside the `bibi` bloc (mako ×3). No `bloc` moves on any row, and saying so is the finding.** **עוצמה יהודית** denies a reported reassurance call (*"פייק ניוז מוחלט. לא נערכה שום שיחה בשבועות האחרונים"*) and escalates — *"על ראש הגנב בוער הכובע... נתניהו רוצה את איזנקוט בממשלה הבאה במקום בן גביר"* — demanding a public commitment not to sit with איזנקוט and גולן; הליכוד answers *"מספיק עם הבלוף"* and *"על בסיס המפלגות הקיימות של המחנה הלאומי"*. A public fight about a coalition's terms is not intent to leave it, and both sides' words assume the same bloc. **עמך ישראל: THIRD instance and `bibi` holds** — הליכוד threatens a defamation suit over וינטר's private-investigators claim (he then denied attributing it to them), and נתניהו reportedly decided to escalate specifically because וינטר might later join ליברמן, whom he had spared until attacking him at this event. Revision 41 set `bibi` on **Winter's own** twice-stated endorsement and revision 76 already held against a similar report; this one is stronger (an operational decision, not a suspicion) and still is not the row's own statement. **Trigger restated: `bloc` moves when וינטר says something incompatible with his endorsement, not when a rival says he will** — and his party's own complaint that the attack *"מאלצת אותם לשבור ימינה"* argues the other way. **The N12 poll is context and moves nothing** (הליכוד −3, עוצמה יהודית −3, ישר 25→23, ביחד 15→13, גוש השינוי 70→66 with its Zionist share 59→54) — this page scores positions, not seats; the one thing it decides is that עמך ישראל's expected-unstable flag stays, with וינטר reported at **four to five seats**, i.e. at the threshold. **Asymmetry worth naming: a party's denial of a report about ITSELF is first-party** and is recorded; a rival's characterisation of it is not |
 | 2026-09-16 | revision 89 — **עוצמה יהודית: a second outlet on revision 80's subject, with a different number and a different mechanism — and it is NOT a second source (כאן). No axis moved, no tag added, `seed.sql` unchanged.** ~**₪748m** of ~₪1.5bn actually spent on the **police** line of Decision 549, against revision 80's ~₪950m of ₪1.5bn programme-wide. **The transmission rule written this morning applies within hours**: כאן states the figures were published *"לראשונה ב'הארץ'"*, so this is the same reporting, not confirmation of it, and the ministry's category argument is not answered by a second byline repeating the first — **revision 80's refusal to score stands**. The rule was written for a friendly outlet amplifying a party and catches an unfriendly one amplifying a newspaper, which is the sign it is about independence rather than alignment. **What כאן adds is the MECHANISM, and it contradicts הארץ's**: not a recruitment shortfall but budgets **withheld and conditioned on new oversight** after בן גביר and other ministers alleged money leaking from Arab local authorities to crime organisations — a deliberate hold, same shape as revision 77's *"אינה קשורה לתקציב"*. Both recorded, neither scored. **A RECORD instance of the internal-policing sweep item, whose every holder is a plan**: civilian welfare/prevention/rehabilitation budgets cut and part of the civilian allocation redirected to *"תגבור מנגנוני אכיפה ופעילות שב"כ"* — the executed form of the instrument the sweep was filed for; not minted, but the strongest argument yet that the dimension is real. **Two homicide trackers disagree and the gap matters**: הארץ's 170-so-far-in-2026 after 251 in 2025, versus יוזמות אברהם's **176 this year against 179 in the same period last year** — roughly flat, which sits awkwardly beside הארץ's *"הרציחות בתקופת בן גביר זינקו"* premise. The spike since 2022 is not in doubt; whether 2026 beats 2025 is, and revision 80 must not be read as having established it. **Retrieval: revision 83's Kan note was right for the wrong reason, corrected same day** — across six attempts on two URLs the site served the Cloudflare interstitial **intermittently and per request** (4 challenges, 2 real pages, both URLs producing both). The header set is not what decides it, **the retry is**. Two self-inflicted traps: a `-o /dev/null -w '%{http_code}'` probe **reported 200 for a page it never looked at**, and its byte figure was `%{size_download}`, the **compressed wire size**, not the 127KB document; and revision 83 generalised from ONE lucky request exactly as revision 77 did from one unlucky one. Durable claim: **kan.org.il is readable on retry; verify the body (`Just a moment`, ~5.7KB/403 vs ~127KB/200), not the status** |
+| 2026-09-16 | revision 90 — **כחול לבן: גנץ's book "אנחנו" read through a hostile review (הארץ ביקורת ספרים, 2026-09-15; body supplied by the repo owner; the book itself NOT read). No axis moved, no tag added, `seed.sql` unchanged — and one scored element of the 2026-08-01 verification is contradicted by the party leader in print.** **A hostile review that QUOTES its subject delivers first-party text; its surrounding argument does not** — sixth straight day of that separation and the first where both tiers arrive inside one article. **The catch is selection**: a hostile reviewer quotes the contradictions, an inverted twin of the 2026-08-11 עוצמה יהודית corpus and no less biased for pointing the other way. **`security +2` holds and the +2/+3 line is reinforced**: *"לעולם לא נצטרך לפנות התנחלויות"* is stronger than the platform's *"חיזוק והרחבה"* and still is not סיפוח — a promise not to withdraw and a claim of sovereignty are different propositions. **The book CONTRADICTS the platform on voluntary emigration**, which the 2026-08-01 entry counted toward the hawkish doctrine: *"לא היתה פותרת את הבעיה"*, against גנץ calling Trump a *"ידיד אמת"* with *"חשיבה יצירתית"* when it was raised. No field moves (the row never carried the tag), but **a `platform`-basis row whose leader's book disagrees with its platform is a first**, and the next pass must read the book. **`jewish-arab-partnership` REFUSED and the refusal is self-evidencing** — inclusion of *"ערבים, דרוזים, בדואים, צ'רקסים ונוצרים... במפעל הלאומי"* asserted while campaigning against a רע"ם coalition; not עמך ישראל's identity-replacement case, not הדמוקרטים's candidate-level one, but inclusion and partnership denied by the same actor in the same election. **A THIRD coalition-exclusion data point today and a third SHAPE** — ישראל תחילה excludes a **category**, ישר on **criteria**, this row a named **party** plus a distinction between two **people** (*"מודאג מהדעות של סמוטריץ' ומעריך את חוכמתו... עם בן גביר אין לי על מה לדבר"*). **Three shapes in one day argues the sweep item is not one tag** — a vocabulary that cannot tell them apart will file all three identically and mean nothing. **`hard-to-classify-bloc` confirmed first-party for the first time** (*"פירק את דמותה של החברה הישראלית"* beside *"כל אלו שמתמקדים ב'רק לא ביבי'... שוכחים שיש כאן מדינה לנהל"*), so the tag stops being an inference. **Revision 44's Arab-society-crime debt gains a THIRD row** and is no longer plausibly a single-corpus problem. Reported **below the electoral threshold** — as in revision 88, that bears on `on_ballot` and lineage, not on any tag |
+| 2026-09-16 | revision 91 — **cross-row: a polling column on the three small right-wing lists (הארץ, body supplied by the repo owner). Nothing moves, and the entry is short because the marginal value is low.** An opinion column whose scored content is poll numbers; *"אייקון טרנספר"*, *"תוכנית לביטול הדמוקרטיה"* and *"הימין הדוגל בטיהור אתני"* are the columnist's, refused without further argument for the seventh day. **The one item bearing on a scored field CORROBORATES `two-faction-list`**: a predicted post-election split *"הנדל לא ישלים 61 לנתניהו... זליכה... ילך עם מי שייתן לו תפקיד בכיר יותר"* runs along exactly the faction line revision 58 took the tag on (זליכה's own *"חיבור טכני בלבד"*, a strict 5:4 zipper), and `bloc` **`unaligned`** is confirmed rather than moved. Analysis, not a principal's statement, so nothing is recorded as fact; the same source's *"קולות רבים מעומק הביביזם"* cuts the other way and is left standing beside it. **Better-sourced polls than revision 88's and they still decide only survival** — both 2026-09-14 with method stated: מדגם/גבע (502, ±4.4%) RZP 5 / המילואימניקים 4 / עמך ישראל 4; קנטאר (551, ±4.2%) RZP 6 / 4 / 4. All three at or just above the threshold, so המילואימניקים והכלכלית joins עמך ישראל's expected-unstable flag — `on_ballot` and lineage, not tags. The column's own caveat carried: a bloc player calls the numbers *"הייפ סביב סגירת הרשימות"*, to be re-checked after the holidays. **One lead for revision 87's open action**: the claim that *"חוק וצדק"* is named after Poland's PiS is the columnist's reading and is **not** recorded — whoever fetches the plan should check whether the party claims that lineage itself, since a borrowed name claimed by its borrower is first-party and a resemblance noticed by a critic is not |
