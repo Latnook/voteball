@@ -120,6 +120,9 @@ const DARK_VARIANT_LOGOS = new Map([
   // shown unchanged in both themes) until the party's own site supplied a light version on
   // 2026-09-16 -- navy and cyan on white. logo_url now points at that; the tile stays for dark.
   ['Noam for Israel', '/logos/noam.png'],
+  // And the third: joint-list-2026.png (white lettering on a teal tile) was the only file until the
+  // party's teal-on-white version arrived on 2026-09-16; it now serves dark mode only.
+  ['The Joint List', '/logos/joint-list-2026.png'],
 ]);
 
 // Entities (by name_en) whose artwork file carries transparent padding, and the factor that
