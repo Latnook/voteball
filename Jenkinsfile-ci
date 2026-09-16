@@ -411,7 +411,14 @@ pipeline {
     // pod before any stage runs, so a per-stage `when` skips the work and none of the setup.
     stage('Build, scan and push') {
       agent { label 'voteball-build' }
-      when { allOf {
+      // `beforeAgent true` IS THE WHOLE POINT OF THE SPLIT, not a tuning flag. Declarative
+      // allocates a stage's agent BEFORE evaluating its `when` unless this is set -- so without it
+      // the heavy pod is provisioned, all nine containers start, the repo is cloned, and only THEN
+      // the stage skips. Measured on build #4 (2026-09-16, the first build after the split shipped
+      // without it): 16:59:20 -> 17:01:47, 2m27s spent to skip, and the build came out SLOWER than
+      // the single-pod version it replaced. The log says "skipped due to when conditional" either
+      // way, which is why this is invisible unless you read the timestamps.
+      when { beforeAgent true; allOf {
         expression { env.ALREADY_BUILT != 'present' }
         anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
                 expression { env.NO_CHANGELOG == 'true' } }   // G3, G3c
@@ -625,6 +632,18 @@ pipeline {
     // Back on the LIGHT agent: these three only need awscli and git.
     stage('Publish and trigger') {
       agent { label 'voteball-test' }
+      // Union of the three children's conditions, `beforeAgent` for the reason above: without a
+      // parent `when` this group allocated a pod and cloned the repo even when all three children
+      // skipped (build #4: 17:02:04 -> 17:02:41, 37s for nothing).
+      // CHARTS_CHANGED, not CHART_ONLY -- the latter is set INSIDE 'Chart-only change' and does not
+      // exist yet when this is evaluated. CHARTS_CHANGED is that stage's own precondition.
+      when { beforeAgent true; anyOf {
+        expression { env.ALREADY_BUILT == 'present' }
+        expression { env.SERVICES_CHANGED == 'true' }
+        expression { params.FORCE_BUILD }
+        expression { env.NO_CHANGELOG == 'true' }
+        expression { env.CHARTS_CHANGED == 'true' }
+      } }
       stages {
 
       // Traceability. The brief requires that a CD build can identify the CI build, the git commit,

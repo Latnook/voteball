@@ -118,10 +118,19 @@ push started all nine containers and then declined to use three of them. `Jenkin
 `agent none` and allocates `voteball-build` only for the Build/Trivy/Push group, behind a `when` that
 is the union of those three stages' own conditions.
 
-**The failure mode to know**: a stage calling `container('x')` on an agent whose template has no `x`
-fails with `container [x] not found`, which reads like a Jenkinsfile bug and is template drift.
-`scripts/tests/test-jenkins-agent-templates.sh` pins the two container sets against each other and
-checks every `container()` call is reachable on the agent its stage runs on.
+**`beforeAgent true` is what makes the split work at all.** Declarative allocates a stage's agent
+*before* evaluating its `when` unless that flag is set. Build #4 shipped without it: the heavy pod was
+provisioned, all nine containers started and the repo was cloned, and only then did the stage report
+`skipped due to when conditional` — 2m27s to skip, plus 37s for a group whose three children all
+skipped, making a docs-only build **slower** than the single-pod version it replaced. The log reads
+identically with and without the flag, so the cost is invisible unless you read the timestamps.
+
+**Two failure modes to know**, both green-and-silent, both pinned by
+`scripts/tests/test-jenkins-agent-templates.sh`:
+- a stage calling `container('x')` on an agent whose template has no `x` fails with
+  `container [x] not found`, which reads like a Jenkinsfile bug and is template drift;
+- an agent-allocating stage whose `when` lacks `beforeAgent true` defeats the split while every
+  stage still passes.
 
 The privilege contrast below is between the **CI** and **CD** agents; `voteball-test` carries exactly
 what `voteball-build` does in that respect:

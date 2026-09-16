@@ -106,8 +106,33 @@ if 'when {' not in header:
     sys.exit(f"FAIL: the stage that allocates {HEAVY} has no `when` guard, so a docs-only push "
              "still starts buildkit/trivy/skopeo")
 
+# 5. Every agent-allocating stage with a `when` must use `beforeAgent true`. Declarative allocates
+#    the agent BEFORE evaluating `when` unless it is set, so the pod is provisioned, every container
+#    starts and the repo is cloned -- and only then does the stage skip. The log reads
+#    "skipped due to when conditional" either way, so the cost is invisible without timestamps.
+#    Shipped without it on 2026-09-16 and build #4 came out SLOWER than the single-pod version:
+#    2m27s to allocate the heavy pod and skip, plus 37s for a group whose children all skipped.
+#    COMMENTS ARE STRIPPED FIRST, and that is not tidiness. The first version of this check tested
+#    the raw header text, which INCLUDES the Jenkinsfile comment explaining why `beforeAgent true`
+#    matters -- so the literal string was always present and the check passed on its own prose.
+#    Deleting the real flag did not fail it. Found by mutation, not by reading.
+gates = 0
+strip_comments = lambda t: '\n'.join(l for l in t.split('\n') if not l.lstrip().startswith('//'))
+for m in re.finditer(r"agent \{ label '([a-z-]+)' \}(.*?)stages \{", src, re.S):
+    label, header = m.group(1), strip_comments(m.group(2))
+    if 'when {' not in header:
+        continue
+    gates += 1
+    if 'beforeAgent true' not in header:
+        sys.exit(f"FAIL: the stage allocating {label!r} has a `when` without `beforeAgent true`, so "
+                 "Declarative provisions the pod and clones the repo before deciding to skip it -- "
+                 "a green build that is slower than having no split at all")
+if gates < 2:
+    sys.exit(f"FAIL: expected both grouping stages to carry a gated agent, found {gates} -- the "
+             "pattern matched too little, so check 5 proved nothing")
+
 print(f"  {LIGHT}: {len(light)} containers; {HEAVY}: {len(heavy)}; heavy-only {sorted(HEAVY_ONLY)}; "
-      f"{seen} container() calls reachable; heavy group gated")
+      f"{seen} container() calls reachable; {gates} agent groups gated with beforeAgent")
 PY
 
 echo "    PASS"
