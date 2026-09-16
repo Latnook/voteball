@@ -890,13 +890,21 @@ around this, both hit for real on the 2026-07-27 rebuild (see `docs/production-r
   snapshot and **retained automated backups** (`delete_automated_backups = false`). Don't count the
   dumps when deciding whether a teardown is safe.
 
-Five teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
+Six teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
 - **`./scripts/cleanup-stale-dns.sh`** removes this cluster's Route53 records if external-dns didn't get
   to it first (it only reconciles on a timer and can be destroyed before noticing the deleted Ingress).
   Gated on the ownership TXT (`external-dns/owner=voteball`), so apex/MX/DKIM records are never eligible.
 - **An orphaned-ENI reaper** runs in the background during destroy. The VPC CNI leaves detached
   `aws-K8S-*` interfaces when nodes terminate, and they make Terraform retry `DeleteSubnet` against a
   `DependencyViolation` for 10–20 minutes. See `docs/deploy.md` troubleshooting for the manual command.
+- **A load-balancer leftover sweep** (`scripts/cleanup-orphaned-lb-resources.sh`), once before the
+  destroy and again inside the ENI reaper loop. On 2026-09-16 the ALB vanished from the ELB API while
+  AWS kept its `amazon-elb` interfaces attached for ~6 hours, so the controller never deleted its two
+  security groups or its target group, and `aws_vpc` sat on "Still destroying..." until they were
+  removed by hand. Eligibility is the controller's own `elbv2.k8s.aws/cluster=<cluster>` tag (its IAM
+  policy cannot create one without it), and the sweep does nothing while any load balancer or ELB
+  interface remains in the VPC. The reaper-loop call is the half that matters: AWS released the
+  interfaces mid-teardown, and only a sweep running at that moment can use it.
 - **Pre-uninstalling all six of this stack's own Helm releases while the cluster is still healthy**
   (`voteball`, `jenkins`, `jenkins-support`, `kube-prometheus-stack`, `logging`, `elastic-operator`
   — count them in `scripts/destroy.sh` step 4 rather than trusting this list), and **one bounded automatic retry** (state-rm on `helm_release.*`/`kubernetes_*` only,

@@ -39,6 +39,7 @@ PYTHON_GROUP=(
   test-bootstrap-backend.sh
   test-ci-guards.sh
   test-clean-failed-helm-installs.sh  # aws/helm/terraform all faked; python3 + bash (2026-09-15)
+  test-cleanup-orphaned-lb-resources.sh  # aws/terraform faked in bash; needs neither python3 nor git (2026-09-16)
   test-deploy-env.sh
   test-eks-addons.sh          # eks v21 new-cluster add-ons; python3 only (2026-09-15)
   test-frontend-seo.sh
