@@ -271,9 +271,21 @@ sleep 1
 kids="$(children_of "$wpid")"
 [ -n "${kids//[[:space:]]/}" ] || fail "expected the watcher to be waiting on a backgrounded sleep child"
 kill "$wpid" 2>/dev/null
-sleep 1
+# BOUNDED WAIT, not `sleep 1` then check once. The cleanup is trap-driven and asynchronous, so a
+# single check a fixed second later is a race against the scheduler -- it passed locally and in
+# Jenkins build #4 and failed build #5 on the same commit content, which is the signature.
+# 5s is chosen against what this assertion actually detects: an orphan lingers for up to the POLL
+# INTERVAL (30s here), so anything under that still catches a real orphan, while 5s is far more
+# than reaping jitter on a loaded agent. Do not raise it to 30 -- that would make a genuine orphan
+# indistinguishable from a slow one.
+for _ in $(seq 1 50); do
+  alive=""
+  for k in $kids; do kill -0 "$k" 2>/dev/null && alive="$alive $k"; done
+  [ -z "${alive//[[:space:]]/}" ] && break
+  sleep 0.1
+done
 for k in $kids; do
-  kill -0 "$k" 2>/dev/null && fail "killing the watcher orphaned its sleep child (pid $k)"
+  kill -0 "$k" 2>/dev/null && fail "killing the watcher orphaned its sleep child (pid $k, still alive after 5s)"
 done
 ok "killing the watcher takes its sleep child with it (no orphans on Ctrl-C)"
 
