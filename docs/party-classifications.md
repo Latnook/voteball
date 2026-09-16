@@ -1107,6 +1107,40 @@ above has already read every name on the realistic range. The one concrete item,
 opposing reliance on "non-Zionist" parties, is the בית ציוני platform line that arrived with him, and
 it is already recorded on that row. The page's rule holds: a candidate is not a position.
 
+**2026-09-16 — revision 85. Eisenkot denies committing to bring רע"ם into a future government, and
+the party restates its three coalition principles. `excludes-anti-zionist-parties` ADDED (27 → 28
+tags); no axis moved.**
+([ynet](https://www.ynet.co.il/news/elections2026/article/sy2400pkfg).) After a ישר! meeting with the
+northern Bedouin local-authority heads' forum at זרזיר, ראש מועצת טובא זנגרייה מואיד אל-היב said
+Eisenkot *"התחייב"* to approach רע"ם for a coalition if asked to form one. Eisenkot:
+*"מדובר בשקר מוחלט... מי שלא יקבל את העקרונות שלי לא יהיה שותף"*; the party: *"שקר וכזב. הדברים לא
+נאמרו מעולם, גם לא ברמיזה"*.
+
+- **Three accounts of one closed room, and only the party's own statement is scored.** אל-היב says he
+  committed; סאלח גריפאת, who was in the room, says *"לא היה משהו כזה, אני לא שמעתי את זה"* while
+  adding the possibility was not ruled out either; מוניר זבידאת calls the meeting positive and
+  declines to relay its content. **All three accounts are compatible with the principles the party
+  published**, which is why those are what gets recorded. This is the fourth day running that the
+  page has had to separate a first-party statement from a counterparty's account of it (revisions 44,
+  80, 81, 82) — the difference here is that the competing accounts are **friendly witnesses**, not
+  rivals, which changes nothing about the rule.
+- **`excludes-anti-zionist-parties` added, and the founding standard is met verbatim.** The tag had
+  one holder (ישראל תחילה, revision 63), taken there because the refusal was *"categorical and
+  verbatim"*. Here the party states partnership requires *"הכרה בערכי מגילת העצמאות, הכרה במדינת
+  ישראל כמדינה יהודית ודמוקרטית ושירות לכל"*, and adds categorically that parties
+  *"שאינן מכירות בחמאס כארגון טרור"* will not sit in a government it forms. Recognition of Israel as
+  a Jewish and democratic state **is** the dividing line this page already uses for the anti-Zionist
+  rows, so the criterion is not merely adjacent to the tag, it is the tag.
+- **Stated against the coalition-exclusion sweep, not in spite of it.** That sweep item exists because
+  the page lacks a general vocabulary for coalition exclusion. It governs **minting**, not applying:
+  extending an existing tag to first-party text that meets its founding standard is not the
+  opportunistic growth revision 49 warned about. The sweep still has to decide the rest.
+- **רע"ם: nothing.** The story is a denial *about* the row by another party; it contains no statement
+  from it. The Bedouin authority heads' agenda — development and budgeting, חוק קמיניץ, חוק הלאום,
+  with the party's readout saying some were discussed as **amendment rather than repeal** — is
+  recorded here because the Kaminitz-Law gap is already queued (revision 44), and this is a second
+  sighting of it from a row that is not Arab. Still not minted.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -1726,6 +1760,116 @@ the Prime Minister's Office with a one-stop-shop and a case manager per family.
   this entry cites, is NO LONGER LISTED in the index but still answers 200.** An index is evidence
   of what a party is showing today, not of what it has published.
 
+**2026-09-16 — revision 84. Lapid on the stuck defence budget: convene the joint committee and move
+₪11bn from the coalition funds rather than raise taxes. No axis moved, no tag added, no `seed.sql`
+change — here or on הליכוד.**
+([ynet](https://www.ynet.co.il/news/article/hjsje1dyzx).) *"יש לנו אפשרות חוקית לפתור את סוגיית
+המלאים המיידית של צה"ל בלי לפרוץ את התקציב ולהעלות מיסים"*, against *"תעלולי בחירות פוליטיים זולים
+והעברת מיליארדים למשתמטים ולכספים קואליציוניים"*; in the Netanyahu meeting two days earlier,
+*"המקור התקציבי לא יכול להיות העלאת מסים למעמד הביניים ומשרתי המילואים"*, with the offered trade being
+cancellation of *"הכספים הקואליציוניים המושחתים ועשרות מיליארדי השקלים שאתם מעבירים היום למימון
+ההשתמטות החרדית"*.
+
+- **Everything here is already tagged on this row and the value is corroboration, not novelty.** The
+  three strands — reservists and the middle class as the constituency being protected
+  (`reservist-focused`), coalition funds to haredi institutions as the thing to cut
+  (`anti-clerical`, `sanctions-on-non-servers`), and financing exemption from service as the specific
+  waste (`anti-conscription-exemption`, added the same day in revision 86) — land on tags this row
+  holds. **`anti-conscription-exemption` arriving independently from two unrelated sources on one
+  day is worth noting**, because the ynet questionnaire is a solicited answer and this is not.
+- **Opposing a tax RISE is not `tax-cutting`, and `economic 1` does not move.** The row's +1 was set
+  on liberalizing fused with real state expansion; refusing a specific tax increase while demanding a
+  ₪11bn defence transfer is not a doctrine about the size of the state. The same refusal applies to
+  הליכוד's answer — *"ניתן להגדיל את תקציב הביטחון ללא כל העלאת מיסים"* because revenues beat
+  forecast — which is a claim about this year's arithmetic and is already covered by
+  `claims-economically-liberal`.
+- **The underlying facts are disputed three ways and none is recorded as fact.** לשכת לפיד, הליכוד
+  (*"מעולם לא היו סכומים כאלו לכספים קואליציוניים ולמגזר החרדי"*), the Treasury (₪15bn approved and
+  stuck 45 days in the finance committee, *"יש למערכת הביטחון את כל הכספים הדרושים"*) and the defence
+  establishment (a 12-Apache purchase already missed) give four incompatible pictures. The budget
+  figures that are not in dispute — ₪111bn originally, raised to ₪143bn pre-approval, ₪158bn approved
+  and held up, ₪183bn now demanded — are context.
+
+**2026-09-16 — revision 86. ynet and "ידיעות אחרונות" put the SAME conscription question to every
+party and printed the answers. Four tags added across four rows; no axis moved.**
+([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14898966), first in a series.) **This
+is the strongest corpus shape this page has ever had**: one question, thirteen rows, answers supplied
+by the parties themselves on the record. Everything below is first-party unless marked.
+
+**`anti-conscription-exemption` and `arab-civil-service` ADDED to this row (19 → 21 tags).**
+*"כל אזרח במדינת ישראל יתגייס לצה״ל או יעשה שירות לאומי אזרחי לפי חוק שירות ביטחון, **ללא פטורים** -
+זה נכון **לערבים** ונכון גם לחרדים"*, with *"אין מכסות ואין יעדים, מי שלא יתגייס לא יקבל שקל מהמדינה"*
+and *"לא ציוני - לא על חשבוני"*, cancelling אברך stipends and redirecting מעונות, ארנונה and
+דיור למשתכן to servers. Both tags were missing while `universal-conscription`,
+`sanctions-on-non-servers` and `service-conditioned-citizenship` were already held — the row had the
+consequences tagged and not the two premises.
+
+**The uniform questionnaire makes SILENCE readable, and that is the pass's real finding.** Scattered
+sources can only ever show what a party said; a single question put to everyone shows what a party
+*declined to say while others answered*. Three instances, and none of them would be available from
+any other source shape:
+
+- **הליכוד did not answer at all** — the only row that refused the question outright, while
+  reportedly intending to pass the previous Knesset's failed bill *"מיד אחרי הבחירות, עוד לפני הקמת
+  הממשלה הבאה, בהתאם לדרישת ש"ס"*. `scholar-exemption-retained` and the `conscription-exemption`
+  family already carry the position; **the refusal changes no field and is recorded because it is
+  evidence of a kind this page rarely gets.**
+- **רע"ם also declined**, on the haredi half specifically, having had three MKs vote for the January
+  2022 draft law. **So the headline's *"רק אחת לא ענתה"* is contradicted by the article's own body** —
+  two rows declined, on different questions. A piece disagreeing with itself is this project's most
+  reliable tell, and it is the reason the body and not the headline is cited here. No tag: ynet's
+  *"כמובן מתנגדים"* is the journalist's characterisation, not a quoted party statement, and revision
+  44's rule does not stop applying because the characterisation is probably right.
+- **הדמוקרטים answered fully and did NOT name Arab citizens**, saying only *"כלל האזרחים, במסגרת
+  ממלכתית ושוויונית"*. `arab-civil-service` is **refused** — and the refusal is far stronger than it
+  was before, because ביחד, ישראל ביתנו, כחול לבן and עמך ישראל all named them explicitly **in
+  answers to the same question**. Revision 15's open question about whether *"אוכלוסיות נוספות"*
+  includes Arab citizens is therefore **narrowed and still not answered**: the row has now had one
+  more chance to say so and did not.
+
+**Other rows, all checked and all unmoved:**
+
+- **הדמוקרטים — `sanctions-on-non-servers` ADDED (22 → 23 tags).** Named instruments, which is this
+  tag's standing test: *"לא יוכל להמשיך ליהנות מאותן הטבות עודפות... מעונות יום, צהרונים וארנונה"*,
+  plus cutting public funding to *"מוסדות או לגורמים שפועלים באופן שיטתי לעידוד השתמטות"*, under
+  *"המדינה תתגמל שירות ולא השתמטות"*.
+- **ישראל ביתנו — `anti-conscription-exemption` ADDED (14 → 15 tags).** *"בלי פטורים, בלי מכסות ובלי
+  קומבינות"*, with the enumerated groups (*"יהודים, מוסלמים, נוצרים, דרוזים וצ׳רקסים"*) and sanctions
+  including an exit ban.
+- **ישר — nothing added, and the near-miss is recorded.** The plan is *"שירות ממלכתי לכל"* with
+  *"הקצאה של עד 3% מכל מחזור שנתי למצטיינים... ובהם לומדי תורה, במיון פתוח ושוויוני, כשגם הם יבצעו
+  חיול והכשרה בסיסית"*, and sanctions up to **דין פלילי**. `anti-conscription-exemption` is wrong
+  here — a 3% carve-out *is* a deferral mechanism. `scholar-exemption-retained` was tested and
+  **refused**: כחול לבן holds it for *"רק מצטיינים יקבלו 'פטור'"*, but ישר's 3% is an open competitive
+  pool in which Torah study is one qualifying field among several **and the selected still do basic
+  training**, which is not an exemption at all. **Flagged as an open consistency question** rather
+  than settled unilaterally: the tag now sits on כחול לבן, המילואימניקים והכלכלית and המפלגה הכלכלית
+  beside `universal-conscription`, and whether it means "a narrow scholar exemption survives" or "the
+  haredi exemption is retained" decides three rows at once.
+- **עמך ישראל — `reservist-focused` refused a SECOND time.** *"לא נהיה שכפ״ץ של גולדקנופף אלא של
+  משרתי המילואים"* is the rhetorical form of the position revision 41 refused for having no benefit,
+  number or instrument attached. It still has none. The pre-swearing-in precondition
+  (*"חקיקת חוק זה לפני השבעת הממשלה מהווה תנאי סף"*) is restated and already recorded.
+- **עוצמה יהודית** — Ben Gvir's answer is `conscription-by-incentive` verbatim (haredi tracks in
+  משטרה and מג"ב, פלוגת אבנט, *"להיכנס לשירות חרדי ולצאת ממנו חרדי"*), confirming revision 57 from a
+  solicited source. **הציונות הדתית** refused the sanctions question and answered with
+  *"חוק יסוד המשרתים"* under *"הראשון לשוויון"* — priority for servers, not a duty for
+  non-servers — which is why `conscription-split` and not `universal-conscription` is right there.
+  **המילואימניקים והכלכלית** matches its existing tags exactly, down to revoking driving licences.
+  **כחול לבן** matches, including the pre-swearing-in precondition. **ש"ס** and **יהדות התורה** are
+  unchanged: both now concede only that yeshiva **drop-outs** cannot be shielded, which is
+  `scholar-exemption-retained` working as written.
+- **הרשימה המשותפת — a vocabulary gap, noted not minted.** *"אין להטיל סנקציות על אדם שבוחר שלא
+  להתגייס"* opposes **all** compulsory service, haredi included, while its tag
+  `opposes-arab-conscription` is Arab-specific. One holder, so no tag; recorded so the conscription
+  sweep has it.
+
+**Retrieval note — the summarizer attributed ישר's 3% plan to יש עתיד, which is not on this ballot at
+all** (it merged into ביחד). The raw `articleBody` in the page's JSON-LD says ישר!. **This is the same
+rule as revision 30's**: a summarizer's rendering of a source is not the source, and the failure mode
+is a confident, well-formed sentence about the wrong row. `ynet.co.il` serves the full body in
+`application/ld+json` to a browser-shaped `curl`; read that, not a summary.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -2168,6 +2312,17 @@ the party that was half of this row's name in 2022 has less realistic representa
 no axis. Top 13 otherwise as expected: גולן, לזימי, קריב, רייטן, פינק, לסקי שוץ, רונן, רוזין, רדמן,
 **בשיר סומיה #10** (revision 36 cited her at #10 for `jewish-arab-partnership` — confirmed against
 the filing), שפר, זר קצנשטיין, דאבוש.
+
+**2026-09-16 — revision 86 (cross-row). `sanctions-on-non-servers` ADDED (22 → 23 tags); no axis
+moved.** From the ynet/"ידיעות אחרונות" conscription questionnaire — see the full pass under ביחד.
+The tag's standing test is a **named instrument**, and the answer names them: withdrawal of
+*"הטבות עודפות... מעונות יום, צהרונים וארנונה"* from anyone not regularising their status, plus an end
+to public funding for *"מוסדות או לגורמים שפועלים באופן שיטתי לעידוד השתמטות"*, under the principle
+*"המדינה תתגמל שירות ולא השתמטות"*. **`arab-civil-service` REFUSED, and the refusal is now much
+stronger than a silence normally is**: the answer says *"כלל האזרחים"* and never names Arab citizens,
+in a questionnaire where ביחד, ישראל ביתנו, כחול לבן and עמך ישראל all did, to the same question.
+**Revision 15's open question is narrowed, not answered** — the row had one more chance to say so and
+did not.
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -2741,6 +2896,16 @@ list-based observations. **Two names it flagged as "genuinely unsourced" — י�
 עמי קור #21 — are outside the realistic 10**, which is precisely the class of gap the ranges retire:
 they were never worth sourcing. The filing runs to **34**, not the "at least 25" that entry could
 see.
+
+**2026-09-16 — revision 86 (cross-row). `anti-conscription-exemption` ADDED (14 → 15 tags); no axis
+moved.** From the ynet/"ידיעות אחרונות" conscription questionnaire — see the full pass under ביחד.
+*"כל צעיר וצעירה בגיל 18 - יהודים, מוסלמים, נוצרים, דרוזים וצ׳רקסים - יחויבו בשירות צבאי או אזרחי...
+בלי פטורים, בלי מכסות ובלי קומבינות"*, with the IDF sorting by need and civilian service in שב"ס,
+כבאות, medical services and community work. Sanctions already covered by `sanctions-on-non-servers`
+are restated with an **exit ban** (*"תיאסר יציאה מישראל"*) alongside benefit, tax, arnona, מעונות and
+public-employment bars. `universal-conscription` and `arab-civil-service` were already held; the
+explicit *"בלי פטורים"* is what was missing, and the row now carries the premise as well as the
+consequences.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -7598,3 +7763,6 @@ pass happened, for anyone reading git history.
 | 2026-09-16 | revision 81 — **ש"ס: Deri on the Ovadia Yosef state memorial and the High Court (ynet, ערוץ 14). No axis moved, no tag added, `seed.sql` unchanged — and the two sources disagree about the central fact.** The Religious Services Ministry cancelled the 6–8 October state memorial after the AG objected to state funding during the election period as campaigning. **Only the first-party quote is scored**: *"ההחלטה הזו רק מחזקת את נחישותנו לתקן מן היסוד את מערכת המשפט ולהחזיר את הכוח לעם ולנבחריו"*, identical in both outlets, which are aligned in opposite directions — dated campaign-period corroboration of `judicial-overhaul`, which matters on a row with no platform whose corpus is campaign speech and the voting record. **What the court did is CONTESTED and not recorded as fact**: ynet says **no ruling issued** (the event was already cancelled, so the petition was moot) and that ש"ס falsely announced the court *"החליט על ביטול הכנס"* — headline *"השקר החדש של דרעי"*; ערוץ 14 runs *"אחרי הכרעת בג"ץ"* and has the court **rejecting the petition**. Different events, not different emphases. Neither links the decision and this pass did not read the docket, stated rather than papered over. **New distinction, and the entry's most useful half: an ALIGNED outlet reproducing the party's framing is transmission, not corroboration** — ערוץ 14 asserts the fact ynet says was fabricated, in the party's own words, so counting it as a second source would launder the claim. Two sources are two sources only when independent of each other **and** of the subject. Third angle on one rule: revision 44 refused a **rival's** characterisation, revision 80 a **contested figure**, this a **friendly** outlet's account. **`populist` declined a FIFTH time and the first outside the far right** — *"להחזיר את הכוח לעם ולנבחריו"* is a frame, not an instrument (revision 30), and the substance is already `judicial-overhaul` (revision 57 on *"מאבק בדיפ-סטייט"*); the four prior refusals were all far-right rows, so applying it unchanged to a haredi row is worth recording. The commemoration law is the kind of legislative record `sectoral-budgeting` already names, and the AG hostility is the reading revision 77 gave עוצמה יהודית. No field moves |
 | 2026-09-16 | revision 82 — **הליכוד petitions the CEC chair against the voter-flight projects (הארץ, paywalled; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged — here or on הדמוקרטים, a named respondent.** Filed against AID Coalition's `FLY&AID`/`Fly & Vote`, עמותת "המחנה הישראלי" and הדמוקרטים, claiming election bribery and a party-financing breach; the organisation says it supplies bureaucratic and logistical help only, every cost including the fare borne by the voter, no party condition. **The petition is first-party and is read as such; the opponent's gloss is not** — הליכוד disclaims the obvious reading (*"אינה מבקשת למנוע הצבעה... אלא מבקשת להבחין בין פעילות אזרחית כללית לבין פעילות בחירות מאורגנת, ממומנת ומכוונת"*), and recording AID Coalition's *"מבקשים למנוע מישראלים להצביע"* as this row's position would be the move revisions 44, 80 and 81 refused three days running. **A genuine vocabulary gap filed as a LEAD, not a sweep**: nothing in the 126 entries covers election administration or franchise access — not absentee voting (which Israel lacks, hence flights), not the voter register, not turnout-drive restrictions; `service-conditioned-citizenship` is about conditioning the franchise on service, a different question. One party on one filing is one data point, the same discipline that kept revision 80's press-freedom gap a lead. **Trigger**: any row publishing on expatriate voting, absentee ballots or the register. **הדמוקרטים: nothing recorded, and the refusal is the point** — a rival's allegation in a filing, with no response quoted, is the tier revision 44 wrote its rule for; written down so a later pass does not score it. Organisation figures (50–70k target, 30,000+ registrations, $75 deposits) are context, not evidence |
 | 2026-09-16 | revision 83 — **הציונות הדתית: the party's AI campaign video dragging יצחק עמית, דפנה ברק־ארז and גלי בהרב־מיארה along the road (כאן, הארץ TV review). First-party material of the strongest tier and NOTHING moves.** `judicial-overhaul` already held; revision 30's line applies — this page tags what a party advocates, not how it says it, and the video is the existing position at maximum volume. Recorded for its **tier**: the party's own published campaign material, rarer on this row than it looks, which still has nothing published for 2026. Smotrich's expected defence (the video depicts clearing a **road blockage**; the real scandal is those who blocked the שב"כ and מוסד chiefs) is the same court-and-gatekeeper hostility `judicial-overhaul` carries, in revision 77's shape. **The critical minister is UNNAMED and therefore unattributable** — *"שר בכיר בממשלה"* on *"גרירות מבזות"*; an intra-coalition rebuke would be a real finding if it could be filed to a row, so it is left unrecorded rather than guessed at, and הרצוג belongs to no row. **מיקי זוהר's citizenship-stripping statement about the "נז"א" filmmakers is recorded against הליכוד (#13) and NOT tagged**: it arrives only via a hostile column's opening clause, revoking citizenship is outside his portfolio so it is stated intent rather than revision 77's ministerial record, and revision 49's candidate-advocacy rule stands. **Explicitly do not fuse it with revision 82's franchise lead** — same row, same day, adjacent-feeling, genuinely different questions, and merging them would manufacture a two-instance case out of one. **The column's analogy is REFUSED as evidence**: extending `voluntary-palestinian-emigration-incentives`, a tag earned from a drafted bill, to Jewish citizens by metaphor supplies no instrument. **Retrieval correction — `kan.org.il` is READABLE and revision 77 said it was not**: a browser-shaped `curl` (UA + `Accept`/`Accept-Language`/`Referer`/`--compressed`) returns **200** with the full body while WebFetch still 403s. **Fourth instance** of the rule after `timesofisrael.com`, `kachollavan.org.il` and `davar1.co.il`: a fetcher's 403 is a fact about the fetcher, not the site. Revision 77's Kan gap is now closeable |
+| 2026-09-16 | revision 84 — **ביחד: Lapid on the stuck defence budget — convene the joint committee, move ₪11bn from the coalition funds rather than raise taxes (ynet). No axis moved, no tag added, `seed.sql` unchanged, here or on הליכוד.** Every strand is already tagged and the value is corroboration: reservists and the middle class as the protected constituency (`reservist-focused`), coalition funds to haredi institutions as the cut (`anti-clerical`, `sanctions-on-non-servers`), *"מימון ההשתמטות החרדית"* as the named waste (`anti-conscription-exemption`, added the same day in revision 86 from a **solicited** answer — the two sources are unrelated and landed on the same tag). **Opposing a tax RISE is not `tax-cutting`** and `economic 1` does not move; הליכוד's *"ניתן להגדיל את תקציב הביטחון ללא כל העלאת מיסים"* is an arithmetic claim already covered by `claims-economically-liberal`. **Four incompatible accounts** (לשכת לפיד, הליכוד, the Treasury's ₪15bn stuck 45 days, the defence establishment's missed 12-Apache deal) and none is recorded as fact; the undisputed ladder ₪111bn → ₪143bn → ₪158bn → ₪183bn demanded is context |
+| 2026-09-16 | revision 85 — **ישר: Eisenkot denies committing to bring רע"ם into a future government; the party restates its three coalition principles. `excludes-anti-zionist-parties` ADDED (27 → 28 tags), no axis moved.** *"מדובר בשקר מוחלט... מי שלא יקבל את העקרונות שלי לא יהיה שותף"*; the party: *"שקר וכזב. הדברים לא נאמרו מעולם, גם לא ברמיזה"*. **Three accounts of one closed room and only the party's own statement is scored** — אל-היב says he committed, גריפאת was in the room and *"לא שמעתי את זה"* while not ruling it out, זבידאת declines to relay content; all three are compatible with the published principles. Fourth consecutive day of separating first-party text from a counterparty's account (44, 80, 81, 82), and the first where the competing witnesses are **friendly**, which changes nothing. **The tag's founding standard is met verbatim**: partnership requires *"הכרה בערכי מגילת העצמאות, הכרה במדינת ישראל כמדינה יהודית ודמוקרטית ושירות לכל"*, and parties *"שאינן מכירות בחמאס כארגון טרור"* are categorically out — and recognition as a Jewish and democratic state **is** this page's anti-Zionist dividing line, so the criterion is the tag rather than an analogue of it. **The coalition-exclusion sweep governs MINTING, not applying**: extending an existing tag to qualifying first-party text is not revision 49's opportunistic growth. **רע"ם: nothing** — a denial about the row by another party contains no statement from it. The Bedouin heads' agenda (development, חוק קמיניץ, חוק הלאום, some discussed as **amendment not repeal**) is a second sighting of the queued Kaminitz gap, from a non-Arab row; still not minted |
+| 2026-09-16 | revision 86 — **ynet + "ידיעות אחרונות" put the SAME conscription question to every party and printed the answers. FOUR tags added across four rows, no axis moved.** The strongest corpus shape this page has had: one question, thirteen rows, party-supplied answers on the record. **ביחד +`anti-conscription-exemption` +`arab-civil-service` (19 → 21)** — *"ללא פטורים - זה נכון לערבים ונכון גם לחרדים"*, *"אין מכסות ואין יעדים, מי שלא יתגייס לא יקבל שקל מהמדינה"*, *"לא ציוני - לא על חשבוני"*; the row had the consequences tagged and neither premise. **הדמוקרטים +`sanctions-on-non-servers` (22 → 23)** on named instruments (מעונות יום, צהרונים, ארנונה, defunding institutions encouraging evasion). **ישראל ביתנו +`anti-conscription-exemption` (14 → 15)** on *"בלי פטורים, בלי מכסות ובלי קומבינות"*. **The pass's real finding is that a uniform questionnaire makes SILENCE readable** — what a row declined to say *while others answered*, which no scattered corpus can show. Three instances: **הליכוד refused the question outright** (no field changes; recorded as evidence this page rarely gets); **רע"ם also declined** on the haredi half, so **the headline's *"רק אחת לא ענתה"* is contradicted by its own body** — a piece disagreeing with itself, this project's most reliable tell, and why the body is cited; and **הדמוקרטים answered fully without naming Arab citizens** (*"כלל האזרחים"*), so `arab-civil-service` is refused **far more strongly than an ordinary silence**, because four other rows named them to the same question — revision 15's open question narrowed, still unanswered. **ישר: nothing added and the near-miss recorded** — its 3% מצטיינים pool includes לומדי תורה but is open, competitive and still requires basic training, so `scholar-exemption-retained` is refused; **flagged as an open consistency question**, since that tag sits on כחול לבן, המילואימניקים והכלכלית and המפלגה הכלכלית and whether it means "a narrow scholar exemption survives" or "the haredi exemption is retained" decides three rows at once. **עמך ישראל: `reservist-focused` refused a SECOND time** — *"שכפ״ץ של משרתי המילואים"* is the rhetorical form of what revision 41 refused for having no instrument. עוצמה יהודית confirms `conscription-by-incentive` verbatim; הציונות הדתית refused the sanctions question and answered with priority for servers, not duty for non-servers, which is why `conscription-split` is right there; המילואימניקים והכלכלית, כחול לבן, ש"ס and יהדות התורה all match existing tags. **הרשימה המשותפת opposes ALL compulsory service** while its tag is Arab-specific — one holder, noted for the conscription sweep, not minted. **Retrieval: the summarizer attributed ישר's 3% plan to יש עתיד, which is not on this ballot** (merged into ביחד); the JSON-LD `articleBody` says ישר!. Same rule as revision 30 — a summarizer's rendering is not the source, and it fails as a confident sentence about the wrong row |
