@@ -6171,6 +6171,50 @@ finding**; the general form is this repo's own rule about exercising a check aga
 answer you already know — here input you know should *fail*. Content on gov.il remains unreachable in
 all three modes, which is why these three lists rest on the repo owner's verbatim copy plus press.
 
+**2026-09-16 — revision 81. Deri on the Ovadia Yosef state memorial and the High Court. No axis
+moved, no tag added, no `seed.sql` change — and the two sources disagree about the central fact.**
+([ynet](https://www.ynet.co.il/news/elections2026/article/rkeq1kdkge),
+[ערוץ 14](https://www.c14.co.il/article/1703839).) The Religious Services Ministry cancelled the
+state memorial for Rabbi Ovadia Yosef (6–8 October) after the Attorney General objected to funding it
+from the state during the election period, on the ground that ש"ס would use it as campaigning. A
+Knesset law passed last year requires state institutions to mark the anniversary annually.
+
+- **The first-party quote is safe and is the only thing scored.** Deri:
+  *"ההחלטה הזו רק מחזקת את נחישותנו לתקן מן היסוד את מערכת המשפט ולהחזיר את הכוח לעם ולנבחריו"*,
+  alongside *"הלב כואב. מיליון איש צעדו אחר מיטתו של מרן רבנו עובדיה יוסף זצ"ל"*. It appears
+  **identically in both outlets**, which are aligned in opposite directions, so the quote itself is
+  not in dispute. `judicial-overhaul` is already on this row; this is dated, campaign-period,
+  first-party corroboration of it, which matters here because the row has **no platform** and its
+  declared corpus is campaign speech, rabbinic instruction and the voting record.
+- **What the court actually did is CONTESTED, and it is not recorded as fact.** ynet reports that the
+  justices issued **no ruling at all** — the event had already been cancelled, so the petition was
+  moot and the question theoretical — and that ש"ס nonetheless put out a statement saying the court
+  *"החליט על ביטול הכנס"*; its headline calls this *"השקר החדש של דרעי"*. ערוץ 14 runs
+  *"אחרי הכרעת בג"ץ"* and describes the court as having **rejected the petition**, leaving the
+  cancellation standing. Those are different events, not different emphases. Neither article links the
+  decision, and **this pass did not read the docket**; the resolution instrument exists and was not
+  used, which is stated rather than papered over.
+- **A NEW distinction, and the most useful thing in this entry: an aligned outlet reproducing the
+  party's framing is transmission, not corroboration.** The temptation is to count two outlets as two
+  sources. But ערוץ 14's headline *asserts the very fact ynet says was fabricated*, in the party's own
+  words — so treating it as independent confirmation would launder the claim through a second byline.
+  **Two sources are two sources only when they are independent of each other and of the subject.**
+  This extends the page's existing rule in a third direction: revision 44 refused to score רע"ם on a
+  **rival's** characterisation, revision 80 refused a **contested figure** on עוצמה יהודית the same
+  week, and this refuses a **friendly** outlet's account. Same rule, three angles.
+- **`populist` declined, a FIFTH time, and the first time on a row outside the far right.**
+  *"להחזיר את הכוח לעם ולנבחריו"* is majoritarian framing, and revision 30's line holds: this page
+  tags what a party advocates, not how it talks, and a frame is not an instrument. The substance —
+  curbing the court, hostility to the Attorney General — is already carried by `judicial-overhaul`,
+  exactly as revision 57 found for *"מאבק בדיפ-סטייט"*. That the four prior refusals were all on
+  far-right rows made the rule look wing-specific; applying it unchanged to a haredi row is worth
+  having on the record.
+- **Nothing new on the funding side either.** A Knesset law directing state institutions to
+  commemorate the movement's founding rabbi is first-party legislative record of exactly the kind
+  `sectoral-budgeting` already names as a family on this row, and the AG's objection is the hostility
+  `judicial-overhaul` already covers — the same reading revision 77 gave the AG framing on
+  עוצמה יהודית. No field moves.
+
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
 Same four numbers as ש"ס and, until revision 34, the same two tags and the same merged entry. The
@@ -7463,3 +7507,4 @@ pass happened, for anyone reading git history.
 | 2026-09-15 | revision 78 — **ישראל תחילה: שרן השכל on 103FM (2026-09-14) proposes a Foreign Ministry legal department that only sues foreign media for defamation. No axis moved, no tag added, `seed.sql` unchanged.** Evidence is the station page's title and description only (audio, no transcript, not listened to). It corroborates the platform's state-funded information-warfare line (hasbara corps, consciousness departments), which is part of why economic +3 was refused, and it adds no field. Logged as a lead for the foreign-relations sweep item alongside עוצמה יהודית's consulate demand. The summary tool mislabelled her party, and this row is hers |
 | 2026-09-16 | revision 79 — **ביחד: the accessibility plan (`access`) read; no axis moved, no tag added, `seed.sql` unchanged.** ~1.25M people, 60% of the disability allowance kept after entering work, 100% of intercity buses and 25% of taxis accessible, a 5%-of-apartments developer incentive, community housing instead of institutions, and a רשות הנגישות וההעצמה in the PMO. `economic +1` holds on revision 28's line for `הזדקנות-בכבוד`: universal statutory spending with no offsetting cut, and mandates of the kind the cost-of-living programme already supplies. No disability/accessibility tag exists; filed as a sweep item rather than minted from one row. **Retrieval finding: the `/plans/` index lists six URLs that 302 back to the index** (`foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי`, `הסכם-חדש-השירות-הציבורי`) — a summarizer fetch of any of them returns the ARCHIVE page and reads like a real plan; four were nearly recorded as new documents. Check the HTTP status before reading. Conversely `kiryat-shmona` is delisted but still 200 |
 | 2026-09-16 | revision 80 — **עוצמה יהודית: Decision 549 money for Arab-society crime unspent (הארץ 2026-09-16, paywalled; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** A PMO document answering a parliamentary query: two thirds of a 300M-shekel 2026 line executed, 100M returned to the Treasury in 2025 at 67% execution, ~950M of 1.5B across 2022–2026. Police recruitment missed its own targets in Arab and mixed towns (Lod staffed ~100 against 180 posts); the community-security authority returned 7.5M of 17M. **The figures are CONTESTED and are not scored in either direction** — the ministry's reply is a category argument, not a denial: the police share entered the police base budget at the outset so a leftover cannot exist on that line, and the query's balances are *"מופרכים, מומצאים, משוללים כל יסוד"*. Revision 44's rule applied symmetrically: an unresolved factual dispute is not evidence, including when the disputed fact would be unflattering to the row rather than supplied by a rival. **Second budget-non-execution item on this row in eight days** (revision 77: 333M of 450M of the equipment budget), on a different line, counterparty and mechanism — a pattern, not a repeat; filed alongside revision 77's `governance-reform` note. **`basis` stays `record` with a caution about WHICH record**: the 2026-08-11 corpus is 30 of the party's own ministerial-action posts, Arab-society crime appears in none of them, and an independent record source on the same ministry points the other way — read that corpus as selected, not complete. **Revision 44's Arab-society-crime tag debt is NOT paid**: non-execution is not a position. Haaretz's homicide tracker recorded as context only (108 / 242 / 233 / **251** / 170-to-date, 15–20% solved) — a ministry's outcomes are not a party's position. **No press-freedom tag minted** from *"תעמולה... במסווה של 'עיתונות'"*; with revision 78's ישראל תחילה item that is two data points, a lead rather than a sweep |
+| 2026-09-16 | revision 81 — **ש"ס: Deri on the Ovadia Yosef state memorial and the High Court (ynet, ערוץ 14). No axis moved, no tag added, `seed.sql` unchanged — and the two sources disagree about the central fact.** The Religious Services Ministry cancelled the 6–8 October state memorial after the AG objected to state funding during the election period as campaigning. **Only the first-party quote is scored**: *"ההחלטה הזו רק מחזקת את נחישותנו לתקן מן היסוד את מערכת המשפט ולהחזיר את הכוח לעם ולנבחריו"*, identical in both outlets, which are aligned in opposite directions — dated campaign-period corroboration of `judicial-overhaul`, which matters on a row with no platform whose corpus is campaign speech and the voting record. **What the court did is CONTESTED and not recorded as fact**: ynet says **no ruling issued** (the event was already cancelled, so the petition was moot) and that ש"ס falsely announced the court *"החליט על ביטול הכנס"* — headline *"השקר החדש של דרעי"*; ערוץ 14 runs *"אחרי הכרעת בג"ץ"* and has the court **rejecting the petition**. Different events, not different emphases. Neither links the decision and this pass did not read the docket, stated rather than papered over. **New distinction, and the entry's most useful half: an ALIGNED outlet reproducing the party's framing is transmission, not corroboration** — ערוץ 14 asserts the fact ynet says was fabricated, in the party's own words, so counting it as a second source would launder the claim. Two sources are two sources only when independent of each other **and** of the subject. Third angle on one rule: revision 44 refused a **rival's** characterisation, revision 80 a **contested figure**, this a **friendly** outlet's account. **`populist` declined a FIFTH time and the first outside the far right** — *"להחזיר את הכוח לעם ולנבחריו"* is a frame, not an instrument (revision 30), and the substance is already `judicial-overhaul` (revision 57 on *"מאבק בדיפ-סטייט"*); the four prior refusals were all far-right rows, so applying it unchanged to a haredi row is worth recording. The commemoration law is the kind of legislative record `sectoral-budgeting` already names, and the AG hostility is the reading revision 77 gave עוצמה יהודית. No field moves |
