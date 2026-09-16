@@ -116,6 +116,10 @@ const DARK_VARIANT_LOGOS = new Map([
   // (2026-09-16, from three rendered options). The dark file is the party's transparent artwork
   // with navy and white swapped -- white wordmark and bands, navy name on a white band.
   ['The Democrats', '/logos/the-democrats-2026-dark.png'],
+  // Same shape, opposite direction: noam.png was the ONLY file (a navy tile with a light wordmark,
+  // shown unchanged in both themes) until the party's own site supplied a light version on
+  // 2026-09-16 -- navy and cyan on white. logo_url now points at that; the tile stays for dark.
+  ['Noam for Israel', '/logos/noam.png'],
 ]);
 
 // Entities (by name_en) whose artwork file carries transparent padding, and the factor that
