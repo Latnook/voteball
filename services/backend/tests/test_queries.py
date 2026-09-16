@@ -39,7 +39,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'Likud', 'Yashar', 'Together', 'The Democrats', 'Blue and White', 'Yisrael Beiteinu',
         'Religious Zionist Party', 'Otzma Yehudit', 'The Joint List', "Ra'am",
         'Shas', 'United Torah Judaism',
-        'The Economic Party', 'El HaDegel', 'The Reservists and the Economic Party', 'Noam',
+        'The Economic Party', 'El HaDegel', 'The Reservists and the Economic Party', 'Noam for Israel',
         'Amcha Yisrael', 'Haredi Public', 'Israel First', 'Other',
     }
     upcoming_names_he = {p['name_he'] for p in options['upcoming_parties']}
@@ -47,7 +47,7 @@ def test_get_options_returns_seeded_leagues(conn):
         'הליכוד', 'ישר', 'ביחד', 'הדמוקרטים', 'כחול לבן', 'ישראל ביתנו',
         'הציונות הדתית', 'עוצמה יהודית', 'הרשימה המשותפת', 'רע"ם',
         'ש"ס', 'יהדות התורה',
-        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים והכלכלית', 'נעם',
+        'המפלגה הכלכלית', 'אל הדגל', 'המילואימניקים והכלכלית', 'נעם לישראל',
         'עמך ישראל', 'הציבור החרדי', 'ישראל תחילה', 'אחר',
     }
 
