@@ -72,7 +72,13 @@ After all phases: `terraform validate` prints no warnings, a full plan reports *
 warnings, all nodes Ready, vpc-cni unchanged (v1.22.4-eksbuild.3), all ExternalSecrets synced, the
 site served 200 throughout.
 
-**The first from-scratch deploy on these versions (the same evening) failed exactly where warned.**
+**Verified from scratch on 2026-09-16, after the fix:** vpc-cni and kube-proxy created BEFORE the
+node group (7s), the node group itself **1m47s** (against 31m+ deadlocked), coredns 24s after the
+nodes, 150 resources added, zero Terraform warnings or errors, site 200. The
+clean-failed-helm-installs step correctly no-opped ("no cluster yet") and the watcher printed no
+CNI diagnosis, which is the right answer on a healthy run.
+
+**The first from-scratch deploy on these versions (2026-09-15, before that fix) failed exactly where warned.**
 eks v21 hardcodes `bootstrap_self_managed_addons = false`, so a new cluster gets no VPC CNI, kube-proxy
 or CoreDNS unless they are declared as add-ons -- and v20's config declared only vpc-cni, without
 `before_compute`, which v21 creates after the node group. The node group then waited for nodes that
