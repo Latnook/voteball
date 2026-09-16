@@ -1140,6 +1140,14 @@ Eisenkot *"התחייב"* to approach רע"ם for a coalition if asked to form o
   with the party's readout saying some were discussed as **amendment rather than repeal** — is
   recorded here because the Kaminitz-Law gap is already queued (revision 44), and this is a second
   sighting of it from a row that is not Arab. Still not minted.
+- **mako/N12 carries a FULLER version of the same principles, and it strengthens the tag.** Eisenkot
+  at בליך: *"שישראל היא מדינה יהודית, **עם רוב יהודי מוצק**, דמוקרטית וליברלית, שמקבלים את ערכי מגילת
+  העצמאות, ושמקבלים את חובת השירות בצה"ל, שירות לאומי ושירות אזרחי. מי שלא יקבל את שלושת העקרונות
+  האלה, לא יהיה שותף"* — with *"אני לא מבטיח לאף ראש מפלגה מקום, אני מדבר על עקרונות ולא על אנשים"*.
+  The Jewish-majority clause is absent from the ynet version and is the sharpest form the criterion
+  takes. **אל-היב's account also has Eisenkot excluding סמוטריץ' and בן גביר**, which would be a second
+  exclusion direction — **refused on the same ground as the first half of his account**, since it is
+  the same witness the party contradicts, and nothing in the party's own statement says it.
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -1789,6 +1797,10 @@ cancellation of *"הכספים הקואליציוניים המושחתים וע�
   establishment (a 12-Apache purchase already missed) give four incompatible pictures. The budget
   figures that are not in dispute — ₪111bn originally, raised to ₪143bn pre-approval, ₪158bn approved
   and held up, ₪183bn now demanded — are context.
+- **Corroborated the same day by mako/N12**, which broke the meeting and adds the procedural core the
+  ynet piece leaves out: the government wants a **נומרטור** update, the opposition says no legislative
+  change is needed, and Lapid's condition is general — *"כל תוספת מעבר למסגרת התקציב מחייבת ביטול
+  הכספים הקואליציונים והכספים למשתמטים"*. Same position, second outlet, no field moves.
 
 **2026-09-16 — revision 86. ynet and "ידיעות אחרונות" put the SAME conscription question to every
 party and printed the answers. Four tags added across four rows; no axis moved.**
@@ -3723,6 +3735,41 @@ investigation; legal sources expect none — *"סרטון בעייתי, אך כ�
   and the note has been wrong in this direction every time it has been wrong. Revision 77's Kan gap is
   now closeable.
 
+**2026-09-16 — revision 87. The AI video was the TRAILER for a published plan: "חוק וצדק 2.0" was
+presented the same day by סמוטריץ' and רוטמן. No tag added — and revision 83's central claim about
+this row is corrected, three hours old.**
+([mako](https://www.mako.co.il/news-israel-elections/2026/Article-8bc88f253f4a0a1027.htm).)
+
+- **CORRECTION to revision 83, same day.** That entry said the video was *"the party's own published
+  campaign material"* and that the row *"still has nothing published for 2026"*. The second half is
+  **wrong**: the video accompanied the launch of a named programme, *"חוק וצדק 2.0"*, subtitled
+  *"משחררים את החסימה"*, presented by the party chairman together with the chair of ועדת חוק חוקה
+  ומשפט. The video is the trailer, not the artefact. Revision 83's reasoning is otherwise unaffected —
+  it declined to tag on the video and that decision stands — but the sentence that made the video look
+  like the only thing the row had published is deleted by this note rather than left to be quoted.
+- **The plan's stated content is the appointments half, in the party's own words.** סמוטריץ':
+  *"הפעם אף אחד לא יגיד שהוא לא ידע. מערכת הבחירות הזו היא על תיקון מערכת המשפט. בקדנציה הבאה נשלים
+  את 'ארגון המגרש' שכבר עשינו בקדנציה הזו - **נחליף את האנשים**"*, and that the next term must both
+  *"לתקן את החקיקה"* and *"למנות אנשים שיפעלו לפי כללי המשחק החדשים"*.
+- **`governance-reform`: the trigger revision 77 wrote is TRIPPED, and the tag is still not added —
+  deliberately, with the next step named.** Revision 75 refused the tag for this row *"pending
+  publication"* of the 50%-political-appointment plan; revision 77 then recorded הציונות הדתית and
+  עוצמה יהודית moving the same way, one as a plan and one as a practice, and said the decision waits.
+  The plan is now published and presented by both principals — **so the precondition is met and the
+  document is not in hand.** This pass has a press account of a launch, not the text, and the page's
+  own standard for this row has been first-party documents since revision 17. **Do not resolve it from
+  this entry; fetch the plan.** That is the single highest-value open action on this row, and it
+  decides `governance-reform` for two rows at once.
+- **Every reaction quoted is a rival's characterisation and none is recorded.** איזנקוט
+  (*"מכשיר ההשתמטות ותומך הסרבנות"*, *"הסרטון הבזוי והאלים"*), יאיר גולן (*"הסתה מסוכנת והתרת דם"*),
+  בנט (*"ויאמר לרשע: למה תכה רעך?"*) and גלעד קריב are all attacking, and revisions 44/80/81/82/85
+  have now refused this evidence tier five days running. **It does place the unnamed *"שר בכיר
+  בממשלה"* of revision 83 in context without identifying them** — the named critics are all from the
+  other bloc, so the anonymous one is still the only intra-coalition signal and is still unusable.
+- **סמוטריץ' did not retreat**, which is the one thing the reaction round-up adds about the row
+  itself: he answered by inviting opponents to publish their own material rather than by withdrawing
+  the video. Recorded; no field moves.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -4399,6 +4446,43 @@ returned 7.5M.
   month against diverting ~532M from Decision 549 to a crime-fighting expansion run by מאי גולן
   (שוויון חברתי, הליכוד), arguing it duplicates lines this ministry already holds. That touches
   הליכוד as a ministerial action nobody has read the party's position on; not scored here.
+
+**2026-09-16 — revision 88 (cross-row). Three separate stories about who will sit with whom inside
+the `bibi` bloc. No `bloc` moves on any row, and saying so is the finding.**
+([mako, ליכוד↔עוצמה יהודית](https://www.mako.co.il/news-israel-elections/2026/Article-0285a7559e4a0a1027.htm),
+[mako, ליכוד↔וינטר](https://www.mako.co.il/news-israel-elections/2026/Article-676e5c4f616a0a1027.htm),
+[mako, N12 poll](https://www.mako.co.il/news-israel-elections/2026/Article-16f5b846bd3a0a1026.htm).)
+
+- **עוצמה יהודית — a dated, first-party instance of a dynamic this row already records.** The entry
+  above already notes the PM's office telling foreign governments the party will not be in the next
+  coalition. The party now denies a reported reassurance call outright — *"פייק ניוז מוחלט. לא נערכה
+  שום שיחה בשבועות האחרונים"* — and escalates: *"על ראש הגנב בוער הכובע... נתניהו רוצה את איזנקוט
+  בממשלה הבאה במקום בן גביר"*, demanding Netanyahu commit publicly not to sit with איזנקוט and
+  יאיר גולן. הליכוד: *"בן גביר - מספיק עם הבלוף... יקים את הממשלה הבאה על בסיס המפלגות הקיימות של
+  המחנה הלאומי"*. **`bloc` stays `bibi` on both rows**: a public fight about the terms of a coalition
+  is not a statement of intent to leave one, and both sides' own words assume the same bloc.
+- **עמך ישראל — THIRD instance, and the `bibi` resolution still holds.** הליכוד is threatening a
+  defamation suit over וינטר's claim that private investigators were sent to his home (he then said
+  he had not attributed it to הליכוד), and per the report נתניהו decided to escalate the campaign
+  against him, the deciding consideration being that he might later join ליברמן — noting he attacks
+  איזנקוט and בנט but had spared ליברמן until this event, where he attacked him too. **Revision 41
+  resolved `bloc` to `bibi` and removed `hard-to-classify-bloc` on Winter's own twice-stated
+  endorsement; revision 76 weighed a walla report of Netanyahu privately expecting a defection and
+  held.** This is the third such report and the strongest — an operational decision rather than a
+  suspicion — and it **still is not the row's own statement**, which is the only thing that moved the
+  field in the first place. **Trigger, restated concretely**: `bloc` moves when וינטר says something
+  incompatible with his endorsement, not when a rival says he will. His party's own complaint is that
+  the attack *"מאלצת אותם לשבור ימינה"* — which argues the opposite way.
+- **The poll is context and changes nothing, but it is the reason one flag stays on.** N12, within a
+  month: הליכוד −3, עוצמה יהודית −3, ישר −2 (25 → 23), ביחד −2 (15 → 13); גוש השינוי 70 → 66, with the
+  Zionist share of it falling 59 → 54 as the Arab lists strengthen. **This page scores positions, not
+  seats**, and no field depends on a poll. The exception is survival: וינטר is reported at **four to
+  five seats**, i.e. at the threshold, which is why עמך ישראל's expected-unstable flag stays and why
+  its lineage and `on_ballot` handling matter more than its tag list.
+- **Nothing here is scored from a rival's mouth**, which by now is the fifth consecutive day of the
+  same refusal. The one asymmetry worth naming: **a party's denial of a report about itself IS
+  first-party** — עוצמה יהודית's *"לא נערכה שום שיחה"* is its own statement and is recorded as such,
+  while הליכוד's characterisation of what בן גביר should worry about is not.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -7766,3 +7850,5 @@ pass happened, for anyone reading git history.
 | 2026-09-16 | revision 84 — **ביחד: Lapid on the stuck defence budget — convene the joint committee, move ₪11bn from the coalition funds rather than raise taxes (ynet). No axis moved, no tag added, `seed.sql` unchanged, here or on הליכוד.** Every strand is already tagged and the value is corroboration: reservists and the middle class as the protected constituency (`reservist-focused`), coalition funds to haredi institutions as the cut (`anti-clerical`, `sanctions-on-non-servers`), *"מימון ההשתמטות החרדית"* as the named waste (`anti-conscription-exemption`, added the same day in revision 86 from a **solicited** answer — the two sources are unrelated and landed on the same tag). **Opposing a tax RISE is not `tax-cutting`** and `economic 1` does not move; הליכוד's *"ניתן להגדיל את תקציב הביטחון ללא כל העלאת מיסים"* is an arithmetic claim already covered by `claims-economically-liberal`. **Four incompatible accounts** (לשכת לפיד, הליכוד, the Treasury's ₪15bn stuck 45 days, the defence establishment's missed 12-Apache deal) and none is recorded as fact; the undisputed ladder ₪111bn → ₪143bn → ₪158bn → ₪183bn demanded is context |
 | 2026-09-16 | revision 85 — **ישר: Eisenkot denies committing to bring רע"ם into a future government; the party restates its three coalition principles. `excludes-anti-zionist-parties` ADDED (27 → 28 tags), no axis moved.** *"מדובר בשקר מוחלט... מי שלא יקבל את העקרונות שלי לא יהיה שותף"*; the party: *"שקר וכזב. הדברים לא נאמרו מעולם, גם לא ברמיזה"*. **Three accounts of one closed room and only the party's own statement is scored** — אל-היב says he committed, גריפאת was in the room and *"לא שמעתי את זה"* while not ruling it out, זבידאת declines to relay content; all three are compatible with the published principles. Fourth consecutive day of separating first-party text from a counterparty's account (44, 80, 81, 82), and the first where the competing witnesses are **friendly**, which changes nothing. **The tag's founding standard is met verbatim**: partnership requires *"הכרה בערכי מגילת העצמאות, הכרה במדינת ישראל כמדינה יהודית ודמוקרטית ושירות לכל"*, and parties *"שאינן מכירות בחמאס כארגון טרור"* are categorically out — and recognition as a Jewish and democratic state **is** this page's anti-Zionist dividing line, so the criterion is the tag rather than an analogue of it. **The coalition-exclusion sweep governs MINTING, not applying**: extending an existing tag to qualifying first-party text is not revision 49's opportunistic growth. **רע"ם: nothing** — a denial about the row by another party contains no statement from it. The Bedouin heads' agenda (development, חוק קמיניץ, חוק הלאום, some discussed as **amendment not repeal**) is a second sighting of the queued Kaminitz gap, from a non-Arab row; still not minted |
 | 2026-09-16 | revision 86 — **ynet + "ידיעות אחרונות" put the SAME conscription question to every party and printed the answers. FOUR tags added across four rows, no axis moved.** The strongest corpus shape this page has had: one question, thirteen rows, party-supplied answers on the record. **ביחד +`anti-conscription-exemption` +`arab-civil-service` (19 → 21)** — *"ללא פטורים - זה נכון לערבים ונכון גם לחרדים"*, *"אין מכסות ואין יעדים, מי שלא יתגייס לא יקבל שקל מהמדינה"*, *"לא ציוני - לא על חשבוני"*; the row had the consequences tagged and neither premise. **הדמוקרטים +`sanctions-on-non-servers` (22 → 23)** on named instruments (מעונות יום, צהרונים, ארנונה, defunding institutions encouraging evasion). **ישראל ביתנו +`anti-conscription-exemption` (14 → 15)** on *"בלי פטורים, בלי מכסות ובלי קומבינות"*. **The pass's real finding is that a uniform questionnaire makes SILENCE readable** — what a row declined to say *while others answered*, which no scattered corpus can show. Three instances: **הליכוד refused the question outright** (no field changes; recorded as evidence this page rarely gets); **רע"ם also declined** on the haredi half, so **the headline's *"רק אחת לא ענתה"* is contradicted by its own body** — a piece disagreeing with itself, this project's most reliable tell, and why the body is cited; and **הדמוקרטים answered fully without naming Arab citizens** (*"כלל האזרחים"*), so `arab-civil-service` is refused **far more strongly than an ordinary silence**, because four other rows named them to the same question — revision 15's open question narrowed, still unanswered. **ישר: nothing added and the near-miss recorded** — its 3% מצטיינים pool includes לומדי תורה but is open, competitive and still requires basic training, so `scholar-exemption-retained` is refused; **flagged as an open consistency question**, since that tag sits on כחול לבן, המילואימניקים והכלכלית and המפלגה הכלכלית and whether it means "a narrow scholar exemption survives" or "the haredi exemption is retained" decides three rows at once. **עמך ישראל: `reservist-focused` refused a SECOND time** — *"שכפ״ץ של משרתי המילואים"* is the rhetorical form of what revision 41 refused for having no instrument. עוצמה יהודית confirms `conscription-by-incentive` verbatim; הציונות הדתית refused the sanctions question and answered with priority for servers, not duty for non-servers, which is why `conscription-split` is right there; המילואימניקים והכלכלית, כחול לבן, ש"ס and יהדות התורה all match existing tags. **הרשימה המשותפת opposes ALL compulsory service** while its tag is Arab-specific — one holder, noted for the conscription sweep, not minted. **Retrieval: the summarizer attributed ישר's 3% plan to יש עתיד, which is not on this ballot** (merged into ביחד); the JSON-LD `articleBody` says ישר!. Same rule as revision 30 — a summarizer's rendering is not the source, and it fails as a confident sentence about the wrong row |
+| 2026-09-16 | revision 87 — **הציונות הדתית: the AI video was the TRAILER for a published plan — "חוק וצדק 2.0" ("משחררים את החסימה") presented the same day by סמוטריץ' and רוטמן (mako). No tag added; revision 83 CORRECTED three hours after it was written.** That entry said the row *"still has nothing published for 2026"* — wrong; the video accompanied a named programme's launch. Its decision not to tag on the video stands, but the sentence is deleted rather than left to be quoted. **The plan's stated content is the appointments half**: *"בקדנציה הבאה נשלים את 'ארגון המגרש'... נחליף את האנשים"* and *"למנות אנשים שיפעלו לפי כללי המשחק החדשים"*. **`governance-reform`: revision 77's trigger is TRIPPED and the tag is still not added, deliberately** — revision 75 refused it *"pending publication"*, publication has happened, and this pass has a press account of a launch rather than the text, against a row whose standard has been first-party documents since revision 17. **Do not resolve it from this entry; fetch the plan** — the highest-value open action on this row, and it decides `governance-reform` for two rows at once. **Every reaction quoted is a rival's** (איזנקוט, יאיר גולן, בנט, קריב) and none is recorded — fifth straight day of refusing this tier; it does confirm that revision 83's anonymous *"שר בכיר בממשלה"* remains the only intra-coalition signal and remains unusable. סמוטריץ' did not retreat |
+| 2026-09-16 | revision 88 — **cross-row: three stories about who will sit with whom inside the `bibi` bloc (mako ×3). No `bloc` moves on any row, and saying so is the finding.** **עוצמה יהודית** denies a reported reassurance call (*"פייק ניוז מוחלט. לא נערכה שום שיחה בשבועות האחרונים"*) and escalates — *"על ראש הגנב בוער הכובע... נתניהו רוצה את איזנקוט בממשלה הבאה במקום בן גביר"* — demanding a public commitment not to sit with איזנקוט and גולן; הליכוד answers *"מספיק עם הבלוף"* and *"על בסיס המפלגות הקיימות של המחנה הלאומי"*. A public fight about a coalition's terms is not intent to leave it, and both sides' words assume the same bloc. **עמך ישראל: THIRD instance and `bibi` holds** — הליכוד threatens a defamation suit over וינטר's private-investigators claim (he then denied attributing it to them), and נתניהו reportedly decided to escalate specifically because וינטר might later join ליברמן, whom he had spared until attacking him at this event. Revision 41 set `bibi` on **Winter's own** twice-stated endorsement and revision 76 already held against a similar report; this one is stronger (an operational decision, not a suspicion) and still is not the row's own statement. **Trigger restated: `bloc` moves when וינטר says something incompatible with his endorsement, not when a rival says he will** — and his party's own complaint that the attack *"מאלצת אותם לשבור ימינה"* argues the other way. **The N12 poll is context and moves nothing** (הליכוד −3, עוצמה יהודית −3, ישר 25→23, ביחד 15→13, גוש השינוי 70→66 with its Zionist share 59→54) — this page scores positions, not seats; the one thing it decides is that עמך ישראל's expected-unstable flag stays, with וינטר reported at **four to five seats**, i.e. at the threshold. **Asymmetry worth naming: a party's denial of a report about ITSELF is first-party** and is recorded; a rival's characterisation of it is not |
