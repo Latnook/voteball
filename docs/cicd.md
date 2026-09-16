@@ -79,9 +79,10 @@ that agent is made of. Everything in this section is what that one line sets in 
 one per job. **The agent does not exist until a build needs it, and stops existing when the build
 ends** — there is no build machine to log into, patch, or keep clean, for either job.
 
-### Lifecycle (both templates)
+### Lifecycle (all three templates)
 
-1. **A queue item appears** needing the label `voteball-build` or `voteball-deploy`. The controller
+1. **A queue item appears** needing the label `voteball-test`, `voteball-build` or
+   `voteball-deploy`. The controller
    runs `numExecutors: 0` (set in both `ci/jenkins/jenkins.yaml` and the Helm values), so it can never
    satisfy that itself. The item sits in the queue *unsatisfiable* — by design, not as a fault.
 2. **The Kubernetes cloud provisions.** It matches the label to the corresponding pod template,
@@ -105,17 +106,32 @@ namespace-scoped Role over `pods`, `pods/exec`, `pods/log`, `persistentvolumecla
 every `container('...') { sh ... }` step runs, in either job. Neither build has a shell of its own;
 each step is the controller exec'ing into a named container of a pod it owns.
 
-### The two templates, contrasted
+### The templates, contrasted
 
-Two ServiceAccounts, two IRSA roles, two Kubernetes RBAC grants — deliberately incompatible with each
-other's job:
+**`application-ci` uses TWO of them, `voteball-test` and `voteball-build`** (since 2026-09-16). They
+share a ServiceAccount and an IRSA role — the split is about *startup cost*, not privilege.
+`voteball-test` is `voteball-build` minus `buildkit`, `trivy` and `skopeo`.
+
+**Why it exists.** Kubernetes pulls and starts **every** container in a pod before any stage runs, so
+the G3c guards (`env.SERVICES_CHANGED`) were skipping the *work* and none of the *setup*: a docs-only
+push started all nine containers and then declined to use three of them. `Jenkinsfile-ci` now declares
+`agent none` and allocates `voteball-build` only for the Build/Trivy/Push group, behind a `when` that
+is the union of those three stages' own conditions.
+
+**The failure mode to know**: a stage calling `container('x')` on an agent whose template has no `x`
+fails with `container [x] not found`, which reads like a Jenkinsfile bug and is template drift.
+`scripts/tests/test-jenkins-agent-templates.sh` pins the two container sets against each other and
+checks every `container()` call is reachable on the agent its stage runs on.
+
+The privilege contrast below is between the **CI** and **CD** agents; `voteball-test` carries exactly
+what `voteball-build` does in that respect:
 
 | | `voteball-build` (`application-ci`) | `voteball-deploy` (`application-cd`) |
 |---|---|---|
 | ServiceAccount | `jenkins-agent` | `jenkins-cd-agent` |
 | AWS role (IRSA) | ECR **push**/pull on `repository/<cluster_name>-*` | ECR **read-only** (`DescribeImages`, `BatchGetImage`) on the same repos, no push |
 | Kubernetes RBAC | **none** — no Role or ClusterRole binds this ServiceAccount anywhere | a namespaced, **strictly read-only** `Role` in `devops-app` (`charts/jenkins-support/templates/rbac.yaml`): `get`/`list`/`watch` on deployments, replicasets, pods, services, events, ingresses, plus `get` on pod logs — no `patch`, no `create`, no ClusterRole |
-| Containers | `jnlp`, `buildkit`, `trivy`, `skopeo`, `awscli`, `python`, `postgres`, `hadolint` (8, including the implicit `jnlp`) | `jnlp`, `deploy` (kubectl+helm+aws-cli+jq+curl, `alpine/k8s:1.31.3`), `argocd` (the ArgoCD CLI, `quay.io/argoproj/argocd:v3.4.5` — pinned to the same version as the running server) |
+| Containers | `voteball-build`: `jnlp`, `buildkit`, `trivy`, `skopeo`, `awscli`, `python`, `postgres`, `hadolint` (plus the `promtool-fetch` init-container). `voteball-test`: the same **minus** `buildkit`, `trivy`, `skopeo` | `jnlp`, `deploy` (kubectl+helm+aws-cli+jq+curl, `alpine/k8s:1.31.3`), `argocd` (the ArgoCD CLI, `quay.io/argoproj/argocd:v3.4.5` — pinned to the same version as the running server) |
 | Can build an image | yes | no |
 | Can write to the cluster | no (zero RBAC) | **no** — read-only RBAC; only ArgoCD applies |
 
@@ -193,6 +209,12 @@ was never created through the UI**. The pod agent template lives in the same fil
 `templates:` block, not in `Jenkinsfile-ci` — the 2026-07-20 design's own rule ("everything about HOW
 to build lives in the Jenkinsfile ... this block only says where to find it and when to run it"),
 applied to *what a build agent is made of*.
+
+**Three grouping stages wrap the twelve below**, added 2026-09-16 with the agent split, and they are
+what `grep -nE "^\s*stage\(" Jenkinsfile-ci` returns in addition to the named stages: `Test and
+validate` (stages 2-7, on `voteball-test`), `Build, scan and push` (8-10, on `voteball-build`, the
+only group that allocates the heavy pod) and `Publish and trigger` (11-12, back on `voteball-test`).
+The twelve stages themselves are unchanged in name, order and condition.
 
 ### 1. Trigger — GitHub webhook
 

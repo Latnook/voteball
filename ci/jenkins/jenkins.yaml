@@ -341,6 +341,180 @@ jenkins:
                   - name: pgdata
                     emptyDir: {}
 
+          - name: "voteball-test"
+            label: "voteball-test"
+            # The LIGHT half of the CI pod, added 2026-09-16. Identical to voteball-build below
+            # minus buildkit, trivy and skopeo -- the three containers no stage uses unless
+            # services/** actually changed.
+            #
+            # Why a second template instead of gating stages harder: Kubernetes pulls and starts
+            # EVERY container in a pod before any stage runs, so the G3c guards (env.SERVICES_CHANGED)
+            # skip the WORK and none of the SETUP. A docs-only push was paying for ~400MB of build
+            # tooling it then declined to use. Jenkinsfile-ci runs its test/validate stages here and
+            # allocates voteball-build only for Build/Trivy/Push.
+            #
+            # KEEP THE TWO TEMPLATES IN STEP. A container added to voteball-build that a
+            # test/validate stage needs must be added here too, or that stage fails with
+            # "container [x] not found" -- which reads like a Jenkinsfile bug and is not.
+            # scripts/tests/test-jenkins-agent-templates.sh pins the container sets in both
+            # directions.
+            yamlMergeStrategy: override
+            yaml: |
+              apiVersion: v1
+              kind: Pod
+              spec:
+                # jenkins-agent, NOT jenkins. "jenkins" is the CONTROLLER's service account and
+                # carries no AWS role; the ECR-push IRSA role is bound to jenkins-agent (see
+                # terraform/addon-jenkins.tf's serviceAccountAgent block), so this is what makes the
+                # buildkit/skopeo containers below able to push to ECR.
+                serviceAccountName: jenkins-agent
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                # Runs before every container below starts. Its only job is putting `promtool` onto
+                # the shared `images` volume for the `observability` container to find on PATH -- see
+                # that container's comment for why this two-step handoff exists instead of one image
+                # carrying everything.
+                initContainers:
+                  - name: promtool-fetch
+                    # Pinned to v3.13.1 to match the Prometheus SERVER version kube-prometheus-stack
+                    # 87.21.0 actually deploys by default (prometheus.prometheusSpec image tag
+                    # v3.13.1-distroless -- confirmed via
+                    # `helm show values prometheus-community/kube-prometheus-stack --version 87.21.0`,
+                    # terraform/addon-monitoring.tf), so `promtool check rules` validates PromQL
+                    # against the same rule-evaluation engine that will actually run these rules in
+                    # production, not an arbitrary other version.
+                    image: prom/prometheus:v3.13.1
+                    command: ["sh", "-c", "mkdir -p /images/promtool-bin && cp /bin/promtool /images/promtool-bin/promtool"]
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                containers:
+                  - name: awscli
+                    image: amazon/aws-cli:2.22.0
+                    command: ["cat"]
+                    tty: true
+                    # HOME=/tmp: the pod runs every container as uid 1000, but these images assume
+                    # root and leave HOME as / -- which is not writable. The AWS CLI then fails with
+                    # "[Errno 13] Permission denied: '/.aws'" and Trivy cannot create $HOME/.cache.
+                    # Neither needs a real home: IRSA passes credentials via env vars, and the Trivy
+                    # DB comes from --db-repository.
+                    env:
+                      - { name: HOME, value: /tmp }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+
+                  # Runs ruff and the 153 pytest tests. python:3.12-slim, not alpine: psycopg2-binary
+                  # ships manylinux wheels, so nothing is compiled and no build toolchain is needed.
+                  - name: python
+                    image: python:3.12-slim
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      # HOME=/tmp for the same reason as the containers above: uid 1000 with a
+                      # non-writable /. pip also needs a writable cache dir.
+                      - { name: HOME, value: /tmp }
+                      - { name: PIP_CACHE_DIR, value: /tmp/pip }
+                      # Point the tests at the sidecar, not at RDS. conftest.py only setdefault()s
+                      # these, so an explicit value wins.
+                      - { name: DB_HOST, value: "localhost" }
+                      - { name: DB_NAME, value: "postgres" }
+                      - { name: DB_USER, value: "postgres" }
+                      - { name: DB_PASS, value: "test" }
+                      - { name: DB_SSLMODE, value: "disable" }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "200m", memory: "512Mi" }
+                      limits: { memory: "1Gi" }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+
+                  # Ephemeral Postgres for the test suite. Holds no real data and is reachable only
+                  # from inside this pod's network namespace, so the ci NetworkPolicies are
+                  # unaffected and no route to the real RDS instance is created or needed.
+                  - name: postgres
+                    image: postgres:16-alpine
+                    env:
+                      - { name: POSTGRES_PASSWORD, value: "test" }
+                      # The image initialises the data directory as uid 70 by default; the pod
+                      # forces uid 1000, so PGDATA must sit somewhere writable by it.
+                      - { name: PGDATA, value: /tmp/pgdata }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "100m", memory: "256Mi" }
+                      limits: { memory: "512Mi" }
+                    volumeMounts:
+                      - { name: pgdata, mountPath: /tmp }
+
+                  - name: hadolint
+                    image: hadolint/hadolint:2.12.0-alpine
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      - { name: HOME, value: /tmp }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+
+                  # Runs scripts/ci/validate-observability.sh (Jenkinsfile-ci's Observability
+                  # Validation stage). That script needs helm (to render charts/voteball and
+                  # charts/observability), python3 + PyYAML (the checks themselves) and promtool (the
+                  # PromQL rule check) all on ONE PATH in ONE process -- no published image ships all
+                  # three. alpine/k8s:1.31.3 (same pinned image as Jenkinsfile-cd's `deploy`
+                  # container) already carries helm, python3 and PyYAML; confirmed live 2026-08-18
+                  # (`docker run --user 1000:1000 alpine/k8s:1.31.3 -- command -v helm python3` and
+                  # `python3 -c "import yaml"`, both present). promtool is not in that image, so the
+                  # initContainer above copies it onto the `images` volume this container also
+                  # mounts, and PATH below is the image's own default with that directory prepended.
+                  #
+                  # Deliberately NOT the `python` container above: that one is python:3.12-slim, which
+                  # has no helm and no apt-installable static helm binary without a network fetch on
+                  # every build -- reusing the already-pinned alpine/k8s image avoids adding a second
+                  # runtime download to the pipeline (the initContainer's promtool copy is the only
+                  # one, and it happens once per pod, not per build).
+                  #
+                  # UNTIL THIS TEMPLATE (AND THE initContainer ABOVE) REACH THE CLUSTER VIA
+                  # `terraform apply`, this container does not exist at all -- committing this file
+                  # alone changes nothing (see the root CLAUDE.md's Jenkins-is-a-platform-add-on
+                  # note). Jenkinsfile-ci's Observability Validation stage will fail every build until
+                  # that apply runs, with an error naming a container Jenkins cannot find, not the
+                  # softer "promtool: SKIPPED" path validate-observability.sh takes when only promtool
+                  # (not helm) is missing. That apply is a separate, deliberate step -- not run as
+                  # part of committing this file.
+                  - name: observability
+                    image: alpine/k8s:1.31.3
+                    command: ["cat"]
+                    tty: true
+                    env:
+                      - { name: HOME, value: /tmp }
+                      - { name: PATH, value: "/images/promtool-bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" }
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                    resources:
+                      requests: { cpu: "200m", memory: "256Mi" }
+                      limits: { memory: "512Mi" }
+                    volumeMounts:
+                      - { name: images, mountPath: /images }
+                volumes:
+                  # Tarballs are never written here -- this pod does not build. The volume
+                  # stays because the promtool init-container hands promtool over on it and
+                  # the Tests stage writes its junit XML to it. sizeLimit is 1Gi, not 8Gi.
+                  - name: images
+                    emptyDir: { sizeLimit: 1Gi }
+                  - name: pgdata
+                    emptyDir: {}
+
+
           - name: "voteball-deploy"
             label: "voteball-deploy"
             yamlMergeStrategy: override
