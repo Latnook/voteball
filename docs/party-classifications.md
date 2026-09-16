@@ -1652,6 +1652,41 @@ rest to יש עתיד. A reconstruction from a party-internal document, checked 
 registrar and found exact. **`two-faction-list` is held, and at 45% of the realistic range it is now
 the second-best-evidenced instance of that tag on the page** (see the measure in Conventions).
 
+**2026-09-16 — revision 79. One new plan (`access`), and a retrieval finding that matters more than
+it does. No axis moved, no tag added, `seed.sql` unchanged.**
+([תכנית נגישות](https://be-yahad.org.il/plans/access/), supplied by the repo owner.)
+*"ביחד נעצים אנשים עם מוגבלויות"*, for ~**1.25 million** Israelis with a disability: **60% of the
+disability allowance retained after entering work**, vocational and assistive-technology training,
+enforcement of representation targets in the civil service, **100% of intercity buses** and **25% of
+taxis** accessible, accessible-aviation standards, tax benefits and developer incentives for at least
+**5% of apartments**, accelerated closure of large institutions in favour of community housing, an
+ability-based volunteer military track (intelligence, cyber), and a new **רשות הנגישות וההעצמה** in
+the Prime Minister's Office with a one-stop-shop and a case manager per family.
+
+- **No axis moved, on revision 28's line for `הזדקנות-בכבוד` exactly.** This is universal statutory
+  spending with no offsetting cut named, which is what that entry already accepted without moving
+  `economic +1`; the mandates on business (bus, taxi and apartment quotas) are the same coercive
+  instrument the cost-of-living programme already supplies, and the row's +1 is a *net* of that
+  fusion. A second document of the same shape corroborates the band rather than shifting it.
+- **No disability tag exists, and one row does not make one.** Nothing in the vocabulary covers
+  disability or accessibility. הדמוקרטים, ישראל ביתנו and המפלגה הכלכלית are all plausible holders
+  and none has been checked. **Filed as a sweep item** on revision 15's reasoning, the same as the
+  internal-policing, foreign-relations and gun-control items.
+- **THE INDEX LISTS SIX PLANS WHOSE PAGES 302 BACK TO THE INDEX**, and reading one through a
+  summarizer returns *the index's own content*, which reads exactly like a plan. Measured
+  2026-09-16: `foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי` and
+  `הסכם-חדש-השירות-הציבורי` all answer **302 → `/plans/`**; only `access` answers 200. A first pass
+  here summarised four of them and got four plausible, quotable "plans" — a foreign-policy posture,
+  an internal-security doctrine, a governance programme, a haredi-integration programme — none of
+  which is a document. They were the archive page every time. **This is the page's own
+  summarizer-is-not-the-source rule (revision 30) in a new costume, and the cheap defence is the
+  same one: `curl -o /dev/null -w '%{http_code} %{redirect_url}'` on the URL before reading it.**
+  Two of those four would have been recorded as advancing sweep items they have nothing to do with.
+- **Enumeration cost nothing and is still the right rule** (revision 29): two index pages, 19 plan
+  links, 13 already cited here, 6 dead. And it cuts the other way too — **`kiryat-shmona`, which
+  this entry cites, is NO LONGER LISTED in the index but still answers 200.** An index is evidence
+  of what a party is showing today, not of what it has published.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -7376,3 +7411,4 @@ pass happened, for anyone reading git history.
 | 2026-09-15 | revision 76 — **עמך ישראל: walla column (ברק סרי) on Netanyahu suspecting Winter will cross to ליברמן after the election, citing his ties to שרון שלום. `bloc` stays `bibi`, nothing moves, `seed.sql` unchanged.** Analysis with no party document. Netanyahu's private expectation is the N12 report already weighed against Winter's own 2026-09-02 endorsement and "ברור שלא נלך עם ליברמן". An associate's past employer is a candidate-is-not-a-position question, and the 4-seat poll is not a field. Trigger unchanged: Winter withdrawing the endorsement himself |
 | 2026-09-15 | revision 77 — **עוצמה יהודית: Ben Gvir vs. the police commissioner (13, ynet, מעריב; Kan unreadable behind Cloudflare). No axis moved, no tag added, `seed.sql` unchanged.** The commissioner held up appointments, and the minister froze equipment funds (333M of 450M shekels for 2026 unreleased, per the commissioner's letter). Ben Gvir says the fight is about promotions the AG favours, not money. Recorded as ministerial record: political control of police appointments, the same subject as the מח"ש file on the row, now acknowledged conduct. No tag covers it, and the AG framing is already `judicial-overhaul`. Noted for the future `governance-reform` decision alongside הציונות הדתית's reported 50% appointment quota (revision 75): the same direction on two bloc partners, one a plan and one a practice. Neither is tagged now |
 | 2026-09-15 | revision 78 — **ישראל תחילה: שרן השכל on 103FM (2026-09-14) proposes a Foreign Ministry legal department that only sues foreign media for defamation. No axis moved, no tag added, `seed.sql` unchanged.** Evidence is the station page's title and description only (audio, no transcript, not listened to). It corroborates the platform's state-funded information-warfare line (hasbara corps, consciousness departments), which is part of why economic +3 was refused, and it adds no field. Logged as a lead for the foreign-relations sweep item alongside עוצמה יהודית's consulate demand. The summary tool mislabelled her party, and this row is hers |
+| 2026-09-16 | revision 79 — **ביחד: the accessibility plan (`access`) read; no axis moved, no tag added, `seed.sql` unchanged.** ~1.25M people, 60% of the disability allowance kept after entering work, 100% of intercity buses and 25% of taxis accessible, a 5%-of-apartments developer incentive, community housing instead of institutions, and a רשות הנגישות וההעצמה in the PMO. `economic +1` holds on revision 28's line for `הזדקנות-בכבוד`: universal statutory spending with no offsetting cut, and mandates of the kind the cost-of-living programme already supplies. No disability/accessibility tag exists; filed as a sweep item rather than minted from one row. **Retrieval finding: the `/plans/` index lists six URLs that 302 back to the index** (`foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי`, `הסכם-חדש-השירות-הציבורי`) — a summarizer fetch of any of them returns the ARCHIVE page and reads like a real plan; four were nearly recorded as new documents. Check the HTTP status before reading. Conversely `kiryat-shmona` is delisted but still 200 |
