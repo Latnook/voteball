@@ -604,6 +604,45 @@ under ש"ס for how the API was reached.
   candidate-recruitment pattern, the same line revision 52 drew for ישראל ביתנו's cross-party intake
   (*"strategic, not classificatory"*). **Trigger:** a stated coalition position, not another recruit.
 
+**2026-09-16 — revision 82. הליכוד petitions the CEC chair to stop the voter-flight projects. No axis
+moved, no tag added, no `seed.sql` change — on this row or on הדמוקרטים, which is a named
+respondent.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-16/ty-article/.premium/000001a0-a988-d91d-afeb-e9c82b370000),
+paywalled; body supplied by the repo owner.) The party petitioned Justice נעם סולברג against
+AID Coalition's `FLY&AID` / `Fly & Vote` project, עמותת "המחנה הישראלי" and **מפלגת הדמוקרטים**,
+arguing the operation is election bribery and breaches the party-financing law. The organisation says
+it offers bureaucratic and logistical help only — eligibility checks, passport renewal, document
+filing, flight-route coordination — with every cost, the fare included, borne by the voter, and that
+it does not ask or condition on party preference. Its stated target is **50,000–70,000** voters, with
+~20 staff, **30,000+** registrations and several thousand $75 deposits paid.
+
+- **The petition is first-party text and is read as such; the opponent's gloss is not.** הליכוד's own
+  framing disclaims the obvious reading: *"המפלגה אינה מבקשת למנוע הצבעה או עידוד אזרחי להצביע
+  בבחירות, אלא מבקשת להבחין בין פעילות אזרחית כללית לבין פעילות בחירות מאורגנת, ממומנת ומכוונת"*,
+  against *"השפעה בלתי הוגנת על ההשתתפות בבחירות"* and *"פגיעה קשה בטוהר הבחירות"*. AID Coalition
+  answers that the party *"מבקשים למנוע מישראלים להצביע בבחירות"*. **Recording that second sentence as
+  this row's position would be the exact move revisions 44, 80 and 81 refused** — a counterparty's
+  characterisation, three days running. What is on the record is a legal claim about financing and
+  bribery, and the page has no tag for that.
+- **A genuine vocabulary gap, filed as a LEAD and not as a sweep item.** The 126-entry vocabulary has
+  **no dimension for election administration or franchise access** — nothing on who may vote, on
+  absentee voting (which Israel does not have, which is why flights are the mechanism at all), on the
+  voter register, or on restricting organised turnout drives. `service-conditioned-citizenship` is the
+  nearest thing and is about *conditioning* the franchise on service, a different question.
+  **One party on one filing is one data point**, and the same discipline that kept the press-freedom
+  gap a lead in revision 80 keeps this one. **Trigger, and it is concrete**: if any row publishes a
+  position on expatriate voting, absentee ballots or the voter register, this becomes a sweep. Two
+  things already point at it — דגון's claim that *"תהליך הגריעה מהפנקס לא קיים כמעט"*, i.e. that
+  people who cut tax residency stay on the register, and the petition's own premise that they should
+  not be flown in to use it.
+- **הדמוקרטים: nothing recorded, and the refusal is the point.** The row is a respondent because
+  הליכוד says it has evidence linking the party's aims *"לקיעקוע התמיכה הציבורית בליכוד"* to the
+  organisations. That is an allegation by a rival, in a filing, with no response from the row quoted —
+  the weakest tier this page recognises and the one revision 44 wrote its rule for. Written down here
+  so a later pass finding this article does not score it.
+- **The organisation's numbers are context, not evidence.** They come from the organisation and from
+  a הארץ interview, and they describe an NGO's operation, not a party's position.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -3469,6 +3508,55 @@ opinion piece on the Galilee.)
   attributes to Smotrich a line about "crushing procedures and people" to let a farm go up. Press, and
   not verified against a first-party source, so it is recorded as a **lead** for that sweep and not as
   evidence on this row.
+
+**2026-09-16 — revision 83. The party's AI campaign video showing the Supreme Court president, a
+sitting justice and the Attorney General dragged along the road. First-party material of the
+strongest tier, and NOTHING moves.** ([כאן](https://www.kan.org.il/content/kan-news/politic/1099929/),
+[הארץ TV review](https://www.haaretz.co.il/gallery/television/tv-review/2026-09-16/ty-article/.premium/000001a0-a683-df5b-adf2-f6e7e8120000),
+body supplied by the repo owner.) The party published an AI-generated campaign video in which
+יצחק עמית, דפנה ברק־ארז and גלי בהרב־מיארה appear at a Kaplan-style protest holding anti-Smotrich
+placards and are dragged along the asphalt by men in vests, with protester-lit fires burning behind
+them. A criminal complaint for incitement was filed and התנועה לאיכות השלטון demanded an
+investigation; legal sources expect none — *"סרטון בעייתי, אך כזה שאינו מצדיק פתיחת חקירה"*.
+
+- **`judicial-overhaul` is already on this row and no tag is added, on revision 30's line.** This page
+  tags what a party advocates, not how it says it, and the video is the existing position delivered at
+  maximum volume rather than a new position. It is worth recording anyway because of its **tier**: it
+  is the party's own published campaign material, which is the top of this page's evidence hierarchy
+  and rarer here than it looks — revisions 17 and 75 read platform PDFs and press accounts of חוק וצדק
+  2.0, and this row still has nothing published for 2026.
+- **Smotrich's own defence is the classifiable half, and it changes nothing.** Per כאן he was expected
+  to answer that the shock should be directed not at the video — which he frames as depicting the
+  clearing of a **road blockage** by senior judicial figures — but at those who he says tried to block
+  the שב"כ and מוסד chiefs in the last term. That is the same court-and-gatekeeper hostility
+  `judicial-overhaul` already carries, in the same shape revision 77 read Ben Gvir's AG framing.
+- **The minister who criticised it is UNNAMED and therefore unattributable.** כאן has *"שר בכיר
+  בממשלה"* saying *"מדובר בסרטון לא ראוי, אפשר להעביר ביקורת באופן ענייני - ולא על ידי גרירות מבזות"*.
+  An anonymous minister cannot be filed to a row, and **an intra-coalition rebuke would be a real
+  finding if it could be** — it is left unrecorded rather than guessed at. הרצוג's
+  *"בחירות הן לא מלחמת אזרחים, גם לא בסרטוני AI"* is the President and belongs to no row.
+- **מיקי זוהר's citizenship-stripping statement is recorded against הליכוד and NOT tagged.** The הארץ
+  column opens on the Culture Minister declaring he would act to revoke the citizenship of the makers
+  of the film *"נז"א"*. He is **הליכוד #13** (already on that row's list). Three reasons it stays
+  prose: it reaches this page only through the opening clause of a hostile opinion column, not a news
+  report; revoking citizenship is not in his portfolio, so it is stated intent and not the ministerial
+  *record* revision 77 scored for Ben Gvir; and revision 49's rule stands — candidate advocacy is not a
+  party position. **Do not fuse it with revision 82's franchise lead** on the same row and the same
+  day: election administration and citizenship revocation are adjacent-feeling and genuinely
+  different, and merging them would manufacture a two-instance case out of one.
+- **The column's central analogy is REFUSED as evidence.** It argues the government now wants
+  *"הגירה 'מרצון'"* of Jewish Israeli citizens who defend Palestinian rights, on the model of
+  `voluntary-palestinian-emigration-incentives` — a tag this page holds with a drafted bill behind it
+  (revision 30). The parallel is the columnist's construction; there is no instrument, no bill and no
+  party text. **A tag earned from legislation must not be extended by a metaphor.**
+- **Retrieval correction — `kan.org.il` is READABLE, and revision 77 said it was not.** That entry
+  recorded a Kan link as unreadable *"behind a Cloudflare challenge that no header set passes"*. A
+  browser-shaped `curl` — UA plus `Accept`, `Accept-Language`, `Referer`, `--compressed` — returns
+  **HTTP 200** and the full article body; WebFetch alone still returns 403. This is the **fourth**
+  instance of the same rule, after `timesofisrael.com` (revision 30), `kachollavan.org.il` and
+  `davar1.co.il` (revision 41): **a fetcher's 403 is a fact about the fetcher, not about the site**,
+  and the note has been wrong in this direction every time it has been wrong. Revision 77's Kan gap is
+  now closeable.
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -7508,3 +7596,5 @@ pass happened, for anyone reading git history.
 | 2026-09-16 | revision 79 — **ביחד: the accessibility plan (`access`) read; no axis moved, no tag added, `seed.sql` unchanged.** ~1.25M people, 60% of the disability allowance kept after entering work, 100% of intercity buses and 25% of taxis accessible, a 5%-of-apartments developer incentive, community housing instead of institutions, and a רשות הנגישות וההעצמה in the PMO. `economic +1` holds on revision 28's line for `הזדקנות-בכבוד`: universal statutory spending with no offsetting cut, and mandates of the kind the cost-of-living programme already supplies. No disability/accessibility tag exists; filed as a sweep item rather than minted from one row. **Retrieval finding: the `/plans/` index lists six URLs that 302 back to the index** (`foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי`, `הסכם-חדש-השירות-הציבורי`) — a summarizer fetch of any of them returns the ARCHIVE page and reads like a real plan; four were nearly recorded as new documents. Check the HTTP status before reading. Conversely `kiryat-shmona` is delisted but still 200 |
 | 2026-09-16 | revision 80 — **עוצמה יהודית: Decision 549 money for Arab-society crime unspent (הארץ 2026-09-16, paywalled; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** A PMO document answering a parliamentary query: two thirds of a 300M-shekel 2026 line executed, 100M returned to the Treasury in 2025 at 67% execution, ~950M of 1.5B across 2022–2026. Police recruitment missed its own targets in Arab and mixed towns (Lod staffed ~100 against 180 posts); the community-security authority returned 7.5M of 17M. **The figures are CONTESTED and are not scored in either direction** — the ministry's reply is a category argument, not a denial: the police share entered the police base budget at the outset so a leftover cannot exist on that line, and the query's balances are *"מופרכים, מומצאים, משוללים כל יסוד"*. Revision 44's rule applied symmetrically: an unresolved factual dispute is not evidence, including when the disputed fact would be unflattering to the row rather than supplied by a rival. **Second budget-non-execution item on this row in eight days** (revision 77: 333M of 450M of the equipment budget), on a different line, counterparty and mechanism — a pattern, not a repeat; filed alongside revision 77's `governance-reform` note. **`basis` stays `record` with a caution about WHICH record**: the 2026-08-11 corpus is 30 of the party's own ministerial-action posts, Arab-society crime appears in none of them, and an independent record source on the same ministry points the other way — read that corpus as selected, not complete. **Revision 44's Arab-society-crime tag debt is NOT paid**: non-execution is not a position. Haaretz's homicide tracker recorded as context only (108 / 242 / 233 / **251** / 170-to-date, 15–20% solved) — a ministry's outcomes are not a party's position. **No press-freedom tag minted** from *"תעמולה... במסווה של 'עיתונות'"*; with revision 78's ישראל תחילה item that is two data points, a lead rather than a sweep |
 | 2026-09-16 | revision 81 — **ש"ס: Deri on the Ovadia Yosef state memorial and the High Court (ynet, ערוץ 14). No axis moved, no tag added, `seed.sql` unchanged — and the two sources disagree about the central fact.** The Religious Services Ministry cancelled the 6–8 October state memorial after the AG objected to state funding during the election period as campaigning. **Only the first-party quote is scored**: *"ההחלטה הזו רק מחזקת את נחישותנו לתקן מן היסוד את מערכת המשפט ולהחזיר את הכוח לעם ולנבחריו"*, identical in both outlets, which are aligned in opposite directions — dated campaign-period corroboration of `judicial-overhaul`, which matters on a row with no platform whose corpus is campaign speech and the voting record. **What the court did is CONTESTED and not recorded as fact**: ynet says **no ruling issued** (the event was already cancelled, so the petition was moot) and that ש"ס falsely announced the court *"החליט על ביטול הכנס"* — headline *"השקר החדש של דרעי"*; ערוץ 14 runs *"אחרי הכרעת בג"ץ"* and has the court **rejecting the petition**. Different events, not different emphases. Neither links the decision and this pass did not read the docket, stated rather than papered over. **New distinction, and the entry's most useful half: an ALIGNED outlet reproducing the party's framing is transmission, not corroboration** — ערוץ 14 asserts the fact ynet says was fabricated, in the party's own words, so counting it as a second source would launder the claim. Two sources are two sources only when independent of each other **and** of the subject. Third angle on one rule: revision 44 refused a **rival's** characterisation, revision 80 a **contested figure**, this a **friendly** outlet's account. **`populist` declined a FIFTH time and the first outside the far right** — *"להחזיר את הכוח לעם ולנבחריו"* is a frame, not an instrument (revision 30), and the substance is already `judicial-overhaul` (revision 57 on *"מאבק בדיפ-סטייט"*); the four prior refusals were all far-right rows, so applying it unchanged to a haredi row is worth recording. The commemoration law is the kind of legislative record `sectoral-budgeting` already names, and the AG hostility is the reading revision 77 gave עוצמה יהודית. No field moves |
+| 2026-09-16 | revision 82 — **הליכוד petitions the CEC chair against the voter-flight projects (הארץ, paywalled; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged — here or on הדמוקרטים, a named respondent.** Filed against AID Coalition's `FLY&AID`/`Fly & Vote`, עמותת "המחנה הישראלי" and הדמוקרטים, claiming election bribery and a party-financing breach; the organisation says it supplies bureaucratic and logistical help only, every cost including the fare borne by the voter, no party condition. **The petition is first-party and is read as such; the opponent's gloss is not** — הליכוד disclaims the obvious reading (*"אינה מבקשת למנוע הצבעה... אלא מבקשת להבחין בין פעילות אזרחית כללית לבין פעילות בחירות מאורגנת, ממומנת ומכוונת"*), and recording AID Coalition's *"מבקשים למנוע מישראלים להצביע"* as this row's position would be the move revisions 44, 80 and 81 refused three days running. **A genuine vocabulary gap filed as a LEAD, not a sweep**: nothing in the 126 entries covers election administration or franchise access — not absentee voting (which Israel lacks, hence flights), not the voter register, not turnout-drive restrictions; `service-conditioned-citizenship` is about conditioning the franchise on service, a different question. One party on one filing is one data point, the same discipline that kept revision 80's press-freedom gap a lead. **Trigger**: any row publishing on expatriate voting, absentee ballots or the register. **הדמוקרטים: nothing recorded, and the refusal is the point** — a rival's allegation in a filing, with no response quoted, is the tier revision 44 wrote its rule for; written down so a later pass does not score it. Organisation figures (50–70k target, 30,000+ registrations, $75 deposits) are context, not evidence |
+| 2026-09-16 | revision 83 — **הציונות הדתית: the party's AI campaign video dragging יצחק עמית, דפנה ברק־ארז and גלי בהרב־מיארה along the road (כאן, הארץ TV review). First-party material of the strongest tier and NOTHING moves.** `judicial-overhaul` already held; revision 30's line applies — this page tags what a party advocates, not how it says it, and the video is the existing position at maximum volume. Recorded for its **tier**: the party's own published campaign material, rarer on this row than it looks, which still has nothing published for 2026. Smotrich's expected defence (the video depicts clearing a **road blockage**; the real scandal is those who blocked the שב"כ and מוסד chiefs) is the same court-and-gatekeeper hostility `judicial-overhaul` carries, in revision 77's shape. **The critical minister is UNNAMED and therefore unattributable** — *"שר בכיר בממשלה"* on *"גרירות מבזות"*; an intra-coalition rebuke would be a real finding if it could be filed to a row, so it is left unrecorded rather than guessed at, and הרצוג belongs to no row. **מיקי זוהר's citizenship-stripping statement about the "נז"א" filmmakers is recorded against הליכוד (#13) and NOT tagged**: it arrives only via a hostile column's opening clause, revoking citizenship is outside his portfolio so it is stated intent rather than revision 77's ministerial record, and revision 49's candidate-advocacy rule stands. **Explicitly do not fuse it with revision 82's franchise lead** — same row, same day, adjacent-feeling, genuinely different questions, and merging them would manufacture a two-instance case out of one. **The column's analogy is REFUSED as evidence**: extending `voluntary-palestinian-emigration-incentives`, a tag earned from a drafted bill, to Jewish citizens by metaphor supplies no instrument. **Retrieval correction — `kan.org.il` is READABLE and revision 77 said it was not**: a browser-shaped `curl` (UA + `Accept`/`Accept-Language`/`Referer`/`--compressed`) returns **200** with the full body while WebFetch still 403s. **Fourth instance** of the rule after `timesofisrael.com`, `kachollavan.org.il` and `davar1.co.il`: a fetcher's 403 is a fact about the fetcher, not the site. Revision 77's Kan gap is now closeable |
