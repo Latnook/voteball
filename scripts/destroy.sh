@@ -63,9 +63,14 @@ if kubectl cluster-info >/dev/null 2>&1; then
   # prevent. This is why the kibana Ingress is deleted HERE and not left to step 4's
   # `helm uninstall logging` -- that runs AFTER step 3 already starts waiting, which would be the
   # exact hang all over again for the group's third member.
-  kubectl delete ingress voteball -n devops-app --ignore-not-found || true
-  kubectl delete ingress jenkins-webhook -n ci --ignore-not-found || true
-  kubectl delete ingress kibana -n logging --ignore-not-found || true
+  #
+  # --wait=false: each Ingress carries the controller's group finalizer, and a plain delete blocks
+  # until it clears -- with no timeout and no output. On 2026-09-16 the controller could not clear
+  # it (DeleteTargetGroup kept answering ResourceInUse after the ALB was already gone) and the
+  # script froze here, silently, after printing "deleted". Step 3's loop is the bounded waiter.
+  kubectl delete ingress voteball -n devops-app --ignore-not-found --wait=false || true
+  kubectl delete ingress jenkins-webhook -n ci --ignore-not-found --wait=false || true
+  kubectl delete ingress kibana -n logging --ignore-not-found --wait=false || true
 else
   step "1-2/7  Cluster unreachable — skipping ArgoCD/Ingress deletion (already gone)"
 fi
