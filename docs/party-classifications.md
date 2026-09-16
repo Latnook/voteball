@@ -4097,6 +4097,56 @@ reports Lahav 433 fighters telling the commissioner not to bring the minister on
 - **The fighters' remark is about the minister's standing, not a position**, and is recorded for
   context only.
 
+**2026-09-16 — revision 80. Decision 549 money for Arab-society crime unspent: ~100M of 300M this
+year, ~550M of 1.5B across the five-year window. No axis moved, no tag added, no `seed.sql` change.**
+([הארץ](https://www.haaretz.co.il/news/law/2026-09-16/ty-article/.premium/000001a0-a454-dfa9-ada3-ee5602c60000);
+paywalled past the opening, and the body was supplied by the repo owner rather than fetched.)
+A PMO document answering a parliamentary query puts the ministry's 2026 execution at two thirds of a
+300M-shekel line, with 100M returned to the Treasury in 2025 on a 67% execution rate, and ~950M of
+1.5B used across 2022–2026 — leaving 550M for the programme's final six months. A senior government
+source attributes it to police recruitment missing its own targets in Arab and mixed towns
+(*"בפועל יש מחסור אדיר בשוטרים באופן כללי אבל באופן ייחודי בתחנות ערביות"*; Lod station staffed at
+~100 against 180 posts). The community-security authority under the ministry used half of its 17M and
+returned 7.5M.
+
+- **The figures are CONTESTED and are not scored, in either direction.** The ministry's reply is not
+  a bare denial — it is a category argument: the police share of Decision 549
+  *"נכנס עוד בראשית ההחלטה לבסיס תקציב המשטרה... ומן הסתם מנוצל כולו"*, so a leftover cannot exist on
+  that line, and the query's balances are *"מופרכים, מומצאים, משוללים כל יסוד"*. Haaretz's source is a
+  PMO document; the ministry's is the budget's structure. Neither is checkable from here, and the two
+  claims are not about the same quantity. **Revision 44's rule applies symmetrically** — it refused to
+  score רע"ם on הליכוד's characterisation, and an unresolved factual dispute is equally not evidence
+  when the disputed fact would be *unflattering* to the row.
+- **It is the SECOND budget-non-execution item on this row in eight days, and the pair is the
+  finding.** Revision 77 had 333M of 450M of the 2026 police *equipment* budget unreleased in a
+  dispute with the commissioner. This is a different line, a different counterparty and a different
+  mechanism — a recruitment shortfall, not a minister's freeze — which is why it is a pattern rather
+  than a repeat. Still no tag: the page has no dimension for a ministry's budget execution, and
+  minting one from two press reports about one minister would describe a person, not a party
+  position. Filed alongside revision 77's `governance-reform` note for the same future decision.
+- **`basis` stays `record`, and this is a caution about WHICH record.** The 2026-08-11 pass rebuilt
+  this row from 30 of the party's own ministerial-action posts, correctly calling them record
+  evidence rather than platform evidence. But they are a record of what the ministry chose to
+  publicise, and **Arab-society crime appears in none of them**. Here an independent record source
+  covers exactly the area the self-published stream omits, and points the other way. Read that corpus
+  as selected, not complete — its `gun-rights` figures are first-party claims about the ministry's own
+  performance, from the same publisher.
+- **The revision 44 debt is NOT paid.** No tag covers crime and personal security in Arab society, and
+  this article is about *non-execution*, which is not a position on that dimension at all. The debt
+  still waits on the הרשימה המשותפת and הדמוקרטים corpora.
+- **Outcome data recorded as context, not as evidence.** Haaretz's own homicide tracker for Arab
+  citizens: 108 (2022), 242 (2023), 233 (2024), **251 in 2025**, and 170 so far in 2026, with 15–20%
+  of cases solved. A ministry's outcomes are not a party's position, and this page scores positions.
+- **The "fake news" reply is noted and nothing is minted from it.**
+  *"תעמולה נוספת של עיתון 'הארץ' במסווה של 'עיתונות'"* is a press line, and the vocabulary has no
+  press-freedom dimension at either pole. Revision 78's ישראל תחילה item — a Foreign Ministry
+  department to sue foreign media — is the only neighbouring material, and it is a *policy proposal*
+  on a different row. Two items are a lead, not a sweep: recorded here, not filed.
+- **A third minister is involved and is context only.** Arab local-authority heads petitioned last
+  month against diverting ~532M from Decision 549 to a crime-fighting expansion run by מאי גולן
+  (שוויון חברתי, הליכוד), arguing it duplicates lines this ministry already holds. That touches
+  הליכוד as a ministerial action nobody has read the party's position on; not scored here.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -7412,3 +7462,4 @@ pass happened, for anyone reading git history.
 | 2026-09-15 | revision 77 — **עוצמה יהודית: Ben Gvir vs. the police commissioner (13, ynet, מעריב; Kan unreadable behind Cloudflare). No axis moved, no tag added, `seed.sql` unchanged.** The commissioner held up appointments, and the minister froze equipment funds (333M of 450M shekels for 2026 unreleased, per the commissioner's letter). Ben Gvir says the fight is about promotions the AG favours, not money. Recorded as ministerial record: political control of police appointments, the same subject as the מח"ש file on the row, now acknowledged conduct. No tag covers it, and the AG framing is already `judicial-overhaul`. Noted for the future `governance-reform` decision alongside הציונות הדתית's reported 50% appointment quota (revision 75): the same direction on two bloc partners, one a plan and one a practice. Neither is tagged now |
 | 2026-09-15 | revision 78 — **ישראל תחילה: שרן השכל on 103FM (2026-09-14) proposes a Foreign Ministry legal department that only sues foreign media for defamation. No axis moved, no tag added, `seed.sql` unchanged.** Evidence is the station page's title and description only (audio, no transcript, not listened to). It corroborates the platform's state-funded information-warfare line (hasbara corps, consciousness departments), which is part of why economic +3 was refused, and it adds no field. Logged as a lead for the foreign-relations sweep item alongside עוצמה יהודית's consulate demand. The summary tool mislabelled her party, and this row is hers |
 | 2026-09-16 | revision 79 — **ביחד: the accessibility plan (`access`) read; no axis moved, no tag added, `seed.sql` unchanged.** ~1.25M people, 60% of the disability allowance kept after entering work, 100% of intercity buses and 25% of taxis accessible, a 5%-of-apartments developer incentive, community housing instead of institutions, and a רשות הנגישות וההעצמה in the PMO. `economic +1` holds on revision 28's line for `הזדקנות-בכבוד`: universal statutory spending with no offsetting cut, and mandates of the kind the cost-of-living programme already supplies. No disability/accessibility tag exists; filed as a sweep item rather than minted from one row. **Retrieval finding: the `/plans/` index lists six URLs that 302 back to the index** (`foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי`, `הסכם-חדש-השירות-הציבורי`) — a summarizer fetch of any of them returns the ARCHIVE page and reads like a real plan; four were nearly recorded as new documents. Check the HTTP status before reading. Conversely `kiryat-shmona` is delisted but still 200 |
+| 2026-09-16 | revision 80 — **עוצמה יהודית: Decision 549 money for Arab-society crime unspent (הארץ 2026-09-16, paywalled; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** A PMO document answering a parliamentary query: two thirds of a 300M-shekel 2026 line executed, 100M returned to the Treasury in 2025 at 67% execution, ~950M of 1.5B across 2022–2026. Police recruitment missed its own targets in Arab and mixed towns (Lod staffed ~100 against 180 posts); the community-security authority returned 7.5M of 17M. **The figures are CONTESTED and are not scored in either direction** — the ministry's reply is a category argument, not a denial: the police share entered the police base budget at the outset so a leftover cannot exist on that line, and the query's balances are *"מופרכים, מומצאים, משוללים כל יסוד"*. Revision 44's rule applied symmetrically: an unresolved factual dispute is not evidence, including when the disputed fact would be unflattering to the row rather than supplied by a rival. **Second budget-non-execution item on this row in eight days** (revision 77: 333M of 450M of the equipment budget), on a different line, counterparty and mechanism — a pattern, not a repeat; filed alongside revision 77's `governance-reform` note. **`basis` stays `record` with a caution about WHICH record**: the 2026-08-11 corpus is 30 of the party's own ministerial-action posts, Arab-society crime appears in none of them, and an independent record source on the same ministry points the other way — read that corpus as selected, not complete. **Revision 44's Arab-society-crime tag debt is NOT paid**: non-execution is not a position. Haaretz's homicide tracker recorded as context only (108 / 242 / 233 / **251** / 170-to-date, 15–20% solved) — a ministry's outcomes are not a party's position. **No press-freedom tag minted** from *"תעמולה... במסווה של 'עיתונות'"*; with revision 78's ישראל תחילה item that is two data points, a lead rather than a sweep |
