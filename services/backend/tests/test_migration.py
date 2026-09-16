@@ -349,7 +349,7 @@ def test_seeded_party_lineage(conn):
         ORDER BY u.name_en
     ''')
     successors = {r[0] for r in cur.fetchall()}
-    assert successors == {'Noam', 'Otzma Yehudit', 'Religious Zionist Party'}
+    assert successors == {'Noam for Israel', 'Otzma Yehudit', 'Religious Zionist Party'}
 
     cur.execute('''
         SELECT p.name_en FROM party_lineage pl
