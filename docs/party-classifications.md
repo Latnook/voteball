@@ -283,6 +283,12 @@ permanent buffer zone to the Litani, and implementing the Trump emigration plan 
 stated it. **Classify this row from the party's own sources only.** This has already caused one real
 bug: the row carried Ach's movement's logo until it was corrected.
 
+*(Amended 2026-09-16, revision 98: the party's own site, `themiluimnikim.org.il`, does carry a
+voluntary-emigration plank, *"הקמת מנהלת הגירה מרצון – לאפשר לתושבי עזה המעוניינים בכך להגר
+למדינות אחרות"*. The warning still holds, but the contrast is now **opt-in facilitation against
+removing a majority**, not "something against nothing". Neither the emigration tag nor
+`population-transfer` applies to this row; the reasons are in revision 98.)*
+
 ### Renaming a party orphans its votes
 
 Several rows have outdated names. **The stated reason for not renaming them mid-cycle — "votes
@@ -5397,7 +5403,10 @@ institutions that do not support service. Severe, and two of those are harsher t
 this page — but none of them is disenfranchisement. The tag stays, because the statement was really
 made and this axis records the revealed position; but the party's own document, which is both newer
 and more authoritative, declines to write it down. A later pass should check whether the omission is
-deliberate before treating the tag as platform-backed.
+deliberate before treating the tag as platform-backed. *(Resolved 2026-09-16, revision 98: המילואימניקים'
+own platform page, home page and conscription outline all carry the franchise clause. The tag is now
+platform-backed. Whether the union text left it out on purpose is still unknown, and it no longer
+matters, because בית ציוני has left the list.)*
 
 religiosity **−2 (was 0, moved 2026-08-08; re-examined against the full platform 2026-08-13 and
 held).** The education chapter conditions state money on the core curriculum in as many words —
@@ -5622,6 +5631,232 @@ running and it is refused again here without further argument.
   the הציונות הדתית plan, which revision 87 named as the highest-value open action on that row,
   should check whether the party makes that lineage itself. A borrowed name claimed by its borrower
   is first-party; a resemblance noticed by a critic is not.
+
+**2026-09-16 — revision 98. The party's own site, `themiluimnikim.org.il`, read for the first time.
+The repo owner supplied four pages; the rest were found by listing the whole site. Two tags added
+(36 → 38): `preemptive-security-doctrine` and `arab-civil-service`. NO AXIS MOVED. `bloc`, `sector`
+and the families are unchanged.**
+
+**What was read, and how.** All four supplied URLs returned **200** to a browser-shaped `curl`. The
+site is WordPress/Elementor, and none of the pages is an empty JavaScript shell:
+
+| page | what it is | `lastmod` |
+|---|---|---|
+| [`/platform/`](https://www.themiluimnikim.org.il/platform) | *עקרי המצע* | 2026-06-07 |
+| [`/תוכנית-המשילות/`](https://www.themiluimnikim.org.il/%d7%aa%d7%95%d7%9b%d7%a0%d7%99%d7%aa-%d7%94%d7%9e%d7%a9%d7%99%d7%9c%d7%95%d7%aa/) | *תוכנית 10 הנקודות לחזית השמינית* | 2026-03-01 |
+| [`/הקמת-משטרה-מקומית/`](https://www.themiluimnikim.org.il/%d7%94%d7%a7%d7%9e%d7%aa-%d7%9e%d7%a9%d7%98%d7%a8%d7%94-%d7%9e%d7%a7%d7%95%d7%9e%d7%99%d7%aa/) | the local-police plan | 2026-03-01 |
+| [`/חוזרים-מהקרב/`](https://www.themiluimnikim.org.il/%d7%97%d7%95%d7%96%d7%a8%d7%99%d7%9d-%d7%9e%d7%94%d7%a7%d7%a8%d7%91/) | the PTSD plan | 2026-05-20 |
+
+**Half of two of those pages is missing from the visible page text.** On the governance page and the
+PTSD page, every *"קראו עוד"* opens an Elementor popup. The popup text is embedded in the same HTML
+(10 popups on one page, 8 on the other), but a plain text extraction returns only the headings. All
+18 were read. Every *"לקריאת התוכנית המלאה"* inside them links back to the local-police page, so
+nothing else in the governance material was left unread.
+
+**The rest of the site.** `page-sitemap.xml` lists 33 URLs, which sets the scope of the site. Also
+read:
+
+- `/about/`, `/המילואימניקים/` and the home page.
+- `/מתווה-המילואימניקים/`. Its *"לקריאת המתווה המלא"* link redirects to an **11-page PDF**, *הרחבת
+  שורות צבא העם – מתווה המילואימניקים* (`wp-content/uploads/2025/10/`). `pdftotext` extracts it
+  cleanly, **but the text stops mid-sentence on p. 10** (*"הסדר דומה יוקם גם למצטיינים בתחומים
+  אחרים (ספורטאים"*), and p. 11 holds only the logo. The file itself is truncated as published, so
+  nothing past that point exists to read.
+- `/המילואימניקים-והכלכלית/`, a poll-and-signup landing page with no policy text.
+
+**Not read:**
+
+- the five PDFs on `/elections/` (the primary timetable, its rules and the candidate lists, none of
+  which is policy);
+- `/events/`;
+- the shop, donation and legal pages.
+
+**Could not be re-read:** revision 20's unified בית ציוני PDF. `baitzioni-hamiluimnikim.org.il` now
+returns NOERROR with no A record. Any claim below about what that document lacked rests on revision
+20's reading, not on a new one.
+
+**Identity checked first, because of the ⚠ block above.** This is Hendel's party, not Gilad Ach's
+movement. `/about/` and the home page list *"יועז הנדל, יו"ר מפלגת המילואימניקים"*, יואב אדומי,
+שלומי דמרי, תהילה פרץ, עמליה קינן and *"ד"ר עינת וילף … ממקימי מפלגת עוז"*. Those are the
+המילואימניקים slots on the filed list (revision 61). The domain is `themiluimnikim.org.il`, not
+`miluimnikim.org.il`.
+
+**Why a pre-merge page can add tags to the merged row.** Most of this material predates both the
+בית ציוני union (2026-07-07) and the merger with זליכה's party. It still counts, for three reasons:
+
+- It is still live, and still linked from the navigation of a home page modified 2026-09-09.
+- It is the platform of **המילואימניקים**, the registered party that every odd-numbered slot on the
+  filed list runs under (revision 61).
+- The union rule that carried הכלכלית's tags onto this row (revision 58) carries this faction's tags
+  too.
+
+It does **not** replace revision 20. That document was the בית ציוני union's text, and בית ציוני
+is no longer part of the list.
+
+- **`preemptive-security-doctrine` ADDED (3 → 4).** The platform says *"על מדינת ישראל לאמץ מדיניות
+  ביטחון אגרסיבית המעבירה את ההכרעה לשטח האויב – ממדיניות הכלה ותגובתיות למדיניות של יוזמה
+  והתקפיות. נפעל להרתעה ממשית ומתמשכת המבוססת על עליונות מודיעינית וטכנולוגית לסיכול איומים
+  מראש"*. On Iran it says *"המשימה לא הסתיימה. אין לישראל יכולת להכיל איראן עם אמצעי וכוונה לאורך
+  זמן"*. Why this is enough:
+  - The nearest existing holder, ישראל תחילה, holds the tag on *"גדיעת איומים לפני שהם
+    מתפתחים"*, which is the same claim in fewer words.
+  - The tag was refused for ביחד because its Iran plank was retaliation (*"כל ירי... יביא
+    לתקיפות"*). This text names reactivity (*"תגובתיות"*) as the very thing it is abandoning, so
+    that objection does not apply here.
+  - The evidence is a platform plank, the same kind that founded the tag on אל הדגל, so adding it
+    does not water the tag down.
+  - The row joins two other +2 holders, and the +2 band's own definition already names a preemptive
+    doctrine, which revision 20 cited without adding the tag.
+
+  The Hezbollah plank is **not** part of the evidence. *"במידה וחיזבאללה לא פורק מנשקו לפי ההסכם
+  שנקבע, תפתח מערכה"* enforces an agreement on a condition; it is not preemption.
+- **`arab-civil-service` ADDED (6 → 7).** The tag marks a *national-service track for Arab citizens*;
+  it is not about civil-service jobs, a trap recorded under הדמוקרטים. The faction states the track
+  in three places of its own:
+  - *עקרי המצע*: *"יצירת מסלולי שירות לאומי נוספים לחברה הערבית"*.
+  - The outline page: *"יצירת מסלולי שירות לאומי לחברה הערבית"*.
+  - The PDF's fifth principle, *"חובת שירות גם בחברה הערבית"*: *"חובת השירות ומערכת התמריצים
+    החיובית והשלילית אשר תחול על המשרתים בשירות הלאומי/אזרחי תחול מטבע הדברים גם על אוכלוסיה
+    זו"*.
+
+  A stated duty plus a named track is at least as much as כחול לבן's founding evidence, and more than
+  ביחד's (revision 86: *"ללא פטורים - זה נכון לערבים"*). No pass on this row had refused the tag. It
+  was missing because these documents had not been read.
+- **`service-conditioned-citizenship` now rests on the platform, which answers revision 20's open
+  question.** Revision 20 found the voting-rights clause missing from the unified בית ציוני platform
+  and asked a later pass to check before treating the tag as platform-backed. This faction's own
+  documents state it three times:
+  - *עקרי המצע* lists *"מניעת הזכות לבחור ולהיבחר"* first among the sanctions. Its vision section
+    adds *"מי שיבחר לא לשרת בוחר בכך לא לקבל זכויות כמו הטבות כלכליות, הזכות לבחור את נציגי
+    הציבור ולהיבחר כנציג ציבור"*.
+  - The home page: *"מי שלא ישרת, לא יוכל לבחור ולהיבחר לכנסת"*.
+  - The PDF: *"עריק משירות לא יהיה זכאי להתמודד לבחירות למשרה ציבורית כלשהי ואף לא להצביע
+    בבחירות לרשויות המקומיות או בבחירות לכנסת"*.
+
+  Nobody knows whether the union text left the clause out on purpose, and it no longer matters:
+  that text belongs to a partner that has left. The local-police plan applies the same rule to
+  public office. A mayor who has not served *"לא יוכל להיות חלק מתהליך קבלת ההחלטות והמינוי"*, and
+  local officers are recruited *"אך ורק"* from people who completed full service. No field changes.
+- **`scholar-exemption-retained` KEPT. This row makes revision 86's open definition question
+  sharper; it does not answer it.** The faction's two documents disagree on whether the track for
+  outstanding Torah students (עילויים) is an exemption at all:
+  - *עקרי המצע* calls it one: *"מבחן עילויים בתורה, עילויים באקדמיה וספורטאים מצטיינים לקבלת
+    פטור זמני"*.
+  - The PDF says the opposite: *"לא ינתן עוד פטור משירות למי שתורתם אומנותם גם לא במספרים
+    קטנים"*. The עילויים *"לא יקבלו עוד דח"ש או פטור משירות צבאי כפי שהנהוג היום אלא יבצעו את
+    שירותם בלימוד התורה"*, in yeshivas on the front lines that include basic training and duty in
+    the local emergency squads.
+
+  If the tag means "a narrow track for Torah scholars survives", both documents support it. If it
+  means "the haredi exemption is kept", the PDF rules that out in as many words. Revision 86 filed
+  this as a definition question that decides three rows at once, so it is not settled on one row
+  here. This row now has the clearest evidence on both sides of it.
+- **`security +2` KEPT, and one phrase needs reading in context.** The site says *"ריבונות דרך
+  מעשים"* twice and defines it on the spot: *"חיזוק ההתיישבות ביהודה ושומרון והכרעה במאבק על
+  ההשתלטות העוינת על שטחי c"*. That is settlement plus the fight over Area C, which is the +2 band as
+  written, under a sovereignty *slogan*. Nothing calls for applying Israeli law anywhere, so
+  `sovereignty-annexation` is refused. The phrase is recorded so the next pass does not add the tag
+  just because the word appears.
+  - **Gaza:** harder than revision 20's *"stay to the yellow line"*. The site calls for *"שליטה
+    מלאה לאורך הפרימטר, ברכסים הגבוהים … ובציר פילדלפי"* and *"גביית מחיר בפרימטר (עד הקו הצהוב)
+    שם יעובדו הקרקעות על ידי יישובי חבל התקומה"*, that is, Israeli communities farming land inside
+    Gaza. That is `territorial-control-gaza`, which the row already holds, and it still claims no
+    sovereignty.
+  - **Lebanon:** *"שליטה מלאה ברכסים הגבוהים בלבנון ובכתר החרמון"*. Same reading.
+- **`voluntary-palestinian-emigration-incentives` REFUSED. The plank is recorded here because of the
+  ⚠ block.** The text is *"הקמת מנהלת הגירה מרצון – לאפשר לתושבי עזה המעוניינים בכך להגר למדינות
+  אחרות"*. This page's test has two halves:
+  - **Opt-in: passes.** It says *מרצון*, and it names an instrument, a directorate.
+  - **Incentive: fails, and that is the half the tag is named for.** Every holder's evidence includes
+    an incentive: אל הדגל's benefits basket, סמוטריץ' costed grants, עוצמה יהודית's bill, גמליאל's costed
+    plan. This is one line that helps people leave, with no benefit, cost or grant attached, and it
+    is a single bullet on a June page, not a programme.
+
+  **It changes the ⚠ block's comparison, not its conclusion.** This party does state a voluntary
+  emigration plank. It has never said what Ach's movement says, which is to remove a *majority* of
+  Gaza's population. The difference is now opt-in help against mass removal, rather than something
+  against nothing, and the ⚠ block has a note saying so.
+- **`territorial-price-doctrine` REFUSED, narrowly.** *"גביית מחיר בפרימטר"* is a price paid in
+  land, but it is charged after the fact and on one front only. The tag's two holders state a
+  **standing rule, committed in advance** (עמך ישראל: *"אויב שיפתח נגדנו במלחמה ישלם מחיר
+  טריטוריאלי כבד"*); this text states no such rule. `territorial-control-gaza` already covers the
+  plank.
+- **Also refused, in brief:**
+  - **`hardline-on-gaza`**: no siege or supply measures, and that is what every holder's evidence
+    is.
+  - **`gun-rights`**: the *"דוקטרינת טקסס"* is a self-defence amendment to חוק דרומי (*"כל חדירה
+    למתחם פרטי בשעות חשכה של אזרח נושא נשק – תוגדר סכנת חיים"*), plus a home-defence track for
+    former local-police officers. Neither is policy on civilian gun licences.
+  - **`state-commission-of-inquiry`**: refused for the **seventh** time, following the precedent in
+    Open questions. Here the inquiry is a condition for joining a government (*"וועדת חקירה — תנאי
+    להקמת ממשלה"*). The page does **not** insist on the statutory "state" form: *"המילה ממלכתית
+    הפכה לתירוץ כדי לא לחקור"*.
+  - **`judicial-overhaul`**: *"פיצול תפקידי היועמ"ש"* and outside oversight of the courts are items
+    from the overhaul coalition's agenda, but the text frames them *"תחת הסכמות רחבות ובתהליך
+    ציבורי משותף"*. As revision 20 ruled, `constitutionalist` (*"חוק יסוד החקיקה"*) already covers
+    this.
+  - **`unity-government`**: *"ממשלת אחדות ציונית"* is the same exclusion that
+    `excludes-haredi-and-arab-parties` already records, not a willingness to join a broad government.
+    The platform page itself says only *"ממשלה ציונית"*.
+  - **`free-market`** (*"כלכלה חופשית … שוק חופשי"*): both holders are at +2, and this row's +1 is
+    argued from its state expansion. Adding the tag on a slogan would blur that difference.
+  - **`deregulation` and `public-service-reform`**: refused as they have been across the page,
+    because adding them would record which documents happen to have been read rather than a
+    position. *"פתיחת חסמים"* and *"צמצום משרדי ממשלה"* fit under `governance-reform` and
+    `anti-monopoly`.
+  - **`agricultural-protectionism`**: the agriculture plank is support and R&D, not trade
+    protection, and the row holds `free-trade`.
+- **`term-limits` now has a number:** *"הגבלת כהונה לשמונה שנים או לשתי קדנציות למשרת ראש
+  ממשלה"*.
+- **Three gaps in the tag vocabulary get a new sighting. No tag is created for any of them.**
+  - **Internal security. This row is a FIFTH holder, and Open questions had listed it as not yet
+    checked.** *תוכנית 10 הנקודות לחזית השמינית* contains:
+    - a Shin Bet division for Arab crime (*"תוגדר הפשיעה הערבית כאחת ממשימות הליבה של השב״כ"*);
+    - minimum sentences, with shootings, illegal weapons and agricultural crime treated as serious
+      offences;
+    - a joint anti-crime authority in the national-security ministry;
+    - local police forces under mayors;
+    - the phrase *"מודל ג׳וליאני"*, the same one הציונות הדתית's `/judaization/` uses.
+
+    With holders across the whole table, this is not a label for one wing. The sweep item stands,
+    with one holder now better documented.
+  - **Land enforcement (the Kaminitz Law gap), seen from the ENFORCEMENT side for the first time.**
+    The local-police plan gives mayors *"מסלול מהיר וישיר ליוזמת הריסת מבנים לא חוקיים"*, and
+    district courts approve demolition orders for inhabited buildings. Every earlier sighting
+    (הדמוקרטים' *"נבטל את חוק קמיניץ"*, and revisions 44, 85 and 94) came from the side asking for
+    relief. This is the first party proposing faster demolitions, so the gap now has holders at
+    both ends, which this page treats as the strongest kind of gap.
+  - **A Jewish majority in the Negev and Galilee as a goal.** The plan says *"הגדרת ההתיישבות והרוב
+    היהודי באזורים אלו כמשימה לאומית מתועדפת. לצד ישובי משרתים – ישובים דרוזים חדשים"*. Revision
+    20 recorded *"ייהוד הנגב והגליל"* in prose and noted that the axis does not score internal
+    demography. The new text adds an explicit *"הרוב היהודי"* goal. It stays in prose, and a note is
+    added under Open questions.
+
+    A plank against polygamy is also recorded here for the same sweep. It is framed as fighting the
+    *"איסלמיזציה של הסביבה"* (*"מאבק בפוליגמיה"*).
+- **`economic +1` KEPT.** The market side: *"התעצמות מדינת ישראל מבוססת על כלכלה חופשית"*,
+  corporate-tax breaks for tech firms with about 70% of staff in the periphery, and breaking up
+  monopolies. The state side:
+  - a ₪1bn-a-year PTSD fund, *"שלא בבסיס התקציב ולא ניתנת לקיצוץ"*;
+  - subsidised rent and insurance during reserve duty;
+  - compensation for employers of reservists;
+  - land set aside for reservists;
+  - *"העברת תקציבים מהציבור המשתמט אל הציבור המשרת"*.
+
+  That mix is the +1 band as written, and `tax-cutting`, `anti-monopoly` and `reservist-focused`
+  already record it.
+- **`religiosity −2` KEPT.** Nothing here goes beyond revision 20 on the Rabbinate, marriage or
+  religious funding. The funding condition returns as *"תקציבי חינוך יינתנו רק למי שתורם למדינה,
+  אין תקצוב ותמיכה למוסדות בלי שותפות בשירות"*. That ties funding to national service rather than to
+  teaching the core curriculum, so it moves nothing.
+
+**Retrieval note for the next pass: on an Elementor site, a *"קראו עוד"* heading with no text under
+it does not mean the section is empty.** The popup bodies are in the same HTML, outside the visible
+page flow, so a text extraction and a summarizer both skip them. Look for
+`data-elementor-type="popup"` before concluding that a plan is only a list of headings.
+
+Sources: the four supplied pages above, plus `/about/`, `/המילואימניקים/`, the home page,
+`/מתווה-המילואימניקים/` and the PDF it links. All were fetched 2026-09-16.
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -7517,11 +7752,13 @@ names, ballot name **יהדות התורה והשבת אגודת ישראל - ד
 - **No axis moved and no tag added.** `−2 / 1 / 2` are argued from the record; a slate is not a
   record, and the leadership turnover changes who states the positions rather than what they are.
 
-### Three logos are self-hosted under `/logos/`, and none is a matter of taste
+### Party logos self-hosted under `/logos/`, and none is a matter of taste
 
 `services/frontend/logos/` is copied into the frontend image as a whole directory, so adding a file
-there is a data change. All three party logos that live there had to leave Wikimedia/CDN hosting
-(a fourth, בית ציוני - המילואימניקים, was retired 2026-09-07 — see the end of this list):
+there is a data change. Every party logo that lives there had to leave Wikimedia/CDN hosting. Count
+them with `ls services/frontend/logos/` rather than trusting a number here — this heading said
+"three" while the directory held seven (בית ציוני - המילואימניקים was retired 2026-09-07 — see the
+first bullet):
 
 - **בית ציוני - המילואימניקים** (`beit-tzioni-miluimnikim.png`) — **RETIRED 2026-09-07 and the file
   deleted**: the row merged into המילואימניקים והכלכלית and runs on הכלכלית's registration, hence on
@@ -7573,6 +7810,28 @@ the blue in each is faceted and bands.
   because a cropped file is no longer the file at the URL. Shown **unchanged in both themes** — see
   the נעם note below for why the recolour's own solid-tile guard already handles it and why no
   `SKIP_RECOLOR_PARTIES` entry belongs there.
+- **המילואימניקים והכלכלית** (`reservists-economic-2026.png`) — *(2026-09-16, revision 98a)* the
+  merged list's own lockup (green המילואימניקים bar, blue והכלכלית bar, *"בראשות הנדל וזליכה"*),
+  supplied by the repo owner as a 2048×2048 **fbcdn** JPEG — the signed, expiring, tracker-blocked
+  host described in the first bullet, so it could never be pointed at. Cropped to the measured
+  lockup (bbox 184,798 → 1863,1297, plus a 28px margin) and scaled to 800×256. **The navy ground is
+  kept**: the *בראשות* line is white text with nothing behind it but that navy, so keying the ground
+  out would leave it invisible on the light card. An opaque tile, so `recolorLogoForDark()` leaves it
+  unchanged in both themes, as with נעם and the Joint List. Replaces הכלכלית's Wikimedia SVG, which
+  revision 58a had adopted for want of joint-list artwork.
+- **הדמוקרטים** (`the-democrats-2026.png` light, `the-democrats-2026-dark.png` dark) — *(2026-09-16,
+  revision 98a)* the 2026 *הדמוקרטים / יאיר גולן* lockup. **The first party with a hand-made
+  dark-theme file**, registered in `DARK_VARIANT_LOGOS` in `logos.js` — whose party check had to be
+  opened for it (`!opts.recolor` removed from the guard; the map is `name_en`-keyed and checked before
+  every party path, so nothing else changed). Light: the repo owner's fbcdn JPEG cropped to the
+  lockup on its sky-blue tile (339×156). Dark: the party's own **transparent** PNG
+  (`victory26.democrats.org.il`), which the owner offered for dark mode but is navy ink —
+  `#203370` on the `#161B22` card is roughly 1.6:1 and the top wordmark all but vanishes. Three
+  renderings were shown (tile unchanged, file as sent, navy↔white swapped) and **the owner chose the
+  swap**: white wordmark and bands, navy *יאיר גולן* on a white band, red dot untouched. The canvas
+  recolour was not an option for the transparent file: it would lift the navy band to near-white
+  behind letters that are already white.
+
 
 
 ### A knockout cannot be recoloured, and it defeats every check based on brightness
@@ -8056,6 +8315,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   of revision 33 on this point**: the instruction lived in a party entry for two revisions and never
   here, which is exactly the mechanism that left the `religiosity −3` band unactioned. **Resolution:
   sweep all 18 rows for demographic-engineering content, then decide membership in one pass.**
+  *(2026-09-16, revision 98: המילואימניקים והכלכלית is a further holder, from the centre-right. Its
+  governance plan says *"הגדרת ההתיישבות והרוב היהודי באזורים אלו כמשימה לאומית מתועדפת"* about
+  the Negev and Galilee. Recorded, not tagged.)*
 - **No domestic-policing tag exists, and two rows earn one without a sweep being needed to find
   them.** הציונות הדתית's `/judaization/` proposes a national הוראת שעה against organised crime
   whose stated goal is *"לפרק את האוטונומיה הערבית החמושה"* — illegal weapons possession defined as
@@ -8068,6 +8330,11 @@ bought nothing here, because the defect was never in the pixels being measured.
   the territories, Gaza, the judiciary or religion. **Resolution: sweep all 18 rows for internal
   security and policing content — הליכוד, ישראל ביתנו, אל הדגל and בית ציוני are the other likely
   holders and none has been checked — then decide membership in one pass.**
+  *(2026-09-16, revision 98: the בית ציוני slot is now checked, on its successor row
+  המילואימניקים והכלכלית, and it **holds**. Its *תוכנית 10 הנקודות לחזית השמינית* sets up a
+  Shin Bet division for Arab crime, minimum sentences, local police forces run by mayors and the same
+  *"מודל ג׳וליאני"* phrase. That makes it the fifth holder alongside the four in the sibling bullet
+  above. Nothing is minted; the sweep stands.)*
 - ~~**זהות is the only `judicial-restraint` family member without the `judicial-overhaul` tag.**~~
   **Resolved by removal, 2026-09-01** — and it did not resolve the way the question expected. זהות
   merged into הציונות הדתית, which already carries `judicial-overhaul`, so the family's members
@@ -8297,3 +8564,5 @@ pass happened, for anyone reading git history.
 | 2026-09-16 | revision 95 — **נעם → `נעם לישראל` RENAMED, on the repo owner's instruction. `seed.sql` changed; no axis moved, no tag added.** `name_he` `נעם` → `נעם לישראל`, `name_en` `Noam` → `Noam for Israel`, `name_ru` `Ноам` → `Ноам ле-Исраэль`; **`seed_key` stays `noam`**, which is what makes this an in-place column update rather than a new row. Revision 93 flagged the trigger (revision 18's *"ballot certification, not campaign launch"*) as discharged by revision 68's registrar reading, and gated the execution as a scope-and-irreversibility call. **The gate existed because of a stale warning, and correcting it is the durable half.** Both the Conventions bullet and the "Renaming a party orphans its votes" section said a rename orphans votes. **It does not, and has not since the 2026-08-12 `seed_key` model**: the seed's `UPDATE ... WHERE t.seed_key = s.seed_key` finds the row by key and rewrites the three `name_*` columns in place, so `id` never changes and every `vote_upcoming_parties` and `party_lineage` row keeps pointing at it; the name-keyed adoption statement fires only for `seed_key IS NULL`, and the duplicate-insert `RAISE EXCEPTION` guard only when a key is *absent*. Both texts corrected rather than left standing. **Verified against PRODUCTION before editing** (`admin_edited` = `[]` so all three columns writable, **0 votes**, 1 lineage link unaffected) rather than reasoned from the SQL alone. **Two real consequences the vote warning was obscuring, and they are what to check on the next rename**: the **legacy `name` column is NOT updated** (written only by the `INSERT`, so it stays `נעם` — harmless, nothing reads it, but the row is not internally consistent); and **`generate-tables.py` now re-keys this row**, since it derives `seed_key` from `slug(name_en)` and `slug("Noam for Israel")` is `noam-for-israel` — so **`noam` joins `joint-list` and `the-reservists` in the never-paste-a-regenerated-block list**, where pasting wholesale means `RAISE EXCEPTION` inside `init_db` and CrashLoopBackOff on every backend pod. True of **any** rename whose new `name_en` does not slug back to the existing key, which is most of them. Two test files updated (`test_migration.py`'s lineage successors, `test_queries.py`'s two `/api/options` name sets). **270 backend + 48 worker + 36 script tests green; ruff unchanged at its pre-existing count** |
 | 2026-09-16 | revision 96 — **ש"ס: the הילולה ruling reported properly, and it RESOLVES revision 81's contested fact in a way that vindicates refusing to score it (הארץ; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The petition was to hold the הילולה **in an alternative format** rather than at בנייני האומה; the court **rejected it** (ערוץ 14's account) and the stated reason is ynet's — **גרוסקופף** held the court decides *"מקרים קונקרטיים"* and an alternative event is *"נתון להחלטת הרשות המבצעת"*. **A dismissal for non-justiciability is at once a rejection of the petition and a refusal to rule on the question**, so both accounts are true of it and each misleads alone. **The strongest vindication the refusal rule has had**: the page picked no side and the answer was a distinction neither outlet drew. **One half of revision 81 stays open** — ynet's claim that ש"ס announced the court *"החליט על ביטול הכנס"* is untouched here and remains unrecorded. **`rabbinic-authority-led` reaches its sharpest form, as an instruction to disregard a court**: הרב יצחק יוסף, *"לא צריך להתחשב בהם, אני קורא לקיים אלף הילולות מרן בכל רחבי הארץ"* — revision 93 gave the tag its purest *doctrinal* instance on נעם; this is the other kind, the spiritual leader setting what the public does **after** a ruling goes against the party. No new tag (none exists for defying a court, one holder, revision 30's line). **The AG attacks are the most extreme `judicial-overhaul`-adjacent material this row has produced and add no tag**: *"מי היא בכלל?"*, *"זה לא יעבור בשתיקה"*, *"הקדוש ברוך הוא יכלה אותה, ייתן לה את המכה שלה"*, **"רשעה"**, **"משוגעת"**; התנועה לאיכות השלטון has sought a criminal investigation for incitement. AG hostility is already inside `judicial-overhaul` (revisions 77, 87) and **intensity is not a field** — recorded because this row's evidence for the tag had been a voting record and a campaign line. **A first-party argument whose premise the source refutes**: *"מדוע את הילולת רבין לא אוסרים?"* — the Rabin memorial is **privately funded** and falls **after** the election, while the הילולה is **publicly funded**, which is the exact distinction the AG's guidance turned on (it addressed the הילולה, not the אזכרה at סנהדריה). Nothing moves; noted so a later pass does not repeat a comparison that collapses on the one variable at issue. **`sectoral-budgeting` gets a number**: **₪4m** spent on הילולה events over two years by the Ministry of Religious Services and the Jerusalem Municipality; the ministry offered to move it a week earlier and hold it **without ש"ס representatives**, and the AG refused |
 | 2026-09-16 | revision 97 — **ביחד: Bennett commits to a bloc-agreed candidate; the poll trajectory is halved (הארץ; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** First-party and clear: *"יום אחרי הבחירות אנחנו מתכנסים כל ראשי הגוש ויוצאים עם מועמד אחד, ואני אכבד את התוצאות"*. **No tag covers a commitment about how a bloc selects its candidate** — a process undertaking, not a position about the state, and distinct from revision 93's pre-swearing-in instrument (that one *conditions entry* on a policy, this one *allocates leadership*). One holder, noted, not filed. **What he did NOT say is the recordable part**: he declines to recognise איזנקוט's candidacy while ישר leads the bloc in every poll cited. `bloc` **`opposition`** is unaffected — **refusing to concede leadership inside a bloc is not leaving it**, the same rule revisions 88 and 92 applied three times to the `bibi` side today, now applied to the other one; **the symmetry is stated because a rule only applied to one bloc reads as a judgement about that bloc.** **Poll trajectory as context**: 26 → 22 → 18 → 14 → 15 → **13** between 27 Apr and 14 Sep, halved in five months; the one structural note is that **about half the 13 are reported as Yesh Atid's rather than Bennett's**, corroborating `two-faction-list` from the electorate side where revision 49 took it from the list's composition. **ליברמן exploring a cross-camp coalition is REFUSED as evidence about ישראל ביתנו** — a journalist's characterisation (*"בוחן את האפשרות"*) with no quotation, against a scored `bloc` field. **Flagged as a TRIGGER, not a finding**: if ליברמן says it himself, `bloc` `opposition` needs re-examining there and `hard-to-classify-bloc` becomes live |
+| 2026-09-16 | revision 98 — **המילואימניקים והכלכלית: the party's own site `themiluimnikim.org.il` read for the first time. The repo owner supplied four pages (*עקרי המצע*, *תוכנית המשילות*, *הקמת משטרה מקומית*, *חוזרים מהקרב*), and the rest came from listing the whole site via `page-sitemap.xml`, including an 11-page conscription outline PDF that is published cut off mid-sentence on p. 10. Two tags added (36 → 38), NO AXIS MOVED, `seed.sql` changed in the tags array only.** **Half of two pages is hidden from a text extraction**: the 18 *"קראו עוד"* items are Elementor popups whose text sits in the same HTML but outside the visible page. All were read. **The site was confirmed to be Hendel's party, not Ach's movement**, before anything was scored. **`preemptive-security-doctrine` (3 → 4)**: *"ממדיניות הכלה ותגובתיות למדיניות של יוזמה והתקפיות … לסיכול איומים מראש"*, the same claim ישראל תחילה holds the tag on, and it explicitly abandons the reactive stance ביחד was refused for. **`arab-civil-service` (6 → 7)**: national-service tracks for Arab society in three documents, plus the PDF's *"חובת שירות גם בחברה הערבית"*. **Revision 20's open question is answered**: the voting-rights sanction that the בית ציוני union text left out appears three times in this faction's own documents (*"מניעת הזכות לבחור ולהיבחר"*; *"מי שלא ישרת, לא יוכל לבחור ולהיבחר לכנסת"*), so `service-conditioned-citizenship` now rests on the platform. **`scholar-exemption-retained` KEPT, and this row sharpens revision 86's definition question**: the platform page calls the עילויים track *"פטור זמני"*, while the PDF says *"לא ינתן עוד פטור … גם לא במספרים קטנים"*. **`security +2` KEPT**: *"ריבונות דרך מעשים"* is defined on the spot as settlement plus the Area C fight, not as applying Israeli law. The Gaza plank (Israeli communities farming land up to the yellow line) is `territorial-control-gaza`, already held. **Twelve tags refused**, most notably `voluntary-palestinian-emigration-incentives`: *"הקמת מנהלת הגירה מרצון"* is opt-in and has an instrument, but offers no incentive, and every holder's evidence includes one. The plank is still noted in the ⚠ name-collision block, whose comparison is now opt-in help against mass removal rather than something against nothing. `territorial-price-doctrine` is a narrow miss: the price here is charged after the fact on one front, not committed in advance as a standing rule. **Three vocabulary-gap sightings, none turned into a tag**: internal security (a fifth holder, in the slot Open questions had marked unchecked), the Kaminitz land-enforcement gap seen for the first time from the side that wants faster demolitions, and a stated Jewish-majority goal for the Negev and Galilee. The old בית ציוני domain no longer resolves, so revision 20's PDF could not be read again. |
+| 2026-09-16 | revision 98a — **two party logos replaced on the repo owner's supply; no axis moved, no tag added.** המילואימניקים והכלכלית gets its own joint lockup (`/logos/reservists-economic-2026.png`, cropped from an fbcdn JPEG, navy ground kept for the white *בראשות* line) in place of הכלכלית's Wikimedia SVG. הדמוקרטים gets the 2026 lockup (`/logos/the-democrats-2026.png`) and is **the first party in `DARK_VARIANT_LOGOS`** (`/logos/the-democrats-2026-dark.png`, the party's transparent artwork navy↔white swapped, chosen by the owner from three rendered options) — which required opening that map's guard to parties in `logos.js`. The self-hosted section's heading stopped asserting a count: it said three while the directory held seven. Verified by rendering the real `logos.js`/`style.css` in headless Chromium in both themes (the right file visible in each); `test-logo-assets.sh` green. **Unverified: production `admin_edited`** — the cluster was down, and a `logo_url` an admin has edited is not written by `seed.sql` |

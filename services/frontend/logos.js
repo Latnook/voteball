@@ -75,8 +75,8 @@ const OUTLINE_CLUBS = new Set([
   'Mjällby',
 ]);
 
-// Clubs/leagues (by name_en) that ship a SECOND artwork file for the dark theme, rather than being
-// derived from the light one. The light file is what logo_url points at; the value here is the dark
+// Clubs, leagues and parties (by name_en) that ship a SECOND artwork file for the dark theme, rather
+// than being derived from the light one. The light file is what logo_url points at; the value here is the dark
 // one. Both render, and the same four CSS rules that switch the party canvases pick which is visible
 // (.logo-orig in light, .logo-recolored in dark), so this needs no theme logic of its own and
 // follows the manual toggle as well as the OS preference.
@@ -111,6 +111,11 @@ const DARK_VARIANT_LOGOS = new Map([
   // that separated Ararat-Armenia's wordmark from Lugano's disc. Single flat colour, so the dark
   // file is that one fill swapped to white and stays reviewable as a file.
   ['Jablonec', '/logos/fk-jablonec-dark.svg'],
+  // The first PARTY here. The light file is the 2026 lockup on its opaque sky-blue tile, which the
+  // recolour would leave unchanged; the repo owner chose a reversed version for dark mode instead
+  // (2026-09-16, from three rendered options). The dark file is the party's transparent artwork
+  // with navy and white swapped -- white wordmark and bands, navy name on a white band.
+  ['The Democrats', '/logos/the-democrats-2026-dark.png'],
 ]);
 
 // Entities (by name_en) whose artwork file carries transparent padding, and the factor that
@@ -427,7 +432,8 @@ function logoEl(entity, displayName, opts) {
   // canvas and no crossOrigin -- both files are same-origin static assets, so there is nothing to
   // taint and nothing to compute. Each carries its own error handler, so a missing file falls back
   // to the monogram exactly like a single image would.
-  if (!opts.recolor && entity && DARK_VARIANT_LOGOS.has(entity.name_en)) {
+  // Checked before every party path below, so a party listed here never reaches the canvas.
+  if (entity && DARK_VARIANT_LOGOS.has(entity.name_en)) {
     const light = document.createElement('img');
     light.alt = '';
     light.loading = 'lazy';
