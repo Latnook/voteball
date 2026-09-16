@@ -15,7 +15,8 @@
 #      by design, and the gp3 StorageClass's reclaim policy is Delete, so this is what actually removes
 #      the underlying EBS volume. Must run AFTER step 4, once the operator can no longer recreate the
 #      StatefulSet it belongs to.
-#   6. DNS cleanup backstop.
+#   6. DNS cleanup backstop, then a sweep of load-balancer security groups/target groups the
+#      controller left behind (they block VPC deletion; see scripts/cleanup-orphaned-lb-resources.sh).
 #   7. terraform destroy last, with one bounded automatic retry if it hits either of the two hangs
 #      documented in CLAUDE.md's teardown section (a Helm uninstall racing cluster deletion, and the
 #      second-order External Secrets finalizer hang that follows it) -- see step 7 for the detail.
@@ -63,9 +64,14 @@ if kubectl cluster-info >/dev/null 2>&1; then
   # prevent. This is why the kibana Ingress is deleted HERE and not left to step 4's
   # `helm uninstall logging` -- that runs AFTER step 3 already starts waiting, which would be the
   # exact hang all over again for the group's third member.
-  kubectl delete ingress voteball -n devops-app --ignore-not-found || true
-  kubectl delete ingress jenkins-webhook -n ci --ignore-not-found || true
-  kubectl delete ingress kibana -n logging --ignore-not-found || true
+  #
+  # --wait=false: each Ingress carries the controller's group finalizer, and a plain delete blocks
+  # until it clears -- with no timeout and no output. On 2026-09-16 the controller could not clear
+  # it (DeleteTargetGroup kept answering ResourceInUse after the ALB was already gone) and the
+  # script froze here, silently, after printing "deleted". Step 3's loop is the bounded waiter.
+  kubectl delete ingress voteball -n devops-app --ignore-not-found --wait=false || true
+  kubectl delete ingress jenkins-webhook -n ci --ignore-not-found --wait=false || true
+  kubectl delete ingress kibana -n logging --ignore-not-found --wait=false || true
 else
   step "1-2/7  Cluster unreachable — skipping ArgoCD/Ingress deletion (already gone)"
 fi
@@ -229,6 +235,12 @@ step "6/7  Removing this cluster's DNS records"
 # records whose ownership TXT names this cluster.
 ./scripts/cleanup-stale-dns.sh || echo "WARNING: DNS cleanup failed; check the zone by hand."
 
+# Security groups and target groups the load balancer controller created and did not get to delete.
+# Terraform does not know they exist, and a leftover security group keeps `aws_vpc` on "Still
+# destroying..." (2026-09-16). The sweep only acts once no load balancer and no ELB network interface
+# remains in the VPC; when AWS is still holding those, the reaper below re-runs it every 30s.
+./scripts/cleanup-orphaned-lb-resources.sh --apply || echo "WARNING: load-balancer leftover sweep failed; see above."
+
 step "7/7  Destroying AWS infrastructure (Terraform will ask you to confirm)"
 
 # When nodes terminate, the AWS VPC CNI can leave DETACHED (status=available) aws-K8S-* interfaces
@@ -255,6 +267,10 @@ reap_orphaned_enis() {
       echo "  reaping orphaned CNI interface $eni (detached; was blocking subnet deletion)"
       aws ec2 delete-network-interface --region "$REGION" --network-interface-id "$eni" 2>/dev/null || true
     done
+    # Same loop, second kind of leftover: controller-created security groups and target groups. Here
+    # rather than only before the destroy because on 2026-09-16 AWS released the ALB's interfaces
+    # hours late, mid-teardown -- only a sweep running at that moment can use the opening.
+    ./scripts/cleanup-orphaned-lb-resources.sh --apply --quiet 2>/dev/null || true
   done
 }
 

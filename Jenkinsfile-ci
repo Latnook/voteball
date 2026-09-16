@@ -9,7 +9,11 @@ pipeline {
   // kubernetes cloud's `templates:` block -- NOT here. The CI environment is configuration and
   // belongs in JCasC; the Jenkinsfile owns build steps. Changing which containers exist, or their
   // versions, means editing that file and re-applying Terraform.
-  agent { label 'voteball-build' }
+  // `agent none`: this pipeline uses TWO pod templates, not one. Test/validate and
+  // publish/trigger run on `voteball-test`; only Build/Trivy/Push allocate `voteball-build`,
+  // which is the one carrying buildkit, trivy and skopeo. Added 2026-09-16 -- a docs-only push
+  // was starting all nine containers and then skipping every stage that uses three of them.
+  agent none
 
   options {
     // Two builds racing to rewrite values.yaml and push to master would conflict. Also bounds the
@@ -58,719 +62,779 @@ pipeline {
 
   stages {
 
-    // G2 -- Jenkins has no native [skip ci]. Without this, the pipeline's own tag-bump commit
-    // retriggers it forever.
-    stage('Guard: is this our own commit?') {
-      steps {
-        script {
-          // This guard runs unconditionally and first: a changeset containing nothing but [skip ci]
-          // commits can never be built here, even manually with FORCE_BUILD.
-          //
-          // RANGE, not just the tip (2026-08-23, Task 4 review P1). Jenkins checks out the branch TIP
-          // at build start, not the commit that triggered the webhook. If CD pushes its promotion
-          // commit into the gap between a queued build being triggered and that build starting its
-          // checkout, the tip carries the marker, this guard skips, and the source commit that
-          // actually triggered the build is never built -- not here and not by any later build,
-          // because it sits BEHIND the tip and so falls outside every subsequent changeset. That is
-          // the real 2026-08-21 incident (see should-skip-build.sh), and NOT_BUILT reads like a pass.
-          //
-          // GIT_PREVIOUS_SUCCESSFUL_COMMIT is the correct base: a NOT_BUILT run does not advance it,
-          // so a commit missed this way stays inside the range until something actually builds it.
-          // It is unset on the first build of a job and can name a commit that no longer exists after
-          // a history rewrite, so both cases fall back to the single-tip form rather than guessing.
-          def prev = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
-          def verdict = null
-          if (prev) {
-            def rangeOk = sh(script: "git cat-file -e ${prev}^{commit} 2>/dev/null", returnStatus: true) == 0
-            if (rangeOk) {
-              withEnv(["RANGE_BASE=${prev}"]) {
-                verdict = sh(script: 'git log --format=%s "$RANGE_BASE"..HEAD | scripts/ci/should-skip-build.sh --subjects',
+    // Runs on the LIGHT agent (voteball-test): no buildkit, no trivy, no skopeo. See the two
+    // pod templates in ci/jenkins/jenkins.yaml and the `agent none` note at the top of this file.
+    stage('Test and validate') {
+      agent { label 'voteball-test' }
+      stages {
+      // G2 -- Jenkins has no native [skip ci]. Without this, the pipeline's own tag-bump commit
+      // retriggers it forever.
+      stage('Guard: is this our own commit?') {
+        steps {
+          script {
+            // This guard runs unconditionally and first: a changeset containing nothing but [skip ci]
+            // commits can never be built here, even manually with FORCE_BUILD.
+            //
+            // RANGE, not just the tip (2026-08-23, Task 4 review P1). Jenkins checks out the branch TIP
+            // at build start, not the commit that triggered the webhook. If CD pushes its promotion
+            // commit into the gap between a queued build being triggered and that build starting its
+            // checkout, the tip carries the marker, this guard skips, and the source commit that
+            // actually triggered the build is never built -- not here and not by any later build,
+            // because it sits BEHIND the tip and so falls outside every subsequent changeset. That is
+            // the real 2026-08-21 incident (see should-skip-build.sh), and NOT_BUILT reads like a pass.
+            //
+            // GIT_PREVIOUS_SUCCESSFUL_COMMIT is the correct base: a NOT_BUILT run does not advance it,
+            // so a commit missed this way stays inside the range until something actually builds it.
+            // It is unset on the first build of a job and can name a commit that no longer exists after
+            // a history rewrite, so both cases fall back to the single-tip form rather than guessing.
+            def prev = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+            def verdict = null
+            if (prev) {
+              def rangeOk = sh(script: "git cat-file -e ${prev}^{commit} 2>/dev/null", returnStatus: true) == 0
+              if (rangeOk) {
+                withEnv(["RANGE_BASE=${prev}"]) {
+                  verdict = sh(script: 'git log --format=%s "$RANGE_BASE"..HEAD | scripts/ci/should-skip-build.sh --subjects',
+                               returnStdout: true).trim()
+                }
+                echo "Guard: examined ${prev}..HEAD -> ${verdict}"
+              } else {
+                echo "Guard: GIT_PREVIOUS_SUCCESSFUL_COMMIT ${prev} is not in this repository -- falling back to the tip commit alone."
+              }
+            } else {
+              echo 'Guard: no GIT_PREVIOUS_SUCCESSFUL_COMMIT (first build of this job) -- examining the tip commit alone.'
+            }
+            if (verdict == null) {
+              def msg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+              withEnv(["COMMIT_MSG=${msg}"]) {
+                verdict = sh(script: 'scripts/ci/should-skip-build.sh "$COMMIT_MSG"',
                              returnStdout: true).trim()
               }
-              echo "Guard: examined ${prev}..HEAD -> ${verdict}"
-            } else {
-              echo "Guard: GIT_PREVIOUS_SUCCESSFUL_COMMIT ${prev} is not in this repository -- falling back to the tip commit alone."
             }
-          } else {
-            echo 'Guard: no GIT_PREVIOUS_SUCCESSFUL_COMMIT (first build of this job) -- examining the tip commit alone.'
-          }
-          if (verdict == null) {
-            def msg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-            withEnv(["COMMIT_MSG=${msg}"]) {
-              verdict = sh(script: 'scripts/ci/should-skip-build.sh "$COMMIT_MSG"',
-                           returnStdout: true).trim()
+            if (verdict == 'skip') {
+              // currentBuild.result is set before the error() below because Jenkins only ever
+              // worsens a build result, never improves it -- so NOT_BUILT survives even though the
+              // exception raised next is uncaught. That uncaught exception is what actually skips
+              // every later stage; nothing here catches it.
+              currentBuild.result = 'NOT_BUILT'
+              currentBuild.description = 'Skipped: every commit since the last successful build is a tag bump ([skip ci])'
+              error('SKIP_CI')
             }
           }
-          if (verdict == 'skip') {
-            // currentBuild.result is set before the error() below because Jenkins only ever
-            // worsens a build result, never improves it -- so NOT_BUILT survives even though the
-            // exception raised next is uncaught. That uncaught exception is what actually skips
-            // every later stage; nothing here catches it.
-            currentBuild.result = 'NOT_BUILT'
-            currentBuild.description = 'Skipped: every commit since the last successful build is a tag bump ([skip ci])'
-            error('SKIP_CI')
+        }
+      }
+
+      // Cheap repo-shape assertions, before anything is built. A repo that fails these must not
+      // produce an image at all, so this runs ahead of 'Already built?' -- a re-run of an
+      // already-built tag still has to pass validation.
+      stage('Validation') {
+        steps {
+          sh 'scripts/ci/validate-repo.sh'
+        }
+      }
+
+      // Renders charts/voteball and charts/observability and checks the observability config itself --
+      // Prometheus release labels, ServiceMonitor port names, metric-label collisions with
+      // prometheus-operator's reserved target labels, dashboard JSON shape, and (when promtool is on
+      // PATH) `promtool check rules` against every PrometheusRule group. Every one of those checks
+      // exists because the mistake it catches applied cleanly, `kubectl get` listed it, and nothing
+      // worked -- see the header comment in scripts/ci/validate-observability.sh for the live 2026-08-18
+      // incident (an `endpoint` label collision) that made that point directly.
+      //
+      // Runs offline against rendered chart output -- no cluster, no credentials, same contract as
+      // 'Validation' above -- and fails the build on a bad config rather than warning. Placed right
+      // after 'Validation' and before 'Script tests': both are cheap, no-network-to-the-app,
+      // repo-shape gates that should stop a build before anything is compiled or tested, and this one
+      // specifically needs `helm` on PATH the same way Manifest Validation in Jenkinsfile-cd does --
+      // see the container('observability') note in ci/jenkins/jenkins.yaml for why that container
+      // exists and what putting a normal `helm`+`python3` image cannot do alone (promtool).
+      stage('Observability Validation') {
+        steps {
+          container('observability') {
+            sh 'scripts/ci/validate-observability.sh'
           }
         }
       }
-    }
 
-    // Cheap repo-shape assertions, before anything is built. A repo that fails these must not
-    // produce an image at all, so this runs ahead of 'Already built?' -- a re-run of an
-    // already-built tag still has to pass validation.
-    stage('Validation') {
-      steps {
-        sh 'scripts/ci/validate-repo.sh'
-      }
-    }
-
-    // Renders charts/voteball and charts/observability and checks the observability config itself --
-    // Prometheus release labels, ServiceMonitor port names, metric-label collisions with
-    // prometheus-operator's reserved target labels, dashboard JSON shape, and (when promtool is on
-    // PATH) `promtool check rules` against every PrometheusRule group. Every one of those checks
-    // exists because the mistake it catches applied cleanly, `kubectl get` listed it, and nothing
-    // worked -- see the header comment in scripts/ci/validate-observability.sh for the live 2026-08-18
-    // incident (an `endpoint` label collision) that made that point directly.
-    //
-    // Runs offline against rendered chart output -- no cluster, no credentials, same contract as
-    // 'Validation' above -- and fails the build on a bad config rather than warning. Placed right
-    // after 'Validation' and before 'Script tests': both are cheap, no-network-to-the-app,
-    // repo-shape gates that should stop a build before anything is compiled or tested, and this one
-    // specifically needs `helm` on PATH the same way Manifest Validation in Jenkinsfile-cd does --
-    // see the container('observability') note in ci/jenkins/jenkins.yaml for why that container
-    // exists and what putting a normal `helm`+`python3` image cannot do alone (promtool).
-    stage('Observability Validation') {
-      steps {
-        container('observability') {
-          sh 'scripts/ci/validate-observability.sh'
+      // The tests that protect the pipeline itself. Until 2026-08-11 nothing here ran scripts/tests/
+      // at all -- CI ran pytest for services/{backend,worker} and stopped -- so the [skip ci] loop
+      // guard, the immutable-tag re-run check, the values.yaml drift check and the dirty-tree guard
+      // were covered only by tests somebody had to remember to run. Any of them could have been
+      // deleted and every build would have stayed green.
+      //
+      // Split across two containers because NO container in this pod has both python3 and git: the
+      // `python` container (python:3.12-slim) has python3 and no git, while the default jnlp container
+      // has git -- it performs the checkout -- and no python3. Build #7 established that the expensive
+      // way, running the whole suite in jnlp and losing four tests to "python3: command not found".
+      // Splitting keeps full coverage without adding tooling to an image, which would need a
+      // terraform apply. run-ci-suite.sh checks that every test is classified whichever group runs, so
+      // a new test cannot slip through the gap between the two.
+      //
+      // Placed before Lint and Tests because it is the cheapest gate in the pipeline (seconds, no
+      // network, no services) and because a broken guard should stop a build before anything is built.
+      stage('Script tests') {
+        steps {
+          sh 'scripts/tests/run-ci-suite.sh git'
+          container('python') {
+            sh 'scripts/tests/run-ci-suite.sh python'
+          }
         }
       }
-    }
 
-    // The tests that protect the pipeline itself. Until 2026-08-11 nothing here ran scripts/tests/
-    // at all -- CI ran pytest for services/{backend,worker} and stopped -- so the [skip ci] loop
-    // guard, the immutable-tag re-run check, the values.yaml drift check and the dirty-tree guard
-    // were covered only by tests somebody had to remember to run. Any of them could have been
-    // deleted and every build would have stayed green.
-    //
-    // Split across two containers because NO container in this pod has both python3 and git: the
-    // `python` container (python:3.12-slim) has python3 and no git, while the default jnlp container
-    // has git -- it performs the checkout -- and no python3. Build #7 established that the expensive
-    // way, running the whole suite in jnlp and losing four tests to "python3: command not found".
-    // Splitting keeps full coverage without adding tooling to an image, which would need a
-    // terraform apply. run-ci-suite.sh checks that every test is classified whichever group runs, so
-    // a new test cannot slip through the gap between the two.
-    //
-    // Placed before Lint and Tests because it is the cheapest gate in the pipeline (seconds, no
-    // network, no services) and because a broken guard should stop a build before anything is built.
-    stage('Script tests') {
-      steps {
-        sh 'scripts/tests/run-ci-suite.sh git'
-        container('python') {
-          sh 'scripts/tests/run-ci-suite.sh python'
+      stage('Lint / Static Analysis') {
+        steps {
+          container('python') {
+            // `ruff` (bare) is not on PATH here: this pod runs as uid 1000 with HOME=/tmp, so pip does
+            // a user install into $HOME/.local/bin, which nothing adds to PATH. The install succeeds
+            // and `ruff check` then fails with "ruff: not found", exit 127 -- a missing-tool error that
+            // reads like the pip install itself failed. `python -m ruff` sidesteps PATH entirely by
+            // asking the interpreter to run the installed module directly (confirmed ruff supports -m
+            // invocation: `python -m ruff --version` works).
+            sh '''
+              set -eu
+              pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location ruff==0.8.4
+              python -m ruff check services/backend services/worker
+            '''
+          }
+          container('hadolint') {
+            // DL3008 (unpinned apt version), DL3013 (unpinned pip version) and DL3018 (unpinned apk
+            // version) are all the same class of rule -- hadolint wants a package-manager command to
+            // pin an exact version, and this project pins dependencies a different way (requirements.txt
+            // for pip; nothing pins apt/apk packages, deliberately) that hadolint cannot see into. A
+            // pinned Alpine/Debian package version is not more reproducible here -- it is a build that
+            // breaks the moment that exact version leaves the distro index, which is an arbitrary
+            // future failure with a confusing message, not a real guarantee. (services/backup/Dockerfile
+            // pinned aws-cli=2.34.63-r0 for exactly one commit, 3f8ea6f, before this ignore replaced it
+            // -- see git history for why that pin was reverted.)
+            sh '''
+              set -eu
+              for svc in backend worker frontend backup; do
+                echo "--- hadolint services/$svc/Dockerfile ---"
+                hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 "services/$svc/Dockerfile"
+              done
+            '''
+          }
         }
       }
-    }
 
-    stage('Lint / Static Analysis') {
-      steps {
-        container('python') {
-          // `ruff` (bare) is not on PATH here: this pod runs as uid 1000 with HOME=/tmp, so pip does
-          // a user install into $HOME/.local/bin, which nothing adds to PATH. The install succeeds
-          // and `ruff check` then fails with "ruff: not found", exit 127 -- a missing-tool error that
-          // reads like the pip install itself failed. `python -m ruff` sidesteps PATH entirely by
-          // asking the interpreter to run the installed module directly (confirmed ruff supports -m
-          // invocation: `python -m ruff --version` works).
-          sh '''
-            set -eu
-            pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location ruff==0.8.4
-            python -m ruff check services/backend services/worker
-          '''
+      // The 153 tests in services/{backend,worker}/tests. They existed before this pipeline stage did
+      // and were never run by CI -- so a failing test blocked nothing. They now block everything.
+      //
+      // They need a REAL Postgres: both conftest.py files DROP TABLE ... CASCADE and call init_db().
+      // The `postgres` sidecar in the pod template provides it on localhost; it is ephemeral, holds no
+      // real data, and is reachable only from inside this pod's own network namespace, so the ci
+      // NetworkPolicies are untouched and no route to the real RDS instance exists or is needed.
+      stage('Tests') {
+        steps {
+          container('python') {
+            // Wait for the sidecar: containers in a pod start concurrently, and psycopg2 connecting
+            // before Postgres is listening fails with "could not connect", which reads like a
+            // configuration error rather than a race.
+            //
+            // This does NOT use pg_isready: that binary ships with postgres-client packages, not with
+            // the `python` image, so it would fail with "not found", exit 127 -- the same class of bug
+            // as the ruff one above, just one stage later. A plain TCP connect via the stdlib
+            // (connect_ex returns 0 on success, no extra package needed) is enough to confirm the
+            // sidecar has opened its listening socket, which is all this loop needs to know.
+            //
+            // The shared volume is mounted at /images, OUTSIDE the Jenkins workspace -- archiveArtifacts
+            // in the post block below can only read files under $WORKSPACE. The final copy below has no
+            // `|| true`: if the XML is missing, the tests did not run, and that must fail loudly rather
+            // than be swallowed.
+            sh '''
+              set -eu
+              for i in $(seq 1 30); do
+                python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)" && break
+                echo "waiting for postgres ($i/30)"
+                sleep 2
+              done
+              python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)" || { echo "postgres sidecar never became ready"; exit 1; }
+
+              pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location -r services/backend/requirements-dev.txt
+              (cd services/backend && python -m pytest tests -q --junitxml=/images/backend-tests.xml)
+
+              pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location -r services/worker/requirements-dev.txt
+              (cd services/worker && python -m pytest tests -q --junitxml=/images/worker-tests.xml)
+
+              cp /images/*-tests.xml "$WORKSPACE"/
+            '''
+          }
         }
-        container('hadolint') {
-          // DL3008 (unpinned apt version), DL3013 (unpinned pip version) and DL3018 (unpinned apk
-          // version) are all the same class of rule -- hadolint wants a package-manager command to
-          // pin an exact version, and this project pins dependencies a different way (requirements.txt
-          // for pip; nothing pins apt/apk packages, deliberately) that hadolint cannot see into. A
-          // pinned Alpine/Debian package version is not more reproducible here -- it is a build that
-          // breaks the moment that exact version leaves the distro index, which is an arbitrary
-          // future failure with a confusing message, not a real guarantee. (services/backup/Dockerfile
-          // pinned aws-cli=2.34.63-r0 for exactly one commit, 3f8ea6f, before this ignore replaced it
-          // -- see git history for why that pin was reverted.)
-          sh '''
-            set -eu
-            for svc in backend worker frontend backup; do
-              echo "--- hadolint services/$svc/Dockerfile ---"
-              hadolint --ignore DL3008 --ignore DL3013 --ignore DL3018 "services/$svc/Dockerfile"
-            done
-          '''
+        post {
+          always {
+            // junit AND archiveArtifacts, both (2026-08-23, Task 4 review finding P2 "publish tests as
+            // Jenkins test results"). The brief asks for results presented as TEST RESULTS in Jenkins
+            // -- counts, trends, individual failing cases, a link straight to the failure -- which
+            // archiving an XML file does not give you: it gives you a file to download and read.
+            //
+            // THIS PREVIOUSLY FAILED, and the reason it is safe now is a specific change, not a change
+            // of mind. `junit` died with NoSuchMethodError on live CI build 11, after all 188 tests had
+            // already passed: the step did not exist, because the plugin was not in the controller
+            // image. That comment then said not to swap back without editing ci/jenkins/plugins.txt AND
+            // rebuilding the controller image AND running terraform apply. All three are done in this
+            // pass -- `junit` is declared in plugins.txt, pinned in plugins.lock.txt at
+            // 1424.vc64a_edde7777, and the image is rebuilt by deploy.sh step 5.
+            // scripts/tests/test-jenkins-plugin-lock.sh now fails the build if that declaration is ever
+            // dropped, so the plugin cannot silently disappear again.
+            //
+            // allowEmptyResults: false is the fail-loudly guarantee: missing XML means the tests did
+            // not run, which must fail the stage rather than pass quietly.
+            //
+            // archiveArtifacts is KEPT alongside it, deliberately. The two do different jobs -- junit
+            // parses the results into Jenkins' own model (which is what the brief asks for), while the
+            // archived file is what gets attached to evidence captures and read after the build record
+            // rotates out at numToKeep(20). Dropping either loses something real.
+            //
+            // Neither step is the test GATE. The gate is pytest's own exit code under `set -eu` in the
+            // stage above: a failing test fails the stage, and the pipeline, regardless of how or
+            // whether results are published here.
+            junit testResults: '*-tests.xml', allowEmptyResults: false
+            archiveArtifacts artifacts: '*-tests.xml', allowEmptyArchive: false
+          }
         }
       }
-    }
 
-    // The 153 tests in services/{backend,worker}/tests. They existed before this pipeline stage did
-    // and were never run by CI -- so a failing test blocked nothing. They now block everything.
-    //
-    // They need a REAL Postgres: both conftest.py files DROP TABLE ... CASCADE and call init_db().
-    // The `postgres` sidecar in the pod template provides it on localhost; it is ephemeral, holds no
-    // real data, and is reachable only from inside this pod's own network namespace, so the ci
-    // NetworkPolicies are untouched and no route to the real RDS instance exists or is needed.
-    stage('Tests') {
-      steps {
-        container('python') {
-          // Wait for the sidecar: containers in a pod start concurrently, and psycopg2 connecting
-          // before Postgres is listening fails with "could not connect", which reads like a
-          // configuration error rather than a race.
-          //
-          // This does NOT use pg_isready: that binary ships with postgres-client packages, not with
-          // the `python` image, so it would fail with "not found", exit 127 -- the same class of bug
-          // as the ruff one above, just one stage later. A plain TCP connect via the stdlib
-          // (connect_ex returns 0 on success, no extra package needed) is enough to confirm the
-          // sidecar has opened its listening socket, which is all this loop needs to know.
-          //
-          // The shared volume is mounted at /images, OUTSIDE the Jenkins workspace -- archiveArtifacts
-          // in the post block below can only read files under $WORKSPACE. The final copy below has no
-          // `|| true`: if the XML is missing, the tests did not run, and that must fail loudly rather
-          // than be swallowed.
-          sh '''
-            set -eu
-            for i in $(seq 1 30); do
-              python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)" && break
-              echo "waiting for postgres ($i/30)"
-              sleep 2
-            done
-            python3 -c "import socket,sys; s=socket.socket(); s.settimeout(2); sys.exit(0 if s.connect_ex(('localhost',5432))==0 else 1)" || { echo "postgres sidecar never became ready"; exit 1; }
+      stage('Resolve tag and account') {
+        steps {
+          script {
+            // Fail loudly and early if the global properties are missing, rather than producing
+            // image references like "null.dkr.ecr.null.amazonaws.com" that fail confusingly later.
+            if (!env.AWS_REGION || !env.CLUSTER_NAME) {
+              error('AWS_REGION and CLUSTER_NAME must be set as Jenkins global environment variables ' +
+                    '(Manage Jenkins > System > Global properties). See docs/cicd.md.')
+            }
+            env.TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+            // Full SHA, captured HERE rather than in 'Publish Metadata' below: this stage runs in the
+            // default jnlp container, which has git. amazon/aws-cli:2.22.0 (Publish Metadata's
+            // container) does not ship git at all -- confirmed with
+            // `docker run --rm --entrypoint sh amazon/aws-cli:2.22.0 -c "command -v git"`, which finds
+            // nothing. CI build 33 shipped image-metadata.json with an empty git_commit because a
+            // failing `git rev-parse HEAD` was buried inside $(...) used as one printf ARGUMENT there --
+            // set -eu does not abort on that, since the discarded exit status belongs to the
+            // substitution, not to printf itself. Publish Metadata now reads GIT_COMMIT_SHA from here
+            // and asserts it is non-empty before writing the file, instead of shelling out to a
+            // container that cannot do it.
+            env.GIT_COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+            // container('awscli') is REQUIRED, not decoration. Steps outside a container() block run
+            // in the `jnlp` container, which has git but no AWS CLI -- on the retired EC2 host `aws`
+            // was simply on PATH, so this line needed no wrapper there. Without it the build dies with
+            // "aws: not found" and exit code 127, which reads like a broken image rather than a step
+            // running in the wrong container. Same reason for 'Already built?' below.
+            container('awscli') {
+              env.AWS_ACCOUNT_ID = sh(script: 'aws sts get-caller-identity --query Account --output text',
+                                      returnStdout: true).trim()
+            }
+            env.ECR_REGISTRY = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com"
+            env.ECR_REPOS = "${env.CLUSTER_NAME}-backend ${env.CLUSTER_NAME}-worker " +
+                            "${env.CLUSTER_NAME}-nginx ${env.CLUSTER_NAME}-backup"
 
-            pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location -r services/backend/requirements-dev.txt
-            (cd services/backend && python -m pytest tests -q --junitxml=/images/backend-tests.xml)
+            // G3b -- "no changelog at all" is NOT the same as "nothing under services/ changed", and
+            // `changeset` cannot tell them apart: it returns false for both. Jenkins has no changelog
+            // on its FIRST build of this job, because there is no previous build to diff against.
+            // FIXED 2026-08-04: this used to say JENKINS_HOME is an emptyDir reclaimed roughly daily
+            // with the rest of the 100%-Spot node group -- that stopped being true when JENKINS_HOME
+            // moved to an EFS-backed PVC (terraform/addon-jenkins.tf), which now survives ordinary
+            // pod/node reclaims along with build history. The guard is still needed for a narrower
+            // reason: a full `destroy.sh` + `deploy.sh` rebuild provisions a brand-new EFS filesystem
+            // (terraform/modules/storage/main.tf), so the controller's build history -- and with it every job's
+            // changelog -- genuinely starts empty again after one of those, the same way it did after
+            // every daily reclaim before EFS. Without this flag the first webhook build after such a
+            // rebuild skips build, scan, push and tag bump, and reports SUCCESS -- observed 2026-08-03,
+            // build 2, which shipped nothing while master sat 7 commits ahead of production.
+            //
+            // Empty changeSets means "Jenkins cannot tell what changed", so build. A build with real
+            // commits that merely miss services/** still has a NON-empty changeSets and is still
+            // correctly skipped. Redundancy is bounded by G1 above: if the images for this SHA are
+            // already in ECR, ALREADY_BUILT short-circuits every stage anyway. This is the same
+            // fail-safe direction scripts/ci/images-exist.sh takes, and for the same reason -- a
+            // redundant build is harmless, a green build that shipped nothing is not.
+            env.NO_CHANGELOG = currentBuild.changeSets.isEmpty().toString()
+            if (env.NO_CHANGELOG == 'true') {
+              echo 'No changelog for this build (first build since the controller was recreated) -- ' +
+                   'treating it as "cannot determine what changed" and building rather than skipping.'
+            }
+            // G3c -- `changeset` diffs against the PREVIOUS build, not the previous SUCCESSFUL one, so a
+            // build that FAILS consumes its changeset: whatever it was carrying falls behind the next
+            // build's range base and no later `changeset` can see it again. Green pipeline, nothing
+            // shipped. Exactly the trap G2's Guard was hardened against above (and for the same reason
+            // it cites: a commit "sits BEHIND the tip and so falls outside every subsequent
+            // changeset") -- the Guard got GIT_PREVIOUS_SUCCESSFUL_COMMIT, these conditions did not,
+            // so the same trap fired a second time on 2026-09-08. The decision lives in a script so it
+            // can be tested without triggering a build; scripts/ci/changed-paths.sh carries the
+            // fail-safe (cannot tell -> build).
+            withEnv(["PREV_SUCCESS=${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: ''}"]) {
+              env.SERVICES_CHANGED = sh(script: 'scripts/ci/changed-paths.sh "$PREV_SUCCESS" services/',
+                                        returnStdout: true).trim()
+              env.CHARTS_CHANGED   = sh(script: 'scripts/ci/changed-paths.sh "$PREV_SUCCESS" charts/',
+                                        returnStdout: true).trim()
+            }
+            echo "Changed since the last SUCCESSFUL build (${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'none'}): " +
+                 "services=${env.SERVICES_CHANGED} charts=${env.CHARTS_CHANGED}"
 
-            pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location -r services/worker/requirements-dev.txt
-            (cd services/worker && python -m pytest tests -q --junitxml=/images/worker-tests.xml)
+            echo "Building ${env.TAG} into ${env.ECR_REGISTRY}"
 
-            cp /images/*-tests.xml "$WORKSPACE"/
-          '''
+            // The brief requires branch, commit SHA and build number to be visible on the build.
+            currentBuild.description = "${env.BRANCH_NAME ?: 'master'} @ ${env.TAG} (build #${env.BUILD_NUMBER})"
+          }
         }
+      }
+
+      // G1 -- ECR tags are immutable, so re-pushing an existing SHA is rejected. If everything is
+      // already there, skip straight to the tag bump instead of failing.
+      stage('Already built?') {
+        steps {
+          script {
+            // container('awscli'): images-exist.sh shells out to `aws ecr describe-images`. The script
+            // itself is untouched -- only where it runs had to change. See 'Resolve tag and account'.
+            container('awscli') {
+              env.ALREADY_BUILT = sh(script: 'scripts/ci/images-exist.sh', returnStdout: true).trim()
+            }
+            if (env.ALREADY_BUILT == 'present') {
+              echo "All images for ${env.TAG} are already in ECR -- skipping build, scan and push."
+            }
+          }
+        }
+      }
       }
       post {
-        always {
-          // junit AND archiveArtifacts, both (2026-08-23, Task 4 review finding P2 "publish tests as
-          // Jenkins test results"). The brief asks for results presented as TEST RESULTS in Jenkins
-          // -- counts, trends, individual failing cases, a link straight to the failure -- which
-          // archiving an XML file does not give you: it gives you a file to download and read.
-          //
-          // THIS PREVIOUSLY FAILED, and the reason it is safe now is a specific change, not a change
-          // of mind. `junit` died with NoSuchMethodError on live CI build 11, after all 188 tests had
-          // already passed: the step did not exist, because the plugin was not in the controller
-          // image. That comment then said not to swap back without editing ci/jenkins/plugins.txt AND
-          // rebuilding the controller image AND running terraform apply. All three are done in this
-          // pass -- `junit` is declared in plugins.txt, pinned in plugins.lock.txt at
-          // 1424.vc64a_edde7777, and the image is rebuilt by deploy.sh step 5.
-          // scripts/tests/test-jenkins-plugin-lock.sh now fails the build if that declaration is ever
-          // dropped, so the plugin cannot silently disappear again.
-          //
-          // allowEmptyResults: false is the fail-loudly guarantee: missing XML means the tests did
-          // not run, which must fail the stage rather than pass quietly.
-          //
-          // archiveArtifacts is KEPT alongside it, deliberately. The two do different jobs -- junit
-          // parses the results into Jenkins' own model (which is what the brief asks for), while the
-          // archived file is what gets attached to evidence captures and read after the build record
-          // rotates out at numToKeep(20). Dropping either loses something real.
-          //
-          // Neither step is the test GATE. The gate is pytest's own exit code under `set -eu` in the
-          // stage above: a failing test fails the stage, and the pipeline, regardless of how or
-          // whether results are published here.
-          junit testResults: '*-tests.xml', allowEmptyResults: false
-          archiveArtifacts artifacts: '*-tests.xml', allowEmptyArchive: false
-        }
+        // The pod is destroyed anyway; an explicit clean is what makes the guarantee independent
+        // of that. deleteDir(), not cleanWs() -- ws-cleanup is not in ci/jenkins/plugins.txt and
+        // adding it means rebuilding the controller image plus a terraform apply. deleteDir() is a
+        // Jenkins core step. Do not swap it back without doing both.
+        always { deleteDir() }
       }
     }
 
-    stage('Resolve tag and account') {
-      steps {
-        script {
-          // Fail loudly and early if the global properties are missing, rather than producing
-          // image references like "null.dkr.ecr.null.amazonaws.com" that fail confusingly later.
-          if (!env.AWS_REGION || !env.CLUSTER_NAME) {
-            error('AWS_REGION and CLUSTER_NAME must be set as Jenkins global environment variables ' +
-                  '(Manage Jenkins > System > Global properties). See docs/cicd.md.')
-          }
-          env.TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-          // Full SHA, captured HERE rather than in 'Publish Metadata' below: this stage runs in the
-          // default jnlp container, which has git. amazon/aws-cli:2.22.0 (Publish Metadata's
-          // container) does not ship git at all -- confirmed with
-          // `docker run --rm --entrypoint sh amazon/aws-cli:2.22.0 -c "command -v git"`, which finds
-          // nothing. CI build 33 shipped image-metadata.json with an empty git_commit because a
-          // failing `git rev-parse HEAD` was buried inside $(...) used as one printf ARGUMENT there --
-          // set -eu does not abort on that, since the discarded exit status belongs to the
-          // substitution, not to printf itself. Publish Metadata now reads GIT_COMMIT_SHA from here
-          // and asserts it is non-empty before writing the file, instead of shelling out to a
-          // container that cannot do it.
-          env.GIT_COMMIT_SHA = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
-          // container('awscli') is REQUIRED, not decoration. Steps outside a container() block run
-          // in the `jnlp` container, which has git but no AWS CLI -- on the retired EC2 host `aws`
-          // was simply on PATH, so this line needed no wrapper there. Without it the build dies with
-          // "aws: not found" and exit code 127, which reads like a broken image rather than a step
-          // running in the wrong container. Same reason for 'Already built?' below.
-          container('awscli') {
-            env.AWS_ACCOUNT_ID = sh(script: 'aws sts get-caller-identity --query Account --output text',
-                                    returnStdout: true).trim()
-          }
-          env.ECR_REGISTRY = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com"
-          env.ECR_REPOS = "${env.CLUSTER_NAME}-backend ${env.CLUSTER_NAME}-worker " +
-                          "${env.CLUSTER_NAME}-nginx ${env.CLUSTER_NAME}-backup"
-
-          // G3b -- "no changelog at all" is NOT the same as "nothing under services/ changed", and
-          // `changeset` cannot tell them apart: it returns false for both. Jenkins has no changelog
-          // on its FIRST build of this job, because there is no previous build to diff against.
-          // FIXED 2026-08-04: this used to say JENKINS_HOME is an emptyDir reclaimed roughly daily
-          // with the rest of the 100%-Spot node group -- that stopped being true when JENKINS_HOME
-          // moved to an EFS-backed PVC (terraform/addon-jenkins.tf), which now survives ordinary
-          // pod/node reclaims along with build history. The guard is still needed for a narrower
-          // reason: a full `destroy.sh` + `deploy.sh` rebuild provisions a brand-new EFS filesystem
-          // (terraform/modules/storage/main.tf), so the controller's build history -- and with it every job's
-          // changelog -- genuinely starts empty again after one of those, the same way it did after
-          // every daily reclaim before EFS. Without this flag the first webhook build after such a
-          // rebuild skips build, scan, push and tag bump, and reports SUCCESS -- observed 2026-08-03,
-          // build 2, which shipped nothing while master sat 7 commits ahead of production.
-          //
-          // Empty changeSets means "Jenkins cannot tell what changed", so build. A build with real
-          // commits that merely miss services/** still has a NON-empty changeSets and is still
-          // correctly skipped. Redundancy is bounded by G1 above: if the images for this SHA are
-          // already in ECR, ALREADY_BUILT short-circuits every stage anyway. This is the same
-          // fail-safe direction scripts/ci/images-exist.sh takes, and for the same reason -- a
-          // redundant build is harmless, a green build that shipped nothing is not.
-          env.NO_CHANGELOG = currentBuild.changeSets.isEmpty().toString()
-          if (env.NO_CHANGELOG == 'true') {
-            echo 'No changelog for this build (first build since the controller was recreated) -- ' +
-                 'treating it as "cannot determine what changed" and building rather than skipping.'
-          }
-          // G3c -- `changeset` diffs against the PREVIOUS build, not the previous SUCCESSFUL one, so a
-          // build that FAILS consumes its changeset: whatever it was carrying falls behind the next
-          // build's range base and no later `changeset` can see it again. Green pipeline, nothing
-          // shipped. Exactly the trap G2's Guard was hardened against above (and for the same reason
-          // it cites: a commit "sits BEHIND the tip and so falls outside every subsequent
-          // changeset") -- the Guard got GIT_PREVIOUS_SUCCESSFUL_COMMIT, these conditions did not,
-          // so the same trap fired a second time on 2026-09-08. The decision lives in a script so it
-          // can be tested without triggering a build; scripts/ci/changed-paths.sh carries the
-          // fail-safe (cannot tell -> build).
-          withEnv(["PREV_SUCCESS=${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: ''}"]) {
-            env.SERVICES_CHANGED = sh(script: 'scripts/ci/changed-paths.sh "$PREV_SUCCESS" services/',
-                                      returnStdout: true).trim()
-            env.CHARTS_CHANGED   = sh(script: 'scripts/ci/changed-paths.sh "$PREV_SUCCESS" charts/',
-                                      returnStdout: true).trim()
-          }
-          echo "Changed since the last SUCCESSFUL build (${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'none'}): " +
-               "services=${env.SERVICES_CHANGED} charts=${env.CHARTS_CHANGED}"
-
-          echo "Building ${env.TAG} into ${env.ECR_REGISTRY}"
-
-          // The brief requires branch, commit SHA and build number to be visible on the build.
-          currentBuild.description = "${env.BRANCH_NAME ?: 'master'} @ ${env.TAG} (build #${env.BUILD_NUMBER})"
-        }
-      }
-    }
-
-    // G1 -- ECR tags are immutable, so re-pushing an existing SHA is rejected. If everything is
-    // already there, skip straight to the tag bump instead of failing.
-    stage('Already built?') {
-      steps {
-        script {
-          // container('awscli'): images-exist.sh shells out to `aws ecr describe-images`. The script
-          // itself is untouched -- only where it runs had to change. See 'Resolve tag and account'.
-          container('awscli') {
-            env.ALREADY_BUILT = sh(script: 'scripts/ci/images-exist.sh', returnStdout: true).trim()
-          }
-          if (env.ALREADY_BUILT == 'present') {
-            echo "All images for ${env.TAG} are already in ECR -- skipping build, scan and push."
-          }
-        }
-      }
-    }
-
-    stage('Build images') {
-      when { allOf {
+    // The ONLY stages that need the heavy agent, and the only ones that allocate it. The `when`
+    // here is the union of the three children's -- kept on the children too, so each one still
+    // states its own condition where it is read. Hoisting it is what stops a docs-only push
+    // starting buildkit/trivy/skopeo at all: Kubernetes pulls and starts EVERY container in a
+    // pod before any stage runs, so a per-stage `when` skips the work and none of the setup.
+    stage('Build, scan and push') {
+      agent { label 'voteball-build' }
+      // `beforeAgent true` IS THE WHOLE POINT OF THE SPLIT, not a tuning flag. Declarative
+      // allocates a stage's agent BEFORE evaluating its `when` unless this is set -- so without it
+      // the heavy pod is provisioned, all nine containers start, the repo is cloned, and only THEN
+      // the stage skips. Measured on build #4 (2026-09-16, the first build after the split shipped
+      // without it): 16:59:20 -> 17:01:47, 2m27s spent to skip, and the build came out SLOWER than
+      // the single-pod version it replaced. The log says "skipped due to when conditional" either
+      // way, which is why this is invisible unless you read the timestamps.
+      when { beforeAgent true; allOf {
         expression { env.ALREADY_BUILT != 'present' }
         anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
                 expression { env.NO_CHANGELOG == 'true' } }   // G3, G3c
       } }
-      steps {
-        // BuildKit needs ECR credentials of its own: --import-cache/--export-cache talk to the
-        // registry directly, and buildctl reads $DOCKER_CONFIG/config.json rather than inheriting
-        // anything from the agent. Without this the build runs, resolves the Dockerfile, and only
-        // fails when it reaches the registry -- "401 Unauthorized" against the buildcache repo,
-        // minutes in, looking like an IAM problem rather than a missing file.
-        //
-        // The AWS CLI lives in its own container, so the token is written to the shared /images
-        // volume for the buildkit container to pick up. Removed in the post block.
-        //
-        // LEAK, FIXED 2026-08-04: this used to build the docker-auth string as
-        // "$(printf 'AWS:%s' "$(aws ecr get-login-password ...)" | base64 -w0)" -- a $(...) used
-        // as a printf ARGUMENT. Jenkins' sh step traces every command it runs, and tracing a
-        // command logs it AFTER argument expansion, so both the raw token (as the inner printf's
-        // argument) and its base64 form (as the outer printf's argument) were written to the
-        // console log in full. That live token ended up committed to this repo as CI evidence and
-        // had to be redacted (see git history, commit 2c3cbcf). The fix below never lets the
-        // token become a command-line ARGUMENT anywhere: every step that touches it either writes
-        // straight to a file (`>`) or reads one via `cat`/a pipe, and a traced `cat <path>` or
-        // `base64 -w0` logs only the command name and the filename, never the file's contents.
-        //
-        // NEWLINE, FIXED 2026-08-04: the leak fix above swapped $(...) for cat, which stopped the
-        // leak but dropped $(...)'s side effect of trimming trailing newlines. aws ecr
-        // get-login-password's output ends in a newline, and `>`/`cat` both preserve it, so the
-        // base64 "auth" value below silently encoded "AWS:<token>\n" instead of "AWS:<token>" --
-        // buildctl then got a 401 from ECR at the END of the build, reading like an IAM problem
-        // rather than a one-byte formatting bug. Two constraints pull opposite ways here, and
-        // fixing one tends to re-break the other -- keep both in mind together: (1) the token must
-        // never reach an ARGUMENT position, per the LEAK note above (commit 2c3cbcf), and (2) that
-        // trailing newline must still be stripped, or the base64 auth is corrupt. `tr -d` on a file
-        // redirect satisfies both: the value never leaves file/pipe form, and the newline is gone.
-        container('awscli') {
-          sh '''
-            set -eu
-            umask 077
-            mkdir -p /images/dockercfg
-            aws ecr get-login-password --region "$AWS_REGION" > /images/dockercfg/password
-            { printf 'AWS:'; tr -d '\\n' < /images/dockercfg/password; } | base64 -w0 > /images/dockercfg/auth
-            {
-              printf '{"auths":{"%s":{"auth":"' "$ECR_REGISTRY"
-              cat /images/dockercfg/auth
-              printf '"}}}'
-            } > /images/dockercfg/config.json
-            rm -f /images/dockercfg/password /images/dockercfg/auth
-          '''
-        }
-        container('buildkit') {
-          // NOTE: --export-cache pushes unscanned layer-cache blobs to the *-buildcache repo below,
-          // ahead of the Trivy scan. That is fine -- buildcache is not a repo the app ever deploys
-          // from -- but it means "nothing reaches ECR before the scan passes" is not literally true
-          // of bytes. What IS still true: no deployable, tagged image reaches ECR pre-scan; see
-          // the 'Push to ECR' stage and design doc section 5.
+      stages {
+      stage('Build images') {
+        when { allOf {
+          expression { env.ALREADY_BUILT != 'present' }
+          anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
+                  expression { env.NO_CHANGELOG == 'true' } }   // G3, G3c
+        } }
+        steps {
+          // BuildKit needs ECR credentials of its own: --import-cache/--export-cache talk to the
+          // registry directly, and buildctl reads $DOCKER_CONFIG/config.json rather than inheriting
+          // anything from the agent. Without this the build runs, resolves the Dockerfile, and only
+          // fails when it reaches the registry -- "401 Unauthorized" against the buildcache repo,
+          // minutes in, looking like an IAM problem rather than a missing file.
           //
-          // BUILDKIT_HOST, not buildctl-daemonless.sh. daemonless.sh ignores any existing daemon and
-          // spawns its OWN buildkitd under a fresh temp root, taking flags only from
-          // $BUILDKITD_FLAGS -- which is unset here. That silently drops
-          // --oci-worker-no-process-sandbox, the flag the buildkit sidecar in ci/jenkins/jenkins.yaml
-          // was started with to run rootless. Pointing plain `buildctl` at the sidecar socket instead
-          // means the daemon that actually builds is the one that was configured for it.
+          // The AWS CLI lives in its own container, so the token is written to the shared /images
+          // volume for the buildkit container to pick up. Removed in the post block.
           //
-          // DOCKER_CONFIG below was written by the awscli container above; buildctl reads
-          // config.json from there.
+          // LEAK, FIXED 2026-08-04: this used to build the docker-auth string as
+          // "$(printf 'AWS:%s' "$(aws ecr get-login-password ...)" | base64 -w0)" -- a $(...) used
+          // as a printf ARGUMENT. Jenkins' sh step traces every command it runs, and tracing a
+          // command logs it AFTER argument expansion, so both the raw token (as the inner printf's
+          // argument) and its base64 form (as the outer printf's argument) were written to the
+          // console log in full. That live token ended up committed to this repo as CI evidence and
+          // had to be redacted (see git history, commit 2c3cbcf). The fix below never lets the
+          // token become a command-line ARGUMENT anywhere: every step that touches it either writes
+          // straight to a file (`>`) or reads one via `cat`/a pipe, and a traced `cat <path>` or
+          // `base64 -w0` logs only the command name and the filename, never the file's contents.
           //
-          // type=docker, NOT type=oci, on --output below. Both write a tar, but `type=oci` writes an
-          // OCI ARCHIVE (index.json + blobs/), and Trivy's --input reads a docker-archive or an OCI
-          // DIRECTORY -- not an OCI archive. With type=oci the whole build succeeds and Trivy then
-          // fails with "manifest.json not found in tar", which reads like a corrupt image. skopeo
-          // reads docker-archive: just as happily, so nothing downstream loses out.
-          //
-          // image-manifest=true,oci-mediatypes=true on the --export-cache below is REQUIRED for ECR.
-          // BuildKit's default cache manifest is an OCI image INDEX, which ECR rejects with a bare
-          // "400 Bad Request" on the manifest PUT -- after the whole image has already been built and
-          // every layer uploaded, so it reads like a transient registry fault rather than an
-          // unsupported media type. These two options make it export a plain image manifest, which
-          // ECR accepts.
-          sh '''
-            set -eu
-            export BUILDKIT_HOST=unix:///run/user/1000/buildkit/buildkitd.sock
-            export DOCKER_CONFIG=/images/dockercfg
-            CACHE="$ECR_REGISTRY/$CLUSTER_NAME-buildcache"
-            for svc in backend worker nginx backup; do
-              case "$svc" in
-                nginx) ctx=services/frontend ;;
-                *)     ctx=services/$svc ;;
-              esac
-              buildctl build \
-                --frontend dockerfile.v0 \
-                --local context="$ctx" --local dockerfile="$ctx" \
-                --output type=docker,dest=/images/$svc.tar,name="$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG" \
-                --import-cache type=registry,ref="$CACHE:$svc" \
-                --export-cache type=registry,ref="$CACHE:$svc",mode=max,image-manifest=true,oci-mediatypes=true
-            done
-          '''
-        }
-      }
-    }
-
-    stage('Trivy scan') {
-      when { allOf {
-        expression { env.ALREADY_BUILT != 'present' }
-        anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
-                expression { env.NO_CHANGELOG == 'true' } }
-      } }
-      steps {
-        container('trivy') {
-          // ALL FOUR IMAGES BLOCK, including backup (2026-08-23; Task 3 review T3-5, Task 4 review
-          // P2). The backup image was report-only, justified as "third-party base CVEs outside this
-          // project's control". That was true of where the findings came FROM and false about
-          // whether they had to be there: measuring them showed all 22 HIGH/CRITICAL findings lived
-          // in ONE binary, /usr/local/bin/gosu, a Go helper postgres:17-alpine ships so its own
-          // entrypoint can drop from root -- and this image overrides the entrypoint and runs as
-          // uid 1000, so it never used gosu at all. services/backup/Dockerfile now deletes it, the
-          // image scans clean (0 findings, and Trivy reports no language-specific files left), and
-          // the exemption has nothing to protect.
-          //
-          // Do not reintroduce a report-only image. If a future base drags in another unused binary,
-          // remove the binary -- an exemption on a deployable artifact is a permanent hole that
-          // outlives whoever accepted it.
-          sh '''
-            set -eu
-            DB="$ECR_REGISTRY/$CLUSTER_NAME-trivy-db"
-            export TRIVY_DISABLE_VEX_NOTICE=true
-            for svc in backend worker nginx backup; do
-              echo "--- trivy $CLUSTER_NAME-$svc (blocking) ---"
-              trivy image --db-repository "$DB" --input /images/$svc.tar \
-                --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
-            done
-          '''
-        }
-      }
-    }
-
-    stage('Push to ECR') {
-      when { allOf {
-        expression { env.ALREADY_BUILT != 'present' }
-        anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
-                expression { env.NO_CHANGELOG == 'true' } }
-      } }
-      steps {
-        // Two containers: quay.io/skopeo/stable carries no AWS CLI, so the ECR login password is
-        // obtained in `awscli` and handed over through the shared /images volume.
-        //
-        // Checked against the same 2026-08-04 leak class as 'Build images' above and confirmed
-        // safe: the password is never captured via $(...), never passed as a command ARGUMENT
-        // anywhere below, and login reads it with --password-stdin, not --dest-creds. A trace of
-        // this line logs only the command and the destination filename, never the token itself.
-        container('awscli') {
-          sh '''
-            set -eu
-            # umask BEFORE the redirect -- the file must never exist world-readable, even briefly.
-            umask 077
-            aws ecr get-login-password --region "$AWS_REGION" > /images/ecr-password
-          '''
-        }
-        container('skopeo') {
-          // skopeo copies the EXACT file Trivy scanned. Nothing is rebuilt between scan and push,
-          // so the scanned artifact and the pushed artifact are provably the same bytes -- a
-          // stronger guarantee than the docker build/scan/push flow this replaces.
-          //
-          // The trap below is a trap, NOT a cleanup line at the bottom of the block. Under `set -eu`
-          // a failed copy exits immediately and never reaches a trailing rm, leaving a live 12-hour
-          // registry credential in a volume four containers share -- on exactly the failure path
-          // where it matters most.
-          //
-          // skopeo login below uses --authfile rather than --dest-creds: the latter puts the password
-          // in skopeo argv, readable via ps inside this container. Same pattern as
-          // scripts/mirror-trivy-db.sh.
-          sh '''
-            set -eu
-            trap 'rm -f /images/ecr-password /images/auth.json' EXIT
-
-            skopeo login --username AWS --password-stdin \
-              --authfile /images/auth.json "$ECR_REGISTRY" < /images/ecr-password
-
-            for svc in backend worker nginx backup; do
-              skopeo copy --dest-authfile /images/auth.json \
-                docker-archive:/images/$svc.tar \
-                docker://"$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG"
-            done
-          '''
-        }
-      }
-    }
-
-    // Traceability. The brief requires that a CD build can identify the CI build, the git commit,
-    // the image and the digest that produced it. The digest is the part that matters: a tag is a
-    // pointer and could in principle be moved, a digest is the content.
-    stage('Publish Metadata') {
-      // Same guard as 'Trigger CD' below, for the same reason: with no images in ECR for this SHA
-      // the digest lookups return None and the metadata file would record nothing.
-      when { anyOf {
-        expression { env.ALREADY_BUILT == 'present' }
-        expression { env.SERVICES_CHANGED == 'true' }
-        expression { params.FORCE_BUILD }
-        expression { env.NO_CHANGELOG == 'true' }
-      } }
-      steps {
-        container('awscli') {
-          // ANSI-C quoting ($'...') on the sep= assignment below is REQUIRED, not decoration. A plain
-          // '...' string leaves \n as the two literal characters backslash+n, and printf only expands
-          // backslash escapes that appear in ITS OWN format-string argument -- never in a value
-          // substituted via %s, which is how $sep is used. Without $'...' this separator prints as a
-          // literal backslash-n between JSON entries instead of a real newline, and the emitted
-          // image-metadata.json is invalid JSON -- a failure invisible just by reading the source,
-          // since the string still looks like a comma and a newline.
-          //
-          // The backend digest is captured below at the moment it is computed, into its own file --
-          // NOT re-parsed back out of the JSON afterwards. Grepping the JSON apart is what broke this
-          // the first time: an unterminated quote failed the stage outright, and even fixed, a
-          // `grep -A1` on the backend line also captures the line of the next service, so the second
-          // grep would return two sha256 values that .trim() silently concatenates into one bogus
-          // digest.
-          //
-          // git_commit comes from $GIT_COMMIT_SHA (set in 'Resolve tag and account'), NOT from a
-          // `git rev-parse HEAD` run in this container. amazon/aws-cli ships no git binary at all, and
-          // CI build 33 shipped image-metadata.json with an empty git_commit for exactly that reason:
-          // the failing git call was buried inside $(...) used as one argument to printf, so its
-          // non-zero exit was discarded and never seen by set -eu. The assertion below makes an empty
-          // GIT_COMMIT_SHA fail this stage instead of silently writing "".
-          sh '''
-            set -eu
-            : "${GIT_COMMIT_SHA:?GIT_COMMIT_SHA is empty. amazon/aws-cli has no git; the commit must be captured earlier, in Resolve tag and account.}"
-            {
-              printf '{\\n'
-              printf '  "image_tag": "%s",\\n' "$TAG"
-              printf '  "git_commit": "%s",\\n' "$GIT_COMMIT_SHA"
-              printf '  "ci_build": "%s",\\n' "$BUILD_NUMBER"
-              printf '  "built_at": "%s",\\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              printf '  "images": {\\n'
-              sep=""
+          // NEWLINE, FIXED 2026-08-04: the leak fix above swapped $(...) for cat, which stopped the
+          // leak but dropped $(...)'s side effect of trimming trailing newlines. aws ecr
+          // get-login-password's output ends in a newline, and `>`/`cat` both preserve it, so the
+          // base64 "auth" value below silently encoded "AWS:<token>\n" instead of "AWS:<token>" --
+          // buildctl then got a 401 from ECR at the END of the build, reading like an IAM problem
+          // rather than a one-byte formatting bug. Two constraints pull opposite ways here, and
+          // fixing one tends to re-break the other -- keep both in mind together: (1) the token must
+          // never reach an ARGUMENT position, per the LEAK note above (commit 2c3cbcf), and (2) that
+          // trailing newline must still be stripped, or the base64 auth is corrupt. `tr -d` on a file
+          // redirect satisfies both: the value never leaves file/pipe form, and the newline is gone.
+          container('awscli') {
+            sh '''
+              set -eu
+              umask 077
+              mkdir -p /images/dockercfg
+              aws ecr get-login-password --region "$AWS_REGION" > /images/dockercfg/password
+              { printf 'AWS:'; tr -d '\\n' < /images/dockercfg/password; } | base64 -w0 > /images/dockercfg/auth
+              {
+                printf '{"auths":{"%s":{"auth":"' "$ECR_REGISTRY"
+                cat /images/dockercfg/auth
+                printf '"}}}'
+              } > /images/dockercfg/config.json
+              rm -f /images/dockercfg/password /images/dockercfg/auth
+            '''
+          }
+          container('buildkit') {
+            // NOTE: --export-cache pushes unscanned layer-cache blobs to the *-buildcache repo below,
+            // ahead of the Trivy scan. That is fine -- buildcache is not a repo the app ever deploys
+            // from -- but it means "nothing reaches ECR before the scan passes" is not literally true
+            // of bytes. What IS still true: no deployable, tagged image reaches ECR pre-scan; see
+            // the 'Push to ECR' stage and design doc section 5.
+            //
+            // BUILDKIT_HOST, not buildctl-daemonless.sh. daemonless.sh ignores any existing daemon and
+            // spawns its OWN buildkitd under a fresh temp root, taking flags only from
+            // $BUILDKITD_FLAGS -- which is unset here. That silently drops
+            // --oci-worker-no-process-sandbox, the flag the buildkit sidecar in ci/jenkins/jenkins.yaml
+            // was started with to run rootless. Pointing plain `buildctl` at the sidecar socket instead
+            // means the daemon that actually builds is the one that was configured for it.
+            //
+            // DOCKER_CONFIG below was written by the awscli container above; buildctl reads
+            // config.json from there.
+            //
+            // type=docker, NOT type=oci, on --output below. Both write a tar, but `type=oci` writes an
+            // OCI ARCHIVE (index.json + blobs/), and Trivy's --input reads a docker-archive or an OCI
+            // DIRECTORY -- not an OCI archive. With type=oci the whole build succeeds and Trivy then
+            // fails with "manifest.json not found in tar", which reads like a corrupt image. skopeo
+            // reads docker-archive: just as happily, so nothing downstream loses out.
+            //
+            // image-manifest=true,oci-mediatypes=true on the --export-cache below is REQUIRED for ECR.
+            // BuildKit's default cache manifest is an OCI image INDEX, which ECR rejects with a bare
+            // "400 Bad Request" on the manifest PUT -- after the whole image has already been built and
+            // every layer uploaded, so it reads like a transient registry fault rather than an
+            // unsupported media type. These two options make it export a plain image manifest, which
+            // ECR accepts.
+            sh '''
+              set -eu
+              export BUILDKIT_HOST=unix:///run/user/1000/buildkit/buildkitd.sock
+              export DOCKER_CONFIG=/images/dockercfg
+              CACHE="$ECR_REGISTRY/$CLUSTER_NAME-buildcache"
               for svc in backend worker nginx backup; do
-                digest="$(aws ecr describe-images \\
-                  --repository-name "$CLUSTER_NAME-$svc" \\
-                  --image-ids "imageTag=$TAG" \\
-                  --region "$AWS_REGION" \\
-                  --query 'imageDetails[0].imageDigest' --output text)"
-                printf '%s    "%s-%s": { "digest": "%s" }' "$sep" "$CLUSTER_NAME" "$svc" "$digest"
-                sep=$',\\n'
-                if [ "$svc" = backend ]; then
-                  printf '%s' "$digest" > backend-digest.txt
-                fi
+                case "$svc" in
+                  nginx) ctx=services/frontend ;;
+                  *)     ctx=services/$svc ;;
+                esac
+                buildctl build \
+                  --frontend dockerfile.v0 \
+                  --local context="$ctx" --local dockerfile="$ctx" \
+                  --output type=docker,dest=/images/$svc.tar,name="$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG" \
+                  --import-cache type=registry,ref="$CACHE:$svc" \
+                  --export-cache type=registry,ref="$CACHE:$svc",mode=max,image-manifest=true,oci-mediatypes=true
               done
-              printf '\\n  }\\n}\\n'
-            } > image-metadata.json
-            cat image-metadata.json
-          '''
+            '''
+          }
         }
-        archiveArtifacts artifacts: 'image-metadata.json', fingerprint: true
-        script {
-          // Fail loudly rather than hand CD an empty or missing IMAGE_DIGEST: a Trigger CD build
-          // with a blank digest parameter would look like it ran with one and did not, and CD's
-          // Input Validation may not catch an empty string the same way it catches a missing one.
-          if (!fileExists('backend-digest.txt')) {
-            error('backend-digest.txt was not written -- the digest-capture loop in Publish ' +
-                  'Metadata did not run for svc=backend')
+      }
+
+      stage('Trivy scan') {
+        when { allOf {
+          expression { env.ALREADY_BUILT != 'present' }
+          anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
+                  expression { env.NO_CHANGELOG == 'true' } }
+        } }
+        steps {
+          container('trivy') {
+            // ALL FOUR IMAGES BLOCK, including backup (2026-08-23; Task 3 review T3-5, Task 4 review
+            // P2). The backup image was report-only, justified as "third-party base CVEs outside this
+            // project's control". That was true of where the findings came FROM and false about
+            // whether they had to be there: measuring them showed all 22 HIGH/CRITICAL findings lived
+            // in ONE binary, /usr/local/bin/gosu, a Go helper postgres:17-alpine ships so its own
+            // entrypoint can drop from root -- and this image overrides the entrypoint and runs as
+            // uid 1000, so it never used gosu at all. services/backup/Dockerfile now deletes it, the
+            // image scans clean (0 findings, and Trivy reports no language-specific files left), and
+            // the exemption has nothing to protect.
+            //
+            // Do not reintroduce a report-only image. If a future base drags in another unused binary,
+            // remove the binary -- an exemption on a deployable artifact is a permanent hole that
+            // outlives whoever accepted it.
+            sh '''
+              set -eu
+              DB="$ECR_REGISTRY/$CLUSTER_NAME-trivy-db"
+              export TRIVY_DISABLE_VEX_NOTICE=true
+              for svc in backend worker nginx backup; do
+                echo "--- trivy $CLUSTER_NAME-$svc (blocking) ---"
+                trivy image --db-repository "$DB" --input /images/$svc.tar \
+                  --severity CRITICAL,HIGH --exit-code 1 --ignore-unfixed
+              done
+            '''
           }
-          env.BACKEND_DIGEST = readFile('backend-digest.txt').trim()
-          if (!env.BACKEND_DIGEST) {
-            error('BACKEND_DIGEST is empty after reading backend-digest.txt')
+        }
+      }
+
+      stage('Push to ECR') {
+        when { allOf {
+          expression { env.ALREADY_BUILT != 'present' }
+          anyOf { expression { env.SERVICES_CHANGED == 'true' }; expression { params.FORCE_BUILD }
+                  expression { env.NO_CHANGELOG == 'true' } }
+        } }
+        steps {
+          // Two containers: quay.io/skopeo/stable carries no AWS CLI, so the ECR login password is
+          // obtained in `awscli` and handed over through the shared /images volume.
+          //
+          // Checked against the same 2026-08-04 leak class as 'Build images' above and confirmed
+          // safe: the password is never captured via $(...), never passed as a command ARGUMENT
+          // anywhere below, and login reads it with --password-stdin, not --dest-creds. A trace of
+          // this line logs only the command and the destination filename, never the token itself.
+          container('awscli') {
+            sh '''
+              set -eu
+              # umask BEFORE the redirect -- the file must never exist world-readable, even briefly.
+              umask 077
+              aws ecr get-login-password --region "$AWS_REGION" > /images/ecr-password
+            '''
           }
+          container('skopeo') {
+            // skopeo copies the EXACT file Trivy scanned. Nothing is rebuilt between scan and push,
+            // so the scanned artifact and the pushed artifact are provably the same bytes -- a
+            // stronger guarantee than the docker build/scan/push flow this replaces.
+            //
+            // The trap below is a trap, NOT a cleanup line at the bottom of the block. Under `set -eu`
+            // a failed copy exits immediately and never reaches a trailing rm, leaving a live 12-hour
+            // registry credential in a volume four containers share -- on exactly the failure path
+            // where it matters most.
+            //
+            // skopeo login below uses --authfile rather than --dest-creds: the latter puts the password
+            // in skopeo argv, readable via ps inside this container. Same pattern as
+            // scripts/mirror-trivy-db.sh.
+            sh '''
+              set -eu
+              trap 'rm -f /images/ecr-password /images/auth.json' EXIT
+
+              skopeo login --username AWS --password-stdin \
+                --authfile /images/auth.json "$ECR_REGISTRY" < /images/ecr-password
+
+              for svc in backend worker nginx backup; do
+                skopeo copy --dest-authfile /images/auth.json \
+                  docker-archive:/images/$svc.tar \
+                  docker://"$ECR_REGISTRY/$CLUSTER_NAME-$svc:$TAG"
+              done
+            '''
+          }
+        }
+      }
+      }
+      post {
+        always {
+          // The ECR token written to the shared volume in 'Build images' is a live registry
+          // credential. The emptyDir dies with the pod, but a build that fails between writing
+          // it and finishing should not leave it sitting there for the rest of the pod's life.
+          // This lives HERE, not in the pipeline-level post: with `agent none` at the top that
+          // block has no workspace and no pod, so container('awscli') there would fail.
+          container('awscli') {
+            sh 'rm -rf /images/dockercfg || true'
+          }
+          deleteDir()
         }
       }
     }
 
-    // Handing the tag to a separate job is one of the four connection mechanisms the brief permits
-    // ("הפעלת CD מתוך build trigger והעברת parameter"). It is NOT a deploy stage: this pipeline
-    // holds no cluster credentials and cannot reach the cluster.
-    //
-    // wait:false so a slow rollout does not hold a CI executor, and so a CD failure is reported
-    // against the CD build where the logs are, not as a confusing CI failure.
-    //
-    // THE `when` GUARD IS LOAD-BEARING and is the same one the retired tag-bump stage (now
-    // Jenkinsfile-cd) carried. Without it, a commit touching only docs/ or README.md triggers CD
-    // with a tag that has no images in ECR -- CD's Input Validation then correctly refuses, and
-    // every documentation commit produces a red CD build. The condition is "this SHA has images",
-    // which is true when we just built them OR when they were already present.
-    // G4 -- chart changes must reach CD too, and they need a tag they do not have.
-    //
-    // Until 2026-08-23 ArgoCD watched `master`, so a chart-only commit deployed itself: it skipped
-    // every stage in this file (all gated on env.SERVICES_CHANGED, G3c) and was auto-synced straight
-    // to the cluster, bypassing Manifest Validation, the smoke test, the monitoring gate and
-    // rollback. Task 4 review finding P2. ArgoCD now watches `release`, which only application-cd
-    // writes -- so the bypass is gone, but a chart-only commit would now deploy NEVER instead of
-    // deploying unchecked. This stage is the other half of that fix.
-    //
-    // The wrinkle: a chart-only commit is a new SHA and no images were built for it, so CD cannot be
-    // triggered with `env.TAG`. Input Validation would correctly refuse a tag that is not in ECR.
-    // What is actually wanted is "deploy the chart at this commit with the images already running",
-    // so the tag is read off the release branch.
-    //
-    // Deliberately NOT `not { SERVICES_CHANGED }` alone: FORCE_BUILD and NO_CHANGELOG both
-    // mean "treat this as a real build", and in both cases the normal path already produces a tag.
-    // Overriding env.TAG there would deploy the OLD images over a fresh build.
-    stage('Chart-only change') {
-      when { allOf {
-        expression { env.CHARTS_CHANGED == 'true' }
-        not { expression { env.SERVICES_CHANGED == 'true' } }
-        not { expression { params.FORCE_BUILD } }
-        not { expression { env.NO_CHANGELOG == 'true' } }
-        not { expression { env.ALREADY_BUILT == 'present' } }
-      } }
-      steps {
-        script {
-          sh 'git fetch --quiet origin release 2>/dev/null || true'
-          def st = sh(script: 'scripts/ci/current-release-tag.sh > release-tag.out 2> release-tag.err',
-                      returnStatus: true)
-          if (st != 0) {
-            // Not an error. On a cluster that has never completed a CD run there is no release
-            // branch yet, and the first application-cd run will create it -- failing the build here
-            // would make a docs-and-chart commit look broken on a brand-new deployment.
-            def why = fileExists('release-tag.err') ? readFile('release-tag.err').trim() : '(no stderr)'
-            echo "Chart-only change, but no deployable tag on the release branch yet: ${why}"
-            echo 'Skipping the CD trigger. The next application-cd run will pick this chart up.'
-          } else {
-            env.TAG = readFile('release-tag.out').trim()
-            env.CHART_ONLY = 'true'
-            currentBuild.description = "chart-only -> redeploying running tag ${env.TAG}"
-            echo "Chart-only change: triggering CD with the tag already on release (${env.TAG})."
-          }
-        }
-      }
-    }
-
-    stage('Trigger CD') {
-      when { anyOf {
+    // Back on the LIGHT agent: these three only need awscli and git.
+    stage('Publish and trigger') {
+      agent { label 'voteball-test' }
+      // Union of the three children's conditions, `beforeAgent` for the reason above: without a
+      // parent `when` this group allocated a pod and cloned the repo even when all three children
+      // skipped (build #4: 17:02:04 -> 17:02:41, 37s for nothing).
+      // CHARTS_CHANGED, not CHART_ONLY -- the latter is set INSIDE 'Chart-only change' and does not
+      // exist yet when this is evaluated. CHARTS_CHANGED is that stage's own precondition.
+      when { beforeAgent true; anyOf {
         expression { env.ALREADY_BUILT == 'present' }
         expression { env.SERVICES_CHANGED == 'true' }
         expression { params.FORCE_BUILD }
         expression { env.NO_CHANGELOG == 'true' }
-        expression { env.CHART_ONLY == 'true' }   // G4, above
+        expression { env.CHARTS_CHANGED == 'true' }
       } }
-      steps {
-        // SOURCE_SHA is the commit THIS build checked out and built (env.GIT_COMMIT_SHA, captured in
-        // 'Resolve tag and account'), and it is what CD promotes the tree of. Added 2026-08-28: CD's
-        // Promote stage used to call `git rev-parse HEAD` in its OWN workspace instead, which is
-        // sampled minutes later than IMAGE_TAG is sampled here. Any push landing on master in the gap
-        // separated the two, and because promotion is a `git read-tree` of that commit, the release
-        // branch shipped the newer commit's chart against images built from the older one. Live
-        // evidence: `release: cfb579a (image tag edd3d9b)`.
-        //
-        // It is passed on the CHART-ONLY path too, and there it is deliberately NOT the same commit
-        // as the tag: env.TAG has been overridden to the tag already running on release, while
-        // GIT_COMMIT_SHA stays this chart-only commit -- which is precisely the request, "deploy the
-        // chart at THIS commit with the images that are already running". Overriding it to match the
-        // tag would redeploy the old chart and make the whole stage a no-op.
-        //
-        // env.GIT_COMMIT_SHA is set unconditionally in 'Resolve tag and account' (no `when` guard),
-        // which every path into this stage passes through. Sending an empty string would not fail
-        // quietly: CD's Input Validation refuses it before promoting anything.
-        build job: 'application-cd', wait: false, parameters: [
-          string(name: 'IMAGE_TAG',    value: env.TAG),
-          string(name: 'SOURCE_SHA',   value: env.GIT_COMMIT_SHA ?: ''),
-          string(name: 'IMAGE_DIGEST', value: env.BACKEND_DIGEST ?: ''),
-          string(name: 'SOURCE_BUILD', value: env.BUILD_NUMBER),
-        ]
+      stages {
+
+      // Traceability. The brief requires that a CD build can identify the CI build, the git commit,
+      // the image and the digest that produced it. The digest is the part that matters: a tag is a
+      // pointer and could in principle be moved, a digest is the content.
+      stage('Publish Metadata') {
+        // Same guard as 'Trigger CD' below, for the same reason: with no images in ECR for this SHA
+        // the digest lookups return None and the metadata file would record nothing.
+        when { anyOf {
+          expression { env.ALREADY_BUILT == 'present' }
+          expression { env.SERVICES_CHANGED == 'true' }
+          expression { params.FORCE_BUILD }
+          expression { env.NO_CHANGELOG == 'true' }
+        } }
+        steps {
+          container('awscli') {
+            // ANSI-C quoting ($'...') on the sep= assignment below is REQUIRED, not decoration. A plain
+            // '...' string leaves \n as the two literal characters backslash+n, and printf only expands
+            // backslash escapes that appear in ITS OWN format-string argument -- never in a value
+            // substituted via %s, which is how $sep is used. Without $'...' this separator prints as a
+            // literal backslash-n between JSON entries instead of a real newline, and the emitted
+            // image-metadata.json is invalid JSON -- a failure invisible just by reading the source,
+            // since the string still looks like a comma and a newline.
+            //
+            // The backend digest is captured below at the moment it is computed, into its own file --
+            // NOT re-parsed back out of the JSON afterwards. Grepping the JSON apart is what broke this
+            // the first time: an unterminated quote failed the stage outright, and even fixed, a
+            // `grep -A1` on the backend line also captures the line of the next service, so the second
+            // grep would return two sha256 values that .trim() silently concatenates into one bogus
+            // digest.
+            //
+            // git_commit comes from $GIT_COMMIT_SHA (set in 'Resolve tag and account'), NOT from a
+            // `git rev-parse HEAD` run in this container. amazon/aws-cli ships no git binary at all, and
+            // CI build 33 shipped image-metadata.json with an empty git_commit for exactly that reason:
+            // the failing git call was buried inside $(...) used as one argument to printf, so its
+            // non-zero exit was discarded and never seen by set -eu. The assertion below makes an empty
+            // GIT_COMMIT_SHA fail this stage instead of silently writing "".
+            sh '''
+              set -eu
+              : "${GIT_COMMIT_SHA:?GIT_COMMIT_SHA is empty. amazon/aws-cli has no git; the commit must be captured earlier, in Resolve tag and account.}"
+              {
+                printf '{\\n'
+                printf '  "image_tag": "%s",\\n' "$TAG"
+                printf '  "git_commit": "%s",\\n' "$GIT_COMMIT_SHA"
+                printf '  "ci_build": "%s",\\n' "$BUILD_NUMBER"
+                printf '  "built_at": "%s",\\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+                printf '  "images": {\\n'
+                sep=""
+                for svc in backend worker nginx backup; do
+                  digest="$(aws ecr describe-images \\
+                    --repository-name "$CLUSTER_NAME-$svc" \\
+                    --image-ids "imageTag=$TAG" \\
+                    --region "$AWS_REGION" \\
+                    --query 'imageDetails[0].imageDigest' --output text)"
+                  printf '%s    "%s-%s": { "digest": "%s" }' "$sep" "$CLUSTER_NAME" "$svc" "$digest"
+                  sep=$',\\n'
+                  if [ "$svc" = backend ]; then
+                    printf '%s' "$digest" > backend-digest.txt
+                  fi
+                done
+                printf '\\n  }\\n}\\n'
+              } > image-metadata.json
+              cat image-metadata.json
+            '''
+          }
+          archiveArtifacts artifacts: 'image-metadata.json', fingerprint: true
+          script {
+            // Fail loudly rather than hand CD an empty or missing IMAGE_DIGEST: a Trigger CD build
+            // with a blank digest parameter would look like it ran with one and did not, and CD's
+            // Input Validation may not catch an empty string the same way it catches a missing one.
+            if (!fileExists('backend-digest.txt')) {
+              error('backend-digest.txt was not written -- the digest-capture loop in Publish ' +
+                    'Metadata did not run for svc=backend')
+            }
+            env.BACKEND_DIGEST = readFile('backend-digest.txt').trim()
+            if (!env.BACKEND_DIGEST) {
+              error('BACKEND_DIGEST is empty after reading backend-digest.txt')
+            }
+          }
+        }
+      }
+
+      // Handing the tag to a separate job is one of the four connection mechanisms the brief permits
+      // ("הפעלת CD מתוך build trigger והעברת parameter"). It is NOT a deploy stage: this pipeline
+      // holds no cluster credentials and cannot reach the cluster.
+      //
+      // wait:false so a slow rollout does not hold a CI executor, and so a CD failure is reported
+      // against the CD build where the logs are, not as a confusing CI failure.
+      //
+      // THE `when` GUARD IS LOAD-BEARING and is the same one the retired tag-bump stage (now
+      // Jenkinsfile-cd) carried. Without it, a commit touching only docs/ or README.md triggers CD
+      // with a tag that has no images in ECR -- CD's Input Validation then correctly refuses, and
+      // every documentation commit produces a red CD build. The condition is "this SHA has images",
+      // which is true when we just built them OR when they were already present.
+      // G4 -- chart changes must reach CD too, and they need a tag they do not have.
+      //
+      // Until 2026-08-23 ArgoCD watched `master`, so a chart-only commit deployed itself: it skipped
+      // every stage in this file (all gated on env.SERVICES_CHANGED, G3c) and was auto-synced straight
+      // to the cluster, bypassing Manifest Validation, the smoke test, the monitoring gate and
+      // rollback. Task 4 review finding P2. ArgoCD now watches `release`, which only application-cd
+      // writes -- so the bypass is gone, but a chart-only commit would now deploy NEVER instead of
+      // deploying unchecked. This stage is the other half of that fix.
+      //
+      // The wrinkle: a chart-only commit is a new SHA and no images were built for it, so CD cannot be
+      // triggered with `env.TAG`. Input Validation would correctly refuse a tag that is not in ECR.
+      // What is actually wanted is "deploy the chart at this commit with the images already running",
+      // so the tag is read off the release branch.
+      //
+      // Deliberately NOT `not { SERVICES_CHANGED }` alone: FORCE_BUILD and NO_CHANGELOG both
+      // mean "treat this as a real build", and in both cases the normal path already produces a tag.
+      // Overriding env.TAG there would deploy the OLD images over a fresh build.
+      stage('Chart-only change') {
+        when { allOf {
+          expression { env.CHARTS_CHANGED == 'true' }
+          not { expression { env.SERVICES_CHANGED == 'true' } }
+          not { expression { params.FORCE_BUILD } }
+          not { expression { env.NO_CHANGELOG == 'true' } }
+          not { expression { env.ALREADY_BUILT == 'present' } }
+        } }
+        steps {
+          script {
+            sh 'git fetch --quiet origin release 2>/dev/null || true'
+            def st = sh(script: 'scripts/ci/current-release-tag.sh > release-tag.out 2> release-tag.err',
+                        returnStatus: true)
+            if (st != 0) {
+              // Not an error. On a cluster that has never completed a CD run there is no release
+              // branch yet, and the first application-cd run will create it -- failing the build here
+              // would make a docs-and-chart commit look broken on a brand-new deployment.
+              def why = fileExists('release-tag.err') ? readFile('release-tag.err').trim() : '(no stderr)'
+              echo "Chart-only change, but no deployable tag on the release branch yet: ${why}"
+              echo 'Skipping the CD trigger. The next application-cd run will pick this chart up.'
+            } else {
+              env.TAG = readFile('release-tag.out').trim()
+              env.CHART_ONLY = 'true'
+              currentBuild.description = "chart-only -> redeploying running tag ${env.TAG}"
+              echo "Chart-only change: triggering CD with the tag already on release (${env.TAG})."
+            }
+          }
+        }
+      }
+
+      stage('Trigger CD') {
+        when { anyOf {
+          expression { env.ALREADY_BUILT == 'present' }
+          expression { env.SERVICES_CHANGED == 'true' }
+          expression { params.FORCE_BUILD }
+          expression { env.NO_CHANGELOG == 'true' }
+          expression { env.CHART_ONLY == 'true' }   // G4, above
+        } }
+        steps {
+          // SOURCE_SHA is the commit THIS build checked out and built (env.GIT_COMMIT_SHA, captured in
+          // 'Resolve tag and account'), and it is what CD promotes the tree of. Added 2026-08-28: CD's
+          // Promote stage used to call `git rev-parse HEAD` in its OWN workspace instead, which is
+          // sampled minutes later than IMAGE_TAG is sampled here. Any push landing on master in the gap
+          // separated the two, and because promotion is a `git read-tree` of that commit, the release
+          // branch shipped the newer commit's chart against images built from the older one. Live
+          // evidence: `release: cfb579a (image tag edd3d9b)`.
+          //
+          // It is passed on the CHART-ONLY path too, and there it is deliberately NOT the same commit
+          // as the tag: env.TAG has been overridden to the tag already running on release, while
+          // GIT_COMMIT_SHA stays this chart-only commit -- which is precisely the request, "deploy the
+          // chart at THIS commit with the images that are already running". Overriding it to match the
+          // tag would redeploy the old chart and make the whole stage a no-op.
+          //
+          // env.GIT_COMMIT_SHA is set unconditionally in 'Resolve tag and account' (no `when` guard),
+          // which every path into this stage passes through. Sending an empty string would not fail
+          // quietly: CD's Input Validation refuses it before promoting anything.
+          build job: 'application-cd', wait: false, parameters: [
+            string(name: 'IMAGE_TAG',    value: env.TAG),
+            string(name: 'SOURCE_SHA',   value: env.GIT_COMMIT_SHA ?: ''),
+            string(name: 'IMAGE_DIGEST', value: env.BACKEND_DIGEST ?: ''),
+            string(name: 'SOURCE_BUILD', value: env.BUILD_NUMBER),
+          ]
+        }
+      }
+      }
+      post {
+        // The pod is destroyed anyway; an explicit clean is what makes the guarantee independent
+        // of that. deleteDir(), not cleanWs() -- ws-cleanup is not in ci/jenkins/plugins.txt and
+        // adding it means rebuilding the controller image plus a terraform apply. deleteDir() is a
+        // Jenkins core step. Do not swap it back without doing both.
+        always { deleteDir() }
       }
     }
   }
 
   post {
-    always {
-      // The ECR token written to the shared volume in 'Build images' is a live registry credential.
-      // The emptyDir dies with the pod, but a build that fails between writing it and finishing
-      // should not leave it sitting there for the rest of the pod's life.
-      container('awscli') {
-        sh 'rm -rf /images/dockercfg || true'
-      }
-      // The brief's Cleanup stage. The pod is destroyed anyway, but an explicit clean is what makes
-      // the guarantee independent of that.
-      //
-      // deleteDir(), not cleanWs(): cleanWs() is the ws-cleanup plugin's step, and that plugin is
-      // not in ci/jenkins/plugins.txt. Adding it means rebuilding the controller image and a
-      // terraform apply -- too heavy for what this stage needs. deleteDir() is a Jenkins core step
-      // (no plugin required) and empties the same workspace directory. Do not swap this back to
-      // cleanWs() without also adding ws-cleanup to plugins.txt and rebuilding the image.
-      deleteDir()
-    }
     // G5's `docker image prune` is DELETED, not ported: it existed because the EC2 host was
     // persistent. A pod agent is destroyed after every build, so the disk cleans itself.
+    // Workspace cleanup and the dockercfg wipe moved into the per-group post blocks above,
+    // because `agent none` leaves this block without a workspace or a pod to run them in.
     failure {
       // G7 -- there is no email. This line is the record; check the UI.
       echo 'BUILD FAILED. No notification is sent (see docs/cicd.md, G7).'

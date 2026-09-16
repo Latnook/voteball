@@ -957,6 +957,9 @@ infrastructure. Order matters:
 6. **Remove the DNS records** for both `<your-domain>` and `jenkins.<your-domain>`, in case
    external-dns was deleted before it noticed. It only ever touches records it created for this
    cluster; your email and other records are never eligible.
+   Then it removes any **security groups and target groups the load balancer controller left
+   behind** — they are invisible to Terraform and stop the network from being deleted (see
+   troubleshooting).
 7. **Then** delete everything else — and confirm before it starts, because this is the irreversible
    part.
 
@@ -1250,6 +1253,15 @@ steps 1 and 4.
   `destroy.sh` steps 1–2 do and why they cannot be skipped. Observed on 2026-08-02 in an unrelated
   practice cluster, where one such group had blocked its teardown for five weeks — and the load balancer
   it belonged to went on billing the whole time.
+
+  **`destroy.sh` now does this for you** (since 2026-09-16), via
+  `./scripts/cleanup-orphaned-lb-resources.sh`. It deletes only the security groups and target
+  groups tagged as made by this cluster's load balancer controller, and only once no load balancer
+  is left in the network. It runs once before the delete and again every 30 seconds while the delete
+  runs. Run it yourself with no arguments to see what it would delete; add `--apply` to delete.
+  **One case it cannot fix:** if the load balancer has vanished but AWS still shows its network
+  interfaces (owned by `amazon-elb`), nobody can delete those. AWS removes them itself; on
+  2026-09-16 that took about six hours, and the script says so and waits.
 - **`values.yaml` looks wrong / the ALB says `CertificateNotFound`** → the file drifted from the live
   stack. Run `./scripts/sync-values-from-tf.sh --check` to see the drift and
   `./scripts/sync-values-from-tf.sh` to fix it. Never edit those fields by hand.

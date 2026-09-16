@@ -25,6 +25,8 @@ cd "$(dirname "$0")/../.."   # repo root
 # python:3.12-slim -- not by reading the scripts, which mention `aws` and `terraform` in comments and
 # stub variables and would mislead a grep. Reading them is exactly how build #7 went wrong.
 PYTHON_GROUP=(
+  # Parses ci/jenkins/jenkins.yaml with PyYAML and greps Jenkinsfile-ci: python3 + yaml, no git.
+  test-jenkins-agent-templates.sh
   check-jenkinsfile-shell.sh
   test-argocd-sync-wait.sh
   # Needs neither python3 nor git (bash + awk, grep, sort, timeout; aws/kubectl/helm are all
@@ -37,6 +39,7 @@ PYTHON_GROUP=(
   test-bootstrap-backend.sh
   test-ci-guards.sh
   test-clean-failed-helm-installs.sh  # aws/helm/terraform all faked; python3 + bash (2026-09-15)
+  test-cleanup-orphaned-lb-resources.sh  # aws/terraform faked in bash; needs neither python3 nor git (2026-09-16)
   test-deploy-env.sh
   test-eks-addons.sh          # eks v21 new-cluster add-ons; python3 only (2026-09-15)
   test-frontend-seo.sh
