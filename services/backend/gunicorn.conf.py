@@ -6,6 +6,9 @@ import shutil
 # __main__) is single-threaded and explicitly not for production; gunicorn replaces it here.
 bind = '0.0.0.0:5000'
 workers = int(os.environ.get('GUNICORN_WORKERS', '2'))
+# gunicorn 25.1+ opens a runtime-management socket under $HOME by default. Nothing here uses it, and
+# the read-only root filesystem made it log "Control server error" on every start.
+control_socket_disable = True
 
 
 def _reset_multiproc_dir():
