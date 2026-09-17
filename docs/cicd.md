@@ -140,7 +140,7 @@ what `voteball-build` does in that respect:
 | ServiceAccount | `jenkins-agent` | `jenkins-cd-agent` |
 | AWS role (IRSA) | ECR **push**/pull on `repository/<cluster_name>-*` | ECR **read-only** (`DescribeImages`, `BatchGetImage`) on the same repos, no push |
 | Kubernetes RBAC | **none** — no Role or ClusterRole binds this ServiceAccount anywhere | a namespaced, **strictly read-only** `Role` in `devops-app` (`charts/jenkins-support/templates/rbac.yaml`): `get`/`list`/`watch` on deployments, replicasets, pods, services, events, ingresses, plus `get` on pod logs — no `patch`, no `create`, no ClusterRole |
-| Containers | `voteball-build`: `jnlp`, `buildkit`, `trivy`, `skopeo`, `awscli`, `python`, `postgres`, `hadolint` (plus the `promtool-fetch` init-container). `voteball-test`: the same **minus** `buildkit`, `trivy`, `skopeo` | `jnlp`, `deploy` (kubectl+helm+aws-cli+jq+curl, `alpine/k8s:1.31.3`), `argocd` (the ArgoCD CLI, `quay.io/argoproj/argocd:v3.4.5` — pinned to the same version as the running server) |
+| Containers | `voteball-build`: `jnlp`, `buildkit`, `trivy`, `skopeo`, `awscli`, `python`, `postgres`, `hadolint` (plus the `promtool-fetch` init-container). `voteball-test`: the same **minus** `buildkit`, `trivy`, `skopeo` | `jnlp`, `deploy` (kubectl+helm+aws-cli+jq+curl, `alpine/k8s:1.36.4`), `argocd` (the ArgoCD CLI, `quay.io/argoproj/argocd:v3.5.3` — pinned to the same version as the running server) |
 | Can build an image | yes | no |
 | Can write to the cluster | no (zero RBAC) | **no** — read-only RBAC; only ArgoCD applies |
 
@@ -406,7 +406,7 @@ Trigger CD. The skip only happens on a **positive** answer — a lookup failure 
 
 ### 8. Build images
 
-Four images (`backend`, `worker`, `nginx`, `backup`), rootless BuildKit (`moby/buildkit:v0.19.0-rootless`,
+Four images (`backend`, `worker`, `nginx`, `backup`), rootless BuildKit (`moby/buildkit:v0.33.0-rootless`,
 uid 1000), `--output type=docker` (not `type=oci` — Trivy's `--input` cannot read an OCI archive), tagged
 with the short git SHA — never `latest`. Both the layer cache (`<cluster_name>-buildcache`, mutable,
 outside the immutable ECR set) and the Trivy database (`<cluster_name>-trivy-db`) live in ECR rather

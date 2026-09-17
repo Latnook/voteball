@@ -118,14 +118,14 @@ jenkins:
                 # carrying everything.
                 initContainers:
                   - name: promtool-fetch
-                    # Pinned to v3.13.1 to match the Prometheus SERVER version kube-prometheus-stack
-                    # 87.21.0 actually deploys by default (prometheus.prometheusSpec image tag
-                    # v3.13.1-distroless -- confirmed via
-                    # `helm show values prometheus-community/kube-prometheus-stack --version 87.21.0`,
+                    # Pinned to v3.14.0 to match the Prometheus SERVER version kube-prometheus-stack
+                    # 91.4.1 actually deploys by default (prometheus.prometheusSpec image tag
+                    # v3.14.0-distroless -- confirmed via
+                    # `helm show values prometheus-community/kube-prometheus-stack --version 91.4.1`,
                     # terraform/addon-monitoring.tf), so `promtool check rules` validates PromQL
                     # against the same rule-evaluation engine that will actually run these rules in
                     # production, not an arbitrary other version.
-                    image: prom/prometheus:v3.13.1
+                    image: prom/prometheus:v3.14.0
                     command: ["sh", "-c", "mkdir -p /images/promtool-bin && cp /bin/promtool /images/promtool-bin/promtool"]
                     securityContext:
                       allowPrivilegeEscalation: false
@@ -137,7 +137,7 @@ jenkins:
                   # the securityContext below for exactly what it is allowed to do and why -- this is
                   # the one container here that does not run allowPrivilegeEscalation:false.
                   - name: buildkit
-                    image: moby/buildkit:v0.19.0-rootless
+                    image: moby/buildkit:v0.33.0-rootless
                     # THE ONE CONTAINER IN THIS PROJECT THAT ALLOWS PRIVILEGE ESCALATION. Deliberate,
                     # approved 2026-07-30, and it must not be "tidied" back into line with the others.
                     #
@@ -198,7 +198,7 @@ jenkins:
                     volumeMounts:
                       - { name: images, mountPath: /images }
                   - name: skopeo
-                    image: quay.io/skopeo/stable:v1.17.0
+                    image: quay.io/skopeo/stable:v1.22.2
                     command: ["cat"]
                     tty: true
                     # HOME=/tmp: the pod runs every container as uid 1000, but these images assume
@@ -214,7 +214,7 @@ jenkins:
                     volumeMounts:
                       - { name: images, mountPath: /images }
                   - name: awscli
-                    image: amazon/aws-cli:2.22.0
+                    image: amazon/aws-cli:2.36.47
                     command: ["cat"]
                     tty: true
                     # HOME=/tmp: the pod runs every container as uid 1000, but these images assume
@@ -277,7 +277,7 @@ jenkins:
                       - { name: pgdata, mountPath: /tmp }
 
                   - name: hadolint
-                    image: hadolint/hadolint:2.12.0-alpine
+                    image: hadolint/hadolint:v2.15.1-alpine
                     command: ["cat"]
                     tty: true
                     env:
@@ -290,9 +290,9 @@ jenkins:
                   # Validation stage). That script needs helm (to render charts/voteball and
                   # charts/observability), python3 + PyYAML (the checks themselves) and promtool (the
                   # PromQL rule check) all on ONE PATH in ONE process -- no published image ships all
-                  # three. alpine/k8s:1.31.3 (same pinned image as Jenkinsfile-cd's `deploy`
+                  # three. alpine/k8s:1.36.4 (same pinned image as Jenkinsfile-cd's `deploy`
                   # container) already carries helm, python3 and PyYAML; confirmed live 2026-08-18
-                  # (`docker run --user 1000:1000 alpine/k8s:1.31.3 -- command -v helm python3` and
+                  # (`docker run --user 1000:1000 alpine/k8s:1.36.4 -- command -v helm python3` and
                   # `python3 -c "import yaml"`, both present). promtool is not in that image, so the
                   # initContainer above copies it onto the `images` volume this container also
                   # mounts, and PATH below is the image's own default with that directory prepended.
@@ -312,7 +312,7 @@ jenkins:
                   # (not helm) is missing. That apply is a separate, deliberate step -- not run as
                   # part of committing this file.
                   - name: observability
-                    image: alpine/k8s:1.31.3
+                    image: alpine/k8s:1.36.4
                     command: ["cat"]
                     tty: true
                     env:
@@ -377,14 +377,14 @@ jenkins:
                 # carrying everything.
                 initContainers:
                   - name: promtool-fetch
-                    # Pinned to v3.13.1 to match the Prometheus SERVER version kube-prometheus-stack
-                    # 87.21.0 actually deploys by default (prometheus.prometheusSpec image tag
-                    # v3.13.1-distroless -- confirmed via
-                    # `helm show values prometheus-community/kube-prometheus-stack --version 87.21.0`,
+                    # Pinned to v3.14.0 to match the Prometheus SERVER version kube-prometheus-stack
+                    # 91.4.1 actually deploys by default (prometheus.prometheusSpec image tag
+                    # v3.14.0-distroless -- confirmed via
+                    # `helm show values prometheus-community/kube-prometheus-stack --version 91.4.1`,
                     # terraform/addon-monitoring.tf), so `promtool check rules` validates PromQL
                     # against the same rule-evaluation engine that will actually run these rules in
                     # production, not an arbitrary other version.
-                    image: prom/prometheus:v3.13.1
+                    image: prom/prometheus:v3.14.0
                     command: ["sh", "-c", "mkdir -p /images/promtool-bin && cp /bin/promtool /images/promtool-bin/promtool"]
                     securityContext:
                       allowPrivilegeEscalation: false
@@ -393,7 +393,7 @@ jenkins:
                       - { name: images, mountPath: /images }
                 containers:
                   - name: awscli
-                    image: amazon/aws-cli:2.22.0
+                    image: amazon/aws-cli:2.36.47
                     command: ["cat"]
                     tty: true
                     # HOME=/tmp: the pod runs every container as uid 1000, but these images assume
@@ -456,7 +456,7 @@ jenkins:
                       - { name: pgdata, mountPath: /tmp }
 
                   - name: hadolint
-                    image: hadolint/hadolint:2.12.0-alpine
+                    image: hadolint/hadolint:v2.15.1-alpine
                     command: ["cat"]
                     tty: true
                     env:
@@ -469,9 +469,9 @@ jenkins:
                   # Validation stage). That script needs helm (to render charts/voteball and
                   # charts/observability), python3 + PyYAML (the checks themselves) and promtool (the
                   # PromQL rule check) all on ONE PATH in ONE process -- no published image ships all
-                  # three. alpine/k8s:1.31.3 (same pinned image as Jenkinsfile-cd's `deploy`
+                  # three. alpine/k8s:1.36.4 (same pinned image as Jenkinsfile-cd's `deploy`
                   # container) already carries helm, python3 and PyYAML; confirmed live 2026-08-18
-                  # (`docker run --user 1000:1000 alpine/k8s:1.31.3 -- command -v helm python3` and
+                  # (`docker run --user 1000:1000 alpine/k8s:1.36.4 -- command -v helm python3` and
                   # `python3 -c "import yaml"`, both present). promtool is not in that image, so the
                   # initContainer above copies it onto the `images` volume this container also
                   # mounts, and PATH below is the image's own default with that directory prepended.
@@ -491,7 +491,7 @@ jenkins:
                   # (not helm) is missing. That apply is a separate, deliberate step -- not run as
                   # part of committing this file.
                   - name: observability
-                    image: alpine/k8s:1.31.3
+                    image: alpine/k8s:1.36.4
                     command: ["cat"]
                     tty: true
                     env:
@@ -536,7 +536,7 @@ jenkins:
                   # kubectl, helm, aws-cli, jq and curl in one image, so the CD pod stays two
                   # containers rather than five. Pinned; alpine/k8s tags track a Kubernetes minor.
                   - name: deploy
-                    image: alpine/k8s:1.31.3
+                    image: alpine/k8s:1.36.4
                     command: ["cat"]
                     tty: true
                     env:
@@ -547,10 +547,10 @@ jenkins:
                     resources:
                       requests: { cpu: "200m", memory: "512Mi" }
                       limits: { memory: "1Gi" }
-                  # The argocd CLI. Same image as the running ArgoCD server (chart 10.2.1 =>
-                  # app v3.4.5) so the client can never be a version ahead of the server.
+                  # The argocd CLI. Same image as the running ArgoCD server (chart 10.9.2 =>
+                  # app v3.5.3) so the client can never be a version ahead of the server.
                   - name: argocd
-                    image: quay.io/argoproj/argocd:v3.4.5
+                    image: quay.io/argoproj/argocd:v3.5.3
                     command: ["cat"]
                     tty: true
                     env:

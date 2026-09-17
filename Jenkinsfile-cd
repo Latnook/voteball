@@ -412,9 +412,9 @@ pipeline {
         //
         // The `argocd` container (quay.io/argoproj/argocd) carries the argocd CLI and NOTHING else
         // useful for shell scripting: no jq, no curl, no kubectl (confirmed live,
-        // `docker run --entrypoint sh quay.io/argoproj/argocd:v3.4.5 -c 'command -v jq'` finds
+        // `docker run --entrypoint sh quay.io/argoproj/argocd:v3.5.3 -c 'command -v jq'` finds
         // nothing). jq lives in the OTHER container of this pod, `deploy`
-        // (alpine/k8s:1.31.3 -- see ci/jenkins/jenkins.yaml's voteball-deploy template comment: it
+        // (alpine/k8s:1.36.4 -- see ci/jenkins/jenkins.yaml's voteball-deploy template comment: it
         // bundles kubectl/helm/aws-cli/jq/curl in one image specifically so this pod stays two
         // containers instead of five). This is what build #7 hit: `jq: not found` in the argocd
         // container, which also silently left $sync_status empty rather than failing -- see the

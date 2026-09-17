@@ -304,9 +304,9 @@ pipeline {
             }
             env.TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
             // Full SHA, captured HERE rather than in 'Publish Metadata' below: this stage runs in the
-            // default jnlp container, which has git. amazon/aws-cli:2.22.0 (Publish Metadata's
+            // default jnlp container, which has git. amazon/aws-cli:2.36.47 (Publish Metadata's
             // container) does not ship git at all -- confirmed with
-            // `docker run --rm --entrypoint sh amazon/aws-cli:2.22.0 -c "command -v git"`, which finds
+            // `docker run --rm --entrypoint sh amazon/aws-cli:2.36.47 -c "command -v git"`, which finds
             // nothing. CI build 33 shipped image-metadata.json with an empty git_commit because a
             // failing `git rev-parse HEAD` was buried inside $(...) used as one printf ARGUMENT there --
             // set -eu does not abort on that, since the discarded exit status belongs to the

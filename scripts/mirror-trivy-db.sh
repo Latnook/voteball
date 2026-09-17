@@ -14,7 +14,7 @@
 # treat Trivy's stale-database warning in a build log as a build failure, not noise.
 #
 # skopeo is NOT installed on this machine (or expected to be, on whatever machine runs this), so it
-# runs containerized via docker. Pinned to quay.io/skopeo/stable:v1.17.0 -- the exact version the
+# runs containerized via docker. Pinned to quay.io/skopeo/stable:v1.22.2 -- the exact version the
 # Jenkins build pod template uses for the same tool (ci/jenkins/jenkins.yaml). Keeping the
 # maintenance script and CI on one version means a skopeo behaviour change cannot affect one
 # without the other.
@@ -25,7 +25,7 @@ cd "$(dirname "$0")/.."   # repo root
 # shellcheck source=lib/config.sh disable=SC1091
 . scripts/lib/config.sh
 
-SKOPEO_IMAGE="quay.io/skopeo/stable:v1.17.0"
+SKOPEO_IMAGE="quay.io/skopeo/stable:v1.22.2"
 
 REGISTRY="$(tf_out ecr_registry)"
 DEST="${REGISTRY}/${CLUSTER}-trivy-db"

@@ -23,5 +23,5 @@ RUN useradd --create-home --uid 1000 appuser
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY worker.py db.py metrics.py rollups.py alerts.py snapshots.py heartbeat.py notifications.py ./
-USER appuser
+USER 1000
 CMD ["python", "worker.py"]
