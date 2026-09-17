@@ -30,10 +30,10 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:bab679a869fc8b8dee05443f465d5466c8aa0bb0c4a3d61411190e3c27bbb9c2"
-    worker: "sha256:6a537ed16feee181fe3668b07c09b3227c4abda424542659782224f982e4cd73"
-    nginx: "sha256:b843244c85b2b5c67b9262b481cf6a0dd66f9bd7eb3afaa5aac5fd7795e4880c"
-    backup: "sha256:281e85f0a12a934a2d2fb92cf0299d46febe088109975916e5a30bb1b50f4113"
+    backend: "sha256:312c89c932898f97dcce3c5e8436e494f58b2d600648b62c7530506a49705ec5"
+    worker: "sha256:ff37e1a231a86b3017698f07d28d9b9aa8a713f5eebde6156a02834de07dfae1"
+    nginx: "sha256:33ef3455a0e7a713fc0cf0399783f0ae45af70988c082f2877a22be83134b51a"
+    backup: "sha256:924c9a38b27075a43761cbdb15062b9b5ec1113ce9d120498b4cd4b300fd301b"
 
 # The two PUBLIC subnet CIDRs from terraform/main.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
