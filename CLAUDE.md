@@ -929,7 +929,11 @@ one bug.** This is the most-repeated defect shape in this repository, and
 it is worth grepping for before writing anything that shells out:
 
 - **Pipe position.** `terraform apply | tail` reports the exit status of `tail`, so a FAILED apply
-  reads as 0.
+  reads as 0. **The reverse bites under `pipefail`: `producer | grep -q` turns a MATCH into a
+  miss** once the producer writes more than one pipe chunk — grep exits at the match, the
+  producer's next write dies of SIGPIPE (141). `changed-paths.sh` answered "nothing changed" for
+  every large commit this way, and `test-aws-pager-guard.sh` flaked only in CI (2026-09-17).
+  Capture into a variable, or drop `-q` and redirect to `/dev/null`.
 - **A status interpolated into a message that asserts success.** `scripts/drills/`'s first version
   printed `application-ci triggered (HTTP $code)` — and on 2026-08-24 that line read
   `application-ci triggered (HTTP 403)`, because a Jenkins CSRF crumb is bound to the session that

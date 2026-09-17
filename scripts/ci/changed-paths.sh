@@ -44,7 +44,11 @@ if ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
 fi
 
 # --diff-filter is deliberately absent: a DELETED file under services/ changes the image too.
-if git diff --name-only "${base}" HEAD -- "$prefix" | grep -q .; then
+# Captured, never piped into `grep -q`: grep exits at its first line, git's next write dies of
+# SIGPIPE, and pipefail turns that 141 into "nothing changed" -- deterministically for any diff
+# larger than one pipe write (a 3,000-file commit answered false every time).
+changed="$(git diff --name-only "${base}" HEAD -- "$prefix")"
+if [ -n "$changed" ]; then
   echo true
 else
   echo false

@@ -65,7 +65,9 @@ unguarded=()
 declare -A seen=()
 while IFS= read -r f; do
   # Comments stripped: several scripts discuss `aws ...` in prose without running it.
-  sed 's/#.*//' "$f" | grep -qE '(^|[^[:alnum:]_./-])aws[[:space:]]+[a-z0-9-]+[[:space:]]+[a-z0-9-]+' || continue
+  # Not `grep -q`: it exits at the first match, sed's next write dies of SIGPIPE, and pipefail
+  # reports the match as a miss -- a timing race that failed CI on 2026-09-17 and passed locally.
+  sed 's/#.*//' "$f" | grep -E '(^|[^[:alnum:]_./-])aws[[:space:]]+[a-z0-9-]+[[:space:]]+[a-z0-9-]+' >/dev/null || continue
   seen["$f"]=1
   [ -n "${EXEMPT[$f]:-}" ] && continue
   grep -q 'lib/config.sh' "$f" && continue
