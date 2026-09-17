@@ -221,7 +221,7 @@ pipeline.
 ## Nothing automates dependency updates
 
 There is no Dependabot or Renovate config. Python dependencies are exact-pinned
-(`flask==3.1.3`, `gunicorn==23.0.0`, `boto3==1.42.85`, …) which is right for reproducibility, but
+(`flask==3.1.3`, `gunicorn==26.2.0`, `boto3==1.43.96`, …; last swept 2026-09-17) which is right for reproducibility, but
 means they only move when someone moves them.
 
 **Dependabot is a poor fit for this repo, and that is a workflow fact rather than a gap.** It only ever

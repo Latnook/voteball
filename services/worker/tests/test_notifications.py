@@ -2,8 +2,8 @@
 import threading
 import time
 
-import notifications
 import db
+import notifications
 
 
 def test_times_out_and_returns_false_when_nothing_happens():

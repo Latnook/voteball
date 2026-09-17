@@ -1,5 +1,6 @@
 import collections
 
+import psycopg2
 import pytest
 import queries
 
@@ -211,7 +212,7 @@ def test_insert_vote_same_club_under_two_leagues_produces_two_rows(conn):
 def test_insert_vote_invalid_previous_vote_status_raises_and_rolls_back(conn):
     league_id, _ = _epl_and_liverpool(conn)
 
-    with pytest.raises(Exception):
+    with pytest.raises(psycopg2.Error):
         queries.insert_vote(
             conn, team_picks=[_pick(league_id)],
             previous_vote_status='not_a_real_status', previous_party_id=None,
@@ -271,7 +272,7 @@ def _seed_rollup_rows(conn):
 
 def test_get_results_by_club_includes_did_not_vote(conn):
     import queries
-    league_id, club_id, party_x = _seed_rollup_rows(conn)
+    _league_id, club_id, party_x = _seed_rollup_rows(conn)
 
     result = queries.get_results_by_club(conn, club_id)
     previous = {row['party_id']: row['count'] for row in result['previous']}
@@ -281,7 +282,7 @@ def test_get_results_by_club_includes_did_not_vote(conn):
 
 def test_get_results_by_party_previous(conn):
     import queries
-    league_id, club_id, party_x = _seed_rollup_rows(conn)
+    _league_id, club_id, party_x = _seed_rollup_rows(conn)
 
     result = queries.get_results_by_party(conn, 'previous', party_x)
     # club-scope rows collapse their league_id to NULL (see get_results_by_party's CASE) -- this
@@ -336,7 +337,7 @@ def test_get_results_by_party_previous_includes_crosstab(conn):
     # crosstab is a national (no league/club dimension) migration figure, so it's seeded via
     # rollup_national_previous_upcoming, not the per-scope rollup_previous_upcoming.
     import queries
-    league_id, club_id, party_x = _seed_rollup_rows(conn)
+    _league_id, _club_id, party_x = _seed_rollup_rows(conn)
 
     cur = conn.cursor()
     cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
@@ -360,7 +361,7 @@ def test_get_results_by_party_previous_includes_crosstab(conn):
 
 def test_get_results_by_party_upcoming_includes_crosstab(conn):
     import queries
-    league_id, club_id, party_x = _seed_rollup_rows(conn)
+    _league_id, _club_id, party_x = _seed_rollup_rows(conn)
 
     cur = conn.cursor()
     cur.execute("INSERT INTO upcoming_parties (name) VALUES ('Party A') RETURNING id")
@@ -384,7 +385,7 @@ def test_get_results_by_party_upcoming_includes_crosstab(conn):
 
 def test_get_results_by_party_crosstab_empty_when_no_data(conn):
     import queries
-    league_id, club_id, party_x = _seed_rollup_rows(conn)
+    _league_id, _club_id, party_x = _seed_rollup_rows(conn)
 
     result = queries.get_results_by_party(conn, 'previous', party_x)
     assert result['crosstab'] == []
@@ -1209,7 +1210,7 @@ def test_changed_field_records_exactly_that_field(conn):
     cur = conn.cursor()
     cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
                 "FROM clubs WHERE name_en = 'Bayern Munich'")
-    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+    club_id, league_id, domestic_id, name_en, name_he, name_ru, _logo_url = cur.fetchone()
 
     queries.rename_club(conn, club_id, league_id=league_id, domestic_league_id=domestic_id,
                         name_en=name_en, name_he=name_he, name_ru=name_ru,
@@ -1224,7 +1225,7 @@ def test_provenance_accumulates_across_saves(conn):
     cur = conn.cursor()
     cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
                 "FROM clubs WHERE name_en = 'Arsenal'")
-    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+    club_id, league_id, domestic_id, name_en, name_he, name_ru, _logo_url = cur.fetchone()
 
     queries.rename_club(conn, club_id, league_id, domestic_id, name_en, name_he, name_ru,
                         'https://example.invalid/one.svg')
@@ -1269,28 +1270,28 @@ def test_name_he_provenance_is_recorded_for_every_renamable_table(conn):
     cur = conn.cursor()
     cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM leagues "
                 "WHERE name_en = 'La Liga'")
-    lid, en, he, ru, logo = cur.fetchone()
+    lid, en, _he, ru, logo = cur.fetchone()
     queries.rename_league(conn, lid, en, 'ליגה בדיונית', ru, logo)
     cur.execute('SELECT admin_edited FROM leagues WHERE id = %s', (lid,))
     assert cur.fetchone()[0] == ['name_he']
 
     cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
                 "FROM clubs WHERE name_en = 'Bayern Munich'")
-    club_id, league_id, domestic_id, en, he, ru, logo = cur.fetchone()
+    club_id, league_id, domestic_id, en, _he, ru, logo = cur.fetchone()
     queries.rename_club(conn, club_id, league_id, domestic_id, en, 'מועדון בדיוני', ru, logo)
     cur.execute('SELECT admin_edited FROM clubs WHERE id = %s', (club_id,))
     assert cur.fetchone()[0] == ['name_he']
 
     cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM previous_parties "
                 "WHERE name_he = 'הליכוד'")
-    pid, en, he, ru, logo = cur.fetchone()
+    pid, en, _he, ru, logo = cur.fetchone()
     queries.rename_previous_party(conn, pid, en, 'מפלגה בדיונית', ru, logo)
     cur.execute('SELECT admin_edited FROM previous_parties WHERE id = %s', (pid,))
     assert cur.fetchone()[0] == ['name_he']
 
     cur.execute("SELECT id, name_en, name_he, name_ru, logo_url FROM upcoming_parties "
                 "WHERE name_he = 'הליכוד'")
-    uid, en, he, ru, logo = cur.fetchone()
+    uid, en, _he, ru, logo = cur.fetchone()
     queries.rename_upcoming_party(conn, uid, en, 'מפלגה בדיונית 2', ru, logo)
     cur.execute('SELECT admin_edited FROM upcoming_parties WHERE id = %s', (uid,))
     assert cur.fetchone()[0] == ['name_he']
@@ -1305,7 +1306,7 @@ def test_domestic_league_id_change_is_recorded_as_provenance(conn):
     cur = conn.cursor()
     cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
                 "FROM clubs WHERE name_en = 'Bayern Munich'")
-    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+    club_id, league_id, _domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
     cur.execute("SELECT id FROM leagues WHERE name_en = 'Serie A'")
     new_domestic_id = cur.fetchone()[0]
 
@@ -1324,7 +1325,7 @@ def test_league_id_change_is_recorded_as_provenance(conn):
     cur = conn.cursor()
     cur.execute("SELECT id, league_id, domestic_league_id, name_en, name_he, name_ru, logo_url "
                 "FROM clubs WHERE name_en = 'Bayern Munich'")
-    club_id, league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
+    club_id, _league_id, domestic_id, name_en, name_he, name_ru, logo_url = cur.fetchone()
     cur.execute("SELECT id FROM leagues WHERE name_en = 'La Liga'")
     new_league_id = cur.fetchone()[0]
 

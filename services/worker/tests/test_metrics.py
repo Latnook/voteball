@@ -12,12 +12,13 @@ import urllib.request
 # arrangement test_worker_loop.py already uses. conftest.py does not set it.
 os.environ.setdefault('SNS_TOPIC', 'arn:aws:sns:il-central-1:000000000000:test-topic')
 
-import metrics  # noqa: E402
-import worker  # noqa: E402  (import after env setup, matches test_worker_loop.py)
+# Imported after the env setup above, matching test_worker_loop.py.
+import metrics
+import worker
 
 
 def _reading(name, label=None):
-    from prometheus_client import generate_latest, REGISTRY
+    from prometheus_client import REGISTRY, generate_latest
     for line in generate_latest(REGISTRY).decode().splitlines():
         if not line.startswith(name):
             continue

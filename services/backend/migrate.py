@@ -13,9 +13,8 @@ idempotent (CREATE TABLE IF NOT EXISTS + seed inserts guarded by ON CONFLICT DO 
 """
 import os
 
-from psycopg2 import sql
-
 import db
+from psycopg2 import sql
 
 
 def _set_grafana_password(conn):

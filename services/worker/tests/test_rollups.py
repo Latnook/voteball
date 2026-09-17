@@ -37,7 +37,7 @@ def _seed_votes(conn):
 
 def test_recompute_builds_previous_and_upcoming_rollups(conn):
     import rollups
-    league_id, club_id, party_x, party_a, party_b = _seed_votes(conn)
+    _league_id, club_id, party_x, party_a, party_b = _seed_votes(conn)
 
     rollups.recompute(conn)
 
@@ -76,7 +76,7 @@ def test_recompute_is_idempotent(conn):
 
 def test_recompute_builds_previous_upcoming_crosstab(conn):
     import rollups
-    league_id, club_id, party_x, party_a, party_b = _seed_votes(conn)
+    _league_id, club_id, party_x, party_a, party_b = _seed_votes(conn)
 
     rollups.recompute(conn)
 
@@ -592,7 +592,7 @@ def test_dual_league_club_counts_at_both_leagues_in_upcoming_rollup(conn):
 
 def test_upcoming_weight_counts_ballots_not_picks(conn):
     import rollups
-    league_id, club_id, party_x, party_a, party_b = _seed_votes(conn)
+    _league_id, club_id, _party_x, party_a, party_b = _seed_votes(conn)
 
     rollups.recompute(conn)
 

@@ -1,10 +1,9 @@
 import os
 
+import db as db_module
 import psycopg2
 import psycopg2.sql
 import pytest
-
-import db as db_module
 
 
 def test_all_seeded_rows_have_both_languages(conn):
@@ -393,7 +392,7 @@ def test_nations_league_is_seeded_after_the_world_cup(conn):
     )
     row = cur.fetchone()
     assert row is not None, 'Nations League league row is missing'
-    name_en, name_he, name_ru, sort_order, logo_url = row
+    _name_en, name_he, name_ru, sort_order, logo_url = row
     assert (name_he, name_ru) == ('ליגת האומות', 'Лига наций УЕФА')
     assert logo_url == '/logos/uefa-nations-league.svg'
 
