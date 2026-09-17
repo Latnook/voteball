@@ -1,4 +1,5 @@
 import os
+
 import psycopg2
 
 DB_HOST = os.environ['DB_HOST']

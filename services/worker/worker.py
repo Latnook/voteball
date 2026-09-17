@@ -1,15 +1,14 @@
 import os
 import time
 
-import boto3
-
-import db
-import metrics
-import rollups
 import alerts
-import snapshots
+import boto3
+import db
 import heartbeat
+import metrics
 import notifications
+import rollups
+import snapshots
 
 SNS_TOPIC = os.environ['SNS_TOPIC']
 AWS_REGION = os.environ.get('AWS_REGION', 'il-central-1')
@@ -64,7 +63,7 @@ def run_iteration(sns, s3, snapshot_fingerprint):
         # Set only on success: a failed cycle that advanced this would make the staleness alert
         # unfireable, which is the failure the gauge exists to catch.
         metrics.LAST_SUCCESS.set(time.time())
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 -- a failed cycle must never kill the loop
         metrics.RECOMPUTES.labels(result='failure').inc()
         print(f'Worker iteration failed, will retry next cycle: {e}')
     finally:
@@ -98,12 +97,12 @@ if __name__ == '__main__':
                 listener = notifications.open_listener(db.get_db)
             if notifications.wait_for_change(listener, POLL_INTERVAL, DEBOUNCE_SECONDS):
                 metrics.NOTIFICATIONS.inc()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 -- degrade to polling, never crash (see above)
             print(f'Listener unavailable, falling back to polling this cycle: {e}')
             if listener is not None:
                 try:
                     listener.close()
-                except Exception:
+                except Exception:  # noqa: BLE001, S110 -- best-effort close of a dead listener
                     pass
             listener = None
             time.sleep(POLL_INTERVAL)

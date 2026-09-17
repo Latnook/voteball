@@ -729,9 +729,10 @@ def test_require_admin_rejects_token_with_bad_signature(client):
 
 
 def test_require_admin_rejects_expired_token(client):
-    import app as app_module
-    from unittest.mock import patch
     import time as time_module
+    from unittest.mock import patch
+
+    import app as app_module
 
     with patch.object(time_module, 'time', return_value=time_module.time() - 100000):
         old_token = app_module._admin_token_serializer.dumps(app_module.ADMIN_USERNAME)
@@ -741,8 +742,8 @@ def test_require_admin_rejects_expired_token(client):
 
 
 def test_clubs_domestic_league_id_and_global_name_uniqueness(conn):
-    import pytest
     import psycopg2
+    import pytest
     cur = conn.cursor()
     cur.execute("SELECT id FROM leagues WHERE name = 'EPL'")
     epl_id = cur.fetchone()[0]
@@ -1439,9 +1440,8 @@ def test_options_closes_its_connection_when_the_query_raises(client, monkeypatch
     without try/finally, so a raising query leaked its connection -- on the public, unauthenticated
     endpoint the canary hits every 30 seconds, which is the fastest possible way to exhaust the RDS
     connection limit."""
-    import pytest  # this module has no top-level imports; keep it that way
-
     import app as app_module
+    import pytest  # this module has no top-level imports; keep it that way
 
     closed = []
 

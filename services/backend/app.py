@@ -301,7 +301,7 @@ def vote():
     except ValueError:
         metrics.VOTES_REJECTED.labels(reason='duplicate').inc()
         return jsonify({'error': 'You have already voted'}), 409
-    except Exception:
+    except Exception:  # noqa: BLE001 -- any other insert failure is a bad ballot, answered 400
         metrics.VOTES_REJECTED.labels(reason='invalid-data').inc()
         return jsonify({'error': 'invalid vote data'}), 400
     finally:

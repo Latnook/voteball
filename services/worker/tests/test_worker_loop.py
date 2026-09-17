@@ -6,7 +6,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 os.environ.setdefault('SNS_TOPIC', 'arn:aws:sns:il-central-1:000000000000:test-topic')
 
-import worker  # noqa: E402  (import after env setup, matches conftest.py pattern)
+# Imported after the env setup above, matching the conftest.py pattern.
+import worker
 
 
 def test_run_iteration_success_closes_connection():

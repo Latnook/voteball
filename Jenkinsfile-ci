@@ -191,7 +191,7 @@ pipeline {
             // invocation: `python -m ruff --version` works).
             sh '''
               set -eu
-              pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location ruff==0.8.4
+              pip install --quiet --no-cache-dir --disable-pip-version-check --no-warn-script-location ruff==0.16.8
               python -m ruff check services/backend services/worker
             '''
           }
