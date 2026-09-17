@@ -251,6 +251,18 @@ delayed, confusing ways:
   never delivered — the exact failure this whole design exists to avoid, in the component that exists
   to avoid it.
 
+**Two data source "Test" results are red on purpose — do not "fix" them.** Measured 2026-09-17 on
+Grafana 13.2 (kube-prometheus-stack 91.4.1):
+
+- **CloudWatch** reports metrics OK and *logs query failed* (`AccessDeniedException` on
+  `logs:DescribeLogGroups`). The health check lists log groups account-wide; the IRSA policy scopes
+  every logs action to `/aws/containerinsights/<cluster>/*` (`terraform/modules/iam/main.tf`). Real
+  log queries naming those groups work — a Logs Insights query through `/api/ds/query` returned rows
+  the same day. Widening `DescribeLogGroups` to `*` would turn the test green and expose every log
+  group name in the account to Grafana.
+- **Alertmanager** answers `Plugin unavailable`: that data source type has no health endpoint. Its
+  proxied API (`/api/alertmanager/alertmanager/api/v2/status`) responds normally.
+
 NetworkPolicy does not sever established connections, so a mistake in either only breaks *reconnects* —
 which is why a target-count check run immediately after applying shows everything healthy.
 
