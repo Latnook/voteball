@@ -41,7 +41,7 @@ resource "helm_release" "external_secrets" {
   name             = "external-secrets"
   repository       = "https://charts.external-secrets.io"
   chart            = "external-secrets"
-  version          = "2.8.0" # verified latest via `helm search repo` on 2026-07-19 (app v2.8.0)
+  version          = "2.10.0" # verified latest via `helm search repo` on 2026-09-17 (app v2.10.0)
   namespace        = "external-secrets"
   create_namespace = true
 

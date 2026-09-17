@@ -119,20 +119,46 @@ rotation, or this table rots right along with the token it's supposed to be trac
 
 ## Version pins that drift
 
-Eight Helm charts and the EKS add-ons are pinned, all re-verified against the repo on 2026-07-30
-(the date each pin was last confirmed *latest*, which is the number that matters — a pin nobody has
-re-checked is the one that has drifted):
+Nine Helm charts and the EKS add-ons are pinned. The table records the date each pin was last
+confirmed *latest*, which is the number that matters — a pin nobody has re-checked is the one that
+has drifted:
 
 | Chart | Pinned | Last confirmed latest |
 |---|---|---|
-| ArgoCD | 10.2.1 | 2026-07-30 |
-| AWS Load Balancer Controller | 3.4.3 | 2026-07-30 |
-| kube-prometheus-stack | 87.21.0 | 2026-07-30 |
-| External Secrets Operator | 2.8.0 | 2026-07-30 |
-| Cluster Autoscaler | 9.59.0 | 2026-07-30 |
-| external-dns | 1.21.1 | 2026-07-30 |
-| metrics-server | 3.13.1 | 2026-07-30 |
-| Node Termination Handler | 0.21.0 | 2026-07-30 |
+| ArgoCD | 10.9.2 (app v3.5.3) | 2026-09-17 |
+| AWS Load Balancer Controller | 3.5.0 | 2026-09-17 |
+| kube-prometheus-stack | 91.4.1 (operator v0.94.0) | 2026-09-17 |
+| External Secrets Operator | 2.10.0 | 2026-09-17 |
+| Cluster Autoscaler | 9.59.0 (image overridden to v1.36.1, see above) | 2026-09-17 |
+| external-dns | 1.22.0 (app v0.22.0) | 2026-09-17 |
+| metrics-server | 3.14.0 | 2026-09-17 |
+| Node Termination Handler | 0.21.0 | 2026-09-17 |
+| Jenkins | 5.9.63 | 2026-09-17 |
+| ECK operator | 3.5.0 | 2026-09-17 |
+
+**kube-prometheus-stack: helm does NOT upgrade its CRDs.** They live in `charts/crds/crds/`, which
+Helm installs once and never touches again, so a chart bump that moves the operator version needs the
+CRDs applied by hand *before* `terraform apply`, on the running cluster only (a fresh deploy installs
+the current set itself):
+
+```
+helm show crds prometheus-community/kube-prometheus-stack --version <new> \
+  | kubectl apply --server-side --force-conflicts -f -
+```
+
+`--force-conflicts` is required: the live CRDs are owned by the Terraform Helm provider's field
+manager, so a plain server-side apply refuses. Done for 87.21.0 → 91.4.1 on 2026-09-17. Read every
+major's section of the chart's UPGRADE.md; that jump moved Grafana to the distroless 13.x image and
+added a long-lived `kube-prometheus-stack-prometheus-token` Secret for control-plane scraping.
+
+**external-dns v0.22 (chart 1.22.0) reads only `external-dns.kubernetes.io/*` annotations**, with no
+fallback to the old `external-dns.alpha.kubernetes.io/*` prefix — upstream warns a missed rename can
+delete records. Both Ingress templates were renamed first. It also renames the AWS ownership TXT for
+an A record from `cname-<host>` to `a-<host>`; `scripts/cleanup-stale-dns.sh` matches the TXT
+*value*, so it is unaffected.
+
+**These 2026-09-17 bumps were applied in place.** Per the rule in `CLAUDE.md`, they are not proven
+until a destroy → deploy cycle has passed on them.
 
 The two native **EKS add-ons** (`aws_eks_addon`, not `helm_release`) are not both pinned the same
 way, and that asymmetry is worth stating plainly rather than leaving "the EKS add-ons are pinned"
@@ -257,11 +283,11 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   Plugin updates are the most common source of both security advisories and behaviour changes. After
   bumping the plugin set, **re-test the webhook with a SHA-256 signature** — signed should give `200`,
   unsigned `400`.
-- **`moby/buildkit:v0.19.0-rootless`, `aquasec/trivy:0.74.0` (bumped from 0.58.1 on 2026-09-15, which predated alpine 3.24 and warned it was not on its EOL list), `quay.io/skopeo/stable:v1.17.0`,
-  `amazon/aws-cli:2.22.0`, `python:3.12-slim` (lint/test), `postgres:16-alpine` (ephemeral test DB,
-  not the app's own `postgres:17-alpine` base image) and `hadolint/hadolint:2.12.0-alpine`** are
+- **`moby/buildkit:v0.33.0-rootless`, `aquasec/trivy:0.74.0` (bumped from 0.58.1 on 2026-09-15, which predated alpine 3.24 and warned it was not on its EOL list), `quay.io/skopeo/stable:v1.22.2`,
+  `amazon/aws-cli:2.36.47`, `python:3.12-slim` (lint/test), `postgres:16-alpine` (ephemeral test DB,
+  not the app's own `postgres:17-alpine` base image) and `hadolint/hadolint:v2.15.1-alpine`** (note the `v` — hadolint's tags gained it, and `2.15.1-alpine` 404s), plus the `promtool-fetch` init container's `prom/prometheus:v3.14.0`, which must match the Prometheus server kube-prometheus-stack deploys are
   pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod template (`application-ci`);
-  `alpine/k8s:1.31.3` and `quay.io/argoproj/argocd:v3.4.5` (matched to the
+  `alpine/k8s:1.36.4` (track the cluster minor) and `quay.io/argoproj/argocd:v3.5.3` (matched to the
   running ArgoCD server's app version, not just any tag) are pinned in the `voteball-deploy` template
   (`application-cd`). The Trivy vulnerability *database* refreshes on every run via `--db-repository`,
   so scanning stays current, but every pinned binary ages and stops learning new formats/APIs. Pinning

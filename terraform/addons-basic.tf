@@ -4,7 +4,7 @@ resource "helm_release" "metrics_server" {
   name       = "metrics-server"
   repository = "https://kubernetes-sigs.github.io/metrics-server/"
   chart      = "metrics-server"
-  version    = "3.13.1" # verified against K8s 1.34 via `helm search repo` on 2026-07-19
+  version    = "3.14.0" # verified latest via `helm search repo` on 2026-09-17 (app v0.9.0, built against K8s 1.36)
   namespace  = "kube-system"
 }
 

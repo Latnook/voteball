@@ -139,7 +139,7 @@ resource "helm_release" "jenkins_support" {
 # could drift apart silently -- a maintainer bumping only `version` would get a successful apply
 # that installs nothing new.
 locals {
-  jenkins_chart_version = "5.9.45" # verified via `helm search repo jenkins/jenkins --versions` on 2026-07-30 (app v2.568.1)
+  jenkins_chart_version = "5.9.63" # verified via `helm search repo jenkins/jenkins --versions` on 2026-09-17 (app v2.568.3)
 }
 
 # ---- Jenkins itself ----
@@ -218,7 +218,7 @@ resource "helm_release" "jenkins" {
         # kubernetes_config_map_v1.jenkins_casc below, which the chart's config-reload sidecar picks up
         # by label exactly as it picked up the chart-rendered one.
         #
-        # EMPTY, and they must stay empty. The chart (5.9.45, templates/jcasc-config.yaml) renders its
+        # EMPTY, and they must stay empty. The chart (5.9.45 through 5.9.63, templates/jcasc-config.yaml) renders its
         # own `securityRealm` and `authorizationStrategy` ConfigMaps unless configScripts contains
         # those strings -- a text check, which our file passed silently while it lived in configScripts.
         # Once it moved out, both defaults rendered, collided with the same keys in jenkins.yaml, and

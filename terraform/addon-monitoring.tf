@@ -6,7 +6,7 @@ resource "helm_release" "kube_prometheus_stack" {
   name       = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  version    = "87.21.0" # verified latest via `helm search repo` on 2026-07-30 (app v0.92.1)
+  version    = "91.4.1" # verified latest via `helm search repo` on 2026-09-17 (app v0.94.0) -- CRDs applied by hand first, see docs/maintenance.md
   # The brief names this namespace. Renaming REPLACES the release: Terraform destroys and recreates
   # it, so the stack is down for the length of one apply. Nothing is lost -- see the storage block
   # below for what is and is not persistent.

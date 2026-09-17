@@ -107,7 +107,7 @@ See decision 5 in `docs/design/2026-08-24-grafana-datasources-design.md`.
 
 ## 3. The stack itself
 
-`kube-prometheus-stack` (chart `87.21.0`, prometheus-community) in namespace **`observability`**,
+`kube-prometheus-stack` (chart `91.4.1`, prometheus-community) in namespace **`observability`**,
 installed as `helm_release.kube_prometheus_stack`. It brings Prometheus, Grafana, Alertmanager,
 kube-state-metrics and node-exporter in one release.
 
