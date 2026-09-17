@@ -34,7 +34,7 @@ metadata:
     # does not exist at apply time. ARN written by scripts/sync-values-from-tf.sh.
     alb.ingress.kubernetes.io/wafv2-acl-arn: {{ .Values.ingress.wafAclArn | quote }}
     {{- end }}
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.ingress.host | quote }}
+    external-dns.kubernetes.io/hostname: {{ .Values.ingress.host | quote }}
 spec:
   ingressClassName: alb
   rules:

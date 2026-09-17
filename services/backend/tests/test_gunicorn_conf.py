@@ -83,3 +83,16 @@ def test_child_exit_calls_mark_process_dead_with_the_worker_pid(monkeypatch):
 
     module.child_exit(server=None, worker=FakeWorker())
     assert reaped == [4242]
+
+
+def test_control_socket_is_disabled_under_gunicorns_own_settings():
+    # gunicorn 25.1+ opens a control socket under $HOME by default; the root filesystem is read-only,
+    # so it logged "Control server error" on every start. Checked through gunicorn's Config rather
+    # than the module attribute alone: an unknown or misspelled setting name is silently ignored.
+    from gunicorn.config import Config
+    module = _load()
+    cfg = Config()
+    for name in cfg.settings:
+        if hasattr(module, name):
+            cfg.set(name, getattr(module, name))
+    assert cfg.control_socket_disable is True

@@ -16,7 +16,7 @@
 # "google-site-verification=..." (added 2026-07-31, see docs/design/2026-07-31-seo-design.md). It is
 # intentionally outside Terraform and must survive every teardown -- deleting it un-verifies Google
 # Search Console and loses the property's search history. Do NOT broaden the filter to "every TXT at
-# our host": external-dns keeps its own registry under PREFIXED names (cname-<host>, aaaa-<host>),
+# our host": external-dns keeps its own registry under PREFIXED names (a-<host>, aaaa-<host>; cname-<host> before v0.22),
 # so nothing it manages lives at the bare host name, and a broader filter would catch only this.
 set -euo pipefail
 cd "$(dirname "$0")/.."   # repo root
@@ -49,7 +49,7 @@ records_json() {
 }
 
 # Records are only eligible when an ownership TXT names this cluster. external-dns stores that marker
-# in a sibling TXT whose name embeds the record type, e.g. cname-<host> for the A
+# in a sibling TXT whose name embeds the record type, e.g. a-<host> (cname-<host> before v0.22) for the A
 # record. We require at least one such TXT before deleting anything.
 owned_marker_present() {
   records_json | python3 -c "

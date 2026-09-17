@@ -83,7 +83,7 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: {{ . | quote }}
     {{- end }}
     alb.ingress.kubernetes.io/healthcheck-path: /api/status
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.kibana.ingress.host | quote }}
+    external-dns.kubernetes.io/hostname: {{ .Values.kibana.ingress.host | quote }}
 spec:
   ingressClassName: alb
   rules:

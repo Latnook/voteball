@@ -102,7 +102,7 @@ commit-count widget is not an incident.
 
 **Action:** mint a new fine-grained PAT with the same scope (`Latnook/voteball`, read-only Contents +
 Metadata + Issues) at github.com/settings/tokens, then run
-`GITHUB_TOKEN=<new token> FORCE_ROTATE=1 ROTATE_WHAT=github_token ./scripts/seed-grafana-secret.sh`
+`GRAFANA_GITHUB_TOKEN=<new token> FORCE_ROTATE=1 ROTATE_WHAT=github_token ./scripts/seed-grafana-secret.sh`
 — `FORCE_ROTATE=1` is required here too, for the same reason it's required to rotate `db_password`:
 the script exits early on an already-seeded secret so a routine `deploy.sh` re-run can't silently
 invalidate a working credential. **`ROTATE_WHAT=github_token` is load-bearing, not optional** — the
