@@ -275,11 +275,15 @@ project and it hasn't been projected yet — no churn on a routine re-run. (This
 root `CLAUDE.md` records for Jenkins, where a new key in `voteball/jenkins` needs a controller restart
 for the same reason — a rule written for one component does not generalise itself to its neighbour,
 which is exactly how this was found the first time.) It verifies the projection landed rather than
-assuming:
+assuming. Grafana 13's image is distroless, so there is no shell to `kubectl exec` into; the script
+asks the API instead — the variable is present when every running `grafana` container started after
+the Secret was created. To check by hand, compare the two, or ask Grafana directly:
 
 ```bash
-kubectl exec -n observability deploy/kube-prometheus-stack-grafana -c grafana -- \
-  sh -c 'echo "${GF_DATASOURCE_DB_PASSWORD:+set}"'      # prints "set", or nothing at all
+kubectl get secret grafana-datasources -n observability -o jsonpath='{.metadata.creationTimestamp}{"\n"}'
+kubectl get pods -n observability -l app.kubernetes.io/name=grafana \
+  -o jsonpath='{range .items[*].status.containerStatuses[?(@.name=="grafana")]}{.state.running.startedAt}{"\n"}{end}'
+# or: Grafana > Connections > Data sources > PostgreSQL > Test  ->  "Database Connection OK"
 ```
 
 **Skipping all of this remains safe, if you ever want to.** Both `terraform/addon-monitoring.tf`

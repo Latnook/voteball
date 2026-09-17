@@ -76,6 +76,39 @@ run GRAFANA_GET_SECRET_CMD='true' \
 [ -e "$TMP/restarted-5" ] && ok "still attempted the restart" || bad "never restarted"
 grep -qi "still not set" <<<"$OUT" && ok "says the verification failed" || bad "no failure explanation: $OUT"
 
+echo "6. the REAL projection check, against a fake kubectl (no GRAFANA_CHECK_ENV_CMD stub)"
+# Grafana 13 is distroless: no shell, so the check must be answerable from the API alone. A fake
+# kubectl on PATH serves the Secret's key and creationTimestamp, the Deployment selector and the
+# grafana containers' start times; the answer has to follow the timestamps in BOTH directions.
+mkdir -p "$TMP/bin"
+cat > "$TMP/bin/kubectl" <<'KUBECTL'
+#!/usr/bin/env bash
+case "$*" in
+  *exec*) echo "fake kubectl: exec is not available in a distroless container" >&2; exit 1 ;;
+  "get secret "*GF_DATASOURCE_DB_PASSWORD*) printf '%s' "${FAKE_KEY-c2VjcmV0}" ;;
+  "get secret "*creationTimestamp*) printf '%s' "2026-09-17T16:48:48Z" ;;
+  "get deployment "*) printf '%s' "app.kubernetes.io/name=grafana," ;;
+  "get pods "*) printf '%b' "$FAKE_STARTS" ;;
+  *) echo "fake kubectl: unexpected call: $*" >&2; exit 1 ;;
+esac
+KUBECTL
+chmod +x "$TMP/bin/kubectl"
+realrun() { run PATH="$TMP/bin:$PATH" GRAFANA_GET_SECRET_CMD='true' GRAFANA_GET_DEPLOYMENT_CMD='true' \
+  GRAFANA_ROLLOUT_STATUS_CMD='true' "$@"; }
+realrun FAKE_STARTS='2026-09-17T16:50:00Z\n' GRAFANA_RESTART_CMD="touch $TMP/restarted-6a"
+[ -e "$TMP/restarted-6a" ] && bad "restarted a pod that started AFTER the Secret: $OUT" || ok "started after the Secret -> projected, no restart"
+realrun FAKE_STARTS='2026-09-17T16:40:00Z\n' GRAFANA_RESTART_CMD="touch $TMP/restarted-6b"
+[ -e "$TMP/restarted-6b" ] && ok "started before the Secret -> restarted" || bad "left a pod that predates the Secret: $OUT"
+realrun FAKE_STARTS='2026-09-17T16:50:00Z\n2026-09-17T16:40:00Z\n' GRAFANA_RESTART_CMD="touch $TMP/restarted-6c"
+[ -e "$TMP/restarted-6c" ] && ok "one of two pods predates the Secret -> restarted" || bad "ignored a stale second pod: $OUT"
+realrun FAKE_KEY='' FAKE_STARTS='2026-09-17T16:50:00Z\n' GRAFANA_RESTART_CMD="touch $TMP/restarted-6d"
+[ -e "$TMP/restarted-6d" ] && ok "Secret without the key -> not treated as projected" || bad "treated a keyless Secret as projected: $OUT"
+if sed 's/#.*//' "$SCRIPT_UNDER_TEST" | grep -E 'kubectl[[:space:]]+exec' >/dev/null; then
+  bad "the script runs kubectl exec again -- Grafana's image has no shell to exec into"
+else
+  ok "no kubectl exec into the (distroless) Grafana container"
+fi
+
 echo
 if [ "$fail" -gt 0 ]; then echo "FAIL — $fail of $((pass+fail)) checks failed" >&2; exit 1; fi
 echo "PASS — all $pass checks green"
@@ -97,7 +130,7 @@ out="$(env \
   GRAFANA_WAIT_SECONDS=20 \
   GRAFANA_GET_SECRET_CMD='n=$(cat '"$_probe"'); n=$((n+1)); printf %s "$n" > '"$_probe"'; [ "$n" -ge 3 ]' \
   GRAFANA_GET_DEPLOYMENT_CMD='true' \
-  GRAFANA_ENV_CMD='echo notset' \
+  GRAFANA_CHECK_ENV_CMD='echo set' \
   GRAFANA_RESTART_CMD='echo restarted' \
   GRAFANA_ROLLOUT_STATUS_CMD='true' \
   bash scripts/restart-grafana-datasources.sh 2>&1)" || true

@@ -157,8 +157,13 @@ delete records. Both Ingress templates were renamed first. It also renames the A
 an A record from `cname-<host>` to `a-<host>`; `scripts/cleanup-stale-dns.sh` matches the TXT
 *value*, so it is unaffected.
 
-**These 2026-09-17 bumps were applied in place.** Per the rule in `CLAUDE.md`, they are not proven
-until a destroy → deploy cycle has passed on them.
+**These 2026-09-17 bumps were applied in place and then proven from scratch** the same evening: a
+full `destroy.sh` → `deploy.sh` cycle completed on them (all three ArgoCD Applications Synced/Healthy,
+every release at its new version, site 200). The rebuild found one casualty: step 11d's Grafana check
+ran `kubectl exec … sh -c`, and Grafana 13's distroless image has no shell, so it restarted Grafana
+needlessly and warned about a missing password while the PostgreSQL data source was healthy.
+`restart-grafana-datasources.sh` now asks the API instead. **Before a chart bump that moves an image
+to distroless, grep for `kubectl exec` into it.**
 
 The two native **EKS add-ons** (`aws_eks_addon`, not `helm_release`) are not both pinned the same
 way, and that asymmetry is worth stating plainly rather than leaving "the EKS add-ons are pinned"
