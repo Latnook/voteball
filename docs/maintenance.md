@@ -283,12 +283,15 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
 
 ## Routine housekeeping
 
-- **RDS snapshots accumulate** — one per teardown (**nine** in the account as of 2026-07-29). Only the
-  newest is ever used by `find-latest-snapshot.sh`. Prune to the most recent N. When you do, sort by
-  `SnapshotCreateTime` and **never by the identifier** — the name embeds the *deploy* date, so the
-  newest snapshot can carry the oldest-looking name (`voteball-eks-db-final-20260722065933` was
-  created 2026-07-27).
-- **CloudWatch log groups have no retention policy** — they grow and bill indefinitely. Set 14–30 days.
+- **RDS snapshots accumulate** — one per teardown — and are now **pruned automatically**:
+  `destroy.sh`'s last step runs `scripts/prune-db-snapshots.sh --apply`, retaining the newest 7
+  (verified 2026-09-17: 7 manual snapshots, dry-run reports nothing to prune). Run the script without
+  `--apply` to check. Any manual pruning must sort by `SnapshotCreateTime` and **never by the
+  identifier** — the name embeds the *deploy* date, so the newest snapshot can carry the
+  oldest-looking name (`voteball-eks-db-final-20260722065933` was created 2026-07-27).
+- **CloudWatch log groups carry retention** — the pod-log groups are 7 days
+  (`terraform/addon-cloudwatch.tf`); verified 2026-09-17 that no `voteball` group is unbounded.
+  Re-check after enabling anything new in that file.
 - **`values.yaml` churn** — every deploy and every CI build commits to `master`. Harmless, but the
   history is noisy; that is the cost of the GitOps model.
 - **ACM certificate** renews automatically (DNS-validated). No action — this replaced the k3s certbot

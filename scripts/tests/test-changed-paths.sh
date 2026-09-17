@@ -77,6 +77,16 @@ DEL_BASE="$(git rev-parse HEAD~0)"
 commit 'delete seed' >/dev/null
 want "a deleted file under the prefix counts" true "$("$SCRIPT" "$DEL_BASE" services/)"
 
+# --- 4b. A LARGE change counts -----------------------------------------------------------------
+# `git diff | grep -q .` under pipefail answered false for any diff bigger than one pipe write:
+# grep exits at line one, git dies of SIGPIPE, and the 141 read as "nothing changed" -- a big
+# commit would have gone green while skipping Build and Deploy (found 2026-09-17).
+BIG_BASE="$(git rev-parse HEAD)"
+mkdir -p services/bulk
+for i in $(seq 3000); do echo "$i" > "services/bulk/file_with_a_reasonably_long_name_$i.txt"; done
+commit 'bulk change' >/dev/null
+want "a diff larger than one pipe write still counts" true "$("$SCRIPT" "$BIG_BASE" services/)"
+
 # --- 5. Argument handling ----------------------------------------------------------------------
 if "$SCRIPT" "$BASE" >/dev/null 2>&1; then
   bad "rejects a missing prefix" "exited 0"

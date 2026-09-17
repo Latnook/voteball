@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-09-15 against jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
+# Generated 2026-09-17 against jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -65,7 +65,7 @@ jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
 junit:1425.v9c7318dca_96d
-kubernetes:4547.v52f3080db_8cd
+kubernetes:4557.ve746270f672f
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
 mailer:534.v1b_36f5864073
@@ -75,7 +75,7 @@ mina-sshd-api-core:2.19.0-192.v2b_a_7b_2c1dc71
 okhttp-api:5.3.2-200.vedb_720a_cf1f8
 pipeline-build-step:601.v6d4c6d1a_9dc7
 pipeline-graph-analysis:254.v0f63a_a_447dca_
-pipeline-groovy-lib:805.va_fc79344957d
+pipeline-groovy-lib:806.v408277b_33d1d
 pipeline-input-step:560.v56198a_642157
 pipeline-milestone-step:152.v6e22b_8cfc66c
 pipeline-model-api:2.2293.v6e7193cec599
@@ -89,7 +89,7 @@ plugin-util-api:7.1341.v039f146993d9
 prism-api:1.30.0-741.v034eb_0b_0a_a_fa_
 prometheus:860.v532442b_44e9a_
 scm-api:728.vc30dcf7a_0df5
-script-security:1415.v9a_f9b_3a_c253d
+script-security:1422.v06869826dd9b_
 snakeyaml-api:2.5-149.v72471e9c6371
 snakeyaml-engine-api:3.1.1-12.v4320c7d6f89c
 ssh-agent:433.v9e73d67c3f74
@@ -103,10 +103,10 @@ woodstox-core-api:7.2.2-10.vcb_629759b_2c2
 workflow-aggregator:608.v67378e9d3db_1
 workflow-api:1413.v2ff1a_5e720fa_
 workflow-basic-steps:1098.v808b_fd7f8cf4
-workflow-cps:4380.v6eb_8378b_9647
+workflow-cps:4383.v04fa_a_3d67b_d9
 workflow-durable-task-step:1479.v56e587f413a_7
 workflow-job:1600.v6f36ed83529d
-workflow-multibranch:841.vec5b_9e1806ec
+workflow-multibranch:842.v3a_b_59b_57b_e6e
 workflow-scm-step:487.v41313a_96b_65d
 workflow-step-api:724.v538c2362b_dfb_
 workflow-support:1015.v785e5a_b_b_8b_22
