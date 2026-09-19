@@ -13,7 +13,7 @@ image:
   # recovers the rollback target with `git log -p` over this file, so its history IS the rollback
   # mechanism. Written by scripts/sync-values-from-tf.sh and application-cd. A git SHA of a public
   # repo leaks nothing.
-  tag: "1063587"
+  tag: "5414fc4"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -30,7 +30,7 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:298362d2df2651f1ae6ef2f58dd1e51b4eba9d62e65f1ed8117efa9b154225d5"
+    backend: "sha256:b5d682150bd1c7544bb34aeb6e29219a4c9752cbd7b6dd67a884d28f26dbdbf8"
     worker: "sha256:16f22c8a0911dfb5b8aa074e8780ee5a0cbf2ae76d84878f86f7e94762719106"
     nginx: "sha256:f45adec214d44e7317cd514a37bd44547e9a768aabf13391ecf3a89629ff71f5"
     backup: "sha256:1965a7edf71f16e26f67655863fa5a5be1acff6312bf4211942261f39fbcdd52"
