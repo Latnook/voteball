@@ -108,7 +108,10 @@ All three failure modes were verified by mutating `seed.sql` against
 Verify a single-value revision the way every one has been: seed a container with the *previous* file,
 apply the new one on top, and confirm the value actually moves on the already-seeded row — testing
 against a fresh database only proves the literal is spelled right, not that an existing row's stale
-value gets overwritten.
+value gets overwritten. **Run each `psql -f` with `-1`**: the `seed_*` staging tables are
+`TEMP ... ON COMMIT DROP`, so under autocommit they vanish after the first statement and the rest
+fail with `relation "seed_leagues" does not exist` — which reads as a broken seed file rather than a
+missing flag. See the command block in `docs/party-classifications.md`.
 
 **`upcoming_parties.on_ballot` is a BALLOT flag, not a classification** (added 2026-09-06, default
 `TRUE`, seed-owned and written unconditionally by the same `UPDATE` as the ideology columns). `FALSE`
