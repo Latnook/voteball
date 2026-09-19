@@ -267,8 +267,19 @@ children_of() {
 # Ctrl-C, so the litter is guaranteed, not hypothetical.
 VOTEBALL_WATCH_START_DELAY=30 VOTEBALL_WATCH_POLL_SECS=30 "$SCRIPT" apply >/dev/null 2>&1 &
 wpid=$!
-sleep 1
-kids="$(children_of "$wpid")"
+# Wait until the child IS the nap's `sleep`, not a fixed second. On a CPU-starved agent the watcher
+# can still be sourcing config.sh at 1s -- its children are then startup subprocesses and its traps
+# are not installed yet, so the kill below tests nothing this check is about. That is the likeliest
+# reading of the 2026-09-17 CI failure (same commit green locally and in earlier builds).
+kids=""
+for _ in $(seq 1 100); do
+  kids=""
+  for k in $(children_of "$wpid"); do
+    [ "$(cat "/proc/$k/comm" 2>/dev/null)" = "sleep" ] && kids="$kids $k"
+  done
+  [ -n "${kids//[[:space:]]/}" ] && break
+  sleep 0.1
+done
 [ -n "${kids//[[:space:]]/}" ] || fail "expected the watcher to be waiting on a backgrounded sleep child"
 kill "$wpid" 2>/dev/null
 # BOUNDED WAIT, not `sleep 1` then check once. The cleanup is trap-driven and asynchronous, so a
@@ -285,7 +296,7 @@ for _ in $(seq 1 50); do
   sleep 0.1
 done
 for k in $kids; do
-  kill -0 "$k" 2>/dev/null && fail "killing the watcher orphaned its sleep child (pid $k, still alive after 5s)"
+  kill -0 "$k" 2>/dev/null && fail "killing the watcher orphaned its sleep child (pid $k [$(cat "/proc/$k/cmdline" 2>/dev/null | tr "\\0" " ")], still alive after 5s)"
 done
 ok "killing the watcher takes its sleep child with it (no orphans on Ctrl-C)"
 

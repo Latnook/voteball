@@ -73,10 +73,30 @@ deployment_exists() {
 }
 
 # Prints "set" (and only "set") when the running pod already has the credential projected.
+#
+# Asked of the API server, NOT of the container. Grafana 13 (kube-prometheus-stack 89+) ships a
+# distroless image with no shell, so the old `kubectl exec ... sh -c 'echo $VAR'` could never answer
+# "set" -- every deploy restarted Grafana for nothing and then warned that the password was missing
+# while the PostgreSQL data source was healthy (2026-09-17 rebuild). The equivalent question the API
+# CAN answer: envFrom projects a Secret at container start, so the variable is present exactly when
+# the Secret holds the key and every live grafana container started at or after the Secret was
+# created. RFC 3339 UTC timestamps compare correctly as strings.
 env_is_projected() {
   if [ -n "${GRAFANA_CHECK_ENV_CMD:-}" ]; then ( eval "$GRAFANA_CHECK_ENV_CMD" ); return; fi
-  kubectl exec -n "$NS" "deploy/$DEPLOYMENT" -c grafana -- \
-    sh -c 'echo "${GF_DATASOURCE_DB_PASSWORD:+set}"' 2>/dev/null
+  local created selector starts s
+  [ -n "$(kubectl get secret "$SECRET" -n "$NS" -o jsonpath='{.data.GF_DATASOURCE_DB_PASSWORD}' 2>/dev/null)" ] || return 0
+  created="$(kubectl get secret "$SECRET" -n "$NS" -o jsonpath='{.metadata.creationTimestamp}' 2>/dev/null)"
+  selector="$(kubectl get deployment "$DEPLOYMENT" -n "$NS" \
+    -o go-template='{{range $k, $v := .spec.selector.matchLabels}}{{$k}}={{$v}},{{end}}' 2>/dev/null)"
+  selector="${selector%,}"
+  [ -n "$created" ] && [ -n "$selector" ] || return 0
+  # Terminating pods are skipped: right after a rollout the old one can still be listed.
+  starts="$(kubectl get pods -n "$NS" -l "$selector" -o go-template='{{range .items}}{{if not .metadata.deletionTimestamp}}{{range .status.containerStatuses}}{{if eq .name "grafana"}}{{with .state.running}}{{.startedAt}}{{"\n"}}{{end}}{{end}}{{end}}{{end}}{{end}}' 2>/dev/null)"
+  [ -n "$starts" ] || return 0
+  for s in $starts; do
+    [[ "$s" < "$created" ]] && return 0
+  done
+  echo set
 }
 
 restart_grafana() {
@@ -119,5 +139,5 @@ fi
 
 echo "restart-grafana-datasources: restarted Grafana, but GF_DATASOURCE_DB_PASSWORD is still not set" >&2
 echo "  in the running container. The PostgreSQL data source will keep failing SASL auth. Check:" >&2
-echo "    kubectl exec -n ${NS} deploy/${DEPLOYMENT} -c grafana -- sh -c 'echo \"\${GF_DATASOURCE_DB_PASSWORD:+set}\"'" >&2
+echo "    kubectl get pods -n ${NS} -l app.kubernetes.io/name=grafana -o wide   # start time vs the Secret's creationTimestamp" >&2
 exit 1
