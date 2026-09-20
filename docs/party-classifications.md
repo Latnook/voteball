@@ -729,6 +729,38 @@ bodies supplied by the repo owner.)
   and all twelve are expected to fail. Recorded so a later pass finding one filing in isolation does
   not read it as a coalition-exclusion signal.
 
+**2026-09-20 — revision 100. The women's-representation survey read; this row is its sharpest case
+and NOTHING moves, on a rule ישר already paid for. ארז תדמור at #27 independently confirms revision
+99's certified list. No axis moved, no tag added, `seed.sql` unchanged.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-20/ty-article-magazine/.premium/000001a0-a943-d5b2-a9ee-abcb25220000) on the status of women, and [הארץ](https://www.haaretz.co.il/news/politics/2026-09-20/ty-article/.highlight/000001a0-bafc-d160-a3ae-beff516e0000) on the 7 October narrative — bodies
+supplied by the repo owner.)
+
+- **The list-is-not-a-programme rule now cuts against this row, which is the test of it.** מיזם 50/50's
+  יעל יחיאלי scores הליכוד as *"חזרה 15 שנים אחורה… רק שתיים או שלוש נשים במקומות ריאליים"*, against
+  five lists she counts as balanced or near-balanced — *"מפלגות ישר, הדמוקרטים וגנץ בנויות ממש על
+  50-50, ומפלגות ביחד ועמך ישראל נושקות לכך"*. **Nothing is recorded in either direction.** The rule
+  was established by refusing ישר the tag *"against a much stronger fact"* — its chairman's own
+  *"התחייבות המפלגה לשוויון בין גברים לנשים"* plus 14 of the top 30 — and **a third party's count is a
+  weaker instrument than a party's statement about its own list**. A rule that only ever cost the
+  opposition rows a tag would be worth distrusting; this is the pass where it declines to hand this
+  row a negative one.
+- **`gender-equality` therefore stays off עמך ישראל too**, whose list the same source calls
+  near-balanced. Granting it on an NGO's count, to a row whose own tags number eight, while ישר is
+  refused it on the party chairman's own commitment, would make the tag record who got counted.
+- **הציבור החרדי placing women at #3 and #4 is the most interesting fact in the survey and still
+  earns nothing.** For a haredi list that is without precedent — ש"ס and יהדות התורה carry no women
+  at all — and it points the same way as that row's `anti-haredi-establishment`. **Same rule, applied
+  where it costs something in the other direction**: a list is not a programme.
+- **ארז תדמור #27 checks out against the certified filing** read in revision 99, which is the
+  cheapest available confirmation that the two passes are reading the same list — the same check
+  revision 24 ran on ברקת and תדמור. His book *"מרד הגנרלים"* is described as the manifesto framing
+  נתניהו's campaign ([הארץ](https://www.haaretz.co.il/news/politics/2026-09-20/ty-article/.highlight/000001a0-bafc-d160-a3ae-beff516e0000)); **a candidate's book is not a party position**, the rule that
+  refused ברדוגו's שב"כ meeting in revision 99.
+- **The UAE denial is logged against revision 99's איזנקוט claim and settles nothing.** An official
+  Emirati source now says בן זאיד did not warn נתניהו, against איזנקוט's *"על פי המידע שלי, עבר מידע
+  מאיחוד האמירויות"*. **Neither is a party position** — one is an allegation about a third party's
+  conduct, the other a foreign state's denial — and the page scores no fact about who knew what.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -1264,6 +1296,37 @@ columnist's gloss, and the interview is what is read here.)
   tier, and the fifth consecutive pass to apply it. His account of blocking וינטר's appointment as
   מזכיר צבאי, and of וינטר and בריק *"מפחידים"* commanders with casualty estimates, is biography
   about a third party. **What the same article carries FROM וינטר's own party is scored — see that row.**
+
+**2026-09-20 — revision 100. A FOURTH coalition principle appears, and it dates revision 85's
+evidence rather than adding to it. No axis moved, no tag added, `seed.sql` unchanged — and
+`excludes-anti-zionist-parties` survives the finding.**
+([הארץ, ביקורת טלוויזיה](https://www.haaretz.co.il/gallery/television/tv-review/2026-09-20/ty-article/.highlight/000001a0-baf7-dea8-afe0-faffd0330000) — an opinion column, and the factual claim inside it is what
+is read here, the same care the satire column got in revision 99.)
+
+- **The claim.** שאול מרידור, asked on אופירה אסייג about cooperating with רע"ם, gave a condition for
+  sitting in an איזנקוט government: *"מפלגה חייבת להכיר בחמאס כארגון טרור"*. The reviewer's point is
+  that this is a **fourth** principle — the leader had stated **three**: ישראל יהודית ודמוקרטית,
+  קבלת ערכי מגילת העצמאות, וחובת שירות לכול — and that it *"צץ בעקבות הפרסום של מוחמד מג'אדלה"*,
+  i.e. in reaction to the very story revision 85 was written about.
+- **Revision 85 recorded that clause as part of the party's principles. If the dating is right, it
+  was minted DURING the controversy, not stated before it.** That entry quoted the party on parties
+  *"שאינן מכירות בחמאס כארגון טרור"* alongside the three, and read the set as one published
+  position. **The set is not fixed; it grew by one under pressure** — which is a fact about this
+  row's coalition posture and is recorded here as such.
+- **The tag is unaffected, and checking that mattered.** `excludes-anti-zionist-parties` was granted
+  in revision 85 on *recognition of Israel as a Jewish and democratic state* — the **first** of the
+  three original principles, not the fourth. A reactive fourth condition neither supports nor
+  undermines it. **Had the tag rested on the Hamas clause, this column would have required
+  withdrawing it.**
+- **Dating is the finding, and it is not certain.** This is one columnist's account of what was and
+  was not said previously; the page has no transcript of either the אסייג interview or the earlier
+  statements of the three principles. **Recorded as contested, not as settled** — the discipline
+  revisions 81 and 96 established, where the page picked no side and the later answer was a
+  distinction neither outlet had drawn.
+- **Nothing is recorded about רע"ם.** The column argues מנסור עבאס condemned the 7 October massacre
+  and declines definitional demands *"מחשש לחייו ושיקולים פוליטיים רגישים"*. That is a commentator's
+  account of a third row's motives — the weakest tier — and revision 85 already refused a friendly
+  witness's account of this same meeting.
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -4184,6 +4247,39 @@ not challenges a provenance claim this page makes in TWO places. No axis moved, 
   Second application in one week, from the other side of the coalition.
 - **`populist` declined a SIXTH time**, and the reasoning is unchanged from revision 30: a frame is
   not an instrument.
+
+**2026-09-20 — revision 100. סמוטריץ' says the election IS about Judaizing the Galilee. The queued
+demography item gets its strongest instance and is STILL not minted. No axis moved, no tag added,
+`seed.sql` unchanged.**
+([הארץ](https://www.haaretz.co.il/news/politics/2026-09-20/ty-article/.highlight/000001a0-bafc-d160-a3ae-beff516e0000), and [הארץ](https://www.haaretz.co.il/news/elections/2026-09-20/ty-article-magazine/.premium/000001a0-a943-d5b2-a9ee-abcb25220000) for the women's-representation half.)
+
+- **Second instance of a programme this page has already read, and the escalation is real.** The
+  party's `/judaization/` page was read on 2026-08-26 — **״כן. מייהדים.״**, *"מעתיקים את מהפכת
+  ההתיישבות ביו״ש לנגב והגליל"*, 20 new Galilee settlements, and *"קרקע שלא אנחנו מחזיקים בה –
+  יחזיקו בה הערבים"*. The finance minister now says it from a campaign platform, in the first person
+  and with a timetable: *"בקדנציה הבאה **נייהד את הגליל** כמו המהפכה שעשינו ביהודה ושומרון. **על זה
+  הבחירות**"*. **A programme page states a plan; "על זה הבחירות" states it as the stake of the
+  vote** — which is the difference between a document and a mandate claim.
+- **Not minted, and the scope argument is untouched.** Revision 31 refused a demography-inside-the-
+  Green-Line tag *"on scope, not on evidence"*, directing that it be added across rows or not at all,
+  and revision 99's predecessor filed that instruction into Open questions after finding it had lived
+  only in one entry. **A second instance from the same row does not change a scope argument** — it is
+  exactly the "audit coverage, not position" failure the `state-commission-of-inquiry` sweep was
+  about, and granting it here on a quotation while ישראל ביתנו's population swap and איזנקוט's
+  anti-annexation case sit unexamined would repeat it.
+- **`population-transfer` already sits on this row and does NOT absorb this.** That tag is about
+  Palestinians in the territories; this is land and settlement policy **inside the Green Line**
+  directed at Israeli citizens. Recorded so a later pass does not fold the two together and lose the
+  distinction — the same care revision 99 took refusing `population-transfer` for עמך ישראל.
+- **אורית סטרוק as the list's only woman scores nothing**, on the list-is-not-a-programme rule
+  applied to ישר and הציבור החרדי in the same pass.
+- **טל שניידר on this row's leader is REFUSED** — *"סמוטריץ' כמייצגם חושב שנשים בכלל לא צריכות לשרת
+  בצבא"* is a journalist's characterisation of a party leader's view, which is revision 44's tier
+  whoever is speaking. **The coalition agreements are a different matter and are first-party**: the
+  commitment to a *"הגשמת הזהות היהודית במרחב הציבורי"* law and to permitting service-provider
+  discrimination on religious grounds is signed party text. **It still adds no tag** — `halakhic-state`
+  already names it on this row — and is logged because it is the strongest form that tag's evidence
+  has taken.
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -8637,6 +8733,15 @@ bought nothing here, because the defect was never in the pixels being measured.
   - **What survives is the prose**, which is where line 783 said this distinction belonged all along:
     אל הדגל wants a commission, ישר has drafted the statute, and two rows across the blocs want an
     inquiry that is deliberately not a *ממלכתית* one.
+  - **MEASURED, 2026-09-20 (revision 100), and it confirms the resolution from outside the party
+    system.** An INSS poll this month finds **75% support establishing a state commission of
+    inquiry — including 52% of COALITION voters** ([הארץ](https://www.haaretz.co.il/news/politics/2026-09-20/ty-article/.highlight/000001a0-bafc-d160-a3ae-beff516e0000)). ד"ר עידית שפרן־גיטלמן
+    notes it is the one question in the survey where respondents' politics do **not** predict their
+    answer, while every other war-related question splits on bloc. **A position held by
+    three-quarters of the public and by a majority of the governing coalition's own voters is the
+    definition of a tag that cannot discriminate** — the sweep reached that conclusion from nine
+    party positions, and the polling reaches it from the electorate. Recorded because the sweep's
+    verdict was an argument and this is a measurement of the same thing.
 - **No tag exists for REFUSING a rotation or an alternating premiership — SIXTH item in the sweep
   queue, and both poles arrived in one week (2026-09-19, revision 99).** `unity-government` has two
   holders (כחול לבן, ישראל תחילה) and no negation. On 17.09 איזנקוט refuses it on principle —
@@ -8972,3 +9077,4 @@ pass happened, for anyone reading git history.
 | 2026-09-16 | revision 98c — **הדמוקרטים light-theme logo replaced, on the repo owner's call; no axis moved, no tag added.** `/logos/the-democrats-2026.png` is now the party's own transparent PNG (`victory26.democrats.org.il`) cropped to its alpha bounds, replacing revision 98a's sky-blue fbcdn tile. Same URL, so `seed.sql` is unchanged; the dark file is untouched and is now the exact navy↔white swap of the light one. Verified in headless Chromium in both themes |
 | 2026-09-16 | revision 98d — **הרשימה המשותפת gets a light-theme logo; no axis moved, no tag added.** The repo owner's fbcdn JPEG (teal wordmark and the four-colour stripes on white, 1702×630) is cropped to the wordmark with the existing tile's proportional margins and self-hosted as `/logos/joint-list-2026-light.png`, now `logo_url`. The teal tile `joint-list-2026.png` moves to dark mode only via `DARK_VARIANT_LOGOS` (`The Joint List`), the third party there. Verified in headless Chromium in both themes; `test-logo-assets.sh` green |
 | 2026-09-19 | revision 99 — **five sources in one pass: the CERTIFIED הליכוד list, ביחד's religion-and-state plan, הדמוקרטים's conscription paper, the ynet איזנקוט interview and the בג"ץ אלקטור ruling. Six tags added across four rows; no axis moved; nine refusals recorded.** **הליכוד's "Realized list" was the PRIMARY RESULT, not the filed list** — certified order differs from slot 3 down, **slot 11 is ברדוגו** (not `אורן דוברונסקי (reserved, unconfirmed)`), and **טלי גוטליב is on no slot of the 120** though this page placed her at 20. `two-faction-list` **stays refused and gains a number**: 117/120 to הליכוד against **3** to תקווה חדשה (#9, #88, #89), where the prior refusal reasoned from the CEC page title; ביחד's comparable filing is 62/58. **ביחד +`civil-marriage` (21 → 22) and a sentence in "The axes" corrected against it** — that band asserted ביחד had no civil-marriage position while its plan commits to *"ברית זוגיות אזרחית במשרד הפנים"* and to *"הרבנות הראשית לא מבוטלת. הבלעדיות שלה כן"*; **religiosity HELD at −2** because the plan keeps state religious funding and keeps conversion orthodox, which is the funding criterion that same sentence already named for ישר and בית ציוני — **same verdict, correct reason, third attempt**. **הדמוקרטים +3 (23 → 26)**, corpus 15 → 16, revision 62's edition probe run first and clean (`(1)`/`(2)` both 403): `anti-conscription-exemption` (*"בלי חוקי השתמטות"*, **נבטל את חוק מעצרי עריקים**), `state-haredi-education` (*"מערכת חינוך ממלכתית־חרדית"*), `arab-civil-service`; **security −1 held for the THIRD time** on revisions 40/62's argument, now against a document devoted to the subject; `anti-annexation` gains a **military** leg (*"נפסיק לרתק כוחות להגנה על מאחזים מבודדים"*) beside revision 40's fiscal one. **`workforce-integration` was drafted in and then REFUSED** — its only support is the purpose clause of the school system already earning `state-haredi-education`, so it records one sentence twice (revision 62's `public-service-reform` ground), and the draft had additionally fused an **Arab-society** clause into a haredi tag. **ישראל ביתנו +`excludes-haredi-and-arab-parties` (15 → 16)** — the Open question said the tag was undocumented and could not move until someone wrote down what it means; *"ממשלה ציונית, ללא נתניהו, המפלגות הערביות והחרדיות"* supplies the definition and the second holder. **עמך ישראל +`hardline-on-gaza` (7 → 8)**, the thinnest row's first doctrinal statement (*"תפיסת ההכרעה"*, *"לדחוק את האוכלוסיה העזתית דרומה ולייצר מצור חכם"*); **`population-transfer` REFUSED** — the same words serve either claim and only the surrounding sentence decides. **`state-commission-of-inquiry` SWEPT and resolved after nine refusals, two added by this pass after it had drafted the tag in**: not populated (the distribution is four-valued and the tag is boolean), **not retired** (the `periphery-development` precedent does not transfer — that tag's holders were unjustified, this one's is, and אל הדגל is a withdrawn party's frozen record), `seed.sql` untouched. The seam the tag cuts at is wrong: **המילואימניקים והכלכלית and עמך ישראל hold the same position from opposing blocs** and the tag's *name* excludes them both — the `two-faction-list` defect. **Three new sweep-queue items**: no negation for `unity-government` (both poles dated within seven days — איזנקוט refusing rotation *"באופן עקרוני"*, גנץ entertaining it), `sectoral-budgeting` recording only the receiving end (הדמוקרטים against **₪20bn** of *"כספים קואליציוניים"*), and the two exclusion tags. **Refused and written down so a later pass does not re-score them**: the ברדוגו communications portfolio (two closed conversations, three unnamed sources — the revisions 44/80/81/85 tier, and the party denies the premise), ברדוגו's שב"כ meeting (a candidate is not a position), the שב"כ registration page (a state body's conduct, no party statement), the twelve mutual disqualification petitions (**the same instrument fired in both directions is campaign ritual**), עוצמה יהודית's Druze support letter (**first-party publication, third-party content** — and an automated rendering misattributed it to בן גביר when the letter is to **וסרלאוף**), the אלקטור workaround (machinery, not programme), and ישר's `anti-indicted-pm` (*"כל חברי הקבינט ב-7 באוקטובר"* is broader than the tag). **Fetching note**: `gov.il` sits behind a Cloudflare JS interstitial that returns **403** to WebFetch and to browser-shaped `curl` alike; the certified list was read with Playwright Chromium, the same class of finding as revision 43's mako/i24 note. **Verification note**: the revcheck snippet in `services/backend/CLAUDE.md` omits `psql -1`, and the seed's `ON COMMIT DROP` temp tables make every statement fail without it |
+| 2026-09-20 | revision 100 — **three sources, NOTHING moves: no axis, no tag, no `seed.sql` change.** The third such pass on this page, and the first where every item was already settled in the opposite direction from the reading that prompted it. **הליכוד is the women's-representation survey's sharpest case and gets nothing** — מיזם 50/50 scores it *"חזרה 15 שנים אחורה… רק שתיים או שלוש נשים במקומות ריאליים"* against five lists it counts balanced or near-balanced (ישר, הדמוקרטים, כחול לבן at 50-50; ביחד and עמך ישראל close), and **the list-is-not-a-programme rule declines to record it in either direction**: the rule was set by refusing ישר the tag *"against a much stronger fact"* — its chairman's own commitment plus 14 of the top 30 — so **a third party's count cannot earn what a party's own statement could not**, and a rule that only ever cost opposition rows a tag would be worth distrusting. Same rule applied where it costs the other way: **הציבור החרדי places women at #3 and #4**, unprecedented for a haredi list (ש"ס and יהדות התורה carry none), and earns nothing. **`gender-equality` therefore also stays off עמך ישראל.** **סמוטריץ': *"בקדנציה הבאה נייהד את הגליל כמו המהפכה שעשינו ביהודה ושומרון. על זה הבחירות"*** — a **second** instance of the `/judaization/` programme read 2026-08-26 (**״כן. מייהדים.״**, 20 Galilee settlements, *"קרקע שלא אנחנו מחזיקים בה – יחזיקו בה הערבים"*), now first-person with a timetable and elevated from a programme page to the stated stake of the vote. **Still not minted**: revision 31 refused the demography-inside-the-Green-Line tag *on scope, not on evidence*, and **a second instance from the same row does not answer a scope argument** — minting here would be the audit-coverage failure the `state-commission-of-inquiry` sweep was about. Logged that `population-transfer`, already on that row, does **not** absorb it: that tag is about Palestinians in the territories, this is land policy inside the Green Line aimed at citizens. **ישר: a FOURTH coalition principle surfaces and DATES revision 85's evidence** — שאול מרידור on אופירה אסייג gives *"מפלגה חייבת להכיר בחמאס כארגון טרור"*, which the reviewer says was not among איזנקוט's three stated principles and *"צץ בעקבות הפרסום של מוחמד מג'אדלה"*, i.e. appeared during the controversy revision 85 was written about. **The set of principles is not fixed; it grew by one under pressure.** `excludes-anti-zionist-parties` **survives and the check mattered** — it was granted on the Jewish-and-democratic-state criterion, the FIRST of the three, so a reactive fourth neither supports nor undermines it; **had the tag rested on the Hamas clause, this would have required withdrawing it.** Dating recorded as **contested, not settled** (one columnist, no transcript), per revisions 81 and 96. **The `state-commission-of-inquiry` resolution is now MEASURED from outside the party system**: an INSS poll finds **75% support, including 52% of coalition voters**, and שפרן־גיטלמן notes it is the one war-related question where politics does not predict the answer. The sweep concluded the tag cannot discriminate from nine party positions; the polling reaches the same place from the electorate. **Refused and written down**: טל שניידר's characterisation of סמוטריץ' on women in the army (a journalist on a leader, revision 44's tier whoever speaks), ארז תדמור's *"מרד הגנרלים"* as נתניהו's campaign manifesto (a candidate's book is not a party position — though **#27 checks out against revision 99's certified filing**, the cheap cross-check revision 24 ran), the UAE's denial of the בן זאיד warning against איזנקוט's claim (neither is a party position), and the column's account of מנסור עבאס's motives (a commentator on a third row). **The coalition agreements ARE first-party and still add nothing**: the *"הגשמת הזהות היהודית במרחב הציבורי"* law and permitting service-provider discrimination on religious grounds are signed party text, and `halakhic-state` already names them — logged as the strongest form that tag's evidence has taken |
