@@ -2334,7 +2334,56 @@ discounts of 45% residential / 39% business, and mandatory annual reporting to t
   today's bulk re-save, so only the CPT `date` is informative).
 
 **Not read in this pass:** `tourism`, created **today** (2026-09-22) and serving `200`. Enumerated,
-recorded, left for the next pass rather than read at the tail of this one.
+recorded, left for the next pass rather than read at the tail of this one. **Read in revision 113.**
+
+**2026-09-22 — revision 113. The `tourism` plan, read the same day it was published. No axis moved,
+no tag added, `seed.sql` unchanged.**
+([ביחד נתקן את ענף התיירות בישראל](https://be-yahad.org.il/plans/tourism/), party-published,
+`200` to a browser-shaped `curl`, supplied at the repo owner's request.)
+
+- **economic +1 HELD, and this is the most market-leaning plan in the corpus.** Its stated formula is
+  *"יותר היצע, פחות בירוקרטיה ויותר כוח לשטח = תחרות אמיתית ומחירים נגישים"*: a one-stop *"מסלול ירוק"*
+  bringing land, planning and licensing under one roof with approval in **18 months instead of up to
+  five years**, a single fast track for rural businesses on moshavim and נחלות, regulatory sandboxes,
+  and price relief argued purely from supply and competition. The state half is smaller but present:
+  a national plan to expand hotel rooms, a national multilingual tourist platform, international
+  training centres with placement for discharged soldiers, more flight routes, and a mandatory
+  accessible-room standard for every new hotel. Still the fusion band.
+- **`deregulation` refused again**, on the reason revision 49 gave: it measures which documents were
+  read, and the content is already carried by `pro-competition` and `free-trade`.
+- **`municipal-devolution` corroborated, already held.** Tourism management moves *"מידי הממשלה"* to
+  **6–8 regional coalitions of local authorities**, each with its own professional manager, work plan
+  and targets. It is the same instrument the religion-and-state plan used for Shabbat transport,
+  applied to an economic sector.
+- **Development focused on the north, the Negev and the Gaza envelope** — the same regions as the
+  north-border and Kiryat Shmona laws. `periphery-development` stays retired (revision 19).
+- **An internal inconsistency, recorded so nobody quotes the wrong figure.** The page gives today's
+  approval time as *"עד 5 שנים"* in three places and as *"כ-10 שנים"* in one FAQ answer. The headline
+  commitment (18 months) is the same in both; only the baseline differs. The counters also render as
+  `0` in static HTML, as on `hitech`.
+
+**Corpus accounting — checked, not assumed, and the first draft of this line was wrong.** It said
+every live Hebrew plan had now been read. Status-checking every Hebrew slug in the CPT against the
+URLs this entry cites found **two live plans cited nowhere**, both read in this same revision:
+
+- **`תוכנית-לאומית-להזדקנות-בכבוד-2`** (CPT date 2026-09-17) is a **second edition** of the aging plan
+  revision 29 read, not a new programme. The body is the same text; what is new is a summary
+  paragraph on top that states the numbers outright — the pension *"נשחקה ב-16% מאז שהופסקה
+  הצמדתה לשינוי שכר הממוצע במשק ב-2003"*, re-indexation to the average wage, and a differential rise
+  for **~350,000** pensioners under ₪10,000. **Revision 29's `welfare-state` finding and revision
+  106's cross-row comparison both stand on it unchanged.** This is revision 62's edition trap (two
+  keys, one programme) on this site rather than the Democrats' bucket.
+- **`rehabilitation`** (CPT date 2026-05-03, modified 2026-09-21) —
+  [שיקום פצועי צה״ל וכוחות הביטחון](https://be-yahad.org.il/plans/rehabilitation/). A national
+  rehabilitation directorate, full implementation of the *"נפש אחת"* reform within six months,
+  state-funded legal counsel for every wounded soldier from the first hearing, digitised medical
+  committees (a human committee kept for complex cases and appeals), housing priority *"בדיוק כמו
+  שמילואימניקים מקבלים"*, and a gradual return to work without losing benefits. It corroborates
+  `reservist-focused` (held) and adds nothing to any axis. **One internal inconsistency:** the plan
+  puts the directorate *"תחת משרד ראש הממשלה"*; FAQ 19 on the same page says *"תחת משרד הביטחון"*.
+
+Now every live Hebrew plan in the CPT is cited in this entry — **verified by the check above, which
+is the part that matters**: the unverified version of this sentence was written first.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -9777,3 +9826,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 110 — **ש"ס: a חדשות 12 investigation into #6 דרור עמוס's NGO. Read, nothing scored**: allegations about a candidate are the lowest tier, and `sectoral-budgeting` is already in `families` on the party's own demands. |
 | 2026-09-22 | revision 111 — **הציונות הדתית: five פייגלין posts (19–22 Sept). `anti-oslo` ADDED (23 → 24)** — the זהות platform the row absorbed opens with cancelling Oslo, and the merge had not carried the tag; פייגלין restates it (*"אף אחד לא מציע דרך אל מחוץ למתכונת אוסלו מלבד זהות"*). *"כיבוש. גירוש. התיישבות."* is the first dated first-party campaign use of the slogan behind `population-transfer` (already held); it does not settle revision 92's provenance question. The IDF ethics code is now a demand on two rows the same week (with עוצמה יהודית); filed, not minted. |
 | 2026-09-22 | revision 112 — **cross-row `anti-oslo` check, at the repo owner's request. Added to עוצמה יהודית (17 → 18)** on the faction's 2025 bill annulling Oslo, Hebron and Wye, already quoted in revision 30. Not added to עמך ישראל (its entry records no such evidence), נעם (none), or הליכוד (a cabinet act breaching Oslo is not a statement cancelling it). אל הדגל held open pending the platform's own wording. The tag now has three holders. |
+| 2026-09-22 | revision 113 — **ביחד: the `tourism` plan, published today. No axis moved, no tag added.** The most market-leaning plan in the corpus (a one-stop hotel approval track, 18 months instead of up to five years, price relief argued from supply), with a smaller state half; economic +1 held, `deregulation` refused again. Tourism management devolved to 6–8 regional coalitions of local authorities corroborates `municipal-devolution`. The page gives two different baselines (5 years and ~10 years). The corpus check that followed found two more live, uncited plans — a second edition of the aging plan (unchanged: average-wage indexation still there) and the wounded-soldiers `rehabilitation` plan (corroborates `reservist-focused`) — both read in the same revision. |
