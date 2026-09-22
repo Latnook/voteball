@@ -4678,6 +4678,43 @@ text was read through `api.fxtwitter.com`.)
   revolution to the Negev and Galilee"* argument revision 100 recorded. It is the third sighting of
   that item on this row, and revision 100's scope argument still decides it: not minted.
 
+**2026-09-22 — revision 111. Five posts by פייגלין (#2, זהות's faction), 19–22 September.
+`anti-oslo` ADDED (23 → 24 tags). No axis moved.**
+(@moshefeiglin:
+[2102340488288252401](https://x.com/moshefeiglin/status/2102340488288252401) ·
+[2102079221795278943](https://x.com/moshefeiglin/status/2102079221795278943) ·
+[2101641373078151620](https://x.com/moshefeiglin/status/2101641373078151620) ·
+[2101570487960691025](https://x.com/moshefeiglin/status/2101570487960691025) ·
+[2101351441126310014](https://x.com/moshefeiglin/status/2101351441126310014), full text read through
+`api.fxtwitter.com`; three carry video, which was not watched.)
+
+- **`anti-oslo` ADDED — a gap from the merge, now restated in the campaign.** The זהות platform this
+  row absorbed starts its security chapter *"מביטול הסכמי אוסלו"*, and the merge carried that
+  platform's `population-transfer`, `gun-rights` and others onto this row — but not `anti-oslo`. On
+  22 September פייגלין writes that everyone *"מרבין ועד ישראל כץ"* is *"שבויים באוסלו ואף אחד לא מציע
+  דרך אל מחוץ למתכונת אוסלו מלבד זהות"*. Second holder, after ישראל תחילה; both sit at `security`
+  +2/+3. **Note what he names: זהות, not the joint list.** That fits `two-faction-list` (separate
+  campaigns inside a technical bloc) and is why the tag is recorded as coming from the זהות half.
+- **`population-transfer` — the first dated, first-party campaign use, and it settles nothing about
+  provenance.** 21 September, in a campaign video post: *"לא עוד סבבים. לא עוד מלחמה ללא תכלית.
+  **כיבוש. גירוש. התיישבות.** פייגלין. הגיע הזמן לנצח."* Revision 92 had this slogan only through
+  הארץ's account of 2023 and 2025 remarks. **The tag is already held; this makes it current and
+  first-party.** It does **not** answer revision 92's open question (is the tag native to
+  הציונות הדתית or carried in by זהות?), because the speaker is זהות's leader. That still needs
+  סטרוק's Knesset remark.
+- **The IDF ethics code is now on TWO rows in one day — recorded, not minted.** 19 September: *"את
+  מסמך רוח צה"ל והקוד האתי המעוות – לשרוף במדורה גדולה"*, plus a **polygraph "loyalty" test** for
+  officers trained by Wexner or *"קרנות זרות"*, and *"צבא יבשה מסיבי, חותר למגע וקטלני"*. עוצמה
+  יהודית's programme (revision 107) demands *"שינוי הקוד האתי הפרוגרסיבי של אסא כשר"* the same
+  week. Revision 107 declined a tag because one row did not make a dimension. **Two rows is where
+  this page starts to take a gap seriously, but both sit in the same bloc at the same pole**, and the
+  page mints only in a sweep (revision 15). Filed here with both texts.
+- **Recorded, nothing scored:** Rabin-to-Katz as one continuous *"שקר"* (a within-bloc attack on
+  הליכוד's defence minister, the fourth such case on this page — `bloc` stays `bibi`); the Maayan
+  murder in Binyamin as *"רצח ידוע מראש"* (rhetoric); and a visit to 770 in כפר חב"ד with *"עם
+  ישראל, ארץ ישראל ותורת ישראל – חד הם. בלי פשרות, בלי ויתור על סנטימטר של ארץ"* (a personal
+  religious framing; the territorial half is already carried by `sovereignty-annexation`).
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -8242,8 +8279,8 @@ scored. No axis moved, no tag added, `seed.sql` unchanged.**
   obvious fit, `sectoral-budgeting`, is **already in this row's `families`** and rests on the party's
   own budget demands, not on alleged misuse. Scoring alleged misconduct would put the page in the
   business of weighing investigations, which is not what it measures.
-- **It does bear on the rank discrepancy revision 61 recorded for #6.** Two outlets gave עמוס's army
-  service differently, and this report calls him a major from the maintenance corps. That supports
+- **It does bear on the rank discrepancy revision 61 recorded for #6.** Three outlets disagreed about עמוס's
+  rank; this report calls him a major (רס"ן במיל') from the maintenance corps. That supports
   the "army slot" reading already recorded (a slot aimed at traditional voters) and changes nothing
   else.
 
@@ -9720,3 +9757,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 108 — **כחול לבן: the *רפורמה משפטית בהסכמה* booklet (7pp). THREE tags added (15 → 18): `constitutionalist` (a Basic Law: Legislation with a special majority and four readings), `governance-reform` (Knesset oversight, sanctions on non-cooperating ministers, *פתק וחצי*), `term-limits` (PM 8 years, AG 5). No axis moved.** `judicial-overhaul` refused: the booklet repeals Sa'ar–Levin, keeps the judges' veto (7 of 9 to appoint) and affirms judicial review in writing. A Nation-State Law equality amendment is now on two rows (with הדמוקרטים); no tag exists, filed for the sweep. **`pdftotext` silently dropped every body-font digit**; figures were read from rendered pages. |
 | 2026-09-22 | revision 109 — **הציונות הדתית: סמוטריץ'’s long post on the 80th anniversary of the 11 Negev points. `pro-settlement` ADDED (22 → 23).** The paradigm pro-settlement row did not hold the tag (it had `settler-movement`, a different claim). The chairman's first-person *"מפעל ההתיישבות ביהודה ושומרון הוא צורך ביטחוני"* meets revision 51's forward-commitment standard. Two recruits (פלד, בכר) recorded; whether they are on the filed list is not established. |
 | 2026-09-22 | revision 110 — **ש"ס: a חדשות 12 investigation into #6 דרור עמוס's NGO. Read, nothing scored**: allegations about a candidate are the lowest tier, and `sectoral-budgeting` is already in `families` on the party's own demands. |
+| 2026-09-22 | revision 111 — **הציונות הדתית: five פייגלין posts (19–22 Sept). `anti-oslo` ADDED (23 → 24)** — the זהות platform the row absorbed opens with cancelling Oslo, and the merge had not carried the tag; פייגלין restates it (*"אף אחד לא מציע דרך אל מחוץ למתכונת אוסלו מלבד זהות"*). *"כיבוש. גירוש. התיישבות."* is the first dated first-party campaign use of the slogan behind `population-transfer` (already held); it does not settle revision 92's provenance question. The IDF ethics code is now a demand on two rows the same week (with עוצמה יהודית); filed, not minted. |
