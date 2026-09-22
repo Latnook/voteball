@@ -4653,6 +4653,31 @@ demography item gets its strongest instance and is STILL not minted. No axis mov
   already names it on this row — and is logged because it is the strongest form that tag's evidence
   has taken.
 
+**2026-09-22 — revision 109. סמוטריץ' on settlement, in his own long post; `pro-settlement` ADDED
+(22 → 23 tags). No axis moved.**
+([@bezalelsm](https://x.com/bezalelsm/status/2102284163810202045), 2026-09-22 06:29 UTC, the
+party chairman's own account. The embed endpoint truncates long posts at ~280 characters; the full
+text was read through `api.fxtwitter.com`.)
+
+- **`pro-settlement` ADDED — and the gap is the finding.** The tag has six holders, all at
+  `security` +2 or +3, and **this row, the paradigm case, was not one of them**; it carried
+  `settler-movement` instead. The two are not the same claim: `settler-movement` says where a party
+  comes from, `pro-settlement` says what it will do. עוצמה יהודית holds `pro-settlement` without
+  `settler-movement`, which shows they were already being used separately. The post meets the tag's
+  standard (revision 51: a forward commitment, not a past credential) in the chairman's first person:
+  *"מפעל ההתיישבות ביהודה ושומרון הוא צורך ביטחוני חשוב לסיכול הקמת מדינת טרור בלב הארץ"*, and
+  *"בבואנו ליישב להצמיח ולהפריח את הארץ – בגליל, בנגב, **ביו"ש**"*. He also writes from קדומים,
+  where he lives.
+- **The two recruits are recorded and score nothing.** Brig-Gen (res.) משה (מוסא) פלד of קיבוץ בית
+  השיטה and Maj-Gen (res.) יוסי בכר of קיבוץ בארי *"הסכימו להצטרף לרשימת הציונות הדתית בבחירות
+  הקרובות"*. Neither name appears anywhere on this page, and the lists were filed on 2026-09-07/08,
+  so **whether they are on the filed list, and where, is not established here** — check the CEC
+  filing before treating either as a candidate. A candidate is not a position either way.
+- **The kibbutz framing does not move the demography item.** The post puts Judea and Samaria in one
+  line with חומה ומגדל, the 11 Negev points of 1946 and the Galilee — the same *"copy the settlement
+  revolution to the Negev and Galilee"* argument revision 100 recorded. It is the third sighting of
+  that item on this row, and revision 100's scope argument still decides it: not minted.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -8200,6 +8225,28 @@ deliberate.**
 - **Feeds the franchise-access lead in Open questions** — second sighting, now with a בג"ץ ruling and
   four rows on the record. Still a lead; see there for why it is not a tag.
 
+**2026-09-22 — revision 110. A חדשות 12 investigation into candidate #6, דרור עמוס. Read; nothing is
+scored. No axis moved, no tag added, `seed.sql` unchanged.**
+([mako](https://www.mako.co.il/news-politics/2026_q3/Article-686cfe7d92ab0a1027.htm),
+*חדשות סוף השבוע*, עמרי מניב, 2026-09-19.)
+
+- **What it alleges.** The NGO עמוס founded, *"חסד חיים ואמת"*, received millions from the Religious
+  Services Ministry (under ש"ס) and from ש"ס-linked religious councils and municipalities to support
+  bereaved families after 7 October and later wars. Families and communities the reporters asked
+  said they had never heard of it, and more than ₪2.5m went to stipends for kollel students. The
+  report also describes apparent double funding and a ministry appointment made over its legal
+  adviser's conflict-of-interest objection. **ש"ס calls it *"תחקיר שקרי"*.** A complaint asking the
+  יועמ"שית to open a criminal investigation was announced.
+- **Not scored, on the page's two standing rules.** These are *allegations* reported by a journalist
+  about a *candidate* — the lowest evidence tier on the page, and a candidate is not a position. The
+  obvious fit, `sectoral-budgeting`, is **already in this row's `families`** and rests on the party's
+  own budget demands, not on alleged misuse. Scoring alleged misconduct would put the page in the
+  business of weighing investigations, which is not what it measures.
+- **It does bear on the rank discrepancy revision 61 recorded for #6.** Two outlets gave עמוס's army
+  service differently, and this report calls him a major from the maintenance corps. That supports
+  the "army slot" reading already recorded (a slot aimed at traditional voters) and changes nothing
+  else.
+
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
 Same four numbers as ש"ס and, until revision 34, the same two tags and the same merged entry. The
@@ -9671,3 +9718,5 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 106 — **הדמוקרטים: the senior-citizens paper (corpus 16 → 17), one edition by revision 62's probe. No axis moved, no tag added.** It names the formula ישר's aging paper was held short of in revision 39 — pension indexation *לשכר הממוצע במשק* — and legislates the state nursing-insurance law ישר only *examines*. `welfare-state` already in `families`, economic already −2. The three aging papers are now a graded set: ביחד and הדמוקרטים name the formula, ישר does not. |
 | 2026-09-22 | revision 107 — **עוצמה יהודית: the chairman's statement demanding Defence for בן גביר and Justice for גוטליב, with a six-point programme for each. No axis moved, no tag added.** `judicial-overhaul` moves from a slogan to a programme (dismiss the יועמ"שית, Supreme Court appointments by Knesset hearing and a two-thirds majority, non-justiciable subjects listed). Voluntary emigration now extends to **יו"ש** as well as Gaza, a first on this row; `population-transfer` refused a fifth time because the text still says מרצון and has no coercive clause. `reservist-focused` refused: uncosted. Rules of engagement, the Kasher ethics code and opening 8200 recorded in prose. |
 | 2026-09-22 | revision 108 — **כחול לבן: the *רפורמה משפטית בהסכמה* booklet (7pp). THREE tags added (15 → 18): `constitutionalist` (a Basic Law: Legislation with a special majority and four readings), `governance-reform` (Knesset oversight, sanctions on non-cooperating ministers, *פתק וחצי*), `term-limits` (PM 8 years, AG 5). No axis moved.** `judicial-overhaul` refused: the booklet repeals Sa'ar–Levin, keeps the judges' veto (7 of 9 to appoint) and affirms judicial review in writing. A Nation-State Law equality amendment is now on two rows (with הדמוקרטים); no tag exists, filed for the sweep. **`pdftotext` silently dropped every body-font digit**; figures were read from rendered pages. |
+| 2026-09-22 | revision 109 — **הציונות הדתית: סמוטריץ'’s long post on the 80th anniversary of the 11 Negev points. `pro-settlement` ADDED (22 → 23).** The paradigm pro-settlement row did not hold the tag (it had `settler-movement`, a different claim). The chairman's first-person *"מפעל ההתיישבות ביהודה ושומרון הוא צורך ביטחוני"* meets revision 51's forward-commitment standard. Two recruits (פלד, בכר) recorded; whether they are on the filed list is not established. |
+| 2026-09-22 | revision 110 — **ש"ס: a חדשות 12 investigation into #6 דרור עמוס's NGO. Read, nothing scored**: allegations about a candidate are the lowest tier, and `sectoral-budgeting` is already in `families` on the party's own demands. |
