@@ -4653,6 +4653,68 @@ demography item gets its strongest instance and is STILL not minted. No axis mov
   already names it on this row — and is logged because it is the strongest form that tag's evidence
   has taken.
 
+**2026-09-22 — revision 109. סמוטריץ' on settlement, in his own long post; `pro-settlement` ADDED
+(22 → 23 tags). No axis moved.**
+([@bezalelsm](https://x.com/bezalelsm/status/2102284163810202045), 2026-09-22 06:29 UTC, the
+party chairman's own account. The embed endpoint truncates long posts at ~280 characters; the full
+text was read through `api.fxtwitter.com`.)
+
+- **`pro-settlement` ADDED — and the gap is the finding.** The tag has six holders, all at
+  `security` +2 or +3, and **this row, the paradigm case, was not one of them**; it carried
+  `settler-movement` instead. The two are not the same claim: `settler-movement` says where a party
+  comes from, `pro-settlement` says what it will do. עוצמה יהודית holds `pro-settlement` without
+  `settler-movement`, which shows they were already being used separately. The post meets the tag's
+  standard (revision 51: a forward commitment, not a past credential) in the chairman's first person:
+  *"מפעל ההתיישבות ביהודה ושומרון הוא צורך ביטחוני חשוב לסיכול הקמת מדינת טרור בלב הארץ"*, and
+  *"בבואנו ליישב להצמיח ולהפריח את הארץ – בגליל, בנגב, **ביו"ש**"*. He also writes from קדומים,
+  where he lives.
+- **The two recruits are recorded and score nothing.** Brig-Gen (res.) משה (מוסא) פלד of קיבוץ בית
+  השיטה and Maj-Gen (res.) יוסי בכר of קיבוץ בארי *"הסכימו להצטרף לרשימת הציונות הדתית בבחירות
+  הקרובות"*. Neither name appears anywhere on this page, and the lists were filed on 2026-09-07/08,
+  so **whether they are on the filed list, and where, is not established here** — check the CEC
+  filing before treating either as a candidate. A candidate is not a position either way.
+- **The kibbutz framing does not move the demography item.** The post puts Judea and Samaria in one
+  line with חומה ומגדל, the 11 Negev points of 1946 and the Galilee — the same *"copy the settlement
+  revolution to the Negev and Galilee"* argument revision 100 recorded. It is the third sighting of
+  that item on this row, and revision 100's scope argument still decides it: not minted.
+
+**2026-09-22 — revision 111. Five posts by פייגלין (#2, זהות's faction), 19–22 September.
+`anti-oslo` ADDED (23 → 24 tags). No axis moved.**
+(@moshefeiglin:
+[2102340488288252401](https://x.com/moshefeiglin/status/2102340488288252401) ·
+[2102079221795278943](https://x.com/moshefeiglin/status/2102079221795278943) ·
+[2101641373078151620](https://x.com/moshefeiglin/status/2101641373078151620) ·
+[2101570487960691025](https://x.com/moshefeiglin/status/2101570487960691025) ·
+[2101351441126310014](https://x.com/moshefeiglin/status/2101351441126310014), full text read through
+`api.fxtwitter.com`; three carry video, which was not watched.)
+
+- **`anti-oslo` ADDED — a gap from the merge, now restated in the campaign.** The זהות platform this
+  row absorbed starts its security chapter *"מביטול הסכמי אוסלו"*, and the merge carried that
+  platform's `population-transfer`, `gun-rights` and others onto this row — but not `anti-oslo`. On
+  22 September פייגלין writes that everyone *"מרבין ועד ישראל כץ"* is *"שבויים באוסלו ואף אחד לא מציע
+  דרך אל מחוץ למתכונת אוסלו מלבד זהות"*. Second holder, after ישראל תחילה; both sit at `security`
+  +2/+3. **Note what he names: זהות, not the joint list.** That fits `two-faction-list` (separate
+  campaigns inside a technical bloc) and is why the tag is recorded as coming from the זהות half.
+- **`population-transfer` — the first dated, first-party campaign use, and it settles nothing about
+  provenance.** 21 September, in a campaign video post: *"לא עוד סבבים. לא עוד מלחמה ללא תכלית.
+  **כיבוש. גירוש. התיישבות.** פייגלין. הגיע הזמן לנצח."* Revision 92 had this slogan only through
+  הארץ's account of 2023 and 2025 remarks. **The tag is already held; this makes it current and
+  first-party.** It does **not** answer revision 92's open question (is the tag native to
+  הציונות הדתית or carried in by זהות?), because the speaker is זהות's leader. That still needs
+  סטרוק's Knesset remark.
+- **The IDF ethics code is now on TWO rows in one day — recorded, not minted.** 19 September: *"את
+  מסמך רוח צה"ל והקוד האתי המעוות – לשרוף במדורה גדולה"*, plus a **polygraph "loyalty" test** for
+  officers trained by Wexner or *"קרנות זרות"*, and *"צבא יבשה מסיבי, חותר למגע וקטלני"*. עוצמה
+  יהודית's programme (revision 107) demands *"שינוי הקוד האתי הפרוגרסיבי של אסא כשר"* the same
+  week. Revision 107 declined a tag because one row did not make a dimension. **Two rows is where
+  this page starts to take a gap seriously, but both sit in the same bloc at the same pole**, and the
+  page mints only in a sweep (revision 15). Filed here with both texts.
+- **Recorded, nothing scored:** Rabin-to-Katz as one continuous *"שקר"* (a within-bloc attack on
+  הליכוד's defence minister, the fourth such case on this page — `bloc` stays `bibi`); the Maayan
+  murder in Binyamin as *"רצח ידוע מראש"* (rhetoric); and a visit to 770 in כפר חב"ד with *"עם
+  ישראל, ארץ ישראל ותורת ישראל – חד הם. בלי פשרות, בלי ויתור על סנטימטר של ארץ"* (a personal
+  religious framing; the territorial half is already carried by `sovereignty-annexation`).
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -5494,6 +5556,24 @@ Justice for טלי גוטליב (#2).
   same distinction revision 60 drew for the ₪10bn emigration budget.
 - **`family_evidence` stays `record`.** A chairman's statement with twelve bullet points is a
   programme sketch, not a platform. Same reasoning as the 710 pass.
+
+**2026-09-22 — revision 112 (cross-row). `anti-oslo` ADDED (17 → 18 tags), on evidence this entry
+has carried since revision 30.** Revision 111 gave the tag to הציונות הדתית, and the repo owner asked
+whether the other far-right rows should have it too. Checked row by row against what this page
+already quotes:
+
+- **עוצמה יהודית — added.** The bill Ben Gvir led *with his whole faction* (2025-03-09) annuls the
+  Oslo, Hebron and Wye agreements outright, restores the territories transferred under them and
+  repeals the implementing laws. Revision 30 used it for `anti-two-state` and called this row *"the
+  cleanest case the page has for why the two tags are separate"*. That is also the cleanest case for
+  `anti-oslo`; it was missed because the tag had no holder then.
+- **עמך ישראל — not added.** Its own entry says *"annulling-Oslo-type evidence … there is none"*.
+- **נעם — not added.** Oslo does not appear anywhere in its entry.
+- **הליכוד — not added.** The February 2026 cabinet measures breach Oslo in practice (control in
+  Areas A and B), but a government act is not a stated position to cancel the accords, and this is
+  the party that signed Hebron and Wye. **Trigger:** a party statement or bill to annul them.
+- **אל הדגל — held open.** Its platform is paraphrased here as *"rejection of both Oslo and conflict
+  management"*, with no Hebrew quote to hold the tag to. **Trigger:** read the platform sentence.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -8200,6 +8280,28 @@ deliberate.**
 - **Feeds the franchise-access lead in Open questions** — second sighting, now with a בג"ץ ruling and
   four rows on the record. Still a lead; see there for why it is not a tag.
 
+**2026-09-22 — revision 110. A חדשות 12 investigation into candidate #6, דרור עמוס. Read; nothing is
+scored. No axis moved, no tag added, `seed.sql` unchanged.**
+([mako](https://www.mako.co.il/news-politics/2026_q3/Article-686cfe7d92ab0a1027.htm),
+*חדשות סוף השבוע*, עמרי מניב, 2026-09-19.)
+
+- **What it alleges.** The NGO עמוס founded, *"חסד חיים ואמת"*, received millions from the Religious
+  Services Ministry (under ש"ס) and from ש"ס-linked religious councils and municipalities to support
+  bereaved families after 7 October and later wars. Families and communities the reporters asked
+  said they had never heard of it, and more than ₪2.5m went to stipends for kollel students. The
+  report also describes apparent double funding and a ministry appointment made over its legal
+  adviser's conflict-of-interest objection. **ש"ס calls it *"תחקיר שקרי"*.** A complaint asking the
+  יועמ"שית to open a criminal investigation was announced.
+- **Not scored, on the page's two standing rules.** These are *allegations* reported by a journalist
+  about a *candidate* — the lowest evidence tier on the page, and a candidate is not a position. The
+  obvious fit, `sectoral-budgeting`, is **already in this row's `families`** and rests on the party's
+  own budget demands, not on alleged misuse. Scoring alleged misconduct would put the page in the
+  business of weighing investigations, which is not what it measures.
+- **It does bear on the rank discrepancy revision 61 recorded for #6.** Three outlets disagreed about עמוס's
+  rank; this report calls him a major (רס"ן במיל') from the maintenance corps. That supports
+  the "army slot" reading already recorded (a slot aimed at traditional voters) and changes nothing
+  else.
+
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
 Same four numbers as ש"ס and, until revision 34, the same two tags and the same merged entry. The
@@ -9671,3 +9773,7 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 106 — **הדמוקרטים: the senior-citizens paper (corpus 16 → 17), one edition by revision 62's probe. No axis moved, no tag added.** It names the formula ישר's aging paper was held short of in revision 39 — pension indexation *לשכר הממוצע במשק* — and legislates the state nursing-insurance law ישר only *examines*. `welfare-state` already in `families`, economic already −2. The three aging papers are now a graded set: ביחד and הדמוקרטים name the formula, ישר does not. |
 | 2026-09-22 | revision 107 — **עוצמה יהודית: the chairman's statement demanding Defence for בן גביר and Justice for גוטליב, with a six-point programme for each. No axis moved, no tag added.** `judicial-overhaul` moves from a slogan to a programme (dismiss the יועמ"שית, Supreme Court appointments by Knesset hearing and a two-thirds majority, non-justiciable subjects listed). Voluntary emigration now extends to **יו"ש** as well as Gaza, a first on this row; `population-transfer` refused a fifth time because the text still says מרצון and has no coercive clause. `reservist-focused` refused: uncosted. Rules of engagement, the Kasher ethics code and opening 8200 recorded in prose. |
 | 2026-09-22 | revision 108 — **כחול לבן: the *רפורמה משפטית בהסכמה* booklet (7pp). THREE tags added (15 → 18): `constitutionalist` (a Basic Law: Legislation with a special majority and four readings), `governance-reform` (Knesset oversight, sanctions on non-cooperating ministers, *פתק וחצי*), `term-limits` (PM 8 years, AG 5). No axis moved.** `judicial-overhaul` refused: the booklet repeals Sa'ar–Levin, keeps the judges' veto (7 of 9 to appoint) and affirms judicial review in writing. A Nation-State Law equality amendment is now on two rows (with הדמוקרטים); no tag exists, filed for the sweep. **`pdftotext` silently dropped every body-font digit**; figures were read from rendered pages. |
+| 2026-09-22 | revision 109 — **הציונות הדתית: סמוטריץ'’s long post on the 80th anniversary of the 11 Negev points. `pro-settlement` ADDED (22 → 23).** The paradigm pro-settlement row did not hold the tag (it had `settler-movement`, a different claim). The chairman's first-person *"מפעל ההתיישבות ביהודה ושומרון הוא צורך ביטחוני"* meets revision 51's forward-commitment standard. Two recruits (פלד, בכר) recorded; whether they are on the filed list is not established. |
+| 2026-09-22 | revision 110 — **ש"ס: a חדשות 12 investigation into #6 דרור עמוס's NGO. Read, nothing scored**: allegations about a candidate are the lowest tier, and `sectoral-budgeting` is already in `families` on the party's own demands. |
+| 2026-09-22 | revision 111 — **הציונות הדתית: five פייגלין posts (19–22 Sept). `anti-oslo` ADDED (23 → 24)** — the זהות platform the row absorbed opens with cancelling Oslo, and the merge had not carried the tag; פייגלין restates it (*"אף אחד לא מציע דרך אל מחוץ למתכונת אוסלו מלבד זהות"*). *"כיבוש. גירוש. התיישבות."* is the first dated first-party campaign use of the slogan behind `population-transfer` (already held); it does not settle revision 92's provenance question. The IDF ethics code is now a demand on two rows the same week (with עוצמה יהודית); filed, not minted. |
+| 2026-09-22 | revision 112 — **cross-row `anti-oslo` check, at the repo owner's request. Added to עוצמה יהודית (17 → 18)** on the faction's 2025 bill annulling Oslo, Hebron and Wye, already quoted in revision 30. Not added to עמך ישראל (its entry records no such evidence), נעם (none), or הליכוד (a cabinet act breaching Oslo is not a statement cancelling it). אל הדגל held open pending the platform's own wording. The tag now has three holders. |
