@@ -817,6 +817,93 @@ RATE is why that is recorded as a placement and not as a punishment. No axis mov
   test aimed from the coalition side at the opposition. Noted because the symmetry is the
   interesting part, not because either earns a tag.
 
+**2026-09-22 — revision 115 (cross-row). The disqualification thread, read from four sources at
+once, and the gap revision 102 left open is CLOSED. No axis moved, no tag added, `seed.sql`
+unchanged.**
+([N12/mako](https://www.mako.co.il/news-israel-elections/2026/Article-0d330f36818c0a1026.htm), דביר ג'ברה, 22.09.26 14:12 ·
+[זמן ישראל](https://www.zman.co.il/live/726094/) ·
+[ערוץ 14](https://www.c14.co.il/article/1701843), 14.09.26 ·
+[המכון הישראלי לדמוקרטיה](https://www.idi.org.il/articles/65951) and its
+[מסבירון](https://www.idi.org.il/media/32129/disqualification-of-lists-and-candidates-ahead-of-the-26th-knesset-elections.pdf),
+ד"ר אופיר חדד וד"ר עמיר פוקס, August 2026.)
+**The refusal stands untouched** — a petition or a CEC vote is a claim about a named list's or
+candidate's *legal eligibility* under סעיף 7א, not a programme — but three things behind it are now
+established rather than assumed.
+
+- **The ten/twelve discrepancy has a mechanism, and it is `נדחו על הסף`.** Revision 102 recorded
+  *"ten hearings against this bullet's twelve filings"* and said the gap was **not investigated**.
+  It is now. ערוץ 14 reports the filing window closing at **22:00 on Monday 2026-09-14** with **ten**
+  requests standing, **after** the committee threw out at the threshold: every individual petition
+  against **seven named עוצמה יהודית candidates** — בן גביר, עמיחי אליהו, גוטליב, סון הר-מלך,
+  קרויזר, **דורפמן** and **צחי אליהו** — so *"הדיון יתקיים ביחס לרשימה בלבד"*; **אם תרצו**'s petition
+  against **יאיר גולן**; and **a petition against רשימת ישראל תחילה** (see that row). Also filed and
+  not reaching the plenum: אורי בכור against הציונות הדתית and זהות, and one against יורם כהן. The
+  numbers still do not reconcile arithmetically across outlets and nothing turns on that; **the
+  mechanism does**, because it means the plenum list is a *survivor* set, not the filed set.
+- **The plenum inventory is confirmed EXACTLY against revision 102's enumeration**, from N12's
+  itemisation: **רע"ם ×3** (עוצמה יהודית, הליכוד, פורום בוחרים בחיים), **עוצמה יהודית ×2**
+  (זולת לשוויון וזכויות-אדם; הדמוקרטים), **הדמוקרטים ×1** (עוצמה יהודית), **הציונות הדתית וזהות ×1**
+  (זולת), **בל"ד ×1** (מפלגת אורות השחר), **הרשימה המשותפת וח"כ עופר כסיף ×1** (הליכוד),
+  **סאמי אבו שחאדה ×1** (עוצמה יהודית). Ten. Hearings **Wednesday 2026-09-23, 09:00–20:30**
+  (כסיף, אבו שחאדה, רע"ם, הרשימה המשותפת/בל"ד) and **Thursday 2026-09-24, 09:00–17:00**
+  (עוצמה יהודית, הציונות הדתית וזהות, הדמוקרטים), chaired by **השופט נעם סולברג**, live-streamed,
+  a quarter-hour each for petitioner, יועמ"שית and respondent.
+- **The grounds, for the record, because they are stated in סעיף 7א's own terms and that is the
+  point.** הליכוד against רע"ם: *"שלילת קיומה של מדינת ישראל כמדינה יהודית ודמוקרטית"* plus support
+  for armed struggle, alleging ties between רע"ם, התנועה האסלאמית and עמותת *"סיוע 48"*.
+  הדמוקרטים against עוצמה יהודית: denial of Israel as a **democratic** state, and incitement to
+  racism. עוצמה יהודית against הדמוקרטים: גולן's statements about haredim and settlers as incitement
+  to racism, plus the party's positions on ערוץ 14 and on סרבנות; the party calls this a
+  *"מסה קריטית"*.
+- **The refusal now rests on a BASE RATE instead of a prediction, which is what revision 102 said it
+  needed.** The IDI מסבירון: **no candidate disqualified by the ועדת הבחירות המרכזית has ever had
+  that disqualification upheld by the Supreme Court.** The three 2019 cases run the *other* way —
+  candidates the committee **approved** whom the Court then disqualified: **מיכאל בן ארי**
+  (21st Knesset, איחוד מפלגות הימין), the first individual disqualification by the Court ever and
+  the first reversal of a committee *approval*; then, for the 22nd, **בנצי גופשטיין וברוך מרזל, both
+  of עוצמה יהודית**, גופשטיין unanimously on *"הסתה שיטתית לגזענות נגד הציבור הערבי"*. Committee
+  disqualifications the Court has **overturned** include the lists בל"ד, רע"ם-תע"ל, רע"ם-בל"ד and
+  משפט צדק, and the candidates בשארה, טיבי, זועבי, מרזל (יח"ד), **כסיף**, יזבק and מראענה-מנוחין.
+  The governing doctrine is narrow construction, *"רק במקרים קיצוניים ביותר כשיש מסה קריטית של
+  ראיות"* — **so עוצמה יהודית's petition borrows the Court's own threshold phrase for the
+  proposition the Court uses it to refuse.** Recorded as irony, not as a finding.
+  **This also sources revision 114**, which called גופשטיין *"barred from candidacy"* on הארץ's
+  word: it was the **Supreme Court, 2019, unanimously**, over the committee's approval.
+- **The committee is seated by the TWENTY-FIFTH Knesset, not by the 2026 ballot, and this page must
+  not read its roster as a party list.** סולברג plus **34** representatives: **19 coalition** — 8
+  הליכוד, 5 haredi (ש"ס three, דגל התורה and אגודת ישראל two), 1 הימין הממלכתי, and 5 shared across
+  הציונות הדתית / עוצמה יהודית / נעם — against **15 opposition** — 6 **יש עתיד**, 2 כחול לבן, 2
+  ישראל ביתנו, 4 Arab (חד"ש, תע"ל, רע"ם) and 1 העבודה. Four of those names are not rows on this
+  page. The six **יש עתיד** seats are the ones ביחד actually votes, which is legible here only
+  through this page's own `party_lineage` (`yesh-atid` → `together`) — N12 writes it out as
+  *"6 נציגי יש עתיד (ביחד)"*. A reader matching committee seats to ballot rows without that table
+  would mis-assign a quarter of the opposition.
+- **Announced positions, none of which moves anything.** **כחול לבן** (2 seats) confirms revision
+  102's one-directional vote, now verbatim: *"חופש הבחירה נמצא בידי הציבור, וכך צריך להיות. במקרה
+  שבו פוליטיקאי מביע תמיכה בפעילות טרור ומתנגד לקיומה של ישראל כמדינה יהודית - אין לו מקום בכנסת
+  ישראל"*, naming **אבו שחאדה, בל"ד וכסיף**. **ישראל ביתנו** (2) will back **כסיף**'s
+  disqualification — ח"כ **עודד פורר** sits on the committee and called for it — with no position
+  stated on the rest. **ש"ס and יהדות התורה have announced nothing**, which N12 treats as the
+  open question of the session. **ביחד abstains entirely** — see that row. Every one of these is a
+  vote on eligibility, so the category rule disposes of all of them at once.
+
+**A retrieval failure worth the space, and a NEW member of the confident-wrong-answer family.** Two
+summarising fetches of the **same N12 URL**, minutes apart, disagreed with each other and **both**
+were wrong. The first returned *"קרקס פוליטי ותקשורתי חסר משמעות מעשית"* attributed to **בל"ד**, and
+separately attributed the same sentiment to *"Yesh Atid (Together party)"*; the second returned
+*"סיבוב פוליטי ותקשורתי חסר כל משמעות מעשית"* attributed to **ביחד**. The raw page says **סיבוב**,
+says **מפלגת ביחד**, and contains the string **קרקס** nowhere. The hearing dates came back as
+**25–26** and then **24–25**; the article is dated **Tuesday 22.09.26** and says *"מחר ומוחרתיים
+(רביעי וחמישי)"* — **23–24**. So the speaker was wrong once, the wording was invented once, and the
+date was wrong **twice, differently**. **The only reason anyone looked was that two calls
+disagreed.** One call would have written a fabricated Hebrew quote into this page under בל"ד's
+name — a row that is itself facing disqualification in the same article, where a manufactured
+dismissal of the process would have read as perfectly in character. **For a verbatim quote, a date,
+a vote count or an attribution, fetch the page and read it; a summarising fetch is a reader, not a
+source.** It belongs beside *"a check that passes only because of where it ran"* in
+`CLAUDE.md` — same shape, different layer: the output is confident, well-formed, and its wrongness
+leaves no trace in itself.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -2384,6 +2471,38 @@ URLs this entry cites found **two live plans cited nowhere**, both read in this 
 
 Now every live Hebrew plan in the CPT is cited in this entry — **verified by the check above, which
 is the part that matters**: the unverified version of this sentence was written first.
+
+**2026-09-22 — revision 115 (cross-row). This row ABSTAINS from the disqualification votes, says so
+in its own words, and it is a change. No axis moved, no tag added, `seed.sql` unchanged.**
+([N12/mako](https://www.mako.co.il/news-israel-elections/2026/Article-0d330f36818c0a1026.htm), 22.09.26 — the full
+inventory of the ten petitions is in הליכוד's entry above.)
+
+- **The abstention.** *"מפלגת ביחד החליטה שלא להשתתף במשחק הפסילות בוועדת הבחירות המרכזית, מדובר
+  בסיבוב פוליטי ותקשורתי חסר כל משמעות מעשית"*, given to N12, which adds that this is
+  **בניגוד למערכות קודמות** — N12's words for the decision, not the party's. The row votes inside
+  **יש עתיד**'s committee representation (*"במסגרת הנציגות של יש עתיד בוועדת הבחירות"*; see the
+  `party_lineage` note in הליכוד's entry), which is why its six seats are listed under that name. **It scores nothing**, on the
+  category rule: a decision about whether to fire an eligibility instrument is not a position on what
+  the state should do. **This is the strongest test that rule has had**, because unlike כחול לבן's or
+  ישראל ביתנו's announcements it is *declared as a stance about the instrument itself*, which is the
+  nearest a vote on 7א can come to being a programme — and it still is not one.
+- **What the same statement DOES carry is conscription, and it corroborates three tags this row
+  already holds.** *"ברור שיש לפעול נגד התמודדות עתידית של גורמים שלא מקבלים את עקרונות מדינת ישראל
+  כיהודית, דמוקרטית ושוות זכויות לכל אזרחיה, **בכלים אפקטיביים ולא בהצהרות פופוליסטיות**"*, followed
+  by בנט's commitment that *"כל חוקי הביזה שקודמו בכנסת האחרונה, ובראשם **חוקי ההשתמטות** ואלו
+  שמעבירים מיליארדים לציבור המשתמט על חשבון זה המשרת, **יבוטלו עם השבעת הממשלה החדשה**"*.
+  `universal-conscription`, `anti-conscription-exemption` and `sanctions-on-non-servers` are all
+  already held and all three are reinforced. **What is new is the schedule, not the position** —
+  repeal timed to the swearing-in of the next government, which is the mirror of the pre-swearing-in
+  *precondition* this page records for עמך ישראל and is now the second row to put a conscription
+  commitment on the coalition-formation clock.
+- **`excludes-anti-zionist-parties` considered and REFUSED.** *"יש לפעול נגד התמודדות עתידית של
+  גורמים שלא מקבלים את עקרונות מדינת ישראל כיהודית, דמוקרטית"* is about **future candidacy**, i.e.
+  amending the eligibility rules, not about whom the party will sit with in a coalition — which is
+  what that tag means on ישראל תחילה's row and what `excludes-haredi-and-arab-parties` means on
+  המילואימניקים והכלכלית's. Granting it here would merge two different subjects under one label, the
+  same error revision 41 avoided by refusing `service-conditioned-citizenship` for a benefits claim.
+  **Trigger:** a statement about coalition partners rather than about ballot eligibility.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -8867,6 +8986,18 @@ states. The summary tool labelled her "Tkuma/Israel Beytenu", which is wrong; sh
   in a different form from עוצמה יהודית's consulate demand. It is logged there as a lead, not decided
   here, for the reason the queue exists.
 
+**2026-09-22 — revision 115 (cross-row). A disqualification petition was filed against this list and
+thrown out at the threshold. Nothing moves.**
+([ערוץ 14](https://www.c14.co.il/article/1701843), 14.09.26.) *"בקשה שהוגשה נגד רשימת 'ישראל תחילה'
+בראשות שרן השכל"* was among those **נדחו על הסף** before the plenum stage, alongside every individual
+petition against עוצמה יהודית's seven named candidates and אם תרצו's against יאיר גולן; the petitioner
+is not named in the report. **This page had not recorded that this row was petitioned against at
+all** — the enumeration in revision 102 covers the ten that reached the plenum, which is a survivor
+set. Recorded here so a later pass does not find the filing in isolation and read it as a signal
+about this row; it scores nothing for the same reason none of the other nine do (see הליכוד's entry,
+revision 115). Worth noting only that the row was **added to this page on 2026-09-14**, the same day
+the filing window closed at 22:00 — the petition and this row's first entry are the same day's news.
+
 ## Previous parties
 
 These describe each party **as it stood at the previous election** and are frozen. Most carry the
@@ -9896,3 +10027,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 112 — **cross-row `anti-oslo` check, at the repo owner's request. Added to עוצמה יהודית (17 → 18)** on the faction's 2025 bill annulling Oslo, Hebron and Wye, already quoted in revision 30. Not added to עמך ישראל (its entry records no such evidence), נעם (none), or הליכוד (a cabinet act breaching Oslo is not a statement cancelling it). אל הדגל held open pending the platform's own wording. The tag now has three holders. |
 | 2026-09-22 | revision 113 — **ביחד: the `tourism` plan, published today. No axis moved, no tag added.** The most market-leaning plan in the corpus (a one-stop hotel approval track, 18 months instead of up to five years, price relief argued from supply), with a smaller state half; economic +1 held, `deregulation` refused again. Tourism management devolved to 6–8 regional coalitions of local authorities corroborates `municipal-devolution`. The page gives two different baselines (5 years and ~10 years). The corpus check that followed found two more live, uncited plans — a second edition of the aging plan (unchanged: average-wage indexation still there) and the wounded-soldiers `rehabilitation` plan (corroborates `reservist-focused`) — both read in the same revision. |
 | 2026-09-22 | revision 114 — **עוצמה יהודית: a הארץ profile of the campaign apparatus (2026-09-06), read person by person. No axis moved, no tag added, `seed.sql` unchanged (18 tags).** **A tier BELOW candidate biography — campaign staff, press-reported** — read anyway because it is the strongest `kahanist` evidence the page has seen and the page should say why it still scores nothing. זאב וולף, the party's Elections-Committee lawyer, is a כהנא חי activist **convicted of murder** for the Nov-1992 שוק הקצבים attack staged on Kahane's yahrzeit; the father of CEO **ניימן #10** runs the yeshiva **Kahane founded**, whose head is the father of **#6 קרויזר**; **גופשטיין** — convicted of incitement to terrorism, US-sanctioned 2024, **barred from candidacy** — is central to the campaign and advises on police appointments. **The tier question is recorded, not resolved**: גופשטיין *cannot* be slotted, so a campaign role is the nearest revealed preference available, which argues for counting staff — but `kahanist`/`jewish-supremacist` are held and both axes are at +3, and **a rule is not worth changing on a case where the answer is the same either way**. **The refutation is in the same article, and is the finding**: campaign manager **רוזנבאום** spent the previous year working *against* this government inside the civil commission of inquiry with October-7 bereaved families and was preparing a children's book attacking בן גביר from the right, while **שריקי** (youth HQ) worked with פורום דין וצדק, who *oppose* a state commission — **one campaign, staff on both poles** of a subject revision 99 swept the whole table for. A hire is not a position; the outreach-structure line (מטה הסרוגים, the Druze HQ, ישר's 14-women-in-30) has never before been demonstrable from one document. **Prison conditions still not filed**, and the reason is sharper than "one holder": this row and בל"ד now hold **opposite poles of one subject**, one holder each — trigger set at a third row. הארץ's forecast focus (death penalty / prison conditions / mass weapons) is `צפוי להתמקד`, a press prediction, and all three were already on the row. **#7 דורפמן**: revision 57's refusal restated on more facts (resigned to run, שוחד/מרמה/הפרת אמונים, refused to cooperate, himself a שב"כ target) — an allegation against a candidate is the lowest tier. Polling **8–9 seats**, so the realistic range of 10 used since revision 57 stays generous; ניימן #10 sits on its edge |
+| 2026-09-22 | revision 115 — **cross-row: the disqualification thread read from four sources (N12 22.09, ערוץ 14 14.09, IDI article + מסבירון). No axis moved, no tag added, `seed.sql` unchanged.** **The gap revision 102 left explicitly uninvestigated is CLOSED**: the ten/twelve discrepancy is `נדחו על הסף` — the filing window shut 22:00 on 14.09 with ten requests standing **after** the committee threw out every individual petition against **seven named עוצמה יהודית candidates** (so *"הדיון יתקיים ביחס לרשימה בלבד"*), אם תרצו vs יאיר גולן, and **one against רשימת ישראל תחילה** — a row this page never recorded as petitioned at all. **The plenum list is a SURVIVOR set, not the filed set.** N12's itemisation confirms revision 102's enumeration exactly (רע"ם ×3, עוצמה יהודית ×2, one each for הדמוקרטים / הציונות הדתית-זהות / בל"ד / הרשימה המשותפת-כסיף / אבו שחאדה); hearings 23–24.09 under השופט נעם סולברג. **The refusal now rests on a BASE RATE rather than a prediction, which is what revision 102 said it needed**: per IDI, **no candidate disqualified by the committee has ever had it upheld by the Supreme Court** — the 2019 trio ran the other way, the Court disqualifying בן ארי and then **גופשטיין ומרזל of עוצמה יהודית** over committee *approvals*, which also **sources revision 114's "barred from candidacy"**. The Court's own threshold phrase for refusing disqualification is *"מסה קריטית"* — **the exact words עוצמה יהודית's petition borrows to demand one**. **The committee is seated by the 25th Knesset**, so four of its factions are not rows here and ביחד's six seats sit under **יש עתיד**, legible only through this page's `party_lineage`. **ביחד abstains entirely** (*"סיבוב פוליטי ותקשורתי חסר כל משמעות מעשית"*) — the strongest test the category rule has had, since it is declared as a stance about the instrument itself and still is not a programme; the same statement's conscription half (בנט: חוקי ההשתמטות *"יבוטלו עם השבעת הממשלה החדשה"*) corroborates three held tags and adds a **schedule**, and `excludes-anti-zionist-parties` is refused there as being about ballot eligibility, not coalition partners. **A NEW member of the confident-wrong-answer family**: two summarising fetches of the SAME N12 URL disagreed and both were wrong — speaker בל"ד vs ביחד, an invented *"קרקס"* for the page's actual *"סיבוב"*, and the hearing dates wrong twice in two different ways. Ground truth came from the raw page. **Only the disagreement caused anyone to look**; one call would have written a fabricated Hebrew quote into this page under בל"ד's name |
