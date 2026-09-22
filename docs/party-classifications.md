@@ -1379,6 +1379,77 @@ is read here, the same care the satire column got in revision 99.)
   account of a third row's motives — the weakest tier — and revision 85 already refused a friendly
   witness's account of this same meeting.
 
+**2026-09-22 — revision 104. A Haaretz campaign-trail feature (נ"ח, 2026-09-22) quoting איזנקוט at
+four events, and it carries the first sentence on the West Bank this row has ever had. No axis
+moved, no tag added, `seed.sql` unchanged — but the +1 is now the closest call on the row.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-22/ty-article-magazine/.premium/000001a0-b950-dea8-afe0-f9fcbb5d0000),
+supplied as pasted text. Reportage, not a column: the quotations are what is read, the reporter's
+readings of them are not.)
+
+- **The sentence.** Asked at קריית מלאכי about a permanent arrangement with the Palestinians:
+  *"מעולם לא אמרתי שהפתרון הוא שתי מדינות לשני עמים... מי שחושב שאפשר להגיע להסכם עכשיו טועה טעות
+  מרה"*, then, against סמוטריץ'-style *"מדיניות ההכרעה"* (dismantling the PA, control of 2.8 million
+  Palestinians): *"לכן אני תומך בהתיישבות בתנאי שהיא נעשית על פי האינטרסים הלאומיים ועל פי חוק"*.
+  **The התיישבות homograph resolves to the West Bank here, and not by inference** — the reporter
+  annotates the word in-line, *"הוא אינו משתמש במילה התנחלויות"*. This is the first time on this row
+  the word does *not* mean the Negev and Galilee (revisions 15, 21, 39 each recorded the other case).
+- **Why this weighs more than a candidate's biography did.** Revision 69 set the trigger as *"any ישר
+  document on the territories, or any אבו רוקן statement made in the party's name"*. This is neither
+  — it is the leader, orally, at a campaign event. But the security score has rested on **איזנקוט's
+  own statements** since the row was scored, because thirteen documents say nothing. So this is the
+  same evidence tier the +1 already stands on, not a weaker one, and it cannot be waved away as
+  "not a document" without also removing the +1's footing.
+- **Why it still does not reach +2.** The +2 band is *no Palestinian state **plus** a territorial
+  claim* — sovereignty over security-essential areas, **settlement expansion**, taking territory. The
+  sentence supports settlement **conditionally** (national interest, and lawful — in Israeli usage,
+  the distinction that excludes outposts), names **no region, no number and no expansion**, and comes
+  in the same breath as a rejection of the control plan that *is* the annexationist position. Support
+  for lawful settlement is compatible with the refusal of annexation the +1 rests on;
+  `anti-annexation` stands.
+- **`pro-settlement` REFUSED, on the co-occurrence test (revision 49).** All six current holders sit
+  at `security` +2 or +3, and every grant was a forward commitment to *strengthen* settlement
+  (שרעבי's *"אפעל לחיזוק ההתיישבות היהודית"*) or a platform naming יהודה ושומרון (המפלגה הכלכלית).
+  A conditional endorsement from a row whose band definition is *refusing territorial expansion*
+  would either contradict the band or quietly redefine the tag on six rows.
+- **The reported sentence is internally garbled, and nothing here relies on its middle.** It reads
+  *"2.8 מיליון פלסטינים תחת אחריות **פלסטינית** זה דבר רע מאוד, לכן אני תומך בהתיישבות"* — which
+  inverts the argument the rest of the passage makes against סמוטריץ'. Probably *ישראלית*; not
+  checkable without a recording. Only the first clause (the rejected plan) and the last (the
+  conditional support) are scored.
+- **Trigger, restated sharper:** a named region (בקעת הירדן, the blocs), a number of units or
+  communities, or the word *הרחבה* from איזנקוט or any ישר document → `security` +2 and
+  `pro-settlement`, and `anti-annexation` re-read against it.
+
+**The fourth coalition principle now has a first-party date, and it contradicts revision 100's
+columnist.** At the Jerusalem event (Wednesday 2026-09-16, the day of the N12 report revision 85 was
+written about): *"לפני חודש הכנסתי תנאי נוסף – שבקווי היסוד יוכנס שחמאס הוא ארגון טרור שצריך
+להשמיד אותו"*. Revision 100 recorded, as contested, a TV critic's claim that the clause *"צץ בעקבות
+הפרסום"* — minted during that controversy. The leader dates it about a month **before** it. **Still
+not settled** — a party dating its own principle is interested testimony, and the page still has no
+text of the clause earlier than 16 September — but revision 100's *"it grew by one under pressure"*
+is now one account against another, not a finding. As revision 100 already checked, the tag does not
+rest on this clause either way.
+
+- **`excludes-anti-zionist-parties` corroborated, and its conditional form preserved.** *"אני לא מכיר
+  היום מפלגה ערבית שמקבלת את העקרונות האלו. כשאני אראה מפלגה כזו נדבר על שותפויות"*. In practice that
+  excludes every Arab list running; in form it is still a **principle test**, not an ethnic one, which
+  is why the tag is the principle-based one and why no broader exclusion tag is warranted. The
+  reporter's gloss — that accepting a Jewish/non-Jewish bloc split is *"הנחת היסוד הגזענית"* — is
+  opinion and is not scored.
+- **A candidate anti-defection charter — noted, not minted.** Asked *"איך תבטיח שלא יהיו לך סילמנים
+  ושיקלים ברשימה?"*, he said candidates will sign an **אמנה** preventing them from defecting. One
+  holder, oral, no text of the charter: revision 15's rule. It would only become a dimension if a
+  second row publishes one, and an Open-questions entry is not justified on one sighting.
+- **Gaza: `hardline-on-gaza` not reached.** Fighting Hamas and conditioning reconstruction on
+  disarmament is near-universal Zionist-party doctrine; every holder's evidence is siege or supply
+  measures, the line revision 98 drew for המילואימניקים.
+- **Recorded as read, carrying nothing:** the October 7 *"three of four principles collapsed"*
+  analysis (diagnosis, not policy); the refusal to allow a transition government (a stated coalition
+  tactic, already covered by revision 99's position); a campaign in Likud towns and settlements under
+  *"ועשית הישר והטוב"* (targeting, not position); the בליך mock vote and 23-seat polling average (not
+  evidence of anything this page scores); the list's centre-right composition (audited in revision 69,
+  argued in revision 75).
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -9368,3 +9439,4 @@ pass happened, for anyone reading git history.
 | 2026-09-20 | revision 101 — **ten sources read, NOTHING moves, and the pass's value is THREE corrections to entries written in the previous two days.** No axis moved, no tag added, `seed.sql` unchanged. **(1) A quotation that inverted on truncation.** Revision 99 cited הדמוקרטים's *"נבטל את חוק מעצרי עריקים"* as anti-exemption evidence; quoted alone that reads as *abolishing deserter arrests*, the opposite of the row's position. The full clause is *"…ונאכוף את חוק שירות ביטחון באופן שיוויוני"* and the statute meant is **חוק הקפאת מעצרי העריקים**, so the commitment is that arrests RESUME — confirmed by ח"כ אפרת רייטן of that row co-signing a letter demanding to know why they stopped. **A quotation that inverts on removal of five words is a defect in the citation, not the source.** **(2) A junior partner's share overstated.** Revision 99 read תקווה חדשה's filing share as 3 of 120; **#9 טליק גואילי is a הליכוד recruit holding a שריון from נתניהו**, filed under תקווה חדשה technically, so the real share is **2**. Cuts the same way (the absorption reading strengthens), but **the filing-attribution field is not a reliable measure of a junior partner on its own** — and that field is what revision 55 established as the measure for a joint list. **(3) A sweep table that misdescribed a row.** הליכוד was listed as flatly opposed to an inquiry; ח"כ **אריאל קלנר** *"הוביל בכנסת את הקמפיין להקמת ועדת חקירה לאומית/פוליטית, ועבד בצמוד ללשכת נתניהו על חוק בעניין"*. **The entry stays "opposed" anyway, because this row is scored from RECORD** (revision 24's rule, which took `security +3` from conduct and declined the primary): three years, a coalition majority, a בג"ץ order to produce a framework by 1 July 2026, and no commission of any kind. **The fact is recorded, the motive is not.** **A base rate saved a fourth would-be finding.** קלנר led that campaign and sits at **#47**; the drop looks punitive at −22 until the other four MKs in the same article read −17, −20 and −22, all from נתניהו's ten reserved slots being inserted above them — and קטי שטרית claims she was punished for the **opposite** behaviour (*"אם הייתי תוקפת מבוקר עד לילה את מערכת המשפט הייתי מקבלת יותר קולות"*). **Two claimed incentives in one article pointing opposite ways is the clearest sign neither is a measurement.** **Corroboration: `excludes-haredi-and-arab-parties` gets a second independent first-party statement** three days after being added — ליברמן, *"לא יכול להיות שום שינוי כששתי המפלגות הכי גזעניות, ש"ס ויהדות התורה, הן חלק מהקואליציה הבאה"*. **And a consistency refusal**: his *"כל אלו שהיו שותפים למחדל 7 באוקטובר – לא יכולים להיות שותפים לממשלה הבאה"* is the same shape as איזנקוט's statement refused for ישר in revision 99, so it is refused too — **granting it here would make the tag record which row was read second.** **Legislative fact recorded**: בג"ץ struck down **חוק הקפאת מעצרי העריקים** unanimously in early September (passed 58–54 in July), **eight of nine** also on the merits — *"פוגע קשות בליבת הזכות החוקתית לשוויון"*, שטיין: *"מנוגד למגילת העצמאות"* — and four rows' MKs (פורר, רייטן, בן ברק, פרקש-הכהן) then jointly asked why enforcement stopped anyway; first instance of those rows acting together on it, no tag to any. **חד"ש-תע"ל: טיבי's *"לדעתי נעשה יותר מזה"*** on recommending a PM, plus backing a challenger to יו"ר הכנסת — recorded in prose; **the page has no vocabulary for coalition INCLUSION**, only for refusals, and a hint is not a stated position. **אבו שחאדה's retraction of his 8 October 2023 article REFUSED** — the candidate-is-not-a-position rule applied where the candidate chairs a component party. **עמך ישראל answers נתניהו** (*"החלק הראשון לא נכון והחלק השני לא יהיה"*); `bloc` stays `bibi` — denying you will help the other side is not a positive signal, revision 43's rule. **The Russian-speaking representation gap stays unminted and the case for leaving it is stronger**: the source is entirely placements (אלקין #32, בליאק #16, מלינובסקי #5, סובה #8), *"a list is not a programme"* now applied four times in four days, and ישראל ביתנו — the row where the tag would have to be decided — is reported to be shedding the sectoral label deliberately. **Out of scope and said so**: the TikTok policy interview contains no party position at all |
 | 2026-09-22 | revision 102 — **the יועמ"שית's opinion on the petition against אבו שחאדה (פ"מ 8/26, 24 pages) read in full, plus the הארץ report. No axis moved, no tag added, `seed.sql` unchanged; the pass's value is two corrections and a document the page did not know existed.** **(1) The opinion is narrower than its headline**: of the petition's two grounds, *denial of the Jewish state* gets **no basis at all** — *"מדינת כל אזרחיה"* restates בל"ד doctrine that בג"ץ has repeatedly held lawful — and only the armed-struggle ground survives, on the 8 October 2023 article alone, hedged (*"אינה תואמת את המתכונת המלאה"*, *"למצער לעת הזו"*). So `state-of-all-its-citizens`/`non-zionist` on הרשימה המשותפת are exactly what a state legal body just called lawful. **(2) Revision 101's "retraction" corrected**: the sworn affidavit disowns the article's *silence* (*"צורם לעין ושגוי"*), not the article, and the יועמ"שית reads it as no withdrawal; inline pointer added. **(3) Revision 99's petitions refusal re-grounded**: its two premises — all twelve expected to fail, the instrument fired symmetrically — both failed within three days (the partisan CEC plenum is expected to accept the petitions against the Arab lists; the יועמ"שית backed one petition and no other; כחול לבן announced a one-directional vote). **The refusal now rests on the instrument**: a disqualification petition or vote concerns legal eligibility under סעיף 7א, neither a programme nor a coalition statement. **A refusal resting on a prediction is only as durable as the prediction.** **(4) בל"ד adopted a ten-point programme in June 2026** (affidavit §33), so this page's *"dated 2018-09-11 and unchanged"* is now unverified — queued as the document to fetch before הרשימה המשותפת's axes are next touched. **Refused**: כחול לבן's vote for `excludes-anti-zionist-parties` (its ground matches the tag's founding criterion word for word, but running is not governing — and the יועמ"שית rejected that ground the same day); the affidavit's recognition of *"זכויות הקולקטיב היהודי-ישראלי"* (litigant's sworn statement, incentive obvious); ג'בארין's reply to איזנקוט; ישר's non-voting statement. **Unexplained and left so**: the article lists ten hearings against revision 99's twelve filings |
 | 2026-09-22 | revision 103 — **בל"ד's June 2026 ten points, found and read in the original ([ערב 48](https://www.arab48.com/%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9/2026/09/16/%D8%A7%D9%84%D8%AA%D8%AC%D9%85%D8%B9-%D9%8A%D9%82%D8%B1-10-%D9%86%D9%82%D8%A7%D8%B7-%D8%A3%D8%B3%D8%A7%D8%B3-%D9%81%D9%8A-%D8%A7%D9%84%D8%B9%D9%85%D9%84-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A-%D9%88%D8%A7%D9%84%D8%AC%D9%85%D8%A7%D9%87%D9%8A%D8%B1%D9%8A-%D9%81%D9%8A-%D8%A5%D8%B7%D8%A7%D8%B1-%D8%B7%D8%B1%D8%AD%D9%87-%D8%A7%D9%84%D8%AD%D8%B2%D8%A8%D9%8A-%D9%88%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A), 27.06.2026) and in the Hebrew sworn into Abu Shehadeh's affidavit (Adalah's filing, pp. 7–8, OCR'd from a scan and checked against the image; the two match point for point). No axis moved, no tag added, `seed.sql` unchanged.** **Found through the affidavit**, whose link survives only as a percent-encoded image; a title search returned nothing. **It is a priorities list adopted by the political bureau, not a replacement programme**, so revision 102's worry resolves the quiet way: **`security` −3 held** (*"UN resolutions and the Arab Initiative"* keeps the 2018 direction, just less specifically — omitting detail does not retract it), **`religiosity` −3 held on silence** (the ten points never mention religion; the 2018 separation clause stands, and is now the oldest evidence on the newest list), `state-of-all-its-citizens` stands though the phrase is absent (point 1 describes it; Abu Shehadeh said the words the next day). Point 7's return of **internally displaced citizens** is not the Palestinian right of return and moves nothing. **The land-planning Open question is half answered**: points 6 and 8 (freeze demolition orders, recognise unrecognised villages, jurisdiction areas) put this row beside הדמוקרטים' *"נבטל את חוק קמיניץ"*; **רע"ם is the open half** and the rule said to read both. **Not filed, one holder each**: Arab educational self-administration (point 9) and equal treatment of prisoners regardless of offence (point 10) |
+| 2026-09-22 | revision 104 — **ישר: a הארץ campaign-trail feature quoting איזנקוט at four events, and the row's first sentence on the West Bank.** No axis moved, no tag added, `seed.sql` unchanged. *"אני תומך בהתיישבות בתנאי שהיא נעשית על פי האינטרסים הלאומיים ועל פי חוק"* — the reporter annotates that he avoids *התנחלויות*, so the homograph resolves to the West Bank for the first time on this row. Same evidence tier the +1 rests on, but conditional, no region, no expansion, and paired with rejecting the סמוטריץ' control plan, so +1 and `anti-annexation` hold; `pro-settlement` refused on co-occurrence (all six holders at +2/+3). Trigger sharpened: a named region, a number, or *הרחבה* → +2. The Hamas coalition clause is dated by איזנקוט to *"לפני חודש"*, contradicting revision 100's columnist — recorded as contested. An anti-defection charter noted, not minted. |
