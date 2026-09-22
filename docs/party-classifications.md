@@ -5624,6 +5624,74 @@ already quotes:
 - **אל הדגל — held open.** Its platform is paraphrased here as *"rejection of both Oslo and conflict
   management"*, with no Hebrew quote to hold the tag to. **Trigger:** read the platform sentence.
 
+**2026-09-22 — revision 114. A הארץ profile of the campaign apparatus (2026-09-06) — the whole
+"כוורת" named person by person. No axis moved, no tag added, `seed.sql` unchanged (18 tags).**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-06/ty-article-magazine/.premium/000001a0-6678-dca9-a1e2-777ead900000))
+**This is a tier below everything this row has been scored from**: not a platform, not the party's
+own record, not even candidate biography — campaign *staff*, reported by a third party. It is read
+here anyway, because it is the strongest `kahanist` evidence the page has ever seen and the page
+should say out loud why it still scores nothing.
+
+- **The stated campaign focus adds no tag, and is not first-party.** הארץ forecasts the campaign
+  will centre on *"עונש מוות למחבלים, החמרת תנאי הכליאה לאסירים פלסטינים וחלוקת הנשק ההמונית"* —
+  `צפוי להתמקד`, a press prediction about a campaign, not a party statement. All three are already
+  on this row: `death-penalty-for-terrorists`, `gun-rights`, and prison conditions as a **ministerial
+  record** since revision 45 read the Damon Prison visit (*"נגמרו הקייטנות בבתי הכלא"*, 2026-08-30).
+  **Prison conditions still gets no tag and the reason is now sharper than "one holder".** The page
+  has a holder at each pole — this row wants conditions harsher for Palestinian security prisoners,
+  בל"ד's point 10 wants *"دون تمييز"* equality for all prisoners regardless of offence (revision
+  103, explicitly not filed). Two rows, opposite directions, one subject. That is nearer to a
+  dimension than either was alone, but they are **two tags, one holder each**, and revision 15's
+  rule is about holders per tag. **Trigger:** a third row publishing a prison-conditions position,
+  at either pole.
+- **`kahanist` — the best evidence the row has, and it is not scored.** Revision 57 finally cited
+  the tag on **#8 צחי אליהו**'s כך tattoo, and said correctly that the evidence was *the party's
+  reversal* in slotting him, not the tattoo. This article is denser by an order of magnitude:
+  **זאב וולף**, the lawyer representing the party and בן גביר before the Elections Committee, was a
+  **כהנא חי** activist convicted of murder for the November 1992 שוק הקצבים attack in Jerusalem —
+  staged on the anniversary of Kahane's killing, one 65-year-old Palestinian dead and seven wounded
+  — sentenced at 16 to ten years, pardoned by ויצמן after four and a half as a counterweight to
+  אחמד יאסין's release. **אלי ניימן**, father of party CEO **איתיאל ניימן #10**, runs *ישיבת הרעיון
+  היהודי*, **the yeshiva Kahane founded**; בן גביר calls him *"שותף וחבר"*, and its head is הרב
+  יהודה קרויזר, **father of #6 יצחק קרויזר** — so the row's list and that institution touch at two
+  points. **בנצי גופשטיין**, יו"ר להב"ה, convicted of incitement to terrorism, **US-sanctioned in
+  2024**, and **disqualified from standing for the Knesset**, is described as among the closest
+  people to בן גביר, central to the campaign, and advising the minister on security matters and
+  **police appointments**.
+- **The tier question this raises is recorded, not resolved, and deliberately so.** The אליהו
+  precedent scores a *revealed preference* — the party reversing itself to seat someone. גופשטיין
+  **cannot** be seated; he is legally barred. A central, unpaid-for-in-votes campaign role is
+  therefore the nearest thing to a revealed preference the party can offer him, which is a real
+  argument that staffing should count somewhere on the ladder. **Nothing turns on it**: `kahanist`
+  and `jewish-supremacist` are both held, `security` and `religiosity` are both at +3, and there is
+  no band above either. **A rule is not worth changing on a case where the answer is the same either
+  way** — and the article itself supplies the argument against changing it, below.
+- **The refutation is in the same article, and it is the finding.** **עופר רוזנבאום**, the campaign's
+  manager, spent the year before he crossed over working **against** this government inside the
+  civil commission of inquiry set up with October 7 bereaved families, and was preparing a
+  children's book attacking בן גביר **from the right**. **ויקטור שריקי**, in the party's youth HQ,
+  worked with **פורום דין וצדק**, bereaved families who *oppose* a state commission of inquiry. So
+  one campaign carries staff on **both poles** of `state-commission-of-inquiry` — a subject revision
+  99 swept the entire table for, ending at **one holder (אל הדגל, since withdrawn) and nine
+  refusals**, with the distribution documented in Open questions instead of in `seed.sql`. The
+  manager held the opposite position twelve months ago and said so in public (*"את השירותים שלי שוכרים כדי להניח אקדח על השולחן"*, TheMarker 2022). **A hire is
+  not a position.** This is the same line the page drew refusing מטה הסרוגים and this row's own
+  Druze HQ as **outreach structures**, and the same line that cost ישר `gender-equality` on 14 women
+  in 30 slots. It has never before been demonstrable from a single document.
+- **#7 חנמאל דורפמן — revision 57's refusal restated, on more facts.** That entry recorded the live
+  מח"ש recommendation to indict (2026-04-28, פרשת מקורבי בן גביר) and **deliberately did not tag
+  it**. The article adds that he resigned as ראש המטה במשרד לביטחון לאומי in order to run, that the
+  suspicions are named **שוחד, מרמה והפרת אמונים** over interfering in Jewish-terrorism
+  investigations, that he refused to cooperate with investigators, and that he was **himself a שב"כ
+  target** for activity against Palestinians. **Nothing moves.** An allegation against a candidate
+  is the lowest tier on this page, the same line that keeps `populist` off this row; it is recorded
+  in prose only because the alleged conduct is the row's own subject matter.
+- **Polling, for the range this row's candidate audits use.** הארץ puts the party at **8–9 seats**;
+  the party's own target is *"מספר דו־ספרתי"*. The realistic range of **10** that revisions 57 and
+  65 read this list at is therefore still generous rather than tight — דורפמן #7 and גולדברגר #9
+  stay comfortably inside it, and ניימן #10 sits exactly on its edge.
+- **`family_evidence` stays `record`.** Nothing here is party-published.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -9827,3 +9895,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 111 — **הציונות הדתית: five פייגלין posts (19–22 Sept). `anti-oslo` ADDED (23 → 24)** — the זהות platform the row absorbed opens with cancelling Oslo, and the merge had not carried the tag; פייגלין restates it (*"אף אחד לא מציע דרך אל מחוץ למתכונת אוסלו מלבד זהות"*). *"כיבוש. גירוש. התיישבות."* is the first dated first-party campaign use of the slogan behind `population-transfer` (already held); it does not settle revision 92's provenance question. The IDF ethics code is now a demand on two rows the same week (with עוצמה יהודית); filed, not minted. |
 | 2026-09-22 | revision 112 — **cross-row `anti-oslo` check, at the repo owner's request. Added to עוצמה יהודית (17 → 18)** on the faction's 2025 bill annulling Oslo, Hebron and Wye, already quoted in revision 30. Not added to עמך ישראל (its entry records no such evidence), נעם (none), or הליכוד (a cabinet act breaching Oslo is not a statement cancelling it). אל הדגל held open pending the platform's own wording. The tag now has three holders. |
 | 2026-09-22 | revision 113 — **ביחד: the `tourism` plan, published today. No axis moved, no tag added.** The most market-leaning plan in the corpus (a one-stop hotel approval track, 18 months instead of up to five years, price relief argued from supply), with a smaller state half; economic +1 held, `deregulation` refused again. Tourism management devolved to 6–8 regional coalitions of local authorities corroborates `municipal-devolution`. The page gives two different baselines (5 years and ~10 years). The corpus check that followed found two more live, uncited plans — a second edition of the aging plan (unchanged: average-wage indexation still there) and the wounded-soldiers `rehabilitation` plan (corroborates `reservist-focused`) — both read in the same revision. |
+| 2026-09-22 | revision 114 — **עוצמה יהודית: a הארץ profile of the campaign apparatus (2026-09-06), read person by person. No axis moved, no tag added, `seed.sql` unchanged (18 tags).** **A tier BELOW candidate biography — campaign staff, press-reported** — read anyway because it is the strongest `kahanist` evidence the page has seen and the page should say why it still scores nothing. זאב וולף, the party's Elections-Committee lawyer, is a כהנא חי activist **convicted of murder** for the Nov-1992 שוק הקצבים attack staged on Kahane's yahrzeit; the father of CEO **ניימן #10** runs the yeshiva **Kahane founded**, whose head is the father of **#6 קרויזר**; **גופשטיין** — convicted of incitement to terrorism, US-sanctioned 2024, **barred from candidacy** — is central to the campaign and advises on police appointments. **The tier question is recorded, not resolved**: גופשטיין *cannot* be slotted, so a campaign role is the nearest revealed preference available, which argues for counting staff — but `kahanist`/`jewish-supremacist` are held and both axes are at +3, and **a rule is not worth changing on a case where the answer is the same either way**. **The refutation is in the same article, and is the finding**: campaign manager **רוזנבאום** spent the previous year working *against* this government inside the civil commission of inquiry with October-7 bereaved families and was preparing a children's book attacking בן גביר from the right, while **שריקי** (youth HQ) worked with פורום דין וצדק, who *oppose* a state commission — **one campaign, staff on both poles** of a subject revision 99 swept the whole table for. A hire is not a position; the outreach-structure line (מטה הסרוגים, the Druze HQ, ישר's 14-women-in-30) has never before been demonstrable from one document. **Prison conditions still not filed**, and the reason is sharper than "one holder": this row and בל"ד now hold **opposite poles of one subject**, one holder each — trigger set at a third row. הארץ's forecast focus (death penalty / prison conditions / mass weapons) is `צפוי להתמקד`, a press prediction, and all three were already on the row. **#7 דורפמן**: revision 57's refusal restated on more facts (resigned to run, שוחד/מרמה/הפרת אמונים, refused to cooperate, himself a שב"כ target) — an allegation against a candidate is the lowest tier. Polling **8–9 seats**, so the realistic range of 10 used since revision 57 stays generous; ניימן #10 sits on its edge |
