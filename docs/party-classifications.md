@@ -2843,6 +2843,45 @@ argument.**
   `sectoral-budgeting` and it sits **only on rows that receive it**. Same asymmetry as the gun-control
   gap, which this page calls the strongest kind. Filed, not minted.
 
+**2026-09-22 — revision 106. The senior-citizens paper; corpus 16 → 17. No axis moved, no tag
+added, `seed.sql` unchanged — and the paper is the cleanest cross-row comparison this page has for
+`welfare-state`.**
+([תוכנית אזרחים ותיקים](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%90%D7%96%D7%A8%D7%97%D7%99%D7%9D+%D7%95%D7%AA%D7%99%D7%A7%D7%99%D7%9D.pdf),
+3 pages, created 2026-09-16, party-published, supplied by the repo owner.)
+
+- **Revision 62's edition probe run first: one edition.** `(1)`/`(2)`, with and without the `+`
+  separator, all answer **403** against the base key's **200 / 99,952 bytes**.
+- **It names the formula — the exact line ישר's aging paper was held short of.** *"נחזיר את הצמדת
+  הקצבה לשכר הממוצע במשק"*, plus a gradual rise in the base pension *"שיפצה על השחיקה שלה בשני
+  העשורים האחרונים"*. Revision 29 granted `welfare-state` to ביחד for naming average-wage indexation;
+  revision 39 held it back from ישר because its paper promised to *build* a value-preservation
+  mechanism and named no formula, recording *"name the formula or the baseline"* as the line that
+  would earn it. **This row crosses that line in one sentence.** Nothing changes, because
+  `welfare-state` is already in this row's `families` and `economic` is already −2 — but the three
+  aging papers now form a graded set on one question, which is worth having in one place: **ביחד
+  and הדמוקרטים name the formula; ישר does not.**
+- **The other contrast with ישר is the verb.** ישר: *"**נבחן** הטלת חובת ביטוח סיעודי"*. Here:
+  *"נפעל לחוקק את **חוק ביטוח סיעוד ממלכתי**"*, care *"ללא תלות ביכולתו הכלכלית"*, reorganised
+  *"במסגרת ממלכתית"*. A statutory universal entitlement, stated as a commitment — the thing ישר's
+  paper examined.
+- **economic −2 corroborated, not stretched.** Everything else is expansionary and state-run:
+  a government-approved five-year plan reporting to the social-economic cabinet, a larger health
+  basket, more geriatric beds, controlled-price assisted housing on **state land** with priority to
+  government companies and a mandatory quota of controlled-price units, automatic proactive
+  entitlement through ביטוח לאומי, doubled day centres, a minister-rank Holocaust-survivor
+  coordinator, and a monthly allowance for FSU Holocaust refugees. The two market-flavoured measures
+  — an extra tax-credit point for pensioners and employer incentives to keep over-67s working — are
+  **targeted transfers through the tax system**, not a liberalizing doctrine; −2 needs no defence
+  against them. Nor is the employment incentive workfare: it enables work past retirement, it does
+  not condition support on it (the distinction revision 39 drew on ישר's *"לבני 67 ומעלה להמשיך
+  לעבוד"*).
+- **A statutory accessibility duty on commercial firms** — banks, insurers and telecoms obliged to
+  offer *"שירות אישי... מענה אנושי"* — is regulation of private business for a consumer group.
+  Recorded; `cost-of-living` (held) is the nearest tag and does not fit well enough to cite as
+  corroboration.
+- **Not scored:** *"נחזק את המשטרה הכחולה"* and harsher sentences for fraud against the elderly —
+  crime policy, carried already by revision 62's internal-security paper.
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -3174,6 +3213,58 @@ and כסיף. No axis moved, no tag added, `seed.sql` unchanged.**
   it said *"אבו שחאדה חצה אותו"* while adding *"זכותם של אזרחי ישראל הערבים לייצוג פוליטי מלא"* — a
   view on one candidate's eligibility, from a row that already holds `excludes-anti-zionist-parties`
   on its own coalition text.
+
+**2026-09-22 — revision 108. The party's judicial-reform booklet; THREE tags added (15 → 18), all
+existing vocabulary. No axis moved.**
+([רפורמה משפטית בהסכמה](https://kachollavan.org.il/wp-content/uploads/2026/09/%D7%A8%D7%A4%D7%95%D7%A8%D7%9E%D7%94-%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%AA-%D7%91%D7%94%D7%A1%D7%9B%D7%9E%D7%94-%D7%9B%D7%97%D7%95%D7%9C-%D7%9C%D7%91%D7%9F-2.pdf),
+7 pages, created 2026-09-15, party-published, supplied by the repo owner; fetched with the
+browser `User-Agent` + `Referer` this entry already records the site needs.)
+
+**Extraction trap, new on this page: `pdftotext` drops every digit set in the body font.** The text
+layer reads *"כהונת היועץ המשפטי לממשלה תוגבל ל שנים"* and *"תמיכה של מתוך חברי הוועדה"* — the
+numbers are gone and the sentences still parse. Every figure below was read from the **rendered
+page** (`pdftoppm`, then zoomed), not from the text layer. **A sentence that parses with its number
+missing is the dangerous case**: nothing about it looks broken.
+
+The booklet is Gantz's answer to the 2023 overhaul — *"רפורמה משפטית בהסכמה"*, opening with six red
+lines. The first is that a regular coalition majority (*"61 אצבעות"*) may not change Basic Laws.
+
+- **`constitutionalist` ADDED.** The keystone is **חוק יסוד: החקיקה**: Basic Laws passed by a special
+  majority in **four readings** with time gaps between them, limited to regime, institutions and
+  rights, proposed only by the Constitution Committee, the Justice Ministry or at least **20 MKs**.
+  **This is the exact ground the tag was held on elsewhere** — the המילואימניקים row's own refusal of
+  `judicial-overhaul` says *"As revision 20 ruled, `constitutionalist` (חוק יסוד החקיקה) already covers
+  this"*. This row already carries `constitutional-reform` in its `families`; the tag was missing.
+- **`governance-reform` ADDED, and it is the largest chapter.** The tag's holders hold it for
+  institutional-design reform of state bodies (revision 62). Here: Knesset committees matched to
+  (fewer) ministries, mandatory oversight hearings on each ministry's work plan with twice-yearly
+  reporting, **sanctions on ministers who do not cooperate with the Knesset** (delayed bills, budget
+  cuts, travel limits, a personal fine), a restored question hour for every minister including the
+  PM, one secret "conscience vote" per committee on the opposition's demand, published minutes of the
+  ministerial legislation committee, and a semi-open list system (*"פתק וחצי"*).
+- **`term-limits` ADDED** — *"הגבלת כהונת ראש הממשלה ל־8 שנים"*, plus a **five-year** term for the
+  Attorney General and term limits for ministry legal advisers. It joins ישר (two terms, in its
+  registered goals), אל הדגל and המילואימניקים.
+- **`judicial-overhaul` REFUSED, and the booklet refutes it in its own words.** It commits to
+  **repealing the Sa'ar–Levin framework**, keeps **three judges** among the nine on the selection
+  committee, requires **7 of 9** to appoint a Supreme Court justice (so the judges keep a veto — the
+  booklet's own table lists *"וטו לרשות השופטת"*), lets the opposition choose its own committee
+  member, puts seniority for the court presidency into statute, and **affirms in writing** that the
+  Supreme Court may strike down laws. Some items sit on the overhaul's list — the AG term limit,
+  automatic private representation when the AG will not defend the government, only the Supreme Court
+  striking laws and only by **2/3 of at least nine justices** (a Basic Law only by 2/3 of the full
+  court) — but they are presented as a package passed by broad agreement. That is the המילואימניקים
+  ruling again: consensual reform is `constitutionalist`, not `judicial-overhaul`.
+- **A Nation-State Law amendment adding equality — the SECOND row to propose it.** Two clauses:
+  Israel *"מדינה יהודית ודמוקרטית"* as the Jewish people's national home, and *"מימוש זכויות הפרט …
+  מושתת על עיקרון ההגנה השווה בפני החוק"*. הדמוקרטים proposed the same (*"נעגן את עקרון השוויון
+  בחוק יסוד ונתקן את חוק הלאום"*, its Arab-society paper), and ביחד's pride plan puts equality in a
+  Basic Law without naming this law. **No tag exists.** Two holders on opposite sides of the centre is
+  the pattern this page treats as a real dimension, but minting belongs to a sweep, not to one row's
+  pass (revision 15). **Filed here with both texts so the sweep can compare them.**
+- **Axes untouched.** Nothing on the economy, the conflict or religion and state. A Basic Law on
+  criminal-procedure rights, digital courts, more judge posts and plain-language forms (with
+  Arabic, Russian and Amharic translations) are service reforms and carry no tag.
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
@@ -5358,6 +5449,51 @@ entry. No axis moved, no tag added, `seed.sql` unchanged.**
   לגבולות"*, i.e. support for Druze across the Syrian border. If this row publishes its **own**
   statement on that, it is foreign-policy content on a row that would then be the second sighting for
   the foreign-relations gap (Open questions, fourth sweep item). **Trigger recorded; nothing claimed.**
+
+**2026-09-22 — revision 107. Two portfolio demands and two six-point programmes, in the chairman's
+own statement. No axis moved, no tag added, `seed.sql` unchanged.**
+([בן גביר לביטחון. גוטליב למשפטים](https://www.ozma-yeudit.co.il/%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%9c%d7%91%d7%99%d7%98%d7%97%d7%95%d7%9f-%d7%92%d7%95%d7%98%d7%9c%d7%99%d7%91-%d7%9c%d7%9e%d7%a9%d7%a4%d7%98%d7%99%d7%9d/),
+party site, 2026-09-22 15:29 UTC, *"הצהרת יו״ר עוצמה יהודית"* — first-party in publication **and**
+content, unlike revision 99's letter.) The party will demand the Defence Ministry for בן גביר and
+Justice for טלי גוטליב (#2).
+
+- **`judicial-overhaul` — the evidence is upgraded from a slogan to a programme; the tag is not
+  changed.** It was added in revision 16 on *"אמשיך בכל הכוח עד שנעביר את הרפורמה המשפטית"*. It
+  now has six named measures: **immediate dismissal of the יועמ"שית** as the government's first act
+  (the standing coalition precondition, now in writing), Supreme Court appointments only after a
+  hearing in the Knesset Constitution Committee **and a two-thirds majority**, standing and
+  non-justiciability restored with subjects *"שאינם שפיטים"* listed explicitly, abolition of the
+  judges' candidate-screening course, harsher sentencing for crime organisations and terrorists, and
+  repeal of the State Attorney's rule requiring prior approval to open incitement and sedition
+  investigations. **One detail cuts against the obvious reading and is recorded for that reason**:
+  a two-thirds Knesset majority for a judge is a *supermajority*, which binds a narrow coalition as
+  well as an opposition. It is still a transfer of appointment power from the judicial selection
+  committee to the Knesset, which is the tag's content; the `judicial-restraint` family is untouched.
+- **`voluntary-palestinian-emigration-incentives` — the SCOPE widens, and that is the finding.**
+  Point 1 is *"עידוד הגירה מרצון מעזה **ומיו"ש**"*. The flagship 710 programme (2026-09-04) was
+  Gaza only, and that entry recorded *"this plan is about the population, not the land"* of the
+  Strip. **This is the first first-party text on this row extending the programme to Judea and
+  Samaria.** `security` is +3 and cannot move.
+- **`population-transfer` refused a FIFTH time, on the trigger that entry set.** The trigger is *a
+  coercive clause in the instrument, or a statement that those who decline will be made to leave*.
+  The text still says *מרצון* and contains neither. **Recorded plainly: the population the voluntary
+  instrument now targets roughly doubles**, and the opt-in/transfer line still rests entirely on the
+  programme's own description of itself — the weakest ground the page stands on, as revision 60 said.
+- **`hardline-on-gaza` and `no-palestinian-state` corroborated, both held**: *"ניפוץ קונספציית
+  ההכלה"*, and disarming *"רשות הטרור הפלסטינית"* with arrests of its senior figures who support
+  terror.
+- **Three military-personnel planks, recorded in prose, no tag.** Loosening the open-fire rules with
+  *"גיבוי לחיילים"*; replacing *"הקוד האתי הפרוגרסיבי של אסא כשר"*; and opening the elite units,
+  8200 included, *"לכלל האוכלוסייה"*. The vocabulary has no rules-of-engagement or military-ethics
+  tag, and one row's six-line list does not make a dimension — revision 15's rule.
+- **`reservist-focused` REFUSED on revision 19's standard.** *"העלאת שכר החיילים וקרקע חינם
+  ללוחמים"* names two benefits and costs neither; the tag needs a costed benefits package, not
+  rhetoric. (Dedicated land allocation for soldiers is also on ישר's row, where it sits inside a ₪20bn costed
+  package. That package is why ישר has the tag.)
+- **economic `0` / `not-economy-focused` untouched** — soldiers' pay is a defence line item, the
+  same distinction revision 60 drew for the ₪10bn emigration budget.
+- **`family_evidence` stays `record`.** A chairman's statement with twelve bullet points is a
+  programme sketch, not a platform. Same reasoning as the 710 pass.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -9532,3 +9668,6 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 103 — **בל"ד's June 2026 ten points, found and read in the original ([ערב 48](https://www.arab48.com/%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9/2026/09/16/%D8%A7%D9%84%D8%AA%D8%AC%D9%85%D8%B9-%D9%8A%D9%82%D8%B1-10-%D9%86%D9%82%D8%A7%D8%B7-%D8%A3%D8%B3%D8%A7%D8%B3-%D9%81%D9%8A-%D8%A7%D9%84%D8%B9%D9%85%D9%84-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A-%D9%88%D8%A7%D9%84%D8%AC%D9%85%D8%A7%D9%87%D9%8A%D8%B1%D9%8A-%D9%81%D9%8A-%D8%A5%D8%B7%D8%A7%D8%B1-%D8%B7%D8%B1%D8%AD%D9%87-%D8%A7%D9%84%D8%AD%D8%B2%D8%A8%D9%8A-%D9%88%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A), 27.06.2026) and in the Hebrew sworn into Abu Shehadeh's affidavit (Adalah's filing, pp. 7–8, OCR'd from a scan and checked against the image; the two match point for point). No axis moved, no tag added, `seed.sql` unchanged.** **Found through the affidavit**, whose link survives only as a percent-encoded image; a title search returned nothing. **It is a priorities list adopted by the political bureau, not a replacement programme**, so revision 102's worry resolves the quiet way: **`security` −3 held** (*"UN resolutions and the Arab Initiative"* keeps the 2018 direction, just less specifically — omitting detail does not retract it), **`religiosity` −3 held on silence** (the ten points never mention religion; the 2018 separation clause stands, and is now the oldest evidence on the newest list), `state-of-all-its-citizens` stands though the phrase is absent (point 1 describes it; Abu Shehadeh said the words the next day). Point 7's return of **internally displaced citizens** is not the Palestinian right of return and moves nothing. **The land-planning Open question is half answered**: points 6 and 8 (freeze demolition orders, recognise unrecognised villages, jurisdiction areas) put this row beside הדמוקרטים' *"נבטל את חוק קמיניץ"*; **רע"ם is the open half** and the rule said to read both. **Not filed, one holder each**: Arab educational self-administration (point 9) and equal treatment of prisoners regardless of offence (point 10) |
 | 2026-09-22 | revision 104 — **ישר: a הארץ campaign-trail feature quoting איזנקוט at four events, and the row's first sentence on the West Bank.** No axis moved, no tag added, `seed.sql` unchanged. *"אני תומך בהתיישבות בתנאי שהיא נעשית על פי האינטרסים הלאומיים ועל פי חוק"* — the reporter annotates that he avoids *התנחלויות*, so the homograph resolves to the West Bank for the first time on this row. Same evidence tier the +1 rests on, but conditional, no region, no expansion, and paired with rejecting the סמוטריץ' control plan, so +1 and `anti-annexation` hold; `pro-settlement` refused on co-occurrence (all six holders at +2/+3). Trigger sharpened: a named region, a number, or *הרחבה* → +2. The Hamas coalition clause is dated by איזנקוט to *"לפני חודש"*, contradicting revision 100's columnist — recorded as contested. An anti-defection charter noted, not minted. |
 | 2026-09-22 | revision 105 — **ביחד: three plans (`hitech`, `northborderlaw`, and `pride`, found by enumerating the CPT). `lgbt-rights` ADDED (22 → 23 tags)** — revision 49's trigger, *any plan naming the community*, met by a full programme: civil union with full marital rights, Basic-Law equality naming sexual orientation, a total conversion-therapy ban. No axis moved. `hitech` was one of revision 49's seven *retired* (302) plans and is live again as of today — a redirect is a snapshot. `northborderlaw` is the statutory confrontation-line law, the second row after ישר to propose one modelled on חוק תקומה; `tax-cutting` refused again as place-based (revision 51), `periphery-development` stays retired. `tourism` (created today) enumerated, not read. |
+| 2026-09-22 | revision 106 — **הדמוקרטים: the senior-citizens paper (corpus 16 → 17), one edition by revision 62's probe. No axis moved, no tag added.** It names the formula ישר's aging paper was held short of in revision 39 — pension indexation *לשכר הממוצע במשק* — and legislates the state nursing-insurance law ישר only *examines*. `welfare-state` already in `families`, economic already −2. The three aging papers are now a graded set: ביחד and הדמוקרטים name the formula, ישר does not. |
+| 2026-09-22 | revision 107 — **עוצמה יהודית: the chairman's statement demanding Defence for בן גביר and Justice for גוטליב, with a six-point programme for each. No axis moved, no tag added.** `judicial-overhaul` moves from a slogan to a programme (dismiss the יועמ"שית, Supreme Court appointments by Knesset hearing and a two-thirds majority, non-justiciable subjects listed). Voluntary emigration now extends to **יו"ש** as well as Gaza, a first on this row; `population-transfer` refused a fifth time because the text still says מרצון and has no coercive clause. `reservist-focused` refused: uncosted. Rules of engagement, the Kasher ethics code and opening 8200 recorded in prose. |
+| 2026-09-22 | revision 108 — **כחול לבן: the *רפורמה משפטית בהסכמה* booklet (7pp). THREE tags added (15 → 18): `constitutionalist` (a Basic Law: Legislation with a special majority and four readings), `governance-reform` (Knesset oversight, sanctions on non-cooperating ministers, *פתק וחצי*), `term-limits` (PM 8 years, AG 5). No axis moved.** `judicial-overhaul` refused: the booklet repeals Sa'ar–Levin, keeps the judges' veto (7 of 9 to appoint) and affirms judicial review in writing. A Nation-State Law equality amendment is now on two rows (with הדמוקרטים); no tag exists, filed for the sweep. **`pdftotext` silently dropped every body-font digit**; figures were read from rendered pages. |
