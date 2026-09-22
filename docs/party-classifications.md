@@ -31,7 +31,12 @@ This file records how those decisions were applied to each party.
    docker exec voteball-test-db psql -q -1 -U postgres -d revcheck -f /tmp/schema.sql
    docker exec voteball-test-db psql -q -1 -U postgres -d revcheck -f /tmp/seed-prev.sql   # previous
    docker exec voteball-test-db psql -q -1 -U postgres -d revcheck -f /tmp/seed-new.sql    # new
+   docker exec voteball-test-db psql -U postgres -c "DROP DATABASE revcheck;"             # then step 4
    ```
+
+   **Drop `revcheck` before running the suite.** `schema.sql` creates the `grafana_ro` role, roles
+   are cluster-wide, and a live `revcheck` holding it makes three `grafana_ro` tests fail on clean
+   HEAD — it reads as a broken tree, not as leftover state (revision 105, 2026-09-22).
 
    **`-1` is not optional.** `seed.sql` builds its `seed_*` staging tables as `TEMP ... ON COMMIT
    DROP`, so under psql's default autocommit each statement commits and drops them, and every
@@ -1856,7 +1861,7 @@ advocacy is not a party position**, which is the same line revision 22 drew when
 this row from its leaders' statements. The Democrats' candidate audit is the contrast that makes the
 rule legible: there, candidate positions *corroborated* an axis the platform already carried; here
 there is no platform text to corroborate. **Trigger:** any plan, or any joint list statement, naming
-the community.
+the community. **✔ Trigger met — the `pride` plan (2026-09-16); tag added in revision 105.**
 
 **Three further refusals.** `state-commission-of-inquiry` — **fourth** refusal, on revisions 15, 20
 and 24's unchanged reasoning, even though Bennett and Lapid committed to one on day one at the joint
@@ -2244,6 +2249,92 @@ the ~20 `/plans/` pages this entry already cites.)
   local-option instrument in its cleanest form on this row.
 - **`kashrut-liberalization` gets its mechanism**, already held: *"נכיר בכשרות בינלאומית"* paired with
   import-barrier removal, which is the same economic instrument the יוקר המחיה plan already supplied.
+
+**2026-09-22 — revision 105. Three plans: two supplied by the repo owner (`hitech`, `northborderlaw`)
+and a third found by enumerating the CPT, which fires revision 49's `lgbt-rights` trigger.
+`lgbt-rights` ADDED (22 → 23 tags); no axis moved.** Sources, party-published, all `200` to a
+browser-shaped `curl` on 2026-09-22:
+[ביחד נתקן — ההייטק](https://be-yahad.org.il/plans/hitech/) ·
+[חוק קו העימות](https://be-yahad.org.il/plans/northborderlaw/) ·
+[ביחד נביא שוויון זכויות לקהילה הגאה](https://be-yahad.org.il/plans/pride/).
+
+- **`lgbt-rights` ADDED — the trigger revision 49 set, met to the letter.** That pass refused the
+  tag because two gay MKs on the list were *candidate advocacy* while twelve plans said nothing, and
+  set the trigger as *"any plan, or any joint list statement, naming the community."* The `pride`
+  plan (CPT date 2026-09-16) is a full programme: *"חוקי שגיא"* in the name of רס"ן שגיא גולן, civil
+  union with *"מלוא הזכויות והחובות של זוגות נשואים"* regardless of *"נטייה מינית"*, immediate
+  registration of both parents, ROPA and surrogacy barriers removed, equality in a Basic Law with
+  sexual orientation and gender identity named, incitement against the community made a criminal
+  offence, a **total ban on conversion therapy** (*"באופן גורף ומוחלט"*), and a statutory budget line
+  for community organisations. **Revision 49's refusal was right when written** (the plan postdates
+  it by ten days) **and its reasoning is what made this addition cheap**: the line it drew —
+  candidates are not a position, a plan is — is exactly what now separates the two passes.
+  **Revision 49's leader-record note is overtaken, not wrong**: it described Bennett's movement as
+  *distancing* from conversion therapy rather than advocacy; the joint list now proposes to outlaw it.
+  Third holder, after הדמוקרטים and המילואימניקים; no co-occurrence problem (revision 49's test) — the
+  holders sit at religiosity −3 and −2, and this row is −2.
+- **`religious-pluralism` still refused (revision 99).** The pride plan's civil track is a *civil*
+  alternative to the Rabbinate, not recognition of non-orthodox streams — the same distinction.
+- **`constitutionalist` corroborated twice, already held.** The pride plan puts equality *"בחוקי
+  היסוד"*; the hitech plan promises *"יציבות משטרית ודמוקרטית מעוגנת בחוקה"* and *"אי־פגיעה במערכת
+  המשפט"* — framed, notably, as **investor protection** (*"כיפת ברזל כלכלית למשקיעים"*), which is
+  the first time this row argues the judicial question from economics rather than from democracy.
+
+**`hitech` was RETIRED and is back — revision 49's "302 = retired" reading was a snapshot, not a
+fact about the page.** Revision 49 listed הייטק among seven plans of a *"single retired batch dated
+22–25 June"* that `302` to `/plans/`. The CPT still carries the same post (`hitech`, created
+2026-06-25) and it now serves `200`, `article:modified_time` **2026-09-22 11:13 UTC — today**. Of
+that batch, `personal-security` still `302`s. **Status-check again at read time; a redirect only
+proves what the page did on the day it was checked.** It is the mirror of the moved-URL lesson this
+entry records twice (`yoker`, `servant-law-new`): there a live page moved, here a dead one revived.
+
+- **economic +1 HELD — the fusion band, again inside one document.** Liberalizing: *"דלאוור
+  בישראל"* (incorporation, bank account and approvals within 24 hours), ten-year tax certainty, no
+  retroactive regulation, regulatory sandboxes and *"רגולציה רזה"*, tax relief for returnees and for
+  option expenses. Expanding: a new **AI and technology ministry** replacing the Innovation Ministry,
+  national compute infrastructure, a *"אוצר לאומי של דאטה"*, a dual-use *"חוסן טכנולוגי"* fund, a
+  PMO multinationals desk offering *"גישה מועדפת לתשתיות הלאומיות"* in exchange for investment, and
+  the state as *"הלקוח הראשון"* with **preference for Israeli solutions in government tenders**. That
+  last is procurement protectionism, and it is recorded, not tagged: `agricultural-protectionism` is
+  sector-specific by definition and `free-trade` (held) is about imports, not tenders.
+- **Held tags corroborated, none added:** `regional-normalization` (*"דיפלומטיית חדשנות שתמנף את
+  הסכמי אברהם"*), `workforce-integration` (women, haredim and Arabs named as target populations),
+  `reservist-focused` (retention grants *"למילואימניקים"*).
+- **security NULL untouched.** A plan that calls hi-tech *"ליבת הביטחון הלאומי"* throughout says
+  nothing on statehood or the territories — the `homeland-security` trap recorded on ישר, in another
+  costume.
+- **The plan has visible drafting defects**: principles **05 and 07 are byte-identical** (same
+  heading, same paragraph), and the counters render as `0` in static HTML. A plan revived today with a
+  duplicated section is a page still being edited; treat absences in it as unwritten, the reading
+  applied to ישר's lorem-ipsum economics page.
+
+**`northborderlaw` — the statutory confrontation-line law, and ישר's twin.** It generalises this
+row's own [חוק קרית שמונה](https://be-yahad.org.il/plans/kiryat-shmona/) from three towns and a
+four-year הוראת שעה to the whole confrontation line and the Galilee, as a *"אזור מיקוד לאומי עד
+2035"*: a binding multi-year budget written into the annual budget laws and **additive** to regular
+ministry spending, a statutory מינהלת תנופה, differential benefits by distance from the fence
+(*"דין יקנעם אינו כדין קריית שמונה"*), income-tax benefits, a reduced corporate rate, arnona
+discounts of 45% residential / 39% business, and mandatory annual reporting to the Knesset.
+
+- **economic +1 HELD, and `tax-cutting` refused again on revision 51's reason — the instrument, not
+  the size.** Every tax measure here is bounded by geography and graded by threat; it is place-based
+  development, exactly what the Kiryat Shmona law was, only larger.
+- **The same instrument now sits on two rows, and that is a data point for a retired tag, not a
+  reason to revive it.** ישר's north paper (revision 39) proposes *"חוק עדיפות לאומית לקו העימות
+  הצפוני"* modelled on מנהלת תקומה; this plan says of itself *"במה החוק דומה לחוק תקומה?"* and answers
+  with the same principle. **Two opposition rows, one statute, both modelled on the Gaza-envelope
+  law.** `periphery-development` stays retired (revision 19): a confrontation-line law is war
+  recovery for a bounded region, not a periphery doctrine, and it would re-import the audit-depth
+  problem that retired the tag. Recorded here so the next pass that meets a third holder has the two
+  texts to compare.
+- **`התיישבות` homograph, fifth instance on the page**: *"לחזק את ההתיישבות על הגבול"* is northern
+  border communities inside the Green Line and **must not be read as `pro-settlement`**.
+- **Dated 2026-09-08 in the CPT, the day revision 60 enumerated fifteen plans from the sitemap** —
+  published after that read, not missed by it (its `modified` time, like most Hebrew plans on the site, is
+  today's bulk re-save, so only the CPT `date` is informative).
+
+**Not read in this pass:** `tourism`, created **today** (2026-09-22) and serving `200`. Enumerated,
+recorded, left for the next pass rather than read at the tail of this one.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -9440,3 +9531,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 102 — **the יועמ"שית's opinion on the petition against אבו שחאדה (פ"מ 8/26, 24 pages) read in full, plus the הארץ report. No axis moved, no tag added, `seed.sql` unchanged; the pass's value is two corrections and a document the page did not know existed.** **(1) The opinion is narrower than its headline**: of the petition's two grounds, *denial of the Jewish state* gets **no basis at all** — *"מדינת כל אזרחיה"* restates בל"ד doctrine that בג"ץ has repeatedly held lawful — and only the armed-struggle ground survives, on the 8 October 2023 article alone, hedged (*"אינה תואמת את המתכונת המלאה"*, *"למצער לעת הזו"*). So `state-of-all-its-citizens`/`non-zionist` on הרשימה המשותפת are exactly what a state legal body just called lawful. **(2) Revision 101's "retraction" corrected**: the sworn affidavit disowns the article's *silence* (*"צורם לעין ושגוי"*), not the article, and the יועמ"שית reads it as no withdrawal; inline pointer added. **(3) Revision 99's petitions refusal re-grounded**: its two premises — all twelve expected to fail, the instrument fired symmetrically — both failed within three days (the partisan CEC plenum is expected to accept the petitions against the Arab lists; the יועמ"שית backed one petition and no other; כחול לבן announced a one-directional vote). **The refusal now rests on the instrument**: a disqualification petition or vote concerns legal eligibility under סעיף 7א, neither a programme nor a coalition statement. **A refusal resting on a prediction is only as durable as the prediction.** **(4) בל"ד adopted a ten-point programme in June 2026** (affidavit §33), so this page's *"dated 2018-09-11 and unchanged"* is now unverified — queued as the document to fetch before הרשימה המשותפת's axes are next touched. **Refused**: כחול לבן's vote for `excludes-anti-zionist-parties` (its ground matches the tag's founding criterion word for word, but running is not governing — and the יועמ"שית rejected that ground the same day); the affidavit's recognition of *"זכויות הקולקטיב היהודי-ישראלי"* (litigant's sworn statement, incentive obvious); ג'בארין's reply to איזנקוט; ישר's non-voting statement. **Unexplained and left so**: the article lists ten hearings against revision 99's twelve filings |
 | 2026-09-22 | revision 103 — **בל"ד's June 2026 ten points, found and read in the original ([ערב 48](https://www.arab48.com/%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9/2026/09/16/%D8%A7%D9%84%D8%AA%D8%AC%D9%85%D8%B9-%D9%8A%D9%82%D8%B1-10-%D9%86%D9%82%D8%A7%D8%B7-%D8%A3%D8%B3%D8%A7%D8%B3-%D9%81%D9%8A-%D8%A7%D9%84%D8%B9%D9%85%D9%84-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A-%D9%88%D8%A7%D9%84%D8%AC%D9%85%D8%A7%D9%87%D9%8A%D8%B1%D9%8A-%D9%81%D9%8A-%D8%A5%D8%B7%D8%A7%D8%B1-%D8%B7%D8%B1%D8%AD%D9%87-%D8%A7%D9%84%D8%AD%D8%B2%D8%A8%D9%8A-%D9%88%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A), 27.06.2026) and in the Hebrew sworn into Abu Shehadeh's affidavit (Adalah's filing, pp. 7–8, OCR'd from a scan and checked against the image; the two match point for point). No axis moved, no tag added, `seed.sql` unchanged.** **Found through the affidavit**, whose link survives only as a percent-encoded image; a title search returned nothing. **It is a priorities list adopted by the political bureau, not a replacement programme**, so revision 102's worry resolves the quiet way: **`security` −3 held** (*"UN resolutions and the Arab Initiative"* keeps the 2018 direction, just less specifically — omitting detail does not retract it), **`religiosity` −3 held on silence** (the ten points never mention religion; the 2018 separation clause stands, and is now the oldest evidence on the newest list), `state-of-all-its-citizens` stands though the phrase is absent (point 1 describes it; Abu Shehadeh said the words the next day). Point 7's return of **internally displaced citizens** is not the Palestinian right of return and moves nothing. **The land-planning Open question is half answered**: points 6 and 8 (freeze demolition orders, recognise unrecognised villages, jurisdiction areas) put this row beside הדמוקרטים' *"נבטל את חוק קמיניץ"*; **רע"ם is the open half** and the rule said to read both. **Not filed, one holder each**: Arab educational self-administration (point 9) and equal treatment of prisoners regardless of offence (point 10) |
 | 2026-09-22 | revision 104 — **ישר: a הארץ campaign-trail feature quoting איזנקוט at four events, and the row's first sentence on the West Bank.** No axis moved, no tag added, `seed.sql` unchanged. *"אני תומך בהתיישבות בתנאי שהיא נעשית על פי האינטרסים הלאומיים ועל פי חוק"* — the reporter annotates that he avoids *התנחלויות*, so the homograph resolves to the West Bank for the first time on this row. Same evidence tier the +1 rests on, but conditional, no region, no expansion, and paired with rejecting the סמוטריץ' control plan, so +1 and `anti-annexation` hold; `pro-settlement` refused on co-occurrence (all six holders at +2/+3). Trigger sharpened: a named region, a number, or *הרחבה* → +2. The Hamas coalition clause is dated by איזנקוט to *"לפני חודש"*, contradicting revision 100's columnist — recorded as contested. An anti-defection charter noted, not minted. |
+| 2026-09-22 | revision 105 — **ביחד: three plans (`hitech`, `northborderlaw`, and `pride`, found by enumerating the CPT). `lgbt-rights` ADDED (22 → 23 tags)** — revision 49's trigger, *any plan naming the community*, met by a full programme: civil union with full marital rights, Basic-Law equality naming sexual orientation, a total conversion-therapy ban. No axis moved. `hitech` was one of revision 49's seven *retired* (302) plans and is live again as of today — a redirect is a snapshot. `northborderlaw` is the statutory confrontation-line law, the second row after ישר to propose one modelled on חוק תקומה; `tax-cutting` refused again as place-based (revision 51), `periphery-development` stays retired. `tourism` (created today) enumerated, not read. |
