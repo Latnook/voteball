@@ -5557,6 +5557,24 @@ Justice for טלי גוטליב (#2).
 - **`family_evidence` stays `record`.** A chairman's statement with twelve bullet points is a
   programme sketch, not a platform. Same reasoning as the 710 pass.
 
+**2026-09-22 — revision 112 (cross-row). `anti-oslo` ADDED (17 → 18 tags), on evidence this entry
+has carried since revision 30.** Revision 111 gave the tag to הציונות הדתית, and the repo owner asked
+whether the other far-right rows should have it too. Checked row by row against what this page
+already quotes:
+
+- **עוצמה יהודית — added.** The bill Ben Gvir led *with his whole faction* (2025-03-09) annuls the
+  Oslo, Hebron and Wye agreements outright, restores the territories transferred under them and
+  repeals the implementing laws. Revision 30 used it for `anti-two-state` and called this row *"the
+  cleanest case the page has for why the two tags are separate"*. That is also the cleanest case for
+  `anti-oslo`; it was missed because the tag had no holder then.
+- **עמך ישראל — not added.** Its own entry says *"annulling-Oslo-type evidence … there is none"*.
+- **נעם — not added.** Oslo does not appear anywhere in its entry.
+- **הליכוד — not added.** The February 2026 cabinet measures breach Oslo in practice (control in
+  Areas A and B), but a government act is not a stated position to cancel the accords, and this is
+  the party that signed Hebron and Wye. **Trigger:** a party statement or bill to annul them.
+- **אל הדגל — held open.** Its platform is paraphrased here as *"rejection of both Oslo and conflict
+  management"*, with no Hebrew quote to hold the tag to. **Trigger:** read the platform sentence.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -9758,3 +9776,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 109 — **הציונות הדתית: סמוטריץ'’s long post on the 80th anniversary of the 11 Negev points. `pro-settlement` ADDED (22 → 23).** The paradigm pro-settlement row did not hold the tag (it had `settler-movement`, a different claim). The chairman's first-person *"מפעל ההתיישבות ביהודה ושומרון הוא צורך ביטחוני"* meets revision 51's forward-commitment standard. Two recruits (פלד, בכר) recorded; whether they are on the filed list is not established. |
 | 2026-09-22 | revision 110 — **ש"ס: a חדשות 12 investigation into #6 דרור עמוס's NGO. Read, nothing scored**: allegations about a candidate are the lowest tier, and `sectoral-budgeting` is already in `families` on the party's own demands. |
 | 2026-09-22 | revision 111 — **הציונות הדתית: five פייגלין posts (19–22 Sept). `anti-oslo` ADDED (23 → 24)** — the זהות platform the row absorbed opens with cancelling Oslo, and the merge had not carried the tag; פייגלין restates it (*"אף אחד לא מציע דרך אל מחוץ למתכונת אוסלו מלבד זהות"*). *"כיבוש. גירוש. התיישבות."* is the first dated first-party campaign use of the slogan behind `population-transfer` (already held); it does not settle revision 92's provenance question. The IDF ethics code is now a demand on two rows the same week (with עוצמה יהודית); filed, not minted. |
+| 2026-09-22 | revision 112 — **cross-row `anti-oslo` check, at the repo owner's request. Added to עוצמה יהודית (17 → 18)** on the faction's 2025 bill annulling Oslo, Hebron and Wye, already quoted in revision 30. Not added to עמך ישראל (its entry records no such evidence), נעם (none), or הליכוד (a cabinet act breaching Oslo is not a statement cancelling it). אל הדגל held open pending the platform's own wording. The tag now has three holders. |
