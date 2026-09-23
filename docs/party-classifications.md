@@ -2145,7 +2145,8 @@ the Prime Minister's Office with a one-stop-shop and a case manager per family.
 - **No disability tag exists, and one row does not make one.** Nothing in the vocabulary covers
   disability or accessibility. הדמוקרטים, ישראל ביתנו and המפלגה הכלכלית are all plausible holders
   and none has been checked. **Filed as a sweep item** on revision 15's reasoning, the same as the
-  internal-policing, foreign-relations and gun-control items.
+  internal-policing, foreign-relations and gun-control items. *(Revision 116: הדמוקרטים now checked —
+  it holds a six-step programme; see its entry.)*
 - **THE INDEX LISTS SIX PLANS WHOSE PAGES 302 BACK TO THE INDEX**, and reading one through a
   summarizer returns *the index's own content*, which reads exactly like a plan. Measured
   2026-09-16: `foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי` and
@@ -3049,6 +3050,105 @@ added, `seed.sql` unchanged — and the paper is the cleanest cross-row comparis
   corroboration.
 - **Not scored:** *"נחזק את המשטרה הכחולה"* and harsher sentences for fraud against the elderly —
   crime policy, carried already by revision 62's internal-security paper.
+
+**2026-09-23 — revision 116. Three papers in one pass (תקשורת, תרבות, אנשים עם מוגבלות); corpus
+17 → 20. No axis moved, no tag added, `seed.sql` unchanged — and two sweep-queue items each gain a
+checked holder.**
+([תוכנית תקשורת](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%A7%D7%A9%D7%95%D7%A8%D7%AA.pdf), 3pp;
+[תוכנית תרבות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%A8%D7%91%D7%95%D7%AA.pdf), 2pp;
+[תוכנית לשילוב אנשים עם מוגבלות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%90%D7%A0%D7%A9%D7%99%D7%9D+%D7%A2%D7%9D+%D7%9E%D7%95%D7%92%D7%91%D7%9C%D7%95%D7%AA.pdf), 3pp.
+All three created **2026-09-22 between 16:11 and 16:45 IDT**, party-published, supplied by the repo
+owner the next day.)
+
+- **Revision 62's edition probe run first: one edition each.** `(1)`/`(2)`, with and without the `+`
+  separator, answer **403** on all three against the base keys' **200** (94,520 / 111,089 / 92,270
+  bytes).
+- **All three axes hold.** מדינה פלסטינית, פלסטינ, כיבוש, שתי מדינות and סיפוח occur **0 times** in
+  all three papers, so security **−1** needs no defence here, and revision 15's "third document" trigger
+  is not touched. economic **−2** is corroborated in every paper and stretched by none: the culture
+  budget **doubled within two years** with a target of **1% of the state budget within a decade**,
+  multi-year funding for cultural institutions, a gradual rise in the **disability allowance**, public-
+  sector pay rises and added posts for care and rehabilitation staff, earmarked municipal money for
+  accessibility on binding timetables, and a statutory investment duty on streaming firms — with no tax
+  rate, no privatization and no cut named anywhere. religiosity **−3** is untouched; the disability
+  paper grounds its duty in *"אופייה הדמוקרטי והיהודי של מדינת ישראל"*, the Decision 5 phrasing this
+  row has carried since the religion-and-state paper.
+- **The press-freedom sweep item (Open questions) gets its FIRST PARTY PROGRAMME, and it is the
+  opposite pole from the one that filed it.** Revision 24 filed the gap from שלמה קרעי's record as a
+  minister — a candidate's conduct, not a platform. This paper is a platform, and it is aimed at
+  exactly that record: *"נבטל את חוקי קרעי"*, reverse the decision to close גל"צ, protect the public
+  broadcaster's **news-division budget by statute**, replace the cable-and-satellite council and the
+  Second Authority with a single regulator whose council is appointed on an **independent search
+  committee's recommendation** with *"ניתוק מוחלט של הדרג הפוליטי מכל מה שקשור בתכנים"*, restore
+  cross-ownership limits and statutory **structural separation** of news companies, bar political use
+  of state advertising budgets, and protect journalists against SLAPP suits. **Still not minted** —
+  the rule is membership decided in one pass — but the item now has a first-party pole and a
+  record-level pole on different rows, which is the polar shape this page calls strongest.
+- **One definitional point for whoever runs that sweep: both poles speak the language of regulation, so
+  the tag cannot be defined as for-or-against it.** This paper *tightens* rules on ערוץ 14 by name —
+  equal professional standards, an end to the exemptions *"שנתפרו למידותיו"*, systematic enforcement,
+  and *"יצטרך להפוך משופר תעמולה לגוף תקשורת אמיתי – או שיצטרך לשלם"* — and it asks for EU-style
+  platform regulation (bots, impersonation, disclosure of political-content funding, AI labelling,
+  children's online safety on the Australian and British models). קרעי's reform was also presented as
+  a regulatory modernisation. **The distinguishing variable is political control over appointments and
+  content**, which this paper states in so many words; a tag defined any other way would put both
+  poles in the same bucket.
+- **A borrowed slogan, recorded and not scored.** The platform-regulation step is titled *"מה שטוב
+  לאירופה טוב לישראל"* — the name of the coalition's own **import reform** (Standards Law amendment 19,
+  passed 2024-08-05, in force 2025-01-01), a *deregulation* measure letting EU-certified goods skip
+  Israeli testing. Here it argues for **more** regulation. Rhetoric, not a position; noted so the next
+  reader does not take the phrase for a trade-policy commitment.
+- **`anti-monopoly` REFUSED, though *"מניעת ריכוזיות באמצעות מגבלות אפקטיביות על בעלויות צולבות"* is
+  literally a concentration rule.** Its stated purpose is *"פלורליזם תקשורתי"* and newsroom
+  independence — press freedom, not competition policy — and the six holders hold the tag for antitrust
+  enforcement across the economy. **The axis records direction; the tag records motive**, and filing
+  this sentence under a market-structure tag would record the wrong motive. Revision 40's route stands:
+  the economic paper's cartel-breaking is the evidence to re-read for this tag, not this.
+- **`governance-reform` (held) corroborated twice**, both as institutional design of a state body: the
+  independent communications regulator above, and the culture paper's *"נוציא את הפוליטיקה מהתרבות"* —
+  a strengthened Council for Culture and Arts and professional councils appointed *"על בסיס ניסיון
+  ומומחיות"*, setting support criteria and recommending allocations. **Creative freedom belongs in the
+  press-freedom sweep, not in a tag of its own**: the culture paper argues it in the same terms
+  (political control over state-funded expression), so the sweep should be scoped
+  *press, broadcasting and culture* rather than growing a sibling item.
+- **A seam between two papers published 34 minutes apart, on the same levy.** Both oblige streaming
+  services above **₪40M a year** to invest **8%** in Israeli originals. The media paper (16:11) sets
+  the base as *"8% ממחזור ההכנסות השנתי"*, which read literally is a firm's **global** turnover; the
+  culture paper (16:45) says *"8% מהכנסותיו בישראל"* and adds *"מסוגה עילית"*, the regulatory term for
+  premium drama. The later wording is presumably the intended one; **recorded rather than resolved**,
+  and it bears on no axis either way.
+- **The culture paper touches the foreign-relations sweep item and does not advance it.** Restoring
+  Israeli culture abroad comes *"לצד שינוי עמוק במדיניות שהביאה את יחסיה הבינלאומיים של ישראל לשפל
+  ופגעה באופן ישיר ביוצרים, במוסדות תרבות ובאקדמיה"* — the cost of isolation is named, the policy
+  that caused it is not. Nothing to file.
+- **The disability sweep item (revision 79) now has a second CHECKED holder.** Revision 79 named this
+  row as a plausible holder that nobody had checked; it holds a six-step programme: completing the
+  move from institutions to community living under **ועדת דותן** and **government decision 2007 (July
+  2024)**, full implementation of the welfare-services law, a gradual rise in the allowance, employment
+  support with **enforcement of the adequate-representation duty in the public and private sectors**,
+  accessibility regulations completed across health, roads and the whole public-transport chain, a
+  **נציבות שוויון זכויות** with effective sanctions *including against public bodies and local
+  authorities*, special education, and a national plan for **accessible shelters and home protection**,
+  with lessons drawn from *"מבצע 'שאגת הארי'"*. **The two holders differ in instrument the way their
+  axes predict**: ביחד (`economic +1`) names a **work disregard** — 60% of the allowance kept after
+  entering work; הדמוקרטים (`−2`) raises the allowance itself and names no figure. Still not minted.
+- **`affirmative-action` REFUSED on revision 36's precedent, again.** Enforcing an existing statutory
+  duty, with no target and no new mechanism, is weaker than the 50% target plus party-funding
+  incentive that revision 29 refused to ביחד, and ביחד's own accessibility plan — which also enforced
+  representation targets — was not given the tag in revision 79.
+- **`workforce-integration` REFUSED.** The tag's founding cases are haredim and Arab citizens (ישר,
+  ביחד, אל הדגל) — the participation gap that dominates Israeli labour economics — and a disability-
+  employment step would dilute it to "any employment programme for any group". That content belongs to
+  the disability sweep.
+- **`גיוס` occurs once, and it is the second false hit on revision 15's tracking token.** The disability
+  paper's *"נרחיב את ההכשרה והגיוס למתן שירותים איכותיים"* is **recruitment of care staff**, the same
+  homograph revision 40 logged in the north–south paper. Revision 15's open question is unchanged.
+- **The published disability PDF DROPS A LINE, and it is not an extraction artifact.** Step 5 runs
+  *"…באופן שפוגע במימושו ומכביד על צוותי החינוך / ברורים, לחיזוק החינוך המיוחד"* — the text between
+  those two lines is missing from the rendered page as well as from `pdftotext` (checked by rendering
+  page 2 to an image, 2026-09-23). The lost clause is evidently the step's own commitment (something
+  *with clear* targets or criteria). **Not reconstructed**; if the party republishes the file, probe it
+  against the 92,270 bytes recorded above.
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -9724,6 +9824,11 @@ bought nothing here, because the defect was never in the pixels being measured.
   for press-and-broadcasting content first, then create the tag (or don't) with membership decided in
   one pass.** This is the second tag now queued behind such a sweep, alongside the environment tag, and
   they should be done together.
+  **Revision 116: the item now has a first-party pole.** הדמוקרטים' media paper (2026-09-22) repeals
+  *"חוקי קרעי"* by name — the opposite pole from the one that filed it. Two instructions for the sweep
+  from that pass: scope it *press, broadcasting and culture* (the culture paper argues creative freedom
+  in the same terms), and define the tag by **political control over appointments and content**, not by
+  for-or-against regulation, since both poles present their programme as regulatory reform.
 - **No workfare tag and no labour-organization tag exist, and אל הדגל clearly earns both.** Its
   economic paper conditions income support on 20 weekly hours of work, funded training or community
   service, moves the daycare subsidy from a birth test to a work-and-service test with serving
@@ -10028,3 +10133,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 113 — **ביחד: the `tourism` plan, published today. No axis moved, no tag added.** The most market-leaning plan in the corpus (a one-stop hotel approval track, 18 months instead of up to five years, price relief argued from supply), with a smaller state half; economic +1 held, `deregulation` refused again. Tourism management devolved to 6–8 regional coalitions of local authorities corroborates `municipal-devolution`. The page gives two different baselines (5 years and ~10 years). The corpus check that followed found two more live, uncited plans — a second edition of the aging plan (unchanged: average-wage indexation still there) and the wounded-soldiers `rehabilitation` plan (corroborates `reservist-focused`) — both read in the same revision. |
 | 2026-09-22 | revision 114 — **עוצמה יהודית: a הארץ profile of the campaign apparatus (2026-09-06), read person by person. No axis moved, no tag added, `seed.sql` unchanged (18 tags).** **A tier BELOW candidate biography — campaign staff, press-reported** — read anyway because it is the strongest `kahanist` evidence the page has seen and the page should say why it still scores nothing. זאב וולף, the party's Elections-Committee lawyer, is a כהנא חי activist **convicted of murder** for the Nov-1992 שוק הקצבים attack staged on Kahane's yahrzeit; the father of CEO **ניימן #10** runs the yeshiva **Kahane founded**, whose head is the father of **#6 קרויזר**; **גופשטיין** — convicted of incitement to terrorism, US-sanctioned 2024, **barred from candidacy** — is central to the campaign and advises on police appointments. **The tier question is recorded, not resolved**: גופשטיין *cannot* be slotted, so a campaign role is the nearest revealed preference available, which argues for counting staff — but `kahanist`/`jewish-supremacist` are held and both axes are at +3, and **a rule is not worth changing on a case where the answer is the same either way**. **The refutation is in the same article, and is the finding**: campaign manager **רוזנבאום** spent the previous year working *against* this government inside the civil commission of inquiry with October-7 bereaved families and was preparing a children's book attacking בן גביר from the right, while **שריקי** (youth HQ) worked with פורום דין וצדק, who *oppose* a state commission — **one campaign, staff on both poles** of a subject revision 99 swept the whole table for. A hire is not a position; the outreach-structure line (מטה הסרוגים, the Druze HQ, ישר's 14-women-in-30) has never before been demonstrable from one document. **Prison conditions still not filed**, and the reason is sharper than "one holder": this row and בל"ד now hold **opposite poles of one subject**, one holder each — trigger set at a third row. הארץ's forecast focus (death penalty / prison conditions / mass weapons) is `צפוי להתמקד`, a press prediction, and all three were already on the row. **#7 דורפמן**: revision 57's refusal restated on more facts (resigned to run, שוחד/מרמה/הפרת אמונים, refused to cooperate, himself a שב"כ target) — an allegation against a candidate is the lowest tier. Polling **8–9 seats**, so the realistic range of 10 used since revision 57 stays generous; ניימן #10 sits on its edge |
 | 2026-09-22 | revision 115 — **cross-row: the disqualification thread read from four sources (N12 22.09, ערוץ 14 14.09, IDI article + מסבירון). No axis moved, no tag added, `seed.sql` unchanged.** **The gap revision 102 left explicitly uninvestigated is CLOSED**: the ten/twelve discrepancy is `נדחו על הסף` — the filing window shut 22:00 on 14.09 with ten requests standing **after** the committee threw out every individual petition against **seven named עוצמה יהודית candidates** (so *"הדיון יתקיים ביחס לרשימה בלבד"*), אם תרצו vs יאיר גולן, and **one against רשימת ישראל תחילה** — a row this page never recorded as petitioned at all. **The plenum list is a SURVIVOR set, not the filed set.** N12's itemisation confirms revision 102's enumeration exactly (רע"ם ×3, עוצמה יהודית ×2, one each for הדמוקרטים / הציונות הדתית-זהות / בל"ד / הרשימה המשותפת-כסיף / אבו שחאדה); hearings 23–24.09 under השופט נעם סולברג. **The refusal now rests on a BASE RATE rather than a prediction, which is what revision 102 said it needed**: per IDI, **no candidate disqualified by the committee has ever had it upheld by the Supreme Court** — the 2019 trio ran the other way, the Court disqualifying בן ארי and then **גופשטיין ומרזל of עוצמה יהודית** over committee *approvals*, which also **sources revision 114's "barred from candidacy"**. The Court's own threshold phrase for refusing disqualification is *"מסה קריטית"* — **the exact words עוצמה יהודית's petition borrows to demand one**. **The committee is seated by the 25th Knesset**, so four of its factions are not rows here and ביחד's six seats sit under **יש עתיד**, legible only through this page's `party_lineage`. **ביחד abstains entirely** (*"סיבוב פוליטי ותקשורתי חסר כל משמעות מעשית"*) — the strongest test the category rule has had, since it is declared as a stance about the instrument itself and still is not a programme; the same statement's conscription half (בנט: חוקי ההשתמטות *"יבוטלו עם השבעת הממשלה החדשה"*) corroborates three held tags and adds a **schedule**, and `excludes-anti-zionist-parties` is refused there as being about ballot eligibility, not coalition partners. **A NEW member of the confident-wrong-answer family**: two summarising fetches of the SAME N12 URL disagreed and both were wrong — speaker בל"ד vs ביחד, an invented *"קרקס"* for the page's actual *"סיבוב"*, and the hearing dates wrong twice in two different ways. Ground truth came from the raw page. **Only the disagreement caused anyone to look**; one call would have written a fabricated Hebrew quote into this page under בל"ד's name |
+| 2026-09-23 | revision 116 — **הדמוקרטים: three papers (תקשורת, תרבות, אנשים עם מוגבלות, all created 2026-09-22); corpus 17 → 20. No axis moved, no tag added, `seed.sql` unchanged.** One edition each (all `(1)`/`(2)` probes 403). The media paper repeals *"חוקי קרעי"*, reverses the גל"צ closure, protects the public broadcaster's news budget by statute and puts a single regulator under search-committee appointments — the **first party programme** on the press-freedom sweep item, at the opposite pole from the one that filed it; the sweep is now scoped to press, broadcasting and culture and must define the tag by political control over appointments and content, since both poles present themselves as regulation. `anti-monopoly` refused (cross-ownership limits argued for pluralism, not competition); `governance-reform` corroborated twice. The disability paper makes this row the disability sweep item's second checked holder (allowance raised, where ביחד names a work disregard); `affirmative-action` and `workforce-integration` refused. Two seams: the 8% streaming levy is on annual turnover in one paper and on Israeli revenue in the other, and the published disability PDF drops a line in step 5 (confirmed on the rendered page). |
