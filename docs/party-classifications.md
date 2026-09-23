@@ -3574,6 +3574,9 @@ than filling it in. **This is sourced from he.wikipedia and from the leader's bi
 party document, so it moves no number** — see the "classify from the party's own sources" rule
 above. It is recorded here because without it this row reads as a party with no territorial
 position, which is not the same thing as a party that has one and declines to print it.
+**Superseded in part by revision 117 (2026-09-23)**: the leader's current plan assigns Areas A and B to
+Jordan and calls the PA a terror organisation, so "presupposes a Palestinian state to trade with" no
+longer describes his position — see that revision.
 
 The bloc is pinned down rather than inferred: they want a statutory ban on an indicted person
 forming a government.
@@ -3958,6 +3961,73 @@ revision 99, and a statement this page must refuse for consistency. No axis move
   that this row is reported to be *shedding* the sectoral label deliberately, *"עושה הכול כדי
   להיפטר מהתווית המגזרית"*. **That is an argument against ever minting the tag, not for it** — and it
   is a journalist's characterisation besides, so it is not recorded as this row's position either.
+
+**2026-09-23 — revision 117. ליברמן proposes that Jordan run Areas A and B. The row's FIRST territorial
+claim in the leader's own voice — and it is a claim to control, not sovereignty. No axis moved, no tag
+added, `seed.sql` unchanged.**
+([ynet](https://www.ynet.co.il/news/elections2026/article/ryclswzqml), 23.09.26, קרני/אזולאי/פריד;
+[ערוץ 7](https://www.inn.co.il/news/706863), 23.09.26, חזקי ברוך. Both read from the raw HTML. They
+quote the chairman's written post **word for word identically**, so they are **one statement, not two
+sources** — revision 89's rule. A third,
+[כאן](https://www.kan.org.il/content/kan-news/politic/1102057/), answers a Cloudflare challenge to curl
+and to WebFetch (both 403) and has no Wayback copy; **its body was supplied by the repo owner** and is
+independent reporting, not the same post again.)
+
+- **Spoken, then corrected in writing — and the written version is the one scored.** On the בשבע
+  podcast he named Areas **B and C**; his post the same day corrected it to **A and B**. The slip is not
+  small: C is the area Israel administers in full, so the spoken version handed Jordan the territory the
+  written one claims. **A same-day written correction by the speaker is the position**; the podcast
+  line is recorded so nobody quotes it back as the plan. כאן reports the slip and the correction
+  independently of the post (*"ירדן צריכה לשלוט בשטחי B ו-C... הבהיר ליברמן כי התכוון לשטחי A ו-B"*),
+  so the correction rests on two reports, not one.
+- **What the post says**: *"מדינת ישראל חייבת ליצור רצף טריטוריאלי בין כל שטחי C ולשמור שם על שליטה
+  מוחלטת. במקביל, חייבים למצוא אלטרנטיבה לשליטה מנהלית וביטחונית בשטחי A ו-B"*; *"אני מתנגד בתוקף לכך
+  שישראל תנהל את חיי הפלסטינים בשכם, בג׳נין או בטול כרם"*; and so *"צריך להגיע להסכמה עם ירדן על ניהול
+  שטחי A ו-B על ידיהם, קונפדרציה ישראלית-ירדנית"*. The PA is *"ארגון טרור"* — *"חמאס מתמחה בטרור מזוין,
+  והרשות הפלסטינית בטרור מדיני"*.
+- **The platform's Jordan plank now has content.** This entry recorded *"ייצוב ביטחוני וכלכלי בשיתוף
+  פעולה עם ירדן"* as one of four יהודה ושומרון mentions, *"security posture in a territory, not a position
+  on who holds it"*. The post is that plank spelled out by the man who wrote it, and it is consistent with
+  the platform's other line on the subject — no settlement with the Palestinians alone, only a regional
+  package. **Not a new position; the first time it has been stated in full.**
+- **`security` +2 HELD, and it now rests on the band's TERRITORIAL half as well as its doctrine.** Since
+  2026-07-27 this row's +2 rested on doctrine alone (אפס הכלה, preemptive strikes), because the platform
+  made no territorial claim and revision 52's claim came from candidates, not the leader. *Absolute
+  control* and contiguity across all of Area C is a territorial claim in his own voice. **+3 is not
+  reached**: the band reads *annexation / sovereignty*, and he claims control, uses neither word, and
+  gives up A and B.
+- **`sovereignty-annexation` REFUSED — revision 52's trigger is approached and NOT met.** That trigger
+  was *"if the sovereignty resolution reaches the platform, a קו יסוד, or Lieberman's own voice"*. His
+  voice has now arrived with the **smaller** claim: control of C, not sovereignty over Judea and Samaria.
+  The trigger stays as written.
+- **`no-palestinian-state` REFUSED, and this is the closest the row has come.** This entry opens *"It does
+  not say 'no Palestinian state' in those words"*, and it still does not. What it has is implication: the
+  PA as a terror organisation, a plan that allocates A and B with no Palestinian state in it, and Bar-Ilan
+  used as an accusation — *"היחיד שהצהיר על נכונות להקים מדינה פלסטינית, בנאום בר אילן, הוא בנימין
+  נתניהו"*. ישראל תחילה's entry sets the rule: *"this page does not convert an implication into a stated
+  position"*, which is why that row carries `anti-oslo` without `no-palestinian-state`. **Trigger
+  written**: the words themselves from the chairman, or a platform plank. `anti-two-state` refused on the
+  same ground.
+- **The swap-plan paragraph above is superseded in part**, and the evidence for its earlier half comes
+  from a rival. That paragraph (he.wikipedia, the leader's biography) read the land-and-population swap
+  as *presupposing a Palestinian state to trade with*. דרעי today confirms the earlier plan's partner:
+  *"בעבר הוא הציע חילופי שטחים במשולש **עם הרשות הפלסטינית**"*. The current plan puts **Jordan** in
+  that role and calls the PA a terror organisation, so the partner changed. Moves no number, because the
+  old paragraph never moved one; a pointer has been added to it.
+- **Three rival reactions, none scored** (revision 44's tier). נתניהו: *"לא האמנתי שאתה תציע היום שצבא
+  ירדן ישלוט בשטחי ארץ ישראל. חזור בך מייד"*, calling him *"בשמאל"*; דרעי: *"התנתקות 2 ביהודה ושומרון...
+  ליברמן הוא סכנה לימין"*; סמוטריץ׳, speaking at the dedication of a new settlement, **מצוקי ארץ** in
+  בנימין: *"אובדן עשתונות ערכי"*, and per כאן *"מי שישלוט ביטחונית על השטח שאנחנו נמצאים בו כעת אלה
+  לגיונות ירדנים"*. **That line answers the version Lieberman withdrew**: settlements lie in Area C,
+  which the written post keeps under full Israeli control, so the attack lands on the podcast slip,
+  not on the plan. The settler forum פורום חוזרים הביתה (not a party) called it *"שיגעון של אדם
+  מסוכן"*. All three party rows already carry what those lines would evidence.
+- **His reply to the storm frames it as the draft fight, not as territory**: *"התגובה ההיסטרית של גוש
+  המשתמטים רק מראה כמה הם נואשים"* (כאן). That is the *"גוש המשרתים"* framing revision 101 recorded,
+  used to answer a question about the West Bank. Rhetoric; scores nothing. **The
+  split reading is the finding**: the right reads the plan as a concession (A and B), this page reads it
+  as a claim (all of C), and both are true. **A plan that keeps C and gives up A and B is the +2 band as
+  written**, a territorial claim short of sovereignty.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -10134,3 +10204,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 114 — **עוצמה יהודית: a הארץ profile of the campaign apparatus (2026-09-06), read person by person. No axis moved, no tag added, `seed.sql` unchanged (18 tags).** **A tier BELOW candidate biography — campaign staff, press-reported** — read anyway because it is the strongest `kahanist` evidence the page has seen and the page should say why it still scores nothing. זאב וולף, the party's Elections-Committee lawyer, is a כהנא חי activist **convicted of murder** for the Nov-1992 שוק הקצבים attack staged on Kahane's yahrzeit; the father of CEO **ניימן #10** runs the yeshiva **Kahane founded**, whose head is the father of **#6 קרויזר**; **גופשטיין** — convicted of incitement to terrorism, US-sanctioned 2024, **barred from candidacy** — is central to the campaign and advises on police appointments. **The tier question is recorded, not resolved**: גופשטיין *cannot* be slotted, so a campaign role is the nearest revealed preference available, which argues for counting staff — but `kahanist`/`jewish-supremacist` are held and both axes are at +3, and **a rule is not worth changing on a case where the answer is the same either way**. **The refutation is in the same article, and is the finding**: campaign manager **רוזנבאום** spent the previous year working *against* this government inside the civil commission of inquiry with October-7 bereaved families and was preparing a children's book attacking בן גביר from the right, while **שריקי** (youth HQ) worked with פורום דין וצדק, who *oppose* a state commission — **one campaign, staff on both poles** of a subject revision 99 swept the whole table for. A hire is not a position; the outreach-structure line (מטה הסרוגים, the Druze HQ, ישר's 14-women-in-30) has never before been demonstrable from one document. **Prison conditions still not filed**, and the reason is sharper than "one holder": this row and בל"ד now hold **opposite poles of one subject**, one holder each — trigger set at a third row. הארץ's forecast focus (death penalty / prison conditions / mass weapons) is `צפוי להתמקד`, a press prediction, and all three were already on the row. **#7 דורפמן**: revision 57's refusal restated on more facts (resigned to run, שוחד/מרמה/הפרת אמונים, refused to cooperate, himself a שב"כ target) — an allegation against a candidate is the lowest tier. Polling **8–9 seats**, so the realistic range of 10 used since revision 57 stays generous; ניימן #10 sits on its edge |
 | 2026-09-22 | revision 115 — **cross-row: the disqualification thread read from four sources (N12 22.09, ערוץ 14 14.09, IDI article + מסבירון). No axis moved, no tag added, `seed.sql` unchanged.** **The gap revision 102 left explicitly uninvestigated is CLOSED**: the ten/twelve discrepancy is `נדחו על הסף` — the filing window shut 22:00 on 14.09 with ten requests standing **after** the committee threw out every individual petition against **seven named עוצמה יהודית candidates** (so *"הדיון יתקיים ביחס לרשימה בלבד"*), אם תרצו vs יאיר גולן, and **one against רשימת ישראל תחילה** — a row this page never recorded as petitioned at all. **The plenum list is a SURVIVOR set, not the filed set.** N12's itemisation confirms revision 102's enumeration exactly (רע"ם ×3, עוצמה יהודית ×2, one each for הדמוקרטים / הציונות הדתית-זהות / בל"ד / הרשימה המשותפת-כסיף / אבו שחאדה); hearings 23–24.09 under השופט נעם סולברג. **The refusal now rests on a BASE RATE rather than a prediction, which is what revision 102 said it needed**: per IDI, **no candidate disqualified by the committee has ever had it upheld by the Supreme Court** — the 2019 trio ran the other way, the Court disqualifying בן ארי and then **גופשטיין ומרזל of עוצמה יהודית** over committee *approvals*, which also **sources revision 114's "barred from candidacy"**. The Court's own threshold phrase for refusing disqualification is *"מסה קריטית"* — **the exact words עוצמה יהודית's petition borrows to demand one**. **The committee is seated by the 25th Knesset**, so four of its factions are not rows here and ביחד's six seats sit under **יש עתיד**, legible only through this page's `party_lineage`. **ביחד abstains entirely** (*"סיבוב פוליטי ותקשורתי חסר כל משמעות מעשית"*) — the strongest test the category rule has had, since it is declared as a stance about the instrument itself and still is not a programme; the same statement's conscription half (בנט: חוקי ההשתמטות *"יבוטלו עם השבעת הממשלה החדשה"*) corroborates three held tags and adds a **schedule**, and `excludes-anti-zionist-parties` is refused there as being about ballot eligibility, not coalition partners. **A NEW member of the confident-wrong-answer family**: two summarising fetches of the SAME N12 URL disagreed and both were wrong — speaker בל"ד vs ביחד, an invented *"קרקס"* for the page's actual *"סיבוב"*, and the hearing dates wrong twice in two different ways. Ground truth came from the raw page. **Only the disagreement caused anyone to look**; one call would have written a fabricated Hebrew quote into this page under בל"ד's name |
 | 2026-09-23 | revision 116 — **הדמוקרטים: three papers (תקשורת, תרבות, אנשים עם מוגבלות, all created 2026-09-22); corpus 17 → 20. No axis moved, no tag added, `seed.sql` unchanged.** One edition each (all `(1)`/`(2)` probes 403). The media paper repeals *"חוקי קרעי"*, reverses the גל"צ closure, protects the public broadcaster's news budget by statute and puts a single regulator under search-committee appointments — the **first party programme** on the press-freedom sweep item, at the opposite pole from the one that filed it; the sweep is now scoped to press, broadcasting and culture and must define the tag by political control over appointments and content, since both poles present themselves as regulation. `anti-monopoly` refused (cross-ownership limits argued for pluralism, not competition); `governance-reform` corroborated twice. The disability paper makes this row the disability sweep item's second checked holder (allowance raised, where ביחד names a work disregard); `affirmative-action` and `workforce-integration` refused. Two seams: the 8% streaming levy is on annual turnover in one paper and on Israeli revenue in the other, and the published disability PDF drops a line in step 5 (confirmed on the rendered page). |
+| 2026-09-23 | revision 117 — **ישראל ביתנו: ליברמן proposes that Jordan run Areas A and B (ynet + ערוץ 7, one statement quoted identically; כאן supplied by the repo owner past a Cloudflare challenge). No axis moved, no tag added, `seed.sql` unchanged.** The row's first territorial claim in the leader's own voice: territorial contiguity and *"שליטה מוחלטת"* across all of Area C, and the platform's Jordan plank spelled out. `security` +2 now rests on the band's territorial half as well as its doctrine; +3 not reached (control, not sovereignty, and A and B given up). `sovereignty-annexation` refused (revision 52's trigger approached, not met). `no-palestinian-state` and `anti-two-state` refused on ישראל תחילה's implication rule: PA called a terror organisation and Bar-Ilan used as an accusation, but the words are never said. The podcast said B and C; the same-day written post corrected it to A and B (כאן reports the correction independently), and the post is scored. סמוטריץ׳'s *"לגיונות ירדנים"* line answers the withdrawn B-and-C version, since settlements lie in Area C. The Wikipedia-sourced swap paragraph is superseded in part: דרעי confirms the old swap was with the PA, and the partner is now Jordan. Rival reactions (נתניהו, דרעי, סמוטריץ׳) not scored. |
