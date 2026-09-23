@@ -1542,6 +1542,38 @@ rest on this clause either way.
   evidence of anything this page scores); the list's centre-right composition (audited in revision 69,
   argued in revision 75).
 
+**2026-09-23 — revision 118. איזנקוט on how the bloc picks its prime minister, and a reconciliation
+meeting with ליברמן. No axis moved, no tag added, `seed.sql` unchanged.**
+([כאן](https://www.kan.org.il/content/kan-news/politic/1101863/), Tuesday 2026-09-22. It sits behind the
+same Cloudflare wall as revision 117's link; **the body was supplied by the repo owner**.) The article
+has two layers, and they are weighted differently. The quotes come from איזנקוט's own interview on כאן
+רשת ב' and are first-party. The meeting itself is כאן's reporting from unnamed sources: the two
+*"סיכמו... לתאם מהלכים"*, the fight over who leads the bloc *"עדיין לא נפתרה"*, and the parties intend
+*"לטשטש את המחלוקת"*.
+
+- **The rotation sweep item (Open questions, sixth) gets a second statement at the same pole.** Revision
+  99 had איזנקוט refusing an alternating premiership. Here he demands that the bloc agree *before* the
+  vote on *"כללי יסוד ועקרונות לבחירת המועמד לראשות הממשלה"*, and rejects the alternative by name:
+  *"הפוליטיקה הישנה, שניכנס לחדר ביום שאחרי, נעשה 'פוילשטיק' ונחליט מי ראש הממשלה - זה דבר שאי אפשר
+  לקבל אותו. צריך לקבל את הכרעת הציבור"*. **This is the procedure behind the rotation refusal**: the
+  premiership is decided by a rule agreed in advance and by the vote, not bargained after it. It
+  strengthens the ישר pole and adds no holder.
+- **The other pole is REPORTED, not stated, and is not scored.** That בנט and ליברמן *"לא רוצים לקבוע
+  כללי יסוד"* is איזנקוט's description of two rivals, which is revision 44's tier. **It is a lead for
+  the sweep, which needs ביחד's and ישראל ביתנו's own words on the question.** Their silence is not
+  evidence either way.
+- **`מי שבונה על ממשלה עם שמונה מנדטים` is not attributed.** The quote names no one, and guessing which
+  rival is meant would put a number in someone's mouth.
+- **The photograph with יאיר גולן scores nothing on any row.** כאן reports that *"בסביבת בנט וליברמן"*
+  (unnamed people close to them) have not decided whether to appear in a joint picture with the
+  Democrats' chairman, as in earlier meetings. That is anonymous, and it is about how they look, not about
+  who they would govern with. ישראל ביתנו's `excludes-haredi-and-arab-parties` rests on the chairman's
+  own words and names no Zionist-left party. **Recorded so the story is not read as an exclusion of
+  הדמוקרטים**, which nothing first-party supports.
+- **Context only:** לפיד (now inside ביחד, after the merger with בנט) will host the change-bloc
+  leaders on Saturday night. Per כאן it is their first meeting in over ten months, the last being
+  2025-11-08 with גנץ.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -9851,6 +9883,10 @@ bought nothing here, because the defect was never in the pixels being measured.
   (*"מי זוכה ללגיטימציה יותר גבוהה מבחינה ציבורית"*). **A polar gap whose two poles are dated within
   seven days of each other is the cleanest case this queue has**, and unlike the others it needs no
   argument that the dimension is real. **Resolution: sweep all 18 rows.**
+  *Revision 118 (2026-09-23): a second איזנקוט statement at the same pole, which supplies the procedure.
+  The bloc's candidate should be picked by pre-agreed rules and the vote, against a
+  *"פוילשטיק"* the day after. He also CHARACTERISES בנט and ליברמן as refusing such rules. That is a
+  rival's account, so it is a lead for the sweep and not a holder.*
 - **`sectoral-budgeting` records only the RECEIVING end — SEVENTH item (2026-09-19, revision 99).**
   הדמוקרטים's conscription paper commits to abolishing *"כספים קואליציוניים"*, **₪20bn** over four
   years, *"כסף שחולק לפי כוח פוליטי, קרבה לממשלה ויכולת סחיטה"*. The vocabulary has
@@ -10205,3 +10241,4 @@ pass happened, for anyone reading git history.
 | 2026-09-22 | revision 115 — **cross-row: the disqualification thread read from four sources (N12 22.09, ערוץ 14 14.09, IDI article + מסבירון). No axis moved, no tag added, `seed.sql` unchanged.** **The gap revision 102 left explicitly uninvestigated is CLOSED**: the ten/twelve discrepancy is `נדחו על הסף` — the filing window shut 22:00 on 14.09 with ten requests standing **after** the committee threw out every individual petition against **seven named עוצמה יהודית candidates** (so *"הדיון יתקיים ביחס לרשימה בלבד"*), אם תרצו vs יאיר גולן, and **one against רשימת ישראל תחילה** — a row this page never recorded as petitioned at all. **The plenum list is a SURVIVOR set, not the filed set.** N12's itemisation confirms revision 102's enumeration exactly (רע"ם ×3, עוצמה יהודית ×2, one each for הדמוקרטים / הציונות הדתית-זהות / בל"ד / הרשימה המשותפת-כסיף / אבו שחאדה); hearings 23–24.09 under השופט נעם סולברג. **The refusal now rests on a BASE RATE rather than a prediction, which is what revision 102 said it needed**: per IDI, **no candidate disqualified by the committee has ever had it upheld by the Supreme Court** — the 2019 trio ran the other way, the Court disqualifying בן ארי and then **גופשטיין ומרזל of עוצמה יהודית** over committee *approvals*, which also **sources revision 114's "barred from candidacy"**. The Court's own threshold phrase for refusing disqualification is *"מסה קריטית"* — **the exact words עוצמה יהודית's petition borrows to demand one**. **The committee is seated by the 25th Knesset**, so four of its factions are not rows here and ביחד's six seats sit under **יש עתיד**, legible only through this page's `party_lineage`. **ביחד abstains entirely** (*"סיבוב פוליטי ותקשורתי חסר כל משמעות מעשית"*) — the strongest test the category rule has had, since it is declared as a stance about the instrument itself and still is not a programme; the same statement's conscription half (בנט: חוקי ההשתמטות *"יבוטלו עם השבעת הממשלה החדשה"*) corroborates three held tags and adds a **schedule**, and `excludes-anti-zionist-parties` is refused there as being about ballot eligibility, not coalition partners. **A NEW member of the confident-wrong-answer family**: two summarising fetches of the SAME N12 URL disagreed and both were wrong — speaker בל"ד vs ביחד, an invented *"קרקס"* for the page's actual *"סיבוב"*, and the hearing dates wrong twice in two different ways. Ground truth came from the raw page. **Only the disagreement caused anyone to look**; one call would have written a fabricated Hebrew quote into this page under בל"ד's name |
 | 2026-09-23 | revision 116 — **הדמוקרטים: three papers (תקשורת, תרבות, אנשים עם מוגבלות, all created 2026-09-22); corpus 17 → 20. No axis moved, no tag added, `seed.sql` unchanged.** One edition each (all `(1)`/`(2)` probes 403). The media paper repeals *"חוקי קרעי"*, reverses the גל"צ closure, protects the public broadcaster's news budget by statute and puts a single regulator under search-committee appointments — the **first party programme** on the press-freedom sweep item, at the opposite pole from the one that filed it; the sweep is now scoped to press, broadcasting and culture and must define the tag by political control over appointments and content, since both poles present themselves as regulation. `anti-monopoly` refused (cross-ownership limits argued for pluralism, not competition); `governance-reform` corroborated twice. The disability paper makes this row the disability sweep item's second checked holder (allowance raised, where ביחד names a work disregard); `affirmative-action` and `workforce-integration` refused. Two seams: the 8% streaming levy is on annual turnover in one paper and on Israeli revenue in the other, and the published disability PDF drops a line in step 5 (confirmed on the rendered page). |
 | 2026-09-23 | revision 117 — **ישראל ביתנו: ליברמן proposes that Jordan run Areas A and B (ynet + ערוץ 7, one statement quoted identically; כאן supplied by the repo owner past a Cloudflare challenge). No axis moved, no tag added, `seed.sql` unchanged.** The row's first territorial claim in the leader's own voice: territorial contiguity and *"שליטה מוחלטת"* across all of Area C, and the platform's Jordan plank spelled out. `security` +2 now rests on the band's territorial half as well as its doctrine; +3 not reached (control, not sovereignty, and A and B given up). `sovereignty-annexation` refused (revision 52's trigger approached, not met). `no-palestinian-state` and `anti-two-state` refused on ישראל תחילה's implication rule: PA called a terror organisation and Bar-Ilan used as an accusation, but the words are never said. The podcast said B and C; the same-day written post corrected it to A and B (כאן reports the correction independently), and the post is scored. סמוטריץ׳'s *"לגיונות ירדנים"* line answers the withdrawn B-and-C version, since settlements lie in Area C. The Wikipedia-sourced swap paragraph is superseded in part: דרעי confirms the old swap was with the PA, and the partner is now Jordan. Rival reactions (נתניהו, דרעי, סמוטריץ׳) not scored. |
+| 2026-09-23 | revision 118 — **ישר: איזנקוט on picking the bloc's prime minister (כאן 22.09, body supplied by the repo owner past a Cloudflare wall). No axis moved, no tag added, `seed.sql` unchanged.** A second statement at the ישר pole of the rotation sweep item, and this one supplies the procedure: pre-agreed *"כללי יסוד ועקרונות לבחירת המועמד"* and the vote, rejecting a day-after *"פוילשטיק"*. His claim that בנט and ליברמן refuse such rules is a rival's account (revision 44's tier) and is recorded as a lead, not a holder. The reconciliation meeting is anonymous-source reporting. The unnamed *"שמונה מנדטים"* jab is not attributed. The reported hesitation over a photograph with גולן scores nothing on any row and is recorded so it is not read as an exclusion of הדמוקרטים. |
