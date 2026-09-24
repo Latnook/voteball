@@ -3320,6 +3320,20 @@ owner the next day.)
 *Lead, revision 122 (2026-09-24): a הארץ column credits גולן with a programme of benefits for discharged
 soldiers. It is not in the corpus, and guessed bucket keys all answer 403. Needs the URL.*
 
+**2026-09-24 — revision 125. גולן on נתניהו's UN speech: a one-line jab. First-party, and it scores
+nothing.** ([X, @YairGolan1](https://x.com/YairGolan1/status/2103196559252807840), 24.09.26 18:55:09
+UTC, read through the fxtwitter JSON API.) *"הופתעתי לשמוע שביבי מאשים את קטאר בהפצת שקרים ובאירוח של
+בכירי החמאס בשבעה באוקטובר, כנראה שהנאום לא תואם עם יונתן אוריך"*. It alludes to the investigation into
+Qatari payments to נתניהו's aide יונתן אוריך. `anti-indicted-pm` is already held, and sarcasm about a
+rival's aide is not a position on anything. **Recorded for the comparison it makes with revision 124.**
+בנט posted **41 seconds earlier** that נתניהו *"מסרב לקרוא לאויב הקטארי בשמו"*. Two opposition chairmen
+read the same speech in opposite directions within a minute, one saying he spared Qatar and the other
+that he accused it. גולן's reading matches הארץ's account (revision 123). His addition, that the speech
+also blamed Qatar for hosting Hamas leaders on 7 October, is not in the excerpt this page has and is not
+recorded as fact. **This is the cleanest demonstration yet of why a rival's characterisation is revision
+44's tier**: both statements are first-party, both are about the same forty minutes, and at most one of
+them can describe it.
+
 **2026-09-24 — revision 120. The health paper; corpus 20 → 21. No axis moved, no tag added, `seed.sql`
 unchanged.**
 ([תוכנית בריאות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA.pdf),
@@ -10485,3 +10499,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 122 — **ישראל ביתנו: `kashrut-liberalization` and `municipal-devolution` ADDED (16 → 18), both verbatim from the live platform, which carried them through every previous read. No axis moved.** Found by checking a הארץ polling column's reference to *"תוכנית התחבורה והמסחר בשבת של ליברמן"* against the platform: *"העברת כלל הסמכויות בנושא פתיחת עסקים והפעלת תחבורה ציבורית בשבת לידי הרשויות המקומיות"* (stronger than ישר's and ביחד's instances) and *"יישום הרפורמה בתחום הכשרות"*. `communitarian-devolution` not added (local authorities only); `religious-pluralism` refused (Orthodox conversion decentralised). The 2026-08-02 re-verification confirmed the five planks the entry cited out of the section's ten, and it could not find the unwritten ones: re-verifying an entry is not re-reading its source. The column scores nothing. Its Golan discharged-soldiers programme is filed as a lead (not in the corpus; 22 guessed bucket keys return 403). Verified 16 → 18 on an already-seeded row; 271 backend tests pass. |
 | 2026-09-24 | revision 123 — **הליכוד: נתניהו at the UN General Assembly (הארץ 24.09, body supplied by the repo owner; the quotes are the paper's Hebrew rendering of an English speech). No axis moved, no tag added, `seed.sql` unchanged.** Settler violence minimised (*"150 פורעים צעירים... אולי שניים או שלושה"*) while enforcement is affirmed (*"שירות הביטחון הכללי מטפל בהם"*), so it is not the opposite pole of `anti-settler-violence` and no gap is filed. The article cites OCHA's 23 killed in 2026 for the record. Qatar and Al Jazeera advance neither the press-freedom nor the foreign-relations sweep, but "foreign influence" is now a frame at both press-freedom poles, which supports revision 116's instruction to define that tag by political control over domestic content. |
 | 2026-09-24 | revision 124 — **ביחד: בנט on Qatar, an hour after נתניהו's UN speech (X, read through the fxtwitter API). No axis moved, no tag added, `seed.sql` unchanged.** Revision 49's Qatar-as-enemy plank restated in its sharpest form, *"נכריז על קטאר כאויב, נסלק אותה מישראל ומעזה"*. The foreign-relations sweep item is re-framed: it listed ביחד opposite הליכוד, but on Qatar ביחד is the hawk, so the dimension is at least two lines (Western institutions, and hostile or mediating states). `hardline-on-gaza` not reached. בנט's charge that נתניהו refuses to name Qatar is looser than the speech, which named it but did not call it an enemy; not scored on הליכוד. |
+| 2026-09-24 | revision 125 — **הדמוקרטים: גולן on נתניהו's UN speech (X, read through the fxtwitter API). Nothing scored.** A jab tying the speech's attack on Qatar to the payments investigation around aide יונתן אוריך; `anti-indicted-pm` already held. Recorded for the comparison: בנט, 41 seconds earlier, said נתניהו refused to name Qatar, and גולן says he accused it. Opposite readings of one speech within a minute, which shows why rival characterisations stay at revision 44's tier. גולן's reading matches הארץ's; his claim about 7 October hosting is not in the excerpt and is not recorded as fact. |
