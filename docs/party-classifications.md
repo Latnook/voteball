@@ -2610,6 +2610,10 @@ inventory of the ten petitions is in הליכוד's entry above.)
   repeal timed to the swearing-in of the next government, which is the mirror of the pre-swearing-in
   *precondition* this page records for עמך ישראל and is now the second row to put a conscription
   commitment on the coalition-formation clock.
+  *(Revision 130, 2026-09-24: לפיד on גל"צ confirmed the abstention, telling his representatives they need
+  not attend, since it is *"הצגה לבוחרים"* and *"החבר'ה שלי ילכו לשתות קפה"*. **One יש עתיד representative
+  still voted, AGAINST disqualifying רע"ם** (per הארץ's breakdown). The declared abstention and the record
+  disagree by one vote. That is recorded, and under revision 115's rule it scores nothing either way.)*
 - **`excludes-anti-zionist-parties` considered and REFUSED.** *"יש לפעול נגד התמודדות עתידית של
   גורמים שלא מקבלים את עקרונות מדינת ישראל כיהודית, דמוקרטית"* is about **future candidacy**, i.e.
   amending the eligibility rules, not about whom the party will sit with in a coalition — which is
@@ -3381,6 +3385,37 @@ also blamed Qatar for hosting Hamas leaders on 7 October, is not in the excerpt 
 recorded as fact. **This is the cleanest demonstration yet of why a rival's characterisation is revision
 44's tier**: both statements are first-party, both are about the same forty minutes, and at most one of
 them can describe it.
+
+**2026-09-24 — revision 130 (cross-row). גולן on the disqualifications: the inclusive pole of the
+coalition-exclusion question, first-party. No axis moved, no tag added.**
+([X, @YairGolan1](https://x.com/YairGolan1/status/2102673147753369962), 23.09.26 08:15 UTC, before the
+votes; read through the fxtwitter API. Outcomes are in הרשימה המשותפת's entry.)
+
+- **`jewish-arab-partnership` (tag and family) gets its most direct statement yet.** *"נגן בנחישות על זכותם
+  של אזרחי ישראל הערבים לבחור, להיבחר **ולהיות שותפים בהנהגת המדינה**"*, *"נתנגד נחרצות לפסילה גורפת של
+  רע״ם והרשימה המשותפת"*, and the closing line *"שותפות יהודית-ערבית כן. פסילה קטגורית לא"*. The row's
+  faction in the outgoing Knesset, העבודה, voted **against** disqualifying רע"ם and כסיף, so the words and
+  the recorded votes agree.
+- **It also supplies the INCLUSIVE pole of the coalition-exclusion sweep**, which until now had only
+  exclusion tags: `excludes-anti-zionist-parties` (ישר, ישראל תחילה) and `excludes-haredi-and-arab-parties`
+  (ישראל ביתנו, המילואימניקים והכלכלית). *"שותפים בהנהגת המדינה"* is the opposite claim, and it comes from
+  the party itself. **Not minted**: the sweep decides the vocabulary for coalition exclusion in one pass.
+  This is the first first-party text at the other pole, and it makes the item polar.
+- **It is not an unconditional position, and the condition is symmetric.** *"אין הנחות לאבו שחאדה ואין
+  הנחות לבן גביר – את שניהם צריך לפסול"*, with *"נילחם בכהניזם ובלאומנות היהודית הקיצונית"*. The row
+  supports disqualifying **individuals** over support for armed struggle and over Kahanism, and opposes
+  disqualifying **lists**. As a disqualification stance it scores nothing (revision 115's rule), but it
+  shows the partnership tag is held with a stated red line and not as blanket inclusion.
+- **Revision 15's open question is unchanged.** The post is about the ballot and the coalition, not about
+  who is conscripted.
+- **The row's own hearing, 24.09: kept on the ballot, 14–2.** עוצמה יהודית's petition quoted גולן on
+  חומש's residents and on the haredi public, and claimed he had said he would **close ערוץ 14**. That last
+  claim is the petitioner's, in a legal filing, and it is not what the party published: the media paper
+  (revision 116) makes ערוץ 14 meet the same standards *"או שיצטרך לשלם"*, which is enforcement, not
+  closure. **If a first-party closure statement turns up, it matters for the press-freedom sweep**, because
+  it would put this row on both sides of the political-control test that revision 116 wrote. Until then it
+  is not recorded as the row's position. קריב, רייטן and לזימי spoke at the hearing; their words are about
+  עוצמה יהודית and are not scored.
 
 **2026-09-24 — revision 120. The health paper; corpus 20 → 21. No axis moved, no tag added, `seed.sql`
 unchanged.**
@@ -6319,6 +6354,27 @@ item, *"אמש הודיע בן גביר... תיק הביטחון... תיק המ�
 the dates match. **Trigger:** the same idea in the party's own text, or in the chairman's own recorded
 words from the hearing's stream.
 
+**2026-09-24 — revision 130 (cross-row). The row's own disqualification hearing: KEPT on the ballot, 11–10–1.
+Nothing moves.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.premium/000001a0-d1a3-dcb9-a9a4-f1e794ad0000),
+24.09.26; the vote table is in הרשימה המשותפת's entry.) The יועמ"שית's representative said the evidence
+*"מקרבות את הרשימה קרבה מסוכנת לתחום האסור"* but that the critical mass was not established. That is a
+legal finding on eligibility, not a classification.
+
+- **בן גביר on police appointments is the opposite pole of the police-independence content, first-party.**
+  *"אני לא מתערב במינויים. אני ממנה. זו הסמכות שלי! זה תפקידו של השר"*. הדמוקרטים earned
+  `governance-reform` (revision 62) for taking the political echelon *out* of police appointments, and
+  ביחד's truncated step 07 (revision 119) points the same way. This is the minister asserting the power
+  those programmes would remove. **Not tagged**: `governance-reform` has no negation, and this row's
+  `judicial-overhaul` is about the courts. Recorded as a pole for whoever next defines the police-independence
+  dimension. It is the internal-policing sweep's neighbour, not the same question.
+- **גוטליב: *"אין שום סיבה בעולם להסכים שעל גבולותינו תהיה מדינה פלסטינית"***, in defence of הציונות הדתית.
+  `no-palestinian-state` is already held. Her remarks on גולן (*"סכין בגב האומה"*, the Nazi-Germany
+  comparison) are a rival's characterisation, revision 44's tier.
+- **Its own petition against הדמוקרטים was lost 14–2, only its own two representatives voting for it.** Per the
+  report, הליכוד and הציונות הדתית asked it to withdraw the petition and it refused. **This is the first
+  recorded case of this row's bloc partners publicly declining to back it on a disqualification**, and it
+  scores nothing (revision 115's rule).
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -8643,6 +8699,62 @@ the יועמ"שית's opinion revision 102 already read at the same URL: 24 page
   8 October 2023 article to be weighed *"בכובד ראש"*. The column argues it fails the case law's
   repetition and critical-mass tests. That is argument, not a new fact.
 
+**2026-09-24 — revision 130. The committee's votes, from a news report. BOTH ARAB LISTS STAY ON THE
+BALLOT — the repo owner's decision, 2026-09-24.** Nothing moves on any row.
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-23/ty-article/000001a0-cc88-d52e-a7f4-fe8d624b0000),
+23.09.26; body supplied by the repo owner.) This confirms revision 129's claim, which came from an opinion
+column, and adds the counts:
+
+| decision (23.09.26) | for | against | abstain | ground |
+|---|---|---|---|---|
+| **הרשימה המשותפת** disqualified | 18 | 5 | – | negation of a Jewish and democratic state; support for armed struggle |
+| **רע"ם** disqualified | 18 | 5 | 1 | the same two, plus incitement to racism |
+| **כסיף** (חד"ש) disqualified | 19 | 5 | 2 | negation of a Jewish and democratic state |
+| **אבו שחאדה** (#3) disqualified | 31 | 4 | – | support for armed struggle or a terror organisation |
+
+The CEC chair voted on אבו שחאדה, after ח"כ שמחה רוטמן demanded it. The last chair to vote on a
+disqualification was חשין, in 2003, against ברוך מרזל. **The next day's petitions were all rejected**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.premium/000001a0-d1a3-dcb9-a9a4-f1e794ad0000),
+24.09.26, body supplied by the repo owner):
+
+| decision (24.09.26) | against disqualifying | for | abstain |
+|---|---|---|---|
+| **עוצמה יהודית** kept on the ballot | 11 | 10 | 1 (המחנה הממלכתי) |
+| **הציונות הדתית וזהות** kept | 21 | 3 | – |
+| **הדמוקרטים** kept | 14 | 2 (עוצמה יהודית) | – |
+
+**The asymmetry is the finding, and it is not scored.** The committee disqualified every list and
+candidate petitioned against from the Arab lists, and none from the Jewish lists, which is what both the
+column (revision 129) and the news report predicted from its coalition majority. The Supreme Court hears
+אבו שחאדה before an expanded panel on **Thursday 2026-10-01**. Per the report, זולת and הדמוקרטים are
+expected to appeal the עוצמה יהודית decision.
+
+- **`upcoming_parties` is NOT changed, by decision.** The repo owner, 2026-09-24: *do not remove the parties,
+  because the Supreme Court will likely overturn the CEC's decision.* That matches revision 115's base rate
+  (no committee disqualification of a candidate has ever been upheld), and the report itself expects the
+  court to reverse the decisions on רע"ם, הרשימה המשותפת and כסיף, calling only אבו שחאדה unclear. **The
+  rows stay voteable until the court rules.** Trigger: a Supreme Court ruling that upholds a list's
+  disqualification is when removal is considered, as a separate decision for the repo owner. A ruling that
+  upholds only אבו שחאדה's changes the list's slate and not the row.
+- **Every party's vote scores nothing, on revision 115's category rule.** Deciding whether to use an
+  eligibility instrument is not a position on what the state should do, and that rule was written for
+  exactly this. The breakdown is recorded as a record of votes, by outgoing-Knesset faction. For כסיף:
+  **for** 6 הליכוד, 2 המחנה הממלכתי, 2 הציונות הדתית, 1 הימין הממלכתי, 3 ש"ס, 2 עוצמה יהודית, 2 ישראל
+  ביתנו, 1 נעם; **against** 2 רע"מ, 1 העבודה, 1 חד"ש, 1 תע"ל; **abstained** 1 יהדות התורה, 1 אגודת ישראל.
+  For רע"ם: **for** 7 הליכוד, 2 הציונות הדתית, 1 הימין הממלכתי, 3 ש"ס, 2 עוצמה יהודית, 2 ישראל ביתנו,
+  1 נעם; **against** 2 רע"מ, 1 חד"ש, 1 העבודה, 1 יש עתיד; **abstained** 1 אגודת ישראל. The report gives no
+  breakdown for the other two votes.
+- **The respondents' own words, recorded and not scored.** אבו שחאדה, by Zoom, said he regrets the article:
+  *"לא הייתי צריך לכתוב את המאמר והייתי צריך לגנות באופן ברור"*. He condemned the Hamas attack and said his
+  intent was to *"לעבור למסלול מדיני שיובילו אותו הרשות הפלסטינית ומדינות ערב"*. After the vote he pledged
+  a *"מאבקנו העקבי והבלתי־אלים"*. רע"ם: *"כוחה עשוי להיות מכריע בהחלפת הממשלה הנוכחית ובהקמת ממשלה
+  חלופית"*, which is its coalition posture and fits its `opposition` bloc. None of this moves the −3 / −3 / −3
+  row or רע"ם's.
+- **ישראל ביתנו's announcement** (to vote for all four disqualifications) carries a line that goes further
+  than its `excludes-haredi-and-arab-parties` tag: *"כל מפלגה שמתנגדת לכך [חיסול חמאס כיעד מרכזי] אין לה
+  מקום בכנסת"*. That is a statement about **eligibility for the Knesset**, not about coalition partners.
+  Revision 115 already separated those two subjects on ביחד's row, and the tag stays where it is.
+
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
 **Neither this row nor יהדות התורה has a platform, and that is a finding, not a failed search.**
@@ -10594,3 +10706,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 127 — **הליכוד: הארץ on יונתן אוריך's campaign media-monitoring tool (body supplied by the repo owner). Read; nothing scored.** Campaign apparatus, revision 114's tier. The tool tracks גולן, איזנקוט, לפיד, בנט and ליברמן by name, which fits the page's blocs and cannot set one. ברדוגו's slot (#11) was already recorded from the certified list. |
 | 2026-09-24 | revision 128 — **context, no party: הארץ reports שב"כ head זיני refused to monitor domestic online influence operations against the election, which went to the police; שב"כ keeps foreign actors. Nothing scored.** Noted on the internal-policing sweep item, because the service is resisting a domestic role that ביחד and הדמוקרטים propose to give it for crime. That bears on whether the instrument can be delivered, not on any party's position. CEC chair סולברג's warning about fake accounts is not a party statement either. |
 | 2026-09-24 | revision 129 — **cross-row: a הארץ opinion piece on the disqualification hearings (body supplied by the repo owner). Nothing moves.** Its linked PDF is פ"מ 8/26, already read in revision 102 at the same URL. **The CEC disqualified אבו שחאדה on 23.09**, reported inside the column with סולברג voting against a 20-year custom; no tally, and the other petitions' outcomes are not in the text. The Supreme Court decides, and revision 115's base rate (never upheld) stands; trigger: an upheld disqualification removes #3 from הרשימה המשותפת. עוצמה יהודית: בן גביר's reported *"אתם כולכם צריכים ללכת בררא"* to ג'בארין is not tagged (a remark at a hearing, quoted by a columnist, aimed at citizens' representatives, and in nothing the party published). |
+| 2026-09-24 | revision 130 — **cross-row: the CEC's votes of 23–24.09 from two הארץ news reports (bodies supplied by the repo owner). 24.09: עוצמה יהודית kept 11–10–1, הציונות הדתית וזהות kept 21–3, הדמוקרטים kept 14–2; the Supreme Court hears אבו שחאדה on 2026-10-01. בן גביר's *"אני ממנה. זו הסמכות שלי"* is recorded as the opposite pole of the police-independence content, not tagged. עוצמה יהודית's claim that גולן would close ערוץ 14 is the petitioner's and contradicts the party's own paper. 23.09: הרשימה המשותפת 18–5 and רע"ם 18–5–1 disqualified, כסיף 19–5–2, אבו שחאדה 31–4 with the chair voting. BOTH LISTS STAY ON THE BALLOT, by the repo owner's decision:** the Supreme Court decides, revision 115's base rate is "never upheld", and removal would only be considered on an upheld ruling. Faction vote breakdowns are recorded and score nothing (revision 115's rule). הדמוקרטים: גולן's post (X) is the most direct `jewish-arab-partnership` statement yet (*"שותפים בהנהגת המדינה"*) and supplies the inclusive pole of the coalition-exclusion sweep, with a symmetric red line (disqualify אבו שחאדה and בן גביר, not lists); העבודה's votes match it. ביחד: לפיד called it *"הצגה"*, but one יש עתיד representative voted against disqualifying רע"ם. ישראל ביתנו's *"אין לה מקום בכנסת"* is about eligibility, not coalition, so its exclusion tag is unchanged. |
