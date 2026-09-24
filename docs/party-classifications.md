@@ -2181,7 +2181,7 @@ the Prime Minister's Office with a one-stop-shop and a case manager per family.
   it holds a six-step programme; see its entry.)*
 - **THE INDEX LISTS SIX PLANS WHOSE PAGES 302 BACK TO THE INDEX**, and reading one through a
   summarizer returns *the index's own content*, which reads exactly like a plan. Measured
-  2026-09-16: `foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי` and
+  2026-09-16 *(`personal-security` came back as a live page on 2026-09-24; see revision 119)*: `foreign-policy`, `personal-security`, `ממשלה`, `שילוב-חרדים`, `בטחון-לאומי` and
   `הסכם-חדש-השירות-הציבורי` all answer **302 → `/plans/`**; only `access` answers 200. A first pass
   here summarised four of them and got four plausible, quotable "plans" — a foreign-policy posture,
   an internal-security doctrine, a governance programme, a haredi-integration programme — none of
@@ -2536,6 +2536,60 @@ inventory of the ten petitions is in הליכוד's entry above.)
   המילואימניקים והכלכלית's. Granting it here would merge two different subjects under one label, the
   same error revision 41 avoided by refusing `service-conditioned-citizenship` for a benefits claim.
   **Trigger:** a statement about coalition partners rather than about ballot eligibility.
+
+**2026-09-24 — revision 119. The `personal-security` plan is LIVE, and it was not two days ago. No axis
+moved, no tag added, `seed.sql` unchanged.**
+([רק ביחד נתקן את הריבונות והביטחון האישי](https://be-yahad.org.il/plans/personal-security/),
+supplied by the repo owner, read from the live HTML.)
+
+- **The retrieval history comes first, because it is the reason this was not read earlier.** Revision 79
+  listed `personal-security` among six plans that redirected (`302`) to `/plans/`. Revision 49's `hitech`
+  note, written 2026-09-22, recorded that it *"still `302`s"*. Today it answers **200** with
+  `article:modified_time` **2026-09-24 05:50 UTC**, the morning it was read. This is the second retired
+  plan in the batch to come back, after `hitech`. **The rule that note wrote holds: status-check at read
+  time.** Revision 49 also found this plan's text being served by the WordPress API as the shared body of
+  three *other* retired pages, so it existed before it was published here. Whether the live text matches
+  that body was not checked, and nothing below depends on it.
+- **The page as published is TRUNCATED.** Its heading promises *"שישה צעדים מיידיים"* and it lists
+  **seven**. The seventh, *"נשחרר את המשטרה מהפוליטיקה"*, stops mid-sentence at *"נגביר את השיטור הרגלי"*,
+  and the site footer follows immediately in the raw HTML, so this is not an extraction artifact. It is
+  the same kind of defect as revision 116's missing line in a Democrats PDF.
+- **Content.** Crime is declared a threat to national security and one of the government's four top
+  goals, under the PM's direct responsibility. The crime cabinet is re-established with a national
+  project manager, and the **שב"כ** is brought in *"עם כל היכולות המודיעיניות והמבצעיות שלו"*. The plan
+  has a national operation to collect *"מאות אלפי"* illegal weapons, higher minimum sentences for
+  illegal possession, and an *"אל-קפונה"* financial pursuit of the top 100 criminals by the police,
+  prosecution, tax authority, money-laundering authority, ביטוח לאומי and local authorities. It revives
+  *מסלול בטוח*, adds a protection-racket indemnity fund, a security-companies law and a dedicated unit,
+  closes the borders to smuggling (drones included), doubles police stations in the south, and
+  strengthens urban and foot policing with Border Police attached to stations.
+- **The internal-policing sweep item (Open questions) is strengthened on this row, and the scope has
+  widened.** The row already held a place there through [חוק וסדר בנגב](https://be-yahad.org.il/plans/negev/).
+  That plan brought the שב"כ in for the **Negev**; this one brings it in **nationwide**, for crime in
+  general. Same instrument, larger reach, and the Democrats' task force (revision 62) remains the other
+  pole's version of it. Still not minted.
+- **The gun-control sweep item is NOT advanced, and the distinction matters.** Collecting *illegal*
+  weapons and raising sentences for possessing them is law enforcement, and every row would sign it. The
+  gun-control pole exists because of the Democrats' commitment on **licensed** private weapons
+  (*"נגביר את הפיקוח על רשיונות נשק"*), the direct opposite of `gun-rights`. This plan says nothing about
+  licensing.
+- **`governance-reform` considered and REFUSED, on the truncation.** *"נעביר חקיקה שתחזיר למשטרה את
+  עצמאותה"* is the same subject that earned the Democrats the tag in revision 62. That grant rested on
+  **mechanisms**: amending פקודת המשטרה, removing politicians from appointments, and barring the minister
+  from investigations. This page gives one sentence and then breaks off inside the step where the
+  mechanisms would appear. **Trigger:** step 07 republished in full with a mechanism, or any other ביחד
+  document that names one.
+- **The Negev step, recorded and not scored.** It says *"נטפל בהקצנה האיסלמית, בתמיכה בטרור הפלסטיני
+  ונשלול תמריצים למשפחות פוליגמיות בחברה הבדואית"* and encourages IDF enlistment
+  (`arab-civil-service` is already held). Polygamy has one other mention on this page, as עוצמה
+  יהודית's *"מאבק בפוליגמיה"*. No tag covers it and one sighting per row does not make one.
+- **`התיישבות` homograph, with a SPELLING trap on top.** *"נסדיר את ההתישבות"* is spelled with **one
+  yod**, so every token sweep on this page that greps `התיישבות` misses it. In a paragraph about Bedouin
+  society it most likely means regularising Bedouin settlement, which touches the land-planning sweep
+  item. It is too thin to count there: one verb, and no planning instrument. **Grep both spellings.**
+- **Not scored:** the 30% crime-drop claim for the Bennett government (a record claim about the past);
+  the *"74% מהציבור"* police-trust figure; and the animated counters, which extract as `0` because
+  they are filled by script.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -9719,7 +9773,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   without judicial discretion**, and closed-military-area declarations — paired, unlike the other two
   rows, with a substantial integration half. **A gap that spans הציונות הדתית, עוצמה יהודית and ביחד
   is not a description of the far right.** Every existing tag on all three rows is about the
-  territories, Gaza, the judiciary or religion. **Resolution: sweep all 18 rows for internal-policing
+  territories, Gaza, the judiciary or religion. *(Revision 119, 2026-09-24: ביחד's `personal-security`
+  plan takes the שב"כ from the Negev to crime **nationwide**, so the same instrument now has a wider reach
+  on this row.)* **Resolution: sweep all 18 rows for internal-policing
   content, then create the tag (or don't) with membership decided in one pass** — the same discipline
   as the environment sweep below and for revision 15's reason. This is now the **third** item in the
   sweep queue, alongside the environment tag and the workfare/labour-organization pair.
@@ -10242,3 +10298,4 @@ pass happened, for anyone reading git history.
 | 2026-09-23 | revision 116 — **הדמוקרטים: three papers (תקשורת, תרבות, אנשים עם מוגבלות, all created 2026-09-22); corpus 17 → 20. No axis moved, no tag added, `seed.sql` unchanged.** One edition each (all `(1)`/`(2)` probes 403). The media paper repeals *"חוקי קרעי"*, reverses the גל"צ closure, protects the public broadcaster's news budget by statute and puts a single regulator under search-committee appointments — the **first party programme** on the press-freedom sweep item, at the opposite pole from the one that filed it; the sweep is now scoped to press, broadcasting and culture and must define the tag by political control over appointments and content, since both poles present themselves as regulation. `anti-monopoly` refused (cross-ownership limits argued for pluralism, not competition); `governance-reform` corroborated twice. The disability paper makes this row the disability sweep item's second checked holder (allowance raised, where ביחד names a work disregard); `affirmative-action` and `workforce-integration` refused. Two seams: the 8% streaming levy is on annual turnover in one paper and on Israeli revenue in the other, and the published disability PDF drops a line in step 5 (confirmed on the rendered page). |
 | 2026-09-23 | revision 117 — **ישראל ביתנו: ליברמן proposes that Jordan run Areas A and B (ynet + ערוץ 7, one statement quoted identically; כאן supplied by the repo owner past a Cloudflare challenge). No axis moved, no tag added, `seed.sql` unchanged.** The row's first territorial claim in the leader's own voice: territorial contiguity and *"שליטה מוחלטת"* across all of Area C, and the platform's Jordan plank spelled out. `security` +2 now rests on the band's territorial half as well as its doctrine; +3 not reached (control, not sovereignty, and A and B given up). `sovereignty-annexation` refused (revision 52's trigger approached, not met). `no-palestinian-state` and `anti-two-state` refused on ישראל תחילה's implication rule: PA called a terror organisation and Bar-Ilan used as an accusation, but the words are never said. The podcast said B and C; the same-day written post corrected it to A and B (כאן reports the correction independently), and the post is scored. סמוטריץ׳'s *"לגיונות ירדנים"* line answers the withdrawn B-and-C version, since settlements lie in Area C. The Wikipedia-sourced swap paragraph is superseded in part: דרעי confirms the old swap was with the PA, and the partner is now Jordan. Rival reactions (נתניהו, דרעי, סמוטריץ׳) not scored. |
 | 2026-09-23 | revision 118 — **ישר: איזנקוט on picking the bloc's prime minister (כאן 22.09, body supplied by the repo owner past a Cloudflare wall). No axis moved, no tag added, `seed.sql` unchanged.** A second statement at the ישר pole of the rotation sweep item, and this one supplies the procedure: pre-agreed *"כללי יסוד ועקרונות לבחירת המועמד"* and the vote, rejecting a day-after *"פוילשטיק"*. His claim that בנט and ליברמן refuse such rules is a rival's account (revision 44's tier) and is recorded as a lead, not a holder. The reconciliation meeting is anonymous-source reporting. The unnamed *"שמונה מנדטים"* jab is not attributed. The reported hesitation over a photograph with גולן scores nothing on any row and is recorded so it is not read as an exclusion of הדמוקרטים. |
+| 2026-09-24 | revision 119 — **ביחד: the `personal-security` plan, live since 05:50 UTC today (it `302`ed on 16 and 22 September). No axis moved, no tag added, `seed.sql` unchanged.** The page is truncated as published: it announces six steps, lists seven, and the seventh (police independence) stops mid-sentence. The internal-policing sweep item is strengthened on this row, because the שב"כ now goes into crime nationwide, not just the Negev. The gun-control item is not advanced: illegal-weapons collection is enforcement, and the pole is about licensing. `governance-reform` refused on the truncation, since revision 62 granted it to הדמוקרטים on named mechanisms; trigger: the full step 07. *"נסדיר את ההתישבות"* is spelled with one yod and escapes every `התיישבות` grep. |
