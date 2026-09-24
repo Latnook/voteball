@@ -904,6 +904,39 @@ source.** It belongs beside *"a check that passes only because of where it ran"*
 `CLAUDE.md` — same shape, different layer: the output is confident, well-formed, and its wrongness
 leaves no trace in itself.
 
+**2026-09-24 — revision 123. נתניהו at the UN General Assembly. First-party, the chairman in his own
+voice. No axis moved, no tag added, `seed.sql` unchanged.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.premium/000001a0-d3cd-d259-a3b4-dbddd3680000),
+24.09.26, paywalled; body supplied by the repo owner. The quotes are the paper's Hebrew rendering of a
+speech given in English, so they are near-verbatim, not verbatim.)
+
+- **Settler violence: minimised, and NOT the opposite pole of `anti-settler-violence`.** *"חבורה של 150
+  פורעים צעירים, שזורקים אבנים וכורתים עצי זית... אנחנו מדינת חוק, אז שירות הביטחון הכללי מטפל בהם...
+  מספר הקורבנות בשנה הוא אולי שניים או שלושה"*, set against *"אלפי המתקפות נגד מתיישבים לא אלימים
+  ומכובדים"*. The tag's only holder is הדמוקרטים, on outposts defunded, the annexation laws repealed and a
+  named eradication programme. The opposite of that would be opposing enforcement. This sentence
+  **affirms** enforcement (*"שירות הביטחון הכללי מטפל בהם"*) and disputes the scale. **Minimising a
+  problem is not opposing its remedy**, so no polar gap is filed. The dispute over scale is not this
+  page's to settle. For the record, the article cites OCHA: **23** Palestinians killed and more than
+  1,040 injured in settler attacks since the start of 2026. `pro-settlement` is already held and needs
+  nothing from this.
+- **Qatar and Al Jazeera, for two sweep items, and neither advances.** *"מדינות זרות הוציאו מאות אלפי
+  דולרים כדי להפיץ שקרים על ישראל, הראשונה שעשתה זאת הייתה קטאר... כלי תקשורת רעילים כמו
+  אל־ג'זירה"*. For **press freedom**, this is the chairman's framing of the outlet whose ban by קרעי
+  (#22) is the record the item was filed on. A rationale is not a policy, and the record was already
+  there. For **foreign relations**, calling a state a disinformation sponsor is rhetoric; this row's
+  entry in that item rests on conduct. **One thing worth carrying into the press-freedom sweep:**
+  "foreign influence" is now a frame at **both** poles. הדמוקרטים' media paper (revision 116) wants a
+  national team against *"התערבות זרה ודיסאינפורמציה"*; נתניהו uses the same frame for Al Jazeera. That
+  is more support for revision 116's instruction that the tag must turn on **political control over
+  domestic content and appointments**, not on regulation and not on foreign interference, since both
+  sides claim both.
+- **Not scored:** *"האשמת ישראל ברצח עם היא השקר הגדול ביותר של המאה"* (a defence, no position on any
+  axis); the attack on ניו יורק mayor ממדאני (US politics); the walkout and *"פחדנים"* (diplomatic
+  theatre); the meetings with מיצוטאקיס and יאנשה (context for the foreign-relations sweep, no policy);
+  who sat in the hall (the Likud director-general, קיש, סילמן); and the protests outside by תרועה and
+  UnXeptable, whose speakers are not parties on this ballot.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -10420,3 +10453,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 120 — **הדמוקרטים: the health paper (created 2026-09-22 17:14, the fourth paper of revision 116's batch); corpus 20 → 21. No axis moved, no tag added, `seed.sql` unchanged.** One edition. economic −2 corroborated: health spending raised toward the OECD benchmark, a multi-year health basket, more than 2,000 medical students a year, and the state nursing-care insurance law, which now rests on two papers. No health tag: ביחד's refusal (revision 49) stands, because the difference between the two programmes is already on the economic axis and public-against-private medicine is absent from both. `anti-privatization` refused (private spending named as a symptom, no measure against it). `jewish-arab-partnership` corroborated. The civil-service sentence sits beside the Arab-society text but does not name Arab citizens, so revision 15's question narrows and is not answered. |
 | 2026-09-24 | revision 121 — **ביחד: the `plans` CPT re-enumerated (68 sitemap entries, all status-checked). Nothing new to read.** All 19 live Hebrew plans are cited, including `personal-security` and `religionandstate`, which are live but missing from the sitemap. The five retired plans still `302`; their English and Russian editions were deliberately not read. **`hitech` has gone again**: `/plans/hitech/` now `301`s to the Russian edition, so revision 105's citation opens a translation. That is the third status flip on this site in eight days. |
 | 2026-09-24 | revision 122 — **ישראל ביתנו: `kashrut-liberalization` and `municipal-devolution` ADDED (16 → 18), both verbatim from the live platform, which carried them through every previous read. No axis moved.** Found by checking a הארץ polling column's reference to *"תוכנית התחבורה והמסחר בשבת של ליברמן"* against the platform: *"העברת כלל הסמכויות בנושא פתיחת עסקים והפעלת תחבורה ציבורית בשבת לידי הרשויות המקומיות"* (stronger than ישר's and ביחד's instances) and *"יישום הרפורמה בתחום הכשרות"*. `communitarian-devolution` not added (local authorities only); `religious-pluralism` refused (Orthodox conversion decentralised). The 2026-08-02 re-verification confirmed the five planks the entry cited out of the section's ten, and it could not find the unwritten ones: re-verifying an entry is not re-reading its source. The column scores nothing. Its Golan discharged-soldiers programme is filed as a lead (not in the corpus; 22 guessed bucket keys return 403). Verified 16 → 18 on an already-seeded row; 271 backend tests pass. |
+| 2026-09-24 | revision 123 — **הליכוד: נתניהו at the UN General Assembly (הארץ 24.09, body supplied by the repo owner; the quotes are the paper's Hebrew rendering of an English speech). No axis moved, no tag added, `seed.sql` unchanged.** Settler violence minimised (*"150 פורעים צעירים... אולי שניים או שלושה"*) while enforcement is affirmed (*"שירות הביטחון הכללי מטפל בהם"*), so it is not the opposite pole of `anti-settler-violence` and no gap is filed. The article cites OCHA's 23 killed in 2026 for the record. Qatar and Al Jazeera advance neither the press-freedom nor the foreign-relations sweep, but "foreign influence" is now a frame at both press-freedom poles, which supports revision 116's instruction to define that tag by political control over domestic content. |
