@@ -966,6 +966,25 @@ be missing from this endpoint.
   taken no position on it. **Recorded so the next pass does not re-run this sweep believing it was never
   done, and so nobody reads "no reaction" as agreement.**
 
+**2026-09-24 — revision 127. הארץ on יונתן אוריך's media-monitoring tool for the Likud campaign. Read;
+nothing scored.**
+([הארץ](https://www.haaretz.co.il/news/security/2026-09-24/ty-article-magazine/.premium/000001a0-ceac-d18d-afbf-ffee3a660000),
+24.09.26, paywalled; body supplied by the repo owner.) The article reports a tool built by the aide and
+left public on GitHub. It scans about fifty news sources every 90 seconds, drafts response lines *"בגוף
+ראשון או בשם הליכוד"*, and has been running since 1 September.
+
+- **Campaign apparatus, the tier below candidates** (revision 114's tier, where עוצמה יהודית's campaign
+  staff were read and scored nothing). How a party watches the news is not a position on any axis or tag.
+- **Its target list is the Likud campaign's own map of its opponents**: גולן, איזנקוט, לפיד, בנט and
+  ליברמן are tracked by name, while סמוטריץ', וינטר, גנץ and בן גביר are tracked only through their
+  parties. That fits the blocs this page already assigns and adds nothing to them. A bloc is scored from
+  a party's own stated coalition position, never from whom a rival watches.
+- **The one list fact is already recorded.** ברדוגו is at **#11** from the certified list (revision 99).
+- **Background to revision 125, not a finding.** גולן's jab alluded to Qatargate, which the article
+  describes as a campaign to improve Qatar's image before the World Cup, built with ישראל איינהורן. The
+  tool's repository included an empty folder named after איינהורן's company. Allegations about an aide
+  are not this page's subject.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -10530,3 +10549,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 124 — **ביחד: בנט on Qatar, an hour after נתניהו's UN speech (X, read through the fxtwitter API). No axis moved, no tag added, `seed.sql` unchanged.** Revision 49's Qatar-as-enemy plank restated in its sharpest form, *"נכריז על קטאר כאויב, נסלק אותה מישראל ומעזה"*. The foreign-relations sweep item is re-framed: it listed ביחד opposite הליכוד, but on Qatar ביחד is the hawk, so the dimension is at least two lines (Western institutions, and hostile or mediating states). `hardline-on-gaza` not reached. בנט's charge that נתניהו refuses to name Qatar is looser than the speech, which named it but did not call it an enemy; not scored on הליכוד. |
 | 2026-09-24 | revision 125 — **הדמוקרטים: גולן on נתניהו's UN speech (X, read through the fxtwitter API). Nothing scored.** A jab tying the speech's attack on Qatar to the payments investigation around aide יונתן אוריך; `anti-indicted-pm` already held. Recorded for the comparison: בנט, 41 seconds earlier, said נתניהו refused to name Qatar, and גולן says he accused it. Opposite readings of one speech within a minute, which shows why rival characterisations stay at revision 44's tier. גולן's reading matches הארץ's; his claim about 7 October hosting is not in the excerpt and is not recorded as fact. |
 | 2026-09-24 | revision 126 — **cross-row: every opposition chairman's X feed checked for reactions to נתניהו's UN speech (fxtwitter profile API, posts from 15:00 UTC, each feed's newest post recorded). Nothing scored.** בנט and גולן are revisions 124–125. לפיד endorses the speech's words to the לייטר family (condolence). טיבי jokes that the walkout was *"הגירה מרצון"*. עודה's post was written before the speech. איזנקוט, ליברמן, גנץ and הנדל posted nothing after it, and עבאס's account is dormant. זליכה and אבו שחאדה were not reached (handles unresolved). Silence recorded as bounded by time, not as a position. |
+| 2026-09-24 | revision 127 — **הליכוד: הארץ on יונתן אוריך's campaign media-monitoring tool (body supplied by the repo owner). Read; nothing scored.** Campaign apparatus, revision 114's tier. The tool tracks גולן, איזנקוט, לפיד, בנט and ליברמן by name, which fits the page's blocs and cannot set one. ברדוגו's slot (#11) was already recorded from the certified list. |
