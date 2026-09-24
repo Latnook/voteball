@@ -2645,6 +2645,33 @@ status-checked:
 - **`servant-law-new` → `meshartim-law`** is the move revision 105's era already logged. It still
   redirects correctly.
 
+**2026-09-24 — revision 124. בנט on Qatar, an hour after נתניהו's UN speech. First-party. No axis moved,
+no tag added, `seed.sql` unchanged.**
+([X, @naftalibennett](https://x.com/naftalibennett/status/2103196384140706096), 24.09.26 18:54 UTC. Read
+through the fxtwitter JSON API, because x.com serves no text without script. The text is the post's own,
+not a summary.)
+
+- **The position is already on record, and this is its sharpest form.** Revision 49 recorded the joint
+  security doctrine declaring Qatar an enemy state and expelling Qatar and Turkey from Gaza. The chairman
+  now: *"אנחנו נכריז על קטאר כאויב, נסלק אותה מישראל ומעזה, ונכריע את החמאס"*, with the causal claim
+  *"בלי קטאר, אין חמאס"* and the charge that Qatar *"מימנו את הנוחבות"*. **Expelling Qatar from Israel**
+  (not only from Gaza) is new wording, and it points at the same subject as the Al Jazeera ban on הליכוד's
+  side of the press-freedom item. It is not a statement about the press, so it is recorded here and
+  not filed there.
+- **The foreign-relations sweep item needs a correction to its framing.** That item lists ביחד among
+  plausible holders on the side *opposite* הליכוד, הציונות הדתית and נעם, because the dimension was drawn
+  from עוצמה יהודית's conduct toward **British** missions. On **Qatar**, ביחד is the hawk and attacks
+  הליכוד for being too soft. **The dimension is at least two lines**: posture toward Western and
+  European institutions, and posture toward hostile or mediating states. A single tag would put this row
+  on both sides. Noted in the item.
+- **`hardline-on-gaza` not reached**, on revision 98's line. *"נכריע את החמאס"* is near-universal among
+  Zionist parties; the tag's holders earn it on siege and supply measures.
+- **The attack on נתניהו is checked against the speech itself, and it is looser than the speech.** *"כל
+  רגע שבו נתניהו מסרב לקרוא לאויב הקטארי בשמו"*: revision 123 records the speech **naming** Qatar as the
+  first state to fund *"שקרים על ישראל"*. What the speech did not do is call Qatar an *enemy* or link it to
+  7 October, and that is the narrower true version of the charge. A rival's characterisation, revision 44's
+  tier. It scores nothing on הליכוד, and the speech is the record on that row.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -10117,7 +10144,10 @@ bought nothing here, because the defect was never in the pixels being measured.
   הדמוקרטים, ביחד and רע"ם on the other. A gap with holders on both sides is a vocabulary hole, not a
   far-right descriptor — the same finding shape as the internal-policing item above. **Resolution:
   sweep all 18 rows for foreign-relations content, then create the tag (or don't) with membership
-  decided in one pass.**
+  decided in one pass.** *(Revision 124, 2026-09-24: ביחד, listed above on the non-far-right
+  side, is the most hawkish row on **Qatar**. It would declare Qatar an enemy and expel it from Israel and
+  Gaza, and it attacks הליכוד as too soft. The sweep should split Western and European institutions from
+  hostile or mediating states before deciding membership, or one tag will need this row on both sides.)*
 - **`security 0` now has exactly one holder, יש עתיד `[p]`, and it has never been re-verified.**
   Revision 23 removed the other one after finding a full conflict platform behind it, and the band's
   explanatory note had been built on that wrong example. A `0` asserts a party has genuinely taken no
@@ -10454,3 +10484,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 121 — **ביחד: the `plans` CPT re-enumerated (68 sitemap entries, all status-checked). Nothing new to read.** All 19 live Hebrew plans are cited, including `personal-security` and `religionandstate`, which are live but missing from the sitemap. The five retired plans still `302`; their English and Russian editions were deliberately not read. **`hitech` has gone again**: `/plans/hitech/` now `301`s to the Russian edition, so revision 105's citation opens a translation. That is the third status flip on this site in eight days. |
 | 2026-09-24 | revision 122 — **ישראל ביתנו: `kashrut-liberalization` and `municipal-devolution` ADDED (16 → 18), both verbatim from the live platform, which carried them through every previous read. No axis moved.** Found by checking a הארץ polling column's reference to *"תוכנית התחבורה והמסחר בשבת של ליברמן"* against the platform: *"העברת כלל הסמכויות בנושא פתיחת עסקים והפעלת תחבורה ציבורית בשבת לידי הרשויות המקומיות"* (stronger than ישר's and ביחד's instances) and *"יישום הרפורמה בתחום הכשרות"*. `communitarian-devolution` not added (local authorities only); `religious-pluralism` refused (Orthodox conversion decentralised). The 2026-08-02 re-verification confirmed the five planks the entry cited out of the section's ten, and it could not find the unwritten ones: re-verifying an entry is not re-reading its source. The column scores nothing. Its Golan discharged-soldiers programme is filed as a lead (not in the corpus; 22 guessed bucket keys return 403). Verified 16 → 18 on an already-seeded row; 271 backend tests pass. |
 | 2026-09-24 | revision 123 — **הליכוד: נתניהו at the UN General Assembly (הארץ 24.09, body supplied by the repo owner; the quotes are the paper's Hebrew rendering of an English speech). No axis moved, no tag added, `seed.sql` unchanged.** Settler violence minimised (*"150 פורעים צעירים... אולי שניים או שלושה"*) while enforcement is affirmed (*"שירות הביטחון הכללי מטפל בהם"*), so it is not the opposite pole of `anti-settler-violence` and no gap is filed. The article cites OCHA's 23 killed in 2026 for the record. Qatar and Al Jazeera advance neither the press-freedom nor the foreign-relations sweep, but "foreign influence" is now a frame at both press-freedom poles, which supports revision 116's instruction to define that tag by political control over domestic content. |
+| 2026-09-24 | revision 124 — **ביחד: בנט on Qatar, an hour after נתניהו's UN speech (X, read through the fxtwitter API). No axis moved, no tag added, `seed.sql` unchanged.** Revision 49's Qatar-as-enemy plank restated in its sharpest form, *"נכריז על קטאר כאויב, נסלק אותה מישראל ומעזה"*. The foreign-relations sweep item is re-framed: it listed ביחד opposite הליכוד, but on Qatar ביחד is the hawk, so the dimension is at least two lines (Western institutions, and hostile or mediating states). `hardline-on-gaza` not reached. בנט's charge that נתניהו refuses to name Qatar is looser than the speech, which named it but did not call it an enemy; not scored on הליכוד. |
