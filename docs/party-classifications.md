@@ -985,6 +985,14 @@ left public on GitHub. It scans about fifty news sources every 90 seconds, draft
   tool's repository included an empty folder named after איינהורן's company. Allegations about an aide
   are not this page's subject.
 
+**2026-09-24 — revision 135. חוק התקשורת, which this page had never recorded as ENACTED.** It passed in July
+2026; the High Court froze its immediate provisions and the יועמ"שית now asks to freeze the rest
+([כאן](https://www.kan.org.il/content/kan-news/local/1102847/), [mako](https://www.mako.co.il/news-entertainment/2026_q3/Article-937d86bcee4d0a1027.htm), [חדשות 13](https://13tv.co.il/item/news/domestic/crime-and-justice/q4zll-905369698/)). Per כאן, קרעי (#22) told the plenum he advanced it at
+נתניהו's request. **This is the government's record, the strongest kind of evidence this page uses**, and it
+is filed on the press-freedom sweep item (Open questions), where it makes the Likud pole a statute. No tag
+exists to add. קרעי on the court's order, *"לבג"צ אין סמכות להקפיא או לפסול חוקים... אינני מתכוון להשתתף
+בהליך"*, is `judicial-overhaul` (held) from a candidate inside the realistic range. The row already carries it.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -1654,6 +1662,14 @@ has two layers, and they are weighted differently. The quotes come from איזנ
 - **Context only:** לפיד (now inside ביחד, after the merger with בנט) will host the change-bloc
   leaders on Saturday night. Per כאן it is their first meeting in over ten months, the last being
   2025-11-08 with גנץ.
+  *(Revision 135: [חדשות 13](https://13tv.co.il/item/news/politics/politics/eisenkot-905361430/) dates the interview to **2026-09-17** and adds his reason, that the bloc
+  is organised *"כפי שלא היה"* around *"ארבע מפלגות הומוגניות"*. ישראל ביתנו's reply is the same
+  *"ממשלה ציונית, ללא נתניהו, המפלגות הערביות והחרדיות"* statement revision 99 recorded from ynet the same
+  day, so it is one statement and not a second one. [A later חדשות 13 report](https://13tv.co.il/item/news/politics/politics/abhya-905369461/) says בנט and ליברמן
+  discussed pledging, before the election, not to back any candidate who forms a government with רע"ם.
+  **Both denied it on the record**: בנט *"שקר מוחלט, הנושא כלל לא עלה בשיחה"*; ליברמן *"לא מקיים דיונים בשום
+  נושא הקשור להקמת הממשלה עד אחרי הבחירות"*. A denied anonymous report is not scored, and it does not count
+  as the other pole of the rotation item.)*
 
 **2026-09-24 — revision 134 (cross-row). Nine ynet links supplied together, and two of them are cross-party
 questionnaires. THREE TAGS ADDED on three rows, none on this one; no axis moved.** All nine were read from the
@@ -3959,6 +3975,14 @@ lines. The first is that a regular coalition majority (*"61 אצבעות"*) may 
   criminal-procedure rights, digital courts, more judge posts and plain-language forms (with
   Arabic, Russian and Amharic translations) are service reforms and carry no tag.
 
+
+**2026-09-24 — revision 135. A reported plan to offer גנץ *"פרישה בכבוד"*. Nothing moves.**
+([חדשות 13](https://13tv.co.il/item/news/politics/politics/abhya-905369461/), 24.09, a "first publication" citing unnamed bloc sources.) The change-bloc leaders are
+said to be preparing an offer for גנץ to withdraw, because every poll has the row under the threshold (חדשות
+13's own poll of 16.09 put it under one percent). **This is anonymous reporting about other parties'
+intentions toward this row, and it is not scored.** **Trigger:** if כחול לבן actually withdraws, the precedent
+is revision 42 (האחדות, removed on withdrawal). Removing a row is the repo owner's decision, and it would be
+the second withdrawal of this cycle.
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
 The platform confirms every axis rather than moving any: privatizing Ashdod Port and Haifa Airport
@@ -10580,6 +10604,25 @@ bought nothing here, because the defect was never in the pixels being measured.
   from that pass: scope it *press, broadcasting and culture* (the culture paper argues creative freedom
   in the same terms), and define the tag by **political control over appointments and content**, not by
   for-or-against regulation, since both poles present their programme as regulatory reform.
+  **Revision 135 (2026-09-24): the Likud pole is now a STATUTE, and the two poles differ on the same three
+  instruments.** קרעי's **חוק התקשורת** passed its second and third readings in July 2026, before the Knesset
+  dispersed. A temporary High Court order (גרוסקופף, July) froze its immediate provisions, and on 2026-09-24
+  the יועמ"שית asked for an interim order freezing the rest ([כאן](https://www.kan.org.il/content/kan-news/local/1102847/), [mako](https://www.mako.co.il/news-entertainment/2026_q3/Article-937d86bcee4d0a1027.htm),
+  [חדשות 13](https://13tv.co.il/item/news/domestic/crime-and-justice/q4zll-905369698/)). Per כאן, קרעי said in the plenum that he advanced it **at נתניהו's request**. Side by
+  side with הדמוקרטים' media paper (revision 116):
+
+  | instrument | חוק התקשורת (enacted) | הדמוקרטים' paper |
+  |---|---|---|
+  | the new broadcast regulator's council | selected by the **Communications Ministry's director-general** (כאן) | appointed on an **independent search committee's** recommendation, with the political echelon cut off from content |
+  | structural separation of news companies | **abolished** | **restored by statute** |
+  | ערוץ 14's news-investment duty (over ₪50M, per mako) | **cancelled** | the same standards for every broadcaster, enforced |
+
+  **Revision 116's definition is now confirmed on concrete texts, not just on rhetoric**: the poles do not
+  split over regulating (both regulate) but over **who appoints the regulator**. The sweep's remaining work is
+  the other sixteen rows. The two poles are documented: one by enacted law, which is the strongest kind of
+  record, and one by a published programme. הדמוקרטים' faction chair רייטן is among the petitioners, so the row's
+  record matches its paper. גינזבורג petitioned too, as a כחול לבן MK, before joining ביחד (#8). That was his
+  act at the time, not ביחד's position, so it is not credited to ביחד.
 - **No workfare tag and no labour-organization tag exist, and אל הדגל clearly earns both.** Its
   economic paper conditions income support on 20 weekly hours of work, funded training or community
   service, moves the daycare subsidy from a birth test to a work-and-service test with serving
@@ -10903,3 +10946,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 132 — **עוצמה יהודית: two בן גביר posts on X (fxtwitter API). Nothing moves.** Confirms from this row's side that הליכוד and הציונות הדתית asked it to withdraw the petition against הדמוקרטים, and blames *"הגישה המתרפסת"* for the judicial reform's failure (`judicial-overhaul`, held). The claim that הדמוקרטים *"יסגרו את ערוץ 14"* is repeated with no source and stays the petitioner's. Eight hours later he praises נתניהו's UN speech, the coalition-side counterpart to revision 126's sweep. |
 | 2026-09-24 | revision 133 — **הדמוקרטים: כאן 11's *מהצד השני* montage of גולן's own clips (YouTube, 22.09; read from YouTube's automatic captions, short timestamped quotes only). No axis moved, no tag added.** His own glosses on two petition quotes: חומש *"תתי אדם"* was *"חריפה מדי"* (*"פורעים שפלים"*), and *"הורגת תינוקות כתחביב"* referred *"אך ורק לשרי הממשלה"*, which contradicts בן גביר's soldiers version. `anti-settler-violence` corroborated (the Jewish-terror test for the שב"כ head). מכינת עלי: from close to defund, only the later form treated as stable. The chairman drops the word "left" while קריב, פינק and לסקי keep it; labels are not scored. |
 | 2026-09-24 | revision 134 — **cross-row: nine ynet links, two of them cross-party questionnaires. THREE TAGS ADDED; no axis moved.** Judicial questionnaire (21.09), read against revisions 20 and 108's boundary: **`constitutionalist` added to ישראל ביתנו (18 → 19)**, for a full constitution by referendum entrenched at 80 MKs, and **to הדמוקרטים (26 → 27)**, for Basic Law: Legislation with a special majority. Both rows held the family and not the tag. **`judicial-overhaul` added to עמך ישראל (8 → 9)**, the row's first judicial position (Bar out of the committee, narrow reasonableness, an extra instance appointed by the public's will). המילואימניקים refused again, with a trigger (override at 61, or the committee handed to the coalition). הליכוד declined questionnaires; עוצמה יהודית's legal platform is pending (trigger). Environment questionnaire (23.09) filed on the sweep item: five answered, six did not; all four change-bloc rows commit to closing בז"ן and restoring the disposables and sweetened-drinks tax; still no tag. The rest: עוצמה יהודית's vote counted 10–19–1 by ynet against הארץ's 11–10–1; ביחד's confrontation-line law is now a coalition condition; the Gottlieb video was not read. |
+| 2026-09-24 | revision 135 — **five links (mako, כאן, three חדשות 13; חדשות 13 is readable only with a link-preview user agent). No axis moved, no tag added, `seed.sql` unchanged.** **חוק התקשורת, never before recorded as ENACTED**, passed in July, and the יועמ"שית now seeks to freeze it; per כאן, קרעי advanced it at נתניהו's request. On the press-freedom sweep item the Likud pole is now a statute, and it differs from הדמוקרטים' paper on the same three instruments: who selects the regulator's council (the ministry's director-general against an independent search committee), structural separation (abolished against restored), and ערוץ 14's news-investment duty (cancelled against enforced). That confirms revision 116's definition on concrete texts; the sweep still needs the other sixteen rows. כחול לבן: an anonymous report of a "retirement with honour" offer to גנץ is not scored; trigger: an actual withdrawal (revision 42's precedent, the repo owner's decision). ישר: חדשות 13 dates revision 118's interview to 17.09. A report that בנט and ליברמן discussed a pledge against any government with רע"ם was denied by both and is not scored. |
