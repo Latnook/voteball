@@ -2591,6 +2591,27 @@ supplied by the repo owner, read from the live HTML.)
   the *"74% מהציבור"* police-trust figure; and the animated counters, which extract as `0` because
   they are filled by script.
 
+**2026-09-24 — revision 121. The whole `plans` CPT re-enumerated at the repo owner's request, two hours
+after revision 119. Nothing new to read.** From `plans-sitemap.xml` (68 entries), with every URL
+status-checked:
+
+- **All 19 live Hebrew plans are cited on this page**, counting `personal-security`, which is live
+  (**200**) but **absent from the sitemap**. So is `religionandstate`, which is cited and also live.
+  **A sitemap is not a complete index of this site either.** The other 49 entries are English and
+  Russian editions, and every one of those `301`s to `/en/` or `/ru/`.
+- **The five retired plans still `302` to `/plans/`**: `foreign-policy`, `ממשלה`, `שילוב-חרדים`,
+  `בטחון-לאומי`, `הסכם-חדש-השירות-הציבורי`. Their English and Russian editions (for example
+  `restoring-sovereignty-and-personal-security-en`, `together-we-will-integrate-the-haredi-public`) are
+  still in the sitemap. **They were not read**: this page classifies from the Hebrew platform, and a
+  translation of a plan the party withdrew in Hebrew is not a current position.
+- **`hitech` has gone AGAIN.** Revision 49 had it retired, revision 105 read it live on 2026-09-22, and
+  today `/plans/hitech/` answers **301 → `/ru/plans/hitech-ru/`**, so **revision 105's citation now opens
+  the Russian edition**. Nothing is withdrawn: what it evidenced was read from the Hebrew text while it
+  was live. **The third status flip on this site in eight days**, which is why the rule is to
+  status-check at read time and to record the date of each reading next to the citation.
+- **`servant-law-new` → `meshartim-law`** is the move revision 105's era already logged. It still
+  redirects correctly.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -10346,3 +10367,4 @@ pass happened, for anyone reading git history.
 | 2026-09-23 | revision 118 — **ישר: איזנקוט on picking the bloc's prime minister (כאן 22.09, body supplied by the repo owner past a Cloudflare wall). No axis moved, no tag added, `seed.sql` unchanged.** A second statement at the ישר pole of the rotation sweep item, and this one supplies the procedure: pre-agreed *"כללי יסוד ועקרונות לבחירת המועמד"* and the vote, rejecting a day-after *"פוילשטיק"*. His claim that בנט and ליברמן refuse such rules is a rival's account (revision 44's tier) and is recorded as a lead, not a holder. The reconciliation meeting is anonymous-source reporting. The unnamed *"שמונה מנדטים"* jab is not attributed. The reported hesitation over a photograph with גולן scores nothing on any row and is recorded so it is not read as an exclusion of הדמוקרטים. |
 | 2026-09-24 | revision 119 — **ביחד: the `personal-security` plan, live since 05:50 UTC today (it `302`ed on 16 and 22 September). No axis moved, no tag added, `seed.sql` unchanged.** The page is truncated as published: it announces six steps, lists seven, and the seventh (police independence) stops mid-sentence. The internal-policing sweep item is strengthened on this row, because the שב"כ now goes into crime nationwide, not just the Negev. The gun-control item is not advanced: illegal-weapons collection is enforcement, and the pole is about licensing. `governance-reform` refused on the truncation, since revision 62 granted it to הדמוקרטים on named mechanisms; trigger: the full step 07. *"נסדיר את ההתישבות"* is spelled with one yod and escapes every `התיישבות` grep. |
 | 2026-09-24 | revision 120 — **הדמוקרטים: the health paper (created 2026-09-22 17:14, the fourth paper of revision 116's batch); corpus 20 → 21. No axis moved, no tag added, `seed.sql` unchanged.** One edition. economic −2 corroborated: health spending raised toward the OECD benchmark, a multi-year health basket, more than 2,000 medical students a year, and the state nursing-care insurance law, which now rests on two papers. No health tag: ביחד's refusal (revision 49) stands, because the difference between the two programmes is already on the economic axis and public-against-private medicine is absent from both. `anti-privatization` refused (private spending named as a symptom, no measure against it). `jewish-arab-partnership` corroborated. The civil-service sentence sits beside the Arab-society text but does not name Arab citizens, so revision 15's question narrows and is not answered. |
+| 2026-09-24 | revision 121 — **ביחד: the `plans` CPT re-enumerated (68 sitemap entries, all status-checked). Nothing new to read.** All 19 live Hebrew plans are cited, including `personal-security` and `religionandstate`, which are live but missing from the sitemap. The five retired plans still `302`; their English and Russian editions were deliberately not read. **`hitech` has gone again**: `/plans/hitech/` now `301`s to the Russian edition, so revision 105's citation opens a translation. That is the third status flip on this site in eight days. |
