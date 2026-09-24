@@ -8171,6 +8171,31 @@ added, `seed.sql` unchanged — and the `bloc` question stays closed.**
   consistent with what this entry already records — `family_evidence` is `record`, not `platform`,
   and revision 99 had to reach a party response to a third party to find any doctrine at all.
 
+**2026-09-24 — revision 131. Two party statements from the Days of Awe, supplied by the repo owner. `bibi`
+held and corroborated; nothing moves.** Both are on the party's Facebook page
+([to ליברמן](https://www.facebook.com/amchaisraelparty/posts/pfbid02pwnTQuKbG8UJ2izZ8Bsg6aM59yda2ZYPgWXU3abTCA2uaUYbkoHXotidmzDSBeb7l),
+[to נתניהו](https://www.facebook.com/amchaisraelparty/posts/pfbid0XCNUZn67t2LdarhB3MX44t16vDsyp9dKhkDk8yUCRZnUvRN2w9LDvt341cMbvRdbl)).
+Outside a logged-in session Facebook serves only a preview cut at about 200 characters, so **the full
+texts were pasted by the repo owner** and the previews were used to confirm they are the same posts.
+**Neither post's date could be retrieved.** Both close with Yom Kippur greetings (*"גמר חתימה טובה"*, and
+*"ערב יום הכיפורים"* in the second), which puts them in the ten days ending 2026-09-21, probably 09-20.
+
+- **To ליברמן, the bloc restated.** *"אי אפשר לממש מדיניות ימין בממשלה עם רמטכ"ל ההכלה איזנקוט. אי אפשר
+  להשפיע כשאתה יושב ביציע. רק בתוך ממשלת ימין"*. It repeats the refusal of איזנקוט as prime minister that
+  the 2026-08-27 assessment was built on, and the *"רק בתוך ממשלת ימין"* line is the plainest bloc
+  statement this row has made after revision 32's. The claim that ליברמן's *"השותפים הבכירים"* are גולן,
+  לסקי and עבאס is a rival's characterisation (revision 44's tier) and scores nothing on ישראל ביתנו.
+- **To נתניהו, the other half of the same distinction.** Replying to a post by the prime minister (a photo
+  post, [facebook.com/photo/?fbid=1663032515192552](https://www.facebook.com/photo/?fbid=1663032515192552&set=a.507263454102803&locale=he_IL),
+  whose text **could not be read** and is not guessed at), the party calls what he wrote *"כזב ורכילות
+  שווא"*, declines *"פוליטיקה קטנה ושגויה מיסודה"*, and asks everyone *"לשים את החרמות ואת האישי בצד"*.
+  **This is the counter-evidence the bloc assessment kept on file**, friction with נתניהו personally, and
+  it arrives in the same days as the plainest bloc declaration the row has made. The reading from revision 32
+  and 2026-09-02 holds, and is now better evidenced from both sides: **the bloc is the right camp; the
+  quarrel is with the man.** *"החרמות"* (boycotts) suggests the dispute is about being shut out. The page
+  does not know what נתניהו posted, and it does not record why.
+- **No tag.** Neither post states a policy. `family_evidence` stays `record`.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -10707,3 +10732,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 128 — **context, no party: הארץ reports שב"כ head זיני refused to monitor domestic online influence operations against the election, which went to the police; שב"כ keeps foreign actors. Nothing scored.** Noted on the internal-policing sweep item, because the service is resisting a domestic role that ביחד and הדמוקרטים propose to give it for crime. That bears on whether the instrument can be delivered, not on any party's position. CEC chair סולברג's warning about fake accounts is not a party statement either. |
 | 2026-09-24 | revision 129 — **cross-row: a הארץ opinion piece on the disqualification hearings (body supplied by the repo owner). Nothing moves.** Its linked PDF is פ"מ 8/26, already read in revision 102 at the same URL. **The CEC disqualified אבו שחאדה on 23.09**, reported inside the column with סולברג voting against a 20-year custom; no tally, and the other petitions' outcomes are not in the text. The Supreme Court decides, and revision 115's base rate (never upheld) stands; trigger: an upheld disqualification removes #3 from הרשימה המשותפת. עוצמה יהודית: בן גביר's reported *"אתם כולכם צריכים ללכת בררא"* to ג'בארין is not tagged (a remark at a hearing, quoted by a columnist, aimed at citizens' representatives, and in nothing the party published). |
 | 2026-09-24 | revision 130 — **cross-row: the CEC's votes of 23–24.09 from two הארץ news reports (bodies supplied by the repo owner). 24.09: עוצמה יהודית kept 11–10–1, הציונות הדתית וזהות kept 21–3, הדמוקרטים kept 14–2; the Supreme Court hears אבו שחאדה on 2026-10-01. בן גביר's *"אני ממנה. זו הסמכות שלי"* is recorded as the opposite pole of the police-independence content, not tagged. עוצמה יהודית's claim that גולן would close ערוץ 14 is the petitioner's and contradicts the party's own paper. 23.09: הרשימה המשותפת 18–5 and רע"ם 18–5–1 disqualified, כסיף 19–5–2, אבו שחאדה 31–4 with the chair voting. BOTH LISTS STAY ON THE BALLOT, by the repo owner's decision:** the Supreme Court decides, revision 115's base rate is "never upheld", and removal would only be considered on an upheld ruling. Faction vote breakdowns are recorded and score nothing (revision 115's rule). הדמוקרטים: גולן's post (X) is the most direct `jewish-arab-partnership` statement yet (*"שותפים בהנהגת המדינה"*) and supplies the inclusive pole of the coalition-exclusion sweep, with a symmetric red line (disqualify אבו שחאדה and בן גביר, not lists); העבודה's votes match it. ביחד: לפיד called it *"הצגה"*, but one יש עתיד representative voted against disqualifying רע"ם. ישראל ביתנו's *"אין לה מקום בכנסת"* is about eligibility, not coalition, so its exclusion tag is unchanged. |
+| 2026-09-24 | revision 131 — **עמך ישראל: two Facebook statements from the Days of Awe (full texts pasted by the repo owner; Facebook serves only truncated previews; dates not retrievable, before Yom Kippur 2026-09-21). `bibi` held, nothing moves.** To ליברמן: *"רק בתוך ממשלת ימין"* and איזנקוט refused again, the plainest bloc statement since revision 32. To נתניהו: his post called *"כזב ורכילות שווא"* and a call to set *"החרמות ואת האישי"* aside. That is the personal-friction counter-evidence arriving in the same days as the bloc declaration, so the reading holds: the bloc is the right camp, the quarrel is with the man. נתניהו's post could not be read and is not guessed at. |
