@@ -1655,6 +1655,71 @@ has two layers, and they are weighted differently. The quotes come from איזנ
   leaders on Saturday night. Per כאן it is their first meeting in over ten months, the last being
   2025-11-08 with גנץ.
 
+**2026-09-24 — revision 134 (cross-row). Nine ynet links supplied together, and two of them are cross-party
+questionnaires. THREE TAGS ADDED on three rows, none on this one; no axis moved.** All nine were read from the
+raw HTML (`articleBody`); one is a video and was not read (below).
+
+**The judicial questionnaire** ([ynet + ידיעות אחרונות](https://www.ynet.co.il/news/elections2026/article/yokra14903844), 21.09.26) put the same questions to every
+party: the overhaul, the judicial-selection committee, and the High Court's powers. The answers are
+first-party (each is quoted as the party's reply) and are read against the boundary revision 20 and revision
+108 drew: **Basic Law: Legislation / a constitution by special majority is `constitutionalist`; the 2023
+programme (committee to the politicians, override, reasonableness, splitting the AG) is `judicial-overhaul`;
+consensual reform is the first, not the second.**
+
+| row | answer, in brief | result |
+|---|---|---|
+| ישר | repeal the committee-politicisation law; Basic Law: Legislation and a fixed Basic Law: the Judiciary; **no override clause** (*"אין לאמצו בישראל"*) | `constitutionalist` held, corroborated |
+| ביחד | Basic Law: Legislation; the Declaration of Independence as a Basic Law, *"הפרק הראשון בחוקה"*; repeal the new selection law | `constitutionalist` held, corroborated |
+| ישראל ביתנו | a **full constitution put to a referendum**, amendable only by **80 MKs**, from the פרידמן–רייכמן–נסים outline; against *"טלאי על טלאי"* | **`constitutionalist` ADDED** |
+| הדמוקרטים | repeal the overhaul laws; *"אפס נאשמים בממשלה"*; entrench equality, speech and religion; **Basic Law: Legislation**, with a special majority to change the rules | **`constitutionalist` ADDED**; `anti-indicted-pm` corroborated |
+| עמך ישראל | the court *"לקח לעצמו סמכויות-יתר"*; an additional court instance appointed *"על בסיס רצון הציבור"*; **Bar representatives out** of the selection committee; **narrow reasonableness** | **`judicial-overhaul` ADDED** |
+| המילואימניקים והכלכלית | Basic Law: Legislation first; the Knesset sets the committee's composition; **override by more than 72 MKs**; narrow, not abolish, reasonableness; Basic Laws by at least 61 | `constitutionalist` held; `judicial-overhaul` **still refused**, see that row |
+| הציונות הדתית וזהות | סמוטריץ'/רוטמן: court president by secret vote of the judges, split the AG role, override clause, the AG and ministry advisers as trust appointments, and the plan made **a precondition for any coalition**; זהות: no selection committee, **Supreme Court justices elected directly** | `judicial-overhaul` held, corroborated (the precondition was already recorded) |
+| כחול לבן | the courts' power is *"גדול מדי ובלתי-מוסדר"*; limit intervention in government decisions, but no politicisation; prosecution oversight | consistent with revision 108's refusal of `judicial-overhaul` |
+| ש"ס, יהדות התורה | **ynet's description** plus one quote each (דרעי: *"לתקן מן היסוד את מערכת המשפט ולהחזיר את הכוח לעם ולנבחריו"*) | `judicial-overhaul` held on both; nothing new |
+| עוצמה יהודית | a full legal platform *"יפורסם לציבור כבר בימים הקרובים"* | **trigger**: read it when it appears |
+| הרשימה המשותפת | balance between the branches, an independent judiciary, minority rights | nothing to score |
+| רע"ם | declined; ynet recounts its 2023 votes against the overhaul | not first-party this cycle; nothing |
+| הליכוד | *"לא משתתפים בשאלונים"* | the refusal is recorded |
+
+- **`constitutionalist` on ישראל ביתנו is the strongest instance the tag has.** Every other holder proposes
+  Basic Law: Legislation; this row proposes a whole constitution, ratified by the public and entrenched at 80.
+  The platform already carried *"קידום מתווה חוקה על בסיס עבודתם של פרופ' רייכמן, פרופ' פרידמן ומשה ניסים"*
+  and the row already had `constitutional-reform` in its `families`. **The tag was missing on the row that
+  states it most strongly**, the same gap revision 122 found on this row's religion section.
+- **`constitutionalist` on הדמוקרטים**: the keystone, verbatim. The row held the family and not the tag.
+- **`judicial-overhaul` on עמך ישראל**: three of the 2023 programme's planks in one answer (the committee's
+  composition, reasonableness, and the court's powers), framed as returning power to the people's
+  representatives rather than as a consensual package. It fits the row's `bibi` bloc. **The row had no
+  judicial position on record at all** until this answer.
+
+**The environment questionnaire** ([ynet, with מגמה ירוקה](https://www.ynet.co.il/environment-science/article/yokra14907119), 23.09.26) is filed on the environment sweep
+item in Open questions, where it belongs. **No tag is created.**
+
+**The other seven links:**
+- [הדמוקרטים/ליברמן and רע"ם](https://www.ynet.co.il/news/elections2026/article/rjh8kyb5gx) (23.09) and
+  [the disqualification report](https://www.ynet.co.il/news/elections2026/article/hj3llhz9zx) (24.09)
+  corroborate revision 130. One conflict: **ynet counts עוצמה יהודית's vote as 10 for, 19 against and 1
+  abstaining, where הארץ has 11–10–1**. Both are recorded, and nothing depends on which is right. ynet adds
+  that הליכוד, ש"ס and הציונות הדתית **did not vote** on the petition against הדמוקרטים, to protect the
+  petitions against אבו שחאדה and רע"ם.
+- [The reactions to the UN speech](https://www.ynet.co.il/news/elections2026/article/s1bzwx7qfe) (24.09)
+  confirm revision 126 independently, including that איזנקוט *"בלט בשתיקתו"*, and add the coalition's
+  praise (סער, סמוטריץ', דרעי, זוהר) to בן גביר's.
+- [נתניהו keeping his distance from בן גביר](https://www.ynet.co.il/news/elections2026/article/rkngzhgqgg)
+  (24.09): anonymous sources on both sides, about photographs. Campaign tactics; nothing.
+- [בנט on the confrontation-line law](https://www.ynet.co.il/economy/article/yokra14907668) (23.09): the plan
+  revision 105 read, now stated as **a condition for joining a government**. See ביחד.
+- [סעדה (הליכוד #10) against גינזבורג (ביחד #8)](https://www.ynet.co.il/news/article/bjr011kf5ze) (24.09): a
+  candidates' debate. סעדה concedes *"טעינו באיך שהובלנו את זה"* about the overhaul and says the system is
+  *"מושחתת והיא רקובה"*; `judicial-overhaul` is held on הליכוד. His claim that the שב"כ told a closed committee
+  that money for רע"ם reached Hamas is **a candidate's report of a closed session**, and it scores nothing on
+  רע"ם. He also credits *"מה שטוב לאירופה טוב לישראל"* with lowering prices, which is the import reform whose
+  slogan הדמוקרטים borrowed (revision 116). גינזבורג restates ביחד's Basic Law: Legislation and the
+  Declaration as the constitution's preamble.
+- [A video interview with גוטליב](https://www.ynet.co.il/news/article/rjbf2qm5mx) (24.09): **not read**. The
+  page has only a description, which is not a transcript.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -2724,6 +2789,14 @@ not a summary.)
   7 October, and that is the narrower true version of the charge. A rival's characterisation, revision 44's
   tier. It scores nothing on הליכוד, and the speech is the record on that row.
 
+**2026-09-24 — revision 134. The confrontation-line law becomes a COALITION CONDITION.**
+([ynet](https://www.ynet.co.il/economy/article/yokra14907668), 23.09.) Revision 105 read `northborderlaw`. בנט
+now tells the confrontation-line council heads it will be *"חלק מהתנאים של מפלגתו להצטרפות לממשלה"*: a
+**12 km** zone to 2035, graded by distance and damage, income-tax exemptions, a **0–4% / 5–10%** corporate rate
+and fully subsidised arnona discounts (45% residential, 39% business). It is the row's second stated coalition
+condition, after revision 115's repeal of the exemption laws at swearing-in. No tag; `periphery-development`
+stays retired. The judicial answer is recorded under ישר.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -3450,6 +3523,11 @@ audio. The clips are undated and the programme's framing is its own; **only גו
   chairman calls them.
 - **Not scored:** the Hebron human-shield episode from his military career (biography, not policy), and the
   party's reply (*"מדבר אמת ובאומץ... עיניים על הכדור"*), which is rhetoric.
+
+**2026-09-24 — revision 134. `constitutionalist` ADDED (26 → 27).** The ynet judicial questionnaire answer
+names the tag's keystone: *"נחוקק את חוק יסוד: החקיקה... ויקבע ששינוי כללי המשחק הדמוקרטיים דורש רוב
+מיוחד"*, alongside repealing the overhaul laws and *"אפס נאשמים בממשלה"* (`anti-indicted-pm`, held). The row
+has had `constitutional-reform` in its `families` all along without the tag. See the cross-row pass under ישר.
 
 **2026-09-24 — revision 120. The health paper; corpus 20 → 21. No axis moved, no tag added, `seed.sql`
 unchanged.**
@@ -4423,6 +4501,10 @@ the platform carries it:
 Verified the page's way: previous `seed.sql` seeded, new one applied on top. The row's tag array went
 **16 → 18** with both present, and it is unchanged when applied again. Backend suite **271 passed**,
 `ruff` clean.
+
+**2026-09-24 — revision 134. `constitutionalist` ADDED (18 → 19).** From the ynet judicial questionnaire: a full
+constitution by referendum, amendable only by 80 MKs, on the פרידמן–רייכמן–נסים outline the platform already
+cites. The strongest instance of the tag on the page; see the cross-row pass under ישר.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -7579,6 +7661,16 @@ page flow, so a text extraction and a summarizer both skip them. Look for
 Sources: the four supplied pages above, plus `/about/`, `/המילואימניקים/`, the home page,
 `/מתווה-המילואימניקים/` and the PDF it links. All were fetched 2026-09-16.
 
+**2026-09-24 — revision 134. `judicial-overhaul` refused again, and the boundary is closer than it was.** The
+ynet judicial questionnaire answer: *"אנחנו בעד שינויים במערכת המשפט"*, Basic Law: Legislation first, the
+Knesset to fix *"הרכב מאוזן"* for the selection committee by statute, an **override by more than 72 MKs**,
+reasonableness narrowed but not abolished, and Basic Laws by at least 61. Revision 20's ruling (consensual
+reform is `constitutionalist`) still holds, for two reasons. The override threshold is above any ordinary
+coalition majority, and the whole is presented as *"חלק מרפורמה כוללת"* led by Basic Law: Legislation. But the
+answer drops the broad-agreement wording the platform used, and **Basic Laws at 61 is the line כחול לבן's
+booklet (revision 108) put on the other side**. **Trigger:** an override at 61, or the committee's composition
+given to the coalition, moves this row to `judicial-overhaul`.
+
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
 *(Renamed from `נעם` on 2026-09-16, revision 95; `seed_key` is still `noam`. Entries below written
@@ -8248,6 +8340,12 @@ texts were pasted by the repo owner** and the previews were used to confirm they
   does not know what נתניהו posted, and it does not record why.
 - **No tag.** Neither post states a policy. `family_evidence` stays `record`.
 
+**2026-09-24 — revision 134. `judicial-overhaul` ADDED (8 → 9): the row's first judicial position.** From the
+ynet judicial questionnaire: *"בית המשפט לקח לעצמו סמכויות-יתר"*, an additional instance whose judges are
+appointed *"על בסיס רצון הציבור"*, the Bar's representatives removed from the selection committee, and
+*"צמצום עילת הסבירות"*. That is three planks of the 2023 programme, with no consensual framing and no Basic
+Law: Legislation. See the cross-row pass under ישר.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -8799,6 +8897,9 @@ disqualification was חשין, in 2003, against ברוך מרזל. **The next da
 | **עוצמה יהודית** kept on the ballot | 11 | 10 | 1 (המחנה הממלכתי) |
 | **הציונות הדתית וזהות** kept | 21 | 3 | – |
 | **הדמוקרטים** kept | 14 | 2 (עוצמה יהודית) | – |
+
+*ynet counts the עוצמה יהודית vote as **10 for, 19 against, 1 abstaining**, where הארץ has 11–10–1 (revision
+134). Both are recorded, and nothing turns on which is right.*
 
 **The asymmetry is the finding, and it is not scored.** The committee disqualified every list and
 candidate petitioned against from the Arab lists, and none from the Jewish lists, which is what both the
@@ -10295,6 +10396,20 @@ bought nothing here, because the defect was never in the pixels being measured.
   reading — three audited rows out of eighteen changes the count, not the defect. What changes is the
   urgency. **Status: no longer "likeliest holders unchecked" but "three confirmed, fifteen unchecked,
   sweep overdue."**
+  **A CROSS-PARTY QUESTIONNAIRE, 2026-09-24 (revision 134).** [ynet with מגמה ירוקה](https://www.ynet.co.il/environment-science/article/yokra14907119), 23.09.26, put
+  the same questions to every party. **Five answered**: ישר, ביחד, הדמוקרטים, הרשימה המשותפת and עוצמה
+  יהודית. **Six did not**: הליכוד, הציונות הדתית, ש"ס, יהדות התורה, רע"ם and כחול לבן. The rest are not
+  mentioned. All four change-bloc answers commit to **closing בז"ן** under Government Decision 1231 (הדמוקרטים
+  and הרשימה המשותפת immediately; ביחד accelerated; ישר with a budget and a shorter timetable), and to
+  **restoring the tax on disposables and sweetened drinks** that סמוטריץ' repealed. **All five**, עוצמה יהודית
+  included, back a framework waste law and a national waste authority. Beyond that, הדמוקרטים want a binding
+  climate law and a future-generations commissioner, ביחד opposes sport hunting, and עוצמה יהודית (via קרויזר,
+  #6) backs a national nature-protection plan and sport hunting, and wants **the environment ministry** in
+  coalition talks. **What it does to the sweep:** the four change-bloc rows now answer the same question on
+  the record, and הרשימה המשותפת and ישר are new. עוצמה יהודית answering at all, and sharing the waste-law
+  plank, means an environment tag would not be a bloc marker. **Still not created**: eleven rows are unread on
+  this question, and six of them declined to answer, which is not the same as having no position. A
+  non-answer is recorded as a non-answer.
 - **No gun-control tag exists although `gun-rights` does — FIFTH item in the sweep queue (2026-09-08,
   revision 62), and the only queued gap that is proven real by the vocabulary itself.** הדמוקרטים's
   internal-security paper commits to *"נגביר את הפיקוח על רשיונות נשק ומנגנוני זיהוי מסוכנות בקרב
@@ -10787,3 +10902,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 131 — **עמך ישראל: two Facebook statements from the Days of Awe (full texts pasted by the repo owner; Facebook serves only truncated previews; dates not retrievable, before Yom Kippur 2026-09-21). `bibi` held, nothing moves.** To ליברמן: *"רק בתוך ממשלת ימין"* and איזנקוט refused again, the plainest bloc statement since revision 32. To נתניהו: his post called *"כזב ורכילות שווא"* and a call to set *"החרמות ואת האישי"* aside. That is the personal-friction counter-evidence arriving in the same days as the bloc declaration, so the reading holds: the bloc is the right camp, the quarrel is with the man. נתניהו's post could not be read and is not guessed at. |
 | 2026-09-24 | revision 132 — **עוצמה יהודית: two בן גביר posts on X (fxtwitter API). Nothing moves.** Confirms from this row's side that הליכוד and הציונות הדתית asked it to withdraw the petition against הדמוקרטים, and blames *"הגישה המתרפסת"* for the judicial reform's failure (`judicial-overhaul`, held). The claim that הדמוקרטים *"יסגרו את ערוץ 14"* is repeated with no source and stays the petitioner's. Eight hours later he praises נתניהו's UN speech, the coalition-side counterpart to revision 126's sweep. |
 | 2026-09-24 | revision 133 — **הדמוקרטים: כאן 11's *מהצד השני* montage of גולן's own clips (YouTube, 22.09; read from YouTube's automatic captions, short timestamped quotes only). No axis moved, no tag added.** His own glosses on two petition quotes: חומש *"תתי אדם"* was *"חריפה מדי"* (*"פורעים שפלים"*), and *"הורגת תינוקות כתחביב"* referred *"אך ורק לשרי הממשלה"*, which contradicts בן גביר's soldiers version. `anti-settler-violence` corroborated (the Jewish-terror test for the שב"כ head). מכינת עלי: from close to defund, only the later form treated as stable. The chairman drops the word "left" while קריב, פינק and לסקי keep it; labels are not scored. |
+| 2026-09-24 | revision 134 — **cross-row: nine ynet links, two of them cross-party questionnaires. THREE TAGS ADDED; no axis moved.** Judicial questionnaire (21.09), read against revisions 20 and 108's boundary: **`constitutionalist` added to ישראל ביתנו (18 → 19)**, for a full constitution by referendum entrenched at 80 MKs, and **to הדמוקרטים (26 → 27)**, for Basic Law: Legislation with a special majority. Both rows held the family and not the tag. **`judicial-overhaul` added to עמך ישראל (8 → 9)**, the row's first judicial position (Bar out of the committee, narrow reasonableness, an extra instance appointed by the public's will). המילואימניקים refused again, with a trigger (override at 61, or the committee handed to the coalition). הליכוד declined questionnaires; עוצמה יהודית's legal platform is pending (trigger). Environment questionnaire (23.09) filed on the sweep item: five answered, six did not; all four change-bloc rows commit to closing בז"ן and restoring the disposables and sweetened-drinks tax; still no tag. The rest: עוצמה יהודית's vote counted 10–19–1 by ynet against הארץ's 11–10–1; ביחד's confrontation-line law is now a coalition condition; the Gottlieb video was not read. |
