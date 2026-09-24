@@ -6375,6 +6375,24 @@ legal finding on eligibility, not a classification.
   recorded case of this row's bloc partners publicly declining to back it on a disqualification**, and it
   scores nothing (revision 115's rule).
 
+**2026-09-24 — revision 132. Two בן גביר posts on X, read through the fxtwitter API. Nothing moves.**
+
+- **The withdrawal request is now confirmed from this row's side**, and the row turns it into a charge
+  against its own bloc. ([10:56 UTC](https://x.com/itamarbengvir/status/2103076120329400329).) *"הליכוד
+  והציונות הדתית ביקשו מעוצמה יהודית למשוך את בקשת הפסילה נגד הדמוקרטים"*, then: *"הגישה המתרפסת הזו מול
+  השמאל, היא שהביאה לכישלון הרפורמה המשפטית"*. Revision 130 had the request from הארץ alone. The second
+  sentence is `judicial-overhaul` (held) in its sharpest form: this row blames its partners for the reform's
+  failure, not the opposition. **No tag**; the bloc friction is recorded and it is not a bloc change.
+- **The ערוץ 14 claim is repeated, and it is still the petitioner's.** *"הצהירו שיסגרו את ערוץ 14 מייד אחרי
+  הבחירות"* names no speaker, date or source. The other items on the list (גולן on soldiers, *סרבנות*, a
+  member representing terrorists, the נז"א film) are the same petition's case against הדמוקרטים, and they are
+  a rival's characterisation. Revision 130's condition on הדמוקרטים' row is unchanged: only a first-party
+  closure statement would count.
+- **On the UN speech** ([18:57 UTC](https://x.com/itamarbengvir/status/2103197161982677299)): *"נאום חשוב של ראש
+  הממשלה באו״ם, כל מדינת ישראל עומדת מאחוריך מול השקרים של העולם"*. Eight hours after attacking הליכוד over
+  the petition, the chairman backs נתניהו on the speech. Revision 126 swept only opposition chairmen; this is
+  the coalition side, recorded for completeness. `bibi` needed no support.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -10733,3 +10751,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 129 — **cross-row: a הארץ opinion piece on the disqualification hearings (body supplied by the repo owner). Nothing moves.** Its linked PDF is פ"מ 8/26, already read in revision 102 at the same URL. **The CEC disqualified אבו שחאדה on 23.09**, reported inside the column with סולברג voting against a 20-year custom; no tally, and the other petitions' outcomes are not in the text. The Supreme Court decides, and revision 115's base rate (never upheld) stands; trigger: an upheld disqualification removes #3 from הרשימה המשותפת. עוצמה יהודית: בן גביר's reported *"אתם כולכם צריכים ללכת בררא"* to ג'בארין is not tagged (a remark at a hearing, quoted by a columnist, aimed at citizens' representatives, and in nothing the party published). |
 | 2026-09-24 | revision 130 — **cross-row: the CEC's votes of 23–24.09 from two הארץ news reports (bodies supplied by the repo owner). 24.09: עוצמה יהודית kept 11–10–1, הציונות הדתית וזהות kept 21–3, הדמוקרטים kept 14–2; the Supreme Court hears אבו שחאדה on 2026-10-01. בן גביר's *"אני ממנה. זו הסמכות שלי"* is recorded as the opposite pole of the police-independence content, not tagged. עוצמה יהודית's claim that גולן would close ערוץ 14 is the petitioner's and contradicts the party's own paper. 23.09: הרשימה המשותפת 18–5 and רע"ם 18–5–1 disqualified, כסיף 19–5–2, אבו שחאדה 31–4 with the chair voting. BOTH LISTS STAY ON THE BALLOT, by the repo owner's decision:** the Supreme Court decides, revision 115's base rate is "never upheld", and removal would only be considered on an upheld ruling. Faction vote breakdowns are recorded and score nothing (revision 115's rule). הדמוקרטים: גולן's post (X) is the most direct `jewish-arab-partnership` statement yet (*"שותפים בהנהגת המדינה"*) and supplies the inclusive pole of the coalition-exclusion sweep, with a symmetric red line (disqualify אבו שחאדה and בן גביר, not lists); העבודה's votes match it. ביחד: לפיד called it *"הצגה"*, but one יש עתיד representative voted against disqualifying רע"ם. ישראל ביתנו's *"אין לה מקום בכנסת"* is about eligibility, not coalition, so its exclusion tag is unchanged. |
 | 2026-09-24 | revision 131 — **עמך ישראל: two Facebook statements from the Days of Awe (full texts pasted by the repo owner; Facebook serves only truncated previews; dates not retrievable, before Yom Kippur 2026-09-21). `bibi` held, nothing moves.** To ליברמן: *"רק בתוך ממשלת ימין"* and איזנקוט refused again, the plainest bloc statement since revision 32. To נתניהו: his post called *"כזב ורכילות שווא"* and a call to set *"החרמות ואת האישי"* aside. That is the personal-friction counter-evidence arriving in the same days as the bloc declaration, so the reading holds: the bloc is the right camp, the quarrel is with the man. נתניהו's post could not be read and is not guessed at. |
+| 2026-09-24 | revision 132 — **עוצמה יהודית: two בן גביר posts on X (fxtwitter API). Nothing moves.** Confirms from this row's side that הליכוד and הציונות הדתית asked it to withdraw the petition against הדמוקרטים, and blames *"הגישה המתרפסת"* for the judicial reform's failure (`judicial-overhaul`, held). The claim that הדמוקרטים *"יסגרו את ערוץ 14"* is repeated with no source and stays the petitioner's. Eight hours later he praises נתניהו's UN speech, the coalition-side counterpart to revision 126's sweep. |
