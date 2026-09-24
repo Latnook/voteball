@@ -6307,6 +6307,18 @@ should say out loud why it still scores nothing.
   stay comfortably inside it, and ניימן #10 sits exactly on its edge.
 - **`family_evidence` stays `record`.** Nothing here is party-published.
 
+**2026-09-24 — revision 129 (cross-row). A remark at the disqualification hearing, reported by a הארץ
+opinion piece. `voluntary-palestinian-emigration-incentives` stays, and nothing is added.** At the hearing,
+according to the columnist, בן גביר told the Joint List's chair ג'בארין *"אתם כולכם צריכים ללכת בררא"*
+(Arabic for "outside"). The row's emigration tag rests on the programme, which keeps the word *voluntary*
+and is about Gaza and Judea and Samaria. This remark is aimed at **Arab citizens' elected
+representatives**, which is a different and stronger claim than anything the row's tags record.
+**Not tagged**, for three reasons: it is a remark at a hearing and not a programme; it is known only
+through an opinion writer's quotation; and nothing the party has published says it. The column's portfolio
+item, *"אמש הודיע בן גביר... תיק הביטחון... תיק המשפטים לטלי גוטליב"*, is revision 107's statement, and
+the dates match. **Trigger:** the same idea in the party's own text, or in the chairman's own recorded
+words from the hearing's stream.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -8608,6 +8620,29 @@ as a percent-encoded image — web search for the title returned nothing.)
   prisoners — has no counterpart anywhere. **One holder is not a dimension**, the rule revision 94
   applied to the Negev-Galilee one; both become candidates if a second row publishes the same thing.
 
+**2026-09-24 — revision 129. The CEC disqualified אבו שחאדה on 2026-09-23, per a הארץ opinion piece.
+Nothing moves. The Supreme Court decides, and revision 115's base rate says how that usually ends.**
+([הארץ, opinion](https://www.haaretz.co.il/news/elections/2026-09-23/ty-article/.premium/000001a0-cc6c-d06e-afab-fdfdb2310000),
+23.09.26, paywalled; body supplied by the repo owner. The PDF it links is
+[פ"מ 8/26](https://img.haarets.co.il/bs/000001a0-c8e3-de5d-a5fa-d9fbf09d0000/b7/61/803fc88c4b229355e70a3943a9b9/ds.pdf),
+the יועמ"שית's opinion revision 102 already read at the same URL: 24 pages, created 2026-09-22.)
+
+- **The one new fact is reported inside an opinion column, and is recorded as reported.** The writer
+  criticises סולברג, *"שהצטרף לפסילת אבו שחאדה, למרות המנהג הקיים זה 20 שנה שלפיו יושבי ראש ועדת
+  הבחירות אינם משתתפים בהצבעות"*. That means the committee voted to disqualify, and the chair voted with
+  the majority. **The vote count and the fate of the other petitions heard the same day are not in the
+  text** (the list, כסיף, רע"ם, בל"ד). The column *predicts* the Arab lists will be disqualified and the
+  coalition lists spared, and a prediction is not recorded as an outcome. Confirm against a news report
+  before anything cites a tally.
+- **No axis, tag or list change.** revision 115's rule stands: a CEC vote is a claim about legal
+  eligibility under סעיף 7א, not a programme. The base rate is the IDI's: no candidate disqualified by the
+  committee has ever had it upheld by the Supreme Court. **Trigger:** if the Supreme Court upholds it,
+  #3 leaves the list and בל"ד's chair is no longer on this row's realistic slate. That would be the first
+  list change on this page made by a court.
+- **The יועמ"שית's position matches revision 102**: no legal basis for any petition, and אבו שחאדה's
+  8 October 2023 article to be weighed *"בכובד ראש"*. The column argues it fails the case law's
+  repetition and critical-mass tests. That is argument, not a new fact.
+
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
 **Neither this row nor יהדות התורה has a platform, and that is a finding, not a failed search.**
@@ -10558,3 +10593,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 126 — **cross-row: every opposition chairman's X feed checked for reactions to נתניהו's UN speech (fxtwitter profile API, posts from 15:00 UTC, each feed's newest post recorded). Nothing scored.** בנט and גולן are revisions 124–125. לפיד endorses the speech's words to the לייטר family (condolence). טיבי jokes that the walkout was *"הגירה מרצון"*. עודה's post was written before the speech. איזנקוט, ליברמן, גנץ and הנדל posted nothing after it, and עבאס's account is dormant. זליכה and אבו שחאדה were not reached (handles unresolved). Silence recorded as bounded by time, not as a position. |
 | 2026-09-24 | revision 127 — **הליכוד: הארץ on יונתן אוריך's campaign media-monitoring tool (body supplied by the repo owner). Read; nothing scored.** Campaign apparatus, revision 114's tier. The tool tracks גולן, איזנקוט, לפיד, בנט and ליברמן by name, which fits the page's blocs and cannot set one. ברדוגו's slot (#11) was already recorded from the certified list. |
 | 2026-09-24 | revision 128 — **context, no party: הארץ reports שב"כ head זיני refused to monitor domestic online influence operations against the election, which went to the police; שב"כ keeps foreign actors. Nothing scored.** Noted on the internal-policing sweep item, because the service is resisting a domestic role that ביחד and הדמוקרטים propose to give it for crime. That bears on whether the instrument can be delivered, not on any party's position. CEC chair סולברג's warning about fake accounts is not a party statement either. |
+| 2026-09-24 | revision 129 — **cross-row: a הארץ opinion piece on the disqualification hearings (body supplied by the repo owner). Nothing moves.** Its linked PDF is פ"מ 8/26, already read in revision 102 at the same URL. **The CEC disqualified אבו שחאדה on 23.09**, reported inside the column with סולברג voting against a 20-year custom; no tally, and the other petitions' outcomes are not in the text. The Supreme Court decides, and revision 115's base rate (never upheld) stands; trigger: an upheld disqualification removes #3 from הרשימה המשותפת. עוצמה יהודית: בן גביר's reported *"אתם כולכם צריכים ללכת בררא"* to ג'בארין is not tagged (a remark at a hearing, quoted by a columnist, aimed at citizens' representatives, and in nothing the party published). |
