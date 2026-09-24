@@ -937,6 +937,35 @@ speech given in English, so they are near-verbatim, not verbatim.)
   who sat in the hall (the Likud director-general, קיש, סילמן); and the protests outside by תרועה and
   UnXeptable, whose speakers are not parties on this ballot.
 
+**2026-09-24 — revision 126 (cross-row). Every opposition chairman's X feed checked for reactions to the
+speech. Nothing scored on any row.** Read through the fxtwitter profile API (`/2/profile/<handle>/statuses`,
+which returns roughly the latest 20 posts per account), for posts from 15:00 UTC on. Each feed's newest
+post is recorded, so every "nothing" below is bounded by a time rather than asserted:
+
+| row | chairman | newest post | on the speech |
+|---|---|---|---|
+| ביחד | בנט | 18:54 | revision 124: Qatar should have been named an enemy |
+| הדמוקרטים | גולן | 18:55 | revision 125: the Qatar/אוריך jab; also, *before* the speech, an image captioned *"תמונה ראשונה מהנאום באו״ם"* and then labelled AI-generated (15:20, 15:53) |
+| ביחד | לפיד | 18:28 | endorses one passage: *"עם כל חילוקי הדיעות, מברך ומצטרף לדברי נתניהו למשפחת לייטר ולתפילה לשלום נריה"* |
+| הרשימה המשותפת | טיבי | 18:46 | the walkout as *"'הגירה מרצון' מהאולם"*, sarcasm aimed at the voluntary-emigration programme other rows carry |
+| הרשימה המשותפת | עודה | 16:48 | a **pre-emptive** post listing what the speech would omit, including *"הטיהור האתני ועל הפוגרומים בחסות הממשלה והצבא"* in the West Bank and *"הניסיון של הליכוד לפסול את הרשימות"*. Written before the speech, so it is not a reaction to its content. |
+| ישר | איזנקוט | 08:17 | nothing |
+| ישראל ביתנו | ליברמן | 12:11 | nothing |
+| כחול לבן | גנץ | 12:55 | nothing |
+| המילואימניקים והכלכלית | הנדל | 09:41 | nothing |
+| רע"ם | עבאס | 2026-09-11 | nothing; the account is dormant |
+
+**Not reached:** זליכה and אבו שחאדה, whose handles did not resolve (every guess returned 404). Replies may
+be missing from this endpoint.
+
+- **No row moves.** לפיד's endorsement is condolence, not policy. עודה's post restates positions הרשימה
+  המשותפת's −3 / −3 / −3 row already carries, and its disqualification clause is revision 115's thread.
+  טיבי's is a joke.
+- **The silence is not evidence either way.** Four of the change-bloc chairmen said nothing within about
+  an hour. That is a snapshot of one evening's feeds, and a party that does not tweet about a speech has
+  taken no position on it. **Recorded so the next pass does not re-run this sweep believing it was never
+  done, and so nobody reads "no reaction" as agreement.**
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -10500,3 +10529,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 123 — **הליכוד: נתניהו at the UN General Assembly (הארץ 24.09, body supplied by the repo owner; the quotes are the paper's Hebrew rendering of an English speech). No axis moved, no tag added, `seed.sql` unchanged.** Settler violence minimised (*"150 פורעים צעירים... אולי שניים או שלושה"*) while enforcement is affirmed (*"שירות הביטחון הכללי מטפל בהם"*), so it is not the opposite pole of `anti-settler-violence` and no gap is filed. The article cites OCHA's 23 killed in 2026 for the record. Qatar and Al Jazeera advance neither the press-freedom nor the foreign-relations sweep, but "foreign influence" is now a frame at both press-freedom poles, which supports revision 116's instruction to define that tag by political control over domestic content. |
 | 2026-09-24 | revision 124 — **ביחד: בנט on Qatar, an hour after נתניהו's UN speech (X, read through the fxtwitter API). No axis moved, no tag added, `seed.sql` unchanged.** Revision 49's Qatar-as-enemy plank restated in its sharpest form, *"נכריז על קטאר כאויב, נסלק אותה מישראל ומעזה"*. The foreign-relations sweep item is re-framed: it listed ביחד opposite הליכוד, but on Qatar ביחד is the hawk, so the dimension is at least two lines (Western institutions, and hostile or mediating states). `hardline-on-gaza` not reached. בנט's charge that נתניהו refuses to name Qatar is looser than the speech, which named it but did not call it an enemy; not scored on הליכוד. |
 | 2026-09-24 | revision 125 — **הדמוקרטים: גולן on נתניהו's UN speech (X, read through the fxtwitter API). Nothing scored.** A jab tying the speech's attack on Qatar to the payments investigation around aide יונתן אוריך; `anti-indicted-pm` already held. Recorded for the comparison: בנט, 41 seconds earlier, said נתניהו refused to name Qatar, and גולן says he accused it. Opposite readings of one speech within a minute, which shows why rival characterisations stay at revision 44's tier. גולן's reading matches הארץ's; his claim about 7 October hosting is not in the excerpt and is not recorded as fact. |
+| 2026-09-24 | revision 126 — **cross-row: every opposition chairman's X feed checked for reactions to נתניהו's UN speech (fxtwitter profile API, posts from 15:00 UTC, each feed's newest post recorded). Nothing scored.** בנט and גולן are revisions 124–125. לפיד endorses the speech's words to the לייטר family (condolence). טיבי jokes that the walkout was *"הגירה מרצון"*. עודה's post was written before the speech. איזנקוט, ליברמן, גנץ and הנדל posted nothing after it, and עבאס's account is dormant. זליכה and אבו שחאדה were not reached (handles unresolved). Silence recorded as bounded by time, not as a position. |
