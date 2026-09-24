@@ -10015,7 +10015,14 @@ bought nothing here, because the defect was never in the pixels being measured.
   is not a description of the far right.** Every existing tag on all three rows is about the
   territories, Gaza, the judiciary or religion. *(Revision 119, 2026-09-24: ביחד's `personal-security`
   plan takes the שב"כ from the Negev to crime **nationwide**, so the same instrument now has a wider reach
-  on this row.)* **Resolution: sweep all 18 rows for internal-policing
+  on this row.)* *(Revision 128, 2026-09-24, context only, since no party speaks in it:
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.highlight/000001a0-d27c-d18d-afbf-f3fef4af0000)
+  reports that שב"כ head דוד זיני **refused** responsibility for monitoring Israeli online influence
+  operations against the election, on the ground that the service does not handle *"גורמי פנים"*. The
+  police took it, and שב"כ keeps foreign actors such as Iran and Russia. So the service itself is
+  resisting a domestic mandate while ביחד and הדמוקרטים campaign to give it one for crime. **This bears on
+  whether the instrument can be delivered, not on what any party proposes**, and it scores nothing. The
+  sweep should still record each party's proposal as proposed.)* **Resolution: sweep all 18 rows for internal-policing
   content, then create the tag (or don't) with membership decided in one pass** — the same discipline
   as the environment sweep below and for revision 15's reason. This is now the **third** item in the
   sweep queue, alongside the environment tag and the workfare/labour-organization pair.
@@ -10550,3 +10557,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 125 — **הדמוקרטים: גולן on נתניהו's UN speech (X, read through the fxtwitter API). Nothing scored.** A jab tying the speech's attack on Qatar to the payments investigation around aide יונתן אוריך; `anti-indicted-pm` already held. Recorded for the comparison: בנט, 41 seconds earlier, said נתניהו refused to name Qatar, and גולן says he accused it. Opposite readings of one speech within a minute, which shows why rival characterisations stay at revision 44's tier. גולן's reading matches הארץ's; his claim about 7 October hosting is not in the excerpt and is not recorded as fact. |
 | 2026-09-24 | revision 126 — **cross-row: every opposition chairman's X feed checked for reactions to נתניהו's UN speech (fxtwitter profile API, posts from 15:00 UTC, each feed's newest post recorded). Nothing scored.** בנט and גולן are revisions 124–125. לפיד endorses the speech's words to the לייטר family (condolence). טיבי jokes that the walkout was *"הגירה מרצון"*. עודה's post was written before the speech. איזנקוט, ליברמן, גנץ and הנדל posted nothing after it, and עבאס's account is dormant. זליכה and אבו שחאדה were not reached (handles unresolved). Silence recorded as bounded by time, not as a position. |
 | 2026-09-24 | revision 127 — **הליכוד: הארץ on יונתן אוריך's campaign media-monitoring tool (body supplied by the repo owner). Read; nothing scored.** Campaign apparatus, revision 114's tier. The tool tracks גולן, איזנקוט, לפיד, בנט and ליברמן by name, which fits the page's blocs and cannot set one. ברדוגו's slot (#11) was already recorded from the certified list. |
+| 2026-09-24 | revision 128 — **context, no party: הארץ reports שב"כ head זיני refused to monitor domestic online influence operations against the election, which went to the police; שב"כ keeps foreign actors. Nothing scored.** Noted on the internal-policing sweep item, because the service is resisting a domestic role that ביחד and הדמוקרטים propose to give it for crime. That bears on whether the instrument can be delivered, not on any party's position. CEC chair סולברג's warning about fake accounts is not a party statement either. |
