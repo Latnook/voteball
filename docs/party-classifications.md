@@ -3417,6 +3417,40 @@ votes; read through the fxtwitter API. Outcomes are in הרשימה המשותפ
   is not recorded as the row's position. קריב, רייטן and לזימי spoke at the hearing; their words are about
   עוצמה יהודית and are not scored.
 
+**2026-09-24 — revision 133. כאן 11's *מהצד השני* on גולן (22.09.26, 14 min), a critical montage of the
+chairman's own recorded clips. No axis moved, no tag added.**
+([YouTube, @KAN11](https://www.youtube.com/watch?v=lgSQXzXB1YU), *"הפער של המועמד יאיר גולן"*.) **The
+transcript is YouTube's automatic Hebrew captions**, which mangle words (*מחינת אלי* for מכינת עלי, *פוראים*
+for פורעים), so only short passages are quoted, each with its timestamp so it can be checked against the
+audio. The clips are undated and the programme's framing is its own; **only גולן's words are read**.
+
+- **Two petition quotes now have the chairman's own gloss on record.** On חומש (02:38): the *"תתי אדם"*
+  phrase was *"חריפה מדי"*, and the right term is *"פורעים שפלים"*. This is the line עוצמה יהודית's
+  petition (revision 130) and בן גביר's post (revision 132) cite. On *"מדינה שפויה לא הורגת תינוקות כתחביב"*
+  (07:33–08:02), he says he *"התייחסתי אך ורק לשרי הממשלה"*. בן גביר's version, that גולן said IDF
+  **soldiers** kill babies, is therefore contested by the speaker himself. Neither gloss changes a tag;
+  both are recorded so the rival's paraphrase is not read as the quote.
+- **`anti-settler-violence` (held) corroborated, and the internal-policing sweep touched.** On שב"כ head
+  זיני, one clip says a change government would send him home (03:22–03:36). A later one sets him two tests,
+  pursuing the Qatar affair and *"טרור יהודי ופלסטיני"* (03:57–04:12), and says he would bless him if he
+  proved *"ממלכתית נאמנה לחוק"* (04:18). The programme presents this as a walk-back. **The page records
+  the stable part**: fighting Jewish terror as a test for the service's head. Who heads the service is not
+  a position on any axis.
+- **מכינת עלי: from "close" to "defund", and only the later form is stable.** One clip (04:41–05:10) calls for
+  closing, *"בתהליך מסודר"*, academies that teach *"עליונות יהודית"*. Later ones (06:04–07:18) have
+  institutions that promote racism or LGBT hatred, or oppose women's service, **lose public funding**: *"אני
+  לא מוכן שהמיסים שלי ימנו את"* it. The defunding form matches the row's existing funding-conditionality
+  tags in education (`core-curriculum`), and `lgbt-rights` and `gender-equality` are held. **No new tag**;
+  one academy named in a broadcast is not a programme.
+- **The chairman drops the word "left"; his candidates do not.** גולן (10:58–11:41): *"המושגים האלה של שמאל
+  וימין... לא טובים לנו ואני לא משתמש בזה יותר"*, reframing the contest as democracy against dictatorship.
+  In the same montage לסקי (#6), פינק (#5) and קריב (#3) each call themselves *"שמאל ציוני גאה"*. **Labels
+  are not scored**, and none of this row's tags is the word "left". It is the same finding as revision 65's
+  מרצ nameplate, from the other direction: the positions of both predecessors survive whatever the
+  chairman calls them.
+- **Not scored:** the Hebron human-shield episode from his military career (biography, not policy), and the
+  party's reply (*"מדבר אמת ובאומץ... עיניים על הכדור"*), which is rhetoric.
+
 **2026-09-24 — revision 120. The health paper; corpus 20 → 21. No axis moved, no tag added, `seed.sql`
 unchanged.**
 ([תוכנית בריאות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA.pdf),
@@ -10752,3 +10786,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 130 — **cross-row: the CEC's votes of 23–24.09 from two הארץ news reports (bodies supplied by the repo owner). 24.09: עוצמה יהודית kept 11–10–1, הציונות הדתית וזהות kept 21–3, הדמוקרטים kept 14–2; the Supreme Court hears אבו שחאדה on 2026-10-01. בן גביר's *"אני ממנה. זו הסמכות שלי"* is recorded as the opposite pole of the police-independence content, not tagged. עוצמה יהודית's claim that גולן would close ערוץ 14 is the petitioner's and contradicts the party's own paper. 23.09: הרשימה המשותפת 18–5 and רע"ם 18–5–1 disqualified, כסיף 19–5–2, אבו שחאדה 31–4 with the chair voting. BOTH LISTS STAY ON THE BALLOT, by the repo owner's decision:** the Supreme Court decides, revision 115's base rate is "never upheld", and removal would only be considered on an upheld ruling. Faction vote breakdowns are recorded and score nothing (revision 115's rule). הדמוקרטים: גולן's post (X) is the most direct `jewish-arab-partnership` statement yet (*"שותפים בהנהגת המדינה"*) and supplies the inclusive pole of the coalition-exclusion sweep, with a symmetric red line (disqualify אבו שחאדה and בן גביר, not lists); העבודה's votes match it. ביחד: לפיד called it *"הצגה"*, but one יש עתיד representative voted against disqualifying רע"ם. ישראל ביתנו's *"אין לה מקום בכנסת"* is about eligibility, not coalition, so its exclusion tag is unchanged. |
 | 2026-09-24 | revision 131 — **עמך ישראל: two Facebook statements from the Days of Awe (full texts pasted by the repo owner; Facebook serves only truncated previews; dates not retrievable, before Yom Kippur 2026-09-21). `bibi` held, nothing moves.** To ליברמן: *"רק בתוך ממשלת ימין"* and איזנקוט refused again, the plainest bloc statement since revision 32. To נתניהו: his post called *"כזב ורכילות שווא"* and a call to set *"החרמות ואת האישי"* aside. That is the personal-friction counter-evidence arriving in the same days as the bloc declaration, so the reading holds: the bloc is the right camp, the quarrel is with the man. נתניהו's post could not be read and is not guessed at. |
 | 2026-09-24 | revision 132 — **עוצמה יהודית: two בן גביר posts on X (fxtwitter API). Nothing moves.** Confirms from this row's side that הליכוד and הציונות הדתית asked it to withdraw the petition against הדמוקרטים, and blames *"הגישה המתרפסת"* for the judicial reform's failure (`judicial-overhaul`, held). The claim that הדמוקרטים *"יסגרו את ערוץ 14"* is repeated with no source and stays the petitioner's. Eight hours later he praises נתניהו's UN speech, the coalition-side counterpart to revision 126's sweep. |
+| 2026-09-24 | revision 133 — **הדמוקרטים: כאן 11's *מהצד השני* montage of גולן's own clips (YouTube, 22.09; read from YouTube's automatic captions, short timestamped quotes only). No axis moved, no tag added.** His own glosses on two petition quotes: חומש *"תתי אדם"* was *"חריפה מדי"* (*"פורעים שפלים"*), and *"הורגת תינוקות כתחביב"* referred *"אך ורק לשרי הממשלה"*, which contradicts בן גביר's soldiers version. `anti-settler-violence` corroborated (the Jewish-terror test for the שב"כ head). מכינת עלי: from close to defund, only the later form treated as stable. The chairman drops the word "left" while קריב, פינק and לסקי keep it; labels are not scored. |
