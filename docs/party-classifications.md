@@ -3257,6 +3257,9 @@ owner the next day.)
   *with clear* targets or criteria). **Not reconstructed**; if the party republishes the file, probe it
   against the 92,270 bytes recorded above.
 
+*Lead, revision 122 (2026-09-24): a הארץ column credits גולן with a programme of benefits for discharged
+soldiers. It is not in the corpus, and guessed bucket keys all answer 403. Needs the URL.*
+
 **2026-09-24 — revision 120. The health paper; corpus 20 → 21. No axis moved, no tag added, `seed.sql`
 unchanged.**
 ([תוכנית בריאות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA.pdf),
@@ -4181,6 +4184,54 @@ independent reporting, not the same post again.)
   split reading is the finding**: the right reads the plan as a concession (A and B), this page reads it
   as a claim (all of C), and both are true. **A plan that keeps C and gives up A and B is the +2 band as
   written**, a territorial claim short of sovereignty.
+
+**2026-09-24 — revision 122. TWO TAGS ADDED (16 → 18): `kashrut-liberalization` and
+`municipal-devolution`, both verbatim from the party's own platform, which has carried them through
+every read of this row. No axis moved.**
+The pointer came from a [הארץ polling column](https://www.haaretz.co.il/news/elections/sakran/2026-09-24/ty-article/.premium/000001a0-d400-d9ab-abfd-f7a1ca3a0000)
+(24.09.26, paywalled; body supplied by the repo owner). It urges the bloc to campaign on four
+programmes, one of them *"תוכנית התחבורה והמסחר בשבת של ליברמן"*. **This entry had never mentioned
+Shabbat.** A column is not a source, so the claim was checked against
+[the platform](https://beytenu.org.il/party-platform/) (live, `article:modified_time` 2026-09-16), and
+the platform carries it:
+
+- **`municipal-devolution`**: *"העברת כלל הסמכויות בנושא פתיחת עסקים והפעלת תחבורה ציבורית בשבת לידי
+  הרשויות המקומיות"*, restated in the קווי יסוד as *"הפעלת תחבורה ציבורית בשבת בהתאם להחלטת הרשויות
+  המקומיות"*. The tag's standard on this subject is set by ישר (*"הרחבת העצמאות של רשויות מקומיות... לעצב
+  את השבת במרחב הציבורי"*) and ביחד (*"כל רשות מקומית תחליט בעצמה אם היא רוצה תחבורה ציבורית... בשבת"*).
+  This plank is stronger than both: it transfers **all** the powers, over commerce as well as transport.
+  `communitarian-devolution` is **not** added. The text names local authorities only, and ישר got both
+  tags because its wording named communities as well.
+- **`kashrut-liberalization`**: *"יישום הרפורמה בתחום הכשרות"*, in the religion-and-state section. ישר
+  holds the tag on *"נקדם רפורמות בכשרות"*. Implementing an existing reform is at least as strong as
+  promising reforms, and the tag's four holders now span `economic` +1 to +2.
+- **`religious-pluralism` REFUSED.** *"אימוץ דוח ניסים בנושא הגיור"* and *"השלמת רפורמת הגיור באמצעות
+  רבני הערים"* decentralise **Orthodox** conversion. The tag is for recognising non-Orthodox streams, the
+  line revision 22 drew when it refused ביחד. *"אין לאף אדם או גוף מונופול על היהדות"* is `anti-clerical`,
+  which the row already holds.
+- **Why three reads missed both planks, recorded so it does not happen a fourth time.** The 2026-08-02
+  string-by-string re-verification checked the claims **already in this entry** (*"all four
+  religion-and-state planks"*) against the live page and confirmed them. That checks whether what is
+  written is true. It cannot find what was never written. The platform's religion-and-state section has
+  **ten** planks, and this entry cited five of them. The 2026-09-04 gap audit then looked at the
+  candidate list, not the platform. **Re-verifying an entry's claims is not re-reading its source.**
+  Revision 21 found the same thing on ישר (*"the entry had asserted this position in prose... while the
+  tag was missing — a gap only a corpus read would surface"*), and here it happened on the one row this
+  page called *"verified against a live primary source"*.
+- **The column itself scores nothing.** It is poll analysis: bloc totals of 50–54, and small right-wing
+  lists above the threshold drawing about two seats from the Eisenkot bloc. It also attributes
+  *"צריך לפסול את בל"ד"* to איזנקוט and *"למסור את הגדה לצבא ירדן"* to ליברמן. The second is a hostile
+  paraphrase of revision 117's plan, which gives Jordan Areas A and B, not *"the West Bank"*. The first
+  is a columnist's four-word attribution. The disqualification thread is revision 115's, and nothing
+  here is first-party. It also names *"תוכנית גולן להטבות לחיילים משוחררים"*, a Democrats programme for
+  discharged soldiers. **No such paper is in this page's corpus**, and 22 guessed bucket keys (including
+  *חיילים משוחררים*, *משוחררים*, *צעירים*) all answer **403**. Revision 36's bound holds: the bucket
+  cannot be listed, so the paper, if it exists, needs its URL supplied. Filed as a lead under
+  הדמוקרטים, not a finding.
+
+Verified the page's way: previous `seed.sql` seeded, new one applied on top. The row's tag array went
+**16 → 18** with both present, and it is unchanged when applied again. Backend suite **271 passed**,
+`ruff` clean.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -10368,3 +10419,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 119 — **ביחד: the `personal-security` plan, live since 05:50 UTC today (it `302`ed on 16 and 22 September). No axis moved, no tag added, `seed.sql` unchanged.** The page is truncated as published: it announces six steps, lists seven, and the seventh (police independence) stops mid-sentence. The internal-policing sweep item is strengthened on this row, because the שב"כ now goes into crime nationwide, not just the Negev. The gun-control item is not advanced: illegal-weapons collection is enforcement, and the pole is about licensing. `governance-reform` refused on the truncation, since revision 62 granted it to הדמוקרטים on named mechanisms; trigger: the full step 07. *"נסדיר את ההתישבות"* is spelled with one yod and escapes every `התיישבות` grep. |
 | 2026-09-24 | revision 120 — **הדמוקרטים: the health paper (created 2026-09-22 17:14, the fourth paper of revision 116's batch); corpus 20 → 21. No axis moved, no tag added, `seed.sql` unchanged.** One edition. economic −2 corroborated: health spending raised toward the OECD benchmark, a multi-year health basket, more than 2,000 medical students a year, and the state nursing-care insurance law, which now rests on two papers. No health tag: ביחד's refusal (revision 49) stands, because the difference between the two programmes is already on the economic axis and public-against-private medicine is absent from both. `anti-privatization` refused (private spending named as a symptom, no measure against it). `jewish-arab-partnership` corroborated. The civil-service sentence sits beside the Arab-society text but does not name Arab citizens, so revision 15's question narrows and is not answered. |
 | 2026-09-24 | revision 121 — **ביחד: the `plans` CPT re-enumerated (68 sitemap entries, all status-checked). Nothing new to read.** All 19 live Hebrew plans are cited, including `personal-security` and `religionandstate`, which are live but missing from the sitemap. The five retired plans still `302`; their English and Russian editions were deliberately not read. **`hitech` has gone again**: `/plans/hitech/` now `301`s to the Russian edition, so revision 105's citation opens a translation. That is the third status flip on this site in eight days. |
+| 2026-09-24 | revision 122 — **ישראל ביתנו: `kashrut-liberalization` and `municipal-devolution` ADDED (16 → 18), both verbatim from the live platform, which carried them through every previous read. No axis moved.** Found by checking a הארץ polling column's reference to *"תוכנית התחבורה והמסחר בשבת של ליברמן"* against the platform: *"העברת כלל הסמכויות בנושא פתיחת עסקים והפעלת תחבורה ציבורית בשבת לידי הרשויות המקומיות"* (stronger than ישר's and ביחד's instances) and *"יישום הרפורמה בתחום הכשרות"*. `communitarian-devolution` not added (local authorities only); `religious-pluralism` refused (Orthodox conversion decentralised). The 2026-08-02 re-verification confirmed the five planks the entry cited out of the section's ten, and it could not find the unwritten ones: re-verifying an entry is not re-reading its source. The column scores nothing. Its Golan discharged-soldiers programme is filed as a lead (not in the corpus; 22 guessed bucket keys return 403). Verified 16 → 18 on an already-seeded row; 271 backend tests pass. |
