@@ -3236,6 +3236,52 @@ owner the next day.)
   *with clear* targets or criteria). **Not reconstructed**; if the party republishes the file, probe it
   against the 92,270 bytes recorded above.
 
+**2026-09-24 — revision 120. The health paper; corpus 20 → 21. No axis moved, no tag added, `seed.sql`
+unchanged.**
+([תוכנית בריאות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA.pdf),
+3pp, created **2026-09-22 17:14 IDT**, half an hour after revision 116's three and from the same batch.
+Party-published, supplied by the repo owner. One edition: `(1)`/`(2)` with and without `+` all answer
+**403** against the base key's **200 / 113,103 bytes**.) **The batch is at least four papers, not three.**
+The bucket still refuses listing, so a fifth from that afternoon would be invisible until someone hands
+over its URL.
+
+- **All three axes hold.** פלסטינ, כיבוש, שתי מדינות and סיפוח occur **0 times**. economic **−2** is
+  corroborated by the framing and by every step. The framing is *"נחזיר למדינה את האחריות לבריאות
+  הציבור"*. The steps raise national health spending gradually toward the OECD benchmark, put the
+  annual growth of the health basket into a multi-year framework, supervise the HMOs harder and change
+  their funding formula to reward access in the periphery, add more than **2,000** medical students a
+  year, run a national programme to bring specialists north and south, set up a five-year prevention
+  plan, and legislate a **state nursing-care insurance law** *"ללא תלות ביכולתו הכלכלית"*. That last
+  commitment appears here almost word for word as in revision 106's senior-citizens paper, so it now
+  rests on **two** documents. The one liberalising clause, *"נצמצם חסמים רגולטוריים ובירוקרטיים"*, is
+  scoped to research and innovation, and a −2 needs no defence against it.
+- **No health tag, and a second holder does not change revision 49's refusal.** ביחד's health plan was
+  refused one as a single-document tag and was not even queued. There are now two health programmes, but
+  the difference between them is already carried by the economic axis. ביחד (`+1`) leads with
+  regulatory sandboxes and competition; this row (`−2`) leads with state responsibility and public
+  spending. **The dimension that would discriminate, public against private medicine, is absent from
+  both**, and a tag for "improve health care" is the near-universal kind that got
+  `periphery-development` retired.
+- **`anti-privatization` REFUSED.** The paper names *"הוצאה פרטית גבוהה"* as a symptom, but it proposes
+  no measure against private medicine: no שר"פ, no private insurance, no private hospitals. The tag's
+  only holder is הרשימה המשותפת, and a diagnosis is not a policy.
+- **`jewish-arab-partnership` (held, and a family) corroborated in a paper that could easily have left it
+  out.** *"בתי החולים, המרפאות והצוותים הרפואיים הם מהמקומות הבודדים שבהם יהודים וערבים עובדים כתף אל
+  כתף מדי יום... נשמור עליה ונחזק אותה, גם בשגרה וגם בתקופות של מתח ומשבר"*, alongside access in
+  *"החברה הערבית"*.
+- **The same paragraph extends national-civil service tracks inside the health system.** That is
+  `arab-civil-service`, already held since revision 99, and the sentence sits right next to the
+  partnership one. **It does not name Arab citizens**, so it does not answer revision 15's open question
+  about *"אוכלוסיות נוספות"*. It narrows it again, because the service track is placed where the paper is
+  talking about Arab and Jewish staff. That is placement, not text, and it is recorded as placement.
+- **The mental-health step restates, it does not add.** A national inter-ministerial headquarters for
+  mental rehabilitation, proactive early detection, more posts, and statutory recognition of arts
+  therapists all appear in [תוכנית לאומית לשיקום נפשי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%9C%D7%90%D7%95%D7%9E%D7%99%D7%AA+%D7%9C%D7%A9%D7%99%D7%A7%D7%95%D7%9D+%D7%A0%D7%A4%D7%A9%D7%99.pdf)
+  (revision 62), and `welfare-state` is already in `families`. A new Negev hospital, new northern
+  hospitals and a unit to bring back doctors working abroad are recorded; periphery development stays
+  retired.
+
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -10299,3 +10345,4 @@ pass happened, for anyone reading git history.
 | 2026-09-23 | revision 117 — **ישראל ביתנו: ליברמן proposes that Jordan run Areas A and B (ynet + ערוץ 7, one statement quoted identically; כאן supplied by the repo owner past a Cloudflare challenge). No axis moved, no tag added, `seed.sql` unchanged.** The row's first territorial claim in the leader's own voice: territorial contiguity and *"שליטה מוחלטת"* across all of Area C, and the platform's Jordan plank spelled out. `security` +2 now rests on the band's territorial half as well as its doctrine; +3 not reached (control, not sovereignty, and A and B given up). `sovereignty-annexation` refused (revision 52's trigger approached, not met). `no-palestinian-state` and `anti-two-state` refused on ישראל תחילה's implication rule: PA called a terror organisation and Bar-Ilan used as an accusation, but the words are never said. The podcast said B and C; the same-day written post corrected it to A and B (כאן reports the correction independently), and the post is scored. סמוטריץ׳'s *"לגיונות ירדנים"* line answers the withdrawn B-and-C version, since settlements lie in Area C. The Wikipedia-sourced swap paragraph is superseded in part: דרעי confirms the old swap was with the PA, and the partner is now Jordan. Rival reactions (נתניהו, דרעי, סמוטריץ׳) not scored. |
 | 2026-09-23 | revision 118 — **ישר: איזנקוט on picking the bloc's prime minister (כאן 22.09, body supplied by the repo owner past a Cloudflare wall). No axis moved, no tag added, `seed.sql` unchanged.** A second statement at the ישר pole of the rotation sweep item, and this one supplies the procedure: pre-agreed *"כללי יסוד ועקרונות לבחירת המועמד"* and the vote, rejecting a day-after *"פוילשטיק"*. His claim that בנט and ליברמן refuse such rules is a rival's account (revision 44's tier) and is recorded as a lead, not a holder. The reconciliation meeting is anonymous-source reporting. The unnamed *"שמונה מנדטים"* jab is not attributed. The reported hesitation over a photograph with גולן scores nothing on any row and is recorded so it is not read as an exclusion of הדמוקרטים. |
 | 2026-09-24 | revision 119 — **ביחד: the `personal-security` plan, live since 05:50 UTC today (it `302`ed on 16 and 22 September). No axis moved, no tag added, `seed.sql` unchanged.** The page is truncated as published: it announces six steps, lists seven, and the seventh (police independence) stops mid-sentence. The internal-policing sweep item is strengthened on this row, because the שב"כ now goes into crime nationwide, not just the Negev. The gun-control item is not advanced: illegal-weapons collection is enforcement, and the pole is about licensing. `governance-reform` refused on the truncation, since revision 62 granted it to הדמוקרטים on named mechanisms; trigger: the full step 07. *"נסדיר את ההתישבות"* is spelled with one yod and escapes every `התיישבות` grep. |
+| 2026-09-24 | revision 120 — **הדמוקרטים: the health paper (created 2026-09-22 17:14, the fourth paper of revision 116's batch); corpus 20 → 21. No axis moved, no tag added, `seed.sql` unchanged.** One edition. economic −2 corroborated: health spending raised toward the OECD benchmark, a multi-year health basket, more than 2,000 medical students a year, and the state nursing-care insurance law, which now rests on two papers. No health tag: ביחד's refusal (revision 49) stands, because the difference between the two programmes is already on the economic axis and public-against-private medicine is absent from both. `anti-privatization` refused (private spending named as a symptom, no measure against it). `jewish-arab-partnership` corroborated. The civil-service sentence sits beside the Arab-society text but does not name Arab citizens, so revision 15's question narrows and is not answered. |
