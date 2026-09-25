@@ -2850,7 +2850,7 @@ stays retired. The judicial answer is recorded under ישר.
 model he offers is 1973 turned into *"הסכם שלום"*: military achievements should be converted into agreements.
 
 - **`security` stays NULL, and this is the reason it does.** בן ברק is the candidate revision 49
-  recorded as supporting conditional statehood after Saudi normalisation, one slot below שלו (#10), who
+  recorded as supporting conditional statehood after Saudi normalisation, two places below יונתן שלו (#10), who
   opposes it. A diplomatic-conversion argument from him is the dovish half of `internally-split-on-conflict`
   restated, not a party line: it is a candidate's radio interview, and it names no agreement, partner or
   territorial term. The joint national-security plan is still the row's text, and it is silent on statehood.
