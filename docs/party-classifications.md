@@ -1738,6 +1738,34 @@ item in Open questions, where it belongs. **No tag is created.**
 - [A video interview with גוטליב](https://www.ynet.co.il/news/article/rjbf2qm5mx) (24.09): **not read**. The
   page has only a description, which is not a transcript.
 
+**2026-09-25 — revision 137 (cross-row). A הארץ political column ahead of the change-bloc meeting at לפיד's
+home (25.09.26; body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-25/ty-article/.highlight/000001a0-d48c-db4b-a7a5-d6fead070000).) An analysis column: almost every claim is the writer's, an unnamed source's, or a
+rival's, and it is read at those tiers.
+
+- **The "big party" campaign is campaign strategy, not a position.** The column says ישר has run a *"המפלגה
+  הגדולה"* campaign for a week, and that איזנקוט holds that the head of the largest party should form the
+  government. That is revision 118's pole of the rotation sweep item, already recorded in his own words.
+  **The other pole is still not stated first-party.** *"ליברמן ובנט אומרים"* that granting it would cost them
+  seats and send switchers back to הליכוד is the writer's paraphrase, and the one quote (*"מצביע ימני מאריאל"*)
+  is an unnamed *"מקור בגוש"*. That gives the other pole a reason (electoral), not a text. Revision 118's lead
+  is unchanged: it needs ביחד's and ישראל ביתנו's own words.
+- **איזנקוט's "thesis" is the columnist's words, and must never be quoted as his.** The passage from
+  *"כשאני מוציא סמס"* to *"אנחנו מעל 61"* is introduced as what *"עשויה להיות רוח הדברים, אם ייאמרו, באחריות
+  הח"מ"*, a hypothetical speech the writer composed. Its seat numbers (עוצמה יהודית *"על שישה"*, הליכוד 18–20,
+  the bloc at 58–59) are inside that invention and are not recorded as polling. Revision 114's 8–9 for עוצמה
+  יהודית stands.
+- **The disqualifications.** The column says the four change-bloc chairmen agreed a common line supporting the
+  disqualification of אבו שחאדה, and that ליברמן alone supported disqualifying רע"ם. That matches revision 130
+  (גולן's red line; ישראל ביתנו's *"אין לה מקום בכנסת"*) and adds nothing to score.
+- **ישראל ביתנו: `excludes-haredi-and-arab-parties` corroborated, reported.** See that row.
+- **עמך ישראל: נתניהו's reported view that וינטר is *"סגור"* with the other bloc is not scored.** See that row.
+- **עוצמה יהודית: billboards for revision 107's portfolio demands.** See that row.
+- **Not recorded as anything**: the reported שב"כ delay over security for איזנקוט and גולן (context, no party
+  position; revision 128 is the related note), the הנדל–זליכה list's polling, the Haredi parties' distrust of
+  נתניהו (דגל התורה's removal of גפני is already on יהדות התורה's row), and the UN section (revisions 123
+  and 136). A joint photograph with גולן is the same anonymous item revision 118 declined to score.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -2814,6 +2842,16 @@ now tells the confrontation-line council heads it will be *"חלק מהתנאי�
 and fully subsidised arnona discounts (45% residential, 39% business). It is the row's second stated coalition
 condition, after revision 115's repeal of the exemption laws at swearing-in. No tag; `periphery-development`
 stays retired. The judicial answer is recorded under ישר.
+
+**2026-09-25 — revision 138. A bottle thrown at בנט in בני ברק. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-25/ty-article/000001a0-d656-d9ab-abfd-f7f739c70000), 25.09.26;
+body supplied by the repo owner; [בנט on X](https://x.com/naftalibennett/status/2103225533672685615), 24.09
+20:50 UTC, read through the fxtwitter API.) בנט held an open *"פרלמנט עם תלמידי ישיבה חרדים"* at a Bnei Brak
+restaurant. The party says political activists arrived half an hour in and threw two objects, and a bottle hit
+a campaign worker on the head; a man was arrested. **This is an attack on a campaign, not a position.** The
+meeting is outreach, the same kind of fact revision 114 read for עוצמה יהודית's campaign structure: talking to
+yeshiva students does not soften the conscription tags, which rest on the platform and on revision 115's
+*"יבוטלו עם השבעת הממשלה החדשה"*. The post contains only the location and one line, so nothing that was said
+there is on record.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -4531,6 +4569,14 @@ Verified the page's way: previous `seed.sql` seeded, new one applied on top. The
 **2026-09-24 — revision 134. `constitutionalist` ADDED (18 → 19).** From the ynet judicial questionnaire: a full
 constitution by referendum, amendable only by 80 MKs, on the פרידמן–רייכמן–נסים outline the platform already
 cites. The strongest instance of the tag on the page; see the cross-row pass under ישר.
+
+**2026-09-25 — revision 137. `excludes-haredi-and-arab-parties` corroborated, as reported by a הארץ column.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-25/ty-article/.highlight/000001a0-d48c-db4b-a7a5-d6fead070000).) The writer says ליברמן binds himself not to rely on רע"ם even from outside a coalition, and
+that he *"הודיע"* he would not accept יואב סגלוביץ' (רע"ם #2) as the 61st vote or as a minister on רע"ם's behalf.
+The platform's *"אך ורק ממפלגות ציוניות"* already carries the tag, so a paraphrase adds a named case and
+nothing else. The column's personal motive (סגלוביץ' recommended charging ליברמן when he headed police
+investigations) is the writer's reading and is not scored. Revision 135's denial was of a *joint* pledge
+with בנט; this is ליברמן's own line, and the two do not conflict. See the cross-row pass under ישר.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -6535,6 +6581,12 @@ legal finding on eligibility, not a classification.
   the petition, the chairman backs נתניהו on the speech. Revision 126 swept only opposition chairmen; this is
   the coalition side, recorded for completeness. `bibi` needed no support.
 
+**2026-09-25 — revision 137. Billboards for revision 107's portfolio demands. Nothing moves.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-25/ty-article/.highlight/000001a0-d48c-db4b-a7a5-d6fead070000).) A הארץ column reports the campaign's billboards, *"יטפל בהם"* (Defence for בן גביר) and
+*"תדיח אותה"* (Justice for גוטליב, dismissing the יועמ"שית). Dismissing her is already a plank of revision
+107's programme, so the billboards corroborate `judicial-overhaul` (held). The column's claim that נתניהו's
+circle read the demand as בן גביר expecting to lose is unnamed sourcing and is not scored.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -8371,6 +8423,13 @@ ynet judicial questionnaire: *"בית המשפט לקח לעצמו סמכויו�
 appointed *"על בסיס רצון הציבור"*, the Bar's representatives removed from the selection committee, and
 *"צמצום עילת הסבירות"*. That is three planks of the 2023 programme, with no consensual framing and no Basic
 Law: Legislation. See the cross-row pass under ישר.
+
+**2026-09-25 — revision 137. נתניהו's reported view of וינטר. `bibi` held.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-25/ty-article/.highlight/000001a0-d48c-db4b-a7a5-d6fead070000).) A הארץ column
+says נתניהו has told closed meetings that he believes וינטר is *"סגור"* with the other bloc and would complete 61
+for איזנקוט in exchange for Defence, and that he let סמוטריץ' or בן גביר understand Defence was וינטר's if the
+right reached 61. That is a rival's private assessment, reported second-hand from unnamed participants, which
+is below revision 44's tier. The bloc value rests on the row's own words, and revision 131's *"רק בתוך ממשלת
+ימין"* is the latest of them. **Trigger:** וינטר's own statement that he would sit with איזנקוט, or a vote.
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
@@ -10950,3 +11009,5 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 134 — **cross-row: nine ynet links, two of them cross-party questionnaires. THREE TAGS ADDED; no axis moved.** Judicial questionnaire (21.09), read against revisions 20 and 108's boundary: **`constitutionalist` added to ישראל ביתנו (18 → 19)**, for a full constitution by referendum entrenched at 80 MKs, and **to הדמוקרטים (26 → 27)**, for Basic Law: Legislation with a special majority. Both rows held the family and not the tag. **`judicial-overhaul` added to עמך ישראל (8 → 9)**, the row's first judicial position (Bar out of the committee, narrow reasonableness, an extra instance appointed by the public's will). המילואימניקים refused again, with a trigger (override at 61, or the committee handed to the coalition). הליכוד declined questionnaires; עוצמה יהודית's legal platform is pending (trigger). Environment questionnaire (23.09) filed on the sweep item: five answered, six did not; all four change-bloc rows commit to closing בז"ן and restoring the disposables and sweetened-drinks tax; still no tag. The rest: עוצמה יהודית's vote counted 10–19–1 by ynet against הארץ's 11–10–1; ביחד's confrontation-line law is now a coalition condition; the Gottlieb video was not read. |
 | 2026-09-24 | revision 135 — **five links (mako, כאן, three חדשות 13; חדשות 13 is readable only with a link-preview user agent). No axis moved, no tag added, `seed.sql` unchanged.** **חוק התקשורת, never before recorded as ENACTED**, passed in July, and the יועמ"שית now seeks to freeze it; per כאן, קרעי advanced it at נתניהו's request. On the press-freedom sweep item the Likud pole is now a statute, and it differs from הדמוקרטים' paper on the same three instruments: who selects the regulator's council (the ministry's director-general against an independent search committee), structural separation (abolished against restored), and ערוץ 14's news-investment duty (cancelled against enforced). That confirms revision 116's definition on concrete texts; the sweep still needs the other sixteen rows. כחול לבן: an anonymous report of a "retirement with honour" offer to גנץ is not scored; trigger: an actual withdrawal (revision 42's precedent, the repo owner's decision). ישר: חדשות 13 dates revision 118's interview to 17.09. A report that בנט and ליברמן discussed a pledge against any government with רע"ם was denied by both and is not scored. |
 | 2026-09-24 | revision 136 — **ממדאני's reply to נתניהו's UN speech (הארץ live blog, body supplied by the repo owner). Read; nothing scored**, because the mayor of New York is not a party on this ballot. Noted under revision 123 so it is not supplied again. |
+| 2026-09-25 | revision 137 — **cross-row: a הארץ political column before the change-bloc meeting at לפיד's home (body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** Read at the tiers of its sources: writer, unnamed sources, rivals. The ישר "big party" campaign is strategy, and the other pole of the rotation sweep is still only a paraphrase (*"ליברמן ובנט אומרים"*) plus an unnamed source, so revision 118's lead stands. **The איזנקוט "thesis" passage is a speech the columnist composed (*"באחריות הח"מ"*), and neither its words nor its seat numbers may be quoted as his.** ישראל ביתנו: `excludes-haredi-and-arab-parties` corroborated by a reported veto of סגלוביץ' (רע"ם #2) as the 61st vote or a minister. עוצמה יהודית: billboards *"יטפל בהם"* / *"תדיח אותה"* corroborate revision 107. עמך ישראל: נתניהו's reported belief that וינטר is *"סגור"* with the other bloc is a rival's private view, second-hand; `bibi` held. The disqualification line matches revision 130. |
+| 2026-09-25 | revision 138 — **ביחד: a bottle thrown at בנט's Bnei Brak meeting with Haredi yeshiva students (הארץ, body supplied by the repo owner; בנט's post via fxtwitter). Nothing scored.** An attack on a campaign event, and a campaign worker was hurt. The meeting is outreach and does not soften the conscription tags; the post records only the location. |
