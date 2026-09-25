@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-09-17 against jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
+# Generated 2026-09-25 against jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -30,7 +30,7 @@ asm-api:9.10.1-216.va_9256d3b_844b_
 authentication-tokens:1.144.v5ff4a_5ec5c33
 bootstrap5-api:5.3.8-1048.va_c299057e35c
 bouncycastle-api:2.30.1.85.2-304.v4b_5b_62e59a_a_7
-branch-api:2.1280.v0d4e5b_b_460ef
+branch-api:2.1303.v9f3b_95dc329d
 caffeine-api:3.2.4-208.v7e2da_a_7db_82b_
 checks-api:422.vc7e8b_51488c6
 cloudbees-folder:6.1106.v3a_d9a_6d2465e
@@ -52,7 +52,7 @@ gson-api:2.14.0-201.v8eefe5515533
 instance-identity:203.v15e81a_1b_7a_38
 ionicons-api:94.vcc3065403257
 jackson2-api:2.22.2-445.vdc613f1d8012
-jackson3-api:3.2.2-96.v599957900a_1a_
+jackson3-api:3.2.3-101.v69fc84453a_8e
 jackson-annotations2-api:2.22-19.v10a_a_582ea_26e
 jakarta-activation-api:2.1.4-1
 jakarta-mail-api:2.1.5-1
@@ -60,11 +60,11 @@ jakarta-xml-bind-api:4.0.9-19.v2b_a_5b_44d9a_1c
 javax-activation-api:1.2.0-8
 jaxb:2.3.9-143.v5979df3304e6
 job-dsl:3732.v9a_c49a_61a_313
-joda-time-api:2.14.3-200.v65623733c99f
+joda-time-api:2.14.4-206.vc0945a_7c5f95
 jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
-junit:1425.v9c7318dca_96d
+junit:1428.vef95b_fa_89508
 kubernetes:4557.ve746270f672f
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
@@ -105,7 +105,7 @@ workflow-api:1413.v2ff1a_5e720fa_
 workflow-basic-steps:1098.v808b_fd7f8cf4
 workflow-cps:4383.v04fa_a_3d67b_d9
 workflow-durable-task-step:1479.v56e587f413a_7
-workflow-job:1600.v6f36ed83529d
+workflow-job:1602.v2a_70b_80a_2396
 workflow-multibranch:842.v3a_b_59b_57b_e6e
 workflow-scm-step:487.v41313a_96b_65d
 workflow-step-api:724.v538c2362b_dfb_
