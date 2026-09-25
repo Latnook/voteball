@@ -2843,6 +2843,24 @@ and fully subsidised arnona discounts (45% residential, 39% business). It is the
 condition, after revision 115's repeal of the exemption laws at swearing-in. No tag; `periphery-development`
 stays retired. The judicial answer is recorded under ישר.
 
+**2026-09-25 — revision 139. רם בן ברק (#12) on כאן רשת ב': international standing, not Iran, is the
+*"איום קיומי"*. No axis moved, no tag added, `seed.sql` unchanged.** ([כאן live blog](https://www.kan.org.il/content/kan-news/politic/live-1102851/), 25.09.26,
+*הבוקר הזה*; Cloudflare-walled, entry text supplied by the repo owner, only the first two paragraphs.)
+*"אנחנו נמצאים באיום קיומי לא בגלל איראן, ולא בגלל חמאס, ולא בגלל חיזבאללה... בגלל מעמדנו בעולם"*, and the
+model he offers is 1973 turned into *"הסכם שלום"*: military achievements should be converted into agreements.
+
+- **`security` stays NULL, and this is the reason it does.** בן ברק is the candidate revision 49
+  recorded as supporting conditional statehood after Saudi normalisation, one slot below שלו (#10), who
+  opposes it. A diplomatic-conversion argument from him is the dovish half of `internally-split-on-conflict`
+  restated, not a party line: it is a candidate's radio interview, and it names no agreement, partner or
+  territorial term. The joint national-security plan is still the row's text, and it is silent on statehood.
+- **The foreign-relations sweep item gets a first line from this row on the Western-standing side.**
+  *"מאבדים את אחרוני הידידים שלנו"* places ביחד opposite הליכוד on that line, while revision 124 put it on
+  the hawkish side on Qatar. That is what the item's split predicted. Recorded at candidate tier; the sweep
+  still needs party text.
+- ***"האויב הכי גדול של ישראל"* is rhetoric**, and this page does not tag style (revision 30). `anti-indicted-pm`
+  is not what the sentence is about, since it attacks policy rather than the trial.
+
 **2026-09-25 — revision 138. A bottle thrown at בנט in בני ברק. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-25/ty-article/000001a0-d656-d9ab-abfd-f7f739c70000), 25.09.26;
 body supplied by the repo owner; [בנט on X](https://x.com/naftalibennett/status/2103225533672685615), 24.09
 20:50 UTC, read through the fxtwitter API.) בנט held an open *"פרלמנט עם תלמידי ישיבה חרדים"* at a Bnei Brak
@@ -10640,7 +10658,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   decided in one pass.** *(Revision 124, 2026-09-24: ביחד, listed above on the non-far-right
   side, is the most hawkish row on **Qatar**. It would declare Qatar an enemy and expel it from Israel and
   Gaza, and it attacks הליכוד as too soft. The sweep should split Western and European institutions from
-  hostile or mediating states before deciding membership, or one tag will need this row on both sides.)*
+  hostile or mediating states before deciding membership, or one tag will need this row on both sides.)* *(Revision 139, 2026-09-25: the split is borne out on the same row. ביחד's #12 רם בן ברק calls Israel's
+  standing in the world, not Iran, the existential threat, and faults the government for losing *"אחרוני
+  הידידים שלנו"*. That places the row opposite הליכוד on the Western-standing line, at candidate tier.)*
 - **`security 0` now has exactly one holder, יש עתיד `[p]`, and it has never been re-verified.**
   Revision 23 removed the other one after finding a full conflict platform behind it, and the band's
   explanatory note had been built on that wrong example. A `0` asserts a party has genuinely taken no
@@ -11011,3 +11031,4 @@ pass happened, for anyone reading git history.
 | 2026-09-24 | revision 136 — **ממדאני's reply to נתניהו's UN speech (הארץ live blog, body supplied by the repo owner). Read; nothing scored**, because the mayor of New York is not a party on this ballot. Noted under revision 123 so it is not supplied again. |
 | 2026-09-25 | revision 137 — **cross-row: a הארץ political column before the change-bloc meeting at לפיד's home (body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** Read at the tiers of its sources: writer, unnamed sources, rivals. The ישר "big party" campaign is strategy, and the other pole of the rotation sweep is still only a paraphrase (*"ליברמן ובנט אומרים"*) plus an unnamed source, so revision 118's lead stands. **The איזנקוט "thesis" passage is a speech the columnist composed (*"באחריות הח"מ"*), and neither its words nor its seat numbers may be quoted as his.** ישראל ביתנו: `excludes-haredi-and-arab-parties` corroborated by a reported veto of סגלוביץ' (רע"ם #2) as the 61st vote or a minister. עוצמה יהודית: billboards *"יטפל בהם"* / *"תדיח אותה"* corroborate revision 107. עמך ישראל: נתניהו's reported belief that וינטר is *"סגור"* with the other bloc is a rival's private view, second-hand; `bibi` held. The disqualification line matches revision 130. |
 | 2026-09-25 | revision 138 — **ביחד: a bottle thrown at בנט's Bnei Brak meeting with Haredi yeshiva students (הארץ, body supplied by the repo owner; בנט's post via fxtwitter). Nothing scored.** An attack on a campaign event, and a campaign worker was hurt. The meeting is outreach and does not soften the conscription tags; the post records only the location. |
+| 2026-09-25 | revision 139 — **ביחד: רם בן ברק (#12) on כאן רשת ב' (live-blog entry supplied by the repo owner past Cloudflare; first two paragraphs only). No axis moved, no tag added, `seed.sql` unchanged.** International standing, not Iran, is the *"איום קיומי"*, and military gains should become agreements, as 1973 did. `security` stays NULL: this is the dovish half of `internally-split-on-conflict`, from the candidate already recorded as supporting conditional statehood, in an interview, with no terms. The foreign-relations sweep item gets this row's first line on the Western-standing side, which confirms revision 124's split (hawk on Qatar, opposite הליכוד on Western standing). *"האויב הכי גדול של ישראל"* is rhetoric and is not tagged. |
