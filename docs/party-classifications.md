@@ -6724,6 +6724,30 @@ legal finding on eligibility, not a classification.
 107's programme, so the billboards corroborate `judicial-overhaul` (held). The column's claim that נתניהו's
 circle read the demand as בן גביר expecting to lose is unnamed sourcing and is not scored.
 
+**2026-09-26 — revision 145. עמיחי אליהו (#4) and the atom bomb, 5 November 2023, the source behind a line in
+revision 144's column. No axis moved, no tag added, `seed.sql` unchanged.**
+([הארץ](https://www.haaretz.co.il/news/politi/2023-11-05/ty-article/.premium/0000018b-9e6f-dbad-abfb-dfffa3d00000), 05.11.23,
+body supplied by the repo owner; his walk-back read first-party from [X](https://x.com/Eliyahu_a/status/1721070203516129426) through the
+fxtwitter API, posted 05.11.23 07:41 UTC, word for word as הארץ quotes it.) On קול ברמה, asked whether he
+meant dropping an atom bomb on Gaza: *"זו דרך אחת"*. Also *"אין בלתי מעורבים"*, no humanitarian aid *"לנאצים"*,
+and on the roughly 240 hostages: *"במלחמה אנחנו משלמים מחירים"*. The same day, #6 יצחק קרויזר said on גלי
+ישראל: *"צריך למחוק את רצועת עזה מהמפה, אין שם חפים מפשע"*.
+
+- **Nothing can move, and it is recorded anyway.** `security` is already +3, the top of the scale, and
+  `hardline-on-gaza` is held on this row's own bills (revision 30). What the story adds is **who says it**:
+  two candidates now in the realistic range (#4 and #6), speaking as a minister and an MK during the war.
+- **The walk-back is first-party and is read as written.** *"ברור לכל בר דעת שהאמירה על אטום היא מטאפורית.
+  אבל בהחלט חייבים תגובה עוצמתית ולא פרופורציונלית לטרור"*. He withdraws the atom bomb as a literal policy
+  and keeps "non-proportional". So nothing here is recorded as a nuclear position.
+- **`opposes-hostage-deals` corroborated, already held**, from a candidate: weighing the hostages' lives
+  against soldiers' is the argument that tag rests on. The walk-back adds that the state *"מחויבת לעשות
+  הכל"* to bring them back, which is a general line and does not reverse it.
+- **The party's own answer was not a retreat.** בן גביר said אליהו had clarified it to him and that
+  *"יש להשמיד את חמאס"*. He did not disown the words. נתניהו suspended אליהו from cabinet meetings and
+  called the words *"מנותקים מהמציאות"*: that is the prime minister's act against a coalition partner's
+  minister, and it scores nothing on הליכוד. לפיד, גלנט, עבאס, Saudi Arabia and the hostage families'
+  forum condemned it; reactions are not positions of this row.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -11201,3 +11225,4 @@ pass happened, for anyone reading git history.
 | 2026-09-26 | revision 142 — **cross-row: eight links (five ynet, three N12). Nothing scored; one list number corrected.** The certified הליכוד list (CEC API) has זוהר at **#12** and אלמוג כהן at **#13**; the page had kept the primary's 13 and 14. אלמוג כהן's interview is candidate tier (unity government only *"not at our partners' expense"*, the Abbas *"גריל"* line noted for the coalition-exclusion sweep). בנט's *"לא תקבל שקל מהמדינה"* on video corroborates `sanctions-on-non-servers`. גולן's post repeats revision 130's individual-yes, lists-no line; טיבי's attack and קריב's reported worry are not scored. The UN-reactions link was already read in revision 134. N12 analysis and the Abramovich column are commentary. The liberal-voters poll and the קריית ביאליק interviews are about voters, not parties. |
 | 2026-09-26 | revision 143 — **ישר: איזנקוט on פגוש את העיתונות (הארץ, body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The principle test is applied to a named row for the first time: no Arab or haredi party accepts the rules *"כרגע"*, *"כולל מנסור עבאס, ולכן הוא לא יהיה חלק מהממשלה הבאה"*. `excludes-anti-zionist-parties` corroborated; it rests on the first principle, not the Hamas clause (revision 100). `excludes-haredi-and-arab-parties` refused: an observation under a principle test is not a stated boycott of both, and he is reported to declare no boycotts. That answers the coalition-exclusion sweep's unverified ישר lead. The fourth rule is called an add-on but is still undated. The reported internal exchange (members asking for a רע"ם pledge; no declaration on בן גביר and סמוטריץ' either) backs revision 85's refusal of אל-היב's account and moves nothing. Nothing on רע"ם. |
 | 2026-09-26 | revision 144 — **cross-row: five הארץ opinion columns (bodies supplied by the repo owner). Nothing scored.** The key sentence of אבו שחאדה's 8 October 2023 article was read in full from the יועמ"שית's opinion (פ"מ 8/26 §42): *"אם עזה הקטנה והנצורה הצליחה לעשות זאת וברמה הזו, הרי שאחרים יכולים לעשות זאת באופן יעיל ופשוט יותר"*, closing a paragraph about intelligence penetration. N12's version (quoted in revision 101) and the pro-אבו שחאדה column each cut it from a different end; revision 101's quote now points to the full text. Both columns read it the same way and differ only in judgment. The "Hamas terminology" claim is answered by the expert opinion on the quotation marks; the late-7-October dating is the writer's inference. 2023 quotes from גלנט, כ"ץ, בן גביר, עמיחי אליהו and גולן are individuals' words relayed by a columnist. The change-bloc letter is advice; the הרצוג/אזריה column concerns a President who is not on the ballot; the fifth column was revision 140. |
+| 2026-09-26 | revision 145 — **עוצמה יהודית: עמיחי אליהו (#4) on an atom bomb for Gaza, 05.11.23 (הארץ, body supplied by the repo owner; his walk-back read first-party from X via fxtwitter). No axis moved, no tag added, `seed.sql` unchanged.** `security` is already +3 and `hardline-on-gaza` is held on the party's bills; the story adds that #4 and #6 (קרויזר, *"למחוק את רצועת עזה מהמפה"*) said it in the war as minister and MK. The walk-back calls the atom line a metaphor and keeps *"לא פרופורציונלית"*, so no nuclear position is recorded. His *"במלחמה אנחנו משלמים מחירים"* on the hostages corroborates `opposes-hostage-deals`. בן גביר did not disown him; נתניהו's cabinet suspension scores nothing on הליכוד. |
