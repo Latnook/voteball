@@ -8965,7 +8965,8 @@ majority; אבו שחאדה retracts a 2023 article. No axis moved, no tag added
 - **סאמי אבו שחאדה's retraction scores nothing, and the tier is worth stating because he is not an
   ordinary candidate.** The בל"ד chair, whose party is a component of this row, wrote on 8 October
   2023 that the attack was *"אירוע היסטורי חשוב מבחינה צבאית, מדינית ואסטרטגית"* and that
-  *"אם עזה הקטנה והנצורה הצליחה לעשות זאת… אחרים יכולים לעשות זאת בצורה יותר קלה"*. He now says
+  *"אם עזה הקטנה והנצורה הצליחה לעשות זאת… אחרים יכולים לעשות זאת בצורה יותר קלה"* *(N12's rendering,
+  cut from its paragraph, which is about intelligence penetration; the full sentence is in revision 144)*. He now says
   *"אילו הייתי מודע לממדי הזוועות בעת כתיבת המאמר, לא הייתי מפרסם אותו"*. **A component party's
   chair is closer to a party position than a #40 candidate is, and it is still an individual's
   three-year-old article and his retraction of it** — the candidate-is-not-a-position rule, applied
@@ -9154,6 +9155,48 @@ expected to appeal the עוצמה יהודית decision.
   than its `excludes-haredi-and-arab-parties` tag: *"כל מפלגה שמתנגדת לכך [חיסול חמאס כיעד מרכזי] אין לה
   מקום בכנסת"*. That is a statement about **eligibility for the Knesset**, not about coalition partners.
   Revision 115 already separated those two subjects on ביחד's row, and the tag stays where it is.
+
+**2026-09-26 — revision 144 (cross-row). Five הארץ opinion columns (23–24.09.26; bodies supplied by the repo
+owner). Nothing scored. But the sentence at the centre of the אבו שחאדה case was read in full for the first
+time, and this page had been quoting half of it.** The columns: against אבו שחאדה
+([1](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.premium/000001a0-cd24-d688-a7b4-cd7ecc0b0000)), for him
+([2](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.premium/000001a0-ceea-de22-a3b8-fefa38e50000)), a letter to the
+change-bloc leaders ([3](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.highlight/000001a0-ce0e-d72e-a7e0-febff2c70000)), הרצוג and
+אזריה ([4](https://www.haaretz.co.il/opinions/2026-09-23/ty-article-opinion/.premium/000001a0-cde3-d4d3-a1b0-edfbc8980000)), and
+[5](https://www.haaretz.co.il/opinions/2026-09-23/ty-article-opinion/.premium/000001a0-ce1e-de22-a3b8-fe5eef7b0000), already read as revision 140.
+
+- **The sentence, from the יועמ"שית's opinion** ([פ"מ 8/26](https://img.haarets.co.il/bs/000001a0-c8e3-de5d-a5fa-d9fbf09d0000/b7/61/803fc88c4b229355e70a3943a9b9/ds.pdf) §42,
+  which quotes the whole article in Hebrew translation; re-fetched today). It closes the article's third
+  note, which is about Israeli intelligence: *"ניתן למנוע מהם לחדור למדינותינו, למפלגותינו ולתנועותינו
+  הפוליטיות – וזאת אם קיים הרצון ונתארגן באופן הנכון. יתרה מזו, אם עזה הקטנה והנצורה הצליחה לעשות זאת
+  וברמה הזו, הרי שאחרים יכולים לעשות זאת באופן יעיל ופשוט יותר"*.
+- **Both short versions cut it, from opposite ends.** N12's, which revision 101 quoted, keeps the conclusion
+  and drops the paragraph, so it reads as a call to repeat the attack. Column 2 stops at *"וברמה הזאת"* and
+  drops *"באופן יעיל ופשוט יותר"*. Read in its paragraph, *"זאת"* is keeping intelligence out, and column 1
+  reads it that way too (*"מתפעם מהצלחת הארגון למנוע חדירה מודיעינית אליו"*). **So the two columns agree on
+  what the sentence says and disagree only on how to judge it**, and judging it is not this page's job.
+  Revision 101's quote now points here.
+- **Column 1's two factual claims, recorded against the opinion.** That the article *"מאמץ את הטרמינולוגיה
+  החמאסית"*: the title puts *"טופאן אלאקצא"* in quotation marks, which the respondent's expert (פרופ' אסעד
+  גאנם, attached to his reply) reads as quoting the term, not adopting it. The page picks neither. That it was
+  finished late on 7 October: the article does say ביידן gave Israel *"אור ירוק... לנקום בכל עמנו בעזה"*,
+  but the hour the writer works out from that is his inference. It bears on how far the court believes the
+  affidavit, not on this row, and is not checked. The affidavit wording column 1 quotes matches the one
+  revision 102 read.
+- **Column 2's quotes about other rows, not scored.** גלנט, כ"ץ and בן גביר in 2023; עמיחי אליהו (עוצמה
+  יהודית #4) on an atom bomb; גולן on starving Gaza, and his later *"הימים המיידיים אחרי 7 באוקטובר היו של
+  הלם"*. Each is one person's words from the war's first weeks, passed on by a columnist, not a party
+  programme. הדמוקרטים' `security` −1 rests on its platform, and עוצמה יהודית is already at +3. גולן backing
+  the disqualification is revision 130's red line, already recorded.
+- **Column 3 is advice.** It tells איזנקוט, בנט, ליברמן and לפיד to stop boycotting the Arab parties and to
+  attack נתניהו harder. Its premise, that they all boycott, is the writer's summary; this page records a
+  different ground for each, and revision 143 has ישר's (a principle test, no declared boycott). The
+  Western Wall event, the tunnel and the UN flight are reporting on נתניהו in office, not הליכוד's platform.
+- **Column 4 is about the President, who is not on the ballot.** The positions it lists (נתניהו visiting
+  אזריה's father, בנט's *"אולי טעה"*, כ"ץ working to clear the record, איזנקוט as chief of staff backing the
+  prosecution) are individuals' conduct from 2016 on, summarised without quotes or dates. Not scored.
+- **Column 5's fuller body adds the writer's claim that boycotting Arab parties is what defines the right.**
+  Same tier as revision 140. Nothing.
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
@@ -11157,3 +11200,4 @@ pass happened, for anyone reading git history.
 | 2026-09-26 | revision 141 — **הליכוד: כאן relaying the ניו יורק טיימס on בן זאיד's warning call (read through headless Chromium, matching the text the repo owner pasted). Nothing scored.** Who knew what in 2023 is not a party position (revision 100). The Times says בן זאיד told ברנס he had warned נתניהו, against revision 100's Emirati denial; both recorded, neither settled. כאן's "confirms הארץ" cannot be checked, because the Times' sourcing is not given (revision 89). The pre-war Gaza restraint does not touch `security` +3, which comes from post-7-October conduct (revision 24). טופז לוק's denial is staff tier. Retrieval: `curl` was blocked 8/8, headless Chromium got through first try. |
 | 2026-09-26 | revision 142 — **cross-row: eight links (five ynet, three N12). Nothing scored; one list number corrected.** The certified הליכוד list (CEC API) has זוהר at **#12** and אלמוג כהן at **#13**; the page had kept the primary's 13 and 14. אלמוג כהן's interview is candidate tier (unity government only *"not at our partners' expense"*, the Abbas *"גריל"* line noted for the coalition-exclusion sweep). בנט's *"לא תקבל שקל מהמדינה"* on video corroborates `sanctions-on-non-servers`. גולן's post repeats revision 130's individual-yes, lists-no line; טיבי's attack and קריב's reported worry are not scored. The UN-reactions link was already read in revision 134. N12 analysis and the Abramovich column are commentary. The liberal-voters poll and the קריית ביאליק interviews are about voters, not parties. |
 | 2026-09-26 | revision 143 — **ישר: איזנקוט on פגוש את העיתונות (הארץ, body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The principle test is applied to a named row for the first time: no Arab or haredi party accepts the rules *"כרגע"*, *"כולל מנסור עבאס, ולכן הוא לא יהיה חלק מהממשלה הבאה"*. `excludes-anti-zionist-parties` corroborated; it rests on the first principle, not the Hamas clause (revision 100). `excludes-haredi-and-arab-parties` refused: an observation under a principle test is not a stated boycott of both, and he is reported to declare no boycotts. That answers the coalition-exclusion sweep's unverified ישר lead. The fourth rule is called an add-on but is still undated. The reported internal exchange (members asking for a רע"ם pledge; no declaration on בן גביר and סמוטריץ' either) backs revision 85's refusal of אל-היב's account and moves nothing. Nothing on רע"ם. |
+| 2026-09-26 | revision 144 — **cross-row: five הארץ opinion columns (bodies supplied by the repo owner). Nothing scored.** The key sentence of אבו שחאדה's 8 October 2023 article was read in full from the יועמ"שית's opinion (פ"מ 8/26 §42): *"אם עזה הקטנה והנצורה הצליחה לעשות זאת וברמה הזו, הרי שאחרים יכולים לעשות זאת באופן יעיל ופשוט יותר"*, closing a paragraph about intelligence penetration. N12's version (quoted in revision 101) and the pro-אבו שחאדה column each cut it from a different end; revision 101's quote now points to the full text. Both columns read it the same way and differ only in judgment. The "Hamas terminology" claim is answered by the expert opinion on the quotation marks; the late-7-October dating is the writer's inference. 2023 quotes from גלנט, כ"ץ, בן גביר, עמיחי אליהו and גולן are individuals' words relayed by a columnist. The change-bloc letter is advice; the הרצוג/אזריה column concerns a President who is not on the ballot; the fifth column was revision 140. |
