@@ -6739,8 +6739,9 @@ and on the roughly 240 hostages: *"במלחמה אנחנו משלמים מחיר
 - **The walk-back is first-party and is read as written.** *"ברור לכל בר דעת שהאמירה על אטום היא מטאפורית.
   אבל בהחלט חייבים תגובה עוצמתית ולא פרופורציונלית לטרור"*. He withdraws the atom bomb as a literal policy
   and keeps "non-proportional". So nothing here is recorded as a nuclear position.
-- **`opposes-hostage-deals` corroborated, already held**, from a candidate: weighing the hostages' lives
-  against soldiers' is the argument that tag rests on. The walk-back adds that the state *"מחויבת לעשות
+- **`opposes-hostage-deals` corroborated, already held**, from a candidate. The tag rests on the party's
+  threat to leave the government over the January 2025 deal; weighing the hostages' lives against soldiers'
+  is the same position argued in 2023, before any deal. The walk-back adds that the state *"מחויבת לעשות
   הכל"* to bring them back, which is a general line and does not reverse it.
 - **The party's own answer was not a retreat.** בן גביר said אליהו had clarified it to him and that
   *"יש להשמיד את חמאס"*. He did not disown the words. נתניהו suspended אליהו from cabinet meetings and
