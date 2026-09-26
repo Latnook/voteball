@@ -1852,6 +1852,39 @@ page.
   trading run by local authorities overlap `municipal-devolution` (held by ישר, ביחד and ישראל ביתנו), but no
   party is quoted proposing a separate liberal school stream or tax base. Not filed.
 
+**2026-09-26 — revision 143. איזנקוט on פגוש את העיתונות: רע"ם, by name, will not be in his government. No
+axis moved, no tag added, `seed.sql` unchanged.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-26/ty-article/.premium/000001a0-de92-d9ab-abfd-ffb3ac700000), 26.09.26; premium, **body supplied by the repo owner**.) The interview aired the same day, a
+Saturday. The quotes are first-party. The article's second half, about list members' requests and his answer
+to them, is the reporter's account and is read at that tier.
+
+- **The principle test, applied to a named row for the first time.** *"אני לא רואה כרגע אף מפלגה, ערבית או
+  חרדית, שמקבלת את הכללים האלו – כולל מנסור עבאס, ולכן הוא לא יהיה חלק מהממשלה הבאה"*. Revision 104 had
+  *"אני לא מכיר היום מפלגה ערבית שמקבלת את העקרונות האלו"*, which named no one. `excludes-anti-zionist-parties`
+  is corroborated. He gives the reason for רע"ם as all the rules *"כולל הכלל של הכרה בחמאס"*, but the tag
+  rests on the first principle, not the Hamas clause (revision 100), so which clause he stresses does not matter.
+- **`excludes-haredi-and-arab-parties` REFUSED, even though the sentence now names both groups.** Revision 99
+  defined that tag as a party stating it will sit only in a government without both. This sentence is an
+  observation (*"כרגע"*) under a principle test, and רע"ם is the only party it puts out. The reporter also has
+  him saying he *"אינו מצהיר על חרמות"*. A test that happens to exclude the haredi parties today is still the
+  principle tag, the same reading revision 104 gave for the Arab parties alone. **This answers the unverified
+  ישר lead in the coalition-exclusion sweep** (Open questions): ישר did not adopt ישראל ביתנו's line. It
+  reaches the same parties today by a different rule.
+- **The fourth rule is described as an add-on, and still not dated.** *"שלושה כללים ועוד אחד... הוספתי לזה
+  כלל נוסף"* fits revision 104's *"לפני חודש הכנסתי תנאי נוסף"*. There is still no text of it before 16
+  September, so revision 100's dating question stays open.
+- **The reporter's account, not scored.** After the lists closed, and with the polls falling, list members
+  asked him to declare that ישר will not form a government with רע"ם, closer to בנט's and ליברמן's line. He is
+  reported to have said his position is like theirs, but that such a declaration would push away voters who
+  want to hear how to win, and that he has not declared he won't sit with בן גביר and סמוטריץ' either. **That
+  last point backs revision 85's refusal** of אל-היב's claim that he had excluded them. It moves nothing. On air
+  today he did say Abbas will not be in the government, but through the principles and not as a boycott. The
+  two accounts fit together only on that distinction, which is the one the tag already draws.
+- **רע"ם: nothing**, as in revision 85: a statement about the row by another party. The חדשות 13 poll is a
+  poll of voters.
+- **Retrieval.** The article is paywalled and was not fetched. A web search found no N12 transcript of the
+  interview; a forum headline matches the lead quote and is not cited as a source.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -10514,7 +10547,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   statements, decide the conjunction question once (or split the tag into an Arab half and a haredi
   half), and — the part that matters most — WRITE THE DEFINITION DOWN.** A third candidate is flagged
   and unverified: ישר is reported to have adopted the same line, which has not been checked against a
-  first-party source. **This is the fourth item in the sweep queue**, and the only one whose first
+  first-party source. *(Checked in revision 143: it has not. ישר's exclusion is still the principle test,
+  which today reaches the Arab and haredi parties alike, and the leader says he declares no boycotts.)*
+  **This is the fourth item in the sweep queue**, and the only one whose first
   step is documenting a tag that already exists rather than deciding whether to create one.
 - **The internal-security dimension is unlabelled across the whole vocabulary, and it now has a
   CENTRIST holder — which is what turns it from a far-right descriptor into a vocabulary hole.**
@@ -11121,3 +11156,4 @@ pass happened, for anyone reading git history.
 | 2026-09-25 | revision 140 — **cross-row: a הארץ opinion column, *"אין מרכז/שמאל. כולם ימין"* (23.09, body supplied by the repo owner). Nothing scored.** Its claim that נתניהו, איזנקוט, בנט and ליברמן all oppose a Palestinian state is a journalist's summary and fills no tag: only ישר holds `no-palestinian-state`, ביחד is internally split (revision 139), ישראל ביתנו was refused it in revision 117 because the words are never said, and הליכוד does not hold it. The writer's municipal-autonomy programme overlaps `municipal-devolution` but belongs to no party. |
 | 2026-09-26 | revision 141 — **הליכוד: כאן relaying the ניו יורק טיימס on בן זאיד's warning call (read through headless Chromium, matching the text the repo owner pasted). Nothing scored.** Who knew what in 2023 is not a party position (revision 100). The Times says בן זאיד told ברנס he had warned נתניהו, against revision 100's Emirati denial; both recorded, neither settled. כאן's "confirms הארץ" cannot be checked, because the Times' sourcing is not given (revision 89). The pre-war Gaza restraint does not touch `security` +3, which comes from post-7-October conduct (revision 24). טופז לוק's denial is staff tier. Retrieval: `curl` was blocked 8/8, headless Chromium got through first try. |
 | 2026-09-26 | revision 142 — **cross-row: eight links (five ynet, three N12). Nothing scored; one list number corrected.** The certified הליכוד list (CEC API) has זוהר at **#12** and אלמוג כהן at **#13**; the page had kept the primary's 13 and 14. אלמוג כהן's interview is candidate tier (unity government only *"not at our partners' expense"*, the Abbas *"גריל"* line noted for the coalition-exclusion sweep). בנט's *"לא תקבל שקל מהמדינה"* on video corroborates `sanctions-on-non-servers`. גולן's post repeats revision 130's individual-yes, lists-no line; טיבי's attack and קריב's reported worry are not scored. The UN-reactions link was already read in revision 134. N12 analysis and the Abramovich column are commentary. The liberal-voters poll and the קריית ביאליק interviews are about voters, not parties. |
+| 2026-09-26 | revision 143 — **ישר: איזנקוט on פגוש את העיתונות (הארץ, body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The principle test is applied to a named row for the first time: no Arab or haredi party accepts the rules *"כרגע"*, *"כולל מנסור עבאס, ולכן הוא לא יהיה חלק מהממשלה הבאה"*. `excludes-anti-zionist-parties` corroborated; it rests on the first principle, not the Hamas clause (revision 100). `excludes-haredi-and-arab-parties` refused: an observation under a principle test is not a stated boycott of both, and he is reported to declare no boycotts. That answers the coalition-exclusion sweep's unverified ישר lead. The fourth rule is called an add-on but is still undated. The reported internal exchange (members asking for a רע"ם pledge; no declaration on בן גביר and סמוטריץ' either) backs revision 85's refusal of אל-היב's account and moves nothing. Nothing on רע"ם. |
