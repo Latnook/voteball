@@ -995,6 +995,32 @@ is filed on the press-freedom sweep item (Open questions), where it makes the Li
 exists to add. קרעי on the court's order, *"לבג"צ אין סמכות להקפיא או לפסול חוקים... אינני מתכוון להשתתף
 בהליך"*, is `judicial-overhaul` (held) from a candidate inside the realistic range. The row already carries it.
 
+**2026-09-26 — revision 141. כאן on the ניו יורק טיימס report about בן זאיד's warning call. Nothing
+scored.** ([כאן](https://www.kan.org.il/content/kan-news/defense/1102995/), יחזקאל קורנברג, 25.09.26; body read
+through headless Chromium and confirmed word for word against the text the repo owner pasted.) Per the
+Times, נתניהו did not mention the call at a security meeting on 1 October 2023, and held back a
+pre-emptive strike in Gaza to keep the quiet. It also says בן זאיד told CIA director ויליאם ברנס, months
+later, that he had warned נתניהו. The PM's adviser טופז לוק denied it on רשת ב': *"לא הייתה שיחה מהסוג
+הזה, לא התקבלה אזהרה מהסוג הזה"*.
+
+- **Who knew what is not a position.** Revision 100 settled this for the same story: the page scores no
+  fact about what a leader was told. An allegation about 2023 conduct and an adviser's denial are both
+  claims about events, not about what the party would do.
+- **כאן calls the Times report a confirmation of הארץ's. This page cannot check that.** The article
+  does not say where the Times got the call, so it cannot be told apart from הארץ repeated (revision 89's
+  rule). What it does add is a new claim: בן זאיד himself told ברנס. That sits against the Emirati denial
+  logged in revision 100. Both are recorded; neither is settled.
+- **`security` +3 does not move on the pre-war "quiet" policy.** Holding back a strike in Gaza in
+  October 2023 is a report about the pre-war approach. This row's +3 comes from the government's
+  conduct since 7 October (revision 24), and nothing here changes that.
+- **לוק is staff, not a candidate** (revision 114's tier). His account of how leaders' calls are handled
+  is a factual claim for an inquiry to test. It fits this row's "opposed" entry on the
+  `state-commission-of-inquiry` sweep (Open questions) and changes nothing there.
+- **Retrieval.** `curl` got the Cloudflare page 8 times out of 8 (403, 5.7KB), with the full header set
+  and retries. So revision 89's *"readable on retry"* did not hold today. Headless Chromium
+  (`chromium --headless=new --dump-dom`) got the article on the first try (270KB, headline in the
+  `<title>`). Try it before asking the repo owner for the text.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -11048,3 +11074,4 @@ pass happened, for anyone reading git history.
 | 2026-09-25 | revision 138 — **ביחד: a bottle thrown at בנט's Bnei Brak meeting with Haredi yeshiva students (הארץ, body supplied by the repo owner; בנט's post via fxtwitter). Nothing scored.** An attack on a campaign event, and a campaign worker was hurt. The meeting is outreach and does not soften the conscription tags; the post records only the location. |
 | 2026-09-25 | revision 139 — **ביחד: רם בן ברק (#12) on כאן רשת ב' (live-blog entry supplied by the repo owner past Cloudflare; first two paragraphs only). No axis moved, no tag added, `seed.sql` unchanged.** International standing, not Iran, is the *"איום קיומי"*, and military gains should become agreements, as 1973 did. `security` stays NULL: this is the dovish half of `internally-split-on-conflict`, from the candidate already recorded as supporting conditional statehood, in an interview, with no terms. The foreign-relations sweep item gets this row's first line on the Western-standing side, which confirms revision 124's split (hawk on Qatar, opposite הליכוד on Western standing). *"האויב הכי גדול של ישראל"* is rhetoric and is not tagged. |
 | 2026-09-25 | revision 140 — **cross-row: a הארץ opinion column, *"אין מרכז/שמאל. כולם ימין"* (23.09, body supplied by the repo owner). Nothing scored.** Its claim that נתניהו, איזנקוט, בנט and ליברמן all oppose a Palestinian state is a journalist's summary and fills no tag: only ישר holds `no-palestinian-state`, ביחד is internally split (revision 139), ישראל ביתנו was refused it in revision 117 because the words are never said, and הליכוד does not hold it. The writer's municipal-autonomy programme overlaps `municipal-devolution` but belongs to no party. |
+| 2026-09-26 | revision 141 — **הליכוד: כאן relaying the ניו יורק טיימס on בן זאיד's warning call (read through headless Chromium, matching the text the repo owner pasted). Nothing scored.** Who knew what in 2023 is not a party position (revision 100). The Times says בן זאיד told ברנס he had warned נתניהו, against revision 100's Emirati denial; both recorded, neither settled. כאן's "confirms הארץ" cannot be checked, because the Times' sourcing is not given (revision 89). The pre-war Gaza restraint does not touch `security` +3, which comes from post-7-October conduct (revision 24). טופז לוק's denial is staff tier. Retrieval: `curl` was blocked 8/8, headless Chromium got through first try. |
