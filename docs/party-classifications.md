@@ -1021,6 +1021,51 @@ later, that he had warned נתניהו. The PM's adviser טופז לוק denied 
   (`chromium --headless=new --dump-dom`) got the article on the first try (270KB, headline in the
   `<title>`). Try it before asking the repo owner for the text.
 
+**2026-09-26 — revision 142 (cross-row). Eight links: five ynet, three N12/mako. Nothing scored, and
+one list number on this page is corrected.**
+([ynet, liberal voters' poll](https://www.ynet.co.il/news/elections2026/article/bjsxutbqme) ·
+[ynet, reactions to the UN speech](https://www.ynet.co.il/news/elections2026/article/s1bzwx7qfe) ·
+[ynet, אלמוג כהן interview](https://www.ynet.co.il/news/elections2026/article/yokra14908186) ·
+[ynet, בנט in בני ברק](https://www.ynet.co.il/news/elections2026/article/h1tt0wx5me) ·
+[ynet, קריית ביאליק voters](https://www.ynet.co.il/news/article/bktfrrz9ml) ·
+[N12, גולן on אבו שחאדה](https://www.mako.co.il/news-israel-elections/2026/Article-9225a48b77cd0a1027.htm) ·
+[N12 analysts' live blog, 23.09](https://www.mako.co.il/news-israel-elections/2026/liveblog-424109c123dc0a1027.htm) ·
+[N12, אמנון אברמוביץ' column](https://www.mako.co.il/news-israel-elections/2026/Article-6ccae209e7dc0a1027.htm).
+All read with `curl`; ynet and mako both answered 200 with full bodies.)
+
+- **Correction: on the certified list מיקי זוהר is #12 and אלמוג כהן is #13.** The primary order put them
+  at 13 and 14, and this page kept the primary numbers after revision 99 corrected only the top eleven.
+  Read again from the CEC API (revision 63's method): 12 זוהר מכלוף, 13 כהן אלמוג, 14 שיקלי, 15 מדן, 16 פטר,
+  17 סעדה, 18 כץ חיים, 19 אמסלם, 20 עטייה. ynet's *"המקום ה-13"* matches. Revision 83's note calling זוהר #13
+  is corrected in place.
+- **הליכוד: אלמוג כהן (#13) interviewed. Nothing scored** (candidate tier, revision 49's rule). He says
+  a unity government *"לא יכול לבוא על חשבון השותפים שלנו"*, which fits `bibi`. He says הליכוד must keep the
+  core ministries, which is bargaining. On Arab parties: *"אם מישהו אצלנו היה הולך עם מנסור עבאס הייתי שם
+  אותו על הגריל"*. That is a candidate's line and does not give this row an exclusion tag; it is noted
+  for the coalition-exclusion sweep. A leaked 2021 recording in which he says הליכוד talked to the Joint
+  List then is a five-year-old claim he now plays down; not recorded as a position. His 7 October account
+  (the security chiefs hid information from נתניהו *"בכוונה"*) is the same who-knew-what subject as
+  revision 141 and is not scored.
+- **ביחד: the Bnei Brak incident (revision 138), second outlet.** New here is בנט's own line on video to
+  a right-wing activist: *"מציע לך להתגייס מהר, כי מהרגע שאני ראש ממשלה אתה לא תקבל שקל מהמדינה"*. The
+  chairman, in his own voice. It repeats words this row already carries under `sanctions-on-non-servers`
+  (revision 86), so it is corroboration, not a new tag.
+- **הדמוקרטים: גולן's post answering criticism of the vote to disqualify אבו שחאדה.** First-party. It
+  repeats revision 130's position: disqualify the individual, oppose disqualifying the lists (*"התייצבנו
+  ללא היסוס וללא גמגום נגד פסילת רעם והרשימה המשותפת"*), and Arab citizens are *"לא 'נכס' פוליטי ולא
+  'איום'"*. `jewish-arab-partnership` already held. Two things are new and neither is scored: טיבי calls
+  the vote *"אות קין"* (a rival), and דפנה ליאל reports that קריב, #3, worried it would cost Arab support
+  (a reporter's account of internal debate, not a party statement).
+- **UN-speech reactions (ynet): already read in revision 134**, which filed it as confirming revision 126
+  and adding the coalition's praise. Nothing further.
+- **N12 analysts' blog and אברמוביץ' column: commentary.** הנדל *"לא מתכוון להשלים לנתניהו 61"* and
+  זליכה *"ילך עם מי שייתן לו את משרד האוצר"* are the analysts' reading, already recorded as analysis under
+  המילואימניקים והכלכלית. That וינטר *"מבהיר שהוא בגוש של נתניהו"* fits עמך ישראל's `bibi`. ליברמן's
+  claim of 63 seats is a forecast. The column is opinion throughout.
+- **Voters, not parties.** The ynet/Dialog poll of 500 self-described liberals (ישר 30%, הדמוקרטים 20%,
+  ביחד 14%, ישראל ביתנו 9%, הליכוד 4%) and the קריית ביאליק street interviews say who votes for a party.
+  This page records what the party says. Same rule as the women's-representation survey in revision 100.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -5432,7 +5477,7 @@ investigation; legal sources expect none — *"סרטון בעייתי, אך כ�
   *"בחירות הן לא מלחמת אזרחים, גם לא בסרטוני AI"* is the President and belongs to no row.
 - **מיקי זוהר's citizenship-stripping statement is recorded against הליכוד and NOT tagged.** The הארץ
   column opens on the Culture Minister declaring he would act to revoke the citizenship of the makers
-  of the film *"נז"א"*. He is **הליכוד #13** (already on that row's list). Three reasons it stays
+  of the film *"נז"א"*. He is **הליכוד #12** on the certified list (#13 in the primary order this note first used; corrected in revision 142). Three reasons it stays
   prose: it reaches this page only through the opening clause of a hostile opinion column, not a news
   report; revoking citizenship is not in his portfolio, so it is stated intent and not the ministerial
   *record* revision 77 scored for Ben Gvir; and revision 49's rule stands — candidate advocacy is not a
@@ -11075,3 +11120,4 @@ pass happened, for anyone reading git history.
 | 2026-09-25 | revision 139 — **ביחד: רם בן ברק (#12) on כאן רשת ב' (live-blog entry supplied by the repo owner past Cloudflare; first two paragraphs only). No axis moved, no tag added, `seed.sql` unchanged.** International standing, not Iran, is the *"איום קיומי"*, and military gains should become agreements, as 1973 did. `security` stays NULL: this is the dovish half of `internally-split-on-conflict`, from the candidate already recorded as supporting conditional statehood, in an interview, with no terms. The foreign-relations sweep item gets this row's first line on the Western-standing side, which confirms revision 124's split (hawk on Qatar, opposite הליכוד on Western standing). *"האויב הכי גדול של ישראל"* is rhetoric and is not tagged. |
 | 2026-09-25 | revision 140 — **cross-row: a הארץ opinion column, *"אין מרכז/שמאל. כולם ימין"* (23.09, body supplied by the repo owner). Nothing scored.** Its claim that נתניהו, איזנקוט, בנט and ליברמן all oppose a Palestinian state is a journalist's summary and fills no tag: only ישר holds `no-palestinian-state`, ביחד is internally split (revision 139), ישראל ביתנו was refused it in revision 117 because the words are never said, and הליכוד does not hold it. The writer's municipal-autonomy programme overlaps `municipal-devolution` but belongs to no party. |
 | 2026-09-26 | revision 141 — **הליכוד: כאן relaying the ניו יורק טיימס on בן זאיד's warning call (read through headless Chromium, matching the text the repo owner pasted). Nothing scored.** Who knew what in 2023 is not a party position (revision 100). The Times says בן זאיד told ברנס he had warned נתניהו, against revision 100's Emirati denial; both recorded, neither settled. כאן's "confirms הארץ" cannot be checked, because the Times' sourcing is not given (revision 89). The pre-war Gaza restraint does not touch `security` +3, which comes from post-7-October conduct (revision 24). טופז לוק's denial is staff tier. Retrieval: `curl` was blocked 8/8, headless Chromium got through first try. |
+| 2026-09-26 | revision 142 — **cross-row: eight links (five ynet, three N12). Nothing scored; one list number corrected.** The certified הליכוד list (CEC API) has זוהר at **#12** and אלמוג כהן at **#13**; the page had kept the primary's 13 and 14. אלמוג כהן's interview is candidate tier (unity government only *"not at our partners' expense"*, the Abbas *"גריל"* line noted for the coalition-exclusion sweep). בנט's *"לא תקבל שקל מהמדינה"* on video corroborates `sanctions-on-non-servers`. גולן's post repeats revision 130's individual-yes, lists-no line; טיבי's attack and קריב's reported worry are not scored. The UN-reactions link was already read in revision 134. N12 analysis and the Abramovich column are commentary. The liberal-voters poll and the קריית ביאליק interviews are about voters, not parties. |
