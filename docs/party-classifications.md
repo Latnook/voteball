@@ -1885,6 +1885,52 @@ to them, is the reporter's account and is read at that tier.
 - **Retrieval.** The article is paywalled and was not fetched. A web search found no N12 transcript of the
   interview; a forum headline matches the lead quote and is not cited as a source.
 
+**2026-09-26 — revision 146 (cross-row). The change-bloc leaders sign a joint document at לפיד's home.
+`term-limits` ADDED to ביחד, הדמוקרטים and ישראל ביתנו (4 → 7 holders); no axis moved.**
+The document itself was read, not the reports of it: *מסמך העקרונות של ראשי מפלגות התיקון והתקווה*,
+dated מוצאי שבת 26.09.26, one page, signed by איזנקוט, בנט, גולן, ליברמן and לפיד
+([scan published by הארץ](https://img.haarets.co.il/bs/000001a0-df12-d259-a3b4-df9a33430001/21/af/ea2423774af4b4f8b115f2c263d9/whatsapp-image-2026-09-26-at-21-38-25-1.jpeg)). Reports:
+[הארץ](https://www.haaretz.co.il/news/elections/2026-09-26/ty-article/.premium/000001a0-deb4-d9ab-abfd-ffb52e6a0000) (body supplied by the repo owner) and
+[כאן](https://www.kan.org.il/content/kan-news/politic/1103218/) (read through headless Chromium; plain `curl` got the Cloudflare page).
+**It is the first document on this page signed by several parties at once**, and it binds each of them:
+*"החתומים מטה מתחייבים... לקיים מסמך זה ככתבו וכרוחו"*.
+
+- **What it commits to.** No attacks on a bloc partner or its leader *"מהיום ועד לכינון הממשלה"*; acting
+  together after the election to form the government; and three working groups within 48 hours. Group B
+  *"תגבש את קווי היסוד לממשלה הבאה **ובהם** השוויון בנטל, ועדת חקירה ממלכתית לטבח השבעה באוקטובר, הגבלת
+  כהונה לראש הממשלה, חוקה, ותוכנית פעולה ל-100 הימים הראשונים"*. *ובהם* makes these the content of the
+  basic lines, not topics to discuss.
+- **`term-limits` added to the three signers that did not hold it.** Each item on that list maps to a tag,
+  and every signer already held the others: `universal-conscription` and `constitutionalist` are on all
+  four rows, and the inquiry is on every row's prose (Open questions). Term limits was the one item
+  ביחד, הדמוקרטים and ישראל ביתנו had never stated, and a document their chairmen signed now states it.
+  **Why it is enough without a number:** the tag records limiting a prime minister's tenure; ישר's two
+  terms and כחול לבן's eight years are details of its holders, not its test. **Why it is not a bloc
+  label:** it now sits on four `opposition` rows and three `unaligned` ones (כחול לבן, המילואימניקים
+  והכלכלית, אל הדגל), and not on ישראל תחילה or המפלגה הכלכלית, so it does not rebuild `bloc`, which is
+  what stopped the inquiry tag. Verified on an already-seeded database: before, the three rows had 23, 27
+  and 19 tags without it; after, 24, 28 and 20 with it. Backend suite 271 passed.
+- **The inquiry sweep gets a signed text, and its answer stands.** Four rows put *"ועדת חקירה ממלכתית"*
+  in writing together. The sweep's reason for not tagging (four positions, one boolean, and a membership
+  that is the opposition bloc) is unchanged; this is the strongest evidence yet for the table's
+  "wants one" rows, and ביחד's line there now has a first-party text.
+- **"ציונית וממלכתית" is in the document and in neither report.** The preamble calls the goal *"ממשלת
+  תיקון ובניה מחדש, ציונית וממלכתית"*. הארץ quotes the sentence as *"הקמת ממשלת תיקון היא מטרת העל"*, and
+  כאן as *"החלפת הממשלה היא מטרת-העל"*; both drop the two words. It matters because גולן signed it while
+  his row holds the inclusive pole of the coalition-exclusion sweep (revision 130). **Not scored**: it
+  describes the government, not its partners, and the sweep item already refuses to read *"ציונית"* as an
+  exclusion (the conjunction question under `excludes-haredi-and-arab-parties`). The document says
+  nothing about who may join, or about רע"ם.
+- **The rotation sweep item gets its other pole, first-party.** הארץ quotes בנט, from earlier in the
+  week: *"יום אחרי הבחירות אנחנו מתכנסים כל ראשי הגוש ויוצאים עם מועמד אחד, ואני אכבד את התוצאות"*.
+  That is ביחד choosing the candidate after the vote, the position revision 118 had only as איזנקוט's
+  account of him. The signed document is **silent** on the candidate; that the meeting agreed to defer
+  the choice until after the election is הארץ's report, and it is not scored against ישר's pole. The
+  same report repeats איזנקוט's rotation refusal with *"זה לא דמוקרטי"*.
+- **Not scored:** ליברמן *"בוחן"* a cross-camp coalition (a journalist's line, refused before); גולן's
+  *"מיגור הכהניזם"* before the meeting (rhetoric); כחול לבן's truck outside (*"הגושים תוקעים את
+  ישראל"*, campaigning; it signed nothing and does not count itself in the bloc); בנט's 63 seats.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -2990,6 +3036,8 @@ yeshiva students does not soften the conscription tags, which rest on the platfo
 *"יבוטלו עם השבעת הממשלה החדשה"*. The post contains only the location and one line, so nothing that was said
 there is on record.
 
+**2026-09-26 — revision 146. `term-limits` ADDED (23 → 24 tags; בנט and לפיד both signed), from the joint document the change-bloc leaders signed at לפיד's home: the next government's basic lines include *"הגבלת כהונה לראש הממשלה"*. The row's first statement on term limits. See the cross-row pass under ישר.**
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -3767,6 +3815,8 @@ over its URL.
   hospitals and a unit to bring back doctors working abroad are recorded; periphery development stays
   retired.
 
+
+**2026-09-26 — revision 146. `term-limits` ADDED (27 → 28 tags), from the joint document the change-bloc leaders signed at לפיד's home: the next government's basic lines include *"הגבלת כהונה לראש הממשלה"*. The row's first statement on term limits. See the cross-row pass under ישר.**
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -4714,6 +4764,8 @@ The platform's *"אך ורק ממפלגות ציוניות"* already carries the
 nothing else. The column's personal motive (סגלוביץ' recommended charging ליברמן when he headed police
 investigations) is the writer's reading and is not scored. Revision 135's denial was of a *joint* pledge
 with בנט; this is ליברמן's own line, and the two do not conflict. See the cross-row pass under ישר.
+
+**2026-09-26 — revision 146. `term-limits` ADDED (19 → 20 tags), from the joint document the change-bloc leaders signed at לפיד's home: the next government's basic lines include *"הגבלת כהונה לראש הממשלה"*. The row's first statement on term limits. See the cross-row pass under ישר.**
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -8593,6 +8645,39 @@ right reached 61. That is a rival's private assessment, reported second-hand fro
 is below revision 44's tier. The bloc value rests on the row's own words, and revision 131's *"רק בתוך ממשלת
 ימין"* is the latest of them. **Trigger:** וינטר's own statement that he would sit with איזנקוט, or a vote.
 
+**2026-09-26 — revision 147. וינטר on כאן 11's *חדשות השבת*. No axis moved, no tag added, `seed.sql`
+unchanged, and one tension recorded on the conscription tags.**
+([כאן](https://www.kan.org.il/content/kan-news/politic/1103103/), איילה חסון, 26.09.26; read through headless
+Chromium. The quotes are his; the rest is כאן's summary of the interview.)
+
+- **`bibi` corroborated, and revision 137's trigger went the other way.** Per כאן he will not work with
+  גולן or איזנקוט: *"אי אפשר לממש מדיניות ימין, לכן אמרתי אנחנו בימין"*, and he wants *"ממשלת ימין רחבה ככל
+  שניתן, כדי שהיא לא תישען על הקול של גולדקנופף"*. That last line is a new **shape** for the
+  coalition-exclusion sweep: a government big enough not to **depend** on a partner, not a refusal to sit
+  with one. Recorded there in prose; nothing to mint on one sighting.
+- **The conscription statement pulls against revision 41's.** On 2026-09-02 he said he would not enter a
+  government that did not pass, before it was sworn in, *"חוק ששם סוף להשתמטות"*. Tonight: *"לא צריך חוק
+  גיוס כי חוק הגיוס מחייב את כל מדינת ישראל. כשאומרים חוק גיוס, אומרים חוק פטור מגיוס"*, and the army
+  should take haredim *"בלב חפץ... לאפשר להם להישאר חרדים"*. **The tags hold on both readings**:
+  everyone serving under the existing law is `universal-conscription`, and calling any new law an
+  exemption law is `anti-conscription-exemption`. **What is now uncertain is the mechanism** revision 41
+  called the strongest form any holder states, a law passed before the swearing-in. He may mean a
+  "draft law" (an arrangement with exemptions) and a "service law" (ending evasion) as different things,
+  but the interview does not say so. Recorded, not resolved. `religiosity` −2 rests on the tag, not on
+  the mechanism, and does not move.
+- **`no-palestinian-state` corroborated, already held**: *"זה הבית שלנו ולכן לא תקום פה שום מדינה אחרת חוץ
+  ממדינת ישראל"*.
+- **`territorial-control-gaza` REFUSED again.** *"רק מדינת ישראל אחראית על ביטחון מדינת ישראל - לא לגיונות
+  ולא המצאות עם ממשלת טכנוקרטים בעזה"* rejects foreign forces and a technocratic government. It says who is
+  responsible for security, not that Israel holds territory in Gaza, which is what the tag marks. Revision
+  99 refused it on the same gap. Rejecting international forces is also a lead for the foreign-relations
+  sweep item (Open questions), not scored here.
+- **Emigration, still a bare noun.** *"לא התחילה הגירה מעזה"* complains that it has not started; it names no
+  mechanism, so revision 32's refusal of both emigration tags stands.
+- **Not scored:** the aim to be Defence Minister (a portfolio wish); *"באף זירה לא הכרענו"* and *"אין
+  משילות"* (diagnosis); the claim that the army under איזנקוט lied to the cabinet in 2018 to avoid striking
+  Gaza, and the jab at his appointments (a rival's account, revision 44's tier).
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -10617,6 +10702,8 @@ bought nothing here, because the defect was never in the pixels being measured.
   and unverified: ישר is reported to have adopted the same line, which has not been checked against a
   first-party source. *(Checked in revision 143: it has not. ישר's exclusion is still the principle test,
   which today reaches the Arab and haredi parties alike, and the leader says he declares no boycotts.)*
+  *(Revision 147: a further shape, from עמך ישראל: a right-wing government *"רחבה ככל שניתן, כדי שהיא לא
+  תישען על הקול של גולדקנופף"*. Not depending on a partner is not refusing to sit with one.)*
   **This is the fourth item in the sweep queue**, and the only one whose first
   step is documenting a tag that already exists rather than deciding whether to create one.
 - **The internal-security dimension is unlabelled across the whole vocabulary, and it now has a
@@ -10758,7 +10845,7 @@ bought nothing here, because the defect was never in the pixels being measured.
   | ישראל ביתנו | *"כהחלטה ראשונה בממשלה הבאה"* | ynet 17.09.26 |
   | הדמוקרטים | *"נקים ועדת חקירה ממלכתית"* | platform commitment #5 |
   | כחול לבן | one of four coalition conditions | revision 63 |
-  | ביחד | wants one | revision 51 |
+  | ביחד | wants one | revision 51; signed, with the other three rows above, in the joint document of 26.09.26 (revision 146) |
   | אל הדגל | wants one — *"מי שכשל צריך ללכת הביתה"* | **the sole holder; withdrew 2026-09-08** |
   | המילואימניקים והכלכלית | an inquiry **yes**, a *ממלכתית* one **no** — *"המילה ממלכתית הפכה לתירוץ כדי לא לחקור"* | revision 63 |
   | **עמך ישראל** | **same split, opposite bloc** — attacks the absence of any commission, declines the ממלכתית form, promises *"הפתרון שלה"* | ישראל היום; N12 |
@@ -10821,6 +10908,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   The bloc's candidate should be picked by pre-agreed rules and the vote, against a
   *"פוילשטיק"* the day after. He also CHARACTERISES בנט and ליברמן as refusing such rules. That is a
   rival's account, so it is a lead for the sweep and not a holder.*
+  *Revision 146 (2026-09-26): the other pole, first-party. בנט: *"יום אחרי הבחירות אנחנו מתכנסים כל ראשי
+  הגוש ויוצאים עם מועמד אחד, ואני אכבד את התוצאות"*. Both poles now have a holder's own words; the
+  bloc's signed joint document is silent on the question.*
 - **`sectoral-budgeting` records only the RECEIVING end — SEVENTH item (2026-09-19, revision 99).**
   הדמוקרטים's conscription paper commits to abolishing *"כספים קואליציוניים"*, **₪20bn** over four
   years, *"כסף שחולק לפי כוח פוליטי, קרבה לממשלה ויכולת סחיטה"*. The vocabulary has
@@ -11227,3 +11317,5 @@ pass happened, for anyone reading git history.
 | 2026-09-26 | revision 143 — **ישר: איזנקוט on פגוש את העיתונות (הארץ, body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The principle test is applied to a named row for the first time: no Arab or haredi party accepts the rules *"כרגע"*, *"כולל מנסור עבאס, ולכן הוא לא יהיה חלק מהממשלה הבאה"*. `excludes-anti-zionist-parties` corroborated; it rests on the first principle, not the Hamas clause (revision 100). `excludes-haredi-and-arab-parties` refused: an observation under a principle test is not a stated boycott of both, and he is reported to declare no boycotts. That answers the coalition-exclusion sweep's unverified ישר lead. The fourth rule is called an add-on but is still undated. The reported internal exchange (members asking for a רע"ם pledge; no declaration on בן גביר and סמוטריץ' either) backs revision 85's refusal of אל-היב's account and moves nothing. Nothing on רע"ם. |
 | 2026-09-26 | revision 144 — **cross-row: five הארץ opinion columns (bodies supplied by the repo owner). Nothing scored.** The key sentence of אבו שחאדה's 8 October 2023 article was read in full from the יועמ"שית's opinion (פ"מ 8/26 §42): *"אם עזה הקטנה והנצורה הצליחה לעשות זאת וברמה הזו, הרי שאחרים יכולים לעשות זאת באופן יעיל ופשוט יותר"*, closing a paragraph about intelligence penetration. N12's version (quoted in revision 101) and the pro-אבו שחאדה column each cut it from a different end; revision 101's quote now points to the full text. Both columns read it the same way and differ only in judgment. The "Hamas terminology" claim is answered by the expert opinion on the quotation marks; the late-7-October dating is the writer's inference. 2023 quotes from גלנט, כ"ץ, בן גביר, עמיחי אליהו and גולן are individuals' words relayed by a columnist. The change-bloc letter is advice; the הרצוג/אזריה column concerns a President who is not on the ballot; the fifth column was revision 140. |
 | 2026-09-26 | revision 145 — **עוצמה יהודית: עמיחי אליהו (#4) on an atom bomb for Gaza, 05.11.23 (הארץ, body supplied by the repo owner; his walk-back read first-party from X via fxtwitter). No axis moved, no tag added, `seed.sql` unchanged.** `security` is already +3 and `hardline-on-gaza` is held on the party's bills; the story adds that #4 and #6 (קרויזר, *"למחוק את רצועת עזה מהמפה"*) said it in the war as minister and MK. The walk-back calls the atom line a metaphor and keeps *"לא פרופורציונלית"*, so no nuclear position is recorded. His *"במלחמה אנחנו משלמים מחירים"* on the hostages corroborates `opposes-hostage-deals`. בן גביר did not disown him; נתניהו's cabinet suspension scores nothing on הליכוד. |
+| 2026-09-26 | revision 146 — **cross-row: the change-bloc leaders' signed joint document (the scan itself, plus הארץ and כאן). `term-limits` ADDED to ביחד, הדמוקרטים and ישראל ביתנו (4 → 7 holders); no axis moved.** איזנקוט, בנט, גולן, ליברמן and לפיד commit that the next government's basic lines include equal burden, a state commission of inquiry, *"הגבלת כהונה לראש הממשלה"*, a constitution and a 100-day plan. Every item but term limits was already a tag or prose on all four rows; term limits was new for three of them. Not a bloc label: its holders are now four opposition and three unaligned rows. Verified on an already-seeded database (23/27/19 → 24/28/20 tags); backend suite 271 passed. The inquiry sweep keeps its answer and ביחד's line gains a signed text. The preamble's *"ציונית וממלכתית"*, dropped by both reports, is not read as a coalition exclusion. בנט's *"יום אחרי הבחירות... מועמד אחד"* is the rotation item's other pole, first-party; the document itself is silent on the candidate. |
+| 2026-09-26 | revision 147 — **עמך ישראל: וינטר on כאן 11 (read through headless Chromium). No axis moved, no tag added, `seed.sql` unchanged.** `bibi` corroborated: no work with גולן or איזנקוט, and a right-wing government broad enough not to depend on גולדקנופף (a new shape for the coalition-exclusion sweep). *"לא צריך חוק גיוס... כשאומרים חוק גיוס, אומרים חוק פטור"* pulls against revision 41's law-before-swearing-in; both conscription tags hold on either reading, the mechanism is recorded as uncertain. `no-palestinian-state` corroborated; `territorial-control-gaza` refused again (sole security responsibility is not holding territory); emigration still a bare noun. |
