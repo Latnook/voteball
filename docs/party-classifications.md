@@ -2000,6 +2000,19 @@ plain `curl`.)
 - **The history (אדלשטיין in 2020, זוהר and the arranging committee in 2021) is background**, and it scores
   nothing on הליכוד or רע"ם.
 
+**2026-09-27 — revision 158. A day after the signing, the bloc disagrees about what was agreed. Nothing
+scored.** ([כאן](https://www.kan.org.il/content/kan-news/politic/1103732/), יערה שפירא, 27.09.26 20:33, read through headless Chromium.) Per כאן, בנט and
+ליברמן understood that the candidate question would be left until after the election; ישר's campaign ran ads
+framing the race as נתניהו against איזנקוט the same day; and people around איזנקוט say there was no spoken
+agreement, *"וכי כל הסיכומים נעשו בכתב, במסמך שעליו חתמו"*.
+
+- **It bears out revision 146's choice.** That entry scored the signed text and not הארץ's report that the
+  meeting agreed to defer the choice, because the document is silent on the candidate. Now one side says the
+  document is all there was. Both accounts here are unnamed sources (*"להבנת"*, *"בסביבת"*), so neither is
+  scored, and the rotation sweep item keeps the positions each party stated in its own words.
+- **The ads are campaigning**, consistent with ישר's *"המפלגה הגדולה"* line (revision 137), and ליברמן's
+  *"ידונו בזה בהמשך"* adds nothing to revision 148's *"נדע לבוא עם מועמד אחד מוסכם"*.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -11533,3 +11546,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 154 — **cross-row, environment sweep: a הארץ nature-section feature (body supplied by the repo owner). Nothing scored.** Its search of party sites finds climate plans at הדמוקרטים and ביחד and none in ישר's or ישראל ביתנו's platforms, which matches this page; ישר's questionnaire answers (revision 134) stand beside that. Environment candidates' placements (ישר #39; ביחד #18 and #33; הדמוקרטים #30) are candidate tier. איזנקוט's "weather, not climate" line and גולן's 2023 remark are recorded as statements, not positions; בנט's 2050 pledge is record and fits ביחד's programme. Sweep status unchanged. |
 | 2026-09-27 | revision 155 — **cross-row: an N12 explainer on the change bloc taking the Knesset speakership after the vote (read with `curl`). Nothing scored.** The speaker-and-committee plan is the reporter's reading; the signed document names none of it. טיבי's line is revision 101's, already on הרשימה המשותפת. N12 is the first report to quote the document's *"ציונית וממלכתית"*, confirming the scan. The 2020–21 history is background. |
 | 2026-09-27 | revision 157 — **cross-row: TheMarker on the ₪400m coalition transfer at בג"ץ (body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** סמוטריץ' asked for his own lawyer so as not to accept the term *"כספים קואליציוניים"*, and was refused; `sectoral-budgeting` on הציונות הדתית corroborated from conduct. A new panel member let the transfer stand and the petition was withdrawn; not a party act. לזימי (הדמוקרטים #2) petitioned against it, the opposite pole of the sectoral-budgeting sweep item. פרקש-הכהן (ישר #3) voted against late Civil Administration money on timing grounds; recorded, not tested against `anti-annexation`. |
+| 2026-09-27 | revision 158 — **cross-row: כאן on the bloc disagreeing about what the signing agreed (headless Chromium). Nothing scored.** בנט and ליברמן are said to understand the candidate question as deferred; איזנקוט's circle says only the written document counts, and it is silent on the candidate. Both sides are unnamed, so the rotation item keeps the parties' own words; it bears out revision 146's decision to score the text and not the reported deferral. |
