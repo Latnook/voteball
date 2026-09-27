@@ -2013,6 +2013,39 @@ agreement, *"וכי כל הסיכומים נעשו בכתב, במסמך שעלי
 - **The ads are campaigning**, consistent with ישר's *"המפלגה הגדולה"* line (revision 137), and ליברמן's
   *"ידונו בזה בהמשך"* adds nothing to revision 148's *"נדע לבוא עם מועמד אחד מוסכם"*.
 
+**2026-09-27 — revision 159 (cross-row). הארץ's LGBT questionnaire. `lgbt-rights` ADDED to ישר (28 → 29 tags;
+3 → 4 holders); no axis moved.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-09-27/ty-article-magazine/.premium/000001a0-d394-d9b2-abe7-f7b6f8850000), 27.09.26, body supplied by the repo owner.) הארץ sent the same questions to every party
+expected to pass the threshold. **Three answered: ישר, ביחד and הדמוקרטים.** The rest, parties of nearly two
+thirds of the incoming Knesset per the paper, did not.
+
+- **`lgbt-rights` added to ישר, on the trigger revision 49 set for ביחד**: *"any plan, or any joint list
+  statement, naming the community."* ישר's own quoted words commit it to *"מיסוד זוגיות אזרחית בישראל ותיקון
+  ההפליה הקשורה לזוגיות, הורות ומשפחה"*, and הארץ reports that all three parties committed to a **total ban on
+  conversion therapy**, a law against discrimination in property deals *"בשל נטייה מינית או זהות מגדרית"*, and
+  tolerance guidelines in a Director-General's circular. **The evidence is weaker in kind than ביחד's** (a
+  full `pride` plan): a written reply to a newspaper, mostly paraphrased by it. It is the same kind revision
+  134 accepted from the ynet questionnaires, and the paraphrase is specific (named measures, named grounds),
+  not a gloss. **Trigger to remove it:** ישר's reply text, or a ישר document, that does not say this.
+  Revision 21's caveat stands: *זוגיות אזרחית* is the weaker formulation, and #5 מתן כהנא personally opposes
+  civil marriage; the page scores the party's statement, as it did there.
+- **הדמוקרטים and ביחד: corroborated, both already hold the tag.** Differences recorded: הדמוקרטים commit to
+  civil **marriage** by legislation and to easier permits for LGBT asylum seekers from the West Bank; ביחד to
+  its *"חוק ברית הזוגיות האזרחית"* with registration at the Interior Ministry. A non-answer from everyone else
+  is recorded as a non-answer (revision 134's rule), not as opposition.
+- **הליכוד: government conduct recorded, and the row's split is unchanged.** Per the article: the housing-
+  discrimination bill fell 52–33 in January 2026 with לוין arguing the opposition had not shown the need;
+  קרעי sought rules letting rabbis block LGBT hotlines on "kosher" phones (softened after a fight); מאי גולן's
+  ministry cut municipal LGBT programmes by over 90% in five cities; the Education Ministry under קיש
+  suspended tolerance programmes in 2024 and later restored part of the money. These are acts of הליכוד
+  ministers, and this row is scored from record. **Still no `anti-lgbt`**: the budget cuts come through
+  community organisations' testimony, the Treasury gave the war as its reason for one of them, and the row's
+  recorded split (אוחנה for, שיקלי against) has not been answered by a party statement. **Trigger:** a
+  הליכוד minister or document stating opposition as policy.
+- **Not scored:** פינדרוס (יהדות התורה) in 2023 calling LGBT people more dangerous than ISIS (a 2023
+  candidate statement, relayed); יוראי להב הרצנו (ביחד #18) on his record (candidate tier); the experts'
+  and organisations' views.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -11547,3 +11580,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 155 — **cross-row: an N12 explainer on the change bloc taking the Knesset speakership after the vote (read with `curl`). Nothing scored.** The speaker-and-committee plan is the reporter's reading; the signed document names none of it. טיבי's line is revision 101's, already on הרשימה המשותפת. N12 is the first report to quote the document's *"ציונית וממלכתית"*, confirming the scan. The 2020–21 history is background. |
 | 2026-09-27 | revision 157 — **cross-row: TheMarker on the ₪400m coalition transfer at בג"ץ (body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** סמוטריץ' asked for his own lawyer so as not to accept the term *"כספים קואליציוניים"*, and was refused; `sectoral-budgeting` on הציונות הדתית corroborated from conduct. A new panel member let the transfer stand and the petition was withdrawn; not a party act. לזימי (הדמוקרטים #2) petitioned against it, the opposite pole of the sectoral-budgeting sweep item. פרקש-הכהן (ישר #3) voted against late Civil Administration money on timing grounds; recorded, not tested against `anti-annexation`. |
 | 2026-09-27 | revision 158 — **cross-row: כאן on the bloc disagreeing about what the signing agreed (headless Chromium). Nothing scored.** בנט and ליברמן are said to understand the candidate question as deferred; איזנקוט's circle says only the written document counts, and it is silent on the candidate. Both sides are unnamed, so the rotation item keeps the parties' own words; it bears out revision 146's decision to score the text and not the reported deferral. |
+| 2026-09-27 | revision 159 — **cross-row: הארץ's LGBT questionnaire (body supplied by the repo owner). `lgbt-rights` ADDED to ישר (28 → 29 tags; 3 → 4 holders); no axis moved.** Only ישר, ביחד and הדמוקרטים answered. ישר's quoted commitment (*"מיסוד זוגיות אזרחית... ותיקון ההפליה הקשורה לזוגיות, הורות ומשפחה"*) plus the reported joint commitments (total conversion-therapy ban, anti-discrimination in property deals by sexual orientation or gender identity) meet revision 49's trigger. Weaker in kind than ביחד's plan, the same kind revision 134 accepted; removal trigger written. הליכוד ministers' record (the 52–33 vote, קרעי's hotline rules, מאי גולן's cuts, קיש's paused programmes) is recorded; `anti-lgbt` still not given, trigger written. Verified on an already-seeded database; backend suite 271 passed. |
