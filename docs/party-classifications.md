@@ -1102,6 +1102,62 @@ compilation, so the posts were not checked one by one.) From 5 September to toda
   record that רע"ם would sit in an איזנקוט government, that is רע"ם's own coalition posture and belongs on
   that row. The post itself is a rival's paraphrase and is not evidence of what he said.
 
+**2026-09-27 — revision 166 (cross-row). The 25th Knesset's roll calls on what the rows claim, read from the
+Knesset's own records. `death-penalty-for-terrorists` ADDED to הליכוד (14 → 15 tags) and ישראל ביתנו (21 → 22);
+2 → 4 holders. No axis moved.**
+Source: the Knesset OData API, every MK's recorded vote on about fifty plenum votes, picked by title and, for
+bills with clause-by-clause series, by the vote whose question is *"לקבל את הצעת החוק בקריאה שלישית"* (the last
+vote in a series is often an amendment, and reading it as the bill gives the opposite answer). **Checked
+against known results first**: the deserter-arrests law comes out 58–54, as this page recorded it.
+
+**Rule applied throughout, from revision 165's base rate**: a coalition party voting against an opposition bill
+is discipline, not a position. The sovereignty votes prove it: עוצמה יהודית and הציונות הדתית voted **against**
+sovereignty over ביתר עילית (5–0, 2–0) and the Jordan Valley (בן גביר himself, 2023), because the bills came
+from the opposition. So only votes on a party's **own** side's bills, or votes that cross a line, are read here.
+
+| subject (vote) | date | result | readings that matter |
+|---|---|---|---|
+| death penalty for terrorists (final) | 30.03.26 | 62–48 | הליכוד 31–0, ישראל ביתנו 4–0, ש"ס 10–0, **יהדות התורה 0–4, 1 abstaining** |
+| death penalty (preliminary; first) | 01.03.23; 10.11.25 | 55–9; 39–16 | ישראל ביתנו 6–0 both times, ליברמן for |
+| sovereignty over Judea and Samaria | 22.10.25 | 25–24 | ישראל ביתנו 6–0 (**ליברמן for**); הליכוד 1 for, 1 present; לפיד against |
+| sovereignty over מעלה אדומים | 22.10.25 | 31–9 | ישראל ביתנו 6–0; **יש עתיד 16–0 (לפיד for)**; כחול לבן 5–0 (טרופר, פרקש-הכהן for) |
+| sovereignty over ביתר עילית / Jordan Valley | 31.12.25; 15.03.23 | 8–45; 14–66 | ישראל ביתנו 6–0 both; טרופר for both; פרקש-הכהן, כהנא for the Jordan Valley |
+| religious-courts arbitration (final) | 24.03.26 | 65–41 | **רע"ם 5–0 for (עבאס included)**; טיבי's side for, חד"ש against |
+| rabbinical courts, child support (first; final) | 24.03.25; 17.11.25 | passed | רע"ם 0–2 at first reading, absent at final |
+
+- **`death-penalty-for-terrorists` ADDED to הליכוד and ישראל ביתנו.** הליכוד is scored from record, and the
+  law passed under its government with every Likud vote for it (31–0), so revision 24's rule applies: a party
+  that runs the government and passes it holds it. ישראל ביתנו voted for it at all three stages from the
+  **opposition**, ליברמן personally each time, which no discipline explains. **ש"ס NOT added**: 10–0 for a
+  coalition law is indistinguishable from discipline, and the row has no statement on it. **יהדות התורה broke
+  with the coalition against it** (0–4 and an abstention at the final reading, 0–2 at first reading), the one
+  issue-specific coalition vote in this set; recorded on that row's behalf, no tag (none exists for opposing it).
+- **ישראל ביתנו voted for every sovereignty bill, and `sovereignty-annexation` stays off — deliberately.**
+  Revision 117's trigger was *"Lieberman's own voice"*, and a roll-call vote is at least that: ליברמן voted to
+  apply Israeli law to **all** of Judea and Samaria in October 2025. But his written plan eleven months later
+  (revision 117) gives Areas A and B to a Jordanian confederation and keeps control, not sovereignty, of C.
+  **The two cannot both be his position, and this page scores the latest written text** (revision 117's own
+  rule: a written correction is the position). `security` +2 holds; the contradiction is the finding, and a
+  voter should know the party voted for more than its plan now says. **Trigger:** a YB document or statement
+  after September 2026 that restates sovereignty over Judea and Samaria.
+- **ישר: its candidates voted for sovereignty over named areas, which is the closest its `anti-annexation` has
+  come.** פרקש-הכהן (#3), כהנא (#5) and טרופר (#6), then in המחנה הממלכתי, voted for the Jordan Valley (2023), and
+  פרקש-הכהן and טרופר for מעלה אדומים (2025); טרופר also for ביתר עילית. Revision 104's trigger for +2 names
+  *"בקעת הירדן, the blocs"* **from איזנקוט or a ישר document**; these are candidates' votes under another
+  party's banner, and איזנקוט cast none of them. Not tripped. Sovereignty over a consensus bloc is compatible
+  with the demographic argument the tag rests on; sovereignty over all of Judea and Samaria is what it refuses,
+  and no ישר candidate voted for that.
+- **ביחד: לפיד and 16 יש עתיד MKs voted for sovereignty over מעלה אדומים** and against it over Judea and Samaria.
+  The row's `security` is NULL for want of a joint position; this is a record item on one side of
+  `internally-split-on-conflict`, not a position of the list.
+- **The rest is consistent with what each row claims**, recorded so the check is visible: every row holding
+  `universal-conscription` or `sanctions-on-non-servers` voted for the sanctions bills of Oct 2025 – Feb 2026
+  and against the 2026 exemption and deserter laws; every row holding a state commission of inquiry voted for
+  the opposition's inquiry bills and against the coalition's *"ממלכתית-לאומית"* one; ישראל ביתנו, כחול לבן and
+  the יש עתיד/העבודה MKs voted for civil marriage, Shabbat public transport and term limits (revision 146's
+  `term-limits` now has YB votes from 2023 and 2025 behind it); and ישראל ביתנו voted against both rabbinical-
+  courts laws, as `anti-clerical` says.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -5028,7 +5084,10 @@ revision 139's was.)
   been Zionism (revision 99's *"ממשלה ציונית"*) and, for Knesset eligibility, Hamas (revision 130).
 - **`anti-clerical` corroborated, already held.** The law widening the rabbinic courts' powers is *"אחד
   החוקים שאנחנו רוצים לבטל"*. His claim that רע"ם voted for it with ש"ס and יהדות התורה is a rival's
-  account of a Knesset vote. It is not checked here and scores nothing on רע"ם.
+  account of a Knesset vote. It is not checked here and scores nothing on רע"ם. *(Checked in revision 166
+  against the Knesset's records, and **it holds for the arbitration law**: רע"ם voted 5–0 for its final reading on
+  24.03.2026, עבאס included. It does **not** hold for the child-support law of November 2025, where רע"ם voted
+  against at first reading and was absent at the final vote.)*
 
 **2026-09-27 — revision 163. *משילות — תוכנית ליברמן*, the row's crime-and-governance plan, never read here. No
 axis moved, no tag added, `seed.sql` unchanged.**
@@ -11775,3 +11834,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 163 — **ישראל ביתנו: *משילות — תוכנית ליברמן* read for the first time (party site, 17.09). No axis moved, no tag added.** שב"כ tools against serious crime make the row the internal-security sweep's fourth holder. *"יהוד הגליל"*, land prices tied to service and admission committees for communities of 1,000–1,500 households make the row the demography sweep's third holder and the first from the opposition, after הציונות הדתית and המילואימניקים והכלכלית; still to be decided across rows. |
 | 2026-09-27 | revision 164 — **ביחד: the housing plan (new 27.09) and *ממגילה לחוקה* read. No axis moved, no tag added.** ₪1m per active reservist towards a flat, 100,000 long-term rentals, planning to local authorities; `reservist-focused` and `municipal-devolution` corroborated. The constitution page puts `constitutionalist` on a party text. The research harness's 0–3 "refutation" of this row's Hebrew pride, women and environment plans was a fetch failure: all three are in the live sitemap and were read in revisions 105, 29 and 60. |
 | 2026-09-27 | revision 165 — **cross-row: the 25th Knesset's ten LGBT plenum votes, from the Knesset OData API. `anti-lgbt` ADDED to רע"ם (5 → 6 tags), on the repo owner's decision.** Checked against a known answer first (housing bill 33–52, as הארץ reported). Coalition parties voted against all 35 other opposition bills on the same days, so their "no" is discipline and adds nothing to ש"ס, יהדות התורה or הליכוד; אוחנה voted for all ten. רע"ם voted with the opposition on 25 of 26 other bills but against the conversion-therapy ban at all five readings (2023, 2026): issue-specific. Limits recorded (one issue; absent from the other five votes; no party document), with a trigger. הרשימה המשותפת splits by component (חד"ש for, טיבי against). Verified on an already-seeded database, previous-parties row untouched; backend suite 271 passed. |
+| 2026-09-27 | revision 166 — **cross-row: the 25th Knesset's roll calls against what the rows claim (Knesset OData API, about fifty votes, third-reading votes picked by their stated question). `death-penalty-for-terrorists` ADDED to הליכוד and ישראל ביתנו (2 → 4 holders); no axis moved.** Checked first against the recorded 58–54. Coalition "no" votes on opposition bills are read as discipline (עוצמה יהודית and הציונות הדתית voted against sovereignty bills from the opposition). הליכוד passed the death-penalty law 31–0; ישראל ביתנו voted for it at every stage from the opposition. ש"ס not added (coalition discipline). יהדות התורה voted against the death penalty, the one issue-specific coalition break. ליברמן voted for sovereignty over all of Judea and Samaria (Oct 2025) against his own Sept 2026 plan; the latest written plan is scored, `sovereignty-annexation` stays off with a trigger. ישר candidates voted for Jordan Valley and מעלה אדומים sovereignty; revision 104's trigger not tripped. לפיד and יש עתיד voted for מעלה אדומים sovereignty. Revision 151's claim about רע"ם holds for the arbitration law (5–0 for). Everything else matches what the rows claim. Verified on an already-seeded database; backend suite 271 passed. |
