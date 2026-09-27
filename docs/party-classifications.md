@@ -1094,7 +1094,7 @@ compilation, so the posts were not checked one by one.) From 5 September to toda
 איזנקוט"* and, today, *"מספר 2 של מנסור עבאס"*, and one adding *"רק ליכוד גדול יעצור אותם"*.
 
 - **A claim about another party, repeated, is still a claim about another party.** On ישר it scores nothing
-  (revision 44's tier). It is also contradicted by ישר's own words: יום שבת איזנקוט said רע"ם *"לא יהיה חלק
+  (revision 44's tier). It is also contradicted by ישר's own words: on Saturday איזנקוט said רע"ם *"לא יהיה חלק
   מהממשלה הבאה"* (revision 143), and ישראל ביתנו excludes the Arab parties outright (revision 99).
 - **On הליכוד it is campaign messaging, not a position** (revision 114's tier, like the billboards in
   revision 137). It says nothing about what הליכוד would do in government.
