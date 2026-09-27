@@ -10928,6 +10928,21 @@ bought nothing here, because the defect was never in the pixels being measured.
   plank, means an environment tag would not be a bloc marker. **Still not created**: eleven rows are unread on
   this question, and six of them declined to answer, which is not the same as having no position. A
   non-answer is recorded as a non-answer.
+  **PLATFORMS AND PLACEMENTS, 2026-09-27 (revision 154).** A הארץ feature ([nature section](https://www.haaretz.co.il/nature/2026-09-27/ty-article-magazine/.premium/000001a0-cd70-d06e-afab-fdfdaec40000),
+  27.09.26, body supplied by the repo owner) searched the parties' sites and found climate and environment
+  plans at הדמוקרטים and ביחד, and **no mention at all** in the platforms of ישר and ישראל ביתנו. That
+  matches this page: nothing environmental has turned up in ישר's thirteen documents or ישראל ביתנו's
+  platform. **It does not cancel ישר's questionnaire answers** (closing בז"ן with a budget, the waste law):
+  a party can answer a questionnaire without a plan, and the two are recorded separately. Placements, which
+  are candidate tier and move nothing: ישר's environment candidate גידי זאדא at **#39**; ביחד's יוראי להב
+  הרצנו at **#18** and מטי צרפתי הרכבי at **#33**; הדמוקרטים' יעל כהן פארן at **#30**. Also recorded, and not
+  scored as positions: איזנקוט at a youth event, *"עשיתי טעות קולוסאלית ואמרתי 'מזג אוויר'... תיקנו אותי...
+  'אקלים'. אמרתי שזה נושא שאני מאוד מחשיב אותו"* (a gaffe, not a plan); גולן in December 2023 filing climate
+  under *"אג'נדות שהן לא אג'נדות ישראליות"*, which his party's own climate paper has since overtaken; and בנט's
+  2050 net-zero pledge at the climate summit as prime minister, which is record and fits ביחד's programme.
+  דב חנין's remark about *"כמה ח"כים ממפלגת הציונות הדתית"* denying climate change is a commentator's and
+  scores nothing on that row. **The sweep's status is unchanged**: three rows with programmes, ישר with
+  answers but no plan, and the rest unread or silent.
 - **No gun-control tag exists although `gun-rights` does — FIFTH item in the sweep queue (2026-09-08,
   revision 62), and the only queued gap that is proven real by the vocabulary itself.** הדמוקרטים's
   internal-security paper commits to *"נגביר את הפיקוח על רשיונות נשק ומנגנוני זיהוי מסוכנות בקרב
@@ -11466,3 +11481,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 151 — **ישראל ביתנו: עודד פורר (#4) on כאן רשת ב' (live-blog entry supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** רע"ם is *"ש"ס של הערבים"*, excluded on the same ground as ש"ס and יהדות התורה: `excludes-haredi-and-arab-parties` corroborated, and the first reason from this row that treats the tag's Arab and haredi halves as one criterion (religious-sectoral parties). A candidate's reason, filed as a lead for the conjunction question, not its answer. Repealing the rabbinic-courts law corroborates `anti-clerical`; his claim about רע"ם's vote on it is unchecked and scores nothing on רע"ם. |
 | 2026-09-27 | revision 152 — **ישר: יורם כהן (#2, re-read from the filed list via the CEC API) on X, via fxtwitter. Nothing scored.** He calls the report that נתניהו's adviser יונתן אוריך linked his WhatsApp to a Dubai company's service a serious security event needing a שב"כ check. An attack on a rival's office, not a policy; `anti-indicted-pm` stays off the row on revision 99's reasoning. |
 | 2026-09-27 | revision 153 — **הליכוד: a screenshot compilation of @netanyahu posts, 5–27 September (supplied by the repo owner, not checked post by post). Nothing scored.** At least twelve near-identical posts say איזנקוט will form *"ממשלת שמאל עם יאיר גולן, ליברמן והמפלגות הערביות"*. On ישר it is a rival's claim, contradicted by revision 143 and by ישראל ביתנו's exclusion; on הליכוד it is campaign messaging. Today's variant cites רע"ם's #2 סגלוביץ'; his own words, if found, belong on רע"ם's row. |
+| 2026-09-27 | revision 154 — **cross-row, environment sweep: a הארץ nature-section feature (body supplied by the repo owner). Nothing scored.** Its search of party sites finds climate plans at הדמוקרטים and ביחד and none in ישר's or ישראל ביתנו's platforms, which matches this page; ישר's questionnaire answers (revision 134) stand beside that. Environment candidates' placements (ישר #39; ביחד #18 and #33; הדמוקרטים #30) are candidate tier. איזנקוט's "weather, not climate" line and גולן's 2023 remark are recorded as statements, not positions; בנט's 2050 pledge is record and fits ביחד's programme. Sweep status unchanged. |
