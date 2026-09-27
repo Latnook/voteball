@@ -1952,6 +1952,19 @@ dated מוצאי שבת 26.09.26, one page, signed by איזנקוט, בנט, ג
   *"מיגור הכהניזם"* before the meeting (rhetoric); כחול לבן's truck outside (*"הגושים תוקעים את
   ישראל"*, campaigning; it signed nothing and does not count itself in the bloc); בנט's 63 seats.
 
+**2026-09-27 — revision 152. יורם כהן (#2) on יונתן אוריך's WhatsApp. Nothing scored.**
+([X](https://x.com/YoramCohen_/status/2104142373340979450), 27.09.26 09:33 UTC, read through the fxtwitter API. His rank, **#2**, re-read
+today from the filed list through the CEC API, revision 63's method.) The former שב"כ head calls the report
+that the PM's adviser linked his private WhatsApp to a service run by a Dubai company *"אירוע ביטחוני
+חמור"*, and asks for an immediate שב"כ check and damage assessment. *"ראש ממשלה אחראי היה מרחיק מסביבתו
+יועץ שמעורב בפרשות כאלה מזמן"*.
+
+- **An attack on a rival's office, not a policy.** It says what a check should look for, not what ישר
+  would do about it. The underlying report is not this page's to verify. The Qatar-payments story it leans
+  on is already logged under revisions 125 and 127.
+- **`anti-indicted-pm` stays off this row.** Revision 99 refused it for ישר because the leader's line
+  disqualifies a whole cabinet, not a PM on his indictment, and a #2 attacking an aide does not change that.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -11436,3 +11449,4 @@ pass happened, for anyone reading git history.
 | 2026-09-26 | revision 149 — **עוצמה יהודית: בן גביר on פגוש את העיתונות (N12 transcript, read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** Defence for himself and Justice for גוטליב, to fire the יועמ"שית, restate revision 107 in his own voice. His Defence agenda (looser open-fire rules, *"לעודד הגירה"*, disarming the PA, double soldiers' pay) matches planks and tags the row already has. His claimed cabinet votes against aid trucks and for dismantling the PA fit `hardline-on-gaza` and `anti-oslo`, both held; ליברמן's similar line (revision 148) still does not earn `anti-oslo`. `death-penalty-for-terrorists` corroborated; his account of נתניהו's *"בן גביר צודק"* scores nothing on הליכוד. The unlabelled transcript was attributed line by line. |
 | 2026-09-26 | revision 150 — **הליכוד: the E1 tender deadline moved past election day by the Attorney General's office (הארץ, body supplied by the repo owner). Nothing scored.** Publishing the ~1,200-unit tender is government conduct of the kind `security` +3 rests on (E1's approval is already in the record); the deferral is about election-propaganda rules and is not a party act. הארץ's multi-source report that the government told Germany and Britain E1 would wait, then published anyway, is recorded as reported. Foreign reactions and the מעלה אדומים mayor's petition score nothing. |
 | 2026-09-27 | revision 151 — **ישראל ביתנו: עודד פורר (#4) on כאן רשת ב' (live-blog entry supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** רע"ם is *"ש"ס של הערבים"*, excluded on the same ground as ש"ס and יהדות התורה: `excludes-haredi-and-arab-parties` corroborated, and the first reason from this row that treats the tag's Arab and haredi halves as one criterion (religious-sectoral parties). A candidate's reason, filed as a lead for the conjunction question, not its answer. Repealing the rabbinic-courts law corroborates `anti-clerical`; his claim about רע"ם's vote on it is unchecked and scores nothing on רע"ם. |
+| 2026-09-27 | revision 152 — **ישר: יורם כהן (#2, re-read from the filed list via the CEC API) on X, via fxtwitter. Nothing scored.** He calls the report that נתניהו's adviser יונתן אוריך linked his WhatsApp to a Dubai company's service a serious security event needing a שב"כ check. An attack on a rival's office, not a policy; `anti-indicted-pm` stays off the row on revision 99's reasoning. |
