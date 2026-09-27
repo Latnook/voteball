@@ -1980,6 +1980,26 @@ that the PM's adviser linked his private WhatsApp to a service run by a Dubai co
 - **`anti-indicted-pm` stays off this row.** Revision 99 refused it for ישר because the leader's line
   disqualifies a whole cabinet, not a PM on his indictment, and a #2 attacking an aide does not change that.
 
+**2026-09-27 — revision 155 (cross-row). An N12 explainer on the change bloc taking the Knesset speakership
+after the election. Nothing scored.**
+([N12](https://www.mako.co.il/news-israel-elections/2026/Article-74ab92c6691e0a1026.htm), דביר ג'ברה, 27.09.26 14:48, read from the page's `articleBody` with
+plain `curl`.)
+
+- **The plan it describes is the reporter's reading, not something the bloc said.** Electing a new speaker
+  with 61 votes before a government exists, then controlling the arranging committee, is how the article
+  says the bloc *could* use the gap after the vote. The signed document (revision 146) says only that the
+  leaders will act together *"מיד לאחר הבחירות"*; it names no speaker, committee or bill. The bills the
+  article lists (barring an indicted MK from forming a government, the inquiry, dissolving the Knesset) are
+  its examples. None is scored on any row.
+- **The one first-party line is טיבי's, already recorded** on הרשימה המשותפת's row (revision 101: back a
+  challenger to אוחנה, and *"נעשה יותר מזה"*). The article adds *"נגמר הסיפור. זו שליטה מוחלטת בכנסת"*,
+  which is the same statement.
+- **A third report of the document, and the first that keeps *"ציונית וממלכתית"*.** N12 quotes the preamble
+  in full, where הארץ and כאן dropped the two words (revision 146). That confirms the scan's wording from an
+  independent report.
+- **The history (אדלשטיין in 2020, זוהר and the arranging committee in 2021) is background**, and it scores
+  nothing on הליכוד or רע"ם.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -11482,3 +11502,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 152 — **ישר: יורם כהן (#2, re-read from the filed list via the CEC API) on X, via fxtwitter. Nothing scored.** He calls the report that נתניהו's adviser יונתן אוריך linked his WhatsApp to a Dubai company's service a serious security event needing a שב"כ check. An attack on a rival's office, not a policy; `anti-indicted-pm` stays off the row on revision 99's reasoning. |
 | 2026-09-27 | revision 153 — **הליכוד: a screenshot compilation of @netanyahu posts, 5–27 September (supplied by the repo owner, not checked post by post). Nothing scored.** At least twelve near-identical posts say איזנקוט will form *"ממשלת שמאל עם יאיר גולן, ליברמן והמפלגות הערביות"*. On ישר it is a rival's claim, contradicted by revision 143 and by ישראל ביתנו's exclusion; on הליכוד it is campaign messaging. Today's variant cites רע"ם's #2 סגלוביץ'; his own words, if found, belong on רע"ם's row. |
 | 2026-09-27 | revision 154 — **cross-row, environment sweep: a הארץ nature-section feature (body supplied by the repo owner). Nothing scored.** Its search of party sites finds climate plans at הדמוקרטים and ביחד and none in ישר's or ישראל ביתנו's platforms, which matches this page; ישר's questionnaire answers (revision 134) stand beside that. Environment candidates' placements (ישר #39; ביחד #18 and #33; הדמוקרטים #30) are candidate tier. איזנקוט's "weather, not climate" line and גולן's 2023 remark are recorded as statements, not positions; בנט's 2050 pledge is record and fits ביחד's programme. Sweep status unchanged. |
+| 2026-09-27 | revision 155 — **cross-row: an N12 explainer on the change bloc taking the Knesset speakership after the vote (read with `curl`). Nothing scored.** The speaker-and-committee plan is the reporter's reading; the signed document names none of it. טיבי's line is revision 101's, already on הרשימה המשותפת. N12 is the first report to quote the document's *"ציונית וממלכתית"*, confirming the scan. The 2020–21 history is background. |
