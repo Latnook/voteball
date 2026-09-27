@@ -1102,6 +1102,12 @@ compilation, so the posts were not checked one by one.) From 5 September to toda
   record that רע"ם would sit in an איזנקוט government, that is רע"ם's own coalition posture and belongs on
   that row. The post itself is a rival's paraphrase and is not evidence of what he said.
 
+**2026-09-27 — revision 156. A הארץ TV review mocking ערוץ 14's אראל סג"ל. Nothing scored.**
+([הארץ, ביקורת טלוויזיה](https://www.haaretz.co.il/gallery/television/tv-review/2026-09-27/ty-article/.highlight/000001a0-dee6-d259-a3b4-defe54280000), 27.09.26, body supplied by the repo owner; the clip it links is
+on a third-party X account and was not read.) Its subject is a broadcaster's line after the UN speech,
+*"אם הוא לא ינצח המערב לא ישרוד"*, and the rest is satire. A presenter is not a party, and a critic's
+view of נתניהו is not הליכוד's position. The UN speech itself is revisions 123, 126 and 136.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -11503,3 +11509,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 153 — **הליכוד: a screenshot compilation of @netanyahu posts, 5–27 September (supplied by the repo owner, not checked post by post). Nothing scored.** At least twelve near-identical posts say איזנקוט will form *"ממשלת שמאל עם יאיר גולן, ליברמן והמפלגות הערביות"*. On ישר it is a rival's claim, contradicted by revision 143 and by ישראל ביתנו's exclusion; on הליכוד it is campaign messaging. Today's variant cites רע"ם's #2 סגלוביץ'; his own words, if found, belong on רע"ם's row. |
 | 2026-09-27 | revision 154 — **cross-row, environment sweep: a הארץ nature-section feature (body supplied by the repo owner). Nothing scored.** Its search of party sites finds climate plans at הדמוקרטים and ביחד and none in ישר's or ישראל ביתנו's platforms, which matches this page; ישר's questionnaire answers (revision 134) stand beside that. Environment candidates' placements (ישר #39; ביחד #18 and #33; הדמוקרטים #30) are candidate tier. איזנקוט's "weather, not climate" line and גולן's 2023 remark are recorded as statements, not positions; בנט's 2050 pledge is record and fits ביחד's programme. Sweep status unchanged. |
 | 2026-09-27 | revision 155 — **cross-row: an N12 explainer on the change bloc taking the Knesset speakership after the vote (read with `curl`). Nothing scored.** The speaker-and-committee plan is the reporter's reading; the signed document names none of it. טיבי's line is revision 101's, already on הרשימה המשותפת. N12 is the first report to quote the document's *"ציונית וממלכתית"*, confirming the scan. The 2020–21 history is background. |
+| 2026-09-27 | revision 156 — **הליכוד: a הארץ TV review satirising ערוץ 14's אראל סג"ל on the UN speech (body supplied by the repo owner). Nothing scored.** A presenter is not a party and a critic's view is not a position. |
