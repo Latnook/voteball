@@ -1307,6 +1307,7 @@ evidenced, and do not select by filename.**
   `governance-reform` and `public-service-reform`, both of which this row holds.
 - `gender-equality` — the violence-against-women programme is crime policy in a crime paper.
   הדמוקרטים earned this tag from a dedicated equality paper; the standard should not slip.
+  *(Granted in revision 161 on ישר's dedicated gender-equality programme.)*
 - ~~`welfare-state` — this row runs the opposite doctrine, restated verbatim: *"נבטיח שהעבודה תשתלם
   תמיד יותר מקצבה"*.~~ **Reason struck 2026-09-02 (revision 39) — the conclusion survives, the
   argument does not.** Revision 29 granted the tag to ביחד while leaving that row's identical
@@ -1537,6 +1538,7 @@ both already held, are what that composition corroborates; it states no new posi
   is the כחול לבן line drawn hours earlier and the Bukharan-slot line before that. **This refusal is
   the one that shows the rule is not selective**: it costs a row a tag on the best composition
   evidence the page has seen.
+  *(Granted in revision 161: the programme this refusal asked for now exists.)*
 - **A fourth representation gap, logged not minted.** **אלקס ריף #15** founded **לובי המיליון**, which
   campaigns for FSU immigrants. The vocabulary has `mizrahi-representation`,
   `negev-bedouin-representation` and `arab-representation` and **no Russian-speaking equivalent** —
@@ -2068,6 +2070,51 @@ revision 159's tag now rests on ישר's own text; see there.
   equality, the north, culture, PTSD recovery, reservists, homeland security, the economy and aliyah. Several
   may carry positions this row does not record yet. **Trigger:** read all 17 before this row's tags or axes
   are next changed.
+
+**2026-09-27 — revision 161. ישר's 17 topic pages read in full, the queue revision 160 set. `gender-equality` and
+`free-trade` ADDED (29 → 31 tags); no axis moved.**
+Method: every topic page fetched, and each of the eleven that mirror a principles paper compared sentence by
+sentence against the paper this entry already read. **Those eleven add only introductions**; the one new
+line of substance is a national education council with all four streams represented, including
+*ממלכתי-חרדי*, which `state-haredi-education` (held) already covers. **Five topics are new**: LGBT (revision
+159), gender equality, housing, young people and culture. All 157 position posts map to a topic heading,
+so nothing sits outside them.
+
+- **`gender-equality` ADDED, on the line revisions 21 and 69 drew.** Revision 21 refused it because the
+  only material was *"crime policy in a crime paper"*; revision 69 refused it again on a nearly half-female
+  list because *"it is still a list, not a programme."* [*ישר! לשיוויון מגדרי*](https://yasharwitheisenkot.com/topic/%d7%99%d7%a9%d7%a8-%d7%9c%d7%a9%d7%99%d7%95%d7%95%d7%99%d7%95%d7%9f-%d7%9e%d7%92%d7%93%d7%a8%d7%99/) is the programme:
+  employer transparency against the pay gap, paternity leave alongside maternity leave, women in every IDF
+  role and in senior security posts, enforced representation on public boards, *"מניעת הפרדה באקדמיה"*,
+  harsher penalties for excluding women from public space, women on religious councils and rabbinical
+  electoral bodies, enforcement against *עגינות וסרבנות גט*, and a national headquarters against violence
+  against women. Most of it is not about violence, which is revision 23's granting shape. Fifth holder.
+- **`free-trade` ADDED, and this one was missed, not new.** The economics paper revision 21 read already
+  said *"נבטל חסמי ייבוא ותקנים ייחודיים לישראל שאין להם הצדקה, ונפתח את השוק לייבוא מקביל"*; the topic
+  and the young-people page repeat it. That is the tag's founding text almost word for word (המילואימניקים
+  והכלכלית: *"הסרת חסמי יבוא... התאמת תקני"*). Revision 21 added `agricultural-protectionism` from the same
+  paper and never decided `free-trade`. **The two coexist here because the text does**: the same sentence
+  ends *"תוך שימור ועידוד החקלאות הישראלית"*, general import opening with agriculture carved out. No other
+  row holds both, which is recorded so nobody reads it as a contradiction. Fifth holder.
+- **Recorded in prose, no tag:**
+  - *Rabbinical courts*: the gender page commits to *"החזרת הסטטוס-קוו שהופר... בכל הנוגע לסמכויות בתי הדין
+    הרבניים"*, the same law ישראל ביתנו's פורר wants repealed (revision 151). Fits religiosity −2 and
+    `religious-pluralism`, both held.
+  - *Housing*: taxes on undeveloped land and "ghost apartments", limits on rent rises within a contract,
+    brokerage fees paid by the landlord with a consumer-protection unit to enforce it, planning committees
+    with a professional rather than sectoral majority, and transit-oriented building. Interventionist
+    measures inside a +1 economic row; none makes a tag on its own.
+  - *Young people*: conscript pay up 15% and fighters' up 50% in the third year, and transport subsidies
+    for the young and those who serve *"ולא מגזרים לפי עיוות פוליטי"*. `reservist-focused` and
+    `service-conditioned-citizenship` are held. The page cites a transport plan (*ישר! לתחבורה*) that is
+    not published yet.
+  - *Culture*: independence of the professional culture councils from political interference, and bringing
+    back the state's cultural prizes. A governance position in a culture paper; `statist` is held.
+- **Not re-opened:** `anti-corruption` (refused in revision 21 as near-universal rhetoric; the same corruption
+  section is still the only evidence) and `consumer-protection` (one enforcement unit for brokers is thinner
+  than the tag's holders' programmes).
+
+Verified on an already-seeded database: ישר 29 → 31 tags, `gender-equality` and `free-trade` 4 → 5 holders each.
+Backend suite 271 passed.
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -11608,3 +11655,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 158 — **cross-row: כאן on the bloc disagreeing about what the signing agreed (headless Chromium). Nothing scored.** בנט and ליברמן are said to understand the candidate question as deferred; איזנקוט's circle says only the written document counts, and it is silent on the candidate. Both sides are unnamed, so the rotation item keeps the parties' own words; it bears out revision 146's decision to score the text and not the reported deferral. |
 | 2026-09-27 | revision 159 — **cross-row: הארץ's LGBT questionnaire (body supplied by the repo owner). `lgbt-rights` ADDED to ישר (28 → 29 tags; 3 → 4 holders); no axis moved.** Only ישר, ביחד and הדמוקרטים answered. ישר's quoted commitment (*"מיסוד זוגיות אזרחית... ותיקון ההפליה הקשורה לזוגיות, הורות ומשפחה"*) plus the reported joint commitments (total conversion-therapy ban, anti-discrimination in property deals by sexual orientation or gender identity) meet revision 49's trigger. Weaker in kind than ביחד's plan, the same kind revision 134 accepted; removal trigger written *(superseded by revision 160: ישר's own LGBT programme is the source)*. הליכוד ministers' record (the 52–33 vote, קרעי's hotline rules, מאי גולן's cuts, קיש's paused programmes) is recorded; `anti-lgbt` still not given, trigger written. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-27 | revision 160 — **ישר: the site read in full from its sitemaps (357 URLs). No axis moved; no tag beyond revision 159.** ישר now publishes 17 topic pages and 157 position posts beyond the thirteen documents this entry counts. Its LGBT programme (*ישר! לקהילה הגאה*, posts dated 24.09 16:14 UTC) is the primary source for revision 159's `lgbt-rights`: a conversion-therapy ban law, sexual orientation and gender identity in every anti-discrimination law, a civil-partnership track including same-sex couples. הארץ's *"באופן גורף"* is not in ישר's text. **Revision 154 corrected**: ישר's agriculture paper and housing topic mention climate adaptation, so "no mention at all" was wrong; there is still no environment programme. The other topics are queued for a full read. |
+| 2026-09-27 | revision 161 — **ישר: all 17 topic pages read; `gender-equality` and `free-trade` ADDED (29 → 31 tags); no axis moved.** Eleven topics mirror principles papers already read and add only introductions. Five are new (LGBT, gender equality, housing, young people, culture), and every position post maps to one of them. `gender-equality`: the dedicated programme revisions 21 and 69 said was missing (pay transparency, paternity leave, women in all IDF roles, anti-segregation in academia, agunot). `free-trade`: missed since revision 21, the economics paper's import-barrier sentence matches the tag's founding text; it coexists with `agricultural-protectionism` because the same sentence carves out agriculture. Rabbinical-courts rollback, housing, young people and culture measures recorded in prose. Verified on an already-seeded database; backend suite 271 passed. |
