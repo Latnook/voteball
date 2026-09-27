@@ -4831,6 +4831,24 @@ with בנט; this is ליברמן's own line, and the two do not conflict. See t
   reason: *"בבחירות 2021 הלכנו בחמישה ראשים וניצחנו, בבחירות 2022 הלכנו בראש אחד והפסדנו"*. Revision 118
   said the pole needed ביחד's and ישראל ביתנו's own words. It now has both (בנט in revision 146).
 
+**2026-09-27 — revision 151. עודד פורר (#4) on כאן רשת ב': רע"ם is *"ש"ס של הערבים"*. No axis moved, no tag
+added, `seed.sql` unchanged.**
+([כאן, live blog](https://www.kan.org.il/content/kan-news/politic/live-1103034/), 27.09.26; the entry was **supplied by the repo owner**, as
+revision 139's was.)
+
+- **`excludes-haredi-and-arab-parties` corroborated, and this is the first time the row gives a reason that
+  joins its two halves.** *"מפלגת רע"מ כמפלגה מוסלמית דתית... יש לה הרבה יותר משותף עם ש"ס ויהדות התורה"*,
+  and *"אני לא יכול ללכת למדיניות שבה אני אומר... אני לא רוצה את המפלגות הסקטוריאליות של ש"ס', ואז תבוא
+  מפלגה שתגיד... אני ש"ס של הערבים' וזה בסדר"*. Revision 99 defined the tag from ליברמן's *"ללא... המפלגות
+  הערביות והחרדיות"*, and the sweep item (Open questions) still asks whether its Arab and haredi halves are
+  one criterion or two. פורר's answer is one: **religious-sectoral parties**, with conscription and core
+  studies as the test. **Recorded as a lead for that question, not as its answer**: it is a #4 candidate in
+  an interview, not the chairman or the platform, and the chairman's own ground for excluding רע"ם has
+  been about Hamas (revision 99's announcement) and Zionism.
+- **`anti-clerical` corroborated, already held.** The law widening the rabbinic courts' powers is *"אחד
+  החוקים שאנחנו רוצים לבטל"*. His claim that רע"ם voted for it with ש"ס and יהדות התורה is a rival's
+  account of a Knesset vote. It is not checked here and scores nothing on רע"ם.
+
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
 **Merged with זהות into one ballot line, 2026-09-01.** Smotrich and משה פייגלין signed an agreement
@@ -10793,6 +10811,8 @@ bought nothing here, because the defect was never in the pixels being measured.
   and unverified: ישר is reported to have adopted the same line, which has not been checked against a
   first-party source. *(Checked in revision 143: it has not. ישר's exclusion is still the principle test,
   which today reaches the Arab and haredi parties alike, and the leader says he declares no boycotts.)*
+  *(Revision 151: ישראל ביתנו's #4 עודד פורר joins the two halves under one criterion, religious-sectoral
+  parties, calling רע"ם *"ש"ס של הערבים"*. A candidate's reason, recorded as a lead.)*
   *(Revision 147: a further shape, from עמך ישראל: a right-wing government *"רחבה ככל שניתן, כדי שהיא לא
   תישען על הקול של גולדקנופף"*. Not depending on a partner is not refusing to sit with one.)*
   **This is the fourth item in the sweep queue**, and the only one whose first
@@ -11415,3 +11435,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 148 — **ישראל ביתנו and הדמוקרטים, the morning after the bloc meeting (הארץ, body supplied by the repo owner). `no-palestinian-state` ADDED to ישראל ביתנו (20 → 21 tags; 7 → 8 holders); no axis moved.** ליברמן on גל"צ: *"להכניס ודאות שאין מדינה פלסטינית וחייבים לפרק את הרשות הפלסטינית"*, the chairman's own words that revision 117's trigger asked for. `anti-two-state` and `anti-oslo` still refused: he names neither Oslo nor the framework, so dismantling the PA stays in prose with a trigger. `term-limits` (revision 146) corroborated in his own voice; *"נדע לבוא עם מועמד אחד מוסכם"* puts this row at בנט's rotation pole. גולן on כאן: *"גם מנסור עבאס... יכול להיות בממשלה הבאה וזה לגמרי ראוי"*, corroborating `jewish-arab-partnership` and naming a party for the first time; his office says it is the Democrats' position only and was not raised at the meeting, which confirms revision 146's reading of *"ציונית"*. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-26 | revision 149 — **עוצמה יהודית: בן גביר on פגוש את העיתונות (N12 transcript, read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** Defence for himself and Justice for גוטליב, to fire the יועמ"שית, restate revision 107 in his own voice. His Defence agenda (looser open-fire rules, *"לעודד הגירה"*, disarming the PA, double soldiers' pay) matches planks and tags the row already has. His claimed cabinet votes against aid trucks and for dismantling the PA fit `hardline-on-gaza` and `anti-oslo`, both held; ליברמן's similar line (revision 148) still does not earn `anti-oslo`. `death-penalty-for-terrorists` corroborated; his account of נתניהו's *"בן גביר צודק"* scores nothing on הליכוד. The unlabelled transcript was attributed line by line. |
 | 2026-09-26 | revision 150 — **הליכוד: the E1 tender deadline moved past election day by the Attorney General's office (הארץ, body supplied by the repo owner). Nothing scored.** Publishing the ~1,200-unit tender is government conduct of the kind `security` +3 rests on (E1's approval is already in the record); the deferral is about election-propaganda rules and is not a party act. הארץ's multi-source report that the government told Germany and Britain E1 would wait, then published anyway, is recorded as reported. Foreign reactions and the מעלה אדומים mayor's petition score nothing. |
+| 2026-09-27 | revision 151 — **ישראל ביתנו: עודד פורר (#4) on כאן רשת ב' (live-blog entry supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** רע"ם is *"ש"ס של הערבים"*, excluded on the same ground as ש"ס and יהדות התורה: `excludes-haredi-and-arab-parties` corroborated, and the first reason from this row that treats the tag's Arab and haredi halves as one criterion (religious-sectoral parties). A candidate's reason, filed as a lead for the conjunction question, not its answer. Repealing the rabbinic-courts law corroborates `anti-clerical`; his claim about רע"ם's vote on it is unchecked and scores nothing on רע"ם. |
