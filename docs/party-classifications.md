@@ -1066,6 +1066,27 @@ All read with `curl`; ynet and mako both answered 200 with full bodies.)
   ביחד 14%, ישראל ביתנו 9%, הליכוד 4%) and the קריית ביאליק street interviews say who votes for a party.
   This page records what the party says. Same rule as the women's-representation survey in revision 100.
 
+**2026-09-26 — revision 150. The E1 tender deadline is pushed past election day. Nothing scored.**
+([הארץ](https://www.haaretz.co.il/news/politics/2026-09-26/ty-article/.premium/000001a0-df43-d9ab-abfd-ffe318e70000), 26.09.26, body supplied by the repo owner.) The
+Attorney General's office told the government to move the bid deadline of last month's tender (about 1,200
+units in E1) back by a month, so it falls after the vote, to limit its use as banned election propaganda. A
+second tender, over 2,100 units, is due to open for bids two days before the election.
+
+- **The tender is government conduct, and it is the kind `security` +3 already rests on.** This entry
+  scores הליכוד from its record, and E1's final approval with an acceleration agreement Netanyahu signed
+  himself is already in the list above. Publishing a tender is the next step on the same project, so it
+  corroborates the +3 and moves nothing.
+- **The deferral is a legal adviser's act, not a party's.** It is about election propaganda rules, not about
+  whether E1 gets built, and it says nothing about what הליכוד wants.
+- **The broken assurance is recorded as reported.** הארץ says, from several sources, that the government
+  let Germany and Britain understand E1 would not move before the election, and then published the tender.
+  That is the reverse of the counter-evidence paragraph above, where נתניהו held back annexation bills to
+  avoid angering Washington: here the building went ahead despite the promise. Anonymous sourcing about a
+  private assurance, so it is not scored; the published tender is the fact.
+- **Not scored:** European, Arab and US reactions, the UK trade limits and the US senators' sanctions
+  initiative (other governments' positions). מעלה אדומים mayor גיא יפרח's plan to petition is a
+  municipality's, not a party's.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -11393,3 +11414,4 @@ pass happened, for anyone reading git history.
 | 2026-09-26 | revision 147 — **עמך ישראל: וינטר on כאן 11 (read through headless Chromium). No axis moved, no tag added, `seed.sql` unchanged.** `bibi` corroborated: no work with גולן or איזנקוט, and a right-wing government broad enough not to depend on גולדקנופף (a new shape for the coalition-exclusion sweep). *"לא צריך חוק גיוס... כשאומרים חוק גיוס, אומרים חוק פטור"* pulls against revision 41's law-before-swearing-in; both conscription tags hold on either reading, the mechanism is recorded as uncertain. `no-palestinian-state` corroborated; `territorial-control-gaza` refused again (sole security responsibility is not holding territory); emigration still a bare noun. |
 | 2026-09-27 | revision 148 — **ישראל ביתנו and הדמוקרטים, the morning after the bloc meeting (הארץ, body supplied by the repo owner). `no-palestinian-state` ADDED to ישראל ביתנו (20 → 21 tags; 7 → 8 holders); no axis moved.** ליברמן on גל"צ: *"להכניס ודאות שאין מדינה פלסטינית וחייבים לפרק את הרשות הפלסטינית"*, the chairman's own words that revision 117's trigger asked for. `anti-two-state` and `anti-oslo` still refused: he names neither Oslo nor the framework, so dismantling the PA stays in prose with a trigger. `term-limits` (revision 146) corroborated in his own voice; *"נדע לבוא עם מועמד אחד מוסכם"* puts this row at בנט's rotation pole. גולן on כאן: *"גם מנסור עבאס... יכול להיות בממשלה הבאה וזה לגמרי ראוי"*, corroborating `jewish-arab-partnership` and naming a party for the first time; his office says it is the Democrats' position only and was not raised at the meeting, which confirms revision 146's reading of *"ציונית"*. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-26 | revision 149 — **עוצמה יהודית: בן גביר on פגוש את העיתונות (N12 transcript, read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** Defence for himself and Justice for גוטליב, to fire the יועמ"שית, restate revision 107 in his own voice. His Defence agenda (looser open-fire rules, *"לעודד הגירה"*, disarming the PA, double soldiers' pay) matches planks and tags the row already has. His claimed cabinet votes against aid trucks and for dismantling the PA fit `hardline-on-gaza` and `anti-oslo`, both held; ליברמן's similar line (revision 148) still does not earn `anti-oslo`. `death-penalty-for-terrorists` corroborated; his account of נתניהו's *"בן גביר צודק"* scores nothing on הליכוד. The unlabelled transcript was attributed line by line. |
+| 2026-09-26 | revision 150 — **הליכוד: the E1 tender deadline moved past election day by the Attorney General's office (הארץ, body supplied by the repo owner). Nothing scored.** Publishing the ~1,200-unit tender is government conduct of the kind `security` +3 rests on (E1's approval is already in the record); the deferral is about election-propaganda rules and is not a party act. הארץ's multi-source report that the government told Germany and Britain E1 would wait, then published anyway, is recorded as reported. Foreign reactions and the מעלה אדומים mayor's petition score nothing. |
