@@ -6844,6 +6844,33 @@ and on the roughly 240 hostages: *"במלחמה אנחנו משלמים מחיר
   minister, and it scores nothing on הליכוד. לפיד, גלנט, עבאס, Saudi Arabia and the hostage families'
   forum condemned it; reactions are not positions of this row.
 
+**2026-09-26 — revision 149. בן גביר on פגוש את העיתונות. No axis moved, no tag added, `seed.sql` unchanged.
+Every policy line is one this row already carries.**
+([N12](https://www.mako.co.il/news-israel-elections/2026/Article-b693d5d24aed0a1027.htm), עמית סגל and בן כספית, 27.09.26 09:22, read
+from the page's `articleBody` with plain `curl`. The transcript runs the speakers together with no labels, so
+each quote below was attributed by what it says, and only lines that are unmistakably his are used.)
+
+- **The portfolio demands, restated in his own voice.** *"אני רוצה להיות שר ביטחון"* (he says there is no
+  agreement with נתניהו on it) and גוטליב at Justice: *"היא תעמוד על פיטורי היועמ"שית"*, *"בניגוד לחבריי
+  רוטמן ולוין שדיברו ארבע שנים על רפורמה... צריך סגנון אחר"*. Revision 107 recorded both demands from the
+  party's statement; dismissing the יועמ"שית already backs `judicial-overhaul` (revision 137). Corroborated.
+- **What he says he would do at Defence**: *"להקל להם בהוראות הפתיחה באש, לעודד הגירה, לקחת את הנשק מהרשות
+  הפלסטינית, להכפיל את השכר של החיילים"*. Loosening the open-fire rules and soldiers' pay are revision 107's
+  planks, kept in prose there (no rules-of-engagement tag; `reservist-focused` refused as uncosted). *"לעודד
+  הגירה"* is `voluntary-palestinian-emigration-incentives`, held.
+- **Two cabinet votes he claims as his own**: *"אני היחיד שהצבעתי נגד משאיות הסיוע. אני היחיד שהצבעתי בעד
+  לפרק את הרשות הפלסטינית"*. They fit `hardline-on-gaza` and `anti-oslo`, both held. They are his account
+  of closed votes, recorded as such. **Cross-row note:** ליברמן named dismantling the PA as his own aim a
+  day later (revision 148), and that row still does not get `anti-oslo`: this row holds the tag on a bill to
+  annul the agreements, not on the PA sentence.
+- **`death-penalty-for-terrorists` corroborated, already held.** He says the noose was for the law, and
+  that he changed the rule requiring a panel of lieutenant colonels. His claim that נתניהו said *"בן גביר
+  צודק"* is his account of a rival's words and scores nothing on הליכוד.
+- **The שב"כ in Arab-sector crime** (*"בואו נכניס שב"כ"*) is this row's half of the internal-security sweep
+  item (Open questions), already named there. Nothing new to add.
+- **Not scored:** the prisons, the flotilla, the claims about falling terror and crime numbers (his
+  account of his record), the polls at nine seats (revision 114's 8–9 stands), and the jabs at נתניהו.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -11365,3 +11392,4 @@ pass happened, for anyone reading git history.
 | 2026-09-26 | revision 146 — **cross-row: the change-bloc leaders' signed joint document (the scan itself, plus הארץ and כאן). `term-limits` ADDED to ביחד, הדמוקרטים and ישראל ביתנו (4 → 7 holders); no axis moved.** איזנקוט, בנט, גולן, ליברמן and לפיד commit that the next government's basic lines include equal burden, a state commission of inquiry, *"הגבלת כהונה לראש הממשלה"*, a constitution and a 100-day plan. Every item but term limits was already a tag or prose on all four rows; term limits was new for three of them. Not a bloc label: its holders are now four opposition and three unaligned rows. Verified on an already-seeded database (23/27/19 → 24/28/20 tags); backend suite 271 passed. The inquiry sweep keeps its answer and ביחד's line gains a signed text. The preamble's *"ציונית וממלכתית"*, dropped by both reports, is not read as a coalition exclusion. בנט's *"יום אחרי הבחירות... מועמד אחד"* is the rotation item's other pole, first-party; the document itself is silent on the candidate. |
 | 2026-09-26 | revision 147 — **עמך ישראל: וינטר on כאן 11 (read through headless Chromium). No axis moved, no tag added, `seed.sql` unchanged.** `bibi` corroborated: no work with גולן or איזנקוט, and a right-wing government broad enough not to depend on גולדקנופף (a new shape for the coalition-exclusion sweep). *"לא צריך חוק גיוס... כשאומרים חוק גיוס, אומרים חוק פטור"* pulls against revision 41's law-before-swearing-in; both conscription tags hold on either reading, the mechanism is recorded as uncertain. `no-palestinian-state` corroborated; `territorial-control-gaza` refused again (sole security responsibility is not holding territory); emigration still a bare noun. |
 | 2026-09-27 | revision 148 — **ישראל ביתנו and הדמוקרטים, the morning after the bloc meeting (הארץ, body supplied by the repo owner). `no-palestinian-state` ADDED to ישראל ביתנו (20 → 21 tags; 7 → 8 holders); no axis moved.** ליברמן on גל"צ: *"להכניס ודאות שאין מדינה פלסטינית וחייבים לפרק את הרשות הפלסטינית"*, the chairman's own words that revision 117's trigger asked for. `anti-two-state` and `anti-oslo` still refused: he names neither Oslo nor the framework, so dismantling the PA stays in prose with a trigger. `term-limits` (revision 146) corroborated in his own voice; *"נדע לבוא עם מועמד אחד מוסכם"* puts this row at בנט's rotation pole. גולן on כאן: *"גם מנסור עבאס... יכול להיות בממשלה הבאה וזה לגמרי ראוי"*, corroborating `jewish-arab-partnership` and naming a party for the first time; his office says it is the Democrats' position only and was not raised at the meeting, which confirms revision 146's reading of *"ציונית"*. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-26 | revision 149 — **עוצמה יהודית: בן גביר on פגוש את העיתונות (N12 transcript, read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** Defence for himself and Justice for גוטליב, to fire the יועמ"שית, restate revision 107 in his own voice. His Defence agenda (looser open-fire rules, *"לעודד הגירה"*, disarming the PA, double soldiers' pay) matches planks and tags the row already has. His claimed cabinet votes against aid trucks and for dismantling the PA fit `hardline-on-gaza` and `anti-oslo`, both held; ליברמן's similar line (revision 148) still does not earn `anti-oslo`. `death-penalty-for-terrorists` corroborated; his account of נתניהו's *"בן גביר צודק"* scores nothing on הליכוד. The unlabelled transcript was attributed line by line. |
