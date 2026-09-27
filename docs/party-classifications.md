@@ -5921,6 +5921,33 @@ text was read through `api.fxtwitter.com`.)
   ישראל, ארץ ישראל ותורת ישראל – חד הם. בלי פשרות, בלי ויתור על סנטימטר של ארץ"* (a personal
   religious framing; the territorial half is already carried by `sovereignty-annexation`).
 
+**2026-09-27 — revision 157 (cross-row). The ₪400m Finance Committee transfer at בג"ץ, and סמוטריץ' refusing
+the term "coalition funds". No axis moved, no tag added, `seed.sql` unchanged.**
+([TheMarker](https://www.haaretz.co.il/tmr/news/politics/2026-09-27/ty-article/.premium/000001a0-e1bd-db4b-a7a5-f3ff77e30000), 27.09.26, body supplied by the repo owner. A news analysis written in the columnist's
+voice: the amounts, votes and court steps are read as reporting, the adjectives are not.)
+
+- **הציונות הדתית: `sectoral-budgeting` corroborated from government conduct, already held.** Before the
+  hearing on the ₪400m approved in August, the Finance Minister asked to be represented by his own lawyer
+  rather than the State Attorney, and the stated reason was that he would not sign a legal paper that
+  accepts the existence of *"כספים קואליציוניים"*. At stake were ₪123m for the Settlement Ministry and
+  ₪286m for haredi education, which the court had frozen. The request was refused. **His refusal of the
+  category is the position worth recording**: the row's tag names the practice, and here the minister
+  denies it is a separate kind of money. `settler-movement` and `pro-settlement` likewise gain a record
+  item, not a new tag.
+- **The court's turn is not a party act.** A new panel member, השופט כשר, read the speaker's use of
+  Knesset rule 112ב as within his power, and the petitioners withdrew to avoid a binding ruling. The funds
+  flow. Recorded as the outcome, scored on no row.
+- **הדמוקרטים: the opposite pole of the `sectoral-budgeting` sweep item, as an act.** ח"כ נעמה לזימי (#2)
+  was a petitioner, calling it *"שוחד בחירות לכל דבר ועניין"*. The row already commits to abolishing
+  coalition funds (revision 99); this is the same position taken to court. Filed on the sweep item.
+- **ישר: אורית פרקש-הכהן (#3) voted against ₪38.6m more for the Civil Administration**, asking *"למה חודש
+  לפני בחירות?"* and calling it a bribe *"לטובת שר הביטחון השני"*. It objects to the timing and the
+  beneficiary, not to settlement as such, so it does not test `anti-annexation`. A candidate's vote,
+  recorded.
+- **Not scored:** the column's claim that יש עתיד *"עצם עין"* on the late addition (the writer's reading),
+  and the list of blocked requests (מירון, the food vouchers, the National Security Ministry's staff),
+  which is the committee's agenda, not any row's position.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -11092,6 +11119,8 @@ bought nothing here, because the defect was never in the pixels being measured.
   years, *"כסף שחולק לפי כוח פוליטי, קרבה לממשלה ויכולת סחיטה"*. The vocabulary has
   `sectoral-budgeting` on the haredi and coalition rows and nothing for a party that campaigns
   against the instrument. Same asymmetry as the gun-control gap. **Resolution: sweep all 18 rows.**
+  *Revision 157 (2026-09-27): the two poles in one story. סמוטריץ' refuses, in a court filing, to accept that
+  coalition funds exist as a category; הדמוקרטים' לזימי petitions against them as election bribery.*
 - **Two exclusion tags with different criteria and overlapping membership (2026-09-19, revision 99).**
   `excludes-anti-zionist-parties` (ישראל תחילה, ישר) turns on recognition of Israel as a Jewish and
   democratic state; `excludes-haredi-and-arab-parties` (בית ציוני - המילואימניקים, and now
@@ -11503,3 +11532,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 153 — **הליכוד: a screenshot compilation of @netanyahu posts, 5–27 September (supplied by the repo owner, not checked post by post). Nothing scored.** At least twelve near-identical posts say איזנקוט will form *"ממשלת שמאל עם יאיר גולן, ליברמן והמפלגות הערביות"*. On ישר it is a rival's claim, contradicted by revision 143 and by ישראל ביתנו's exclusion; on הליכוד it is campaign messaging. Today's variant cites רע"ם's #2 סגלוביץ'; his own words, if found, belong on רע"ם's row. |
 | 2026-09-27 | revision 154 — **cross-row, environment sweep: a הארץ nature-section feature (body supplied by the repo owner). Nothing scored.** Its search of party sites finds climate plans at הדמוקרטים and ביחד and none in ישר's or ישראל ביתנו's platforms, which matches this page; ישר's questionnaire answers (revision 134) stand beside that. Environment candidates' placements (ישר #39; ביחד #18 and #33; הדמוקרטים #30) are candidate tier. איזנקוט's "weather, not climate" line and גולן's 2023 remark are recorded as statements, not positions; בנט's 2050 pledge is record and fits ביחד's programme. Sweep status unchanged. |
 | 2026-09-27 | revision 155 — **cross-row: an N12 explainer on the change bloc taking the Knesset speakership after the vote (read with `curl`). Nothing scored.** The speaker-and-committee plan is the reporter's reading; the signed document names none of it. טיבי's line is revision 101's, already on הרשימה המשותפת. N12 is the first report to quote the document's *"ציונית וממלכתית"*, confirming the scan. The 2020–21 history is background. |
+| 2026-09-27 | revision 157 — **cross-row: TheMarker on the ₪400m coalition transfer at בג"ץ (body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** סמוטריץ' asked for his own lawyer so as not to accept the term *"כספים קואליציוניים"*, and was refused; `sectoral-budgeting` on הציונות הדתית corroborated from conduct. A new panel member let the transfer stand and the petition was withdrawn; not a party act. לזימי (הדמוקרטים #2) petitioned against it, the opposite pole of the sectoral-budgeting sweep item. פרקש-הכהן (ישר #3) voted against late Civil Administration money on timing grounds; recorded, not tested against `anti-annexation`. |
