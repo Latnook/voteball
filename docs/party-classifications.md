@@ -2027,7 +2027,7 @@ thirds of the incoming Knesset per the paper, did not.
   full `pride` plan): a written reply to a newspaper, mostly paraphrased by it. It is the same kind revision
   134 accepted from the ynet questionnaires, and the paraphrase is specific (named measures, named grounds),
   not a gloss. **Trigger to remove it:** ישר's reply text, or a ישר document, that does not say this.
-  Revision 21's caveat stands: *זוגיות אזרחית* is the weaker formulation, and #5 מתן כהנא personally opposes
+  Revision 21's caveat stands (*זוגיות אזרחית* is the weaker formulation), and so does revision 69's note that #5 מתן כהנא personally opposes
   civil marriage; the page scores the party's statement, as it did there.
 - **הדמוקרטים and ביחד: corroborated, both already hold the tag.** Differences recorded: הדמוקרטים commit to
   civil **marriage** by legislation and to easier permits for LGBT asylum seekers from the West Bank; ביחד to
