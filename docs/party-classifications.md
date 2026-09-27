@@ -10237,7 +10237,7 @@ recorded here, each item at its own tier.
   voted **against** the July 2026 deserter-arrests law, the only New Hope MK to do so, consistent with the row's
   `universal-conscription`.
   Three other coalition MKs voted against it: אדלשטיין and אילוז (הליכוד; **אילוז is now on ישראל ביתנו's list**)
-  and סולומון (הציונות הדתית). The law passed 58–54, so those four votes were the margin's whole cushion.
+  and סולומון (הציונות הדתית). With them the law would have passed 62–50; it passed 58–54.
 - **Already on this page, not repeated:** המילואימניקים והכלכלית's vote-and-stand-for-election-only-for-those-who-
   serve plank (`service-conditioned-citizenship`, held); הליכוד declining ynet's conscription survey (revision
   86); עבאס's civil-service line (revision 48). **The research pass's claim that hakalkalit.org has no positions
