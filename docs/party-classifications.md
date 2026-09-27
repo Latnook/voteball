@@ -5041,15 +5041,15 @@ Two parts: a government programme for internal security, and a campaign section 
   headquarters joining police, שב"כ, prosecution and tax authority, dedicated organised-crime courts, and the
   military court in לוד restored for cases linking crime and terror. הציונות הדתית, עוצמה יהודית and ביחד
   were the first three; the dimension now clearly spans four rows and still has no tag.
-- **The demography sweep (queued under הציונות הדתית, revision on `/judaization/`) gets its second
-  first-party programme.** Under the heading *"יהוד הגליל"*: strengthen Negev and Galilee communities
+- **The demography sweep item (Open questions) gets its third holder, after הציונות הדתית's `/judaization/`
+  and המילואימניקים והכלכלית (revision 98), and the first from the opposition bloc.** Under the heading *"יהוד הגליל"*: strengthen Negev and Galilee communities
   *"בהתאם לחזון ההתיישבות הציונית"*, faster new communities, land prices tied to military and reserve
   service, and admission committees allowed in communities of *"1,000 ועד 1,500 בתי אב"*; plus a
   ministerial committee to re-examine building permits in the Negev and Galilee with *"שיקולים ביטחוניים,
   פליליים ולאומיים"*. Inside the Green Line and moving people, not borders, which is the shape that entry
-  said a cross-row tag would need. **Still not minted here**, on that entry's own instruction that the tag
-  be decided across rows in one pass; this row is now the second instance, and the case for the sweep is
-  stronger for it.
+  said a cross-row tag would need. **Still not minted here**, on that item's own instruction that the tag
+  be decided across rows in one pass; with a holder in each bloc, it can no longer be read as a far-right
+  descriptor.
 - **Also recorded:** 3,000 more police (₪3bn), agricultural-crime units and farms on state land, and wider
   use of the *"חוק הנכבה"* to deny funds to bodies acting against the state, with sanctions for incitement
   and enemy flags on campuses. `service-conditioned-citizenship` (held) is corroborated by the land-price
@@ -11094,7 +11094,8 @@ bought nothing here, because the defect was never in the pixels being measured.
   is not a description of the far right.** Every existing tag on all three rows is about the
   territories, Gaza, the judiciary or religion. *(Revision 119, 2026-09-24: ביחד's `personal-security`
   plan takes the שב"כ from the Negev to crime **nationwide**, so the same instrument now has a wider reach
-  on this row.)* *(Revision 128, 2026-09-24, context only, since no party speaks in it:
+  on this row.)* *(Revision 163, 2026-09-27: ישראל ביתנו is the fourth holder, with *"הפעלת כלים של שב״כ
+  נגד פשיעה חמורה"*.)* *(Revision 128, 2026-09-24, context only, since no party speaks in it:
   [הארץ](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.highlight/000001a0-d27c-d18d-afbf-f3fef4af0000)
   reports that שב"כ head דוד זיני **refused** responsibility for monitoring Israeli online influence
   operations against the election, on the ground that the service does not handle *"גורמי פנים"*. The
@@ -11412,6 +11413,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   *(2026-09-16, revision 98: המילואימניקים והכלכלית is a further holder, from the centre-right. Its
   governance plan says *"הגדרת ההתיישבות והרוב היהודי באזורים אלו כמשימה לאומית מתועדפת"* about
   the Negev and Galilee. Recorded, not tagged.)*
+  *(2026-09-27, revision 163: ישראל ביתנו is the third, and the first from the opposition. Its *משילות*
+  plan heads a section *"יהוד הגליל"* and lets admission committees screen communities of 1,000–1,500
+  households. Recorded, not tagged.)*
 - **No domestic-policing tag exists, and two rows earn one without a sweep being needed to find
   them.** הציונות הדתית's `/judaization/` proposes a national הוראת שעה against organised crime
   whose stated goal is *"לפרק את האוטונומיה הערבית החמושה"* — illegal weapons possession defined as
@@ -11730,5 +11734,5 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 160 — **ישר: the site read in full from its sitemaps (357 URLs). No axis moved; no tag beyond revision 159.** ישר now publishes 17 topic pages and 157 position posts beyond the thirteen documents this entry counts. Its LGBT programme (*ישר! לקהילה הגאה*, posts dated 24.09 16:14 UTC) is the primary source for revision 159's `lgbt-rights`: a conversion-therapy ban law, sexual orientation and gender identity in every anti-discrimination law, a civil-partnership track including same-sex couples. הארץ's *"באופן גורף"* is not in ישר's text. **Revision 154 corrected**: ישר's agriculture paper and housing topic mention climate adaptation, so "no mention at all" was wrong; there is still no environment programme. The other topics are queued for a full read. |
 | 2026-09-27 | revision 161 — **ישר: all 17 topic pages read; `gender-equality` and `free-trade` ADDED (29 → 31 tags); no axis moved.** Eleven topics mirror principles papers already read and add only introductions. Five are new (LGBT, gender equality, housing, young people, culture), and every position post maps to one of them. `gender-equality`: the dedicated programme revisions 21 and 69 said was missing (pay transparency, paternity leave, women in all IDF roles, anti-segregation in academia, agunot). `free-trade`: missed since revision 21, the economics paper's import-barrier sentence matches the tag's founding text; it coexists with `agricultural-protectionism` because the same sentence carves out agriculture. Rabbinical-courts rollback, housing, young people and culture measures recorded in prose. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-27 | revision 162 — **הציונות הדתית: *תכנית רוטמן — חוק וצדק 2.0* is published (`/mishpat/`, 22.09), meeting revisions 71/75/77's trigger. `pm-immunity-protections` and `governance-reform` ADDED (24 → 26 tags); no axis moved.** The "French law" deferring criminal proceedings against a sitting PM and ministers, and pre-2006 MK immunity, are the instrument the tag's founding case (אל הדגל, now withdrawn) held; this is its only live holder. `governance-reform` for the appointments overhaul (committees abolished, ministers appointing up to 50% of senior posts) and the electoral changes (lower threshold, semi-open list); the direction is recorded because the tag does not carry it, and `judicial-overhaul` does. Abolishing breach of trust and state appeals of acquittals recorded, not scored. עוצמה יהודית's half of revision 77's question stays open (no document). Verified on an already-seeded database; backend suite 271 passed. |
-| 2026-09-27 | revision 163 — **ישראל ביתנו: *משילות — תוכנית ליברמן* read for the first time (party site, 17.09). No axis moved, no tag added.** שב"כ tools against serious crime make the row the internal-security sweep's fourth holder. *"יהוד הגליל"*, land prices tied to service and admission committees for communities of 1,000–1,500 households are the demography sweep's second first-party programme, after הציונות הדתית's `/judaization/`; still to be decided across rows. |
+| 2026-09-27 | revision 163 — **ישראל ביתנו: *משילות — תוכנית ליברמן* read for the first time (party site, 17.09). No axis moved, no tag added.** שב"כ tools against serious crime make the row the internal-security sweep's fourth holder. *"יהוד הגליל"*, land prices tied to service and admission committees for communities of 1,000–1,500 households make the row the demography sweep's third holder and the first from the opposition, after הציונות הדתית and המילואימניקים והכלכלית; still to be decided across rows. |
 | 2026-09-27 | revision 164 — **ביחד: the housing plan (new 27.09) and *ממגילה לחוקה* read. No axis moved, no tag added.** ₪1m per active reservist towards a flat, 100,000 long-term rentals, planning to local authorities; `reservist-focused` and `municipal-devolution` corroborated. The constitution page puts `constitutionalist` on a party text. The research harness's 0–3 "refutation" of this row's Hebrew pride, women and environment plans was a fetch failure: all three are in the live sitemap and were read in revisions 105, 29 and 60. |
