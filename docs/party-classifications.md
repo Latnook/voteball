@@ -2020,15 +2020,18 @@ expected to pass the threshold. **Three answered: ישר, ביחד and הדמו�
 thirds of the incoming Knesset per the paper, did not.
 
 - **`lgbt-rights` added to ישר, on the trigger revision 49 set for ביחד**: *"any plan, or any joint list
-  statement, naming the community."* ישר's own quoted words commit it to *"מיסוד זוגיות אזרחית בישראל ותיקון
-  ההפליה הקשורה לזוגיות, הורות ומשפחה"*, and הארץ reports that all three parties committed to a **total ban on
-  conversion therapy**, a law against discrimination in property deals *"בשל נטייה מינית או זהות מגדרית"*, and
-  tolerance guidelines in a Director-General's circular. **The evidence is weaker in kind than ביחד's** (a
-  full `pride` plan): a written reply to a newspaper, mostly paraphrased by it. It is the same kind revision
-  134 accepted from the ynet questionnaires, and the paraphrase is specific (named measures, named grounds),
-  not a gloss. **Trigger to remove it:** ישר's reply text, or a ישר document, that does not say this.
-  Revision 21's caveat stands (*זוגיות אזרחית* is the weaker formulation), and so does revision 69's note that #5 מתן כהנא personally opposes
-  civil marriage; the page scores the party's statement, as it did there.
+  statement, naming the community."* **The primary source is ישר's own page, found the same evening
+  (revision 160):** [*ישר! לקהילה הגאה*](https://yasharwitheisenkot.com/topic/%d7%99%d7%a9%d7%a8-%d7%9c%d7%a7%d7%94%d7%99%d7%9c%d7%94-%d7%94%d7%92%d7%90%d7%94/), a full programme whose sections were published as
+  position posts on 2026-09-24 at 16:14 UTC. It commits to *"נוביל חקיקה שמטרתה לאסור טיפולי המרה"* with
+  an inter-ministry team and enforcement against practitioners; to add *"נטייה מינית וזהות מגדרית לכל
+  איסורי ההפליה הקיימים בחוק"* and pass the housing-discrimination law; to a civil-partnership track
+  *"לרבות זוגות חד-מיניים"* alongside the religious courts, and equal parenthood registration for same-sex
+  couples; to anti-incitement law and recognition of hate-crime victims; and to a Director-General's
+  circular protecting LGBT pupils and teachers. **That is the same kind of evidence as ביחד's `pride`
+  plan**, so the tag does not rest on הארץ's summary. One detail הארץ added: its *"באופן גורף"* for the
+  conversion-therapy ban is not in ישר's text, which says *"לאסור"*. Revision 21's caveat stands
+  (*זוגיות אזרחית* is the weaker formulation), and so does revision 69's note that #5 מתן כהנא personally
+  opposes civil marriage; the page scores the party's statement, as it did there.
 - **הדמוקרטים and ביחד: corroborated, both already hold the tag.** Differences recorded: הדמוקרטים commit to
   civil **marriage** by legislation and to easier permits for LGBT asylum seekers from the West Bank; ביחד to
   its *"חוק ברית הזוגיות האזרחית"* with registration at the Interior Ministry. A non-answer from everyone else
@@ -2045,6 +2048,26 @@ thirds of the incoming Knesset per the paper, did not.
 - **Not scored:** פינדרוס (יהדות התורה) in 2023 calling LGBT people more dangerous than ISIS (a 2023
   candidate statement, relayed); יוראי להב הרצנו (ביחד #18) on his record (candidate tier); the experts'
   and organisations' views.
+
+**2026-09-27 — revision 160. ישר's site has grown past the corpus this entry counts, and it holds the primary
+source for revision 159. No axis moved, no tag added, `seed.sql` unchanged beyond revision 159.**
+Read by enumerating `sitemap_index.xml` and fetching every page with a browser-shaped `curl` (357 URLs). This
+entry counts **thirteen** documents (eleven principles papers, the goals, the brochure). The site now also
+carries **17 topic pages** and **157 position posts**, the posts being the topics' sections published one by
+one. The LGBT programme (*ישר! לקהילה הגאה*) is one of them, and its posts are dated 2026-09-24 16:14 UTC, so
+revision 159's tag now rests on ישר's own text; see there.
+
+- **Revision 154 corrected.** It agreed with הארץ that ישר's platform has *"אף אזכור"* of the environment.
+  Searching the fetched pages (the search was first run on a term known to be there, *המרה*, and found all
+  three LGBT pages) finds climate on three: the agriculture paper names *"שינויי האקלים"* as a threat to food
+  supply and funds *"עמידות לאקלים"* research and agrivoltaics, and the housing topic promises *"כלים שיאפשרו
+  היערכות מיטבית לשינויי אקלים"*. That is adaptation inside other programmes, not an environment programme,
+  so the sweep's standing for ישר is unchanged: questionnaire answers, no plan. The agriculture paper was in
+  the thirteen all along, which is how revision 154 repeated a claim this page could have checked.
+- **The other new topics are queued, not read here**: older people, housing, education, young people, gender
+  equality, the north, culture, PTSD recovery, reservists, homeland security, the economy and aliyah. Several
+  may carry positions this row does not record yet. **Trigger:** read all 17 before this row's tags or axes
+  are next changed.
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -11025,7 +11048,10 @@ bought nothing here, because the defect was never in the pixels being measured.
   27.09.26, body supplied by the repo owner) searched the parties' sites and found climate and environment
   plans at הדמוקרטים and ביחד, and **no mention at all** in the platforms of ישר and ישראל ביתנו. That
   matches this page: nothing environmental has turned up in ישר's thirteen documents or ישראל ביתנו's
-  platform. **It does not cancel ישר's questionnaire answers** (closing בז"ן with a budget, the waste law):
+  platform. *(Corrected by revision 160: "no mention at all" is wrong for ישר. Its agriculture paper names
+  climate change as a threat to food supply and funds climate-resilience research and agrivoltaics, and its
+  housing page promises tools for climate adaptation. Still no environment programme.)* **It does not cancel
+  ישר's questionnaire answers** (closing בז"ן with a budget, the waste law):
   a party can answer a questionnaire without a plan, and the two are recorded separately. Placements, which
   are candidate tier and move nothing: ישר's environment candidate גידי זאדא at **#39**; ביחד's יוראי להב
   הרצנו at **#18** and מטי צרפתי הרכבי at **#33**; הדמוקרטים' יעל כהן פארן at **#30**. Also recorded, and not
@@ -11580,4 +11606,5 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 155 — **cross-row: an N12 explainer on the change bloc taking the Knesset speakership after the vote (read with `curl`). Nothing scored.** The speaker-and-committee plan is the reporter's reading; the signed document names none of it. טיבי's line is revision 101's, already on הרשימה המשותפת. N12 is the first report to quote the document's *"ציונית וממלכתית"*, confirming the scan. The 2020–21 history is background. |
 | 2026-09-27 | revision 157 — **cross-row: TheMarker on the ₪400m coalition transfer at בג"ץ (body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** סמוטריץ' asked for his own lawyer so as not to accept the term *"כספים קואליציוניים"*, and was refused; `sectoral-budgeting` on הציונות הדתית corroborated from conduct. A new panel member let the transfer stand and the petition was withdrawn; not a party act. לזימי (הדמוקרטים #2) petitioned against it, the opposite pole of the sectoral-budgeting sweep item. פרקש-הכהן (ישר #3) voted against late Civil Administration money on timing grounds; recorded, not tested against `anti-annexation`. |
 | 2026-09-27 | revision 158 — **cross-row: כאן on the bloc disagreeing about what the signing agreed (headless Chromium). Nothing scored.** בנט and ליברמן are said to understand the candidate question as deferred; איזנקוט's circle says only the written document counts, and it is silent on the candidate. Both sides are unnamed, so the rotation item keeps the parties' own words; it bears out revision 146's decision to score the text and not the reported deferral. |
-| 2026-09-27 | revision 159 — **cross-row: הארץ's LGBT questionnaire (body supplied by the repo owner). `lgbt-rights` ADDED to ישר (28 → 29 tags; 3 → 4 holders); no axis moved.** Only ישר, ביחד and הדמוקרטים answered. ישר's quoted commitment (*"מיסוד זוגיות אזרחית... ותיקון ההפליה הקשורה לזוגיות, הורות ומשפחה"*) plus the reported joint commitments (total conversion-therapy ban, anti-discrimination in property deals by sexual orientation or gender identity) meet revision 49's trigger. Weaker in kind than ביחד's plan, the same kind revision 134 accepted; removal trigger written. הליכוד ministers' record (the 52–33 vote, קרעי's hotline rules, מאי גולן's cuts, קיש's paused programmes) is recorded; `anti-lgbt` still not given, trigger written. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-27 | revision 159 — **cross-row: הארץ's LGBT questionnaire (body supplied by the repo owner). `lgbt-rights` ADDED to ישר (28 → 29 tags; 3 → 4 holders); no axis moved.** Only ישר, ביחד and הדמוקרטים answered. ישר's quoted commitment (*"מיסוד זוגיות אזרחית... ותיקון ההפליה הקשורה לזוגיות, הורות ומשפחה"*) plus the reported joint commitments (total conversion-therapy ban, anti-discrimination in property deals by sexual orientation or gender identity) meet revision 49's trigger. Weaker in kind than ביחד's plan, the same kind revision 134 accepted; removal trigger written *(superseded by revision 160: ישר's own LGBT programme is the source)*. הליכוד ministers' record (the 52–33 vote, קרעי's hotline rules, מאי גולן's cuts, קיש's paused programmes) is recorded; `anti-lgbt` still not given, trigger written. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-27 | revision 160 — **ישר: the site read in full from its sitemaps (357 URLs). No axis moved; no tag beyond revision 159.** ישר now publishes 17 topic pages and 157 position posts beyond the thirteen documents this entry counts. Its LGBT programme (*ישר! לקהילה הגאה*, posts dated 24.09 16:14 UTC) is the primary source for revision 159's `lgbt-rights`: a conversion-therapy ban law, sexual orientation and gender identity in every anti-discrimination law, a civil-partnership track including same-sex couples. הארץ's *"באופן גורף"* is not in ישר's text. **Revision 154 corrected**: ישר's agriculture paper and housing topic mention climate adaptation, so "no mention at all" was wrong; there is still no environment programme. The other topics are queued for a full read. |
