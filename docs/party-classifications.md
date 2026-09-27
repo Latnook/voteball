@@ -4844,7 +4844,7 @@ revision 139's was.)
   one criterion or two. פורר's answer is one: **religious-sectoral parties**, with conscription and core
   studies as the test. **Recorded as a lead for that question, not as its answer**: it is a #4 candidate in
   an interview, not the chairman or the platform, and the chairman's own ground for excluding רע"ם has
-  been about Hamas (revision 99's announcement) and Zionism.
+  been Zionism (revision 99's *"ממשלה ציונית"*) and, for Knesset eligibility, Hamas (revision 130).
 - **`anti-clerical` corroborated, already held.** The law widening the rabbinic courts' powers is *"אחד
   החוקים שאנחנו רוצים לבטל"*. His claim that רע"ם voted for it with ש"ס and יהדות התורה is a rival's
   account of a Knesset vote. It is not checked here and scores nothing on רע"ם.
