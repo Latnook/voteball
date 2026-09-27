@@ -1087,6 +1087,21 @@ second tender, over 2,100 units, is due to open for bids two days before the ele
   initiative (other governments' positions). מעלה אדומים mayor גיא יפרח's plan to petition is a
   municipality's, not a party's.
 
+**2026-09-27 — revision 153. נתניהו's one line about איזנקוט, posted at least twelve times. Nothing scored.**
+([screenshot of @netanyahu posts](https://pbs.twimg.com/media/HTM9yySXIAAnGuE?format=jpg&name=medium), supplied by the repo owner. It is someone's
+compilation, so the posts were not checked one by one.) From 5 September to today, in near-identical words:
+*"איזנקוט יקים ממשלת שמאל עם יאיר גולן, ליברמן והמפלגות הערביות"*, with variants citing טיבי, *"מספר 2 של
+איזנקוט"* and, today, *"מספר 2 של מנסור עבאס"*, and one adding *"רק ליכוד גדול יעצור אותם"*.
+
+- **A claim about another party, repeated, is still a claim about another party.** On ישר it scores nothing
+  (revision 44's tier). It is also contradicted by ישר's own words: יום שבת איזנקוט said רע"ם *"לא יהיה חלק
+  מהממשלה הבאה"* (revision 143), and ישראל ביתנו excludes the Arab parties outright (revision 99).
+- **On הליכוד it is campaign messaging, not a position** (revision 114's tier, like the billboards in
+  revision 137). It says nothing about what הליכוד would do in government.
+- **A lead, not read:** today's post attributes something to רע"ם's #2, יואב סגלוביץ'. If he said on the
+  record that רע"ם would sit in an איזנקוט government, that is רע"ם's own coalition posture and belongs on
+  that row. The post itself is a rival's paraphrase and is not evidence of what he said.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -11450,3 +11465,4 @@ pass happened, for anyone reading git history.
 | 2026-09-26 | revision 150 — **הליכוד: the E1 tender deadline moved past election day by the Attorney General's office (הארץ, body supplied by the repo owner). Nothing scored.** Publishing the ~1,200-unit tender is government conduct of the kind `security` +3 rests on (E1's approval is already in the record); the deferral is about election-propaganda rules and is not a party act. הארץ's multi-source report that the government told Germany and Britain E1 would wait, then published anyway, is recorded as reported. Foreign reactions and the מעלה אדומים mayor's petition score nothing. |
 | 2026-09-27 | revision 151 — **ישראל ביתנו: עודד פורר (#4) on כאן רשת ב' (live-blog entry supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** רע"ם is *"ש"ס של הערבים"*, excluded on the same ground as ש"ס and יהדות התורה: `excludes-haredi-and-arab-parties` corroborated, and the first reason from this row that treats the tag's Arab and haredi halves as one criterion (religious-sectoral parties). A candidate's reason, filed as a lead for the conjunction question, not its answer. Repealing the rabbinic-courts law corroborates `anti-clerical`; his claim about רע"ם's vote on it is unchecked and scores nothing on רע"ם. |
 | 2026-09-27 | revision 152 — **ישר: יורם כהן (#2, re-read from the filed list via the CEC API) on X, via fxtwitter. Nothing scored.** He calls the report that נתניהו's adviser יונתן אוריך linked his WhatsApp to a Dubai company's service a serious security event needing a שב"כ check. An attack on a rival's office, not a policy; `anti-indicted-pm` stays off the row on revision 99's reasoning. |
+| 2026-09-27 | revision 153 — **הליכוד: a screenshot compilation of @netanyahu posts, 5–27 September (supplied by the repo owner, not checked post by post). Nothing scored.** At least twelve near-identical posts say איזנקוט will form *"ממשלת שמאל עם יאיר גולן, ליברמן והמפלגות הערביות"*. On ישר it is a rival's claim, contradicted by revision 143 and by ישראל ביתנו's exclusion; on הליכוד it is campaign messaging. Today's variant cites רע"ם's #2 סגלוביץ'; his own words, if found, belong on רע"ם's row. |
