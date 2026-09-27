@@ -10204,6 +10204,43 @@ scored. No axis moved, no tag added, `seed.sql` unchanged.**
   the "army slot" reading already recorded (a slot aimed at traditional voters) and changes nothing
   else.
 
+**2026-09-27 — revision 167 (cross-row). A second research pass on the rows the first could not cover. No axis
+moved, no tag added, `seed.sql` unchanged.** Most of what it returned is already on this page; what is new is
+recorded here, each item at its own tier.
+
+- **ש"ס: דרעי on 3 September, and it narrows revision 61's reading.** On קול ברמה, asked about haredim who do
+  not study: *"הצבא לא רוצה חיילים חרדים, זה עושה לו כאב ראש גדול... צה"ל רוצה צבא חילוני"*, and that he
+  does not need to call on them to enlist ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-03/ty-article/000001a0-6613-def7-a7f7-6ef765d90000),
+  [ynet](https://www.ynet.co.il/news/elections2026/article/rjdiiql00ml); several outlets quote the interview directly). Revision 61 read
+  אזולאי's *"מי שלא לומד צריך להתגייס"* as the reason this row holds `scholar-exemption-retained` rather than
+  a blanket exemption. **The chairman declines to say it**, which is a first-party gap between #2 and #1 on the
+  one question that separates the two. `scholar-exemption-retained` holds; the distinction revision 61 drew
+  now rests on the #2's words alone and is recorded as contested inside the party.
+- **יהדות התורה: a reported draft agreement between דגל התורה and אגודת ישראל (8 September).** Per
+  [ערוץ 7](https://www.inn.co.il/news/705881) and haredi outlets, both factions would demand a full exemption for every yeshiva
+  student with no sanctions, their MKs would take no minister, deputy-minister or committee-chair post until a
+  law settling Torah learners' status passes, and they would back no coalition bill before then unless the
+  rabbinic leadership approves. **A reported draft, not a signed or published text**, so it is not scored; if
+  signed, it is `rabbinic-authority-led` (held) in its most explicit form and a coalition condition on the row
+  that holds none. See also revision 166: this row voted **against** the death-penalty law, breaking with the
+  coalition.
+- **רע"ם: עבאס on moving crime to the שב"כ, the opposite pole of the internal-security sweep item.** At TheMarker's
+  Negev conference (14 July), per [ynet](https://www.ynet.co.il/news/article/ryynfpnbgl), he called it a *"הונאה"*, backed civilian service for
+  Arab citizens only if not run by the Defence Ministry, and called an Arab partner a condition for any government
+  investing in Arab society. The civilian-service line matches revision 48's refusal of `arab-civil-service`; the
+  שב"כ line gives the sweep item (Open questions) its first explicit **opponent**, where it had four proponents.
+  The party's 23 August conference statement ([القدس العربي](https://www.alquds.co.uk/%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D9%88%D8%AD%D8%AF%D8%A9-%D8%AA%D9%86%D8%AA%D8%AE%D8%A8-%D9%82%D8%A7%D8%A6%D9%85%D8%A9-%D9%85%D8%B1%D8%B4%D8%AD%D9%8A%D9%87%D8%A7/), a report of it) puts crime first,
+  which `focuses-on-arab-israeli-civil-issues` (held) already carries.
+- **ישראל תחילה: nothing new on its site, and its chair's roll call checks out.** The site read here in
+  revision 63 is unchanged. שרן השכל sat in this Knesset, in the coalition from 2024, so her votes against
+  opposition bills are discipline (revision 166's rule). **The one that breaks it is the one that matters**: she
+  voted **against** the July 2026 deserter-arrests law, the only New Hope MK to do so, consistent with the row's
+  `universal-conscription`.
+- **Already on this page, not repeated:** המילואימניקים והכלכלית's vote-and-stand-for-election-only-for-those-who-
+  serve plank (`service-conditioned-citizenship`, held); הליכוד declining ynet's conscription survey (revision
+  86); עבאס's civil-service line (revision 48). **The research pass's claim that hakalkalit.org has no positions
+  was refuted 0–3 by its own verifiers**, and that site is part of the merged row already read.
+
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
 Same four numbers as ש"ס and, until revision 34, the same two tags and the same merged entry. The
@@ -11192,7 +11229,8 @@ bought nothing here, because the defect was never in the pixels being measured.
   territories, Gaza, the judiciary or religion. *(Revision 119, 2026-09-24: ביחד's `personal-security`
   plan takes the שב"כ from the Negev to crime **nationwide**, so the same instrument now has a wider reach
   on this row.)* *(Revision 163, 2026-09-27: ישראל ביתנו is the fourth holder, with *"הפעלת כלים של שב״כ
-  נגד פשיעה חמורה"*.)* *(Revision 128, 2026-09-24, context only, since no party speaks in it:
+  נגד פשיעה חמורה"*.)* *(Revision 167: רע"ם's עבאס calls moving crime to the שב"כ a *"הונאה"*, the
+  dimension's first explicit opponent.)* *(Revision 128, 2026-09-24, context only, since no party speaks in it:
   [הארץ](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.highlight/000001a0-d27c-d18d-afbf-f3fef4af0000)
   reports that שב"כ head דוד זיני **refused** responsibility for monitoring Israeli online influence
   operations against the election, on the ground that the service does not handle *"גורמי פנים"*. The
@@ -11835,3 +11873,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 164 — **ביחד: the housing plan (new 27.09) and *ממגילה לחוקה* read. No axis moved, no tag added.** ₪1m per active reservist towards a flat, 100,000 long-term rentals, planning to local authorities; `reservist-focused` and `municipal-devolution` corroborated. The constitution page puts `constitutionalist` on a party text. The research harness's 0–3 "refutation" of this row's Hebrew pride, women and environment plans was a fetch failure: all three are in the live sitemap and were read in revisions 105, 29 and 60. |
 | 2026-09-27 | revision 165 — **cross-row: the 25th Knesset's ten LGBT plenum votes, from the Knesset OData API. `anti-lgbt` ADDED to רע"ם (5 → 6 tags), on the repo owner's decision.** Checked against a known answer first (housing bill 33–52, as הארץ reported). Coalition parties voted against all 35 other opposition bills on the same days, so their "no" is discipline and adds nothing to ש"ס, יהדות התורה or הליכוד; אוחנה voted for all ten. רע"ם voted with the opposition on 25 of 26 other bills but against the conversion-therapy ban at all five readings (2023, 2026): issue-specific. Limits recorded (one issue; absent from the other five votes; no party document), with a trigger. הרשימה המשותפת splits by component (חד"ש for, טיבי against). Verified on an already-seeded database, previous-parties row untouched; backend suite 271 passed. |
 | 2026-09-27 | revision 166 — **cross-row: the 25th Knesset's roll calls against what the rows claim (Knesset OData API, about fifty votes, third-reading votes picked by their stated question). `death-penalty-for-terrorists` ADDED to הליכוד and ישראל ביתנו (2 → 4 holders); no axis moved.** Checked first against the recorded 58–54. Coalition "no" votes on opposition bills are read as discipline (עוצמה יהודית and הציונות הדתית voted against sovereignty bills from the opposition). הליכוד passed the death-penalty law 31–0; ישראל ביתנו voted for it at every stage from the opposition. ש"ס not added (coalition discipline). יהדות התורה voted against the death penalty, the one issue-specific coalition break. ליברמן voted for sovereignty over all of Judea and Samaria (Oct 2025) against his own Sept 2026 plan; the latest written plan is scored, `sovereignty-annexation` stays off with a trigger. ישר candidates voted for Jordan Valley and מעלה אדומים sovereignty; revision 104's trigger not tripped. לפיד and יש עתיד voted for מעלה אדומים sovereignty. Revision 151's claim about רע"ם holds for the arbitration law (5–0 for). Everything else matches what the rows claim. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-27 | revision 167 — **cross-row: a second research pass on the rows the first missed. No axis moved, no tag added.** ש"ס: דרעי (3.09) declines to call on non-learners to enlist, a first-party gap with אזולאי's line that revision 61 relied on; `scholar-exemption-retained` holds, the distinction recorded as contested inside the party. יהדות התורה: a reported, unsigned דגל–אגודה draft (full exemption, no posts until a draft law) is not scored. רע"ם: עבאס calls moving crime to the שב"כ a fraud, the internal-security sweep item's first opponent. ישראל תחילה: site unchanged; שרן השכל broke with the coalition to vote against the deserter-arrests law. Nothing else new. |
