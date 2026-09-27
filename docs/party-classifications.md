@@ -9290,6 +9290,44 @@ unchanged.**
   #67 (revision 63) do not add to it. **No tag follows from a name**; what would move it is a
   document.
 
+**2026-09-27 — revision 165 (cross-row). The 25th Knesset's LGBT votes, read from the Knesset's own records.
+`anti-lgbt` ADDED to רע"ם (5 → 6 tags; 1 → 2 holders), on the repo owner's decision. No axis moved.**
+Source: the Knesset OData API (`KNS_PlenumVote`, `KNS_PlenumVoteResult`), every MK's recorded vote, with
+factions from `KNS_PersonToPosition`. Ten plenum votes on LGBT bills, all opposition bills at the preliminary
+reading. **The check was run against a known answer first**: the housing-discrimination bill comes out 33–52,
+matching הארץ's 52–33 (revision 159).
+
+| vote | date | for–against | רע"ם | חד"ש-תע"ל | הליכוד |
+|---|---|---|---|---|---|
+| conversion-therapy ban for minors (×2) | 21.06.23 | 36–42, 35–46 | 0–4, 0–4 | 2–1 | 1–17, 1–19 (אוחנה) |
+| discrimination defined to include sexual orientation | 28.06.23 | 28–43 | absent | absent | 1–20 (אוחנה) |
+| the same, three bills | 31.12.25 | 30–43 to 33–46 | absent | 1–0 (כסיף) | 1–21/22 (אוחנה) |
+| conversion-therapy ban for minors (×3) | 14.01.26 | 36–59, 37–58, 37–58 | 0–4 each | 1–2 each | 1–23/24 (אוחנה) |
+| housing-discrimination ban | 21.01.26 | 33–52 | absent | 3–0 | 1–24 (אוחנה) |
+
+- **The coalition's votes carry no LGBT-specific signal, and the base rate is why.** On the 35 other opposition
+  bills voted the same five days (יש עתיד ≥80% for, הליכוד majority against), הליכוד, ש"ס, יהדות התורה, הציונות
+  הדתית, עוצמה יהודית and הימין הממלכתי voted against **every one**. A "no" from a coalition party here is
+  coalition discipline until shown otherwise, so these votes add nothing to ש"ס or יהדות התורה, and revision
+  159's refusal of `anti-lgbt` for הליכוד stands. **אוחנה voted for all ten**, the only coalition MK who did;
+  that is this row's recorded split (אוחנה for, שיקלי against) in roll-call form.
+- **רע"ם is the exception, and it is issue-specific.** On the same 35 bills it voted with the opposition on 25
+  of 26 where it voted, yet all four of its voting MKs (טאהא, חוג'יראת, ח'טיב-יאסין, אלהואשלה) voted against the
+  conversion-therapy ban at all five readings, in 2023 and again in 2026. **`anti-lgbt` ADDED on that record, on
+  the repo owner's decision (2026-09-27), with its limits stated**: it rests on one issue; רע"ם did not vote on
+  the four discrimination-definition bills or the housing bill (absence is not opposition); עבאס himself appears
+  in none of the ten votes; and no רע"ם document states the position. The context is revision 44's: at
+  סגלוביץ'׳s joining, *"יודעים את עמדתו של מנסור עבאס - גם היא לא השתנתה"*. **Trigger to revisit:** a רע"ם vote
+  *for* an LGBT-protective bill, or a party statement contradicting the record.
+- **הרשימה המשותפת splits along its components, recorded not tagged.** On the conversion-therapy ban חד"ש's
+  כסיף and תומא-סלימאן voted for, and טיבי (תע"ל) and one other voted against; on housing, עודה, כסיף and
+  תומא-סלימאן voted for. The row holds neither LGBT tag, and one issue split this way does not make one.
+- **ישראל ביתנו and כחול לבן voted for whenever they voted**; ישראל ביתנו was absent from the housing bill.
+  Neither holds `lgbt-rights` (ישראל ביתנו has no LGBT plan on record); a record of yes votes on opposition
+  bills does not by itself meet revision 49's trigger, which asks for a statement naming the community.
+- **Not found as a clean vote**: the partners-of-fallen-soldiers recognition הארץ mentions. Its benefits sit
+  inside the broad bereaved-families law (amendment 47, passed January 2026), so that vote is not an LGBT vote.
+
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
 **Formed 2026-08-20**, when חד"ש-תע"ל and בל"ד signed an agreement to run on one slate: #1 יוסף
@@ -11736,3 +11774,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 162 — **הציונות הדתית: *תכנית רוטמן — חוק וצדק 2.0* is published (`/mishpat/`, 22.09), meeting revisions 71/75/77's trigger. `pm-immunity-protections` and `governance-reform` ADDED (24 → 26 tags); no axis moved.** The "French law" deferring criminal proceedings against a sitting PM and ministers, and pre-2006 MK immunity, are the instrument the tag's founding case (אל הדגל, now withdrawn) held; this is its only live holder. `governance-reform` for the appointments overhaul (committees abolished, ministers appointing up to 50% of senior posts) and the electoral changes (lower threshold, semi-open list); the direction is recorded because the tag does not carry it, and `judicial-overhaul` does. Abolishing breach of trust and state appeals of acquittals recorded, not scored. עוצמה יהודית's half of revision 77's question stays open (no document). Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-27 | revision 163 — **ישראל ביתנו: *משילות — תוכנית ליברמן* read for the first time (party site, 17.09). No axis moved, no tag added.** שב"כ tools against serious crime make the row the internal-security sweep's fourth holder. *"יהוד הגליל"*, land prices tied to service and admission committees for communities of 1,000–1,500 households make the row the demography sweep's third holder and the first from the opposition, after הציונות הדתית and המילואימניקים והכלכלית; still to be decided across rows. |
 | 2026-09-27 | revision 164 — **ביחד: the housing plan (new 27.09) and *ממגילה לחוקה* read. No axis moved, no tag added.** ₪1m per active reservist towards a flat, 100,000 long-term rentals, planning to local authorities; `reservist-focused` and `municipal-devolution` corroborated. The constitution page puts `constitutionalist` on a party text. The research harness's 0–3 "refutation" of this row's Hebrew pride, women and environment plans was a fetch failure: all three are in the live sitemap and were read in revisions 105, 29 and 60. |
+| 2026-09-27 | revision 165 — **cross-row: the 25th Knesset's ten LGBT plenum votes, from the Knesset OData API. `anti-lgbt` ADDED to רע"ם (5 → 6 tags), on the repo owner's decision.** Checked against a known answer first (housing bill 33–52, as הארץ reported). Coalition parties voted against all 35 other opposition bills on the same days, so their "no" is discipline and adds nothing to ש"ס, יהדות התורה or הליכוד; אוחנה voted for all ten. רע"ם voted with the opposition on 25 of 26 other bills but against the conversion-therapy ban at all five readings (2023, 2026): issue-specific. Limits recorded (one issue; absent from the other five votes; no party document), with a trigger. הרשימה המשותפת splits by component (חד"ש for, טיבי against). Verified on an already-seeded database, previous-parties row untouched; backend suite 271 passed. |
