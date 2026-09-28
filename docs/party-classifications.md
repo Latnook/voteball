@@ -3668,11 +3668,11 @@ Sources: the thirteen papers below — the first eight read 2026-08-01, מילו
 2026-08-11, חברה ערבית 2026-08-31, and פיתוח הצפון והדרום and המרחב הכפרי 2026-09-03 — all first-party
 (`democrats-media.s3.us-east-1.amazonaws.com`):
 [מדיני־ביטחוני](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%93%D7%99%D7%A0%D7%99+%D7%91%D7%99%D7%98%D7%97%D7%95%D7%A0%D7%99+(1).pdf),
-[כלכלי־חברתי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+(2).pdf),
+[כלכלי־חברתי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+%282%29.pdf),
 [דת ומדינה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%AA+%D7%95%D7%9E%D7%93%D7%99%D7%A0%D7%94.pdf),
 [דמוקרטיה ומשפט](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%9E%D7%95%D7%A7%D7%A8%D7%98%D7%99%D7%94+%D7%95%D7%9E%D7%A9%D7%A4%D7%98.pdf),
 [חינוך](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A0%D7%95%D7%9A.pdf),
-[להט"ב](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9C%D7%94%D7%98%D7%91+(2).pdf),
+[להט"ב](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9C%D7%94%D7%98%D7%91+%282%29.pdf),
 [חיסול הפשע המאורגן](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A1%D7%95%D7%9C+%D7%94%D7%A4%D7%A9%D7%A2+%D7%94%D7%9E%D7%90%D7%95%D7%A8%D7%92%D7%9F.pdf),
 [סביבה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%A6%D7%A2+%D7%A1%D7%91%D7%99%D7%91%D7%94.pdf),
 [מילואימניקים](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D.pdf),
@@ -4187,6 +4187,34 @@ Israelis who left, and two lines that are positions rather than services:
   in one pass, or retire it.
 - **The Russian-language version** is outreach to the constituency the unminted Russian-speaking representation
   item (under ישראל ביתנו) is about; it moves nothing.
+
+**2026-09-28 — revision 174. The full aliyah plan, a transport topic, and an audit of the whole corpus against the
+site's own list. Nothing scored.**
+The site's public Supabase `topics` table lists **25 topics**, each with its PDF; it is the list the pages load,
+so it bounds the corpus the way a sitemap does elsewhere.
+
+- **[*תוכנית עלייה וקליטה*](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%A2%D7%9C%D7%99%D7%99%D7%94+%D7%95%D7%A7%D7%9C%D7%99%D7%98%D7%94.pdf) (4pp, created 28.09 13:08; [Russian edition](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%A8%D7%95%D7%A1%D7%99%D7%AA_%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%A2%D7%9C%D7%99%D7%99%D7%94+%D7%95%D7%A7%D7%9C%D7%99%D7%98%D7%94.pdf), 6pp), the document
+  behind revision 173's topic, and sharper than it: *"נעגן את חוק השבות בחוק יסוד ונגן על זכויותיהם של נכדי
+  יהודים מכוחו"*, *"נתנגד לכל ניסיון להעניק לממסד הרבני האורתודוקסי מונופול על הגיורים"*, *"יחס שווה ומכבד
+  לכל זרמי היהדות"*, civil marriage and civil burial, Shabbat public transport nationwide, and Shabbat commerce
+  devolved to local authorities. `religious-pluralism`, `civil-marriage` and `municipal-devolution` are
+  corroborated, all held. The Law-of-Return gap revision 173 filed now has its clearest first-party pole: the
+  grandchild clause, defended by name.
+- **[*תחבורה ובטיחות בדרכים*](https://yes.democrats.org.il/topics/transportation)** (created 27.09, no PDF): public-transport lanes and rail, a metropolitan
+  transport-authorities law, the Kiryat Shmona line and Route 6 north, **a new airport in the Negev**, the national
+  road-safety plan funded, and *"תחבורה ציבורית בשבת"* with local arrangements and workers' rest rights. No
+  transport tag exists; the Shabbat line is already on the row.
+- **The audit: every topic's PDF has been read, and four were revised after they were.** Two changed in substance:
+  - **The crime plan (current file 06.08) DROPPED *"הורדת הרף הראייתי הנדרש"*** from its legislative package
+    against organised crime, keeping minimum sentences, biometrics and anti-money-laundering. Lowering the standard
+    of proof was the plan's one civil-liberties cost; the party removed it. The team named after the children
+    murdered *"בתקופת בן גביר"* went from 56 to 49.
+  - **Education (current file 16.08)** adds a funded youth-movement and non-formal-education chapter and a
+    five-year school-building plan. `core-curriculum` and `state-haredi-education` are untouched.
+  - The economic and LGBT papers were reworded; the LGBT one now puts the LGBT unit at ₪100m a year in the
+    budget base, and the economic one names *"תקציבים מגזריים למקורבים ולמשתמטים"*, the anti-sectoral pole
+    revision 157 filed. **Two links above to these papers were broken** (a raw `(2)` in the URL ends a Markdown
+    link) and are fixed.
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -11993,3 +12021,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 171 — **ישר: a twelfth principles paper, *ישר! לצעירים* (27.09). Nothing scored.** Its policy lines match the young-people topic page read in revision 161; the new introduction restates `service-conditioned-citizenship` and `universal-conscription`, both held. Corpus now fourteen documents. |
 | 2026-09-28 | revision 172 — **cross-row: four reports of 28 September. Nothing scored.** The pre-7-October warnings (בן זאיד, Egypt's כאמל) are not positions (revisions 100, 141); נתניהו's claim that foreign states want an Eisenkot–Golan–Lieberman government that would create a Palestinian state is a claim about other rows and contradicts their `no-palestinian-state` tags. בונצל (#29)'s deleted post to יוכבד ליפשיץ is a candidate's. סגלוביץ' (רע"ם #2) says אבו שחאדה crossed the line but opposes disqualifying him; candidate tier, consistent with רע"ם's CEC vote. |
 | 2026-09-28 | revision 173 — **הדמוקרטים: a new *עלייה וקליטה* topic in Hebrew and Russian (created 28.09, read from the site's public Supabase table). Nothing scored.** Thirteen pledges, mostly services; the two positions are defending the Law of Return as it stands (no tag covers it on either side; queued) and equality in personal status (`civil-marriage`, held). `aliyah-absorption` not added: one holder, no definition, and ישר's two aliyah papers never earned it; queued to be defined or retired. |
+| 2026-09-28 | revision 174 — **הדמוקרטים: the aliyah PDF (Hebrew and Russian), a transport topic, and a corpus audit against the site's Supabase list of 25 topics. Nothing scored.** The aliyah plan would put the Law of Return in a Basic Law and defend the grandchild clause, and opposes an Orthodox conversion monopoly; held tags corroborated. Every topic PDF has been read; four were revised since, and the crime plan dropped "lowering the standard of proof". Two broken links fixed. |
