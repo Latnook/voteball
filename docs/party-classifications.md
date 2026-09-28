@@ -4166,6 +4166,28 @@ moved, no tag added, `seed.sql` unchanged.**
   his right *"שיש להן קושי לומר את זה בפה מלא"*; that is his reading of rivals and is not scored on them.
 - **רע"ם: nothing**, as in revisions 85 and 143: another party talking about the row.
 
+**2026-09-28 — revision 173. A new *עלייה וקליטה* topic, in Hebrew and Russian, created today. Nothing scored.**
+([Hebrew](https://yes.democrats.org.il/topics/aliyah), [Russian](https://yes.democrats.org.il/topics/aliyah_ru); the site renders client-side, so the text was read from its public Supabase
+`topics` table, the same rows the page loads: `aliyah` created 2026-09-28 10:24 UTC, `aliyah_ru` 10:37.) Thirteen
+pledges: fewer barriers to aliyah, a bigger absorption basket, housing for immigrants, one bureaucratic address
+with services in immigrants' languages, recognition of degrees, Hebrew for every immigrant, support for lone
+soldiers and immigrant reservists, a shorter process for Israelis' foreign spouses, a five-year plan to bring back
+Israelis who left, and two lines that are positions rather than services:
+
+- ***"נגן על חוק השבות ועל הזכויות של זכאי השבות"***, a commitment to defend the Law of Return as it stands, which
+  in this election is the answer to the proposals to repeal its grandchild clause. **No tag covers the Law of
+  Return on either side**; recorded as a gap for the sweep queue, since a tag minted from one row would measure
+  what this page happened to read.
+- ***"נבטיח חופש בחירה ושוויון במעמד האישי"***, which is `civil-marriage` (held) aimed at the immigrants the
+  Rabbinate does not recognise as Jewish.
+- **`aliyah-absorption` NOT added, and the reason is the tag, not the text.** It has one holder (הציבור החרדי)
+  and no written definition on this page; ישר publishes two full aliyah papers (revision 21) and was never given
+  it. Adding it here would make it mean "a row whose aliyah page this page read", the `periphery-development`
+  failure revision 19 retired a tag for. Filed with the Law-of-Return gap: define it, then apply it across rows
+  in one pass, or retire it.
+- **The Russian-language version** is outreach to the constituency the unminted Russian-speaking representation
+  item (under ישראל ביתנו) is about; it moves nothing.
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -11970,3 +11992,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 170 — **cross-row. No axis moved, no tag added.** ביחד's security plan rewritten at `/plans/natsec/` (24.09): same doctrine, but Gaza moves from "freedom of action" to holding the Yellow Line until Hamas disarms; `territorial-control-gaza` and `hardline-on-gaza` refused on the row's directional-tag rule (security is NULL, statehood still unaddressed). בן גביר's post on executing terrorists and emigration from Gaza and Judea and Samaria corroborates held tags. N12: the bloc discussed its candidate and did not agree; revision 158's dispute is settled only in that the subject came up. |
 | 2026-09-28 | revision 171 — **ישר: a twelfth principles paper, *ישר! לצעירים* (27.09). Nothing scored.** Its policy lines match the young-people topic page read in revision 161; the new introduction restates `service-conditioned-citizenship` and `universal-conscription`, both held. Corpus now fourteen documents. |
 | 2026-09-28 | revision 172 — **cross-row: four reports of 28 September. Nothing scored.** The pre-7-October warnings (בן זאיד, Egypt's כאמל) are not positions (revisions 100, 141); נתניהו's claim that foreign states want an Eisenkot–Golan–Lieberman government that would create a Palestinian state is a claim about other rows and contradicts their `no-palestinian-state` tags. בונצל (#29)'s deleted post to יוכבד ליפשיץ is a candidate's. סגלוביץ' (רע"ם #2) says אבו שחאדה crossed the line but opposes disqualifying him; candidate tier, consistent with רע"ם's CEC vote. |
+| 2026-09-28 | revision 173 — **הדמוקרטים: a new *עלייה וקליטה* topic in Hebrew and Russian (created 28.09, read from the site's public Supabase table). Nothing scored.** Thirteen pledges, mostly services; the two positions are defending the Law of Return as it stands (no tag covers it on either side; queued) and equality in personal status (`civil-marriage`, held). `aliyah-absorption` not added: one holder, no definition, and ישר's two aliyah papers never earned it; queued to be defined or retired. |
