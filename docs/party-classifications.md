@@ -2059,6 +2059,10 @@ that the PM's adviser linked his private WhatsApp to a service run by a Dubai co
   on is already logged under revisions 125 and 127.
 - **`anti-indicted-pm` stays off this row.** Revision 99 refused it for ישר because the leader's line
   disqualifies a whole cabinet, not a PM on his indictment, and a #2 attacking an aide does not change that.
+- *(2026-09-28, [הארץ](https://www.haaretz.co.il/news/security/2026-09-28/ty-article/000001a0-e7c3-d6e5-adfe-ffffb9dd0000), body supplied by the repo owner: no state body has opened the check כהן
+  asked for; the cyber directorate, the שב"כ and the PM's office each say it is another's, because אוריך is
+  employed by הליכוד, not the office. It also reports that ישר, הדמוקרטים and ביחד hire private cyber protection
+  for their campaigns. Reporting on institutions and campaign logistics; nothing about any row's position.)*
 
 **2026-09-27 — revision 155 (cross-row). An N12 explainer on the change bloc taking the Knesset speakership
 after the election. Nothing scored.**
