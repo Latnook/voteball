@@ -1180,6 +1180,25 @@ Sources: [כאן](https://www.kan.org.il/content/kan-news/politic/1104019/) and 
   accounts; they score nothing, and revision 130's decision (both Arab lists stay voteable until the court
   rules) stands.
 
+**2026-09-29 — revision 181. כאן: נתניהו made בונצל (#29) apologise to יוכבד ליפשיץ. Nothing scored.**
+([כאן](https://www.kan.org.il/content/kan-news/politic/1104126/), יערה שפירא, 28.09.26 21:15, read through
+headless Chromium.) Revision 172 recorded the post and the apology. כאן adds that the apology was **נתניהו's
+demand**: he phoned בונצל, who argued that ליפשיץ had insulted his fallen son by crediting מרים אדלסון with
+freeing the hostages, and נתניהו insisted *"יש דברים שאי אפשר להגיד, צריך להתנצל"*.
+
+- **The party leader disowned the line, and there was never a position to score.** Revision 172 filed the post
+  as one candidate's (revision 49's rule); the leader overruling it confirms that reading. Disciplining a
+  candidate is list management, not policy. The call is known only through כאן's account, not from נתניהו
+  himself.
+- **The apology is qualified.** בונצל withdraws the Hamas sentence as written *"בסערת רגשות"* and keeps the
+  grievance: *"כאב לי לראות את הדברים הקשים שביזו את הלוחמים שלנו"*. Still candidate tier.
+- **Anonymous *"גורמים בליכוד"*** call it *"התבטאות מזיקה ומיותרת, שממחישה את הסכנה בשיריון גורמים עצמאיים"*.
+  Anonymous, and about how the list was built, not about policy (revision 44's tier). Nothing scored.
+- **ליפשיץ's reply scores nothing.** She is not a party, and blame for 7 October is not a position (revisions
+  100 and 141).
+- **Retrieval:** WebFetch returned 403 and `curl` got the Cloudflare challenge 4/4 times (5,696 bytes each).
+  Headless Chromium got through on the first try, as in revision 141.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -12158,3 +12177,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 178 — **ביחד: `security` NULL → +2; `no-palestinian-state` and `pro-settlement` ADDED (24 → 26); on the repo owner's decision.** The joint list answered ynet's questionnaire (27.09): against a Palestinian state and handing over territory, no evacuation of legal settlements in any circumstances, future sovereignty over Area C. The NULL rested on the list's silence on statehood; the site holds nothing newer and בנט says the same. +2, not +1, because the list claims territory (consistent with ישראל ביתנו and כחול לבן); not +3, because A and B are left out. `internally-split-on-conflict` kept for לפיד's two-state record and בן ברק (#12). Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-28 | revision 179 — **ביחד: the Gaza tags re-read against the revised security plan. `preemptive-security-doctrine` ADDED (26 → 27); `hardline-on-gaza` and `territorial-control-gaza` still refused, now on the content.** No siege or supply measures, which every `hardline-on-gaza` holder's evidence is. The Yellow Line hold is conditional on disarmament, with *"אין לנו עניין לנהל את עזה"*, where the territorial tag marks holding land as policy; trigger written. *"חמאס מתעצם – אנחנו תוקפים"* is the preemptive tag's founding text; revision 49's refusal on the Iran plank stands. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-28 | revision 180 — **יהדות התורה: N12's anonymous אגודת ישראל sources say גולדקנופף and טסלר would abstain on an איזנקוט minority government. Nothing scored; `bloc` stays `bibi`.** Anonymous, hypothetical, and contradicted by דגל התורה's הרב הירש in the same article; trigger written. Fits `two-faction-list`. The reporter's "איזנקוט won't rely on non-Zionist parties" is a gloss; his words exclude membership, not abstention (revision 169). |
+| 2026-09-29 | revision 181 — **הליכוד: כאן reports that נתניהו phoned בונצל (#29) and demanded he apologise to יוכבד ליפשיץ (read through headless Chromium). Nothing scored.** This adds to revision 172: the leader overruled a candidate's post, which confirms it was never the party's line. Disciplining a candidate is list management, not policy. The apology is qualified. The anonymous Likud line about the danger of reserving independents is anonymous and about the list (revision 44's tier). ליפשיץ is not a party. Retrieval: WebFetch 403; `curl` hit the Cloudflare challenge 4/4. |
