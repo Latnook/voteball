@@ -11306,7 +11306,7 @@ bought nothing here, because the defect was never in the pixels being measured.
   restructure is not the same as anticipating its shape. **Still open in a narrower form:** רע"ם
   declined to join and runs alone, with the door left open until the September list-submission
   deadline — if it joins, this row changes again.
-- **ביחד's `security`** is the only NULL axis on a Jewish *upcoming* party (המחנה הממלכתי carries a
+- *(Resolved 2026-09-28, revision 178: ביחד's joint list stated a position and the row is now +2.)* **ביחד's `security`** was the only NULL axis on a Jewish *upcoming* party (המחנה הממלכתי carries a
   NULL security among the frozen previous rows, for the same "no stated position" reason). It
   resolves only if the components merge or publish a joint position — or splits into two rows if the
   list dissolves. **Re-verified 2026-08-01: still no joint platform**, and the dissolution watch is
