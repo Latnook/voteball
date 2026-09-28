@@ -10589,6 +10589,22 @@ Lando personally, not to the מועצת גדולי התורה as a body. `rabbin
 
 ---
 
+**2026-09-28 — revision 180. N12: anonymous אגודת ישראל sources say גולדקנופף would abstain on an איזנקוט
+minority government. Nothing scored; `bloc` stays `bibi`.** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-61db690eff8e0a1027.htm), עמית סגל, 28.09.26 20:30,
+read from the page's `articleBody`.) *"גורמים בכירים באגודת ישראל"* say גולדקנופף and טסלר (גור) would abstain
+rather than vote against a government איזנקוט forms without 61, because the Gerrer Rebbe considers נתניהו finished;
+they expect the rest of אגודה, and perhaps דגל התורה, to follow, and hope for a political return.
+
+- **Anonymous, about a hypothetical vote, and contradicted inside the same article**: דגל התורה's הרב הירש said a day
+  earlier that everything must be done to stop the left. `bloc` records whom a row says it backs, and no party
+  voice has said this (revision 44's tier; revision 137 applied the same rule to נתניהו's reported view of וינטר).
+  **Trigger:** a named אגודה or גור statement, or the vote itself.
+- **It bears on this row's `two-faction-list`** (revision 61), since the story is about the two factions
+  diverging, and that tag already records that they bargain separately.
+- **The reporter's line that איזנקוט *"לא יסתמך על מפלגות שאינן ציוניות"* is a gloss, not a quote.** Revision 169
+  found that his own words exclude רע"ם's *membership*, not outside support; an abstention is the kind of outside
+  support his words leave open, which is why the report is not a contradiction of them.
+
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
 
 New party, added 2026-09-14. Registered with the registrar of parties on **2026-07-05** under the
@@ -12141,3 +12157,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 177 — **ישר: the Judea-and-Samaria questionnaire, and `security` stays +1. No tag added.** *"חיזוק גושי ההתיישבות ובהקמת יישובים חדשים באופן חוקי"* is the West Bank in context, but keeping the blocs is the standard two-state position (the repo owner: not even the Democrats would evacuate מעלה אדומים), and "new settlements" names no place or number. Revision 104's trigger named "the blocs" and is corrected in place to a region outside them, a place or number, or sovereignty. |
 | 2026-09-28 | revision 178 — **ביחד: `security` NULL → +2; `no-palestinian-state` and `pro-settlement` ADDED (24 → 26); on the repo owner's decision.** The joint list answered ynet's questionnaire (27.09): against a Palestinian state and handing over territory, no evacuation of legal settlements in any circumstances, future sovereignty over Area C. The NULL rested on the list's silence on statehood; the site holds nothing newer and בנט says the same. +2, not +1, because the list claims territory (consistent with ישראל ביתנו and כחול לבן); not +3, because A and B are left out. `internally-split-on-conflict` kept for לפיד's two-state record and בן ברק (#12). Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-28 | revision 179 — **ביחד: the Gaza tags re-read against the revised security plan. `preemptive-security-doctrine` ADDED (26 → 27); `hardline-on-gaza` and `territorial-control-gaza` still refused, now on the content.** No siege or supply measures, which every `hardline-on-gaza` holder's evidence is. The Yellow Line hold is conditional on disarmament, with *"אין לנו עניין לנהל את עזה"*, where the territorial tag marks holding land as policy; trigger written. *"חמאס מתעצם – אנחנו תוקפים"* is the preemptive tag's founding text; revision 49's refusal on the Iran plank stands. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-28 | revision 180 — **יהדות התורה: N12's anonymous אגודת ישראל sources say גולדקנופף and טסלר would abstain on an איזנקוט minority government. Nothing scored; `bloc` stays `bibi`.** Anonymous, hypothetical, and contradicted by דגל התורה's הרב הירש in the same article; trigger written. Fits `two-faction-list`. The reporter's "איזנקוט won't rely on non-Zionist parties" is a gloss; his words exclude membership, not abstention (revision 169). |
