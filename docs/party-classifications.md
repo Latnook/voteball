@@ -3421,8 +3421,31 @@ meeting. No axis moved, no tag added, `seed.sql` unchanged.**
   list whose stated position is not shared by one of its two leaders' record and a realistic candidate.
 - **Consequences recorded.** The directional-tag rule that refused `territorial-control-gaza` and
   `hardline-on-gaza` in revision 170 (and `security-hawk` earlier) rested on the NULL; it no longer applies, and
-  those tags should be re-read against the security plan on their own merits in the next pass. **Trigger to
+  those tags should be re-read against the security plan on their own merits in the next pass. *(Done in revision 179.)* **Trigger to
   revisit the number**: a statement by לפיד, or a list document, restoring two states.
+
+**2026-09-28 — revision 179. The Gaza tags re-read on their merits, now that `security` is +2 (revision 178).
+`preemptive-security-doctrine` ADDED (26 → 27 tags; 4 → 5 holders); `hardline-on-gaza` and
+`territorial-control-gaza` still refused, for new reasons.** Source: [the revised security plan](https://be-yahad.org.il/plans/natsec/) (24.09,
+edited 27.09), revision 170.
+
+- **`hardline-on-gaza` REFUSED on the content, where revision 170 refused it on the NULL.** Every holder's
+  evidence is siege or supply measures: ישראל ביתנו cutting water, electricity and fuel, עמך ישראל's *"מצור
+  חכם"*, עוצמה יהודית's closure of all supply. The plan has none. An ultimatum to disarm and strikes on Hamas's
+  build-up are ways of fighting, the line revision 98 drew for המילואימניקים and revision 104 for ישר.
+- **`territorial-control-gaza` REFUSED, and this was the close one.** *"לא נזוז מילימטר מהקו הצהוב עד שחמאס
+  יתפרק לגמרי מנשקו"* holds ground, but **conditionally and as leverage**, and the same paragraph says *"אין לנו
+  עניין לנהל את עזה"*. The tag marks holding Gaza territory **as policy**: המילואימניקים on permanent control
+  on the West Bank model and communities farming land up to the Yellow Line, הציונות הדתית and עוצמה יהודית on
+  sovereignty and resettlement. A hold that ends when Hamas disarms is the opposite of a claim to the land.
+  **Trigger:** a stated permanent presence, a perimeter to be kept or annexed, or settlement in the Strip.
+- **`preemptive-security-doctrine` ADDED, from the same paragraph.** *"חמאס מתעצם – אנחנו תוקפים; חמאס מתאמן –
+  אנחנו תוקפים"*, and *"התעצמות של חמאס ואימונים שלו הם הפרה של הסכם הפסקת האש, והתגובה עליהם תהיה תקיפה
+  מיידית"*, under a doctrine *"מהכלה נעבור להרתעה, מהתשה נעבור להכרעה"*. Striking a threat while it is being
+  built, before it is used, is the tag's founding text almost exactly (ישראל תחילה: *"גדיעת איומים לפני שהם
+  מתפתחים"*). **Revision 22's refusal stands for what it read**: the August plan's Iran plank was retaliatory
+  escalation (*"כל ירי... יביא לתקיפות"*), not preemption, and it still is. The Gaza rule is new in the September
+  rewrite and was never tested against this tag.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -12117,3 +12140,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 176 — **ynet's Judea-and-Samaria questionnaire (27.09). ישראל ביתנו: `anti-oslo` and `anti-two-state` ADDED (22 → 24); עמך ישראל: `sovereignty-annexation` and `pro-settlement` ADDED (9 → 11); both on the repo owner's decision; no axis moved.** ישראל ביתנו names cancelling Oslo and dismantling the PA (revision 148's trigger) and supports sovereignty over Area C only, which stays +2. עמך ישראל claims sovereignty over all of Judea and Samaria and says *הגירה מרצון* for the first time, still with no mechanism. ישר's and ביחד's answers are pending a decision. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-28 | revision 177 — **ישר: the Judea-and-Samaria questionnaire, and `security` stays +1. No tag added.** *"חיזוק גושי ההתיישבות ובהקמת יישובים חדשים באופן חוקי"* is the West Bank in context, but keeping the blocs is the standard two-state position (the repo owner: not even the Democrats would evacuate מעלה אדומים), and "new settlements" names no place or number. Revision 104's trigger named "the blocs" and is corrected in place to a region outside them, a place or number, or sovereignty. |
 | 2026-09-28 | revision 178 — **ביחד: `security` NULL → +2; `no-palestinian-state` and `pro-settlement` ADDED (24 → 26); on the repo owner's decision.** The joint list answered ynet's questionnaire (27.09): against a Palestinian state and handing over territory, no evacuation of legal settlements in any circumstances, future sovereignty over Area C. The NULL rested on the list's silence on statehood; the site holds nothing newer and בנט says the same. +2, not +1, because the list claims territory (consistent with ישראל ביתנו and כחול לבן); not +3, because A and B are left out. `internally-split-on-conflict` kept for לפיד's two-state record and בן ברק (#12). Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-28 | revision 179 — **ביחד: the Gaza tags re-read against the revised security plan. `preemptive-security-doctrine` ADDED (26 → 27); `hardline-on-gaza` and `territorial-control-gaza` still refused, now on the content.** No siege or supply measures, which every `hardline-on-gaza` holder's evidence is. The Yellow Line hold is conditional on disarmament, with *"אין לנו עניין לנהל את עזה"*, where the territorial tag marks holding land as policy; trigger written. *"חמאס מתעצם – אנחנו תוקפים"* is the preemptive tag's founding text; revision 22's refusal on the Iran plank stands. Verified on an already-seeded database; backend suite 271 passed. |
