@@ -3314,6 +3314,31 @@ No axis moved, no tag added, `seed.sql` unchanged.**
   lists all three, and this page read each of them (revisions 105, 29 and 60). A fetch failure was
   scored as a refutation, the same failure revision 48 recorded; the plans stand.
 
+**2026-09-28 — revision 170 (cross-row). ביחד's security plan revised, a בן גביר post, and an N12 report on the bloc
+meeting. No axis moved, no tag added, `seed.sql` unchanged.**
+
+- **ביחד: [*רק ביחד נשמור על הבטחון הלאומי*](https://be-yahad.org.il/plans/natsec/) (published 2026-09-24, edited 27.09) is a rewrite of
+  the August plan this entry scored from, which is still live at `/plans/national-sec/`.** Compared sentence by
+  sentence, most of it is the same doctrine at greater length (Qatar an enemy state, Turkey and Qatar out of Gaza
+  and Egypt in, the Iran equation reversed, *"8300 לתודעה"*, Saudi and Indonesian normalization, illegal weapons as
+  terror, conscription without exemptions). **The one substantive change is Gaza**: the August *"שימור חופש פעולה
+  בעזה"* becomes *"לא נזוז מילימטר מהקו הצהוב עד שחמאס יתפרק לגמרי מנשקו"*, an ultimatum to disarm or be
+  disarmed, and *"אין לנו עניין לנהל את עזה"*. That is a commitment to **hold ground in Gaza until disarmament**.
+  **`territorial-control-gaza` and `hardline-on-gaza` refused on this row's own rule** (the directional-tag test
+  above): both are security-axis tags whose every holder is scored at +2 or +3, and this row's `security` is NULL
+  because the list is split on statehood. A tag would supply the direction the axis withholds. The new plan is
+  still silent on a Palestinian state, so the NULL and `internally-split-on-conflict` stand. Also new: the state
+  commission of inquiry named in the security plan itself, and restoring the Negev Summit.
+- **עוצמה יהודית: בן גביר to חסן סלאמה** ([party site](https://www.ozma-yeudit.co.il/%d7%94%d7%a9%d7%a8-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%9c%d7%90%d7%a8%d7%9b%d7%99-%d7%9e%d7%97%d7%91%d7%9c-%d7%9e%d7%a7%d7%95-18-%d7%a9%d7%90%d7%97%d7%a8%d7%90%d7%99-%d7%9c%d7%a8%d7%a6%d7%97-46/), 28.09.26): *"כשר הביטחון, אפעל לכך שמחבלים רוצחים
+  כמוהו יוצאו להורג, ואקדם את מדיניות ההגירה מעזה ומיהודה ושומרון"*. `death-penalty-for-terrorists` and
+  `voluntary-palestinian-emigration-incentives` corroborated, both held; the Judea-and-Samaria scope was already on
+  the row. The prison visit is conduct in office, not a position.
+- **The bloc meeting, per N12** ([mako](https://www.mako.co.il/news-israel-elections/2026/Article-766c26bb9d3e0a1027.htm), דפנה ליאל, 28.09.26): the candidate question **was raised and not
+  settled**; ליברמן for a bloc strategy with the question left to after the vote, איזנקוט for the largest party
+  forming the government. Both are the positions each stated himself (revisions 118, 148), so this adds nothing
+  to the rotation item. It does settle revision 158's dispute on one point: the subject came up; what was
+  "agreed" about it is still only what the signed text says, which is nothing.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -11911,3 +11936,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 167 — **cross-row: a second research pass on the rows the first missed. No axis moved, no tag added.** ש"ס: דרעי (3.09) declines to call on non-learners to enlist, a first-party gap with אזולאי's line that revision 61 relied on; `scholar-exemption-retained` holds, the distinction recorded as contested inside the party. יהדות התורה: a reported, unsigned דגל–אגודה draft (full exemption, no posts until a draft law) is not scored. רע"ם: עבאס calls moving crime to the שב"כ a fraud, the internal-security sweep item's first opponent. ישראל תחילה: site unchanged; שרן השכל broke with the coalition to vote against the deserter-arrests law. Nothing else new. |
 | 2026-09-28 | revision 168 — **הרשימה המשותפת: כאן on a 10 October 2023 TikTok video by אבו שחאדה (headless Chromium). Nothing scored.** The video repeats the article's line and is silent on Hamas's killings, which weakens the affidavit's "we did not yet know" account; that is for the Supreme Court (1 October). Anonymous legal sources expecting the disqualification to be upheld score nothing; revision 130's decision stands. |
 | 2026-09-28 | revision 169 — **ישר: a הארץ column on the רע"ם line. Nothing scored.** A third account dates the fourth coalition principle to after עבאס's 28 July interview, roughly fitting איזנקוט's "a month ago" and against revision 100's critic; still undated in text before 16 September. The column is right that איזנקוט excludes רע"ם's membership, not its outside support, while ישראל תחילה excludes reliance: the two `excludes-anti-zionist-parties` holders differ, recorded for the exclusion sweep. |
+| 2026-09-28 | revision 170 — **cross-row. No axis moved, no tag added.** ביחד's security plan rewritten at `/plans/natsec/` (24.09): same doctrine, but Gaza moves from "freedom of action" to holding the Yellow Line until Hamas disarms; `territorial-control-gaza` and `hardline-on-gaza` refused on the row's directional-tag rule (security is NULL, statehood still unaddressed). בן גביר's post on executing terrorists and emigration from Gaza and Judea and Samaria corroborates held tags. N12: the bloc discussed its candidate and did not agree; revision 158's dispute is settled only in that the subject came up. |
