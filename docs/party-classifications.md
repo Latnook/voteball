@@ -109,17 +109,17 @@ Negative is dovish, positive is hawkish.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]`, הליכוד `[u]` |
-| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המפלגה הכלכלית `[u]`, ישראל תחילה `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, ביחד `[u]`, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המפלגה הכלכלית `[u]`, ישראל תחילה `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]` |
 | **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
 | **−2** | Two-state with an end to the occupation | חד"ש-תע"ל, רע"ם `[u]` |
 | **−3** | Full withdrawal, right of return, dismantling settlements | בל"ד |
-| **NULL** | No stated position — see the NULL rule above | המחנה הממלכתי `[p]`, רע"ם `[p]`, ביחד `[u]`, הציבור החרדי `[u]` |
+| **NULL** | No stated position — see the NULL rule above | המחנה הממלכתי `[p]`, רע"ם `[p]`, הציבור החרדי `[u]` |
 
 Note **0 and NULL are different claims** here: `0` asserts a party has genuinely taken no side on the
-conflict, `NULL` says none is on record. ביחד is the `NULL` case — its component parties have not
-published a joint position.
+conflict, `NULL` says none is on record. ביחד was the `NULL` case until 2026-09-28, when its joint list
+answered the question (revision 178).
 
 **⚠ The `0` illustration used to be המפלגה הכלכלית, and it was wrong — the row moved to +2 on
 2026-08-17 (revision 23).** This paragraph asserted that it "is an economics party that genuinely
@@ -1158,6 +1158,28 @@ from the opposition. So only votes on a party's **own** side's bills, or votes t
   `term-limits` now has YB votes from 2023 and 2025 behind it); and ישראל ביתנו voted against both rabbinical-
   courts laws, as `anti-clerical` says.
 
+**2026-09-28 — revision 172 (cross-row). Four reports from 28 September. Nothing scored.**
+Sources: [כאן](https://www.kan.org.il/content/kan-news/politic/1104019/) and [כאן](https://www.kan.org.il/content/kan-news/defense/1104028/) (read through headless Chromium); הארץ on
+[סגלוביץ'](https://www.haaretz.co.il/news/elections/2026-09-28/ty-article/000001a0-e7da-d272-adf6-ffde10960000), [נתניהו and בן זאיד](https://www.haaretz.co.il/news/politics/2026-09-28/ty-article/000001a0-e76f-d272-adf6-ffef56e00000) and [בונצל](https://www.haaretz.co.il/news/elections/2026-09-28/ty-article/.premium/000001a0-e7d4-dfbb-afa4-f7d4b3d00000) (bodies supplied by the repo owner).
+
+- **הליכוד: who was warned before 7 October is still not a position** (revisions 100 and 141). New today: two
+  sources say נתניהו asked בן זאיד to deny הארץ's report; the Wall Street Journal and The Atlantic say Egypt's
+  intelligence chief warned Israel in person in September and by phone to נתניהו's office days before. נתניהו
+  denies speaking to him and says he will sue. **His statement also says foreign states want to install
+  *"ממשלת שמאל־מפלגות ערביות של איזנקוט, יאיר גולן וליברמן... ותקים מדינה פלסטינית"*.** That is a claim
+  about other rows, revision 153's line again, and it contradicts what they say: ישר and ישראל ביתנו both
+  hold `no-palestinian-state`, ישראל ביתנו since revision 148.
+- **הליכוד: בונצל (#29) to יוכבד ליפשיץ**, *"הלוואי והייתה דרך להחזיר אותך לידי חמאס"*, after she said
+  מרים אדלסון, not נתניהו, brought the hostages home. He deleted it and apologised. A candidate's post,
+  withdrawn the same day; it scores nothing (revision 49's rule). ליפשיץ is not a party.
+- **רע"ם: סגלוביץ' (#2) on אבו שחאדה**: *"על פי הפסיקה הקיימת... חצה את הגבול"*, better that he not run,
+  yet he opposes the disqualification because the committee is a political body and the court should decide.
+  A candidate's view, and it matches the position the page already records for this row's CEC vote (revision
+  130: רע"ם's members voted against disqualifying lists). הרשימה המשותפת's attack on him, ג'בארין's attack on
+  גולן, and בל"ד's decision to keep אבו שחאדה in the case until Thursday's hearing are list management and rival
+  accounts; they score nothing, and revision 130's decision (both Arab lists stay voteable until the court
+  rules) stands.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -1767,6 +1789,9 @@ readings of them are not.)
 - **Trigger, restated sharper:** a named region (בקעת הירדן, the blocs), a number of units or
   communities, or the word *הרחבה* from איזנקוט or any ישר document → `security` +2 and
   `pro-settlement`, and `anti-annexation` re-read against it.
+  *(Corrected in revision 177: **"the blocs" is struck.** Keeping the large blocs is the standard two-state
+  position, which even −1 rows hold, so naming them cannot mark +2. The trigger is now a named region outside
+  the blocs, such as the Jordan Valley, or new settlements tied to a place or a number, or sovereignty.)*
 
 **The fourth coalition principle now has a first-party date, and it contradicts revision 100's
 columnist.** At the Jerusalem event (Wednesday 2026-09-16, the day of the N12 report revision 85 was
@@ -2037,6 +2062,10 @@ that the PM's adviser linked his private WhatsApp to a service run by a Dubai co
   on is already logged under revisions 125 and 127.
 - **`anti-indicted-pm` stays off this row.** Revision 99 refused it for ישר because the leader's line
   disqualifies a whole cabinet, not a PM on his indictment, and a #2 attacking an aide does not change that.
+- *(2026-09-28, [הארץ](https://www.haaretz.co.il/news/security/2026-09-28/ty-article/000001a0-e7c3-d6e5-adfe-ffffb9dd0000), body supplied by the repo owner: no state body has opened the check כהן
+  asked for; the cyber directorate, the שב"כ and the PM's office each say it is another's, because אוריך is
+  employed by הליכוד, not the office. It also reports that ישר, הדמוקרטים and ביחד hire private cyber protection
+  for their campaigns. Reporting on institutions and campaign logistics; nothing about any row's position.)*
 
 **2026-09-27 — revision 155 (cross-row). An N12 explainer on the change bloc taking the Knesset speakership
 after the election. Nothing scored.**
@@ -2190,7 +2219,35 @@ checkable against this row's own record.
 - **Not scored:** the prediction that עבאס may issue a statement meeting the conditions, and the paraphrase of
   בנט and ליברמן's electoral argument (their own words are on the rotation item already, revisions 146 and 148).
 
-### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
+**2026-09-28 — revision 171. A twelfth principles paper, [*ישר! לצעירים*](https://yasharwitheisenkot.com/principles/youth-and-young-adults/) (published 2026-09-27 09:33 UTC).
+Nothing scored.** Compared sentence by sentence with the young-people topic page revision 161 read, every policy
+line is the same (conscript pay +15% and fighters' +50% in the third year, a ministerial committee on youth,
+rental-market measures, the *ממדים ללימודים* grant widened to all who serve, a personal "launch account"). What
+is new is an introduction: *"מי שתורם לחברה - יצא נתרם ומתועדף על ידה"* and *"חברה חזקה דורשת מכלל מגזריה
+שירות משמעותי, צבאי או אזרחי"*, which is `service-conditioned-citizenship` and `universal-conscription`, both
+held. **Corpus count updated**: this entry's thirteen documents are now fourteen (twelve papers, the goals, the
+brochure), alongside the topic pages revision 160 counted.
+
+**2026-09-28 — revision 177. ynet's Judea-and-Samaria questionnaire (27.09): ישר stays at `security` +1, and
+revision 104's trigger is corrected. No tag added, `seed.sql` unchanged.**
+([ynet + ידיעות אחרונות](https://www.ynet.co.il/news/elections2026/article/yokra14910407); the party's answer, quoted as its own.) *"ישר! תומכת בחיזוק גושי ההתיישבות
+ובהקמת יישובים חדשים באופן חוקי, בהתאם לאינטרסים הלאומיים של ישראל ולהמלצות מערכת הביטחון"*;
+*"הקמת מדינה פלסטינית אינה עומדת על הפרק... אין לנו תוכנית לפינוי יישובים במסגרת הסדר מדיני"*; and against
+sovereignty that risks *"הרוב היהודי"* and a bi-national state.
+
+- **The context makes this the West Bank** (the question was about Judea and Samaria, and the same answer covers
+  outposts and Area C), so it is not the התיישבות homograph. But **the blocs are not a territorial claim of the
+  +2 kind**: keeping them is the standard two-state position, and the repo owner's point settles it: not even
+  הדמוקרטים (−1) propose evacuating מעלה אדומים. Revision 104's trigger named *"the blocs"* and was too loose;
+  it is corrected in place.
+- **The rest does not reach +2 either.** *"הקמת יישובים חדשים באופן חוקי... בהתאם להמלצות מערכת הביטחון"*
+  names no place and no number, the same conditional shape revision 104 found compatible with +1. `pro-settlement`
+  stays off (every holder's grant is a forward commitment tied to a region or to expansion as such), and
+  `anti-annexation` is confirmed by the sovereignty line. `no-palestinian-state` (held) is corroborated.
+- **ביחד's answer in the same questionnaire is a different matter** and is recorded under that row when decided:
+  it goes past the blocs (no Palestinian state, no evacuation *"בכל מצב"*, sovereignty over Area C).
+
+### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
 Bennett as chair and Lapid at #2. The components remain separate and autonomous.
@@ -3314,6 +3371,82 @@ No axis moved, no tag added, `seed.sql` unchanged.**
   lists all three, and this page read each of them (revisions 105, 29 and 60). A fetch failure was
   scored as a refutation, the same failure revision 48 recorded; the plans stand.
 
+**2026-09-28 — revision 170 (cross-row). ביחד's security plan revised, a בן גביר post, and an N12 report on the bloc
+meeting. No axis moved, no tag added, `seed.sql` unchanged.**
+
+- **ביחד: [*רק ביחד נשמור על הבטחון הלאומי*](https://be-yahad.org.il/plans/natsec/) (published 2026-09-24, edited 27.09) is a rewrite of
+  the August plan this entry scored from, which is still live at `/plans/national-sec/`.** Compared sentence by
+  sentence, most of it is the same doctrine at greater length (Qatar an enemy state, Turkey and Qatar out of Gaza
+  and Egypt in, the Iran equation reversed, *"8300 לתודעה"*, Saudi and Indonesian normalization, illegal weapons as
+  terror, conscription without exemptions). **The one substantive change is Gaza**: the August *"שימור חופש פעולה
+  בעזה"* becomes *"לא נזוז מילימטר מהקו הצהוב עד שחמאס יתפרק לגמרי מנשקו"*, an ultimatum to disarm or be
+  disarmed, and *"אין לנו עניין לנהל את עזה"*. That is a commitment to **hold ground in Gaza until disarmament**.
+  **`territorial-control-gaza` and `hardline-on-gaza` refused on this row's own rule** (the directional-tag test
+  above): both are security-axis tags whose every holder is scored at +2 or +3, and this row's `security` is NULL
+  because the list is split on statehood. A tag would supply the direction the axis withholds. The new plan is
+  still silent on a Palestinian state, so the NULL and `internally-split-on-conflict` stand. Also new: the state
+  commission of inquiry named in the security plan itself, and restoring the Negev Summit.
+- **עוצמה יהודית: בן גביר to חסן סלאמה** ([party site](https://www.ozma-yeudit.co.il/%d7%94%d7%a9%d7%a8-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%9c%d7%90%d7%a8%d7%9b%d7%99-%d7%9e%d7%97%d7%91%d7%9c-%d7%9e%d7%a7%d7%95-18-%d7%a9%d7%90%d7%97%d7%a8%d7%90%d7%99-%d7%9c%d7%a8%d7%a6%d7%97-46/), 28.09.26): *"כשר הביטחון, אפעל לכך שמחבלים רוצחים
+  כמוהו יוצאו להורג, ואקדם את מדיניות ההגירה מעזה ומיהודה ושומרון"*. `death-penalty-for-terrorists` and
+  `voluntary-palestinian-emigration-incentives` corroborated, both held; the Judea-and-Samaria scope was already on
+  the row. The prison visit is conduct in office, not a position.
+- **The bloc meeting, per N12** ([mako](https://www.mako.co.il/news-israel-elections/2026/Article-766c26bb9d3e0a1027.htm), דפנה ליאל, 28.09.26): the candidate question **was raised and not
+  settled**; ליברמן for a bloc strategy with the question left to after the vote, איזנקוט for the largest party
+  forming the government. Both are the positions each stated himself (revisions 118, 148), so this adds nothing
+  to the rotation item. It does settle revision 158's dispute on one point: the subject came up; what was
+  "agreed" about it is still only what the signed text says, which is nothing.
+
+**2026-09-28 — revision 178. `security` NULL → +2, and `no-palestinian-state` and `pro-settlement` ADDED (24 →
+26 tags), on the repo owner's decision. The joint list has answered the statehood question.**
+([ynet + ידיעות אחרונות](https://www.ynet.co.il/news/elections2026/article/yokra14910407), 27.09.26; the answer is attributed to *"המפלגה"*, the list, not to one leader.)
+*"אנו תומכים בהתיישבות יהודית בכל מקום בו זה נעשה באופן חוקי. מתנגדים למדינה פלסטינית ומסירת שטחים"*;
+*"מתנגדים לפינוי יישובים יהודיים שנבנו בהתאם לחוק בכל מצב שהוא"*; *"תוכנית בנט מ-2012 רואה את שטחי C כחלק עתידי
+ריבוני של מדינת ישראל. מובן שיש להפעיל שיקול דעת לגבי העיתוי"*; illegal Palestinian building in C removed.
+
+- **Why the NULL goes.** This row's `security` was NULL for one stated reason: a joint document detailed on
+  every other security question and *silent on statehood*, which read as the two leaders' split. The list now
+  states a position on exactly that question, in the list's name. No better source exists: all 87 Hebrew pages of
+  be-yahad.org.il were searched and none mentions a Palestinian state (*"ריבונות"* there means the Negev and
+  crime), and this is the newest statement from the list itself. בנט's own words say the same (3 July: *"אני נגד
+  מדינה פלסטינית נקודה... בשטחי C מתיישבים על פי חוק, ובשטחי A ו-B הרשות מנהלת"*; 28 August: *"מי שמתנגד למדינה
+  פלסטינית - צריך לתמוך בהתיישבות"*).
+- **Why +2 and not +1.** +1 is no state *and explicitly refusing territorial expansion*; the list claims future
+  sovereignty over Area C and rules out evacuation in any circumstances, the opposite. It matches ישראל ביתנו
+  (sovereignty over C, +2, revision 176) and exceeds כחול לבן (+2). The timing caveat defers the claim; it does not
+  withdraw it. **Not +3 and no `sovereignty-annexation`**: Areas A and B are left to the PA, and every holder of
+  that tag claims the whole territory.
+- **Why not lower on account of לפיד.** His pre-merger record is two states ([כלכליסט](https://www.calcalist.co.il/local_news/article/rkr11sf5bo), not re-read), and
+  רם בן ברק (#12) backed conditional statehood on 25.09 (revision 139). Lowering the number for them would be the
+  averaging this entry forbids. **The split stays in `internally-split-on-conflict`, which is kept**, now meaning a
+  list whose stated position is not shared by one of its two leaders' record and a realistic candidate.
+- **Consequences recorded.** The directional-tag rule that refused `territorial-control-gaza` and
+  `hardline-on-gaza` in revision 170 (and `security-hawk` earlier) rested on the NULL; it no longer applies, and
+  those tags should be re-read against the security plan on their own merits in the next pass. *(Done in revision 179.)* **Trigger to
+  revisit the number**: a statement by לפיד, or a list document, restoring two states.
+
+**2026-09-28 — revision 179. The Gaza tags re-read on their merits, now that `security` is +2 (revision 178).
+`preemptive-security-doctrine` ADDED (26 → 27 tags; 4 → 5 holders); `hardline-on-gaza` and
+`territorial-control-gaza` still refused, for new reasons.** Source: [the revised security plan](https://be-yahad.org.il/plans/natsec/) (24.09,
+edited 27.09), revision 170.
+
+- **`hardline-on-gaza` REFUSED on the content, where revision 170 refused it on the NULL.** Every holder's
+  evidence is siege or supply measures: ישראל ביתנו cutting water, electricity and fuel, עמך ישראל's *"מצור
+  חכם"*, עוצמה יהודית's closure of all supply. The plan has none. An ultimatum to disarm and strikes on Hamas's
+  build-up are ways of fighting, the line revision 98 drew for המילואימניקים and revision 104 for ישר.
+- **`territorial-control-gaza` REFUSED, and this was the close one.** *"לא נזוז מילימטר מהקו הצהוב עד שחמאס
+  יתפרק לגמרי מנשקו"* holds ground, but **conditionally and as leverage**, and the same paragraph says *"אין לנו
+  עניין לנהל את עזה"*. The tag marks holding Gaza territory **as policy**: המילואימניקים on permanent control
+  on the West Bank model and communities farming land up to the Yellow Line, הציונות הדתית and עוצמה יהודית on
+  sovereignty and resettlement. A hold that ends when Hamas disarms is the opposite of a claim to the land.
+  **Trigger:** a stated permanent presence, a perimeter to be kept or annexed, or settlement in the Strip.
+- **`preemptive-security-doctrine` ADDED, from the same paragraph.** *"חמאס מתעצם – אנחנו תוקפים; חמאס מתאמן –
+  אנחנו תוקפים"*, and *"התעצמות של חמאס ואימונים שלו הם הפרה של הסכם הפסקת האש, והתגובה עליהם תהיה תקיפה
+  מיידית"*, under a doctrine *"מהכלה נעבור להרתעה, מהתשה נעבור להכרעה"*. Striking a threat while it is being
+  built, before it is used, is the tag's founding text almost exactly (ישראל תחילה: *"גדיעת איומים לפני שהם
+  מתפתחים"*). **Revision 49's refusal stands for what it read**: the August plan's Iran plank was retaliatory
+  escalation (*"כל ירי... יביא לתקיפות"*), not preemption, and it still is. The Gaza rule is new in the September
+  rewrite and was never tested against this tag.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -3612,11 +3745,11 @@ Sources: the thirteen papers below — the first eight read 2026-08-01, מילו
 2026-08-11, חברה ערבית 2026-08-31, and פיתוח הצפון והדרום and המרחב הכפרי 2026-09-03 — all first-party
 (`democrats-media.s3.us-east-1.amazonaws.com`):
 [מדיני־ביטחוני](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%93%D7%99%D7%A0%D7%99+%D7%91%D7%99%D7%98%D7%97%D7%95%D7%A0%D7%99+(1).pdf),
-[כלכלי־חברתי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+(2).pdf),
+[כלכלי־חברתי](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+%282%29.pdf),
 [דת ומדינה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%AA+%D7%95%D7%9E%D7%93%D7%99%D7%A0%D7%94.pdf),
 [דמוקרטיה ומשפט](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%9E%D7%95%D7%A7%D7%A8%D7%98%D7%99%D7%94+%D7%95%D7%9E%D7%A9%D7%A4%D7%98.pdf),
 [חינוך](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A0%D7%95%D7%9A.pdf),
-[להט"ב](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9C%D7%94%D7%98%D7%91+(2).pdf),
+[להט"ב](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9C%D7%94%D7%98%D7%91+%282%29.pdf),
 [חיסול הפשע המאורגן](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%97%D7%99%D7%A1%D7%95%D7%9C+%D7%94%D7%A4%D7%A9%D7%A2+%D7%94%D7%9E%D7%90%D7%95%D7%A8%D7%92%D7%9F.pdf),
 [סביבה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%A6%D7%A2+%D7%A1%D7%91%D7%99%D7%91%D7%94.pdf),
 [מילואימניקים](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9E%D7%99%D7%9C%D7%95%D7%90%D7%99%D7%9E%D7%A0%D7%99%D7%A7%D7%99%D7%9D.pdf),
@@ -4109,6 +4242,56 @@ moved, no tag added, `seed.sql` unchanged.**
   an agreement to exclude, and it did not bind this row to one. He also says he understands the parties to
   his right *"שיש להן קושי לומר את זה בפה מלא"*; that is his reading of rivals and is not scored on them.
 - **רע"ם: nothing**, as in revisions 85 and 143: another party talking about the row.
+
+**2026-09-28 — revision 173. A new *עלייה וקליטה* topic, in Hebrew and Russian, created today. Nothing scored.**
+([Hebrew](https://yes.democrats.org.il/topics/aliyah), [Russian](https://yes.democrats.org.il/topics/aliyah_ru); the site renders client-side, so the text was read from its public Supabase
+`topics` table, the same rows the page loads: `aliyah` created 2026-09-28 10:24 UTC, `aliyah_ru` 10:37.) Thirteen
+pledges: fewer barriers to aliyah, a bigger absorption basket, housing for immigrants, one bureaucratic address
+with services in immigrants' languages, recognition of degrees, Hebrew for every immigrant, support for lone
+soldiers and immigrant reservists, a shorter process for Israelis' foreign spouses, a five-year plan to bring back
+Israelis who left, and two lines that are positions rather than services:
+
+- ***"נגן על חוק השבות ועל הזכויות של זכאי השבות"***, a commitment to defend the Law of Return as it stands, which
+  in this election is the answer to the proposals to repeal its grandchild clause. **No tag covers the Law of
+  Return on either side**; recorded as a gap for the sweep queue, since a tag minted from one row would measure
+  what this page happened to read.
+- ***"נבטיח חופש בחירה ושוויון במעמד האישי"***, which is `civil-marriage` (held) aimed at the immigrants the
+  Rabbinate does not recognise as Jewish.
+- **`aliyah-absorption` NOT added, and the reason is the tag, not the text.** It has one holder (הציבור החרדי)
+  and no written definition on this page; ישר publishes two full aliyah papers (revision 21) and was never given
+  it. Adding it here would make it mean "a row whose aliyah page this page read", the `periphery-development`
+  failure revision 19 retired a tag for. Filed with the Law-of-Return gap: define it, then apply it across rows
+  in one pass, or retire it.
+- **The Russian-language version** is outreach to the constituency the unminted Russian-speaking representation
+  item (under ישראל ביתנו) is about; it moves nothing.
+
+**2026-09-28 — revision 174. The full aliyah plan, a transport topic, and an audit of the whole corpus against the
+site's own list. Nothing scored.**
+The site's public Supabase `topics` table lists **25 topics**, each with its PDF; it is the list the pages load,
+so it bounds the corpus the way a sitemap does elsewhere.
+
+- **[*תוכנית עלייה וקליטה*](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%A2%D7%9C%D7%99%D7%99%D7%94+%D7%95%D7%A7%D7%9C%D7%99%D7%98%D7%94.pdf) (4pp, created 28.09 13:08; [Russian edition](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%A8%D7%95%D7%A1%D7%99%D7%AA_%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%A2%D7%9C%D7%99%D7%99%D7%94+%D7%95%D7%A7%D7%9C%D7%99%D7%98%D7%94.pdf), 6pp), the document
+  behind revision 173's topic, and sharper than it: *"נעגן את חוק השבות בחוק יסוד ונגן על זכויותיהם של נכדי
+  יהודים מכוחו"*, *"נתנגד לכל ניסיון להעניק לממסד הרבני האורתודוקסי מונופול על הגיורים"*, *"יחס שווה ומכבד
+  לכל זרמי היהדות"*, civil marriage and civil burial, Shabbat public transport nationwide, and Shabbat commerce
+  devolved to local authorities. `religious-pluralism`, `civil-marriage` and `municipal-devolution` are
+  corroborated, all held. The Law-of-Return gap revision 173 filed now has its clearest first-party pole: the
+  grandchild clause, defended by name.
+- **[*תחבורה ובטיחות בדרכים*](https://yes.democrats.org.il/topics/transportation)** (created 27.09, no PDF): public-transport lanes and rail, a metropolitan
+  transport-authorities law, the Kiryat Shmona line and Route 6 north, **a new airport in the Negev**, the national
+  road-safety plan funded, and *"תחבורה ציבורית בשבת"* with local arrangements and workers' rest rights. No
+  transport tag exists; the Shabbat line is already on the row.
+- **The audit: every topic's PDF has been read, and four were revised after they were.** Two changed in substance:
+  - **The crime plan (current file 06.08) DROPPED *"הורדת הרף הראייתי הנדרש"*** from its legislative package
+    against organised crime, keeping minimum sentences, biometrics and anti-money-laundering. Lowering the standard
+    of proof was the plan's one civil-liberties cost; the party removed it. The team named after the children
+    murdered *"בתקופת בן גביר"* went from 56 to 49.
+  - **Education (current file 16.08)** adds a funded youth-movement and non-formal-education chapter and a
+    five-year school-building plan. `core-curriculum` and `state-haredi-education` are untouched.
+  - The economic and LGBT papers were reworded; the LGBT one now puts the LGBT unit at ₪100m a year in the
+    budget base, and the economic one names *"תקציבים מגזריים למקורבים ולמשתמטים"*, the anti-sectoral pole
+    revision 157 filed. **Two links above to these papers were broken** (a raw `(2)` in the URL ends a Markdown
+    link) and are fixed.
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -5131,6 +5314,24 @@ Two parts: a government programme for internal security, and a campaign section 
   use of the *"חוק הנכבה"* to deny funds to bodies acting against the state, with sanctions for incitement
   and enemy flags on campuses. `service-conditioned-citizenship` (held) is corroborated by the land-price
   clause.
+
+**2026-09-28 — revision 176. ynet's Judea-and-Samaria questionnaire (27.09.26): `anti-oslo` and `anti-two-state`
+ADDED (22 → 24 tags), on the repo owner's decision; no axis moved.** ([ynet + ידיעות אחרונות](https://www.ynet.co.il/news/elections2026/article/yokra14910407); each party's
+answer is quoted as its own, the standard revision 134 set for these questionnaires.)
+
+- **Revision 148's trigger is met.** It kept both tags off because ליברמן named neither Oslo nor the framework, and
+  asked for *"Oslo named by the chairman"* or a platform plank. The party's answer: *"33 שנים אחרי הסכם אוסלו,
+  ברור שהניסיון נכשל... חייבים לחשוב בצורה חכמה איך מבטלים את הסכמי אוסלו ומפרקים את הרשות הפלסטינית"*.
+  Cancelling the agreements is what `anti-oslo` records, and repealing the framework is what separates
+  `anti-two-state` from `no-palestinian-state` (held since revision 148).
+- **Sovereignty over Area C, and `security` stays +2.** *"תומכים בהחלת ריבונות ישראלית בשטחי C"*, with the party's
+  own bills on מעלה אדומים, ביתר עילית and the Jordan Valley. That is more than revision 117's *control* of C, but
+  Areas A and B are still left out, which keeps it inside the +2 band (*sovereignty over security-essential
+  areas*); every `sovereignty-annexation` holder claims Judea and Samaria as a whole, so that tag stays off.
+  It also narrows revision 166's contradiction: the party now claims sovereignty over C, not the whole territory
+  its October 2025 vote covered.
+- **Also recorded:** building in E1, enforcement against illegal Palestinian building in C (*"חאן אל-אחמר"*), and
+  opposition to illegal outposts. `pro-settlement` (held) corroborated.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -7251,6 +7452,15 @@ each quote below was attributed by what it says, and only lines that are unmista
 - **Not scored:** the prisons, the flotilla, the claims about falling terror and crime numbers (his
   account of his record), the polls at nine seats (revision 114's 8–9 stands), and the jabs at נתניהו.
 
+**2026-09-28 — revision 175. N12 and FakeReporter: about 100 AI-generated profiles linked to the campaign's
+consultancy. Nothing scored.** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-fbd47d952c7e0a1027.htm), עמית סגל, 28.09.26 15:44, read from the page's `articleBody`.) The
+report attributes the profiles to רוזנבאום תקשורת, the firm running עוצמה יהודית's campaign: comments backing בן
+גביר, urging גוטליב to join before she did, and attacking סמוטריץ' and וינטר (*"סוכן של בנט"*). **Campaign
+conduct, not a position** (revision 114's tier for the campaign apparatus), and it is an investigation's finding,
+not a ruling; FakeReporter asks the Central Elections Committee to examine it. **The party's reply does not deny
+it**: *"אותו 'תחקיר', אותם גורמי שמאל... צבא של כסף זר"*. וינטר's reply is a rival's. If the committee rules on
+it, that is a finding about the campaign and still scores nothing on the row.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -9128,6 +9338,16 @@ Chromium. The quotes are his; the rest is כאן's summary of the interview.)
   משילות"* (diagnosis); the claim that the army under איזנקוט lied to the cabinet in 2018 to avoid striking
   Gaza, and the jab at his appointments (a rival's account, revision 44's tier).
 
+**2026-09-28 — revision 176. ynet's Judea-and-Samaria questionnaire: `sovereignty-annexation` and `pro-settlement`
+ADDED (9 → 11 tags), on the repo owner's decision; no axis moved.** ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14910407), 27.09.26.) The party's answer:
+*"תומכים בהקמת יישובים ביהודה ושומרון ובכל חבלי הארץ"*, *"לעולם לא תקום לצדנו מדינה פלסטינית... על המדינה
+להעמיק את האחיזה בקרקע ולהחיל ריבונות ביהודה ושומרון ובכל מקום בארץ"*, no evacuation ever, illegal Palestinian
+building demolished *"ובמקביל להוציא אל הפועל את תוכנית ההגירה מרצון"*. Sovereignty over Judea and Samaria
+as a whole is the tag's founding shape, and the row's `security` is already +3. **The emigration line is the
+first time this row has said *מרצון***, where revision 32 refused both emigration tags because הגירה was a bare
+noun; it names no mechanism or incentive, so `voluntary-palestinian-emigration-incentives` is still not added.
+**Trigger:** a stated mechanism.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -10369,6 +10589,22 @@ Lando personally, not to the מועצת גדולי התורה as a body. `rabbin
 
 ---
 
+**2026-09-28 — revision 180. N12: anonymous אגודת ישראל sources say גולדקנופף would abstain on an איזנקוט
+minority government. Nothing scored; `bloc` stays `bibi`.** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-61db690eff8e0a1027.htm), עמית סגל, 28.09.26 20:30,
+read from the page's `articleBody`.) *"גורמים בכירים באגודת ישראל"* say גולדקנופף and טסלר (גור) would abstain
+rather than vote against a government איזנקוט forms without 61, because the Gerrer Rebbe considers נתניהו finished;
+they expect the rest of אגודה, and perhaps דגל התורה, to follow, and hope for a political return.
+
+- **Anonymous, about a hypothetical vote, and contradicted inside the same article**: דגל התורה's הרב הירש said a day
+  earlier that everything must be done to stop the left. `bloc` records whom a row says it backs, and no party
+  voice has said this (revision 44's tier; revision 137 applied the same rule to נתניהו's reported view of וינטר).
+  **Trigger:** a named אגודה or גור statement, or the vote itself.
+- **It bears on this row's `two-faction-list`** (revision 61), since the story is about the two factions
+  diverging, and that tag already records that they bargain separately.
+- **The reporter's line that איזנקוט *"לא יסתמך על מפלגות שאינן ציוניות"* is a gloss, not a quote.** Revision 169
+  found that his own words exclude רע"ם's *membership*, not outside support; an abstention is the kind of outside
+  support his words leave open, which is why the report is not a contradiction of them.
+
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
 
 New party, added 2026-09-14. Registered with the registrar of parties on **2026-07-05** under the
@@ -11109,7 +11345,7 @@ bought nothing here, because the defect was never in the pixels being measured.
   restructure is not the same as anticipating its shape. **Still open in a narrower form:** רע"ם
   declined to join and runs alone, with the door left open until the September list-submission
   deadline — if it joins, this row changes again.
-- **ביחד's `security`** is the only NULL axis on a Jewish *upcoming* party (המחנה הממלכתי carries a
+- *(Resolved 2026-09-28, revision 178: ביחד's joint list stated a position and the row is now +2.)* **ביחד's `security`** was the only NULL axis on a Jewish *upcoming* party (המחנה הממלכתי carries a
   NULL security among the frozen previous rows, for the same "no stated position" reason). It
   resolves only if the components merge or publish a joint position — or splits into two rows if the
   list dissolves. **Re-verified 2026-08-01: still no joint platform**, and the dissolution watch is
@@ -11911,3 +12147,14 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 167 — **cross-row: a second research pass on the rows the first missed. No axis moved, no tag added.** ש"ס: דרעי (3.09) declines to call on non-learners to enlist, a first-party gap with אזולאי's line that revision 61 relied on; `scholar-exemption-retained` holds, the distinction recorded as contested inside the party. יהדות התורה: a reported, unsigned דגל–אגודה draft (full exemption, no posts until a draft law) is not scored. רע"ם: עבאס calls moving crime to the שב"כ a fraud, the internal-security sweep item's first opponent. ישראל תחילה: site unchanged; שרן השכל broke with the coalition to vote against the deserter-arrests law. Nothing else new. |
 | 2026-09-28 | revision 168 — **הרשימה המשותפת: כאן on a 10 October 2023 TikTok video by אבו שחאדה (headless Chromium). Nothing scored.** The video repeats the article's line and is silent on Hamas's killings, which weakens the affidavit's "we did not yet know" account; that is for the Supreme Court (1 October). Anonymous legal sources expecting the disqualification to be upheld score nothing; revision 130's decision stands. |
 | 2026-09-28 | revision 169 — **ישר: a הארץ column on the רע"ם line. Nothing scored.** A third account dates the fourth coalition principle to after עבאס's 28 July interview, roughly fitting איזנקוט's "a month ago" and against revision 100's critic; still undated in text before 16 September. The column is right that איזנקוט excludes רע"ם's membership, not its outside support, while ישראל תחילה excludes reliance: the two `excludes-anti-zionist-parties` holders differ, recorded for the exclusion sweep. |
+| 2026-09-28 | revision 170 — **cross-row. No axis moved, no tag added.** ביחד's security plan rewritten at `/plans/natsec/` (24.09): same doctrine, but Gaza moves from "freedom of action" to holding the Yellow Line until Hamas disarms; `territorial-control-gaza` and `hardline-on-gaza` refused on the row's directional-tag rule (security is NULL, statehood still unaddressed). בן גביר's post on executing terrorists and emigration from Gaza and Judea and Samaria corroborates held tags. N12: the bloc discussed its candidate and did not agree; revision 158's dispute is settled only in that the subject came up. |
+| 2026-09-28 | revision 171 — **ישר: a twelfth principles paper, *ישר! לצעירים* (27.09). Nothing scored.** Its policy lines match the young-people topic page read in revision 161; the new introduction restates `service-conditioned-citizenship` and `universal-conscription`, both held. Corpus now fourteen documents. |
+| 2026-09-28 | revision 172 — **cross-row: four reports of 28 September. Nothing scored.** The pre-7-October warnings (בן זאיד, Egypt's כאמל) are not positions (revisions 100, 141); נתניהו's claim that foreign states want an Eisenkot–Golan–Lieberman government that would create a Palestinian state is a claim about other rows and contradicts their `no-palestinian-state` tags. בונצל (#29)'s deleted post to יוכבד ליפשיץ is a candidate's. סגלוביץ' (רע"ם #2) says אבו שחאדה crossed the line but opposes disqualifying him; candidate tier, consistent with רע"ם's CEC vote. |
+| 2026-09-28 | revision 173 — **הדמוקרטים: a new *עלייה וקליטה* topic in Hebrew and Russian (created 28.09, read from the site's public Supabase table). Nothing scored.** Thirteen pledges, mostly services; the two positions are defending the Law of Return as it stands (no tag covers it on either side; queued) and equality in personal status (`civil-marriage`, held). `aliyah-absorption` not added: one holder, no definition, and ישר's two aliyah papers never earned it; queued to be defined or retired. |
+| 2026-09-28 | revision 174 — **הדמוקרטים: the aliyah PDF (Hebrew and Russian), a transport topic, and a corpus audit against the site's Supabase list of 25 topics. Nothing scored.** The aliyah plan would put the Law of Return in a Basic Law and defend the grandchild clause, and opposes an Orthodox conversion monopoly; held tags corroborated. Every topic PDF has been read; four were revised since, and the crime plan dropped "lowering the standard of proof". Two broken links fixed. |
+| 2026-09-28 | revision 175 — **עוצמה יהודית: N12/FakeReporter link about 100 AI-generated profiles to the campaign's consultancy. Nothing scored.** Campaign conduct (revision 114's tier), an investigation's finding rather than a ruling; the party's reply attacks the source and does not deny it. |
+| 2026-09-28 | revision 176 — **ynet's Judea-and-Samaria questionnaire (27.09). ישראל ביתנו: `anti-oslo` and `anti-two-state` ADDED (22 → 24); עמך ישראל: `sovereignty-annexation` and `pro-settlement` ADDED (9 → 11); both on the repo owner's decision; no axis moved.** ישראל ביתנו names cancelling Oslo and dismantling the PA (revision 148's trigger) and supports sovereignty over Area C only, which stays +2. עמך ישראל claims sovereignty over all of Judea and Samaria and says *הגירה מרצון* for the first time, still with no mechanism. ישר's and ביחד's answers are pending a decision. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-28 | revision 177 — **ישר: the Judea-and-Samaria questionnaire, and `security` stays +1. No tag added.** *"חיזוק גושי ההתיישבות ובהקמת יישובים חדשים באופן חוקי"* is the West Bank in context, but keeping the blocs is the standard two-state position (the repo owner: not even the Democrats would evacuate מעלה אדומים), and "new settlements" names no place or number. Revision 104's trigger named "the blocs" and is corrected in place to a region outside them, a place or number, or sovereignty. |
+| 2026-09-28 | revision 178 — **ביחד: `security` NULL → +2; `no-palestinian-state` and `pro-settlement` ADDED (24 → 26); on the repo owner's decision.** The joint list answered ynet's questionnaire (27.09): against a Palestinian state and handing over territory, no evacuation of legal settlements in any circumstances, future sovereignty over Area C. The NULL rested on the list's silence on statehood; the site holds nothing newer and בנט says the same. +2, not +1, because the list claims territory (consistent with ישראל ביתנו and כחול לבן); not +3, because A and B are left out. `internally-split-on-conflict` kept for לפיד's two-state record and בן ברק (#12). Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-28 | revision 179 — **ביחד: the Gaza tags re-read against the revised security plan. `preemptive-security-doctrine` ADDED (26 → 27); `hardline-on-gaza` and `territorial-control-gaza` still refused, now on the content.** No siege or supply measures, which every `hardline-on-gaza` holder's evidence is. The Yellow Line hold is conditional on disarmament, with *"אין לנו עניין לנהל את עזה"*, where the territorial tag marks holding land as policy; trigger written. *"חמאס מתעצם – אנחנו תוקפים"* is the preemptive tag's founding text; revision 49's refusal on the Iran plank stands. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-28 | revision 180 — **יהדות התורה: N12's anonymous אגודת ישראל sources say גולדקנופף and טסלר would abstain on an איזנקוט minority government. Nothing scored; `bloc` stays `bibi`.** Anonymous, hypothetical, and contradicted by דגל התורה's הרב הירש in the same article; trigger written. Fits `two-faction-list`. The reporter's "איזנקוט won't rely on non-Zionist parties" is a gloss; his words exclude membership, not abstention (revision 169). |
