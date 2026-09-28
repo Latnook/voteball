@@ -1158,6 +1158,28 @@ from the opposition. So only votes on a party's **own** side's bills, or votes t
   `term-limits` now has YB votes from 2023 and 2025 behind it); and ישראל ביתנו voted against both rabbinical-
   courts laws, as `anti-clerical` says.
 
+**2026-09-28 — revision 172 (cross-row). Four reports from 28 September. Nothing scored.**
+Sources: [כאן](https://www.kan.org.il/content/kan-news/politic/1104019/) and [כאן](https://www.kan.org.il/content/kan-news/defense/1104028/) (read through headless Chromium); הארץ on
+[סגלוביץ'](https://www.haaretz.co.il/news/elections/2026-09-28/ty-article/000001a0-e7da-d272-adf6-ffde10960000), [נתניהו and בן זאיד](https://www.haaretz.co.il/news/politics/2026-09-28/ty-article/000001a0-e76f-d272-adf6-ffef56e00000) and [בונצל](https://www.haaretz.co.il/news/elections/2026-09-28/ty-article/.premium/000001a0-e7d4-dfbb-afa4-f7d4b3d00000) (bodies supplied by the repo owner).
+
+- **הליכוד: who was warned before 7 October is still not a position** (revisions 100 and 141). New today: two
+  sources say נתניהו asked בן זאיד to deny הארץ's report; the Wall Street Journal and The Atlantic say Egypt's
+  intelligence chief warned Israel in person in September and by phone to נתניהו's office days before. נתניהו
+  denies speaking to him and says he will sue. **His statement also says foreign states want to install
+  *"ממשלת שמאל־מפלגות ערביות של איזנקוט, יאיר גולן וליברמן... ותקים מדינה פלסטינית"*.** That is a claim
+  about other rows, revision 153's line again, and it contradicts what they say: ישר and ישראל ביתנו both
+  hold `no-palestinian-state`, ישראל ביתנו since revision 148.
+- **הליכוד: בונצל (#29) to יוכבד ליפשיץ**, *"הלוואי והייתה דרך להחזיר אותך לידי חמאס"*, after she said
+  מרים אדלסון, not נתניהו, brought the hostages home. He deleted it and apologised. A candidate's post,
+  withdrawn the same day; it scores nothing (revision 49's rule). ליפשיץ is not a party.
+- **רע"ם: סגלוביץ' (#2) on אבו שחאדה**: *"על פי הפסיקה הקיימת... חצה את הגבול"*, better that he not run,
+  yet he opposes the disqualification because the committee is a political body and the court should decide.
+  A candidate's view, and it matches the position the page already records for this row's CEC vote (revision
+  130: רע"ם's members voted against disqualifying lists). הרשימה המשותפת's attack on him, ג'בארין's attack on
+  גולן, and בל"ד's decision to keep אבו שחאדה in the case until Thursday's hearing are list management and rival
+  accounts; they score nothing, and revision 130's decision (both Arab lists stay voteable until the court
+  rules) stands.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -11947,3 +11969,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 169 — **ישר: a הארץ column on the רע"ם line. Nothing scored.** A third account dates the fourth coalition principle to after עבאס's 28 July interview, roughly fitting איזנקוט's "a month ago" and against revision 100's critic; still undated in text before 16 September. The column is right that איזנקוט excludes רע"ם's membership, not its outside support, while ישראל תחילה excludes reliance: the two `excludes-anti-zionist-parties` holders differ, recorded for the exclusion sweep. |
 | 2026-09-28 | revision 170 — **cross-row. No axis moved, no tag added.** ביחד's security plan rewritten at `/plans/natsec/` (24.09): same doctrine, but Gaza moves from "freedom of action" to holding the Yellow Line until Hamas disarms; `territorial-control-gaza` and `hardline-on-gaza` refused on the row's directional-tag rule (security is NULL, statehood still unaddressed). בן גביר's post on executing terrorists and emigration from Gaza and Judea and Samaria corroborates held tags. N12: the bloc discussed its candidate and did not agree; revision 158's dispute is settled only in that the subject came up. |
 | 2026-09-28 | revision 171 — **ישר: a twelfth principles paper, *ישר! לצעירים* (27.09). Nothing scored.** Its policy lines match the young-people topic page read in revision 161; the new introduction restates `service-conditioned-citizenship` and `universal-conscription`, both held. Corpus now fourteen documents. |
+| 2026-09-28 | revision 172 — **cross-row: four reports of 28 September. Nothing scored.** The pre-7-October warnings (בן זאיד, Egypt's כאמל) are not positions (revisions 100, 141); נתניהו's claim that foreign states want an Eisenkot–Golan–Lieberman government that would create a Palestinian state is a claim about other rows and contradicts their `no-palestinian-state` tags. בונצל (#29)'s deleted post to יוכבד ליפשיץ is a candidate's. סגלוביץ' (רע"ם #2) says אבו שחאדה crossed the line but opposes disqualifying him; candidate tier, consistent with רע"ם's CEC vote. |
