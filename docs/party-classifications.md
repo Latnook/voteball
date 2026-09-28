@@ -1789,6 +1789,9 @@ readings of them are not.)
 - **Trigger, restated sharper:** a named region (בקעת הירדן, the blocs), a number of units or
   communities, or the word *הרחבה* from איזנקוט or any ישר document → `security` +2 and
   `pro-settlement`, and `anti-annexation` re-read against it.
+  *(Corrected in revision 177: **"the blocs" is struck.** Keeping the large blocs is the standard two-state
+  position, which even −1 rows hold, so naming them cannot mark +2. The trigger is now a named region outside
+  the blocs, such as the Jordan Valley, or new settlements tied to a place or a number, or sovereignty.)*
 
 **The fourth coalition principle now has a first-party date, and it contradicts revision 100's
 columnist.** At the Jerusalem event (Wednesday 2026-09-16, the day of the N12 report revision 85 was
@@ -2224,6 +2227,25 @@ is new is an introduction: *"מי שתורם לחברה - יצא נתרם ומת
 שירות משמעותי, צבאי או אזרחי"*, which is `service-conditioned-citizenship` and `universal-conscription`, both
 held. **Corpus count updated**: this entry's thirteen documents are now fourteen (twelve papers, the goals, the
 brochure), alongside the topic pages revision 160 counted.
+
+**2026-09-28 — revision 177. ynet's Judea-and-Samaria questionnaire (27.09): ישר stays at `security` +1, and
+revision 104's trigger is corrected. No tag added, `seed.sql` unchanged.**
+([ynet + ידיעות אחרונות](https://www.ynet.co.il/news/elections2026/article/yokra14910407); the party's answer, quoted as its own.) *"ישר! תומכת בחיזוק גושי ההתיישבות
+ובהקמת יישובים חדשים באופן חוקי, בהתאם לאינטרסים הלאומיים של ישראל ולהמלצות מערכת הביטחון"*;
+*"הקמת מדינה פלסטינית אינה עומדת על הפרק... אין לנו תוכנית לפינוי יישובים במסגרת הסדר מדיני"*; and against
+sovereignty that risks *"הרוב היהודי"* and a bi-national state.
+
+- **The context makes this the West Bank** (the question was about Judea and Samaria, and the same answer covers
+  outposts and Area C), so it is not the התיישבות homograph. But **the blocs are not a territorial claim of the
+  +2 kind**: keeping them is the standard two-state position, and the repo owner's point settles it: not even
+  הדמוקרטים (−1) propose evacuating מעלה אדומים. Revision 104's trigger named *"the blocs"* and was too loose;
+  it is corrected in place.
+- **The rest does not reach +2 either.** *"הקמת יישובים חדשים באופן חוקי... בהתאם להמלצות מערכת הביטחון"*
+  names no place and no number, the same conditional shape revision 104 found compatible with +1. `pro-settlement`
+  stays off (every holder's grant is a forward commitment tied to a region or to expansion as such), and
+  `anti-annexation` is confirmed by the sovereignty line. `no-palestinian-state` (held) is corroborated.
+- **ביחד's answer in the same questionnaire is a different matter** and is recorded under that row when decided:
+  it goes past the blocs (no Palestinian state, no evacuation *"בכל מצב"*, sovereignty over Area C).
 
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
@@ -12065,3 +12087,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 174 — **הדמוקרטים: the aliyah PDF (Hebrew and Russian), a transport topic, and a corpus audit against the site's Supabase list of 25 topics. Nothing scored.** The aliyah plan would put the Law of Return in a Basic Law and defend the grandchild clause, and opposes an Orthodox conversion monopoly; held tags corroborated. Every topic PDF has been read; four were revised since, and the crime plan dropped "lowering the standard of proof". Two broken links fixed. |
 | 2026-09-28 | revision 175 — **עוצמה יהודית: N12/FakeReporter link about 100 AI-generated profiles to the campaign's consultancy. Nothing scored.** Campaign conduct (revision 114's tier), an investigation's finding rather than a ruling; the party's reply attacks the source and does not deny it. |
 | 2026-09-28 | revision 176 — **ynet's Judea-and-Samaria questionnaire (27.09). ישראל ביתנו: `anti-oslo` and `anti-two-state` ADDED (22 → 24); עמך ישראל: `sovereignty-annexation` and `pro-settlement` ADDED (9 → 11); both on the repo owner's decision; no axis moved.** ישראל ביתנו names cancelling Oslo and dismantling the PA (revision 148's trigger) and supports sovereignty over Area C only, which stays +2. עמך ישראל claims sovereignty over all of Judea and Samaria and says *הגירה מרצון* for the first time, still with no mechanism. ישר's and ביחד's answers are pending a decision. Verified on an already-seeded database; backend suite 271 passed. |
+| 2026-09-28 | revision 177 — **ישר: the Judea-and-Samaria questionnaire, and `security` stays +1. No tag added.** *"חיזוק גושי ההתיישבות ובהקמת יישובים חדשים באופן חוקי"* is the West Bank in context, but keeping the blocs is the standard two-state position (the repo owner: not even the Democrats would evacuate מעלה אדומים), and "new settlements" names no place or number. Revision 104's trigger named "the blocs" and is corrected in place to a region outside them, a place or number, or sovereignty. |
