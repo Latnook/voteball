@@ -9778,6 +9778,21 @@ change-bloc leaders ([3](https://www.haaretz.co.il/opinions/2026-09-24/ty-articl
 - **Column 5's fuller body adds the writer's claim that boycotting Arab parties is what defines the right.**
   Same tier as revision 140. Nothing.
 
+**2026-09-28 — revision 168. כאן: a TikTok video אבו שחאדה posted on 10 October 2023. Nothing scored.**
+([כאן](https://www.kan.org.il/content/kan-news/politic/1103800/), תמר אלמוג, 28.09.26 06:38, read through headless Chromium; the video itself was
+not viewed, and the quotes are כאן's.) Three days after the attack, the בל"ד chair repeated the article's line
+(*"אירוע פוליטי אסטרטגי משמעותי"*), sent condolences to *"משפחות השהידים, הפצועים וכל משפחות הקורבנות החפים
+מפשע, ובמיוחד... אנשינו בנגב"*, did not name Hamas or mention the killings and abductions, and accused Israel's
+leadership of *"הסתה גזענית, ברברית ולא אנושית"* toward Gaza.
+
+- **It bears on his affidavit, not on this row.** Revision 102 recorded that his sworn statement disowns the
+  article's *silence* on the massacre because *"ממדי הקטל"* were not yet known. A video posted after the article,
+  with the same silence, weakens that account; that is for the Supreme Court on 1 October, not for this page.
+  The row's `security` is already −3, and a candidate's post is not the list's programme (revision 101).
+- **כאן's report that *"גורמי משפט בכירים"* expect the court to uphold his disqualification is anonymous** and
+  scores nothing. Revision 130's standing decision is unchanged: the row stays voteable until the court rules,
+  and a ruling upholding only אבו שחאדה's disqualification changes the slate (#3), not the row.
+
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
 **Neither this row nor יהדות התורה has a platform, and that is a finding, not a failed search.**
@@ -11876,3 +11891,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 165 — **cross-row: the 25th Knesset's ten LGBT plenum votes, from the Knesset OData API. `anti-lgbt` ADDED to רע"ם (5 → 6 tags), on the repo owner's decision.** Checked against a known answer first (housing bill 33–52, as הארץ reported). Coalition parties voted against all 35 other opposition bills on the same days, so their "no" is discipline and adds nothing to ש"ס, יהדות התורה or הליכוד; אוחנה voted for all ten. רע"ם voted with the opposition on 25 of 26 other bills but against the conversion-therapy ban at all five readings (2023, 2026): issue-specific. Limits recorded (one issue; absent from the other five votes; no party document), with a trigger. הרשימה המשותפת splits by component (חד"ש for, טיבי against). Verified on an already-seeded database, previous-parties row untouched; backend suite 271 passed. |
 | 2026-09-27 | revision 166 — **cross-row: the 25th Knesset's roll calls against what the rows claim (Knesset OData API, about fifty votes, third-reading votes picked by their stated question). `death-penalty-for-terrorists` ADDED to הליכוד and ישראל ביתנו (2 → 4 holders); no axis moved.** Checked first against the recorded 58–54. Coalition "no" votes on opposition bills are read as discipline (עוצמה יהודית and הציונות הדתית voted against sovereignty bills from the opposition). הליכוד passed the death-penalty law 31–0; ישראל ביתנו voted for it at every stage from the opposition. ש"ס not added (coalition discipline). יהדות התורה voted against the death penalty, the one issue-specific coalition break. ליברמן voted for sovereignty over all of Judea and Samaria (Oct 2025) against his own Sept 2026 plan; the latest written plan is scored, `sovereignty-annexation` stays off with a trigger. ישר candidates voted for Jordan Valley and מעלה אדומים sovereignty; revision 104's trigger not tripped. לפיד and יש עתיד voted for מעלה אדומים sovereignty. Revision 151's claim about רע"ם holds for the arbitration law (5–0 for). Everything else matches what the rows claim. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-27 | revision 167 — **cross-row: a second research pass on the rows the first missed. No axis moved, no tag added.** ש"ס: דרעי (3.09) declines to call on non-learners to enlist, a first-party gap with אזולאי's line that revision 61 relied on; `scholar-exemption-retained` holds, the distinction recorded as contested inside the party. יהדות התורה: a reported, unsigned דגל–אגודה draft (full exemption, no posts until a draft law) is not scored. רע"ם: עבאס calls moving crime to the שב"כ a fraud, the internal-security sweep item's first opponent. ישראל תחילה: site unchanged; שרן השכל broke with the coalition to vote against the deserter-arrests law. Nothing else new. |
+| 2026-09-28 | revision 168 — **הרשימה המשותפת: כאן on a 10 October 2023 TikTok video by אבו שחאדה (headless Chromium). Nothing scored.** The video repeats the article's line and is silent on Hamas's killings, which weakens the affidavit's "we did not yet know" account; that is for the Supreme Court (1 October). Anonymous legal sources expecting the disqualification to be upheld score nothing; revision 130's decision stands. |
