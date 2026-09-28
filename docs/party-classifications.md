@@ -2190,6 +2190,15 @@ checkable against this row's own record.
 - **Not scored:** the prediction that עבאס may issue a statement meeting the conditions, and the paraphrase of
   בנט and ליברמן's electoral argument (their own words are on the rotation item already, revisions 146 and 148).
 
+**2026-09-28 — revision 171. A twelfth principles paper, [*ישר! לצעירים*](https://yasharwitheisenkot.com/principles/youth-and-young-adults/) (published 2026-09-27 09:33 UTC).
+Nothing scored.** Compared sentence by sentence with the young-people topic page revision 161 read, every policy
+line is the same (conscript pay +15% and fighters' +50% in the third year, a ministerial committee on youth,
+rental-market measures, the *ממדים ללימודים* grant widened to all who serve, a personal "launch account"). What
+is new is an introduction: *"מי שתורם לחברה - יצא נתרם ומתועדף על ידה"* and *"חברה חזקה דורשת מכלל מגזריה
+שירות משמעותי, צבאי או אזרחי"*, which is `service-conditioned-citizenship` and `universal-conscription`, both
+held. **Corpus count updated**: this entry's thirteen documents are now fourteen (twelve papers, the goals, the
+brochure), alongside the topic pages revision 160 counted.
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -11937,3 +11946,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 168 — **הרשימה המשותפת: כאן on a 10 October 2023 TikTok video by אבו שחאדה (headless Chromium). Nothing scored.** The video repeats the article's line and is silent on Hamas's killings, which weakens the affidavit's "we did not yet know" account; that is for the Supreme Court (1 October). Anonymous legal sources expecting the disqualification to be upheld score nothing; revision 130's decision stands. |
 | 2026-09-28 | revision 169 — **ישר: a הארץ column on the רע"ם line. Nothing scored.** A third account dates the fourth coalition principle to after עבאס's 28 July interview, roughly fitting איזנקוט's "a month ago" and against revision 100's critic; still undated in text before 16 September. The column is right that איזנקוט excludes רע"ם's membership, not its outside support, while ישראל תחילה excludes reliance: the two `excludes-anti-zionist-parties` holders differ, recorded for the exclusion sweep. |
 | 2026-09-28 | revision 170 — **cross-row. No axis moved, no tag added.** ביחד's security plan rewritten at `/plans/natsec/` (24.09): same doctrine, but Gaza moves from "freedom of action" to holding the Yellow Line until Hamas disarms; `territorial-control-gaza` and `hardline-on-gaza` refused on the row's directional-tag rule (security is NULL, statehood still unaddressed). בן גביר's post on executing terrorists and emigration from Gaza and Judea and Samaria corroborates held tags. N12: the bloc discussed its candidate and did not agree; revision 158's dispute is settled only in that the subject came up. |
+| 2026-09-28 | revision 171 — **ישר: a twelfth principles paper, *ישר! לצעירים* (27.09). Nothing scored.** Its policy lines match the young-people topic page read in revision 161; the new introduction restates `service-conditioned-citizenship` and `universal-conscription`, both held. Corpus now fourteen documents. |
