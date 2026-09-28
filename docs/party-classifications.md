@@ -2172,6 +2172,24 @@ so nothing sits outside them.
 Verified on an already-seeded database: ישר 29 → 31 tags, `gender-equality` and `free-trade` 4 → 5 holders each.
 Backend suite 271 passed.
 
+**2026-09-28 — revision 169. A הארץ column on איזנקוט's רע"ם line (28.09.26, body supplied by the repo owner). Nothing
+scored.** ([הארץ](https://www.haaretz.co.il/opinions/2026-09-28/ty-article-opinion/.highlight/000001a0-e28f-d9ab-abfd-f7affa560000).) Opinion; two of its points are worth keeping, and both are
+checkable against this row's own record.
+
+- **A third account of when the fourth principle appeared.** The writer ties it to עבאס's רשת ב' interview of
+  **28 July**, where he would not call for Hamas to be destroyed, and says איזנקוט added the condition after it.
+  That fits איזנקוט's own *"לפני חודש"* from 16 September (revision 104) roughly and contradicts revision 100's
+  critic, who had it appearing during the מג'אדלה story. Still a columnist's dating, and the clause's earliest
+  text is still 16 September. The interview itself was not read; it is a lead for רע"ם's row.
+- **What איזנקוט excluded is membership, not reliance, and the column is right about the wording.** *"לא יהיה
+  חלק מהממשלה הבאה"* (revision 143) rules רע"ם out of the government; it says nothing about outside support for
+  one. **The tag's two holders now differ on exactly this**: ישראל תחילה's site excludes a government
+  *"הנשענת על כוחות אנטי-ציונים"* (reliance), ישר excludes partnership (membership). Recorded for the
+  coalition-exclusion sweep, where the two exclusion tags already wait to be defined; not a reason to split
+  `excludes-anti-zionist-parties` on one pair.
+- **Not scored:** the prediction that עבאס may issue a statement meeting the conditions, and the paraphrase of
+  בנט and ליברמן's electoral argument (their own words are on the rotation item already, revisions 146 and 148).
+
 ### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -11892,3 +11910,4 @@ pass happened, for anyone reading git history.
 | 2026-09-27 | revision 166 — **cross-row: the 25th Knesset's roll calls against what the rows claim (Knesset OData API, about fifty votes, third-reading votes picked by their stated question). `death-penalty-for-terrorists` ADDED to הליכוד and ישראל ביתנו (2 → 4 holders); no axis moved.** Checked first against the recorded 58–54. Coalition "no" votes on opposition bills are read as discipline (עוצמה יהודית and הציונות הדתית voted against sovereignty bills from the opposition). הליכוד passed the death-penalty law 31–0; ישראל ביתנו voted for it at every stage from the opposition. ש"ס not added (coalition discipline). יהדות התורה voted against the death penalty, the one issue-specific coalition break. ליברמן voted for sovereignty over all of Judea and Samaria (Oct 2025) against his own Sept 2026 plan; the latest written plan is scored, `sovereignty-annexation` stays off with a trigger. ישר candidates voted for Jordan Valley and מעלה אדומים sovereignty; revision 104's trigger not tripped. לפיד and יש עתיד voted for מעלה אדומים sovereignty. Revision 151's claim about רע"ם holds for the arbitration law (5–0 for). Everything else matches what the rows claim. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-27 | revision 167 — **cross-row: a second research pass on the rows the first missed. No axis moved, no tag added.** ש"ס: דרעי (3.09) declines to call on non-learners to enlist, a first-party gap with אזולאי's line that revision 61 relied on; `scholar-exemption-retained` holds, the distinction recorded as contested inside the party. יהדות התורה: a reported, unsigned דגל–אגודה draft (full exemption, no posts until a draft law) is not scored. רע"ם: עבאס calls moving crime to the שב"כ a fraud, the internal-security sweep item's first opponent. ישראל תחילה: site unchanged; שרן השכל broke with the coalition to vote against the deserter-arrests law. Nothing else new. |
 | 2026-09-28 | revision 168 — **הרשימה המשותפת: כאן on a 10 October 2023 TikTok video by אבו שחאדה (headless Chromium). Nothing scored.** The video repeats the article's line and is silent on Hamas's killings, which weakens the affidavit's "we did not yet know" account; that is for the Supreme Court (1 October). Anonymous legal sources expecting the disqualification to be upheld score nothing; revision 130's decision stands. |
+| 2026-09-28 | revision 169 — **ישר: a הארץ column on the רע"ם line. Nothing scored.** A third account dates the fourth coalition principle to after עבאס's 28 July interview, roughly fitting איזנקוט's "a month ago" and against revision 100's critic; still undated in text before 16 September. The column is right that איזנקוט excludes רע"ם's membership, not its outside support, while ישראל תחילה excludes reliance: the two `excludes-anti-zionist-parties` holders differ, recorded for the exclusion sweep. |
