@@ -7357,6 +7357,15 @@ each quote below was attributed by what it says, and only lines that are unmista
 - **Not scored:** the prisons, the flotilla, the claims about falling terror and crime numbers (his
   account of his record), the polls at nine seats (revision 114's 8–9 stands), and the jabs at נתניהו.
 
+**2026-09-28 — revision 175. N12 and FakeReporter: about 100 AI-generated profiles linked to the campaign's
+consultancy. Nothing scored.** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-fbd47d952c7e0a1027.htm), עמית סגל, 28.09.26 15:44, read from the page's `articleBody`.) The
+report attributes the profiles to רוזנבאום תקשורת, the firm running עוצמה יהודית's campaign: comments backing בן
+גביר, urging גוטליב to join before she did, and attacking סמוטריץ' and וינטר (*"סוכן של בנט"*). **Campaign
+conduct, not a position** (revision 114's tier for the campaign apparatus), and it is an investigation's finding,
+not a ruling; FakeReporter asks the Central Elections Committee to examine it. **The party's reply does not deny
+it**: *"אותו 'תחקיר', אותם גורמי שמאל... צבא של כסף זר"*. וינטר's reply is a rival's. If the committee rules on
+it, that is a finding about the campaign and still scores nothing on the row.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -12022,3 +12031,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 172 — **cross-row: four reports of 28 September. Nothing scored.** The pre-7-October warnings (בן זאיד, Egypt's כאמל) are not positions (revisions 100, 141); נתניהו's claim that foreign states want an Eisenkot–Golan–Lieberman government that would create a Palestinian state is a claim about other rows and contradicts their `no-palestinian-state` tags. בונצל (#29)'s deleted post to יוכבד ליפשיץ is a candidate's. סגלוביץ' (רע"ם #2) says אבו שחאדה crossed the line but opposes disqualifying him; candidate tier, consistent with רע"ם's CEC vote. |
 | 2026-09-28 | revision 173 — **הדמוקרטים: a new *עלייה וקליטה* topic in Hebrew and Russian (created 28.09, read from the site's public Supabase table). Nothing scored.** Thirteen pledges, mostly services; the two positions are defending the Law of Return as it stands (no tag covers it on either side; queued) and equality in personal status (`civil-marriage`, held). `aliyah-absorption` not added: one holder, no definition, and ישר's two aliyah papers never earned it; queued to be defined or retired. |
 | 2026-09-28 | revision 174 — **הדמוקרטים: the aliyah PDF (Hebrew and Russian), a transport topic, and a corpus audit against the site's Supabase list of 25 topics. Nothing scored.** The aliyah plan would put the Law of Return in a Basic Law and defend the grandchild clause, and opposes an Orthodox conversion monopoly; held tags corroborated. Every topic PDF has been read; four were revised since, and the crime plan dropped "lowering the standard of proof". Two broken links fixed. |
+| 2026-09-28 | revision 175 — **עוצמה יהודית: N12/FakeReporter link about 100 AI-generated profiles to the campaign's consultancy. Nothing scored.** Campaign conduct (revision 114's tier), an investigation's finding rather than a ruling; the party's reply attacks the source and does not deny it. |
