@@ -5242,6 +5242,24 @@ Two parts: a government programme for internal security, and a campaign section 
   and enemy flags on campuses. `service-conditioned-citizenship` (held) is corroborated by the land-price
   clause.
 
+**2026-09-28 — revision 176. ynet's Judea-and-Samaria questionnaire (27.09.26): `anti-oslo` and `anti-two-state`
+ADDED (22 → 24 tags), on the repo owner's decision; no axis moved.** ([ynet + ידיעות אחרונות](https://www.ynet.co.il/news/elections2026/article/yokra14910407); each party's
+answer is quoted as its own, the standard revision 134 set for these questionnaires.)
+
+- **Revision 148's trigger is met.** It kept both tags off because ליברמן named neither Oslo nor the framework, and
+  asked for *"Oslo named by the chairman"* or a platform plank. The party's answer: *"33 שנים אחרי הסכם אוסלו,
+  ברור שהניסיון נכשל... חייבים לחשוב בצורה חכמה איך מבטלים את הסכמי אוסלו ומפרקים את הרשות הפלסטינית"*.
+  Cancelling the agreements is what `anti-oslo` records, and repealing the framework is what separates
+  `anti-two-state` from `no-palestinian-state` (held since revision 148).
+- **Sovereignty over Area C, and `security` stays +2.** *"תומכים בהחלת ריבונות ישראלית בשטחי C"*, with the party's
+  own bills on מעלה אדומים, ביתר עילית and the Jordan Valley. That is more than revision 117's *control* of C, but
+  Areas A and B are still left out, which keeps it inside the +2 band (*sovereignty over security-essential
+  areas*); every `sovereignty-annexation` holder claims Judea and Samaria as a whole, so that tag stays off.
+  It also narrows revision 166's contradiction: the party now claims sovereignty over C, not the whole territory
+  its October 2025 vote covered.
+- **Also recorded:** building in E1, enforcement against illegal Palestinian building in C (*"חאן אל-אחמר"*), and
+  opposition to illegal outposts. `pro-settlement` (held) corroborated.
+
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
 **Merged with זהות into one ballot line, 2026-09-01.** Smotrich and משה פייגלין signed an agreement
@@ -9247,6 +9265,16 @@ Chromium. The quotes are his; the rest is כאן's summary of the interview.)
   משילות"* (diagnosis); the claim that the army under איזנקוט lied to the cabinet in 2018 to avoid striking
   Gaza, and the jab at his appointments (a rival's account, revision 44's tier).
 
+**2026-09-28 — revision 176. ynet's Judea-and-Samaria questionnaire: `sovereignty-annexation` and `pro-settlement`
+ADDED (9 → 11 tags), on the repo owner's decision; no axis moved.** ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14910407), 27.09.26.) The party's answer:
+*"תומכים בהקמת יישובים ביהודה ושומרון ובכל חבלי הארץ"*, *"לעולם לא תקום לצדנו מדינה פלסטינית... על המדינה
+להעמיק את האחיזה בקרקע ולהחיל ריבונות ביהודה ושומרון ובכל מקום בארץ"*, no evacuation ever, illegal Palestinian
+building demolished *"ובמקביל להוציא אל הפועל את תוכנית ההגירה מרצון"*. Sovereignty over Judea and Samaria
+as a whole is the tag's founding shape, and the row's `security` is already +3. **The emigration line is the
+first time this row has said *מרצון***, where revision 32 refused both emigration tags because הגירה was a bare
+noun; it names no mechanism or incentive, so `voluntary-palestinian-emigration-incentives` is still not added.
+**Trigger:** a stated mechanism.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -12036,3 +12064,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 173 — **הדמוקרטים: a new *עלייה וקליטה* topic in Hebrew and Russian (created 28.09, read from the site's public Supabase table). Nothing scored.** Thirteen pledges, mostly services; the two positions are defending the Law of Return as it stands (no tag covers it on either side; queued) and equality in personal status (`civil-marriage`, held). `aliyah-absorption` not added: one holder, no definition, and ישר's two aliyah papers never earned it; queued to be defined or retired. |
 | 2026-09-28 | revision 174 — **הדמוקרטים: the aliyah PDF (Hebrew and Russian), a transport topic, and a corpus audit against the site's Supabase list of 25 topics. Nothing scored.** The aliyah plan would put the Law of Return in a Basic Law and defend the grandchild clause, and opposes an Orthodox conversion monopoly; held tags corroborated. Every topic PDF has been read; four were revised since, and the crime plan dropped "lowering the standard of proof". Two broken links fixed. |
 | 2026-09-28 | revision 175 — **עוצמה יהודית: N12/FakeReporter link about 100 AI-generated profiles to the campaign's consultancy. Nothing scored.** Campaign conduct (revision 114's tier), an investigation's finding rather than a ruling; the party's reply attacks the source and does not deny it. |
+| 2026-09-28 | revision 176 — **ynet's Judea-and-Samaria questionnaire (27.09). ישראל ביתנו: `anti-oslo` and `anti-two-state` ADDED (22 → 24); עמך ישראל: `sovereignty-annexation` and `pro-settlement` ADDED (9 → 11); both on the repo owner's decision; no axis moved.** ישראל ביתנו names cancelling Oslo and dismantling the PA (revision 148's trigger) and supports sovereignty over Area C only, which stays +2. עמך ישראל claims sovereignty over all of Judea and Samaria and says *הגירה מרצון* for the first time, still with no mechanism. ישר's and ביחד's answers are pending a decision. Verified on an already-seeded database; backend suite 271 passed. |
