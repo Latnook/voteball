@@ -109,17 +109,17 @@ Negative is dovish, positive is hawkish.
 | | meaning | parties |
 |---|---|---|
 | **+3** | Annexation / sovereignty over Judea and Samaria | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]`, הליכוד `[u]` |
-| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המפלגה הכלכלית `[u]`, ישראל תחילה `[u]` |
+| **+2** | No Palestinian state **plus** a territorial claim — sovereignty over security-essential areas, settlement expansion, preemptive doctrine, taking territory in Gaza | הליכוד `[p]`, ישראל ביתנו, ביחד `[u]`, כחול לבן `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, המפלגה הכלכלית `[u]`, ישראל תחילה `[u]` |
 | **+1** | No Palestinian state, but explicitly refusing territorial expansion | ש"ס, יהדות התורה, ישר `[u]` |
 | **0** | No stated conflict doctrine either way — the party is about something else | יש עתיד `[p]` |
 | **−1** | Zionist two-staters | הדמוקרטים `[u]`, העבודה `[p]`, מרצ `[p]` |
 | **−2** | Two-state with an end to the occupation | חד"ש-תע"ל, רע"ם `[u]` |
 | **−3** | Full withdrawal, right of return, dismantling settlements | בל"ד |
-| **NULL** | No stated position — see the NULL rule above | המחנה הממלכתי `[p]`, רע"ם `[p]`, ביחד `[u]`, הציבור החרדי `[u]` |
+| **NULL** | No stated position — see the NULL rule above | המחנה הממלכתי `[p]`, רע"ם `[p]`, הציבור החרדי `[u]` |
 
 Note **0 and NULL are different claims** here: `0` asserts a party has genuinely taken no side on the
-conflict, `NULL` says none is on record. ביחד is the `NULL` case — its component parties have not
-published a joint position.
+conflict, `NULL` says none is on record. ביחד was the `NULL` case until 2026-09-28, when its joint list
+answered the question (revision 178).
 
 **⚠ The `0` illustration used to be המפלגה הכלכלית, and it was wrong — the row moved to +2 on
 2026-08-17 (revision 23).** This paragraph asserted that it "is an economics party that genuinely
@@ -2247,7 +2247,7 @@ sovereignty that risks *"הרוב היהודי"* and a bi-national state.
 - **ביחד's answer in the same questionnaire is a different matter** and is recorded under that row when decided:
   it goes past the blocs (no Palestinian state, no evacuation *"בכל מצב"*, sovereignty over Area C).
 
-### ביחד — Together · `opposition` · 1 / NULL / −2 · secular
+### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
 Bennett as chair and Lapid at #2. The components remain separate and autonomous.
@@ -3395,6 +3395,34 @@ meeting. No axis moved, no tag added, `seed.sql` unchanged.**
   forming the government. Both are the positions each stated himself (revisions 118, 148), so this adds nothing
   to the rotation item. It does settle revision 158's dispute on one point: the subject came up; what was
   "agreed" about it is still only what the signed text says, which is nothing.
+
+**2026-09-28 — revision 178. `security` NULL → +2, and `no-palestinian-state` and `pro-settlement` ADDED (24 →
+26 tags), on the repo owner's decision. The joint list has answered the statehood question.**
+([ynet + ידיעות אחרונות](https://www.ynet.co.il/news/elections2026/article/yokra14910407), 27.09.26; the answer is attributed to *"המפלגה"*, the list, not to one leader.)
+*"אנו תומכים בהתיישבות יהודית בכל מקום בו זה נעשה באופן חוקי. מתנגדים למדינה פלסטינית ומסירת שטחים"*;
+*"מתנגדים לפינוי יישובים יהודיים שנבנו בהתאם לחוק בכל מצב שהוא"*; *"תוכנית בנט מ-2012 רואה את שטחי C כחלק עתידי
+ריבוני של מדינת ישראל. מובן שיש להפעיל שיקול דעת לגבי העיתוי"*; illegal Palestinian building in C removed.
+
+- **Why the NULL goes.** This row's `security` was NULL for one stated reason: a joint document detailed on
+  every other security question and *silent on statehood*, which read as the two leaders' split. The list now
+  states a position on exactly that question, in the list's name. No better source exists: all 87 Hebrew pages of
+  be-yahad.org.il were searched and none mentions a Palestinian state (*"ריבונות"* there means the Negev and
+  crime), and this is the newest statement from the list itself. בנט's own words say the same (3 July: *"אני נגד
+  מדינה פלסטינית נקודה... בשטחי C מתיישבים על פי חוק, ובשטחי A ו-B הרשות מנהלת"*; 28 August: *"מי שמתנגד למדינה
+  פלסטינית - צריך לתמוך בהתיישבות"*).
+- **Why +2 and not +1.** +1 is no state *and explicitly refusing territorial expansion*; the list claims future
+  sovereignty over Area C and rules out evacuation in any circumstances, the opposite. It matches ישראל ביתנו
+  (sovereignty over C, +2, revision 176) and exceeds כחול לבן (+2). The timing caveat defers the claim; it does not
+  withdraw it. **Not +3 and no `sovereignty-annexation`**: Areas A and B are left to the PA, and every holder of
+  that tag claims the whole territory.
+- **Why not lower on account of לפיד.** His pre-merger record is two states ([כלכליסט](https://www.calcalist.co.il/local_news/article/rkr11sf5bo), not re-read), and
+  רם בן ברק (#12) backed conditional statehood on 25.09 (revision 139). Lowering the number for them would be the
+  averaging this entry forbids. **The split stays in `internally-split-on-conflict`, which is kept**, now meaning a
+  list whose stated position is not shared by one of its two leaders' record and a realistic candidate.
+- **Consequences recorded.** The directional-tag rule that refused `territorial-control-gaza` and
+  `hardline-on-gaza` in revision 170 (and `security-hawk` earlier) rested on the NULL; it no longer applies, and
+  those tags should be re-read against the security plan on their own merits in the next pass. **Trigger to
+  revisit the number**: a statement by לפיד, or a list document, restoring two states.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -12088,3 +12116,4 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 175 — **עוצמה יהודית: N12/FakeReporter link about 100 AI-generated profiles to the campaign's consultancy. Nothing scored.** Campaign conduct (revision 114's tier), an investigation's finding rather than a ruling; the party's reply attacks the source and does not deny it. |
 | 2026-09-28 | revision 176 — **ynet's Judea-and-Samaria questionnaire (27.09). ישראל ביתנו: `anti-oslo` and `anti-two-state` ADDED (22 → 24); עמך ישראל: `sovereignty-annexation` and `pro-settlement` ADDED (9 → 11); both on the repo owner's decision; no axis moved.** ישראל ביתנו names cancelling Oslo and dismantling the PA (revision 148's trigger) and supports sovereignty over Area C only, which stays +2. עמך ישראל claims sovereignty over all of Judea and Samaria and says *הגירה מרצון* for the first time, still with no mechanism. ישר's and ביחד's answers are pending a decision. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-28 | revision 177 — **ישר: the Judea-and-Samaria questionnaire, and `security` stays +1. No tag added.** *"חיזוק גושי ההתיישבות ובהקמת יישובים חדשים באופן חוקי"* is the West Bank in context, but keeping the blocs is the standard two-state position (the repo owner: not even the Democrats would evacuate מעלה אדומים), and "new settlements" names no place or number. Revision 104's trigger named "the blocs" and is corrected in place to a region outside them, a place or number, or sovereignty. |
+| 2026-09-28 | revision 178 — **ביחד: `security` NULL → +2; `no-palestinian-state` and `pro-settlement` ADDED (24 → 26); on the repo owner's decision.** The joint list answered ynet's questionnaire (27.09): against a Palestinian state and handing over territory, no evacuation of legal settlements in any circumstances, future sovereignty over Area C. The NULL rested on the list's silence on statehood; the site holds nothing newer and בנט says the same. +2, not +1, because the list claims territory (consistent with ישראל ביתנו and כחול לבן); not +3, because A and B are left out. `internally-split-on-conflict` kept for לפיד's two-state record and בן ברק (#12). Verified on an already-seeded database; backend suite 271 passed. |
