@@ -6541,6 +6541,22 @@ what the party says it did in the 25th Knesset and what it will do in the next.
   override clause, restored limits on standing, and new rules for interim orders. The stated stake is the
   *"עשרה שופטים"* the next Knesset will appoint.
 
+**2026-09-29 — revision 188. סמוטריץ' weighs a second fuel-excise cut before the election, against his ministry's
+professionals. No axis moved, no tag added.** ([כאן](https://www.kan.org.il/content/kan-news/politic/1104411/), ליאל קייזר, 29.09.26 15:55, read through
+headless Chromium on the second attempt.) Petrol is due to rise 52 agorot to ₪8.27 a litre on 1 October, a record,
+after a ~13% rise in world prices. The minister met his officials on a further excise cut, *"נכונה בעת הזו על מנת
+לדחוף את הצמיחה"*. In early September he had already cut the excise by 50 agorot for two months, until the end of
+October, over the professional staff's objection and the concern that it was *"כלכלת בחירות"*. The יועמ"שית
+approved that order.
+
+- **Ministerial record, which counts as record here (revision 77's tier), and it moves nothing.**
+  A temporary cut on one product, set to expire just after the vote, is not the broad-based `tax-cutting` the tag
+  records, and it is not a state-expansion measure either. `economic` 0 stands.
+- **It sits in the gap `claims-economically-liberal` already records:** a finance minister whose own party's
+  economics paper promises deficit reduction and *"הפחתת מיסים אוניברסלית רחבה"* in exchange for cutting
+  exemptions, overruling his professionals on a narrow, temporary cut to one tax, timed to the election. The tag is held, so this is a record, not a grant. *"כלכלת בחירות"* is the professionals' concern as כאן
+  reports it, not a finding.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -7597,6 +7613,23 @@ He says ראש אמ"ן and בר misled נתניהו, that he himself was brushed
   it to נתניהו does not move `bloc`, which is still `bibi`.
 - **His Defence ambition and *"תפיסת הכרעה, לא תפיסת הכלה"* restate revision 149**, and they fit
   `hardline-on-gaza`, which the row already holds.
+
+**2026-09-29 — revision 189. The party's own post: בן גביר, *"כשר ביטחון… שטחי A ו-B יהיו בדיוק כמו שטחי C"*.
+No axis moved, no tag added.** ([עוצמה יהודית](https://www.ozma-yeudit.co.il/%d7%94%d7%a9%d7%a8-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%9e%d7%a1%d7%9e%d7%9f-%d7%99%d7%a2%d7%93-%d7%b4a-%d7%95-b-%d7%99%d7%94%d7%99%d7%95-%d7%91%d7%93%d7%99%d7%95%d7%a7-%d7%9b%d7%9e%d7%95-c/), 29.09.26 17:29,
+read through the site's WordPress REST API.) A tour of farms and outposts in Samaria and the Jordan Valley with
+סון הר מלך and candidate צחי אליהו, *"בעקבות תיקון נזקי הסכמי אוסלו"*. בן גביר: *"הכל שלנו… כשר הביטחון… שטחי A ו-B
+יהיו בדיוק כמו שטחי C. לא יהיה הבדל. אנחנו צריכים להתיישב כאן, בכל רחבי ארצנו, ולעודד הגירה מרצון."*
+
+- **First-party, the chairman in his own words, and all of it is already held.** Erasing the Oslo zones is
+  `anti-oslo` (revision 112). Settling *"בכל רחבי ארצנו"* is `pro-settlement`. The claim to all of Judea and
+  Samaria is `sovereignty-annexation`, whose founding shape already covers the whole area (revision 176).
+  *"לעודד הגירה מרצון"* is `voluntary-palestinian-emigration-incentives`, held on the party's bill.
+- **What is new is the scope and the office.** Areas A and B are where the Palestinian population lives, so this
+  extends the row's claims to the populated areas, not just open land. He ties it to the Defence portfolio he says
+  he will demand (revisions 107 and 149). This is the strongest wording of these positions yet, not a new position.
+- **The farms are recorded, not scored.** The post praises *"תפיסת השטח"* by farm outposts. Backing outposts is
+  `pro-settlement`, held. It is not the opposite pole of `anti-settler-violence`, which would be opposing
+  enforcement (revision 123), and the post says nothing about enforcement.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -12322,3 +12355,5 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 185 — **עוצמה יהודית: בן גביר on רשת ב' says נתניהו bears responsibility for 7 October but was misled (headless Chromium). No axis moved, no tag added; `bloc` stays `bibi`.** Blame is not a position. The Defence ambition and *"הכרעה, לא הכלה"* restate revision 149 and fit `hardline-on-gaza`. |
 | 2026-09-29 | revision 186 — **ישר: `anti-settler-violence` ADDED (31 → 32; the tag goes 1 → 2 holders), on the repo owner's decision. No axis moved.** Reverses revision 182's refusal the same day. A research pass, each claim checked by three reviewers, found the measure 182's trigger asked for, in the chairman's words: JPost 24.09, *"Administrative orders would be restored against those who riot"*, with J&S police under military coordination. The same measure recurs from 22.11.2024 (against Katz ending administrative detention for settlers) through April and August 2026. It departs knowingly from the `gender-equality` line (refused on his words, granted on writing): that commitment named no measure, and this one names two. Against it, recorded: the 28.09 party answer and the site omit it, and the April 2026 visit to the שובאל outpost. Trigger for removal written. הרשימה המשותפת stays off (no measure). Verified on an already-seeded database; 271 tests pass. |
 | 2026-09-29 | revision 187 — **cross-row: נתניהו's pre-election attack warning, with ישר's and וינטר's answers (N12, `curl`). No axis moved, no tag added.** וינטר corroborates עמך ישראל's `hardline-on-gaza` (*"נבוא להכריע"*). *"נרוקן את הבריכה ונביא להגירה"* is still a bare noun plus a metaphor, so neither emigration tag is added (revisions 32, 176). ישר's demand that לפיד be briefed is about process. נתניהו's warning is not a position, and Iran regime change is shared with ביחד, so no tag is minted. |
+| 2026-09-29 | revision 188 — **הציונות הדתית: סמוטריץ' weighs a second pre-election fuel-excise cut against his professionals (כאן, headless Chromium). No axis moved, no tag added.** Ministerial record. A temporary one-product cut expiring after the vote is not broad-based `tax-cutting`, and `economic` 0 stands. It is recorded under the held `claims-economically-liberal`. |
+| 2026-09-29 | revision 189 — **עוצמה יהודית: the party's own post, בן גביר's *"שטחי A ו-B יהיו בדיוק כמו שטחי C"* as Defence minister (WP REST API). No axis moved, no tag added.** `anti-oslo`, `pro-settlement`, `sovereignty-annexation` and `voluntary-palestinian-emigration-incentives` are all held and corroborated. New: the scope reaches the populated areas A and B and is tied to the Defence portfolio. The farm outposts are `pro-settlement`, not the opposite pole of `anti-settler-violence`. |
