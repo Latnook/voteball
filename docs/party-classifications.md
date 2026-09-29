@@ -9485,6 +9485,26 @@ first time this row has said *מרצון***, where revision 32 refused both emig
 noun; it names no mechanism or incentive, so `voluntary-palestinian-emigration-incentives` is still not added.
 **Trigger:** a stated mechanism.
 
+**2026-09-29 — revision 187 (cross-row). נתניהו warns that enemies will try to attack before the election;
+ישר and וינטר answer. No axis moved, no tag added.** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-821984fab1de0a1026.htm), דפנה ליאל, 29.09.26 15:30, read from the page's
+`articleBody` with plain `curl`.)
+
+- **עמך ישראל: וינטר**, *"די להכלה, די לסבבים… נבוא להכריע… נרוקן את הבריכה ונביא להגירה, נביא להכרעה"*.
+  The chairman's own statement. `hardline-on-gaza` (held since revision 99, on *"תפיסת ההכרעה"*) is corroborated
+  in the same word. **Emigration is still a bare noun**, so revision 176's trigger (a stated mechanism) is not
+  met and `voluntary-palestinian-emigration-incentives` stays off. **The new phrase is *"נרוקן את הבריכה"***, and
+  it is the tempting over-read. It is a metaphor, not an instrument, and `population-transfer` needs compulsion
+  in the instrument (revision 32). It is recorded, not scored. The same word does two jobs in the sentence,
+  and only a stated mechanism would decide between them.
+- **ישר's party account**: if the threat is real, נתניהו must brief opposition leader לפיד at once, to make sure
+  it is *"איום אמיתי ולא מהלך פוליטי"*; *"אסור בתכלית האיסור לערב בין ביטחון ישראל ובין מערכת הבחירות"*.
+  A demand about how the government briefs the opposition, not a policy. Nothing scored.
+- **הליכוד: נתניהו's warning and threat (*"הזרוע הארוכה שלנו תגיע אליכם"*) are not a position.** The article
+  sets it against his Rosh Hashana toast three weeks earlier: Iran *"נמנעת מלתקוף"*, and regime change is still
+  the goal (*"המשטר הזה באיראן - סופו קרב"*). **The page has no Iran regime-change tag**, and ביחד's security
+  plan carries the same goal (*"נפעל להפלת המשטר"*). Minting one for two rows that agree would sort nothing, so
+  none is minted. The contrast between the two statements is the reporter's, and it is not scored.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -12301,3 +12321,4 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 184 — **הליכוד: a כאן analysis of the campaign's cropped רונן בר quote and נתניהו's wrong account of the night before 7 October (headless Chromium). Nothing scored.** Who knew what is not a position (revisions 100, 141, 172). Campaign conduct is revision 175's tier. |
 | 2026-09-29 | revision 185 — **עוצמה יהודית: בן גביר on רשת ב' says נתניהו bears responsibility for 7 October but was misled (headless Chromium). No axis moved, no tag added; `bloc` stays `bibi`.** Blame is not a position. The Defence ambition and *"הכרעה, לא הכלה"* restate revision 149 and fit `hardline-on-gaza`. |
 | 2026-09-29 | revision 186 — **ישר: `anti-settler-violence` ADDED (31 → 32; the tag goes 1 → 2 holders), on the repo owner's decision. No axis moved.** Reverses revision 182's refusal the same day. A research pass, each claim checked by three reviewers, found the measure 182's trigger asked for, in the chairman's words: JPost 24.09, *"Administrative orders would be restored against those who riot"*, with J&S police under military coordination. The same measure recurs from 22.11.2024 (against Katz ending administrative detention for settlers) through April and August 2026. It departs knowingly from the `gender-equality` line (refused on his words, granted on writing): that commitment named no measure, and this one names two. Against it, recorded: the 28.09 party answer and the site omit it, and the April 2026 visit to the שובאל outpost. Trigger for removal written. הרשימה המשותפת stays off (no measure). Verified on an already-seeded database; 271 tests pass. |
+| 2026-09-29 | revision 187 — **cross-row: נתניהו's pre-election attack warning, with ישר's and וינטר's answers (N12, `curl`). No axis moved, no tag added.** וינטר corroborates עמך ישראל's `hardline-on-gaza` (*"נבוא להכריע"*). *"נרוקן את הבריכה ונביא להגירה"* is still a bare noun plus a metaphor, so neither emigration tag is added (revisions 32, 176). ישר's demand that לפיד be briefed is about process. נתניהו's warning is not a position, and Iran regime change is shared with ביחד, so no tag is minted. |
