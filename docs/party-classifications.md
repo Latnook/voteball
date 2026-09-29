@@ -1229,6 +1229,27 @@ logged. The paper's lawyers answer that it will prove the report in court, and t
   evidence. The sweep should record it as the party leader's conduct toward named outlets and journalists,
   and not merge it with the statutory pole.
 
+**2026-09-29 — revision 194. הארץ's daily briefing: the Likud's lawyer against two journalists. Nothing scored.**
+([הארץ](https://www.haaretz.co.il/digital/daily/2026-09-29/ty-article/.premium/000001a0-ed4f-d259-a3b4-eddf35760000), 29.09.26, body supplied by the repo owner.) Two items. **שלומי אלדר** (revision 192's defendant)
+says the Likud sent him a warning letter through אילן בומבך, in the party's name. It accused him of being paid by
+the עמותה *"דרכנו"* for podcasts on דמוקרט TV, and called his reporting funded election activity aimed at
+*"השחרת פניו של ראש הממשלה"*. Separately, בומבך filed a police complaint against **רביב דרוקר** for using a phone
+while driving, seen in a *המקור* investigation, and per הארץ the police summoned him for questioning.
+
+- **Both are filed on the press-freedom sweep item beside revision 192**, and they complete a pattern this page
+  had not named: **the party's own legal tools aimed at named journalists.** There are now three instances in one
+  week: the leader's libel suit, a warning letter in the party's name, and a police complaint by the party's
+  counsel. It is not the statutory pole (קרעי's bans and budget cuts), and it must not be merged with it. It is
+  also more than one leader's private suit: two of the three are the party acting as a party. The sweep should
+  decide whether this strand is a tag in its own right. **One week of one row is not enough to mint one**
+  (revision 15's reasoning).
+- **אלדר's account of the Likud's messaging** (denial, then *"קמפיין"*, then *"גם אם הייתה שיחה"*, then jokes, then
+  the army) is a journalist's reading of his critics. עמית סגל and ינון מגל are not the party. אוריך is staff (employed by הליכוד, per
+  revision 152), the tier revision 141 gave טופז לוק. It is recorded, not scored.
+- **The column's roll-call** (ביטן's indictment, חיים כץ's conviction, the file on מאי גולן sent to the prosecution)
+  is the legal standing of candidates, not a position. It scores nothing on this row, which has never held a
+  rule-of-law tag either way.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -10264,6 +10285,26 @@ leadership of *"הסתה גזענית, ברברית ולא אנושית"* toward
   scores nothing. Revision 130's standing decision is unchanged: the row stays voteable until the court rules,
   and a ruling upholding only אבו שחאדה's disqualification changes the slate (#3), not the row.
 
+**2026-09-29 — revision 193. אבו שחאדה interviewed in הארץ's daily briefing, the morning the יועמ"שית backed his
+disqualification in court. Nothing scored.** ([הארץ](https://www.haaretz.co.il/digital/daily/2026-09-29/ty-article/.premium/000001a0-ed4f-d259-a3b4-eddf35760000), 29.09.26, body supplied by the repo owner.)
+Asked what *"מדינותינו"* meant in the 8 October article, he calls it *"ניסוח לא נכון"*, one of *"הרבה ניסוחים...
+לא מוצלחים"*. He says *"אני שייך לאומה הערבית, ומבחינת מדינה אני שייך למדינת ישראל"*, that he wants *"פתרון
+מדיני"* based on *"הצדק, החירות והשוויון לשני העמים"*, and *"אני מכיר בזכות של היהודים שנמצאים פה בארץ כקבוצה
+לאומית, שיש לה זכויות קולקטיביות ואינדיווידואליות"*.
+
+- **Nothing moves, because the words fit every shape the row already holds.** The row carries both `pro-two-state`
+  and `secular-democratic-state` under the union rule, and *"פתרון מדיני… לשני העמים"* names neither shape. Recognising
+  Jews as a national group is compatible with `state-of-all-its-citizens` and `non-zionist`. It is also a
+  component chair speaking, not the list's programme (revision 101).
+- **The article is the defence he gave the Supreme Court, restated to a newspaper.** Revision 102 recorded that
+  the יועמ"שית's case rests on the armed-struggle ground alone, and revision 168 recorded the TikTok video that
+  weakens his account. He now says the article was badly worded, not misread. Whether that holds is the court's
+  question on 1 October, and revision 130's decision stands: the row stays voteable until the court rules.
+- **His claims about others score nothing on them.** That the יועמ"שית *"נכנעה לבן גביר"* is a rival's account.
+  *"יש תוכנית ממשלתית לגירוש"* is a claim about other rows (revision 153's line). The rows it points at already
+  carry `voluntary-palestinian-emigration-incentives` or `population-transfer` on their own evidence. He declined
+  to answer סגלוביץ' (revision 172).
+
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
 **Neither this row nor יהדות התורה has a platform, and that is a finding, not a failed search.**
@@ -12403,3 +12444,5 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 190 — **cross-row: ynet on the Druze vote (`curl`). Nothing scored.** אבו רוקן (ישר #13): a *"תוכנית מאה"*, a legalisation track alongside Kaminitz enforcement, and a Nation-State Law amendment. Candidate tier, and not revision 69's territories trigger. It is this row's first sighting of the Kaminitz gap, and it differs from הדמוקרטים' repeal, so a future tag must not fold the two together. עמאר (ישראל ביתנו #7) bids for internal security; מוגרבי (ישראל תחילה #4) is positioning. |
 | 2026-09-29 | revision 191 — **עוצמה יהודית: ynet on revision 175's FakeReporter bot investigation (`curl`). Nothing scored.** Not a second source (revision 89). It adds the targets (ערוץ 14, סמוטריץ's Negev-and-Galilee campaign, וינטר); still conduct. |
 | 2026-09-29 | revision 192 — **הליכוד: נתניהו sues הארץ, ידיעות, Ynet and six journalists for libel over the בן זאיד report (הארץ, body supplied by the repo owner). Nothing scored.** Who was warned is not a position. Filed on the press-freedom sweep as a borderline instance: a private remedy decided by a court, not a state instrument, so it is kept apart from קרעי's statutory pole. |
+| 2026-09-29 | revision 193 — **הרשימה המשותפת: אבו שחאדה in הארץ's daily briefing, as the יועמ"שית backs his disqualification in court (body supplied by the repo owner). Nothing scored.** *"מדינותינו"* was *"ניסוח לא נכון"*. His *"פתרון מדיני… לשני העמים"* and his recognition of Jewish collective rights fit every shape the row holds under the union rule. He is a component chair, not the programme. Revision 130 stands until the court rules on 1 October. His claims about others are a rival's. |
+| 2026-09-29 | revision 194 — **הליכוד: the party's counsel בומבך sent אלדר a warning letter in the party's name and filed a police complaint against דרוקר (הארץ, body supplied by the repo owner). Nothing scored.** Filed on the press-freedom sweep beside revision 192. Three instances in a week now form a strand: the party's legal tools aimed at named journalists. It is kept apart from the statutory pole, and one week of one row is not enough to mint a tag. The candidates' legal standing is not a position. |
