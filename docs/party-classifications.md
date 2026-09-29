@@ -2429,6 +2429,26 @@ from the page's `articleBody` with plain `curl`.)
   large parties, which is list positioning, not policy.
 - The turnout figures (46.4% in 2021, 50.9% in 2022, against a 55.9% average before that) are background.
 
+**2026-09-29 — revision 196 (cross-row). The full ג'אלוד statements, including two rows revision 182 did not
+have. No axis moved, no tag added.** ([N12](https://www.mako.co.il/news-politics/2026_q3/Article-d3aaf9f49cbe0a1026.htm), 29.09.26 10:00, read from the page's `articleBody` with
+plain `curl`.)
+
+- **כחול לבן: גנץ**, *"קומץ הפורעים הקיצוני… הגיע הזמן להחזיר את המשילות גם ליהודה ושומרון ולטפל בחומרה באותם
+  פורעים"*, which only *"ממשלה ציונית חוצת-גושים"* can do. **It is not `anti-settler-violence`**, on revision 186's
+  test: *"להחזיר את המשילות"* and *"לטפל בחומרה"* name a goal, not a measure. His framing (*"קומץ"*) is also
+  נתניהו's. The row's `governance-reform` and `unity-government` are corroborated in passing.
+- **ישר: איזנקוט's full statement adds *"כך נראים אנרכיה ואובדן שליטה"* and *"אני קורא לרשויות החוק למצות את הדין
+  עם הפורעים בהקדם"***. Revision 186's tag stands on the JPost measure, and this adds nothing to it.
+- **הדמוקרטים: גולן's full statement adds *"נילחם בטרור ביד קשה. בכל טרור, פלסטיני ויהודי"***, the wording of the
+  internal-security paper's *"אפס סובלנות לטרור – יהודי ופלסטיני כאחד"* (revision 62). The held tag is corroborated.
+- **הליכוד: כץ, the Defence Minister**, calls them *"קומץ הפורעים"* and wants the law applied *"בנחישות"*, which is
+  revision 123's shape again. **One fact belongs beside it:** on 22.11.2024 כץ ended administrative detention
+  for settlers, the measure ישר's tag rests on (revision 186). That decision is ministerial record, the strongest
+  tier. The page still files **no opposite pole** of `anti-settler-violence` (revision 123), because that would
+  need a stated opposition to enforcement, and כץ and נתניהו both call for enforcement in words. **If a
+  negation is ever minted, this decision is its first record-tier evidence**, and it is written down here so a
+  later pass finds it.
+
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -12464,3 +12484,4 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 193 — **הרשימה המשותפת: אבו שחאדה in הארץ's daily briefing, as the יועמ"שית backs his disqualification in court (body supplied by the repo owner). Nothing scored.** *"מדינותינו"* was *"ניסוח לא נכון"*. His *"פתרון מדיני… לשני העמים"* and his recognition of Jewish collective rights fit every shape the row holds under the union rule. He is a component chair, not the programme. Revision 130 stands until the court rules on 1 October. His claims about others are a rival's. |
 | 2026-09-29 | revision 194 — **הליכוד: the party's counsel בומבך sent אלדר a warning letter in the party's name and filed a police complaint against דרוקר (הארץ, body supplied by the repo owner). Nothing scored.** Filed on the press-freedom sweep beside revision 192. Three instances in a week now form a strand: the party's legal tools aimed at named journalists. It is kept apart from the statutory pole, and one week of one row is not enough to mint a tag. The candidates' legal standing is not a position. |
 | 2026-09-29 | revision 195 — **הדמוקרטים: a בג"ץ petition for a שב"כ detail for גולן, and an attack on זיני over the service's answer (intelligence plus gun licences for private guards) (ynet, `curl`). Nothing scored.** The party is litigating for its own chair, not proposing a policy. The attack is consistent with revision 133, and who heads the שב"כ is on no axis. |
+| 2026-09-29 | revision 196 — **cross-row: N12's full ג'אלוד statements (`curl`). No axis moved, no tag added.** גנץ (כחול לבן): *"להחזיר את המשילות… לטפל בחומרה"* names a goal, not a measure, so no `anti-settler-violence` (revision 186's test). איזנקוט and גולן add nothing beyond what their held tags already say. כץ repeats revision 123's shape, and his 22.11.2024 decision ending administrative detention for settlers is recorded as the first record-tier evidence for an opposite pole, if one is ever minted. |
