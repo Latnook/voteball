@@ -1213,6 +1213,22 @@ spoke that night, and that only their bureau chiefs did, at 01:46.
   argues for, not how it argues (revision 30). The analysis is a named analyst's, backed by the IDF and שב"כ
   inquiries she cites. It is recorded, not adjudicated.
 
+**2026-09-29 — revision 192. נתניהו sues הארץ, ידיעות אחרונות, Ynet and six journalists for libel over the בן זאיד
+report. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/law/2026-09-29/ty-article/.premium/000001a0-ede1-d259-a3b4-edf91bd70000), 29.09.26, body supplied by the repo owner.) The defendants include
+שלומי אלדר and רותי יובל (whose book the report came from), אורי משגב, נדב איל, ברק רביד and אטילה שומפלבי. His
+denial is detailed: no call with the UAE president from early September to 7 October, and every such call is made
+from his office on an encrypted device brought by an Emirati representative, whose entries are logged. None was
+logged. The paper's lawyers answer that it will prove the report in court, and that his letter shows *"לא בדל
+ראיה"* of intent to harm.
+
+- **Who was warned before 7 October is not a position** (revisions 100, 141, 172 and 184). The suit decides
+  nothing about it, and neither the denial's detail nor the New York Times' two sources are for this page to weigh.
+- **Filed on the press-freedom sweep item (Open questions), as a borderline instance.** The item defines its tag
+  by *political control over appointments and content* (revision 116), and קרעי's measures are state instruments.
+  **A libel suit is a private remedy decided by a court**, open to anyone, so it is not the same kind of
+  evidence. The sweep should record it as the party leader's conduct toward named outlets and journalists,
+  and not merge it with the statutory pole.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -2372,6 +2388,25 @@ reviewers, found the measure revision 182's trigger asked for, in the chairman's
 
 Verified on an already-seeded database: the old file leaves ישר at 31 tags without it, the new one moves the same
 row to 32 with it, and the holders are `yashar` and `the-democrats`. 271 backend tests pass.
+
+**2026-09-29 — revision 190 (cross-row). ynet on the Druze vote: ישר's כמיל אבו רוקן (#13), ישראל ביתנו's חמד
+עמאר (#7), ישראל תחילה's ואיל מוגרבי (#4). Nothing scored.** ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14910958), עינב חלבי, 28.09.26, read
+from the page's `articleBody` with plain `curl`.)
+
+- **ישר: אבו רוקן** describes a *"תוכנית מאה"* for Druze society covering planning and building, land, housing,
+  employment and representation. On חוק קמיניץ: *"אי אפשר להעניש על בנייה לא מוסדרת בלי לפתוח במקביל מסלול
+  אמיתי להסדרה"*. On חוק הלאום: *"כרכתם אותנו עם כולם. זה באמת כואב"*, and he wants it amended. **Candidate tier**
+  (revision 49), and it is his programme as he describes it in an interview, not a party document. It is also
+  **not revision 69's trigger**: that asked for an אבו רוקן statement on the territories, made in the party's name,
+  and this is neither.
+- **It is the first sighting of the Kaminitz-Law gap (revision 44) on this row**, and it is recorded there.
+  Unlike הדמוקרטים' *"נבטל את חוק קמיניץ"*, it keeps enforcement and adds a legalisation track. That is a
+  different position, so if the sweep ever makes a tag, it must not fold the two together.
+- **ישראל ביתנו: עמאר** is running for the internal-security portfolio on fighting crime organisations,
+  *"במיוחד בחברה הערבית"*. That is a candidate's bid for a portfolio, in line with the row's crime-and-governance
+  plan (revision 163), and it scores nothing. **ישראל תחילה: מוגרבי** presents the list as a bridge between the
+  large parties, which is list positioning, not policy.
+- The turnout figures (46.4% in 2021, 50.9% in 2022, against a 55.9% average before that) are background.
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
@@ -7631,6 +7666,14 @@ read through the site's WordPress REST API.) A tour of farms and outposts in Sam
   `pro-settlement`, held. It is not the opposite pole of `anti-settler-violence`, which would be opposing
   enforcement (revision 123), and the post says nothing about enforcement.
 
+**2026-09-29 — revision 191. ynet on the same FakeReporter investigation as revision 175. Nothing scored.**
+([ynet](https://www.ynet.co.il/news/elections2026/article/bygspy00cze), אמיר אטינגר, 28.09.26 15:35, read from the page's `articleBody` with plain `curl`.)
+**It is not a second source** (revision 89's transmission rule): ynet reports FakeReporter's findings, as N12 did,
+and the party's reply is word for word the same. It adds detail on targets: the profiles call ערוץ 14 *"שכירי
+חרב של נתניהו"*, mock סמוטריץ's campaign for Jewish settlement in the Negev and Galilee (*"הבוחרים לא קונים את
+הבלוף הזה"*), attack וינטר, and push for גוטליב to join. Campaign conduct against the row's own bloc partners is
+still conduct, not a position, and revision 175's reading stands.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -12357,3 +12400,6 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 187 — **cross-row: נתניהו's pre-election attack warning, with ישר's and וינטר's answers (N12, `curl`). No axis moved, no tag added.** וינטר corroborates עמך ישראל's `hardline-on-gaza` (*"נבוא להכריע"*). *"נרוקן את הבריכה ונביא להגירה"* is still a bare noun plus a metaphor, so neither emigration tag is added (revisions 32, 176). ישר's demand that לפיד be briefed is about process. נתניהו's warning is not a position, and Iran regime change is shared with ביחד, so no tag is minted. |
 | 2026-09-29 | revision 188 — **הציונות הדתית: סמוטריץ' weighs a second pre-election fuel-excise cut against his professionals (כאן, headless Chromium). No axis moved, no tag added.** Ministerial record. A temporary one-product cut expiring after the vote is not broad-based `tax-cutting`, and `economic` 0 stands. It is recorded under the held `claims-economically-liberal`. |
 | 2026-09-29 | revision 189 — **עוצמה יהודית: the party's own post, בן גביר's *"שטחי A ו-B יהיו בדיוק כמו שטחי C"* as Defence minister (WP REST API). No axis moved, no tag added.** `anti-oslo`, `pro-settlement`, `sovereignty-annexation` and `voluntary-palestinian-emigration-incentives` are all held and corroborated. New: the scope reaches the populated areas A and B and is tied to the Defence portfolio. The farm outposts are `pro-settlement`, not the opposite pole of `anti-settler-violence`. |
+| 2026-09-29 | revision 190 — **cross-row: ynet on the Druze vote (`curl`). Nothing scored.** אבו רוקן (ישר #13): a *"תוכנית מאה"*, a legalisation track alongside Kaminitz enforcement, and a Nation-State Law amendment. Candidate tier, and not revision 69's territories trigger. It is this row's first sighting of the Kaminitz gap, and it differs from הדמוקרטים' repeal, so a future tag must not fold the two together. עמאר (ישראל ביתנו #7) bids for internal security; מוגרבי (ישראל תחילה #4) is positioning. |
+| 2026-09-29 | revision 191 — **עוצמה יהודית: ynet on revision 175's FakeReporter bot investigation (`curl`). Nothing scored.** Not a second source (revision 89). It adds the targets (ערוץ 14, סמוטריץ's Negev-and-Galilee campaign, וינטר); still conduct. |
+| 2026-09-29 | revision 192 — **הליכוד: נתניהו sues הארץ, ידיעות, Ynet and six journalists for libel over the בן זאיד report (הארץ, body supplied by the repo owner). Nothing scored.** Who was warned is not a position. Filed on the press-freedom sweep as a borderline instance: a private remedy decided by a court, not a state instrument, so it is kept apart from קרעי's statutory pole. |
