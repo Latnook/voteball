@@ -1199,6 +1199,20 @@ freeing the hostages, and נתניהו insisted *"יש דברים שאי אפש�
 - **Retrieval:** WebFetch returned 403 and `curl` got the Cloudflare challenge 4/4 times (5,696 bytes each).
   Headless Chromium got through on the first try, as in revision 141.
 
+
+**2026-09-29 — revision 184. כאן analysis: the Likud campaign cropped רונן בר's words, and נתניהו's statement
+got the night of 6–7 October wrong. Nothing scored.** ([כאן](https://www.kan.org.il/content/kan-news/opinions/1104208/), גילי כהן, פרשנות, 29.09.26 13:32,
+read through headless Chromium.) A graphic the Likud campaign posted on 28 September quotes בר at the 1 October
+2023 security meeting with *"בצער"* and the *"קונסטלציה"* (the Saudi normalisation track) cut out. נתניהו's
+statement to reporters says בר held *"שיחות רבות"* with הרצי הלוי that night. כהן writes that the two never
+spoke that night, and that only their bureau chiefs did, at 01:46.
+
+- **Who knew what before 7 October is not a position** (revisions 100, 141 and 172), and nothing here is a
+  plan for what comes next.
+- **How a campaign quotes someone is conduct, not a position**, revision 175's tier. This page tags what a party
+  argues for, not how it argues (revision 30). The analysis is a named analyst's, backed by the IDF and שב"כ
+  inquiries she cites. It is recorded, not adjudicated.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -2265,6 +2279,59 @@ sovereignty that risks *"הרוב היהודי"* and a bi-national state.
   `anti-annexation` is confirmed by the sovereignty line. `no-palestinian-state` (held) is corroborated.
 - **ביחד's answer in the same questionnaire is a different matter** and is recorded under that row when decided:
   it goes past the blocs (no Palestinian state, no evacuation *"בכל מצב"*, sovereignty over Area C).
+
+**2026-09-29 — revision 182 (cross-row). The riot in ג'אלוד: five rows react, and `anti-settler-violence` stays
+on הדמוקרטים alone. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/politics/2026-09-29/ty-article/000001a0-ebcb-d259-a3b4-ebdb1de00000), 29.09.26, body supplied
+by the repo owner; [כאן](https://www.kan.org.il/content/kan-news/defense/1104203/), איתי בלומנטל, חיים גולדיטש and גילי כהן, 29.09.26 13:33, read through
+headless Chromium.) More than 100 Jewish rioters burned the home of the טובאסי family as the army escorted them
+back to it, stoned the troops and lightly injured three Border Police officers. Per כאן, the family was driven
+out at the end of July and בג"ץ ordered the state on 6 September to return them within two weeks. Two suspects
+were arrested.
+
+- **ישר: איזנקוט calls it *"מסע של טרור ואלימות"*** and *"תוצאה ישירה של מדיניות מסוכנת. מדיניות שמבעירה את
+  השטח"* ([his post](https://x.com/gadi_eisenkot/status/2104822473426391237)). The chairman in his own voice, and the
+  first time this row speaks on the subject. **It does not earn `anti-settler-violence`.** The tag's one holder
+  earned it on remedies: outposts blocked and defunded, the annexation laws repealed, and a named programme to
+  eradicate Jewish terror (revision 62). This is a condemnation with a cause attached and no remedy. It also
+  sits beside revision 177's support for *"הקמת יישובים חדשים באופן חוקי"*, so it opposes the violence, not
+  settlement. **Trigger:** an enforcement measure in ישר's own documents.
+- **ביחד: לפיד (#2)**: *"אינם 'פורעים'. הם טרוריסטים"*, *"כתם מוסרי... ונזק נורא למעמדנו הבינלאומי"*. A
+  faction leader on a `two-faction-list` that is `internally-split-on-conflict` and, since revision 178,
+  `pro-settlement`. It is a naming, not a measure. **בנט says nothing in either report**, and a silence is not
+  scored.
+- **הדמוקרטים: `anti-settler-violence` (held) corroborated.** גולן: the government *"יוצרת אווירה של הפקרות,
+  ומעודדת קיצוניים"* and *"נושאת באחריות לדם שיישפך"*. קריב's line, that כץ, סמוטריץ' and בן גביר *"מעניקים הגנה
+  מלאה לכנופיות האלה"*, is a claim about other rows (revision 153's line) and scores nothing on them.
+- **הליכוד: revision 123's reading holds, and this statement is its clearest instance.** נתניהו condemns the
+  riot as the work of *"קומץ הפורעים"* who do not represent *"ציבור המתיישבים שומר החוק"*, and *"קורא לרשויות
+  האכיפה למצות את מלוא חומרת הדין"*. He minimises the scale and **asks for enforcement**, so he is not at the
+  opposite pole. סער: *"פושעים שיש לטפל בהם בכל חומרת הדין... הם פוגעים בהתיישבות היהודית"*. That is candidate
+  tier and points the same way.
+- **הרשימה המשותפת's statement is first-party and still earns nothing.** It says the government
+  *"מכשירה את טרור המתנחלים ומעניקה לו גיבוי פוליטי"*, and it attacks the media and the IDF spokesperson for
+  calling arson *"ונדליזם"*. The security establishment's statement quoted by כאן does use *"מעשי ונדליזם
+  ופגיעה ברכוש"*, so the complaint is accurate about the wording. The row's position on the occupation is
+  already carried by `security` −3 and its tags. Refusing the tag here for the reason it was refused to ישר
+  keeps the test the same for both rows.
+- **Why the test has to be a remedy.** נתניהו and סער condemned the riot too. **Condemnation is close to
+  universal, so a tag granted for it would sort nothing**, which is the failure the
+  `state-commission-of-inquiry` sweep documented (revision 99). הרצוג is not a party.
+
+**2026-09-29 — revision 183 (cross-row). The change bloc sets up three joint teams. Nothing scored.**
+([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4aba848c03ce0a1026.htm), 29.09.26 13:28, read from the page's `articleBody` with plain `curl`.)
+A joint statement from ישר, ביחד, ישראל ביתנו and הדמוקרטים, following the leaders' meeting on Saturday night:
+one team for turnout and election-day integrity, one for *"קווי היסוד של הממשלה הבאה ותוכנית הפעולה ל-100 הימים
+הראשונים"*, one for media coordination and countering disinformation. The subjects named are *"שוויון בנטל
+וגיוס לכל, הקמת ועדת חקירה ממלכתית, הגבלת כהונת ראש הממשלה וקידום חוקה"*.
+
+- **Every one of the four rows already holds `universal-conscription`, `term-limits` and `constitutionalist`**
+  (the last two since revision 146), so the statement corroborates and adds nothing. The inquiry is covered
+  by revision 99's resolution: the distribution is documented and `seed.sql` is left alone.
+- **It lists subjects, not commitments.** *"בין הנושאים שבהם יעסקו"* is a team's agenda, weaker than the
+  signed document of revision 146. **Trigger:** when the *קווי היסוד* or the 100-day plan is published, read it
+  against all four rows. It would be the first document the four have written together on policy.
+- *"ממשלה ציונית ממלכתית"* again, the wording revision 155 confirmed. The team members are staff and
+  candidates; nobody is scored for sitting on a team.
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
@@ -7480,6 +7547,17 @@ not a ruling; FakeReporter asks the Central Elections Committee to examine it. *
 it**: *"אותו 'תחקיר', אותם גורמי שמאל... צבא של כסף זר"*. וינטר's reply is a rival's. If the committee rules on
 it, that is a finding about the campaign and still scores nothing on the row.
 
+**2026-09-29 — revision 185. בן גביר on רשת ב': *"לנתניהו יש אחריות על שבעה באוקטובר, אבל הטעו אותו"*. No axis
+moved, no tag added.** ([כאן](https://www.kan.org.il/content/kan-news/politic/1104218/), אריה גולן, *הבוקר הזה*, 29.09.26 13:32, read through headless Chromium.)
+He says ראש אמ"ן and בר misled נתניהו, that he himself was brushed off before the attack (*"גם נתניהו מידר
+אותי"*), and that he would have *"הופך את השולחן"* over the Qatari money. *"יש לי גם ביקורת עליו, לכן אני
+בעוצמה יהודית ולא בליכוד."*
+
+- **Blame for 7 October is not a position** (revisions 100 and 141), and a coalition partner assigning some of
+  it to נתניהו does not move `bloc`, which is still `bibi`.
+- **His Defence ambition and *"תפיסת הכרעה, לא תפיסת הכלה"* restate revision 149**, and they fit
+  `hardline-on-gaza`, which the row already holds.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -12178,3 +12256,7 @@ pass happened, for anyone reading git history.
 | 2026-09-28 | revision 179 — **ביחד: the Gaza tags re-read against the revised security plan. `preemptive-security-doctrine` ADDED (26 → 27); `hardline-on-gaza` and `territorial-control-gaza` still refused, now on the content.** No siege or supply measures, which every `hardline-on-gaza` holder's evidence is. The Yellow Line hold is conditional on disarmament, with *"אין לנו עניין לנהל את עזה"*, where the territorial tag marks holding land as policy; trigger written. *"חמאס מתעצם – אנחנו תוקפים"* is the preemptive tag's founding text; revision 49's refusal on the Iran plank stands. Verified on an already-seeded database; backend suite 271 passed. |
 | 2026-09-28 | revision 180 — **יהדות התורה: N12's anonymous אגודת ישראל sources say גולדקנופף and טסלר would abstain on an איזנקוט minority government. Nothing scored; `bloc` stays `bibi`.** Anonymous, hypothetical, and contradicted by דגל התורה's הרב הירש in the same article; trigger written. Fits `two-faction-list`. The reporter's "איזנקוט won't rely on non-Zionist parties" is a gloss; his words exclude membership, not abstention (revision 169). |
 | 2026-09-29 | revision 181 — **הליכוד: כאן reports that נתניהו phoned בונצל (#29) and demanded he apologise to יוכבד ליפשיץ (read through headless Chromium). Nothing scored.** This adds to revision 172: the leader overruled a candidate's post, which confirms it was never the party's line. Disciplining a candidate is list management, not policy. The apology is qualified. The anonymous Likud line about the danger of reserving independents is anonymous and about the list (revision 44's tier). ליפשיץ is not a party. Retrieval: WebFetch 403; `curl` hit the Cloudflare challenge 4/4. |
+| 2026-09-29 | revision 182 — **cross-row: the ג'אלוד riot (הארץ, body supplied by the repo owner; כאן, headless Chromium). Nothing scored; `anti-settler-violence` stays on הדמוקרטים alone.** איזנקוט's *"מסע של טרור ואלימות"* blames government policy but names no remedy, so ישר does not earn the tag; trigger written. לפיד's *"הם טרוריסטים"* is one faction's naming on a split list, and בנט was silent. גולן corroborates the held tag. קריב's line is about other rows. נתניהו minimises the scale and calls for full enforcement, and סער does the same, so revision 123 holds. הרשימה המשותפת's statement is refused for the same reason as ישר. Condemnation is near-universal, which is why the test is a remedy (revision 99). |
+| 2026-09-29 | revision 183 — **cross-row: the change bloc's three joint teams (N12, `curl`). Nothing scored.** Conscription for all, term limits and a constitution are held by all four rows. The inquiry is covered by revision 99. A list of subjects, weaker than revision 146's signed document; trigger: read the *קווי היסוד*/100-day plan against all four rows when published. |
+| 2026-09-29 | revision 184 — **הליכוד: a כאן analysis of the campaign's cropped רונן בר quote and נתניהו's wrong account of the night before 7 October (headless Chromium). Nothing scored.** Who knew what is not a position (revisions 100, 141, 172). Campaign conduct is revision 175's tier. |
+| 2026-09-29 | revision 185 — **עוצמה יהודית: בן גביר on רשת ב' says נתניהו bears responsibility for 7 October but was misled (headless Chromium). No axis moved, no tag added; `bloc` stays `bibi`.** Blame is not a position. The Defence ambition and *"הכרעה, לא הכלה"* restate revision 149 and fit `hardline-on-gaza`. |
