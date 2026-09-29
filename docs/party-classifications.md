@@ -2294,7 +2294,8 @@ were arrested.
   earned it on remedies: outposts blocked and defunded, the annexation laws repealed, and a named programme to
   eradicate Jewish terror (revision 62). This is a condemnation with a cause attached and no remedy. It also
   sits beside revision 177's support for *"הקמת יישובים חדשים באופן חוקי"*, so it opposes the violence, not
-  settlement. **Trigger:** an enforcement measure in ישר's own documents.
+  settlement. **Trigger:** an enforcement measure in ישר's own documents. **Superseded the same day by revision 186**, which
+  found the measure in the chairman's own words and ADDED the tag.
 - **ביחד: לפיד (#2)**: *"אינם 'פורעים'. הם טרוריסטים"*, *"כתם מוסרי... ונזק נורא למעמדנו הבינלאומי"*. A
   faction leader on a `two-faction-list` that is `internally-split-on-conflict` and, since revision 178,
   `pro-settlement`. It is a naming, not a measure. **בנט says nothing in either report**, and a silence is not
@@ -2332,6 +2333,45 @@ one team for turnout and election-day integrity, one for *"קווי היסוד �
   against all four rows. It would be the first document the four have written together on policy.
 - *"ממשלה ציונית ממלכתית"* again, the wording revision 155 confirmed. The team members are staff and
   candidates; nobody is scored for sitting on a team.
+
+**2026-09-29 — revision 186. `anti-settler-violence` ADDED to ישר (31 → 32 tags; the tag goes 1 → 2 holders), on
+the repo owner's decision. No axis moved.** This reverses revision 182's refusal the same day. Revision 182 read
+only the party's written material. A multi-source research pass, with every claim checked by three separate
+reviewers, found the measure revision 182's trigger asked for, in the chairman's own words.
+
+- **The measure.** Asked what he would do about the spike in settler violence once in office, in
+  [JPost](https://www.jpost.com/israel-election-2026/article-909543)'s on-the-record interview (24.09.26, quote read directly with `curl`):
+  *"The Civil Administration would return to military coordination, and police activity in Judea and Samaria
+  would again be coordinated by the military command… Administrative orders would be restored against those who
+  riot and harm the settlement enterprise."* He names two measures and states them as government actions.
+- **The position has held for years, and the same measure recurs.** He warned of Jewish terror as outgoing chief of staff in
+  January 2019 ([Times of Israel](https://www.timesofisrael.com/retiring-army-head-warns-rise-in-jewish-terror-could-ignite-region/)).
+  He called Katz ending administrative detention for settlers *"a grave and dangerous mistake"* on 22.11.2024
+  ([Times of Israel](https://www.timesofisrael.com/liveblog_entry/gadi-eisenkot-halting-administrative-detention-a-grave-and-dangerous-mistake/), [מעריב](https://www.maariv.co.il/news/politics/article-1150313)),
+  citing Goldstein and Duma. As ישר's leader (announced 16.09.2025) he said Hilltop Youth who attack soldiers
+  *"are terrorists"* (גל"צ, 12.11.2025) and called for the administrative orders to be restored immediately (April 2026,
+  [ynet](https://www.ynet.co.il/news/article/h1thl6otze)). On Qusra (13.08.2026, [ynet](https://www.ynetnews.com/article/i4i3wykvm)) he criticised halting
+  administrative detentions, and on ג'אלוד (revision 182) he called it terror. The administrative-detention measure is
+  the thread running through them: three dated statements over two years, not a single campaign line.
+- **The test is concrete measures, and this passes it; the evidence is of a different kind from הדמוקרטים'.**
+  That row holds the tag on a written programme (revision 62). This row holds it on the chairman's repeated
+  on-record commitment. The page's earlier line waited for writing: `gender-equality` was refused on his
+  commitment (revision 69) and granted only on the written programme (revision 161). **This grant departs from
+  that line knowingly.** The difference is that the gender commitment named no measure, while this one names two
+  and has been repeated since 2024. The chairman's own recorded words are the tier revision 129's trigger accepts.
+- **The measures differ from הדמוקרטים'.** ישר's restore enforcement under the IDF command. They do not defund or
+  evacuate outposts, which stay *"כל מקרה ייבחן לגופו"* (revision 177). The tag records opposition to the violence
+  backed by a measure, not a position on settlement, and this row stays off `pro-settlement` and on `anti-annexation`.
+- **Recorded against it, and not enough to block it.** The party's own ynet answer (28.09), four days after the
+  interview, leaves the measure out, and so do the 36 pages of the site. On 15.04.2026 he toured the illegal
+  outpost at שובאל, where residents had beaten an Israeli lawyer in June 2025. He said he was impressed, and his
+  spokesperson declined to comment on the assault ([Times of Israel](https://www.timesofisrael.com/eisenkot-visits-illegal-settlement-outpost-site-of-severe-assault-against-israeli-lawyer/)).
+  **Trigger for removal:** the party disowning the administrative-orders commitment, or a platform that excludes it.
+- **הרשימה המשותפת stays off**, on the same test: its ג'אלוד statement names no measure (revision 182). **Unfound
+  either way:** Eisenkot's Knesset votes on the subject, and statements by other ישר candidates.
+
+Verified on an already-seeded database: the old file leaves ישר at 31 tags without it, the new one moves the same
+row to 32 with it, and the holders are `yashar` and `the-democrats`. 271 backend tests pass.
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
@@ -12260,3 +12300,4 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 183 — **cross-row: the change bloc's three joint teams (N12, `curl`). Nothing scored.** Conscription for all, term limits and a constitution are held by all four rows. The inquiry is covered by revision 99. A list of subjects, weaker than revision 146's signed document; trigger: read the *קווי היסוד*/100-day plan against all four rows when published. |
 | 2026-09-29 | revision 184 — **הליכוד: a כאן analysis of the campaign's cropped רונן בר quote and נתניהו's wrong account of the night before 7 October (headless Chromium). Nothing scored.** Who knew what is not a position (revisions 100, 141, 172). Campaign conduct is revision 175's tier. |
 | 2026-09-29 | revision 185 — **עוצמה יהודית: בן גביר on רשת ב' says נתניהו bears responsibility for 7 October but was misled (headless Chromium). No axis moved, no tag added; `bloc` stays `bibi`.** Blame is not a position. The Defence ambition and *"הכרעה, לא הכלה"* restate revision 149 and fit `hardline-on-gaza`. |
+| 2026-09-29 | revision 186 — **ישר: `anti-settler-violence` ADDED (31 → 32; the tag goes 1 → 2 holders), on the repo owner's decision. No axis moved.** Reverses revision 182's refusal the same day. A research pass, each claim checked by three reviewers, found the measure 182's trigger asked for, in the chairman's words: JPost 24.09, *"Administrative orders would be restored against those who riot"*, with J&S police under military coordination. The same measure recurs from 22.11.2024 (against Katz ending administrative detention for settlers) through April and August 2026. It departs knowingly from the `gender-equality` line (refused on his words, granted on writing): that commitment named no measure, and this one names two. Against it, recorded: the 28.09 party answer and the site omit it, and the April 2026 visit to the שובאל outpost. Trigger for removal written. הרשימה המשותפת stays off (no measure). Verified on an already-seeded database; 271 tests pass. |
