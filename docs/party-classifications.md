@@ -4475,6 +4475,23 @@ so it bounds the corpus the way a sitemap does elsewhere.
     revision 157 filed. **Two links above to these papers were broken** (a raw `(2)` in the URL ends a Markdown
     link) and are fixed.
 
+**2026-09-29 — revision 195. הדמוקרטים petition בג"ץ to give גולן a שב"כ security detail, and attack זיני over the
+service's answer. Nothing scored.** ([ynet](https://www.ynet.co.il/news/elections2026/article/b1wyuokqzg), יובל קרני, 29.09.26 18:23, read from the page's `articleBody` with
+plain `curl`.) Per the petition, the police rate the threat to גולן at 4 of 6, with hundreds of explicit death
+threats and his name in the threat letter attached to the brick thrown at ערוץ 12. The party says he was evacuated
+from a meeting in באר שבע last Wednesday when its monitors saw a hostile crowd organising. The שב"כ answered that
+it will give party leaders an intelligence envelope and gun licences for private guards, not a detail. The party:
+זיני *"בחר בנאמנות למלך במקום לממלכה"*, citing the service's duty under section 7 of its law to protect the
+democratic order.
+
+- **The party is litigating for its own chair, which is not a policy.** The petition asks for protection for גולן,
+  not a rule for all party heads, although the שב"כ's answer covers all of them. The threat figures are the
+  petition's, and nothing here is this page's to verify.
+- **The attack on זיני is consistent with revision 133**, where the chairman made fighting Jewish and Palestinian
+  terror a test for the service's head. It is still not a position: who heads the שב"כ, and how he allocates
+  guards, is on no axis. The *"מלך/ממלכה"* charge sits with the internal-policing sweep item and does not
+  advance it.
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -12446,3 +12463,4 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 192 — **הליכוד: נתניהו sues הארץ, ידיעות, Ynet and six journalists for libel over the בן זאיד report (הארץ, body supplied by the repo owner). Nothing scored.** Who was warned is not a position. Filed on the press-freedom sweep as a borderline instance: a private remedy decided by a court, not a state instrument, so it is kept apart from קרעי's statutory pole. |
 | 2026-09-29 | revision 193 — **הרשימה המשותפת: אבו שחאדה in הארץ's daily briefing, as the יועמ"שית backs his disqualification in court (body supplied by the repo owner). Nothing scored.** *"מדינותינו"* was *"ניסוח לא נכון"*. His *"פתרון מדיני… לשני העמים"* and his recognition of Jewish collective rights fit every shape the row holds under the union rule. He is a component chair, not the programme. Revision 130 stands until the court rules on 1 October. His claims about others are a rival's. |
 | 2026-09-29 | revision 194 — **הליכוד: the party's counsel בומבך sent אלדר a warning letter in the party's name and filed a police complaint against דרוקר (הארץ, body supplied by the repo owner). Nothing scored.** Filed on the press-freedom sweep beside revision 192. Three instances in a week now form a strand: the party's legal tools aimed at named journalists. It is kept apart from the statutory pole, and one week of one row is not enough to mint a tag. The candidates' legal standing is not a position. |
+| 2026-09-29 | revision 195 — **הדמוקרטים: a בג"ץ petition for a שב"כ detail for גולן, and an attack on זיני over the service's answer (intelligence plus gun licences for private guards) (ynet, `curl`). Nothing scored.** The party is litigating for its own chair, not proposing a policy. The attack is consistent with revision 133, and who heads the שב"כ is on no axis. |
