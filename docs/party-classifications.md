@@ -1250,6 +1250,27 @@ while driving, seen in a *המקור* investigation, and per הארץ the police
   is the legal standing of candidates, not a position. It scores nothing on this row, which has never held a
   rule-of-law tag either way.
 
+**2026-09-30 — revision 200 (cross-row). A הארץ analysis: נתניהו's warning as a campaign move, and כץ's priorities
+in the West Bank. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-30/ty-article/.highlight/000001a0-eeaf-df19-abbb-ffaf99550000), 30.09.26, body supplied by the repo owner.)
+Security sources told the paper no urgent new intelligence changed the assessment. The writer reads the warning
+as an attempt to heat up the security front before the vote, and does not rule out using an escalation to delay
+it. He also says נתניהו tried and failed, in the UAE, to get בן זאיד to disown הארץ's report.
+
+- **Analysis, not a party act.** Why נתניהו warned is the writer's reading. Delaying the election is his
+  speculation. Who was warned before 7 October is still not a position (revisions 100, 141, 172, 184 and 192).
+- **כץ presses the army for a new offensive in a West Bank refugee camp**, after it settled for arrests in
+  קלנדיה. He also fired the Central Command chief live on ערוץ 14 last month and then reversed it. That is
+  ministerial conduct as the writer reports it, and it is on no axis. For contrast the writer gives the year's
+  record: fewer Israelis hurt by Palestinian terror in the West Bank in 2026, with many of the worst incidents
+  between settlers and Palestinians.
+- **הציונות הדתית: סמוטריץ' *"קרא השבוע לפתוח במלחמה בגדה"*, and the writer says his goal is *"מיטוט הרשות
+  הפלסטינית ואולי סיפוח מלא"***. That is the writer's summary, not a quotation, and the row already holds
+  `anti-oslo` and `sovereignty-annexation`. Nothing is added on a paraphrase.
+- **ג'אלוד again**: the writer says the condemnations (נתניהו, כץ, הרצוג) treated harming the security forces
+  as the main crime, and that the army and police failed to carry out the בג"ץ order. That fits revision 196's
+  reading of כץ and adds nothing to it. The police and שב"כ complaints against חדשות 12 over the report of
+  נתניהו's flight are state bodies' acts, not a party's. The complaint against דרוקר is revision 194's.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -3649,6 +3670,21 @@ edited 27.09), revision 170.
   escalation (*"כל ירי... יביא לתקיפות"*), not preemption, and it still is. The Gaza rule is new in the September
   rewrite and was never tested against this tag.
 
+**2026-09-30 — revision 197 (cross-row). לפיד's security briefing, and בנט on the army's shortage. No axis moved,
+no tag added.** ([כאן](https://www.kan.org.il/content/kan-news/politic/1104518/), שחר גליק and יערה שפירא, 29.09.26 23:44, read through headless Chromium on the
+second attempt; [N12](https://www.mako.co.il/news-politics/2026_q4/Article-a02550ba63ee0a1027.htm), ניר דבורי, 29.09.26 22:45, plain `curl`.) After ישר's demand (revision 187),
+נתניהו briefed לפיד at 23:30. לפיד said the forces are ready and *"אין סיבה להכניס את הציבור לפאניקה"*, and
+demanded a joint meeting with the שב"כ head and the Central Elections Committee chair. The PM's office says the
+briefing showed detailed warnings. Security sources told both outlets that no concrete information links the
+election to an escalation.
+
+- **ביחד: both leaders turn to conscription, and the row's tags are corroborated.** לפיד: *"שיגייס את 15 אלף
+  החרדים שחסרים לצה"ל"*. בנט, at the 7 October survivors' sukkah: the chief of staff lacks *"20,000 לוחמים"*,
+  and נתניהו keeps *"לעודד השתמטות המונית"*. That is `universal-conscription` and `anti-conscription-exemption`,
+  both held. On this subject the two factions of a `two-faction-list` say the same thing.
+- **Whether the threat is real is not this page's question.** The office's account and the security sources'
+  are recorded side by side, and neither scores. לפיד's demand for a joint meeting is about process.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -4511,6 +4547,13 @@ democratic order.
   terror a test for the service's head. It is still not a position: who heads the שב"כ, and how he allocates
   guards, is on no axis. The *"מלך/ממלכה"* charge sits with the internal-policing sweep item and does not
   advance it.
+
+**2026-09-30 — revision 199. דרור מורג, הדמוקרטים' member on the Central Elections Committee, against
+disqualifying רע"ם. No axis moved, no tag added.** ([X](https://x.com/DemocratsIL/status/2102765792412467549), the party's account, 23.09.26, read through the fxtwitter
+API; the 51-second video was not watched.) *"מנסור עבאס הושיט יד להשתלבות בישראליות. ואנחנו הדמוקרטים לא נפסול
+את היד הזאת"*, and *"נגד פסילת רע״ם, בעד שותפות יהודית-ערבית"*. **`jewish-arab-partnership` (held) is
+corroborated, now with the party's own vote on the committee** beside the programme's *"שותפות יהודית-ערבית כן.
+פסילה קטגורית לא"* and העבודה's recorded votes (revision 130). The words and the votes still agree.
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -7731,6 +7774,26 @@ and the party's reply is word for word the same. It adds detail on targets: the 
 חרב של נתניהו"*, mock סמוטריץ's campaign for Jewish settlement in the Negev and Galilee (*"הבוחרים לא קונים את
 הבלוף הזה"*), attack וינטר, and push for גוטליב to join. Campaign conduct against the row's own bloc partners is
 still conduct, not a position, and revision 175's reading stands.
+
+**2026-09-30 — revision 198. The party's own post: עוצמה יהודית asks for a criminal investigation of אבו שחאדה,
+and בן גביר tells him *"ברא לסוריה"*. `kahanist` gets its first first-party textual evidence. No tag added.**
+([עוצמה יהודית](https://www.ozma-yeudit.co.il/%d7%a2%d7%95%d7%a6%d7%9e%d7%94-%d7%99%d7%94%d7%95%d7%93%d7%99%d7%aa-%d7%93%d7%95%d7%a8%d7%a9%d7%aa-%d7%9e%d7%94%d7%99%d7%95%d7%a2%d7%a6%d7%aa-%d7%95%d7%a4%d7%a8%d7%a7%d7%9c%d7%99%d7%98-%d7%94%d7%9e/), 29.09.26 22:25, read through the site's WordPress REST API.) After the
+יועמ"שית and the State Attorney backed the disqualification, the party asks them to open a criminal
+investigation for incitement to terror and identification with a terror organisation. בן גביר: *"מי שמהלל את
+טבח חמאס ומזדהה עם מחבלים לא צריך רק להיפסל – הוא צריך להיחקר ולעמוד לדין… אבו שחאדה – ברא לסוריה."*
+
+- **Revision 129's trigger is met.** That entry recorded, through a columnist, בן גביר telling ג'בארין *"אתם כולכם
+  צריכים ללכת בררא"* at the hearing, and refused to act on it until the same idea appeared in the party's own text
+  or the chairman's recorded words. Here it is in both: the chairman's words, published by the party, telling an
+  Arab citizen and candidate to leave the country.
+- **It is `kahanist`, which the row already holds, so nothing is added.** Revision 57 found that tag had rested
+  on no cited evidence at all, and gave it a revealed preference (צחי אליהו at #8). This is the first time the
+  party's own text states the idea itself, and it is recorded as the tag's first first-party textual evidence.
+  **The emigration tag is a different thing and stays as it is**: `voluntary-palestinian-emigration-incentives`
+  is about Gaza and Judea and Samaria and keeps the word *voluntary*. This is about a citizen, and it is not
+  voluntary.
+- **The demand for an investigation scores nothing on its own.** Asking the prosecution to act is legal machinery,
+  and the eligibility question is the court's on 1 October (revision 130).
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -12485,3 +12548,7 @@ pass happened, for anyone reading git history.
 | 2026-09-29 | revision 194 — **הליכוד: the party's counsel בומבך sent אלדר a warning letter in the party's name and filed a police complaint against דרוקר (הארץ, body supplied by the repo owner). Nothing scored.** Filed on the press-freedom sweep beside revision 192. Three instances in a week now form a strand: the party's legal tools aimed at named journalists. It is kept apart from the statutory pole, and one week of one row is not enough to mint a tag. The candidates' legal standing is not a position. |
 | 2026-09-29 | revision 195 — **הדמוקרטים: a בג"ץ petition for a שב"כ detail for גולן, and an attack on זיני over the service's answer (intelligence plus gun licences for private guards) (ynet, `curl`). Nothing scored.** The party is litigating for its own chair, not proposing a policy. The attack is consistent with revision 133, and who heads the שב"כ is on no axis. |
 | 2026-09-29 | revision 196 — **cross-row: N12's full ג'אלוד statements (`curl`). No axis moved, no tag added.** גנץ (כחול לבן): *"להחזיר את המשילות… לטפל בחומרה"* names a goal, not a measure, so no `anti-settler-violence` (revision 186's test). איזנקוט and גולן add nothing beyond what their held tags already say. כץ repeats revision 123's shape, and his 22.11.2024 decision ending administrative detention for settlers is recorded as the first record-tier evidence for an opposite pole, if one is ever minted. |
+| 2026-09-30 | revision 197 — **ביחד (cross-row): נתניהו briefs לפיד on the threat, and לפיד and בנט turn to conscription (כאן, headless Chromium; N12, `curl`). No axis moved, no tag added.** *"שיגייס את 15 אלף החרדים"* and *"לעודד השתמטות המונית"* corroborate the held `universal-conscription` and `anti-conscription-exemption`, with both factions saying the same. Whether the threat is real is not this page's question. |
+| 2026-09-30 | revision 198 — **עוצמה יהודית: the party's own post asks for a criminal investigation of אבו שחאדה, and בן גביר tells him *"ברא לסוריה"* (WP REST API). No tag added.** Revision 129's trigger is met: the idea is now in the party's own text and the chairman's words. It is `kahanist`, held, and it becomes that tag's first first-party textual evidence. The emigration tag stays as it is (voluntary, Gaza and Judea and Samaria; this is about a citizen). The investigation demand is legal machinery. |
+| 2026-09-30 | revision 199 — **הדמוקרטים: דרור מורג, the party's Central Elections Committee member, against disqualifying רע"ם (X, fxtwitter). No axis moved, no tag added.** `jewish-arab-partnership` is corroborated by the party's own committee vote, beside the programme and העבודה's votes (revision 130). |
+| 2026-09-30 | revision 200 — **cross-row: a הארץ analysis of נתניהו's warning and כץ's West Bank priorities (body supplied by the repo owner). Nothing scored.** The campaign reading and the delay speculation are the writer's. כץ's push for a refugee-camp offensive is conduct on no axis. The claim that סמוטריץ' wants the PA collapsed and full annexation is a paraphrase, and both tags are already held. The ג'אלוד points fit revision 196. |
