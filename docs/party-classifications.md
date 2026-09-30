@@ -10616,6 +10616,20 @@ Asked what *"מדינותינו"* meant in the 8 October article, he calls it *"
   2019 recommendation of גנץ is history. The סטאטנט turnout figure is a poll she says is unclear. Revision 144's
   line holds: a column's advice to parties scores nothing on them.
 
+**2026-09-30 — revision 212 (cross-row). A הארץ opinion piece on the disqualification cases before Thursday's
+hearing. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-30/ty-article/.premium/000001a0-f1ad-d8f2-a5f1-ffbf08ed0000), 30.09.26, body supplied by the repo owner.) The writer argues that
+section 7א, written against Kahanism, is now used against the Arab lists. In his view אבו שחאדה should not be
+disqualified and עוצמה יהודית and הציונות הדתית should be.
+
+- **Every party act it cites is already recorded.** עוצמה יהודית's petition is revisions 102 and 198. הדמוקרטים'
+  support for disqualifying individuals, not lists, is revisions 199 and 206. The Supreme Court hearing on
+  1 October is where revision 130's decision gets tested.
+- **Its claims about rows are the writer's.** That בן גביר's *"מוות למחבלים"* in place of *"מוות לערבים"* is
+  *"התחכמות זולה"* is a reading, and `kahanist` already sits on that row (revision 198 gave it first-party text).
+  That הציונות הדתית's *"הגירה מרצון"* is voluntary in name only argues the gap between the row's two emigration
+  tags. The row holds both `voluntary-palestinian-emigration-incentives` and `population-transfer` (revision 92),
+  so the page already records that gap on its own evidence. The זולת brief is an NGO's.
+
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
 **Neither this row nor יהדות התורה has a platform, and that is a finding, not a failed search.**
@@ -12781,3 +12795,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 209 — **ביחד: supports a national animal-protection authority under the environment ministry, per הארץ (body supplied by the repo owner). No axis moved, no tag added.** A named measure, the only party answer reported. It is filed on the environment item in Open questions, which is waiting on the eighteen-row sweep. The NGO posters of ten party leaders score nothing. |
 | 2026-09-30 | revision 210 — **cross-row: four הארץ opinion pieces (bodies supplied by the repo owner). No axis moved, no tag added.** The reserve-duty column's party promises all sit on held tags. ישר's 50-day cap (150 over three years) was re-read in its reservists paper and written on this page for the first time. הליכוד's silence is not scored. The ג'אלוד editorial, the pre-7 October directive column and the אבו שחאדה column add nothing to revisions 182/196, 100/141 and 199/130. |
 | 2026-09-30 | revision 211 — **cross-row: the deserters' parade (only וינטר condemns from the right; the change bloc condemns in the words of its held conscription tags) and ynet on the speakership plan (`curl`). No axis moved, no tag added.** הליכוד's claim that וינטר joined ליברמן is a rival's, so `bloc` stays `bibi` (revision 137). The coalition's silence is not scored. The speakership plan now has anonymous bloc sources, including a minority-government test, still revision 44's tier. Trigger written. |
+| 2026-09-30 | revision 212 — **cross-row: a הארץ opinion piece on the disqualification cases (body supplied by the repo owner). Nothing scored.** Every party act it cites is already recorded (revisions 102, 130, 198, 199, 206). Its readings of בן גביר's wording and of הציונות הדתית's "voluntary" emigration are the writer's, and both rows already carry the tags that record them. |
