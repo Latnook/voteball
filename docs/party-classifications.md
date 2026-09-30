@@ -4589,6 +4589,25 @@ who left and support for the organisations that help them. He calls it *"אחת 
   and quotes an official *"מקורב למפלגת ש"ס"*, *"לפי מספר מקורות"*, as saying *"יש לי כאב בטן לתמוך בארגון
   הלל"*. The official is anonymous and not the party (revision 44's tier).
 
+**2026-09-30 — revision 206. גולן on רשת ב' (27.09): an Arab party, *"ובוודאי מנסור עבאס"*, can sit in the next
+government. No axis moved, no tag added.** ([N12](https://www.mako.co.il/news-politics/2026_q3/Article-9a7998a7951e0a1026.htm), 27.09.26 08:40, read from the page's `articleBody` with plain
+`curl`; found by searching after [אוחנה's post](https://x.com/AmirOhana/status/2104167840261542109) relayed a clip of the interview, read through fxtwitter.) The
+chairman says whoever treats wounded soldiers *"מגיע לו להיות גם שותף במעשה השלטוני"*, and that for an Arab party
+to be in the government is *"טבעי נכון ראוי ודמוקרטי"*. The party then clarified that his words were **its
+position**, and that the subject did not come up at the leaders' meeting.
+
+- **The inclusive pole of the coalition-exclusion sweep is now explicit, and the party owns it.** Revision 199 and
+  the 23.09 post had *"שותפים בהנהגת המדינה"*. This names רע"ם in government, and the party's clarification
+  confirms it as the party's line. **Not minted**: the sweep decides the vocabulary in one pass. `jewish-arab-partnership`
+  (held) is corroborated.
+- **It is a real split inside the bloc, and both sides are first-party.** The same article has איזנקוט saying
+  the night before that רע"ם will not be in the next government, because it does not accept his conditions,
+  among them recognising Hamas as a terror organisation. That is ישר's `excludes-anti-zionist-parties` (revision
+  169). The joint teams (revision 183) have not settled it.
+- **אוחנה's post (#6, הליכוד) is a rival's relay.** Its quote, *"אני מבין שיש להם כרגע קושי מסויים לומר את זה
+  בפה מלא, אבל נמצא את הנוסחה"*, comes from a clip that was not watched, and N12's account does not carry it. His
+  reading, that גולן *"לא מאמין לליברמן ולבנט"*, is his. Nothing in it scores on הליכוד.
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -7856,6 +7875,28 @@ investigation for incitement to terror and identification with a terror organisa
   voluntary.
 - **The demand for an investigation scores nothing on its own.** Asking the prosecution to act is legal machinery,
   and the eligibility question is the court's on 1 October (revision 130).
+
+**2026-09-30 — revision 207 (cross-row). Six more posts: בן גביר ×3, סמוטריץ', קיש (הליכוד #12), and a repeat of
+פייגלין. No axis moved, no tag added.** (All read through fxtwitter; videos not watched.)
+
+- **בן גביר's *"למה דווקא שר הביטחון?"*** ([post](https://x.com/itamarbengvir/status/2104966794439995511), 29.09) sets six goals for the Defence portfolio. It is the
+  chairman's own long statement, and it restates revision 149. **(א)** *"תכנית אסטרטגית לעידוד הגירה מרצועת
+  עזה"* as the first goal. `voluntary-palestinian-emigration-incentives` is held on the party's bill; *"יש לי
+  תכנית מעשית"* names no mechanism. **(ב)** disarming the PA, which is `anti-oslo`, held. **(ג)** looser open-fire
+  rules, *"כל מחבל הוא בן מוות"*, which fits `hardline-on-gaza` and `death-penalty-for-terrorists`, both held.
+  **(ה)** removing אסא כשר's ethics code, which is revision 107's programme. **Two items are new and are recorded
+  as planks, not tags**: **(ד)** much higher conscript pay plus *"קרקעות חינם לחיילים בנגב ובגליל"*, and **(ו)**
+  opening elite units, 8200 included, *"לכלל האוכלוסייה"*. His account of איזנקוט and גנץ in the war cabinet
+  (against Rafah, Philadelphi, Lebanon) is a rival's, and it scores nothing on them.
+- **בן גביר on the משמר הלאומי entering a mosque over a noise complaint** ([post](https://x.com/itamarbengvir/status/2104868375365324922)): *"מסגד הוא לא שטח אקס
+  טריטוריאלי… זו המשילות שאני מוביל"*. Ministerial conduct, revision 77's tier. No tag covers it.
+- **בן גביר credits דוד בבלי (#11)** for the evidence behind the אבו שחאדה petition ([post](https://x.com/itamarbengvir/status/2104828954322358647)). That is campaign
+  machinery, and the substance is revision 198's.
+- **הציונות הדתית: סמוטריץ'** promotes the party's settlement tours to *"רצועת הביטחון"* near מודיעין ([post](https://x.com/bezalelsm/status/2104494106361856272)).
+  `pro-settlement` is held.
+- **הליכוד: קיש (#12)** calls the pre-7 October warning reports *"פייק ההדלפות"* timed to the election ([post](https://x.com/YoavKisch/status/2104604224847757457)). Who
+  was warned is not a position (revisions 100 and 141), and his rebuttal is a candidate's.
+- **פייגלין's 27.09 post** ([post](https://x.com/moshefeiglin/status/2104124780853014554)) is already in revision 205.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -12656,3 +12697,5 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 203 — **cross-row: נתניהו's *"ימין או פלסטין"* post, the Joint List's *"פלסטין."* reply, and מרידור (ישר #7) on fuel prices (fxtwitter; screenshot viewed). Nothing scored.** נתניהו's claims about other rows contradict their `no-palestinian-state` and ישר's exclusion of anti-Zionist parties (revision 153's line). The Joint List's one word fits the held `palestinian-nationalist` and names no solution shape. מרידור is candidate tier, and `cost-of-living` is already held. |
 | 2026-09-30 | revision 204 — **הדמוקרטים: קריב (#3) commits the party to a law for young people without family support, aimed at those leaving the haredi world (fxtwitter). No axis moved, no tag added.** A named measure, which no tag covers. It is not minted from one row's post (revision 15). Trigger: the party's own documents and a second row. The anonymous official "close to ש"ס" quoted on הלל's budget cut scores nothing. |
 | 2026-09-30 | revision 205 — **הציונות הדתית: eight posts by פייגלין (#2, זהות's leader; fxtwitter). No axis moved, no tag added; `cost-of-living` REFUSED on the merger rule.** On אבו שחאדה he rejects disqualification as judicialisation but wants citizenship stripped and deportation. That corroborates the carried `permanent-residency-not-citizenship` and `population-transfer`, and splits with עוצמה יהודית over method, not goal. The Negev *"מרד חמוש"* plan is the enforcement pole of the Kaminitz gap. His cost-of-living measures (dismantle רמ"י, abolish the agricultural boards) are the instruments the merger refused against `economic` 0, so granting the tag would bring them back under another name. `temple-mount-centred` is corroborated. |
+| 2026-09-30 | revision 206 — **הדמוקרטים: גולן on רשת ב' says an Arab party, *"ובוודאי מנסור עבאס"*, can sit in the next government, and the party confirms that as its position (N12, `curl`; found via אוחנה's post). No axis moved, no tag added.** The inclusive pole of the coalition-exclusion sweep is now explicit and owned by the party, and not minted. It is a first-party split with ישר, which excludes רע"ם (revision 169). אוחנה's relayed quote is a rival's and was not verified. |
+| 2026-09-30 | revision 207 — **cross-row: בן גביר's six Defence goals, his mosque post and his credit to בבלי; סמוטריץ's settlement tours; קיש on the warnings (fxtwitter). No axis moved, no tag added.** The Defence goals restate revision 149 on held tags. The new planks (free land for soldiers, elite units open to all) are recorded, not tagged. The mosque post is ministerial conduct. קיש's rebuttal is not a position. The Feiglin repeat is already in revision 205. |
