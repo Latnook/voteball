@@ -3719,6 +3719,15 @@ code, and the pilot suspected of trying to crash it is under investigation. לפ
 - **Recorded because it tests revision 197's claim from both sides.** The PM's office says the briefing held
   detailed warnings, and לפיד says it held nothing like the next morning's event. Neither can be checked here.
 
+**2026-09-30 — revision 209. ביחד backs a national animal-protection authority. No axis moved, no tag added.**
+([הארץ](https://www.haaretz.co.il/nature/2026-09-30/ty-article/.premium/000001a0-f1bf-d272-adf6-fdff3ee10000), 30.09.26, body supplied by the repo owner.) Twenty groups, among them תנו לחיות לחיות,
+אנימלס and חיים וסביבה, asked the large parties to commit to an independent authority under the environment
+ministry and to write it into the coalition agreements. **ביחד announced its support.** It is a named measure,
+the party's own (as reported; the announcement itself was not read). It joins this row's environment programme
+(revision 60), and אורלי הראל (#17) is the row's animal-rights candidate. No animal-welfare tag exists. It is
+filed on the environment item in Open questions, which is waiting on the eighteen-row sweep. The posters showing
+ten other party leaders are the groups' campaign, and they score nothing on those rows.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -12118,6 +12127,13 @@ bought nothing here, because the defect was never in the pixels being measured.
   דב חנין's remark about *"כמה ח"כים ממפלגת הציונות הדתית"* denying climate change is a commentator's and
   scores nothing on that row. **The sweep's status is unchanged**: three rows with programmes, ישר with
   answers but no plan, and the rest unread or silent.
+  **ANIMAL WELFARE, 2026-09-30 (revision 209).** Twenty environmental and animal-protection groups ([הארץ](https://www.haaretz.co.il/nature/2026-09-30/ty-article/.premium/000001a0-f1bf-d272-adf6-fdff3ee10000),
+  body supplied by the repo owner) asked the large parties to commit, in the next coalition agreements, to a
+  national animal-protection authority under the environment ministry, taking enforcement of the animal-welfare
+  law away from the agriculture ministry. **ביחד announced its support**, the only party the report names as
+  answering. The posters of ten party leaders beside animals are the groups' campaign, not the parties'. Animal
+  welfare belongs to this item: המפלגה הכלכלית's programme already carries a live-export ban and cage-free hens.
+  **Not minted, for the same reason as the rest of the item.**
 - **No gun-control tag exists although `gun-rights` does — FIFTH item in the sweep queue (2026-09-08,
   revision 62), and the only queued gap that is proven real by the vocabulary itself.** הדמוקרטים's
   internal-security paper commits to *"נגביר את הפיקוח על רשיונות נשק ומנגנוני זיהוי מסוכנות בקרב
@@ -12715,3 +12731,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 206 — **הדמוקרטים: גולן on רשת ב' says an Arab party, *"ובוודאי מנסור עבאס"*, can sit in the next government, and the party confirms that as its position (N12, `curl`; found via אוחנה's post). No axis moved, no tag added.** The inclusive pole of the coalition-exclusion sweep is now explicit and owned by the party, and not minted. It is a first-party split with ישר, which excludes רע"ם (revision 169). אוחנה's relayed quote is a rival's and was not verified. |
 | 2026-09-30 | revision 207 — **cross-row: בן גביר's six Defence goals, his mosque post and his credit to בבלי; סמוטריץ's settlement tours; קיש on the warnings (fxtwitter). No axis moved, no tag added.** The Defence goals restate revision 149 on held tags. The new planks (free land for soldiers, elite units open to all) are recorded, not tagged. The mosque post is ministerial conduct. קיש's rebuttal is not a position. The Feiglin repeat is already in revision 205. |
 | 2026-09-30 | revision 208 — **cross-row: the warning dispute, day two: IDF readiness, הליכוד's charge that לפיד's statement was pre-written, the flydubai hijack-code landing, and לפיד's and גולן's reactions (הארץ ×2, bodies supplied by the repo owner; fxtwitter). Nothing scored.** These are disputes of fact and timing between rivals, not positions. Revision 197 stands. |
+| 2026-09-30 | revision 209 — **ביחד: supports a national animal-protection authority under the environment ministry, per הארץ (body supplied by the repo owner). No axis moved, no tag added.** A named measure, the only party answer reported. It is filed on the environment item in Open questions, which is waiting on the eighteen-row sweep. The NGO posters of ten party leaders score nothing. |
