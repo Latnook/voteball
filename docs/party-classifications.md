@@ -3749,6 +3749,11 @@ code, and the pilot suspected of trying to crash it is under investigation. לפ
   messaging. The column answers with לפיד's account and argues the government shaped the threat it warns of.
   That is the writer's view. Neither adds a position, and the rest of the briefing, on French school protests,
   concerns no party.)*
+- *(2026-09-30, [a הארץ column](https://www.haaretz.co.il/news/elections/2026-09-30/ty-article/.highlight/000001a0-f32f-d272-adf6-ffef0b850000), body supplied by the repo owner: the PMO now says the military
+  secretary briefed לפיד on increased *"פעילות עוינת בחו"ל"*, and כץ called the flight a *"ניסיון פיגוע ג'יהאדיסטי"*
+  while נתניהו said *"אירוע ביטחוני חמור"*. The columnist's point is that if there was intelligence, the government,
+  not the opposition, should have acted on it. A minister's characterisation of an incident and a rival's
+  argument about responsibility are still not positions, and revision 197 stands.)*
 
 **2026-09-30 — revision 209. ביחד backs a national animal-protection authority. No axis moved, no tag added.**
 ([הארץ](https://www.haaretz.co.il/nature/2026-09-30/ty-article/.premium/000001a0-f1bf-d272-adf6-fdff3ee10000), 30.09.26, body supplied by the repo owner.) Twenty groups, among them תנו לחיות לחיות,
