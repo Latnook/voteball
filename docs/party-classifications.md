@@ -3704,6 +3704,21 @@ election to an escalation.
 - **Whether the threat is real is not this page's question.** The office's account and the security sources'
   are recorded side by side, and neither scores. לפיד's demand for a joint meeting is about process.
 
+**2026-09-30 — revision 208 (cross-row). The warning dispute, day two: the IDF's readiness, the Likud's timing
+charge, and a hijack-code landing in Saudi Arabia. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-29/ty-article/.premium/000001a0-ed9b-d9ab-abfd-ffbb9a710000), 29.09.26, and
+[הארץ](https://www.haaretz.co.il/news/politics/2026-09-30/ty-article/.premium/000001a0-f20b-dbb2-a9f8-fbcbefc10000), 30.09.26, bodies supplied by the repo owner; [לפיד](https://x.com/yairlapid/status/2105245383853257042), 30.09.26, read through fxtwitter.)
+IDF sources say no front shows practical preparations for an attack, with no raised alert and no reserve call-ups.
+הליכוד's statement says לפיד's post-briefing message was written in advance, since he left at 23:39 and posted
+two minutes later. On 30.09 a flydubai flight carrying about 180 Israelis landed in Saudi Arabia after a hijack
+code, and the pilot suspected of trying to crash it is under investigation. לפיד: *"שום דבר שדומה אפילו לאירוע
+המטוס הבוקר לא הופיע בעדכון"*, and the PM's supporters are *"חבורה מופקרת"*. גולן praised the passengers.
+
+- **None of it is a position.** Whether the warning was real, whether the briefing covered the flight, and when
+  a statement was drafted are disputes of fact and of timing between rivals. Revision 197's reading stands.
+  הליכוד's statement is the party's own, and it is about לפיד's conduct, not policy.
+- **Recorded because it tests revision 197's claim from both sides.** The PM's office says the briefing held
+  detailed warnings, and לפיד says it held nothing like the next morning's event. Neither can be checked here.
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -12699,3 +12714,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 205 — **הציונות הדתית: eight posts by פייגלין (#2, זהות's leader; fxtwitter). No axis moved, no tag added; `cost-of-living` REFUSED on the merger rule.** On אבו שחאדה he rejects disqualification as judicialisation but wants citizenship stripped and deportation. That corroborates the carried `permanent-residency-not-citizenship` and `population-transfer`, and splits with עוצמה יהודית over method, not goal. The Negev *"מרד חמוש"* plan is the enforcement pole of the Kaminitz gap. His cost-of-living measures (dismantle רמ"י, abolish the agricultural boards) are the instruments the merger refused against `economic` 0, so granting the tag would bring them back under another name. `temple-mount-centred` is corroborated. |
 | 2026-09-30 | revision 206 — **הדמוקרטים: גולן on רשת ב' says an Arab party, *"ובוודאי מנסור עבאס"*, can sit in the next government, and the party confirms that as its position (N12, `curl`; found via אוחנה's post). No axis moved, no tag added.** The inclusive pole of the coalition-exclusion sweep is now explicit and owned by the party, and not minted. It is a first-party split with ישר, which excludes רע"ם (revision 169). אוחנה's relayed quote is a rival's and was not verified. |
 | 2026-09-30 | revision 207 — **cross-row: בן גביר's six Defence goals, his mosque post and his credit to בבלי; סמוטריץ's settlement tours; קיש on the warnings (fxtwitter). No axis moved, no tag added.** The Defence goals restate revision 149 on held tags. The new planks (free land for soldiers, elite units open to all) are recorded, not tagged. The mosque post is ministerial conduct. קיש's rebuttal is not a position. The Feiglin repeat is already in revision 205. |
+| 2026-09-30 | revision 208 — **cross-row: the warning dispute, day two: IDF readiness, הליכוד's charge that לפיד's statement was pre-written, the flydubai hijack-code landing, and לפיד's and גולן's reactions (הארץ ×2, bodies supplied by the repo owner; fxtwitter). Nothing scored.** These are disputes of fact and timing between rivals, not positions. Revision 197 stands. |
