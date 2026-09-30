@@ -10429,6 +10429,19 @@ Asked what *"מדינותינו"* meant in the 8 October article, he calls it *"
   carry `voluntary-palestinian-emigration-incentives` or `population-transfer` on their own evidence. He declined
   to answer סגלוביץ' (revision 172).
 
+**2026-09-30 — revision 202 (cross-row). A הארץ opinion column urging Arab citizens to vote. Nothing scored.**
+([הארץ](https://www.haaretz.co.il/opinions/2026-09-30/ty-article-opinion/.premium/000001a0-ee19-d0bd-a3f5-fedb58750000), 30.09.26, body supplied by the repo owner.)
+
+- **The one party act is second-hand.** Per ג'קי חורי's report, which the column relays, the heads of the Arab
+  lists intend to call on voters not to boycott, despite אבו שחאדה's expected disqualification and the committee's
+  disqualification of the lists (revision 130: 18–5 each, and on this page both stay voteable until the court
+  rules). A turnout call is campaign machinery, not a position, and the report itself was not read.
+- **The column's verdicts on other rows are opinion.** That איזנקוט, בנט and לפיד have *"אין מנדט לשבת עם נתניהו"*
+  is the writer's reading, and the rows' `bloc` values already say it. Calling ליברמן *"גזען שונא ערבים"* is her
+  judgement, and ישראל ביתנו's `excludes-haredi-and-arab-parties` (revision 99) is the classification. עודה's
+  2019 recommendation of גנץ is history. The סטאטנט turnout figure is a poll she says is unclear. Revision 144's
+  line holds: a column's advice to parties scores nothing on them.
+
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
 **Neither this row nor יהדות התורה has a platform, and that is a finding, not a failed search.**
@@ -12577,3 +12590,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 199 — **הדמוקרטים: דרור מורג, the party's Central Elections Committee member, against disqualifying רע"ם (X, fxtwitter). No axis moved, no tag added.** `jewish-arab-partnership` is corroborated by the party's own committee vote, beside the programme and העבודה's votes (revision 130). |
 | 2026-09-30 | revision 200 — **cross-row: a הארץ analysis of נתניהו's warning and כץ's West Bank priorities (body supplied by the repo owner). Nothing scored.** The campaign reading and the delay speculation are the writer's. כץ's push for a refugee-camp offensive is conduct on no axis. The claim that סמוטריץ' wants the PA collapsed and full annexation is a paraphrase, and both tags are already held. The ג'אלוד points fit revision 196. |
 | 2026-09-30 | revision 201 — **עמך ישראל: `preemptive-security-doctrine` ADDED (11 → 12; 5 → 6 holders), on וינטר's own statement from revision 187 (*"הבא להורגך השכם להורגו… לא להמתין - ליזום"*), which that pass read and did not score. No axis moved.** Surfaced by a הארץ analysis (body supplied by the repo owner) calling it a proposed pre-emptive strike. The tier matches הליכוד's (כץ's spoken line, revision 24). Six of eighteen holders, across both blocs. The analysis's anonymous Likud quotes and polls score nothing. Verified on an already-seeded database; 271 tests pass. |
+| 2026-09-30 | revision 202 — **cross-row: a הארץ opinion column urging Arab citizens to vote (body supplied by the repo owner). Nothing scored.** The Arab lists' reported call not to boycott is relayed second-hand and is campaign machinery. The writer's verdicts on איזנקוט, בנט, לפיד and ליברמן are opinion, and the rows' `bloc` and exclusion tags already classify them (revision 144's line). |
