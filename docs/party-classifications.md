@@ -2489,6 +2489,31 @@ plain `curl`.)
   negation is ever minted, this decision is its first record-tier evidence**, and it is written down here so a
   later pass finds it.
 
+**2026-09-30 — revision 210 (cross-row). Four הארץ opinion pieces: the ג'אלוד editorial, a column on נתניהו's
+pre-7 October directive, a column on אבו שחאדה, and one on reserve duty. No axis moved, no tag added.** (All
+30.09.26, bodies supplied by the repo owner: [editorial](https://www.haaretz.co.il/opinions/editorial-articles/2026-09-30/ty-article-opinion/000001a0-edee-d259-a3b4-edfed6bb0000), [directive](https://www.haaretz.co.il/opinions/2026-09-30/ty-article-opinion/.premium/000001a0-f1d0-dfbb-afa4-f3d06f2c0000), [אבו שחאדה](https://www.haaretz.co.il/opinions/2026-09-30/ty-article-opinion/.premium/000001a0-ee37-d259-a3b4-eebf2d120000),
+[reserve duty](https://www.haaretz.co.il/opinions/2026-09-30/ty-article-opinion/.premium/000001a0-ecc4-de86-a1a2-ecf57a3f0000).)
+
+- **Reserve duty: the column compares the parties' promises, and each one checks out against a held tag.**
+  **ישר**'s cap of *"עד 50 יום"* a year is in its own reservists paper: *"תגביל את מספר ימי המילואים בשנה לעד 50
+  ימים, ובתנאי שלא יעלו על 150 ימי מילואים בשלוש שנים"*, re-read today. It sits under `reservist-focused`, held, and
+  **the number had not been written on this page until now**. **הדמוקרטים**' 21–30 days (revision 99's paper)
+  is tied to haredi conscription, agreements with Syria and Lebanon, an alternative to Hamas in Gaza, and
+  *"פינוי מאחזים מבודדים"*. That is `reservist-focused`, `regional-normalization` and `anti-annexation`'s military
+  leg, all held. **הציונות הדתית**'s ≤30 days by 2027 is already recorded under `reservist-focused`. The
+  columnist's charge that it contradicts סמוטריץ's record on the haredi draft is the gap `conscription-split`
+  and `claims-economically-liberal` already carry on that row. ביחד's benefits and ישראל ביתנו's conscription law
+  are on held tags. **הליכוד ignoring the subject is a silence, and a silence is not scored.**
+- **The ג'אלוד editorial** blames the army and a Central Command chief *"שצמח בהתנחלויות"*. It repeats
+  איזנקוט's *"טרור"* and נתניהו's *"קומץ"*, both in revisions 182 and 196. It is the paper's view, not a party's.
+- **The directive column** argues that נתניהו's pre-7 October policy, not the warnings, was the failure: 24 of
+  28 battalions in the territories, the PA weakened, the Saudi track. Who was responsible for 7 October is not a
+  position (revisions 100 and 141).
+- **The אבו שחאדה column** records a debate among Palestinian citizens over whether he should withdraw to spare
+  the court a precedent. Its line that *"בן גביר, יאיר גולן והיועמ"שית"* are on the same side matches revision
+  199's record: הדמוקרטים back disqualifying individuals and oppose disqualifying lists. The court rules on
+  1 October, and revision 130 stands until then.
+
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -12732,3 +12757,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 207 — **cross-row: בן גביר's six Defence goals, his mosque post and his credit to בבלי; סמוטריץ's settlement tours; קיש on the warnings (fxtwitter). No axis moved, no tag added.** The Defence goals restate revision 149 on held tags. The new planks (free land for soldiers, elite units open to all) are recorded, not tagged. The mosque post is ministerial conduct. קיש's rebuttal is not a position. The Feiglin repeat is already in revision 205. |
 | 2026-09-30 | revision 208 — **cross-row: the warning dispute, day two: IDF readiness, הליכוד's charge that לפיד's statement was pre-written, the flydubai hijack-code landing, and לפיד's and גולן's reactions (הארץ ×2, bodies supplied by the repo owner; fxtwitter). Nothing scored.** These are disputes of fact and timing between rivals, not positions. Revision 197 stands. |
 | 2026-09-30 | revision 209 — **ביחד: supports a national animal-protection authority under the environment ministry, per הארץ (body supplied by the repo owner). No axis moved, no tag added.** A named measure, the only party answer reported. It is filed on the environment item in Open questions, which is waiting on the eighteen-row sweep. The NGO posters of ten party leaders score nothing. |
+| 2026-09-30 | revision 210 — **cross-row: four הארץ opinion pieces (bodies supplied by the repo owner). No axis moved, no tag added.** The reserve-duty column's party promises all sit on held tags. ישר's 50-day cap (150 over three years) was re-read in its reservists paper and written on this page for the first time. הליכוד's silence is not scored. The ג'אלוד editorial, the pre-7 October directive column and the אבו שחאדה column add nothing to revisions 182/196, 100/141 and 199/130. |
