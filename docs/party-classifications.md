@@ -1271,6 +1271,25 @@ it. He also says נתניהו tried and failed, in the UAE, to get בן זאיד
   reading of כץ and adds nothing to it. The police and שב"כ complaints against חדשות 12 over the report of
   נתניהו's flight are state bodies' acts, not a party's. The complaint against דרוקר is revision 194's.
 
+**2026-09-30 — revision 203 (cross-row). נתניהו's *"ימין או פלסטין"*, the Joint List's one-word reply, and ישר's
+מרידור on fuel prices. Nothing scored.** ([נתניהו](https://x.com/netanyahu/status/2104892862600970555), 29.09.26 11:15 UTC, with a screenshot of the reply; [מרידור](https://x.com/meridors/status/2104899638994059648),
+29.09.26 11:42 UTC; both read through fxtwitter, and the screenshot was viewed.)
+
+- **הליכוד: the choice is *"ממשלה לאומית בראשותי"* or *"ממשלת שמאל של איזנקוט, ליברמן, יאיר גולן והאחים
+  המוסלמים שתקים מדינה פלסטינית"*.** It is revision 172's claim again, and a claim about other rows (revision
+  153's line). It contradicts what they say: ישר and ישראל ביתנו hold `no-palestinian-state`. *"האחים המוסלמים"* is
+  a rival's label for רע"ם. The line that the Joint List *"כבר סגורה עם איזנקוט"* contradicts ישר's own
+  `excludes-anti-zionist-parties` (revision 169), and nothing on this page supports it. The party's ad also
+  pictures גנץ among the left, while כחול לבן's `bloc` is `unaligned`. That is the ad's framing, not a
+  classification.
+- **הרשימה המשותפת: its reply to the Likud ad is *"פלסטין."*** (28.09.26 23:52, per the screenshot). The party's own
+  account, one word. It fits `palestinian-nationalist`, which the row holds, and it names no solution shape, so the
+  union rule's `pro-two-state` / `secular-democratic-state` pair is untouched.
+- **ישר: מרידור (#7)** on petrol reaching ₪8.27: *"עוד תזכורת לכך שממשלת נתניהו לא טיפלה ביוקר המחיה… נקים ממשלה
+  ציונית שתטפל ביוקר המחיה"*. Candidate tier (revision 49), no measure named. The row already holds `cost-of-living`
+  (in its tag families) from the platform's cost-of-living chapter. The price rise is the one revision 188 recorded
+  under הציונות הדתית.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -12591,3 +12610,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 200 — **cross-row: a הארץ analysis of נתניהו's warning and כץ's West Bank priorities (body supplied by the repo owner). Nothing scored.** The campaign reading and the delay speculation are the writer's. כץ's push for a refugee-camp offensive is conduct on no axis. The claim that סמוטריץ' wants the PA collapsed and full annexation is a paraphrase, and both tags are already held. The ג'אלוד points fit revision 196. |
 | 2026-09-30 | revision 201 — **עמך ישראל: `preemptive-security-doctrine` ADDED (11 → 12; 5 → 6 holders), on וינטר's own statement from revision 187 (*"הבא להורגך השכם להורגו… לא להמתין - ליזום"*), which that pass read and did not score. No axis moved.** Surfaced by a הארץ analysis (body supplied by the repo owner) calling it a proposed pre-emptive strike. The tier matches הליכוד's (כץ's spoken line, revision 24). Six of eighteen holders, across both blocs. The analysis's anonymous Likud quotes and polls score nothing. Verified on an already-seeded database; 271 tests pass. |
 | 2026-09-30 | revision 202 — **cross-row: a הארץ opinion column urging Arab citizens to vote (body supplied by the repo owner). Nothing scored.** The Arab lists' reported call not to boycott is relayed second-hand and is campaign machinery. The writer's verdicts on איזנקוט, בנט, לפיד and ליברמן are opinion, and the rows' `bloc` and exclusion tags already classify them (revision 144's line). |
+| 2026-09-30 | revision 203 — **cross-row: נתניהו's *"ימין או פלסטין"* post, the Joint List's *"פלסטין."* reply, and מרידור (ישר #7) on fuel prices (fxtwitter; screenshot viewed). Nothing scored.** נתניהו's claims about other rows contradict their `no-palestinian-state` and ישר's exclusion of anti-Zionist parties (revision 153's line). The Joint List's one word fits the held `palestinian-nationalist` and names no solution shape. מרידור is candidate tier, and `cost-of-living` is already held. |
