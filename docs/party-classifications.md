@@ -6727,6 +6727,34 @@ approved that order.
   exemptions, overruling his professionals on a narrow, temporary cut to one tax, timed to the election. The tag is held, so this is a record, not a grant. *"כלכלת בחירות"* is the professionals' concern as כאן
   reports it, not a finding.
 
+**2026-09-30 — revision 205. Eight posts by פייגלין (#2, the זהות faction's leader), 25–30.09.26. No axis moved, no
+tag added; `cost-of-living` considered and refused on the merger rule.** (Read through fxtwitter; the videos were
+not watched.) He speaks for the faction whose tags this row carries (the 2026-09-01 merger entry), so his words
+are faction-leader tier, the tier לפיד has on ביחד.
+
+- **Disqualifications: against the process, for something harsher.** On 25.09 ([post](https://x.com/moshefeiglin/status/2103395322797883650)): *"כל רעיון הפסילה של
+  מועמדים ורשימות אינו עולה בקנה אחד עם העקרון הדמוקרטי הבסיסי"*. On 26–27.09 ([post](https://x.com/moshefeiglin/status/2103916570384773420), [post](https://x.com/moshefeiglin/status/2104124780853014554)), addressed to בן גביר,
+  he calls the petition a gift to *"האוליגרכיה המשפטית"* and says the answer to אבו שחאדה *"ודומיו"* is prison,
+  then *"לשלול את אזרחותו ולגרשו מן הארץ"*, or *"שלילת אזרחות מיידית, מאסר או גירוש מעבר לגבול"*. The carried
+  `permanent-residency-not-citizenship` and `population-transfer` (revision 92) are corroborated, and so is
+  `judicial-overhaul`. **It is a split with עוצמה יהודית over method, not over the goal**: בן גביר petitioned
+  the committee and now wants a criminal case (revision 198); פייגלין rejects the committee and wants the same
+  outcome by the state's hand.
+- **The Negev: *"מרד חמוש"*** ([post](https://x.com/moshefeiglin/status/2104498578190155954), 28.09): a state of emergency, closed military zones, *"כיבוש מהיר והחרבה מהירה
+  של כל מתחם בלתי חוקי"*, deporting every illegal resident, and full enforcement of planning law. It is the
+  enforcement pole of the Kaminitz / land-enforcement gap (revision 44), and the most extreme form of it this
+  page has seen, recorded there. No tag exists for it, and none is minted from one post.
+- **The economics: `cost-of-living` REFUSED.** Three posts ([housing](https://x.com/moshefeiglin/status/2104274060318220344), [milk](https://x.com/moshefeiglin/status/2104900124803584034), [רמ"י](https://x.com/moshefeiglin/status/2104980202765894115)) name measures and frame
+  them as cost of living: dismantle רשות מקרקעי ישראל's *"מונופול"*, abolish the agricultural boards (*"ברית
+  המועצות הישראלית"*), and let dairy farmers sell direct. **Every one is an instrument the merger entry refused
+  on this row**: `privatization`, `deregulation` and `anti-monopoly` contradict `economic` 0 and the
+  `sectoral-budgeting` family. Granting `cost-of-living` on those instruments would bring the refused tags back
+  under another name. The row's economics stay RZP's, the line a voter gets with the finance portfolio.
+  סמוטריץ's pre-election fuel cut (revision 188) is the row's actual cost-of-living act, and it is recorded
+  under `claims-economically-liberal`.
+- **The Temple Mount** ([post](https://x.com/moshefeiglin/status/2105218339601584628), 30.09): thirty years of ascents, now *"עטוף בטלית"*, and *"המאבק עוד בעיצומו"*.
+  `temple-mount-centred`, carried, is corroborated.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -12627,3 +12655,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 202 — **cross-row: a הארץ opinion column urging Arab citizens to vote (body supplied by the repo owner). Nothing scored.** The Arab lists' reported call not to boycott is relayed second-hand and is campaign machinery. The writer's verdicts on איזנקוט, בנט, לפיד and ליברמן are opinion, and the rows' `bloc` and exclusion tags already classify them (revision 144's line). |
 | 2026-09-30 | revision 203 — **cross-row: נתניהו's *"ימין או פלסטין"* post, the Joint List's *"פלסטין."* reply, and מרידור (ישר #7) on fuel prices (fxtwitter; screenshot viewed). Nothing scored.** נתניהו's claims about other rows contradict their `no-palestinian-state` and ישר's exclusion of anti-Zionist parties (revision 153's line). The Joint List's one word fits the held `palestinian-nationalist` and names no solution shape. מרידור is candidate tier, and `cost-of-living` is already held. |
 | 2026-09-30 | revision 204 — **הדמוקרטים: קריב (#3) commits the party to a law for young people without family support, aimed at those leaving the haredi world (fxtwitter). No axis moved, no tag added.** A named measure, which no tag covers. It is not minted from one row's post (revision 15). Trigger: the party's own documents and a second row. The anonymous official "close to ש"ס" quoted on הלל's budget cut scores nothing. |
+| 2026-09-30 | revision 205 — **הציונות הדתית: eight posts by פייגלין (#2, זהות's leader; fxtwitter). No axis moved, no tag added; `cost-of-living` REFUSED on the merger rule.** On אבו שחאדה he rejects disqualification as judicialisation but wants citizenship stripped and deportation. That corroborates the carried `permanent-residency-not-citizenship` and `population-transfer`, and splits with עוצמה יהודית over method, not goal. The Negev *"מרד חמוש"* plan is the enforcement pole of the Kaminitz gap. His cost-of-living measures (dismantle רמ"י, abolish the agricultural boards) are the instruments the merger refused against `economic` 0, so granting the tag would bring them back under another name. `temple-mount-centred` is corroborated. |
