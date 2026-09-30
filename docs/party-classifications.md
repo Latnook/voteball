@@ -3743,6 +3743,12 @@ code, and the pilot suspected of trying to crash it is under investigation. לפ
   הליכוד's statement is the party's own, and it is about לפיד's conduct, not policy.
 - **Recorded because it tests revision 197's claim from both sides.** The PM's office says the briefing held
   detailed warnings, and לפיד says it held nothing like the next morning's event. Neither can be checked here.
+- *(2026-09-30, [הארץ's daily briefing](https://www.haaretz.co.il/digital/daily/2026-09-30/ty-article/.premium/000001a0-f2c7-d9ab-abfd-f7e721a90000), body supplied by the repo owner, and [אוריך](https://x.com/jonatanu/status/2105241672732856392), read through
+  fxtwitter: the Likud's adviser ties the flight to the warning, *"נתניהו אמר את זה אתמול - איזנקוט, בנט ולפיד
+  גיחכו… אסור לתת להם להנהיג את ישראל"*. He is staff (employed by הליכוד, revision 152), and it is campaign
+  messaging. The column answers with לפיד's account and argues the government shaped the threat it warns of.
+  That is the writer's view. Neither adds a position, and the rest of the briefing, on French school protests,
+  concerns no party.)*
 
 **2026-09-30 — revision 209. ביחד backs a national animal-protection authority. No axis moved, no tag added.**
 ([הארץ](https://www.haaretz.co.il/nature/2026-09-30/ty-article/.premium/000001a0-f1bf-d272-adf6-fdff3ee10000), 30.09.26, body supplied by the repo owner.) Twenty groups, among them תנו לחיות לחיות,
