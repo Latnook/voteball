@@ -4574,6 +4574,21 @@ API; the 51-second video was not watched.) *"מנסור עבאס הושיט יד
 corroborated, now with the party's own vote on the committee** beside the programme's *"שותפות יהודית-ערבית כן.
 פסילה קטגורית לא"* and העבודה's recorded votes (revision 130). The words and the votes still agree.
 
+**2026-09-30 — revision 204. קריב (#3): a law for young people without family support, aimed at those leaving
+the haredi world. No axis moved, no tag added.** ([X](https://x.com/KarivGilad/status/2105243164139249864), 30.09.26 10:27 UTC, read through fxtwitter.) *"בממשלה הבאה
+נחוקק את החוק לתמיכה בצעירים חסרי עורף משפחתי"*, with the haredi employment and education tracks opened to those
+who left and support for the organisations that help them. He calls it *"אחת מההתחייבויות הברורות של הדמוקרטים
+בתחום הדת והמדינה"*, and tags the party's account.
+
+- **A named measure, stated as the party's commitment, by its #3.** It fits the row's religion-and-state tags,
+  `religious-pluralism` and `state-haredi-education`, without being either. **No tag exists for it**, and minting
+  one from one row's post would measure what was read, not who holds the position (revision 15's reasoning).
+  It is recorded as a plank. **Trigger:** the same commitment in the party's own documents, and a second row
+  saying it.
+- **The quoted report scores nothing on ש"ס.** A journalist reports the welfare ministry cutting הלל's budget,
+  and quotes an official *"מקורב למפלגת ש"ס"*, *"לפי מספר מקורות"*, as saying *"יש לי כאב בטן לתמוך בארגון
+  הלל"*. The official is anonymous and not the party (revision 44's tier).
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -12611,3 +12626,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 201 — **עמך ישראל: `preemptive-security-doctrine` ADDED (11 → 12; 5 → 6 holders), on וינטר's own statement from revision 187 (*"הבא להורגך השכם להורגו… לא להמתין - ליזום"*), which that pass read and did not score. No axis moved.** Surfaced by a הארץ analysis (body supplied by the repo owner) calling it a proposed pre-emptive strike. The tier matches הליכוד's (כץ's spoken line, revision 24). Six of eighteen holders, across both blocs. The analysis's anonymous Likud quotes and polls score nothing. Verified on an already-seeded database; 271 tests pass. |
 | 2026-09-30 | revision 202 — **cross-row: a הארץ opinion column urging Arab citizens to vote (body supplied by the repo owner). Nothing scored.** The Arab lists' reported call not to boycott is relayed second-hand and is campaign machinery. The writer's verdicts on איזנקוט, בנט, לפיד and ליברמן are opinion, and the rows' `bloc` and exclusion tags already classify them (revision 144's line). |
 | 2026-09-30 | revision 203 — **cross-row: נתניהו's *"ימין או פלסטין"* post, the Joint List's *"פלסטין."* reply, and מרידור (ישר #7) on fuel prices (fxtwitter; screenshot viewed). Nothing scored.** נתניהו's claims about other rows contradict their `no-palestinian-state` and ישר's exclusion of anti-Zionist parties (revision 153's line). The Joint List's one word fits the held `palestinian-nationalist` and names no solution shape. מרידור is candidate tier, and `cost-of-living` is already held. |
+| 2026-09-30 | revision 204 — **הדמוקרטים: קריב (#3) commits the party to a law for young people without family support, aimed at those leaving the haredi world (fxtwitter). No axis moved, no tag added.** A named measure, which no tag covers. It is not minted from one row's post (revision 15). Trigger: the party's own documents and a second row. The anonymous official "close to ש"ס" quoted on הלל's budget cut scores nothing. |
