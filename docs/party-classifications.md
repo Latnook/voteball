@@ -9878,6 +9878,28 @@ for *"מתקפת מנע"*.
 Verified on an already-seeded database: the old file leaves עמך ישראל at 11 tags without it, and the new one
 moves the same row to 12 with it. 271 backend tests pass.
 
+**2026-09-30 — revision 211 (cross-row). The deserters' parade in Jerusalem, where only וינטר speaks from the
+right, and ynet on the change bloc's speakership plan. No axis moved, no tag added.** ([ynet](https://www.ynet.co.il/news/elections2026/article/r1gmpr59zl), מורן
+אזולאי, 30.09.26 09:37; [ynet](https://www.ynet.co.il/news/elections2026/article/yokra14913260), אמיר אטינגר, 29.09.26; both read from `articleBody` with plain `curl`.)
+
+- **עמך ישראל: וינטר** condemns the parade (*"צבא האויב"*, ₪1,000 envelopes for deserters): *"מבזים ומביישים את
+  לוחמינו… מה לאנשים האלו וללימוד תורה?… החרפה הזאת תסתיים בממשלה הבאה"*. That is `anti-conscription-exemption`
+  and `universal-conscription`, both held, and here they are at odds with his own bloc's silence. **הליכוד's
+  charge the same day, that he has joined ליברמן and will give him the mandate, is a rival's claim.** `bloc`
+  stays `bibi` on revision 137's reasoning, and it would take a statement from וינטר himself to move it.
+- **הליכוד, הציונות הדתית and עוצמה יהודית said nothing, per the report. A silence is not scored.** The reporter's
+  explanation (that the subject hurts הליכוד) is analysis.
+- **The change bloc condemns in the words of its held tags.** איזנקוט: *"ממשלת השתמטות לממשלת גיוס ציונית"*. בנט:
+  *"ההשתמטות זאת הסכנה הביטחונית האמיתית"*. ליברמן demands to know who funded the envelopes. גולן: *"נוביל מדיניות
+  אפס סובלנות למשתמטים"*. All four rows hold `universal-conscription`. ביחד, ישראל ביתנו and הדמוקרטים also hold
+  `anti-conscription-exemption`, and ישר holds `sanctions-on-non-servers` in its place. Nothing moves.
+- **The speakership plan now has named bloc sources, still anonymous.** Revision 155 called the plan (replace
+  אוחנה with 61 votes before a government forms) the reporter's reading. ynet now has *"גורמים במפלגות גוש השינוי"*
+  saying it is being coordinated with רע"ם and the Joint List, and could be *"הדרך… לבחון את האפשרות להקים ממשלת
+  מיעוט"*. Anonymous, so revision 44's tier. טיבי's support is revision 101's. The הליכוד/PMO counter-planning is
+  reported, not stated. **Trigger:** a named party statement on the plan, which would bear on each row's stance
+  toward the Arab parties (revisions 169 and 206).
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -12758,3 +12780,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 208 — **cross-row: the warning dispute, day two: IDF readiness, הליכוד's charge that לפיד's statement was pre-written, the flydubai hijack-code landing, and לפיד's and גולן's reactions (הארץ ×2, bodies supplied by the repo owner; fxtwitter). Nothing scored.** These are disputes of fact and timing between rivals, not positions. Revision 197 stands. |
 | 2026-09-30 | revision 209 — **ביחד: supports a national animal-protection authority under the environment ministry, per הארץ (body supplied by the repo owner). No axis moved, no tag added.** A named measure, the only party answer reported. It is filed on the environment item in Open questions, which is waiting on the eighteen-row sweep. The NGO posters of ten party leaders score nothing. |
 | 2026-09-30 | revision 210 — **cross-row: four הארץ opinion pieces (bodies supplied by the repo owner). No axis moved, no tag added.** The reserve-duty column's party promises all sit on held tags. ישר's 50-day cap (150 over three years) was re-read in its reservists paper and written on this page for the first time. הליכוד's silence is not scored. The ג'אלוד editorial, the pre-7 October directive column and the אבו שחאדה column add nothing to revisions 182/196, 100/141 and 199/130. |
+| 2026-09-30 | revision 211 — **cross-row: the deserters' parade (only וינטר condemns from the right; the change bloc condemns in the words of its held conscription tags) and ynet on the speakership plan (`curl`). No axis moved, no tag added.** הליכוד's claim that וינטר joined ליברמן is a rival's, so `bloc` stays `bibi` (revision 137). The coalition's silence is not scored. The speakership plan now has anonymous bloc sources, including a minority-government test, still revision 44's tier. Trigger written. |
