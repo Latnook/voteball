@@ -9702,6 +9702,30 @@ noun; it names no mechanism or incentive, so `voluntary-palestinian-emigration-i
   plan carries the same goal (*"נפעל להפלת המשטר"*). Minting one for two rows that agree would sort nothing, so
   none is minted. The contrast between the two statements is the reporter's, and it is not scored.
 
+**2026-09-30 — revision 201. `preemptive-security-doctrine` ADDED (11 → 12 tags; the tag goes 5 → 6 holders), on
+revision 187's evidence, which that pass read and did not score. No axis moved.** Surfaced by a
+[הארץ](https://www.haaretz.co.il/news/elections/2026-09-30/ty-article/.premium/000001a0-eeaf-d9ab-abfd-ffafa02a0000) analysis (30.09.26, body supplied by the repo owner) that calls וינטר's statement a proposal
+for *"מתקפת מנע"*.
+
+- **The evidence is וינטר's own statement from revision 187**, the chairman reacting to נתניהו's warning:
+  *"די להכלה, די לסבבים, הבא להורגך השכם להורגו… לפרק אותם עכשיו, לא לחכות… לא להמתין - ליזום"*. Striking a threat
+  before it is used is the tag's founding text (ישראל תחילה: *"גדיעת איומים לפני שהם מתפתחים"*), and ביחד earned
+  it on *"חמאס מתעצם – אנחנו תוקפים"* (revision 179). It sits with revision 99's *"תפיסת ההכרעה"*, which gave
+  this row `hardline-on-gaza`.
+- **The tier is not new.** הליכוד holds the tag on a spoken line by its #4, כץ (revision 24). A chairman's own
+  statement is at least that. **Revision 187 missed it**: it read *"ליזום"* only as corroborating
+  `hardline-on-gaza`, and that tag is about siege and supply, not timing.
+- **Discrimination is checked:** six holders of eighteen, across both blocs (הליכוד and עמך ישראל with ביחד,
+  ישראל תחילה and המילואימניקים). The narrowest founding case, ישראל תחילה's, is a doctrine sentence of the same
+  kind as this one.
+- **The rest of the analysis scores nothing.** Anonymous Likud members say נתניהו *"עוד לא גמר אומר לטרוף"*
+  וינטר (revision 44's tier). הליכוד under 20 seats is a poll. A Likud central-committee member saying the
+  investigations bring the base out is one member's reading. [נתניהו's post](https://x.com/netanyahu/status/2104906661315920101) is *"אל תתעסקו איתנו"*
+  over a video, and [לפיד's](https://x.com/yairlapid/status/2105041891385606279) is revision 197's statement (both read through fxtwitter).
+
+Verified on an already-seeded database: the old file leaves עמך ישראל at 11 tags without it, and the new one
+moves the same row to 12 with it. 271 backend tests pass.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -12552,3 +12576,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 198 — **עוצמה יהודית: the party's own post asks for a criminal investigation of אבו שחאדה, and בן גביר tells him *"ברא לסוריה"* (WP REST API). No tag added.** Revision 129's trigger is met: the idea is now in the party's own text and the chairman's words. It is `kahanist`, held, and it becomes that tag's first first-party textual evidence. The emigration tag stays as it is (voluntary, Gaza and Judea and Samaria; this is about a citizen). The investigation demand is legal machinery. |
 | 2026-09-30 | revision 199 — **הדמוקרטים: דרור מורג, the party's Central Elections Committee member, against disqualifying רע"ם (X, fxtwitter). No axis moved, no tag added.** `jewish-arab-partnership` is corroborated by the party's own committee vote, beside the programme and העבודה's votes (revision 130). |
 | 2026-09-30 | revision 200 — **cross-row: a הארץ analysis of נתניהו's warning and כץ's West Bank priorities (body supplied by the repo owner). Nothing scored.** The campaign reading and the delay speculation are the writer's. כץ's push for a refugee-camp offensive is conduct on no axis. The claim that סמוטריץ' wants the PA collapsed and full annexation is a paraphrase, and both tags are already held. The ג'אלוד points fit revision 196. |
+| 2026-09-30 | revision 201 — **עמך ישראל: `preemptive-security-doctrine` ADDED (11 → 12; 5 → 6 holders), on וינטר's own statement from revision 187 (*"הבא להורגך השכם להורגו… לא להמתין - ליזום"*), which that pass read and did not score. No axis moved.** Surfaced by a הארץ analysis (body supplied by the repo owner) calling it a proposed pre-emptive strike. The tier matches הליכוד's (כץ's spoken line, revision 24). Six of eighteen holders, across both blocs. The analysis's anonymous Likud quotes and polls score nothing. Verified on an already-seeded database; 271 tests pass. |
