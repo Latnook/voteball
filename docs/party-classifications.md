@@ -8170,9 +8170,11 @@ its judgments are the writer's, and only what it quotes or reports is used here.
 - **This row, in court:** בן גביר told the justices *"הם מדברים ערבית כי הם לא רוצים שזה יגיע אליכם"*, and
   ברק־ארז answered *"הם מדברים ערבית כי זו שפתם"*. A detail for revision 219. The column's account of the
   recommendation to אבו שחאדה matches that revision.
-- **ישר: a second sighting of איזנקוט backing the disqualification.** The column says he *"התנדב לתמוך בה אף
-  שאין לו נציגים בוועדת הבחירות"*. Revision 219 had it as a ynet headline. Neither is his own words, and on
-  revision 115's rule the stance scores nothing. That הדמוקרטים voted for it is revision 130's.
+- **ישר: the column's line on איזנקוט is revision 102's.** It says he *"התנדב לתמוך בה אף שאין לו נציגים
+  בוועדת הבחירות"*. That is the party's written statement of 22.09 (*"על אף שאיננו חלק מהגוף המצביע… מבחינתנו,
+  אבו שחאדה חצה אותו"*), carried by [ynet](https://www.ynet.co.il/news/elections2026/article/rjdqktk5fe), i24 and כיכר השבת under headlines that name איזנקוט. No outlet
+  quotes him in the first person. This entry first called it an unsourced second sighting, and revision 219
+  called it a lead. Both were wrong: the page had it. That הדמוקרטים voted for it is revision 130's.
 - **הציונות הדתית, two quotes.** סמוטריץ' on ynet's podcast on Sunday 27.09, as the column quotes him:
   *"יש בקרב ערביי ישראל הרמת ראש"*, which *"אנשים מרגישים"* on the roads and in the malls. New to this page.
   The podcast was not heard, and the words name no measure. סוכות (#6) on ערוץ 14 on Tuesday: *"נשבענו כולנו
@@ -8192,6 +8194,29 @@ its judgments are the writer's, and only what it quotes or reports is used here.
   foreign reports of warnings before 7 October (revision 172), and the flight dispute (revisions 197, 208,
   215, 216). The assault on Palestinians at שער שכם has no party in it. That נתניהו sets the agenda and that
   his rivals lose seats by swearing off the Arab parties is the writer's thesis.
+- **Sources for the column's unattributed claims, found the same day by a research pass** (25 pages fetched by
+  its agents; none re-read here, and several are paywalled past the first paragraph). **Checked by three
+  independent reviewers each:**
+  - נתניהו's *"No, not specifically"* was to CNN's Jim Sciutto ([Jerusalem Post](https://www.jpost.com/israel-news/article-910243), 01.10). He did not rule out
+    an Iranian link, so the column's *"אין קשר"* is stronger than what he said. Revision 208 has CNN.
+  - The *"מקורות ביטחוניים"* are *"מקורות בצה"ל"* in [הארץ](https://www.haaretz.co.il/news/elections/2026-09-29/ty-article/.premium/000001a0-ed9b-d9ab-abfd-ffbb9a710000) (קובוביץ, 29.09 20:10): no preparations identified on any
+    front, no alert raised. [ישראל היום](https://www.israelhayom.co.il/news/defense/article/21516773) the same evening: no concrete alert, by the paper's own checks. Neither
+    says the warning is baseless, which is the column's wording. Still anonymous, and still not used.
+  - The push-notification count is [TheMarker](https://www.themarker.com/news/themedia/2026-09-27/ty-article-magazine/.premium/000001a0-dcba-d259-a3b4-dcba55b00000)'s (גואטה, 27.09): 13 news organisations over three weeks. Who did
+    the analysis is behind the paywall.
+  - The meeting with חיון was photographed by the Government Press Office (ערוץ 7, 30.09). No report says the
+    office arranged it. The repo owner listened to [נתניהו's clip](https://x.com/netanyahu/status/2105339034700841393): חיון says *"אנחנו עם של אריות"* first and
+    נתניהו echoes it, so the column's attribution is right.
+
+  **Extracted from a source and not put to that check:** the censor complaint was announced by the Prime
+  Minister's Office on 28.09, and חדשות 12 says its item aired after the plane had landed (הארץ; the מוסד
+  opinion was not found). The *"two police units"* is דרוקר's own account, and the missing approval was not
+  found (הארץ, 28.09). The decision not to guard איזנקוט is known from ישר's statement, with armed private
+  guards allowed instead (N12, 29.09). The licences issued unlawfully rest on the deputy יועמ"ש's statement to
+  a Knesset committee, at least 14,000 (הארץ, 27.12.23), and on the state's reply to בג"ץ, 1,146 (21.11.24).
+  The groom from פוריידיס was arrested with his father on 25.09 on suspicion of gunfire (ynet; no DJ in it).
+  The ערוץ 14 remark was a guest's, מיכה לייקין-אבני (ישראל היום). **Not found:** the New York Times and Wall
+  Street Journal pieces.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -11023,8 +11048,9 @@ were read from extracted frames, with no audio.)
   ממלכתית"*, which he calls *"אחד הדברים שהגדרנו בתכנית 100 הימים שלנו"*. The commission is revision 99's
   resolution, documented and untagged. The 100-day plan is the one revision 183 is waiting for. *"שלנו"* may
   mean ישר's or the four lists', and no such document was found published. The trigger there stands.
-  **A lead, from a headline only:** ynet's live blog links an item titled *"איזנקוט: תומך בפסילת יו"ר בל"ד
-  מריצה לכנסת"*. It was not read. On revision 115's rule it would score nothing either way.
+  **Not a lead after all (corrected the same day):** ynet's live blog links an item titled *"איזנקוט: תומך
+  בפסילת יו"ר בל"ד מריצה לכנסת"*. That is ישר's party statement of 22.09, which revision 102 already records
+  under כחול לבן. It scored nothing there, on revision 115's rule.
 - **ישראל תחילה: השכל (#1) at a Druze event in the Golan** ([post](https://x.com/SharrenHaskel/status/2105629300179276224)). The text: the Druze community there is
   *"קו הגנה ראשון"*, and the party exists *"לשבור את שיטת שני הגושים"*, which is `unity-government`, held, and
   the row's `unaligned`. The clip adds a fact this page did not have: a Druze candidate in the list's top
@@ -13217,6 +13243,6 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 216 — **cross-row: nine more posts of 30.09 (fxtwitter). No axis moved, no tag added.** קרעי defends the communications law and promises to deal with בג"ץ in the next Knesset, which is `judicial-overhaul`, held; the law is revision 135's. בליאק (ביחד #16) promises a replacement law and names nothing in it, a lead for the press-freedom sweep. זוהר, בן ארי and קריב argue over the flight warning, which is revisions 197 and 208's dispute. פייגלין calls for striking Iran's infrastructure if it was behind the flight, which is conditional retaliation in a faction leader's post and does not earn `preemptive-security-doctrine`. **Correction:** קיש is #10 on the certified list, not #12 as revision 207 wrote. |
 | 2026-10-01 | revision 217 — **cross-row: the CEC chair dismisses both petitions against הציונות הדתית's AI video (decision תב"כ 168/26 and 170/26 read in full with `pdftotext`; הארץ, body supplied by the repo owner). Nothing scored.** ישר petitioned in its own name, which the page had not recorded, on a public-assets argument (section 2א); the threat argument was the Bar Association's alone. A petition to the chair is a legal claim about a rival's material, not a programme (revision 82). It lost on a precedent one day old, תב"כ 117/26, עוצמה יהודית against הדמוקרטים, known here only from the citation and filed as a lead. The video stays conduct on הציונות הדתית (revisions 30, 83, 87). ₪3,500 costs each. |
 | 2026-10-01 | revision 218 — **cross-row: nine posts of 01.10 (fxtwitter; four images viewed; subtitles of three videos read from frames). No axis moved, no tag added.** זליכה's public-housing post gives sitting tenants their flats for free and moves new entitled families to a portable rent subsidy with no state flat. The transfer is הכלכלית's existing plank (revision 23). The second half contradicts the מילואימניקים מצע's 110,000 state-owned units (revision 20), a third tension on that row which revision 58 did not name. Both spend on poor tenants, so `economic` +1 and `welfare-state` stand; trigger is a joint housing text. לפיד's daily pledge puts hasbara under the Foreign Ministry where ביחד's plan has a body under the Prime Minister's Office, recorded and not tagged; the 30.09 pledge (a constitution) is `constitutionalist`, held. The four-list letter on flight security, ליברמן on נתניהו, מעוז's turnout target, קרויזר adding כסיף, בנט, בן ארי and the זהות clip add no position. |
-| 2026-10-01 | revision 219 — **cross-row: the Supreme Court tells אבו שחאדה there is a majority to disqualify him and recommends he withdraw (ynet and N12 live blogs; כאן blocked and not read), plus ten posts (fxtwitter; three images viewed; subtitles of four videos read from frames). No axis moved, no tag added.** The recommendation is unanimous and the majority is not. Nothing is decided: בל"ד was still deliberating at 15:26 and the other three hearings had no outcome. Revision 130's rule holds, so removing only אבו שחאדה changes the slate and not the row. בן גביר, גוטליב and רוטמן demand a written judgment, חדאד a prosecution; all on held tags or candidate tier. קריב on political agreements and on settler violence, מרידור on a state commission, השכל in the Golan, and נעם's two posts sit on held tags. Leads: a Druze candidate in ישראל תחילה's top four, and a ynet headline that איזנקוט backs the disqualification. |
+| 2026-10-01 | revision 219 — **cross-row: the Supreme Court tells אבו שחאדה there is a majority to disqualify him and recommends he withdraw (ynet and N12 live blogs; כאן blocked and not read), plus ten posts (fxtwitter; three images viewed; subtitles of four videos read from frames). No axis moved, no tag added.** The recommendation is unanimous and the majority is not. Nothing is decided: בל"ד was still deliberating at 15:26 and the other three hearings had no outcome. Revision 130's rule holds, so removing only אבו שחאדה changes the slate and not the row. בן גביר, גוטליב and רוטמן demand a written judgment, חדאד a prosecution; all on held tags or candidate tier. קריב on political agreements and on settler violence, מרידור on a state commission, השכל in the Golan, and נעם's two posts sit on held tags. Lead: a Druze candidate in ישראל תחילה's top four. (The ynet headline on איזנקוט, first filed here as a lead, is ישר's statement of 22.09, already in revision 102.) |
 | 2026-10-01 | revision 220 — **עמך ישראל: `hasbara-focused` ADDED (12 → 13 tags; the tag goes 1 → 2 holders). No axis moved. Corrects revisions 215 and 218.** Both said no hasbara tag exists. One did, on ישראל תחילה since 2026-09-14, in `seed.sql` and never named on this page; they searched the page and not the file. The evidence is חדאד's hasbara ministry *"עם תקציב עתק"* at the party's press conference (revision 41) and his single national authority (revision 215). ביחד refused: one clause and one pledge that name different homes. Verified on an already-seeded database (12 → 13); 271 backend tests pass. |
-| 2026-10-01 | revision 221 — **cross-row: הארץ's weekly election column (body supplied by the repo owner; two images viewed) and the בן גביר video it mocks (fxtwitter; subtitles read from frames). Nothing scored.** The video is the minister's own gun-licensing figures (300,000 licences, 200+ localities, *"היועצת ניסתה לעצור את זה"*), which is `gun-rights`, held, on numbers revisions 30 and 73 carry. The column gives a second sighting of איזנקוט backing אבו שחאדה's disqualification, still not his own words. New to the page: סמוטריץ's *"הרמת ראש"* line about Arab citizens (quoted, podcast not heard) and the approved ballot letters (ישר דרך, ביחד רק, המילואימניקים והכלכלית די). סוכות on Gaza is candidate tier on a held tag. The שב"כ and police items are state bodies' acts. The rest is already recorded, and the column's thesis is the writer's. |
+| 2026-10-01 | revision 221 — **cross-row: הארץ's weekly election column (body supplied by the repo owner; two images viewed) and the בן גביר video it mocks (fxtwitter; subtitles read from frames). Nothing scored.** The video is the minister's own gun-licensing figures (300,000 licences, 200+ localities, *"היועצת ניסתה לעצור את זה"*), which is `gun-rights`, held, on numbers revisions 30 and 73 carry. The column's line on איזנקוט backing אבו שחאדה's disqualification is ישר's party statement of 22.09, already in revision 102 (first misfiled here as an unsourced sighting). New to the page: סמוטריץ's *"הרמת ראש"* line about Arab citizens (quoted, podcast not heard) and the approved ballot letters (ישר דרך, ביחד רק, המילואימניקים והכלכלית די). סוכות on Gaza is candidate tier on a held tag. The שב"כ and police items are state bodies' acts. The rest is already recorded, and the column's thesis is the writer's. |
