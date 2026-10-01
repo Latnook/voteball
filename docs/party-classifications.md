@@ -8168,7 +8168,7 @@ its judgments are the writer's, and only what it quotes or reports is used here.
   `gun-rights`, held, and the numbers are the ones revisions 30 and 73 already carry. *"בשנה וחצי"* is his
   and was not checked. The column's reply, that thousands of licences were issued unlawfully by associates
   with no authority and that the thresholds were loosened against warnings, is the writer's summary and
-  cites no document.
+  cites no document. *(The documents are below: הארץ's own exposé and the state's reply to בג"ץ.)*
 - **This row, in court:** בן גביר told the justices *"הם מדברים ערבית כי הם לא רוצים שזה יגיע אליכם"*, and
   ברק־ארז answered *"הם מדברים ערבית כי זו שפתם"*. A detail for revision 219. The column's account of the
   recommendation to אבו שחאדה matches that revision.
@@ -8233,11 +8233,29 @@ its judgments are the writer's, and only what it quotes or reports is used here.
     *"שיתוף פעולה פסול בין המשטרה לבין הליכוד"*. The column's *"בלי להמתין… לאישור הנדרש מהיועמ"שית"* is **not
     in this article** and stays unsourced.
 
-  **Extracted from a source and not put to that check:** the licences issued unlawfully rest on the deputy יועמ"ש's statement to
-  a Knesset committee, at least 14,000 (הארץ, 27.12.23), and on the state's reply to בג"ץ, 1,146 (21.11.24).
+  - [The gun licences](https://www.haaretz.co.il/news/law/2024-11-21/ty-article/.premium/00000193-4e83-dcb4-a993-ffcb513c0000) (21.11.24). The column's line is הארץ's own exposé: ministry staff, *"בהם ארבעה מעובדי לשכת
+    השר"*, *"חילקו אלפי רישיונות נשק בלי שהוסמכו לכך"*, as *"פקידי רישוי זמניים"* who included his office
+    staff and associates, Knesset employees and national-service volunteers. The state's reply to בג"ץ, from
+    the police investigation so far: the reinforcement staff, *"שאינם פקידי רישוי מוסמכים"*, issued about
+    23,000 licences between 08.10.23 and 02.12.23, and **1,146** went to people who met neither the residence
+    nor the service criterion (458 of those, and 688 of 15,428 final licences). The police were still checking
+    whether those exceptions were lawful. The head of the firearms division, אבישר, resigned in December 2023
+    and was questioned under caution in June 2024. So *"thousands, by people with no authority"* is sourced,
+    and *"unlawfully"* is the petitioners' claim and the exposé's, not a ruling. Nothing in the article is
+    about thresholds being loosened.
+
+  **Extracted from a source and not put to that check:** the deputy יועמ"ש told a Knesset committee that at
+  least 14,000 licences were issued unlawfully (הארץ, 27.12.23).
   The groom from פוריידיס was arrested with his father on 25.09 on suspicion of gunfire (ynet; no DJ in it).
-  The ערוץ 14 remark was a guest's, מיכה לייקין-אבני (ישראל היום). **Not found:** the New York Times and Wall
-  Street Journal pieces.
+  The ערוץ 14 remark was a guest's, מיכה לייקין-אבני (ישראל היום).
+
+  **The foreign reports were on this page already** (revisions 141 and 172), which the research pass could
+  not know. [הארץ's write-up](https://www.haaretz.co.il/news/politics/2026-09-25/ty-article/000001a0-d96c-d71f-a9b1-ffee8daa0000) (25.09, body supplied by the repo owner) gives how each is sourced. The New York
+  Times: two sources confirmed the בן זאיד call, the paper obtained the minutes of נתניהו's early-October 2023
+  discussion, and one source says בן זאיד told the CIA's ברנס of it. The Atlantic: כאמל came on 26.09.23,
+  eleven days before, in a plane that sat 67 minutes at Ben Gurion, and whom he met is not known. The
+  column's two sentences match. The Wall Street Journal's phone call is not in this article and rests on
+  revision 172. None of the three papers was read directly.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
