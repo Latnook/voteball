@@ -6834,6 +6834,27 @@ are faction-leader tier, the tier לפיד has on ביחד.
 - **The Temple Mount** ([post](https://x.com/moshefeiglin/status/2105218339601584628), 30.09): thirty years of ascents, now *"עטוף בטלית"*, and *"המאבק עוד בעיצומו"*.
   `temple-mount-centred`, carried, is corroborated.
 
+**2026-10-01 — revision 213 (cross-row). A הארץ magazine investigation of the Argaman Institute and its Churchill
+programme for security officials. No axis moved, no tag added.** ([הארץ](https://www.haaretz.co.il/magazine/2026-10-01/ty-article-magazine/.highlight/000001a0-f23d-d9ab-abfd-f7bdc1b00000), 01.10.26, body supplied by the repo
+owner.) The report traces the המרכז לחירות ישראלית to קרן תקווה's money ($5m in 2024) and describes a 270-page
+security vision by the programme's graduates: peace is not a goal, annex the West Bank, dismantle the PA, encourage
+the emigration of 750,000 Palestinians over two decades, and rewrite the IDF ethics code on a *"משנה מוסרית
+לאומית"*. Graduates include שב"כ head זיני.
+
+- **The vision is an NGO's document, not a party's.** No row adopts it in the report. Its planks match tags that
+  rows already hold on their own evidence: הציונות הדתית and עוצמה יהודית carry `sovereignty-annexation`,
+  `anti-oslo` and `voluntary-palestinian-emigration-incentives`, and the ethics-code rewrite is עוצמה יהודית's
+  programme (revision 107) and בן גביר's Defence goal (revision 207).
+- **The party links are associations, and an association is not a position.** Per the report: **הציונות הדתית**'s
+  איתמר איתם, a Churchill graduate placed #6, sat beside הרב שרקי in the Knesset to push the ethics-code rewrite;
+  רוטמן lectures in the programme; פייגלין's זהות met at שרקי's home. **עמך ישראל**'s וינטר took part in another
+  Argaman programme. **הליכוד**'s נתניהו hosted graduates and received the vision document, and גמליאל's ministry
+  published the Gaza-expulsion paper the report matches to בן לוי's article. None is scored: who attended,
+  lectured or hosted is not what a party advocates. The #6 placement is the report's, not checked here against
+  the filed list.
+- **Nothing moves on עמך ישראל in particular**, where an association could be over-read. Its security tags rest on
+  וינטר's own words (revisions 99, 187 and 201), not on the company he keeps.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -12807,3 +12828,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 210 — **cross-row: four הארץ opinion pieces (bodies supplied by the repo owner). No axis moved, no tag added.** The reserve-duty column's party promises all sit on held tags. ישר's 50-day cap (150 over three years) was re-read in its reservists paper and written on this page for the first time. הליכוד's silence is not scored. The ג'אלוד editorial, the pre-7 October directive column and the אבו שחאדה column add nothing to revisions 182/196, 100/141 and 199/130. |
 | 2026-09-30 | revision 211 — **cross-row: the deserters' parade (only וינטר condemns from the right; the change bloc condemns in the words of its held conscription tags) and ynet on the speakership plan (`curl`). No axis moved, no tag added.** הליכוד's claim that וינטר joined ליברמן is a rival's, so `bloc` stays `bibi` (revision 137). The coalition's silence is not scored. The speakership plan now has anonymous bloc sources, including a minority-government test, still revision 44's tier. Trigger written. |
 | 2026-09-30 | revision 212 — **cross-row: a הארץ opinion piece on the disqualification cases (body supplied by the repo owner). Nothing scored.** Every party act it cites is already recorded (revisions 102, 130, 198, 199, 206). Its readings of בן גביר's wording and of הציונות הדתית's "voluntary" emigration are the writer's, and both rows already carry the tags that record them. |
+| 2026-10-01 | revision 213 — **cross-row: a הארץ magazine investigation of the Argaman Institute's Churchill programme and its 270-page security vision (body supplied by the repo owner). No axis moved, no tag added.** The vision is an NGO's, and its planks match tags rows already hold on their own evidence. The party links (איתם, רוטמן and פייגלין on הציונות הדתית; וינטר; נתניהו and גמליאל) are associations, not positions. |
