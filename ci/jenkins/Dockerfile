@@ -15,15 +15,18 @@
 # you got. The review found the drift already present in this repo's own evidence: the Helm release
 # reports app version 2.568.1 while the controller's plugin inventory reported 2.568.2.
 #
-# The version tag and the digest resolve to the same image today (verified 2026-09-09), and both are
+# The version tag and the digest resolve to the same image today (verified 2026-10-01), and both are
 # written on purpose: the digest is what actually pins, and the version is what makes the pin
 # readable to a human deciding whether it is stale. A bare digest tells you nothing about how far
 # behind you are.
 #
+# JAVA 25, not 21 (since 2026-10-01): Jenkins drops Java 21 on or after 2027-09-30 and has supported
+# 25 since LTS 2.541.1. The -jdk21 tag of the same release still exists if this ever needs reverting.
+#
 # BUMPING IT: change both halves together, then regenerate the plugin lock in the SAME commit with
 # ./scripts/jenkins/lock-plugins.sh -- plugin resolution depends on the core version, so a new base
 # with an old lock is a combination that was never tested.
-FROM jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
+FROM jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
 
 # Installs the RESOLVED LOCK, not the human list. plugins.txt names top-level plugins and no versions
 # -- it is where the justifications live and is meant to stay readable. plugins.lock.txt is generated

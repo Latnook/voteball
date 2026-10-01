@@ -13,7 +13,7 @@ image:
   # recovers the rollback target with `git log -p` over this file, so its history IS the rollback
   # mechanism. Written by scripts/sync-values-from-tf.sh and application-cd. A git SHA of a public
   # repo leaks nothing.
-  tag: "f1c990c"
+  tag: "6a4d5c1"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -30,10 +30,10 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:6065afb841a83b71a8882f08161b203b0cd15c18bfe5c796e04758af3e3fbe24"
-    worker: "sha256:82ff8012046a0575c203f34d7a8459391244359e08c9a24f560b8fd46ea8f51b"
-    nginx: "sha256:bbeb26f9a363f62c3a45c5b02c7cd7ac6e9545381a12ec661b9e1b1b7703c6a9"
-    backup: "sha256:1a3744172a2087c5a36a423b7722d98e7322ad24261fda7e476a16710320722c"
+    backend: "sha256:f69ba248fa28b9e5050f62655aa65aa90a2259ea06b22e0a4bf20a97ba330b2d"
+    worker: "sha256:26c76cf85d17c534118242644b7002c53aaeae109d067f0b07f641b2f0c1b2a7"
+    nginx: "sha256:50bf9fc630f4e9ce7772ae0a1ad56fe2c2fa9554dcd71560d36d2d1662a1611a"
+    backup: "sha256:a11e5b114f018254ee9153d978191bef7d4493c3eb041a8ab210d8759dbf9eed"
 
 # The two PUBLIC subnet CIDRs from terraform/main.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
@@ -157,7 +157,7 @@ canary:
   enabled: true
   # Pinned by tag like every other image in this chart -- validate-repo.sh only checks
   # services/*/Dockerfile, but the same "no floating tag" rule applies here by convention.
-  image: "curlimages/curl:8.7.1"
+  image: "curlimages/curl:8.22.0"
   intervalSeconds: 30
   # RAISED AGAIN 20m -> 150m -> 500m the same day, after measuring: at 150m the container was STILL
   # throttled 72.8% of periods while using 0.0055 cores on average and peaking at 0.0091. That is not

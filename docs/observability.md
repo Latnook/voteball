@@ -107,7 +107,7 @@ See decision 5 in `docs/design/2026-08-24-grafana-datasources-design.md`.
 
 ## 3. The stack itself
 
-`kube-prometheus-stack` (chart `91.4.1`, prometheus-community) in namespace **`observability`**,
+`kube-prometheus-stack` (chart `91.8.2`, prometheus-community) in namespace **`observability`**,
 installed as `helm_release.kube_prometheus_stack`. It brings Prometheus, Grafana, Alertmanager,
 kube-state-metrics and node-exporter in one release.
 
@@ -627,7 +627,7 @@ means AWS-native, IAM-gated storage and a lighter node RAM budget than an in-clu
 
 ### What ships
 
-The AWS-managed `amazon-cloudwatch-observability` add-on (`v6.3.0-eksbuild.1`) deploys **Fluent Bit
+The AWS-managed `amazon-cloudwatch-observability` add-on (`v6.7.0-eksbuild.1`) deploys **Fluent Bit
 only**, tailing container logs to CloudWatch Logs.
 
 | Log group | Retention | Contents |

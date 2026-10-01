@@ -8,7 +8,7 @@
 # "quietly running a base nobody has looked at in four months" into a build that stops and asks. Do
 # not respond by unpinning. Run ./scripts/refresh-base-digests.sh, which re-resolves every base in
 # this repo, and commit the result; the policy and cadence are in docs/security.md.
-FROM python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+FROM python:3.12-slim@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
 # Debian security updates, before anything else -- same reason as services/backend/Dockerfile, and it
 # has to be repeated here because these are two independent build contexts with no shared base image.
 # CI's Trivy gate blocks on CRITICAL,HIGH with --ignore-unfixed, so a base-package CVE fails every
