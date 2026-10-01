@@ -47,6 +47,7 @@ kibana:
   # 9.1.4 sat at 610 MiB in the cluster, and 9.5.4 used 880 MiB of a 1 GiB limit in a local
   # rehearsal straight after the saved-object import -- 86% with nobody using it yet. An OOM-killed
   # Kibana crash-loops, which holds the whole `logging` Application at Degraded.
+  # Confirmed live the same day: 1,205 MiB after the upgrade -- the old 1 GiB limit would have OOM-killed it.
   #
   # Only the limit moved, on purpose. The REQUEST is what the scheduler reserves, and
   # scripts/tests/test-logging-chart.sh caps this chart's total requests so EFK never forces a third
