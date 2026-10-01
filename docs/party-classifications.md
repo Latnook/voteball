@@ -6921,6 +6921,37 @@ the emigration of 750,000 Palestinians over two decades, and rewrite the IDF eth
 - **Nothing moves on עמך ישראל in particular**, where an association could be over-read. Its security tags rest on
   וינטר's own words (revisions 99, 187 and 201), not on the company he keeps.
 
+**2026-10-01 — revision 217 (cross-row). The Central Elections Committee chair dismisses both petitions against
+the AI video of revisions 83 and 87. Nothing scored, on this row or on ישר.** ([decision, תב"כ 168/26 and 170/26](https://img.haarets.co.il/bs/000001a0-f6a5-dbb2-a9f8-ffefbd0b0000/f8/28/79f0f6a54a17abf3065febd5a87e/%D7%AA%D7%91%D7%9B-168-26-170-%D7%94%D7%97%D7%9C%D7%98%D7%94-cleaned.pdf),
+three pages, read in full with `pdftotext`; [הארץ](https://www.haaretz.co.il/news/elections/2026-10-01/ty-article/.premium/000001a0-f69e-de52-afe1-f6de34cb0000), 01.10.26, body supplied by the repo owner.) Justice
+סולברג dismissed the petitions *"על הסף, בלי להיזקק לתשובה, וזאת מחמת העדר עילה"*, and ordered each petitioner to
+pay ₪3,500 in costs to the state.
+
+- **ישר petitioned in its own name, which this page had not recorded.** Until now the page had איזנקוט
+  condemning the video. The decision shows *"מפלגת ישר לישראל עם איזנקוט"* filed תב"כ 170/26 three days after
+  the video went up on סמוטריץ's accounts (15.09), against him and מפלגת האיחוד הלאומי–תקומה, asking for an
+  injunction under section 17ב of the propaganda law. Its argument was that using the figures of the court
+  president, a justice and the Attorney General is *"שימוש בנכסי הציבור בקשר עם תעמולת בחירות"* (section 2א).
+  **The threat argument הארץ leads with was the Bar Association's alone** (תב"כ 168/26, section 119(א)(1),
+  disrupting the orderly course of the elections). The report presents the two as one set of claims by "the
+  petitioners", and calls the request one to disqualify the video; the decision separates the claims and names
+  the remedy.
+- **The petition is not scored on ישר, on revision 82's line.** A petition to the committee chair is a legal
+  claim about a rival's campaign material, not a programme, and the page has no tag for that. It sits beside
+  `constitutionalist` and `statist`, both held, and adds nothing to either.
+- **It lost on a precedent one day old, from a case עוצמה יהודית brought against הדמוקרטים.** *"הבאת דמות של
+  עובד ציבור, ודאי עובד ציבור בכיר, כדי לבקר אותו – אינה נחשבת להפרת סעיף 2א"*, citing תב"כ 117/26 (30.09.2026),
+  paragraphs 9–12. **That case is known here only from this citation**: neither its petition nor its decision
+  has been read, and this page has no other record of it. A lead for both of those rows.
+- **הציונות הדתית: nothing moves.** The video stays conduct and not a tag (revisions 30 and 83), and a ruling
+  that it breaks no election law says nothing about what the party advocates, in either direction. The
+  decision's own description of the clip, that after the dragging come *"כיתובים על תוכנית 'הציונות הדתית'…
+  בנוגע למערכת המשפט"*, matches revision 87's reading of it as the trailer for חוק וצדק 2.0. The criminal
+  complaint of revision 83 is a separate track, and the decision does not touch it.
+- **The chair's own remark belongs to no row**: *"הצפייה בסרטון מושא העתירה – לא הייתה קלה עליי בהיבט האישי,
+  בשל הדמויות שנכללו בו, וטעמו הרע ומר"*, and *"באין עילה – יעמוד הסרטון לדין הבוחר, ולא לדיני הבחירות"*.
+  Neither do הרצוג's and עמית's speeches at the swearing-in, which the report repeats from revision 83.
+
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
 `kahanist`, `jewish-supremacist`. religiosity +3 for the same explicit halakhic-state vision as
@@ -12974,3 +13005,4 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 214 — **ישר: the party's rebuttal page *ישר! נגד השקר* answers ten Likud attack lines (`curl`). No axis moved, no tag added.** It corroborates `no-palestinian-state` in the party's own voice (*"מעולם… לא תמך"*), and its claim about נתניהו's ceasefire is about another row. The refusal line fits held tags. The doctrine is chief-of-staff record under `security-hawk`. The page declines the *"השכם להורגו"* slogan without opposing pre-emption, so `preemptive-security-doctrine` is neither earned nor contradicted; trigger written. The war-cabinet accounts are rival claims. |
 | 2026-10-01 | revision 215 — **cross-row: seventeen posts of 30.09–01.10 (fxtwitter; two screenshots viewed; subtitles of two videos read from frames). No axis moved, no tag added.** עוצמה יהודית at the אבו שחאדה hearing repeats revision 198, and קרויזר's *"נסיים עם טיבי ועבאס"* is candidate tier. סמוטריץ' in his own words wants Oslo cancelled, the A/B/C distinction erased and the PA dismantled, which is `anti-oslo`, held. נתניהו's cut of גולן on stopping house demolitions is a lead on הדמוקרטים (a rival's edit) and a sighting of the enforcement side of the Kaminitz gap on הליכוד; filed in Open questions. ליברמן's *"גולדקנופף NATION"* sits on held tags. חדאד adds a single national hasbara authority to revision 41's ministry, recorded and not tagged. The warning-dispute posts (לפיד, שלו), סער's UAE call, פייגלין on the Temple Mount and בלוך on Beit Shemesh add no position. |
 | 2026-10-01 | revision 216 — **cross-row: nine more posts of 30.09 (fxtwitter). No axis moved, no tag added.** קרעי defends the communications law and promises to deal with בג"ץ in the next Knesset, which is `judicial-overhaul`, held; the law is revision 135's. בליאק (ביחד #16) promises a replacement law and names nothing in it, a lead for the press-freedom sweep. זוהר, בן ארי and קריב argue over the flight warning, which is revisions 197 and 208's dispute. פייגלין calls for striking Iran's infrastructure if it was behind the flight, which is conditional retaliation in a faction leader's post and does not earn `preemptive-security-doctrine`. **Correction:** קיש is #10 on the certified list, not #12 as revision 207 wrote. |
+| 2026-10-01 | revision 217 — **cross-row: the CEC chair dismisses both petitions against הציונות הדתית's AI video (decision תב"כ 168/26 and 170/26 read in full with `pdftotext`; הארץ, body supplied by the repo owner). Nothing scored.** ישר petitioned in its own name, which the page had not recorded, on a public-assets argument (section 2א); the threat argument was the Bar Association's alone. A petition to the chair is a legal claim about a rival's material, not a programme (revision 82). It lost on a precedent one day old, תב"כ 117/26, עוצמה יהודית against הדמוקרטים, known here only from the citation and filed as a lead. The video stays conduct on הציונות הדתית (revisions 30, 83, 87). ₪3,500 costs each. |
