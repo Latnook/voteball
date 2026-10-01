@@ -1235,6 +1235,8 @@ says the Likud sent him a warning letter through אילן בומבך, in the par
 the עמותה *"דרכנו"* for podcasts on דמוקרט TV, and called his reporting funded election activity aimed at
 *"השחרת פניו של ראש הממשלה"*. Separately, בומבך filed a police complaint against **רביב דרוקר** for using a phone
 while driving, seen in a *המקור* investigation, and per הארץ the police summoned him for questioning.
+*(Corrected in revision 221, from הארץ's news report of 28.09: the Traffic Division summoned דרוקר on 27.09 and
+the Likud filed its complaint on 28.09. The complaint is still the party's act. It did not cause the summons.)*
 
 - **Both are filed on the press-freedom sweep item beside revision 192**, and they complete a pattern this page
   had not named: **the party's own legal tools aimed at named journalists.** There are now three instances in one
@@ -8184,7 +8186,7 @@ its judgments are the writer's, and only what it quotes or reports is used here.
   **די** (the list's own post of 27.09 says the same). The clips read today show **ני** for נעם לישראל and
   **ט** for הציונות הדתית. The column says בנט asked for **ב** and בן גביר kept it. Recorded because revision
   58 had only the letters that list requested.
-- **State bodies' acts, not a party's. The column names no source for any of them; two are sourced below.** The שב"כ complained to the censor about חדשות 12's report of
+- **State bodies' acts, not a party's. The column names no source for any of them; three are sourced below.** The שב"כ complained to the censor about חדשות 12's report of
   נתניהו's Emirates visit, with a מוסד opinion behind it. Two police units summoned דרוקר without the
   יועמ"שית's approval (the complaint is revision 194's). The שב"כ declined to guard איזנקוט against its
   advisory committee's recommendation (לפיד's post of 29.09 says the same of that decision). גולן's petition
@@ -8224,8 +8226,14 @@ its judgments are the writer's, and only what it quotes or reports is used here.
     carry weapons *"גם בהיעדר מודיעין או איום קונקרטי"*, with intelligence monitoring and periodic reviews.
     The research pass had this as known only from ישר's statement, which was wrong.
 
-  **Extracted from a source and not put to that check:** the *"two police units"* is דרוקר's own account, and
-  the missing approval was not found (הארץ, 28.09). The licences issued unlawfully rest on the deputy יועמ"ש's statement to
+  - [דרוקר's questioning](https://www.haaretz.co.il/news/law/2026-09-28/ty-article/.premium/000001a0-e889-d259-a3b4-e8995df80000) (28.09). The *"two units"* is his own account: two traffic units phoned him within
+    half an hour. The police Traffic Division summoned him on 27.09, and **the Likud's complaint came a day
+    later**, so it did not cause the summons (see the note on revision 194). One unnamed source says the
+    police first refused to send a ticket and insisted on questioning. The journalists' union called it
+    *"שיתוף פעולה פסול בין המשטרה לבין הליכוד"*. The column's *"בלי להמתין… לאישור הנדרש מהיועמ"שית"* is **not
+    in this article** and stays unsourced.
+
+  **Extracted from a source and not put to that check:** the licences issued unlawfully rest on the deputy יועמ"ש's statement to
   a Knesset committee, at least 14,000 (הארץ, 27.12.23), and on the state's reply to בג"ץ, 1,146 (21.11.24).
   The groom from פוריידיס was arrested with his father on 25.09 on suspicion of gunfire (ynet; no DJ in it).
   The ערוץ 14 remark was a guest's, מיכה לייקין-אבני (ישראל היום). **Not found:** the New York Times and Wall
