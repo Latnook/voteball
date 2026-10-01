@@ -125,16 +125,16 @@ has drifted:
 
 | Chart | Pinned | Last confirmed latest |
 |---|---|---|
-| ArgoCD | 10.9.2 (app v3.5.3) | 2026-09-17 |
-| AWS Load Balancer Controller | 3.5.0 | 2026-09-17 |
-| kube-prometheus-stack | 91.4.1 (operator v0.94.0) | 2026-09-17 |
-| External Secrets Operator | 2.10.0 | 2026-09-17 |
-| Cluster Autoscaler | 9.59.0 (image overridden to v1.36.1, see above) | 2026-09-17 |
-| external-dns | 1.22.0 (app v0.22.0) | 2026-09-17 |
-| metrics-server | 3.14.0 | 2026-09-17 |
-| Node Termination Handler | 0.21.0 | 2026-09-17 |
-| Jenkins | 5.9.63 | 2026-09-17 |
-| ECK operator | 3.5.0 | 2026-09-17 |
+| ArgoCD | 10.9.5 (app v3.5.3) | 2026-10-01 |
+| AWS Load Balancer Controller | 3.5.0 | 2026-10-01 |
+| kube-prometheus-stack | 91.8.2 (operator v0.94.1, Prometheus v3.15.0) | 2026-10-01 |
+| External Secrets Operator | 2.11.0 | 2026-10-01 |
+| Cluster Autoscaler | 9.59.0 (image overridden to v1.36.1, see above) | 2026-10-01 |
+| external-dns | 1.23.0 (app v0.23.0) | 2026-10-01 |
+| metrics-server | 3.14.0 | 2026-10-01 |
+| Node Termination Handler | 0.21.0 | 2026-10-01 |
+| Jenkins | 5.9.64 (controller image: Jenkins 2.580.1 on Java 25, see below) | 2026-10-01 |
+| ECK operator | 3.5.0 | 2026-10-01 |
 
 **kube-prometheus-stack: helm does NOT upgrade its CRDs.** They live in `charts/crds/crds/`, which
 Helm installs once and never touches again, so a chart bump that moves the operator version needs the
@@ -147,7 +147,8 @@ helm show crds prometheus-community/kube-prometheus-stack --version <new> \
 ```
 
 `--force-conflicts` is required: the live CRDs are owned by the Terraform Helm provider's field
-manager, so a plain server-side apply refuses. Done for 87.21.0 → 91.4.1 on 2026-09-17. Read every
+manager, so a plain server-side apply refuses. Done for 87.21.0 → 91.4.1 on 2026-09-17 and for 91.4.1 → 91.8.2 on 2026-10-01 (that
+one changed only the ten CRDs' `operator.prometheus.io/version` label, 0.94.0 → 0.94.1). Read every
 major's section of the chart's UPGRADE.md; that jump moved Grafana to the distroless 13.x image and
 added a long-lived `kube-prometheus-stack-prometheus-token` Secret for control-plane scraping.
 
@@ -171,7 +172,7 @@ implying otherwise:
 
 | EKS add-on | `addon_version` | Status |
 |---|---|---|
-| `amazon-cloudwatch-observability` (`terraform/addon-cloudwatch.tf`) | `v6.3.0-eksbuild.1` | pinned — verified for K8s 1.34 via `aws eks describe-addon-versions` (2026-07-19) |
+| `amazon-cloudwatch-observability` (`terraform/addon-cloudwatch.tf`) | `v6.7.0-eksbuild.1` | pinned — the default for K8s 1.36 per `aws eks describe-addon-versions` (2026-10-01). **Before bumping it, diff the add-on's default `application-log.conf` between the two upstream chart tags** — this stack replaces that file, so a changed default is silently lost; the comment in the `.tf` says how. |
 | `aws-efs-csi-driver` (`terraform/addon-efs.tf`) | *(none set)* | **not pinned — a known, deliberate gap, not an oversight.** Terraform tracks whatever AWS currently ships as default for the cluster's EKS version. Revisit if it starts drifting the way Cluster Autoscaler did above; until then it is one fewer version to carry through every EKS minor bump. |
 
 **The mechanical check is `helm show chart <ref> --version <v>` and its `kubeVersion` field**, not the
@@ -276,11 +277,12 @@ CI is Jenkins in the `ci` namespace, installed by Terraform (`terraform/addon-je
 EC2 host needed, but two things still age on their own schedule and nothing alerts on either:
 
 - **The Jenkins controller image.** Plugins are baked in at build time
-  (`ci/jenkins/Dockerfile`, `ci/jenkins/plugins.txt` — 8 top-level entries, dependencies resolved
-  automatically), pushed to ECR as `<cluster_name>-jenkins`, and referenced by a pinned tag in
+  (`ci/jenkins/Dockerfile`, `ci/jenkins/plugins.txt` — top-level entries only, count them with
+  `grep -c '^[a-z]' ci/jenkins/plugins.txt`; `plugins.lock.txt` is the resolved closure), pushed to ECR as `<cluster_name>-jenkins`, and referenced by a pinned tag in
   `terraform/voteball.tfvars` (`jenkins_image_tag`). This trades the EC2 host's "always current, ages
   invisibly" plugin set for an explicit, reproducible one — but that means **it never updates itself.**
-  Rebuild it deliberately: bump `plugins.txt` if needed, run
+  Rebuild it deliberately: bump the `FROM` line in `ci/jenkins/Dockerfile` (version **and** digest),
+  regenerate the lock with `./scripts/jenkins/lock-plugins.sh`, commit, run
   `./scripts/build-push-ecr.sh jenkins <new-tag>`, update `jenkins_image_tag`, `terraform apply`. Fold
   this into the quarterly pass; `jenkins-plugin-cli --list` output at build time belongs in any bug
   report.
@@ -288,11 +290,27 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   Plugin updates are the most common source of both security advisories and behaviour changes. After
   bumping the plugin set, **re-test the webhook with a SHA-256 signature** — signed should give `200`,
   unsigned `400`.
-- **`moby/buildkit:v0.33.0-rootless`, `aquasec/trivy:0.74.0` (bumped from 0.58.1 on 2026-09-15, which predated alpine 3.24 and warned it was not on its EOL list), `quay.io/skopeo/stable:v1.22.2`,
-  `amazon/aws-cli:2.36.47`, `python:3.12-slim` (lint/test), `postgres:16-alpine` (ephemeral test DB,
-  not the app's own `postgres:17-alpine` base image) and `hadolint/hadolint:v2.15.1-alpine`** (note the `v` — hadolint's tags gained it, and `2.15.1-alpine` 404s), plus the `promtool-fetch` init container's `prom/prometheus:v3.14.0`, which must match the Prometheus server kube-prometheus-stack deploys are
+  **The controller runs Java 25 since 2026-10-01** (`jenkins/jenkins:2.580.1-jdk25`). Jenkins ends
+  Java 21 support on or after 2027-09-30 and nags about it in the UI from a year out; Java 25 has
+  been supported since LTS 2.541.1. Proven before it reached the cluster by booting the built image
+  locally against the real `ci/jenkins/jenkins.yaml` with dummy secrets: all plugins active, both
+  jobs created, no JCasC error — that boot test takes two minutes and is worth repeating on every
+  base bump. **The build agents are a separate question and are still on Java 21**: the `jnlp`
+  container is whatever `jenkins/inbound-agent` tag the `kubernetes` plugin defaults to. A Java 25
+  controller talks to a Java 21 agent fine; the agents only *have* to move before the 2027 date.
+
+  **2.580.1 removed nine "detached" plugins from `jenkins.war`** (bouncycastle-api,
+  instance-identity, jaxb, javax-activation-api, the mail API and others), and installs them from
+  the update centre on demand instead. That path does not exist here — `installPlugins = false`, the
+  image is the only source — so any of them a plugin here depends on must be in `plugins.lock.txt`. The lock is the full resolved
+  closure, so they are (`bouncycastle-api`, `instance-identity`, `jaxb`, `javax-activation-api`);
+  this is the reason not to trim "plugins nothing declares" out of it.
+
+- **`moby/buildkit:v0.33.1-rootless`, `aquasec/trivy:0.74.0` (bumped from 0.58.1 on 2026-09-15, which predated alpine 3.24 and warned it was not on its EOL list), `quay.io/skopeo/stable:v1.22.3`,
+  `amazon/aws-cli:2.37.7`, `python:3.12-slim` (lint/test), `postgres:16-alpine` (ephemeral test DB,
+  not the app's own `postgres:17-alpine` base image) and `hadolint/hadolint:v2.15.1-alpine`** (note the `v` — hadolint's tags gained it, and `2.15.1-alpine` 404s), plus the `promtool-fetch` init container's `prom/prometheus:v3.15.0`, which must match the Prometheus server kube-prometheus-stack deploys are
   pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod template (`application-ci`);
-  `alpine/k8s:1.36.4` (track the cluster minor) and `quay.io/argoproj/argocd:v3.5.3` (matched to the
+  `alpine/k8s:1.36.5` (track the cluster minor) and `quay.io/argoproj/argocd:v3.5.3` (matched to the
   running ArgoCD server's app version, not just any tag) are pinned in the `voteball-deploy` template
   (`application-cd`). The Trivy vulnerability *database* refreshes on every run via `--db-repository`,
   so scanning stays current, but every pinned binary ages and stops learning new formats/APIs. Pinning

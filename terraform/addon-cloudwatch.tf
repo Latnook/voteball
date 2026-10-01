@@ -28,6 +28,13 @@ module "cloudwatch_irsa" {
 # and silently ships nothing. It was copied verbatim out of the live `fluent-bit-config` ConfigMap
 # of add-on v6.3.0 (`kubectl get cm fluent-bit-config -n amazon-cloudwatch`) and changed in exactly
 # two ways, both marked below. Re-copy it from the cluster if the add-on version is ever bumped.
+#
+# Bumped v6.3.0 -> v6.7.0 on 2026-10-01 WITHOUT a re-copy, because there was nothing to re-copy: the
+# add-on's default application-log.conf is byte-identical across those versions. Checked by diffing
+# charts/amazon-cloudwatch-observability/values.yaml between the upstream tags
+# amazon-cloudwatch-observability-6.3.0 and -6.7.0 (github.com/aws-observability/helm-charts) -- the
+# only changes are image tags (Fluent Bit 3.4.3 -> 3.4.16) and new unrelated keys. Repeat that diff
+# on the next bump; the running cluster cannot answer it, since this override hides the default.
 locals {
   cloudwatch_app_namespace = "devops-app"
 
@@ -148,7 +155,7 @@ locals {
 resource "aws_eks_addon" "cloudwatch" {
   cluster_name             = module.compute.cluster_name
   addon_name               = "amazon-cloudwatch-observability"
-  addon_version            = "v6.3.0-eksbuild.1" # verified for K8s 1.34 via aws eks describe-addon-versions (2026-07-19)
+  addon_version            = "v6.7.0-eksbuild.1" # the default for K8s 1.36 per aws eks describe-addon-versions (2026-10-01)
   service_account_role_arn = module.cloudwatch_irsa.arn
 
   configuration_values = jsonencode({

@@ -406,7 +406,7 @@ Trigger CD. The skip only happens on a **positive** answer — a lookup failure 
 
 ### 8. Build images
 
-Four images (`backend`, `worker`, `nginx`, `backup`), rootless BuildKit (`moby/buildkit:v0.33.0-rootless`,
+Four images (`backend`, `worker`, `nginx`, `backup`), rootless BuildKit (`moby/buildkit:v0.33.1-rootless`,
 uid 1000), `--output type=docker` (not `type=oci` — Trivy's `--input` cannot read an OCI archive), tagged
 with the short git SHA — never `latest`. Both the layer cache (`<cluster_name>-buildcache`, mutable,
 outside the immutable ECR set) and the Trivy database (`<cluster_name>-trivy-db`) live in ECR rather

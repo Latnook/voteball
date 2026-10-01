@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-09-25 against jenkins/jenkins:2.568.3-jdk21@sha256:c1e4c349365f6d16d88595b2c5f7e8ff39b8ae1d061f62420bac193b4b9616d0
+# Generated 2026-10-01 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -36,7 +36,7 @@ checks-api:422.vc7e8b_51488c6
 cloudbees-folder:6.1106.v3a_d9a_6d2465e
 commons-lang3-api:3.20.0-109.ve43756e2d2b_4
 commons-text-api:1.15.0-218.va_61573470393
-configuration-as-code:2121.v86fe99d4b_b_a_b_
+configuration-as-code:2130.v3ef02f16a_34b_
 credentials:1511.v2e3cb_0008ef0
 credentials-binding:728.v902a_273b_8947
 dark-theme:652.vea_da_dfea_e769
@@ -64,7 +64,7 @@ joda-time-api:2.14.4-206.vc0945a_7c5f95
 jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
-junit:1428.vef95b_fa_89508
+junit:1431.vc0d98912a_756
 kubernetes:4557.ve746270f672f
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
