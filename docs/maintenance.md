@@ -177,12 +177,12 @@ implying otherwise:
 | `aws-efs-csi-driver` (`terraform/addon-efs.tf`) | *(none set)* | **not pinned — a known, deliberate gap, not an oversight.** Terraform tracks whatever AWS currently ships as default for the cluster's EKS version. Revisit if it starts drifting the way Cluster Autoscaler did above; until then it is one fewer version to carry through every EKS minor bump. |
 
 Two pins that sit **outside** both tables, found behind on 2026-10-01 and deliberately not moved in
-that pass because neither can be undone by reverting a commit:
+that pass because neither can be undone by reverting a commit (the database one was then done the same day):
 
 | What | Running | Latest | Why it is its own job |
 |---|---|---|---|
 | Elasticsearch + Kibana (`charts/logging/values.yaml`) | 9.1.4 | 9.5.5 | Elasticsearch cannot be downgraded once it has started on a newer version, and Kibana's saved-object import has already bitten twice (see the root `CLAUDE.md`). Kibana is reachable from the internet, so this is the one worth doing soon. Bump the Fluentd image (`v1.18.0-…-1.0` → `v1.19.3-…-1.1`) in the same pass and run `scripts/logging/verify-efk.sh`. |
-| RDS PostgreSQL | 17.9 | 17.11 | Nothing pins `engine_version`, so every rebuild restores whatever version the snapshot was taken on, and AWS marks neither 17.10 nor 17.11 as an automatic upgrade — it will stay on 17.9 indefinitely. Setting `engine_version` in `terraform/modules/database/main.tf` upgrades in place with a few minutes of database downtime; every later snapshot then carries the new version. |
+| RDS PostgreSQL | 17.11 (pinned 2026-10-01, was 17.9) | 17.11 | **Being managed by AWS does not keep this current.** Automatic minor upgrades only go to a version AWS has flagged as an automatic target (17.10 and 17.11 were not, from 17.9) and only in the Sunday maintenance window, which a stack torn down between sessions is rarely alive for; and a rebuild restores whatever version the snapshot was taken on. So `engine_version` is now pinned in `terraform/modules/database/main.tf` and has to be bumped by hand like any other pin — an in-place upgrade with a few minutes of database downtime. |
 
 **The mechanical check is `helm show chart <ref> --version <v>` and its `kubeVersion` field**, not the
 release notes. On 2026-07-30 every one of the eight declared either no constraint or an open-ended

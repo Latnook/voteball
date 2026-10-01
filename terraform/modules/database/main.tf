@@ -42,6 +42,20 @@ resource "aws_db_instance" "app" {
   username = var.db_username
   password = var.db_password
 
+  # PINNED, because nothing else ever moves it (added 2026-10-01). "RDS is managed" does not cover
+  # this: auto_minor_version_upgrade only acts on a version AWS has flagged as an automatic target
+  # (neither 17.10 nor 17.11 was, from 17.9), and only inside the Sunday maintenance window -- which
+  # this stack, torn down between sessions, is almost never alive for. A restore also inherits the
+  # snapshot's version, so every rebuild came back on 17.9 and would have indefinitely.
+  #
+  # With a snapshot restore this upgrades AFTER the restore; from then on every final snapshot
+  # carries the new version. Bumping it on a live instance is an in-place upgrade (apply_immediately
+  # below) with a few minutes of database downtime -- never a replacement. Minor versions only: a
+  # major needs allow_major_version_upgrade, the matching CI test image in ci/jenkins/jenkins.yaml,
+  # and the backup image's postgres:17-alpine base (pg_dump must not be older than the server).
+  # Check with: aws rds describe-db-engine-versions --engine postgres --query 'DBEngineVersions[].EngineVersion'
+  engine_version = "17.11"
+
   instance_class         = "db.t4g.micro"
   db_subnet_group_name   = aws_db_subnet_group.app.name
   vpc_security_group_ids = [aws_security_group.rds.id]
