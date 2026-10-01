@@ -8134,7 +8134,8 @@ video were read from extracted frames; no audio was listened to, and the other v
   אחת להסברה שתרכז את כלל הגופים תחת כתובת אחת"*, coordinated with the IDF spokesperson. The ministry is
   revision 41's demand. The single national authority is new detail, a named measure with no tag to carry it.
   ביחד (a national hasbara plank) and ישראל תחילה (a hasbara corps in the IDF) have their own versions, so it
-  is a sweep candidate and not a tag for one row. His English post on the killing of מוחמד אל-נג'אר
+  is a sweep candidate and not a tag for one row. *(Corrected in revision 220: a tag did exist,
+  `hasbara-focused` on ישראל תחילה, and this row now holds it.)* His English post on the killing of מוחמד אל-נג'אר
   ([post](https://x.com/YosephHaddad/status/2105548417887821983)) is advocacy about an IDF strike and holds no position.
 - **ביחד: the warning dispute, continued from revision 208.** לפיד's own summary ([post](https://x.com/yairlapid/status/2105537543441731739), 01.10): the briefing
   held *"לא… שום אזכור של תסריט חטיפת מטוס"*, the risk abroad it did mention *"מוכר לכולנו כבר יותר משנתיים"*,
@@ -9354,7 +9355,8 @@ from the quotations below. No audio was listened to.)
   לתודעה"* (revision 49). One is a new body under the Prime Minister's Office and the other gathers the
   existing bodies under the Foreign Ministry. They may be two parts of one design, and neither text mentions
   the other. No hasbara tag exists. It stays the sweep candidate revision 215 named, with עמך ישראל (a ministry
-  and one authority) and ישראל תחילה (an IDF corps). Yesterday's pledge ([post](https://x.com/yairlapid/status/2105213338552828042), 30.09), found on his timeline:
+  and one authority) and ישראל תחילה (an IDF corps). *(Corrected in revision 220: `hasbara-focused` exists.
+  ישראל תחילה held it, עמך ישראל now does, and ביחד was weighed there and refused.)* Yesterday's pledge ([post](https://x.com/yairlapid/status/2105213338552828042), 30.09), found on his timeline:
   *"נכונן חוקה לישראל, שמגילת העצמאות היא פרק המבוא שלה"*. That is `constitutionalist`, held (revision 134).
   His timeline shows the latest 20 posts, and these two are the only pledges in them. The plan's Hebrew text
   has moved to `/plans/natsec/`. The `/plans/national-sec/` address this row cites now serves the English
@@ -10181,6 +10183,28 @@ right, and ynet on the change bloc's speakership plan. No axis moved, no tag add
   reported, not stated. **Trigger:** a named party statement on the plan, which would bear on each row's stance
   toward the Arab parties (revisions 169 and 206).
 
+**2026-10-01 — revision 220. `hasbara-focused` ADDED (12 → 13 tags; the tag goes 1 → 2 holders). No axis
+moved. It also corrects revisions 215 and 218, which said no hasbara tag exists.**
+
+- **The tag was in `seed.sql` all along and this page never named it.** ישראל תחילה has carried
+  `hasbara-focused` since the row was added on 2026-09-14. Its entry describes the evidence (a hasbara corps
+  in the IDF, consciousness departments in two ministries) and never writes the tag. Revisions 215 and 218
+  looked for a hasbara tag by searching this page, found none, and filed חדאד's ministry as *"a named measure
+  with no tag to carry it"*. The search was of the wrong file. `seed.sql` holds the values.
+- **The evidence is revision 41's and revision 215's.** At the party's own press conference on 02.09, חדאד
+  (#2) demanded a hasbara ministry *"עם תקציב עתק"*, that conference's only spending line of any kind. On 01.10 he
+  restated it with a structure: *"נקים את משרד ההסברה… כולל רשות לאומית אחת להסברה שתרכז את כלל הגופים תחת
+  כתובת אחת"*. A ministry is a larger instrument than the corps and departments the tag was founded on.
+- **Discrimination is checked:** two holders of eighteen, one `unaligned` and one `bibi`. The founding
+  case is a few clauses in ישראל תחילה's platform. This row's is the one thing it has said it would spend on.
+- **ביחד is refused, and it is the closest call.** Its security plan sets up a hasbara body under the Prime
+  Minister's Office (*"8300 לתודעה"*, revision 49), and לפיד's pledge of 01.10 puts the existing bodies under
+  the Foreign Ministry (revision 218). That is one clause in a corpus of twelve plans and one daily pledge,
+  and the two name different homes. **Trigger:** a hasbara plan of its own, or a budget.
+
+Verified on an already-seeded database: the old file leaves עמך ישראל at 12 tags without it, and the new one
+moves the same row to 13 with it. ישראל תחילה stays at 22. 271 backend tests pass.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -10910,6 +10934,67 @@ disqualified and עוצמה יהודית and הציונות הדתית should be
   That הציונות הדתית's *"הגירה מרצון"* is voluntary in name only argues the gap between the row's two emigration
   tags. The row holds both `voluntary-palestinian-emigration-incentives` and `population-transfer` (revision 92),
   so the page already records that gap on its own evidence. The זולת brief is an NGO's.
+
+**2026-10-01 — revision 219 (cross-row). The Supreme Court tells אבו שחאדה there is a majority to disqualify
+him and recommends he withdraw. Ten posts of 01.10 around it. No axis moved, no tag added.**
+([ynet](https://www.ynet.co.il/news/blogs/article/skc6ftiqfe) live blog, first published 10:06; [N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-5a5a2d3f536f0a1027.htm) live blog, last modified 15:26, read from the page's
+embedded data with `curl`. A third link, [כאן](https://www.kan.org.il/content/kan-news/politic/1104945/), returned a Cloudflare challenge to `curl` and to WebFetch and was
+**not read**. Posts read through fxtwitter. Three attached images were viewed. The subtitles of four videos
+were read from extracted frames, with no audio.)
+
+- **What the court said.** Nine justices heard the case. After consulting, the president, עמית, read a
+  statement for the whole panel (N12): *"קיימת תמימות דעים בין השופטים כי הדברים שנכתבו בידי המועמד סאמי אבו
+  שחאדה מכאיבים, מקוממים ומעוררים שאט נפש… מצאנו לשקף כי יש עמדות שונות, ודומה כי התוצאה המסתמנת היא לאישור
+  ההחלטה על הפסילה… על דעת כלל חברי ההרכב, אנחנו ממליצים למר אבו שחאדה לשקול אם הוא עומד על התמודדותו… באופן
+  שייתר מתן פסק דין מנומק בעניינו"*. He has until the end of the day's hearings to answer. **The
+  recommendation is unanimous and the majority is not.** N12's headline says *"פה אחד"*, which is the
+  recommendation.
+- **Nothing is decided, so nothing changes here.** At 15:26 בל"ד's leadership was still discussing it
+  (N12). The hearings on כסיף, on this list and on רע"ם were to follow the same day, and neither live blog had
+  an outcome when read. Revision 130's rule covers both ends: a ruling or a withdrawal that removes only
+  אבו שחאדה (#3) changes the slate and not the row, and removing a list is a separate decision for the repo
+  owner. If the court does uphold it, revision 115's base rate ends: no committee disqualification of a
+  candidate had been upheld before.
+- **From the hearing, recorded and not scored.** The יועמ"שית and the State Attorney backed the
+  disqualification (ynet). Asked by שטיין for one English article calling Hamas a terror organisation,
+  אבו שחאדה answered *"לא קיים מאמר כזה"*. Through his lawyer: *"מעולם לא תמכתי במאבק מזוין נגד מדינת ישראל ואני
+  מגנה את 7 באוקטובר"*, and the article should not have been written. גרוסקופף asked whether prosecution had
+  been considered. The state's lawyer said the senior forums first met the article ahead of the committee
+  hearing. The sentence the case turns on is in revision 144.
+- **עוצמה יהודית wants a judgment, not a withdrawal.** בן גביר ([post](https://x.com/itamarbengvir/status/2105634937210585321)): *"ההצעה של בית המשפט לאבו שחאדה היא
+  הצעה רחמנית מדי… בית המשפט הזה ידע לתת פסק דין על בן ארי, על גופשטיין, על מרזל"*. גוטליב (#2) says the same
+  ([post](https://x.com/TallyGotliv/status/2105633991231504411)). It is the party arguing its own petition (revisions 198 and 215). His comparison to the three
+  disqualified candidates of his own camp is his.
+- **הציונות הדתית: רוטמן (#5)** ([post](https://x.com/rothmar/status/2105634919456133242), with a screenshot of עמית סגל's Telegram): *"יצחק עמית עושה כאן עסקה אפילה
+  עם אבו-שחאדה… מגיע לעם ישראל לדעת מה הנימוקים שלהם לרמיסת חוקי היסוד של הכנסת"*. An attack on the court by
+  the row's author of the overhaul, which is `judicial-overhaul`, held. His claim that the recommendation is
+  against the law is his. No measure is named.
+- **עמך ישראל: חדאד (#2)** ([post](https://x.com/YosephHaddad/status/2105635500895691229)): disqualify him formally, then *"את סמי צריך לעצור ולהעמיד לדין… שייכלא עד
+  אחרון ימיו"*. Candidate tier (revision 49). It asks for existing law to be enforced against one man and
+  names no new measure.
+- **הדמוקרטים: קריב (#3), twice.** A campaign clip ([post](https://x.com/KarivGilad/status/2105622466194297044)): he left the country for 48 hours to meet
+  *"מנהיגים ממדינות האזור וגם… מנהיגים ומנהיגות פלסטינים"*, and *"חייבת לקום ממשלה שמציגה חזון של חתירה להסכמים
+  מדיניים"*. That is `two-state` and `regional-normalization`, both held. He names nobody he met and no
+  agreement. On an attack on protective-presence activists ([post](https://x.com/KarivGilad/status/2105629435214889448), with footage): the attackers are
+  *"טרוריסטים לכל דבר ועניין"*, and after the election *"נדאג לשינוי ברור במדיניות הממשלה והצבא ביחס לאותם
+  פוגרומסטים"*. That is `anti-settler-violence`, held, with no measure added. The footage shows masked men
+  attacking people in an orchard. Where and when is not stated.
+- **ישר: מרידור (#7) at the 7 October families' sukkah** ([post](https://x.com/meridors/status/2105623786200424553)): *"נחליף את הממשלה ונקים ועדת חקירה
+  ממלכתית"*, which he calls *"אחד הדברים שהגדרנו בתכנית 100 הימים שלנו"*. The commission is revision 99's
+  resolution, documented and untagged. The 100-day plan is the one revision 183 is waiting for. *"שלנו"* may
+  mean ישר's or the four lists', and no such document was found published. The trigger there stands.
+  **A lead, from a headline only:** ynet's live blog links an item titled *"איזנקוט: תומך בפסילת יו"ר בל"ד
+  מריצה לכנסת"*. It was not read. On revision 115's rule it would score nothing either way.
+- **ישראל תחילה: השכל (#1) at a Druze event in the Golan** ([post](https://x.com/SharrenHaskel/status/2105629300179276224)). The text: the Druze community there is
+  *"קו הגנה ראשון"*, and the party exists *"לשבור את שיטת שני הגושים"*, which is `unity-government`, held, and
+  the row's `unaligned`. The clip adds a fact this page did not have: a Druze candidate in the list's top
+  four, whom she promises a ministry (*"וואהל ייכנס כשר בממשלת ישראל"*; the subtitles spell the name two
+  ways). The row lists no candidates, and the name was not checked against the filed list. A lead for a
+  candidate pass. It moves nothing.
+- **נעם לישראל, twice.** אלון (#4), a teacher and head of a school network, tells teachers she will bring
+  their workload and pay to the Knesset ([post](https://x.com/noamparty/status/2105621967168471110), the party's account). No measure. מעוז (#1), on the priestly
+  blessing at the Western Wall ([post](https://x.com/AVI_MAOZ/status/2105639054712697195)): the state must *"להעלות לראש סדר העדיפויות הלאומי את הזהות והחינוך
+  היהודי"*. Both sit on `education-system-focused` and `single-issue-jewish-identity`, held.
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
@@ -11851,6 +11936,11 @@ set. Recorded here so a later pass does not find the filing in isolation and rea
 about this row; it scores nothing for the same reason none of the other nine do (see הליכוד's entry,
 revision 115). Worth noting only that the row was **added to this page on 2026-09-14**, the same day
 the filing window closed at 22:00 — the petition and this row's first entry are the same day's news.
+
+*(2026-10-01, revision 220: this row holds `hasbara-focused` in `seed.sql`, and has since it was added. The
+entry above gives the evidence, a hasbara corps in the IDF and consciousness departments in two ministries,
+without naming the tag, and two later revisions concluded no such tag existed. It is named here so the page
+and the file agree. עמך ישראל is the second holder.)*
 
 ## Previous parties
 
@@ -13087,3 +13177,5 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 216 — **cross-row: nine more posts of 30.09 (fxtwitter). No axis moved, no tag added.** קרעי defends the communications law and promises to deal with בג"ץ in the next Knesset, which is `judicial-overhaul`, held; the law is revision 135's. בליאק (ביחד #16) promises a replacement law and names nothing in it, a lead for the press-freedom sweep. זוהר, בן ארי and קריב argue over the flight warning, which is revisions 197 and 208's dispute. פייגלין calls for striking Iran's infrastructure if it was behind the flight, which is conditional retaliation in a faction leader's post and does not earn `preemptive-security-doctrine`. **Correction:** קיש is #10 on the certified list, not #12 as revision 207 wrote. |
 | 2026-10-01 | revision 217 — **cross-row: the CEC chair dismisses both petitions against הציונות הדתית's AI video (decision תב"כ 168/26 and 170/26 read in full with `pdftotext`; הארץ, body supplied by the repo owner). Nothing scored.** ישר petitioned in its own name, which the page had not recorded, on a public-assets argument (section 2א); the threat argument was the Bar Association's alone. A petition to the chair is a legal claim about a rival's material, not a programme (revision 82). It lost on a precedent one day old, תב"כ 117/26, עוצמה יהודית against הדמוקרטים, known here only from the citation and filed as a lead. The video stays conduct on הציונות הדתית (revisions 30, 83, 87). ₪3,500 costs each. |
 | 2026-10-01 | revision 218 — **cross-row: nine posts of 01.10 (fxtwitter; four images viewed; subtitles of three videos read from frames). No axis moved, no tag added.** זליכה's public-housing post gives sitting tenants their flats for free and moves new entitled families to a portable rent subsidy with no state flat. The transfer is הכלכלית's existing plank (revision 23). The second half contradicts the מילואימניקים מצע's 110,000 state-owned units (revision 20), a third tension on that row which revision 58 did not name. Both spend on poor tenants, so `economic` +1 and `welfare-state` stand; trigger is a joint housing text. לפיד's daily pledge puts hasbara under the Foreign Ministry where ביחד's plan has a body under the Prime Minister's Office, recorded and not tagged; the 30.09 pledge (a constitution) is `constitutionalist`, held. The four-list letter on flight security, ליברמן on נתניהו, מעוז's turnout target, קרויזר adding כסיף, בנט, בן ארי and the זהות clip add no position. |
+| 2026-10-01 | revision 219 — **cross-row: the Supreme Court tells אבו שחאדה there is a majority to disqualify him and recommends he withdraw (ynet and N12 live blogs; כאן blocked and not read), plus ten posts (fxtwitter; three images viewed; subtitles of four videos read from frames). No axis moved, no tag added.** The recommendation is unanimous and the majority is not. Nothing is decided: בל"ד was still deliberating at 15:26 and the other three hearings had no outcome. Revision 130's rule holds, so removing only אבו שחאדה changes the slate and not the row. בן גביר, גוטליב and רוטמן demand a written judgment, חדאד a prosecution; all on held tags or candidate tier. קריב on political agreements and on settler violence, מרידור on a state commission, השכל in the Golan, and נעם's two posts sit on held tags. Leads: a Druze candidate in ישראל תחילה's top four, and a ynet headline that איזנקוט backs the disqualification. |
+| 2026-10-01 | revision 220 — **עמך ישראל: `hasbara-focused` ADDED (12 → 13 tags; the tag goes 1 → 2 holders). No axis moved. Corrects revisions 215 and 218.** Both said no hasbara tag exists. One did, on ישראל תחילה since 2026-09-14, in `seed.sql` and never named on this page; they searched the page and not the file. The evidence is חדאד's hasbara ministry *"עם תקציב עתק"* at the party's press conference (revision 41) and his single national authority (revision 215). ביחד refused: one clause and one pledge that name different homes. Verified on an already-seeded database (12 → 13); 271 backend tests pass. |
