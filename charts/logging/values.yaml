@@ -27,7 +27,7 @@ enabled: true
 # Elasticsearch. One node, no replica -- cluster health is YELLOW BY DESIGN and nothing should alert
 # on it (spec decision 3 and 9).
 elasticsearch:
-  version: "9.1.4"
+  version: "9.5.4"
   # 1 GiB heap inside a 2 GiB container: Elasticsearch wants roughly half the container for heap and
   # half for the filesystem cache. Sized from the MEASURED ~150 MB/day that reaches devops-app, not
   # from the vendor default -- see spec decision 3 for the arithmetic and why it removes a node.
@@ -42,10 +42,19 @@ elasticsearch:
 # Kibana. Its self-signed TLS is disabled because the ALB terminates real ACM TLS in front of it --
 # the same reason services/frontend runs plain nginx on :8080.
 kibana:
-  version: "9.1.4"
+  version: "9.5.4"
+  # LIMIT 1.5 GiB, REQUEST still 1 GiB, since the 9.5.4 upgrade (2026-10-01). Measured, not guessed:
+  # 9.1.4 sat at 610 MiB in the cluster, and 9.5.4 used 880 MiB of a 1 GiB limit in a local
+  # rehearsal straight after the saved-object import -- 86% with nobody using it yet. An OOM-killed
+  # Kibana crash-loops, which holds the whole `logging` Application at Degraded.
+  #
+  # Only the limit moved, on purpose. The REQUEST is what the scheduler reserves, and
+  # scripts/tests/test-logging-chart.sh caps this chart's total requests so EFK never forces a third
+  # node; raising the request by 512 MiB broke that budget. The cost of request < limit is that
+  # Kibana is the first thing evicted if its node runs short of memory -- acceptable for a search UI.
   resources:
     requests: { cpu: "200m", memory: "1Gi" }
-    limits:   { cpu: "500m", memory: "1Gi" }
+    limits:   { cpu: "500m", memory: "1536Mi" }
   # The data view, saved searches and dashboard, imported by a post-install/post-upgrade hook from
   # the reviewable JSON under charts/logging/kibana/. Ships ON: without it Kibana is a healthy,
   # empty onboarding screen -- see the long note in templates/kibana-objects.yaml.
