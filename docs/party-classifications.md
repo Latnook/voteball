@@ -8202,6 +8202,8 @@ its judgments are the writer's, and only what it quotes or reports is used here.
   - The *"מקורות ביטחוניים"* are *"מקורות בצה"ל"* in [הארץ](https://www.haaretz.co.il/news/elections/2026-09-29/ty-article/.premium/000001a0-ed9b-d9ab-abfd-ffbb9a710000) (קובוביץ, 29.09 20:10): no preparations identified on any
     front, no alert raised. [ישראל היום](https://www.israelhayom.co.il/news/defense/article/21516773) the same evening: no concrete alert, by the paper's own checks. Neither
     says the warning is baseless, which is the column's wording. Still anonymous, and still not used.
+    The הארץ piece is the one revision 208 read in full. Its closest sentence is *"לפי שעה לא ברור… מהו הבסיס
+    המודיעיני מאחורי אזהרתו"*: the basis is unclear to the defence establishment, not absent.
   - The push-notification count is [TheMarker](https://www.themarker.com/news/themedia/2026-09-27/ty-article-magazine/.premium/000001a0-dcba-d259-a3b4-dcba55b00000)'s (גואטה, 27.09): 13 news organisations over three weeks. Who did
     the analysis is behind the paywall.
   - The meeting with חיון was photographed by the Government Press Office (ערוץ 7, 30.09). No report says the
