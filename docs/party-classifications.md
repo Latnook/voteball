@@ -3830,6 +3830,10 @@ the party's own (as reported; the announcement itself was not read). It joins th
 filed on the environment item in Open questions, which is waiting on the eighteen-row sweep. The posters showing
 ten other party leaders are the groups' campaign, and they score nothing on those rows.
 
+*(2026-10-01: לפיד's daily pledges are in revision 218, filed under המילואימניקים והכלכלית. The 01.10 pledge puts
+all official hasbara bodies under the Foreign Ministry, where this row's security plan sets up a body under the
+Prime Minister's Office. The plan's Hebrew text is now at `/plans/natsec/`. Nothing scored.)*
+
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
 Primary 2026-07-20; list weighted by rank, so the top drives the read. The realized list confirms
@@ -9310,6 +9314,82 @@ answer drops the broad-agreement wording the platform used, and **Basic Laws at 
 booklet (revision 108) put on the other side**. **Trigger:** an override at 61, or the committee's composition
 given to the coalition, moves this row to `judicial-overhaul`.
 
+**2026-10-01 — revision 218 (cross-row). Nine posts of 01.10: זליכה on public housing, לפיד's daily pledges, the
+Emirates-flight letter, and others. No axis moved, no tag added.** (All read through fxtwitter. The four attached
+images were viewed. The subtitles burned into the three videos (מעוז, קרויזר, the זהות clip) were read from
+extracted frames. They are word-by-word captions sampled at 2–2.5 frames a second, so a word may be missing
+from the quotations below. No audio was listened to.)
+
+- **This row: זליכה (#2) on public housing, and the two factions want opposite things** ([post](https://x.com/PZelekha/status/2105591265551143421), 09:30 UTC,
+  under the joint list's logo, ending *"שימו די בקלפי"*). Two proposals:
+  - Sitting tenants get their flats: *"את הדירות שבהן מתגוררים כיום דיירי הדיור הציבורי יש להעביר לבעלותם — וכן,
+    יש היגיון רב בהעברתן ללא תמורה"*. He rejects asking them for 10–20% of the value.
+  - New entitled families get no state flat at all: *"אסור להכניס משפחות חדשות לאותה מלכודת… המדינה צריכה לסבסד
+    את המשפחה ולא את הדירה… הסיוע צריך ללכת אחרי המשפחה, לא אחרי הדירה"*, with help finding a flat and moving.
+
+  **The first half is not new.** הכלכלית's own [welfare page](https://www.hakalkalit.org/הרווחה) already says it: *"יש לשחרר ממלכודת העוני
+  60 אלף משפחות של דיור ציבורי… אנו מתכננים להעביר את הדירות לבעליהן בפועל… במקביל אנו נפעל להגדלת תקציב הסיוע
+  בשכר דירה לזכאי דיור ציבורי"*. That is the plank revision 23 recorded. The post adds *"ללא תמורה"* and the
+  rule for new families. (The site's sitemap lists 125 URLs. The 62 that are not event pages were fetched, and
+  this is the only one with a public-housing plank.)
+
+  **The second half collides with the other faction's platform, and this page had not said so.** The
+  מילואימניקים מצע commits to the Alaluf Committee's **110,000** state-owned units against fewer than 50,000
+  today (revision 20). זליכה says the state should stop holding flats. Revision 58 listed both as state
+  expansion on one row (*"public housing 50,000 → 110,000 here"*) and named two tensions. This is a third, and
+  unlike those two it is a direct contradiction on one instrument.
+
+  **Nothing moves.** Both versions spend public money on poor tenants, so `economic` +1 and the `welfare-state`
+  family stand. The family does not rest on housing alone: the new welfare-services law, the disability
+  allowances and הכלכלית's health spending carry it too. Handing a state service over to a portable subsidy
+  is the instrument the +2 band names for schools, but here it comes with a free transfer of the stock and a
+  larger rent budget, from one faction, in a post that opens *"הגיע הזמן לשקול"*. The joint list has published
+  no housing text. Its own [landing page](https://www.themiluimnikim.org.il/%d7%94%d7%9e%d7%99%d7%9c%d7%95%d7%90%d7%99%d7%9e%d7%a0%d7%99%d7%a7%d7%99%d7%9d-%d7%95%d7%94%d7%9b%d7%9c%d7%9b%d7%9c%d7%99%d7%aa/) was edited on 27.09 and still holds only polls and a sign-up form.
+  **Trigger:** a joint housing text, or הנדל's side restating the 110,000 in the campaign. The post cites
+  *"כשל שוק ההון שעליו מצביע כץ"* without introducing the name, so it reads as cut from a longer article, which
+  was not looked for.
+- **ביחד: לפיד (#2) runs a daily pledge, and today's puts hasbara somewhere the list's plan does not**
+  ([post](https://x.com/yairlapid/status/2105593470152790518), under the list's logo, *"26 ימים לתיקון"*): *"נאחד את כל גורמי ההסברה הרשמיים בישראל תחת משרד החוץ, עם
+  תוכנית אסטרטגית אחת"*. The list's [security plan](https://be-yahad.org.il/plans/natsec/) says *"נקים גוף הסברה לאומי תחת משרד ראש הממשלה… 8300
+  לתודעה"* (revision 49). One is a new body under the Prime Minister's Office and the other gathers the
+  existing bodies under the Foreign Ministry. They may be two parts of one design, and neither text mentions
+  the other. No hasbara tag exists. It stays the sweep candidate revision 215 named, with עמך ישראל (a ministry
+  and one authority) and ישראל תחילה (an IDF corps). Yesterday's pledge ([post](https://x.com/yairlapid/status/2105213338552828042), 30.09), found on his timeline:
+  *"נכונן חוקה לישראל, שמגילת העצמאות היא פרק המבוא שלה"*. That is `constitutionalist`, held (revision 134).
+  His timeline shows the latest 20 posts, and these two are the only pledges in them. The plan's Hebrew text
+  has moved to `/plans/natsec/`. The `/plans/national-sec/` address this row cites now serves the English
+  version.
+- **ביחד: בנט asks supporters to persuade coalition voters** ([post](https://x.com/naftalibennett/status/2105591306227421234)). Campaign advice. The four subjects he names
+  (*"איך נגייס את החרדים. איך נוריד את יוקר המחיה. איך נמגר את הפרוטקשן. איך נציל את החינוך"*) are the row's
+  held families. **בן ארי (#4)** attacks רגב for staying silent as transport minister while Israelis are stuck
+  in Dubai ([post](https://x.com/Meravbenari/status/2105585425926562023)). A complaint about a minister, not a position.
+- **Four opposition lists ask for a hearing on flight security** ([post](https://x.com/Efratrayten1/status/2105614108439498917), letter viewed). רייטן (הדמוקרטים #4),
+  בן ברק (ביחד #12), טרופר (ישר #6) and פורר (ישראל ביתנו #4) wrote to ביסמוט, chair of the Foreign Affairs
+  and Defence Committee, asking him to convene it during the election recess with the head of the שב"כ. The
+  letter relies on עמית סגל's report that the שב"כ head had warned for months that security on flights from the
+  Emirates was insufficient, and on the State Comptroller's 2024 finding on aviation security. Parliamentary
+  oversight in the dispute revisions 197, 208, 215 and 216 hold. It scores nothing on any of the four rows.
+- **ישראל ביתנו: ליברמן calls נתניהו *"אבי הקונספציה ומייסד המדינה הפלסטינית"*** ([post](https://x.com/AvigdorLiberman/status/2105614748578369705), with a photo of נתניהו
+  shaking אבו מאזן's hand). The list: hours with ערפאת, the disengagement vote, the Bar-Ilan speech, the
+  invitation to אבו מאזן, *"הגדה המערבית"*, the release of סינוואר and 1,026 others, the Qatari money. The row
+  already records Bar-Ilan used as an accusation (revision 117). It fits `no-palestinian-state`, held since
+  revision 148, and names no measure. His claim that
+  נתניהו ignored a warning he gave him personally about a Hamas attack is his own account and was not checked.
+- **נעם לישראל: מעוז (#1) on כאן מורשת** ([post](https://x.com/AVI_MAOZ/status/2105587487574020387), 64-second clip): *"יש 4-5-6 מנדטים בקרב מה שאתם קוראים גוש הימין
+  שהם מאוכזבים, לא מתכוונים ללכת להצביע, נשארים בבית… האנשים האלה מורכבים גם מחרדים, גם מציבור חרדי מאוד גדול,
+  וגם מאנשים מסורתיים"*, and *"מאתיים שמונים אלף איש מטורגטים אצלנו"*. Electoral strategy, which revision 93
+  settled. The haredi target is new detail. No position, and `bloc` is untouched.
+- **עוצמה יהודית: קרויזר (#6) on ערוץ 14 from the Supreme Court** ([post](https://x.com/Yitzik_kroizer/status/2105586067877274077), two-minute clip). Revision 215's line
+  with one name added: *"לא נעצור… עד שנראה את כסיף, טיבי ועבאס, תומכי הטרור האלו מסולקים מכנסת ישראל"*. He says
+  איזנקוט would bring עבאס and טיבי in *"או בהימנעות או בתמיכה ישירה"*, and credits בבלי (#11) again
+  (revision 207). Candidate tier, on the petitions revision 130 holds.
+- **הציונות הדתית: a זהות campaign clip posted by פייגלין (#2)** ([post](https://x.com/moshefeiglin/status/2105578585813655915), two minutes, an unnamed speaker, the list's
+  ballot letter on screen). His text: *"העם איננו הסכנה לדמוקרטיה. העם הוא הריבון!"* The clip: *"אנחנו צריכים בתי
+  משפט עצמאיים, אנחנו צריכים שלטון שמוגבל בחוק, אבל אנחנו צריכים גם לשאול מה קורה כשמנגנונים שלא נבחרו מחזיקים
+  בכוח לעצור את המדיניות שבשבילה הציבור הצביע… אנחנו לא מבקשים שלטון בלי גבולות, אנחנו דורשים שהגבולות יהיו
+  ברורים"*. It is the argument behind `judicial-overhaul`, held, put more mildly than the row's programme, and
+  it names no measure.
+
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
 *(Renamed from `נעם` on 2026-09-16, revision 95; `seed_key` is still `noam`. Entries below written
@@ -13006,3 +13086,4 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 215 — **cross-row: seventeen posts of 30.09–01.10 (fxtwitter; two screenshots viewed; subtitles of two videos read from frames). No axis moved, no tag added.** עוצמה יהודית at the אבו שחאדה hearing repeats revision 198, and קרויזר's *"נסיים עם טיבי ועבאס"* is candidate tier. סמוטריץ' in his own words wants Oslo cancelled, the A/B/C distinction erased and the PA dismantled, which is `anti-oslo`, held. נתניהו's cut of גולן on stopping house demolitions is a lead on הדמוקרטים (a rival's edit) and a sighting of the enforcement side of the Kaminitz gap on הליכוד; filed in Open questions. ליברמן's *"גולדקנופף NATION"* sits on held tags. חדאד adds a single national hasbara authority to revision 41's ministry, recorded and not tagged. The warning-dispute posts (לפיד, שלו), סער's UAE call, פייגלין on the Temple Mount and בלוך on Beit Shemesh add no position. |
 | 2026-10-01 | revision 216 — **cross-row: nine more posts of 30.09 (fxtwitter). No axis moved, no tag added.** קרעי defends the communications law and promises to deal with בג"ץ in the next Knesset, which is `judicial-overhaul`, held; the law is revision 135's. בליאק (ביחד #16) promises a replacement law and names nothing in it, a lead for the press-freedom sweep. זוהר, בן ארי and קריב argue over the flight warning, which is revisions 197 and 208's dispute. פייגלין calls for striking Iran's infrastructure if it was behind the flight, which is conditional retaliation in a faction leader's post and does not earn `preemptive-security-doctrine`. **Correction:** קיש is #10 on the certified list, not #12 as revision 207 wrote. |
 | 2026-10-01 | revision 217 — **cross-row: the CEC chair dismisses both petitions against הציונות הדתית's AI video (decision תב"כ 168/26 and 170/26 read in full with `pdftotext`; הארץ, body supplied by the repo owner). Nothing scored.** ישר petitioned in its own name, which the page had not recorded, on a public-assets argument (section 2א); the threat argument was the Bar Association's alone. A petition to the chair is a legal claim about a rival's material, not a programme (revision 82). It lost on a precedent one day old, תב"כ 117/26, עוצמה יהודית against הדמוקרטים, known here only from the citation and filed as a lead. The video stays conduct on הציונות הדתית (revisions 30, 83, 87). ₪3,500 costs each. |
+| 2026-10-01 | revision 218 — **cross-row: nine posts of 01.10 (fxtwitter; four images viewed; subtitles of three videos read from frames). No axis moved, no tag added.** זליכה's public-housing post gives sitting tenants their flats for free and moves new entitled families to a portable rent subsidy with no state flat. The transfer is הכלכלית's existing plank (revision 23). The second half contradicts the מילואימניקים מצע's 110,000 state-owned units (revision 20), a third tension on that row which revision 58 did not name. Both spend on poor tenants, so `economic` +1 and `welfare-state` stand; trigger is a joint housing text. לפיד's daily pledge puts hasbara under the Foreign Ministry where ביחד's plan has a body under the Prime Minister's Office, recorded and not tagged; the 30.09 pledge (a constitution) is `constitutionalist`, held. The four-list letter on flight security, ליברמן on נתניהו, מעוז's turnout target, קרויזר adding כסיף, בנט, בן ארי and the זהות clip add no position. |
