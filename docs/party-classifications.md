@@ -2516,7 +2516,8 @@ pre-7 October directive, a column on אבו שחאדה, and one on reserve duty.
 
 **2026-10-01 — revision 214. ישר's own rebuttal page, *ישר! נגד השקר*, answering ten Likud attack lines. No axis
 moved, no tag added.** ([yasharwitheisenkot.com/the-poison-machine](https://yasharwitheisenkot.com/the-poison-machine/), `article:modified_time` 2026-09-29, read with
-plain `curl`. It was not in the sitemaps crawled for revision 186.) A campaign page, not a programme. It quotes
+plain `curl`. It was among the 36 pages crawled on 29.09, but that search looked only for settler-violence terms,
+and the page has none.) A campaign page, not a programme. It quotes
 the claims it calls lies from *"דף המסרים של הליכוד"* and answers each one, mostly from איזנקוט's record as chief
 of staff.
 
