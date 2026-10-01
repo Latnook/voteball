@@ -181,7 +181,7 @@ that pass because neither can be undone by reverting a commit (both were then do
 
 | What | Running | Latest | Why it is its own job |
 |---|---|---|---|
-| Elasticsearch + Kibana (`charts/logging/values.yaml`) | 9.5.4 (2026-10-01, was 9.1.4) | 9.5.4 | Elasticsearch cannot be downgraded once it has started on a newer version, so **rehearse it locally first** — it takes ten minutes with Docker: start both at the old version with the chart's ILM policy, template, alias and a few documents, import `service-health.ndjson`, then restart both at the new version on the same volume and check the document count, the alias, a write through it, the import's `successCount` and the dashboard read-back. Run Kibana with `--memory` set to the chart's limit; that is how the memory **limit** going 1 GiB → 1.5 GiB was found (the request stayed at 1 GiB, to keep the chart inside its no-third-node budget). **Read the latest version off GitHub releases or by pulling the image, not `artifacts-api.elastic.co`** — that lists unreleased build candidates (it said 9.5.5 when 9.5.4 was the newest image that existed). The Fluentd image (`v1.18.0-…-1.0`) was tested against 9.5.4 and left alone; `v1.19.3-…-1.1` exists. |
+| Elasticsearch + Kibana (`charts/logging/values.yaml`) | 9.5.4 (2026-10-01, was 9.1.4) | 9.5.4 | Elasticsearch cannot be downgraded once it has started on a newer version, so **rehearse it locally first** — it takes ten minutes with Docker: start both at the old version with the chart's ILM policy, template, alias and a few documents, import `service-health.ndjson`, then restart both at the new version on the same volume and check the document count, the alias, a write through it, the import's `successCount` and the dashboard read-back. Run Kibana with `--memory` set to the chart's limit; that is how the memory **limit** going 1 GiB → 1.5 GiB was found — and it was needed: live, 9.5.4 settled at 1,205 MiB, above the old limit (the request stayed at 1 GiB, to keep the chart inside its no-third-node budget). **Read the latest version off GitHub releases or by pulling the image, not `artifacts-api.elastic.co`** — that lists unreleased build candidates (it said 9.5.5 when 9.5.4 was the newest image that existed). The Fluentd image (`v1.18.0-…-1.0`) was tested against 9.5.4 and left alone; `v1.19.3-…-1.1` exists. |
 | RDS PostgreSQL | 17.11 (pinned 2026-10-01, was 17.9) | 17.11 | **Being managed by AWS does not keep this current.** Automatic minor upgrades only go to a version AWS has flagged as an automatic target (17.10 and 17.11 were not, from 17.9) and only in the Sunday maintenance window, which a stack torn down between sessions is rarely alive for; and a rebuild restores whatever version the snapshot was taken on. So `engine_version` is now pinned in `terraform/modules/database/main.tf` and has to be bumped by hand like any other pin — an in-place upgrade with a few minutes of database downtime. |
 
 **The mechanical check is `helm show chart <ref> --version <v>` and its `kubeVersion` field**, not the
@@ -297,8 +297,11 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   report.
 
   Plugin updates are the most common source of both security advisories and behaviour changes. After
-  bumping the plugin set, **re-test the webhook with a SHA-256 signature** — signed should give `200`,
-  unsigned `400`.
+  bumping the plugin set, **re-test the webhook by pushing a commit and watching a build start.** An
+  HTTP status proves nothing here: Jenkins answers `200` to an unsigned or badly signed delivery and
+  silently drops it (`scripts/register-github-ci.sh` records this), so this page's old "signed `200`,
+  unsigned `400`" test could not tell a working webhook from a broken one. On 2026-10-01 the first
+  push after the 2.580.1 upgrade started `application-ci` within 20 seconds.
   **The controller runs Java 25 since 2026-10-01** (`jenkins/jenkins:2.580.1-jdk25`). Jenkins ends
   Java 21 support on or after 2027-09-30 and nags about it in the UI from a year out; Java 25 has
   been supported since LTS 2.541.1. Proven before it reached the cluster by booting the built image
