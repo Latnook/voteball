@@ -8184,7 +8184,7 @@ its judgments are the writer's, and only what it quotes or reports is used here.
   **די** (the list's own post of 27.09 says the same). The clips read today show **ני** for נעם לישראל and
   **ט** for הציונות הדתית. The column says בנט asked for **ב** and בן גביר kept it. Recorded because revision
   58 had only the letters that list requested.
-- **State bodies' acts, not a party's, and the column names no source for any of them.** The שב"כ complained to the censor about חדשות 12's report of
+- **State bodies' acts, not a party's. The column names no source for any of them; two are sourced below.** The שב"כ complained to the censor about חדשות 12's report of
   נתניהו's Emirates visit, with a מוסד opinion behind it. Two police units summoned דרוקר without the
   יועמ"שית's approval (the complaint is revision 194's). The שב"כ declined to guard איזנקוט against its
   advisory committee's recommendation (לפיד's post of 29.09 says the same of that decision). גולן's petition
@@ -8208,11 +8208,22 @@ its judgments are the writer's, and only what it quotes or reports is used here.
     office arranged it. The repo owner listened to [נתניהו's clip](https://x.com/netanyahu/status/2105339034700841393): חיון says *"אנחנו עם של אריות"* first and
     נתניהו echoes it, so the column's attribution is right.
 
-  **Extracted from a source and not put to that check:** the censor complaint was announced by the Prime
-  Minister's Office on 28.09, and חדשות 12 says its item aired after the plane had landed (הארץ; the מוסד
-  opinion was not found). The *"two police units"* is דרוקר's own account, and the missing approval was not
-  found (הארץ, 28.09). The decision not to guard איזנקוט is known from ישר's statement, with armed private
-  guards allowed instead (N12, 29.09). The licences issued unlawfully rest on the deputy יועמ"ש's statement to
+  **Read here afterwards (הארץ, bodies supplied by the repo owner):**
+  - [The censor complaint](https://www.haaretz.co.il/news/law/2026-09-28/ty-article/.premium/000001a0-e8ea-d259-a3b4-e8fadb520000) (28.09). The Prime Minister's Office announced it, and *"באופן חריג"* relayed quotes
+    from the שב"כ's opinion itself, though the service has its own spokesperson. It also quoted a מוסד
+    opinion: *"הדלפה זו היוותה איום ביטחוני חמור לביטחון ראש הממשלה והמשלחת"*. So the column's מוסד line is
+    sourced, through the office. That the report came before the landing is the complaint's claim. חדשות 12
+    says the item aired *"רק לקראת השעה 22:00, כשהמטוס… כבר היה בישראל"*. The column states the complaint's
+    version as fact. The article also says נתניהו's libel suit had been threatened and not filed.
+  - [The decision on איזנקוט](https://www.haaretz.co.il/news/elections/2026-09-29/ty-article/.premium/000001a0-edeb-d259-a3b4-edfb3fec0000) (29.09). The column's wording matches. זיני announced it himself, and the
+    שב"כ said he bears sole responsibility. The advisory committee had recommended about a month earlier that
+    the שב"כ guard איזנקוט, and had refused גולן. The ministers' committee under לוין was to decide; no other
+    minister came, and he left it to the שב"כ. In place of a detail: a private firm a party leader hires may
+    carry weapons *"גם בהיעדר מודיעין או איום קונקרטי"*, with intelligence monitoring and periodic reviews.
+    The research pass had this as known only from ישר's statement, which was wrong.
+
+  **Extracted from a source and not put to that check:** the *"two police units"* is דרוקר's own account, and
+  the missing approval was not found (הארץ, 28.09). The licences issued unlawfully rest on the deputy יועמ"ש's statement to
   a Knesset committee, at least 14,000 (הארץ, 27.12.23), and on the state's reply to בג"ץ, 1,146 (21.11.24).
   The groom from פוריידיס was arrested with his father on 25.09 on suspicion of gunfire (ynet; no DJ in it).
   The ערוץ 14 remark was a guest's, מיכה לייקין-אבני (ישראל היום). **Not found:** the New York Times and Wall
