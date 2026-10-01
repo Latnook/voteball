@@ -3778,6 +3778,14 @@ code, and the pilot suspected of trying to crash it is under investigation. לפ
   while נתניהו said *"אירוע ביטחוני חמור"*. The columnist's point is that if there was intelligence, the government,
   not the opposition, should have acted on it. A minister's characterisation of an incident and a rival's
   argument about responsibility are still not positions, and revision 197 stands.)*
+- *(2026-10-01, [הארץ](https://www.haaretz.co.il/news/politics/2026-10-01/ty-article/.premium/000001a0-f593-dbb2-a9f8-ffdb3c630000), body supplied by the repo owner: **נתניהו himself now says there was no
+  specific warning.** On CNN: *"אני לא יכול להגיד לך שהייתה לנו אזהרה ספציפית לגבי זה"*, only general information on
+  Iranian proxies planning attacks abroad. On Fox: Iranian involvement is not yet known. That contradicts כץ's
+  line of the day before, that the warnings had been *"מבוססות מודיעין"* and should have been heeded. לפיד:
+  the briefing mentioned *"סיכון ביטחוני מסויים בחו"ל… שלא קשור למטוסים"*. The dispute has narrowed to a point
+  the two sides now share: no specific warning about the flight. That is still a fact, not a position.
+  נתניהו's complaint that Britain sanctioned Israel a day after receiving Israeli intelligence is foreign
+  relations, and it scores nothing.)*
 
 **2026-09-30 — revision 209. ביחד backs a national animal-protection authority. No axis moved, no tag added.**
 ([הארץ](https://www.haaretz.co.il/nature/2026-09-30/ty-article/.premium/000001a0-f1bf-d272-adf6-fdff3ee10000), 30.09.26, body supplied by the repo owner.) Twenty groups, among them תנו לחיות לחיות,
