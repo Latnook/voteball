@@ -261,7 +261,7 @@ jenkins:
                   # from inside this pod's network namespace, so the ci NetworkPolicies are
                   # unaffected and no route to the real RDS instance is created or needed.
                   - name: postgres
-                    image: postgres:16-alpine
+                    image: postgres:17-alpine
                     env:
                       - { name: POSTGRES_PASSWORD, value: "test" }
                       # The image initialises the data directory as uid 70 by default; the pod
@@ -440,7 +440,7 @@ jenkins:
                   # from inside this pod's network namespace, so the ci NetworkPolicies are
                   # unaffected and no route to the real RDS instance is created or needed.
                   - name: postgres
-                    image: postgres:16-alpine
+                    image: postgres:17-alpine
                     env:
                       - { name: POSTGRES_PASSWORD, value: "test" }
                       # The image initialises the data directory as uid 70 by default; the pod

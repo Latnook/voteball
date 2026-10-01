@@ -89,9 +89,10 @@ which is the wrong trade for a credential parked in a monitoring stack (see the 
 with no auto-renewal. Unlike the EKS deadline above, nothing about this fails loudly.
 
 ```
-GitHub PAT expires   TBD — this token has not been minted yet. Fill in the real date the first
-                      time scripts/seed-grafana-secret.sh is run with a real GRAFANA_GITHUB_TOKEN, and set
-                      a reminder for it — GitHub does not.
+GitHub PAT expires   2026-11-22 (20:07 UTC) — read 2026-10-01 from GitHub's own response header for
+                      the token in deploy.env. Re-read it after any rotation; GitHub sends no reminder:
+                      curl -sI -H "Authorization: Bearer $GRAFANA_GITHUB_TOKEN" \
+                        https://api.github.com/repos/<owner>/<repo> | grep -i token-expiration
 ```
 
 **Symptom:** the three GitHub panels on `jenkins-delivery` start erroring (`401`/`403` from the
@@ -174,6 +175,14 @@ implying otherwise:
 |---|---|---|
 | `amazon-cloudwatch-observability` (`terraform/addon-cloudwatch.tf`) | `v6.7.0-eksbuild.1` | pinned — the default for K8s 1.36 per `aws eks describe-addon-versions` (2026-10-01). **Before bumping it, diff the add-on's default `application-log.conf` between the two upstream chart tags** — this stack replaces that file, so a changed default is silently lost; the comment in the `.tf` says how. |
 | `aws-efs-csi-driver` (`terraform/addon-efs.tf`) | *(none set)* | **not pinned — a known, deliberate gap, not an oversight.** Terraform tracks whatever AWS currently ships as default for the cluster's EKS version. Revisit if it starts drifting the way Cluster Autoscaler did above; until then it is one fewer version to carry through every EKS minor bump. |
+
+Two pins that sit **outside** both tables, found behind on 2026-10-01 and deliberately not moved in
+that pass because neither can be undone by reverting a commit:
+
+| What | Running | Latest | Why it is its own job |
+|---|---|---|---|
+| Elasticsearch + Kibana (`charts/logging/values.yaml`) | 9.1.4 | 9.5.5 | Elasticsearch cannot be downgraded once it has started on a newer version, and Kibana's saved-object import has already bitten twice (see the root `CLAUDE.md`). Kibana is reachable from the internet, so this is the one worth doing soon. Bump the Fluentd image (`v1.18.0-…-1.0` → `v1.19.3-…-1.1`) in the same pass and run `scripts/logging/verify-efk.sh`. |
+| RDS PostgreSQL | 17.9 | 17.11 | Nothing pins `engine_version`, so every rebuild restores whatever version the snapshot was taken on, and AWS marks neither 17.10 nor 17.11 as an automatic upgrade — it will stay on 17.9 indefinitely. Setting `engine_version` in `terraform/modules/database/main.tf` upgrades in place with a few minutes of database downtime; every later snapshot then carries the new version. |
 
 **The mechanical check is `helm show chart <ref> --version <v>` and its `kubeVersion` field**, not the
 release notes. On 2026-07-30 every one of the eight declared either no constraint or an open-ended
@@ -307,8 +316,8 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   this is the reason not to trim "plugins nothing declares" out of it.
 
 - **`moby/buildkit:v0.33.1-rootless`, `aquasec/trivy:0.74.0` (bumped from 0.58.1 on 2026-09-15, which predated alpine 3.24 and warned it was not on its EOL list), `quay.io/skopeo/stable:v1.22.3`,
-  `amazon/aws-cli:2.37.7`, `python:3.12-slim` (lint/test), `postgres:16-alpine` (ephemeral test DB,
-  not the app's own `postgres:17-alpine` base image) and `hadolint/hadolint:v2.15.1-alpine`** (note the `v` — hadolint's tags gained it, and `2.15.1-alpine` 404s), plus the `promtool-fetch` init container's `prom/prometheus:v3.15.0`, which must match the Prometheus server kube-prometheus-stack deploys are
+  `amazon/aws-cli:2.37.7`, `python:3.12-slim` (lint/test), `postgres:17-alpine` (ephemeral test DB;
+  moved from 16 on 2026-10-01 so CI tests the same major RDS runs — bump it with any RDS major upgrade) and `hadolint/hadolint:v2.15.1-alpine`** (note the `v` — hadolint's tags gained it, and `2.15.1-alpine` 404s), plus the `promtool-fetch` init container's `prom/prometheus:v3.15.0`, which must match the Prometheus server kube-prometheus-stack deploys are
   pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod template (`application-ci`);
   `alpine/k8s:1.36.5` (track the cluster minor) and `quay.io/argoproj/argocd:v3.5.3` (matched to the
   running ArgoCD server's app version, not just any tag) are pinned in the `voteball-deploy` template

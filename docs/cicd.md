@@ -377,7 +377,7 @@ The 314 tests in `services/{backend,worker}/tests/` (266 backend + 48 worker, ve
 2026-08-24 via `python -m pytest -q` in each service — count them the same way rather than trusting
 this number, it drifts every time a test is added), run against a **real** Postgres — both
 `conftest.py` files `DROP TABLE ... CASCADE` and call `init_db()`, and were never sqlite-compatible.
-The `postgres` container in the CI pod template (`postgres:16-alpine`, `DB_SSLMODE=disable`) provides
+The `postgres` container in the CI pod template (`postgres:17-alpine`, the same major as RDS, `DB_SSLMODE=disable`) provides
 it on `localhost`; it is ephemeral, holds no real data, and is reachable only from inside this pod's
 own network namespace, so the `ci` NetworkPolicies are unaffected and no route to the real RDS
 instance is created or needed.
