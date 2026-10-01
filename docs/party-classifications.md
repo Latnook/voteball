@@ -2514,6 +2514,29 @@ pre-7 October directive, a column on אבו שחאדה, and one on reserve duty.
   199's record: הדמוקרטים back disqualifying individuals and oppose disqualifying lists. The court rules on
   1 October, and revision 130 stands until then.
 
+**2026-10-01 — revision 214. ישר's own rebuttal page, *ישר! נגד השקר*, answering ten Likud attack lines. No axis
+moved, no tag added.** ([yasharwitheisenkot.com/the-poison-machine](https://yasharwitheisenkot.com/the-poison-machine/), `article:modified_time` 2026-09-29, read with
+plain `curl`. It was not in the sitemaps crawled for revision 186.) A campaign page, not a programme. It quotes
+the claims it calls lies from *"דף המסרים של הליכוד"* and answers each one, mostly from איזנקוט's record as chief
+of staff.
+
+- **"Lie #9", that איזנקוט would set up a Palestinian state, is answered first-party**: he *"מעולם, בשום שלב בקריירה
+  שלו, לא תמך בהקמת מדינה פלסטינית… התבטאותו היחידה בנושא היא התנגדות"*. `no-palestinian-state` (held) is
+  corroborated by the party in its own voice. The page's counter-claim, that נתניהו signed a ceasefire recognising
+  *"נתיב להקמת מדינה פלסטינית"*, is a claim about הליכוד's record (revision 153's line), and it does not move that
+  row's `no-palestinian-state`, which rests on what the row says and does.
+- **"Lie #7", refusal to serve**: *"אסור שזה ישמש כמנוף לחץ, לא לצד הזה ולא לצד השני"*. That fits `statist` and
+  `universal-conscription`, both held.
+- **Doctrine, and why `preemptive-security-doctrine` stays off.** The page cites the IDF strategy he wrote (*"עדיפות
+  לגישת ההכרעה"*, *"תפיסה צבאית התקפית"*), a 2019 call to *"להביא לסוף שלטון החמאס ברצועת עזה"*, and operations he
+  initiated as chief of staff (מגן צפוני). That is his record in uniform, and `security-hawk` (held) covers it. On
+  *"הקם להורגך, השכם להורגו"*, the line that earned עמך ישראל the tag (revision 201), the page says the IDF works *"לפי
+  פקודות ונהלים"*, not slogans. That is not opposition to striking first either, so the tag is neither earned
+  nor contradicted. **Trigger:** a stated doctrine of striking threats before use, in the party's own voice.
+- **Rafah, Iran and Khamenei are rival accounts of the war cabinet** (revisions 207 and 141's line). The page says
+  איזנקוט voted for the Rafah operation. בן גביר says he opposed it. Neither can be checked here, and who was
+  right in the war is not a position.
+
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -12829,3 +12852,4 @@ pass happened, for anyone reading git history.
 | 2026-09-30 | revision 211 — **cross-row: the deserters' parade (only וינטר condemns from the right; the change bloc condemns in the words of its held conscription tags) and ynet on the speakership plan (`curl`). No axis moved, no tag added.** הליכוד's claim that וינטר joined ליברמן is a rival's, so `bloc` stays `bibi` (revision 137). The coalition's silence is not scored. The speakership plan now has anonymous bloc sources, including a minority-government test, still revision 44's tier. Trigger written. |
 | 2026-09-30 | revision 212 — **cross-row: a הארץ opinion piece on the disqualification cases (body supplied by the repo owner). Nothing scored.** Every party act it cites is already recorded (revisions 102, 130, 198, 199, 206). Its readings of בן גביר's wording and of הציונות הדתית's "voluntary" emigration are the writer's, and both rows already carry the tags that record them. |
 | 2026-10-01 | revision 213 — **cross-row: a הארץ magazine investigation of the Argaman Institute's Churchill programme and its 270-page security vision (body supplied by the repo owner). No axis moved, no tag added.** The vision is an NGO's, and its planks match tags rows already hold on their own evidence. The party links (איתם, רוטמן and פייגלין on הציונות הדתית; וינטר; נתניהו and גמליאל) are associations, not positions. |
+| 2026-10-01 | revision 214 — **ישר: the party's rebuttal page *ישר! נגד השקר* answers ten Likud attack lines (`curl`). No axis moved, no tag added.** It corroborates `no-palestinian-state` in the party's own voice (*"מעולם… לא תמך"*), and its claim about נתניהו's ceasefire is about another row. The refusal line fits held tags. The doctrine is chief-of-staff record under `security-hawk`. The page declines the *"השכם להורגו"* slogan without opposing pre-emption, so `preemptive-security-doctrine` is neither earned nor contradicted; trigger written. The war-cabinet accounts are rival claims. |
