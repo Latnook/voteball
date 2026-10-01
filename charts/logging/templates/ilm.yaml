@@ -43,7 +43,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: bootstrap
-          image: curlimages/curl:8.11.1
+          image: curlimages/curl:8.22.0
           env:
             - name: ELASTIC_PASSWORD
               valueFrom:

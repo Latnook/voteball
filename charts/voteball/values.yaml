@@ -157,7 +157,7 @@ canary:
   enabled: true
   # Pinned by tag like every other image in this chart -- validate-repo.sh only checks
   # services/*/Dockerfile, but the same "no floating tag" rule applies here by convention.
-  image: "curlimages/curl:8.7.1"
+  image: "curlimages/curl:8.22.0"
   intervalSeconds: 30
   # RAISED AGAIN 20m -> 150m -> 500m the same day, after measuring: at 150m the container was STILL
   # throttled 72.8% of periods while using 0.0055 cores on average and peaking at 0.0091. That is not
