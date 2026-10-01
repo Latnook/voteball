@@ -8153,6 +8153,44 @@ video were read from extracted frames; no audio was listened to, and the other v
   לבטל את הפרויקט של בתי הספר הממלכתיים-חרדים"*. Candidate tier. It is her record as mayor, and it matches
   the row's held `state-haredi-education`.
 
+**2026-10-01 — revision 221 (cross-row). הארץ's weekly election column, and the בן גביר video it mocks. Nothing
+scored.** ([הארץ](https://www.haaretz.co.il/news/elections/noharim/2026-10-01/ty-article-magazine/000001a0-f6d9-d9ab-abfd-f7f9ed410000), *נוהרים לקלפיות*, 01.10.26, body supplied by the repo owner. Two of its three images were
+viewed, the ערוץ 14 screenshot and the court photo. [בן גביר's post](https://x.com/itamarbengvir/status/2104497879918260546), 28.09.26 09:06 UTC, read through fxtwitter.
+The subtitles of its two-minute video were read from extracted frames, with no audio.) A satirical column:
+its judgments are the writer's, and only what it quotes or reports is used here.
+
+- **This row: the video is a list of the minister's own figures on gun licensing.** He and his wife at a
+  range, in question and answer: *"כמה רישיונות נשק נתנו בתקופה שלך? קל 300,000 אלף בשנה וחצי"*, *"כמה יישובים
+  נוספו לזכאות? למעלה מ-200"*, training once every year and a half, the reform begun *"מייד כשנכנסתי לתפקיד"*,
+  and *"היועצת ניסתה לעצור את זה, לא הצליח לה"*. His predecessor, he says, issued 8,000 *"בקושי"*. It is
+  `gun-rights`, held, and the numbers are the ones revisions 30 and 73 already carry. *"בשנה וחצי"* is his
+  and was not checked. The column's reply, that thousands of licences were issued unlawfully by associates
+  with no authority and that the thresholds were loosened against warnings, is the writer's summary and
+  cites no document.
+- **This row, in court:** בן גביר told the justices *"הם מדברים ערבית כי הם לא רוצים שזה יגיע אליכם"*, and
+  ברק־ארז answered *"הם מדברים ערבית כי זו שפתם"*. A detail for revision 219. The column's account of the
+  recommendation to אבו שחאדה matches that revision.
+- **ישר: a second sighting of איזנקוט backing the disqualification.** The column says he *"התנדב לתמוך בה אף
+  שאין לו נציגים בוועדת הבחירות"*. Revision 219 had it as a ynet headline. Neither is his own words, and on
+  revision 115's rule the stance scores nothing. That הדמוקרטים voted for it is revision 130's.
+- **הציונות הדתית, two quotes.** סמוטריץ' on ynet's podcast on Sunday 27.09, as the column quotes him:
+  *"יש בקרב ערביי ישראל הרמת ראש"*, which *"אנשים מרגישים"* on the roads and in the malls. New to this page.
+  The podcast was not heard, and the words name no measure. סוכות (#6) on ערוץ 14 on Tuesday: *"נשבענו כולנו
+  ללכת ולחסל את חמאס עד היסוד… האנשים האלה הם בני מוות כולם… צריכים להביא פתרון לרצועת עזה"*. Candidate tier, on
+  `hardline-on-gaza`, held.
+- **The ballot letters, approved on Sunday 27.09:** ישר is **דרך**, ביחד is **רק**, המילואימניקים והכלכלית is
+  **די** (the list's own post of 27.09 says the same). The clips read today show **ני** for נעם לישראל and
+  **ט** for הציונות הדתית. The column says בנט asked for **ב** and בן גביר kept it. Recorded because revision
+  58 had only the letters that list requested.
+- **State bodies' acts, not a party's.** The שב"כ complained to the censor about חדשות 12's report of
+  נתניהו's Emirates visit, with a מוסד opinion behind it. Two police units summoned דרוקר without the
+  יועמ"שית's approval (the complaint is revision 194's). The שב"כ declined to guard איזנקוט against its
+  advisory committee's recommendation. גולן's petition is revision 195's.
+- **Already here:** בונצל's post to יוכבד ליפשיץ and his qualified apology (revisions 172 and 181), the
+  foreign reports of warnings before 7 October (revision 172), and the flight dispute (revisions 197, 208,
+  215, 216). The assault on Palestinians at שער שכם has no party in it. That נתניהו sets the agenda and that
+  his rivals lose seats by swearing off the Arab parties is the writer's thesis.
+
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
 **RESOLVED 2026-09-07 (revision 58) — merged, and taken OFF THE BALLOT as an interim.** The party
@@ -13179,3 +13217,4 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 218 — **cross-row: nine posts of 01.10 (fxtwitter; four images viewed; subtitles of three videos read from frames). No axis moved, no tag added.** זליכה's public-housing post gives sitting tenants their flats for free and moves new entitled families to a portable rent subsidy with no state flat. The transfer is הכלכלית's existing plank (revision 23). The second half contradicts the מילואימניקים מצע's 110,000 state-owned units (revision 20), a third tension on that row which revision 58 did not name. Both spend on poor tenants, so `economic` +1 and `welfare-state` stand; trigger is a joint housing text. לפיד's daily pledge puts hasbara under the Foreign Ministry where ביחד's plan has a body under the Prime Minister's Office, recorded and not tagged; the 30.09 pledge (a constitution) is `constitutionalist`, held. The four-list letter on flight security, ליברמן on נתניהו, מעוז's turnout target, קרויזר adding כסיף, בנט, בן ארי and the זהות clip add no position. |
 | 2026-10-01 | revision 219 — **cross-row: the Supreme Court tells אבו שחאדה there is a majority to disqualify him and recommends he withdraw (ynet and N12 live blogs; כאן blocked and not read), plus ten posts (fxtwitter; three images viewed; subtitles of four videos read from frames). No axis moved, no tag added.** The recommendation is unanimous and the majority is not. Nothing is decided: בל"ד was still deliberating at 15:26 and the other three hearings had no outcome. Revision 130's rule holds, so removing only אבו שחאדה changes the slate and not the row. בן גביר, גוטליב and רוטמן demand a written judgment, חדאד a prosecution; all on held tags or candidate tier. קריב on political agreements and on settler violence, מרידור on a state commission, השכל in the Golan, and נעם's two posts sit on held tags. Leads: a Druze candidate in ישראל תחילה's top four, and a ynet headline that איזנקוט backs the disqualification. |
 | 2026-10-01 | revision 220 — **עמך ישראל: `hasbara-focused` ADDED (12 → 13 tags; the tag goes 1 → 2 holders). No axis moved. Corrects revisions 215 and 218.** Both said no hasbara tag exists. One did, on ישראל תחילה since 2026-09-14, in `seed.sql` and never named on this page; they searched the page and not the file. The evidence is חדאד's hasbara ministry *"עם תקציב עתק"* at the party's press conference (revision 41) and his single national authority (revision 215). ביחד refused: one clause and one pledge that name different homes. Verified on an already-seeded database (12 → 13); 271 backend tests pass. |
+| 2026-10-01 | revision 221 — **cross-row: הארץ's weekly election column (body supplied by the repo owner; two images viewed) and the בן גביר video it mocks (fxtwitter; subtitles read from frames). Nothing scored.** The video is the minister's own gun-licensing figures (300,000 licences, 200+ localities, *"היועצת ניסתה לעצור את זה"*), which is `gun-rights`, held, on numbers revisions 30 and 73 carry. The column gives a second sighting of איזנקוט backing אבו שחאדה's disqualification, still not his own words. New to the page: סמוטריץ's *"הרמת ראש"* line about Arab citizens (quoted, podcast not heard) and the approved ballot letters (ישר דרך, ביחד רק, המילואימניקים והכלכלית די). סוכות on Gaza is candidate tier on a held tag. The שב"כ and police items are state bodies' acts. The rest is already recorded, and the column's thesis is the writer's. |
