@@ -8182,10 +8182,12 @@ its judgments are the writer's, and only what it quotes or reports is used here.
   **די** (the list's own post of 27.09 says the same). The clips read today show **ני** for נעם לישראל and
   **ט** for הציונות הדתית. The column says בנט asked for **ב** and בן גביר kept it. Recorded because revision
   58 had only the letters that list requested.
-- **State bodies' acts, not a party's.** The שב"כ complained to the censor about חדשות 12's report of
+- **State bodies' acts, not a party's, and the column names no source for any of them.** The שב"כ complained to the censor about חדשות 12's report of
   נתניהו's Emirates visit, with a מוסד opinion behind it. Two police units summoned דרוקר without the
   יועמ"שית's approval (the complaint is revision 194's). The שב"כ declined to guard איזנקוט against its
-  advisory committee's recommendation. גולן's petition is revision 195's.
+  advisory committee's recommendation (לפיד's post of 29.09 says the same of that decision). גולן's petition
+  is revision 195's. The one claim the column gives to anonymous sources, *"מקורות ביטחוניים"* saying
+  נתניהו's election warning has no concrete basis, is revision 44's tier and is not used.
 - **Already here:** בונצל's post to יוכבד ליפשיץ and his qualified apology (revisions 172 and 181), the
   foreign reports of warnings before 7 October (revision 172), and the flight dispute (revisions 197, 208,
   215, 216). The assault on Palestinians at שער שכם has no party in it. That נתניהו sets the agenda and that
