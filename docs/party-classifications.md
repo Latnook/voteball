@@ -10757,7 +10757,8 @@ matching הארץ's 52–33 (revision 159).
 
 **Formed 2026-08-20**, when חד"ש-תע"ל and בל"ד signed an agreement to run on one slate: #1 יוסף
 ג'בארין (חד"ש chair), #2 אחמד טיבי (תע"ל chair), #3 סאמי אבו שחאדה (בל"ד chair) *(he withdrew his
-candidacy on 2026-10-01 and stays chair; revision 222)*. One upcoming row
+candidacy on 2026-10-01 and stays chair; revision 222. He resigned from the list formally on 2026-10-02,
+and the Supreme Court cleared the list itself the same day; revision 227)*. One upcoming row
 replaces the two. Both `previous_parties` rows stay exactly as they were — the two lists genuinely
 did run separately in 2022 and that section is frozen — and `party_lineage` carries both
 predecessors into this row, the same two-into-one shape as העבודה/מרצ → הדמוקרטים.
@@ -11084,7 +11085,8 @@ expected to appeal the עוצמה יהודית decision.
   court to reverse the decisions on רע"ם, הרשימה המשותפת and כסיף, calling only אבו שחאדה unclear. **The
   rows stay voteable until the court rules.** Trigger: a Supreme Court ruling that upholds a list's
   disqualification is when removal is considered, as a separate decision for the repo owner. A ruling that
-  upholds only אבו שחאדה's changes the list's slate and not the row.
+  upholds only אבו שחאדה's changes the list's slate and not the row. *(Closed by revision 227: on 02.10.26
+  the court reversed the committee on both lists, unanimously, and on כסיף, seven to two.)*
 - **Every party's vote scores nothing, on revision 115's category rule.** Deciding whether to use an
   eligibility instrument is not a position on what the state should do, and that rule was written for
   exactly this. The breakdown is recorded as a record of votes, by outgoing-Knesset faction. For כסיף:
@@ -11302,7 +11304,8 @@ read from the page's embedded data. One linked image viewed.)
   ruling.
 - **The other three cases are not decided.** The same panel heard כסיף, this list and רע"ם on 01.10. None
   of the four sources has an outcome; ynet says *"לפי כל ההערכות, השופטים יהפכו את ההחלטות"*. Revision 130's
-  decision stands: both Arab rows stay voteable until the court rules.
+  decision stands: both Arab rows stay voteable until the court rules. *(Decided on 02.10.26, all three
+  reversed; revision 227.)*
 - **The statement's content, recorded and not scored.** The case raises *"שאלות קשות על גבולות הלגיטימיות
   הפוליטית הניתנת לאזרחים הערבים"*, and the list will go on working *"להפלת ממשלת נתניהו ובן גביר"*, which fits
   the row's `opposition`. Through N12: the decision *"אינה נסיגה מעמדות המפלגה ומערכיה"* and he *"לא חזר בו
@@ -11341,6 +11344,42 @@ read from the page's embedded data. One linked image viewed.)
 - **The image is the article itself in Hebrew translation**, two pages, the lower numbered 17. The third
   note reads as revision 144 quoted it from פ"מ 8/26 §42, with the sentence about *"עזה הקטנה והנצורה"* closing
   a paragraph on Israeli intelligence. It adds nothing.
+
+**2026-10-02 — revision 227 (cross-row). The Supreme Court reverses the committee: רע"ם, this list and כסיף may
+run. אבו שחאדה resigns from the list formally. Both Arab rows stay on the ballot. No axis moved, no tag added,
+`seed.sql` unchanged.**
+([כאן](https://www.kan.org.il/content/kan-news/politic/live-1105232/) live page, updated 13:21, two entries of 12:37 and 12:42, read through headless Chromium after `curl` got a
+Cloudflare challenge; [ישראל היום](https://www.israelhayom.co.il/news/law/article/21537301), אלינור שירקני-קופמן, 02.10.26 12:54, `articleBody` with plain `curl`, found by
+search; [ליברמן's post](https://x.com/AvigdorLiberman/status/2105957860832350604), 12:47, fxtwitter. N12's live blog had nothing after 06:42. The judgment itself was not
+read.)
+
+- **The ruling.** Nine justices under עמית. On רע"ם and on this list the reversal is unanimous. On כסיף it is
+  seven to two. The majority, per ישראל היום: his statements do not reach the strict threshold of the case
+  law, and no *"מסה קריטית"* of evidence formed. מינץ and שטיין would have upheld the disqualification, on the
+  ground of support for armed struggle against the state.
+- **Revision 130's decision is confirmed, and its trigger is closed.** The repo owner kept both rows on the
+  ballot on 24.09 because the court would probably reverse the committee. It did, for both lists and without
+  a dissent. Nothing is left pending on either row: this one stays −3 / −3 / −3 with its fifteen tags, and
+  רע"ם is unchanged.
+- **Revision 115's base rate stands, and should now be cited with two notes.** The Supreme Court has still
+  never upheld the committee's disqualification of a candidate. But a majority of this panel said in open
+  court that it would have upheld אבו שחאדה's (revisions 219 and 222), and two of the nine would have upheld
+  כסיף's. ישראל היום's account of why the court preferred a withdrawal, that a judgment could become a precedent
+  used against Jewish parties later, is the reporter's.
+- **The slate.** אבו שחאדה notified the committee chair, סולברג, that he resigns from the list (כאן, 12:37).
+  That makes revision 222's withdrawal formal under סעיף 87. Its arithmetic for the slots below is unchanged
+  and is still the page's own. The filed list was not re-read today.
+- **ישראל ביתנו: ליברמן names a measure against בל"ד.** *"כל עוד אבו שחאדה נשאר יו״ר בל״ד ונציגי מפלגתו יהיו
+  בכנסת, זהו ייצוג של ארגון טרור בכנסת ישראל. חייבים להוציא את בל״ד מחוץ לחוק."* Outlawing a party is new to
+  this page, and it is in the chairman's own voice. It scores nothing on revision 115's rule: it is an
+  eligibility instrument aimed at one party, not a position on what the state should do. No tag exists for
+  it, and one post would not mint one. **Trigger:** a bill, or the same demand in the party's platform.
+- **The other reactions repeat what their rows hold** (ישראל היום; the posts were not read). עוצמה יהודית
+  released a voice message of בן גביר: *"ברא, ברא, ברא, סאמי אבו שחאדה"*. It is the party cheering its own
+  petition (revisions 198, 215, 219), and the paper notes there was no judgment to cheer. רוטמן (הציונות
+  הדתית #5) calls the ruling *"רוח גבית לטרור"* and the handling of אבו שחאדה *"בריחה מבישה ממתן פסק דין"*. That
+  is revision 219's attack on the court again, on `judicial-overhaul`, held. פורום בוחרים בחיים, which
+  argued for the disqualification of רע"ם, is not a party.
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
@@ -13531,3 +13570,4 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 224 — **cross-row: ורטר's Friday column in הארץ on נתניהו's week (body supplied by the repo owner). Nothing scored.** Almost every party act in it is already recorded (revisions 172, 181, 184, 195, 197, 208, 211, 221). New and not positions: בר's threatened libel suit, נתניהו's *"לערער את הסכמי אברהם"* line, the AP, רביד and חורי reports on his requests to בן זאיד, and four ministers praising the UN speech. The Durban count, the pending Qatar opinions and the army no longer arresting haredi deserters are state bodies' acts; the last was not verified. The thesis is the writer's. |
 | 2026-10-02 | revision 225 — **cross-row: four posts of 02.10 (fxtwitter; three images viewed) and a ynet link that is revision 211's own source. Nothing scored, `seed.sql` unchanged.** מלינובסקי (ישראל ביתנו #5) writes ליברמן's list of revision 218 at column length, on held tags; her own laws are past credentials, and her date for ש"ס's Oslo abstention is a year late (23.09.1993). איזנקוט asks for a full debrief of the flight and ties it to the state commission, both already this row's. בנט's 7 October account is biography with one position, the state commission. אלמוג כהן (הליכוד #13) answers a private user with a rival's charge; the צנגאוקר reserved-slot episode he cites (מעריב, 10.08.26) is real, new to this page, and list management on הדמוקרטים. |
 | 2026-10-02 | revision 226 — **cross-row: הראל's Friday analysis in הארץ on the flight and the warnings (body supplied by the repo owner). Nothing scored.** Almost all of it is already recorded (revisions 172, 184, 192, 197, 200, 208, 215, 216, 221, 224). One new quotation of נתניהו, to CNN, promises to *"נרד לעומק העניין"* on 7 October and names no form, so הליכוד stays "opposed" in the inquiry sweep. New and not positions: בר announces a libel suit and demands the documents be published, the police investigation of חדשות 12 is attributed to נתניהו's demand, no proof of an Iranian hand in the flight, דחלאן as a third warner, and the Saudis refusing Israeli military planes. The thesis is the writer's. |
+| 2026-10-02 | revision 227 — **cross-row: the Supreme Court reverses the committee (כאן, headless Chromium; ישראל היום, `curl`; ליברמן's post, fxtwitter; the judgment not read). רע"ם and the Joint List may run, unanimously, and כסיף seven to two (מינץ and שטיין dissenting). אבו שחאדה resigns from the list formally. No axis moved, no tag added, `seed.sql` unchanged.** Revision 130's decision to keep both Arab rows is confirmed and its trigger closed. Revision 115's base rate stands, with this panel's stated majority on אבו שחאדה and the two dissents on כסיף beside it. ליברמן demands that בל"ד be outlawed: a named measure, new to the page, and an eligibility instrument that scores nothing on revision 115's rule. בן גביר and רוטמן repeat revision 219. |
