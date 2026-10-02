@@ -10589,7 +10589,8 @@ matching הארץ's 52–33 (revision 159).
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
 **Formed 2026-08-20**, when חד"ש-תע"ל and בל"ד signed an agreement to run on one slate: #1 יוסף
-ג'בארין (חד"ש chair), #2 אחמד טיבי (תע"ל chair), #3 סאמי אבו שחאדה (בל"ד chair). One upcoming row
+ג'בארין (חד"ש chair), #2 אחמד טיבי (תע"ל chair), #3 סאמי אבו שחאדה (בל"ד chair) *(he withdrew his
+candidacy on 2026-10-01 and stays chair; revision 222)*. One upcoming row
 replaces the two. Both `previous_parties` rows stay exactly as they were — the two lists genuinely
 did run separately in 2022 and that section is frozen — and `party_lineage` carries both
 predecessors into this row, the same two-into-one shape as העבודה/מרצ → הדמוקרטים.
@@ -10871,7 +10872,8 @@ the יועמ"שית's opinion revision 102 already read at the same URL: 24 page
   eligibility under סעיף 7א, not a programme. The base rate is the IDI's: no candidate disqualified by the
   committee has ever had it upheld by the Supreme Court. **Trigger:** if the Supreme Court upholds it,
   #3 leaves the list and בל"ד's chair is no longer on this row's realistic slate. That would be the first
-  list change on this page made by a court.
+  list change on this page made by a court. *(Closed by revision 222: he withdrew on the court's
+  recommendation, and no judgment was given.)*
 - **The יועמ"שית's position matches revision 102**: no legal basis for any petition, and אבו שחאדה's
   8 October 2023 article to be weighed *"בכובד ראש"*. The column argues it fails the case law's
   repetition and critical-mass tests. That is argument, not a new fact.
@@ -11100,6 +11102,71 @@ were read from extracted frames, with no audio.)
   their workload and pay to the Knesset ([post](https://x.com/noamparty/status/2105621967168471110), the party's account). No measure. מעוז (#1), on the priestly
   blessing at the Western Wall ([post](https://x.com/AVI_MAOZ/status/2105639054712697195)): the state must *"להעלות לראש סדר העדיפויות הלאומי את הזהות והחינוך
   היהודי"*. Both sit on `education-system-focused` and `single-issue-jewish-identity`, held.
+
+**2026-10-02 — revision 222 (cross-row). אבו שחאדה withdraws his candidacy and stays בל"ד's chair. The slate
+changes and the row does not. No axis moved, no tag added, `seed.sql` unchanged.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-10-01/ty-article/000001a0-f92b-d9ab-abfd-ffab80820000), ג'קי חורי and מיכאל האוזר טוב, 01.10.26 23:37, body supplied by the repo owner, and the page's
+own title, time and first paragraph read with `curl`; [ynet](https://www.ynet.co.il/news/elections2026/article/sj00kfs2cge), 01.10.26 23:42, `curl`; [כאן](https://www.kan.org.il/content/kan-news/politic/1105213/), 02.10.26 00:14, read
+through headless Chromium; [N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-5a5a2d3f536f0a1027.htm) live blog, last updated 02.10.26 00:28, the two entries added since revision 219
+read from the page's embedded data. One linked image viewed.)
+
+- **The act.** On the evening of 01.10 בל"ד's leadership approved the withdrawal, *"בהתייעצות מלאה עם החבר סמי
+  אבו שחאדה"* (ynet's wording of the statement; N12 reported the decision first, at 23:29, and the official
+  statement at 00:25). He stays chair: *"אבו שחאדה ימשיך לעמוד בראש המפלגה ולהוביל את המאבק הפוליטי להגנה על
+  הייצוג הערבי"*. The stated reason is *"אחריות פוליטית כלפי עמנו וכלפי הרשימה המשותפת"*. The party adds that
+  it decided only after the court said most justices leaned toward upholding the disqualification, so in its
+  words the court disqualified him before any judgment.
+- **There is no judgment, and that is what the withdrawal bought.** Revision 219's recommendation was to
+  withdraw *"באופן שייתר מתן פסק דין מנומק"*. So revision 115's base rate is formally intact: the Supreme
+  Court has still never upheld the committee's disqualification of a candidate. It should no longer be cited
+  without this case beside it, because nine justices said in open court that a majority would have.
+  כאן gives the motive as avoiding a precedent and harsher words from the bench; that is its reporting, not
+  the party's statement.
+- **The slate, re-read today from the filed list** (method in revision 63; the page still shows him at #3,
+  so the committee had not updated it when read). The law lets a candidate resign at any time, and the
+  committee publishes a notice (חוק הבחירות לכנסת, סעיף 87, read on Wikisource). The section does not say what
+  happens to the slots below. If the names below close up, the top of the list becomes ג'בארין, טיבי,
+  ג'טאס (חד"ש), and בל"ד's realistic slots move from #3, #5, #8 to #4, #7, #10: עואודה, כרכבי סבאח, and
+  חסן אלנסאסרה, who was #11. The realistic ten stays 5 / 3 / 2 (revision 67). This is the page's arithmetic
+  on the filed list, not a published list.
+- **The row does not change, on revision 130's rule.** בל"ד is still a party to the list, with its chair
+  outside the Knesset slate. The union rule rests on the components' texts, not on who holds slot 3, so
+  −3 / −3 / −3 and the fifteen tags stay. Revision 129's trigger is closed by a withdrawal and not by a
+  ruling.
+- **The other three cases are not decided.** The same panel heard כסיף, this list and רע"ם on 01.10. None
+  of the four sources has an outcome; ynet says *"לפי כל ההערכות, השופטים יהפכו את ההחלטות"*. Revision 130's
+  decision stands: both Arab rows stay voteable until the court rules.
+- **The statement's content, recorded and not scored.** The case raises *"שאלות קשות על גבולות הלגיטימיות
+  הפוליטית הניתנת לאזרחים הערבים"*, and the list will go on working *"להפלת ממשלת נתניהו ובן גביר"*, which fits
+  the row's `opposition`. Through N12: the decision *"אינה נסיגה מעמדות המפלגה ומערכיה"* and he *"לא חזר בו
+  מעמדותיו"*. In court the same day he answered ברק־ארז that he regrets the article (*"כמובן"*, N12). The two
+  are about different things, positions and one article, and the page judges neither.
+- **כאן's three additions are list management.** The other parties on the list promised to *"לפצות"* בל"ד
+  if it ends up with one MK, by rotation or senior posts. בל"ד plans a turnout campaign *"להחליף את מי שפסלו
+  את אבו שחאדה"*. Both are revision 172's tier. כאן also says he had *"עד מחר"* to answer, where N12's text of
+  the statement says *"עד תום יום הדיונים"* (revision 219). Nothing turns on it.
+- **הליכוד at the hearing, through its counsel בומבך.** The party is the petitioner against this list and
+  כסיף (revision 115). הארץ records three justices pressing him. כשר: *"האם נחה דעתה של מפלגת השלטון שאף
+  מפלגה ערבית לא תהיה בכנסת?"* כבוב: *"חמישית מהציבור לא יהיה מיוצג בידי נציגים מהחברה הערבית"*. גרוסקופף:
+  *"אתם מציעים מצב שבו הנבחרים יכולים להיות רק ממפלגות יהודיות"*. בומבך: *"בגלל שאין לציבור הערבי ייצוג נאפשר
+  לתומכי טרור להגיע לכנסת? זה שיקול זר"*. A party arguing its own petition scores nothing (revision 115), and
+  the justices' questions are not party acts.
+- **Reactions, from ynet; the posts themselves were not read.** סמוטריץ': *"יצחק עמית לא רוצה ולא מסוגל
+  לכתוב פסק דין פשוט… אלא מתחנן בפניו שיפרוש"*, the same attack as רוטמן's in revision 219, on `judicial-overhaul`,
+  held. בן גביר: *"הבטחנו - קיימנו!"*, with regret that no judgment was given, which is revisions 198 and 219.
+  איזנקוט posted a video of אבו שחאדה speaking of talks between בל"ד and הליכוד, with condolences to הליכוד
+  on losing *"שותף אמיתי בברית מחל-בל״ד"*. That is a rival's jibe about another row. The video was not viewed,
+  and nothing on this page records such talks. ישר's own support for the disqualification is revision 102.
+- **הארץ's lower half is carried over from its earlier reports, and one paragraph is out of date.** It still
+  says the hearing *"יתקיים ביום חמישי הקרוב"*. The committee's 31–4 vote is revision 130, and ג'בארין's
+  attack on גולן is revision 172. Two quotes are new to this page. The יועמ"שית and the State Attorney
+  called his later explanations *"מיתממים, חלקיים"* and said he gave *"לגיטימציה למתקפה הרצחנית של
+  7 באוקטובר"*. That is a move from the hedged opinion of revision 102 to support for disqualifying him, which
+  revisions 193 and 219 recorded as a fact without her words. He replied *"חוק לאבו שאחדה וחוק לבן גביר"*,
+  a claim about how she treated another row's petition (revision 193's line).
+- **The image is the article itself in Hebrew translation**, two pages, the lower numbered 17. The third
+  note reads as revision 144 quoted it from פ"מ 8/26 §42, with the sentence about *"עזה הקטנה והנצורה"* closing
+  a paragraph on Israeli intelligence. It adds nothing.
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
@@ -13285,3 +13352,4 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 219 — **cross-row: the Supreme Court tells אבו שחאדה there is a majority to disqualify him and recommends he withdraw (ynet and N12 live blogs; כאן blocked and not read), plus ten posts (fxtwitter; three images viewed; subtitles of four videos read from frames). No axis moved, no tag added.** The recommendation is unanimous and the majority is not. Nothing is decided: בל"ד was still deliberating at 15:26 and the other three hearings had no outcome. Revision 130's rule holds, so removing only אבו שחאדה changes the slate and not the row. בן גביר, גוטליב and רוטמן demand a written judgment, חדאד a prosecution; all on held tags or candidate tier. קריב on political agreements and on settler violence, מרידור on a state commission, השכל in the Golan, and נעם's two posts sit on held tags. Lead: a Druze candidate in ישראל תחילה's top four. (The ynet headline on איזנקוט, first filed here as a lead, is ישר's statement of 22.09, already in revision 102.) |
 | 2026-10-01 | revision 220 — **עמך ישראל: `hasbara-focused` ADDED (12 → 13 tags; the tag goes 1 → 2 holders). No axis moved. Corrects revisions 215 and 218.** Both said no hasbara tag exists. One did, on ישראל תחילה since 2026-09-14, in `seed.sql` and never named on this page; they searched the page and not the file. The evidence is חדאד's hasbara ministry *"עם תקציב עתק"* at the party's press conference (revision 41) and his single national authority (revision 215). ביחד refused: one clause and one pledge that name different homes. Verified on an already-seeded database (12 → 13); 271 backend tests pass. |
 | 2026-10-01 | revision 221 — **cross-row: הארץ's weekly election column (body supplied by the repo owner; two images viewed) and the בן גביר video it mocks (fxtwitter; subtitles read from frames). Nothing scored.** The video is the minister's own gun-licensing figures (300,000 licences, 200+ localities, *"היועצת ניסתה לעצור את זה"*), which is `gun-rights`, held, on numbers revisions 30 and 73 carry. The column's line on איזנקוט backing אבו שחאדה's disqualification is ישר's party statement of 22.09, already in revision 102 (first misfiled here as an unsourced sighting). New to the page: סמוטריץ's *"הרמת ראש"* line about Arab citizens (quoted, podcast not heard) and the approved ballot letters (ישר דרך, ביחד רק, המילואימניקים והכלכלית די). סוכות on Gaza is candidate tier on a held tag. The שב"כ and police items are state bodies' acts. The rest is already recorded, and the column's thesis is the writer's. |
+| 2026-10-02 | revision 222 — **cross-row: אבו שחאדה withdraws his candidacy and stays בל"ד's chair (הארץ, body supplied by the repo owner; ynet, `curl`; כאן, headless Chromium; N12 live blog; one image viewed). No axis moved, no tag added, `seed.sql` unchanged.** No judgment was given, so revision 115's base rate is formally intact and needs this case beside it. The filed list still shows him at #3; if the names below close up, בל"ד's realistic slots become #4, #7 and #10 and the ten stays 5 / 3 / 2. The row is unchanged on revision 130's rule, and revision 129's trigger is closed. The court has not ruled on כסיף, the list or רע"ם, so both Arab rows stay voteable. כאן's compensation promise and turnout campaign are list management. בומבך's argument for הליכוד is a party arguing its own petition. סמוטריץ', בן גביר and איזנקוט react on held tags or as rivals (posts not read). הארץ's lower half repeats revisions 130 and 172 and adds the יועמ"שית's words. |
