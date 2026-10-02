@@ -10476,6 +10476,37 @@ moved. It also corrects revisions 215 and 218, which said no hasbara tag exists.
 Verified on an already-seeded database: the old file leaves עמך ישראל at 12 tags without it, and the new one
 moves the same row to 13 with it. ישראל תחילה stays at 22. 271 backend tests pass.
 
+**2026-10-02 — revision 229 (cross-row). חדאד at the party's Arab-society conference in יפיע, and טרנר אייל of
+ביחד on who oversees foreign airlines' security. No axis moved, no tag added, `seed.sql` unchanged.** (Both
+read through fxtwitter. The captions burned into the two clips were read from extracted frames at 2.5–3
+frames a second, with no audio, so a word may be missing from the quotations below.)
+
+- **This row: חדאד (#2) on hecklers removed from the conference** ([post](https://x.com/YosephHaddad/status/2106049893869474097), 02.10.26 15:53 UTC, a 61-second
+  clip ending on the party's logo). The party held a conference *"לחברה הערבית"* in יפיע on 01.10. He films
+  protesters being pushed out of the hall: *"יהיה פה ערבים ישראלים גאים, ופלסטינים כמוך להעיף הביתה… הוא לא
+  רוצה להיות חלק מהמדינה… זו משילות. מעיפים את הקול האנטי ישראלי מתוך החברה ומביאים קול אחר שרוצה להיות חלק
+  מהמדינה. נדאג לעשות ניקוי אורוות בחברה הערבית"*. The text adds *"ככה נעיף אותם מעמדות הכוח"* and *"רוח חדשה
+  שתחזק את השותפות הישראלית"*.
+  - **It is the Arab-society campaign this entry already records, seen at an event.** The two-seat target
+    and the plank that puts an Arab-Israeli identity in place of the Palestinian one in Arab schools are
+    above. The clip is that identity line said to a protester's face. It names no measure: *"ניקוי אורוות"*
+    and *"מעמדות הכוח"* say nothing about who, or by what means.
+  - **`jewish-arab-partnership` stays refused**, on the reasoning above. *"שותפות"* is his word here too, and
+    it comes with sending *"פלסטינים כמוך"* home.
+  - Who the protesters were is his description (*"הבדלנים הקיצוניים"*). No report of the event was looked for.
+- **ביחד: טרנר אייל on the flight** ([post](https://x.com/KerenTernerEyal/status/2105726875050098717), 01.10.26 18:29 UTC, a 112-second clip; her list slot was not
+  checked). She is a former director-general of the Transport Ministry (revision 49). Her account: the law
+  puts Israeli airlines' security under the שב"כ and foreign airlines' under the transport minister, and
+  רגב delegated that to the ministry's security division and not to the Civil Aviation Authority, *"גוף
+  עצמאי מקצועי… כמו בעולם"*. She says the מל"ל and the שב"כ both recommended moving it, and that the State
+  Comptroller found in May 2024 *"חוסר מוכנות ופערים במסוגלות של אגף הביטחון בהנחיה של חברות זרות"*. She asks
+  whether רגב secured a written undertaking that Emirati airlines would not use crew from states with no
+  relations with Israel. It ends *"אנחנו נבוא, אנחנו נתקן, נחזיר מקצועיות וניהול"*.
+  - **A complaint about a minister, with a measure implied and not promised.** Moving the oversight to the
+    Civil Aviation Authority is what she says others recommended. She does not commit the list to it. It
+    sits with the four-list letter of revision 218, which cites the same Comptroller finding.
+  - Her account of the law, of the two recommendations and of the Comptroller's report was not checked.
+
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
 security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
@@ -13649,3 +13680,4 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 226 — **cross-row: הראל's Friday analysis in הארץ on the flight and the warnings (body supplied by the repo owner). Nothing scored.** Almost all of it is already recorded (revisions 172, 184, 192, 197, 200, 208, 215, 216, 221, 224). One new quotation of נתניהו, to CNN, promises to *"נרד לעומק העניין"* on 7 October and names no form, so הליכוד stays "opposed" in the inquiry sweep. New and not positions: בר announces a libel suit and demands the documents be published, the police investigation of חדשות 12 is attributed to נתניהו's demand, no proof of an Iranian hand in the flight, דחלאן as a third warner, and the Saudis refusing Israeli military planes. The thesis is the writer's. |
 | 2026-10-02 | revision 227 — **cross-row: the Supreme Court reverses the committee (כאן, headless Chromium; ישראל היום, `curl`; ליברמן's post, fxtwitter; the judgment not read). רע"ם and the Joint List may run, unanimously, and כסיף seven to two (מינץ and שטיין dissenting). אבו שחאדה resigns from the list formally. No axis moved, no tag added, `seed.sql` unchanged.** Revision 130's decision to keep both Arab rows is confirmed and its trigger closed. Revision 115's base rate stands, with this panel's stated majority on אבו שחאדה and the two dissents on כסיף beside it. ליברמן demands that בל"ד be outlawed: a named measure, new to the page, and an eligibility instrument that scores nothing on revision 115's rule. בן גביר and רוטמן repeat revision 219. |
 | 2026-10-02 | revision 228 — **cross-row: nine posts of 02.10 (fxtwitter; captions of two videos read from frames, no audio; three photos viewed; the מקור ראשון column נתניהו quotes read in part, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** השכל (ישראל תחילה #1) says *"חייבים ממשלה בלי חרדים"* in a clip, past the platform's hostage line; `excludes-haredi-and-arab-parties` is still not added and it is filed on the coalition-exclusion sweep. Five women of four change-bloc lists meet on revision 183's agenda plus women's status, which does not give ישראל ביתנו `gender-equality`. בליאק will ask סולברג whether the government is blocking voters' flights from the Emirates. שירי attacks a holiday gathering at the Nova site. בן גביר repeats his credit for אבו שחאדה. נתניהו's *"עבאס הוא השותף של איזנקוט"* quotes a column of translated עבאס statements, not checked; its two campaign quotations of עבאס and סגלוביץ' on Hamas are a lead for רע"ם. וילף comments on France. |
+| 2026-10-02 | revision 229 — **cross-row: two posts with clips (fxtwitter; captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) films protesters being removed from the party's Arab-society conference in יפיע: *"ערבים ישראלים גאים, ופלסטינים כמוך להעיף הביתה"* and *"ניקוי אורוות בחברה הערבית"*. It is the row's recorded Arab-society campaign at an event, with no measure, and `jewish-arab-partnership` stays refused. טרנר אייל (ביחד) says רגב left foreign airlines' security with a ministry division and not the Civil Aviation Authority, against the מל"ל, the שב"כ and the State Comptroller; a complaint about a minister with a measure implied and not promised. Her account was not checked. |
