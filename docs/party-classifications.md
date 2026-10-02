@@ -1324,6 +1324,37 @@ the videos were not watched.)
   condition he states himself, in a faction leader's post. The call to restrict an ideology names no measure.
   It fits the carried זהות line of revision 205.
 
+**2026-10-02 — revision 224 (cross-row). ורטר's Friday column in הארץ on נתניהו's week. Nothing scored.**
+([הארץ](https://www.haaretz.co.il/news/elections/2026-10-02/ty-article/.highlight/000001a0-f8c1-d9c1-a3fe-ffcf9b730000), יוסי ורטר, פרשנות, 02.10.26 06:00, body supplied by the repo owner; the page's own title, author and
+time read with `curl`.) An opinion column. Its verdicts are the writer's, and only what it quotes or reports is
+used. None of its reported claims was checked against another source.
+
+- **Almost every party act in it is already here.** The deserters' parade and the coalition's silence are
+  revision 211. נתניהו's statement that בר held *"שיחות רבות"* with הלוי on the night of 6–7 October is revision
+  184, where כאן said no such call took place; the column says the same. His *"לא הייתה לנו התרעה או מודיעין
+  ספציפי"* to the American networks, against the morning's briefings that לפיד was told of a hijack risk, is the
+  flight dispute of revisions 197, 208 and 221. The warnings before 7 October are revisions 172 and 192. The
+  censor complaint and זיני's decision not to guard איזנקוט and גולן are revisions 195 and 221. בונצל (#29) and
+  his apology on נתניהו's demand are revisions 172 and 181.
+- **Reported and new to this page, none of it a position.** בר is said to be threatening a libel suit over the
+  statement, which calls him *"פושע"*. נתניהו told reporters the attacker meant *"לערער את הסכמי אברהם"*, before,
+  the writer says, the Saudis had passed on anything from the interrogation. AP is cited for נתניהו asking
+  בן זאיד to deny הארץ's report of the pre-war warning, רביד for בן זאיד having phoned to make sure the warning
+  reached him, and חורי for a request for *"תמיכה מורלית"*. An unnamed law-enforcement official calls the trip
+  possibly *"טיסת שיבוש"*, in a public and not a criminal sense. Who warned whom is not a position (revisions
+  100 and 141), and an anonymous quote is revision 44's tier.
+- **Ministers on the UN speech:** סער *"נאום מזהיר"*, כץ *"עוצמתי"*, לוין *"מצוין"*, בן גביר *"חשוב"*. Praise
+  for the party leader, with no measure in it. Revision 126 has the opposition chairmen on the same speech.
+- **State bodies' acts, not a party's** (revision 221's line). The Foreign Ministry counts 46 states staying
+  away from the Durban conference, up from 38. The prosecution is waiting on the שב"כ and מוסד opinions in
+  the Qatar case. The army has stopped arresting haredi deserters except at the airport, the writer says,
+  despite a בג"ץ ruling that struck down *"חוק ההקפאה"*. That last one bears on the conscription tags of
+  several rows, as enforcement by the army and not as any party's stated policy. It is recorded and was not
+  verified.
+- **The thesis is the writer's**: that נתניהו governs as a sole ruler, that the security services serve his
+  agenda, and that the haredi parties are his partners after the election too. הליכוד's `bibi` and its haredi
+  alliance are already what the row records.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -13407,3 +13438,4 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 221 — **cross-row: הארץ's weekly election column (body supplied by the repo owner; two images viewed) and the בן גביר video it mocks (fxtwitter; subtitles read from frames). Nothing scored.** The video is the minister's own gun-licensing figures (300,000 licences, 200+ localities, *"היועצת ניסתה לעצור את זה"*), which is `gun-rights`, held, on numbers revisions 30 and 73 carry. The column's line on איזנקוט backing אבו שחאדה's disqualification is ישר's party statement of 22.09, already in revision 102 (first misfiled here as an unsourced sighting). New to the page: סמוטריץ's *"הרמת ראש"* line about Arab citizens (quoted, podcast not heard) and the approved ballot letters (ישר דרך, ביחד רק, המילואימניקים והכלכלית די). סוכות on Gaza is candidate tier on a held tag. The שב"כ and police items are state bodies' acts. The rest is already recorded, and the column's thesis is the writer's. |
 | 2026-10-02 | revision 222 — **cross-row: אבו שחאדה withdraws his candidacy and stays בל"ד's chair (הארץ, body supplied by the repo owner; ynet, `curl`; כאן, headless Chromium; N12 live blog; one image viewed). No axis moved, no tag added, `seed.sql` unchanged.** No judgment was given, so revision 115's base rate is formally intact and needs this case beside it. The filed list still shows him at #3; if the names below close up, בל"ד's realistic slots become #4, #7 and #10 and the ten stays 5 / 3 / 2. The row is unchanged on revision 130's rule, and revision 129's trigger is closed. The court has not ruled on כסיף, the list or רע"ם, so both Arab rows stay voteable. כאן's compensation promise and turnout campaign are list management. בומבך's argument for הליכוד is a party arguing its own petition. סמוטריץ', בן גביר and איזנקוט react on held tags or as rivals (posts not read). חדאד (עמך ישראל #2, post read) repeats revision 219: a formal disqualification and prison, candidate tier. הארץ's lower half repeats revisions 130 and 172 and adds the יועמ"שית's words. |
 | 2026-10-02 | revision 223 — **המילואימניקים והכלכלית: הנדל on ערוץ 7, a 17-minute interview (write-up, `curl`; YouTube automatic captions, `yt-dlp`) and the 76-second clip cut for X (captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged. Corrects revision 222.** He calls himself and the list right-wing and refuses both a נתניהו–haredi government and one resting on Arab parties, so `unaligned` stands. His coalition test is by principle (conscription for all, governance, settlement, no Palestinian state, cost of living) and by his account leaves out גולן; filed on the coalition-exclusion sweep, not minted. The conscription lines sit on held tags, and he defers the number of עילויים. Security +2 holds: ridges and settlement, no sovereignty claim. New detail: support for the farms project, and Negev farms. *"נערי הגבעות… צריך לטפל בהם"* names no measure, so no `anti-settler-violence`. Revision 222 said the page recorded no Likud–Joint List talks; revision 142 has a leaked 2021 recording. |
+| 2026-10-02 | revision 224 — **cross-row: ורטר's Friday column in הארץ on נתניהו's week (body supplied by the repo owner). Nothing scored.** Almost every party act in it is already recorded (revisions 172, 181, 184, 195, 197, 208, 211, 221). New and not positions: בר's threatened libel suit, נתניהו's *"לערער את הסכמי אברהם"* line, the AP, רביד and חורי reports on his requests to בן זאיד, and four ministers praising the UN speech. The Durban count, the pending Qatar opinions and the army no longer arresting haredi deserters are state bodies' acts; the last was not verified. The thesis is the writer's. |
