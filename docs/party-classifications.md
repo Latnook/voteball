@@ -12248,7 +12248,9 @@ conflicts (כחול לבן); here the evidence is single-voiced and says *neithe
 is categorical and verbatim. The haredi half is not the same claim: the party says it will not be
 *"תלויה במפלגות סקטוריאליות כלשון מאזניים"* and that they *"סוחטות את הממשלה"* — a refusal to be held
 hostage by them as kingmakers, not a refusal to sit with them. המילואימניקים והכלכלית's tag asserts
-exclusion of both. Reusing it here would have manufactured half a position.
+exclusion of both. Reusing it here would have manufactured half a position. *(Revision 228: the
+chairwoman has since said *"חייבים ממשלה בלי חרדים"* in a campaign clip. Still not added; it is filed on
+the coalition-exclusion sweep.)*
 
 economic **+2**. The +2 band requires the state actually withdrawing, and three chapters do it:
 **school vouchers** — *"המדינה תקצה לכל הורה 'שובר חינוך' שנתי אישי בשווי כ-60,000 שקלים"* with the
@@ -12326,6 +12328,78 @@ the filing window closed at 22:00 — the petition and this row's first entry ar
 entry above gives the evidence, a hasbara corps in the IDF and consciousness departments in two ministries,
 without naming the tag, and two later revisions concluded no such tag existed. It is named here so the page
 and the file agree. עמך ישראל is the second holder.)*
+
+**2026-10-02 — revision 228 (cross-row). Nine posts of 02.10: השכל's *"ממשלה בלי חרדים"*, the women of the
+change bloc, בליאק on the Emirates flights, and others. No axis moved, no tag added, `seed.sql` unchanged.**
+(All read through fxtwitter. The captions burned into the two videos, השכל's and שירי's, were read from
+extracted frames at 3–5 frames a second, with no audio, so a word may be missing from the quotations below.
+Three of the eleven attached photos were viewed. The column נתניהו quotes was read with plain `curl`, its first
+two-thirds only. A tenth link supplied, מלינובסקי's, is revision 225's.)
+
+- **This row: השכל (#1) says the next government must have no haredi parties** ([post](https://x.com/SharrenHaskel/status/2106023142548177055), 14:06 UTC, a
+  15-second clip under the party's logo). The captions: *"חייבים ממשלה בלי חרדים. אם הבחירות יכריעו רק החרדים,
+  ביבי או אייזנקוט, אז ישראל […]. צריך לבחור באזרחים העובדים, המשרתים, כל אלו שנרמסו פה […] יותר. חייבים ממשלה
+  ציונית על מלא"*. The text of the post is milder: the haredi parties hold governments *"כבנות ערובה לדרישות
+  המגזריות שלהן"*, and Israel needs *"ממשלה ציונית"*.
+  - **The clip goes past the platform, and the text does not.** This entry refused
+    `excludes-haredi-and-arab-parties` because the platform refuses to be *held hostage* by sectoral parties
+    and does not refuse to sit with them. The post's text is that same hostage line. The clip's first
+    sentence is a government without them, in the chairwoman's voice.
+  - **Not added.** The tag is a conjunction that Open questions has not yet defined, and its Arab half here
+    is `excludes-anti-zionist-parties`, a different claim. The coalition-exclusion sweep decides the
+    vocabulary in one pass, and this is filed there as the first statement of the haredi half on this row.
+    `unaligned` stands: she rejects a government decided by the haredi parties under either leader.
+  - **A lead, not read.** The clip shows a headline: *""אגודת ישראל כבר לא עם נתניהו, הגוש שלו התפרק": גדי
+    איזנקוט בראיון"*. If איזנקוט said that, it bears on ישר's stance toward the haredi parties (revision 143).
+    One search did not find the interview.
+- **Five women of four change-bloc lists meet** ([לזימי](https://x.com/naamalazimi/status/2105949966115979738), הדמוקרטים #2; [בן ארי](https://x.com/Meravbenari/status/2105950190997737653), ביחד #4; [פרקש הכהן](https://x.com/FarkashOrit/status/2105963036888424771),
+  ישר #3; with טרנר אייל of ביחד and לנקרי, ישראל ביתנו #3, tagged; the photos show the five at a café named
+  for נועה מרציאנו). לזימי's post calls them *"חמש הנשים הראשונות של מפלגות מחנה התיקון והתקווה"*. ביחד sent
+  two, one from each of its factions.
+  - **The agenda is revision 183's, with one subject added.** A state commission of inquiry, *"שוויון בנטל
+    ושירות לכל"* and the cost of living are what the leaders' joint teams named. New here: *"קידום מעמד הנשים
+    בישראל והמאבק באלימות במשפחה"*. It lists subjects, not commitments, which is how revision 183 read the
+    teams' statement.
+  - **It does not give ישראל ביתנו `gender-equality`.** The other three rows hold the tag. ישראל ביתנו was
+    refused it in revision 51, and a candidate attending a meeting does not change that. **Trigger**, as in
+    revision 183: the joint *קווי היסוד*, read against all four rows.
+  - לזימי's *"בממשלה הבאה נשים יהיו כוח מרכזי ומוביל"* and בן ארי's *"מקצוענית ושוויונית"* name no measure.
+- **ביחד: בליאק (#16) will ask the committee chair to look at the Emirates flights** ([post](https://x.com/VladimirBeliak/status/2106015164352827798), 13:35 UTC).
+  *"אי אפשר להיפטר מהתחושה שנתניהו מסלים ומקצין את המשבר, כדי לעצור את הטיסות מהאמירויות באוקטובר, ולמנוע
+  מאלפי ישראלים… להצביע"*, and *"ביום ראשון אפנה לכבוד השופט סולברג"*. He quotes ירון אברהם of חדשות 12, where
+  an unnamed associate of the Emirati government says Israel is the one stopping the flydubai flights and
+  that *"הבחירות מנהלות את האירוע"*. A suspicion, resting on an anonymous source, about the conduct of the
+  election. It is the mirror of הליכוד's petition against the voter-flight projects (revision 82). **Trigger:**
+  the petition's text and סולברג's answer.
+- **ביחד: שירי on a holiday gathering at the Nova site** ([post](https://x.com/naorshiri/status/2105995915983311308), 12:18 UTC, an 84-second clip; his list slot
+  was not checked). The text: *"9 מנהלות לזהות יהודית. שר מורשת. שר מסורת… הפכנו לממשלת 'תרקוד על דם רעך'"*.
+  The clip addresses the heritage minister, אליהו of עוצמה יהודית (*"עאלק מורשת, מורשת של ריקוד על הדם"*), and
+  includes a כנסת 99 interview with יורם יהודאי, a bereaved father, who describes tents, barbecues and
+  caravans on the site and calls it *"חרפה"*. שירי says the families begged that it not be held. A complaint
+  about an event, with no measure in it. The jab at the Jewish-identity administrations names none either;
+  the row's `anti-clerical` is untouched. Who organised the gathering was not checked.
+- **עוצמה יהודית: בן גביר's victory post on אבו שחאדה** ([post](https://x.com/itamarbengvir/status/2106019586667606485), 13:52 UTC, a photo of him with a flag
+  outside the court). He credits וולף and בבלי (#11) again, says he wanted a ruling on the merits, and
+  promises *"בכל הכלים החוקיים נגד תומכי טרור"*. Revisions 198, 207, 219 and 222. It was posted four hours
+  after the court cleared רע"ם, the Joint List and כסיף (revision 227) and does not mention that.
+- **הליכוד: נתניהו, *"עבאס הוא השותף של גדי איזנקוט. זה או ימין - או פלסטין!"*** ([post](https://x.com/netanyahu/status/2105993781707178030), 12:10 UTC). The
+  slogan is revision 203's, and the claim about ישר is a rival's. ישר's own line is that רע"ם will not be in
+  the government (revisions 169 and 206).
+  - **The post quotes [a column by ליבסקינד](https://www.makorrishon.co.il/opinions/article/376625) in מקור ראשון** (02.10.26), which collects statements by עבאס in
+    Arabic from 2013 to 2022, as translated by advocacy bodies it names (הקול היהודי, רגבים, בוחרים בחיים).
+    Among them: a 2016 speech in רמאללה with *"אויבנו החומס את אדמתנו"*, a eulogy at the home of a man shot
+    during the 2021 riots in לוד, and the movement's mourning notice for קרדאווי. A columnist's compilation
+    of translated quotations. None was checked against the Arabic, and none moves רע"ם's row from one hostile
+    source.
+  - **Two quotations from this campaign, as the column gives them, are new to this page.** עבאס to חדשות 12:
+    *"אם אתה אומר 'חמאס ארגון טרור', השאלה השנייה תהיה 'צריך להשמיד אותו?', ואז אני נכנס לעוד מערבולת"*.
+    סגלוביץ' (רע"ם #2), beside him: *"אני אצלו ברשימת רע"מ ואומר 'צריך להשמיד את חמאס, זה ארגון טרור'"*, and on
+    ערוץ 13 that asking it of עבאס may not be *"דרישה הגונה כלפי מנהיג ציבור שבא מהחברה הערבית"*. That is the
+    condition איזנקוט set (revision 206), declined by the chairman and met by his #2. **A lead for רע"ם's
+    row:** the interviews themselves were not watched.
+- **המילואימניקים והכלכלית: וילף (#3) on anti-Zionism in France** ([post](https://x.com/EinatWilf/status/2106010815195230285), 13:18 UTC, quoting a private
+  commentator's long post on מלנשון). *"האנטי-ציונות בשבתה כפנים המכובדות של האנטישמיות… כלי פוליטי אפקטיבי
+  ליצירת קואליציות"*. Commentary on another country's politics. No measure, and nothing about this list.
 
 ## Previous parties
 
@@ -12839,6 +12913,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   parties, calling רע"ם *"ש"ס של הערבים"*. A candidate's reason, recorded as a lead.)*
   *(Revision 147: a further shape, from עמך ישראל: a right-wing government *"רחבה ככל שניתן, כדי שהיא לא
   תישען על הקול של גולדקנופף"*. Not depending on a partner is not refusing to sit with one.)*
+  *(Revision 228: ישראל תחילה's chairwoman says *"חייבים ממשלה בלי חרדים"* in a campaign clip. It is the
+  haredi half, stated outright, on a row whose platform has only the hostage line and whose Arab half is
+  `excludes-anti-zionist-parties`. Captions read from frames, no audio.)*
   **This is the fourth item in the sweep queue**, and the only one whose first
   step is documenting a tag that already exists rather than deciding whether to create one.
 - **The internal-security dimension is unlabelled across the whole vocabulary, and it now has a
@@ -13571,3 +13648,4 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 225 — **cross-row: four posts of 02.10 (fxtwitter; three images viewed) and a ynet link that is revision 211's own source. Nothing scored, `seed.sql` unchanged.** מלינובסקי (ישראל ביתנו #5) writes ליברמן's list of revision 218 at column length, on held tags; her own laws are past credentials, and her date for ש"ס's Oslo abstention is a year late (23.09.1993). איזנקוט asks for a full debrief of the flight and ties it to the state commission, both already this row's. בנט's 7 October account is biography with one position, the state commission. אלמוג כהן (הליכוד #13) answers a private user with a rival's charge; the צנגאוקר reserved-slot episode he cites (מעריב, 10.08.26) is real, new to this page, and list management on הדמוקרטים. |
 | 2026-10-02 | revision 226 — **cross-row: הראל's Friday analysis in הארץ on the flight and the warnings (body supplied by the repo owner). Nothing scored.** Almost all of it is already recorded (revisions 172, 184, 192, 197, 200, 208, 215, 216, 221, 224). One new quotation of נתניהו, to CNN, promises to *"נרד לעומק העניין"* on 7 October and names no form, so הליכוד stays "opposed" in the inquiry sweep. New and not positions: בר announces a libel suit and demands the documents be published, the police investigation of חדשות 12 is attributed to נתניהו's demand, no proof of an Iranian hand in the flight, דחלאן as a third warner, and the Saudis refusing Israeli military planes. The thesis is the writer's. |
 | 2026-10-02 | revision 227 — **cross-row: the Supreme Court reverses the committee (כאן, headless Chromium; ישראל היום, `curl`; ליברמן's post, fxtwitter; the judgment not read). רע"ם and the Joint List may run, unanimously, and כסיף seven to two (מינץ and שטיין dissenting). אבו שחאדה resigns from the list formally. No axis moved, no tag added, `seed.sql` unchanged.** Revision 130's decision to keep both Arab rows is confirmed and its trigger closed. Revision 115's base rate stands, with this panel's stated majority on אבו שחאדה and the two dissents on כסיף beside it. ליברמן demands that בל"ד be outlawed: a named measure, new to the page, and an eligibility instrument that scores nothing on revision 115's rule. בן גביר and רוטמן repeat revision 219. |
+| 2026-10-02 | revision 228 — **cross-row: nine posts of 02.10 (fxtwitter; captions of two videos read from frames, no audio; three photos viewed; the מקור ראשון column נתניהו quotes read in part, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** השכל (ישראל תחילה #1) says *"חייבים ממשלה בלי חרדים"* in a clip, past the platform's hostage line; `excludes-haredi-and-arab-parties` is still not added and it is filed on the coalition-exclusion sweep. Five women of four change-bloc lists meet on revision 183's agenda plus women's status, which does not give ישראל ביתנו `gender-equality`. בליאק will ask סולברג whether the government is blocking voters' flights from the Emirates. שירי attacks a holiday gathering at the Nova site. בן גביר repeats his credit for אבו שחאדה. נתניהו's *"עבאס הוא השותף של איזנקוט"* quotes a column of translated עבאס statements, not checked; its two campaign quotations of עבאס and סגלוביץ' on Hamas are a lead for רע"ם. וילף comments on France. |
