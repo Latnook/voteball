@@ -26,7 +26,9 @@ note() { printf '  %s\n' "$*"; }
 # nothing -- which is the very defect this test exists to catch, and it bit while writing it.
 # --exclude this file: it contains the pattern itself, and would otherwise "find" its own regex
 # text as an address and report it missing.
-mapfile -t hits < <(grep -rhoE --exclude="$(basename "$0")" -- '-target=[][A-Za-z0-9_."-]+' scripts/ \
+# --exclude '*.md': scripts/CLAUDE.md describes the wrappers in prose ("-target=..."), which is not
+# an address anything runs.
+mapfile -t hits < <(grep -rhoE --exclude="$(basename "$0")" --exclude='*.md' -- '-target=[][A-Za-z0-9_."-]+' scripts/ \
   | sed 's/^-target=//' | sort -u)
 
 if [ "${#hits[@]}" -eq 0 ]; then
