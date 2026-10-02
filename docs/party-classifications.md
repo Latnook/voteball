@@ -9496,6 +9496,52 @@ from the quotations below. No audio was listened to.)
   ברורים"*. It is the argument behind `judicial-overhaul`, held, put more mildly than the row's programme, and
   it names no measure.
 
+**2026-10-02 — revision 223. הנדל on ערוץ 7: a 17-minute interview and the 76-second clip cut for X. No axis moved,
+no tag added, `seed.sql` unchanged.** ([post](https://x.com/arutz7heb/status/2105691688245104900), 01.10.26, read through fxtwitter; the clip's burned-in captions read
+from frames, with no audio. The interview it is cut from: [ערוץ 7's write-up](https://www.inn.co.il/news/707482), עוזי ברוך, 01.10.26 13:10, `curl`, and the
+[video](https://www.youtube.com/watch?v=g3CCbasqi_Q), 17 minutes, read from YouTube's automatic Hebrew captions with `yt-dlp`. Quotes below are the write-up's
+unless marked *captions*; those are machine transcription and were not heard.)
+
+- **The clip is a rapid-fire round that is not in the 17-minute video, and its prompts are not captioned.** Only
+  הנדל's answers carry text, so who each answer is about is known only where he says the name. On the hilltop
+  youth: *"את נערי הגבעות שעושים נזק לכולנו, בעיקר להתיישבות, צריך לטפל בהם"*. That names a goal and no measure,
+  so it is not `anti-settler-violence` (revision 186's test, as applied to גנץ in revision 196). On an Arab
+  leader, unnamed in the captions: he *"היה יכול להיות פוטנציאל גדול למדינת ישראל"*, but *"אי אפשר לשבת איתו"* and
+  he *"לא יכול להיות שותף לגיטימי"*, with *"כארגון טרור"* in between. The context points to עבאס and the page does not
+  assert it. It fits `excludes-haredi-and-arab-parties`, held. On איזנקוט: *"איש טוב"*, and *"העמדות המדיניות שלו
+  שונות משלי"*. The captions skip words, so none of this is a full sentence.
+- **`bloc` stays `unaligned`, in his own words.** *"אני ימני, חד-משמעית, וגם המפלגה שלנו היא מפלגה ימנית"*, and
+  *"ימין זה לא לתמוך בבן אדם אחד"*. He will not complete a 61-seat government of נתניהו and the haredi parties, and
+  will not sit in *"גוש כזה של איזנקוט והמפלגות הערביות"*. A self-label is not an axis value, and the row's numbers
+  rest on its platform (revision 20). His claim that וינטר sits inside נתניהו's bloc is a rival's, and עמך ישראל
+  is already `bibi`.
+- **A coalition test by principle, wider than the tag the row holds.** The conditions are *"גיוס לכולם"*,
+  governance, settlement in Judea and Samaria, no Palestinian state, and (with זליכה) the cost of living. On גולן:
+  *"הוא לא בעד ההתיישבות ביו"ש, הוא בעד מדינה פלסטינית, אני נגד"*, so he does not see him in such a coalition. In
+  the captions he says the same of any Zionist-left party from איזנקוט's bloc that takes those positions, and of
+  בן גביר if he goes on shielding the haredi parties. The haredi parties *"צריכים לשבת בצד לכמה שנים"*. He names no
+  prime minister: *"ראש ממשלה שהביא הכי הרבה מנדטים ציוניים"*. Filed on the coalition-exclusion sweep beside ישר's
+  principle test (revision 143). It is not a declared boycott of הדמוקרטים, and nothing is minted.
+- **Conscription, all on held tags.** *"מוסד שמעודד השתמטות ומחנך את תלמידיו להשתמטות לא צריך לקבל שקל מהמדינה"*
+  is `sanctions-on-non-servers`. No government post for someone who chose not to serve is
+  `service-conditioned-citizenship`. Pressed twice to agree a number of full-time Torah students, he declines:
+  *"יהיה לך איזה מספר של עילויים… נדבר על זה אחרי. בוא קודם כל נממש את החוק"* (*captions*). That fits
+  `scholar-exemption-retained` as revision 98 left it: a track for עילויים exists and its size is not stated. He
+  adds yeshivas in the Jordan Valley and on the Egyptian border that combine study with service.
+- **Security +2 held, on the platform's own line.** Israel should sit on the high ridges in Gaza, Lebanon and
+  Judea and Samaria and strengthen the eastern border (*captions*), which is the text revision 20 quoted. He
+  claims territory and settlement and still makes no sovereignty claim, so `sovereignty-annexation` is not earned.
+  *"צריך חיילים… boots on the ground"* ties it to conscription. נתניהו is responsible for 7 October and should
+  have gone home, with credit for the Lebanon operation since, which is `anti-netanyahu`, held.
+- **Settlement: one new detail.** *"אני בעד ההתיישבות ביהודה ושומרון, אני גם בעד פרויקט החוות"* is `pro-settlement`,
+  held, and the farms project is new to this row. He also wants farms in the Negev that *"יתפסו שטח"*, citing
+  illegal Bedouin building around נבטים (*captions*), new communities in the Jordan Valley settled first by
+  reservists, and population moved from the centre to the Negev, the Galilee and the valley as *"פרויקט לאומי
+  ענק"*. The Negev half is the chairman voicing the plan revision 98 recorded, and it stays on the two sweep
+  items that plan sits on: land enforcement, and Jewish settlement in the Negev and Galilee.
+- **The rest is campaign or rival.** That the list passes the threshold in *"99% מהסקרים"*, his attacks on
+  סמוטריץ' (*"לא גייסו אחד"*) and on בן גביר's record on governance, and his warm words for טרופר score nothing.
+
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
 *(Renamed from `נעם` on 2026-09-16, revision 95; `seed_key` is still `noam`. Entries below written
@@ -11155,8 +11201,10 @@ read from the page's embedded data. One linked image viewed.)
   לכתוב פסק דין פשוט… אלא מתחנן בפניו שיפרוש"*, the same attack as רוטמן's in revision 219, on `judicial-overhaul`,
   held. בן גביר: *"הבטחנו - קיימנו!"*, with regret that no judgment was given, which is revisions 198 and 219.
   איזנקוט posted a video of אבו שחאדה speaking of talks between בל"ד and הליכוד, with condolences to הליכוד
-  on losing *"שותף אמיתי בברית מחל-בל״ד"*. That is a rival's jibe about another row. The video was not viewed,
-  and nothing on this page records such talks. ישר's own support for the disqualification is revision 102.
+  on losing *"שותף אמיתי בברית מחל-בל״ד"*. That is a rival's jibe about another row. The video was not viewed.
+  The page has one earlier sighting of the subject: a leaked 2021 recording in which אלמוג כהן says הליכוד
+  talked to the Joint List (revision 142), not recorded as a position. *(Corrected in revision 223: this
+  entry first said the page recorded no such talks.)* ישר's own support for the disqualification is revision 102.
 - **הארץ's lower half is carried over from its earlier reports, and one paragraph is out of date.** It still
   says the hearing *"יתקיים ביום חמישי הקרוב"*. The committee's 31–4 vote is revision 130, and ג'בארין's
   attack on גולן is revision 172. Two quotes are new to this page. The יועמ"שית and the State Attorney
@@ -13353,3 +13401,4 @@ pass happened, for anyone reading git history.
 | 2026-10-01 | revision 220 — **עמך ישראל: `hasbara-focused` ADDED (12 → 13 tags; the tag goes 1 → 2 holders). No axis moved. Corrects revisions 215 and 218.** Both said no hasbara tag exists. One did, on ישראל תחילה since 2026-09-14, in `seed.sql` and never named on this page; they searched the page and not the file. The evidence is חדאד's hasbara ministry *"עם תקציב עתק"* at the party's press conference (revision 41) and his single national authority (revision 215). ביחד refused: one clause and one pledge that name different homes. Verified on an already-seeded database (12 → 13); 271 backend tests pass. |
 | 2026-10-01 | revision 221 — **cross-row: הארץ's weekly election column (body supplied by the repo owner; two images viewed) and the בן גביר video it mocks (fxtwitter; subtitles read from frames). Nothing scored.** The video is the minister's own gun-licensing figures (300,000 licences, 200+ localities, *"היועצת ניסתה לעצור את זה"*), which is `gun-rights`, held, on numbers revisions 30 and 73 carry. The column's line on איזנקוט backing אבו שחאדה's disqualification is ישר's party statement of 22.09, already in revision 102 (first misfiled here as an unsourced sighting). New to the page: סמוטריץ's *"הרמת ראש"* line about Arab citizens (quoted, podcast not heard) and the approved ballot letters (ישר דרך, ביחד רק, המילואימניקים והכלכלית די). סוכות on Gaza is candidate tier on a held tag. The שב"כ and police items are state bodies' acts. The rest is already recorded, and the column's thesis is the writer's. |
 | 2026-10-02 | revision 222 — **cross-row: אבו שחאדה withdraws his candidacy and stays בל"ד's chair (הארץ, body supplied by the repo owner; ynet, `curl`; כאן, headless Chromium; N12 live blog; one image viewed). No axis moved, no tag added, `seed.sql` unchanged.** No judgment was given, so revision 115's base rate is formally intact and needs this case beside it. The filed list still shows him at #3; if the names below close up, בל"ד's realistic slots become #4, #7 and #10 and the ten stays 5 / 3 / 2. The row is unchanged on revision 130's rule, and revision 129's trigger is closed. The court has not ruled on כסיף, the list or רע"ם, so both Arab rows stay voteable. כאן's compensation promise and turnout campaign are list management. בומבך's argument for הליכוד is a party arguing its own petition. סמוטריץ', בן גביר and איזנקוט react on held tags or as rivals (posts not read). הארץ's lower half repeats revisions 130 and 172 and adds the יועמ"שית's words. |
+| 2026-10-02 | revision 223 — **המילואימניקים והכלכלית: הנדל on ערוץ 7, a 17-minute interview (write-up, `curl`; YouTube automatic captions, `yt-dlp`) and the 76-second clip cut for X (captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged. Corrects revision 222.** He calls himself and the list right-wing and refuses both a נתניהו–haredi government and one resting on Arab parties, so `unaligned` stands. His coalition test is by principle (conscription for all, governance, settlement, no Palestinian state, cost of living) and by his account leaves out גולן; filed on the coalition-exclusion sweep, not minted. The conscription lines sit on held tags, and he defers the number of עילויים. Security +2 holds: ridges and settlement, no sovereignty claim. New detail: support for the farms project, and Negev farms. *"נערי הגבעות… צריך לטפל בהם"* names no measure, so no `anti-settler-violence`. Revision 222 said the page recorded no Likud–Joint List talks; revision 142 has a leaked 2021 recording. |
