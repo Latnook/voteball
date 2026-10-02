@@ -1355,6 +1355,40 @@ used. None of its reported claims was checked against another source.
   agenda, and that the haredi parties are his partners after the election too. הליכוד's `bibi` and its haredi
   alliance are already what the row records.
 
+**2026-10-02 — revision 226 (cross-row). הראל's Friday analysis in הארץ on the flight and the warnings. Nothing
+scored.** ([הארץ](https://www.haaretz.co.il/news/politics/2026-10-02/ty-article/.highlight/000001a0-f8d4-de31-a7f0-f8df6e5a0000), עמוס הראל, 02.10.26 06:00, body supplied by the repo owner; the page's own title, author and
+time read with `curl`.) A military analyst's column. Its verdicts are the writer's, and only what it quotes or
+reports is used. None of its reported claims was checked against another source.
+
+- **Almost all of it is already here.** The flight and the warning dispute are revisions 197, 208, 215, 216
+  and 221. The warnings from בן זאיד and כאמל before 7 October are revisions 172 and 192. The statement
+  against בר, and the request that בן זאיד deny the report, are revisions 184 and 224. The complaints against
+  חדשות 12 are revisions 200 and 221.
+- **One quotation of נתניהו is new, and it does not change the inquiry sweep.** CNN's שואיטו asked what he
+  would have done differently before 7 October. His answer, in the column's Hebrew: *"מה אתה עושה כשיש לך 11
+  בספטמבר? מה אתה עושה כשיש פרל הרבור? איך יכול להיות שלא ראינו את זה? אנחנו שואלים את השאלה ונרד לעומק העניין.
+  זו מטרתנו ויש עדיין עבודה לעשות"*. That promises an examination and names no form for it. This row's line
+  in the `state-commission-of-inquiry` sweep (Open questions) stays "opposed", on the government's record
+  (revision 101). The writer's gloss, that he has fought for three years to block an independent inquiry, is
+  the writer's.
+- **Reported and new to this page, none of it a position.**
+  - בר *"הודיע… שיגיש תביעת דיבה"*, where revision 224 had a threat. He demands that the testimony and
+    documents on the warnings be published, and says נתניהו *"מנע בכל דרך מינוי ועדת חקירה ממלכתית"*. He is a
+    former official, not a party.
+  - On the night of 6–7 October: חליוה did not wake, and בר and הלוי spoke only just after 06:29. That
+    matches כאן in revision 184.
+  - The police investigation of חדשות 12 was opened *"לדרישת נתניהו"*. The page had the complaints as state
+    bodies' acts. The attribution to him is the writer's and carries no source.
+  - Israel's intelligence bodies find no proof of an Iranian hand in the flight, the writer says, without
+    naming a source. פייגלין's call to strike Iran (revision 216) was conditional on exactly that.
+  - דחלאן is named as a third source of the pre-war warnings in the American reports. Who warned whom is not
+    a position (revisions 100 and 141).
+  - The Saudis treated the passengers well and refused Israel's offer of military transport planes. No party
+    is in it.
+- **Not used:** that נתניהו keeps the fronts tense so an escalation can serve him, and that Arab leaders are
+  leaking the warnings because they do not want his coalition back. Both are the writer's reading, unsourced.
+  The ערוץ 14 line, that the West will not survive if he loses, is a broadcaster's and not a party's.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -13496,3 +13530,4 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 223 — **המילואימניקים והכלכלית: הנדל on ערוץ 7, a 17-minute interview (write-up, `curl`; YouTube automatic captions, `yt-dlp`) and the 76-second clip cut for X (captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged. Corrects revision 222.** He calls himself and the list right-wing and refuses both a נתניהו–haredi government and one resting on Arab parties, so `unaligned` stands. His coalition test is by principle (conscription for all, governance, settlement, no Palestinian state, cost of living) and by his account leaves out גולן; filed on the coalition-exclusion sweep, not minted. The conscription lines sit on held tags, and he defers the number of עילויים. Security +2 holds: ridges and settlement, no sovereignty claim. New detail: support for the farms project, and Negev farms. *"נערי הגבעות… צריך לטפל בהם"* names no measure, so no `anti-settler-violence`. Revision 222 said the page recorded no Likud–Joint List talks; revision 142 has a leaked 2021 recording. |
 | 2026-10-02 | revision 224 — **cross-row: ורטר's Friday column in הארץ on נתניהו's week (body supplied by the repo owner). Nothing scored.** Almost every party act in it is already recorded (revisions 172, 181, 184, 195, 197, 208, 211, 221). New and not positions: בר's threatened libel suit, נתניהו's *"לערער את הסכמי אברהם"* line, the AP, רביד and חורי reports on his requests to בן זאיד, and four ministers praising the UN speech. The Durban count, the pending Qatar opinions and the army no longer arresting haredi deserters are state bodies' acts; the last was not verified. The thesis is the writer's. |
 | 2026-10-02 | revision 225 — **cross-row: four posts of 02.10 (fxtwitter; three images viewed) and a ynet link that is revision 211's own source. Nothing scored, `seed.sql` unchanged.** מלינובסקי (ישראל ביתנו #5) writes ליברמן's list of revision 218 at column length, on held tags; her own laws are past credentials, and her date for ש"ס's Oslo abstention is a year late (23.09.1993). איזנקוט asks for a full debrief of the flight and ties it to the state commission, both already this row's. בנט's 7 October account is biography with one position, the state commission. אלמוג כהן (הליכוד #13) answers a private user with a rival's charge; the צנגאוקר reserved-slot episode he cites (מעריב, 10.08.26) is real, new to this page, and list management on הדמוקרטים. |
+| 2026-10-02 | revision 226 — **cross-row: הראל's Friday analysis in הארץ on the flight and the warnings (body supplied by the repo owner). Nothing scored.** Almost all of it is already recorded (revisions 172, 184, 192, 197, 200, 208, 215, 216, 221, 224). One new quotation of נתניהו, to CNN, promises to *"נרד לעומק העניין"* on 7 October and names no form, so הליכוד stays "opposed" in the inquiry sweep. New and not positions: בר announces a libel suit and demands the documents be published, the police investigation of חדשות 12 is attributed to נתניהו's demand, no proof of an Iranian hand in the flight, דחלאן as a third warner, and the Saudis refusing Israeli military planes. The thesis is the writer's. |
