@@ -5901,6 +5901,32 @@ fifth link, [ynet](https://www.ynet.co.il/news/elections2026/article/r1gmpr59zl)
     anonymous, revision 44's tier).
   - That is list management on הדמוקרטים, not a position. *"השתמשו בה"* and the racism charge are כהן's.
 
+**2026-10-03 — revision 230 (cross-row). ליברמן at ניר עוז at 06:29 on the anniversary, and חדאד with three
+camps' supporters. No axis moved, no tag added, `seed.sql` unchanged.** (Read through fxtwitter. The
+captions burned into the two clips were read from extracted frames at 2–3 frames a second, with no audio. A
+fourth link supplied, [בנט's post](https://x.com/naftalibennett/status/2105591306227421234) asking supporters to persuade coalition voters, is revision 218's.)
+
+- **This row: ליברמן's anniversary statement** ([video](https://x.com/AvigdorLiberman/status/2106228473891045852), 03.10.26 03:42 UTC, *"השעה 6:29, שבת שמחת
+  תורה. אני נמצא כעת בניר עוז"*; [post](https://x.com/AvigdorLiberman/status/2106256101633081441), 05:32 UTC, with a photo of him with five others in a field,
+  not identified). The clip's captions say what the written post says: *"היינו כאן בניר עוז בדיוק תשעה ימים
+  לפני האסון. כאן הזהרתי… שראש ממשלת ישראל, נתניהו, מנהל מדיניות של כניעה לטרור"*; *"גם היום, מדיניות הממשלה
+  שמאפשרת את שיקום עזה לפני פירוק חמאס מנשקו היא חזרה לשישה באוקטובר"*; *"מי שלא מנע את האסון, מונע היום ועדת
+  חקירה ממלכתית"*; *"אנחנו נחסל את חמאס ונחזיר את הביטחון"*.
+  - **Every line sits on what the row holds.** Destroying Hamas is `hardline-on-gaza`. No reconstruction
+    before disarmament is the near-universal Zionist-party doctrine ישר's entry describes, and adds nothing
+    to a row that already holds the harder tag. The commission is this row's line in the sweep (*"כהחלטה
+    ראשונה בממשלה הבאה"*).
+  - His warning at ניר עוז nine days before is his own account, like the personal warning of revision 218,
+    and was not checked.
+- **עמך ישראל: חדאד (#2) among young supporters of three lists** ([post](https://x.com/YosephHaddad/status/2106252829098676629), 03.10.26 05:19 UTC, a 51-second
+  clip; the text, in English, is *"when it comes to Israel's security, we are all united against them!"*).
+  He wears a *"FCK HMS"* shirt, several of the youths wear *"RAK BNGVIR"* shirts. The captions: *"שלמרות שיש
+  לנו אידיאולוגיות שונות, בדבר אחד אנחנו מאוחדים: הביטחון של העם הישראלי… וזה לא משנה אם זה ערבי או יהודי, כי
+  ב-7 באוקטובר חמאס רצח ערבים ויהודים… ויהודים וערבים נלחמו בחמאס"*, then a chant *"עם 'ביחד', עם 'בן גביר',
+  עם 'עמך ישראל'"* and *"עם ישראל חי"*. Campaign footage with no measure. Its Arab-and-Jewish line is the
+  row's recorded Arab-society campaign (revision 229), said this time to a Jewish crowd. Where it was filmed
+  is not stated.
+
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
 **Merged with זהות into one ballot line, 2026-09-01.** Smotrich and משה פייגלין signed an agreement
@@ -13681,3 +13707,4 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 227 — **cross-row: the Supreme Court reverses the committee (כאן, headless Chromium; ישראל היום, `curl`; ליברמן's post, fxtwitter; the judgment not read). רע"ם and the Joint List may run, unanimously, and כסיף seven to two (מינץ and שטיין dissenting). אבו שחאדה resigns from the list formally. No axis moved, no tag added, `seed.sql` unchanged.** Revision 130's decision to keep both Arab rows is confirmed and its trigger closed. Revision 115's base rate stands, with this panel's stated majority on אבו שחאדה and the two dissents on כסיף beside it. ליברמן demands that בל"ד be outlawed: a named measure, new to the page, and an eligibility instrument that scores nothing on revision 115's rule. בן גביר and רוטמן repeat revision 219. |
 | 2026-10-02 | revision 228 — **cross-row: nine posts of 02.10 (fxtwitter; captions of two videos read from frames, no audio; three photos viewed; the מקור ראשון column נתניהו quotes read in part, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** השכל (ישראל תחילה #1) says *"חייבים ממשלה בלי חרדים"* in a clip, past the platform's hostage line; `excludes-haredi-and-arab-parties` is still not added and it is filed on the coalition-exclusion sweep. Five women of four change-bloc lists meet on revision 183's agenda plus women's status, which does not give ישראל ביתנו `gender-equality`. בליאק will ask סולברג whether the government is blocking voters' flights from the Emirates. שירי attacks a holiday gathering at the Nova site. בן גביר repeats his credit for אבו שחאדה. נתניהו's *"עבאס הוא השותף של איזנקוט"* quotes a column of translated עבאס statements, not checked; its two campaign quotations of עבאס and סגלוביץ' on Hamas are a lead for רע"ם. וילף comments on France. |
 | 2026-10-02 | revision 229 — **cross-row: two posts with clips (fxtwitter; captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) films protesters being removed from the party's Arab-society conference in יפיע: *"ערבים ישראלים גאים, ופלסטינים כמוך להעיף הביתה"* and *"ניקוי אורוות בחברה הערבית"*. It is the row's recorded Arab-society campaign at an event, with no measure, and `jewish-arab-partnership` stays refused. טרנר אייל (ביחד) says רגב left foreign airlines' security with a ministry division and not the Civil Aviation Authority, against the מל"ל, the שב"כ and the State Comptroller; a complaint about a minister with a measure implied and not promised. Her account was not checked. |
+| 2026-10-03 | revision 230 — **cross-row: three posts (fxtwitter; captions of two clips read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן at ניר עוז at 06:29 on the anniversary: no Gaza reconstruction before Hamas disarms, a state commission, *"נחסל את חמאס"*, all on held tags and his sweep line; his warning there nine days before 7 October is his own account. חדאד (עמך ישראל #2) with youths from three camps, chanting *"עם 'ביחד', עם 'בן גביר', עם 'עמך ישראל'"*: campaign footage. A fourth link, בנט's, is revision 218's. |
