@@ -1388,6 +1388,15 @@ reports is used. None of its reported claims was checked against another source.
 - **Not used:** that נתניהו keeps the fronts tense so an escalation can serve him, and that Arab leaders are
   leaking the warnings because they do not want his coalition back. Both are the writer's reading, unsourced.
   The ערוץ 14 line, that the West will not survive if he loses, is a broadcaster's and not a party's.
+- *(2026-10-03, [הארץ](https://www.haaretz.co.il/news/politics/2026-10-02/ty-article/000001a0-fc48-d2b3-a1b8-fc4b29930000)'s news report of 02.10, body supplied by the repo owner. נתניהו: the pilot *"עבר
+  הקצנה אסלאמיסטית"* and *"בא לרסק את המטוס על נוסעיו"*, and *"מי ששלח אותו ישלם מחיר כבד מאוד"*. On Fox he said
+  the coming days would show whether the pilot had an Iranian link, and that he had found a *"פרצה"* in
+  Israeli security policy. Trump, asked about Iran: *"אני מעריך שכן… אך אנחנו בודקים זאת כעת"*. A head of
+  government on an incident and a threat with no measure, so not a position (revision 208's line). Two
+  things are recorded. The *"פרצה"* is his first admission of a gap, which the opposition's flight
+  complaints assert (revisions 218, 229 and 232). On Iran, this revision's writer has Israel's intelligence
+  bodies finding no proof, against Trump's estimate. Neither was checked. The rest of the report, on the
+  pilot's background and the captain's account, names no party; its WSJ line is in revision 232.)*
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
