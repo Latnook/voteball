@@ -6050,6 +6050,52 @@ letter. Nothing scored.** (Read through fxtwitter. A third link supplied, זר �
   leaders to unite and give way to each other. The letter is a private citizen's. His only words are that
   the leaders signed *"מסמך עקרונות להמשך פעילות"*, which is revision 146's document.
 
+**2026-10-03 — revision 235 (cross-row). Seven posts of 03.10: גולן at בארי, בנט in an אשקלון café, a זהות
+clip posted by פייגלין, and four more. No axis moved, no tag added, `seed.sql` unchanged.** (Read through
+fxtwitter. The two clips, בנט's 5:50 and פייגלין's 1:37, were transcribed by machine with ivrit.ai's Hebrew
+Whisper model and checked against their burned-in captions in frames; a machine transcript can mishear a
+word.)
+
+- **This row: ליברמן** ([post](https://x.com/AvigdorLiberman/status/2106427041541238909), 16:51 UTC): *"אני שב ואומר: לא תקום שום קואליציה עם המפלגות הערביות"*, and
+  that גולן, having lost Arab support by voting to disqualify אבו שחאדה, *"מפיץ דברים שאינם נכונים"*.
+  `excludes-haredi-and-arab-parties` corroborated, held. What גולן said that he answers was not found; the
+  Be'eri speech below does not mention the Arab parties.
+- **הדמוקרטים: גולן's memorial speech at בארי** ([post](https://x.com/YairGolan1/status/2106433521434730528) and [its continuation](https://x.com/YairGolan1/status/2106433612224569614), 17:17 UTC, the party's
+  own ceremony). One named measure: *"אנחנו נקבע את העוטף וגבול הצפון כאזורי פיתוח לאומיים עשור קדימה"*,
+  with jobs, schools, services and transport, and *"התשובה שלנו היא בנייה ולא נקמה"*. A regional
+  development plank, which `periphery-development` would have named; that tag was retired in revision 19 and
+  stays retired. The state commission is the row's line in the sweep. His claim that Qatari money again
+  reaches Hamas's military wings is his and was not checked.
+- **ביחד: בנט's answer to "you are not right-wing"** ([post](https://x.com/naftalibennett/status/2106424450753196078), 16:41 UTC; a 5:50 clip in an אשקלון café under the
+  list's *רק* ballot letters).
+  - **Coalition: a principle test, not a list of names.** *"אני אומר לך עם מי אני כן יושב. רק עם מי שציוני ובעד
+    גיוס לכל"*. He would sit with *"ערבי כמו יוסף חדאד… כי הוא שירת בצבא"*, and with דרעי *"אם הוא יגיד, אני בעד
+    לגייס את כולם"*. That is ישר's shape (revision 143), and it goes on the coalition-exclusion sweep beside it.
+  - **Conscription, with numbers.** Prison does not work and talks with גפני and דרעי do not either, so
+    *"אתה לא משרת, אתה לא עובד, לא תקבל שקל מהמדינה"*: no daycare subsidy (*"2 מיליארד"*), no מחיר למשתכן
+    (*"13 מיליארד"*), no yeshiva-student allowances; preference for those who serve, the most for active
+    reservists, and *"1,500 שקלים הנחה במעונות"* for every working couple who served. That is
+    `sanctions-on-non-servers`, `service-conditioned-citizenship` and `reservist-focused`, all held, now with
+    a figure. A proposal he calls his alone: yeshivas on the Sinai border, *"שמונה שעות לומדים תורה, שמונה
+    שעות שומרים"*. Recorded as a plank; no tag covers it.
+  - **Not scored:** the Wye 13%, the Gush Katif votes and סינוואר's release, as charges against נתניהו's record,
+    and murder figures of 148 in his time against about 300 since (his figures, not checked).
+- **הציונות הדתית: a זהות campaign clip posted by פייגלין (#2)** ([post](https://x.com/moshefeiglin/status/2106419560786145718), 16:22 UTC, under the faction's *"הגיע הזמן
+  לנצח"* banner). The speaker is captioned איריס ברנשטיין, *"מועמדת זהות לכנסת"*; her list slot was not
+  found. *"כיבוש, גירוש והתיישבות, רק זה מעדיף את החיים של הילדים שלנו… תושבי עזה הקיאו את עצמם מעל האדמה
+  הקדושה הזאת. רק כיבוש וגירוש והתיישבות יביאו ביטחון"*. She says *גירוש*, expulsion, not voluntary
+  emigration. That is `population-transfer` and `territorial-control-gaza`, both held, now in the faction's own
+  campaign material. פייגלין's text, *"אין לנו ילדים לסבבים נוספים"*, names no measure itself.
+- **עמך ישראל: חדאד (#2)** ([post](https://x.com/YosephHaddad/status/2106404577570361512), 15:22 UTC, in English, answering a Gaza journalist who asks to get
+  out): *"When I am in government we will ensure anyone who wants to leave Gaza will have the ability to do so
+  safely."* Exit for whoever chooses it, with no mechanism or incentive. `voluntary-palestinian-emigration-incentives`
+  stays off, on the refusal this entry gave וינטר's *"הגירה"*.
+- **המילואימניקים והכלכלית: וילף (#3)** ([post](https://x.com/EinatWilf/status/2106422640437067909), 16:34 UTC, in English, on a Foreign Affairs poll of
+  Palestinian support for two states): in two states *"one of the two states is the Jewish state"*, and a
+  Gazan has no *"fictional right to settle in the State of Israel in the name of 'return'"*. A candidate's
+  commentary that rejects the right of return; it neither accepts nor rejects two states for the list.
+  Nothing scored.
+
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -13870,4 +13916,5 @@ pass happened, for anyone reading git history.
 | 2026-10-03 | revision 231 — **נעם לישראל: חיימוב (#5) filmed with the activist מרדכי דוד, who says they are waiting to "block" טיבי (ynet, `curl`; the 35-second clip, supplied by the repo owner, transcribed by machine with a Hebrew Whisper model). Nothing scored.** The plan is the activist's words, and hers name the party and no measure. Candidate tier. Her tie to the ש"ב head is revision 68's and stays refused as a position. The transcript matches ynet's quotations, except that it has the activist calling זיני, not her, *"הגיבור"*; recorded, not relied on. |
 | 2026-10-03 | revision 233 — **cross-row: a research pass on the open leads (108 agents, three-reviewer checks), every source re-read here except two blocked N12 pages. No axis moved, no tag added, `seed.sql` unchanged.** ישר: איזנקוט's full ישראל היום interview. The *"אגודת ישראל"* headline is the editors'. *"בטווח הרחוק אני כן רואה ישות"* is recorded as a qualifier on `no-palestinian-state`, which stays on his 22.08 *"בממשלה שנקים לא תקום מדינה פלסטינית"*; trigger written. A third settler-violence measure (abolish the defence-ministry minister over the Civil Administration). רע"ם: N12's dated report of the 22.08 convention (recognise the State of Palestine, end the occupation) fits −2 and `pro-two-state`; revision 228's Hamas quotations are corrected to N12's of 05.09. יהדות התורה: גולדקנופף's named statement meets revision 180's trigger and leaves `bibi`. הדמוקרטים: גולן's own 12.08 post meets revision 215's trigger in part (stop demolition "show operations", approve plans). Not found: the change bloc's joint plan, תב"כ 117/26, ישראל תחילה's economics and its Druze candidate. |
 | 2026-10-03 | revision 234 — **cross-row: two posts (fxtwitter). Nothing scored.** מלינובסקי (ישראל ביתנו #5) answers a journalist's mockery of ליברמן's ניר עוז clips with revision 225's lines. לפיד (ביחד #2) publishes a bereaved ניר עוז mother's letter asking the change bloc to unite; his own words point only to revision 146's document. A third link, זר קצנשטיין's, is revision 232's. |
+| 2026-10-03 | revision 235 — **cross-row: seven posts (fxtwitter; two clips transcribed by machine and checked against their captions). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן: no coalition with the Arab parties, `excludes-haredi-and-arab-parties` corroborated. גולן at בארי: the Gaza border and the north as national development zones for a decade; `periphery-development` stays retired. בנט: sits only with whoever is *"ציוני ובעד גיוס לכל"* (ישר's principle shape, filed on the sweep), and no state money for those who neither serve nor work, with figures, on held tags. A זהות candidate in פייגלין's clip: *"כיבוש, גירוש והתיישבות"*, on held `population-transfer`. חדאד: safe exit from Gaza for whoever wants it, still no mechanism. וילף rejects the right of return. |
 | 2026-10-03 | revision 232 — **cross-row: three posts (fxtwitter; ליברמן's clip transcribed by machine; the N12 report one of them links read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן repeats revision 230 on the spot and adds Rafah's reconstruction before disarmament as *"כניעה לטרור"*, on `hardline-on-gaza`, held. רונן (הדמוקרטים #7) promises a second state commission, for the flight. זר קצנשטיין (#12) attacks זיני, רגב, כץ and נתניהו; the N12 report she links adds the שב"כ's July ban on Israeli airlines landing in Dubai, and says the מוסד, not the transport minister, thwarts threats to foreign airlines, which differs from טרנר אייל's account (revision 229). Neither checked. |
