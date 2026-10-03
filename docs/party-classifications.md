@@ -4881,6 +4881,30 @@ position**, and that the subject did not come up at the leaders' meeting.
   בפה מלא, אבל נמצא את הנוסחה"*, comes from a clip that was not watched, and N12's account does not carry it. His
   reading, that גולן *"לא מאמין לליברמן ולבנט"*, is his. Nothing in it scores on הליכוד.
 
+**2026-10-03 — revision 236 (cross-row). גולן on N12's *פגוש את העיתונות*: he will work for a government with
+רע"ם, and his partners' refusals are election talk. קריב backs it for the party. No axis moved, no tag added,
+`seed.sql` unchanged.** (נתניהו's [post](https://x.com/netanyahu/status/2106449672139121098), 18:21 UTC, a 28-second cut of the interview: its machine transcript
+misheard *"עם רע"ם"* as *"עם העם"*, so the quotation below is read from the burned-in captions in frames.
+קריב's [post](https://x.com/KarivGilad/status/2106454556645138689), 18:41 UTC, with a screenshot of N12's own headline. N12's report itself was not read.)
+
+- **What גולן said, in הליכוד's cut:** *"כן, עם רע"ם… התפקיד של גדי, של נפתלי, של ליברמן זה ללכת להביא קולות
+  מימין. מה שעושים לפני הבחירות, אני מבין, כל אחד צריך להביא את הבוחרים שלו. אני יודע דבר אחד, שיום אחרי
+  שהבחירות האלה יסתיימו, האם אנחנו מקימים ממשלת תיקון עם רע"ם? כן, עם רע"ם"*. N12's headline in קריב's
+  screenshot: *"אפעל אצל שותפיי להקים ממשלה עם רע"ם, יש דברים שאומרים לפני בחירות, אבל מבחינתי הבחירה קלה"*. A
+  rival's cut and the broadcaster's headline say the same thing, so the edit is not doing the work.
+- **The party owns it.** קריב (#3): *"שותפות פוליטית יהודית-ערבית היא צו השעה… מפלגת הדמוקרטים מעולם לא הסתירה את
+  העמדה שלה בנושא הזה, ולא תסתיר אותה עכשיו"*. This is revision 206's position, now with רע"ם named as a
+  partner in the next government and a promise to press the other three lists for it. The inclusive pole of
+  the coalition-exclusion sweep is now as explicit as it can be. `jewish-arab-partnership` corroborated, held.
+  No inclusion tag is minted (revision 206's reasoning).
+- **What it says about the other rows is גולן's claim, not their position.** He calls their refusals campaign
+  talk. Their own words are on their rows, and they stand: ליברמן repeated *"לא תקום שום קואליציה עם המפלגות
+  הערביות"* the same evening (revision 235, which can now name what he was answering), and ישר's principle test
+  excludes רע"ם until it calls Hamas a terror organisation (revisions 206 and 233).
+- **הליכוד: נתניהו's text is revision 203's slogan** (*"זה או ימין - או פלסטין"*), with *"ממשלת שמאל-ערבים"* as a
+  rival's label. Nothing scored. **רונן (הדמוקרטים #7)** answers it ([post](https://x.com/omrironen24/status/2106453652533813298), 18:37 UTC) with an attack on
+  נתניהו's record. Nothing scored.
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -6059,7 +6083,8 @@ word.)
 - **This row: ליברמן** ([post](https://x.com/AvigdorLiberman/status/2106427041541238909), 16:51 UTC): *"אני שב ואומר: לא תקום שום קואליציה עם המפלגות הערביות"*, and
   that גולן, having lost Arab support by voting to disqualify אבו שחאדה, *"מפיץ דברים שאינם נכונים"*.
   `excludes-haredi-and-arab-parties` corroborated, held. What גולן said that he answers was not found; the
-  Be'eri speech below does not mention the Arab parties.
+  Be'eri speech below does not mention the Arab parties. *(Found in revision 236: גולן on N12 the same evening,
+  saying he will work for a government with רע"ם and that his partners' refusals are election talk.)*
 - **הדמוקרטים: גולן's memorial speech at בארי** ([post](https://x.com/YairGolan1/status/2106433521434730528) and [its continuation](https://x.com/YairGolan1/status/2106433612224569614), 17:17 UTC, the party's
   own ceremony). One named measure: *"אנחנו נקבע את העוטף וגבול הצפון כאזורי פיתוח לאומיים עשור קדימה"*,
   with jobs, schools, services and transport, and *"התשובה שלנו היא בנייה ולא נקמה"*. A regional
@@ -13917,4 +13942,5 @@ pass happened, for anyone reading git history.
 | 2026-10-03 | revision 233 — **cross-row: a research pass on the open leads (108 agents, three-reviewer checks), every source re-read here except two blocked N12 pages. No axis moved, no tag added, `seed.sql` unchanged.** ישר: איזנקוט's full ישראל היום interview. The *"אגודת ישראל"* headline is the editors'. *"בטווח הרחוק אני כן רואה ישות"* is recorded as a qualifier on `no-palestinian-state`, which stays on his 22.08 *"בממשלה שנקים לא תקום מדינה פלסטינית"*; trigger written. A third settler-violence measure (abolish the defence-ministry minister over the Civil Administration). רע"ם: N12's dated report of the 22.08 convention (recognise the State of Palestine, end the occupation) fits −2 and `pro-two-state`; revision 228's Hamas quotations are corrected to N12's of 05.09. יהדות התורה: גולדקנופף's named statement meets revision 180's trigger and leaves `bibi`. הדמוקרטים: גולן's own 12.08 post meets revision 215's trigger in part (stop demolition "show operations", approve plans). Not found: the change bloc's joint plan, תב"כ 117/26, ישראל תחילה's economics and its Druze candidate. |
 | 2026-10-03 | revision 234 — **cross-row: two posts (fxtwitter). Nothing scored.** מלינובסקי (ישראל ביתנו #5) answers a journalist's mockery of ליברמן's ניר עוז clips with revision 225's lines. לפיד (ביחד #2) publishes a bereaved ניר עוז mother's letter asking the change bloc to unite; his own words point only to revision 146's document. A third link, זר קצנשטיין's, is revision 232's. |
 | 2026-10-03 | revision 235 — **cross-row: seven posts (fxtwitter; two clips transcribed by machine and checked against their captions). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן: no coalition with the Arab parties, `excludes-haredi-and-arab-parties` corroborated. גולן at בארי: the Gaza border and the north as national development zones for a decade; `periphery-development` stays retired. בנט: sits only with whoever is *"ציוני ובעד גיוס לכל"* (ישר's principle shape, filed on the sweep), and no state money for those who neither serve nor work, with figures, on held tags. A זהות candidate in פייגלין's clip: *"כיבוש, גירוש והתיישבות"*, on held `population-transfer`. חדאד: safe exit from Gaza for whoever wants it, still no mechanism. וילף rejects the right of return. |
+| 2026-10-03 | revision 236 — **cross-row: גולן on N12's *פגוש את העיתונות* (נתניהו's 28-second cut, captions read from frames because the machine transcript misheard *"עם רע"ם"*; N12's headline in קריב's screenshot). No axis moved, no tag added, `seed.sql` unchanged.** גולן will work for a government with רע"ם and calls his partners' refusals election talk; קריב (#3) says the party has never hidden it. `jewish-arab-partnership` corroborated; the inclusive pole of the coalition-exclusion sweep is now explicit. The other rows' refusals stand on their own words (ליברמן the same evening, revision 235; ישר, revisions 206 and 233). נתניהו's slogan and רונן's reply score nothing. |
 | 2026-10-03 | revision 232 — **cross-row: three posts (fxtwitter; ליברמן's clip transcribed by machine; the N12 report one of them links read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן repeats revision 230 on the spot and adds Rafah's reconstruction before disarmament as *"כניעה לטרור"*, on `hardline-on-gaza`, held. רונן (הדמוקרטים #7) promises a second state commission, for the flight. זר קצנשטיין (#12) attacks זיני, רגב, כץ and נתניהו; the N12 report she links adds the שב"כ's July ban on Israeli airlines landing in Dubai, and says the מוסד, not the transport minister, thwarts threats to foreign airlines, which differs from טרנר אייל's account (revision 229). Neither checked. |
