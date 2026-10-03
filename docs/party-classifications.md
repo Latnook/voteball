@@ -9925,6 +9925,18 @@ exactly this.
   between them, so it is recorded as an observation rather than a sixth sweep item. The gun-control
   case was filed because *nothing* covered the opposite pole; that is not true here.
 
+**2026-10-03 — revision 231. חיימוב (#5) filmed with an activist waiting to "block" טיבי. Nothing scored.**
+([ynet](https://www.ynet.co.il/news/elections2026/article/bkvo3bp9ze), 02.10.26 16:27 UTC, `articleBody` with plain `curl`. The clip itself, posted by the activist, was not found
+in the page and was not watched; the quotations are ynet's.) On 01.10 the right-wing activist מרדכי דוד, who
+is not a party figure, filmed himself with יסכה חיימוב, the ש"ב head's sister: *"אנחנו מחכים לאחמד טיבי לחסום
+אותו. לזכר ערפאת אנחנו חוסמים אותו פה"*. She says: *"אני כאן מטעם 'נעם לישראל', מתמודדת מטעם 'נעם לישראל', אבל
+כיף לדעת שבעזרת השם יחד נעבוד לעוד הרבה שנים"*.
+
+- **A candidate at a protest, inside the realistic range, and not a position.** The plan to block טיבי is
+  the activist's words. Hers name the party and nothing it would do. Candidate tier (revision 49).
+- **Her family tie is revision 68's, and it was refused as a position there.** That stands.
+- ynet's line that the party is not expected to pass the threshold is a poll, and is not used.
+
 ### האחדות — Unity · **withdrew 2026-09-04, removed from the ballot** · was `unaligned` · 1 / 2 / −2 · traditional
 
 **גלעד ארדן announced on Friday 2026-09-04 that האחדות will not contest the election, and the row
@@ -13708,3 +13720,4 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 228 — **cross-row: nine posts of 02.10 (fxtwitter; captions of two videos read from frames, no audio; three photos viewed; the מקור ראשון column נתניהו quotes read in part, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** השכל (ישראל תחילה #1) says *"חייבים ממשלה בלי חרדים"* in a clip, past the platform's hostage line; `excludes-haredi-and-arab-parties` is still not added and it is filed on the coalition-exclusion sweep. Five women of four change-bloc lists meet on revision 183's agenda plus women's status, which does not give ישראל ביתנו `gender-equality`. בליאק will ask סולברג whether the government is blocking voters' flights from the Emirates. שירי attacks a holiday gathering at the Nova site. בן גביר repeats his credit for אבו שחאדה. נתניהו's *"עבאס הוא השותף של איזנקוט"* quotes a column of translated עבאס statements, not checked; its two campaign quotations of עבאס and סגלוביץ' on Hamas are a lead for רע"ם. וילף comments on France. |
 | 2026-10-02 | revision 229 — **cross-row: two posts with clips (fxtwitter; captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) films protesters being removed from the party's Arab-society conference in יפיע: *"ערבים ישראלים גאים, ופלסטינים כמוך להעיף הביתה"* and *"ניקוי אורוות בחברה הערבית"*. It is the row's recorded Arab-society campaign at an event, with no measure, and `jewish-arab-partnership` stays refused. טרנר אייל (ביחד) says רגב left foreign airlines' security with a ministry division and not the Civil Aviation Authority, against the מל"ל, the שב"כ and the State Comptroller; a complaint about a minister with a measure implied and not promised. Her account was not checked. |
 | 2026-10-03 | revision 230 — **cross-row: three posts (fxtwitter; captions of two clips read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן at ניר עוז at 06:29 on the anniversary: no Gaza reconstruction before Hamas disarms, a state commission, *"נחסל את חמאס"*, all on held tags and his sweep line; his warning there nine days before 7 October is his own account. חדאד (עמך ישראל #2) with youths from three camps, chanting *"עם 'ביחד', עם 'בן גביר', עם 'עמך ישראל'"*: campaign footage. A fourth link, בנט's, is revision 218's. |
+| 2026-10-03 | revision 231 — **נעם לישראל: חיימוב (#5) filmed with the activist מרדכי דוד, who says they are waiting to "block" טיבי (ynet, `curl`; the clip not watched). Nothing scored.** The plan is the activist's words, and hers name the party and no measure. Candidate tier. Her tie to the ש"ב head is revision 68's and stays refused as a position. |
