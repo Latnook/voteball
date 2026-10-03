@@ -5927,6 +5927,34 @@ fourth link supplied, [בנט's post](https://x.com/naftalibennett/status/210559
   row's recorded Arab-society campaign (revision 229), said this time to a Jewish crowd. Where it was filmed
   is not stated.
 
+**2026-10-03 — revision 232 (cross-row). ליברמן's longer clip from ניר עוז, and two הדמוקרטים candidates on
+the flight. No axis moved, no tag added, `seed.sql` unchanged.** (Posts read through fxtwitter. ליברמן's
+82-second clip was transcribed by machine with ivrit.ai's Hebrew Whisper model, as in revision 231, and its
+burned-in captions were checked against frames.)
+
+- **This row: ליברמן's clip** ([post](https://x.com/AvigdorLiberman/status/2106308955760722019), 03.10.26 09:02 UTC). The first 45 seconds are revision 230's
+  statement spoken on the spot, with one detail added: *"זה שנכנסות משאיות… לתוך הרצועה, מאפשרים שיקום,
+  שיקום של רפיח במלוא הקצב, לפני שפירקו את חמאס מנשקו, זאת כניעה לטרור. זו חזרה לשבעה באוקטובר."* Rafah is
+  the same doctrine applied to one place, on `hardline-on-gaza`, held. In the rest an unnamed man with a cane,
+  standing beside him, says ליברמן phoned him almost every week, also as defence minister, and spoke before 7
+  October of a disaster nobody imagined. The machine transcript of that part is too broken to quote further.
+  He is not identified and his account was not checked.
+- **הדמוקרטים: רונן (#7)** ([post](https://x.com/omrironen24/status/2106311975378522370), 09:14 UTC): the pilot had been dismissed by Oman Air for extreme views
+  and shared al-Qaeda videos featuring El Al aircraft, and *"ועדת חקירה ממלכתית נוספת תקום בממשלה הבאה"*. A
+  second commission, for the flight. The row's line in the inquiry sweep is a commission for 7 October, and
+  this adds a subject to it, in a candidate's voice and without a measure. His facts about the pilot are
+  unsourced in the post and were not checked.
+- **הדמוקרטים: זר קצנשטיין (#12)** ([post](https://x.com/ZerMoran/status/2106309403146068111), 09:04 UTC, quoting חיים לוינסון of הארץ, a journalist): זיני is
+  *"כושל ולא מתאים"*, and רגב, כץ and נתניהו share the blame. An attack on officials, with no measure. She
+  links [עמית סגל's report](https://www.mako.co.il/news-israel/2026_q3/Article-fbf3aca1643f0a1027.htm) (N12, 30.09.26 22:02, `articleBody` with plain `curl`), whose core, that זיני had
+  warned for months that security on flights from the Emirates was not enough, is what the four-list
+  letter of revision 218 relied on. **New here, and none of it a position:** the שב"כ had barred אל על,
+  ארקיע and ישראייר from landing in Dubai from July to the end of October, while flydubai kept flying ten
+  times a day; and *"השבכ אחראי לאבטחה בטיסות ישראליות… המוסד הוא הארגון שאחראי לסיכול איומים בטיסות של חברות
+  זרות"*. That second sentence does not match טרנר אייל's account in revision 229, which puts foreign
+  airlines' security under the transport minister. They may describe different duties, screening and
+  thwarting, and neither was checked.
+
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
 **Merged with זהות into one ballot line, 2026-09-01.** Smotrich and משה פייגלין signed an agreement
@@ -13730,3 +13758,4 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 229 — **cross-row: two posts with clips (fxtwitter; captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) films protesters being removed from the party's Arab-society conference in יפיע: *"ערבים ישראלים גאים, ופלסטינים כמוך להעיף הביתה"* and *"ניקוי אורוות בחברה הערבית"*. It is the row's recorded Arab-society campaign at an event, with no measure, and `jewish-arab-partnership` stays refused. טרנר אייל (ביחד) says רגב left foreign airlines' security with a ministry division and not the Civil Aviation Authority, against the מל"ל, the שב"כ and the State Comptroller; a complaint about a minister with a measure implied and not promised. Her account was not checked. |
 | 2026-10-03 | revision 230 — **cross-row: three posts (fxtwitter; captions of two clips read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן at ניר עוז at 06:29 on the anniversary: no Gaza reconstruction before Hamas disarms, a state commission, *"נחסל את חמאס"*, all on held tags and his sweep line; his warning there nine days before 7 October is his own account. חדאד (עמך ישראל #2) with youths from three camps, chanting *"עם 'ביחד', עם 'בן גביר', עם 'עמך ישראל'"*: campaign footage. A fourth link, בנט's, is revision 218's. |
 | 2026-10-03 | revision 231 — **נעם לישראל: חיימוב (#5) filmed with the activist מרדכי דוד, who says they are waiting to "block" טיבי (ynet, `curl`; the 35-second clip, supplied by the repo owner, transcribed by machine with a Hebrew Whisper model). Nothing scored.** The plan is the activist's words, and hers name the party and no measure. Candidate tier. Her tie to the ש"ב head is revision 68's and stays refused as a position. The transcript matches ynet's quotations, except that it has the activist calling זיני, not her, *"הגיבור"*; recorded, not relied on. |
+| 2026-10-03 | revision 232 — **cross-row: three posts (fxtwitter; ליברמן's clip transcribed by machine; the N12 report one of them links read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן repeats revision 230 on the spot and adds Rafah's reconstruction before disarmament as *"כניעה לטרור"*, on `hardline-on-gaza`, held. רונן (הדמוקרטים #7) promises a second state commission, for the flight. זר קצנשטיין (#12) attacks זיני, רגב, כץ and נתניהו; the N12 report she links adds the שב"כ's July ban on Israeli airlines landing in Dubai, and says the מוסד, not the transport minister, thwarts threats to foreign airlines, which differs from טרנר אייל's account (revision 229). Neither checked. |
