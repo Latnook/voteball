@@ -2649,6 +2649,70 @@ of staff.
   איזנקוט voted for the Rafah operation. בן גביר says he opposed it. Neither can be checked here, and who was
   right in the war is not a position.
 
+**2026-10-03 — revision 233 (cross-row). A research pass on the page's open leads, and איזנקוט's full Israel
+Hayom interview. No axis moved, no tag added, `seed.sql` unchanged.** (Method: a web research pass of 108
+agents, each claim checked by three reviewers: 25 checked, 23 kept, 2 refuted. Every source quoted below was
+then re-read here, with plain `curl` or headless Chromium, except two N12 interview pages that blocked both and
+are quoted from the pass.)
+
+- **This row: איזנקוט to ישראל היום** (אילי זילברברג; [preview](https://www.israelhayom.co.il/news/politics/article/21531553), 01.10.26 12:37 UTC; [full interview](https://www.israelhayom.co.il/news/politics/article/21537721), 02.10.26 11:08 UTC).
+  - **The headline *"אגודת ישראל כבר לא עם נתניהו"* is the editors'.** His words: *"בצוק העיתים נצטרך להעביר
+    ממשלה ברוב ציוני חד וברור ולנסות להרחיב אותה ככל הניתן. במקביל, הבלוק של נתניהו מתפרק: אגודת ישראל כבר לא
+    שם, ויש עוד נעלמים כמו וינטר וזליכה"*. A reading of the rival bloc, with no offer to any haredi party. It
+    answers revision 228's lead and leaves this row's principle test (revision 143) where it was.
+  - **A Palestinian state, and a qualifier recorded against `no-palestinian-state`.** *"זה לא הזמן לדבר על מדינה
+    פלסטינית, אבל בטווח הרחוק אני כן רואה ישות שיש לנו אינטרס שתהיה יציבה, כמובן בתנאי שהיא תעבור שינוי עמוק
+    במערכת החינוך"*; on Gaza, *"לא תהיה מדינה, אלא ישות מתפתחת"*. **The tag stays.** It rests on the party's
+    own words (revision 176's questionnaire, revision 214's rebuttal page), and the research pass found his own
+    of 22.08 ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-35ecef4f88920a1027.htm), read here): *"אין מדינה פלסטינית, ובממשלה שנקים לא תקום מדינה פלסטינית"*. Both refuse a
+    state while he governs. The interview adds a long-term *"ישות"* that he does not call a state.
+    **Trigger:** the word state for the long term, from him or the party. Then the tag is wrong, and `security`
+    +1 has to be re-read against −1, the Zionist two-staters.
+  - **Settler violence: a third measure.** *"אנחנו נבטל את תפקיד השר במשרד הביטחון שאחראי על המנהל האזרחי ונחזור
+    להפעיל את הכוח המשטרתי בתיאום עם הצבא"*, beside revision 186's two, on `anti-settler-violence`, held. On
+    settlement he repeats revision 104's conditional line (*"אני בעד התיישבות בתנאי שזה בהתאם לאינטרסים לאומיים
+    ועל פי חוק"*), and `pro-settlement` stays refused.
+  - **New and not scored:** on Iran, no regime change but *"הוצאת האורניום המועשר ופיקוח הדוק"*. On Gaza, a
+    local force vetted by the שב"כ under a technocrat government with the moderate Sunni states, and Hamas
+    disarmed and the strip de-radicalised before reconstruction (the doctrine revision 232 found near-universal).
+    Targeted killings are right *"בתנאי שהיא נגד איומים מיידיים"*. On the courts, a cross-party team
+    (פרידמן, רייכמן, ניסים, רוזנאי and others) will bring a bloc proposal: the system *"צריכה לעבור רפורמה, אבל
+    אסור להרוס אותה"*, and the Attorney General is to be kept and backed. That fits `constitutionalist`, held;
+    the same three authors are the source of ישראל ביתנו's constitution draft (revision 134). He rules out a
+    rotation with נתניהו, and *"לא יהיה אצלי שום סילמן ולא יהיה שום שיקלי"*.
+- **רע"ם: the 22.08 convention lead is sourced** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-35ecef4f88920a1027.htm), מוחמד מג'אדלה, 22.08.26 16:13, read here through
+  headless Chromium). Reported speech: *"מדינת פלסטין קיימת וזוכה להכרה מרוב מדינות העולם… רעם פועלת לכך שגם
+  ישראל וארצות הברית יכירו בה"*. Quoted: *"אנו פועלים להשגת שלום ופיוס ולסיום הכיבוש והסכסוך"*. That is the
+  −2 band's own wording, two states with an end to the occupation, and `pro-two-state`, held. −3 is not
+  approached: nothing on return or the settlements. It is a dated report by a named reporter, not the party's
+  text, so the entry's wait for a first-party document goes on. The same report has סגלוביץ' asking, as a
+  condition of joining, for *"עיגון של הצהרות עבר של עבאס ולפיהן ישראל היא מדינת העם היהודי"*.
+- **רע"ם: revision 228's quotations, corrected.** The interview with דנה ויס aired on N12 on **05.09.26** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-12c9bd7e75270a1027.htm);
+  the page blocked `curl` and headless Chromium here, so this is the pass's reading). N12's wording of עבאס
+  differs from the column's: *"רוצים להעמיד אותנו בדילמה: אם אגיד שצריך להשמיד את חמאס, יפרשו את זה כאילו שני
+  מיליון פלסטינים בעזה צריכים להישמד. אם אגיד שהם לא ארגון טרור, אהיה אויב העם"*, and *"גיניתי את מה שחמאס עשתה
+  ב-7 באוקטובר"*. סגלוביץ': *"איך מנסור חי עם זה שאני ברשימה שלו ואומר שחמאס הוא ארגון טרור וצריך להשמיד
+  אותו?"*. The ערוץ 13 *"דרישה הגונה"* line was not found. So the chairman declines and his #2 says it, as
+  revision 228 had it. Nothing is scored on רע"ם: the condition is איזנקוט's (revision 206), and the refusal
+  belongs to this row's `excludes-anti-zionist-parties`.
+- **יהדות התורה: revision 180's trigger is met, and it does not move `bloc`.** A named statement the same
+  evening ([ערוץ 7](https://www.inn.co.il/news/707277), 28.09.26 20:28, `curl`): גולדקנופף, *"אגודת ישראל לא תתמוך בהקמת ממשלה ולא תסייע
+  מבחוץ לממשלה כלשהי ללא הסדרת מעמדם של בני הישיבות וחקיקת חוק גיוס ללא סנקציות וללא יעדים"*. It does not
+  confirm the abstention, and it puts the same price on any government. `bibi` stays. The price is
+  `scholar-exemption-retained`, held.
+- **הדמוקרטים: revision 215's trigger is met in part.** גולן's own post, in Arabic, of 12.08.26 ([ערוץ 7](https://www.inn.co.il/news/703562)'s
+  Hebrew, דלית הלוי, `curl`; the Arabic original and its video were not retrieved): *"הריסת בתים אינה פותרת את
+  משבר הדיור בחברה הערבית, אלא מחמירה אותו"*, *"בממשלה הבאה נעבוד על אישור תוכניות בנייה בכל היישובים הערביים,
+  על הסדרת הבנייה ועל עבודה בשותפות עם הרשויות המקומיות והתושבים"*, and in the video *"בן גביר לא יהיה פה בעוד
+  שלושה חודשים, ואנחנו נפסיק את מבצעי הראווה האלה"*. So the clip נתניהו cut is real in substance. What he
+  promises is to stop demolition "show operations" and to legalise through planning, not a blanket freeze of
+  orders. That is the party's חברה ערבית paper (revision 36), and בל"ד's *"تجميد أوامر الهدم"* stays the
+  stronger form.
+- **Not found, and recorded as not found:** any joint *קווי יסוד* or 100-day plan from the change bloc
+  (revision 183's trigger stays open; the 26.09 document only set up the team), the committee ruling תב"כ
+  117/26, an economic chapter from ישראל תחילה, and a Druze candidate named *"וואהל"* on its filed list.
+  Not found is not shown absent: committee records and filed lists sit on a site the pass did not reach.
+
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
 A **list of two legally separate parties** (Bennett 2026 + Yesh Atid), formed 2026-04-26 with
@@ -8312,7 +8376,9 @@ video were read from extracted frames; no audio was listened to, and the other v
     a rival's edit, and the original was not found (one web search). *"הבלתי-חוקיים"* is נתניהו's word and is
     not in the clip. The content fits the party's חברה ערבית paper (*"נבטל את חוק קמיניץ"*, statutory
     planning; revision 36). A halt to demolitions is stronger than that paper's wording and matches בל"ד's
-    *"تجميد أوامر الهدم"* (revision 103). **Trigger:** גולן's own video or the party's text.
+    *"تجميد أوامر الهدم"* (revision 103). **Trigger:** גולן's own video or the party's text. *(Met in part by
+    revision 233: his own Arabic post of 12.08, through ערוץ 7's Hebrew. He promises to stop demolition "show
+    operations" and to approve plans, not to freeze the orders.)*
   - **On הליכוד it is a sighting of the enforcement side of the Kaminitz gap, in the chairman's words.**
     *"לא ניתן לו להחזיר אותנו לאחור"* defends the demolitions without naming a measure. The gap still has no
     tag (Open questions), and this does not mint one. *"ימין או פלסטין"* is revision 203's slogan.
@@ -10690,7 +10756,8 @@ set aside as pre-2021 Joint List material. **It could not be verified** (the ses
 was exhausted), and it is *not* scored on that report. It probably does not reach −3 regardless: this
 page's −3 needs withdrawal **plus** right of return **plus** dismantling the settlements, and one
 clause is not three. **Trigger:** find the 2026-08-22 conference in a datable first-party source and
-re-read the security axis against it.
+re-read the security axis against it. *(Revision 233: N12's dated report of the speech is found and read.
+It fits −2's own wording and approaches nothing in −3. It is still a report, not the party's text.)*
 
 **Two things still owed on this row.** ~~The civil-service item above is *still* undated~~ — **paid 2026-09-05, and it refused the tag rather than earning it; see the block below.** Nothing in
 this announcement restates it, so the "date it and it earns a tag" trigger stands. And no tag covers
@@ -12076,7 +12143,8 @@ they expect the rest of אגודה, and perhaps דגל התורה, to follow, an
 - **Anonymous, about a hypothetical vote, and contradicted inside the same article**: דגל התורה's הרב הירש said a day
   earlier that everything must be done to stop the left. `bloc` records whom a row says it backs, and no party
   voice has said this (revision 44's tier; revision 137 applied the same rule to נתניהו's reported view of וינטר).
-  **Trigger:** a named אגודה or גור statement, or the vote itself.
+  **Trigger:** a named אגודה or גור statement, or the vote itself. *(Met by revision 233: גולדקנופף's named
+  statement the same evening sets the same price for any government and does not confirm the abstention.)*
 - **It bears on this row's `two-faction-list`** (revision 61), since the story is about the two factions
   diverging, and that tag already records that they bargain separately.
 - **The reporter's line that איזנקוט *"לא יסתמך על מפלגות שאינן ציוניות"* is a gloss, not a quote.** Revision 169
@@ -12479,7 +12547,8 @@ two-thirds only. A tenth link supplied, מלינובסקי's, is revision 225's.
     `unaligned` stands: she rejects a government decided by the haredi parties under either leader.
   - **A lead, not read.** The clip shows a headline: *""אגודת ישראל כבר לא עם נתניהו, הגוש שלו התפרק": גדי
     איזנקוט בראיון"*. If איזנקוט said that, it bears on ישר's stance toward the haredi parties (revision 143).
-    One search did not find the interview.
+    One search did not find the interview. *(Found in revision 233: ישראל היום, 01–02.10. The headline is the
+    editors'; his words describe the rival bloc and offer nothing to a haredi party.)*
 - **Five women of four change-bloc lists meet** ([לזימי](https://x.com/naamalazimi/status/2105949966115979738), הדמוקרטים #2; [בן ארי](https://x.com/Meravbenari/status/2105950190997737653), ביחד #4; [פרקש הכהן](https://x.com/FarkashOrit/status/2105963036888424771),
   ישר #3; with טרנר אייל of ביחד and לנקרי, ישראל ביתנו #3, tagged; the photos show the five at a café named
   for נועה מרציאנו). לזימי's post calls them *"חמש הנשים הראשונות של מפלגות מחנה התיקון והתקווה"*. ביחד sent
@@ -12528,7 +12597,8 @@ two-thirds only. A tenth link supplied, מלינובסקי's, is revision 225's.
     סגלוביץ' (רע"ם #2), beside him: *"אני אצלו ברשימת רע"מ ואומר 'צריך להשמיד את חמאס, זה ארגון טרור'"*, and on
     ערוץ 13 that asking it of עבאס may not be *"דרישה הגונה כלפי מנהיג ציבור שבא מהחברה הערבית"*. That is the
     condition איזנקוט set (revision 206), declined by the chairman and met by his #2. **A lead for רע"ם's
-    row:** the interviews themselves were not watched.
+    row:** the interviews themselves were not watched. *(Revision 233: the N12 interview aired on 05.09, its
+    wording of עבאס differs from the column's, and the ערוץ 13 line was not found.)*
 - **המילואימניקים והכלכלית: וילף (#3) on anti-Zionism in France** ([post](https://x.com/EinatWilf/status/2106010815195230285), 13:18 UTC, quoting a private
   commentator's long post on מלנשון). *"האנטי-ציונות בשבתה כפנים המכובדות של האנטישמיות… כלי פוליטי אפקטיבי
   ליצירת קואליציות"*. Commentary on another country's politics. No measure, and nothing about this list.
@@ -13784,4 +13854,5 @@ pass happened, for anyone reading git history.
 | 2026-10-02 | revision 229 — **cross-row: two posts with clips (fxtwitter; captions read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) films protesters being removed from the party's Arab-society conference in יפיע: *"ערבים ישראלים גאים, ופלסטינים כמוך להעיף הביתה"* and *"ניקוי אורוות בחברה הערבית"*. It is the row's recorded Arab-society campaign at an event, with no measure, and `jewish-arab-partnership` stays refused. טרנר אייל (ביחד) says רגב left foreign airlines' security with a ministry division and not the Civil Aviation Authority, against the מל"ל, the שב"כ and the State Comptroller; a complaint about a minister with a measure implied and not promised. Her account was not checked. |
 | 2026-10-03 | revision 230 — **cross-row: three posts (fxtwitter; captions of two clips read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן at ניר עוז at 06:29 on the anniversary: no Gaza reconstruction before Hamas disarms, a state commission, *"נחסל את חמאס"*, all on held tags and his sweep line; his warning there nine days before 7 October is his own account. חדאד (עמך ישראל #2) with youths from three camps, chanting *"עם 'ביחד', עם 'בן גביר', עם 'עמך ישראל'"*: campaign footage. A fourth link, בנט's, is revision 218's. |
 | 2026-10-03 | revision 231 — **נעם לישראל: חיימוב (#5) filmed with the activist מרדכי דוד, who says they are waiting to "block" טיבי (ynet, `curl`; the 35-second clip, supplied by the repo owner, transcribed by machine with a Hebrew Whisper model). Nothing scored.** The plan is the activist's words, and hers name the party and no measure. Candidate tier. Her tie to the ש"ב head is revision 68's and stays refused as a position. The transcript matches ynet's quotations, except that it has the activist calling זיני, not her, *"הגיבור"*; recorded, not relied on. |
+| 2026-10-03 | revision 233 — **cross-row: a research pass on the open leads (108 agents, three-reviewer checks), every source re-read here except two blocked N12 pages. No axis moved, no tag added, `seed.sql` unchanged.** ישר: איזנקוט's full ישראל היום interview. The *"אגודת ישראל"* headline is the editors'. *"בטווח הרחוק אני כן רואה ישות"* is recorded as a qualifier on `no-palestinian-state`, which stays on his 22.08 *"בממשלה שנקים לא תקום מדינה פלסטינית"*; trigger written. A third settler-violence measure (abolish the defence-ministry minister over the Civil Administration). רע"ם: N12's dated report of the 22.08 convention (recognise the State of Palestine, end the occupation) fits −2 and `pro-two-state`; revision 228's Hamas quotations are corrected to N12's of 05.09. יהדות התורה: גולדקנופף's named statement meets revision 180's trigger and leaves `bibi`. הדמוקרטים: גולן's own 12.08 post meets revision 215's trigger in part (stop demolition "show operations", approve plans). Not found: the change bloc's joint plan, תב"כ 117/26, ישראל תחילה's economics and its Druze candidate. |
 | 2026-10-03 | revision 232 — **cross-row: three posts (fxtwitter; ליברמן's clip transcribed by machine; the N12 report one of them links read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן repeats revision 230 on the spot and adds Rafah's reconstruction before disarmament as *"כניעה לטרור"*, on `hardline-on-gaza`, held. רונן (הדמוקרטים #7) promises a second state commission, for the flight. זר קצנשטיין (#12) attacks זיני, רגב, כץ and נתניהו; the N12 report she links adds the שב"כ's July ban on Israeli airlines landing in Dubai, and says the מוסד, not the transport minister, thwarts threats to foreign airlines, which differs from טרנר אייל's account (revision 229). Neither checked. |
