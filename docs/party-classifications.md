@@ -5943,7 +5943,12 @@ burned-in captions were checked against frames.)
   and shared al-Qaeda videos featuring El Al aircraft, and *"ועדת חקירה ממלכתית נוספת תקום בממשלה הבאה"*. A
   second commission, for the flight. The row's line in the inquiry sweep is a commission for 7 October, and
   this adds a subject to it, in a candidate's voice and without a measure. His facts about the pilot are
-  unsourced in the post and were not checked.
+  unsourced in the post and were not checked. *(Partly borne out the same day by [הארץ](https://www.haaretz.co.il/news/politics/2026-10-03/ty-article/000001a1-001b-d350-a9ab-de5fc99d0000)'s news report, body
+  supplied by the repo owner, which names no party: the Wall Street Journal's sources say Oman had barred
+  him from flying over *"דעות אידיאולוגיות קיצוניות"*, and a deleted LinkedIn account shows seven years at
+  Oman Air. That he was dismissed is רונן's word. CNN found posts under his name, put up about nine hours
+  after the attack by an unknown hand, with El Al aircraft at Dubai filmed after 7 October and closing on
+  images of א־זוואהירי and the 2009 CIA-base bomber.)*
 - **הדמוקרטים: זר קצנשטיין (#12)** ([post](https://x.com/ZerMoran/status/2106309403146068111), 09:04 UTC, quoting חיים לוינסון of הארץ, a journalist): זיני is
   *"כושל ולא מתאים"*, and רגב, כץ and נתניהו share the blame. An attack on officials, with no measure. She
   links [עמית סגל's report](https://www.mako.co.il/news-israel/2026_q3/Article-fbf3aca1643f0a1027.htm) (N12, 30.09.26 22:02, `articleBody` with plain `curl`), whose core, that זיני had
