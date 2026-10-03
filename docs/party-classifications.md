@@ -1395,7 +1395,10 @@ reports is used. None of its reported claims was checked against another source.
   government on an incident and a threat with no measure, so not a position (revision 208's line). Two
   things are recorded. The *"פרצה"* is his first admission of a gap, which the opposition's flight
   complaints assert (revisions 218, 229 and 232). On Iran, this revision's writer has Israel's intelligence
-  bodies finding no proof, against Trump's estimate. Neither was checked. The rest of the report, on the
+  bodies finding no proof, against Trump's estimate. Neither was checked. *(Later, from [Wikipedia](https://en.wikipedia.org/wiki/Flydubai_Flight_1073), revision of 03.10.26 09:25 UTC, citing CBS
+  News of 01.10, not read directly: two Israeli security officials said the pilot *"likely acted alone"* and
+  that no Iranian involvement had been identified, and נתניהו said it was *"too early to say"*. That supports
+  the writer over Trump's estimate.)* The rest of the report, on the
   pilot's background and the captain's account, names no party; its WSJ line is in revision 232.)*
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -5967,7 +5970,8 @@ burned-in captions were checked against frames.)
   times a day; and *"השבכ אחראי לאבטחה בטיסות ישראליות… המוסד הוא הארגון שאחראי לסיכול איומים בטיסות של חברות
   זרות"*. That second sentence does not match טרנר אייל's account in revision 229, which puts foreign
   airlines' security under the transport minister. They may describe different duties, screening and
-  thwarting, and neither was checked.
+  thwarting, and neither was checked. *(2026-10-03, [Wikipedia](https://en.wikipedia.org/wiki/Flydubai_Flight_1073), revision of 03.10.26 09:25 UTC, citing Globes: the Israeli airlines had been
+  restricted from Dubai for the **preceding six months**, where N12 says from July. Not reconciled.)*
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -10595,6 +10599,10 @@ frames a second, with no audio, so a word may be missing from the quotations bel
     Civil Aviation Authority is what she says others recommended. She does not commit the list to it. It
     sits with the four-list letter of revision 218, which cites the same Comptroller finding.
   - Her account of the law, of the two recommendations and of the Comptroller's report was not checked.
+  - *(2026-10-03, [Wikipedia](https://en.wikipedia.org/wiki/Flydubai_Flight_1073), revision of 03.10.26 09:25 UTC, citing the Jerusalem Post of 30.09, not read directly: *"Under its
+    agreement with Israel, Flydubai was obligated to exclude Omani pilots from any of its Israeli operations
+    because Oman and Israel do not have diplomatic relations."* If that holds, the written undertaking she
+    asks about existed, and the failure was in enforcing it, not in agreeing it.)*
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
@@ -12490,7 +12498,11 @@ two-thirds only. A tenth link supplied, מלינובסקי's, is revision 225's.
   an unnamed associate of the Emirati government says Israel is the one stopping the flydubai flights and
   that *"הבחירות מנהלות את האירוע"*. A suspicion, resting on an anonymous source, about the conduct of the
   election. It is the mirror of הליכוד's petition against the voter-flight projects (revision 82). **Trigger:**
-  the petition's text and סולברג's answer.
+  the petition's text and סולברג's answer. *(2026-10-03, [Wikipedia](https://en.wikipedia.org/wiki/Flydubai_Flight_1073), revision of 03.10.26 09:25 UTC, citing ynet and Globes of 30.09, not
+  read directly: on רגב's advice Israel suspended flydubai's flights for **six days**, and the UAE accepted
+  Israel's security demands so that אל על, ארקיע and ישראייר could resume flying to Dubai from 2 October. The
+  suspension is shorter than the election run-up his suspicion assumes, and Israeli airlines resumed the
+  route.)*
 - **ביחד: שירי on a holiday gathering at the Nova site** ([post](https://x.com/naorshiri/status/2105995915983311308), 12:18 UTC, an 84-second clip; his list slot
   was not checked). The text: *"9 מנהלות לזהות יהודית. שר מורשת. שר מסורת… הפכנו לממשלת 'תרקוד על דם רעך'"*.
   The clip addresses the heritage minister, אליהו of עוצמה יהודית (*"עאלק מורשת, מורשת של ריקוד על הדם"*), and
