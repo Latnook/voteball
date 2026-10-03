@@ -6037,6 +6037,20 @@ burned-in captions were checked against frames.)
   thwarting, and neither was checked. *(2026-10-03, [Wikipedia](https://en.wikipedia.org/wiki/Flydubai_Flight_1073), revision of 03.10.26 09:25 UTC, citing Globes: the Israeli airlines had been
   restricted from Dubai for the **preceding six months**, where N12 says from July. Not reconciled.)*
 
+**2026-10-03 — revision 234 (cross-row). מלינובסקי answers a journalist, and לפיד reads a bereaved mother's
+letter. Nothing scored.** (Read through fxtwitter. A third link supplied, זר קצנשטיין's post, is revision
+232's.)
+
+- **This row: מלינובסקי (#5)** ([post](https://x.com/YuliaMalinovsky/status/2106373829945679878), 13:20 UTC) answers נועם אמיר, a journalist, who mocked ליברמן's
+  ניר עוז clips (revisions 230 and 232) as social-media footage. Her reply repeats revision 225's column:
+  the 2016 document, and *"הכסף הקטארי בנה את הטבח"*. A rival's attack, answered on held tags, with no
+  measure.
+- **ביחד: לפיד (#2)** ([post](https://x.com/yairlapid/status/2106366651327246533), 12:51 UTC) publishes the letter he says he read to open the leaders' meeting
+  of 26.09, from גלית דן of ניר עוז, whose daughter and mother were murdered on 7 October. She asks the
+  leaders to unite and give way to each other. The letter is a private citizen's. His only words are that
+  the leaders signed *"מסמך עקרונות להמשך פעילות"*, which is revision 146's document.
+
+
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
 **Merged with זהות into one ballot line, 2026-09-01.** Smotrich and משה פייגלין signed an agreement
@@ -13855,4 +13869,5 @@ pass happened, for anyone reading git history.
 | 2026-10-03 | revision 230 — **cross-row: three posts (fxtwitter; captions of two clips read from frames, no audio). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן at ניר עוז at 06:29 on the anniversary: no Gaza reconstruction before Hamas disarms, a state commission, *"נחסל את חמאס"*, all on held tags and his sweep line; his warning there nine days before 7 October is his own account. חדאד (עמך ישראל #2) with youths from three camps, chanting *"עם 'ביחד', עם 'בן גביר', עם 'עמך ישראל'"*: campaign footage. A fourth link, בנט's, is revision 218's. |
 | 2026-10-03 | revision 231 — **נעם לישראל: חיימוב (#5) filmed with the activist מרדכי דוד, who says they are waiting to "block" טיבי (ynet, `curl`; the 35-second clip, supplied by the repo owner, transcribed by machine with a Hebrew Whisper model). Nothing scored.** The plan is the activist's words, and hers name the party and no measure. Candidate tier. Her tie to the ש"ב head is revision 68's and stays refused as a position. The transcript matches ynet's quotations, except that it has the activist calling זיני, not her, *"הגיבור"*; recorded, not relied on. |
 | 2026-10-03 | revision 233 — **cross-row: a research pass on the open leads (108 agents, three-reviewer checks), every source re-read here except two blocked N12 pages. No axis moved, no tag added, `seed.sql` unchanged.** ישר: איזנקוט's full ישראל היום interview. The *"אגודת ישראל"* headline is the editors'. *"בטווח הרחוק אני כן רואה ישות"* is recorded as a qualifier on `no-palestinian-state`, which stays on his 22.08 *"בממשלה שנקים לא תקום מדינה פלסטינית"*; trigger written. A third settler-violence measure (abolish the defence-ministry minister over the Civil Administration). רע"ם: N12's dated report of the 22.08 convention (recognise the State of Palestine, end the occupation) fits −2 and `pro-two-state`; revision 228's Hamas quotations are corrected to N12's of 05.09. יהדות התורה: גולדקנופף's named statement meets revision 180's trigger and leaves `bibi`. הדמוקרטים: גולן's own 12.08 post meets revision 215's trigger in part (stop demolition "show operations", approve plans). Not found: the change bloc's joint plan, תב"כ 117/26, ישראל תחילה's economics and its Druze candidate. |
+| 2026-10-03 | revision 234 — **cross-row: two posts (fxtwitter). Nothing scored.** מלינובסקי (ישראל ביתנו #5) answers a journalist's mockery of ליברמן's ניר עוז clips with revision 225's lines. לפיד (ביחד #2) publishes a bereaved ניר עוז mother's letter asking the change bloc to unite; his own words point only to revision 146's document. A third link, זר קצנשטיין's, is revision 232's. |
 | 2026-10-03 | revision 232 — **cross-row: three posts (fxtwitter; ליברמן's clip transcribed by machine; the N12 report one of them links read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן repeats revision 230 on the spot and adds Rafah's reconstruction before disarmament as *"כניעה לטרור"*, on `hardline-on-gaza`, held. רונן (הדמוקרטים #7) promises a second state commission, for the flight. זר קצנשטיין (#12) attacks זיני, רגב, כץ and נתניהו; the N12 report she links adds the שב"כ's July ban on Israeli airlines landing in Dubai, and says the מוסד, not the transport minister, thwarts threats to foreign airlines, which differs from טרנר אייל's account (revision 229). Neither checked. |
