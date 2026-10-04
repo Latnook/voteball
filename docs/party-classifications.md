@@ -12819,7 +12819,8 @@ is categorical and verbatim. The haredi half is not the same claim: the party sa
 hostage by them as kingmakers, not a refusal to sit with them. המילואימניקים והכלכלית's tag asserts
 exclusion of both. Reusing it here would have manufactured half a position. *(Revision 228: the
 chairwoman has since said *"חייבים ממשלה בלי חרדים"* in a campaign clip. Still not added; it is filed on
-the coalition-exclusion sweep.)*
+the coalition-exclusion sweep. Revision 241: she wrote *"בלי חרדים"* in a post's own text, while her radio
+interview kept to *"לא נישען על חרדים"*. Still on the sweep.)*
 
 economic **+2**. The +2 band requires the state actually withdrawing, and three chapters do it:
 **school vouchers** — *"המדינה תקצה לכל הורה 'שובר חינוך' שנתי אישי בשווי כ-60,000 שקלים"* with the
@@ -12975,6 +12976,116 @@ two-thirds only. A tenth link supplied, מלינובסקי's, is revision 225's.
 - **המילואימניקים והכלכלית: וילף (#3) on anti-Zionism in France** ([post](https://x.com/EinatWilf/status/2106010815195230285), 13:18 UTC, quoting a private
   commentator's long post on מלנשון). *"האנטי-ציונות בשבתה כפנים המכובדות של האנטישמיות… כלי פוליטי אפקטיבי
   ליצירת קואליציות"*. Commentary on another country's politics. No measure, and nothing about this list.
+**2026-10-04 — revision 241 (cross-row). השכל says *"בלי חרדים"* again, this time in the post's own text;
+two הארץ reports on who was meant to check the flight's crew list; בנט, שפר, לנקרי, ליברמן, סמוטריץ' and
+לפיד. No axis moved, no tag added, `seed.sql` unchanged.** (Nine posts read through fxtwitter. Three clips
+were transcribed by machine with ivrit.ai's Hebrew Whisper model: השכל's was checked against the caption
+block printed on the clip, בנט's against the text of his own post, and שפר's has only word-by-word captions,
+sampled in six frames. The fourth clip, in the post ליברמן quotes, is a crowd singing and gave no words. Four
+photos were viewed. The bodies of the two הארץ reports were supplied by the repo owner; headline, byline
+and time were read with plain `curl`.)
+
+- **This row: השכל (#1) on רדיו 90** ([post](https://x.com/SharrenHaskel/status/2106739254135054384), 13:32 UTC, a 71-second clip of an interview with ברהנו טגניה,
+  recorded on Friday 02.10 by her account).
+  - **The text now says it.** *"עלינו להקים ממשלה ציונית, בלי קיצונים ובלי חרדים, שתבטל את פוליטיקת הזהויות
+    המסוכנת ותדרוש גיוס צבאי לכולם"*. Revision 228 found *"ממשלה בלי חרדים"* in a clip and only the hostage
+    line in the text. Two days later the exclusion is in the chairwoman's written words.
+  - **The interview says the weaker thing.** Her spoken line, in the transcript and in the clip's caption:
+    *"חוק גיוס, נקודה, ואנחנו לא נישען על חרדים. אנחנו נבנה ממשלה ציונית"*. Not leaning on them is the
+    platform's shape (no party as *"לשון מאזניים"*). So the post carries both forms at once: without them in
+    the text, not dependent on them in the audio.
+  - **Not added, as in revision 228.** `excludes-haredi-and-arab-parties` is still a conjunction the
+    coalition-exclusion sweep has not defined. This is the second statement of its haredi half on this row.
+    *"בלי קיצונים"* names nobody. `unaligned` stands: *"זה משנה איזה גוש ייסחט על ידי החרדים?"* rejects both
+    blocs again.
+  - **Her quotation of איזנקוט is not his.** The caption puts *'שהחרדים יבואו ביחד איתנו'* in quotation marks
+    as what he said *"אתמול"*. What he told ישראל היום (revision 233) was that נתניהו's bloc is coming apart
+    and *"אגודת ישראל כבר לא שם"*, with no offer to a haredi party. A rival's paraphrase.
+  - `universal-conscription`, held, restated.
+- **השכל and לפיד on the Green Party of England and Wales** ([השכל](https://x.com/SharrenHaskel/status/2106769513614053748), 15:32 UTC, in English, over a screenshot of
+  a "Politics UK" post; [לפיד](https://x.com/yairlapid/status/2106770142428336600), ביחד, 15:35 UTC). The party's conference voted, by the screenshot, 1,022 to 813
+  for a motion declaring *"Zionism is racism"*. השכל: *"an attack on the legitimacy of Jewish
+  self-determination itself"*. לפיד: *"It is not Zionism that's racism, it is the Green Party"*. Two
+  candidates on a foreign party. No measure, nothing scored; this row's `hasbara-focused` is what it is.
+  - **Checked in part.** The motion was ranked first for the autumn conference and demands a *"single
+    Palestinian state"* ([Jewish Chronicle](https://www.thejc.com/news/politics/zionism-is-racism-to-be-debated-at-green-conference-jt3m4o54), 11.09.26). The vote count was not found in any report.
+- **The flight: two הארץ reports on the crew list.** Neither is a party's document. They are recorded
+  because the page holds three accounts of who secures foreign airlines (revisions 229, 232 and 240) and
+  left them unreconciled.
+  - **[The first](https://www.haaretz.co.il/news/politics/2026-10-03/ty-article/.premium/000001a1-01e2-d8d3-aba3-2bf36e490000)** (ג'וש בריינר and יפעת ראובן, 03.10.26 19:02). Israel received the flight's crew and
+    passenger list in advance. A law the Knesset passed in 2023 has airlines send it 48 hours before a
+    flight to a unit inside the Tax Authority, with full name and citizenship, so the co-pilot's Omani
+    citizenship was on it. The Tax Authority confirms it received this flight's list and refers further
+    questions to the Transport Ministry. The data is meant to flow on to the שב"כ, the police and the
+    מוסד, but the law does not oblige them to examine it, and a security source says the mechanism for
+    passing it on was never decided, so the מוסד did not get this list.
+  - **Who was meant to check it, by source.** Security sources: the ministry's security division and the
+    מוסד. Two of them: the ministry is responsible *"על הנייר"* and has no intelligence capability.
+    Another: under agreements with the Emirates it is the ministry's division that verifies that no crew
+    come from enemy or hostile states, and it did not turn to the שב"כ or the מוסד this time. The שב"כ: it
+    secures Israeli airlines only, and sets procedures at נתב"ג. יצחק רז, a former head of the Civil
+    Aviation Authority: *"אין ספק שמשרד התחבורה הוא אחראי… בסיוע שב"כ ומוסד"*, and the State Comptroller's
+    call for one aviation-security authority was never acted on.
+  - **[The second](https://www.haaretz.co.il/news/politics/2026-10-04/ty-article/.premium/000001a1-0712-dc0c-a5ff-57973cec0000)** (מיכאל האוזר טוב, 04.10.26 16:45). אברי כהן, head of that division, also works for pay
+    as a stand-in security officer at airports abroad in the שב"כ's אופק unit. He says the ministry's
+    director-general approved it in 2018, and the ministry confirms that. The paper calls it very unusual
+    at his rank. It also reports that the check on incoming foreign flights passed from the שב"כ to the
+    division **in 2021, by decision of the security cabinet**; that a מל"ל document published the same day
+    on גלי צה"ל says the division *"לא פעל במסגרת ההחלטה"* and never once asked the שב"כ or the מוסד for
+    help on a crew member or passenger; and that the מל"ל wants the duty moved to the Civil Aviation
+    Authority.
+  - **What this does to the three accounts.** טרנר אייל's (revision 229) is the one the reports bear out:
+    the שב"כ for Israeli airlines, the ministry for foreign ones, and a מל"ל recommendation to move it to
+    the Authority. ליברמן's (revision 240), that everything is the שב"כ's, describes the arrangement before
+    2021; he left the Defence Ministry in 2018. N12's (revision 232), that thwarting on foreign airlines is
+    the מוסד's, fits the sources who say only the מוסד and the שב"כ can do the work, and the 2023 law gave
+    the מוסד a feed that, by one source, was never connected. The agreement revision 229's note asked about
+    is described here by a second source.
+  - **Which government took the 2021 decision is not stated, and it matters to two rows.** The government
+    changed on 13 June 2021, from נתניהו's, with רגב at transport, to בנט's, with מיכאלי. The report gives
+    the year only. Not checked.
+  - **The law's date holds.** The Foreign Affairs and Defence Committee sent the passenger-data bill to its
+    final readings on 15.03.23 ([IAS](https://www.ias.co.il/?p=136905)); the report has it in force from April 2023.
+  - **New to this page:** the co-pilot is named, הומאם אל־הומאמי, with an Omani father and a Syrian mother.
+- **הליכוד: רגב, in both reports**, to כאן 11 on 03.10: the list did not reach her ministry, and *"מי שאמור
+  לבצע את האימות זה גורמי מודיעין ואנחנו לא גורמי מודיעין"*. A minister's account of her own duty, against
+  the מל"ל's and the former Authority head's. No position in it. The ministry did not answer the paper's
+  question on whether it received and examined the list.
+- **ביחד: בנט on the flight** ([post](https://x.com/naftalibennett/status/2106756058785951760), 14:39 UTC; the clip is in [a supporter's post](https://x.com/AviEdelson1/status/2106744195499135046), 13:52 UTC, 116 seconds,
+  and its first 80 seconds are the post's text read aloud). A government that cared *"הייתה מתייחסת לאירוע
+  כאילו התרסק מטוס"*, and a prime minister would have sacked the transport minister. Three questions: is it
+  safe to fly to Israel, did Iranian pilots visit recently, what is being done now. *"קו ישיר מחבר בין מחדל
+  המטוס לטבח השבעה באוקטובר"*. An attack with no measure. The Iranian pilots are ליברמן's unchecked claim of
+  revision 240, put as a question.
+  - **A second speaker, not named.** From 1:22 a woman beside him says: *"למחדל הזה יש כתובת, קוראים לה מירי
+    רגב. היא זאת שבחרה להכריע בניגוד לעמדת שב"כ ומל"ל"*, ignored a Comptroller's report that the division
+    *"אין [לו] את היכולת לעמוד ביעדים הביטחוניים הנדרשים"*, and did it *"בשביל עוד קצת סמכויות ועוד קצת
+    ג'ובים"*. Neither the clip nor either post says who she is. The content is טרנר אייל's of revision 229.
+    The 2021 cabinet decision above sits badly with *"בחרה להכריע"* unless it was taken before 13 June.
+- **הדמוקרטים: שפר (#11) on רשת ב'** ([post](https://x.com/NimrodSheffer/status/2106743581994008883), 13:49 UTC, a 62-second clip). Two ways to treat a near-miss: wipe
+  the sweat and move on, or *"אנחנו מניחים שהייתה פה התרסקות, ועכשיו אנחנו רוצים ללמוד מה היה"*, which he
+  credits for the air force's accident record. Nobody at the ministry said *"זאת אחריותי"*. The next
+  government's commitment is to say so. A former air force general's argument, with no measure.
+- **ישראל ביתנו: לנקרי (#3)** ([post](https://x.com/talyalankri/status/2106770197663068263), 15:35 UTC, tagging the party): *"ממשלת ה'יהיה בסדר' שוב מתנערת מאחריות…
+  דרושות ועדת חקירה ממלכתית וממשלה שלוקחת אחריות"*. As written, a state commission of inquiry into the
+  flight. שטרן named no form (revision 237); she names one. It changes nothing: the row already promises
+  the commission on 7 October, and `state-commission-of-inquiry` is refused for every row. Whose *"אין מאה
+  אחוז ביטחון"* she is quoting is not said. The photo is a headline by סיון חילאי, *"מאחורי הקריסה באגף
+  הביטחון במשרד התחבורה: 'לא מעניין את המנכ"ל או את השרה'"*. One search did not find the article.
+- **ישראל ביתנו: ליברמן** ([post](https://x.com/AvigdorLiberman/status/2106770463867441507), 15:36 UTC): *"בממשלה הבאה - מי שלא מתגייס לא יקבל שקל אחד מהמדינה"*.
+  `sanctions-on-non-servers`, held. It is בנט's sentence of the morning (revision 240), almost word for
+  word, from the next list over.
+  - **What he quotes** ([דניאל גרובייס](https://x.com/daniel_grovais/status/2106751324482130234), a reporter, 14:20 UTC, crediting הפרגוד): a 23-second clip in which a
+    man in a rabbi's hat, holding a microphone among dancing students, tears up a sheet of paper. That he
+    is the head of ישיבת היכל יצחק and that the paper is a student's draft order are the reporter's words.
+    The attached chart shows ₪3,106,775 in state support out of a ₪13.5m budget for 2024, with no name on
+    it. One search found no report of the event.
+- **הציונות הדתית: סמוטריץ'** ([post](https://x.com/bezalelsm/status/2106770640938410172), 15:37 UTC, a photo of workers under shade nets beside a stone-lined
+  pool): *"הבוקר התחלנו את העבודות בבריכת הורדוס לטובת שימור, והנגשה לציבור. מהפכת ההתיישבות ממשיכה!"* A
+  minister's act, filed by him under settlement. `pro-settlement` and `settler-movement`, held. The name
+  is the one [המכלול](https://www.hamichlol.org.il/%D7%91%D7%A8%D7%99%D7%9B%D7%AA_%D7%A4%D7%A6%D7%90%D7%9C) gives the reservoir at פצאל in the Jordan Valley, and the photo fits; the post names no
+  place, and which body is doing the work was not checked.
+
 
 ## Previous parties
 
@@ -14250,3 +14361,4 @@ pass happened, for anyone reading git history.
 | 2026-10-04 | revision 238 — **cross-row: וינטר to N12 and to ynet, ynet's inquiry questionnaire, גולן's N12 interview in full, N12's calendar (all `curl`). No axis moved, no tag added, `seed.sql` unchanged; three tags on עמך ישראל are put to the repo owner.** וינטר supports Jewish settlement in Gaza, would run the emigration administration as Defence Minister, and names penalties for non-servers, which overturns the refusals of `territorial-control-gaza`, `voluntary-palestinian-emigration-incentives` and `sanctions-on-non-servers`. He recommends נתניהו, will not sit under איזנקוט, בנט or ליברמן, and will not join a government until conscription is settled. The inquiry sweep is updated: המילואימניקים והכלכלית now backs the statutory form, עמך ישראל proposes a secret Knesset ballot, הציונות הדתית and זהות give two different non-statutory forms, and four coalition lists declined to answer. גולן declines to name an end state and lists five principles on held tags. |
 | 2026-10-04 | revision 239 — **עמך ישראל: `territorial-control-gaza`, `sanctions-on-non-servers` and `voluntary-palestinian-emigration-incentives` ADDED (13 → 16 tags), on the repo owner's decision. No axis moved.** On revision 238's two interviews: וינטר backs renewed Jewish settlement in Gaza, names penalties for non-servers (no benefits, barred from flying), and would run the emigration administration as Defence Minister. The emigration tag is the weakest of the three, a named body with no incentive. `population-transfer`, `service-conditioned-citizenship` and `reservist-focused` stay off. Verified on an already-seeded database. |
 | 2026-10-04 | revision 240 — **cross-row: nine posts, and four more found from them (fxtwitter; four clips transcribed by machine, three checked against their captions; two captioned clips read from frames). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) answers a clip of him backing two states: he says it predates שומר החומות and that he now opposes a Palestinian state, which restates held tags; a JNF podcast released 07.07.21 has him backing two states seven weeks after that operation ended. סמוטריץ' and הרשימה המשותפת both use the clip against him. פייגלין denies that any Arab was killed by a settler in ten years; an indictment over the 2025 killing of עודה הד'אלין names one. ליברמן wants the שב"כ head to resign over the flight and gives a third account of who secures foreign airlines. בנט repeats no state money for non-servers. פרוש, reported: no post in any government without a draft law. שפר (הדמוקרטים #11) on נתניהו keeping Hamas in power as policy. |
+| 2026-10-04 | revision 241 — **cross-row: nine posts (fxtwitter; three clips transcribed by machine and checked against captions or post text; four photos viewed) and two הארץ reports on the flight's crew list (bodies supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** השכל (ישראל תחילה #1) writes *"ממשלה ציונית, בלי קיצונים ובלי חרדים"* in a post's text, where revision 228 had it only in a clip; her radio interview says the weaker *"לא נישען על חרדים"*; the exclusion tag stays off, on the sweep. הארץ: the crew list reached the Tax Authority under a 2023 law and was not examined; the check on foreign flights passed from the שב"כ to the Transport Ministry's security division in 2021 by cabinet decision, the מל"ל says the division never acted on it, and its head holds a second paid job. That bears out טרנר אייל's account of revision 229 over ליברמן's and N12's; which government took the 2021 decision is not stated. רגב says the check is the intelligence bodies'. בנט, שפר and לנקרי attack on the flight with no measure; לנקרי asks for a state commission on it. ליברמן repeats no state money for non-servers. סמוטריץ' starts works at בריכת הורדוס. השכל and לפיד on the UK Greens' "Zionism is racism" vote. |
