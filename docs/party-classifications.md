@@ -10966,6 +10966,82 @@ moved.** The evidence is revision 238's two interviews, and nothing new was read
 - **Verified** as step 3 above prescribes: the previous `seed.sql`, then the new one on top with `psql -1`.
   The already-seeded row went from 13 tags to 16.
 
+**2026-10-04 — revision 240 (cross-row). חדאד's 2021 support for two states surfaces and he answers it; פייגלין
+attacks איזנקוט; ליברמן wants the שב"כ head gone; בנט and שפר. No axis moved, no tag added, `seed.sql`
+unchanged.** (Nine posts read through fxtwitter, and four more found from them through its profile feed.
+Four clips were transcribed by machine with ivrit.ai's Hebrew Whisper model: פייגלין's and חדאד's two were
+checked against their burned-in captions in sampled frames, and the 2014 clip שפר quotes has none. The two
+clips posted by the journalist carry his Hebrew captions over Arabic and English audio; the captions were
+read from frames and the originals were not heard.)
+
+- **This row: חדאד (#2) and a two-state interview.**
+  - **The charge.** מוחמד מג'אדלה, an N12 analyst and no party's voice, posted a 74-second אל-ערביה clip
+    ([post](https://x.com/mmagadli/status/2106493540968575296), 03.10.26 21:16 UTC). Asked *"מה דעתך על הקמת מדינה פלסטינית?"*, חדאד answers, in the captions:
+    *"כמובן, זה דבר שאני תמיד אומר, שהפתרון הסופי הוא מדינת ישראל לצד מדינת פלסטין… דבר שחייב לקרות, אין
+    להתכחש לכך"*, and speaks of peace *"בינינו לבין אחינו"*. The clip shows no date.
+  - **His answer** ([post](https://x.com/YosephHaddad/status/2106493471796154638), 21:15 UTC; [clip](https://x.com/YosephHaddad/status/2106508552588169531), 22:15 UTC; [second clip](https://x.com/YosephHaddad/status/2106661189748977775), 04.10 08:22 UTC). The interview is *"מלפני
+    מעל חמש וחצי שנים, לפני שומר החומות"*, on Saudi television, *"באווירת עסקת המאה של טראמפ"*. He changed
+    his mind in שומר החומות, when *"הבנתי ששלום לא יהיה איתם ושאסור לתת להם מדינה"*. Today: *"אני מתנגד נחרצות
+    למדינה פלסטינית שהיא אסון קיומי לכולנו"*; the party's principle, *"לא תקום מדינה פלסטינית בשטחי ארץ
+    ישראל"*; *"אנחנו נפעל כדי להשיב אדמות לארץ ישראל"*; and the party *"שמה כמטרה את נושא ההגירה מרצון מעזה כי
+    זה הפתרון היחיד שיש שם"*. As *"שר ההסברה"* he would *"להרוג סופית את רעיון המדינה הפלסטינית"*.
+  - **Nothing moves.** The page scores what a list says now. `no-palestinian-state`, `hasbara-focused` and
+    revision 239's `voluntary-palestinian-emigration-incentives` are each restated by the #2 in his own voice.
+    *"להשיב אדמות"* names no place.
+  - **His date does not hold, by seven weeks.** מג'אדלה's follow-up ([post](https://x.com/mmagadli/status/2106672526113886362), 04.10 09:07 UTC) is a 13-second clip
+    from JNF-USA's IsraelCast: *"אל תסיקו מדבריי שאני חושב שזו צריכה להיות מדינה אחת. לא, אני תומך בפתרון שתי
+    המדינות, בכפוף לכך שישראל תשמור על ביטחון מלא"*. The podcast's own [player](https://html5-player.libsyn.com/embed/episode/id/19736450/) gives the episode's release
+    as 7 July 2021. The fighting of שומר החומות ended with the ceasefire of 21 May 2021 ([Wikipedia](https://en.wikipedia.org/wiki/2021_Israel%E2%80%93Palestine_crisis)). When
+    it was recorded is not stated. So he still said it in public after the event he gives as the turning
+    point. That he holds the opposite view now is not in doubt.
+  - **The party, as the journalist reports it**: *"במפלגת 'עמך ישראל' מודים: יוסף חדאד טעה כשהביע תמיכה בתהליך
+    השלום ובהקמת מדינה פלסטינית"* ([post](https://x.com/mmagadli/status/2106501808617071066), 21:49 UTC). The post he quotes for it did not load.
+  - **Two rivals use it, from opposite ends, and neither is scored.** סמוטריץ' ([post](https://x.com/bezalelsm/status/2106658485920239693), 04.10 08:11 UTC):
+    *"כשמחפשים 'כוכבים חדשים' וקונים חתול בשק - אחוז החסימה הוא לא הסכנה היחידה"*. הרשימה המשותפת's account
+    ([post](https://x.com/ListJoint/status/2106622363043266897), 05:48 UTC): *"גם ימין וגם פלסטין"*. חדאד puts the two side by side ([post](https://x.com/YosephHaddad/status/2106666004675694645), 08:41 UTC):
+    *"סמוטריץ' משתף פעולה עם הרשימה המשותפת באותו קמפיין מתוזמן"*. It is the second attack on this row from
+    inside `bibi`, after נתניהו's (revision 101).
+  - **A repost, not a party voice.** חדאד reposted [דוד אופנהיים](https://x.com/Duduoppe/status/2106676465047572560), who argues that people changed after 7
+    October and cites a מעריב poll: 31% of Jewish Israelis in September 2023, and 52% in August 2026, called
+    a Palestinian state a disaster. The poll was not checked.
+- **הציונות הדתית: פייגלין (#2) on איזנקוט** ([post](https://x.com/moshefeiglin/status/2106735058929193361), 13:15 UTC, a 122-second clip). The clip shows the line
+  he is answering: *"אי אפשר לקבל את המציאות של אזרחים חמושים שלוקחים את החוק לידיים ונכנסים לתוך כפרים והורגים
+  ורוצחים"*. Where איזנקוט said it was not found. It fits ישר's `anti-settler-violence`, held.
+  - **He denies the thing itself.** *"שם אחד של ערבי… עשר השנים האחרונות שנהרג על ידי יהודי, על ידי מתנחל, על
+    ידי נער גבעות. שם אחד אין לך"*, and in the text, *"עלילות דם שקריות נגד ההתיישבות"*. The page files no
+    opposite pole of `anti-settler-violence` (revision 123), so this is recorded and not scored.
+  - **There is a name.** עודה הד'אלין of אום אל-ח'יר was shot dead in the summer of 2025, and ינון לוי of מעון
+    was indicted for it ([מעריב](https://www.maariv.co.il/news/law/article-1352973), found by search, not read). An indictment is not a conviction, but his
+    challenge was for one name.
+  - **Not scored:** that איזנקוט released 100,000 soldiers, scrapped Merkava 4 tanks and disbanded five
+    divisions, and *"ההפיכה הצבאית הפסיבית… ב-2023"*. A rival's account, not checked.
+- **ישראל ביתנו: ליברמן on the flight** ([post](https://x.com/AvigdorLiberman/status/2106730519392092166), 12:57 UTC). *"ראש השב"כ חייב להסיק מסקנות וללכת הביתה. לו
+  הייתי ראש הממשלה, לא הייתי משאיר לו הרבה ברירות"*. A demand that one official resign, with no measure. He
+  says he opposed זיני's appointment from the start; this page has no earlier record of that.
+  - **A third account of who is responsible.** As a former transport and defence minister: *"כל חברות התעופה
+    הפועלות בישראל, סידורי הביטחון… והטיסות הנכנסות לישראל והיוצאות ממנה נמצאים באחריות השב"כ"*. טרנר אייל put
+    foreign airlines under the transport minister (revision 229), and N12 put the thwarting of threats to
+    them under the מוסד (revision 232). Not reconciled. The rest of the opposition blames רגב (revision
+    237); he blames זיני.
+  - **His facts about the pilot** (dismissed by two airlines, shared al-Qaeda posts, made an earlier visit)
+    run into revision 237's note on גולן's: the posts CNN found went up after the attack. The Iranian and
+    Syrian pilots he mentions are *"מפרסומים בתקשורת"* and were not checked.
+- **ביחד: בנט** ([post](https://x.com/naftalibennett/status/2106697080982950314), 10:44 UTC): *"מי שלא משרת לא יקבל שקל מהמדינה. ניקח את הכסף מהמשתמטים ונעביר אותו
+  למשרתים"*. `sanctions-on-non-servers`, held, as in revision 235. His arithmetic about the other side (150
+  reserve days a year, income tax at 60%, VAT at 25%, ₪60bn a year, 120,000 evaders) is campaign material
+  and was not checked.
+- **יהדות התורה: פרוש, in the post בנט quotes** ([ישראל כהן](https://x.com/Israelcohen911/status/2106660837020803084) of קול ברמה, who interviewed him, 08:20 UTC):
+  *"ההסכם העיקרי של דגל ואגודה הוא שלא ניקח שום תפקיד בשום ממשלה עד שיהיה חוק גיוס"*. A third named voice
+  after אשר and גולדקנופף (revisions 233 and 237), and the first to call it an agreement between the two
+  factions. *"לא ניקח שום תפקיד"* is about posts; אשר's wording also ruled out support. One reported sentence
+  does not carry that difference, and the interview was not heard. `bibi` stays.
+- **הדמוקרטים: שפר (#11)** ([post](https://x.com/NimrodSheffer/status/2106724785136754849), 12:35 UTC, quoting a journalist's clip of him from October 2014). As head
+  of the IDF's planning directorate he said then that in צוק איתן *"קבע הדרג המדיני שהתכלית מבוססת על חמאס
+  כריבון"*. Now: נתניהו never wanted Hamas replaced, *"לא הזנחה, ולא חוסר עירנות. מדיניות"*, in order to
+  weaken the PA and avoid *"הסכם מדיני שיבצר את ביטחונה"*. A candidate's charge against a rival's record,
+  resting on his own testimony of the time. It is גולן's line of the evening before (revision 238) and
+  names no measure.
+
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
@@ -14173,3 +14249,4 @@ pass happened, for anyone reading git history.
 | 2026-10-04 | revision 237 — **cross-row: ליברמן's plan for the Palestinian question (two posts and the party's own page, identical text) and four more posts (fxtwitter; the ישראל היום report one of them quotes, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ישראל ביתנו: sovereignty over Area C in the chairman's own words, the whole-territory claim named as בן גביר's and סמוטריץ''s option and rejected (so `sovereignty-annexation` stays off), Israeli security in all of Judea and Samaria with Jordan policing A and B, and Gaza handed to an outside actor after Hamas is destroyed. The hilltop youth are *"חבורת המטורפים"* with no measure. הנדל, בליאק (blocking ₪45m for the Meron הילולה), שטרן and גולן: no measure; גולן's claim about the pilot's posts does not match revision 232. The report: ש"ס and יהדות התורה repeat the exemption as the price of any government, a גור source repeats revision 180's story, and לייטנר proposes a haredi division. |
 | 2026-10-04 | revision 238 — **cross-row: וינטר to N12 and to ynet, ynet's inquiry questionnaire, גולן's N12 interview in full, N12's calendar (all `curl`). No axis moved, no tag added, `seed.sql` unchanged; three tags on עמך ישראל are put to the repo owner.** וינטר supports Jewish settlement in Gaza, would run the emigration administration as Defence Minister, and names penalties for non-servers, which overturns the refusals of `territorial-control-gaza`, `voluntary-palestinian-emigration-incentives` and `sanctions-on-non-servers`. He recommends נתניהו, will not sit under איזנקוט, בנט or ליברמן, and will not join a government until conscription is settled. The inquiry sweep is updated: המילואימניקים והכלכלית now backs the statutory form, עמך ישראל proposes a secret Knesset ballot, הציונות הדתית and זהות give two different non-statutory forms, and four coalition lists declined to answer. גולן declines to name an end state and lists five principles on held tags. |
 | 2026-10-04 | revision 239 — **עמך ישראל: `territorial-control-gaza`, `sanctions-on-non-servers` and `voluntary-palestinian-emigration-incentives` ADDED (13 → 16 tags), on the repo owner's decision. No axis moved.** On revision 238's two interviews: וינטר backs renewed Jewish settlement in Gaza, names penalties for non-servers (no benefits, barred from flying), and would run the emigration administration as Defence Minister. The emigration tag is the weakest of the three, a named body with no incentive. `population-transfer`, `service-conditioned-citizenship` and `reservist-focused` stay off. Verified on an already-seeded database. |
+| 2026-10-04 | revision 240 — **cross-row: nine posts, and four more found from them (fxtwitter; four clips transcribed by machine, three checked against their captions; two captioned clips read from frames). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) answers a clip of him backing two states: he says it predates שומר החומות and that he now opposes a Palestinian state, which restates held tags; a JNF podcast released 07.07.21 has him backing two states seven weeks after that operation ended. סמוטריץ' and הרשימה המשותפת both use the clip against him. פייגלין denies that any Arab was killed by a settler in ten years; an indictment over the 2025 killing of עודה הד'אלין names one. ליברמן wants the שב"כ head to resign over the flight and gives a third account of who secures foreign airlines. בנט repeats no state money for non-servers. פרוש, reported: no post in any government without a draft law. שפר (הדמוקרטים #11) on נתניהו keeping Hamas in power as policy. |
