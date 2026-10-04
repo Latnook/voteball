@@ -1447,6 +1447,91 @@ questionnaire, whose answers are unchanged after its update of 04.10, and N12's 
   אחינו הפלסטינים בעזה ובגדה המערבית"*. N12 dates the interview *"לפני חמש שנים"* and does not mention the
   JNF podcast of July 2021, so revision 240's point about his date stands on that page alone.
 
+**2026-10-04 — revision 243 (cross-row). נתניהו's second *"ימין או פלסטין"* clip, with *"ימין אמיתי, השאר זה
+פייק"*; קריב and שפר on the flight after נתניהו orders an examination; מעוז at the ליבמן memorial. No axis moved,
+no tag added, `seed.sql` unchanged. One error on the נעם row is corrected.** (Four posts read through fxtwitter.
+Three clips were transcribed by machine with ivrit.ai's Hebrew Whisper model and checked against their
+burned-in captions, which are complete on נתניהו's and מעוז's and word-by-word on שפר's. One photo was viewed.
+Seven news reports were read with plain `curl`.)
+
+- **This row: נתניהו, 59 seconds of a studio interview** ([post](https://x.com/netanyahu/status/2106810877227971071), 18:17 UTC; the post's whole text is *"זה או ימין
+  או פלסטין"*). The interviewer is not named in the clip or the post, and one search did not find the
+  programme.
+  - **New: a licence to vote for another list, and a verdict on the rest.** *"לצאת להצביע ליכוד. ואם משום מה
+    אתם לא מצביעים ליכוד, תצביעו לימין אמיתי. השאר זה פייק. או שלא יעברו, או שיעבירו לצד השני"*. He names
+    no list on either side of that line. It is a claim about other rows (revision 153's line) and moves no
+    `bloc`: every `bloc` here is argued from what the list itself says about whom it will sit with. The
+    lists it can only be aimed at are the right-leaning ones outside his bloc, which this page files as
+    `opposition` or `unaligned` on their own words.
+  - **The choice, restated in a third form.** *"זה או ליכוד, ממשלה ימנית חזקה, רחבה בראשותי, או ממשלת שמאל של
+    איזנקוט שתלויה במפלגות הערביות"*. Revision 203 had *"שתקים מדינה פלסטינית"* and a Joint List *"כבר סגורה
+    עם איזנקוט"*. This one says only dependent on the Arab parties. As far as that means the
+    Joint List, it still contradicts ישר's `excludes-anti-zionist-parties` (revision 169), and the slogan
+    contradicts its `no-palestinian-state`.
+  - **Not his words.** *"ממשלה סובייטית שתיתמך על ידי האחים המוסלמים"* is the interviewer's question. He
+    answers it with the turnout line and does not repeat it.
+  - **Turnout.** Asked what happens if right-wing voters stay home: *"אסון. הם פשוט יחזירו לאחור את כל
+    ההישגים הכבירים שעשינו"*, and *"תביאו את הסבתא ותביאו את הדודה"*. It is the pool מעוז says he is
+    targeting (revision 218, *"4-5-6 מנדטים… נשארים בבית"*), claimed here for the Likud. Electoral strategy.
+  - **The closing cards.** *"ימין"*, then *"או פלסטין"* over photographs of six politicians with no name
+    printed, then the party's ballot slip. The spoken text names איזנקוט alone.
+  - `no-palestinian-state` and `anti-two-state`, held. Nothing scored.
+- **The flight: נתניהו orders an examination, four days on.** His office, on the evening of 04.10: he *"הנחה
+  את ראש המל״ל שמואל בן עזרא למנות בודק לביצוע בחינה יסודית של כלל היבטי האבטחה של התעופה האזרחית הזרה
+  לישראל"* ([ynet](https://www.ynet.co.il/news/article/r1bw111lofg), איתמר אייכנר; [הארץ](https://www.haaretz.co.il/news/politics/2026-10-04/ty-article/000001a1-07c1-dff9-a3b3-c7ed1fc40000), יהונתן ליס and מיכאל האוזר טוב, 19:33). A head of
+  government's act, with no position in it.
+  - **What it is, by ynet.** An internal examination whose head has no powers of investigation or
+    enforcement. The State Comptroller's report of May 2024 already recommended that the מל"ל lead staff
+    work on aviation security with the Transport and Finance ministries, the Airports Authority, the שב"כ
+    and the police. A proposal for one state aviation-security authority reached the prime minister in
+    2011, and two מל"ל-led committees recommended it since. None was acted on.
+  - **ynet calls it his first acknowledgement of the failure. This page has an earlier one.** On 02.10 he
+    told Fox he had found a *"פרצה"* in Israeli security policy (the note under revision 226).
+  - **Bears on revision 241's open question, and does not close it.** [וואלה](https://www.walla.co.il/news/israel/383956256) (אבי סולומון and עידן קוולר, 19:51):
+    the ministry did not pull the crew data for a year and a half, *"אף שהאחריות לבדיקתם הוטלה עליו בעקבות
+    דיונים שבהם התעקשו שרת התחבורה מירי רגב וראש רשות התעופה האזרחית… לקבל אותה לידיהם"*. That fits the
+    unnamed speaker's *"בחרה להכריע"* in בנט's clip. It gives no date, so which government took the 2021
+    cabinet decision is still not stated. ynet adds that the 2023 law lets the ministry's division into
+    the passenger database and that it never asked for the access, and that the division has about ten
+    full-time staff.
+- **הדמוקרטים: קריב (#3)** ([post](https://x.com/KarivGilad/status/2106795832985231627), 17:17 UTC, over a screenshot of an N12 push by דפנה ליאל, 19:33, reporting the
+  instruction): *"נתניהו - לך תעבוד על מישהו אחר. רצת להצטלם בנתב״ג במקום לקיים התייעצויות ביטחוניות, וגם עכשיו
+  אתה לא מטפל במחדל… כל מה שאתה עושה זה לבקש מראש המל״ל דו״ח?"* An attack with no measure. Nothing scored.
+  - **Checked, and half of it holds.** He did go to נתב"ג: he received the passengers when the rescue
+    flight landed on 30.09 and met one of the men who subdued the co-pilot ([אייס](https://www.ice.co.il/local-news/news/article/1131776)). *"במקום"* does not
+    hold as written: [ynet](https://www.ynet.co.il/news/article/sjc00c7q5gx)'s report of that morning has him and כ"ץ convening an urgent security
+    consultation while the plane was still in the air, and his office said the same.
+  - **Found in passing, not supplied:** לפיד (ביחד), quoted by וואלה: *"היא בדיקה פח… כפי שנתניהו ברח מחקירת
+    טבח השבעה באוקטובר, כך הוא בורח עכשיו"*. A rival, no measure.
+- **הדמוקרטים: שפר (#11) on N12's חמש עם רפי רשף** ([post](https://x.com/NimrodSheffer/status/2106820485493465576), 18:55 UTC, a 34-second clip): *"יש קו ישיר בין שבעה
+  באוקטובר לאירוע שלפני ארבעה ימים. קו ישיר שקוראים לו אחריות"*. A commission of inquiry is set up by a
+  body that sees itself as responsible, *"ולכן אין ועדת חקירה שלוש שנים לשבעה באוקטובר"*. Before asking who
+  screens pilots, *"אחריותנו שלא ייהרגו אנשים ישראלים"*. It is בנט's *"קו ישיר"* of the same morning
+  (revision 241) from a second list, and שפר's own argument of revision 241 again. He names no form of
+  inquiry for the flight, and `state-commission-of-inquiry` is refused for every row. Nothing scored.
+  - **The strap under him is new to this page.** *"תחקיר באיטליה חושף: טייס המשנה העומאני תכנן להתרסק על
+    גורדי שחקים בתל אביב"*. It is a קוריירה דלה סרה report of 04.10, read here only through [i24](https://www.i24news.tv/he/news/international/artc-a7bd5e91): he
+    meant to kill the captain with the cockpit's emergency axe before any report could be made, fly on,
+    and crash in central Tel Aviv, and he dived the plane over the desert once the door was opened from
+    outside.
+  - **A second target, from a second source.** וואלה, citing Israeli sources in the investigation: he told
+    his interrogators *"החלום היה להתרסק על נתב"ג"*, chose the airline because it flies to Tel Aviv, and
+    had flown into נתב"ג in recent months, the last time around July. Skyscrapers by the Italian paper,
+    the airport by the Israeli leak. Neither was checked against the other, and no party is in either.
+- **נעם לישראל: מעוז (#1) at a memorial for אליקים ליבמן** ([post](https://x.com/AVI_MAOZ/status/2106794623683412283), 17:12 UTC, a 42-second clip under the party's
+  banner, of a eulogy read at an outdoor ceremony; the clip does not name the speaker). The post: *"אם אנחנו
+  רוצים להמשיך לחיות כאן, עלינו לגדל עוד אליקימים. זה מתחיל ונגמר בחינוך. בזהות יהודית ברורה, בשורשים"*, and
+  the upbringing he had from his parents, *"מועמד מפלגת נעם לישראל אליהו ואבישג ליבמן"*, draws on the
+  patriarchs *"במערת המכפלה"*. The clip says the same and ends on the slogan *"הילדים, זה החיים שלנו"*.
+  `education-system-focused` and `single-issue-jewish-identity`, held, restated at a graveside. No measure.
+  Nothing scored, on the line the row already drew for ליבמן (#3): a candidate's bereavement is not a
+  position.
+  - **A correction to this page, found from the post.** The נעם row's slate entry (revision 68) called the
+    son *אלקנה* and said he was held in Gaza. He was אליקים, a security guard at the Nova festival. He was
+    listed as a hostage until May 2024, when his remains were found in Israel, buried by mistake with
+    another victim ([כאן](https://www.kan.org.il/content/kan-news/defense/744844/); [ערוץ 7](https://www.inn.co.il/news/702801), 30.07.26, on the father's candidacy). The entry is corrected in place.
+    Revision 68's row in the change history keeps its wording, as a record.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -10168,8 +10253,10 @@ confirming the rename recorded in Conventions, and the row runs **independently*
   two-faction list by anyone.
 - **#1 אביגדור מעוז** (לזוז), **#2 שמעון טבול**, **#3 אליהו שלום ליבמן** and **#4 ליאורה אלון** (both
   under אחריות לאומית), **#5 יסכה חיימוב**, **#6 ישראל יאיר אביטן**.
-- **No tag from the slate, and one refusal worth naming.** ליבמן #3 is the father of אלקנה ליבמן,
-  killed at the Nova festival and held in Gaza, and חיימוב #5 is the sister of the ש"ב head
+- **No tag from the slate, and one refusal worth naming.** ליבמן #3 is the father of אליקים ליבמן,
+  a security guard killed at the Nova festival and listed as a hostage until his remains were found in
+  Israel in May 2024 *(revision 243: this read "אלקנה" and "held in Gaza", and both were wrong)*, and
+  חיימוב #5 is the sister of the ש"ב head
   דוד זיני. Neither is a position, and this row's `security 3` and `religiosity 3` are argued from
   the party's own material — the same line drawn for כחול לבן's list composition and עמך ישראל's
   בן ציון. **The list is 14 names**, the shortest on the page.
@@ -14409,3 +14496,4 @@ pass happened, for anyone reading git history.
 | 2026-10-04 | revision 240 — **cross-row: nine posts, and four more found from them (fxtwitter; four clips transcribed by machine, three checked against their captions; two captioned clips read from frames). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) answers a clip of him backing two states: he says it predates שומר החומות and that he now opposes a Palestinian state, which restates held tags; a JNF podcast released 07.07.21 has him backing two states seven weeks after that operation ended. סמוטריץ' and הרשימה המשותפת both use the clip against him. פייגלין denies that any Arab was killed by a settler in ten years; an indictment over the 2025 killing of עודה הד'אלין names one. ליברמן wants the שב"כ head to resign over the flight and gives a third account of who secures foreign airlines. בנט repeats no state money for non-servers. פרוש, reported: no post in any government without a draft law. שפר (הדמוקרטים #11) on נתניהו keeping Hamas in power as policy. |
 | 2026-10-04 | revision 241 — **cross-row: nine posts (fxtwitter; three clips transcribed by machine and checked against captions or post text; four photos viewed) and two הארץ reports on the flight's crew list (bodies supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** השכל (ישראל תחילה #1) writes *"ממשלה ציונית, בלי קיצונים ובלי חרדים"* in a post's text, where revision 228 had it only in a clip; her radio interview says the weaker *"לא נישען על חרדים"*; the exclusion tag stays off, on the sweep. הארץ: the crew list reached the Tax Authority under a 2023 law and was not examined; the check on foreign flights passed from the שב"כ to the Transport Ministry's security division in 2021 by cabinet decision, the מל"ל says the division never acted on it, and its head holds a second paid job. That bears out טרנר אייל's account of revision 229 over ליברמן's and N12's; which government took the 2021 decision is not stated. רגב says the check is the intelligence bodies'. בנט, שפר and לנקרי attack on the flight with no measure; לנקרי asks for a state commission on it. ליברמן repeats no state money for non-servers. סמוטריץ' starts works at בריכת הורדוס. השכל and לפיד on the UK Greens' "Zionism is racism" vote. |
 | 2026-10-04 | revision 242 — **cross-row: the CEC chair's ruling on six petitions against נתניהו (תב"כ 66, 67, 77, 78, 83, 91/26, read with `pdftotext`) and two N12 reports (`curl`). Nothing scored.** סולברג finds that נתניהו used public assets, the IDF among them, for election propaganda: two petitions granted in full, three in part, one dismissed, ₪29,000 in costs. The test is whether a speech credits the results to the speaker and promises more under him. The Attorney General backed the petitioners on five. A lead: his earlier ruling in *הליכוד נ' איזנקוט* (תב"כ 87/26), not read. N12's report on חדאד's clip adds one passage of the interview. Four other links supplied were revision 238's. |
+| 2026-10-04 | revision 243 — **cross-row: four posts (fxtwitter; three clips transcribed by machine and checked against their captions; one photo viewed) and seven news reports (`curl`). No axis moved, no tag added, `seed.sql` unchanged; one error on the נעם row corrected.** נתניהו's second *"ימין או פלסטין"* clip adds *"תצביעו לימין אמיתי. השאר זה פייק"*, naming no list: a claim about other rows that moves no `bloc`. The choice is now a government of איזנקוט *"שתלויה במפלגות הערביות"*, a third form of revision 203's claim. He orders the מל"ל head to appoint an examiner of foreign-aviation security; ynet calls it his first acknowledgement, and the page already holds his *"פרצה"* of 02.10. קריב (הדמוקרטים #3) says he went to be photographed at נתב"ג instead of holding security consultations: the visit is reported, and so is a consultation that morning. שפר (#11) repeats the *"קו ישיר"* from 7 October. New on the flight: a קוריירה דלה סרה report that the co-pilot meant to crash into Tel Aviv's towers, and a וואלה leak that he named נתב"ג. מעוז at the ליבמן memorial restates held tags. **Correction:** the son of ליבמן (נעם #3) is אליקים, not אלקנה, and he was not held in Gaza. |
