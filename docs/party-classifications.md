@@ -1410,8 +1410,8 @@ questionnaire, whose answers are unchanged after its update of 04.10, and N12's 
 
 - **This row: סולברג on six petitions against נתניהו** ([decision, תב"כ 66, 67, 77, 78, 83 and 91/26](https://img.mako.co.il/2026/10/04/SOLBERG.pdf), 04.10.26;
   [N12](https://www.mako.co.il/news-israel-elections/2026/Article-d0e933e38c601a1026.htm), יעל יפה, 15:05). The petitioners named in the heading are two associations, בוחרים בישראל and בואו,
-  and a third, משמר הדמוקרטיה, is awarded costs. No party filed. The claim is section 2א of the propaganda law: no use of a public body's assets *"בקשר עם
-  תעמולת בחירות"*.
+  and a third, משמר הדמוקרטיה, is awarded costs. No party filed. The claim is section 2א of the propaganda
+  law: no use of a public body's assets *"בקשר עם תעמולת בחירות"*.
   - **The outcome.** Two petitions granted in full, three in part, one dismissed. נתניהו pays ₪29,000 in
     costs, ₪24,000 to the three associations and ₪5,000 to the state respondents.
 
