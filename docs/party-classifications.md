@@ -10515,7 +10515,7 @@ a long way above the single launch report revision 32 had.
 - **`sanctions-on-non-servers` REJECTED** on the revision 15 line. All seven holders name a concrete
   penalty — a fine, a withdrawn entitlement, a criminal charge. This programme names only rewards,
   graduated by contribution. A reward ladder and a penalty schedule are not the same instrument, and
-  the tag was created to record the second.
+  the tag was created to record the second. *(Reversed by revision 239: penalties named on N12, 03.10.26.)*
 - **`reservist-focused` REJECTED** on the revision 13 standard, which is a costed benefits package
   rather than rhetoric. *"בראש סדר העדיפויות הלאומי"* is a priority claim with no benefit, no number
   and no instrument attached.
@@ -10602,7 +10602,8 @@ ADDED (7 → 8 tags). No axis moved — security is already +3.**
   reasonably reach the other answer.
 - **`territorial-control-gaza` also refused**, for the same reason in the other direction: *"מצור
   חכם"* and *"הכרעה מלאה"* are about defeating the enemy, and the text commits to no post-war
-  presence. The row's existing `territorial-price-doctrine` already carries what is here.
+  presence. The row's existing `territorial-price-doctrine` already carries what is here. *(Reversed by
+  revision 239: וינטר backs renewed Jewish settlement in the Strip.)*
 - **The party's own dividing line, recorded in prose and not minted**: *"הבחירות הקרובות הן על השאלה
   מי יהיה אחראי על ביטחון מדינת ישראל: איזנקוט ויאיר גולן בממשלה עם מנסור עבאס או עופר וינטר"*. It is
   framed as an attack on a rival, but it states what this row says the election is about, which no
@@ -10698,7 +10699,8 @@ Chromium. The quotes are his; the rest is כאן's summary of the interview.)
   ולא המצאות עם ממשלת טכנוקרטים בעזה"* rejects foreign forces and a technocratic government. It says who is
   responsible for security, not that Israel holds territory in Gaza, which is what the tag marks. Revision
   99 refused it on the same gap. Rejecting international forces is also a lead for the foreign-relations
-  sweep item (Open questions), not scored here.
+  sweep item (Open questions), not scored here. *(The tag is added in revision 239, on settlement in the
+  Strip, not on this line.)*
 - **Emigration, still a bare noun.** *"לא התחילה הגירה מעזה"* complains that it has not started; it names no
   mechanism, so revision 32's refusal of both emigration tags stands.
 - **Not scored:** the aim to be Defence Minister (a portfolio wish); *"באף זירה לא הכרענו"* and *"אין
@@ -10714,7 +10716,7 @@ as a whole is the tag's founding shape, and the row's `security` is already +3. 
 first time this row has said *מרצון***, where revision 32 refused both emigration tags because הגירה was a bare
 noun; it names no mechanism or incentive, so `voluntary-palestinian-emigration-incentives` is still not added.
 **Trigger:** a stated mechanism. *(Met by revision 238: וינטר would run the emigration administration as
-Defence Minister. The tag is put to the repo owner there.)*
+Defence Minister. The tag is added in revision 239.)*
 
 **2026-09-29 — revision 187 (cross-row). נתניהו warns that enemies will try to attack before the election;
 ישר and וינטר answer. No axis moved, no tag added.** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-821984fab1de0a1026.htm), דפנה ליאל, 29.09.26 15:30, read from the page's
@@ -10887,7 +10889,7 @@ second.)
     איזנקוט, הלוי and the שב"כ head pushed the Qatari money, with איזנקוט quoted as *"זה לא תשלום פרוטקשן, זה
     השלמת הכנסה"*. The last is a rival's account and was not checked.
   - **Put to the repo owner, not applied.** Tags on this row have been added on the owner's decision
-    (revision 176).
+    (revision 176). *(All three approved the same day and added in revision 239.)*
 
     | tag | holders now | why it was refused | what this row now says |
     |---|---|---|---|
@@ -10942,6 +10944,27 @@ second.)
   between עוצמה יהודית and this row. A surplus agreement is arithmetic inside a bloc and not a position; the
   last pairing, if signed, fits `bibi`. מג'אדלה gives the two Arab lists' slogans, *"רק מנסור יחליף את
   הממשלה הזאת"* and *"בידיים שלנו אפשר לשנות אותה"*.
+
+**2026-10-04 — revision 239. `territorial-control-gaza`, `sanctions-on-non-servers` and
+`voluntary-palestinian-emigration-incentives` ADDED (13 → 16 tags), on the repo owner's decision. No axis
+moved.** The evidence is revision 238's two interviews, and nothing new was read.
+
+- **`territorial-control-gaza` (3 → 4 lists on the ballot).** *"אתה תומך בחידוש ההתיישבות היהודית ברצועת עזה?
+  כן. אני תומך"* (ynet), and *"בשמחה. בהמשך"* (N12). Settlement is a presence after the war, which revisions
+  99 and 147 found missing. `security` is already +3.
+- **`sanctions-on-non-servers` (7 → 8).** *"מי שלא משרת את המדינה, לא יהיה זכאי לאקסטרות"*, and a man who has not
+  regularised his status is *"חסום במדינת ישראל. הוא לא יכול לטוס"* (N12). The tag's test is a named penalty.
+  The bar on flying is one he says exists today, so what he commits to is enforcing it and withholding
+  benefits.
+- **`voluntary-palestinian-emigration-incentives` (3 → 4, beside אל הדגל, withdrawn).** *"הגירה מרצון"* and
+  *"אני כשר ביטחון אדרוש להוביל את מינהלת ההגירה"* (ynet). This is the weakest of the three: a named body and
+  no incentive, where the other holders have a costed plan, a bill or grants. If a later pass tightens the
+  tag to costed incentives, this row is the first to lose it.
+- **Still off:** `population-transfer` (nothing in the instrument compels), `service-conditioned-citizenship`
+  (a benefits ladder, not a claim about citizenship, as on 2026-09-03) and `reservist-focused` (doubled
+  combat pay is one number with no package).
+- **Verified** as step 3 above prescribes: the previous `seed.sql`, then the new one on top with `psql -1`.
+  The already-seeded row went from 13 tags to 16.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -14149,3 +14172,4 @@ pass happened, for anyone reading git history.
 | 2026-10-03 | revision 232 — **cross-row: three posts (fxtwitter; ליברמן's clip transcribed by machine; the N12 report one of them links read with `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ליברמן repeats revision 230 on the spot and adds Rafah's reconstruction before disarmament as *"כניעה לטרור"*, on `hardline-on-gaza`, held. רונן (הדמוקרטים #7) promises a second state commission, for the flight. זר קצנשטיין (#12) attacks זיני, רגב, כץ and נתניהו; the N12 report she links adds the שב"כ's July ban on Israeli airlines landing in Dubai, and says the מוסד, not the transport minister, thwarts threats to foreign airlines, which differs from טרנר אייל's account (revision 229). Neither checked. |
 | 2026-10-04 | revision 237 — **cross-row: ליברמן's plan for the Palestinian question (two posts and the party's own page, identical text) and four more posts (fxtwitter; the ישראל היום report one of them quotes, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** ישראל ביתנו: sovereignty over Area C in the chairman's own words, the whole-territory claim named as בן גביר's and סמוטריץ''s option and rejected (so `sovereignty-annexation` stays off), Israeli security in all of Judea and Samaria with Jordan policing A and B, and Gaza handed to an outside actor after Hamas is destroyed. The hilltop youth are *"חבורת המטורפים"* with no measure. הנדל, בליאק (blocking ₪45m for the Meron הילולה), שטרן and גולן: no measure; גולן's claim about the pilot's posts does not match revision 232. The report: ש"ס and יהדות התורה repeat the exemption as the price of any government, a גור source repeats revision 180's story, and לייטנר proposes a haredi division. |
 | 2026-10-04 | revision 238 — **cross-row: וינטר to N12 and to ynet, ynet's inquiry questionnaire, גולן's N12 interview in full, N12's calendar (all `curl`). No axis moved, no tag added, `seed.sql` unchanged; three tags on עמך ישראל are put to the repo owner.** וינטר supports Jewish settlement in Gaza, would run the emigration administration as Defence Minister, and names penalties for non-servers, which overturns the refusals of `territorial-control-gaza`, `voluntary-palestinian-emigration-incentives` and `sanctions-on-non-servers`. He recommends נתניהו, will not sit under איזנקוט, בנט or ליברמן, and will not join a government until conscription is settled. The inquiry sweep is updated: המילואימניקים והכלכלית now backs the statutory form, עמך ישראל proposes a secret Knesset ballot, הציונות הדתית and זהות give two different non-statutory forms, and four coalition lists declined to answer. גולן declines to name an end state and lists five principles on held tags. |
+| 2026-10-04 | revision 239 — **עמך ישראל: `territorial-control-gaza`, `sanctions-on-non-servers` and `voluntary-palestinian-emigration-incentives` ADDED (13 → 16 tags), on the repo owner's decision. No axis moved.** On revision 238's two interviews: וינטר backs renewed Jewish settlement in Gaza, names penalties for non-servers (no benefits, barred from flying), and would run the emigration administration as Defence Minister. The emigration tag is the weakest of the three, a named body with no incentive. `population-transfer`, `service-conditioned-citizenship` and `reservist-focused` stay off. Verified on an already-seeded database. |
