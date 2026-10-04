@@ -1401,6 +1401,52 @@ reports is used. None of its reported claims was checked against another source.
   the writer over Trump's estimate.)* The rest of the report, on the
   pilot's background and the captain's account, names no party; its WSJ line is in revision 232.)*
 
+**2026-10-04 — revision 242 (cross-row). The CEC chair rules that נתניהו used the IDF and other public assets
+for election propaganda; N12's report on חדאד's clip. No axis moved, no tag added, `seed.sql` unchanged.**
+(The ruling, 22 pages, was read with `pdftotext` from the copy N12 links; its framework section was skimmed
+and the six applications and the operative part were read in full. Both N12 reports with plain `curl`. Four
+more links supplied are revision 238's and were not re-entered: וינטר to N12 and to ynet, ynet's inquiry
+questionnaire, whose answers are unchanged after its update of 04.10, and N12's calendar.)
+
+- **This row: סולברג on six petitions against נתניהו** ([decision, תב"כ 66, 67, 77, 78, 83 and 91/26](https://img.mako.co.il/2026/10/04/SOLBERG.pdf), 04.10.26;
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-d0e933e38c601a1026.htm), יעל יפה, 15:05). The petitioners named in the heading are two associations, בוחרים בישראל and בואו,
+  and a third, משמר הדמוקרטיה, is awarded costs. No party filed. The claim is section 2א of the propaganda law: no use of a public body's assets *"בקשר עם
+  תעמולת בחירות"*.
+  - **The outcome.** Two petitions granted in full, three in part, one dismissed. נתניהו pays ₪29,000 in
+    costs, ₪24,000 to the three associations and ₪5,000 to the state respondents.
+
+    | petition | the speech | result |
+    |---|---|---|
+    | 66/26 | press conference at the PM's office, 15.06.26, closing a week of fighting with Iran | granted: removed from the state's accounts, and from his own unless he shows the footage is not the state's |
+    | 67/26 | the naming of Route 60 as *"דרך התנ"ך"*, 18.06.26 | dismissed: mostly in the plural, and it informs |
+    | 77/26 | to the IDF's senior command forum, 29.06.26 | granted: removed from the state's accounts and from his Facebook page |
+    | 78/26 | to soldiers at an outpost in south Lebanon, 30.06.26 | the full speech stays on the official accounts; the cut he posted on his own is forbidden |
+    | 83/26 | the ז'בוטינסקי memorial, 14.07.26, and a speech at the Negev conference | one section of the first must be cut; the second is propaganda throughout; a message to Iran's leaders taken from it stays, as deterrence |
+    | 91/26 | the officers' course graduation at בה"ד 1, 25.06.26 | two passages must come out, or the whole |
+
+  - **The test he applies.** *"לא הרי האמירה 'מדינת ישראל חזקה', כאמירה 'מדינת ישראל חזקה בהנהגתי'"*. Speeches
+    that credit the results to the speaker in the first person, set against others who advised stopping,
+    and promise more *"כל עוד אני ראש ממשלת ישראל"*, are persuasion of voters. Said four and a half months
+    before the vote, such promises amount to *"הותירו את ההגה בידַי"*.
+  - **The army as an asset.** A speech to the senior command is *"משאב שאינו זמין למועמדים אחרים"*. On the
+    Lebanon clip: the thanks to the soldiers were cut in the edit and the government's achievements kept.
+    *"זוהי, כמובן, תעמולת בחירות"*.
+  - **The Attorney General sided with the petitioners** on five of the six, in full or in part, and against
+    them on the Lebanon speech's official version.
+  - **Nothing scored.** A finding about how an incumbent campaigned, not about what the list wants.
+  - **A lead inside it:** he cites his own ruling in תב"כ 87/26, *הליכוד נ' איזנקוט* (06.08.26), on the bans
+    on using the IDF in propaganda. So הליכוד brought the same kind of complaint against ישר two months
+    earlier. That ruling was not read and its outcome is not on this page.
+  - **From the quoted speeches, in his own words and recorded only:** *"אנחנו מחזיקים בלמעלה מ-60 אחוז משטח
+    הרצועה"*, and on the north, *"זה מחייב שמירה על רצועת הביטחון בדרום לבנון… שלא נצא משם כל עוד צורכי
+    הביטחון של ישראל מחייבים זאת"* (18.06.26). A prime minister describing where the army stands. It claims
+    no sovereignty and no settlement, so `territorial-control-gaza` does not arise on this row.
+- **עמך ישראל: N12's report on חדאד's clip** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-3ff5b7c5a9301a1027.htm), 04.10.26 08:46, unsigned). It is revision 240's story from
+  the outlet whose analyst posted the clip, with the same reply from חדאד. One passage of the interview is
+  new to this page: *"כשאנחנו כערבים ישראלים… בתוך המוסדות הממשלתיים הבכירים ביותר בישראל נוכל לבוא ולדבר על
+  אחינו הפלסטינים בעזה ובגדה המערבית"*. N12 dates the interview *"לפני חמש שנים"* and does not mention the
+  JNF podcast of July 2021, so revision 240's point about his date stands on that page alone.
+
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
 **⚠ 2026-09-06 — חילי טרופר joins this list at #6, two days before the filing deadline.**
@@ -14362,3 +14408,4 @@ pass happened, for anyone reading git history.
 | 2026-10-04 | revision 239 — **עמך ישראל: `territorial-control-gaza`, `sanctions-on-non-servers` and `voluntary-palestinian-emigration-incentives` ADDED (13 → 16 tags), on the repo owner's decision. No axis moved.** On revision 238's two interviews: וינטר backs renewed Jewish settlement in Gaza, names penalties for non-servers (no benefits, barred from flying), and would run the emigration administration as Defence Minister. The emigration tag is the weakest of the three, a named body with no incentive. `population-transfer`, `service-conditioned-citizenship` and `reservist-focused` stay off. Verified on an already-seeded database. |
 | 2026-10-04 | revision 240 — **cross-row: nine posts, and four more found from them (fxtwitter; four clips transcribed by machine, three checked against their captions; two captioned clips read from frames). No axis moved, no tag added, `seed.sql` unchanged.** חדאד (עמך ישראל #2) answers a clip of him backing two states: he says it predates שומר החומות and that he now opposes a Palestinian state, which restates held tags; a JNF podcast released 07.07.21 has him backing two states seven weeks after that operation ended. סמוטריץ' and הרשימה המשותפת both use the clip against him. פייגלין denies that any Arab was killed by a settler in ten years; an indictment over the 2025 killing of עודה הד'אלין names one. ליברמן wants the שב"כ head to resign over the flight and gives a third account of who secures foreign airlines. בנט repeats no state money for non-servers. פרוש, reported: no post in any government without a draft law. שפר (הדמוקרטים #11) on נתניהו keeping Hamas in power as policy. |
 | 2026-10-04 | revision 241 — **cross-row: nine posts (fxtwitter; three clips transcribed by machine and checked against captions or post text; four photos viewed) and two הארץ reports on the flight's crew list (bodies supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** השכל (ישראל תחילה #1) writes *"ממשלה ציונית, בלי קיצונים ובלי חרדים"* in a post's text, where revision 228 had it only in a clip; her radio interview says the weaker *"לא נישען על חרדים"*; the exclusion tag stays off, on the sweep. הארץ: the crew list reached the Tax Authority under a 2023 law and was not examined; the check on foreign flights passed from the שב"כ to the Transport Ministry's security division in 2021 by cabinet decision, the מל"ל says the division never acted on it, and its head holds a second paid job. That bears out טרנר אייל's account of revision 229 over ליברמן's and N12's; which government took the 2021 decision is not stated. רגב says the check is the intelligence bodies'. בנט, שפר and לנקרי attack on the flight with no measure; לנקרי asks for a state commission on it. ליברמן repeats no state money for non-servers. סמוטריץ' starts works at בריכת הורדוס. השכל and לפיד on the UK Greens' "Zionism is racism" vote. |
+| 2026-10-04 | revision 242 — **cross-row: the CEC chair's ruling on six petitions against נתניהו (תב"כ 66, 67, 77, 78, 83, 91/26, read with `pdftotext`) and two N12 reports (`curl`). Nothing scored.** סולברג finds that נתניהו used public assets, the IDF among them, for election propaganda: two petitions granted in full, three in part, one dismissed, ₪29,000 in costs. The test is whether a speech credits the results to the speaker and promises more under him. The Attorney General backed the petitioners on five. A lead: his earlier ruling in *הליכוד נ' איזנקוט* (תב"כ 87/26), not read. N12's report on חדאד's clip adds one passage of the interview. Four other links supplied were revision 238's. |
