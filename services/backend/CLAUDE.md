@@ -388,3 +388,40 @@ instrumentation plan:
   multiprocess check exported it, deleted the directory afterwards, and left the variable set. Unset
   it (or run under `env -u PROMETHEUS_MULTIPROC_DIR`) before trusting any other explanation.
 
+## Backend request-handling pattern
+
+*Moved verbatim from the root `CLAUDE.md` on 2026-10-02 so it loads only when working here. Where a paragraph says "above" or "below" about something not in this file, it is in one of: `terraform/CLAUDE.md`, `scripts/CLAUDE.md`, `charts/logging/CLAUDE.md`, `charts/observability/CLAUDE.md`, `charts/voteball/CLAUDE.md`, or the `voteball-cicd` skill.*
+
+Every route acquires its own `psycopg2` connection via `db.get_db()` (no pooling) and must guarantee
+`conn.close()` on every exit path, including unexpected exceptions — use `try/finally`, not scattered
+`conn.close()` calls in each branch (see `results()` and `vote()` in `app.py` for the established
+shape). `queries.py` functions that mutate data must `conn.rollback()` in a broad `except` before
+re-raising, not just catch the one expected constraint-violation error, since this is the failure mode
+that leaks connections on a public endpoint (see `insert_vote`'s history in `queries.py`).
+
+Admin endpoints (`/api/admin/...`) are protected by the `require_admin` decorator in `app.py`, which
+verifies an `Authorization: Bearer <token>` header — a signed, 12-hour-expiring token
+(`itsdangerous.URLSafeTimedSerializer`) issued by `POST /api/admin/login` after checking a username
+and `werkzeug`-hashed password (`ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`/`ADMIN_SESSION_SECRET` env
+vars). Reuse this decorator for any new admin route — don't hand-roll the check.
+
+## `connect_timeout=5` on `get_db()` (backend AND worker)
+
+`db.get_db()` on both backend and worker connects with `psycopg2.connect(..., connect_timeout=5)` —
+**never remove this.** Without it, a blocked network path to RDS (a NetworkPolicy break, a routing
+problem, RDS itself unreachable) makes the connect call **hang** instead of failing. A hung request
+never completes, so nothing gets counted — not even the error counter — and the request-ratio SLIs
+(`voteball:availability:ratio5m` and friends) simply have no data point to include it in. This was a
+real, live defect (found by the 2026-08-18 drills; re-runnable via
+`scripts/drills/drill-1-controlled-5xx.sh`): a two-hour total API outage rendered as
+`availability = 1`, perfect, because every failing
+request was still in-flight, not failed. `connect_timeout=5` is what turns "the database is
+unreachable" into a fast, countable error instead of an invisible one.
+
+## Reverse-seeding: keeping seed.sql in sync with admin-UI edits
+
+Admin-curated data (logo URLs, renames) lives only in the live RDS instance until someone backfills it
+into `seed.sql`. `scripts/sync-seed-from-rds.sh` used to automate this, but it tunnelled to RDS over
+SSH through the k3s EC2 node — which EKS does not have — so it was **removed on 2026-07-20**. Porting
+it would mean replacing the SSH tunnel with `kubectl port-forward` through a backend pod; the original
+is in git history.

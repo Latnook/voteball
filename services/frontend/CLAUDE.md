@@ -68,3 +68,35 @@ and `#admin-content` is toggled with the `hidden` attribute, not `style.display`
 `img-src` is the one directive wider than `'self'` (`'self' data: https:`), because `logo_url`
 values are hotlinked; the no-hotlinking rule above is about which hosts, not about CSP.
 
+## Languages (English, Hebrew, Russian)
+
+*Moved verbatim from the root `CLAUDE.md` on 2026-10-02 so it loads only when working here. Where a paragraph says "above" or "below" about something not in this file, it is in one of: `terraform/CLAUDE.md`, `scripts/CLAUDE.md`, `charts/logging/CLAUDE.md`, `charts/observability/CLAUDE.md`, `charts/voteball/CLAUDE.md`, or the `voteball-cicd` skill.*
+
+Two independent layers, and adding a language means doing **both**:
+
+- **Interface strings** — the `DICTIONARY` in `services/frontend/i18n.js`, keyed language → string
+  id. All three language objects must carry **identical key sets and identical `{placeholder}`
+  tokens**; `t()` returns the key itself on a miss, so a gap renders `voteHeroTitle` on the page
+  rather than throwing. Language handling reads `SUPPORTED_LANGS`/`RTL_LANGS`/`NAME_FIELD_BY_LANG`
+  at the top of that file — add a language there, not by extending `en`/`he` conditionals.
+- **Entity names** — `name_en`/`name_he`/`name_ru` **columns** on `leagues`, `clubs`,
+  `previous_parties`, `upcoming_parties`, selected by `localizedName()`, which falls back to
+  `name_en`. `name_ru` is **nullable and optional in the admin API** — requiring it would 400 every
+  existing admin client and block saving any entity with no Russian name yet. The cost is that
+  coverage can rot silently as clubs are added.
+
+**Any admin PATCH that forwards a subset of fields must forward every name column.** Those endpoints
+replace all fields, so an omitted name is written as `NULL`. `patchClubLeagues` in `admin.js` (behind
+the per-competition "Add to UEFA Champions League" / "Add to UEFA Europa League" buttons, which are
+generated from `CONTINENTAL_COMPETITIONS`) is the one call site that does this, and it resends
+`name_en`/`name_he`/`name_ru`/`logo_url` for exactly this reason.
+
+**Russian names must be Cyrillic, and a homoglyph will pass review.** `РААМ` typed on a Latin
+keyboard layout is `PAAM` — visually identical, a different string, and it breaks Russian text
+search and collation. `test_migration.py::test_seeded_russian_names_are_cyrillic` asserts the
+property; don't rely on reading the file.
+
+Fonts: Heebo and Anton have no Cyrillic. Roboto's Cyrillic subset is declared under the **same
+`Heebo` family** (Heebo's Latin derives from Roboto, so it matches rather than approximates) and the
+browser picks it by `unicode-range`, so body text needs no `:lang(ru)` rule. Display headings use
+Oswald via `--font-display-ru`, mirroring the `:lang(he)` rules in `style.css`.

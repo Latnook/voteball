@@ -30,3 +30,6 @@ the shared `voteball-test-db` container, so running two at once deadlocks on tab
 like a database problem rather than a scheduling one. See the trap note in
 `services/backend/CLAUDE.md`.
 
+## `connect_timeout=5`
+
+`db.get_db()` here connects with `connect_timeout=5`, same as the backend — **never remove it.** The reason (a hung connect is counted nowhere, so a total outage read as 100% availability) is in `services/backend/CLAUDE.md`.

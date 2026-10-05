@@ -1,8 +1,10 @@
 # charts/voteball — CLAUDE.md
 
 Guidance for the Helm chart. The root `CLAUDE.md` carries the project-wide rules, including the
-warning that **`values.yaml`'s ten env-specific fields are written by
-`scripts/sync-values-from-tf.sh` and must never be hand-edited.**
+warning that **`values.yaml`'s `image.tag` is written by `scripts/sync-values-from-tf.sh` and must
+never be hand-edited**, and that the nine environment-identity fields beside it are
+`REPLACED-BY-ARGOCD` placeholders filled by the ArgoCD Application's `helm.parameters`, not by this
+file.
 
 
 ```bash
@@ -128,3 +130,83 @@ the shared `voteball` ALB group (`charts/jenkins-support` and `charts/logging` a
 members): the values must be byte-identical or the controller errors the whole group and stops
 reconciling all three. Change it in all three files in one commit; the test asserts they match.
 
+## The synthetic canary and what the SLIs depend on
+
+*Moved verbatim from the root `CLAUDE.md` on 2026-10-02 so it loads only when working here. Where a paragraph says "above" or "below" about something not in this file, it is in one of: `terraform/CLAUDE.md`, `scripts/CLAUDE.md`, `charts/logging/CLAUDE.md`, `charts/observability/CLAUDE.md`, `charts/voteball/CLAUDE.md`, or the `voteball-cicd` skill.*
+
+**The synthetic canary Deployment (`charts/voteball/templates/canary-deployment.yaml`, gated on
+`.Values.canary.enabled`) is not a nice-to-have — it is what makes every ratio-based SLI on this site
+meaningful at all.** Voteball has close to no organic traffic, so an outage with zero requests in
+flight makes the availability ratio's numerator and denominator vanish together, and its `or vector(1)`
+"no data" fallback then reports a confident, wrong `1` — the same 2026-08-18 drill found this exact
+failure. The canary hits the real public voting journey every `canary.intervalSeconds` (30s) purely to
+guarantee the ratio always has a real denominator to divide by. **Disabling the canary does not just
+remove one metric source — it silently makes `voteball:availability:ratio5m` untrustworthy again, and
+it makes `VoteballJourneyTrafficStopped` meaningless with it**, since that alert only means something
+against traffic guaranteed to exist; without the canary, zero requests is this site's normal state, and
+the alert would either fire constantly or (worse) be tuned so loose it catches nothing. The two are
+coupled on purpose — see the comment at `VoteballJourneyTrafficStopped` in
+`charts/voteball/templates/prometheusrule.yaml`.
+
+**The canary can be alive, healthy and resolving nothing — and that reads as 100% availability.**
+On a rebuild, app pods start and look up `<app_domain>` *before* external-dns has created its A
+record. Because that name already exists in Route53 for unrelated reasons (a `google-site-verification`
+TXT record), the answer is **NOERROR with no A record**, not NXDOMAIN — a negative answer, and
+RFC 2308 caps how long it may be cached at `min(SOA record TTL, SOA MINIMUM)`, which for
+`latnook.com` is `min(900, 86400)` = **15 minutes**. Four live documents said 86400 / twenty-four
+hours (the MINIMUM field alone) until 2026-08-26; `docs/eks/live-cluster-snapshot.md` had the rule
+right the whole time, which is the usual tell — *a doc contradicting another doc*. **Which cache
+holds it decides whether anything you can do helps**: CoreDNS caps a denial at 30s, so restarting it
+clears its copy cheaply, while the **VPC resolver upstream keeps its own for the full 15 minutes and
+no restart in this cluster can touch it** (measured 2026-08-26 mid-rebuild: 19s left on CoreDNS,
+691s left on `10.0.0.2` — so the restart could not have worked, and the script's three retries over
+30s were never going to be enough). The canary sends nothing,
+`voteball:journey_requests:rate5m` sits at 0, and `voteball:availability:ratio5m` falls back to
+`or vector(1)` — a confident, wrong 100%, on a site whose users are unaffected because the *public*
+path works fine. The tell is **TXT resolves and A does not**. `deploy.sh` step 11c runs
+`scripts/verify-public-dns.sh`, which restarts CoreDNS **only** when a public resolver can resolve a
+name the cluster cannot; an unconditional restart would be a step nobody could safely remove. **That
+"public resolver" must not be the machine's own stub resolver** — it caches the same NODATA for the
+same reason, so `getent` reports "the record does not exist yet" about a record that plainly does and
+the script then refuses to act (2026-08-26: `systemd-resolved` held the negative while `dig @1.1.1.1`
+returned both ALB addresses from the same shell). It now asks the zone's **authoritative**
+nameserver, which has no cache to be wrong.
+`VoteballJourneyTrafficStopped` does catch this on its own after 10 minutes — it went `pending` six
+minutes into the 2026-08-24 occurrence — but an alert that fires on every deploy is one people learn
+to ignore.
+
+## Gating chart resources that reference Terraform-created objects
+
+**Any chart resource that references a Terraform-created object must be gated off by default.**
+Chart code reaches the cluster on a `git push` (CI → CD → ArgoCD, minutes, automatic); the Terraform
+object it names reaches AWS only on a billed `terraform apply` that a human runs. Those are two
+different speeds, and shipping the consumer first is a race the consumer wins. The blast radius is
+much larger than the feature involved: External Secrets Operator cannot resolve the reference, so the
+resource is Degraded, so **ArgoCD's whole sync operation reports `phase: Failed`** — and because
+anything failing after `application-cd`'s Promote stage triggers an automatic rollback, every CD run
+becomes *deploy fails → roll production back*. Hit for real on 2026-08-24: four consecutive failed CD
+runs rolling production back to a stale tag while `master` moved ahead, caused by an ExternalSecret
+naming a Secrets Manager container `terraform apply` had not yet created. The gate
+(`.Values.externalSecret.grafanaEnabled`, `.Values.externalSecret.enabled`) is flipped on only after
+the apply *and* the seed script have run — see
+`docs/design/2026-08-24-grafana-datasources-design.md`'s "Verification outcome". The repo already had
+this shape and nobody had named it: `app-secret` reads a container Terraform creates empty and
+`seed-eks-secret.sh` fills, and it never broke only because it had always been seeded before anyone
+looked.
+
+**A gate that is off in git is a rebuild that does not work.** The corollary nobody wrote down until
+a real destroy/deploy cycle on 2026-08-25: gating a chart resource off protects a *running* cluster,
+but if the gate ships `true` and nothing seeds the secret it references, every fresh deploy
+reproduces the outage the gate was added to prevent. So a gated resource needs BOTH halves —
+`scripts/deploy.sh` step 3c seeds `voteball/grafana` **before** the billed apply (alongside the app
+and Jenkins secrets, and for the same reason), and the gates ship `true` because the seed step makes
+that safe. Adding a gated resource without a seeding step is half a change.
+
+**Environment variables are projected into a pod at START and never again.** `envFromSecret` on
+Grafana, `containerEnvFrom` on Jenkins — same mechanism, same trap, hit twice. A pod older than its
+Secret has the variable **unset**, and Grafana expands an unset variable in a provisioning file to an
+**empty string** rather than erroring, so it authenticates with an empty password and fails at panel
+load with `SQLSTATE 28P01`. `scripts/restart-grafana-datasources.sh` (deploy step 11d) handles it:
+it **waits** for the Secret rather than checking once — on a fresh deploy the single check ran ~90
+seconds before ESO filled it — then restarts and **verifies the variable is actually set** rather
+than assuming the restart worked.
