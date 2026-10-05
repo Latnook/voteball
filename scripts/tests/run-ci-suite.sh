@@ -49,6 +49,10 @@ PYTHON_GROUP=(
   # confirmed passing on 2026-09-09 with git, helm, kubectl, aws, terraform and docker all shimmed
   # to exit 127, per the rule above.
   test-prune-db-snapshots.sh
+  # Same shape as the snapshot pruner's test: a python3 fake `aws` that applies the --filters it is
+  # actually passed, so dropping a filter from the script deletes a fixture volume it must not. Needs
+  # GNU date (-d), which python:3.12-slim has. No git, AWS or terraform (2026-10-05).
+  test-prune-orphaned-volumes.sh
   # Needs python3 (its data-source-uid cross-check parses each dashboard's JSON at any depth,
   # replacing a single-line grep that silently skipped a multi-line "datasource" block -- see
   # docs/design/2026-08-24-grafana-datasources-design.md and the Task 6 report) and no git. It

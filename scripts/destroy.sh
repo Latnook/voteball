@@ -406,6 +406,16 @@ step "Pruning old DB snapshots (backup storage had become the largest RDS line i
 "$(dirname "$0")/prune-db-snapshots.sh" --apply || \
   echo "WARNING: snapshot pruning did not fully succeed -- see above. The teardown itself is fine." >&2
 
+# Last, and only now: the script refuses to run while the EKS cluster exists, because a detached
+# volume on a live cluster may be a pod mid-reschedule rather than an orphan. Step 5 already deletes
+# the PVCs, so a clean teardown leaks nothing and this finds nothing -- it is the backstop for a
+# teardown that did leak (twelve volumes, 220 GB, were found on 2026-10-05 from runs that predated
+# step 5). Only volumes created more than a week ago are deleted; ORPHAN_VOLUME_MIN_AGE_DAYS
+# overrides that. Non-fatal for the same reason as the snapshot prune above.
+step "Pruning orphaned EBS volumes left by earlier clusters (older than a week)"
+"$(dirname "$0")/prune-orphaned-volumes.sh" --apply || \
+  echo "WARNING: volume pruning did not fully succeed -- see above. The teardown itself is fine." >&2
+
 cat <<'EOF'
 
 Teardown complete. A final DB snapshot was taken -- the next deploy restores from it automatically.

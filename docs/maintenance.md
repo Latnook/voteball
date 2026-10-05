@@ -345,11 +345,17 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
 ## Routine housekeeping
 
 - **RDS snapshots accumulate** — one per teardown — and are now **pruned automatically**:
-  `destroy.sh`'s last step runs `scripts/prune-db-snapshots.sh --apply`, retaining the newest 7
+  `destroy.sh` runs `scripts/prune-db-snapshots.sh --apply` near its end, retaining the newest 7
   (verified 2026-09-17: 7 manual snapshots, dry-run reports nothing to prune). Run the script without
   `--apply` to check. Any manual pruning must sort by `SnapshotCreateTime` and **never by the
   identifier** — the name embeds the *deploy* date, so the newest snapshot can carry the
   oldest-looking name (`voteball-eks-db-final-20260722065933` was created 2026-07-27).
+- **Leftover EBS volumes are pruned automatically** — `destroy.sh`'s last step runs
+  `scripts/prune-orphaned-volumes.sh --apply`, which deletes unattached volumes that an earlier
+  cluster's PVCs left behind once they are more than 7 days old. It only acts when the cluster is
+  gone, and only at a teardown: nothing runs on a timer while the stack is down. Run it without
+  `--apply` to check (verified 2026-10-05, after deleting twelve such volumes by hand: nothing to
+  prune).
 - **CloudWatch log groups carry retention** — the pod-log groups are 7 days
   (`terraform/addon-cloudwatch.tf`); verified 2026-09-17 that no `voteball` group is unbounded.
   Re-check after enabling anything new in that file.
