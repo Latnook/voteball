@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-10-01 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
+# Generated 2026-10-05 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -34,9 +34,9 @@ branch-api:2.1303.v9f3b_95dc329d
 caffeine-api:3.2.4-208.v7e2da_a_7db_82b_
 checks-api:422.vc7e8b_51488c6
 cloudbees-folder:6.1106.v3a_d9a_6d2465e
-commons-lang3-api:3.20.0-109.ve43756e2d2b_4
+commons-lang3-api:3.21.0-122.v6a_ea_4fd34049
 commons-text-api:1.15.0-218.va_61573470393
-configuration-as-code:2130.v3ef02f16a_34b_
+configuration-as-code:2132.v60435f73c18a_
 credentials:1511.v2e3cb_0008ef0
 credentials-binding:728.v902a_273b_8947
 dark-theme:652.vea_da_dfea_e769
@@ -60,11 +60,11 @@ jakarta-xml-bind-api:4.0.9-19.v2b_a_5b_44d9a_1c
 javax-activation-api:1.2.0-8
 jaxb:2.3.9-143.v5979df3304e6
 job-dsl:3732.v9a_c49a_61a_313
-joda-time-api:2.14.4-206.vc0945a_7c5f95
+joda-time-api:2.15.0-208.v6b_084e7a_d9f0
 jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
-junit:1431.vc0d98912a_756
+junit:1432.v3f9a_b_73dd986
 kubernetes:4557.ve746270f672f
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
@@ -91,7 +91,7 @@ prometheus:860.v532442b_44e9a_
 scm-api:728.vc30dcf7a_0df5
 script-security:1429.v0810f1b_530f5
 snakeyaml-api:2.5-149.v72471e9c6371
-snakeyaml-engine-api:3.1.1-12.v4320c7d6f89c
+snakeyaml-engine-api:3.2-18.v885ed7ff698f
 ssh-agent:433.v9e73d67c3f74
 ssh-credentials:372.va_250881b_08cd
 structs:362.va_b_695ef4fdf9
@@ -99,7 +99,7 @@ theme-manager:346.v06cca_64c6a_37
 timestamper:1.30
 token-macro:477.vd4f0dc3cb_cf1
 variant:70.va_d9f17f859e0
-woodstox-core-api:7.2.2-10.vcb_629759b_2c2
+woodstox-core-api:7.3.0-16.v017f30ed004c
 workflow-aggregator:608.v67378e9d3db_1
 workflow-api:1413.v2ff1a_5e720fa_
 workflow-basic-steps:1098.v808b_fd7f8cf4
