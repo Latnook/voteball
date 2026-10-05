@@ -12933,11 +12933,12 @@ they expect the rest of אגודה, and perhaps דגל התורה, to follow, an
 **2026-10-05 — revision 245 (cross-row). N12 airs footage of הרב דוב לנדו saying the state should not have been
 founded and that religious-Zionist soldiers die because of *"תורה מעוותת"*; the change bloc answers within the
 hour, and איזנקוט commits not to sit with a party of that worldview. No axis moved, no tag added, `seed.sql`
-unchanged. `non-zionist` is considered for this row and refused, with a trigger.** (Twenty-two posts read through
-fxtwitter, four of them added later the same evening. Six clips were transcribed by machine with ivrit.ai's
-Hebrew Whisper model: the two N12 clips of the rabbi were checked against their burned-in captions in sampled
-frames, and one is an Arabic broadcast the model cannot read. Six images were viewed. Three N12 reports and four pages used as checks were read with
-plain `curl`. One הארץ body was supplied by the repo owner.)
+unchanged. `non-zionist` is considered for this row and refused, with a trigger.** (Twenty-eight posts read through
+fxtwitter, ten of them added later the same evening. Seven clips were transcribed by machine with ivrit.ai's
+Hebrew Whisper model: the two N12 clips of the rabbi and a חדשות 13 item were checked against their burned-in
+captions in sampled frames, and one is an Arabic broadcast the model cannot read. Eight images were viewed.
+Three N12 reports, one ynet report and four pages used as checks were read with plain `curl`. One הארץ body
+was supplied by the repo owner.)
 
 - **This row: what N12 aired** ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-d3dd5506dfc01a1027.htm), אלי הירשמן, 05.10.26 20:12, headed *"חשיפה"* and *"תיעוד נדיר"*). לנדו, 96, head of
   the סלבודקה yeshiva and the Lithuanian stream's leader, in his home in בני ברק before a few rabbis,
@@ -12974,7 +12975,8 @@ plain `curl`. One הארץ body was supplied by the repo owner.)
     saying the state should not exist or that the list is not Zionist, or declining to disown this.
   - **`security` 1 holds.** *"ויתורים"* is an aside he disclaims in the next breath. The row's number
     is argued from the list's record on territory.
-  - **ש"ס is not touched.** N12's *"ובמידה רבה גם בש"ס"* is the reporter's.
+  - **ש"ס is not touched.** N12's *"ובמידה רבה גם בש"ס"* is the reporter's. The ש"ס bullet below was
+    added later and reaches the same answer.
 - **ישר: איזנקוט commits to an exclusion, and it is the principle tag reaching a coalition list**
   ([post](https://x.com/gadi_eisenkot/status/2107158788054700074), 17:19 UTC): *"דבריו החמורים הם אנטי-ציונות בהתגלמותה… על כל מפלגה ציונית שמדינת ישראל ובטחונה
   חשובים לה, להודיע עוד הערב שהיא לא תשב עם מפלגה שזאת תפיסת עולמה. אני מתחייב"*.
@@ -13010,7 +13012,10 @@ plain `curl`. One הארץ body was supplied by the repo owner.)
   in a leader's words, aimed at whoever holds the view and not at a named list. Filed on the
   coalition-exclusion sweep, not minted. **שלו (#10)** ([post](https://x.com/JonathanShalev/status/2107165769188651323)): *"לא נעביר שקל למשתמטים אנטי ציונים"*.
   **גינזבורג (#8)** ([post](https://x.com/EitanGinzburg/status/2107163225359794402)), **בליאק (#16)** ([post](https://x.com/VladimirBeliak/status/2107165846824947733)) and **שירי** ([post](https://x.com/naorshiri/status/2107165719024517495)) say a vote for the Likud is a vote
-  for לנדו. Attacks, no measure.
+  for לנדו. Attacks, no measure. **מירב כהן (#9)** ([post](https://x.com/cohen_meirav/status/2107176349400248458), 18:29 UTC, over בנט's post; added after this
+  revision was first committed): נתניהו, בן גביר and סמוטריץ' have *"אפילו 35 מנדטים"* without the haredi
+  lists and 50 with them, so *"ייתנו להן השתמטות, ייתנו להן כסף, ייתנו להן הכל"*. She names no poll. An
+  attack, no measure. לפיד's second post of the evening is in the ש"ס bullet below.
 - **הדמוקרטים.** **גולן** ([post](https://x.com/YairGolan1/status/2107166012890292456), 17:48 UTC): *"בממשלה שנקים מי שלא מכיר במדינה, לא משרת אותה ומטיף נגדה - לא
   יקבל ממנה שקל"*. `sanctions-on-non-servers`, held. He calls the coalition *"אנטי־ציונית"*. **קריב (#3)**
   ([post](https://x.com/KarivGilad/status/2107162827236458691)): *"והחבורה הזו עוד מעיזה להטיף לנו לגבי הרכב הקואליציה של גוש השינוי"*. **פינק (#5)**, twice
@@ -13018,12 +13023,58 @@ plain `curl`. One הארץ body was supplied by the repo owner.)
   **רייטן (#4)** ([post](https://x.com/Efratrayten1/status/2107167562991575327), 17:54 UTC, over the second N12 excerpt; added after this revision was first
   committed): *"מי שהוביל השתמטות המונית בזמן מלחמה אומר שהוא מצטער שמדינת ישראל קמה… אלה השותפים
   הטבעיים של נתניהו. נחליף את הממשלה ב-27.10"*. An attack, no measure.
+  - **Three more, added after this revision was first committed.** **פינק**, a third time ([post](https://x.com/yayafink/status/2107174966710165690),
+    18:23 UTC): *"הגוש המשרת של ממשלת השינוי מונה 52 מנדטים. הגוש המשרת של ממשלת ההשתמטות מונה 36"*, and
+    *"בלי ערבים וחרדים יש לנו רוב. עם חרדים וערבים יש לנו רוב"*. He names no poll, and his 36 is one more
+    than מירב כהן's ceiling for the same three lists six minutes later. It is a count of seats, not a
+    statement about who sits in a government, so the coalition-exclusion sweep gets nothing from it.
+    **קריב**, a second time ([post](https://x.com/KarivGilad/status/2107174365695479894), 18:21 UTC), is in the ש"ס bullet below. **רדמן (#9)** ([post](https://x.com/RadmanMoshe/status/2107175531846504553),
+    18:26 UTC) posts a photograph of an N12 screen, with the journalist אורי משגב's watermark, showing
+    נתניהו with his eyes closed at the state memorial ceremony: *"סליפי ביבי"*. Mockery. The page does
+    not tag style (revision 30).
   - **גולן's second post** ([post](https://x.com/YairGolan1/status/2107161925872402445), 17:32 UTC, a 32-second clip): נתניהו knew of dozens of tunnels and of a
     plan to send hundreds of attackers through them, *"ידעת. התעלמת. יכולת לעצור את הטבח… אתה הראש, אתה
     אשם"*. A rival's charge with no measure.
 - **ישראל ביתנו: ליברמן** ([post](https://x.com/AvigdorLiberman/status/2107159620150272023), 17:22 UTC): *"את הכסף מהמדינה הם יודעים לקחת. לשרת ולהגן עליה? לא. בקרוב נשים
   סוף לשלטון המשתמטים"*. Held tags. **בן שטרית (#2)** ([post](https://x.com/rpy41447130/status/2107171514730610801), 18:10 UTC; added after this revision was
   first committed) reposts it with *"שמים סוף לשלטון המשתמטים"*. The slogan again.
+- **המילואימניקים והכלכלית: הנדל (#1)** ([post](https://x.com/YoazHendel1/status/2107174805610877344), 18:23 UTC, over N12's post; added after this revision was
+  first committed): *"האדם הזה מחלל שם שמיים ברבים. אנחנו נהרגים כדי להגן עליהם… מי שמוכן להקים איתם
+  ממשלה מפרק את ישראל. רק ממשלה ציונית"*. `excludes-haredi-and-arab-parties`, held, in the leader's
+  words for its haredi half. It is revision 223's refusal of a נתניהו–haredi government, said tonight
+  about anyone who would form one. Nothing new for the row.
+- **ש"ס: דרעי's column in the party bulletin, לפיד's answer, and a חדשות 13 item** (all added after this
+  revision was first committed). None of the three is a reaction to the rabbi's talk.
+  - **The column** ([ynet](https://www.ynet.co.il/news/elections2026/article/hk3zxv11oge), שילה פריד, 05.10.26 21:41, headed *"אמירה מנותקת"*). In the Sukkot issue of
+    the party's bulletin *הדרך*, דרעי writes of parents who send a son to yeshiva *"וחוששים שמא יגיע היום
+    שבו ייעצר ויושלך לכלא רק משום שבחר לשבת וללמוד תורה"*, and commits: *"לא ניכנס לשום ממשלה לפני שמעמדם
+    של בני התורה יוסדר ויובטח"*. That is the condition of the Holon launch (20.08) in the party's own
+    print, on `conscription-exemption` and `scholar-exemption-retained`, both held. It is still a
+    condition about a law and not about a partner, so `bibi` stays closed on the ש"ס row's own reasoning.
+  - **Checked: his account of the court leaves out the ruling.** He writes that the law freezing the
+    arrests was thrown out by *"שופט יחיד… בהחלטה שרירותית ושערורייתית"*. Headlines of 15.07, 28.07 and
+    03.09.26 (הארץ, כאן 11, גלובס, רשת 13; bodies not read) report a temporary order in July and then
+    the law annulled by nine justices, unanimously. One judge fits the first order only. The attack
+    on the court sits on `judicial-overhaul`, held (revision 81).
+  - **לפיד (ביחד #2) answers it** ([post](https://x.com/yairlapid/status/2107174108895002717), 18:20 UTC, over a broadcast graphic of the quotation). He
+    turns the column's sentences around: families live in fear *"כי הממשלה שלך שלחה אותם להלחם בעזה
+    בזמן שהנכדים שלך משתמטים"*, and parents send a son *"ללבנון וחוששים מרחפן שיהרוג אותו בזמן שאתה מעודד
+    עריקים בכלא 10"*. Then: *"אתה באמת לא תכנס לשום ממשלה. עם ישראל לא ייתן לך"*. An hour earlier his
+    exclusion was aimed at a view. This one names a party leader, as בנט did on 9 August and again
+    with איזנקוט and ליברמן (the ש"ס row). It is worded as what voters will do, not as a pledge, and it names one
+    haredi leader and no Arab list. **`excludes-haredi-and-arab-parties` stays off ביחד.** Filed on
+    the coalition-exclusion sweep. The lines about דרעי's grandsons and כלא 10 are a rival's and
+    were not checked.
+  - **חדשות 13, carried by קריב (הדמוקרטים #3)** ([post](https://x.com/KarivGilad/status/2107174365695479894), 18:21 UTC, a 66-second studio clip of the
+    reporter יואלי ברים). Students of ישיבת רכסים, which he calls the largest Sephardi yeshiva and
+    *"מזוהה מאוד עם דרעי, עם ש"ס"*, danced two days ago to *"בשלטון הכופרים אין אנו מאמינים, ובלשכותיהם אין
+    אנו מתייצבים"*. The channel's caption calls it the anthem of נטורי קרתא. He sets it against the
+    party's campaign films, in which הרב יצחק יוסף blesses soldiers. קריב: *"זה לא רק הרב לנדו ויהדות
+    התורה. גם ש"ס… צביעות אנטי ציונית"*, and *"ברור מי מתכוון להקים קואליציה אנטי ציונית"*.
+  - **What it does to ש"ס: nothing.** Students singing at a yeshiva are further from a party text
+    than a rabbi's talk is, and the tie to the party is the reporter's word. `non-zionist` is not
+    opened for the row. The trigger written for יהדות התורה above would serve here too. קריב's
+    sentence is a rival's claim about two rows.
 - **הליכוד: three candidates and one minister's cabinet remark.**
   - **בונצל (#29) on קול ברמה** ([ישראל היום](https://www.israelhayom.co.il/news/politics/article/21558142), 05.10.26 17:12): *"איזנקוט שלח את בנינו להילחם – וברח באמצע"*,
     *"תקום ועדת חקירה לאומית לטבח"*, and those who worked to bring down a sitting prime minister *"הם פושעי
@@ -14912,4 +14963,4 @@ pass happened, for anyone reading git history.
 | 2026-10-04 | revision 242 — **cross-row: the CEC chair's ruling on six petitions against נתניהו (תב"כ 66, 67, 77, 78, 83, 91/26, read with `pdftotext`) and two N12 reports (`curl`). Nothing scored.** סולברג finds that נתניהו used public assets, the IDF among them, for election propaganda: two petitions granted in full, three in part, one dismissed, ₪29,000 in costs. The test is whether a speech credits the results to the speaker and promises more under him. The Attorney General backed the petitioners on five. A lead: his earlier ruling in *הליכוד נ' איזנקוט* (תב"כ 87/26), not read. N12's report on חדאד's clip adds one passage of the interview. Four other links supplied were revision 238's. |
 | 2026-10-04 | revision 243 — **cross-row: four posts (fxtwitter; three clips transcribed by machine and checked against their captions; one photo viewed) and seven news reports (`curl`). No axis moved, no tag added, `seed.sql` unchanged; one error on the נעם row corrected.** נתניהו's second *"ימין או פלסטין"* clip adds *"תצביעו לימין אמיתי. השאר זה פייק"*, naming no list: a claim about other rows that moves no `bloc`. The choice is now a government of איזנקוט *"שתלויה במפלגות הערביות"*, a third form of revision 203's claim. He orders the מל"ל head to appoint an examiner of foreign-aviation security; ynet calls it his first acknowledgement, and the page already holds his *"פרצה"* of 02.10. קריב (הדמוקרטים #3) says he went to be photographed at נתב"ג instead of holding security consultations: the visit is reported, and so is a consultation that morning. שפר (#11) repeats the *"קו ישיר"* from 7 October. New on the flight: a קוריירה דלה סרה report that the co-pilot meant to crash into Tel Aviv's towers, and a וואלה leak that he named נתב"ג. מעוז at the ליבמן memorial restates held tags. **Correction:** the son of ליבמן (נעם #3) is אליקים, not אלקנה, and he was not held in Gaza. |
 | 2026-10-05 | revision 244 — **cross-row: nineteen posts and one of 2022 (fxtwitter; three clips transcribed by machine, two checked against their captions; seven images viewed), nine הארץ bodies supplied by the repo owner, the Knesset legal adviser's filing (`pdftotext`), N12 and ynet (`curl`). No axis moved, no tag added, `seed.sql` unchanged; one sentence of revision 243 narrowed.** נתניהו at the state ceremonies promises to finish off Hamas's rule and names no inquiry; כ"ץ orders the remaining 2,000 attackers hunted down. New to the page: the State Comptroller's post is empty because the Likud had its MKs film a secret ballot, בג"ץ annulled the round, and אוחנה has not held it again; the Knesset's own adviser tells the court it must be held. V26, a turnout project run by the heads of a Likud faction, is joined by the directors of two state-funded religious school networks; הציונות הדתית's director wrote in 2022 of an "operational order" to school heads. מעוז (נעם) wants the שב"כ's Jewish division closed and defends זיני against גוטליב (עוצמה יהודית #2), who tells him to resign: a named measure, not tagged, trigger written. A lecturer is indicted for planning mass attacks on Arabs; he tried to recruit פייגלין, who did not answer and complained after an extortion letter. עוצמה יהודית's billboards say 7 October would not have happened under בן גביר. הארץ's survey of each list's last three weeks: נתניהו will name וינטר as a list not to vote for, which corrects revision 243's reading of *"השאר זה פייק"*; עבאס says רע"ם will take part in forming an alternative government; הרב יצחק יוסף is named ש"ס's spiritual leader. להב הרצנו's claim about a 2022 coalition clause on refusing service for religious belief holds for the agreements and was not found in the guidelines. Leads: a Likud transport platform, the אחי list, עמך ישראל's promised work plans. |
-| 2026-10-05 | revision 245 — **cross-row: N12's footage of הרב לנדו and the reactions (twenty-two posts, fxtwitter; six clips transcribed by machine, two checked against their captions; six images viewed; three N12 reports and four check pages, `curl`; one הארץ body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The rabbi says the state should not have been founded and that religious-Zionist soldiers die because of *"תורה מעוותת"*. **The talk is not new:** כיכר השבת printed its full transcript on 07.02.2025 and every passage N12 quotes is in it. `non-zionist` is refused for יהדות התורה (a rabbi's talk, not a party text, against one holder scored from programmes); trigger written. איזנקוט commits not to sit with *"מפלגה שזאת תפיסת עולמה"*, which is `excludes-anti-zionist-parties` reaching a coalition list for the first time; `excludes-haredi-and-arab-parties` stays off because he names no party. He also rules נתניהו out of any unity government and declines ליברמן's call for זיני to resign. לפיד says those who hold the view cannot be in any government, filed on the sweep. בנט, גולן and ליברמן repeat no state money for non-servers. רגב told the cabinet the responsibility for foreign flights is her ministry's. אליהו (עוצמה יהודית #4) demands sovereignty over בריכות שלמה. ג'בארין offers the Joint List's support for a law barring a defendant from forming a government, with no commitment on a minority government. גלנט says the April 2024 hostage deal was leaked to break it. Added the same evening: שיקלי mocks ליברמן in a Russian accent after ליברמן calls נתניהו *"אהבל"*, style and no measure. Four more posts, also added later: מרידור (ישר #7) answers איזנקוט's commitment with *"אנחנו מתחייבים!"*, רייטן (הדמוקרטים #4) and בן שטרית (ישראל ביתנו #2) repeat their lists' lines, and בנט's statement circulates as a video with the same words as his post. Nothing in them names a party, so both refusals stand. |
+| 2026-10-05 | revision 245 — **cross-row: N12's footage of הרב לנדו and the reactions (twenty-two posts, fxtwitter; six clips transcribed by machine, two checked against their captions; six images viewed; three N12 reports and four check pages, `curl`; one הארץ body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The rabbi says the state should not have been founded and that religious-Zionist soldiers die because of *"תורה מעוותת"*. **The talk is not new:** כיכר השבת printed its full transcript on 07.02.2025 and every passage N12 quotes is in it. `non-zionist` is refused for יהדות התורה (a rabbi's talk, not a party text, against one holder scored from programmes); trigger written. איזנקוט commits not to sit with *"מפלגה שזאת תפיסת עולמה"*, which is `excludes-anti-zionist-parties` reaching a coalition list for the first time; `excludes-haredi-and-arab-parties` stays off because he names no party. He also rules נתניהו out of any unity government and declines ליברמן's call for זיני to resign. לפיד says those who hold the view cannot be in any government, filed on the sweep. בנט, גולן and ליברמן repeat no state money for non-servers. רגב told the cabinet the responsibility for foreign flights is her ministry's. אליהו (עוצמה יהודית #4) demands sovereignty over בריכות שלמה. ג'בארין offers the Joint List's support for a law barring a defendant from forming a government, with no commitment on a minority government. גלנט says the April 2024 hostage deal was leaked to break it. Added the same evening: שיקלי mocks ליברמן in a Russian accent after ליברמן calls נתניהו *"אהבל"*, style and no measure. Four more posts, also added later: מרידור (ישר #7) answers איזנקוט's commitment with *"אנחנו מתחייבים!"*, רייטן (הדמוקרטים #4) and בן שטרית (ישראל ביתנו #2) repeat their lists' lines, and בנט's statement circulates as a video with the same words as his post. Nothing in them names a party, so both refusals stand. Six more posts and one ynet report, added later still: דרעי writes in ש"ס's bulletin *"לא ניכנס לשום ממשלה לפני שמעמדם של בני התורה יוסדר ויובטח"*, the launch condition in print, and blames *"שופט יחיד"* for a law that nine justices annulled unanimously (headlines only). לפיד answers *"אתה באמת לא תכנס לשום ממשלה"*: one haredi leader named, worded as what voters will do, so `excludes-haredi-and-arab-parties` stays off ביחד. הנדל's *"רק ממשלה ציונית"* is his row's held exclusion. קריב carries a חדשות 13 item on yeshiva students singing a נטורי קרתא song and calls ש"ס anti-Zionist too; `non-zionist` is not opened for ש"ס. פינק and מירב כהן count seats without naming a poll, and רדמן mocks a photo of נתניהו. |
