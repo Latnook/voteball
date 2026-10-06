@@ -106,6 +106,10 @@ PYTHON_GROUP=(
   # Needs neither python3 nor git (bash + a fake kubectl on PATH, grep) -- confirmed passing inside a
   # bare python:3.12-slim on 2026-08-23, per the rule above. Never touches a cluster.
   test-verify-deployed-image.sh
+  # Needs neither python3 nor git (bash + grep only; the three jq reads stay in Jenkinsfile-cd and the
+  # script under test takes their results as environment) -- confirmed passing inside a bare
+  # python:3.12-slim on 2026-10-06, per the rule above. Never touches a cluster or ArgoCD.
+  test-argocd-verdict.sh
 )
 
 # Needs git (it builds throwaway repositories), does NOT need python3. Confirmed passing in jnlp by
