@@ -5328,7 +5328,7 @@ chapter of the programme.
   *"צריך להשלים את רפורמת הכשרות… שוק חופשי של כשרות… אנחנו נעשה את זה ונקדם את זה"*. ישר holds the tag
   on *"נקדם רפורמות בכשרות"* and ישראל ביתנו on implementing the reform. It is the gap revision 122
   found on ישראל ביתנו: an entry that states a position in prose and never tags it.
-- **`anti-monopoly` ADDED (7 → 8), and the row's two refusals pointed here.** Revisions 40 and 62 refused
+- **`anti-monopoly` ADDED (7 → 8), and the row's two refusals pointed here.** Revisions 40 and 116 refused
   it on papers about intermediation margins and media ownership, and said the evidence to weigh was
   the economic paper's cartel-breaking, which this entry has recorded since 2026-08-01. The economy
   episode ([כלכלי חברתי](https://www.youtube.com/watch?v=i5_mOP0nIi0), 02.06, גולן and לזימי #2) states it as market structure across the
