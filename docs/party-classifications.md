@@ -6924,6 +6924,41 @@ Chromium, and N12's live blog and its inquiry summary with `curl`. One הארץ 
     Supreme Court appoints, which is the form עמך ישראל's outline is built to avoid (revision 246). 65%
     hold נתניהו directly responsible for the massacre. Poll figures, recorded for the sweep.
 
+**2026-10-06 — revision 249. `anti-monopoly` ADDED (24 → 25 tags; the tag goes 8 → 9 holders, 7 of the 17 scored
+lists on the ballot). No axis moved.** A check of every row that lacks the two tags added to הדמוקרטים
+in revision 248, on the repo owner's question. This row is the only one that earns either.
+
+- **The evidence is the live platform, and this entry has quoted it since revision 46 without the
+  tag.** ([platform](https://beytenu.org.il/party-platform/), fetched again today.) *"פירוק מונופולים והגברת התחרות"* in the package deal for the
+  economy; *"ביטול המונופולים בשוק המזון באמצעות אימוץ מסקנות ועדת בלניקוב למאבק בריכוזיות"*; *"הסדרת תחום
+  היבוא המקביל וביטול מעמדו של היבואן הבלעדי"*; and *"פירוק מועצות הייצור, ובהן מועצת הלול ומועצת הצמחים"*.
+  Revision 46 listed exactly these as the mechanisms behind `cost-of-living` and added only that tag.
+  It is the most specific text any holder has: a named committee's conclusions, a named legal
+  status and two named boards.
+- **It is the third time this row stated a position the page had not tagged**, after
+  `kashrut-liberalization` and `municipal-devolution` (revision 122) and `constitutionalist` (revision
+  134). Each was found by asking of a tag, not of a document, who else says it.
+- **The other rows, checked and left as they are.**
+  - **`kashrut-liberalization`: no one else.** כחול לבן's papers have *"no kashrut reform"*, ישראל תחילה and
+    עמך ישראל publish nothing on it, הציבור החרדי defends none of the monopolies and proposes no reform,
+    and הליכוד, ש"ס, יהדות התורה and הציונות הדתית restored or defend the monopoly.
+  - **`anti-monopoly` on הליכוד: not added.** What the entry holds is ministers' acts (the Standards
+    Institute, the ports, the import reform), which is a record of candidates and not a party text,
+    and `deregulation` was refused there as audit coverage. הדמוקרטים call that reform *"צעדי מלל"*
+    (revision 248), a rival's view.
+  - **On הציונות הדתית: refused already, and it stays.** זהות's planks say it, and revisions 37 and 205
+    ruled that they contradict the merged row's `economic` 0 and its `sectoral-budgeting` family.
+  - **כחול לבן, עוצמה יהודית, נעם, the haredi lists and the Arab lists:** nothing on market structure
+    in any entry.
+- **Discrimination, since the tag is getting wide.** Seven of seventeen lists: ישר, ביחד, הדמוקרטים,
+  ישראל ביתנו, המילואימניקים והכלכלית, ישראל תחילה and עמך ישראל. It spans `economic` −2 to +2 and all
+  three blocs. No coalition list of the outgoing Knesset holds it, and neither does כחול לבן. It still
+  sorts the table. One or two more holders and it would mostly restate who is outside the coalition.
+- **Verified** as step 3 above prescribes: the previous `seed.sql`, then the new one on top with `psql -1`.
+  The already-seeded row went from 24 tags to 25 and a second apply changed nothing. A first attempt
+  edited nothing, because the script matched this party's row in the previous-parties block; the check
+  showed no change and caught it. 271 backend tests pass.
+
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
 **Merged with זהות into one ballot line, 2026-09-01.** Smotrich and משה פייגלין signed an agreement
@@ -15530,3 +15565,4 @@ pass happened, for anyone reading git history.
 | 2026-10-05 | revision 246 — **עמך ישראל: the party's first website and first platform (`amchaisrael.co.il/foundations` and `/inquiry`, supplied by the repo owner, read with `curl`). `economic` NULL → +1, the row's last NULL; `anti-monopoly`, `cost-of-living` and `municipal-devolution` ADDED, `not-economy-focused` REMOVED (16 → 18 tags); families now `universal-conscription`, `judicial-restraint`, `cost-of-living`; `family_evidence` `record` → `platform`.** Eight principles, ten first steps, no number in it. The economy chapter is free market and trust-busting with targeted tax benefits and state infrastructure, which is the +1 band; it is the thinnest +1 on the page. `security` +3 held: the platform never says *"יהודה ושומרון"* or *"פלסטיני"*, and the score rests on the party's ynet answer (revision 176). `religiosity` −2 held; `core-curriculum` refused (the funding condition is on anti-Zionist content, not on the core). The service law is a Basic Law with quotas for Torah learners; `scholar-exemption-retained` not added and `anti-conscription-exemption` flagged as strained, trigger written. Also refused: `reservist-focused` (third time), `free-market`, `free-trade`, `tax-cutting`, `deregulation`, `governance-reform`. The inquiry page is the first-party text of revision 245's outline and adds a mandate from צוק איתן; the platform gives the commission power to enforce its conclusions, which the page does not. Verified on an already-seeded database; 271 backend tests pass. |
 | 2026-10-06 | revision 247 — **cross-row: ליברמן's ten-point plan on religion and state, the night in מודיעין and the reactions (twenty-six posts, fxtwitter; sixteen clips, two checked against their captions and two in Arabic read from their Hebrew subtitles; fourteen images viewed; two כאן reports through headless Chromium; N12's live blog, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** Seven of ליברמן's ten points are the platform's and their tags are held. New: repeal of the outgoing Knesset's religion-and-state laws, direct supervision and Comptroller audit of the two haredi school networks, and chief and city rabbis appointed by state process with army service as a condition. `state-haredi-education` refused again (supervision is not a state stream), trigger written. A crowd stopped the arrest of a deserter in מודיעין; the change bloc's leaders answer in held tags, and לייטנר (הציבור החרדי) condemns the rioters and asks the haredi parties to. בנט promises a *"חוק דרעי"* barring anyone who evaded service, or encourages evasion, from the cabinet: a named measure on a held tag, filed on the coalition-exclusion sweep. גנץ says the election is not about blocs. אשר (יהדות התורה), recorded, fears low turnout. בן גביר, רוטמן and פייגלין restate held tags; פייגלין reposts his 2023 call to make Gaza *"דרזדן"*. טיבי's claim of demolitions set for election day is a lawyer's account of his own files and was not verified. N12's poll has עמך ישראל under the threshold, and its analysts say נתניהו refused איזנקוט's debate and that the Likud will turn on הנדל and זליכה next. **Added later on 06.10, twenty more posts, an N12 summary and a הארץ report, nothing scored:** הדמוקרטים' campaign film says *"ממשלה בלי חרדים"*, the haredi half alone, filed on the sweep with ישראל תחילה's. בנט's clip makes the law a condition for the next government and names the security cabinet. גולדקנופף blames נתניהו for the arrest attempt and does not condemn the crowd. נתניהו welcomes מדן (#15) and promises him the care of the wounded in the next government. הדמוקרטים' candidates attack the broadcaster ינון מגל. N12's inquiry summary differs from the sweep on רע"ם and ש"ס, as a reporter's reading. חדאד (עמך ישראל #2) says he is under attack from the right and is not going anywhere. |
 | 2026-10-06 | revision 248 — **הדמוקרטים: the party's nine-episode video series *"מה המצע"* (YouTube, 01.06–16.09.2026, five and a half hours; automatic captions read in full by three delegated readers, quotations matched to the captions by script, four passages re-transcribed with Whisper). `kashrut-liberalization` (5 → 6) and `anti-monopoly` (7 → 8) ADDED, 28 → 30 tags; no axis moved.** Both were positions the entry already recorded from the papers without the tag: breaking the Rabbinate's kashrut monopoly, restated twice in the religion episode, and breaking up concentration across the economy, with food and toiletries named. The row is the first `anti-monopoly` holder at `economic` −2. Everything else restates held tags. New in the leader's voice, with no tag: the שב"כ head replaced, withdrawal to the border in Syria, a nuclear agreement with Iran first, the two-state vision put beyond ten years. No episode names a coalition partner or exclusion. Verified on an already-seeded database after a first run against stale files; 271 backend tests pass. |
+| 2026-10-06 | revision 249 — **ישראל ביתנו: `anti-monopoly` ADDED (24 → 25 tags; 8 → 9 holders), from a check of every row lacking the two tags of revision 248. No axis moved.** The live platform has *"פירוק מונופולים"*, the food monopolies abolished on the בלניקוב committee's conclusions, the exclusive-importer status ended and the production boards dismantled; revision 46 quoted all of it for `cost-of-living` and did not add this tag. No other row earns `kashrut-liberalization`. `anti-monopoly` stays off הליכוד (ministers' acts, not a party text) and הציונות הדתית (refused on the merger rule). Seven of seventeen lists now hold it, across all three blocs and from −2 to +2; the entry notes it is getting wide. Verified on an already-seeded database; 271 backend tests pass. |
