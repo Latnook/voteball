@@ -5309,6 +5309,93 @@ misheard *"עם רע"ם"* as *"עם העם"*, so the quotation below is read fro
   rival's label. Nothing scored. **רונן (הדמוקרטים #7)** answers it ([post](https://x.com/omrironen24/status/2106453652533813298), 18:37 UTC) with an attack on
   נתניהו's record. Nothing scored.
 
+**2026-10-06 — revision 248. The party's own video series *"מה המצע"*, nine episodes, supplied by the repo
+owner and cited nowhere on this page. `kashrut-liberalization` and `anti-monopoly` ADDED (28 → 30 tags). No
+axis moved.** The series is on the party's YouTube channel, published 01.06–16.09.2026, 27 to 49 minutes
+each, five and a half hours in all. In each, גולן and one or two candidates set out five steps for one
+chapter of the programme.
+
+- **How it was read, and its limit.** From YouTube's automatic Hebrew captions, which have no
+  punctuation, name no speaker and garble names. The nine transcripts were read in full by three
+  delegated readers and not by this pass. Every quotation below was then matched to the caption text by
+  script, and the four passages the two new tags rest on were re-transcribed from the audio with
+  ivrit.ai's Whisper model. Who says a given sentence is inferred from the openings. Spelling in the
+  quotations is restored from the garbled captions.
+- **`kashrut-liberalization` ADDED (5 → 6 holders), and the tag was missing on a row that already stated
+  it.** The 2026-08-01 block above records the religion-and-state paper *"breaking the Rabbinate's
+  monopoly on conversion and kashrut"* and added only `civil-marriage`. The episode ([דת ומדינה](https://www.youtube.com/watch?v=MaecjsTahW4), 09.06,
+  גולן, קריב #3 and רייטן #4) says it twice: *"נפרק את המונופול, המונופול של הרבנות בגיור ובכשרות"*, and
+  *"צריך להשלים את רפורמת הכשרות… שוק חופשי של כשרות… אנחנו נעשה את זה ונקדם את זה"*. ישר holds the tag
+  on *"נקדם רפורמות בכשרות"* and ישראל ביתנו on implementing the reform. It is the gap revision 122
+  found on ישראל ביתנו: an entry that states a position in prose and never tags it.
+- **`anti-monopoly` ADDED (7 → 8), and the row's two refusals pointed here.** Revisions 40 and 62 refused
+  it on papers about intermediation margins and media ownership, and said the evidence to weigh was
+  the economic paper's cartel-breaking, which this entry has recorded since 2026-08-01. The economy
+  episode ([כלכלי חברתי](https://www.youtube.com/watch?v=i5_mOP0nIi0), 02.06, גולן and לזימי #2) states it as market structure across the
+  economy: *"כל מה שמיובא למדינת ישראל כפוף למונופולים, וכל מה שמיוצר בישראל כפוף למשטר של רשתות שיווק…
+  אנחנו נפרק את הריכוזיות במשק, לא בסגנון של ניר ברקת, שזה צעדי מלל"*, and as a first step on the cost of
+  living, *"מטפל במונופולים בתחום המזון והטואלטיקה"*. That names two sectors, where עמך ישראל was granted
+  the tag on none (revision 246). This is the tag's first holder at `economic` −2. The seven others
+  sit at +1 or +2, so the tag now crosses the axis.
+- **The rest, by episode. Held tags, and nothing else moves.**
+  - **[מדיני-בטחוני](https://www.youtube.com/watch?v=PFG9YIvxvkU)** (01.06, גולן). Five steps: Saudi normalisation first; agreements to close every
+    front; *"עצירת הסיפוח ובניית אלטרנטיבה פלסטינית מתונה ואפקטיבית… תוך מלחמה בטרור היהודי"*; strengthening
+    moderates; and a state commission of inquiry. `regional-normalization`, `anti-annexation` and
+    `anti-settler-violence`, all held.
+    - **The end state, in June:** *"יש את חזון שתי המדינות, הוא לא יהיה ממש מחר בבוקר, יכול להיות שגם לא
+      ב-10 השנים הקרובות"*, and the working term is *"היפרדות אזרחית עם אחריות ביטחונית"*. In October he
+      declined to name an end state (revision 238). `two-state` rests on the platform and stays;
+      `security` −1 holds.
+    - **Settlements:** *"מאחז בלתי חוקי דינו לרדת"*, all of them, and the settlement blocs stay
+      (*"גושי התיישבות, כן, בהחלט כן"*). Evacuating other settlements is not addressed.
+    - **Named measures on settler violence:** administrative detention returned to the שב"כ, מחוז ש"י
+      re-established, and the split inside the Defence Ministry cancelled. The second is one of
+      revision 238's five principles.
+    - **Not on the page before:** *"אנחנו נחליף ראש שב"כ, בוודאי"*, said four months before ליברמן's call
+      (revision 240); with Syria, *"עדיף לנו לחזור לגבול"*; with Iran, *"הסכם על הגרעין"* first; in
+      Gaza, a Palestinian body in the part Israel holds, with international and regional forces.
+      Positions in the leader's voice with no tag to carry them. A lead for the foreign-relations
+      sweep.
+  - **[דמוקרטיה ומשפט](https://www.youtube.com/watch?v=A7o83K2Q1jw)** (17.06, גולן, רייטן, קריב). Basic Law: Legislation as *"הבסיס לחוקה"*
+    (`constitutionalist`); *"נבטל את כל… חוקי ההפיכה המשטרית"*, softened later to going over the list
+    of laws before coalition talks; a term limit and a bar on a defendant serving as prime minister
+    or minister (`term-limits`, `anti-indicted-pm`); more judges and an intermediate instance below
+    the Supreme Court; *"חוקי הסיפוח"* repealed. They oppose splitting the Attorney General's role.
+    The override clause is not addressed.
+  - **[דת ומדינה](https://www.youtube.com/watch?v=MaecjsTahW4).** Beside kashrut: *"נחוקק חוק נישואים אזרחיים בלי כל מיני מעקפים"*; *"תחבורה ציבורית
+    בשבת תהיה"*, outside haredi and traditional neighbourhoods, with no word on local authorities;
+    and *"לנתק את הדת מכוח פוליטי… לנתק את הדת מכסף"*. The last is stronger than the paper's equal
+    subsidy for all streams, and it names no budget line. `religiosity` is already −3.
+  - **[חינוך](https://www.youtube.com/watch?v=xmkQ-LemwC4)** (03.06, גולן and לזימי). *"נפסיק לממן רשתות חינוך שלא מלמדות לימודי ליבה"*, and
+    state-haredi education made *"זרם אמיתי פורמלי"* in the State Education Law (`core-curriculum`,
+    `state-haredi-education`). A state education authority, and one carer to three toddlers where
+    there is now one to seven. No figure for teachers' pay or class size.
+  - **[משרתי המילואים](https://www.youtube.com/watch?v=CFdkQeabIds)** (04.08, גולן and רונן #7). *"על כל יום מילואים כל מילואימניק מקבל עוד 1000
+    שקל"*, reserve duty cut from 100–120 days a year to 20–30, and illegal outposts removed *"לאלתר"*
+    to lower the load. `reservist-focused`, held, with its one figure.
+  - **[שיקום הצפון והעוטף](https://www.youtube.com/watch?v=bToRHzpxDzM)** (15.09). A ten-year national project with a permanent directorate in
+    the budget base. The money comes from coalition funds, stipends for non-serving yeshiva students
+    and the outposts. No sum for the plan.
+  - **[ביטחון הפנים](https://www.youtube.com/watch?v=68wHhFmHYbY)** (16.09, גולן). The minister's powers and the Police Ordinance rewritten, the מח"ש
+    law repealed, the National Guard abolished, the ministry's old name restored, and a gun licence
+    revoked for unlawful use. That is the paper `governance-reform` was granted on (revision 62).
+  - **[החברה הערבית](https://www.youtube.com/watch?v=SUqfvN7Fzyg)** (09.09, גולן). *"חוק הלאום, צריך לתקן אותו, לבטל אותו"*, both verbs in one
+    breath; outline plans for every Arab local authority within one to three years; and the July
+    2020 directors-general report on crime carried out. `jewish-arab-partnership`, held. No Arab list
+    is named as a partner, and civil service is not addressed.
+  - **The economy episode, beside the monopolies.** About ₪40bn more *"בתוך הקיימת"*, by ending coalition
+    funds and funding for schools without the core. No new tax or rate. A cut in fuel excise and car
+    taxation. A right to disconnect, hybrid work and a shorter week, with no hours. `economic` −2
+    holds: *"המדינה שמתערבת בשוק החופשי"* is the speakers' own description. `tax-cutting` is not added on
+    one excise (revision 188's reason).
+- **What the series asks for in coalition talks:** the internal-security portfolio first, then justice,
+  education and communications, and the Speaker's chair. **No episode names a party the list would or
+  would not sit with.** The series ends three weeks before *"ממשלה בלי חרדים"* (revision 247).
+- **Verified** as step 3 above prescribes: the previous `seed.sql`, then the new one on top with `psql -1`.
+  The already-seeded row went from 28 tags to 30 and a second apply changed nothing. The first run of
+  the check used stale files left in the container and showed no change. It was re-run with the right
+  ones. 271 backend tests pass.
+
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
 security **+2**, verified against the document 2026-08-01. "Israel Mitazemet" is an explicit hawkish
@@ -15442,3 +15529,4 @@ pass happened, for anyone reading git history.
 | 2026-10-05 | revision 245 — **cross-row: N12's footage of הרב לנדו and the reactions (forty-five posts, fxtwitter; ten clips transcribed by machine, five checked against their captions; fifteen images viewed; three N12 reports, one כיכר השבת report and four check pages, `curl`; one הארץ body supplied by the repo owner). No axis moved, no tag added, `seed.sql` unchanged.** The rabbi says the state should not have been founded and that religious-Zionist soldiers die because of *"תורה מעוותת"*. **The talk is not new:** כיכר השבת printed its full transcript on 07.02.2025 and every passage N12 quotes is in it. `non-zionist` is refused for יהדות התורה (a rabbi's talk, not a party text, against one holder scored from programmes); trigger written. איזנקוט commits not to sit with *"מפלגה שזאת תפיסת עולמה"*, which is `excludes-anti-zionist-parties` reaching a coalition list for the first time; `excludes-haredi-and-arab-parties` stays off because he names no party. He also rules נתניהו out of any unity government and declines ליברמן's call for זיני to resign. לפיד says those who hold the view cannot be in any government, filed on the sweep. בנט, גולן and ליברמן repeat no state money for non-servers. רגב told the cabinet the responsibility for foreign flights is her ministry's. אליהו (עוצמה יהודית #4) demands sovereignty over בריכות שלמה. ג'בארין offers the Joint List's support for a law barring a defendant from forming a government, with no commitment on a minority government. גלנט says the April 2024 hostage deal was leaked to break it. Added the same evening: שיקלי mocks ליברמן in a Russian accent after ליברמן calls נתניהו *"אהבל"*, style and no measure. Four more posts, also added later: מרידור (ישר #7) answers איזנקוט's commitment with *"אנחנו מתחייבים!"*, רייטן (הדמוקרטים #4) and בן שטרית (ישראל ביתנו #2) repeat their lists' lines, and בנט's statement circulates as a video with the same words as his post. Nothing in them names a party, so both refusals stand. Six more posts and one ynet report, added later still: דרעי writes in ש"ס's bulletin *"לא ניכנס לשום ממשלה לפני שמעמדם של בני התורה יוסדר ויובטח"*, the launch condition in print, and blames *"שופט יחיד"* for a law that nine justices annulled unanimously (headlines only). לפיד answers *"אתה באמת לא תכנס לשום ממשלה"*: one haredi leader named, worded as what voters will do, so `excludes-haredi-and-arab-parties` stays off ביחד. הנדל's *"רק ממשלה ציונית"* is his row's held exclusion. קריב carries a חדשות 13 item on yeshiva students singing a נטורי קרתא song and calls ש"ס anti-Zionist too; `non-zionist` is not opened for ש"ס. פינק and מירב כהן count seats without naming a poll, and רדמן mocks a photo of נתניהו. One more post, with a כיפה and a ישראל היום report: עמך ישראל publishes the full outline of its *"ועדת חקירה מיוחדת"* promised in revision 238 (nine members, two judges elected by secret Knesset ballot, a deciding vote for the hit local authorities' representative, first conclusions within six months), which is not the statutory form and scores nothing. חדאד (#2) is not among the four people pictured; the party calls the report on that *"שקרי לחלוטין"* and announces no change to its list. **Added 06.10, sixteen more posts of the same evening, nothing scored:** השכל (ישראל תחילה #1) posts an AI-made film, *"קהל שבוי"*, of a haredi man taking money from a bound soldier; אשר (יהדות התורה #1) calls it *"התרת דמם של החרדים"* and she answers with held tags. גולן asks the Attorney General to order a security investigation of the lecturer's case. רייטן commits to a statutory inquiry. רוזין commits to *"חוקי שגיא לשוויון"* on the נופי פרת case. בנט, בליאק, בן ארי, לזימי and ישראל ביתנו answer דרעי's column. פרקש הכהן (כחול לבן #3) attacks נתניהו's governments, which leaves `unaligned` untouched. שיקלי mocks ישר's formal invitation of 04.10 to a televised debate with נתניהו (ynet, מעריב, כאן; the Likud's campaign manager answers *"גדי בא לבד או עם מנסור עבאס, טיבי ויאיר גולן?"*) and posts an i24 compilation of איזנקוט's past statements. |
 | 2026-10-05 | revision 246 — **עמך ישראל: the party's first website and first platform (`amchaisrael.co.il/foundations` and `/inquiry`, supplied by the repo owner, read with `curl`). `economic` NULL → +1, the row's last NULL; `anti-monopoly`, `cost-of-living` and `municipal-devolution` ADDED, `not-economy-focused` REMOVED (16 → 18 tags); families now `universal-conscription`, `judicial-restraint`, `cost-of-living`; `family_evidence` `record` → `platform`.** Eight principles, ten first steps, no number in it. The economy chapter is free market and trust-busting with targeted tax benefits and state infrastructure, which is the +1 band; it is the thinnest +1 on the page. `security` +3 held: the platform never says *"יהודה ושומרון"* or *"פלסטיני"*, and the score rests on the party's ynet answer (revision 176). `religiosity` −2 held; `core-curriculum` refused (the funding condition is on anti-Zionist content, not on the core). The service law is a Basic Law with quotas for Torah learners; `scholar-exemption-retained` not added and `anti-conscription-exemption` flagged as strained, trigger written. Also refused: `reservist-focused` (third time), `free-market`, `free-trade`, `tax-cutting`, `deregulation`, `governance-reform`. The inquiry page is the first-party text of revision 245's outline and adds a mandate from צוק איתן; the platform gives the commission power to enforce its conclusions, which the page does not. Verified on an already-seeded database; 271 backend tests pass. |
 | 2026-10-06 | revision 247 — **cross-row: ליברמן's ten-point plan on religion and state, the night in מודיעין and the reactions (twenty-six posts, fxtwitter; sixteen clips, two checked against their captions and two in Arabic read from their Hebrew subtitles; fourteen images viewed; two כאן reports through headless Chromium; N12's live blog, `curl`). No axis moved, no tag added, `seed.sql` unchanged.** Seven of ליברמן's ten points are the platform's and their tags are held. New: repeal of the outgoing Knesset's religion-and-state laws, direct supervision and Comptroller audit of the two haredi school networks, and chief and city rabbis appointed by state process with army service as a condition. `state-haredi-education` refused again (supervision is not a state stream), trigger written. A crowd stopped the arrest of a deserter in מודיעין; the change bloc's leaders answer in held tags, and לייטנר (הציבור החרדי) condemns the rioters and asks the haredi parties to. בנט promises a *"חוק דרעי"* barring anyone who evaded service, or encourages evasion, from the cabinet: a named measure on a held tag, filed on the coalition-exclusion sweep. גנץ says the election is not about blocs. אשר (יהדות התורה), recorded, fears low turnout. בן גביר, רוטמן and פייגלין restate held tags; פייגלין reposts his 2023 call to make Gaza *"דרזדן"*. טיבי's claim of demolitions set for election day is a lawyer's account of his own files and was not verified. N12's poll has עמך ישראל under the threshold, and its analysts say נתניהו refused איזנקוט's debate and that the Likud will turn on הנדל and זליכה next. **Added later on 06.10, twenty more posts, an N12 summary and a הארץ report, nothing scored:** הדמוקרטים' campaign film says *"ממשלה בלי חרדים"*, the haredi half alone, filed on the sweep with ישראל תחילה's. בנט's clip makes the law a condition for the next government and names the security cabinet. גולדקנופף blames נתניהו for the arrest attempt and does not condemn the crowd. נתניהו welcomes מדן (#15) and promises him the care of the wounded in the next government. הדמוקרטים' candidates attack the broadcaster ינון מגל. N12's inquiry summary differs from the sweep on רע"ם and ש"ס, as a reporter's reading. חדאד (עמך ישראל #2) says he is under attack from the right and is not going anywhere. |
+| 2026-10-06 | revision 248 — **הדמוקרטים: the party's nine-episode video series *"מה המצע"* (YouTube, 01.06–16.09.2026, five and a half hours; automatic captions read in full by three delegated readers, quotations matched to the captions by script, four passages re-transcribed with Whisper). `kashrut-liberalization` (5 → 6) and `anti-monopoly` (7 → 8) ADDED, 28 → 30 tags; no axis moved.** Both were positions the entry already recorded from the papers without the tag: breaking the Rabbinate's kashrut monopoly, restated twice in the religion episode, and breaking up concentration across the economy, with food and toiletries named. The row is the first `anti-monopoly` holder at `economic` −2. Everything else restates held tags. New in the leader's voice, with no tag: the שב"כ head replaced, withdrawal to the border in Syria, a nuclear agreement with Iran first, the two-state vision put beyond ten years. No episode names a coalition partner or exclusion. Verified on an already-seeded database after a first run against stale files; 271 backend tests pass. |
