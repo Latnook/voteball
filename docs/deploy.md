@@ -1005,7 +1005,7 @@ the final snapshot, plus retained automated backups. If you want the dumps too, 
 aws s3 sync "s3://$(terraform -chdir=terraform output -raw s3_bucket)/backups/" ~/voteball-backups/
 ```
 
-**Old snapshots are now pruned for you, as the last step of `destroy.sh`.** It runs
+**Old snapshots are now pruned for you, near the end of `destroy.sh`.** It runs
 `./scripts/prune-db-snapshots.sh --apply`, which keeps the newest **7** (`SNAPSHOT_RETAIN` overrides)
 and refuses to delete the newest whatever that number says. Run it by hand any time to see the plan —
 **it is dry-run by default**, so this prints what it would delete and touches nothing:
@@ -1021,6 +1021,22 @@ at which point RDS **backup storage cost more than the database instance itself*
 the first nine days of September). AWS gives free backup storage up to 100% of your allocated storage
 (20 GB here), so the bill stays at zero until the total crosses it — which is why this was invisible
 until August.
+
+**Leftover disks are pruned too, as the very last step.** A cluster's storage volumes (Elasticsearch
+logs, Prometheus metrics) are separate AWS disks, and a teardown that fails to remove one leaves it
+behind, unattached and billed, with no error anywhere. `./scripts/prune-orphaned-volumes.sh --apply`
+deletes any such disk that is more than **7 days** old (`ORPHAN_VOLUME_MIN_AGE_DAYS` overrides). It
+is dry-run by default, and it refuses to do anything while the cluster is up:
+
+```bash
+./scripts/prune-orphaned-volumes.sh            # dry run: lists what it would delete
+./scripts/prune-orphaned-volumes.sh --apply    # actually delete
+```
+
+Two things to know. It runs only when `destroy.sh` runs, so a leftover disk goes at the first
+teardown after it turns a week old, not on a timer. And the week is counted from when the disk was
+created, because AWS does not record when a disk was detached. It exists because twelve such disks,
+220 GB, sat in the account from late August until they were found on 2026-10-05.
 
 **Prune snapshots by date, never by name — the names lie.** A snapshot's identifier embeds the date the
 *stack was deployed*, not the date the snapshot was taken. On a teardown today of a stack built three

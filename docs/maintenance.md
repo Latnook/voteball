@@ -318,7 +318,7 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   closure, so they are (`bouncycastle-api`, `instance-identity`, `jaxb`, `javax-activation-api`);
   this is the reason not to trim "plugins nothing declares" out of it.
 
-- **`moby/buildkit:v0.33.1-rootless`, `aquasec/trivy:0.74.0` (bumped from 0.58.1 on 2026-09-15, which predated alpine 3.24 and warned it was not on its EOL list), `quay.io/skopeo/stable:v1.22.3`,
+- **`moby/buildkit:v0.33.1-rootless`, `aquasec/trivy:0.75.0` (0.58.1 → 0.74.0 on 2026-09-15, because 0.58.1 predated alpine 3.24 and warned it was not on its EOL list; → 0.75.0 on 2026-10-05, a routine bump checked by scanning all four images and one known-vulnerable image with both versions), `quay.io/skopeo/stable:v1.22.3`,
   `amazon/aws-cli:2.37.7`, `python:3.12-slim` (lint/test), `postgres:17-alpine` (ephemeral test DB;
   moved from 16 on 2026-10-01 so CI tests the same major RDS runs — bump it with any RDS major upgrade) and `hadolint/hadolint:v2.15.1-alpine`** (note the `v` — hadolint's tags gained it, and `2.15.1-alpine` 404s), plus the `promtool-fetch` init container's `prom/prometheus:v3.15.0`, which must match the Prometheus server kube-prometheus-stack deploys are
   pinned in `ci/jenkins/jenkins.yaml`'s `voteball-build` agent pod template (`application-ci`);
@@ -345,11 +345,17 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
 ## Routine housekeeping
 
 - **RDS snapshots accumulate** — one per teardown — and are now **pruned automatically**:
-  `destroy.sh`'s last step runs `scripts/prune-db-snapshots.sh --apply`, retaining the newest 7
+  `destroy.sh` runs `scripts/prune-db-snapshots.sh --apply` near its end, retaining the newest 7
   (verified 2026-09-17: 7 manual snapshots, dry-run reports nothing to prune). Run the script without
   `--apply` to check. Any manual pruning must sort by `SnapshotCreateTime` and **never by the
   identifier** — the name embeds the *deploy* date, so the newest snapshot can carry the
   oldest-looking name (`voteball-eks-db-final-20260722065933` was created 2026-07-27).
+- **Leftover EBS volumes are pruned automatically** — `destroy.sh`'s last step runs
+  `scripts/prune-orphaned-volumes.sh --apply`, which deletes unattached volumes that an earlier
+  cluster's PVCs left behind once they are more than 7 days old. It only acts when the cluster is
+  gone, and only at a teardown: nothing runs on a timer while the stack is down. Run it without
+  `--apply` to check (verified 2026-10-05, after deleting twelve such volumes by hand: nothing to
+  prune).
 - **CloudWatch log groups carry retention** — the pod-log groups are 7 days
   (`terraform/addon-cloudwatch.tf`); verified 2026-09-17 that no `voteball` group is unbounded.
   Re-check after enabling anything new in that file.

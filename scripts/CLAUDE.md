@@ -187,7 +187,7 @@ around this, both hit for real on the 2026-07-27 rebuild (see `docs/production-r
   snapshot and **retained automated backups** (`delete_automated_backups = false`). Don't count the
   dumps when deciding whether a teardown is safe.
 
-Six teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
+Seven teardown behaviours `destroy.sh` handles that a manual `terraform destroy` does not:
 - **`./scripts/cleanup-stale-dns.sh`** removes this cluster's Route53 records if external-dns didn't get
   to it first (it only reconciles on a timer and can be destroyed before noticing the deleted Ingress).
   Gated on the ownership TXT (`external-dns/owner=voteball`), so apex/MX/DKIM records are never eligible.
@@ -208,7 +208,7 @@ Six teardown behaviours `destroy.sh` handles that a manual `terraform destroy` d
   never `aws_*`) if `terraform destroy` still hangs — see above for both.
 - **State-lock detection** — prints the exact `force-unlock` recovery instead of failing opaquely, and
   never force-unlocks on its own (see above).
-- **Pruning old DB snapshots** (`scripts/prune-db-snapshots.sh --apply`, last step, non-fatal). Every
+- **Pruning old DB snapshots** (`scripts/prune-db-snapshots.sh --apply`, second-to-last step, non-fatal). Every
   teardown takes a final snapshot and nothing ever deleted one, so by 2026-09-09 there were **52**
   going back to 2026-07-19 and RDS backup storage had become the **largest RDS line item on the
   bill** — `ChargedBackupUsage` went $0.19 (Jul) → $4.21 (Aug) → $2.00 in the first nine days of
@@ -220,6 +220,20 @@ Six teardown behaviours `destroy.sh` handles that a manual `terraform destroy` d
   match on the next deploy. A narrower predicate here would delete the snapshot the next apply is
   about to restore from. On top of `--retain` there is a hard floor: the newest is never deleted,
   whatever the number says. Dry-run by default; `destroy.sh` passes `--apply`.
+- **Pruning orphaned EBS volumes** (`scripts/prune-orphaned-volumes.sh --apply`, last step,
+  non-fatal). An orphaned volume blocks nothing, so `terraform destroy` reports success while leaking
+  it. Step 5 deletes the PVCs so a clean teardown leaks none, but on 2026-10-05 the account still
+  held **twelve** unattached volumes, 220 GB, from teardowns of 2026-08-23 to 2026-09-08 that
+  predated that step, all billed while the stack was down. **Three rules the script must keep**: it
+  **refuses to run while the EKS cluster exists** (a detached volume on a live cluster may be a pod
+  mid-reschedule, and "cannot tell" counts as "exists"), which is why it runs after the destroy and
+  must not be moved earlier; it matches on **two** markers, the `<cluster>-dynamic-pvc-*` Name tag
+  **and** the `kubernetes.io/created-for/pvc/name` tag key, plus `available`; and it deletes only
+  volumes created more than **7 days** ago (`ORPHAN_VOLUME_MIN_AGE_DAYS`). The age is measured from
+  creation because EBS records no detach time. **It is not a timer**: nothing runs while the stack is
+  down, so "after a week" means "at the first teardown after the volume is a week old".
+  `scripts/tests/test-prune-orphaned-volumes.sh`'s fake `aws` applies the filters it is passed, so
+  dropping any one of them deletes a fixture volume it must not.
 
 ## Checks that lie: swallowed exit statuses and silent name contracts
 
