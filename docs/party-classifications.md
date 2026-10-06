@@ -6731,9 +6731,9 @@ Chromium, and N12's live blog and its inquiry summary with `curl`. One הארץ 
     - **It is the haredi half, stated outright by the list, and it is new on this row.** The row's
       entry had no exclusion of any party. `excludes-haredi-and-arab-parties` is NOT added: the tag
       is a conjunction, and this row holds `jewish-arab-partnership`. ישראל תחילה said the same
-      words (revisions 228 and 241) and was filed the same way. **Three lists now exclude the haredi
-      parties and not the Arab ones or not by name**, which is the case for splitting the tag that
-      the sweep in Open questions already raises. Filed there.
+      words (revisions 228 and 241) and was filed the same way. **Two lists now state the haredi half
+      alone, beside the two that hold the conjunction**, which is the case for splitting the tag
+      that the sweep in Open questions already raises. Filed there.
     - **The rest of the row this morning.** גולן wants the broadcaster ינון מגל suspended from 103FM
       ([post](https://x.com/YairGolan1/status/2107383354370707716)), and **קריב (#3)** ([post](https://x.com/KarivGilad/status/2107395551863951764)), **רונן (#7)** ([post](https://x.com/omrironen24/status/2107384718467776837)), **רדמן (#9)** ([post](https://x.com/RadmanMoshe/status/2107390772752318534)) and **זר קצנשטיין (#12)**
       ([post](https://x.com/ZerMoran/status/2107389061568831514)) attack him. In the 73 seconds 103FM posted, מגל says those who joined *"הקמפיין של מפקיר
