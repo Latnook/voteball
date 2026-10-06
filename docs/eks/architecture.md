@@ -282,7 +282,7 @@ flowchart TD
         manval --> promote["Promote<br/>read-tree master@SHA onto RELEASE branch<br/>+ pin image.tag and 4 digests<br/>promote-to-release.sh"]
         promote --> sync["Deploy<br/>argocd app sync (NO --revision)"]
         sync --> wait["Rollout<br/>argocd app wait --sync --health"]
-        wait --> verify["Verify<br/>argocd app get: Synced + Healthy<br/>+ live image tags (revision = warning only)"]
+        wait --> verify["Verify<br/>argocd app get, polled up to 2 min:<br/>Synced + Healthy<br/>+ live image tags (revision = warning only)"]
         verify --> smoke["Smoke Test<br/>HTTPS GET / + /api/options<br/>+ /api/results?by=all<br/>(NOT /health -- 404 from outside)"]
         smoke -->|"pass"| gate["Monitoring Gate<br/>own traffic burst, then Prometheus:<br/>targets up, 5xx &lt; 1%, p95 &lt; 1s"]
         gate -->|"pass"| done(["Deployed and verified"])

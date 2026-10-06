@@ -746,13 +746,28 @@ ServiceAccount holds no write verb that a hand-rolled rollout loop would need an
 
 ### 7. Verify
 
-Reads ArgoCD's own verdict rather than re-deriving one:
+Reads ArgoCD's own verdict rather than re-deriving one, and **polls it** rather than sampling it
+once:
 
 ```bash
-argocd app get voteball ... -o json
-# assert status.sync.status == Synced, status.health.status == Healthy,
-# status.sync.revision starts with $PROMOTE_SHA
+argocd app get voteball ... -o json          # argocd container
+SYNC_STATUS=... HEALTH=... REVISION=... scripts/ci/argocd-verdict.sh   # deploy container
+# exit 0  Synced and Healthy                 -> go on
+# exit 75 read fine, not Synced/Healthy yet  -> wait 15s, read again (9 reads, two minutes)
+# exit 1  a value is empty, verdict unreadable -> fail now, never retried
+# a status.sync.revision past $PROMOTE_SHA is a WARNING, not a failure
 ```
+
+**Why it polls (2026-10-06, `application-cd` #2).** The Rollout stage's `argocd app wait --health`
+returned Healthy at 13:05:59. The backend HPA then reported `FailedGetResourceMetric` for the pods it
+had just been given, because a new pod has no CPU sample for its first 15-30 seconds, and ArgoCD
+scores an HPA in that state Degraded. The Application was Degraded from 13:06:01 to 13:06:31, Verify
+read once at 13:06:03, and a good release was rolled back. The rollback build crossed the same window
+(13:07:46 to 13:08:01) and passed because its read landed outside it. Every deploy that replaces the
+backend pods opens that window, so a single read fails by timing. The loop is bounded: a deploy that
+is really broken is still Degraded after two minutes and fails as before, two minutes later. The
+decision is in `scripts/ci/argocd-verdict.sh` so that `scripts/tests/test-argocd-verdict.sh` can test
+it offline; the test also fails if the Jenkinsfile's loop loses its bound.
 
 Followed by one `kubectl get deployments,pods,services,ingress -n devops-app` through the CD agent's
 read-only `deploy` container — **evidence capture for the brief's §10 requirement, not a second
@@ -1129,6 +1144,8 @@ original 2026-07-20 design predicted and remain accurate, now labelled against `
 | `application-cd` is triggered (by hand, usually) with a tag that is not in ECR | Someone passed a made-up or mistyped `IMAGE_TAG`, or a tag from before a `force_delete`d ECR repo | Input Validation's `images-exist.sh` check refuses it before anything is committed — the build fails at stage 2, `master` is untouched, nothing to roll back |
 | `application-cd`'s `Deploy`/`Rollout`/`Verify` stages fail with an auth error against ArgoCD | The `jenkins-cd` ArgoCD account's token expired or was rotated without updating Secrets Manager, or the controller was never restarted after the token was added (see runbook step 5) | Re-mint with `argocd account generate-token --account jenkins-cd`, merge into `voteball/jenkins`, then `kubectl rollout restart statefulset jenkins -n ci` — env vars only reach a controller at pod start |
 | `application-cd`'s Deploy stage fails immediately with `FailedPrecondition desc = another operation is already in progress`, and CD rolls back a deploy that was working | A race with ArgoCD's **own** automated sync, not a deploy failure. `syncPolicy.automated` means the tag-bump commit Promote just pushed can make ArgoCD start syncing seconds before the pipeline's explicit `argocd app sync` lands, and ArgoCD refuses a second concurrent operation. Hit for real by `application-cd` #3 (2026-08-10): pushed 12:40:17, refused 12:40:20, and that build's own event dump shows ArgoCD had already created the migrate Job for that build's image | Already handled — the Deploy stage treats **only** this error string as success and continues, since Rollout waits for the in-flight operation and Verify asserts the landed revision. Do not "clean this up" into a blanket `\|\| true`; every other sync error must still fail. If a deploy was already rolled back by this, re-promote the tag by hand (see Rollback) — but note `git pull --rebase` will silently **drop** that re-promote, because rolling a tag forward and back leaves two upstream commits whose patches are exact inverses, so the re-promote has the same patch-id as the original and rebase discards it as already applied, reporting only a `skippedCherryPicks` hint |
+| Promote fails with `git@github.com: Permission denied (publickey)` although the deploy key is registered and the same build's checkout used it a minute earlier | **Not root-caused; seen once, `application-cd` #1 on 2026-10-06, the first CD build after a rebuild.** It is NOT the late-registration trap in `scripts/CLAUDE.md`: the key had been registered 36 minutes earlier with write access (`gh api repos/<repo>/keys` shows `read_only: false` and a `last_used` at that build's own checkout), there was one key, and the next two builds pushed with it. The step took 15s where a working one takes 4s, so both of `promote-to-release.sh`'s remote calls were slow to be refused. GitHub's status page showed no incident at that minute. What was not captured: the script discards the fetch's stderr, so only the push's refusal is in the log | Re-run the build. Nothing is promoted when Promote fails, and the log says so (`NO ROLLBACK NEEDED: this build failed before promoting`). If it happens twice, capture `ssh -vT git@github.com` from a CD agent pod before changing anything |
+| Verify fails with `ArgoCD reports Degraded` seconds after Rollout reported Healthy, and CD rolls back a good deploy | **FIXED 2026-10-06 — kept as the record of `application-cd` #2.** After a rollout the backend HPA has no CPU sample for its new pods for 15-30s and reports `FailedGetResourceMetric`; ArgoCD scores that Degraded, and Verify used to read ArgoCD's health exactly once. Confirm it is this and not a broken deploy: `kubectl get events -n devops-app --field-selector involvedObject.kind=HorizontalPodAutoscaler` shows `FailedGetResourceMetric` at the second the Application went Degraded, and `kubectl logs -n argocd statefulset/argocd-application-controller \| grep 'health status'` shows it Healthy again within half a minute | Already handled — Verify polls through `scripts/ci/argocd-verdict.sh` for up to two minutes. If it still fails after that, the deploy is really Degraded: read the build's event and pod-log dump, do not widen the loop |
 | Smoke Test fails on what looks like a perfectly healthy site, and CD rolls back a good deploy | ALB target-group warm-up: `argocd app wait --health` can report `Healthy` fractionally before the ALB has finished routing to the newly-Ready pods, so the first smoke-test attempt lands before the path is live | `smoke-test.sh` already retries (`SMOKE_RETRIES`/`SMOKE_DELAY`, default 10×6s) for exactly this; if it still rolls back, widen the retry window rather than removing the check — the check exists because ArgoCD's `Healthy` is a pod-probe verdict, not a "the site works" verdict |
 | Smoke Test logs `curl exit 6: could not resolve host` for minutes on the first CD run after a rebuild, while the site loads fine from outside | A cached negative DNS answer: something in the cluster looked up `<app_domain>` before external-dns created the A record, and the VPC resolver keeps that "no address" answer for up to 15 minutes. It is per resolver host, so deploy step 11c can pass from one node while an agent on another still fails. Measured 2026-09-15: record created 17:27:19, the CD agent in il-central-1b resolved it at 17:42:43 | Nothing; it expires on its own. `smoke-test.sh` waits up to `SMOKE_DNS_WAIT` (900s) for exit 6 specifically, instead of failing into a rollback. Before that budget existed, CD #1 rolled back a good deploy on exactly this. Do not raise `SMOKE_RETRIES` for it, since that widens the window for real failures too |
 | JCasC boots with a Jenkins-shaped controller and a job that silently has no credential | An unresolved `${VAR}` in `ci/jenkins/jenkins.yaml` — JCasC does **not** fail fatally on this; it logs `Found unresolved variable 'X'. Will default to empty string` and boots anyway | `kubectl logs -n ci jenkins-0 -c jenkins \| grep -i "unresolved variable"` after any secret or JCasC change; treat any hit as a failed deploy even though nothing crashed |

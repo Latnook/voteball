@@ -402,8 +402,8 @@ by the EKS-managed ASG, not Terraform, so the provider's `default_tags` never re
 
 ## CI/CD scripts (`scripts/ci/`, `scripts/jenkins/`) and the script test suite
 
-**Fourteen scripts** (count them: `ls scripts/ci/*.sh | wc -l` — this number has been wrong three
-times now: it said "Five" while the directory held eight, was corrected to "Twelve" only to be stale
+**Fifteen scripts** (count them: `ls scripts/ci/*.sh | wc -l` — this number has been wrong three
+times now, and moved again on 2026-10-06 when `argocd-verdict.sh` landed: it said "Five" while the directory held eight, was corrected to "Twelve" only to be stale
 again within the same session because `verify-deployed-image.sh` landed an hour later, and said
 "Thirteen" until `changed-paths.sh` landed on 2026-09-08. Derive it, do not read it from here), each one pipeline decision point extracted so it can be tested without
 triggering a real build. Five were added on 2026-08-23 by the review pass:
@@ -414,7 +414,10 @@ are `IMMUTABLE`), `current-release-tag.sh` (what is deployed right now, for the 
 `verify-deployed-image.sh` (CD Verify — matches the running image's DIGEST against what the tag
 resolves to, falling back to the tag only when no digest is pinned; it was inline in Jenkinsfile-cd
 and rolled back a healthy release because it still matched on `:tag` after the chart moved to
-digests). `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the
+digests). `argocd-verdict.sh` (2026-10-06) is the other half of CD Verify: it says what ONE read of
+ArgoCD's sync and health means — pass, not yet (exit 75) or unreadable — and `Jenkinsfile-cd` polls it
+for two minutes, because the backend HPA is scored Degraded for 15-30s after every rollout and a
+single read rolled back a good release. `should-skip-build.sh` (G2, the `[skip ci]` loop guard) and `images-exist.sh` (G1, the
 immutable-tag re-run check) hold two of `Jenkinsfile-ci`'s decisions — `images-exist.sh` is also
 reused, read-only, by `Jenkinsfile-cd`'s Input Validation stage to confirm a requested tag really is
 in ECR before promoting it. `validate-repo.sh` is the CI Validation stage: asserts every
@@ -443,6 +446,8 @@ scripts/tests/test-notify.sh               # the SNS notifier can NEVER fail a b
 scripts/tests/test-refresh-api-cidr.sh     # the EKS API allow-list helper; its refusals and
                                            # already-covered no-ops are the point, not the happy path
 scripts/tests/test-verify-deployed-image.sh # CD Verify: match the DIGEST, not the tag
+scripts/tests/test-argocd-verdict.sh        # CD Verify: one ArgoCD read is pass / not yet (75) / unreadable;
+                                           # also pins that Jenkinsfile-cd polls it in a BOUNDED loop
 ```
 
 **Do not read the suite's size from this file — derive it:**
