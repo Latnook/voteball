@@ -2576,10 +2576,10 @@ funding". The religion-and-state plan (rev 99) meets two of the three explicitly
   *"רבני הקהילה"* within *"הסטנדרט ההלכתי"*, and no non-orthodox track is recognised.
 - **Funding — kept, which is why the row stops at −2.** The plan keeps state religious funding and
   keeps it orthodox, conditioning money on curriculum rather than withdrawing it: *"100% ליבה או 0%
-  תקצוב"*. The education plan had already met the −2 band's defining condition — *"נחייב 60 אחוזים
-  מהתוכנית שתהיה תוכנית ליבה ארצית"*, with *"נבטל תקצוב לרשתות פוליטיות, מוסדות פטור ובתי ספר
-  מגזריים בדלניים"* under the slogan *"לא ממלכתי – לא על חשבוני"* and full state supervision of
-  haredi education — while still funding the state-haredi stream it pushes pupils into (rev 22).
+  תקצוב"*. The education plan states the same condition — *"מימון ציבורי יינתן רק למוסדות המלמדים 100%
+  לימודי ליבה"*, under the heading *"לא ממלכתי – לא על חשבוני – או 100% ליבה או 0% תקצוב"* — while
+  connecting haredi education to the state system and guaranteeing state-haredi frameworks at
+  every stage, which it still funds (rev 22, as re-read in rev 253).
   Same shape as ישר and בית ציוני.
 - **The women's plan** (rev 29) repeals the laws that expanded the rabbinical courts' authority —
   their *expansion*, not their jurisdiction — and the gender-separation-in-academia law, and adds
@@ -2690,7 +2690,7 @@ imports, not tenders (rev 105).
 **Religion and state**
 
 - **`anti-clerical`** — the kashrut plank is the strongest single piece (under `religiosity`), with
-  the education plan's defunding, 60% condition and state supervision, and universal conscription;
+  the education plan's funding condition (100% core or no public money), and universal conscription;
   the early-childhood plan adds, in the party's own voice, that haredi families took a
   disproportionate share of 2022 daycare subsidy against ~14% of the population (rev 49). Until
   2026-08-17 this entry read the kashrut reform as liberalization *inside* the Rabbinate's
@@ -2700,11 +2700,19 @@ imports, not tenders (rev 105).
 - **`civil-marriage`** — the civil partnership covenant (rev 99). Refused in rev 29, when the
   women's plan answered עגינות and get-refusal by training דיינים and adding preventive measures
   inside the rabbinical system.
-- **`core-curriculum`** — rests on the education plan as read 2026-08-17 (60%; rev 22); the
-  religion-and-state plan states the condition as 100% (rev 99); the two figures were never
-  reconciled here.
-- **`state-haredi-education`** — *"העברת 90% מהתלמידים בפיקוח חרדי למוסדות חינוך ממלכתיים-חרדיים תוך
-  שמונה שנים"*, a dated numeric target (rev 22).
+- **`core-curriculum`** — *"מימון ציבורי יינתן רק למוסדות המלמדים 100% לימודי ליבה"* (the
+  education plan as it stands; rev 253), the same condition the religion-and-state plan states
+  (rev 99). **The page was rewritten in place** (modified 2026-09-23) and none of the five
+  quotations rev 22 took from it on 2026-08-17 survives: that text required 60% of the programme
+  to be a national core and named the networks it would defund. On the page now, 60% is the common
+  core's share of the timetable — *"ליבה משותפת של 60% מהלימודים לכל ילדי ישראל"*, with 20% set by
+  each stream and 20% by the local authority or school — so the two figures the entry could not
+  reconcile were never rivals. Re-read a plan page before re-quoting it.
+- **`state-haredi-education`** — *"נחבר את החינוך החרדי למערכת החינוך הממלכתית"*, with full core
+  studies for every haredi pupil from first to twelfth grade within eight years and *"זמינות מלאה
+  של מסגרות ממלכתיות-חרדיות"* at every stage (rev 253). The numeric target rev 22 quoted, 90% of
+  pupils moved to state-haredi institutions within eight years, is no longer on the page; the
+  tag now rests on the commitment without it.
 
 **Society**
 
@@ -2729,9 +2737,10 @@ imports, not tenders (rev 105).
 
 **Local government**
 
-- **`municipal-devolution`** — the education plan's headline: dissolve the districts, reduce the
-  ministry to a regulator, move *"70% מהחלטות החינוך"* to local authorities and school heads (rev
-  22). Later instances: Shabbat transport by local option (revs 60, 99); tourism management moved
+- **`municipal-devolution`** — the education plan: *"נעביר את מערכת החינוך ממודל ריכוזי, שבו 69%
+  מההחלטות על חיי ילדינו מתקבלות במטה משרד החינוך, למודל שמעניק יותר סמכויות לרשויות המקומיות,
+  ולמנהלים ולמנהלות של מוסדות החינוך"*, the ministry confined to *"קביעת מדיניות, יעדים ופיקוח"*
+  (rev 253; the text rev 22 read dissolved the districts and moved 70% of decisions). Later instances: Shabbat transport by local option (revs 60, 99); tourism management moved
   *"מידי הממשלה"* to 6–8 regional coalitions of local authorities (rev 113); planning moved to local
   authorities, permits in three months (rev 164); and נגרי's portfolio, the only first-party
   evidence for it from a named candidate.
@@ -3263,10 +3272,19 @@ recognition of non-Orthodox conversion, public transport on Shabbat, freedom of 
 and equal, transparent subsidy of religious services to all streams.
 
 - The motive is pluralism, not anti-clericalism (Decision 5 — the axis records direction, the tag
-  records motive). The framing is *"הפרדת הדת ממוסדות המדינה לצד חיזוק אופיה של ישראל כמדינה יהודית
-  ודמוקרטית"*. קריב (#3) is a Reform rabbi, פינק (#5) an observant Shabbat-keeper who supports
+  records motive). קריב (#3) is a Reform rabbi, פינק (#5) an observant Shabbat-keeper who supports
   separation, דאבוש (#13) runs Rabbis for Human Rights. **The religious figures on this list push
   the score down, not up.**
+- **The paper has two editions, and the party dropped its separation sentence between them** (rev
+  253). The edition read on 2026-08-01 (created 8 June 2026; [archived 2026-07-25](http://web.archive.org/web/20260725203357/https://democrats-media.s3.us-east-1.amazonaws.com/%D7%93%D7%AA+%D7%95%D7%9E%D7%93%D7%99%D7%A0%D7%94.pdf))
+  framed the programme as *"הדרך לשם עוברת בהפרדת הדת ממוסדות המדינה לצד חיזוק אופיה של ישראל כמדינה
+  יהודית ודמוקרטית"* and promised *"נסבסד שירותי דת באופן שוויוני ושקוף לכל הזרמים והדתות"*. The
+  edition on the party's bucket now (created 11 August 2026) contains no form of הפרדת: its framing
+  is *"מדינה שמכבדת את המסורת היהודית ורואה בה מקור זהות, תרבות ושייכות – אך לא משתמשת בה ככלי
+  כפייה"*, and the subsidy line reads *"נפעל לסבסוד שוויוני של כלל הזרמים והדתות, לקידום הזרמים
+  הליברלים ביהדות"*. The planks listed above are in both editions. **Both keep state religious
+  funding and spread it across the streams; neither ends it** — which is the −3 band's third
+  criterion, and is why this row is named in the band item under Open questions.
 - The gender paper reaches the same −3 by a third road: women's exposure in religious divorce —
   *"חשופות לסחטנות, לתלות ולסרבנות גט"* — so every expansion of rabbinical-court jurisdiction is
   cancelled and a full civil track opened.
@@ -3726,15 +3744,19 @@ precedent — it carries the `reservist-focused` tag and not the family.
 **Service and the haredi settlement**
 
 - **`universal-conscription`** (tag and family) — added 2026-08-01, with the next two tags, from
-  `sherut4all.com`: *"כל הצעירים יחויבו בשירות"* and a "מנהלת שירות ישראלי" administration.
+  `sherut4all.com`: *"כלל הצעירים יחויבו בשירות"* and a "מנהלת שירות ישראלי" administration.
   *מציאות אחרת* is the third independent confirmation, after that site and the education paper:
   *"כולם משרתים — חילונים, דתיים, חרדים, יהודים, ערבים ודרוזים"*, *"צה״ל בוחר ראשון את מי לגייס
   וכל השאר הולכים לשירות אזרחי"*.
-- **`sanctions-on-non-servers`** — *"קנוס אותו וצמצום זכויות"*: fines and reduced state-granted
-  rights, specifically allowances, subsidized housing, government tenders and public-sector posts.
+- **`sanctions-on-non-servers`** — *"ככל שצעיר ישתמט משירות המנהלת תוכל לקנוס אותו ולצמצם זכויות
+  הניתנות לו על ידי המדינה"*: fines and reduced state-granted rights, specifically allowances,
+  *מחיר למשתכן* housing, government tenders and public-sector posts (wording re-read from the
+  site in rev 253; the entry had a garbled form of it).
   In *מציאות אחרת*: *"סנקציות אישיות על כולם, עבודה מול הפרט ולא הישיבות"*.
-- **`arab-civil-service`** — mandatory civilian-service tracks: *"כל צעיר/ה בחברה הערבית לשרת
-  במסלולים אזרחיים"*. Minted for this row — no counterpart existed; the vocabulary held only its
+- **`arab-civil-service`** — civilian-service tracks first and a duty after a phase-in: *"נרצה
+  לאפשר לכל צעיר/ה בחברה הערבית לשרת במסלולים אזרחיים איכותיים"*, and once the tracks have been
+  built over several years, *"בסיומם תוטל חובה בשירות אזרחי לכל הצעירים והצעירות בחברה הערבית"*
+  (re-read in rev 253: the sentence the entry quoted says "enable"; the duty is in the next one). Minted for this row — no counterpart existed; the vocabulary held only its
   opposite, בל"ד's `opposes-arab-conscription`.
 - **`scholar-exemption-retained`** — the *"תורתו אומנותו"* exemption kept for genuine Torah
   scholars, open-ended, with quotas fixed in law and no service attached (*"מכסות לפטור במקום
@@ -3927,9 +3949,11 @@ All first-party unless marked.
   limit);
   [book-hinuh-kahollavan.pdf](https://kachollavan.org.il/wp-content/uploads/2025/12/book-hinuh-kahollavan.pdf)
   (the 14-point education programme);
-  [book-kahol-lavan.pdf](https://kachollavan.org.il/wp-content/uploads/2025/07/book-kahol-lavan.pdf)
+  [book-kahol-lavan.pdf](https://kachollavan.org.il/8ps/wp-content/uploads/2025/07/book-kahol-lavan.pdf)
   (צו 8 — public-service reform, the content behind the [`/8ps/`](https://kachollavan.org.il/8ps/)
-  page).
+  page; the file moved under `/8ps/`, and its old address,
+  `kachollavan.org.il/wp-content/uploads/2025/07/book-kahol-lavan.pdf`, returns 404 as of
+  2026-10-07, rev 253).
 - **Read by 2026-08-11:**
   [*מציאות אחרת*](https://kachollavan.org.il/wp-content/uploads/2025/12/book%20different%20reality%20.pdf);
   [*יחד מנצחים*](https://kachollavan.org.il/wp-content/uploads/2026/07/20678_9_Amud-Atar.pdf)
@@ -11969,12 +11993,14 @@ bought nothing here, because the defect was never in the pixels being measured.
     cited anywhere on the page).
   - **Filed lists never read from the filing:** הציבור החרדי's at all; הליכוד's slots 21 and below,
     and its reserved slots (counted as eight, seven and ten); הציונות הדתית's beyond #2 and #3.
-  - **Sources that have changed since they were quoted** (live checks of 2026-10-07; the quotations
-    were deliberately left as the entries had them): ביחד's education plan no longer contains any of
-    rev 22's five quotations and now states the funding condition as 100% core; three
-    `sherut4all.com` quotations on כחול לבן differ from the site, and the link to its principles
-    booklet returns 404 (the file moved under `/8ps/`); the *"הפרדת הדת ממוסדות המדינה…"* framing
-    quoted in הדמוקרטים' entry is not in the paper now on the party's bucket.
+  - ~~**Sources that have changed since they were quoted**~~ — **re-read at source and replaced,
+    2026-10-07 (revision 253).** ביחד's education plan had been rewritten in place and none of rev
+    22's five quotations survived; three `sherut4all.com` quotations on כחול לבן were garbled or
+    clipped and a booklet had moved; and the framing quotation in הדמוקרטים' entry belonged to an
+    edition of their paper the party has since replaced, **dropping its sentence on separating
+    religion from state institutions**. No tag lost its support. The lesson is the page's own, from
+    the edition probe under הדמוקרטים: a party document is not a fixed text, and a quotation is
+    only as good as the day it was read.
   - **Revision numbers are cited inconsistently** — the same pass as 49 and 51, 55 and 57, 16 and
     18, 63 and 70. Each entry now notes both where it matters; the Change history table is right.
   - **The band tables in "The axes" have drifted from `seed.sql`:** they still list חד"ש-תע"ל and
@@ -12949,3 +12975,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-07 | revision 251 — **cross-row: the third anniversary of 7 October (forty-five posts, fxtwitter; nineteen clips transcribed by machine, five checked against their captions; twenty-three images viewed; two ynet reports and a כיפה report, `curl`; three passages of a הארץ analysis supplied by the repo owner). No axis moved; one tag follows in revision 252.** בן גביר at the seam line: disarm the Authority, and *"מול איום לא מחכים. פועלים לפני!"*. איזנקוט promises the decision on a state inquiry within the government's first two weeks; אופיר כץ gives the Likud's six-member parity commission in his own words on ynet; `state-commission-of-inquiry` stays refused. Four opposition candidates count the coalition's absence from the ceremonies; בליאק's count of the dead at כפר עזה matches the memorial board, and his claim that סמוטריץ' had posted nothing is wrong by two hours. ליברמן at כרם שלום: the aid lorries fund Hamas, `hardline-on-gaza` held. פייגלין calls a רע"ם campaign motorcade *"דגלים אסלאמיים"* (the frames show the party's flag) and stands by bus advertisements reading *"כיבוש. גירוש. התיישבות."*, `population-transfer` held. A 2024 clip has חדאד (עמך ישראל #2) for leaving *"כל סנטימטר ברצועת עזה"*; his answer does not disown it, while the row's `territorial-control-gaza` rests on וינטר's current answers; trigger set. הארץ's analysis that נתניהו is running the campaign against וינטר rests on unnamed sources and scores nothing; `bloc` stays `bibi`. השכל: no state money for whoever refuses to serve, `sanctions-on-non-servers` held. The Likud's voter-flight petition (revision 82) is struck out in a settlement whose terms the two sides describe differently; the decision was not read |
 | 2026-10-07 | revision 252 — **עוצמה יהודית: `preemptive-security-doctrine` ADDED (18 → 19 tags; 7 → 8 holders), on בן גביר's post from the seam line on the anniversary. No axis moved.** *"ה-7.10 לימד אותנו - מול איום לא מחכים. פועלים לפני!"* is a doctrine sentence of the tag's founding kind, with no condition, in the chairman's own words (revision 201's tier rule), and the campaign's billboards rest on the same claim. Weighed against revision 250's warning that the tag is no longer rare: it stops separating this row from הציונות הדתית, and still separates ביחד from ישר and ישראל ביתנו, with כחול לבן and נעם not holding it. Nothing added for disarming the Authority, which has no tag on any row |
 | 2026-10-07 | **Every party entry converted from dated blocks to a current-state format** (eighteen entries; האחדות and אל הדגל, already organised by subject and off the ballot, left as written). The document went from 16,131 lines / 270,979 words to about 12,950 lines / 212,000 words; **no value changed and `seed.sql` is untouched.** Each conversion was checked mechanically (links carried, quotations verbatim, tags and families equal to `seed.sql`), audited against the old text by an independent reader and corrected, and a final sweep confirmed every cross-row item still has a counterpart. Revision 68's block (יהדות התורה's filed-list reading) was found filed under Logos and moved into that party's entry. The audits also corrected statements the old text had left stale; what they raised and nobody has acted on is the first item under Open questions. The per-pass text of every revision is in git history from commit `bec77c3` backwards. |
+| 2026-10-07 | revision 253 — **three rows' stale quotations re-read at source and replaced. No axis moved, no tag added or removed, `seed.sql` unchanged.** Prompted by the live checks the conversion audits ran. **ביחד**: the education plan page was rewritten in place (modified 2026-09-23) and none of the five quotations revision 22 took from it survives; `core-curriculum`, `state-haredi-education` and `municipal-devolution` are re-grounded on the current text. The funding condition is now *"מימון ציבורי יינתן רק למוסדות המלמדים 100% לימודי ליבה"*, and the 60% the entry could not reconcile with it is the common core's share of the timetable; the 90% transfer target and the dissolution of the districts are no longer on the page. **כחול לבן**: three `sherut4all.com` quotations corrected against the site — *"כלל הצעירים"* for *"כל הצעירים"*, the sanctions sentence in full, and the Arab-service sentence, which says "enable" and puts the duty after a phase-in of several years; the צו 8 booklet moved under `/8ps/`. **הדמוקרטים**: the framing *"הפרדת הדת ממוסדות המדינה…"* is from the paper's June edition (recovered from the Wayback Machine, snapshot 2026-07-25); the 11 August edition now on the party's bucket drops that sentence. Both editions keep state religious funding and spread it across all streams, which bears on the `religiosity` −3 band item under Open questions. Retrieval: `sherut4all.com` returns its FAQ block only to a request carrying a Referer. |
