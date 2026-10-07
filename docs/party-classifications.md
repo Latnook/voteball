@@ -211,7 +211,12 @@ one way an establishment keeps or loses its protected place.
     *"שימור הסטטוס-קוו"* and is the +2 band almost word for word.
   - **עוצמה יהודית — no, on the text read.** Its site carries no religion-and-state programme and
     describes its aim as *"לחזק את האופי היהודי של מדינת ישראל"*, the +1 band's wording.
-  - **Both are left at +3 pending the repo owner's decision**; the reasoning is in each entry.
+  - **Both are held at +3 by the repo owner's decision of 2026-10-08** (revision 256), taken with
+    a research run's findings in hand: neither party's current text, nor the coalition agreement
+    either signed in 2022, meets the own-text test, and what each rests on is what it has said it
+    wants — סמוטריץ''s 2019 statements for the first, the party's own 2019–2020 principles for the
+    second. The evidence both ways is in each entry. **Do not move either row on the own-text test
+    alone**: that check has been done and the decision was made knowing its result.
     ש"ס, יהדות התורה and הליכוד stay at +2: they defend and fund the existing settlement, and the
     arbitration law is opt-in.
 
@@ -5878,8 +5883,26 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   *"פסיקת הלכה בסוגיות ציבוריות"*, and the coalition agreements as הארץ reports them (rev 100).
   **Caveats:** the paper is the 2022 election's and only indicative for this row; no 2026 document
   of the party addresses religion and state; and the זהות faction it absorbed sat at +2.
-  **Decision for the repo owner:** move to +2, or hold +3 on the record and name what the record
-  is.
+  **The signed record reads +2 as well** (rev 256; a research run whose agents read the scans by
+  eye and by OCR — not re-read here). The party's December 2022
+  [coalition agreement](https://main.knesset.gov.il/mk/government/Documents/CA37-RZ.pdf) with הליכוד has a religion chapter (clauses 89 to 117)
+  framed as status quo — Annex A: *"יישמר הסטטוס קוו בנושאי דת ומדינה"* — with no occurrence of
+  הלכה, משפט עברי or מדינת הלכה in 29 pages. Rabbinical courts get arbitration in monetary
+  disputes only *"בהסכמת הצדדים"* (clause 110), which is the opt-in the band places at +2. Its
+  strongest clause toward +3 is 116, prayer at the Western Wall *"על פי מנהג המקום שהינו על פי דין
+  תורה"*, enforceable by law on everyone at the site; it opens by invoking the status quo. The
+  law for *"הגשמת הזהות היהודית במרחב הציבורי"* that rev 100 took from הארץ is not in the
+  agreement.
+  **The case for +3 is the chairman's own words**, as reported by
+  [mako](https://www.mako.co.il/news-israel-elections/elections_2019-q2_2019/Article-8922ae5529c1b61026.htm) (3 June 2019) and [כיפה](https://www.kipa.co.il/%D7%97%D7%93%D7%A9%D7%95%D7%AA/944938-%D7%A1%D7%A2%D7%A8%D7%AA-%D7%9E%D7%93%D7%99%D7%A0%D7%AA-%D7%94%D7%94%D7%9C%D7%9B%D7%94-%D7%97%D7%95%D7%96%D7%A8%D7%AA-%D7%A1%D7%9E%D7%95%D7%98%D7%A8%D7%99%D7%A5-%D7%A1%D7%AA%D7%99%D7%9E%D7%AA-%D7%A4%D7%99%D7%95%D7%AA-%D7%A7%D7%9C%D7%90%D7%A1%D7%99%D7%AA/) (6 August 2019) and not
+  re-read at source: that the state should be run, as in the days of David and Solomon, by Torah
+  law — said as chairman of האיחוד הלאומי, qualified the same day ("with adjustments for our
+  time") and followed two months later by a rejection of religious coercion. He has not been found
+  retracting the aspiration. Nothing was established about his position since, about the party's
+  votes in the outgoing Knesset, or about other senior figures.
+  **Decided 2026-10-08 by the repo owner: held at +3.** The score records the aspiration its
+  leader stated, not the programme its documents carry; `halakhic-state` is the tag that says so.
+  **Trigger to re-open:** a 2026 party text on religion and state, in either direction.
 
 #### The `/judaization/` page (revs 31, 33)
 
@@ -6660,9 +6683,27 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   נעם holds `halakhic-state` on platform text, הציונות הדתית's own paper reads +2 (see that entry),
   and this row holds neither the tag nor a text. **Not examined in this pass:** what the party's
   record in the outgoing coalition adds — which is what הליכוד's +2 is scored from.
-  **Decision for the repo owner:** +1 on its own text, +2 if the coalition record is read and
-  supports it, or hold +3 and name the evidence. **Trigger either way:** any first-party
-  religion-and-state text; the legal platform promised to ynet is the likeliest place.
+  **The signed record reads +2** (rev 256; a research run whose agents read the scans — not
+  re-read here). The party's December 2022 [coalition agreement](https://main.knesset.gov.il/mk/government/Documents/CA37-Otzma.pdf) has no
+  religion-and-state chapter; its religion clauses are a thinner subset of הציונות הדתית's
+  (conversion under the Chief Rabbinate's rulings, rabbinical-court arbitration by consent, the
+  anti-discrimination amendment, the Law of Return's grandchild clause), and Annex A commits to
+  the status quo on religion and state. No clause on halakha, משפט עברי or prayer on the Temple
+  Mount. Those are the clauses הליכוד's +2 is scored on.
+  **The case for +3 is the party's own older text**, which is the nearest thing to the band's
+  wording that either +3 row has published. Its principles for the 2019 and 2020 elections
+  ([archived 2019-08-19](http://web.archive.org/web/20190819003342/http://ozmayeudit.com/), re-read here): clause 3, *"המשפט העברי: נפעל להטמעת
+  המשפט העברי במערכת המשפטית של מדינת ישראל"*; the preamble, *"תורת ישראל היא דרך החיים החוקה
+  והמוסר של עם ישראל"* and *"לא תיתכן יהדות בלא היסודות ההלכתיים שלה"*; and clause 11, a
+  *"דמוקרטיה יהודית"* with the state's values *"על פי המוסר היהודי"*. The verb is embedding, the
+  rest of clause 3 is about the State Attorney's office, and no rabbinic body or mechanism is
+  named. **The party's current site carries none of it.** Nothing was established about בן גביר's
+  own statements on a halakhic state, the party's votes in the outgoing Knesset, or anything
+  separating it from הליכוד on religion.
+  **Decided 2026-10-08 by the repo owner: held at +3.** The score rests on the principles the
+  party published and has not disowned, not on what it publishes now. **Trigger to re-open:** any
+  first-party religion-and-state text; the legal platform promised to ynet is the likeliest
+  place.
 - **The promised legal platform.** ynet's judicial questionnaire (21.09.26): the party answered only
   that a full legal platform would be published within days — **trigger:** read it when it appears
   (revision 134, under ישר). Rev 107's six measures are a chairman's statement, not that platform.
@@ -12069,9 +12110,10 @@ bought nothing here, because the defect was never in the pixels being measured.
   that goes unactioned (the lesson of the `religiosity −3` item below).
   - ~~**Both ends of `religiosity` rest on band wording the recorded evidence does not meet.**~~ —
     **the bands were reworded and all six pole rows re-tested on their own text, 2026-10-07
-    (revision 255; "The axes").** All three −3 rows hold, הרשימה המשותפת by declaration. **Still
-    open, and the repo owner's to decide: הציונות הדתית and עוצמה יהודית are at +3 and their own
-    text reads +2 and +1.** The reasoning and the options are in each entry's Open questions.
+    (revision 255; "The axes").** All three −3 rows hold, הרשימה המשותפת by declaration. **Decided
+    2026-10-08 (revision 256): הציונות הדתית and עוצמה יהודית stay at +3 by the repo owner's
+    decision**, though their current text reads +2 and +1 and their signed coalition agreements
+    read +2. What each rests on, and what would re-open it, is in each entry's Open questions.
   - **`economic` 0 against NULL on עוצמה יהודית.** Its evidence is the absence of economic content,
     which is what scored נעם NULL; the stated reason for 0 is a claim of economic liberalism that no
     pass has cited a text for.
@@ -13076,3 +13118,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-07 | revision 253 — **three rows' stale quotations re-read at source and replaced. No axis moved, no tag added or removed, `seed.sql` unchanged.** Prompted by the live checks the conversion audits ran. **ביחד**: the education plan page was rewritten in place (modified 2026-09-23) and none of the five quotations revision 22 took from it survives; `core-curriculum`, `state-haredi-education` and `municipal-devolution` are re-grounded on the current text. The funding condition is now *"מימון ציבורי יינתן רק למוסדות המלמדים 100% לימודי ליבה"*, and the 60% the entry could not reconcile with it is the common core's share of the timetable; the 90% transfer target and the dissolution of the districts are no longer on the page. **כחול לבן**: three `sherut4all.com` quotations corrected against the site — *"כלל הצעירים"* for *"כל הצעירים"*, the sanctions sentence in full, and the Arab-service sentence, which says "enable" and puts the duty after a phase-in of several years; the צו 8 booklet moved under `/8ps/`. **הדמוקרטים**: the framing *"הפרדת הדת ממוסדות המדינה…"* is from the paper's June edition (recovered from the Wayback Machine, snapshot 2026-07-25); the 11 August edition now on the party's bucket drops that sentence. Both editions keep state religious funding and spread it across all streams, which bears on the `religiosity` −3 band item under Open questions. Retrieval: `sherut4all.com` returns its FAQ block only to a request carrying a Referer. |
 | 2026-10-07 | revision 254 — **עוצמה יהודית (cross-row): two הארץ items of 07.10, bodies supplied by the repo owner. Nothing scored.** A report that הליכוד and הציונות הדתית hold a rabbis' conference on 08.10 without בן גביר or his party, which the party's sources read with the surplus-vote agreement of revision 247 as a sign of his exclusion from the next government; both charges it repeats were already on the row, and friction inside a bloc moves no `bloc`. And a column on the disqualification votes that relays three statements by בן גביר at the hearings, one of them on `hardline-on-gaza`, held; a columnist's relay, undated. Written in the current-state format: one item under עוצמה יהודית's sources that scored nothing, and a pointer in each of the other two entries. |
 | 2026-10-07 | revision 255 — **the `religiosity` poles reworded, and every row at either pole tested on its own text. No value changed; `seed.sql` unchanged.** The −3 band no longer turns on "no state religious funding", which no −3 row met; it asks whether any couple can marry and divorce civilly, whether the Rabbinate's monopolies end outright, and whether the establishment loses its protected place. The +3 band asks whether the party's own text makes religious law a source of state power. **−3**: הדמוקרטים and ישראל ביתנו hold on their programmes; הרשימה המשותפת holds by declaration — בל"ד's 2018 programme, recovered from the Wayback Machine, gives the sentence in Hebrew and names no plank. **+3**: נעם holds on its own text. **הציונות הדתית's religion-and-state paper of the 2022 platform, read by OCR for the first time, is headed "שימור הסטטוס-קוו" and reads +2; עוצמה יהודית's site has no religion-and-state programme and its self-description reads +1.** Both are left at +3 for the repo owner to decide. Also: a source that covers several parties is from now on cited under each of them, not hosted under one. |
+| 2026-10-08 | revision 256 — **הציונות הדתית and עוצמה יהודית: the `religiosity` +3 researched, and held by the repo owner's decision. No value changed; `seed.sql` unchanged.** A research run read each party's December 2022 coalition agreement with הליכוד from the scans: both commit to the status quo on religion and state, give rabbinical courts arbitration only by consent, and contain no clause on halakha or משפט עברי — the +2 band. The case for +3 is, for הציונות הדתית, סמוטריץ''s statements of 2019 that the state should be run by Torah law, as reported and since qualified; for עוצמה יהודית, its own principles for the 2019 and 2020 elections — *"נפעל להטמעת המשפט העברי במערכת המשפטית של מדינת ישראל"* — re-read from an archived copy and absent from its current site. The owner kept both at +3 with that in hand; each entry records the evidence both ways and the trigger that would re-open it. Not established: either party's votes in the outgoing Knesset, or בן גביר's own statements on the subject. |
