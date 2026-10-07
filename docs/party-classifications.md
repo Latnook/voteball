@@ -28,8 +28,8 @@ This file records how those decisions were applied to each party.
    **How to update the entry depends on which format it is in.** Until 2026-10-07 every entry grew
    by appending a dated block per pass, which is the failure this file was created to get `seed.sql`
    out of: the current answer could only be worked out by reading every block in order. Entries are
-   being converted one at a time to a **current-state** format — **converted so far: הדמוקרטים**,
-   which is the model.
+   being converted one at a time to a **current-state** format — **converted so far: הדמוקרטים** (the
+   model) **and רע"ם**.
 
    - **In a converted entry, edit in place; never append a dated block.** Change the sentence under
      the axis or tag that moved, citing "(rev N)". A refusal goes under *Considered and refused*, an
@@ -11885,250 +11885,184 @@ summary of the first gave each principle one English line and none of the text q
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
-security **−2** on Abbas's own statements: an immediate end to the war, and a peaceful settlement
-requiring an independent Palestinian state alongside Israel. That two-state position lands between
-the Democrats (−1, Zionist two-staters) and בל"ד (−3).
+> **This is a current-state entry** (converted 2026-10-07; the format is described under "How to
+> revise a classification"). It says why each value holds *today* and is edited in place when
+> something moves. The pass-by-pass text it replaced is in git history, each pass has a row under
+> Change history, and "(rev N)" marks the revision a point comes from.
 
-**Scored conservatively on purpose.** A secondary summary also attributes to רע"ם the ending of the
-occupation, evacuation of the settlements and the right of return — which would be −3, level with
-בל"ד. That could **not** be verified: `idi.org.il` returned 504 on two attempts and
-`israelhayom.co.il` returned 403, so the claim could not be traced to רע"ם's own material and may be
-inherited from old Joint List text. −2 is what the confirmed evidence carries. If the stronger
-platform is ever verified from the party's own source this row moves to −3 — but it should move on
-evidence, not on a summary nobody could open.
+**Basis.** The leader's own statements as the press carried them, the 25th Knesset's recorded votes,
+and the filed list — not a platform: a search for a 2026 רע"ם platform from the party's own source
+returned nothing (rev 11).
 
-**2026-08-01: `idi.org.il` was reachable this time, and reading it makes the −2 stronger, not
-weaker.** The page does carry the full −3 language — *"תומכת בהקמת מדינה פלסטינית שבירתה ירושלים
-מתוך סיום הכיבוש ופינוי ההתנחלויות"* and *"זכות השיבה לפליטים הפלסטינים"* — but it is **undated**,
-and that text is the pre-2021 Joint List-era programme, not anything from Abbas's pragmatic turn. A
-search for a 2026 רע"ם platform from the party's own source returned nothing. So the suspicion
-recorded above ("may be inherited from old Joint List text") is now the likeliest reading rather
-than a caveat, and **−2 stands**. Do not move this row on the IDI page.
+- **The filed list** is CEC list 18 ([`gov.il/he/pages/raam_list18`](https://www.gov.il/he/pages/raam_list18),
+  rev 61; slots 1–6 corroborated by
+  [he.wikipedia](https://he.wikipedia.org/wiki/הבחירות_לכנסת_העשרים_ושש)). It is **73 names** (rev
+  63), read at its realistic range of **10** (rev 64): עבאס 1, סגלוביץ 2, טאהא 3, אל-הואשלה 4,
+  ח'טיב-יאסין 5, חוג'יראת 6, and at #7–#10 איברהים אל-טורי, עבד אל-כרים מסרי, עבד אל-כרים עזאם,
+  אבראהים אבו לבן. Ra'am holds five seats against it.
+- **How the order was made** (rev 48, confirmed by the filing in rev 61). The primaries at the
+  2026-08-22 conference produced 1 עבאס, 2 טאהא, 3 אלהואשלה, 4 ח'טיב-יאסין, 5 חוג'יראת; the same
+  conference authorised Abbas to alter the list and add candidates בשריון, and slot #2 was filled by
+  appointment nine days later, so the primaries' 2–5 sit at 3–6.
 
-One genuinely current item, recorded here but **not** scored: Abbas has publicly backed civilian
-national service for Arab citizens — *"קידום מתווה שירות אזרחי יענה על הצרכים של הצעירים הערבים"* —
-which is the opposite of בל"ד's `opposes-arab-conscription` and would be a real distinction between
-the two rows. It is not tagged because the interview carries no publication date. ~~Date it and it
-earns a tag.~~ **That instruction was wrong and is struck: dated 2026 sources arrived on 2026-09-05
-and they REFUSE the tag rather than earning it — see the block at the end of this entry.** Note also that Abbas's "ריבונות" quote in the same interview is about **crime
-organisations and the state's monopoly on force inside Israel**, not territory — it is not a
-security-axis input, and reads like one at a glance.
+#### The three axes
 
-religiosity **NULL** by Decision 3: this axis measures *Jewish* religion-and-state, and Ra'am's
-conservatism is about Muslim religious life, which it does not measure.
+**`economic` 0 — no economic doctrine, or a genuinely balanced one.** Nothing in rev 44's three
+sources touches it. No pass has argued or sourced this value in this entry; treat it as unaudited.
 
-**2026-08-31 — `jewish-arab-partnership` added (tag and family, 2 → 3 holders each). No axis moved.**
-On 31 August 2026 Abbas and **יואב סגלוביץ'** announced at a Nazareth press conference that Segalovich
-takes the **second slot** on Ra'am's list — the first Jewish candidate in the party's history, and the
-highest-placed. He is a former ניצב who founded לה"ב 433 and headed the police investigations and
-intelligence branch, then sat for יש עתיד and served as **Deputy Minister of Public Security in the
-Bennett–Lapid government**, where he ran the government's campaign against crime in Arab society
-(*מסלול בטוח*); he resigned from יש עתיד and from the Knesset in early August 2026. Read from ynet,
-[וואלה](https://news.walla.co.il/item/3864608) and [דבר](https://www.davar1.co.il/695470), the last two
-carrying the statements at length. (The JPost article cited alongside them by a research pass **404s**;
-the Hebrew three are the record here.)
+**`security` −2 — two-state with an end to the occupation** (the Conventions' own-sources case).
 
-**The tag is earned on the same standard הדמוקרטים's was, and by a stronger instance of it.** Revision
-36 recorded that row as earning `jewish-arab-partnership` "from the realized list (בשיר at #10) and
-from scattered lines in other papers" before its Arab-society paper arrived. Here the realized list is
-**#2**, and the framing is the party leader's own, not a classifier's inference:
+- **Abbas's own statements** (rev 7): an immediate end to the war, and a peaceful settlement
+  requiring an independent Palestinian state alongside Israel. That lands between the Democrats (−1,
+  Zionist two-staters) and בל"ד (−3).
+- **Dated 2026 statements, as reported** (rev 48). At the 2026-08-22 conference Abbas said the
+  State of Palestine exists and is recognised by most of the world, that רע"ם works for Israel and
+  the US to recognise it, and *"אנו פועלים להשגת שלום ופיוס ולסיום הכיבוש והסכסוך"*
+  ([mako](https://www.mako.co.il/news-politics/2026_q3/Article-6db9307149620a1027.htm)); his Arabic
+  post of 2026-08-26 restates *"זכותו של העם הפלסטיני להגדרה עצמית ולהכרה במדינה פלסטינית לצד מדינת
+  ישראל"*. Rev 48 calls this "a dated first-party 2026 basis for the first time"; rev 233 (under
+  ישר), reading N12's dated report of the same speech, finds it fits −2's own wording and
+  approaches nothing in −3.
+- **Not −3.** This page's −3 needs **full** withdrawal **plus** right of return **plus**
+  dismantling the settlements — the three things בל"ד's −3 is built on. The 2026 statements carry
+  none of them; ending the occupation is the −2 band's own wording, not the withdrawal clause (revs
+  48, 233).
+- **Scored conservatively on purpose.** A secondary summary attributes to רע"ם the ending of the
+  occupation, evacuation of the settlements and the right of return. The IDI page (rev 11) does
+  carry that −3 language — *"תומכת בהקמת מדינה פלסטינית שבירתה ירושלים מתוך סיום הכיבוש ופינוי
+  ההתנחלויות"* and *"זכות השיבה לפליטים הפלסטינים"* — but it is **undated**, and the text reads as
+  the pre-2021 Joint List-era programme, not anything from Abbas's pragmatic turn — the likeliest
+  reading, not a dated fact. **Do not move this row on the IDI page.**
+- **Trigger.** If the stronger platform is ever verified from the party's own current source the
+  row moves to −3 — on evidence, not on a summary nobody could open. Rev 44's trigger (the
+  2026-08-22 conference in a datable first-party source) was answered by rev 48 as to the number —
+  it does not move — but rev 233 holds that what was found is a report, not the party's text: the
+  wait for a first-party document goes on.
 
-- *"כדי לייצר שינוי, צריך שותפות. שותפות אזרחית"*, and *"יש מפלגות שמפחדות משותפות... רע"ם לא מפחדת
-  משותפות. רע"ם מקדמת אותה"*.
-- *"אני לא מחפש מי שדומה לי. אני מחפש מי שיודע לעשות את העבודה"* — his own answer to *"מה ערבי צריך
-  ניצב יהודי"*.
-- Explicitly **not** a sectoral favour — *"זו לא טובה לערבים"* — and argued to the Jewish public in
-  shared-society terms: *"הנשק שיורה היום בטמרה יירה מחר בעפולה... זאת לא בעיה של הערבים. זאת בעיה של
-  המדינה"*.
-- Segalovich's half is a joint civil agenda — crime, health, welfare, planning and building —
-  and *"אני רוצה במפורש לשבור את הפרדיגמה של קווי הגבול וקווי השיח"*.
+**`religiosity` NULL**, by Decision 3: the axis measures *Jewish* religion-and-state, and Ra'am's
+conservatism is about Muslim religious life, which it does not measure. (The axes section adds that
+the row is NULL for having published nothing, "not because of their sector"; rev 166, under הליכוד,
+tables its recorded votes on religious-courts statutes.)
 
-**The strongest argument against it is recorded rather than buried, because it nearly won.** The
-linkage is **technical and personal**: *"אני לא מתחבר לרשימת רע"ם עם סיעה, אני אישית מצטרף לרע"ם"*,
-with both sides keeping their positions — *"אני לא מתכוון לשנות את מנסור ואת רע"ם והם לא ישנו אותי"*,
-and on LGBTQ rights *"יודעים את עמדתי - היא לא השתנתה. יודעים את עמדתו של מנסור עבאס - גם היא לא
-השתנתה"*. That is a coalition of convenience on civil issues, not agreement. It is tagged anyway
-because **this family's test is shared-society equality, not shared ideology** — הרשימה המשותפת holds
-it on exactly the model of Jews and Arabs acting together across a real disagreement, and Segalovich's
-own formulation is that one *"ההתקדמות שלנו היא מתוך הבנת השונות, ולא מדמיון וזהות"*. The refusal
-under עמך ישראל is not the contrary precedent it looks like: that row was refused for **identity
-replacement** — replacing Palestinian identity with Israeli-Arab identity in the state's Arab schools
-— which is a different position, arguably the opposite one.
+#### Families
 
-**`sector` stays `arab` and `focuses-on-arab-israeli-civil-issues` is only reinforced.** A Jewish #2
-does not change whose constituency and idiom this row is, and the announcement's whole substantive
-content — crime, health, welfare, planning — is the civil-issues tag's own subject matter.
+`arab-representation`, `jewish-arab-partnership` — the second added with the tag of the same name
+(rev 44).
 
-**No axis moved, and one lead is deliberately left unscored.** Nothing in the three sources touches the
-economic 0 or the religiosity NULL. On `security`, the only statehood content is **הליכוד's** attack
-(*"דוחף להקים מדינה פלסטינית"*), which is a rival's characterisation and not admissible here. A
-research pass reported that Abbas said at Ra'am's **2026-08-22** list conference that the State of
-Palestine already exists and called for recognition and an end to *"the occupation"* — which, if
-sourced, would be the **dated first-party** text this entry has been waiting for since the IDI page was
-set aside as pre-2021 Joint List material. **It could not be verified** (the session's search budget
-was exhausted), and it is *not* scored on that report. It probably does not reach −3 regardless: this
-page's −3 needs withdrawal **plus** right of return **plus** dismantling the settlements, and one
-clause is not three. **Trigger:** find the 2026-08-22 conference in a datable first-party source and
-re-read the security axis against it. *(Revision 233: N12's dated report of the speech is found and read.
-It fits −2's own wording and approaches nothing in −3. It is still a report, not the party's text.)*
+#### Tags (6) and what each rests on
 
-**Two things still owed on this row.** ~~The civil-service item above is *still* undated~~ — **paid 2026-09-05, and it refused the tag rather than earning it; see the block below.** Nothing in
-this announcement restates it, so the "date it and it earns a tag" trigger stands. And no tag covers
-**crime and personal security in Arab society**, which is the substance of both speeches; it is not
-created here because it would need the הרשימה המשותפת and הדמוקרטים corpora read for holders, and it
-joins the Kaminitz-Law gap already queued behind a pass over the two Arab-list rows. **This pass
-covered one of those two rows, not both.**
+**Held in `seed.sql` and not argued in this entry:** **`pro-two-state`**; **`conservative`**, which
+rev 61 left unmoved by ח'טיב-יאסין (#5) being a feminist activist — it is a claim about the party,
+and a candidate cuts against it no more than עוצמה יהודית's #9 changed that row's `sector`; and
+**`focuses-on-arab-israeli-civil-issues`**, which rev 44 found only reinforced — a Jewish #2 does
+not change whose constituency and idiom this row is (`sector` stays `arab`), and the announcement's
+whole substantive content — crime, health, welfare, planning — is this tag's own subject matter.
 
-**2026-09-05 — the Shura Council split confirmed, and the standing civil-service instruction turned
-out to be backwards. No axis moved; `seed.sql` unchanged.**
+- **`islamist`** — kept, its basis narrowed rather than removed (rev 48). The party formally
+  disengaged from the Islamic Movement's Shura Council and chose its 2026 list without it
+  ([דבר](https://www.davar1.co.il/694057/), on the 2026-08-22 conference): *"לאחרונה התנתקה המפלגה
+  פורמלית ממועצת השורא של התנועה האסלאמית. הבחירות הפעם התקיימו בנפרד ממועצת השורא ועל בסיס אזורי,
+  כלומר הנציגים מייצגים את אזורי הבחירה השונים במפלגה"*. מעריב had reported the intention on
+  2025-12-06 (*"הודיע כי מפלגתו תיפרד ממועצת השורא ומהאחים המוסלמים"*).
+  - What ended is an *institutional* arrangement: the Council no longer selects or approves the
+    list. The tag records what the party **is** — its origin in, and identification with, the
+    southern Islamic Movement, and its religiously observant leadership — and no source has it
+    renouncing that. Removing a tag because a committee stopped meeting would confuse governance
+    with ideology.
+  - **The tag was inherited from general knowledge and has never rested on a Ra'am document**; it is
+    the second-weakest basis of any tag on this row (as of rev 48).
+  - **The instance behind the narrowed reading** (rev 61): אימאן ח'טיב-יאסין, #5, is סגנית יו"ר
+    מועצת השורא של רע"ם and a member of the Islamic Movement's southern branch. A Shura Council
+    officer elected by the regional primaries rather than designated by the Council is what the
+    narrowed reading predicts — personnel continuity without the institutional selection mechanism.
+- **`jewish-arab-partnership`** (tag and family) — added in rev 44 on the standard הדמוקרטים's was
+  (revision 36: "from the realized list (בשיר at #10) and from scattered lines in other papers"),
+  by a stronger instance: here the realized list is **#2** and the framing is the leader's own.
+  - On 31 August 2026 Abbas and יואב סגלוביץ' announced at a Nazareth press conference that
+    Segalovich takes the second slot — the first Jewish candidate in the party's history, and the
+    highest-placed (ynet, [וואלה](https://news.walla.co.il/item/3864608),
+    [דבר](https://www.davar1.co.il/695470), the last two at length). A former ניצב who founded
+    לה"ב 433, then a יש עתיד MK and Deputy Minister of Public Security in the Bennett–Lapid
+    government, where he ran the campaign against crime in Arab society (*מסלול בטוח*); he resigned
+    from יש עתיד and the Knesset in early August 2026.
+  - **Abbas:** *"כדי לייצר שינוי, צריך שותפות. שותפות אזרחית"*; *"יש מפלגות שמפחדות משותפות... רע"ם
+    לא מפחדת משותפות. רע"ם מקדמת אותה"*; to *"מה ערבי צריך ניצב יהודי"*, *"אני לא מחפש מי שדומה לי.
+    אני מחפש מי שיודע לעשות את העבודה"*. Not a sectoral favour — *"זו לא טובה לערבים"* — and argued
+    to the Jewish public: *"הנשק שיורה היום בטמרה יירה מחר בעפולה... זאת לא בעיה של הערבים. זאת בעיה
+    של המדינה"*.
+  - **Segalovich:** a joint civil agenda, and *"אני
+    רוצה במפורש לשבור את הפרדיגמה של קווי הגבול וקווי השיח"*.
+  - **The strongest argument against it nearly won.** The linkage is technical and personal — *"אני
+    לא מתחבר לרשימת רע"ם עם סיעה, אני אישית מצטרף לרע"ם"* — with both sides keeping their positions:
+    *"אני לא מתכוון לשנות את מנסור ואת רע"ם והם לא ישנו אותי"*, and on LGBTQ rights *"יודעים את
+    עמדתי - היא לא השתנתה. יודעים את עמדתו של מנסור עבאס - גם היא לא השתנתה"*. A coalition of
+    convenience on civil issues, not agreement. Tagged anyway because **this family's test is
+    shared-society equality, not shared ideology**: הרשימה המשותפת holds it on exactly the model of
+    Jews and Arabs acting together across a real disagreement, and Segalovich's formulation is that
+    one — *"ההתקדמות שלנו היא מתוך הבנת השונות, ולא מדמיון וזהות"*.
+  - **The refusal under עמך ישראל is not the contrary precedent it looks like**: that row was
+    refused for identity replacement — replacing Palestinian identity with Israeli-Arab identity in
+    the state's Arab schools — a different position, arguably the opposite one.
+  - Announced on the 31st but negotiated earlier (rev 48, correcting rev 44): on 2026-08-22 Abbas
+    said *"אנחנו באמצע הדרך"* and called Segalovich *"ראוי להיות השר לביטחון הפנים"*, and it was
+    still incomplete in between (on the LGBTQ terms: *"את הפרטים האלו אנחנו נשלים"*). #2 then
+    survived from announcement to filing, which is not something a symbolic slot always does (rev
+    61).
+- **`anti-lgbt`** — added in rev 165 on the repo owner's decision (2026-09-27); the votes are
+  tabled under Cross-row passes. All four of the party's voting MKs (טאהא,
+  חוג'יראת, ח'טיב-יאסין, אלהואשלה) voted against the conversion-therapy ban at all five readings, in
+  2023 and again in 2026 (context: the LGBTQ line quoted above, rev 44) — and it is
+  issue-specific: on the 35 other opposition bills of the same
+  five days רע"ם voted with the opposition on 25 of 26 where it voted. **Limits:** it rests on one
+  issue; רע"ם did not vote on the four discrimination-definition bills or the housing bill (absence
+  is not opposition); עבאס himself appears in none of the ten votes; and no רע"ם document states the
+  position. **Trigger to revisit:** a רע"ם vote *for* an LGBT-protective bill, or a party statement
+  contradicting the record.
 
-**רע"ם formally disengaged from the Islamic Movement's Shura Council, and its 2026 list was chosen
-without it.** [דבר](https://www.davar1.co.il/694057/), reporting the party conference of
-**2026-08-22**: *"לאחרונה התנתקה המפלגה פורמלית ממועצת השורא של התנועה האסלאמית. הבחירות הפעם
-התקיימו בנפרד ממועצת השורא ועל בסיס אזורי, כלומר הנציגים מייצגים את אזורי הבחירה השונים במפלגה"*.
-מעריב had reported the intention on **2025-12-06** (*"הודיע כי מפלגתו תיפרד ממועצת השורא ומהאחים
-המוסלמים"*) — an announced intention then, a completed fact now.
+#### Considered and refused
 
-- **`islamist` is KEPT, and its basis is narrowed rather than removed.** What ended is an
-  *institutional* arrangement: the Shura Council no longer selects or approves the list. The tag
-  records what the party **is** — its origin in, and identification with, the southern Islamic
-  Movement, and its religiously observant leadership — and no source has it renouncing that. Removing
-  a tag because a committee stopped meeting would confuse governance with ideology. **But the tag was
-  inherited from general knowledge and has never rested on a Ra'am document**, which is now the more
-  honest thing to say about it, and it is the second-weakest basis of any tag on this row.
-- **The list order was set before סגלוביץ' existed on it.** The primaries produced 1 עבאס,
-  2 **טאהא**, 3 **אלהואשלה**, 4 **ח'טיב-יאסין**, 5 **חוג'יראת**; the same conference authorised Abbas
-  to alter the list and add candidates **בשריון**, and slot #2 was filled by appointment nine days
-  later, pushing all four elected candidates down one. Abbas was already negotiating publicly on
-  2026-08-22 — *"אנחנו באמצע הדרך"*, calling Segalovich *"ראוי להיות השר לביטחון הפנים"* — so
-  revision 44's implication that the arrangement was settled on the 31st is corrected: announced then,
-  negotiated earlier, and still incomplete in between (Abbas on the LGBTQ terms: *"את הפרטים האלו
-  אנחנו נשלים"*).
+- **`arab-civil-service`** — refused in rev 48. The tag means a national-service track for Arab
+  citizens (כחול לבן's founding position, אל הדגל's bill §8). Abbas's Arabic post of 2026-08-26, as
+  reported by [ynet](https://www.ynet.co.il/news/elections2026/article/rjnwqfhwzg): *"רע"מ תומכת
+  ביוזמה ערבית התנדבותית שאינה צבאית או ביטחונית, אך מתנגדת לשירות הלאומי-אזרחי במתכונתו
+  הנוכחית"*. In Arabic on 2026-07-11 (كل العرب): *"طرحنا خدمة مجتمعية تطوعية مدنية بحتة لمجتمعنا،
+  ولا علاقة لها بالأمن أو العسكر إطلاقاً"* — a purely civilian voluntary community service with no
+  connection whatsoever to security or the military. A voluntary communal initiative proposed
+  *against* the existing national-service framework is not that track; it is closer to its refusal.
+  - **The earlier instruction was backwards.** An undated interview has Abbas backing civilian
+    national service — *"קידום מתווה שירות אזרחי יענה על הצרכים של הצעירים הערבים"* — read then as
+    the opposite of בל"ד's `opposes-arab-conscription`, with the note "date it and it earns a tag".
+    That note predicted the conclusion and left only the date open, so dating the claim would have
+    looked like completing the work. The prediction was the thing that was wrong.
 
-**`arab-civil-service` — the trigger fired, the sources arrived dated, and the tag is REFUSED.** This
-is the finding of the pass. The instruction left above said "date it and it earns a tag"; dated 2026
-material says the opposite of what that note assumed. In his Arabic post of **2026-08-26**, as
-reported by [ynet](https://www.ynet.co.il/news/elections2026/article/rjnwqfhwzg): *"רע"מ תומכת
-ביוזמה ערבית התנדבותית שאינה צבאית או ביטחונית, אך **מתנגדת לשירות הלאומי-אזרחי במתכונתו
-הנוכחית**"*. In Arabic on **2026-07-11** (كل العرب): *"طرحنا خدمة مجتمعية تطوعية مدنية بحتة لمجتمعنا،
-ولا علاقة لها بالأمن أو العسكر إطلاقاً"* — a purely civilian voluntary community service with no
-connection whatsoever to security or the military. **This tag means a national-service track for Arab
-citizens** (כחול לבן's founding position, אל הדגל's bill §8). A voluntary communal initiative
-proposed *against* the existing national-service framework is not that — it is closer to its refusal.
-**Note the shape of the error that was avoided**: a note written by an earlier pass predicted the
-conclusion and only left the date open, so dating the claim would have looked like completing the
-work. The prediction was the thing that was wrong.
+#### Open questions and triggers
 
-**security −2 HELD, now on a dated first-party 2026 basis for the first time.** The entry has said
-since 2026-08-01 that −2 stands and that the row would move only on the party's own current material,
-not on the undated IDI page. That material now exists: at the 2026-08-22 conference Abbas said the
-State of Palestine exists and is recognised by most of the world, that רע"ם works for Israel and the
-US to recognise it, and *"אנו פועלים להשגת שלום ופיוס ולסיום הכיבוש והסכסוך"*
-([mako](https://www.mako.co.il/news-politics/2026_q3/Article-6db9307149620a1027.htm)), and the
-2026-08-26 post restates *"זכותו של העם הפלסטיני להגדרה עצמית ולהכרה במדינה פלסטינית לצד מדינת
-ישראל"*. **That is two-state at the −2 band, not −3**: no right of return, no dismantling of
-settlements, no full withdrawal — the three things בל"ד's −3 is built on. The **trigger written into
-this entry on 2026-09-04 is therefore discharged**, and the answer is that the number does not move.
+- **Slots #7–#10 return nothing in Hebrew press beyond the filing** (rev 69) — four names inside a
+  realistic range; a property of Hebrew-language coverage of this row, not of the candidates.
+  **Arabic-language sources are the obvious next instrument and were not used**; they need
+  browser-shaped fetches by hand, not a search pass.
+- **`negev-bedouin-representation` is live rather than deferrable** (revs 64, 69). The question is
+  whether this row earns the tag at all: it does not hold it — הרשימה המשותפת does, as a deliberate
+  singleton (revs 63 and 69 call it "this row's"). אל-טורי איברהים #7 sits **inside** the range, so
+  the Negev slot is a real seat rather than a courtesy; אלטורי אדם #26 and אל עמור אבראהים #67 (rev
+  63) add nothing to that (rev 69). Left for a pass that reads the names rather than counting them.
+  **No tag follows from a name; what would move it is a document.**
+- **No tag covers crime and personal security in Arab society**, the substance of both speeches at
+  the Segalovich announcement (rev 44). Creating it needs the הרשימה המשותפת and הדמוקרטים corpora
+  read for holders; it joins the Kaminitz-Law gap already queued behind a pass over the two
+  Arab-list rows. **Rev 44 covered one of those two rows, not both.** On Kaminitz the other row has
+  since been read (rev 103, under הרשימה המשותפת); **this row is the open half** — see the page's
+  Open questions.
+- **Leads filed for this row under other entries:** what סגלוביץ' said about sitting in an איזנקוט
+  government (rev 153, under הליכוד); an עבאס interview on רשת ב' (rev 169, under ישר); the
+  Hamas-question interviews (rev 228, under ישראל תחילה; corrected by rev 233, under ישר).
 
-**The Arabic/Hebrew seam is real, and it is a seam in TIME as much as in audience.** On 2026-08-26,
-in Arabic, Abbas called the state's Jewishness imposed: *"יהודיות המדינה זהו מצב קיים שנכפה עלינו ולא
-אנחנו שבחרנו בו... המפלגות הערביות נאלצו לקבל זאת מבחינה מעשית, שאם לא כן הן עלולות להיפסל"*. ynet
-sets that against his own 2021 formulation at the Globes conference — *"מדינת ישראל נולדה כמדינה
-יהודית וככה תישאר. זאת החלטתו של העם היהודי. נקודה"*. **Three qualifications keep this from being
-scored as a two-faced-messaging finding**, and all three matter:
-1. The Arabic post was **published in Hebrew within hours** by N12 and ynet, so it was never an
-   audience-only message; it was a reaction to Hebrew-language backlash over an Amit Segal interview
-   days earlier, which is the opposite of a hidden channel.
-2. The contrast is **2021 against 2026**, not Hebrew against Arabic on the same day. A five-year shift
-   in a leader's formulation is ordinary politics.
-3. Abbas describes the change himself as one of **formulation, not position** — *"אני מנסח את
-   התבטאויותיי... בצורה אחרת, אין פירוש הדבר שאני מכחיש את הנכבה, העקירה או הנרטיב הפלסטיני"*.
+#### Cross-row passes hosted here
 
-No tag is minted for it. `claims-economically-liberal` is this page's instrument for a rhetoric/record
-gap, and it exists because a *number* would otherwise misreport the row; nothing here misreports a
-number. Recorded in prose, which is what the entry text is for.
-
-**Method note, because it nearly produced a wrong answer.** The research harness returned "refuted
-0-3" on nearly every claim sourced to an **Arabic-language** domain (`kul-alarab.com`, `arabi21.com`,
-`bldtna.co.il`) while confirming the *same substance* 3-0 from `mako.co.il`. It also refuted a ynet
-claim whose identical content it had confirmed from mako, and refuted the שריון mechanism that is
-stated verbatim in the דבר text. Those are **fetch failures reported as refutations** — the
-swallowed-status family in `CLAUDE.md`, in the sub-type that is worst: a confident negative that looks
-like a finding. Every claim above was re-verified by fetching the source directly with a
-browser-shaped `curl`. **Do not accept a "refuted" verdict from that harness on a source it may
-simply have failed to open.**
-
-**2026-09-08 — revision 61. The filed list DISCHARGES revision 48's order prediction and supplies the
-first evidence that separates its two readings of `islamist`. No axis moved; no tag added.** Source:
-the CEC filing ([`gov.il/he/pages/raam_list18`](https://www.gov.il/he/pages/raam_list18), list 18),
-supplied verbatim by the repo owner. Slots 1–6 corroborated by
-[he.wikipedia](https://he.wikipedia.org/wiki/הבחירות_לכנסת_העשרים_ושש).
-
-- **Revision 48's correction of revision 44 is confirmed by the filing.** It predicted that
-  Segalovich's #2 was an **appointment בשריון** that pushed the four primary winners down one:
-  filed order is עבאס 1, **סגלוביץ 2**, טאהא 3, אל-הואשלה 4, ח'טיב-יאסין 5, חוג'יראת 6 — the
-  primaries' 2–5 now sitting at 3–6, exactly. A prediction this page made from a party conference
-  report and then checked against the filing four days later; recorded because most of the entries
-  above are corrections, and this one is not.
-- **אימאן ח'טיב-יאסין at #5 is the sharpest test `islamist` has had, and it lands on revision 48's
-  narrowed reading.** She is **סגנית יו"ר מועצת השורא של רע"ם** — deputy chair of the very Shura
-  Council the party formally disconnected from — sitting in a realistic slot on a list Ra'am holds
-  five seats against. Revision 48 narrowed the tag with care: *what ended is an institutional
-  arrangement (the Shura Council no longer selects the list), not the party's identification with the
-  southern Islamic Movement*. **A Shura Council officer elected by the regional primaries rather than
-  designated by the Council is precisely what that sentence predicts** — personnel continuity without
-  the institutional selection mechanism. Before this the distinction was a careful formulation with
-  nothing behind it; it now has an instance.
-- **She is also a feminist activist** (social worker by training; she chose the Knesset's Committee on
-  the Status of Women for her Mandel practicum) and a member of the Islamic Movement's southern
-  branch. `conservative` is **unmoved** — it is a claim about the party, and a candidate cuts against
-  it no more than עוצמה יהודית's #9 changed that row's `sector`. Recorded, not scored.
-- ~~**#7–#12 are unsourced beyond the filing**~~ — **superseded 2026-09-08 by revision 63, which
-  read the filing itself.** The list is **73 names**, not the twelve supplied, and every one is now
-  in hand from the CEC's own API. The observation that press coverage stops at #6 because that is the
-  party's realistic range still holds and is still the reason to expect nothing more from reporting;
-  what was wrong was the conclusion drawn from it, that the filing was out of reach. **אל-טורי
-  איברהים #7 is joined by אלטורי אדם #26 and אל עמור אבראהים #67**, so a Negev presence spans the
-  list rather than occupying one slot — relevant to this row's `negev-bedouin-representation`, which
-  is a deliberate singleton, and left for a pass that reads the names rather than counting them.
-  **Amended again the same day (revision 64): the realistic range is TEN, not six.** The sentence
-  above reasoned that press coverage stops at #6 "because that is the party's realistic range" — it
-  is not; the range is 10, so **אל-טורי איברהים #7 sits INSIDE it**, and the Negev slot is a real
-  seat rather than a courtesy. The observation about press coverage was sound and the range inferred
-  from it was invented — **a stopping point in reporting is a fact about reporting.** The
-  `negev-bedouin-representation` question is therefore live rather than deferrable.
-- **`jewish-arab-partnership` is unchanged and better-founded**: #2 survived from announcement to
-  filing, which is not something a symbolic slot always does.
-
-
-**2026-09-09 — revision 69. Candidate audit completed at the realistic range of 10, and the bottom
-half of that range is a genuine documentary gap. No axis moved; no tag added; `seed.sql`
-unchanged.**
-
-- **#1–#6 are already covered**: עבאס, סגלוביץ (revision 44), and the four primary winners
-  טאהא / אל-הואשלה / ח'טיב-יאסין / חוג'יראת, whose displacement from 2–5 to 3–6 revision 48 predicted
-  and revision 61 confirmed against the filing. ח'טיב-יאסין #5's Shura Council office and its bearing
-  on `islamist` is set out in revision 61 and is unchanged.
-- **#7–#10 — איברהים אל-טורי, עבד אל-כרים מסרי, עבד אל-כרים עזאם, אבראהים אבו לבן — return NOTHING
-  in Hebrew press beyond the filing itself.** Four names inside a realistic range, in list order and
-  nowhere else. **Revision 64 corrected revision 63 for inventing a range from press coverage
-  stopping at #6; the corrected range makes this a real gap rather than an artefact**, and the gap is
-  a property of Hebrew-language coverage of this row rather than of the candidates. **Arabic-language
-  sources are the obvious next instrument and were not used here** — flagged explicitly, because
-  revision 48 records the research harness returning *refuted 0–3* on nearly every Arabic-domain
-  source while confirming the same substance from Hebrew media, which means this gap needs
-  browser-shaped fetches by hand and not a search pass.
-- **אל-טורי #7 keeps `negev-bedouin-representation` live rather than deferrable**, per revision 64 —
-  and the tag is a deliberate singleton on this row, so a second Negev name at #26 and a third at
-  #67 (revision 63) do not add to it. **No tag follows from a name**; what would move it is a
-  document.
-
-**2026-09-27 — revision 165 (cross-row). The 25th Knesset's LGBT votes, read from the Knesset's own records.
-`anti-lgbt` ADDED to רע"ם (5 → 6 tags; 1 → 2 holders), on the repo owner's decision. No axis moved.**
-Source: the Knesset OData API (`KNS_PlenumVote`, `KNS_PlenumVoteResult`), every MK's recorded vote, with
-factions from `KNS_PersonToPosition`. Ten plenum votes on LGBT bills, all opposition bills at the preliminary
-reading. **The check was run against a known answer first**: the housing-discrimination bill comes out 33–52,
-matching הארץ's 52–33 (revision 159).
+**Rev 165 — the 25th Knesset's LGBT votes**, from the Knesset OData API (`KNS_PlenumVote`,
+`KNS_PlenumVoteResult`; factions from `KNS_PersonToPosition`): ten plenum votes, all opposition
+bills at the preliminary reading. **Checked against a known answer first**: the
+housing-discrimination bill comes out 33–52, matching הארץ's 52–33 (revision 159).
 
 | vote | date | for–against | רע"ם | חד"ש-תע"ל | הליכוד |
 |---|---|---|---|---|---|
@@ -12138,28 +12072,67 @@ matching הארץ's 52–33 (revision 159).
 | conversion-therapy ban for minors (×3) | 14.01.26 | 36–59, 37–58, 37–58 | 0–4 each | 1–2 each | 1–23/24 (אוחנה) |
 | housing-discrimination ban | 21.01.26 | 33–52 | absent | 3–0 | 1–24 (אוחנה) |
 
-- **The coalition's votes carry no LGBT-specific signal, and the base rate is why.** On the 35 other opposition
-  bills voted the same five days (יש עתיד ≥80% for, הליכוד majority against), הליכוד, ש"ס, יהדות התורה, הציונות
-  הדתית, עוצמה יהודית and הימין הממלכתי voted against **every one**. A "no" from a coalition party here is
-  coalition discipline until shown otherwise, so these votes add nothing to ש"ס or יהדות התורה, and revision
-  159's refusal of `anti-lgbt` for הליכוד stands. **אוחנה voted for all ten**, the only coalition MK who did;
-  that is this row's recorded split (אוחנה for, שיקלי against) in roll-call form.
-- **רע"ם is the exception, and it is issue-specific.** On the same 35 bills it voted with the opposition on 25
-  of 26 where it voted, yet all four of its voting MKs (טאהא, חוג'יראת, ח'טיב-יאסין, אלהואשלה) voted against the
-  conversion-therapy ban at all five readings, in 2023 and again in 2026. **`anti-lgbt` ADDED on that record, on
-  the repo owner's decision (2026-09-27), with its limits stated**: it rests on one issue; רע"ם did not vote on
-  the four discrimination-definition bills or the housing bill (absence is not opposition); עבאס himself appears
-  in none of the ten votes; and no רע"ם document states the position. The context is revision 44's: at
-  סגלוביץ'׳s joining, *"יודעים את עמדתו של מנסור עבאס - גם היא לא השתנתה"*. **Trigger to revisit:** a רע"ם vote
-  *for* an LGBT-protective bill, or a party statement contradicting the record.
-- **הרשימה המשותפת splits along its components, recorded not tagged.** On the conversion-therapy ban חד"ש's
-  כסיף and תומא-סלימאן voted for, and טיבי (תע"ל) and one other voted against; on housing, עודה, כסיף and
-  תומא-סלימאן voted for. The row holds neither LGBT tag, and one issue split this way does not make one.
-- **ישראל ביתנו and כחול לבן voted for whenever they voted**; ישראל ביתנו was absent from the housing bill.
-  Neither holds `lgbt-rights` (ישראל ביתנו has no LGBT plan on record); a record of yes votes on opposition
-  bills does not by itself meet revision 49's trigger, which asks for a statement naming the community.
-- **Not found as a clean vote**: the partners-of-fallen-soldiers recognition הארץ mentions. Its benefits sit
-  inside the broad bereaved-families law (amendment 47, passed January 2026), so that vote is not an LGBT vote.
+- **The base rate: the coalition's votes carry no LGBT-specific signal.** On the 35 other opposition
+  bills voted the same five days (יש עתיד ≥80% for, הליכוד majority against), הליכוד, ש"ס, יהדות
+  התורה, הציונות הדתית, עוצמה יהודית and הימין הממלכתי voted against **every one**. A "no" from a
+  coalition party here is coalition discipline until shown otherwise, so these votes add nothing to
+  ש"ס or יהדות התורה, and revision 159's refusal of `anti-lgbt` for הליכוד stands. **אוחנה voted
+  for all ten**, the only coalition MK who did — the הליכוד row's recorded split (אוחנה for, שיקלי
+  against) in roll-call form.
+- **הרשימה המשותפת splits along its components, recorded not tagged**: on the conversion-therapy ban
+  כסיף and תומא-סלימאן (חד"ש) for, טיבי (תע"ל) and one other against; on housing עודה, כסיף and
+  תומא-סלימאן for.
+- **ישראל ביתנו and כחול לבן voted for whenever they voted** (ישראל ביתנו absent on housing).
+  Neither holds `lgbt-rights`; yes votes on opposition bills do not by themselves meet revision 49's
+  trigger, which asks for a statement naming the community.
+- **Not a clean vote:** the partners-of-fallen-soldiers recognition הארץ mentions sits inside the
+  broad bereaved-families law (amendment 47, passed January 2026).
+
+#### Recorded so it is not mistaken for a finding
+
+- **A rival's characterisation is not admissible** (rev 44): the only statehood content at the
+  Segalovich announcement is הליכוד's attack, *"דוחף להקים מדינה פלסטינית"*.
+- **Abbas's "ריבונות" quote** in the undated interview is about crime organisations and the state's
+  monopoly on force inside Israel, not territory — not a security-axis input, and it reads like one
+  at a glance.
+- **The Arabic/Hebrew seam is real, and it is a seam in TIME as much as in audience** (rev 48). On
+  2026-08-26, in Arabic, Abbas called the state's Jewishness imposed: *"יהודיות המדינה זהו מצב קיים
+  שנכפה עלינו ולא אנחנו שבחרנו בו... המפלגות הערביות נאלצו לקבל זאת מבחינה מעשית, שאם לא כן הן
+  עלולות להיפסל"*. ynet sets that against his 2021 formulation at the Globes conference — *"מדינת
+  ישראל נולדה כמדינה יהודית וככה תישאר. זאת החלטתו של העם היהודי. נקודה"*. Three qualifications keep
+  it from being scored as two-faced messaging: (1) the post was **published in Hebrew within hours**
+  by N12 and ynet, and was a reaction to Hebrew-language backlash over an Amit Segal interview days
+  earlier — the opposite of a hidden channel; (2) the contrast is **2021 against 2026**, not Hebrew
+  against Arabic on the same day, and a five-year shift in a leader's formulation is ordinary
+  politics; (3) Abbas calls the change one of **formulation, not position** —
+  *"אני מנסח את התבטאויותיי... בצורה אחרת, אין פירוש הדבר שאני מכחיש את הנכבה, העקירה או הנרטיב
+  הפלסטיני"*. No tag is minted: `claims-economically-liberal` is this page's instrument for a
+  rhetoric/record gap and exists because a *number* would otherwise misreport the row; nothing here
+  misreports a number.
+- **Press coverage of the list stops at #6 — a stopping point in reporting is a fact about
+  reporting** (revs 63, 64); the realistic range once inferred from it was invented.
+
+#### Reading this party's sources
+
+- **⚠ Do not accept a "refuted" verdict from the research harness on a source it may simply have
+  failed to open** (rev 48). It returned "refuted 0-3" on nearly every claim sourced to an
+  Arabic-language domain (`kul-alarab.com`, `arabi21.com`, `bldtna.co.il`) while confirming the same
+  substance 3-0 from `mako.co.il`; it also refuted a ynet claim whose identical content it had
+  confirmed from mako, and the שריון mechanism stated verbatim in the דבר text. Those are **fetch
+  failures reported as refutations** — the swallowed-status family in `CLAUDE.md`, in the sub-type
+  that is worst: a confident negative that looks like a finding. Every claim of rev 48 was
+  re-verified by fetching the source directly with a browser-shaped `curl`.
+- **Read the filing from the CEC's own API** (rev 63): 73 names, not the twelve first supplied.
+- `idi.org.il` returned 504 on two attempts before it opened on 2026-08-01.
+
+#### Sources
+
+- **Not linked above:** ynet on the Segalovich announcement; N12's dated report of the conference
+  speech (rev 233, linked under ישר); מעריב, 2025-12-06; كل العرب, 2026-07-11.
+- **Read, and scored nothing:** the IDI page (undated; rev 11); the undated Abbas interview (no
+  publication date); the Hebrew-press search on #7–#10 (rev 69). **Never opened:**
+  `israelhayom.co.il` (403, tracing the secondary summary) and the JPost article a research pass
+  cited for the announcement (404).
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
