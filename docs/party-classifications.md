@@ -35,11 +35,15 @@ This file records how those decisions were applied to each party.
      under *Open questions and triggers*, a newly read document under *Sources*. A source that moved
      nothing gets one line under *Sources → Read, and scored nothing* and its Change history row,
      and nothing else — that line is what stops it being read twice.
-   - **A pass about several parties is written once**, under `#### Cross-row passes hosted here` in
-     one entry, as `**Rev N — what it was.**`, and **every other entry it says something about gets
-     a one-line pointer, "(rev N, under X)", in the same commit.** This is the rule the old format
-     broke most: the conversion audits found live triggers, refusals and a party's own written
-     statements recorded only under another party, invisible from the row they were about.
+   - **A source that covers several parties is cited under each of them.** Each party's entry gets
+     its own line — what the source says about *that* party, with the link — under the heading it
+     bears on. Nothing is hosted under one party on behalf of the others, so no pointer is needed
+     and no entry fills up with other parties' material (the repo owner's rule, 2026-10-07). The
+     old format broke this most: the conversion audits found live triggers, refusals and a party's
+     own written statements recorded only under another party, invisible from the row they were
+     about. Passes written before that date still sit under `#### Cross-row passes hosted here`,
+     with "(rev N, under X)" pointers elsewhere; leave them as they are until they are
+     redistributed.
    - **When a later pass overturns something, change the sentence it overturns** — in every entry
      that states it, not only the one being revised. Most of what the audits corrected was text that
      had been true when written and was never revisited.
@@ -166,14 +170,50 @@ Negative reduces religious authority.
 
 | | meaning | parties |
 |---|---|---|
-| **+3** | Halakhic state: derive state law from religious law | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
+| **+3** | **Religious law as a source of state power.** The party's own text makes halakha or משפט עברי a source of state law, or gives rabbinic bodies a binding role in the state's decisions. Defending, funding or expanding today's arrangements is +2, however far it goes, and so is a religious court a citizen must opt into | הציונות הדתית, עוצמה יהודית `[u]`, נעם `[u]` |
 | **+2** | Expand religious authority and state religious funding — defend the marriage, kashrut and Shabbat monopolies, *without* a halakhic-state programme | הליכוד, ש"ס, יהדות התורה |
 | **+1** | Preserve and modestly strengthen the state's Jewish character; or keep the haredi sectoral settlement and expand state religious funding **while defending none of the monopolies and narrowing the exemption it keeps** | הציבור החרדי `[u]` |
 | **0** | Status quo — no active religion-state agenda in either direction | *(none)* |
 | **−1** | Pluralist: soften the monopolies without disestablishing | המחנה הממלכתי `[p]` |
-| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר, בית ציוני and **ביחד** all demand it and are held at −2 by the funding criterion of the −3 band, not by its marriage criterion. *(ביחד moved across this sentence in revision 99: its religion-and-state plan commits to a full civil track and to ending the Rabbinate's exclusivity, and it is held at −2 because the plan keeps state religious funding — the criterion this sentence already named. The verdict never depended on the claim that was wrong.)* | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, עמך ישראל `[u]`, ישראל תחילה `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
-| **−3** | Disestablishment: end the Rabbinate's monopolies outright, civil marriage, no state religious funding | ישראל ביתנו, בל"ד, הדמוקרטים `[u]` |
+| **−2** | Strong separationist: **core curriculum as a funding condition**, break the monopolies, universal conscription. Civil marriage is neither required to sit here (כחול לבן, המפלגה הכלכלית and אל הדגל have none) **nor disqualifying** — ישר, בית ציוני and **ביחד** all demand it and are held at −2 because they keep the Orthodox state establishment and narrow, condition or devolve it (the −3 test below; a partnership registry is not the civil marriage and divorce that test requires). *(ביחד moved across this sentence in revision 99: its religion-and-state plan commits to a full civil track and to ending the Rabbinate's exclusivity, and it is held at −2 because the plan keeps state religious funding — the criterion this sentence already named. The verdict never depended on the claim that was wrong.)* | ישר `[u]`, ביחד `[u]`, כחול לבן `[u]`, המפלגה הכלכלית `[u]`, אל הדגל `[u]`, המילואימניקים והכלכלית `[u]`, עמך ישראל `[u]`, ישראל תחילה `[u]`, יש עתיד `[p]`, העבודה `[p]`, מרצ `[p]` |
+| **−3** | **The Orthodox establishment ended.** Civil marriage **and divorce** by law, open to every couple (required), plus at least one of: the Rabbinate's monopolies ended outright, not reformed or handed to another Orthodox body; or the establishment losing its protected place — dismantled or put under ordinary civil control, or made to share money and recognition equally with every stream. A stated commitment to complete separation of religion and state meets the band by declaration. Motive is not tested | ישראל ביתנו, הדמוקרטים `[u]`, הרשימה המשותפת `[u]`, בל"ד `[p]` |
 | **NULL** | The Jewish religion-and-state question does not apply, or no position published | רע"ם, חד"ש-תע"ל |
+
+**The two poles are tested on the party's own text (reworded 2026-10-07, revision 255).** Until
+then −3 read "end the Rabbinate's monopolies outright, civil marriage, no state religious funding"
+and +3 "derive state law from religious law". No −3 row met the funding clause — הדמוקרטים spread
+religious money across all streams, ישראל ביתנו ends one stream and re-houses the rest — and it was
+used all the same to hold three rows at −2; and two +3 rows had no text behind the band at all. The
+axis is about religious *authority*, so both poles are now defined by it, and money counts only as
+one way an establishment keeps or loses its protected place.
+
+- **−3, three questions.** Can any couple marry and divorce civilly, by law? Do the Rabbinate's
+  monopolies end outright? Does the establishment lose its protected place? The band needs yes to
+  the first and to at least one of the other two.
+  - **הדמוקרטים — yes to all three**, in both editions of their paper: a civil marriage law and
+    civil divorce, the monopoly on conversion and kashrut ended with non-Orthodox conversion
+    recognised, and subsidy shared equally by all streams and religions.
+  - **ישראל ביתנו — yes, partly, yes**: a civil track for marriage and divorce; the kashrut
+    monopoly ended but conversion only reformed; and the establishment put under civil control —
+    religious councils abolished, rabbinical courts moved to the Justice Ministry, rabbis appointed
+    like any official.
+  - **הרשימה המשותפת — by declaration.** בל"ד's programme: *"המשטר במדינה יושתת על הפרדה מוחלטת של
+    דת ממדינה, תוך הבטחת חופש פולחן לבני כל הדתות"*. It names no plank on marriage, the Rabbinate
+    or religious money.
+  - **The −2 rows stay**: ישר and ביחד offer a civil partnership, not marriage and divorce;
+    המילואימניקים והכלכלית has civil marriage but devolves the Rabbinate to local rabbinates and
+    expands its funding.
+- **+3, one question.** Does the party's own text make religious law a source of state law, or give
+  rabbinic bodies a binding say in the state's decisions?
+  - **נעם — yes**: the Chief Rabbinate as a fourth branch of government, and legislation including
+    משפט עברי.
+  - **הציונות הדתית — no, on the text read.** Its religion-and-state paper is headed
+    *"שימור הסטטוס-קוו"* and is the +2 band almost word for word.
+  - **עוצמה יהודית — no, on the text read.** Its site carries no religion-and-state programme and
+    describes its aim as *"לחזק את האופי היהודי של מדינת ישראל"*, the +1 band's wording.
+  - **Both are left at +3 pending the repo owner's decision**; the reasoning is in each entry.
+    ש"ס, יהדות התורה and הליכוד stay at +2: they defend and fund the existing settlement, and the
+    arbitration law is opt-in.
 
 **This axis folds two different fights into one number, and כחול לבן is the case that exposes it.**
 A party's posture on *religion in public life* (Shabbat, marriage, kashrut, the Rabbinate) and its
@@ -3285,8 +3325,10 @@ and equal, transparent subsidy of religious services to all streams.
   is *"מדינה שמכבדת את המסורת היהודית ורואה בה מקור זהות, תרבות ושייכות – אך לא משתמשת בה ככלי
   כפייה"*, and the subsidy line reads *"נפעל לסבסוד שוויוני של כלל הזרמים והדתות, לקידום הזרמים
   הליברלים ביהדות"*. The planks listed above are in both editions. **Both keep state religious
-  funding and spread it across the streams; neither ends it** — which is the −3 band's third
-  criterion, and is why this row is named in the band item under Open questions.
+  funding and spread it across the streams; neither ends it.** The band was reworded around
+  exactly this (rev 255, "The axes"), and against it the row holds on its own text, in both
+  editions, without the separation sentence: civil marriage and divorce by law; the monopoly on
+  conversion and kashrut ended; money and recognition shared equally by every stream.
 - The gender paper reaches the same −3 by a third road: women's exposure in religious divorce —
   *"חשופות לסחטנות, לתלות ולסרבנות גט"* — so every expansion of rabbinical-court jurisdiction is
   cancelled and a full civil track opened.
@@ -4153,7 +4195,11 @@ is headed *"הפרדה בין דת למדינה"*, and its statement is recorded
   declared principle and one platform-only plank, not by programme — the same "conditions rather
   than withdraws" shape the page uses to hold ביחד and ישר at −2 (Open questions, "The `religiosity
   −3` band criterion conflates…"). The score is not moved here. **Lead:** quote the stipends plank
-  verbatim on the next platform read.
+  verbatim on the next platform read. **The band has since been reworded (rev 255, "The axes") so
+  that it no longer turns on funding**, and against it the row holds: a civil track for marriage
+  and divorce, and an establishment put under ordinary civil control — the councils abolished, the
+  courts moved to the Justice Ministry, rabbis appointed like any official. Its one shortfall is
+  conversion, which the party reforms and does not open.
 - **A claim other entries make about this row that nothing here supports.** ישר's and המילואימניקים
   והכלכלית's entries describe it, to justify their own −2, as wanting the institution "gone". This
   row keeps the Chief Rabbinate (one chief rabbi; women on its council), and its ten points create
@@ -5818,9 +5864,22 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   and said that would depend on Netanyahu — the reporter's paraphrase, not a quote. Abolishing an
   offence for everyone is a different instrument from deferring proceedings against a sitting PM
   (rev 75).
-- **No first-party text for the halakhic-state band is quoted in this entry.** The 2022 platform's
-  זהות יהודית and דיני משפחה papers were read in rev 17 and nothing from them was recorded — read
-  them against the +3/+2 line.
+- **`religiosity`: the row's own paper reads +2, and the score is +3** (rev 255). The 2022
+  platform's [זהות יהודית](https://zionutdatit.org.il/wp-content/uploads/2021/12/%D7%96%D7%94%D7%95%D7%AA-%D7%99%D7%94%D7%95%D7%93%D7%99%D7%AA.pdf) paper — an image, read by OCR and checked against
+  the scan — is headed *"שימור הסטטוס-קוו"*. Its commitments: *"נשמור על קדושת השבת וחגי ישראל"*,
+  *"נשמור על מוסד הנישואין והמשפחה"*, *"נשמור על הכשרות הממלכתית"*; a state conversion law *"על פי
+  דרכה של תורה ותחת סמכות הרבנות הראשית"*; *"נחזק את מעמדה של הרבנות הראשית על ידי ביצור
+  סמכויותיה"*; an override clause to protect all of this from the High Court; repeal of the Law of
+  Return's grandchild clause; and *"נעגן בחקיקה את הסמכות של בתי הדין הרבניים לפסוק בדיני
+  ממונות"*. That is defending and expanding the existing settlement, the +2 band nearly word for
+  word, and the paper has no commitment to make halakha a source of state law. The
+  [דיני משפחה](https://zionutdatit.org.il/wp-content/uploads/2021/12/%D7%93%D7%99%D7%A0%D7%99-%D7%9E%D7%A9%D7%A4%D7%97%D7%94.pdf) paper is about child support, joint custody and false complaints.
+  **What presses toward +3:** the paper's description of the Rabbinate as the body entrusted with
+  *"פסיקת הלכה בסוגיות ציבוריות"*, and the coalition agreements as הארץ reports them (rev 100).
+  **Caveats:** the paper is the 2022 election's and only indicative for this row; no 2026 document
+  of the party addresses religion and state; and the זהות faction it absorbed sat at +2.
+  **Decision for the repo owner:** move to +2, or hold +3 on the record and name what the record
+  is.
 
 #### The `/judaization/` page (revs 31, 33)
 
@@ -6590,10 +6649,20 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   any decision on the recommendation to indict דורפמן.
 - **`economic` 0 or NULL.** Find the first-party claim of economic liberalism, or the evidence under
   `economic` is the evidence for NULL.
-- **`religiosity` +3 and the unconsidered `halakhic-state`.** The other two +3 rows, הציונות הדתית
-  and נעם, hold that tag on platform text; this row holds neither the tag nor a text, and no pass
-  considered the tag. **Trigger:** any first-party religion-and-state text; the legal platform
-  promised to ynet is the likeliest place.
+- **`religiosity`: the row's own text reads +1, and the score is +3** (rev 255). The party's site
+  was searched and its standing pages read on 2026-10-07. It has no religion-and-state programme.
+  Its [מי אנחנו](https://www.ozma-yeudit.co.il/%D7%9E%D7%99-%D7%90%D7%A0%D7%97%D7%A0%D7%95/) page says the party *"תומכת בחיזוק הזהות והמסורת היהודית במוסדות
+  החינוך, בביצוע רפורמות מהותיות במערכות השלטון על מנת לחזק את האופי היהודי של מדינת ישראל"* —
+  the +1 band's wording — and in 1,160 words has no occurrence of הלכה, תורה, משפט עברי or רבנות;
+  it also says most of its supporters are *"חובשי כיפת השמיים"*, that is, do not wear a kippah. Its
+  [programme for the next government](https://www.ozma-yeudit.co.il/bg-ru/) (the Russian edition is the one on the
+  site) repeats that self-description and adds no plank. The comparison the +3 was given on does not hold either:
+  נעם holds `halakhic-state` on platform text, הציונות הדתית's own paper reads +2 (see that entry),
+  and this row holds neither the tag nor a text. **Not examined in this pass:** what the party's
+  record in the outgoing coalition adds — which is what הליכוד's +2 is scored from.
+  **Decision for the repo owner:** +1 on its own text, +2 if the coalition record is read and
+  supports it, or hold +3 and name the evidence. **Trigger either way:** any first-party
+  religion-and-state text; the legal platform promised to ynet is the likeliest place.
 - **The promised legal platform.** ynet's judicial questionnaire (21.09.26): the party answered only
   that a full legal platform would be published within days — **trigger:** read it when it appears
   (revision 134, under ישר). Rev 107's six measures are a chairman's statement, not that platform.
@@ -8376,7 +8445,8 @@ Consistent with it: the state must not become "a state of all its citizens", opp
 Western Wall pluralistic-prayer compromise, and the demand that only the Chief Rabbinate rule on
 desecration of holy sites. First-party on the relaunched site (rev 18): *"חיזוק הרבנות הראשית,
 הסדרת מעמד הכותל המערבי"*; legislation "במבט יהודי" on kashrut, conversion, **משפט עברי** and
-family values; Shabbat as the public day of rest.
+family values; Shabbat as the public day of rest. It meets the +3 band as reworded in rev 255 on
+its own text, the only row that does.
 
 #### Bloc, lineage, name and ballot status
 
@@ -9761,9 +9831,12 @@ same and nothing is withdrawn. **A priorities list that omits a programme's deta
 it**; had it named a *different* endpoint, the axis would move.
 
 **`religiosity` −3 — disestablishment.** Carried from בל"ד, the only component that has published
-on religion and state at all: *"complete separation of religion from the state"*, freedom of
-worship for all religions, and state symbols grounded in constitutional egalitarian principles
-rather than sectarian ones. חד"ש is **silent** on the question, not opposed — which is why its own
+on religion and state at all: *"המשטר במדינה יושתת על הפרדה מוחלטת של דת ממדינה, תוך הבטחת חופש
+פולחן לבני כל הדתות"* — "complete separation of religion from the state", as the entry had it in
+English until the programme was re-read in rev 255 — with *"הפרדת הדת מהמדינה"* among the founding
+principles of the constitution it demands, and state symbols grounded in constitutional egalitarian
+principles rather than sectarian ones. **It is held by declaration** (the −3 test in "The axes"):
+the programme names no plank on marriage, the Rabbinate or religious money. חד"ש is **silent** on the question, not opposed — which is why its own
 row is NULL rather than a number contradicting this one. That NULL survives on the frozen
 `previous_parties` row and in `RELIGIOSITY_NULL_BY_DESIGN`; read the note beside it before "fixing"
 the apparent inconsistency. **Held on silence** (rev 103): religion and state appears nowhere in
@@ -9959,9 +10032,12 @@ The 15 are the union of both predecessor rows' tags, deduped, less the two dropp
   rows**, so the tag is not minted on two holders.
 - **`two-faction-list`'s name** and the **`two-state` / `pro-two-state` pair** are filed to the
   page's Open questions (rev 67).
-- **`religiosity` −3 rests on one sentence, given here in translation**; the band's three
-  criteria are not itemised against the text, and the funding criterion that holds ביחד at −2 has
-  not been checked. When the 2018 text is next read, quote the Hebrew and check funding.
+- ~~**`religiosity` −3 rests on one sentence, given here in translation**~~ — **read in rev 255.**
+  The Hebrew is now quoted under `religiosity`. The programme holds the principle and nothing
+  else: no sentence on marriage, the Rabbinate, religious courts or religious money, in 5,300
+  words. So the −3 is a declaration, which the band as reworded accepts and marks as such. What
+  stays open is the age of the text (2018, one component's) on a list that has published no joint
+  platform.
 - **`anti-indicted-pm`'s trigger** (rev 245), under Considered and refused.
 - **Positions and refusals on this row hosted under other entries:** the conscription
   questionnaire answer (rev 86, under ביחד; under Tags); the judicial questionnaire answer,
@@ -10233,8 +10309,9 @@ clean by automation while still looking wrong on the actual site.
 Reports, columns and posts not listed here are linked where they are used above. הארץ bodies were
 supplied by the repo owner.
 
-- **בל"ד's programme** — `altajamoa.org`, Hebrew edition, dated 2018-09-11 (from the pre-merge
-  בל"ד entry, git history; not re-fetched since).
+- **בל"ד's programme** — `altajamoa.org`, Hebrew edition, dated 2018-09-11. The party's site did
+  not answer on 2026-10-07; read from the [Wayback Machine](http://web.archive.org/web/20221226040448/https://www.altajamoa.org/%D7%A2%D7%91%D7%A8%D7%99%D7%AA/2018/09/11/%D7%9E%D7%A6%D7%A2-%D7%91%D7%9C-%D7%93)
+  (snapshot 2022-12-26; rev 255).
 - **בל"ד's ten points** (rev 103):
   [ערב 48](https://www.arab48.com/%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9/2026/09/16/%D8%A7%D9%84%D8%AA%D8%AC%D9%85%D8%B9-%D9%8A%D9%82%D8%B1-10-%D9%86%D9%82%D8%A7%D8%B7-%D8%A3%D8%B3%D8%A7%D8%B3-%D9%81%D9%8A-%D8%A7%D9%84%D8%B9%D9%85%D9%84-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A-%D9%88%D8%A7%D9%84%D8%AC%D9%85%D8%A7%D9%87%D9%8A%D8%B1%D9%8A-%D9%81%D9%8A-%D8%A5%D8%B7%D8%A7%D8%B1-%D8%B7%D8%B1%D8%AD%D9%87-%D8%A7%D9%84%D8%AD%D8%B2%D8%A8%D9%8A-%D9%88%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A),
   *"التجمع يقر 10 نقاط أساس في العمل السياسي والجماهيري"*, published 27.06.2026; and
@@ -11990,15 +12067,11 @@ bought nothing here, because the defect was never in the pixels being measured.
 - **Raised by the 2026-10-07 conversion audits and not actioned.** Each item is recorded in the entry
   named; they are gathered here because an instruction that lives only in a party entry is the one
   that goes unactioned (the lesson of the `religiosity −3` item below).
-  - **Both ends of `religiosity` rest on band wording the recorded evidence does not meet.** At −3:
-    הדמוקרטים keep state religious funding and spread it across all streams — *"נפעל לסבסוד שוויוני
-    של כלל הזרמים והדתות"* (the religion-and-state paper, read 2026-10-07; both predecessor parties'
-    platforms took the same line); ישראל ביתנו ends one funding stream, in a platform-only plank, and
-    re-houses the rest; הרשימה המשותפת's −3 is one translated sentence from a 2018 text. At +3:
-    הציונות הדתית has no first-party text quoted for the halakhic-state band, and עוצמה יהודית has no
-    document cited at all. **None of the three −3 rows meets "no state religious funding" as
-    written.** This is the band item below, now with every row examined: rewrite the band text
-    first, then re-test the five rows against it. Do not move a row to fit wording that no row fits.
+  - ~~**Both ends of `religiosity` rest on band wording the recorded evidence does not meet.**~~ —
+    **the bands were reworded and all six pole rows re-tested on their own text, 2026-10-07
+    (revision 255; "The axes").** All three −3 rows hold, הרשימה המשותפת by declaration. **Still
+    open, and the repo owner's to decide: הציונות הדתית and עוצמה יהודית are at +3 and their own
+    text reads +2 and +1.** The reasoning and the options are in each entry's Open questions.
   - **`economic` 0 against NULL on עוצמה יהודית.** Its evidence is the absence of economic content,
     which is what scored נעם NULL; the stated reason for 0 is a claim of economic liberalism that no
     pass has cited a text for.
@@ -12154,8 +12227,11 @@ bought nothing here, because the defect was never in the pixels being measured.
   their first fiscal *figure* (a ₪12,000 starting-teacher salary floor) and it does not move the
   axis, because a sectoral wage floor is not a position on how the economy should be organised. The
   next revisit needs a fiscal **position**, not another figure.
-- **The `religiosity −3` band criterion conflates disestablishment with anti-clericalism, and its
-  trigger condition has now fired.** Revision 20 said this should be rewritten "rather than
+- ~~**The `religiosity −3` band criterion conflates disestablishment with anti-clericalism, and its
+  trigger condition has now fired.**~~ **Resolved 2026-10-07 (revision 255): both poles were
+  reworded around religious authority instead of funding, and every row at either pole was tested
+  against its own text — see "The axes". What follows is the history that made it necessary.**
+  Revision 20 said this should be rewritten "rather than
   stretched **if a second pluralist-funding party ever arrives**" — and recorded it only in the
   change history, never here, which is why it went unactioned. Revision 21 (2026-08-16) supplied
   that second party: ישר demands civil partnership, kashrut reform and devolved Shabbat while
@@ -12999,3 +13075,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-07 | **Every party entry converted from dated blocks to a current-state format** (eighteen entries; האחדות and אל הדגל, already organised by subject and off the ballot, left as written). The document went from 16,131 lines / 270,979 words to about 12,950 lines / 212,000 words; **no value changed and `seed.sql` is untouched.** Each conversion was checked mechanically (links carried, quotations verbatim, tags and families equal to `seed.sql`), audited against the old text by an independent reader and corrected, and a final sweep confirmed every cross-row item still has a counterpart. Revision 68's block (יהדות התורה's filed-list reading) was found filed under Logos and moved into that party's entry. The audits also corrected statements the old text had left stale; what they raised and nobody has acted on is the first item under Open questions. The per-pass text of every revision is in git history from commit `bec77c3` backwards. |
 | 2026-10-07 | revision 253 — **three rows' stale quotations re-read at source and replaced. No axis moved, no tag added or removed, `seed.sql` unchanged.** Prompted by the live checks the conversion audits ran. **ביחד**: the education plan page was rewritten in place (modified 2026-09-23) and none of the five quotations revision 22 took from it survives; `core-curriculum`, `state-haredi-education` and `municipal-devolution` are re-grounded on the current text. The funding condition is now *"מימון ציבורי יינתן רק למוסדות המלמדים 100% לימודי ליבה"*, and the 60% the entry could not reconcile with it is the common core's share of the timetable; the 90% transfer target and the dissolution of the districts are no longer on the page. **כחול לבן**: three `sherut4all.com` quotations corrected against the site — *"כלל הצעירים"* for *"כל הצעירים"*, the sanctions sentence in full, and the Arab-service sentence, which says "enable" and puts the duty after a phase-in of several years; the צו 8 booklet moved under `/8ps/`. **הדמוקרטים**: the framing *"הפרדת הדת ממוסדות המדינה…"* is from the paper's June edition (recovered from the Wayback Machine, snapshot 2026-07-25); the 11 August edition now on the party's bucket drops that sentence. Both editions keep state religious funding and spread it across all streams, which bears on the `religiosity` −3 band item under Open questions. Retrieval: `sherut4all.com` returns its FAQ block only to a request carrying a Referer. |
 | 2026-10-07 | revision 254 — **עוצמה יהודית (cross-row): two הארץ items of 07.10, bodies supplied by the repo owner. Nothing scored.** A report that הליכוד and הציונות הדתית hold a rabbis' conference on 08.10 without בן גביר or his party, which the party's sources read with the surplus-vote agreement of revision 247 as a sign of his exclusion from the next government; both charges it repeats were already on the row, and friction inside a bloc moves no `bloc`. And a column on the disqualification votes that relays three statements by בן גביר at the hearings, one of them on `hardline-on-gaza`, held; a columnist's relay, undated. Written in the current-state format: one item under עוצמה יהודית's sources that scored nothing, and a pointer in each of the other two entries. |
+| 2026-10-07 | revision 255 — **the `religiosity` poles reworded, and every row at either pole tested on its own text. No value changed; `seed.sql` unchanged.** The −3 band no longer turns on "no state religious funding", which no −3 row met; it asks whether any couple can marry and divorce civilly, whether the Rabbinate's monopolies end outright, and whether the establishment loses its protected place. The +3 band asks whether the party's own text makes religious law a source of state power. **−3**: הדמוקרטים and ישראל ביתנו hold on their programmes; הרשימה המשותפת holds by declaration — בל"ד's 2018 programme, recovered from the Wayback Machine, gives the sentence in Hebrew and names no plank. **+3**: נעם holds on its own text. **הציונות הדתית's religion-and-state paper of the 2022 platform, read by OCR for the first time, is headed "שימור הסטטוס-קוו" and reads +2; עוצמה יהודית's site has no religion-and-state programme and its self-description reads +1.** Both are left at +3 for the repo owner to decide. Also: a source that covers several parties is from now on cited under each of them, not hosted under one. |
