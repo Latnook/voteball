@@ -29,7 +29,7 @@ This file records how those decisions were applied to each party.
    by appending a dated block per pass, which is the failure this file was created to get `seed.sql`
    out of: the current answer could only be worked out by reading every block in order. Entries are
    being converted one at a time to a **current-state** format — **converted so far: הדמוקרטים** (the
-   model)**, רע"ם, כחול לבן, המפלגה הכלכלית, ש"ס, ישראל תחילה**.
+   model)**, רע"ם, כחול לבן, המפלגה הכלכלית, ש"ס, ישראל תחילה, הציבור החרדי**.
 
    - **In a converted entry, edit in place; never append a dated block.** Change the sentence under
      the axis or tag that moved, citing "(rev N)". A refusal goes under *Considered and refused*, an
@@ -13550,266 +13550,270 @@ was supplied by the repo owner.)
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
 
-New party, added 2026-09-14. Registered with the registrar of parties on **2026-07-05** under the
-legal name **למען אחיי מפלגת כלל ישראל**; chaired by **מוטי לייטנר** (33), deputy mayor of Beit
-Shemesh and chair of the ׳דרך׳ faction on its council, which ran independently in the 2024 municipal
-elections and took two seats. Rachmastrivka hasidut, yeshiva-educated, then a software/DevOps career.
-Ten public figures on the מי אנחנו page, including **ד״ר נחומי יפה** of Tel Aviv University, who
-researches the haredi community. **This is a haredi revolt against the haredi PARTIES, not against
-the haredi settlement**: the founding act was a written demand for representation sent to
-**אריה דרעי, משה גפני and יצחק גולדקנופף on 2026-08-04**, with a deadline for a reply.
+> **This is a current-state entry** (converted 2026-10-07; the format is described under "How to
+> revise a classification"). It says why each value holds *today* and is edited in place when
+> something moves. The pass-by-pass text it replaced is in git history, each pass has a row under
+> Change history, and "(rev N)" marks the revision a point comes from.
 
-**The corpus is a complete eight-chapter platform PLUS two broadcast interviews** — the interviews
-were added in revision 72 after the site alone produced a wrong `bloc`, and the heading below says
-why; do not read "complete" as meaning the site sweep was sufficient. The platform is at
-`hatzibur-haharedi.org/מצע` — עולם התורה,
-שירות חרדים, החינוך החרדי, תופעת הנשירה, פרנסה בכבוד, דיור בר השגה, המאבק באפליה, עלייה וקליטה —
-plus the אודות page, the אימות-עובדות page, a dated timeline (יומן הדרך) and ~40 campaign items. The
-site was enumerated from `sitemap.xml` (66 URLs, incl. `/en` and `/fr` mirrors of every page) before
-anything was read, per this page's own rule; there are no PDFs. `family_evidence: platform`.
+**Basis.** `family_evidence` is `platform`: a complete eight-chapter platform at
+`hatzibur-haharedi.org/מצע` (עולם התורה, שירות חרדים, החינוך החרדי, תופעת הנשירה, פרנסה בכבוד, דיור
+בר השגה, המאבק באפליה, עלייה וקליטה), the אודות page, the אימות-עובדות page, a dated timeline (יומן
+הדרך) and ~40 campaign items, **plus two broadcast interviews** added in rev 72 after the site alone
+produced a wrong `bloc`. New party, added 2026-09-14; registered 2026-07-05 under the legal name
+**למען אחיי מפלגת כלל ישראל**. Chairman **מוטי לייטנר** (33), deputy mayor of Beit Shemesh and chair
+of its council's ׳דרך׳ faction, which ran independently in the 2024 municipal elections and took two
+seats; Rachmastrivka hasidut, yeshiva-educated, then a software/DevOps career. Ten public figures on
+the מי אנחנו page, including ד״ר נחומי יפה of Tel Aviv University, who researches the haredi
+community. List: לייטנר #1 (rev 247); women at #3 and #4 by הארץ's survey (rev 100); the CEC list
+itself not read here. `sector: haredi` is the party's own name and self-description. Self-reported
+potential is ~6 seats, about three from outside haredi society (כיכר: 5–6, and 1.5% in polls a week
+after launch).
 
-**security NULL, and it is a MEASURED absence, not an unread corpus.** A keyword sweep over the
-concatenated text of all eight platform chapters, the אודות page, the fact-check page and four
-campaign items returns **zero** occurrences of עזה, פלסטינ, ריבונות, התנחל, חמאס, איראן, חיזבאללה,
-"שתי מדינות", "יהודה ושומרון", מלחמה, צה"ל, נתניהו, קואליציה, גוש or ציונ. The only two hits for
-ימין are the idioms ״ימין מקרבת״ (a pedagogical phrase) and ״לא יסורו ימין ושמאל״. The single
-security-adjacent line in the platform is `שירות/7`, which promotes haredi towns and hesder yeshivas
-**באזורי הגבול המזרחי** — settlement inside the state's own border region, packaged with housing and
-employment, not a conflict doctrine. A `0` would assert this party has taken a side and landed in the
-centre. It has not taken one.
+**A haredi revolt against the haredi PARTIES, not against the haredi settlement.** The founding act
+was a written demand for representation sent to אריה דרעי, משה גפני and יצחק גולדקנופף on
+2026-08-04, with a deadline for a reply. The chairman confirms it (ערוץ 7): the first choice was
+absorption into ש"ס or יהדות התורה as a structured faction, and only after *"הפניות והמגעים עם
+גורמים בכירים לא הבשילו"* did it *"נאלצנו… להקים מפלגה עצמאית"*.
 
-**Revision 72 tested that NULL against two long broadcast interviews and it HELD — and the closest
-thing to a challenge is worth naming, because it looks like one.** לייטנר places himself explicitly:
-*"אין ספק שהציבור החרדי הוא ימני, שמרני. אני בתפיסתי האישית ימין - ימין כלכלי, לאומי, ביטחוני"*
-(ערוץ 7). **A self-placement on the left-right map is not a position on this axis**, which is the
-conflict and the territory — neither interview contains a sentence on Gaza, sovereignty, יהודה
-ושומרון, a Palestinian state, Iran or borders. What looks security-shaped in them is conscription
-argument, not doctrine: 7 October appears as the moment the exemption arrangement
-*"התפרקה והתנפצה לכולנו בפרצוף"* because the IDF needs tens of thousands more soldiers, and
-חטיבת החשמונאים as a model for haredi service. Both are about who serves, not about what the country
-should do with territory. The absence is now measured across **three** independent corpora — the site
-sweep and two studio interviews in which the interviewers were free to ask anything — which makes
-this one of the better-evidenced NULLs on the page rather than an unread row. `bloc` took the
-self-placement; this axis cannot.
+#### `bloc`: `bibi`, on the chairman's own words
 
-**bloc `bibi` (was `unaligned` + `hard-to-classify-bloc`; corrected 2026-09-15, revision 72), on
-לייטנר's own words in a recorded interview.** **Two long broadcast interviews, both transcribed from the page rather than from a summary**, and they
-have to be read together because the later one alone would overstate the finding:
+`bibi` since 2026-09-15 (rev 72). It was `unaligned` with `hard-to-classify-bloc`, carried on one
+stated reason, "there is no coalition statement of any kind" — and there is one (rev 41's reasoning
+on עמך ישראל).
 
-- **ערוץ 7 (`inn.co.il/news/705202`), אולפן interview with איציק ברנדויין, 31.08.26 21:32.**
-- **כיכר השבת (`kikar.co.il/interviews/tkqhnh`), 24-minute studio interview with ישי כהן, 02.09.26.**
+- **כיכר השבת, 02.09.26:** *"מכיוון שאנחנו חלק מהגוש האמוני"*, in passing, on who donates; *"מועמד
+  הגוש האמוני לראשות הממשלה הוא המועמד שלנו, מה השאלה בכלל"*; asked *אתה אומר "אני הולך רק עם
+  נתניהו"?* — **"חד-משמעית!"**, no condition attached; asked whether he would be גדי אייזנקוט's 61st
+  seat if Netanyahu falls short, *"מה פתאום! ... אנחנו נתמוך רק במועמד הגוש האמוני לראשות הממשלה"*.
+  Refusing the alternative by name is what separates a recommendation from a preference.
+- **ערוץ 7, 31.08.26, stops כיכר being over-read as a personal pledge.** Asked at the close whether
+  he would join a right-wing government **not** headed by Netanyahu, *לייטנר לא התחייב לאדם מסוים*;
+  his test is membership of the camp and the government's guidelines, *"אנחנו נאמנים לגוש האמוני,
+  אנחנו נאמנים למחנה ולציבור שלנו, ואנחנו נעשה הכול כדי שתקום פה ממשלה יהודית, אחראית, אמונית"*.
+  Asked again, he *חזר על העיקרון ולא נקב בשם של מועמד לראשות הממשלה*. His self-placement, *"אין ספק
+  שהציבור החרדי הוא ימני, שמרני. אני בתפיסתי האישית ימין - ימין כלכלי, לאומי, ביטחוני"*, is `bloc`
+  evidence, so the hedge was wrong on this interview alone.
+- **Together: the loyalty is to the bloc, and within the bloc the candidate is Netanyahu.** The
+  column records the PM recommendation, not coalition entry (rev 41's note on וינטר); here both
+  point the same way, and he also endorses Netanyahu's own broad-government idea. זהות's correction
+  of 2026-07-27 is the precedent in the other direction (criticising Netanyahu ≠ leaving his bloc).
+- **Not scored off `sector: haredi`** — an inference from category, the move this page refused for
+  the Arab parties; the fix was a better source, not a looser standard. The site alone fell short: a
+  campaign item of 2026-08-04, *"מחזיקי עולם התורה לצד אנשי ימין מובהקים, הם התומכים המרכזיים
+  שלנו"*, describes supporters, not partners; the demand letter is a bid to join the representation
+  whose parties sit with Netanyahu; the אודות page's *"המשך ההתנגשות עם חלקים נרחבים בעם ישראל מסכן
+  את עתידו של הציבור החרדי כולו"* argues against the last term's bloc politics and declares nothing
+  about the next.
 
-From כיכר, four statements, escalating, the last two closing the question from both directions:
+#### The three axes
 
-- *"מכיוון שאנחנו חלק מהגוש האמוני"* — said in passing, while explaining who donates to the party.
-- *"מועמד הגוש האמוני לראשות הממשלה הוא המועמד שלנו, מה השאלה בכלל"*.
-- Asked directly *אתה אומר "אני הולך רק עם נתניהו"?* — **"חד-משמעית!"**. Netanyahu named, no condition
-  attached.
-- Asked whether he would be **גדי אייזנקוט's** 61st seat if Netanyahu falls short —
-  *"מה פתאום! ... אנחנו נתמוך רק במועמד הגוש האמוני לראשות הממשלה"*. The alternative is refused by
-  name, which is what separates a recommendation from a preference.
+**`economic` −2 — social-democratic, on the same reading as ש"ס and יהדות התורה.** The platform's
+instruments are state provision throughout: a national housing plan multiplying haredi building
+starts fivefold, dedicated budgets for hi-tech and high-productivity training tracks with separate
+men's and women's frameworks, government subsidy of seminary graduates' professional certification,
+אפליה מתקנת בשירות המדינה, employer incentives in the private market, enlarged aliyah-absorption
+budgets, and direct budgeting of non-discriminating institutions with budget sanctions on the rest.
+The eight chapters have no tax, competition, privatization or cost-of-living content.
 
-**The ערוץ 7 interview, two days EARLIER, is the one that stops this from being over-read — and it is
-why the value is `bibi` rather than a personal pledge.** Asked at the close whether he would join a
-right-wing government **not** headed by Netanyahu, *לייטנר לא התחייב לאדם מסוים*: the test he names is
-membership of the camp and the government's guidelines, *"אנחנו נאמנים לגוש האמוני, אנחנו נאמנים
-למחנה ולציבור שלנו, ואנחנו נעשה הכול כדי שתקום פה ממשלה יהודית, אחראית, אמונית"*. Asked **again**, he
-*חזר על העיקרון ולא נקב בשם של מועמד לראשות הממשלה*. Read together with כיכר the position is coherent
-and not a reversal: **the loyalty is to the bloc, and within the bloc the candidate is Netanyahu.**
-Which is exactly what this column records — זהות's correction of 2026-07-27 is the standing precedent
-in the other direction (criticising Netanyahu ≠ leaving his bloc); this is the same principle applied
-to a party that declines to pledge to the man while refusing the rival camp's candidate by name. He
-also endorses Netanyahu's own broad-government idea, and is negotiating *"עם כל הגורמים בספקטרום
-הימני"* and nobody outside it.
+- **The rhetoric points the other way; the axis takes the instruments** (revealed position, not
+  claimed). `עולם התורה/3` wants yeshiva budgets rebased on ״הסכם יששכר וזבולון״ so the Torah world
+  is *"מבלי להיות סמוכים על שולחן אחרים"*, and `פרנסה` opens on the prayer *"שלא יצטרכו עמך בית
+  ישראל זה לזה ולא לעם אחר"*.
+- **The chairman names liberalizing instruments and the axis still does not move (ערוץ 7, rev 72).**
+  He calls himself ימין כלכלי, backs *"רפורמות כלכליות שיצמצמו מנגנונים ופריבילגיות"*, answers yes
+  on סמוטריץ's milk reform and attacks the הסתדרות as *"אנכרוניסטי"* that should have been abolished
+  long ago; his goal for haredi education is earning power, so that *"מגזר חרדי חזק ועשיר יותר יוכל
+  גם לתמוך בעצמו בעולם הישיבות והכוללים"* instead of raising donations abroad. But the platform is
+  the party's own instrument list, and two of the three liberalizing answers are about somebody
+  else's sector (dairy, the labour federation), not the budget lines this party asks for.
+- **Trigger:** an economic chapter carrying these instruments makes the gap party-level, and either
+  `claims-economically-liberal` becomes right or the axis moves. Today `פרנסה בכבוד` is training
+  budgets, subsidies and אפליה מתקנת.
 
-This is the **second** row to resolve this way in twelve days, on the same reasoning as עמך ישראל in
-revision 41: `hard-to-classify-bloc` was carried on **one stated reason**, that reason was
-"there is no coalition statement of any kind", and there is one. It is also the same field split —
-what this column records is the **PM recommendation**, not coalition entry (revision 41's note on
-וינטר), and here both happen to point the same way. `hard-to-classify-bloc` goes **2 holders → 1**
-(כחול לבן alone, where the evidence genuinely conflicts); rarity is not a defect, revision 19.
-Note the hedge would have been **wrong in the same direction** even on the earlier interview alone:
-*"אין ספק שהציבור החרדי הוא ימני, שמרני. אני בתפיסתי האישית ימין - ימין כלכלי, לאומי, ביטחוני"* is a
-self-placement on the map, which is `bloc` evidence of exactly the kind the sweep found none of.
+**`security` NULL — a measured absence, not an unread corpus.** A `0` would assert this party has
+taken a side and landed in the centre; it has not taken one. Measured across three independent
+corpora:
 
-**The finding that matters more than the value: revision 70's sweep was complete and its conclusion
-was still wrong, because the corpus boundary was the party's WEBSITE.** That pass enumerated
-`hatzibur-haharedi.org` from `sitemap.xml` — 66 URLs, every chapter, every campaign item — and
-reported zero hits for נתניהו, קואליציה and גוש. That result was accurate and is still accurate: the
-site does not say it. **The chairman did, on camera, in TWO separate studio interviews fourteen and
-twelve days before that pass ran**, and the sweep could not see either, because an interview is not a
-page on the party's site. A site enumeration bounds the
-*site*; it does not bound *what the party has said*. This is the sibling of the root `CLAUDE.md`'s
-"a pattern that can never match" — the sweep returned an empty result that read as a correct negative,
-and nothing about re-running it would ever have surfaced this. **New rule, recorded in
-`services/backend/CLAUDE.md`: for a new party, search the party's NAME in the press alongside
-enumerating its site, before writing `hard-to-classify-bloc` or a measured absence.** The
-`security` NULL on this row is the other half of that same sweep and is **confirmed rather than
-cleared** by both interviews — see below.
+- **The site.** A keyword sweep over all eight chapters, the אודות page, the fact-check page and
+  four campaign items returns zero occurrences of עזה, פלסטינ, ריבונות, התנחל, חמאס, איראן,
+  חיזבאללה, "שתי מדינות", "יהודה ושומרון", מלחמה, צה"ל, נתניהו, קואליציה, גוש or ציונ. The only two
+  hits for ימין are idioms, ״ימין מקרבת״ (a pedagogical phrase) and ״לא יסורו ימין ושמאל״. The
+  single security-adjacent line, `שירות/7`, promotes haredi towns and hesder yeshivas באזורי הגבול
+  המזרחי — settlement inside the state's own border region, packaged with housing and employment,
+  not a conflict doctrine.
+- **The two interviews (rev 72)**, whose interviewers were free to ask anything: no sentence on
+  Gaza, sovereignty, יהודה ושומרון, a Palestinian state, Iran or borders. **The self-placement
+  quoted under `bloc` is not a position on this axis**, which is the conflict and the territory.
+  What looks security-shaped is conscription argument: 7 October as the moment the exemption
+  arrangement *"התפרקה והתנפצה לכולנו בפרצוף"* because the IDF needs tens of thousands more
+  soldiers, and חטיבת החשמונאים as a model for haredi service — who serves, not what the country
+  should do with territory.
 
-What the earlier reading had, and why it correctly did not reach `bibi` on its own: a campaign item of
-2026-08-04 — *"מחזיקי עולם התורה לצד אנשי ימין מובהקים, הם התומכים המרכזיים שלנו"*, which describes
-**supporters** and not partners; the demand letter to דרעי, גפני and גולדקנופף, a bid to join the
-representation whose parties sit with Netanyahu; and the אודות page's
-*"המשך ההתנגשות עם חלקים נרחבים בעם ישראל מסכן את עתידו של הציבור החרדי כולו"*, a case against the
-last term's bloc politics rather than a declaration about the next one. **Scoring `bibi` off
-`sector: haredi` would still have been an inference from category** — the move this page refused for
-the Arab parties — and that refusal was right. The fix was a better source, not a looser standard.
+**`religiosity` +1 — keeps the sectoral settlement and expands state religious funding while
+narrowing the exemption it keeps.** The band's first holder; the band was extended to say what this
+party does rather than the row being rounded to a neighbour.
 
-**Open, and worth watching: this row is a merger candidate and says so.** לייטנר confirms
-negotiations with **עופר וינטר** and declines to characterise them — *"אני מעדיף שמה שסיכמנו שיישאר
-באופק של שיחות שקטות – יישאר כך"* (כיכר) — calls a link-up with **אביר קארה** *"רעיון מעניין"*, and
-says he is in talks *"עם כל הגורמים בספקטרום הימני"* (ערוץ 7). The rule he states is conditional and
-explicit: run alone if the threshold looks reachable alone, *"במידה ונזהה שיש לנו את הפוטנציאל ואת
-היכולת לחצות את אחוז החסימה לבד, כמובן שנרוץ עד הסוף"*; otherwise *"נפעל באחריות ונעשה את מה שנדרש
-כדי שלציבור החרדי תהיה נציגות בכנסת הבאה, בכל מחיר ובכל חיבור ובכל צורה שתידרש"*. A merger with
-עמך ישראל would be a real event rather than a formality — the two rows' conscription positions are
-close to opposite (this one keeps an absolute ״תורתו אומנותו״ exemption; עמך ישראל holds
-`universal-conscription` and `anti-conscription-exemption`). **Trigger: the CEC filing.** A joint list
-moves `on_ballot` and `party_lineage`, not an axis.
+- **Not +2** (ש"ס, יהדות התורה, הליכוד): that band's content is defending the marriage, kashrut and
+  Shabbat monopolies, and this platform has nothing on any of them, on the Rabbinate, or on Shabbat
+  in the public sphere.
+- **Not −2:** that band's criterion is core curriculum *as a funding condition* on somebody else's
+  schools plus universal conscription; this party demands English and mathematics **inside** haredi
+  education for its own children and keeps a full exemption.
+- **What it does:** protection of ״תורתו אומנותו״ from arrest and sanctions as *"תנאי יסודי ובלתי
+  מתפשר"*, strengthening the state-haredi (ממ״ח) stream, government encouragement of haredi hesder
+  yeshivas — guarding haredi educational autonomy rather than extending religious authority over
+  anyone else.
+- **Read the education and conscription chapters** — there is no religion-and-state chapter, the
+  failure mode this axis's own warning describes.
 
-**Two facts from ערוץ 7 that belong on the record and move nothing.** The founding demand letter is
-confirmed from the other end — the party's *first* choice was to be absorbed into ש"ס or יהדות התורה
-as a structured faction (*"לקבל ייצוג אינטגרלי מובנה בתוך אותן מפלגות"*), and only after
-*"הפניות והמגעים עם גורמים בכירים לא הבשילו"* did it *"נאלצנו… להקים מפלגה עצמאית"*; that is the
-entry's "revolt against the haredi PARTIES, not against the settlement" reading stated by the
-chairman rather than inferred. And on rabbinic backing he is unusually candid about its limits:
-a ועד רבנים letter is promised, but *"רבנים שחששו יש רבים, ולכן במקום 150 רבנים אנחנו רואים רשימה
-מצומצמת יותר"* — which is worth holding against the אודות page's flatter
-*"המפלגה מלווה ונתמכת בידי רבנים גדולי תורה"*. Self-reported electoral potential is ~6 seats, about
-three of them from **outside** haredi society (כיכר: 5–6, and 1.5% in polls a week after launch).
+#### Families
 
-economic **−2**, on the same reading as ש"ס and יהדות התורה, plus a caveat neither of them carries.
-The instruments are state provision throughout: a national housing plan multiplying haredi building
-starts **fivefold**, dedicated budgets for hi-tech and high-productivity training tracks with
-separate men's and women's frameworks, government subsidy of seminary graduates' professional
-certification, **אפליה מתקנת בשירות המדינה**, employer incentives in the private market, enlarged
-aliyah-absorption budgets, and direct budgeting of non-discriminating institutions with budget
-sanctions on the rest. There is no tax, competition, privatization or cost-of-living content
-anywhere in the eight chapters. **The caveat is that the party's own rhetoric points the other
-way**: `עולם התורה/3` wants yeshiva budgets rebased on ״הסכם יששכר וזבולון״ so the Torah world is
-*"מבלי להיות סמוכים על שולחן אחרים"*, and `פרנסה` opens on the prayer
-*"שלא יצטרכו עמך בית ישראל זה לזה ולא לעם אחר"*. That is an aspiration to depend on the state less,
-delivered by a platform that asks it for more of everything — **revealed position, not claimed
-position**, and the axis takes the instruments.
-
-**Revision 72 upgrades that caveat from aspiration to NAMED INSTRUMENTS, leaves the −2 where it is,
-and refuses the tag that exists for exactly this gap — the refusal is the part worth reading.** To
-ערוץ 7 לייטנר calls himself **ימין כלכלי**, backs *"רפורמות כלכליות שיצמצמו מנגנונים ופריבילגיות"*,
-answers **yes** on סמוטריץ's milk reform, and attacks the הסתדרות as *"אנכרוניסטי"* that should have
-been abolished long ago; his stated goal for haredi education is earning power, so that
-*"מגזר חרדי חזק ועשיר יותר יוכל גם לתמוך בעצמו בעולם הישיבות והכוללים"* instead of raising donations
-abroad. Those are instruments, not a prayer. The **axis still does not move**: the eight-chapter
-platform is the party's own instrument list and every one of its instruments is state provision, and
-two of the three liberalizing answers are about somebody else's sector (dairy, the labour federation)
-rather than about the budget lines this party asks for.
-
-**`claims-economically-liberal` was considered here and REFUSED**, against the memory of what the tag
-was founded on rather than against its holder count (3 on `upcoming_parties`, so the count would have
-been comfortable). Its founding case — הליכוד, הציונות הדתית, עוצמה יהודית — is a rhetoric-versus-**record**
-gap, and on הציונות הדתית it is read against a sitting finance minister's actual ministry. **This
-party has no record**: it has never governed, never held a portfolio and never voted on a budget.
-What it has is a platform/chairman gap, which is a different kind of evidence, and granting the tag
-here would dilute it to "someone associated with this party said a market-liberal thing" — the failure
-mode this page has already logged for `service-conditioned-citizenship` (five holders under a label
-only one of them meets). **Trigger, and it is a real one**: if the party publishes an economic chapter
-carrying these instruments, the gap becomes party-level and either the tag becomes right or the axis
-moves. There is no such chapter today — `פרנסה בכבוד` is training budgets, subsidies and
-אפליה מתקנת.
-
-religiosity **+1 — the first holder this band has ever had**, and the band was extended to say what
-this party does rather than the row being rounded to a neighbour. Against **+2** (ש"ס, יהדות התורה,
-הליכוד): that band's content is defending the marriage, kashrut and Shabbat monopolies, and this
-platform contains **nothing** on any of them, on the Rabbinate, or on Shabbat in the public sphere.
-Against **−2**: that band's criterion is core curriculum *as a funding condition* on somebody else's
-schools plus universal conscription, and this party demands English and mathematics **inside** haredi
-education for its own children, while its conscription position keeps a full exemption. What it
-actually does is keep the sectoral settlement and expand state religious funding — protection of
-״תורתו אומנותו״ from arrest and sanctions as *"תנאי יסודי ובלתי מתפשר"*, strengthening the
-state-haredi (ממ״ח) stream, government encouragement of haredi hesder yeshivas — while narrowing the
-exemption it keeps and guarding haredi educational autonomy rather than extending religious authority
-over anyone else. **Read the education and conscription chapters, not a religion-and-state chapter**
-— there isn't one, which is precisely the failure mode this axis's own warning describes.
-
-**`service-for-non-learners` is a new tag and it is the row's discriminating claim.** *"כל צעיר חרדי
-שאינו מקדיש את חייו ללימוד תורה, צריך לשרת שירות ביטחון ככל אזרח ישראלי אחר"*, with seven
-implementing clauses — tracks built on ״נכנס חרדי - יוצא חרדי״, rabbinic accompaniment, funding for
-haredi hesder yeshivas, compulsory-service routes in the Shin Bet, Mossad and police alongside
-national and civil service, a support administration for serving haredim and one for haredi reservist
-families. No existing tag says this: `universal-conscription` overstates it (the learner exemption is
-absolute and non-negotiable here), `anti-conscription-exemption` inverts it, and
-`scholar-exemption-retained` — which the row also carries — is shared with ש"ס, יהדות התורה, הליכוד
-and כחול לבן and so cannot be what separates it from them. Note also that this row carries
-`core-curriculum` where both of its sector-mates carry `opposes-core-curriculum`; that pair is the
-cleanest single contrast on the page.
-
-**`core-curriculum` is kept and qualified (revision 72): the interview formulation is meaningfully
-softer than the platform's, and the difference is the word "compulsory".** To ערוץ 7 לייטנר leads with
-parental choice, and what he asks of the state is that children who do *not* learn English and maths
-at school be able to acquire them **elsewhere** — *"חינוך בלתי פורמלי"* in the evenings, on Fridays,
-במוצאי שבת, in holidays and in חוגים — alongside making it easier to **open** haredi institutions
-teaching secular subjects at a higher level for parents who want them, against opposition he
-attributes to the veteran haredi parties. That is opt-in supplementation plus supply-side
-liberalisation; it is not core curriculum as a funding condition on anyone, which is the form the
-−2 religiosity band is written around and the form both sector-mates reject. The tag survives because
-the platform demands the subjects **inside** haredi education, and one interview does not overturn a
-chapter — but a reader who scores this row from the interviews alone would not reach the same tag,
-and that is worth knowing before the next pass treats `core-curriculum` here as settled.
-
-**families `conscription-exemption` + `sectoral-budgeting` + `welfare-state`, and the first of those
-is a compromise worth naming.** The vocabulary is closed by `test_queries.py` (a family must sit on
-≥2 parties, and every value must be used), so a fourth conscription family cannot be minted for one
-row. Of the three that exist, `conscription-split` means a list whose **components** vote opposite
-ways (הציונות הדתית, יהדות התורה) and does not apply to a party with one line;
-`conscription-by-incentive` rejects coercion and sanctions, which this party does not —
-it makes service compulsory for non-learners. `conscription-exemption` is right about the
+`conscription-exemption`, `sectoral-budgeting`, `welfare-state`. The first is a compromise: the
+vocabulary is closed by `test_queries.py` (a family must sit on ≥2 parties, and every value must be
+used), so no fourth conscription family can be minted for one row. It is right about the
 non-negotiable (the ״תורתו אומנותו״ exemption is the platform's stated precondition for any
-cooperation at all) and silent about the other half. The tag carries the half the family cannot.
+cooperation at all) and silent about the other half, which a tag carries.
 
-**That refusal survives revision 72's two interviews INTACT, on both limbs — and it survives a
-reading that, from one source alone, looked like it had collapsed.** כיכר has לייטנר saying
-*"מסיר את כל הסנקציות"*, with the article's own summary line *"נבטל את הסנקציות ונרחיב את המסלולים
-החרדיים"*, and taken alone that refutes the sanctions limb outright. **It does not, because of where
-the sentence sits**: it is the closing clause of the learner half — *"כל מי שלומד תורה, כל מי שתורתו
-אומנותו – ילמד תורה בתנאים הכי טובים שאפשר… זה קודש קודשים… מסיר את כל הסנקציות"*. Sanctions are
-removed **from learners**. ערוץ 7, two days earlier, states the other half and settles it:
-*"מי שימלא את אחריותו יקבל תמריצים ומי שלא יעשה זאת ייתקל בתמריצים הפוכים"*, on a programme whose
-premise is *"כל מי שתורתו אומנותו - שיישב וילמד. כל היתר, ומדובר באלפים רבים כל שנה, ילכו וייקחו
-אחריות"*, with a ועד רבנים to help fix *"איך עובר הגבול"* and *"מנגנוני פיקוח"* to police it. So the
-party rejects neither coercion nor adverse consequences — it relocates both onto non-learners — and
-`conscription-by-incentive` stays refused, on better evidence than it was refused on.
-**Recorded because the near-miss is the lesson, not the conclusion**: this entry was drafted with the
-sanctions limb written off, and only the earlier interview put it back. A quote that refutes a stated
-reason has to be read in its own paragraph before it is allowed to overturn one.
+**Not `conscription-split`:** a list whose components vote opposite ways (הציונות הדתית, יהדות
+התורה); this party has one line. **Not `conscription-by-incentive`:** that family rejects coercion
+and sanctions, and this party makes service compulsory for non-learners. The refusal survived both
+interviews on both limbs (rev 72):
 
-**`sanctions-on-non-servers` was tested against this and refused**, on revision 41's standard: all
-eight holders name a concrete penalty, and *"תמריצים הפוכים"* names a direction with no instrument,
-no benefit and no number attached — the mirror of the reason עמך ישראל's reward ladder was refused
-the tag from the opposite side. No inverse tag was minted for the learner-side removal either:
-`scholar-exemption-retained`, which this row already carries, **is** that claim, and a second tag
-would restate it. **`gender-equality`'s inverse was refused on the discrimination test**, and the two
-interviews are why this has to be prose rather than a tag. The party runs no women, and the two
-answers are not the same answer: to כיכר, *"הבעיות המהותיות ביותר של הציבור החרדי זו לא סוגיית שילוב
-נשים"*, and the demand is *"ראייה חד-ממדית, דיכוטומית, בינארית"*; to ערוץ 7, **"אני בעד נציגות נשית
-חרדית"** — in favour, but holding that haredi society is not ready and that it is not his job
-*"לחנך את הציבור"*, *"דרך שצריך לעשות במדרגות לא בהכרח ניתן לעשות במעלית"*. A tag on this row alone
-would in any case imply ש"ס and יהדות התורה do otherwise, and they do not — it would narrow a
-sector-wide practice to the one row whose chairman happened to be asked about it on camera, the same
-move `mizrahi-representation` was refused for. `rabbinic-authority-led` is corroborated first-party
-by both interviews — *"שישאל את רבו, שישאל את אדמו״רו"*, and a ועד רבנים whose letter is promised —
-and is logged as **corroboration, not new evidence**: the אודות page already said it (the
-"A second document agreeing with the first" rule in `services/backend/CLAUDE.md`).
-`rabbinate-as-fourth-branch` was considered for that ועד רבנים and refused — that tag is about the
-**state** Rabbinate as an organ of government, not a party's own rabbinical council.
+- כיכר has *"מסיר את כל הסנקציות"*, with the article's own summary line *"נבטל את הסנקציות ונרחיב את
+  המסלולים החרדיים"*; taken alone that refutes the sanctions limb. But it is the closing clause of
+  the learner half — *"כל מי שלומד תורה, כל מי שתורתו אומנותו – ילמד תורה בתנאים הכי טובים שאפשר… זה
+  קודש קודשים… מסיר את כל הסנקציות"*. Sanctions are removed **from learners**.
+- ערוץ 7 states the other half: *"מי שימלא את אחריותו יקבל תמריצים ומי שלא יעשה זאת ייתקל בתמריצים
+  הפוכים"*, on the premise *"כל מי שתורתו אומנותו - שיישב וילמד. כל היתר, ומדובר באלפים רבים כל שנה,
+  ילכו וייקחו אחריות"*, with a ועד רבנים to help fix *"איך עובר הגבול"* and *"מנגנוני פיקוח"* to
+  police it. Coercion and adverse consequences are relocated onto non-learners, not rejected. Not
+  re-tested against rev 247's *"מעצרים לא מועילים למאמצי גיוס החרדים"* (כאן, 06.10.26), which is not
+  confined to learners; arrest is one coercive instrument, and the refusal rests on compulsion and
+  *"תמריצים הפוכים"*.
+- **⚠ A quote that refutes a stated reason has to be read in its own paragraph before it is allowed
+  to overturn one.** This entry was drafted with the sanctions limb written off; only the earlier
+  interview put it back.
 
-`sector: haredi` is the party's own name and self-description. `rabbinic-authority-led` on the אודות
-page's *"המפלגה מלווה ונתמכת בידי רבנים גדולי תורה, אשר מנחים את דרכה"*.
-`anti-discrimination-in-admissions` is a whole chapter (המאבק באפליה) with real instruments —
-budget cuts to institutions running ״מסננות״, an inter-communal placement committee, suspension of
-offending ממ״ח principals. **`mizrahi-representation` was considered and refused**: the chapter
-frames the harm as crossing communities — *"מזרחים ואשכנזים, משפחות של חוזרים בתשובה, בני תורה
-ומשפחות עובדות"* — so the ש"ס tag would narrow a broader claim to the one group that already has a
-party named for it.
+#### Tags (13) and what each rests on
+
+**Carried from the original classification and never argued here:** **`new-party`**,
+**`ultra-orthodox`**, **`religious-conservative`**, **`state-haredi-education`**,
+**`workforce-integration`**, **`aliyah-absorption`**, **`municipal-devolution`**.
+
+- **`service-for-non-learners`** — a new tag, and the row's discriminating claim: *"כל צעיר חרדי
+  שאינו מקדיש את חייו ללימוד תורה, צריך לשרת שירות ביטחון ככל אזרח ישראלי אחר"*, with seven
+  implementing clauses — tracks built on ״נכנס חרדי - יוצא חרדי״, rabbinic accompaniment, funding
+  for haredi hesder yeshivas, compulsory-service routes in the Shin Bet, Mossad and police alongside
+  national and civil service, a support administration for serving haredim and one for haredi
+  reservist families. No existing tag says this: `universal-conscription` overstates it (the learner
+  exemption is absolute and non-negotiable here) and `anti-conscription-exemption` inverts it.
+  Restated to ישראל היום, 03.10.26 (rev 237, under ישראל ביתנו): whoever *"לא לומד יום שלם"* must
+  enlist in adapted tracks, and *"ניתן להקים אוגדה חרדית"* — the position as rev 72 left it; the
+  division and the full-day test are the new details. Nothing scored.
+- **`scholar-exemption-retained`** — the learner half, quoted under Families. Shared with ש"ס, יהדות
+  התורה, הליכוד and כחול לבן, among others, so it cannot be what separates this row from them.
+- **`core-curriculum`** — kept and qualified (rev 72). The platform demands the subjects inside
+  haredi education, where both sector-mates carry `opposes-core-curriculum`. The ערוץ 7 formulation
+  is softer, and the difference is the word "compulsory": לייטנר leads with parental choice, asks
+  that children who do *not* learn English and maths at school be able to acquire them elsewhere —
+  *"חינוך בלתי פורמלי"* in the evenings, on Fridays, במוצאי שבת, in holidays and in חוגים — and
+  wants it easier to open haredi institutions teaching secular subjects at a higher level, against
+  opposition he attributes to the veteran haredi parties. That is opt-in supplementation plus
+  supply-side liberalisation, not a funding condition on anyone. One interview does not overturn a
+  chapter, but a reader scoring this row from the interviews alone would not reach the tag; do not
+  treat it as settled.
+- **`anti-discrimination-in-admissions`** — a whole chapter (המאבק באפליה) with real instruments:
+  budget cuts to institutions running ״מסננות״, an inter-communal placement committee, suspension of
+  offending ממ״ח principals.
+- **`rabbinic-authority-led`** — the אודות page's *"המפלגה מלווה ונתמכת בידי רבנים גדולי תורה, אשר
+  מנחים את דרכה"*. Both interviews corroborate it first-party — *"שישאל את רבו, שישאל את אדמו״רו"*,
+  and a ועד רבנים whose letter is promised — logged as corroboration, not new evidence (the "A
+  second document agreeing with the first" rule in `services/backend/CLAUDE.md`). Hold the page's
+  flat claim against the chairman's own limit (ערוץ 7): *"רבנים שחששו יש רבים, ולכן במקום 150 רבנים
+  אנחנו רואים רשימה מצומצמת יותר"*.
+- **`anti-haredi-establishment`** — not argued in this entry's own passes. Argued in rev 247 (under
+  ישראל ביתנו): לייטנר (#1), in כאן 06.10.26, on the crowd that stopped a deserter's arrest in
+  מודיעין — *"בריוני הפלג הירושלמי האלימים… מקומם של פראי האדם האלה - מאחורי סורג ובריח. ללא קשר לכך
+  שמעצרים לא מועילים למאמצי גיוס החרדים - דרעי, אשר וגולדקנופף חייבים לגנות"*; the only haredi list
+  heard in the report. Rev 100 (under הליכוד) reads the women at #3 and #4 as pointing the same way.
+
+#### Considered and refused
+
+- **`claims-economically-liberal`** (rev 72) — judged against the tag's founding case, not its
+  holder count. That case (הליכוד, הציונות הדתית, עוצמה יהודית) is a rhetoric-versus-**record** gap,
+  read on הציונות הדתית against a sitting finance minister's actual ministry. This party has no
+  record: it has never governed, held a portfolio or voted on a budget. A platform/chairman gap is a
+  different kind of evidence; granting the tag would dilute it to "someone associated with this
+  party said a market-liberal thing", the failure mode logged for `service-conditioned-citizenship`.
+  Trigger under `economic`.
+- **`sanctions-on-non-servers`** — on rev 41's standard holders name a concrete penalty; *"תמריצים
+  הפוכים"* names a direction with no instrument, no benefit and no number attached — the mirror of
+  the reason עמך ישראל's reward ladder was refused the tag from the opposite side. No inverse tag
+  was minted for the learner-side removal either: `scholar-exemption-retained` is that claim.
+- **`gender-equality`, in either direction** — neither. Rev 72 wrote that the party runs no women
+  and refused an exclusion tag on the discrimination test (it would single out one row for a
+  sector-wide practice, the move `mizrahi-representation` was refused for). **That premise is
+  superseded:** by הארץ's women's-representation survey the list places women at #3 and #4, without
+  precedent for a haredi list — ש"ס and יהדות התורה carry none (rev 100, under הליכוד). An exclusion
+  tag would now be false of this row. The placement earns `gender-equality` nothing either: a list
+  is not a programme (rev 100). Both interviews predate the 08.09 filing: to כיכר, *"הבעיות המהותיות
+  ביותר של הציבור החרדי זו לא סוגיית שילוב נשים"*, and the demand is *"ראייה חד-ממדית, דיכוטומית,
+  בינארית"*; to ערוץ 7, **"אני בעד נציגות נשית חרדית"** — in favour, but holding then that haredi
+  society was not ready and that it was not his job *"לחנך את הציבור"*. The slots are the survey's;
+  the row's CEC list has not been read here.
+- **`rabbinate-as-fourth-branch`** — considered for the ועד רבנים; the tag is about the **state**
+  Rabbinate as an organ of government, not a party's own rabbinical council.
+- **`mizrahi-representation`** — the admissions chapter frames the harm as crossing communities,
+  *"מזרחים ואשכנזים, משפחות של חוזרים בתשובה, בני תורה ומשפחות עובדות"*, so the ש"ס tag would narrow
+  a broader claim to the one group that already has a party named for it.
+- **`hard-to-classify-bloc`** — held from rev 70, removed in rev 72: retired, not refused; see
+  `bloc`.
+
+#### Open questions and triggers
+
+- **Resolved, pending one check: no joint list.** In the interviews of 31.08 and 02.09 לייטנר
+  confirmed talks with עופר וינטר (כיכר), called a link-up with אביר קארה *"רעיון מעניין"*, said he
+  was in talks *"עם כל הגורמים בספקטרום הימני"* (ערוץ 7) and nobody outside it, and said the party
+  would run alone only if the threshold looked reachable alone. Lists were filed 07–08.09, before
+  this row was created; it runs as its own list (לייטנר #1, rev 247) and עמך ישראל as its own.
+  **Still open:** the row's CEC list has never been read here — list number, slots, the two women
+  (rev 100), whether any outside component is on it. **Remaining trigger:** a withdrawal, which
+  moves `on_ballot`, not an axis.
+- The economic-chapter trigger under `economic`.
+- `municipal-devolution` is held with no clause recorded in this entry or elsewhere on the page;
+  find the platform clause or re-examine the tag.
+
+#### Reading this party's sources
+
+- **⚠ A site enumeration bounds the site; it does not bound what the party has said.** Rev 70
+  enumerated `hatzibur-haharedi.org` from `sitemap.xml` before anything was read (66 URLs, incl.
+  `/en` and `/fr` mirrors of every page; no PDFs) and reported zero hits for נתניהו, קואליציה and
+  גוש. That is still accurate of what was swept, and the `bloc` drawn from it was wrong: the
+  chairman had said it on camera in two studio interviews fourteen and twelve days before that pass
+  ran. The empty result read as a correct negative, and no re-run would have surfaced it (the
+  sibling of the root `CLAUDE.md`'s "a pattern that can never match"). **Rule, recorded in
+  `services/backend/CLAUDE.md`: for a new party, search the party's NAME and its chairman's in the
+  press alongside enumerating its site, before writing `hard-to-classify-bloc` or a measured
+  absence.**
+- Coverage as recorded: the enumeration covered every URL, but the keyword sweep read four of ~40
+  campaign items. The 04.08 item quoted under `bloc` contains ימין and is not among the sweep's two
+  hits, so it was outside the swept text. The site-level zeros are therefore measured over the
+  platform, two pages and four campaign items, not the whole site.
+
+#### Sources
+
+- **Site** (first-party): the platform and pages listed under Basis.
+- **Interviews** (first-party, both transcribed from the page rather than from a summary; rev 72):
+  ערוץ 7, `inn.co.il/news/705202`, אולפן interview with איציק ברנדויין, 31.08.26 21:32; כיכר השבת,
+  `kikar.co.il/interviews/tkqhnh`, 24-minute studio interview with ישי כהן, 02.09.26.
+- **Read, and scored nothing:** הארץ's women's-representation survey, 20.09.26 (rev 100, under
+  הליכוד); לייטנר to ישראל היום, 03.10.26, `israelhayom.co.il/news/defense/article/21544057` (rev
+  237, under ישראל ביתנו); הארץ's survey of the last 22 days, 05.10.26 (rev 244, under הליכוד;
+  unnamed campaign sources) — יהדות התורה's אשר talks of a campaign to suppress haredi turnout, and
+  that talk *"is said to be aimed partly at"* this row, while כאן, 06.10.26 (rev 247, under ישראל
+  ביתנו) sets the same talk against *"the new haredi lists"*: a rival's framing, electoral strategy;
+  כאן on the night in מודיעין, 06.10.26, `kan.org.il/content/kan-news/local/1106432/` (rev 247,
+  under ישראל ביתנו).
 
 ### ישראל תחילה — Israel First · `unaligned` · +2 / +2 / −2 · secular
 
