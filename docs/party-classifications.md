@@ -1547,6 +1547,8 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
     ([post](https://x.com/YosephHaddad/status/2106988071560355920)).
   - Not entered at all: a tenth הארץ link of rev 244, a television review of the coverage of רגב;
     four links of rev 242 that are revision 238's.
+  - The joint conference of rabbis with הציונות הדתית on 08.10, held without עוצמה יהודית: a
+    turnout operation, electoral strategy (rev 254, under עוצמה יהודית).
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
@@ -6228,7 +6230,8 @@ rewriting its programme would be the thing to catch.
   170/26](https://img.haarets.co.il/bs/000001a0-f6a5-dbb2-a9f8-ffefbd0b0000/f8/28/79f0f6a54a17abf3065febd5a87e/%D7%AA%D7%91%D7%9B-168-26-170-%D7%94%D7%97%D7%9C%D7%98%D7%94-cleaned.pdf),
   read in full with `pdftotext`, and
   [הארץ](https://www.haaretz.co.il/news/elections/2026-10-01/ty-article/.premium/000001a0-f69e-de52-afe1-f6de34cb0000)
-  on it, 01.10.26 (rev 217).
+  on it, 01.10.26 (rev 217); the joint conference of rabbis with הליכוד on 08.10, held without
+  עוצמה יהודית — a turnout operation, electoral strategy (rev 254, under עוצמה יהודית).
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -7185,6 +7188,25 @@ Linked where used above. Not linked above:
   75). Linked under Recorded: the Druze heads' letter (rev 99), the FakeReporter reports (revs 175,
   191) and the billboards column (rev 137). The posts that scored nothing in a cross-row pass are
   listed under that pass.
+  - **Rev 254** (2026-10-07; two הארץ items, bodies supplied by the repo owner). A
+    [report](https://www.haaretz.co.il/news/elections/2026-10-07/ty-article/.premium/000001a1-161a-dbd6-a5a5-9fffd6c30000):
+    הליכוד and הציונות הדתית hold a conference of senior rabbis and heads of institutions on
+    08.10, titled *"מצילים את הימין, מתגייסים לניצחון המחנה הלאומי"*, without בן גביר or anyone
+    from this party. Its sources call it one more sign after the surplus-vote agreement (rev 247);
+    the organisers deny a boycott and say the event is built for הציונות הדתית's field activists
+    and yeshiva students. The party's two charges in it are already on this row: that הליכוד
+    refused a surplus agreement with it (rev 247), and that the prime minister's office told
+    foreign governments it will not be in the next government (rev 75), which the sources now cite
+    from ישראל היום. Friction inside the bloc, and `bibi` stays on all three rows. And a
+    [column](https://www.haaretz.co.il/magazine/2026-10-07/ty-article/.highlight/000001a1-1679-dbd6-a5a5-9fff10a30000)
+    on the disqualification votes, which relays בן גביר at the hearings: his opening against אבו
+    שחאדה (*"אני לא עומד כאן לבד. יחד איתי עומדים 1,163 נרצחים"*, which the columnist sets beside
+    the prosecutor's opening at the Eichmann trial), *"כאן כולכם ברא"* to the other side's lawyers,
+    and *"הדבר היחיד שצריך להביא לעזה זה מאות טונות חומר נפץ של חיל האוויר, לא גרם אחד של סיוע
+    הומניטרי"*. A columnist's relay with no date or recording; the last line sits on
+    `hardline-on-gaza`, held, and a disqualification stance scores nothing (revision 115's rule).
+    Its count for the petitions against this party, 11–10–1, is הארץ's own (the other count is
+    under Recorded).
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -12976,3 +12998,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-07 | revision 252 — **עוצמה יהודית: `preemptive-security-doctrine` ADDED (18 → 19 tags; 7 → 8 holders), on בן גביר's post from the seam line on the anniversary. No axis moved.** *"ה-7.10 לימד אותנו - מול איום לא מחכים. פועלים לפני!"* is a doctrine sentence of the tag's founding kind, with no condition, in the chairman's own words (revision 201's tier rule), and the campaign's billboards rest on the same claim. Weighed against revision 250's warning that the tag is no longer rare: it stops separating this row from הציונות הדתית, and still separates ביחד from ישר and ישראל ביתנו, with כחול לבן and נעם not holding it. Nothing added for disarming the Authority, which has no tag on any row |
 | 2026-10-07 | **Every party entry converted from dated blocks to a current-state format** (eighteen entries; האחדות and אל הדגל, already organised by subject and off the ballot, left as written). The document went from 16,131 lines / 270,979 words to about 12,950 lines / 212,000 words; **no value changed and `seed.sql` is untouched.** Each conversion was checked mechanically (links carried, quotations verbatim, tags and families equal to `seed.sql`), audited against the old text by an independent reader and corrected, and a final sweep confirmed every cross-row item still has a counterpart. Revision 68's block (יהדות התורה's filed-list reading) was found filed under Logos and moved into that party's entry. The audits also corrected statements the old text had left stale; what they raised and nobody has acted on is the first item under Open questions. The per-pass text of every revision is in git history from commit `bec77c3` backwards. |
 | 2026-10-07 | revision 253 — **three rows' stale quotations re-read at source and replaced. No axis moved, no tag added or removed, `seed.sql` unchanged.** Prompted by the live checks the conversion audits ran. **ביחד**: the education plan page was rewritten in place (modified 2026-09-23) and none of the five quotations revision 22 took from it survives; `core-curriculum`, `state-haredi-education` and `municipal-devolution` are re-grounded on the current text. The funding condition is now *"מימון ציבורי יינתן רק למוסדות המלמדים 100% לימודי ליבה"*, and the 60% the entry could not reconcile with it is the common core's share of the timetable; the 90% transfer target and the dissolution of the districts are no longer on the page. **כחול לבן**: three `sherut4all.com` quotations corrected against the site — *"כלל הצעירים"* for *"כל הצעירים"*, the sanctions sentence in full, and the Arab-service sentence, which says "enable" and puts the duty after a phase-in of several years; the צו 8 booklet moved under `/8ps/`. **הדמוקרטים**: the framing *"הפרדת הדת ממוסדות המדינה…"* is from the paper's June edition (recovered from the Wayback Machine, snapshot 2026-07-25); the 11 August edition now on the party's bucket drops that sentence. Both editions keep state religious funding and spread it across all streams, which bears on the `religiosity` −3 band item under Open questions. Retrieval: `sherut4all.com` returns its FAQ block only to a request carrying a Referer. |
+| 2026-10-07 | revision 254 — **עוצמה יהודית (cross-row): two הארץ items of 07.10, bodies supplied by the repo owner. Nothing scored.** A report that הליכוד and הציונות הדתית hold a rabbis' conference on 08.10 without בן גביר or his party, which the party's sources read with the surplus-vote agreement of revision 247 as a sign of his exclusion from the next government; both charges it repeats were already on the row, and friction inside a bloc moves no `bloc`. And a column on the disqualification votes that relays three statements by בן גביר at the hearings, one of them on `hardline-on-gaza`, held; a columnist's relay, undated. Written in the current-state format: one item under עוצמה יהודית's sources that scored nothing, and a pointer in each of the other two entries. |
