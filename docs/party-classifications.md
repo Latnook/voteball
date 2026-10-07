@@ -4415,9 +4415,10 @@ pilots' letter).
 
 #### The three axes
 
-**`economic` −2 — social-democratic.** Every paper is state-led and distributive, and none names a
-tax rate, a nationalisation or a privatisation — which is why it is −2 and not the self-defined
-communism of −3.
+**`economic` −2 — social-democratic.** The papers are state-led and distributive, and in each one
+checked for it (economic, Arab-society, north–south, rural, media, culture, disability) no tax rate,
+nationalisation or privatisation is named — which is why it is −2 and not the self-defined communism
+of −3.
 
 - Economic paper: a shorter work week, added vacation and sick days, paternity leave, expanded
   subsidised early childhood, restored price controls, public and long-term-rental housing.
@@ -4425,7 +4426,9 @@ communism of −3.
   for the north and south; the culture budget doubled within two years; a rising disability
   allowance; health spending raised toward the OECD benchmark under the framing *"נחזיר למדינה את
   האחריות לבריאות הציבור"*; and a state nursing-care insurance law, care *"ללא תלות ביכולתו
-  הכלכלית"*, committed in both the senior-citizens and the health paper.
+  הכלכלית"*, in both the senior-citizens and the health paper — stated as a commitment, *"נפעל
+  לחוקק את חוק ביטוח סיעוד ממלכתי"*, where ישר's paper only examines it (*"נבחן הטלת חובת ביטוח
+  סיעודי"*).
 - The old-age pension names its formula: *"נחזיר את הצמדת הקצבה לשכר הממוצע במשק"*. That is the line
   ישר's aging paper was held short of (rev 39) and ביחד's crossed (rev 29).
 - The speakers' own description in the economy episode is *"המדינה שמתערבת בשוק החופשי"*. The money
@@ -4438,7 +4441,8 @@ communism of −3.
 
 **`security` −1 — Zionist two-stater, and not −2.** The −2 band requires two-state *with an end to
 the occupation*. This party holds a two-state position conditioned on a Jewish majority, full
-demilitarisation and Israeli security control, and the word כיבוש appears nowhere in its material.
+demilitarisation and Israeli security control, and — the far-left critique's sharpest point — the
+word כיבוש never appears in its material; every paper counted since confirms it.
 
 - The papers do not use the words מדינה פלסטינית either. They commit to *"מהלך מדיני אחראי מול
   הפלסטינים"*, *"הסדרים מדיניים"* and *"אלטרנטיבה שלטונית מתונה"*, and one of the security paper's
@@ -4452,8 +4456,12 @@ demilitarisation and Israeli security control, and the word כיבוש appears n
 - **What presses toward −2:** the reservists paper wants an international stabilising force in Gaza
   and Lebanon *"במקום החזקת השטח בידי צה"ל"* and evacuation of West Bank outposts and farms, and
   לסקי (#6, from מרצ) carries the "end the occupation" language the party itself declines to use.
-- **Standing trigger (rev 15): two documents lean on this boundary; if a third does, re-open the
-  −1.** No paper read since has been that third.
+- **Standing trigger (rev 15): two documents lean on this boundary — by context the security paper
+  and the reservists paper; if a third does, re-open the −1.** No paper read since has been judged
+  that third.
+- גולן's own political plan (N12, 2026-06-29) has the same shape: recognition of a Palestinian
+  technocratic government replacing Hamas, PA reform into *"גורם שלטוני מתון ואפקטיבי"*, and
+  *"עצירת הסיפוח"* — mechanism first, endpoint assumed rather than proclaimed.
 - The chairman, in the June security episode: *"יש את חזון שתי המדינות, הוא לא יהיה ממש מחר בבוקר,
   יכול להיות שגם לא ב-10 השנים הקרובות"*, with the working term *"היפרדות אזרחית עם אחריות
   ביטחונית"*. In October he declined to name an end state (rev 238). On settlements: *"מאחז בלתי
@@ -4486,18 +4494,21 @@ not what it has a policy about.
 #### Tags (30) and what each rests on
 
 **Carried from the original classification (2026-07-16) and never argued separately here:**
-**`progressive`**, **`social-democrat`**, **`liberal-zionist`**. The evidence in this entry is consistent with
-all three; none has been re-tested the way `two-state` was.
+**`progressive`**, **`social-democrat`**, **`liberal-zionist`**. None has been re-tested the way `two-state` was.
 
 **Conflict and territory**
 
-- **`two-state`** — challenged on 2026-08-01 because the papers never say מדינה פלסטינית, and kept on
-  three independent lines. (1) The party's own platform text names the state, quoted against
-  interest by a far-left critic ([zoha.org.il](https://zoha.org.il/145596/), 2026-05-22): *"בהגדרת גבולות קבע ברורים תוך
+- **`two-state`** — challenged on 2026-08-01 because the papers never say מדינה פלסטינית, which read
+  alone looked like the statehood-silence recorded for ישר. Kept then on three lines, **and resting
+  since October on the first alone** (revs 238, 248). (1) A sentence a far-left critic quotes from
+  the party's platform, against interest, names the state
+  ([zoha.org.il](https://zoha.org.il/145596/), 2026-05-22): *"בהגדרת גבולות קבע ברורים תוך
   שמירה על רוב יהודי מוצק, פירוז מלא של המדינה הפלסטינית העתידית – ללא צבא או איום טרור ובשליטה
   ביטחונית ישראלית מלאה"*. (2) The chairman states it as the party's vision: *"החזון זה שתי מדינות
   לשני עמים"*. (3) Of the top six, four campaign on it explicitly (גולן, לזימי, קריב, לסקי); רייטן
   and פינק hold domestic portfolios and state no position, which is division of labour, not dissent.
+  In October the chairman declined to name an end state (rev 238): *"`two-state` rests on the
+  platform and stays"*.
 - **`anti-annexation`** — three kinds of evidence: diplomatic (halt annexation, repeal the
   annexation laws, defund illegal outposts); fiscal, *"במקום תקציבי עתק למאחזים ולסיפוח והטבות מס
   למתנחלים, נפנה תקציבים לשינוי מציאות בצפון ובדרום"*; and military, *"נפסיק לרתק כוחות להגנה על
@@ -4517,28 +4528,32 @@ all three; none has been re-tested the way `two-state` was.
   paper's independent regulator and the culture paper's *"נוציא את הפוליטיקה מהתרבות"*.
 - **`constitutionalist`** — *"נחוקק את חוק יסוד: החקיקה... ויקבע ששינוי כללי המשחק הדמוקרטיים דורש
   רוב מיוחד"* (ynet judicial questionnaire, rev 134).
-- **`term-limits`** — the democracy paper's eight-year limit, and *"הגבלת כהונה לראש הממשלה"* in the
-  joint document the change-bloc leaders signed (rev 146).
+- **`term-limits`** — the democracy paper's eight-year limit, recorded on 2026-08-01 and not tagged
+  until the joint document the change-bloc leaders signed said *"הגבלת כהונה לראש הממשלה"*
+  (rev 146).
 - **`anti-indicted-pm`** — the democracy paper legislates *"איסור כהונה תחת כתב אישום"* for ministers
   and the prime minister; *"אפס נאשמים בממשלה"* in the questionnaire.
 
 **Service and the haredi settlement**
 
 - **`universal-conscription`** (tag and family) — *"ננהיג שירות לאומי שוויוני לכלל אזרחי ישראל"*.
-- **`anti-conscription-exemption`** — *"בלי קומבינות, בלי שטיקים ובלי חוקי השתמטות"*, and repeal of
-  the July 2026 law freezing arrests of haredi draft evaders. **Quote that commitment whole or not at
-  all:** the paper's wording, cut short, reads as *abolishing deserter arrests* — the opposite of the
-  position (rev 101).
+- **`anti-conscription-exemption`** — *"בלי קומבינות, בלי שטיקים ובלי חוקי השתמטות"*, and **נבטל את חוק
+  מעצרי עריקים ונאכוף את חוק שירות ביטחון באופן שיוויוני**. The law meant is חוק הקפאת מעצרי העריקים,
+  the July 2026 statute freezing arrests of haredi draft evaders, so the commitment is that arrests
+  resume. **Quote it whole or not at all:** cut after its first clause it reads as *abolishing
+  deserter arrests* — the opposite of the position (rev 101). The tag is not redundant beside the two
+  around it: neither says a party rejects the exemption *statutes*.
 - **`sanctions-on-non-servers`** — the tag's test is a named instrument aimed at the individual.
   Refused in rev 15, when the only text targeted institutions; granted in rev 86, when the
   conscription questionnaire named them: withdrawal of *"הטבות עודפות... מעונות יום, צהרונים
   וארנונה"* under *"המדינה תתגמל שירות ולא השתמטות"*.
 - **`arab-civil-service`** — *"נחזיר את הביטחון האישי והחוק לחברה הערבית, נשקיע בחינוך ובתעסוקה
-  וניצור מסלולי שירות משמעותיים המותאמים לצורכי הקהילות ולצורכי המדינה"* (rev 99). The tag means a
+  וניצור מסלולי שירות משמעותיים המותאמים לצורכי הקהילות ולצורכי המדינה"* (rev 99; refused three days
+  earlier, in rev 86, when the questionnaire answer named no one). The tag means a
   national-service track for Arab citizens; **it is not about civil-service employment**, and the
   name invites that wrong match.
 - **`core-curriculum`** — the education paper defunds institutions that teach neither maths, English
-  nor civics; *"נפסיק לממן רשתות חינוך שלא מלמדות לימודי ליבה"*.
+  nor civics; in the video series, *"נפסיק לממן רשתות חינוך שלא מלמדות לימודי ליבה"*.
 - **`state-haredi-education`** — *"נייבש את מערכות החינוך הפרטיות־מפלגתיות ונקים מערכת חינוך
   ממלכתית־חרדית מעולה"*.
 - **`reservist-focused`** — a costed package, which is the standard כחול לבן set in rev 13: ₪1,000 a
@@ -4553,7 +4568,8 @@ all three; none has been re-tested the way `two-state` was.
 - **`civil-marriage`** — by statute, in the religion-and-state paper; *"נחוקק חוק נישואים אזרחיים
   בלי כל מיני מעקפים"* in the video series.
 - **`kashrut-liberalization`** — *"נפרק את המונופול, המונופול של הרבנות בגיור ובכשרות"* and *"צריך
-  להשלים את רפורמת הכשרות… שוק חופשי של כשרות… אנחנו נעשה את זה ונקדם את זה"* (rev 248). The paper
+  להשלים את רפורמת הכשרות… שוק חופשי של כשרות… אנחנו נעשה את זה ונקדם את זה"* (video series, rev
+  248). The paper
   had said it since 2026-08-01 and the tag was simply never added.
 
 **Society**
@@ -4561,9 +4577,12 @@ all three; none has been re-tested the way `two-state` was.
 - **`jewish-arab-partnership`** (tag and family) — בשיר סומיה at #10; a dedicated Arab-society
   paper (crime task force, statutory master plans and *"נבטל את חוק קמיניץ"*, a five-year
   gap-closing plan, equal per-pupil funding, *"נעגן את עקרון השוויון בחוק יסוד ונתקן את חוק
-  הלאום"*); and the party's stated line that an Arab party can sit in the next government —
-  *"שותפות יהודית-ערבית כן. פסילה קטגורית לא"*, then רע"ם by name (revs 148, 206, 236), which the
-  party confirmed as its position. Its member on the Central Elections Committee voted against
+  הלאום"*); the chairman's post against disqualifying the Arab lists, which wants Arab citizens *"שותפים בהנהגת
+  המדינה"* and closes *"שותפות יהודית-ערבית כן. פסילה קטגורית לא"* (rev 130); and the stated line
+  that רע"ם can sit in the next government (revs 148, 206, 236), which the party confirmed as its
+  position. His office said that line is *"עמדת הדמוקרטים"* only and that *"הנושא לא עלה כלל
+  בפגישה"* — so the *"ציונית"* of the joint document the row signed was not an agreement to exclude
+  and did not bind it to one. Its member on the Central Elections Committee voted against
   disqualifying רע"ם. **It is held with a red line, not as blanket inclusion:** *"אין הנחות לאבו
   שחאדה ואין הנחות לבן גביר – את שניהם צריך לפסול"* — individuals yes, lists no.
 - **`protest-movement-rooted`** — רונן #7, רדמן #9, אביטל #15.
@@ -4579,12 +4598,14 @@ all three; none has been re-tested the way `two-state` was.
 - **`cost-of-living`** — step 4 of the rural paper is titled *"נוריד את יוקר המחיה"*; the economic
   paper had supported the tag since 2026-08-01 (cartels, price controls).
 - **`anti-monopoly`** — stated as market structure across the economy: *"אנחנו נפרק את הריכוזיות
-  במשק, לא בסגנון של ניר ברקת, שזה צעדי מלל"*, naming food and toiletries (rev 248). Two earlier
+  במשק, לא בסגנון של ניר ברקת, שזה צעדי מלל"*, naming food and toiletries (video series, rev 248). Two earlier
   papers were refused as evidence for it: intermediation margins are not market structure, and the
   media paper's cross-ownership limits serve press pluralism, not competition policy.
-- **`agricultural-protectionism`** — *"ננהל את מדיניות הסחר כך שתגן על הייצור המקומי"*, plus national
-  production targets and state management of the water economy. The opposite of the parties refused
-  this tag for *abolishing* tariffs and substituting subsidy (rev 23).
+- **`agricultural-protectionism`** — *"ננהל את מדיניות הסחר כך שתגן על הייצור המקומי"*. It clears two
+  of ישר's three named elements — national production targets and state management of the water
+  economy; the third, legislated *ענף אסטרטגי חיוני* status, is absent, and a national-security
+  framing stands in for it. The opposite of the parties refused this tag for *abolishing* tariffs
+  and substituting subsidy (rev 23).
 - **`municipal-devolution`** and **`communitarian-devolution`** — granted together on the ישר
   precedent that wording naming both levels earns both: a resourced transfer of powers to local
   authorities, and energy-siting decisions taken *"בשיתוף ובהסכמה עם הרשויות המקומיות והיישובים
@@ -4594,12 +4615,13 @@ all three; none has been re-tested the way `two-state` was.
 
 Each refusal names the reason, so the next pass does not reopen it on the same evidence.
 
-- **`two-faction-list`** — מרצ holds one slot in the realistic 13 (לסקי שוץ, #6). A nameplate, not a
+- **`two-faction-list`** — מרצ holds one slot in the entire 120 (לסקי שוץ, #6). A nameplate, not a
   faction; the *positions* of both predecessors merged even where the organisation did not survive,
   which is what `party_lineage` is for.
 - **`affirmative-action`** — *"ייצוג הולם"* with no target, mechanism or enforcement is weaker than
   the 50% target plus funding incentive this tag was refused to ביחד on (rev 29). Refused twice
-  (revs 36, 116).
+  (revs 36, 116). The gender paper's statutory 40% quota is carried by `gender-equality`; tagging
+  both would record one document twice (rev 62).
 - **`arab-representation`**, **`focuses-on-arab-israeli-civil-issues`** — both record what a party
   *is*, not that a Jewish-Zionist party has a policy about Arab citizens.
 - **`sectoral-budgeting`** — the tag is for coalition funds; a gap-closing five-year plan is a
@@ -4607,7 +4629,8 @@ Each refusal names the reason, so the next pass does not reopen it on the same e
   תקציבים מגזריים, נשקיע בתעסוקה ובשירותים החברתיים"* and the Arab-society paper demands a
   תוכנית חומש.
 - **`statist`** — the three holders sit at `economic` 0 or +1, where the axis would otherwise hide
-  state expansion. At −2 the axis already records it.
+  state expansion. At −2 the axis already records it. The tag is never defined in prose anywhere on
+  this page; its standard exists only in its membership.
 - **`anti-corruption`** — near-universal rhetoric (rev 21's test). **`public-service-reform`** — it
   would record the internal-security paper twice beside `governance-reform`.
 - **`workforce-integration`** — its only support was the purpose clause already used for
@@ -4618,9 +4641,10 @@ Each refusal names the reason, so the next pass does not reopen it on the same e
 - **`tax-cutting`** — one excise cut is not a tax doctrine (rev 188's reason).
 - **`aliyah-absorption`** — the tag has one holder and no written definition; adding it here would
   make it mean "a row whose aliyah page was read". Define it and apply it across rows, or retire it.
-- **No health, transport or environment tag is created**, and `periphery-development` stays retired:
-  each is the near-universal kind, and for health the discriminating difference from ביחד is already
-  carried by the economic axis.
+- **No health or environment tag is created**, and `periphery-development` stays retired: each is the
+  near-universal kind. For health the difference from ביחד is already carried by the economic axis,
+  and the dimension that would discriminate — public against private medicine — is absent from
+  both. No transport tag exists.
 
 #### Open questions and triggers
 
@@ -4629,9 +4653,14 @@ Each refusal names the reason, so the next pass does not reopen it on the same e
   documents had the chance to say and did not: the Arab-society paper never mentions service at all,
   the conscription questionnaire answered *"כלל האזרחים"* where four other parties named Arab
   citizens, and the health paper places a service track beside its Jewish-Arab sentence without
-  naming anyone. Open, and narrowing. **The tracking token `גיוס` has two known false hits** —
+  naming anyone. The conscription paper offers Arab society service tracks (`arab-civil-service`,
+  held) but does not say whether the expansion of גיוס means conscripting them: the question is
+  about conscription, not tracks. Open, and narrowing. **The tracking token `גיוס` has two known false hits** —
   recruitment of municipal staff (north–south paper) and of care staff (disability paper).
 - **The −1 trigger** above: a third document leaning on the two-state/occupation boundary.
+- **Locate the sentence `two-state` now rests on.** It is known only as a critic's quotation of the
+  platform; no paper read here contains the words מדינה פלסטינית, and this entry records no
+  first-party location for it.
 - **ערוץ 14.** A rival's petition claimed גולן said he would close it. The media paper says it must
   meet the same standards *"או שיצטרך לשלם"* — enforcement, not closure. A first-party closure
   statement would put the row on both sides of the political-control test (rev 116).
@@ -4651,33 +4680,51 @@ None is created from one row; the rule is membership decided across all rows in 
 
 - **Internal policing** — the organised-crime paper brings the שב"כ into civilian policing under a
   national state of emergency. That is the mechanism ביחד's Negev plan supplied, on an item filed
-  across הציונות הדתית, עוצמה יהודית and ביחד — here arrived at from the left (rev 62).
+  across הציונות הדתית, עוצמה יהודית and ביחד — here arrived at from the left (rev 62). On the
+  service's head: *"אנחנו נחליף ראש שב"כ, בוודאי"* in the June video series, while a clip in כאן 11's
+  montage sets him two tests — pursuing the Qatar affair and *"טרור יהודי ופלסטיני"* — and would
+  bless him if he proved *"ממלכתית נאמנה לחוק"* (rev 133). The stable part is fighting Jewish terror
+  as a test for the service's head; who heads it is on no axis.
 - **Gun control** — tighter licensing and regulated כיתות כוננות. `gun-rights` exists; its opposite
   has no name.
-- **Coalition funds** — abolish *"כספים קואליציוניים"*, ₪20bn over four years. `sectoral-budgeting`
-  sits only on rows that receive them.
+- **Coalition funds** — abolish *"כספים קואליציוניים"*, ₪20bn over four years; the reworded economic
+  paper names *"תקציבים מגזריים למקורבים ולמשתמטים"* (the anti-sectoral pole rev 157 filed).
+  `sectoral-budgeting` sits only on rows that receive them.
 - **Press, broadcasting and culture** — the media paper is the first party *programme* on this, and
   the opposite pole from the one that filed the item: *"נבטל את חוקי קרעי"*, a statutory news budget,
   one regulator appointed on an independent committee's recommendation with *"ניתוק מוחלט של הדרג
   הפוליטי מכל מה שקשור בתכנים"*. **Both poles speak the language of regulation, so the tag must be
   defined by political control over appointments and content**, not by for-or-against regulation.
-- **Coalition inclusion** — the row is the inclusive pole of the coalition-exclusion question, in the
-  party's own words.
+- **Coalition inclusion** — on Arab parties the row is the inclusive pole of the coalition-exclusion
+  question, in the party's own words. **On haredi parties it states the exclusion half outright:**
+  *"ממשלה בלי חרדים"* (rev 247, recorded under ישראל ביתנו).
 - **Law of Return** — *"נעגן את חוק השבות בחוק יסוד ונגן על זכויותיהם של נכדי יהודים מכוחו"*. No tag
   covers the Law of Return on either side.
 - **Disability** — a six-step programme; it raises the allowance where ביחד (`economic` +1) names a
   work disregard, the difference their axes predict.
 - **Planning for Arab, Druze and Bedouin localities** — repeal of the Kaminitz Law and statutory
   master plans; the row's most specific and least universal plank.
-- **Foreign relations** — leads only, in the leader's voice: *"אנחנו נחליף ראש שב"כ, בוודאי"*;
-  with Syria, *"עדיף לנו לחזור לגבול"*; with Iran, *"הסכם על הגרעין"* first.
+- **Foreign relations** — leads only, in the leader's voice: with Syria, *"עדיף לנו לחזור לגבול"*;
+  with Iran, *"הסכם על הגרעין"* first; in Gaza, a Palestinian body in the part Israel holds, with
+  international and regional forces.
 
 #### Recorded so it is not mistaken for a finding
 
-- **Two quotations rivals cite have the chairman's own gloss.** On חומש's residents, *"תתי אדם"* was
-  *"חריפה מדי"* and the right term is *"פורעים שפלים"*. On *"מדינה שפויה לא הורגת תינוקות כתחביב"*, he
-  says *"התייחסתי אך ורק לשרי הממשלה"* — so the version in which he said IDF *soldiers* kill babies is
-  contested by the speaker (כאן 11, rev 133).
+- **Two quotations rivals cite have the chairman's own gloss.** On חומש's residents (02:38), *"תתי
+  אדם"* was *"חריפה מדי"* and the right term is *"פורעים שפלים"*. On *"מדינה שפויה לא הורגת תינוקות
+  כתחביב"* (07:33–08:02), he says *"התייחסתי אך ורק לשרי הממשלה"* — so the version in which he said
+  IDF *soldiers* kill babies is contested by the speaker (כאן 11, rev 133; automatic captions, undated
+  clips, timestamps given so the audio can be checked).
+- **מכינת עלי: "close" in one clip, "defund" in the later ones, and only the later form is stable.**
+  One clip (04:41–05:10) calls for closing, *"בתהליך מסודר"*, academies that teach *"עליונות
+  יהודית"*; later ones (06:04–07:18) have such institutions lose public funding. That matches the
+  row's funding-conditionality tags. No new tag: one academy named in a broadcast is not a programme.
+- **The row's own disqualification hearing** (24.09): kept on the ballot, 14–2.
+- **Positions in the video series that no tag carries:** it opposes splitting the Attorney General's
+  role and does not address the override clause; *"נבטל את כל… חוקי ההפיכה המשטרית"* is softened
+  later to going over the list of laws before coalition talks; the National Guard is abolished; and
+  on the Nation-State Law, *"חוק הלאום, צריך לתקן אותו, לבטל אותו"* — both verbs in one breath, where
+  the paper only amends.
 - **He has dropped the word "left"; his candidates have not.** Labels are not scored.
 - ***"מה שטוב לאירופה טוב לישראל"*** titles the party's platform-regulation step. It is the name of
   the coalition's import *de*regulation; here it argues for more regulation. Not a trade position.
@@ -4687,30 +4734,42 @@ None is created from one row; the rule is membership decided across all rows in 
   השנתי"* (media) and *"8% מהכנסותיו בישראל"* (culture). Presumably the second; bears on no axis.
 - **What the series asks for in coalition talks:** internal security first, then justice, education
   and communications, and the Speaker's chair. No episode names a party the list would or would not
-  sit with.
+  sit with; the series ends three weeks before *"ממשלה בלי חרדים"* (rev 247).
 
 #### Reading this party's sources
 
 - **Enumerate from the site's public Supabase `topics` table** — the rows `yes.democrats.org.il`
-  loads client-side. It listed 25 topics on 2026-09-28, each with its PDF, and bounds the corpus the
-  way a sitemap does elsewhere. The S3 bucket itself refuses `ListObjectsV2` and no page links the
-  PDFs.
+  loads client-side. It listed 25 topics on 2026-09-28 with their PDFs (the transport topic has
+  none), and bounds the corpus the way a sitemap does elsewhere. The S3 bucket itself refuses
+  `ListObjectsV2`, and no page on `democrats.org.il` links the topic PDFs.
 - **Probe for a second edition before reading a paper** (rev 62): try `(1)` and `(2)` suffixes, with
   and without the `+` separator, and compare bytes. Five papers existed in two substantively
-  different editions, and a stem match reads as the same document. A 403 settles it.
+  different editions, and a stem match reads as the same document. A 403 settles it. The five:
+  מדיני ביטחוני, כלכלי חברתי and להטב, linked below in their `(1)`, `(2)` and `(2)` forms, whose
+  counterparts are the unsuffixed keys; and חינוך and חיסול הפשע המאורגן, linked unsuffixed, whose
+  counterparts are the `(1)` forms. **The unsuffixed מדיני ביטחוני is the three-page edition the
+  `security` argument cites.** Sizes recorded for later papers, to detect a silent revision:
+  conscription 96,656 bytes; senior citizens 99,952; media 94,520; culture 111,089; disability
+  92,270; health 113,103.
 - **Papers are revised after publication.** The 2026-09-28 audit found four changed since they were
   read (crime, education, economic, LGBT).
 - **Use `pdftotext`, not WebFetch** — the PDFs are Illustrator exports with no usable text layer for
   it. `pdftotext` reorders bulleted columns, so a sentence-level diff reports differences in
   identical text; check distinctive tokens before believing a diff.
 - **`plan-8-26-he.pdf`**, the 16-page booklet the homepage links as the platform, is a re-package of
-  eight papers with no text of its own. **`ערבית` in a bucket filename is a language**: that file is
-  the Arabic edition of the organised-crime plan, checked and found faithful to the Hebrew.
+  eight papers with no text of its own. **`ערבית` in a bucket filename is a language**: that file
+  (its key has a leading space) is the Arabic edition of the organised-crime plan, checked and found
+  faithful to the Hebrew.
+- **A heading is a poor index of which axis a document bears on:** the party's most explicit
+  anti-annexation budget line sits in a regional-development paper.
 - **Homographs:** `התיישבות` in the rural paper means kibbutzim, moshavim and border localities, on
   a row that defunds מאחזים in its other paper; `גיוס` can mean hiring.
 - **The video series was read from YouTube's automatic captions**, which have no punctuation, name
-  no speaker and garble names. Quotations were matched to the caption text by script, and the four
-  passages the two tags of rev 248 rest on were re-transcribed from the audio.
+  no speaker and garble names. The nine transcripts were read in full by three delegated readers
+  and not by the pass itself. Quotations were matched to the caption text by script, and the four
+  passages the two tags of rev 248 rest on were re-transcribed from the audio. Who says a given
+  sentence is inferred from the openings, and spelling in the quotations is restored from the
+  garbled captions.
 - **A raw `(2)` in a URL ends a Markdown link** — percent-encode it.
 
 #### Sources
@@ -4737,7 +4796,8 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   [החברה הערבית](https://www.youtube.com/watch?v=SUqfvN7Fzyg), [שיקום הצפון והעוטף](https://www.youtube.com/watch?v=bToRHzpxDzM), [ביטחון הפנים](https://www.youtube.com/watch?v=68wHhFmHYbY).
 - **Questionnaires and joint documents** (read under other entries): the ynet conscription
   questionnaire (rev 86, under ביחד), the ynet judicial questionnaire (rev 134, under ישר), the
-  change-bloc leaders' joint document (rev 146, under ישר).
+  change-bloc leaders' joint document (rev 146, under ישר), גולן's October N12 interview (rev 238,
+  under עמך ישראל), the party's campaign film (rev 247, under ישראל ביתנו).
 - **Statements that bear on a tag:** גולן on the disqualifications ([X](https://x.com/YairGolan1/status/2102673147753369962)); the party's CEC member
   ([X](https://x.com/DemocratsIL/status/2102765792412467549)); גולן on רע"ם in government ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-27/ty-article/.premium/000001a0-e100-dfbb-afa4-f350d1be0000), [N12](https://www.mako.co.il/news-politics/2026_q3/Article-9a7998a7951e0a1026.htm), and a rival's
   [cut](https://x.com/netanyahu/status/2106449672139121098) confirmed by קריב's [post](https://x.com/KarivGilad/status/2106454556645138689)); כאן 11's montage of his recorded clips
