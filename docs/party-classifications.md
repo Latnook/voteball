@@ -29,7 +29,7 @@ This file records how those decisions were applied to each party.
    by appending a dated block per pass, which is the failure this file was created to get `seed.sql`
    out of: the current answer could only be worked out by reading every block in order. Entries are
    being converted one at a time to a **current-state** format — **converted so far: הדמוקרטים** (the
-   model)**, רע"ם, כחול לבן, המפלגה הכלכלית**.
+   model)**, רע"ם, כחול לבן, המפלגה הכלכלית, ש"ס**.
 
    - **In a converted entry, edit in place; never append a dated block.** Change the sentence under
      the axis or tag that moved, citing "(rev N)". A refusal goes under *Considered and refused*, an
@@ -12749,468 +12749,380 @@ read.)
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
-**Neither this row nor יהדות התורה has a platform, and that is a finding, not a failed search.**
-`shas.org.il` is not merely blocked, it is **unreachable** — `curl` times out and WebFetch returns
-`ECONNREFUSED 185.151.196.220:443`, two independent fetchers agreeing, and the Internet Archive's
-closest snapshot to 2026 is dated **2022-11-01**, the week of the previous election. `degel.org.il`
-resets the connection; `agudatisrael.org.il`, `yahadut-hatorah.org.il` and `shasnet.co.il` do not
-resolve at all. This is the opposite of the כחול לבן case in `services/backend/CLAUDE.md`, where a
-403 was mistaken for absence: here the block was tested and there is nothing behind it. So the
-corpus for both rows is **campaign speech, rabbinic instruction, and the voting record** — and,
-uniquely on this page, the record is by far the larger half. Both rows are `record`, and were
-already.
+> **This is a current-state entry** (converted 2026-10-07; the format is described under "How to
+> revise a classification"). It says why each value holds *today* and is edited in place when
+> something moves. The pass-by-pass text it replaced is in git history, each pass has a row under
+> Change history, and "(rev N)" marks the revision a point comes from.
 
-**This entry and יהדות התורה's were one merged four-line block until revision 34, scoring both
-parties identically on every column with only `religiosity` argued.** That is precisely the collapse
-the "axis records direction, tag records motive" convention exists to prevent. No axis moved in the
-split — all four numbers turn out to be right — but each is now carried by evidence rather than by
-assertion, and the two rows no longer claim to be the same party.
+**Basis.** `family_evidence` is `record`. **Neither this row nor יהדות התורה has a platform, and that
+is a finding, not a failed search.** `shas.org.il` is **unreachable**, not merely blocked: `curl`
+times out, WebFetch returns `ECONNREFUSED 185.151.196.220:443`, and the Internet Archive's closest
+snapshot to 2026 is dated **2022-11-01**, the week of the previous election. `degel.org.il` resets
+the connection; `agudatisrael.org.il`, `yahadut-hatorah.org.il` and `shasnet.co.il` do not resolve.
+Unlike the כחול לבן case in `services/backend/CLAUDE.md`, where a 403 was mistaken for absence, the
+block was tested and there is nothing behind it. The corpus for both rows is therefore **campaign
+speech, rabbinic instruction, and the voting record**, the record by far the larger half. The two
+rows shared one four-line block until revision 34; the split moved no axis.
 
-`religiosity` **+2**: communal autonomy and state funding, plus defence of the marriage, kashrut and
-Shabbat monopolies — but **not** a programme to derive state law from halakha, which is what
-separates them from +3. The 25th Knesset supplies the first hard test this score has ever had, and
-it lands on the +2 side of the line twice. **חוק שיפוט בתי דין דתיים (בוררות), תשפ"ו-2026** —
-sponsored by MKs Moshe Gafni and Yaakov Asher (יהדות התורה) together with **Yinon Azoulay (ש"ס)**,
-passed second and third reading in the early hours of Tuesday **24 March 2026, 65–41** — lets
-rabbinical and sharia courts sit as arbitrators in defined civil matters and, under §3(a),
-**"רשאי בית הדין לדון ולפסוק בהתאם לדין הדתי שהוא דן לפיו"** — rule according to the religious law
-they apply. It reverses בג"ץ 8638/03 אמיר, restoring a practice the High Court had ended two decades
-earlier. That is a parallel jurisdiction, not a halakhic state: §2(a)(1) requires every party to sign
-an arbitration form, and the statute excludes criminal, administrative, spousal, state-party,
-most labour and disciplinary matters, and carves out substantive rights under חוק שיווי זכויות
-האישה 1951, protective labour law, disability rights and חוק החוזים האחידים. **The citizen who does
-not sign is untouched** — which is exactly the Zehut distinction at the head of that block (a subsection of
-הציונות הדתית since the 2026-09-01 merge), and it is
-why this legislating party sits at the same +2 as the party that only proposed it.
-The second test is **חוק החמץ**, an amendment to the Patient's Rights Law empowering a hospital
-director to restrict chametz on Passover, passed **48–43**: religious restriction extended into a
-state institution, with no claim on the law of the state.
+The list (CEC [list 19](https://www.gov.il/he/pages/shas_list19), supplied verbatim by the repo owner and corroborated in full by [ynet](https://www.ynet.co.il/news/elections2026/article/hkjzuqtofe),
+[כיפה](https://www.kipa.co.il/חדשות/1231238-0/) and [כיכר השבת](https://www.kikar.co.il/haredim/shas-list-knesset-26-approved-new-members); rev 61) is read at its realistic range of 10 (rev 64): דרעי #1;
+אזולאי #2, up from #7 and the outgoing faction chair; דרור עמוס #6, new; בוסו #8. Outside it:
+אלנתנוב #11, new, and מושיאשוילי #13. The מועצת חכמי התורה kept every sitting MK; מרגי and ארבל
+left voluntarily, in the council's words — *"ומקבלת את בקשתם שלא להיכלל ברשימת ש"ס לכנסת הבאה"*.
 
-`economic` **−2**: social-democratic, and this is the one row on the page where the number is
-carried by a ministry rather than a manifesto. Shas held **Welfare (Margi), Labour (Ben-Tzur),
-Interior (Arbel) and Health (Buso)** until July 2025, and its flagship social programme is the food
-voucher: **₪300m earmarked in the 2025 coalition funds, ₪277m after across-the-board cuts**, with
-the High Court moving distribution from Interior to Welfare on "professional and equal criteria" and
-striking the arnona-discount test. **The criteria the Shas-run Welfare Ministry then wrote use a
-per-capita income test *without* a מיצוי כושר השתכרות — an exhaustion-of-earning-capacity test**
-(Calcalist, 27 November 2025), which is the mechanism by which a household whose
-father learns full-time rather than works stays eligible. **That is the whole shape of this row's
-economics in one clause**: a genuinely redistributive instrument, means-tested in universal language,
-with the one test that would exclude the sector deliberately left out. The number stays −2 because
-the spending is real and the form is universal; `sectoral-budgeting` in the families and
-`mizrahi-representation` in the tags carry what the number cannot.
+#### The three axes
 
-`security` **+1** — "no Palestinian state, but explicitly refusing territorial expansion" — and this
+**`economic` −2 — social-democratic**, carried by a ministry rather than a manifesto. Shas held
+**Welfare (Margi), Labour (Ben-Tzur), Interior (Arbel) and Health (Buso)** until July 2025. Its
+flagship programme is the food voucher: **₪300m earmarked in the 2025 coalition funds, ₪277m after
+across-the-board cuts**, with the High Court moving distribution from Interior to Welfare on
+"professional and equal criteria" and striking the arnona-discount test. **The criteria the
+Shas-run Welfare Ministry then wrote use a per-capita income test *without* a מיצוי כושר השתכרות —
+an exhaustion-of-earning-capacity test** (Calcalist, 27 November 2025), so a household whose father
+learns full-time rather than works stays eligible: a genuinely redistributive instrument,
+means-tested in universal language, with the one test that would exclude the sector deliberately
+left out. The number stays −2 because the spending is real and the form is universal;
+`sectoral-budgeting` and `mizrahi-representation` carry what it cannot. It rests on what the
+ministries did, so it does not move when two of the four ministers (Welfare, Interior) leave the
+Knesset (rev 61).
+
+**`security` +1 — "no Palestinian state, but explicitly refusing territorial expansion"**, and this
 row is the reason that band exists separately from +2. Shas carries **no** `pro-settlement`,
-`sovereignty-annexation` or `hardline-on-gaza` tag and has never asked for one. The positive
-evidence is the hostage deals, which both Haredi factions **supported** while הציונות הדתית, עוצמה
-יהודית and נעם hold `opposes-hostage-deals`: Deri framed the January 2025 agreement as the mitzvah
-of **פדיון שבויים** and called it *"הישג גדול"*. **`supports-hostage-deals` was considered as a tag
-and rejected** — nearly every party outside the far right supports them, so it would discriminate
-nothing; the finding belongs in the axis, where it is what keeps this row off +2.
+`sovereignty-annexation` or `hardline-on-gaza` tag and has never asked for one. What keeps it off +2
+is the hostage deals, which both Haredi factions **supported** while הציונות הדתית, עוצמה יהודית
+and נעם hold `opposes-hostage-deals`: Deri framed the January 2025 agreement as the mitzvah of
+**פדיון שבויים** and called it *"הישג גדול"*.
 
-`bloc` **bibi — kept, and settled by the repo owner on 2026-08-30 (~99% that UTJ goes with
-Netanyahu). The evidence stays written out here anyway, because a settled cell that shows its
-working is worth more than a confident one that does not.** Against it: Shas
-resigned seven ministerial and deputy posts on 16 July 2025 over the stalled exemption law; both
-Haredi parties voted to dissolve the Knesset, and it dissolved on 17 July 2026; Rabbi Dov Lando's
-*"אין לנו אמון בו"* (~12 May 2026) has never been retracted; and Netanyahu was reduced to **asking**
-the Haredi parties to commit to a coalition under him after the election. For it: **Shas stayed in
-the coalition when it gave up the ministries**, and its stated condition is about a *law*, not a
-person — *"לא ניכנס לקואליציה ולממשלה בלי שנסדיר את מעמדם של לומדי התורה"* (Deri, campaign launch,
-Holon, 20 August 2026). No source obtained states a preference for any alternative, and ביחד
-publicly refuses them (Bennett, 9 August 2026: *"מי שבאמת רוצה לגייס חרדים... צריך להשאיר את מחוללי
-ההשתמטות, דרעי וגפני, מחוץ לממשלה"*). **A bloc value is a positive claim in the same way a `0` on an
-axis is** — `unaligned` would assert an availability nobody has stated. The question is **closed**
-in Open questions; the trigger that would reopen it is a *positive* signal (a recommendation to
-someone other than Netanyahu, or a stated willingness to sit under him not leading), never more
-distance. Note the asymmetry with יהדות התורה below: **Gafni said the sentence Deri has not.**
+**`religiosity` +2** — communal autonomy and state funding, plus defence of the marriage, kashrut
+and Shabbat monopolies, but **not** a programme to derive state law from halakha, which is what
+separates it from +3. The 25th Knesset supplied the score's first hard tests, two statutes:
 
-Six tags added, **2 → 8**. `scholar-exemption-retained` is the correction that most needed making:
-it sat on הליכוד, כחול לבן, המפלגה הכלכלית and בית ציוני — four parties that merely tolerate the
-yeshiva exemption — and on neither of the two organised around it. `rabbinic-authority-led` moves
-from a נעם singleton to its paradigm case: the reported 20 August 2026 Deri–Rabbi Yitzhak Yosef
-agreement makes **Yosef and the מועצת חכמי התורה partners in the party's political decisions**
-(Yosef did *not* receive the formal council presidency, at Deri's insistence).
-`jewish-law-parallel-jurisdiction` is earned by the arbitration law above.
-`opposes-core-curriculum` is new, the mirror of `core-curriculum`'s seven holders, and rested on
-the funding architecture rather than on rhetoric until the 2026-09-03 interview below supplied the
-rhetoric too: exempt institutions teach **55%** core and are funded
-at 55%, and the government decision of 25 December 2025 setting up a ministerial team on Haredi
-education budgets provides for introducing גפ"ן into Haredi schools **"ללא תלות בלימודי ליבה או
-מחויבות ללימודי חול"** — without dependence on core studies or any commitment to secular studies.
-Shas MK **Yosef Tayeb**, chairing the Education Committee, additionally proposed requiring a special
-committee's approval before a school could move from "recognised but unofficial" to state education,
-withdrawing it only after publication. `mizrahi-representation` is a deliberate singleton on the
-model of `negev-bedouin-representation`: `sector: haredi` is true of both rows and is exactly what
-made them look identical. `judicial-overhaul` is from the record and the arithmetic is conclusive —
-the reasonableness repeal passed **64–0 on 24 July 2023 with the opposition boycotting**, and 64 was
-the whole coalition, so all eleven Shas MKs voted for it. It is reinforced by two 2026 statutes aimed
-squarely at High Court rulings: **Basic Law: Torah Study** (House Committee 6–4 on 9 July 2026,
-plenary **63–52** on 13 July 2026, Netanyahu absent) and the law freezing arrests of Haredi draft
-evaders (**58–54**, and **frozen by a High Court interim order** before it took effect).
+- **חוק שיפוט בתי דין דתיים (בוררות), תשפ"ו-2026** — sponsored by Moshe Gafni and Yaakov Asher
+  (יהדות התורה) with **Yinon Azoulay (ש"ס)**, passed **24 March 2026, 65–41**. Rabbinical and sharia
+  courts may sit as arbitrators in defined civil matters and, under §3(a), *"רשאי בית הדין לדון
+  ולפסוק בהתאם לדין הדתי שהוא דן לפיו"*; it reverses בג"ץ 8638/03 אמיר. **A parallel jurisdiction,
+  not a halakhic state**: §2(a)(1) requires every party to sign an arbitration form, and the statute
+  excludes criminal, administrative, spousal, state-party, most labour and disciplinary matters, and
+  carves out substantive rights under חוק שיווי זכויות האישה 1951, protective labour law,
+  disability rights and חוק החוזים האחידים. **The citizen who does not sign is untouched** — the
+  Zehut distinction (now a subsection of הציונות הדתית), given as why this legislating party sits
+  at the same +2 as the party that only proposed it.
+- **חוק החמץ** — an amendment to the Patient's Rights Law empowering a hospital director to restrict
+  chametz on Passover, passed **48–43**: religious restriction extended into a state institution,
+  with no claim on the law of the state.
+Deri's September interview (under Tags) does not move it either: it is the +2 band verbatim —
+communal autonomy, sectoral funding and the yeshiva exemption — and refusing the state's inspector
+inside your own schools is the opposite of a claim on the law of the state.
 
-`judicial-restraint` added to the families, **3 → 4**, on the same record.
+**What the record does not support.** Four years of maximal leverage produced **no exemption
+statute**. It produced a Basic Law cut down to a single declarative clause, an arrest-freeze law the
+High Court froze, and an enforcement vacuum — **79,000+ conscription orders issued since the 2024
+ruling against ~2,100 enlistments, and 17 proactive arrests in the twelve months to January 2026**,
+against ~32,000 men the IDF classifies as evaders. The threats were mostly not executed: in January
+2026 Shas's spokesman said the party would not vote for the budget without **prior passage** of the
+conscription law, eleven days later Kan reported the climbdown, and the budget passed on 29 January
+2026 with Haredi consent. Deri concedes a delivery failure of his own, to the haredi-network
+teachers in the September interview: *"לא הצלחנו להביא את מה שהבטחנו לכם, למרות שהכנסנו את זה
+לתקציב"*. Where the record *is* one of delivery is money — see the
+education figures under יהדות התורה, which both parties collected jointly.
 
-**The 2026-09-03 קול ברמה interview supplies in Deri's own voice what two of this row's tags were
-carried by inference — and moves nothing.** Six independently fetched outlets on one radio interview
-(N12, i24, מעריב, כיפה, ערוץ 14, וואלה — 3 September 2026), which is the largest same-event
-corpus this row has; the axes are unchanged and `seed.sql` is untouched. What it changes is the
-basis:
+#### Bloc
 
-- **`opposes-core-curriculum` now rests on rhetoric as well as on the funding architecture**, and
-  the paragraph above saying it does not is amended rather than deleted — it was accurate when
-  written. Deri on the חינוך הממלכתי חרדי (ממ"ח) framework: *"יש רצון לסגור את הרשתות של החינוך של
-  הציבור החרדי כדי להפוך את זה לממ"ח, כדי להחטיא ולגדל פה דור של ילדים שלא שומעים לגדולי ישראל"*,
-  with the objection stated as a slippery slope about supervision rather than about money —
-  *"היום נותנים לך את מה שאתה רוצה, מחר בבוקר יבוא מפקח של משרד החינוך ולאט לאט יכתיבו לך את תוכנית
-  הלימודים, מה ילמדו, מה האידיאולוגיה"* — and to the teachers themselves, *"תהיו גיבורים, זו מלחמת
-  קודש, אתם שליחים של מר"ן"*. He also concedes the delivery failure in the same breath
-  (*"לא הצלחנו להביא את מה שהבטחנו לכם, למרות שהכנסנו את זה לתקציב"*), which belongs with the
-  promise-versus-delivery finding below rather than against it.
-- **`opposes-state-haredi-education` was considered as a new tag and refused**, even though ממ"ח is
-  the exact mirror of `state-haredi-education`'s five holders. Deri collapses the two himself in the
-  same answer — asked what changes when a Hasidic institution moves to ממ"ח with the same teachers,
-  he answers *"זה נהיה פתאום לימודי ליבה"* — so the mechanism the tag would name is the one
-  `opposes-core-curriculum` already names, and it would enter the vocabulary as a singleton. **It is
-  specifically not extended to יהדות התורה on this evidence**: Deri says *"גדולי ישראל נלחמים בכל
-  כוחם נגד הממ"ח"*, but attributing a position to the other row from this row's leader is the
+**`bibi` — kept, and settled by the repo owner on 2026-08-30 (~99% that UTJ goes with Netanyahu).**
+The evidence stays written out: a settled cell that shows its working is worth more than a confident
+one that does not.
+
+- **Against:** Shas resigned seven ministerial and deputy posts on 16 July 2025 over the stalled
+  exemption law; both Haredi parties voted to dissolve the Knesset, which dissolved on 17 July 2026;
+  Rabbi Dov Lando's *"אין לנו אמון בו"* (~12 May 2026) has never been retracted; and Netanyahu was
+  reduced to **asking** the Haredi parties to commit to a coalition under him after the election.
+- **For:** **Shas stayed in the coalition when it gave up the ministries**, and its stated condition
+  is about a *law*, not a person — *"לא ניכנס לקואליציה ולממשלה בלי שנסדיר את מעמדם של לומדי
+  התורה"* (Deri, campaign launch, Holon, 20 August 2026). No source obtained states a preference for
+  any alternative, and ביחד publicly refuses them (Bennett, 9 August 2026: *"מי שבאמת רוצה לגייס
+  חרדים... צריך להשאיר את מחוללי ההשתמטות, דרעי וגפני, מחוץ לממשלה"*).
+- **A bloc value is a positive claim in the same way a `0` on an axis is** — `unaligned` would
+  assert an availability nobody has stated. Closed in Open questions; **what reopens it is a
+  *positive* signal** (a recommendation to someone other than Netanyahu, or a stated willingness to
+  sit under him not leading), never more distance. **Gafni said the sentence Deri has not** — see
+  יהדות התורה.
+- **Exclusion by others is not a positive signal from this row.** After the September interview
+  three party leaders excluded Deri from a future government: בנט (*"אריה דרעי לא יכול לשבת בעוד
+  ממשלה אחת בישראל... לא יישב בקבינט"*), איזנקוט (*"אריה, זה נגמר. הפעם אתה תתמודד"*) and ליברמן
+  (*"מעודד ההשתמטות מספר 1 בישראל"*).
+
+#### Families
+
+`conscription-exemption`, `welfare-state`, `sectoral-budgeting`, `judicial-restraint`.
+
+`judicial-restraint` was added on the record that earns the judicial-overhaul tag.
+`sectoral-budgeting` rests on the party's own budget demands (rev 110); a Knesset law directing
+state institutions to commemorate the movement's founding rabbi is legislative record of the kind it
+names (rev 81); and it has one figure — the Ministry of Religious Services and the Jerusalem
+Municipality spent **₪4 million** on הילולה events over the past two years (rev 96).
+
+#### Tags (8) and what each rests on
+
+**Carried from the original classification and never argued here:** **`ultra-orthodox`**,
+**`religious-conservative`**.
+
+**The exemption and the schools**
+
+- **`scholar-exemption-retained`** — the tag had sat on parties that merely tolerate the yeshiva
+  exemption (הליכוד, כחול לבן, המפלגה הכלכלית, בית ציוני) and on neither of the two organised
+  around it. What separates it from `universal-conscription`, which this row has never held, is the
+  position its #2 states (rev 61): ynet describes אזולאי as arguing in the Foreign Affairs and
+  Defence Committee that alongside regularising yeshiva students *"מי שלא לומד צריך להתגייס"* —
+  conscript the non-studiers, keep the exemption for the studiers. **The chairman declines to say
+  it** (rev 167; [הארץ](https://www.haaretz.co.il/news/elections/2026-09-03/ty-article/000001a0-6613-def7-a7f7-6ef765d90000), [ynet](https://www.ynet.co.il/news/elections2026/article/rjdiiql00ml)), so what makes this
+  `scholar-exemption-retained` rather than a blanket exemption rests on the #2's words alone and is
+  recorded as contested inside the party. Asked on קול ברמה (rev 43; wording as in the six outlets
+  under Sources) whether he would call a haredi who is *not* learning to enlist, Deri answered
+  *"אני לא צריך לקרוא לזה"* and put it on the army —
+  *"הצבא שיודע להפציץ באיראן... שיתמודד. הצבא לא רוצה חיילים חרדים... הוא רוצה צבא חילוני, הוא לא
+  רוצה צבא ששומעים לרבנים שלהם"* — plus *"כל השנים זה היה אחיזת עיניים גדולה מאוד"* on the
+  integration programmes, *"אין מסלולים חרדיים אמיתיים"*, and *"אני לא בדקתי את זה"* on חטיבת
+  החשמונאים, the unit built for exactly that.
+- **`opposes-core-curriculum`** — the mirror of `core-curriculum`, resting on the funding
+  architecture and on Deri's words. Exempt institutions teach **55%** core and are funded at 55%;
+  the government decision of 25 December 2025 setting up a ministerial team on Haredi education
+  budgets provides for introducing גפ"ן into Haredi schools *"ללא תלות בלימודי ליבה או מחויבות
+  ללימודי חול"*; and Shas MK **Yosef Tayeb**, chairing the Education Committee, proposed requiring a
+  special committee's approval before a school could move from "recognised but unofficial" to state
+  education, withdrawing it only after publication. Deri on the חינוך הממלכתי חרדי (ממ"ח)
+  framework: *"יש רצון לסגור את הרשתות של החינוך של הציבור החרדי כדי להפוך את זה לממ"ח, כדי
+  להחטיא ולגדל פה דור של ילדים שלא שומעים לגדולי ישראל"*; as a slippery slope about supervision
+  rather than money, *"היום נותנים לך את מה שאתה רוצה, מחר בבוקר יבוא מפקח של משרד החינוך ולאט
+  לאט יכתיבו לך את תוכנית הלימודים, מה ילמדו, מה האידיאולוגיה"*; and to the teachers, *"תהיו
+  גיבורים, זו מלחמת קודש, אתם שליחים של מר"ן"*.
+
+**Who decides**
+
+- **`rabbinic-authority-led`** — moved from a נעם singleton to its paradigm case. The reported 20
+  August 2026 Deri–Rabbi Yitzhak Yosef agreement makes **Yosef and the מועצת חכמי התורה partners in
+  the party's political decisions** (Yosef did *not* receive the formal council presidency, at
+  Deri's insistence). Deri: *"כשהרבנים יחליטו, אחרי שיסדירו את מעמדם של לומדי התורה, הם גם
+  יחליטו"*, with the service tracks explicitly not his call. Its sharpest form is an instruction to
+  disregard a court (rev 96; [הארץ](https://www.haaretz.co.il/news/elections/2026-09-16/ty-article/.premium/000001a0-a9dd-de68-a7e0-bbdfb0790000), body supplied by the repo owner) — הרב יצחק יוסף: *"לא צריך
+  להתחשב בהם, אני קורא לקיים אלף הילולות מרן בכל רחבי הארץ"*, *"נקיים הילולות בכל עיר ובכל
+  יישוב"*. Revision 93's instance on נעם was a rosh yeshiva deciding whether a party runs; this is
+  the spiritual leader setting what the public does **after** a ruling goes against the party.
+
+**Law and the courts**
+
+- **`jewish-law-parallel-jurisdiction`** — earned by the arbitration law under `religiosity`.
+- **`judicial-overhaul`** — the reasonableness repeal passed **64–0 on 24 July 2023 with the
+  opposition boycotting**, and 64 was the whole coalition, so all eleven Shas MKs voted for it.
+  Reinforced by two 2026 statutes aimed squarely at High Court rulings: **Basic Law: Torah Study**
+  (House Committee 6–4 on 9 July 2026, plenary **63–52** on 13 July 2026, Netanyahu absent) and the
+  law freezing arrests of Haredi draft evaders (**58–54**, and **frozen by a High Court interim
+  order** before it took effect). Dated first-party corroboration (rev 81; [ynet](https://www.ynet.co.il/news/elections2026/article/rkeq1kdkge), [ערוץ 14](https://www.c14.co.il/article/1703839),
+  identical in both, which are aligned in opposite directions) is Deri on the cancelled Ovadia
+  Yosef memorial: *"ההחלטה הזו רק מחזקת את נחישותנו לתקן מן היסוד את מערכת המשפט ולהחזיר את הכוח
+  לעם ולנבחריו"*. The tag already carries hostility to the Attorney General — the reading revision
+  77 gave Ben Gvir and revision 87 gave סמוטריץ' — so הרב יצחק יוסף's weekly-shiur attacks on her,
+  two weeks before the הילולה ruling, add no tag (rev 96): *"שלא ישמעו בקולה, מי היא בכלל?"*;
+  *"מתעסקת עם מרן גדול הדורות? זה לא יעבור בשתיקה"*; *"הקדוש ברוך הוא יכלה אותה, ייתן לה את המכה
+  שלה"*; *"רשעה"*, *"משוגעת"*. התנועה לאיכות השלטון has asked for a criminal investigation for
+  *"חשש ממשי לביצוע עבירה של הסתה לאלימות"*. **Intensity is not a field.**
+
+**Identity**
+
+- **`mizrahi-representation`** — a deliberate singleton on the model of
+  `negev-bedouin-representation`: `sector: haredi` is true of both Haredi rows and is exactly what
+  made them look identical. It is evidenced by the row's substance, not by the list (rev 64): the
+  council's named community slots — אלנתנוב #11 as נציג העדה הבוכרית (he runs תלמוד תורה "בית
+  יוסף" in Holon), מושיאשוילי #13 a Georgian-Jewish name — both sit outside the realistic 10. **The
+  military slot was given a seat, the two community slots were given a place on the paper.**
+
+#### Considered and refused
+
+- **`supports-hostage-deals`** — nearly every party outside the far right supports them, so it would
+  discriminate nothing; the finding belongs in the axis.
+- **`opposes-state-haredi-education`** — refused although ממ"ח is the exact mirror of
+  `state-haredi-education`. Asked what changes when a Hasidic institution moves to ממ"ח with the
+  same teachers, Deri answers *"זה נהיה פתאום לימודי ליבה"*, so the mechanism is the one
+  `opposes-core-curriculum` already names, and the tag would be a singleton. **It is specifically
+  not extended to יהדות התורה on this evidence**: Deri says *"גדולי ישראל נלחמים בכל כוחם נגד
+  הממ"ח"*, but attributing a position to the other row from this row's leader breaks the
   classify-from-the-party's-own-sources rule stated under בית ציוני, and that row's own material
   already earns the tag independently.
-- **`rabbinic-authority-led` gets its cleanest statement**: *"כשהרבנים יחליטו, אחרי שיסדירו את
-  מעמדם של לומדי התורה, הם גם יחליטו"*, with the service tracks explicitly not his call.
-- **The conscription material goes further than `scholar-exemption-retained` and still earns no new
-  tag.** Asked whether he would call a haredi who is *not* learning to enlist, Deri answered
-  *"אני לא צריך לקרוא לזה"* and put it on the army — *"הצבא שיודע להפציץ באיראן... שיתמודד. הצבא לא
-  רוצה חיילים חרדים... הוא רוצה צבא חילוני, הוא לא רוצה צבא ששומעים לרבנים שלהם"* — plus
-  *"כל השנים זה היה אחיזת עיניים גדולה מאוד"* on the integration programmes, *"אין מסלולים חרדיים
-  אמיתיים"*, and *"אני לא בדקתי את זה"* when asked about חטיבת החשמונאים, the unit built for exactly
-  that. That is a refusal to endorse enlistment for the non-learners the scholar exemption does not
-  cover, which is broader than the tag's name — but the `conscription-exemption` **family** is
-  already the row's, and a tag splitting learners from non-learners would have this row as its only
-  holder. Recorded here instead, which is what the entry text is for.
-- **The `religiosity` +2 does not move on any of it.** Both halves are the +2 band verbatim —
-  communal autonomy, sectoral funding and the yeshiva exemption — and neither is a claim on the law
-  of the state; +3 needs a halakhic-state programme, and refusing the state's inspector inside your
-  own schools is the opposite claim.
-- **Three party leaders responded by excluding Deri from a future government and the `bloc` stays
-  `bibi` and stays closed**, for the reason already given: exclusion by others is not a positive
-  signal from this row. בנט (*"אריה דרעי לא יכול לשבת בעוד ממשלה אחת בישראל... לא יישב בקבינט"*),
-  איזנקוט (*"אריה, זה נגמר. הפעם אתה תתמודד"*) and ליברמן (*"מעודד ההשתמטות מספר 1 בישראל"*) join
-  ביחד's August refusal recorded above. The reopening trigger is unchanged and none of this is it.
+- **A tag splitting learners from non-learners** — Deri refuses to endorse enlistment for the
+  non-learners the scholar exemption does not cover, which is broader than
+  `scholar-exemption-retained`; but the `conscription-exemption` family is already the row's, and
+  this row would be the tag's only holder.
+- **`populist`** (rev 81) — *"להחזיר את הכוח לעם ולנבחריו"* is majoritarian framing, and revision
+  30's line holds: this page tags what a party advocates, not how it talks, and a frame is not an
+  instrument. The substance is already `judicial-overhaul`, as revision 57 found for *"מאבק
+  בדיפ-סטייט"*. The prior refusals were all on far-right rows; the rule applies unchanged to a
+  haredi row.
+- **A tag for defying a court** (rev 96) — the page has none, it would have one holder, and revision
+  30's line governs.
+- **A tag for the voter-identification operation** (rev 99) — **machinery, not programme.** Deri to
+  *משפחה*, on the בג"ץ ruling on voter-identity apps: *"התגברנו על ההחלטה הזו… אנחנו נדע בזמן אמת
+  מי הצביע, נתגבר על הבעיה המשפטית, בלי לעקוף את זה. מצאנו דרך"*, with *"הוריתי לעזור לכולם"* to
+  the other parties in the bloc; the method is not disclosed. Campaign operations describe how a
+  party turns out its vote, not what it wants the state to do — the line הליכוד's `unity-government`
+  refusal drew (*"strategic, not classificatory"*) and revision 52 drew for ישראל ביתנו's
+  cross-party intake. **A tag here would record which parties run a good ground game.**
+- **Any tag or number from the army slot at #6** (rev 61) — כיכר reports עמוס entered *"משבצת איש
+  הצבא"*. A haredi party seating a reserve Major in a realistic slot during an election fought over
+  the conscription law is **outreach to a constituency, not a claim about policy**, on three
+  precedents: revision 45's Druze HQ, revision 52's מטה הסרוגים and פורום יו"ש ביתנו, and revision
+  55's haredi slot on עוצמה יהודית.
+- **Scoring the חדשות 12 investigation into #6** (rev 110) — it alleges that the NGO עמוס founded,
+  *"חסד חיים ואמת"*, received millions from the Religious Services Ministry (under ש"ס) and from
+  ש"ס-linked religious councils and municipalities to support bereaved families, with more than
+  ₪2.5m going to stipends for kollel students; **ש"ס calls it *"תחקיר שקרי"***, and a complaint
+  asking the יועמ"שית to open a criminal investigation was announced. *Allegations* reported by a
+  journalist about a *candidate* are the lowest evidence tier on the page, and a candidate is not a
+  position; scoring alleged misconduct would put the page in the business of weighing
+  investigations.
 
-**What the record does not support, and it is the headline of this pass.** Four years of maximal
-leverage produced **no exemption statute**. What it produced instead: a Basic Law cut down to a
-single declarative clause; an arrest-freeze law the High Court froze; and an enforcement vacuum —
-**79,000+ conscription orders issued since the 2024 ruling against ~2,100 enlistments, and 17
-proactive arrests in the twelve months to January 2026**, against ~32,000 men the IDF classifies as
-evaders. The threats were real and mostly not executed: in January 2026 Shas's spokesman said the
-party would not vote for the budget without **prior passage** of the conscription law, and eleven
-days later Kan reported the climbdown; the budget passed on 29 January 2026 with Haredi consent.
-Where the record *is* one of delivery is money — see the education figures under יהדות התורה, which
-both parties collected jointly.
+#### Open questions and triggers
 
-**2026-09-08 — revision 61. The filed list, a rank that three outlets disagree about, and the first
-side-by-side test of `rabbinic-authority-led` against the row that shares it. No axis moved; no tag
-added.** Source: the CEC filing
-([`gov.il/he/pages/shas_list19`](https://www.gov.il/he/pages/shas_list19), list 19), supplied
-verbatim by the repo owner; corroborated in full by [ynet](https://www.ynet.co.il/news/elections2026/article/hkjzuqtofe),
-[כיפה](https://www.kipa.co.il/חדשות/1231238-0/) and [כיכר השבת](https://www.kikar.co.il/haredim/shas-list-knesset-26-approved-new-members).
+- **Bloc** — closed; the reopening trigger is under Bloc.
+- **Trigger (rev 61):** a Shas document or council statement changing the exemption itself — that,
+  not a list slot, is what would re-open `scholar-exemption-retained` and `conscription-exemption`.
+- **What ש"ס announced about the הילולה ruling** (revs 81, 96). ynet's claim that the party said the
+  court *"החליט על ביטול הכנס"* when the cancellation was the ministry's — headlined *"השקר החדש
+  של דרעי"* — is still unrecorded.
+- **The franchise-access lead in Open questions** (rev 99): Deri's statement is its second sighting,
+  now with a בג"ץ ruling and four rows on the record. Still a lead; see there for why it is not a
+  tag.
 
-- **The list is THIRTEEN, not twelve** — ~~and that is the filed length~~ **corrected 2026-09-08 by
-  revision 65, which read the filing: ש"ס filed 120 candidates.** Thirteen is what the party
-  *published* and what all three outlets reported; the CEC list runs to 120, continuing
-  אוריאל כהן #14, יעקב ישראל צדקה #15, רפאל נמני #16 and on. **A press-reported list length is the
-  party's publication, not its filing**, and the two differ by two orders of magnitude here. The
-  correction changes nothing about the reading below — the realistic range is 10, so everything that
-  matters was inside the thirteen — but "the list is N" was stated as a fact about the filing and was
-  a fact about a press release. #13 is **סימיון מושיאשוילי** (so spelled in the filing; the reports
-  say סימון), absent from the excerpt this pass was given and present in all three. The same trap as revision 52's
-  ישראל ביתנו list (*"21 is not its length"*), and it matters more here than there, because at
-  twelve the list reads as one short of Shas's current eleven-seat faction plus its two new
-  recruits — a coincidence tidy enough to stop a reader from checking.
-- **מרגי and ארבל left voluntarily, and the מועצת חכמי התורה said so in its own words.** The council's
-  decision reads: *"מביעה את הערכתה לנציגים הנאמנים הרב יעקב מרגי והרב משה ארבל … **ומקבלת את בקשתם
-  שלא להיכלל ברשימת ש"ס לכנסת הבאה**"* — it *accepts their request*. Two of the four ministers this
-  row's `economic −2` is argued from (Welfare and Interior) are leaving the Knesset. **The number does
-  not move**: the axis rests on the ministries' record and the food-voucher criteria, which are
-  facts about what the party did, not about who is still on the list — and בוסו (Health) is still
-  here at #8. Recorded as a note for the next reader, because an entry that names four ministers
-  should say when two of them stop being MKs.
-- **`rabbinic-authority-led` is on this row AND on יהדות התורה, and this election ran the tag in
-  opposite directions on the same day.** Shas's council **kept every sitting MK** and merely accepted
-  two withdrawals; UTJ's Rabbi Lando **deposed** sitting MKs גפני and מקלב (כיפה states the contrast
-  outright: *"בניגוד להחלטת מפלגת 'יהדות התורה', בה הרב לנדו החליט להדיח את הח"כים גפני ומקלב"*).
-  **The tag names who decides, not how hard they decide** — and it is worth saying, because a reader
-  seeing only the Shas half would conclude the tag is decorative here. Both councils exercised the
-  same authority; one used it to conserve and one to purge.
-- **⚠ Trigger, not a finding — יהדות התורה is mid-event and is NOT scored from a headline.** The same
-  outlets report that Gafni is leaving the Knesset while staying movement chairman
-  (*"אמשיך לכהן כיו״ר התנועה"*) and that **the hasidic factions split, leaving three parties inside
-  יהדות התורה**. That row carries `two-faction-list` and `conscription-split`, both of which a
-  three-way split would bear on directly. **Nothing is changed here**: no filed UTJ list was supplied,
-  and this page does not audit a row from a headline about it — the ישראל ביתנו "not found" pair and
-  the עוצמה יהודית slug sweep are both what happens when it does. Verify against
-  `gov.il/he/pages/<utj>_list<n>` when a list is available.
-- **`opposes-core-curriculum` and `scholar-exemption-retained` corroborated by the promotion at #2.**
-  ynet describes אזולאי — up from #7 to #2, and the outgoing faction chair — as having argued in the
-  Foreign Affairs and Defence Committee that alongside regularising yeshiva students *"מי שלא לומד
-  צריך להתגייס"*. That is this row's position stated precisely: **conscript the non-studiers, keep the
-  exemption for the studiers**, which is what separates `scholar-exemption-retained` from
-  `universal-conscription` and is exactly why this row has never held the latter.
-- **#6 דרור עמוס is a RANK DISCREPANCY, and the discrepancy is the finding.** כיכר השבת and כיפה
-  both call him **סא"ל** (Lt. Col.); ynet's body calls him **רס"ן** (Major) — *"רס"ן במילואים דרור
-  דויד עמוס, שירת בצה"ל יותר מ-25 שנה בחיל הלוגיסטיקה"* — and **ynet's own headline was corrected
-  from סא"ל to רס"ן** while this pass was running (the search index still carries the old one, the
-  live page the new). **A source that corrects itself downward is the one to follow**, so רס"ן is
-  recorded and the other two are carrying the uncorrected claim. Third rank correction on this page
-  after revision 52's captain-not-major; the pattern is that ranks are the field press gets wrong.
-- **⚠ Amended 2026-09-08 (revision 64), when the realistic range arrived: this row's cut is 10, and
-  the "named community slots" pattern SPLITS ACROSS IT.** דרור עמוס's army slot at **#6 is inside**;
-  **אלנתנוב #11 (Bukharan) and מושיאשוילי #13 (Georgian) are both outside**, on a 13-name list. So
-  the bullet below is right that the council allocates named community slots and wrong to read them
-  as one pattern with the army slot: **the military slot was given a seat, the two community slots
-  were given a place on the paper.** `mizrahi-representation` is *not* "better evidenced" by them —
-  it is evidenced by the row's substance, and these two are the cheapest form of the gesture. The
-  army slot's refusal to move a number stands regardless, and stands more comfortably now that the
-  slot it occupies is real.
-- **The two new names are both slots, and Shas named them as such.** כיכר reports עמוס entered
-  *"משבצת איש הצבא"* — the army-man slot — and **אלנתנוב #11 as נציג העדה הבוכרית**, the Bukharan
-  community's representative (he runs תלמוד תורה "בית יוסף" in Holon); מושיאשוילי at #13 is a
-  Georgian-Jewish name completing the pattern. **`mizrahi-representation` is unmoved and better
-  evidenced**: it was minted as a deliberate singleton to say what `sector: haredi` cannot, and the
-  filing shows the mechanism — **named community slots**, allocated by the council.
-- **The army slot does NOT move a number or mint a tag, on three of this page's own precedents.**
-  A haredi party seating a reserve Major in a realistic slot during an election fought over the
-  conscription law is a striking act, and it is **outreach to a constituency, not a claim about
-  policy** — revision 45's Druze HQ, revision 52's מטה הסרוגים and פורום יו"ש ביתנו, and revision 55's
-  haredi slot on עוצמה יהודית all refused exactly this inference, twice in the party's own favour and
-  once against. `scholar-exemption-retained` and `conscription-exemption` are untouched, and the #2
-  quotation above is what the party's actual position still looks like. **Trigger:** a Shas document
-  or council statement changing the exemption itself.
+#### Cross-row passes hosted here
 
-**✅ Retrieval note, revision 63 (2026-09-08) — HOW TO ACTUALLY READ A CEC LIST.** `www.gov.il`
-serves an Angular shell; the list is fetched client-side from a separate host, and both the host and
-its credential are published in the page's own JavaScript:
+- **`rabbinic-authority-led` on the two rows that hold it** (rev 61): this election ran the tag in
+  opposite directions on the same day. Shas's council kept every sitting MK; UTJ's Rabbi Lando
+  **deposed** גפני and מקלב — כיפה: *"בניגוד להחלטת מפלגת 'יהדות התורה', בה הרב לנדו החליט להדיח את
+  הח"כים גפני ומקלב"* (confirmed by the filing, rev 68). **The tag names who decides, not how hard
+  they decide**: both councils exercised the same authority, one to conserve and one to purge.
+- **The יהדות התורה trigger of rev 61** (do not score that row from a headline) **was discharged by
+  revision 68**; see יהדות התורה.
+- **An aligned outlet reproducing the party's framing is transmission, not corroboration** (rev
+  81). ערוץ 14's headline *asserts the very fact ynet says was fabricated*, in the party's own
+  words, so counting it as confirmation would launder the claim through a second byline. **Two
+  sources are two sources only when they are independent of each other and of the subject.** The
+  rule from a third angle: revision 44 refused a **rival's** characterisation of רע"ם, revision 80
+  a **contested figure** on עוצמה יהודית, and this a **friendly** outlet's account.
+- **יהדות התורה is NOT recorded on the voter-identification story** (rev 99): its dependence is
+  reported through an unnamed source — *"לא מדובר בבעיה קשה עבורנו אלא בבעיה אנושה"* — and this
+  page does not score rows from anonymous sourcing. A tag granted to ש"ס and הליכוד (its counsel
+  אילן בומבך; see the franchise-access lead in Open questions) on named statements and extended on
+  an unnamed one is the dilution the tag-discrimination rule warns about.
 
-```bash
-# 1. the page's own config names the API base and the client id — no login, no secret
-curl -s https://www.gov.il/ContentpageWebApi/client-config.js
-#    -> {"contentPageWebApi":"https://openapi-gc.digital.gov.il/pub/cio/govil/rest/contentpage/v1",
-#        "clientId":"9KFgciHHGDyNiqz5MdQS0eK2ApeJYMc6YnElUICpN1atirZc", ...}
+**Revision 167 (cross-row)** — a second research pass on rows the first could not cover; no axis or
+tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
 
-# 2. the route is in the bundle: `${contentPageWebApi}/api/content-pages/${slug}?culture=he`
-curl -s -H "x-client-id: <clientId>" -H 'Origin: https://www.gov.il' \
-  'https://openapi-gc.digital.gov.il/pub/cio/govil/rest/contentpage/v1/api/content-pages/raam_list18?culture=he'
-```
-
-The candidate list is the longest `sectionData` field, as numbered names, **with a
-`מטעם מפלגת …` attribution per slot on a joint list**. The header name matters: `x-client-id`
-returns 200, and `client-id`, `ClientId`, `apikey` and `Authorization: Bearer` all return a **500
-with a generic body** rather than a 401 — so a wrong header reads as a broken API, not as bad auth.
-`Origin: https://www.gov.il` is required; without it the same request intermittently 500s. Verified
-against רע"ם list 18, whose first twelve names the repo owner had already supplied by hand: **exact
-match, and the full list is 72 names.**
-
-**⚠ The paragraph below is the dated record of the wrong conclusion this replaces, kept because the
-way it was reached is the lesson.** The
-paragraph below is kept as the dated record of a wrong conclusion, because the way it was reached is
-the lesson: it tested the *page* URL, found a Cloudflare challenge, verified the block with a control
-slug, correctly retired revision 55's byte-count tell — and then stopped, having proved only that the
-**HTML shell** is blocked. The shell is an Angular app; the list arrives from a content API whose
-base URL and client id are published in the page's own `client-config.js`. **A rigorous negative
-about the wrong endpoint is still a wrong answer**, and this one stood in three revisions.
-
-**Retrieval note — revision 55's gov.il tell has DECAYED, and the method that replaced it still
-works.** That entry recorded the durable tell as a **constant 8,734 bytes** returned to every slug,
-real or invented. Today the three real slugs return **5,610 / 2,459 / 5,719** bytes and an invented
-control (`zzz_bogus_list99`) returns **5,647** — all different, so **the byte-count tell is dead**.
-The *control* is not: the bogus slug returns the same `Just a moment...` challenge as the real ones,
-which is what proves the block rather than a missing page. `raam_list18`'s 200 is a third mode —
-the **Angular shell** with an empty `<div id="root">`, no list in the HTML, and a retry seconds later
-returned the challenge instead. **Revision 55 wrote down the symptom where the method was the
-finding**; the general form is this repo's own rule about exercising a check against input whose
-answer you already know — here input you know should *fail*. Content on gov.il remains unreachable in
-all three modes, which is why these three lists rest on the repo owner's verbatim copy plus press.
-
-**2026-09-16 — revision 81. Deri on the Ovadia Yosef state memorial and the High Court. No axis
-moved, no tag added, no `seed.sql` change — and the two sources disagree about the central fact.**
-([ynet](https://www.ynet.co.il/news/elections2026/article/rkeq1kdkge),
-[ערוץ 14](https://www.c14.co.il/article/1703839).) The Religious Services Ministry cancelled the
-state memorial for Rabbi Ovadia Yosef (6–8 October) after the Attorney General objected to funding it
-from the state during the election period, on the ground that ש"ס would use it as campaigning. A
-Knesset law passed last year requires state institutions to mark the anniversary annually.
-
-- **The first-party quote is safe and is the only thing scored.** Deri:
-  *"ההחלטה הזו רק מחזקת את נחישותנו לתקן מן היסוד את מערכת המשפט ולהחזיר את הכוח לעם ולנבחריו"*,
-  alongside *"הלב כואב. מיליון איש צעדו אחר מיטתו של מרן רבנו עובדיה יוסף זצ"ל"*. It appears
-  **identically in both outlets**, which are aligned in opposite directions, so the quote itself is
-  not in dispute. `judicial-overhaul` is already on this row; this is dated, campaign-period,
-  first-party corroboration of it, which matters here because the row has **no platform** and its
-  declared corpus is campaign speech, rabbinic instruction and the voting record.
-- **What the court actually did is CONTESTED, and it is not recorded as fact.** ynet reports that the
-  justices issued **no ruling at all** — the event had already been cancelled, so the petition was
-  moot and the question theoretical — and that ש"ס nonetheless put out a statement saying the court
-  *"החליט על ביטול הכנס"*; its headline calls this *"השקר החדש של דרעי"*. ערוץ 14 runs
-  *"אחרי הכרעת בג"ץ"* and describes the court as having **rejected the petition**, leaving the
-  cancellation standing. Those are different events, not different emphases. Neither article links the
-  decision, and **this pass did not read the docket**; the resolution instrument exists and was not
-  used, which is stated rather than papered over.
-- **A NEW distinction, and the most useful thing in this entry: an aligned outlet reproducing the
-  party's framing is transmission, not corroboration.** The temptation is to count two outlets as two
-  sources. But ערוץ 14's headline *asserts the very fact ynet says was fabricated*, in the party's own
-  words — so treating it as independent confirmation would launder the claim through a second byline.
-  **Two sources are two sources only when they are independent of each other and of the subject.**
-  This extends the page's existing rule in a third direction: revision 44 refused to score רע"ם on a
-  **rival's** characterisation, revision 80 refused a **contested figure** on עוצמה יהודית the same
-  week, and this refuses a **friendly** outlet's account. Same rule, three angles.
-- **`populist` declined, a FIFTH time, and the first time on a row outside the far right.**
-  *"להחזיר את הכוח לעם ולנבחריו"* is majoritarian framing, and revision 30's line holds: this page
-  tags what a party advocates, not how it talks, and a frame is not an instrument. The substance —
-  curbing the court, hostility to the Attorney General — is already carried by `judicial-overhaul`,
-  exactly as revision 57 found for *"מאבק בדיפ-סטייט"*. That the four prior refusals were all on
-  far-right rows made the rule look wing-specific; applying it unchanged to a haredi row is worth
-  having on the record.
-- **Nothing new on the funding side either.** A Knesset law directing state institutions to
-  commemorate the movement's founding rabbi is first-party legislative record of exactly the kind
-  `sectoral-budgeting` already names as a family on this row, and the AG's objection is the hostility
-  `judicial-overhaul` already covers — the same reading revision 77 gave the AG framing on
-  עוצמה יהודית. No field moves.
-
-**2026-09-16 — revision 96. The הילולה ruling, reported properly — and it RESOLVES revision 81's
-contested fact in a way that vindicates refusing to score it. No axis moved, no tag added, no
-`seed.sql` change.**
-([הארץ](https://www.haaretz.co.il/news/elections/2026-09-16/ty-article/.premium/000001a0-a9dd-de68-a7e0-bbdfb0790000),
-body supplied by the repo owner.)
-
-- **Revision 81 refused to record what the court did, because ynet and ערוץ 14 described different
-  events. Both were describing parts of the same thing, and neither said so.** The petition was to
-  hold the הילולה **in an alternative format** rather than at בנייני האומה. The court **rejected it**
-  — ערוץ 14's account — and the stated reason is ynet's: **השופט עופר גרוסקופף** held that the court
-  decides *"מקרים קונקרטיים"* and that mounting an alternative event *"נתון להחלטת הרשות המבצעת"*.
-  **A dismissal for non-justiciability is simultaneously a rejection of the petition and a refusal to
-  rule on the question**, so "no ruling was issued" and "the petition was rejected" are both true of
-  it and each is misleading alone. **This is the strongest vindication the refusal rule has had**: the
-  page did not pick a side, and the answer turned out to be a distinction neither outlet drew.
-- **One half of revision 81 remains open and is NOT resolved here.** ynet's separate claim — that ש"ס
-  announced the court *"החליט על ביטול הכנס"* when the cancellation was the ministry's, headlined
-  *"השקר החדש של דרעי"* — is untouched by this report. Still unrecorded.
-- **`rabbinic-authority-led` reaches its sharpest form on this page, and it is an instruction to
-  disregard a court.** הרב יצחק יוסף: *"לא צריך להתחשב בהם, אני קורא לקיים אלף הילולות מרן בכל רחבי
-  הארץ"*, *"נקיים הילולות בכל עיר ובכל יישוב"*. Revision 93 gave this tag its purest doctrinal
-  instance on נעם (a rosh yeshiva deciding whether a party runs); this is the other kind — the
-  spiritual leader setting what the public does **after** a ruling goes against the party. No new tag:
-  the page has none for defying a court, it would have one holder, and revision 30's line still
-  governs the shape of what gets tagged.
-- **The AG attacks are the most extreme `judicial-overhaul`-adjacent material this row has produced,
-  and they are recorded without a new tag.** Two weeks earlier, in his weekly shiur:
-  *"שלא ישמעו בקולה, מי היא בכלל?"*; *"מתעסקת עם מרן גדול הדורות? זה לא יעבור בשתיקה"*;
-  *"הקדוש ברוך הוא יכלה אותה, ייתן לה את המכה שלה"*; **"רשעה"**, **"משוגעת"**. התנועה לאיכות השלטון
-  has asked for a criminal investigation for *"חשש ממשי לביצוע עבירה של הסתה לאלימות"*. `judicial-overhaul`
-  already carries hostility to the Attorney General — the same reading revision 77 gave Ben Gvir and
-  revision 87 gave סמוטריץ' — and **intensity is not a field.** Recorded because the row's evidence
-  for that tag had been a voting record and a campaign line, and this is neither.
-- **A first-party argument whose factual premise the source refutes, and the refutation is
-  checkable.** יוסף: *"מדוע את הילולת רבין לא אוסרים? הוא היה איש פוליטי. מרן היה ענק בתורה"*. הארץ
-  answers that the central Rabin memorial at כיכר רבין is **privately funded** and falls **after** the
-  election, in November, while the הילולה is **publicly funded** — which is exactly the distinction the
-  AG's guidance turned on, since it addressed the publicly funded הילולה and **not** the אזכרה at
-  סנהדריה, attended by thousands and untouched. **The page scores positions, not the arguments for
-  them**, so nothing moves; written down because a comparison that collapses on the one variable at
-  issue is the kind of claim a later pass might otherwise repeat.
-- **`sectoral-budgeting` gets a number.** The Ministry of Religious Services and the Jerusalem
-  Municipality spent **₪4 million** on הילולה events over the past two years. The ministry offered to
-  move this year's a week earlier and hold it **without ש"ס representatives**; the AG's office refused
-  and directed that it be held about a week and a half after the date of death, i.e. after the
-  election. The family tag has carried no figure until now.
-
-**2026-09-19 — revision 99. דרעי says the party has already circumvented the בג"ץ ruling on
-voter-identity apps. No axis moved, no tag added, `seed.sql` unchanged — and the refusal is
-deliberate.**
-([הארץ](https://www.haaretz.co.il/news/elections/2026-09-17/ty-article/.premium/000001a0-afc3-d5b2-a9ee-afcb7ca30000).)
-
-- **First-party and unusually concrete**, from an interview to *משפחה*: *"התגברנו על ההחלטה הזו…
-  אנחנו נדע בזמן אמת מי הצביע, נתגבר על הבעיה המשפטית, בלי לעקוף את זה. מצאנו דרך"*, with
-  *"הוריתי לעזור לכולם"* to the other parties in the bloc. The method is not disclosed.
-- **Considered as a tag and REFUSED: this is machinery, not programme.** A party's campaign
-  operations describe how it turns out its vote, not what it wants the state to do — the same line
-  הליכוד's `unity-government` refusal drew when it called candidate recruitment *"strategic, not
-  classificatory"*, and revision 52 drew for ישראל ביתנו's cross-party intake. הליכוד's counsel
-  אילן בומבך states the position most plainly and it is still about machinery:
-  *"הליכוד זו מפלגה ותיקה בעלת מאגר בוחרים גדול, ששקדה עליו הרבה מאוד שנים וברור שהיא רוצה להשתמש
-  במידע שברשותה"*, and *"מבחינת הליכוד מדובר בפיגוע. זה הורס למפלגה את הבחירות"*. **A tag here would
-  record which parties run a good ground game.**
-- **יהדות התורה is NOT recorded at all, and the reason is the evidence tier.** Its dependence is
-  reported through an unnamed source — *"לא מדובר בבעיה קשה עבורנו אלא בבעיה אנושה"* — and this page
-  does not score rows from anonymous sourcing. Noted because a tag granted to ש"ס and הליכוד on
-  named statements and extended to יהדות התורה on an unnamed one is exactly the dilution
-  the tag-discrimination rule warns about.
-- **The הילולה line is a second sighting of revision 96 and changes nothing there**: *"הלב כואב"*,
-  with the judges accused *"באטימות ובניתוק מרגשותיהם של המוני יהודים"* ([הארץ](https://www.haaretz.co.il/news/elections/noharim/2026-09-17/ty-article-magazine/000001a0-aeda-df5b-adf2-feff5f220000)).
-  `judicial-overhaul` already holds; intensity is not a field.
-- **Feeds the franchise-access lead in Open questions** — second sighting, now with a בג"ץ ruling and
-  four rows on the record. Still a lead; see there for why it is not a tag.
-
-**2026-09-22 — revision 110. A חדשות 12 investigation into candidate #6, דרור עמוס. Read; nothing is
-scored. No axis moved, no tag added, `seed.sql` unchanged.**
-([mako](https://www.mako.co.il/news-politics/2026_q3/Article-686cfe7d92ab0a1027.htm),
-*חדשות סוף השבוע*, עמרי מניב, 2026-09-19.)
-
-- **What it alleges.** The NGO עמוס founded, *"חסד חיים ואמת"*, received millions from the Religious
-  Services Ministry (under ש"ס) and from ש"ס-linked religious councils and municipalities to support
-  bereaved families after 7 October and later wars. Families and communities the reporters asked
-  said they had never heard of it, and more than ₪2.5m went to stipends for kollel students. The
-  report also describes apparent double funding and a ministry appointment made over its legal
-  adviser's conflict-of-interest objection. **ש"ס calls it *"תחקיר שקרי"*.** A complaint asking the
-  יועמ"שית to open a criminal investigation was announced.
-- **Not scored, on the page's two standing rules.** These are *allegations* reported by a journalist
-  about a *candidate* — the lowest evidence tier on the page, and a candidate is not a position. The
-  obvious fit, `sectoral-budgeting`, is **already in this row's `families`** and rests on the party's
-  own budget demands, not on alleged misuse. Scoring alleged misconduct would put the page in the
-  business of weighing investigations, which is not what it measures.
-- **It does bear on the rank discrepancy revision 61 recorded for #6.** Three outlets disagreed about עמוס's
-  rank; this report calls him a major (רס"ן במיל') from the maintenance corps. That supports
-  the "army slot" reading already recorded (a slot aimed at traditional voters) and changes nothing
-  else.
-
-**2026-09-27 — revision 167 (cross-row). A second research pass on the rows the first could not cover. No axis
-moved, no tag added, `seed.sql` unchanged.** Most of what it returned is already on this page; what is new is
-recorded here, each item at its own tier.
-
-- **ש"ס: דרעי on 3 September, and it narrows revision 61's reading.** On קול ברמה, asked about haredim who do
-  not study: *"הצבא לא רוצה חיילים חרדים, זה עושה לו כאב ראש גדול... צה"ל רוצה צבא חילוני"*, and that he
-  does not need to call on them to enlist ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-03/ty-article/000001a0-6613-def7-a7f7-6ef765d90000),
-  [ynet](https://www.ynet.co.il/news/elections2026/article/rjdiiql00ml); several outlets quote the interview directly). Revision 61 read
-  אזולאי's *"מי שלא לומד צריך להתגייס"* as the reason this row holds `scholar-exemption-retained` rather than
-  a blanket exemption. **The chairman declines to say it**, which is a first-party gap between #2 and #1 on the
-  one question that separates the two. `scholar-exemption-retained` holds; the distinction revision 61 drew
-  now rests on the #2's words alone and is recorded as contested inside the party.
 - **יהדות התורה: a reported draft agreement between דגל התורה and אגודת ישראל (8 September).** Per
   [ערוץ 7](https://www.inn.co.il/news/705881) and haredi outlets, both factions would demand a full exemption for every yeshiva
-  student with no sanctions, their MKs would take no minister, deputy-minister or committee-chair post until a
-  law settling Torah learners' status passes, and they would back no coalition bill before then unless the
-  rabbinic leadership approves. **A reported draft, not a signed or published text**, so it is not scored; if
-  signed, it is `rabbinic-authority-led` (held) in its most explicit form and a coalition condition on the row
-  that holds none. See also revision 166: this row voted **against** the death-penalty law, breaking with the
-  coalition.
-- **רע"ם: עבאס on moving crime to the שב"כ, the opposite pole of the internal-security sweep item.** At TheMarker's
-  Negev conference (14 July), per [ynet](https://www.ynet.co.il/news/article/ryynfpnbgl), he called it a *"הונאה"*, backed civilian service for
-  Arab citizens only if not run by the Defence Ministry, and called an Arab partner a condition for any government
-  investing in Arab society. The civilian-service line matches revision 48's refusal of `arab-civil-service`; the
-  שב"כ line gives the sweep item (Open questions) its first explicit **opponent**, where it had four proponents.
-  The party's 23 August conference statement ([القدس العربي](https://www.alquds.co.uk/%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D9%88%D8%AD%D8%AF%D8%A9-%D8%AA%D9%86%D8%AA%D8%AE%D8%A8-%D9%82%D8%A7%D8%A6%D9%85%D8%A9-%D9%85%D8%B1%D8%B4%D8%AD%D9%8A%D9%87%D8%A7/), a report of it) puts crime first,
-  which `focuses-on-arab-israeli-civil-issues` (held) already carries.
-- **ישראל תחילה: nothing new on its site, and its chair's roll call checks out.** The site read here in
-  revision 63 is unchanged. שרן השכל sat in this Knesset, in the coalition from 2024, so her votes against
-  opposition bills are discipline (revision 166's rule). **The one that breaks it is the one that matters**: she
-  voted **against** the July 2026 deserter-arrests law, the only New Hope MK to do so, consistent with the row's
-  `universal-conscription`.
-  Three other coalition MKs voted against it: אדלשטיין and אילוז (הליכוד; **אילוז is now on ישראל ביתנו's list**)
-  and סולומון (הציונות הדתית). With them the law would have passed 62–50; it passed 58–54.
-- **Already on this page, not repeated:** המילואימניקים והכלכלית's vote-and-stand-for-election-only-for-those-who-
-  serve plank (`service-conditioned-citizenship`, held); הליכוד declining ynet's conscription survey (revision
-  86); עבאס's civil-service line (revision 48). **The research pass's claim that hakalkalit.org has no positions
-  was refuted 0–3 by its own verifiers**, and that site is part of the merged row already read.
+  student with no sanctions, their MKs would take no minister, deputy-minister or committee-chair
+  post until a law settling Torah learners' status passes, and they would back no coalition bill
+  before then unless the rabbinic leadership approves. **A reported draft, not a signed or published
+  text**, so not scored; if signed, it is `rabbinic-authority-led` (held) in its most explicit form
+  and a coalition condition on the row that holds none. See also revision 166: this row voted
+  **against** the death-penalty law, breaking with the coalition.
+- **רע"ם: עבאס on moving crime to the שב"כ.** At TheMarker's Negev conference (14 July), per [ynet](https://www.ynet.co.il/news/article/ryynfpnbgl),
+  he called it a *"הונאה"*, backed civilian service for Arab citizens only if not run by the
+  Defence Ministry, and called an Arab partner a condition for any government investing in Arab
+  society. The civilian-service line matches revision 48's refusal of `arab-civil-service`; the
+  שב"כ line gives the internal-security sweep item (Open questions) its first explicit
+  **opponent**, where it had four proponents. The party's 23 August conference statement
+  ([القدس العربي](https://www.alquds.co.uk/%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D9%88%D8%AD%D8%AF%D8%A9-%D8%AA%D9%86%D8%AA%D8%AE%D8%A8-%D9%82%D8%A7%D8%A6%D9%85%D8%A9-%D9%85%D8%B1%D8%B4%D8%AD%D9%8A%D9%87%D8%A7/), a report of it) puts crime first, which
+  `focuses-on-arab-israeli-civil-issues` (held) already carries.
+- **ישראל תחילה: nothing new on its site** (read in revision 63, unchanged), **and its chair's roll
+  call checks out.** שרן השכל sat in this Knesset, in the coalition from 2024, so her votes against
+  opposition bills are discipline (revision 166's rule). The one that breaks it: she voted
+  **against** the July 2026 deserter-arrests law, the only New Hope MK to do so, consistent with
+  the row's `universal-conscription`. Three other coalition MKs voted against it: אדלשטיין and
+  אילוז (הליכוד; **אילוז is now on ישראל ביתנו's list**) and סולומון (הציונות הדתית). With them the
+  law would have passed 62–50; it passed 58–54.
+- **The research pass's claim that hakalkalit.org has no positions was refuted 0–3 by its own
+  verifiers**; that site is part of the merged row already read.
+
+#### Recorded so it is not mistaken for a finding
+
+- **What the court did about the הילולה** (revs 81, 96). The Religious Services Ministry cancelled
+  the state memorial for Rabbi Ovadia Yosef (6–8 October) after the Attorney General objected to
+  funding it during the election period, on the ground that ש"ס would use it as campaigning. Rev 81
+  refused to record the court's part — neither article linked the decision and the docket was not
+  read — because ynet (no ruling at all — the petition was moot) and
+  ערוץ 14 (*"אחרי הכרעת בג"ץ"*, the petition rejected) described different events. Both hold (rev
+  96): the petition was to hold the הילולה **in an alternative format** rather than at בנייני
+  האומה, and the court **rejected it** because, per השופט עופר גרוסקופף, it decides *"מקרים
+  קונקרטיים"* and an alternative event *"נתון להחלטת הרשות המבצעת"*. **A dismissal for
+  non-justiciability is simultaneously a rejection of the petition and a refusal to rule on the
+  question.** The ministry had offered to hold the event a week earlier **without ש"ס
+  representatives**; the AG's office refused and set it after the election.
+- **A first-party argument whose factual premise the source refutes** (rev 96). יוסף: *"מדוע את
+  הילולת רבין לא אוסרים? הוא היה איש פוליטי. מרן היה ענק בתורה"*. הארץ answers that the central
+  Rabin memorial at כיכר רבין is **privately funded** and falls **after** the election, while the
+  הילולה is **publicly funded** — the distinction the AG's guidance turned on, since it left the
+  אזכרה at סנהדריה untouched. **The page scores positions, not the arguments for them.**
+- **#6's rank is recorded as רס"ן (Major)** (rev 61). כיכר השבת and כיפה say **סא"ל** (Lt. Col.);
+  ynet's body says רס"ן and its headline was corrected from סא"ל to רס"ן; the חדשות 12 report also
+  says רס"ן במיל' (rev 110). **A source that corrects itself downward is the one to follow.**
+
+#### Reading this party's sources
+
+- **A press-reported list length is the party's publication, not its filing** (revs 61, 65).
+  Thirteen is what the party *published* and all three outlets reported; **ש"ס filed 120
+  candidates**, continuing אוריאל כהן #14, יעקב ישראל צדקה #15, רפאל נמני #16 and on. The same trap
+  as revision 52's ישראל ביתנו list (*"21 is not its length"*), and worse here: at the twelve names
+  first supplied (the excerpt stopped one short of #13), the list reads as one short of Shas's
+  current eleven-seat faction plus its two new recruits — a coincidence tidy enough to stop a reader
+  from checking. #13 is **סימיון מושיאשוילי** in the filing; the
+  reports say סימון.
+- **This page does not audit a row from a headline about it** (rev 61) — the ישראל ביתנו "not
+  found" pair and the עוצמה יהודית slug sweep are both what happens when it does.
+- **Ranks are the field press gets wrong** — the third rank correction on this page, after revision
+  52's captain-not-major. A search index can carry a headline the live page has already corrected.
+- **✅ Retrieval note, revision 63 — HOW TO ACTUALLY READ A CEC LIST.** `www.gov.il` serves an
+  Angular shell; the list is fetched client-side from a separate host, and both the host and its
+  credential are published in the page's own JavaScript:
+
+  ```bash
+  # 1. the page's own config names the API base and the client id — no login, no secret
+  curl -s https://www.gov.il/ContentpageWebApi/client-config.js
+  #    -> {"contentPageWebApi":"https://openapi-gc.digital.gov.il/pub/cio/govil/rest/contentpage/v1",
+  #        "clientId":"9KFgciHHGDyNiqz5MdQS0eK2ApeJYMc6YnElUICpN1atirZc", ...}
+
+  # 2. the route is in the bundle: `${contentPageWebApi}/api/content-pages/${slug}?culture=he`
+  curl -s -H "x-client-id: <clientId>" -H 'Origin: https://www.gov.il' \
+    'https://openapi-gc.digital.gov.il/pub/cio/govil/rest/contentpage/v1/api/content-pages/raam_list18?culture=he'
+  ```
+
+  The candidate list is the longest `sectionData` field, as numbered names, **with a
+  `מטעם מפלגת …` attribution per slot on a joint list**. The header name matters: `x-client-id`
+  returns 200, and `client-id`, `ClientId`, `apikey` and `Authorization: Bearer` all return a **500
+  with a generic body** rather than a 401 — so a wrong header reads as a broken API, not as bad
+  auth. `Origin: https://www.gov.il` is required; without it the same request intermittently 500s.
+  Verified against רע"ם list 18, whose first twelve names the repo owner had already supplied by
+  hand: **exact match, and the full list is 72 names.**
+- **⚠ The wrong conclusion that note replaced — that gov.il content is unreachable "in all three
+  modes" — stood in three revisions, and the way it was reached is the lesson.** It tested the
+  *page* URL, found a Cloudflare challenge, verified the block with a control slug — and stopped,
+  having proved only that the **HTML shell** is blocked. **A rigorous negative about the wrong
+  endpoint is still a wrong answer.** What it found about the shell holds:
+  revision 55's tell, a **constant 8,734 bytes** returned to every slug, has decayed — the three
+  real slugs returned **5,610 / 2,459 / 5,719** bytes and an invented control (`zzz_bogus_list99`)
+  **5,647**, so **the byte-count tell is dead**. The control is not: the bogus slug returns the same
+  `Just a moment...` challenge as the real ones, which is what proves a block rather than a missing
+  page. `raam_list18`'s 200 is a third mode — the shell with an empty `<div id="root">` and no list
+  in the HTML, and a retry seconds later returned the challenge instead. **Revision 55 wrote down
+  the symptom where the method was the finding**: exercise a check against input you know should
+  *fail*.
+
+#### Sources
+
+- **Not linked above:** the 3 September 2026 קול ברמה interview was read from six independently
+  fetched outlets — N12, i24, מעריב, כיפה, ערוץ 14, וואלה — the largest same-event corpus this row
+  has.
+- **Read, and scored nothing:** Deri on the voter-identity apps ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-17/ty-article/.premium/000001a0-afc3-d5b2-a9ee-afcb7ca30000), rev 99); a second sighting
+  of his הילולה line, the judges accused *"באטימות ובניתוק מרגשותיהם של המוני יהודים"* ([הארץ](https://www.haaretz.co.il/news/elections/noharim/2026-09-17/ty-article-magazine/000001a0-aeda-df5b-adf2-feff5f220000),
+  rev 99); the חדשות 12 investigation into #6 ([mako](https://www.mako.co.il/news-politics/2026_q3/Article-686cfe7d92ab0a1027.htm), *חדשות סוף השבוע*, עמרי מניב, 2026-09-19,
+  rev 110).
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
