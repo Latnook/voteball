@@ -29,7 +29,7 @@ This file records how those decisions were applied to each party.
    by appending a dated block per pass, which is the failure this file was created to get `seed.sql`
    out of: the current answer could only be worked out by reading every block in order. Entries are
    being converted one at a time to a **current-state** format — **converted so far: הדמוקרטים** (the
-   model)**, רע"ם, כחול לבן, המפלגה הכלכלית, ש"ס, ישראל תחילה, הציבור החרדי, נעם לישראל, יהדות התורה, ישר, ביחד, הציונות הדתית, עוצמה יהודית, המילואימניקים והכלכלית, עמך ישראל**.
+   model)**, רע"ם, כחול לבן, המפלגה הכלכלית, ש"ס, ישראל תחילה, הציבור החרדי, נעם לישראל, יהדות התורה, ישר, ביחד, הציונות הדתית, עוצמה יהודית, המילואימניקים והכלכלית, עמך ישראל, הרשימה המשותפת**.
 
    - **In a converted entry, edit in place; never append a dated block.** Change the sentence under
      the axis or tag that moved, citing "(rev N)". A refusal goes under *Considered and refused*, an
@@ -5944,7 +5944,7 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
     It is about Judea and Samaria where those are about Gaza and Iran, and the tag does not name a
     front.
   - Revision 247 first refused it as a single post by the list's #2. The tier is not new: הליכוד
-    holds the tag on a spoken line by its #4 (revision 24), עמך ישראל on its chairman's statement
+    holds the tag on a spoken line by ישראל כץ (its #4 in the primary, #6 on the certified list; revision 24), עמך ישראל on its chairman's statement
     (revision 201, which set the rule that a chairman's own statement is at least that tier), and
     פייגלין leads the faction whose tags this row carries (rev 205).
   - The merger rule does not block it. That rule refuses a tag where the two factions contradict
@@ -6795,7 +6795,7 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   the Authority, demilitarise it and arrest its men. It is the tag's founding kind of text, with no
   condition in it: עמך ישראל holds the tag on *"לא להמתין - ליזום"* (revision 201) and הציונות הדתית
   on *"אינו ממתין… אלא מקדים"* (revision 250). Tier, on revision 201's rule: a chairman's own
-  statement is at least the tier of the spoken line by a #4 that הליכוד holds it on; it is one post,
+  statement is at least the tier of the spoken line by ישראל כץ (#4 in the primary, #6 on the certified list) that הליכוד holds it on; it is one post,
   and it does not stand alone — the campaign's billboards rest on the same claim, and he says he
   demanded targeted killings before the attack (revision 244). Added against revision 250's warning
   that the tag is not rare any more: it no longer separates this row from הציונות הדתית, but it
@@ -9170,7 +9170,7 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   source): *"די להכלה, די לסבבים, הבא להורגך השכם להורגו… לפרק אותם עכשיו, לא לחכות… לא להמתין -
   ליזום"*. Striking a threat before it is used is the tag's founding text (ישראל תחילה: *"גדיעת
   איומים לפני שהם מתפתחים"*, a doctrine sentence of the same kind), and ביחד earned it on *"חמאס
-  מתעצם – אנחנו תוקפים"* (rev 179). **The tier:** הליכוד holds the tag on a spoken line by its #4,
+  מתעצם – אנחנו תוקפים"* (rev 179). **The tier:** הליכוד holds the tag on a spoken line by ישראל כץ (its #4 in the primary, #6 on the certified list),
   כץ (rev 24), and a chairman's own statement is at least that. Rev 187 had read *"ליזום"* only as
   corroborating `hardline-on-gaza`, which is about siege and supply, not timing. In the platform:
   *"יוזמה ושלילת יכולות מתמשכת"*.
@@ -9990,302 +9990,373 @@ housing-discrimination bill comes out 33–52, matching הארץ's 52–33 (revi
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
-**Formed 2026-08-20**, when חד"ש-תע"ל and בל"ד signed an agreement to run on one slate: #1 יוסף
-ג'בארין (חד"ש chair), #2 אחמד טיבי (תע"ל chair), #3 סאמי אבו שחאדה (בל"ד chair) *(he withdrew his
-candidacy on 2026-10-01 and stays chair; revision 222. He resigned from the list formally on 2026-10-02,
-and the Supreme Court cleared the list itself the same day; revision 227)*. One upcoming row
-replaces the two. Both `previous_parties` rows stay exactly as they were — the two lists genuinely
-did run separately in 2022 and that section is frozen — and `party_lineage` carries both
-predecessors into this row, the same two-into-one shape as העבודה/מרצ → הדמוקרטים.
+> **This is a current-state entry** (converted 2026-10-07; the format is described under "How to
+> revise a classification"). It says why each value holds *today* and is edited in place when
+> something moves. The pass-by-pass text it replaced is in git history, each pass has a row under
+> Change history, and "(rev N)" marks the revision a point comes from.
 
-**רע"ם is NOT in it** and keeps its own row. It said it was willing to join a technical joint list
-provided its political independence was guaranteed; the agreement was signed without it and the door
-left open. If it joins before the September list-submission deadline, this row changes again.
+**Basis.** `family_evidence` is `record`: there is no joint platform to read, so every value is
+carried from a component's text (next section). The filed list is CEC list 35
+([`gov.il/he/pages/hareshima-hameshutefet_list35`](https://www.gov.il/he/pages/hareshima-hameshutefet_list35)),
+120 names, read at its realistic range of **10** (rev 67).
 
-**All three axes are the union of the components' published positions** — not an average, and not
-the lead party's numbers carried over as a rebrand. This was the repo owner's call on 2026-08-20,
-taken over two alternatives: keeping חד"ש-תע"ל's −3 / −2 / NULL (which is what the *Renaming*
-warning above had anticipated), or NULLing the two axes where the components differ.
+- **Three parties are on the form**: *"מטעם מפלגת המפלגה הקומוניסטית הישראלית ומטעם מפלגת אלתג'מוע
+  אלווטני אלדמוקרטי ומטעם מפלגת התנועה הערבית להתחדשות"* — Maki (חד"ש's registered vehicle), בל"ד
+  and תע"ל. **67 / 34 / 19 across 120 and 5 / 3 / 2 inside the realistic 10.**
+- **As filed:** #1 יוסף ג'בארין (חד"ש chair), #2 אחמד טיבי (תע"ל chair), #3 סאמי אבו שחאדה (בל"ד
+  chair), #4 פאתן ג'טאס, #6 עופר כסיף, #8 מהא כרכבי סבאח, #10 נהאיה וישאחי.
+- **#3 has left the slate and stays בל"ד's chair**: he withdrew on 2026-10-01 (rev 222) and
+  resigned formally on 2026-10-02, by notice to the committee chair under סעיף 87 (rev 227). The
+  section (חוק הבחירות לכנסת, read on Wikisource) does not say what happens to the slots below. If
+  the names close up, the top becomes ג'בארין, טיבי, ג'טאס (חד"ש), and בל"ד's realistic slots move
+  from #3, #5, #8 to #4, #7, #10: עואודה, כרכבי סבאח, and חסן אלנסאסרה, who was #11; the ten stays
+  5 / 3 / 2. **This is the page's arithmetic on the filed list, not a published list** — at rev
+  222's re-read (method in revision 63) the filing still showed him at #3, and it was not re-read
+  for rev 227.
+- **עודה is at #110, תומא סלימאן at #111 and דב חנין at #105** — the outgoing chairman, a sitting
+  MK and the movement's veteran Jewish MK. Odeh stepped down from the חד"ש chairmanship in May
+  2026, losing the leadership contest to ג'בארין, so these are farewell placements rather than
+  demotions and no inference about a purge is available. Without the range, "Odeh is on the list"
+  reads as continuity, and the list's actual leadership is a generation the page had not looked
+  at (rev 67).
 
-- **economic −3** — unchanged from חד"ש-תע"ל. חד"ש self-defines as communist; בל"ד's −2 was
-  social-democratic, and was held apart from −3 precisely to keep the two lists distinguishable to a
-  voter choosing between them. That distinction no longer exists to preserve, and חד"ש chairs the
-  list.
-- **security −3** — up from חד"ש-תע"ל's −2, carried from בל"ד: complete withdrawal from the
-  post-1967 territories, a Palestinian state with East Jerusalem as its capital, right of return
-  under UNGA 194, dismantling the settlements, opposition to Druze conscription and to national
-  service for Arab citizens. It is already the pole of the axis.
-- **religiosity −3** — carried from בל"ד, the only component that has published on religion and
-  state at all: "complete separation of religion from the state", freedom of worship for all
-  religions, and state symbols grounded in constitutional egalitarian principles rather than
-  sectarian ones. חד"ש is **silent** on the question, not opposed — which is why its own row is NULL
-  rather than a number contradicting this one. That NULL survives on the frozen `previous_parties`
-  row and in `RELIGIOSITY_NULL_BY_DESIGN`; read the note beside it before "fixing" the apparent
-  inconsistency.
+#### The merger, the union rule, and what is carried from בל"ד (Balad)
 
-**The cost of the union rule, recorded rather than hidden: the list has published no joint
-platform.** Every number above is carried from a component's text, and security and religiosity rest
-on בל"ד's programme alone — dated 2018-09-11 and unchanged, which is what the dropped
-`program-unchanged-since-2018` tag used to record. *(Since revision 102, "unchanged" is unverified:
-בל"ד's political bureau adopted a ten-point programme in June 2026. **Read in revision 103**: it
-does not replace the 2018 text — it is ten working priorities, silent on religion and state, and on
-the conflict it says the same thing less specifically — so the axes still rest where this paragraph
-says.)* ביחד's `security` NULL is the precedent that
-argues the other way, and it was decided differently here on purpose: ביחד's components *disagree*
-on the conflict, whereas חד"ש and בל"ד differ only in degree, with direction not in dispute.
-**Revisit all three axes the moment the list publishes jointly.**
+- **Formed 2026-08-20**, when חד"ש-תע"ל and בל"ד signed an agreement to run on one slate. One
+  upcoming row replaces the two; both `previous_parties` rows stay exactly as they were, frozen at
+  their separate 2022 runs, and `party_lineage` carries both predecessors into this row, the same
+  two-into-one shape as העבודה/מרצ → הדמוקרטים.
+- **רע"ם is not in it.** It said it was willing to join a technical joint list provided its
+  political independence was guaranteed; the agreement was signed without it, and it filed
+  separately as list 18 (rev 67).
+- **The union rule: all three axes are the union of the components' published positions** — not an
+  average, and not the lead party's numbers carried over as a rebrand. The repo owner's call on
+  2026-08-20, over two alternatives: keeping חד"ש-תע"ל's −3 / −2 / NULL (what the *Renaming*
+  warning had anticipated), or NULLing the two axes where the components differ. ביחד's `security`
+  NULL (the row's value until revision 178, 2026-09-28, when its joint list answered the statehood
+  question and the row moved to +2) was the precedent that argued the other way, and it was decided
+  differently here on purpose: ביחד's components *disagree* on the conflict, whereas חד"ש and בל"ד
+  differ only in degree, with direction not in dispute. The filing confirms all three components
+  are parties to the list, so carrying axes from each describes the thing rather than averaging
+  over it (rev 67); and the rule rests on the components' texts, not on who holds slot 3 (rev 222).
+- **The cost, recorded rather than hidden: the list has published no joint platform.** It has
+  answered jointly in questionnaires (revs 86, 134 and 238, under Open questions). Security and
+  religiosity rest on בל"ד's programme alone, dated 2018-09-11. **Revisit all three axes the
+  moment the list publishes jointly.**
+- **בל"ד's ten points of June 2026 do not replace the 2018 text** (rev 103; the opinion's §33,
+  which cites the affidavit, is where rev 102 learned of them). Its **political bureau** adopted
+  them on the day of its list conference as *"نقاط أساس في العمل السياسي والجماهيري"* — working
+  priorities, not a platform. In order: (1) a democratic state of law and separation of powers,
+  equality and non-discrimination, *"بما في ذلك ضمان الحقوق الجماعية للمواطنين العرب"*; (2) cancel
+  all transfer plans and the siege on Gaza, and investigate war crimes of the October 2023 war; (3)
+  *"حل عادل للمسألة الفلسطينية على أساس قرارات الأمم المتحدة والمبادرة العربية"*; (4) eradicate
+  crime and violence in Arab society; (5) economic and social rights, unemployment and poverty,
+  centre–periphery gaps; (6) recognise the unrecognised villages and **freeze demolition orders**;
+  (7) recognise the rights of **internally displaced citizens and return them to their villages**;
+  (8) close the gap between Jewish and Arab local authorities, *"العدالة التوزيعية"* in
+  **jurisdiction areas** and budgets; (9) Arab-education reform on *"إدارة عربية ذاتية"*, teaching
+  universal values including gender equality; (10) human dignity and equality for all prisoners and
+  detainees *"دون تمييز على أساس القومية أو نوع المخالفة"*. The יועמ"שית's description — nothing
+  the courts treat as denying the Jewish state — is accurate and slightly beside the point: they
+  say nothing about the Jewish state either way.
 
-**Two tags were dropped rather than carried.** `pro-joint-list` recorded ג'בארין's goal of
-rebuilding the list — a list tagged with wanting to form itself records nothing — and
-`program-unchanged-since-2018` is a note about the age of בל"ד's evidence that would now read as a
-claim that the joint list itself has a 2018 programme. The remaining 15 tags are the union of both
-rows, deduped. `families` is likewise the union (`arab-representation`, `jewish-arab-partnership`,
-`welfare-state`), and `family_evidence` stays `record` — there is no joint platform to read.
+#### The three axes
 
-**Logo** *(replaced 2026-09-15)*: now the 2026 mark, white lettering on a solid teal tile, self-hosted
-as `/logos/joint-list-2026.png` and cropped to the wordmark. *(Since 2026-09-16, revision 98d, that tile is the DARK-theme file only, via `DARK_VARIANT_LOGOS`; light mode shows the party's teal-on-white version, `/logos/joint-list-2026-light.png`, cropped with the same proportional margins — 6/337 of the width on each side — and aspect ratio, 2.89:1 against 2.88:1.)* An opaque tile is skipped by the dark-mode
-recolour, so it shows unchanged in both themes, and `PLATE_PARTIES` is empty (the plate had framed the
-new tile in a white box). What follows is the record for the 2019 mark: pure black artwork on
-transparency, in `PLATE_PARTIES`, shown unchanged on a near-white plate in dark mode, like ש"ס. See "The logo that could not be recoloured"
-under Logos; it took three attempts and the first two were both verified clean by automation while
-still looking wrong on the actual site.
+**`economic` −3 — self-defined communist.** Unchanged from חד"ש-תע"ל: חד"ש self-defines as
+communist, and it chairs the list. בל"ד's −2 was social-democratic, held apart from −3 precisely
+to keep the two lists distinguishable to a voter choosing between them; that distinction no longer
+exists to preserve. Point 5 of the ten points is consistent with it (rev 103).
 
-**2026-09-09 — revision 67. The filing is up, and it is the page's first THREE-party list. All three
-axes unchanged; no tag added; `seed.sql` unchanged.** Source:
-[`gov.il/he/pages/hareshima-hameshutefet_list35`](https://www.gov.il/he/pages/hareshima-hameshutefet_list35),
-120 names, realistic range **10**.
+**`security` −3 — full withdrawal, right of return, dismantling settlements.** Up from חד"ש-תע"ל's
+−2, carried from בל"ד: complete withdrawal from the post-1967 territories, a Palestinian state with
+East Jerusalem as its capital, right of return under UNGA 194, dismantling the settlements,
+opposition to Druze conscription and to national service for Arab citizens. It is already the pole
+of the axis. **Held through the ten points because the new text is vaguer, not different** (rev
+103): they say *"UN resolutions and the Arab Initiative"*, and the Arab Peace Initiative contains
+1967 and East Jerusalem and a refugee solution *"agreed upon"* under 194, so the direction is the
+same and nothing is withdrawn. **A priorities list that omits a programme's detail does not retract
+it**; had it named a *different* endpoint, the axis would move.
 
-- **The three components are on the form, so this row's composition is now primary-sourced.** Filed
-  *"מטעם מפלגת המפלגה הקומוניסטית הישראלית ומטעם מפלגת אלתג'מוע אלווטני אלדמוקרטי ומטעם מפלגת התנועה
-  הערבית להתחדשות"* — Maki (חד"ש's registered vehicle), בל"ד and תע"ל. **67 / 34 / 19 across 120 and
-  5 / 3 / 2 inside the realistic 10.** The 2026-08-20 merge was recorded from an agreement report;
-  the registrar now confirms it, and **the union rule this entry adopted is vindicated in the one way
-  that was checkable** — all three components really are parties to the list, so carrying axes from
-  each is describing the thing rather than averaging over it. #1 ג'בארין, #2 טיבי, #3 אבו שחאדה are
-  exactly as recorded.
-- **`two-faction-list` still not added, and the reason is now the tag's NAME rather than its
-  substance.** On the senior-share measure (Conventions) this row sits at **50%**, level with
-  המילואימניקים והכלכלית and inside the band both holders occupy — it qualifies on every ground
-  except that it has **three** components and the tag says two. **Adding it would be false; renaming
-  it is a five-row edit** touching four existing holders. Filed to Open questions alongside the
-  `two-state`/`pro-two-state` pair, and *not* resolved on one row's filing.
-- **This row is what broke the measure's first formulation**, and that is worth keeping: revision 65
-  built it as the *junior* partner's share, which is undefined when there are two junior partners.
-  Restated as the senior partner's share it is count-agnostic and every prior judgement survives
-  unchanged. **A statistic derived from six examples of one shape held exactly until the seventh
-  shape arrived** — nineteen hours later.
-- **איימן עודה is at #110, עאידה תומא סלימאן at #111 and דב חנין at #105** — the outgoing chairman,
-  a sitting MK and the movement's veteran Jewish MK, all filed eleven times past the realistic cut.
-  Odeh **stepped down from the חד"ש chairmanship in May 2026**, losing the leadership contest to
-  ג'בארין, so these are farewell placements rather than demotions and no inference about a purge is
-  available. **The point is what the range does to the reading**: without it, "Odeh is on the list"
-  reads as continuity, and the list's actual leadership is a generation the page had not looked at.
-- **עופר כסיף at #6 is inside the range, and `jewish-arab-partnership` is now evidenced at a
-  realistic slot** rather than from the components' history — the same standard revision 44 used for
-  רע"ם's #2 and revision 36 for הדמוקרטים's #10. The tag was carried into this row as a union of its
-  predecessors' families; it now stands on the filing.
-- **Women hold 3 of the realistic 10** — פאתן ג'טאס #4, מהא כרכבי סבאח #8, נהאיה וישאחי #10 — and
-  **no tag follows**, on the כחול לבן precedent set hours earlier: a list is the party doing
-  something to itself, not a position it proposes. Recorded so the refusal is visible.
-- **Resolved: רע"ם did not join.** This entry said *"if it joins before the September
-  list-submission deadline, this row changes again"* — it filed separately as list 18 and keeps its
-  own row. The conditional is closed.
+**`religiosity` −3 — disestablishment.** Carried from בל"ד, the only component that has published
+on religion and state at all: *"complete separation of religion from the state"*, freedom of
+worship for all religions, and state symbols grounded in constitutional egalitarian principles
+rather than sectarian ones. חד"ש is **silent** on the question, not opposed — which is why its own
+row is NULL rather than a number contradicting this one. That NULL survives on the frozen
+`previous_parties` row and in `RELIGIOSITY_NULL_BY_DESIGN`; read the note beside it before "fixing"
+the apparent inconsistency. **Held on silence** (rev 103): religion and state appears nowhere in
+the ten points, and nothing has superseded the 2018 text — the same rule that keeps חד"ש at NULL
+rather than reading its silence as a position. It is the axis with the oldest evidence on the
+page's newest list. That בל"ד is scored at all is the per-party evidence test — Decision 3 of the
+religiosity design doc as amended 2026-07-21, revision 4 — not a rule that Arab parties are
+scored.
 
-**2026-09-16 — revision 94 (cross-row). An analysis column on land enforcement and the Arab vote.
-Nothing moves, and the useful half is that it contains NO first-party text at all.**
+#### Families
+
+`arab-representation`, `jewish-arab-partnership`, `welfare-state` — the union of the two
+predecessor rows' families.
+
+#### Tags (15) and what each rests on
+
+The 15 are the union of both predecessor rows' tags, deduped, less the two dropped at the merge.
+
+**Carried from the predecessor rows; not argued in this entry:** **`arab-nationalist`**,
+**`anti-privatization`**, **`progressive-taxation`**, **`affirmative-action`**; and
+**`communist`**, from חד"ש-תע"ל's row, whose matching text is חד"ש's self-definition under
+`economic`.
+
+- **`palestinian-nationalist`** — restated by the list's one-word reply (rev 203, under הליכוד).
+- **`civil-rights-focused`** — טיבי's post is read on it (rev 244, under הליכוד).
+- **`opposes-arab-conscription`** — from בל"ד's row; its matching text is under `security`. The
+  list's own questionnaire answer goes wider than the tag — no sanctions on anyone who does not
+  enlist (rev 86, under ביחד).
+- **`negev-bedouin-representation`** — from חד"ש-תע"ל's row, a deliberate singleton; why רע"ם does
+  not share it is under רע"ם's Open questions (revs 64, 69), and ש"ס's `mizrahi-representation` is
+  modelled on it (rev 64). Its own basis is not on this page: the pre-merge חד"ש-תע"ל entry (git
+  history, rev 26) rested it on that party's #4, a former MK and a Negev Bedouin, and his slot on
+  the filed list has not been read.
+- **`right-of-return`** — בל"ד's programme, UNGA 194. Point 7 of the ten points is **not** the
+  Palestinian right of return — it is Israeli citizens displaced inside the state (the
+  איקרית/בירעם class), and the tag neither gains nor loses by it (rev 103).
+- **`state-of-all-its-citizens`** and **`non-zionist`** — exactly the positions a state legal body
+  has called lawful (rev 102), recorded because a reader seeing "disqualification" beside this
+  row's tags would otherwise assume the opposite. On the petition's ground of denying the state's
+  existence as a Jewish state the יועמ"שית finds **no basis at all** (§34): אבו שחאדה's *"אנחנו
+  מאמינים שישראל צריכה להיות מדינת כל אזרחיה"* (28.6.26) restates בל"ד's doctrine, which בג"ץ has
+  examined repeatedly without finding it denies the state's core Jewish characteristics, and
+  *"השאיפה לכינונה של מדינת כל אזרחיה… אין משמעותן בהכרח שלילה של יסודותיה היהודיים"* (Zoabi,
+  quoted §31). The first tag stands though the phrase is absent from the ten points: point 1
+  describes the same thing without the words, and he used them the next day (rev 103). His
+  recognition of Jews as a national group (rev 193, quoted below) is compatible with both.
+  `non-zionist` is recorded as resting on its parties' own programmes (rev 245, under יהדות
+  התורה).
+- **`pro-two-state`** — held by both predecessor rows; בל"ד's text is under `security`.
+  **`secular-democratic-state`** — בל"ד's, the motive tag for `religiosity` −3 (civic equality;
+  Conventions, "The axis records direction; the tag records motive"). Rev 193 read the two as
+  rival solution shapes and found that אבו שחאדה's *"פתרון מדיני… לשני העמים"* names neither;
+  that reading is rev 193's (and rev 203's, under הליכוד), and it does not match the tag's
+  definition.
+- **`jewish-arab-partnership`** (tag and family) — carried in as a union of the predecessors'
+  families; since the filing it stands on עופר כסיף at #6, a realistic slot rather than the
+  components' history — the standard revision 44 used for רע"ם's #2 and revision 36 for
+  הדמוקרטים's #10 (rev 67).
+
+#### Considered and refused
+
+- **`pro-joint-list`**, dropped at the merge — it recorded ג'בארין's goal of rebuilding the list,
+  and a list tagged with wanting to form itself records nothing.
+- **`program-unchanged-since-2018`**, dropped at the merge — a note about the age of בל"ד's
+  evidence that would now read as a claim that the joint list itself has a 2018 programme.
+- **`two-faction-list`** — not added, and the reason is the tag's **name** rather than its
+  substance (rev 67). On the senior-share measure (Conventions) this row sits at **50%**, level
+  with המילואימניקים והכלכלית; it qualifies on every ground except that it has **three**
+  components and the tag says two. Adding it would be false; renaming it is a five-row edit, not
+  made on one row's filing. This row also broke the measure's first formulation: revision 65 built
+  it as the *junior* partner's share, undefined when there are two junior partners; restated as
+  the senior partner's share it is count-agnostic and every prior judgement survived.
+- **No tag for the women on the list** — 3 of the realistic 10 as filed (#4, #8, #10) — on the
+  כחול לבן precedent: a list is the party doing something to itself, not a position it proposes
+  (rev 67).
+- **`anti-settler-violence`** — the ג'אלוד statement names no measure (rev 182, under ישר).
+- **`anti-indicted-pm`** — not added (rev 245, under יהדות התורה): at the list's Hebrew campaign
+  launch ג'בארין said a law barring a criminal defendant from forming a government could pass
+  with the list's support. **Trigger:** the list's platform or a bill it signs.
+
+#### The disqualification case and אבו שחאדה's article: nothing scored
+
+- **Why nothing is scored.** A petition or a CEC vote is a claim about legal eligibility under
+  סעיף 7א, not a programme (rev 115's rule, under הליכוד; revision 99's stated reason, the
+  petitions' symmetry, has been replaced — see the correction under הליכוד). And a component
+  party's chair is closer to a party position than a #40 candidate is, and it is still an
+  individual's three-year-old article and his account of it — the candidate-is-not-a-position
+  rule, applied where the candidate is a chairman (rev 101).
+- **The opinion** ([פ"מ 8/26](https://img.haarets.co.il/bs/000001a0-c8e3-de5d-a5fa-d9fbf09d0000/b7/61/803fc88c4b229355e70a3943a9b9/ds.pdf),
+  24 pages, 22.09.26; read in full, rev 102). The petition (עוצמה יהודית and בן גביר) pleads two
+  grounds. Denial of the Jewish state fails (under Tags). Only the **armed-struggle** ground
+  survives, on one document — his article of 8 October 2023 — and hedged: the evidence *"אינה
+  תואמת את המתכונת המלאה שעד כה הוכרה בפסיקה"* (§55), the committee must *"לבחון בכובד ראש"*,
+  *"למצער לעת הזו"* (§56–58). Before the Supreme Court the יועמ"שית and the State Attorney backed
+  the disqualification (revs 193, 219), calling his later explanations *"מיתממים, חלקיים"* and
+  saying he gave *"לגיטימציה למתקפה הרצחנית של 7 באוקטובר"* (rev 222).
+- **The committee, 23.09.26** (rev 130; table under Cross-row passes): the list disqualified 18–5,
+  אבו שחאדה 31–4. **The row stayed on the ballot by the repo owner's decision of 2026-09-24**: *do
+  not remove the parties, because the Supreme Court will likely overturn the CEC's decision.* Its
+  rule: a row stays voteable until the court rules; a ruling upholding a list's disqualification
+  is when removal is considered, as a separate decision for the repo owner; a ruling or a
+  withdrawal that removes only אבו שחאדה changes the slate and not the row.
+- **The court, 01.10.26** (rev 219). Nine justices; the president, עמית, read a statement for the
+  whole panel (N12): *"קיימת תמימות דעים בין השופטים כי הדברים שנכתבו בידי המועמד סאמי אבו שחאדה
+  מכאיבים, מקוממים ומעוררים שאט נפש… מצאנו לשקף כי יש עמדות שונות, ודומה כי התוצאה המסתמנת היא
+  לאישור ההחלטה על הפסילה… על דעת כלל חברי ההרכב, אנחנו ממליצים למר אבו שחאדה לשקול אם הוא עומד על
+  התמודדותו… באופן שייתר מתן פסק דין מנומק בעניינו"*. **The recommendation is unanimous and the
+  majority is not**; N12's headline *"פה אחד"* is the recommendation. In the hearing he said
+  through his lawyer *"מעולם לא תמכתי במאבק מזוין נגד מדינת ישראל ואני מגנה את 7 באוקטובר"*, and,
+  asked by שטיין for one English article calling Hamas a terror organisation, *"לא קיים מאמר
+  כזה"*. גרוסקופף asked whether prosecution had been considered; the state's lawyer said the
+  senior forums first met the article ahead of the committee hearing.
+- **The withdrawal** (rev 222). בל"ד's leadership approved it that evening; he stays chair, *"אבו
+  שחאדה ימשיך לעמוד בראש המפלגה"*. The party says it decided only after the court said most
+  justices leaned toward upholding, so in its words the court disqualified him before any
+  judgment; that the decision *"אינה נסיגה מעמדות המפלגה ומערכיה"* (through N12); and that the
+  list will go on working *"להפלת ממשלת נתניהו ובן גביר"*, which fits the row's `opposition`. In
+  court the same day he answered ברק־ארז that he regrets the article (*"כמובן"*, N12): positions
+  and one article are different things, and the page judges neither. כאן's motive — avoiding a
+  precedent and harsher words from the bench — is its reporting, not the party's statement.
+- **The ruling, 02.10.26** (rev 227; the judgment itself was not read). The panel reversed the
+  committee on this list and on רע"ם unanimously, and on כסיף seven to two. The majority, per
+  ישראל היום: his statements do not reach the strict threshold of the case law, and no *"מסה
+  קריטית"* of evidence formed; מינץ and שטיין would have upheld, on the ground of support for
+  armed struggle against the state. Nothing is left pending on either Arab row.
+- **The base rate, and how to cite it.** The IDI's (rev 115): no candidate disqualified by the
+  committee has ever had it upheld by the Supreme Court. It is formally intact — the withdrawal
+  bought there being no judgment — and **should be cited with two notes**: a majority of this
+  panel said in open court that it would have upheld אבו שחאדה's (revs 219, 222), and two of the
+  nine would have upheld כסיף's (rev 227). ישראל היום's account of why the court preferred a
+  withdrawal, that a judgment could become a precedent used against Jewish parties later, is the
+  reporter's.
+- **⚠ The sentence the case turns on: both short versions cut it** (rev 144). The article called
+  the attack an *"אירוע היסטורי חשוב מבחינה צבאית, מדינית ואסטרטגית"*. The sentence, from the
+  opinion's §42, which quotes the whole article in Hebrew translation, closes the article's third
+  note, which is about Israeli intelligence: *"ניתן למנוע מהם לחדור למדינותינו, למפלגותינו
+  ולתנועותינו הפוליטיות – וזאת אם קיים הרצון ונתארגן באופן הנכון. יתרה מזו, אם עזה הקטנה והנצורה
+  הצליחה לעשות זאת וברמה הזו, הרי שאחרים יכולים לעשות זאת באופן יעיל ופשוט יותר"*. N12's
+  rendering, which rev 101 quoted — *"אם עזה הקטנה והנצורה הצליחה לעשות זאת… אחרים יכולים לעשות
+  זאת בצורה יותר קלה"* — keeps the conclusion and drops the paragraph, so it reads as a call to
+  repeat the attack; column 2 stops at *"וברמה הזאת"* and drops *"באופן יעיל ופשוט יותר"*. Read in
+  its paragraph, *"זאת"* is keeping
+  intelligence out, and column 1 reads it that way too (*"מתפעם מהצלחת הארגון למנוע חדירה
+  מודיעינית אליו"*): the two columns disagree only on how to judge it, which is not this page's
+  job.
+- **Column 1's two factual claims** (rev 144). That the article *"מאמץ את הטרמינולוגיה החמאסית"*:
+  the title puts *"טופאן אלאקצא"* in quotation marks, which the respondent's expert (פרופ' אסעד
+  גאנם, attached to his reply) reads as quoting the term, not adopting it; the page picks neither.
+  That it was finished late on 7 October: the article does say ביידן gave Israel *"אור ירוק...
+  לנקום בכל עמנו בעזה"*, but the hour is the writer's inference; it bears on how far the court
+  believes the affidavit, not on this row, and is not checked. The affidavit wording column 1
+  quotes matches the one revision 102 read.
+- **He disowns the silence, not the article** (rev 102, correcting rev 101's word "retraction").
+  N12's line was *"אילו הייתי מודע לממדי הזוועות בעת כתיבת המאמר, לא הייתי מפרסם אותו"*. The
+  **sworn** affidavit, quoted verbatim in the opinion, is narrower — *"היעדר התייחסות לפשעי מתקפת
+  7 באוקטובר במאמרי צורם לעין ושגוי"* and *"אילו ממדי הקטל היו נהירים לי… הייתי מגנה אותם"* — and
+  the יועמ"שית reads it as not withdrawing the article or disowning its content (§45). To the
+  committee, by Zoom (rev 130): *"לא הייתי צריך לכתוב את המאמר והייתי צריך לגנות באופן ברור"*; he
+  condemned the Hamas attack, said his intent was to *"לעבור למסלול מדיני שיובילו אותו הרשות
+  הפלסטינית ומדינות ערב"*, and after the vote pledged a *"מאבקנו העקבי והבלתי־אלים"*.
+- **A TikTok video he posted on 10 October 2023 weakens the "not yet known" account** (rev 168;
+  [כאן](https://www.kan.org.il/content/kan-news/politic/1103800/), תמר אלמוג, 28.09.26 06:38; the
+  video was not viewed and the quotes are כאן's). It repeats the article's line (*"אירוע פוליטי
+  אסטרטגי משמעותי"*), sends condolences to *"משפחות השהידים, הפצועים וכל משפחות הקורבנות החפים
+  מפשע, ובמיוחד... אנשינו בנגב"*, and does not name Hamas or mention the killings and abductions.
+  That was for the court; the report's *"גורמי משפט בכירים"* are anonymous.
+- **To הארץ's daily briefing** (rev 193;
+  [הארץ](https://www.haaretz.co.il/digital/daily/2026-09-29/ty-article/.premium/000001a0-ed4f-d259-a3b4-eddf35760000),
+  29.09.26): *"מדינותינו"* was *"ניסוח לא נכון"* — badly worded, he now says, not misread. Also
+  *"אני שייך לאומה הערבית, ומבחינת מדינה אני שייך למדינת ישראל"*, a *"פתרון מדיני"* based on
+  *"הצדק, החירות והשוויון לשני העמים"*, and *"אני מכיר בזכות של היהודים שנמצאים פה בארץ כקבוצה
+  לאומית, שיש לה זכויות קולקטיביות ואינדיווידואליות"*. The words move nothing (under Tags). He
+  declined to answer סגלוביץ' (revision 172, under הליכוד).
+- **Refused as evidence, each for a stated reason** (rev 102). The affidavit's recognition of
+  *"זכויות הקולקטיב היהודי- ישראלי"* (the opinion's §33, citing it) is a component chair's sworn
+  statement in litigation over his own candidacy, with an obvious incentive. ג'בארין's reply to
+  איזנקוט (*"כל המועמדים ברשימה שלנו… מחויבים באופן חד־משמעי לערכים של צדק, שוויון, חירות ושלום"*)
+  is a list-wide value statement specific to nothing. The 2022 post praising three Al-Aqsa Brigades
+  gunmen (§37–39) is an individual's post.
+- **List management, not the row's position.** חד"ש and תע"ל are reported to have been unaware of
+  the article and to have pressed him to retract (rev 101). Per כאן, the other parties on the list
+  promised to *"לפצות"* בל"ד if it ends up with one MK, by rotation or senior posts, and בל"ד
+  plans a turnout campaign (rev 222, on revision 172's tier; ג'בארין's attack on גולן is that
+  revision's too).
+
+#### Open questions and triggers
+
+- **The three axes**, the moment the list publishes jointly.
+- **The land-planning sweep item** (the page's Open questions) deferred a tag until *"a pass over
+  the two Arab-list rows' own platforms"*. Points 6 and 8 carry it on this side (rev 103) —
+  demolition-order freezes, recognition of unrecognised villages, and jurisdiction boundaries —
+  beside הדמוקרטים' *"נבטל את חוק קמיניץ"*. **רע"ם is still unread, and the trigger names both
+  rows**, so the tag is not minted on two holders.
+- **`two-faction-list`'s name** and the **`two-state` / `pro-two-state` pair** are filed to the
+  page's Open questions (rev 67).
+- **`religiosity` −3 rests on one sentence, given here in translation**; the band's three
+  criteria are not itemised against the text, and the funding criterion that holds ביחד at −2 has
+  not been checked. When the 2018 text is next read, quote the Hebrew and check funding.
+- **`anti-indicted-pm`'s trigger** (rev 245), under Considered and refused.
+- **Positions and refusals on this row hosted under other entries:** the conscription
+  questionnaire answer (rev 86, under ביחד; under Tags); the judicial questionnaire answer,
+  nothing to score (rev 134, under ישר); the inquiry questionnaire — statutory, with the mandate
+  widened to the occupation and the siege; no tag (rev 238, under עמך ישראל); the LGBT plenum
+  votes — split along the components, neither `lgbt-rights` nor `anti-lgbt` (rev 165, under
+  רע"ם); the one-word reply to the Likud ad (rev 203, under הליכוד; under Tags); the ג'אלוד
+  statement (rev 182, under ישר) and the campaign launch (rev 245, under יהדות התורה), both under
+  Considered and refused.
+- **Triggers and leads for other rows sit in the cross-row passes below:** ליברמן's demand to
+  outlaw בל"ד (rev 227), the 100-day plan and the Druze candidate (rev 219).
+
+#### What this row contributes to tags that do not exist yet
+
+- **Two one-holder dimensions, noted and not filed** (rev 103, on rev 94's rule that one holder
+  is not a dimension): Arab educational **self-administration** (point 9), institutional autonomy
+  which no other row's text proposes; and equal treatment of prisoners *regardless of offence*
+  (point 10), which on this page's reading includes security prisoners and had no counterpart
+  anywhere (since rev 114, under עוצמה יהודית, the page records a holder at each pole). Both
+  become candidates if a second row publishes the same thing.
+- **Coalition inclusion** (rev 101). טיבי describes *"מנעד של צעדים"* available after the election
+  even with no coalition agreement: he would back a challenger to יו"ר הכנסת אמיר אוחנה, and asked
+  whether the party would recommend a candidate for prime minister to the President, answered
+  *"לדעתי נעשה יותר מזה"*. The page has no vocabulary for coalition *inclusion* —
+  `excludes-anti-zionist-parties` and `excludes-haredi-and-arab-parties` both name refusals — so
+  this mirrors a gap already logged. And it is a hint, not a stated position: revision 30's rule
+  that a frame is not an instrument. Later sightings: rev 155 (under ישר), and ג'בארין on a
+  minority government at the campaign launch (rev 245, under יהדות התורה).
+- **Compulsory service as such** — the questionnaire answer opposes sanctions on anyone who does
+  not enlist, where `opposes-arab-conscription` is Arab-specific; a vocabulary gap, noted not
+  minted (rev 86, under ביחד).
+
+#### Cross-row passes hosted here
+
+Nothing in any of them is scored on any row. This row's part of each is in the sections above.
+
+**Rev 94 — a הארץ analysis column on land enforcement and the Arab vote**
 ([הארץ](https://www.haaretz.co.il/news/politics/2026-09-14/ty-article/.premium/000001a0-9fd9-dceb-abe2-bfd9651d0000),
-2026-09-14; body supplied by the repo owner.)
+2026-09-14; body supplied by the repo owner).
 
-- **A source type this page has not yet named: an argument about parties with nothing any party
-  said.** Every refusal this week had the shape *"the party said X, the rival said Y"* — a rival's
-  characterisation (44, 82, 87), a friendly outlet transmitting (81, 89), disputing witnesses (85), a
-  hostile reviewer quoting (90). **Here there is no X.** The column names סמוטריץ', סטרוק, בן גביר
-  and צבי סוכות and quotes not one of them; its content is the author's reading of an accumulation —
-  a settler outpost near מג'ד אל־כרום, בן גביר's publicised visits to Arab towns, סוכות's
-  *"ביקורים"* at schools in טובא זנגרייה and אום אל־פחם, attempts to disqualify Arab lists. **The
-  danger is specific**: a well-argued column about the right subjects reads like a finding, and the
-  temptation is to promote its characterisations because they are *about* parties rather than *by*
-  them. It even says so itself — *"אין הוכחה לתוכנית מסודרת"*. Nothing here is scored.
-- **The Kaminitz / land-enforcement gap gets a THIRD sighting, and this one supplies the substance
-  rather than the name.** Revision 44 queued it behind a pass over the two Arab rows; revision 85 saw
-  it from a **non-Arab** row (the northern Bedouin authority heads putting חוק קמיניץ and חוק הלאום
-  to ישר, some framed as *amendment* rather than repeal); now a column describing what the dimension
-  actually consists of — demolition orders, eviction demands and fines of hundreds of thousands of
-  shekels for building on land defined as illegal, against decades-long state delay in approving
-  master plans and expanding building areas at the pace of population growth. **Upgraded from a queued
-  debt to a named sweep candidate**, on the same reasoning revision 93 used for the pre-swearing-in
-  instrument: three independent sightings across blocs is a founding case, and the remaining work is a
-  single pass deciding membership rather than more evidence.
-- **A one-holder dimension noted and not filed: Judaization of the Negev and Galilee.** The column
-  treats *"מדיניות מוצהרת לחיזוק ההתיישבות היהודית בנגב ובגליל"* as coalition-wide. This page has it
-  as **first-party text on exactly one row** — ישראל תחילה's אדמה chapter, with 20 new settlements in
-  each, *"יצירת רצפים התיישבותיים"*, *"ביטול תוכניות היוצרות רצפים טריטוריאליים ערבים"* and
-  *"קרקע שלא אנחנו מחזיקים בה – יחזיקו בה הערבים"*. **`pro-settlement` is about the West Bank and does
-  not reach it**, and `periphery-development` was retired. One documented holder is not a dimension;
-  it becomes one if a second row publishes the same thing, and the אדמה chapter is the text to compare
-  against.
-- **Recorded as background, not as evidence.** The column's historical claim — that שומר החומות in
-  May 2021 and the mixed-city riots (לוד, עכו, יפו, רמלה, בת ים, חיפה) were the turning point in
-  Jewish public opinion rather than 7 October — is a thesis about the electorate, not about any row's
-  position, and this page does not score electorates. Its prediction that the Arab response will be
-  turnout rather than confrontation (*"לא להתעמת – להצביע"*) is likewise a forecast. **Both are
-  relevant to nothing on this page**, which is worth stating plainly rather than leaving the article
-  to look partially used.
+- **⚠ A source type: an argument about parties with nothing any party said.** It names סמוטריץ',
+  סטרוק, בן גביר and צבי סוכות and quotes not one of them; its content is the author's reading of
+  an accumulation — a settler outpost near מג'ד אל־כרום, בן גביר's publicised visits to Arab
+  towns, סוכות's *"ביקורים"* at schools in טובא זנגרייה and אום אל־פחם, attempts to disqualify
+  Arab lists — and it says itself *"אין הוכחה לתוכנית מסודרת"*. A well-argued column about the
+  right subjects reads like a finding, and the temptation is to promote its characterisations
+  because they are *about* parties rather than *by* them. The refusals before it all had a party's
+  words somewhere: a rival's characterisation (revisions 44, 82, 87), a friendly outlet
+  transmitting (81, 89), disputing witnesses (85), a hostile reviewer quoting (90).
+- **The Kaminitz / land-enforcement gap: a third sighting, supplying the substance.** Revision 44
+  queued it behind a pass over the two Arab rows; revision 85 saw it from a **non-Arab** row (the
+  northern Bedouin authority heads putting חוק קמיניץ and חוק הלאום to ישר, some framed as
+  *amendment* rather than repeal). The dimension: demolition orders, eviction demands and fines of
+  hundreds of thousands of shekels for building on land defined as illegal, against decades-long
+  state delay in approving master plans and expanding building areas at the pace of population
+  growth. **Upgraded from a queued debt to a named sweep candidate**, on revision 93's reasoning:
+  three independent sightings across blocs is a founding case, and what remains is a single pass
+  deciding membership.
+- **Judaization of the Negev and Galilee: one holder, noted and not filed.** The column treats
+  *"מדיניות מוצהרת לחיזוק ההתיישבות היהודית בנגב ובגליל"* as coalition-wide. The page has it as
+  first-party text on exactly one row — the אדמה pillar of הציונות הדתית's *מייהדים את הנגב והגליל*
+  page (revs 31 and 33, under הציונות הדתית; rev 94 wrote "ישראל תחילה's אדמה chapter", which was
+  wrong) — with 20 new settlements in each, *"יצירת רצפים התיישבותיים"*, *"ביטול תוכניות היוצרות
+  רצפים טריטוריאליים ערבים"* and *"קרקע שלא אנחנו מחזיקים בה – יחזיקו בה הערבים"*. `pro-settlement`
+  is about the West Bank and does not reach it, and `periphery-development` was retired. It becomes
+  a dimension if a second row publishes the same thing; that page is the text to compare against.
+- **Background, not evidence.** That שומר החומות in May 2021 and the mixed-city riots (לוד, עכו,
+  יפו, רמלה, בת ים, חיפה), rather than 7 October, turned Jewish public opinion is a thesis about
+  the electorate, and this page does not score electorates; that the Arab response will be turnout
+  rather than confrontation (*"לא להתעמת – להצביע"*) is a forecast.
 
-**2026-09-20 — revision 101. טיבי sets out what the Arab parties would do with a parliamentary
-majority; אבו שחאדה retracts a 2023 article. No axis moved, no tag added, `seed.sql` unchanged.**
-([N12, "פגוש את העיתונות"](https://www.mako.co.il/news-israel-elections/2026/Article-1c40e7c140ab0a1027.htm), 19.09.26, and [N12](https://www.mako.co.il/news-israel-elections/2026/Article-0104778830bb0a1026.htm), 19.09.26.)
-
-- **A first-party statement on post-election posture, recorded in prose and not minted.** יו"ר
-  חד"ש-תע"ל אחמד טיבי describes *"מנעד של צעדים"* available immediately after the election even with
-  no coalition agreement: he would back a challenger to יו"ר הכנסת אמיר אוחנה, and asked whether the
-  party would recommend a candidate for prime minister to the President, answered **"לדעתי נעשה יותר
-  מזה"**. **The page has no vocabulary for coalition INCLUSION** — `excludes-anti-zionist-parties`
-  and `excludes-haredi-and-arab-parties` both name refusals, and nothing names a willingness — so
-  this is the mirror of a gap already logged rather than a new one. **"נעשה יותר מזה" is a hint, not
-  a stated position**, which is the other reason nothing is recorded: revision 30's rule that a frame
-  is not an instrument.
-- **סאמי אבו שחאדה's retraction scores nothing, and the tier is worth stating because he is not an
-  ordinary candidate.** The בל"ד chair, whose party is a component of this row, wrote on 8 October
-  2023 that the attack was *"אירוע היסטורי חשוב מבחינה צבאית, מדינית ואסטרטגית"* and that
-  *"אם עזה הקטנה והנצורה הצליחה לעשות זאת… אחרים יכולים לעשות זאת בצורה יותר קלה"* *(N12's rendering,
-  cut from its paragraph, which is about intelligence penetration; the full sentence is in revision 144)*. He now says
-  *"אילו הייתי מודע לממדי הזוועות בעת כתיבת המאמר, לא הייתי מפרסם אותו"*. **A component party's
-  chair is closer to a party position than a #40 candidate is, and it is still an individual's
-  three-year-old article and his retraction of it** — the candidate-is-not-a-position rule, applied
-  where the candidate is a chairman. **Corrected 2026-09-22 (revision 102): "retraction" overstates
-  it** — the sworn affidavit disowns the article's *silence* on the massacre, not the article; see
-  revision 102 below. The article is central to a petition to disqualify his
-  candidacy, and **this page does not score disqualification petitions** (revision 99, on their
-  symmetry).
-- **The internal pressure is likewise not this row's position.** חד"ש and תע"ל are reported to have
-  been unaware of the article and to be pressing him to retract, with their legal advisers concerned
-  it grounds disqualification. **That is reporting about a list's internal management**, the same
-  tier as the ביחד/יש עתיד filing questions, and it bears on none of this row's fifteen tags.
-
-**2026-09-22 — revision 102. The יועמ"שית's opinion on the petition against אבו שחאדה, read in full
-rather than through its headline. No axis moved, no tag added, `seed.sql` unchanged — and the
-document corrects two things this page said, one of them two days ago.**
-([הארץ](https://www.haaretz.co.il/news/elections/2026-09-22/ty-article/.premium/000001a0-c86a-da03-ade3-dc6e454a0000), body supplied by the repo owner, and the opinion itself,
-[פ"מ 8/26](https://img.haarets.co.il/bs/000001a0-c8e3-de5d-a5fa-d9fbf09d0000/b7/61/803fc88c4b229355e70a3943a9b9/ds.pdf), 24 pages, 22.09.26.)
-
-- **The opinion is narrower than the article's lead, and the narrow part is what matters here.**
-  The petition (עוצמה יהודית and בן גביר) pleads **two** grounds. On **שלילת קיומה של המדינה כמדינה
-  יהודית** the יועמ"שית finds **no basis at all** (§34): Abu Shehadeh's *"אנחנו מאמינים שישראל צריכה
-  להיות מדינת כל אזרחיה"* (28.6.26) restates בל"ד's doctrine, which בג"ץ has examined repeatedly
-  without finding it denies the state's core Jewish characteristics, and *"השאיפה לכינונה של מדינת כל
-  אזרחיה… אין משמעותן בהכרח שלילה של יסודותיה היהודיים"* (Zoabi, quoted §31). Only the **armed-struggle**
-  ground survives, on one document — the 8 October 2023 article — and even that is hedged: the
-  evidence *"אינה תואמת את המתכונת המלאה שעד כה הוכרה בפסיקה"* (§55), the committee must *"לבחון
-  בכובד ראש"*, *"למצער לעת הזו"* (§56–58). **So `state-of-all-its-citizens` and `non-zionist`, which
-  this row holds, are exactly the positions a state legal body has just called lawful** — recorded
-  because a reader seeing "disqualification" beside this row's tags would otherwise assume the
-  opposite.
-- **Correction to revision 101: "retraction" overstated it.** Revision 101 quoted the N12 line
-  *"אילו הייתי מודע לממדי הזוועות… לא הייתי מפרסם אותו"*. The **sworn** affidavit, quoted verbatim
-  in the opinion, says something narrower — *"היעדר התייחסות לפשעי מתקפת 7 באוקטובר במאמרי צורם לעין
-  ושגוי"* and *"אילו ממדי הקטל היו נהירים לי… הייתי מגנה אותם"* — and the יועמ"שית reads it as not
-  withdrawing the article or disowning its content (§45). **He disowns the silence, not the
-  article.** Nothing was scored on either, so no value moves; the word in revision 101 was wrong and
-  carries an inline correction pointing here, the convention revision 101 itself used.
-- **A document this page says does not exist.** The affidavit (§33) cites **ten points adopted by
-  בל"ד's political bureau in June 2026** under Abu Shehadeh to guide the faction's parliamentary work.
-  This entry's union paragraph above rests security and religiosity on *"בל"ד's programme alone —
-  dated 2018-09-11 and unchanged"*. **"Unchanged" is now unverified rather than known**: a newer
-  first-party text exists and has not been read. The יועמ"שית's only characterisation is that it
-  contains nothing the courts treat as denying the Jewish state — which bears on legality, not on
-  where it sits on `security`. **Queued as the document to fetch before this row's axes are next
-  touched**; until then the 2018 text remains the only one in hand, and the axes stay. *(Fetched the
-  same day — revision 103.)*
-- **Refused, each for a stated reason.** The affidavit's recognition of *"זכויות הקולקטיב היהודי-
-  ישראלי"* (§33) is a component chair's sworn statement in litigation over his own candidacy — the
-  revision 101 tier, with the added weight of an obvious incentive, and no tag turns on it. ג'בארין's
-  reply to איזנקוט (*"כל המועמדים ברשימה שלנו… מחויבים באופן חד־משמעי לערכים של צדק, שוויון, חירות
-  ושלום"*) is a list-wide value statement specific to nothing. The 2022 post praising three
-  Al-Aqsa Brigades gunmen (§37–39) is an individual's post. **The disqualification petitions
-  themselves still score nothing**, but revision 99's stated reason has been replaced — see the
-  correction under הליכוד.
-
-**2026-09-22 — revision 103. בל"ד's ten points, read in the original. No axis moved, no tag added,
-`seed.sql` unchanged — and the land-planning sweep item gets its first Arab-list answer.**
-([ערב 48](https://www.arab48.com/%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9/2026/09/16/%D8%A7%D9%84%D8%AA%D8%AC%D9%85%D8%B9-%D9%8A%D9%82%D8%B1-10-%D9%86%D9%82%D8%A7%D8%B7-%D8%A3%D8%B3%D8%A7%D8%B3-%D9%81%D9%8A-%D8%A7%D9%84%D8%B9%D9%85%D9%84-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A-%D9%88%D8%A7%D9%84%D8%AC%D9%85%D8%A7%D9%87%D9%8A%D8%B1%D9%8A-%D9%81%D9%8A-%D8%A5%D8%B7%D8%A7%D8%B1-%D8%B7%D8%B1%D8%AD%D9%87-%D8%A7%D9%84%D8%AD%D8%B2%D8%A8%D9%8A-%D9%88%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A), *"التجمع يقر 10 نقاط أساس في العمل السياسي والجماهيري"*, published 27.06.2026 — the
-URL path carries 2026/09/16, a later edit date, while the page's `datePublished` and the affidavit
-both say 27 June; and the Hebrew rendering sworn in Abu Shehadeh's affidavit, §3, pages 7–8 of
-[Adalah's filing](https://www.adalah.org/uploads/uploads/6171120cd2c4f7a4d82bbbe7b50fb263.pdf), a scan read by OCR and checked against the page image. **The two texts
-match point for point.** How it was found: the affidavit cites the link, and the link survives only
-as a percent-encoded image — web search for the title returned nothing.)
-
-- **What it is.** Adopted by בל"ד's **political bureau** on the day of its list conference, as
-  *"نقاط أساس في العمل السياسي والجماهيري"* — working priorities, not a platform. In order: (1) a
-  democratic state of law and separation of powers, equality and non-discrimination, *"بما في ذلك
-  ضمان الحقوق الجماعية للمواطنين العرب"*; (2) cancel all transfer plans and the siege on Gaza, and
-  investigate war crimes of the October 2023 war; (3) *"حل عادل للمسألة الفلسطينية على أساس قرارات
-  الأمم المتحدة والمبادرة العربية"*; (4) eradicate crime and violence in Arab society; (5) economic
-  and social rights, unemployment and poverty, centre–periphery gaps; (6) recognise the unrecognised
-  villages and **freeze demolition orders**; (7) recognise the rights of **internally displaced
-  citizens and return them to their villages**; (8) close the gap between Jewish and Arab local
-  authorities, *"العدالة التوزيعية"* in **jurisdiction areas** and budgets; (9) Arab-education reform
-  on *"إدارة عربية ذاتية"*, teaching universal values including gender equality; (10) human dignity
-  and equality for all prisoners and detainees *"دون تمييز على أساس القومية أو نوع المخالفة"*.
-- **`security` −3 HELD, and the reason is that the new text is vaguer, not different.** The 2018
-  programme named the right of return under UNGA 194, withdrawal to 1967, East Jerusalem and
-  dismantling the settlements. The 2026 points say *"UN resolutions and the Arab Initiative"* — the
-  Arab Peace Initiative contains 1967 and East Jerusalem and a refugee solution *"agreed upon"* under
-  194 — so the direction is the same and nothing is withdrawn. **A priorities list that omits a
-  programme's detail does not retract it**; had it named a *different* endpoint, the axis would
-  move. Point 7 is **not** the Palestinian right of return — it is Israeli citizens displaced
-  inside the state (the איקרית/בירעם class), and `right-of-return` neither gains nor loses by it.
-- **`religiosity` −3 HELD, on silence.** Religion and state appears nowhere in the ten points. The
-  −3 rests on the 2018 text's *"complete separation of religion from the state"*, which nothing has
-  superseded — the same rule that keeps חד"ש at NULL rather than reading its silence as a position.
-  **Recorded plainly because it is now the axis with the oldest evidence on the page's newest
-  list.** `economic` −3 comes from חד"ש and point 5 is consistent with it.
-- **`state-of-all-its-citizens` stands, though the phrase is absent.** Point 1 describes the same
-  thing without the words, and Abu Shehadeh used them the next day (*"אנחנו מאמינים שישראל צריכה
-  להיות מדינת כל אזרחיה"*, 28.6.26, quoted by the יועמ"שית). The יועמ"שית's description of the points
-  — nothing the courts treat as denying the Jewish state — is **accurate and slightly beside the
-  point**: they say nothing about the Jewish state either way.
-- **The land-planning sweep item (Open questions) gets its first Arab-list answer, and it is not yet
-  decided.** That item deferred a tag until *"a pass over the two Arab-list rows' own platforms"*.
-  Points 6 and 8 carry it on this side — demolition-order freezes, recognition of unrecognised
-  villages, and jurisdiction boundaries — beside הדמוקרטים' *"נבטל את חוק קמיניץ"*. **רע"ם is still
-  unread, and the trigger names both rows**, so the tag is not minted on two holders when the rule
-  asked for the third to be read first. Recorded in the Open question.
-- **Two dimensions noted and NOT filed, each one holder.** Arab educational **self-administration**
-  (point 9) is institutional autonomy, which no other row's text proposes; equal treatment of
-  prisoners *regardless of offence* (point 10) — which on this page's reading includes security
-  prisoners — has no counterpart anywhere. **One holder is not a dimension**, the rule revision 94
-  applied to the Negev-Galilee one; both become candidates if a second row publishes the same thing.
-
-**2026-09-24 — revision 129. The CEC disqualified אבו שחאדה on 2026-09-23, per a הארץ opinion piece.
-Nothing moves. The Supreme Court decides, and revision 115's base rate says how that usually ends.**
-([הארץ, opinion](https://www.haaretz.co.il/news/elections/2026-09-23/ty-article/.premium/000001a0-cc6c-d06e-afab-fdfdb2310000),
-23.09.26, paywalled; body supplied by the repo owner. The PDF it links is
-[פ"מ 8/26](https://img.haarets.co.il/bs/000001a0-c8e3-de5d-a5fa-d9fbf09d0000/b7/61/803fc88c4b229355e70a3943a9b9/ds.pdf),
-the יועמ"שית's opinion revision 102 already read at the same URL: 24 pages, created 2026-09-22.)
-
-- **The one new fact is reported inside an opinion column, and is recorded as reported.** The writer
-  criticises סולברג, *"שהצטרף לפסילת אבו שחאדה, למרות המנהג הקיים זה 20 שנה שלפיו יושבי ראש ועדת
-  הבחירות אינם משתתפים בהצבעות"*. That means the committee voted to disqualify, and the chair voted with
-  the majority. **The vote count and the fate of the other petitions heard the same day are not in the
-  text** (the list, כסיף, רע"ם, בל"ד). The column *predicts* the Arab lists will be disqualified and the
-  coalition lists spared, and a prediction is not recorded as an outcome. Confirm against a news report
-  before anything cites a tally.
-- **No axis, tag or list change.** revision 115's rule stands: a CEC vote is a claim about legal
-  eligibility under סעיף 7א, not a programme. The base rate is the IDI's: no candidate disqualified by the
-  committee has ever had it upheld by the Supreme Court. **Trigger:** if the Supreme Court upholds it,
-  #3 leaves the list and בל"ד's chair is no longer on this row's realistic slate. That would be the first
-  list change on this page made by a court. *(Closed by revision 222: he withdrew on the court's
-  recommendation, and no judgment was given.)*
-- **The יועמ"שית's position matches revision 102**: no legal basis for any petition, and אבו שחאדה's
-  8 October 2023 article to be weighed *"בכובד ראש"*. The column argues it fails the case law's
-  repetition and critical-mass tests. That is argument, not a new fact.
-
-**2026-09-24 — revision 130. The committee's votes, from a news report. BOTH ARAB LISTS STAY ON THE
-BALLOT — the repo owner's decision, 2026-09-24.** Nothing moves on any row.
-([הארץ](https://www.haaretz.co.il/news/elections/2026-09-23/ty-article/000001a0-cc88-d52e-a7f4-fe8d624b0000),
-23.09.26; body supplied by the repo owner.) This confirms revision 129's claim, which came from an opinion
-column, and adds the counts:
+**Revs 129 and 130 — the committee's votes of 23–24.09.26** (a
+[הארץ opinion piece](https://www.haaretz.co.il/news/elections/2026-09-23/ty-article/.premium/000001a0-cc6c-d06e-afab-fdfdb2310000),
+23.09.26, paywalled, where the vote on אבו שחאדה was first met; then the news reports of
+[23.09](https://www.haaretz.co.il/news/elections/2026-09-23/ty-article/000001a0-cc88-d52e-a7f4-fe8d624b0000)
+and
+[24.09](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.premium/000001a0-d1a3-dcb9-a9a4-f1e794ad0000);
+bodies supplied by the repo owner).
 
 | decision (23.09.26) | for | against | abstain | ground |
 |---|---|---|---|---|
@@ -10294,327 +10365,233 @@ column, and adds the counts:
 | **כסיף** (חד"ש) disqualified | 19 | 5 | 2 | negation of a Jewish and democratic state |
 | **אבו שחאדה** (#3) disqualified | 31 | 4 | – | support for armed struggle or a terror organisation |
 
-The CEC chair voted on אבו שחאדה, after ח"כ שמחה רוטמן demanded it. The last chair to vote on a
-disqualification was חשין, in 2003, against ברוך מרזל. **The next day's petitions were all rejected**
-([הארץ](https://www.haaretz.co.il/news/elections/2026-09-24/ty-article/.premium/000001a0-d1a3-dcb9-a9a4-f1e794ad0000),
-24.09.26, body supplied by the repo owner):
-
 | decision (24.09.26) | against disqualifying | for | abstain |
 |---|---|---|---|
 | **עוצמה יהודית** kept on the ballot | 11 | 10 | 1 (המחנה הממלכתי) |
 | **הציונות הדתית וזהות** kept | 21 | 3 | – |
 | **הדמוקרטים** kept | 14 | 2 (עוצמה יהודית) | – |
 
-*ynet counts the עוצמה יהודית vote as **10 for, 19 against, 1 abstaining**, where הארץ has 11–10–1 (revision
-134). Both are recorded, and nothing turns on which is right.*
+- On the עוצמה יהודית vote ynet has **19 against, 10 for, 1 abstaining** where הארץ has 11
+  against, 10 for, 1 abstaining (revision 134, under ישר): the same votes for, a different count
+  against. Both are recorded, and nothing turns on which is right.
+- The CEC chair, סולברג, voted on אבו שחאדה, after ח"כ שמחה רוטמן demanded it. The last chair to
+  vote on a disqualification was חשין, in 2003, against ברוך מרזל.
+- **The asymmetry is the finding, and it is not scored.** The committee disqualified every list
+  and candidate petitioned against from the Arab lists, and none from the Jewish lists, which is
+  what both the column and the news report predicted from its coalition majority. Per the report,
+  זולת and הדמוקרטים are expected to appeal the עוצמה יהודית decision. The column's case that the
+  evidence against אבו שחאדה fails the case law's repetition and critical-mass tests is argument,
+  not a new fact. Per the column, the יועמ"שית found no legal basis for any of the petitions.
+- **Every party's vote scores nothing, on revision 115's category rule**: deciding whether to use
+  an eligibility instrument is not a position on what the state should do. By outgoing-Knesset
+  faction, for כסיף: **for** 6 הליכוד, 2 המחנה הממלכתי, 2 הציונות הדתית, 1 הימין הממלכתי, 3 ש"ס,
+  2 עוצמה יהודית, 2 ישראל ביתנו, 1 נעם; **against** 2 רע"מ, 1 העבודה, 1 חד"ש, 1 תע"ל;
+  **abstained** 1 יהדות התורה, 1 אגודת ישראל. For רע"ם: **for** 7 הליכוד, 2 הציונות הדתית, 1
+  הימין הממלכתי, 3 ש"ס, 2 עוצמה יהודית, 2 ישראל ביתנו, 1 נעם; **against** 2 רע"מ, 1 חד"ש, 1
+  העבודה, 1 יש עתיד; **abstained** 1 אגודת ישראל. No breakdown is given for the other two votes.
+  Labels are the report's. המחנה הממלכתי is the two seats rev 115's roster (under הליכוד) lists as
+  כחול לבן; "1 יהדות התורה, 1 אגודת ישראל" are that roster's דגל התורה and אגודת ישראל seats, both
+  the יהדות התורה row.
+- **רע"ם**, as respondent: *"כוחה עשוי להיות מכריע בהחלפת הממשלה הנוכחית ובהקמת ממשלה חלופית"* —
+  its coalition posture, and it fits its `opposition` bloc.
+- **ישראל ביתנו's announcement** (to vote for all four disqualifications) goes further than its
+  `excludes-haredi-and-arab-parties` tag: *"כל מפלגה שמתנגדת לכך [חיסול חמאס כיעד מרכזי] אין לה
+  מקום בכנסת"*. That is about **eligibility for the Knesset**, not coalition partners; revision
+  115 already separated the two subjects on ביחד's row, and the tag stays where it is.
 
-**The asymmetry is the finding, and it is not scored.** The committee disqualified every list and
-candidate petitioned against from the Arab lists, and none from the Jewish lists, which is what both the
-column (revision 129) and the news report predicted from its coalition majority. The Supreme Court hears
-אבו שחאדה before an expanded panel on **Thursday 2026-10-01**. Per the report, זולת and הדמוקרטים are
-expected to appeal the עוצמה יהודית decision.
+**Rev 144 — five הארץ opinion columns** (23–24.09.26; bodies supplied by the repo owner): against
+אבו שחאדה
+([1](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.premium/000001a0-cd24-d688-a7b4-cd7ecc0b0000)),
+for him
+([2](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.premium/000001a0-ceea-de22-a3b8-fefa38e50000)),
+a letter to the change-bloc leaders
+([3](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.highlight/000001a0-ce0e-d72e-a7e0-febff2c70000)),
+הרצוג and אזריה
+([4](https://www.haaretz.co.il/opinions/2026-09-23/ty-article-opinion/.premium/000001a0-cde3-d4d3-a1b0-edfbc8980000)),
+and
+[5](https://www.haaretz.co.il/opinions/2026-09-23/ty-article-opinion/.premium/000001a0-ce1e-de22-a3b8-fe5eef7b0000),
+already read as revision 140.
 
-- **`upcoming_parties` is NOT changed, by decision.** The repo owner, 2026-09-24: *do not remove the parties,
-  because the Supreme Court will likely overturn the CEC's decision.* That matches revision 115's base rate
-  (no committee disqualification of a candidate has ever been upheld), and the report itself expects the
-  court to reverse the decisions on רע"ם, הרשימה המשותפת and כסיף, calling only אבו שחאדה unclear. **The
-  rows stay voteable until the court rules.** Trigger: a Supreme Court ruling that upholds a list's
-  disqualification is when removal is considered, as a separate decision for the repo owner. A ruling that
-  upholds only אבו שחאדה's changes the list's slate and not the row. *(Closed by revision 227: on 02.10.26
-  the court reversed the committee on both lists, unanimously, and on כסיף, seven to two.)*
-- **Every party's vote scores nothing, on revision 115's category rule.** Deciding whether to use an
-  eligibility instrument is not a position on what the state should do, and that rule was written for
-  exactly this. The breakdown is recorded as a record of votes, by outgoing-Knesset faction. For כסיף:
-  **for** 6 הליכוד, 2 המחנה הממלכתי, 2 הציונות הדתית, 1 הימין הממלכתי, 3 ש"ס, 2 עוצמה יהודית, 2 ישראל
-  ביתנו, 1 נעם; **against** 2 רע"מ, 1 העבודה, 1 חד"ש, 1 תע"ל; **abstained** 1 יהדות התורה, 1 אגודת ישראל.
-  For רע"ם: **for** 7 הליכוד, 2 הציונות הדתית, 1 הימין הממלכתי, 3 ש"ס, 2 עוצמה יהודית, 2 ישראל ביתנו,
-  1 נעם; **against** 2 רע"מ, 1 חד"ש, 1 העבודה, 1 יש עתיד; **abstained** 1 אגודת ישראל. The report gives no
-  breakdown for the other two votes.
-- **The respondents' own words, recorded and not scored.** אבו שחאדה, by Zoom, said he regrets the article:
-  *"לא הייתי צריך לכתוב את המאמר והייתי צריך לגנות באופן ברור"*. He condemned the Hamas attack and said his
-  intent was to *"לעבור למסלול מדיני שיובילו אותו הרשות הפלסטינית ומדינות ערב"*. After the vote he pledged
-  a *"מאבקנו העקבי והבלתי־אלים"*. רע"ם: *"כוחה עשוי להיות מכריע בהחלפת הממשלה הנוכחית ובהקמת ממשלה
-  חלופית"*, which is its coalition posture and fits its `opposition` bloc. None of this moves the −3 / −3 / −3
-  row or רע"ם's.
-- **ישראל ביתנו's announcement** (to vote for all four disqualifications) carries a line that goes further
-  than its `excludes-haredi-and-arab-parties` tag: *"כל מפלגה שמתנגדת לכך [חיסול חמאס כיעד מרכזי] אין לה
-  מקום בכנסת"*. That is a statement about **eligibility for the Knesset**, not about coalition partners.
-  Revision 115 already separated those two subjects on ביחד's row, and the tag stays where it is.
+- **Column 2** quotes גלנט, כ"ץ and בן גביר in 2023, עמיחי אליהו (עוצמה יהודית #4) on an atom
+  bomb, and גולן on starving Gaza, with his later *"הימים המיידיים אחרי 7 באוקטובר היו של הלם"* —
+  each one person's words from the war's first weeks, passed on by a columnist. הדמוקרטים'
+  `security` −1 rests on its platform, and עוצמה יהודית is already at +3. גולן backing the
+  disqualification is revision 130's red line (under הדמוקרטים).
+- **Column 3** tells איזנקוט, בנט, ליברמן and לפיד to stop boycotting the Arab parties. That they
+  all boycott is the writer's summary; this page records a different ground for each, and revision
+  143 has ישר's (a principle test, no declared boycott). The Western Wall event, the tunnel and
+  the UN flight are reporting on נתניהו in office, not הליכוד's platform.
+- **Column 4** is about the President, who is not on the ballot: נתניהו visiting אזריה's father,
+  בנט's *"אולי טעה"*, כ"ץ working to clear the record, איזנקוט as chief of staff backing the
+  prosecution — individuals' conduct from 2016 on, without quotes or dates. **Column 5**'s fuller
+  body adds the claim that boycotting Arab parties is what defines the right (revision 140's
+  tier).
 
-**2026-09-26 — revision 144 (cross-row). Five הארץ opinion columns (23–24.09.26; bodies supplied by the repo
-owner). Nothing scored. But the sentence at the centre of the אבו שחאדה case was read in full for the first
-time, and this page had been quoting half of it.** The columns: against אבו שחאדה
-([1](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.premium/000001a0-cd24-d688-a7b4-cd7ecc0b0000)), for him
-([2](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.premium/000001a0-ceea-de22-a3b8-fefa38e50000)), a letter to the
-change-bloc leaders ([3](https://www.haaretz.co.il/opinions/2026-09-24/ty-article-opinion/.highlight/000001a0-ce0e-d72e-a7e0-febff2c70000)), הרצוג and
-אזריה ([4](https://www.haaretz.co.il/opinions/2026-09-23/ty-article-opinion/.premium/000001a0-cde3-d4d3-a1b0-edfbc8980000)), and
-[5](https://www.haaretz.co.il/opinions/2026-09-23/ty-article-opinion/.premium/000001a0-ce1e-de22-a3b8-fe5eef7b0000), already read as revision 140.
+**Rev 193 — אבו שחאדה's claims about others** (the הארץ interview linked above). That the
+יועמ"שית *"נכנעה לבן גביר"* is a rival's account. *"יש תוכנית ממשלתית לגירוש"* is a claim about
+other rows (revision 153's line); the rows it points at already carry
+`voluntary-palestinian-emigration-incentives` or `population-transfer` on their own evidence. His
+*"חוק לאבו שאחדה וחוק לבן גביר"* (rev 222) is a claim about how she treated another row's
+petition.
 
-- **The sentence, from the יועמ"שית's opinion** ([פ"מ 8/26](https://img.haarets.co.il/bs/000001a0-c8e3-de5d-a5fa-d9fbf09d0000/b7/61/803fc88c4b229355e70a3943a9b9/ds.pdf) §42,
-  which quotes the whole article in Hebrew translation; re-fetched today). It closes the article's third
-  note, which is about Israeli intelligence: *"ניתן למנוע מהם לחדור למדינותינו, למפלגותינו ולתנועותינו
-  הפוליטיות – וזאת אם קיים הרצון ונתארגן באופן הנכון. יתרה מזו, אם עזה הקטנה והנצורה הצליחה לעשות זאת
-  וברמה הזו, הרי שאחרים יכולים לעשות זאת באופן יעיל ופשוט יותר"*.
-- **Both short versions cut it, from opposite ends.** N12's, which revision 101 quoted, keeps the conclusion
-  and drops the paragraph, so it reads as a call to repeat the attack. Column 2 stops at *"וברמה הזאת"* and
-  drops *"באופן יעיל ופשוט יותר"*. Read in its paragraph, *"זאת"* is keeping intelligence out, and column 1
-  reads it that way too (*"מתפעם מהצלחת הארגון למנוע חדירה מודיעינית אליו"*). **So the two columns agree on
-  what the sentence says and disagree only on how to judge it**, and judging it is not this page's job.
-  Revision 101's quote now points here.
-- **Column 1's two factual claims, recorded against the opinion.** That the article *"מאמץ את הטרמינולוגיה
-  החמאסית"*: the title puts *"טופאן אלאקצא"* in quotation marks, which the respondent's expert (פרופ' אסעד
-  גאנם, attached to his reply) reads as quoting the term, not adopting it. The page picks neither. That it was
-  finished late on 7 October: the article does say ביידן gave Israel *"אור ירוק... לנקום בכל עמנו בעזה"*,
-  but the hour the writer works out from that is his inference. It bears on how far the court believes the
-  affidavit, not on this row, and is not checked. The affidavit wording column 1 quotes matches the one
-  revision 102 read.
-- **Column 2's quotes about other rows, not scored.** גלנט, כ"ץ and בן גביר in 2023; עמיחי אליהו (עוצמה
-  יהודית #4) on an atom bomb; גולן on starving Gaza, and his later *"הימים המיידיים אחרי 7 באוקטובר היו של
-  הלם"*. Each is one person's words from the war's first weeks, passed on by a columnist, not a party
-  programme. הדמוקרטים' `security` −1 rests on its platform, and עוצמה יהודית is already at +3. גולן backing
-  the disqualification is revision 130's red line, already recorded.
-- **Column 3 is advice.** It tells איזנקוט, בנט, ליברמן and לפיד to stop boycotting the Arab parties and to
-  attack נתניהו harder. Its premise, that they all boycott, is the writer's summary; this page records a
-  different ground for each, and revision 143 has ישר's (a principle test, no declared boycott). The
-  Western Wall event, the tunnel and the UN flight are reporting on נתניהו in office, not הליכוד's platform.
-- **Column 4 is about the President, who is not on the ballot.** The positions it lists (נתניהו visiting
-  אזריה's father, בנט's *"אולי טעה"*, כ"ץ working to clear the record, איזנקוט as chief of staff backing the
-  prosecution) are individuals' conduct from 2016 on, summarised without quotes or dates. Not scored.
-- **Column 5's fuller body adds the writer's claim that boycotting Arab parties is what defines the right.**
-  Same tier as revision 140. Nothing.
+**Rev 219 — ten posts of 01.10.26 around the hearing.** Read through fxtwitter; three attached
+images were viewed; the subtitles of four videos were read from extracted frames, with no audio.
 
-**2026-09-28 — revision 168. כאן: a TikTok video אבו שחאדה posted on 10 October 2023. Nothing scored.**
-([כאן](https://www.kan.org.il/content/kan-news/politic/1103800/), תמר אלמוג, 28.09.26 06:38, read through headless Chromium; the video itself was
-not viewed, and the quotes are כאן's.) Three days after the attack, the בל"ד chair repeated the article's line
-(*"אירוע פוליטי אסטרטגי משמעותי"*), sent condolences to *"משפחות השהידים, הפצועים וכל משפחות הקורבנות החפים
-מפשע, ובמיוחד... אנשינו בנגב"*, did not name Hamas or mention the killings and abductions, and accused Israel's
-leadership of *"הסתה גזענית, ברברית ולא אנושית"* toward Gaza.
+- **עוצמה יהודית wants a judgment, not a withdrawal**: בן גביר
+  ([post](https://x.com/itamarbengvir/status/2105634937210585321)), *"ההצעה של בית המשפט לאבו
+  שחאדה היא הצעה רחמנית מדי"*, and גוטליב (#2), the same
+  ([post](https://x.com/TallyGotliv/status/2105633991231504411)). The party arguing its own
+  petition (revisions 198 and 215).
+- **הציונות הדתית: רוטמן (#5)** ([post](https://x.com/rothmar/status/2105634919456133242), with a
+  screenshot of עמית סגל's Telegram): *"יצחק עמית עושה כאן עסקה אפילה עם אבו-שחאדה"*. An attack on
+  the court by the row's author of the overhaul — `judicial-overhaul`, held. No measure is named.
+- **עמך ישראל: חדאד (#2)** ([post](https://x.com/YosephHaddad/status/2105635500895691229)):
+  disqualify him formally, then *"את סמי צריך לעצור ולהעמיד לדין"*. Candidate tier (revision 49);
+  existing law against one man, no new measure.
+- **הדמוקרטים: קריב (#3), twice.** A campaign clip
+  ([post](https://x.com/KarivGilad/status/2105622466194297044)) on meeting *"מנהיגים ממדינות האזור
+  וגם… מנהיגים ומנהיגות פלסטינים"*, naming nobody and no agreement — `two-state` and
+  `regional-normalization`, both held. On an attack on protective-presence activists
+  ([post](https://x.com/KarivGilad/status/2105629435214889448), with footage; where and when is
+  not stated): *"נדאג לשינוי ברור במדיניות הממשלה והצבא ביחס לאותם פוגרומסטים"* —
+  `anti-settler-violence`, held, no measure added.
+- **ישר: מרידור (#7)** ([post](https://x.com/meridors/status/2105623786200424553)): *"נחליף את
+  הממשלה ונקים ועדת חקירה ממלכתית"*, which he calls *"אחד הדברים שהגדרנו בתכנית 100 הימים שלנו"*.
+  The commission is revision 99's resolution, documented and untagged. The 100-day plan is the one
+  revision 183 is waiting for; *"שלנו"* may mean ישר's or the four lists', no such document was
+  found published, and the trigger there stands. **Not a lead:** the item ynet's live blog links,
+  *"איזנקוט: תומך בפסילת יו"ר בל"ד מריצה לכנסת"*, is ישר's party statement of 22.09, which
+  revision 102 already records under כחול לבן; it scored nothing there, on revision 115's rule.
+- **ישראל תחילה: השכל (#1) at a Druze event in the Golan**
+  ([post](https://x.com/SharrenHaskel/status/2105629300179276224)): the Druze community there is
+  *"קו הגנה ראשון"*, and the party exists *"לשבור את שיטת שני הגושים"*, which is
+  `unity-government`, held, and the row's `unaligned`. **A lead for a candidate pass:** a Druze
+  candidate in the list's top four, whom she promises a ministry (*"וואהל ייכנס כשר בממשלת
+  ישראל"*; the subtitles spell the name two ways). The row lists no candidates, and rev 219 did
+  not check the name against the filed list (see rev 190, under ישר: ואיל מוגרבי, #4; rev 233,
+  under ישר, did not find the subtitle's spelling on the filed list).
+- **נעם לישראל, twice.** אלון (#4), a teacher and head of a school network, tells teachers she
+  will bring their workload and pay to the Knesset
+  ([post](https://x.com/noamparty/status/2105621967168471110), the party's account); no measure.
+  מעוז (#1), on the priestly blessing at the Western Wall
+  ([post](https://x.com/AVI_MAOZ/status/2105639054712697195)): the state must *"להעלות לראש סדר
+  העדיפויות הלאומי את הזהות והחינוך היהודי"*. Both sit on `education-system-focused` and
+  `single-issue-jewish-identity`, held.
 
-- **It bears on his affidavit, not on this row.** Revision 102 recorded that his sworn statement disowns the
-  article's *silence* on the massacre because *"ממדי הקטל"* were not yet known. A video posted after the article,
-  with the same silence, weakens that account; that is for the Supreme Court on 1 October, not for this page.
-  The row's `security` is already −3, and a candidate's post is not the list's programme (revision 101).
-- **כאן's report that *"גורמי משפט בכירים"* expect the court to uphold his disqualification is anonymous** and
-  scores nothing. Revision 130's standing decision is unchanged: the row stays voteable until the court rules,
-  and a ruling upholding only אבו שחאדה's disqualification changes the slate (#3), not the row.
+**Rev 222 — the withdrawal: other rows.**
 
-**2026-09-29 — revision 193. אבו שחאדה interviewed in הארץ's daily briefing, the morning the יועמ"שית backed his
-disqualification in court. Nothing scored.** ([הארץ](https://www.haaretz.co.il/digital/daily/2026-09-29/ty-article/.premium/000001a0-ed4f-d259-a3b4-eddf35760000), 29.09.26, body supplied by the repo owner.)
-Asked what *"מדינותינו"* meant in the 8 October article, he calls it *"ניסוח לא נכון"*, one of *"הרבה ניסוחים...
-לא מוצלחים"*. He says *"אני שייך לאומה הערבית, ומבחינת מדינה אני שייך למדינת ישראל"*, that he wants *"פתרון
-מדיני"* based on *"הצדק, החירות והשוויון לשני העמים"*, and *"אני מכיר בזכות של היהודים שנמצאים פה בארץ כקבוצה
-לאומית, שיש לה זכויות קולקטיביות ואינדיווידואליות"*.
+- **הליכוד at the hearing, through its counsel בומבך.** The party is the petitioner against this
+  list and כסיף (revision 115). הארץ records three justices pressing him — כשר: *"האם נחה דעתה של
+  מפלגת השלטון שאף מפלגה ערבית לא תהיה בכנסת?"* — and his answer: *"בגלל שאין לציבור הערבי ייצוג
+  נאפשר לתומכי טרור להגיע לכנסת? זה שיקול זר"*. A party arguing its own petition scores nothing,
+  and the justices' questions are not party acts.
+- **Reactions, from ynet; the posts themselves were not read.** סמוטריץ': *"יצחק עמית לא רוצה ולא
+  מסוגל לכתוב פסק דין פשוט… אלא מתחנן בפניו שיפרוש"* — רוטמן's attack again, on
+  `judicial-overhaul`, held. בן גביר: *"הבטחנו - קיימנו!"*, with regret that no judgment was
+  given. איזנקוט posted a video of אבו שחאדה speaking of talks between בל"ד and הליכוד, with
+  condolences to הליכוד on losing *"שותף אמיתי בברית מחל-בל״ד"* — a rival's jibe about another
+  row; the video was not viewed. The page has one earlier sighting of the subject, a leaked 2021
+  recording in which אלמוג כהן says הליכוד talked to the Joint List (revision 142), not recorded
+  as a position (revision 223 corrected a first version that said the page recorded no such
+  talks). ישר's own support for the disqualification is revision 102.
+- **עמך ישראל: חדאד (#2), read first-hand**
+  ([post](https://x.com/YosephHaddad/status/2105762729642578212), 01.10.26 23:52, fxtwitter): the
+  court's offer is a *"קומבינה"*, and *"המקום שלו זה במאסר לצד המחבלים שהוא תומך בהם"*. It repeats
+  his post of rev 219; candidate tier, no measure named.
 
-- **Nothing moves, because the words fit every shape the row already holds.** The row carries both `pro-two-state`
-  and `secular-democratic-state` under the union rule, and *"פתרון מדיני… לשני העמים"* names neither shape. Recognising
-  Jews as a national group is compatible with `state-of-all-its-citizens` and `non-zionist`. It is also a
-  component chair speaking, not the list's programme (revision 101).
-- **The article is the defence he gave the Supreme Court, restated to a newspaper.** Revision 102 recorded that
-  the יועמ"שית's case rests on the armed-struggle ground alone, and revision 168 recorded the TikTok video that
-  weakens his account. He now says the article was badly worded, not misread. Whether that holds is the court's
-  question on 1 October, and revision 130's decision stands: the row stays voteable until the court rules.
-- **His claims about others score nothing on them.** That the יועמ"שית *"נכנעה לבן גביר"* is a rival's account.
-  *"יש תוכנית ממשלתית לגירוש"* is a claim about other rows (revision 153's line). The rows it points at already
-  carry `voluntary-palestinian-emigration-incentives` or `population-transfer` on their own evidence. He declined
-  to answer סגלוביץ' (revision 172).
+**Rev 227 — the reversal: other rows.**
 
-**2026-09-30 — revision 202 (cross-row). A הארץ opinion column urging Arab citizens to vote. Nothing scored.**
-([הארץ](https://www.haaretz.co.il/opinions/2026-09-30/ty-article-opinion/.premium/000001a0-ee19-d0bd-a3f5-fedb58750000), 30.09.26, body supplied by the repo owner.)
+- **ישראל ביתנו: ליברמן names a measure against בל"ד**
+  ([post](https://x.com/AvigdorLiberman/status/2105957860832350604), 12:47, fxtwitter): *"כל עוד
+  אבו שחאדה נשאר יו״ר בל״ד ונציגי מפלגתו יהיו בכנסת, זהו ייצוג של ארגון טרור בכנסת ישראל. חייבים
+  להוציא את בל״ד מחוץ לחוק."* Outlawing a party is new to this page, and it is in the chairman's
+  own voice. It scores nothing on revision 115's rule: an eligibility instrument aimed at one
+  party, not a position on what the state should do. No tag exists for it, and one post would not
+  mint one. **Trigger:** a bill, or the same demand in the party's platform.
+- **The other reactions repeat what their rows hold** (ישראל היום; the posts were not read). עוצמה
+  יהודית released a voice message of בן גביר, *"ברא, ברא, ברא, סאמי אבו שחאדה"* — cheering its
+  own petition, and the paper notes there was no judgment to cheer. רוטמן calls the ruling *"רוח
+  גבית לטרור"* and the handling of אבו שחאדה *"בריחה מבישה ממתן פסק דין"* (`judicial-overhaul`,
+  held). פורום בוחרים בחיים, which argued for the disqualification of רע"ם, is not a party.
 
-- **The one party act is second-hand.** Per ג'קי חורי's report, which the column relays, the heads of the Arab
-  lists intend to call on voters not to boycott, despite אבו שחאדה's expected disqualification and the committee's
-  disqualification of the lists (revision 130: 18–5 each, and on this page both stay voteable until the court
-  rules). A turnout call is campaign machinery, not a position, and the report itself was not read.
-- **The column's verdicts on other rows are opinion.** That איזנקוט, בנט and לפיד have *"אין מנדט לשבת עם נתניהו"*
-  is the writer's reading, and the rows' `bloc` values already say it. Calling ליברמן *"גזען שונא ערבים"* is her
-  judgement, and ישראל ביתנו's `excludes-haredi-and-arab-parties` (revision 99) is the classification. עודה's
-  2019 recommendation of גנץ is history. The סטאטנט turnout figure is a poll she says is unclear. Revision 144's
-  line holds: a column's advice to parties scores nothing on them.
+#### Reading this party's sources
 
-**2026-09-30 — revision 212 (cross-row). A הארץ opinion piece on the disqualification cases before Thursday's
-hearing. Nothing scored.** ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-30/ty-article/.premium/000001a0-f1ad-d8f2-a5f1-ffbf08ed0000), 30.09.26, body supplied by the repo owner.) The writer argues that
-section 7א, written against Kahanism, is now used against the Arab lists. In his view אבו שחאדה should not be
-disqualified and עוצמה יהודית and הציונות הדתית should be.
+- **בל"ד's ten points cannot be found by search.** The affidavit cites the link, and the link
+  survives only as a percent-encoded image; web search for the title returned nothing. The ערב 48
+  URL path carries 2026/09/16, a later edit date, while the page's `datePublished` and the
+  affidavit both say 27 June. The Hebrew rendering sworn in the affidavit is §3, pages 7–8 of
+  Adalah's filing, a scan read by OCR and checked against the page image; **the two texts match
+  point for point.**
+- **A fact first met inside an opinion column is recorded as reported** (rev 129): the vote count
+  and the fate of the other petitions were not in its text, and its *prediction* is not recorded
+  as an outcome. Confirm against a news report before anything cites a tally — rev 130 did.
+- **Fetching.** `kan.org.il` returns a Cloudflare challenge to `curl` and to WebFetch and opens
+  through headless Chromium. N12's live blog is read from the page's embedded data with `curl`,
+  ישראל היום's `articleBody` with plain `curl`, posts through fxtwitter.
+- **הארץ's withdrawal report carries its lower half over from earlier reports, and one paragraph
+  is out of date** (rev 222): it still says the hearing *"יתקיים ביום חמישי הקרוב"*. Its image is
+  the article in Hebrew translation, two pages, the lower numbered 17, and adds nothing to §42.
 
-- **Every party act it cites is already recorded.** עוצמה יהודית's petition is revisions 102 and 198. הדמוקרטים'
-  support for disqualifying individuals, not lists, is revisions 199 and 206. The Supreme Court hearing on
-  1 October is where revision 130's decision gets tested.
-- **Its claims about rows are the writer's.** That בן גביר's *"מוות למחבלים"* in place of *"מוות לערבים"* is
-  *"התחכמות זולה"* is a reading, and `kahanist` already sits on that row (revision 198 gave it first-party text).
-  That הציונות הדתית's *"הגירה מרצון"* is voluntary in name only argues the gap between the row's two emigration
-  tags. The row holds both `voluntary-palestinian-emigration-incentives` and `population-transfer` (revision 92),
-  so the page already records that gap on its own evidence. The זולת brief is an NGO's.
+#### Logo
 
-**2026-10-01 — revision 219 (cross-row). The Supreme Court tells אבו שחאדה there is a majority to disqualify
-him and recommends he withdraw. Ten posts of 01.10 around it. No axis moved, no tag added.**
-([ynet](https://www.ynet.co.il/news/blogs/article/skc6ftiqfe) live blog, first published 10:06; [N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-5a5a2d3f536f0a1027.htm) live blog, last modified 15:26, read from the page's
-embedded data with `curl`. A third link, [כאן](https://www.kan.org.il/content/kan-news/politic/1104945/), returned a Cloudflare challenge to `curl` and to WebFetch and was
-**not read**. Posts read through fxtwitter. Three attached images were viewed. The subtitles of four videos
-were read from extracted frames, with no audio.)
+Replaced 2026-09-15 with the 2026 mark, white lettering on a solid teal tile, self-hosted as
+`/logos/joint-list-2026.png` and cropped to the wordmark. Since 2026-09-16 (revision 98d) that
+tile is the **dark-theme** file only, via `DARK_VARIANT_LOGOS`; light mode shows the party's
+teal-on-white version, `/logos/joint-list-2026-light.png`, cropped with the same proportional
+margins — 6/337 of the width on each side — and aspect ratio, 2.89:1 against 2.88:1. An opaque
+tile is skipped by the dark-mode recolour, and `PLATE_PARTIES` is empty (the plate had framed the
+new tile in a white box). The record for the 2019 mark: pure black artwork on transparency, in
+`PLATE_PARTIES`, shown unchanged on a near-white plate in dark mode, like ש"ס. See "The logo that
+could not be recoloured" under Logos; it took three attempts and the first two were both verified
+clean by automation while still looking wrong on the actual site.
 
-- **What the court said.** Nine justices heard the case. After consulting, the president, עמית, read a
-  statement for the whole panel (N12): *"קיימת תמימות דעים בין השופטים כי הדברים שנכתבו בידי המועמד סאמי אבו
-  שחאדה מכאיבים, מקוממים ומעוררים שאט נפש… מצאנו לשקף כי יש עמדות שונות, ודומה כי התוצאה המסתמנת היא לאישור
-  ההחלטה על הפסילה… על דעת כלל חברי ההרכב, אנחנו ממליצים למר אבו שחאדה לשקול אם הוא עומד על התמודדותו… באופן
-  שייתר מתן פסק דין מנומק בעניינו"*. He has until the end of the day's hearings to answer. **The
-  recommendation is unanimous and the majority is not.** N12's headline says *"פה אחד"*, which is the
-  recommendation.
-- **Nothing is decided, so nothing changes here.** At 15:26 בל"ד's leadership was still discussing it
-  (N12). The hearings on כסיף, on this list and on רע"ם were to follow the same day, and neither live blog had
-  an outcome when read. Revision 130's rule covers both ends: a ruling or a withdrawal that removes only
-  אבו שחאדה (#3) changes the slate and not the row, and removing a list is a separate decision for the repo
-  owner. If the court does uphold it, revision 115's base rate ends: no committee disqualification of a
-  candidate had been upheld before.
-- **From the hearing, recorded and not scored.** The יועמ"שית and the State Attorney backed the
-  disqualification (ynet). Asked by שטיין for one English article calling Hamas a terror organisation,
-  אבו שחאדה answered *"לא קיים מאמר כזה"*. Through his lawyer: *"מעולם לא תמכתי במאבק מזוין נגד מדינת ישראל ואני
-  מגנה את 7 באוקטובר"*, and the article should not have been written. גרוסקופף asked whether prosecution had
-  been considered. The state's lawyer said the senior forums first met the article ahead of the committee
-  hearing. The sentence the case turns on is in revision 144.
-- **עוצמה יהודית wants a judgment, not a withdrawal.** בן גביר ([post](https://x.com/itamarbengvir/status/2105634937210585321)): *"ההצעה של בית המשפט לאבו שחאדה היא
-  הצעה רחמנית מדי… בית המשפט הזה ידע לתת פסק דין על בן ארי, על גופשטיין, על מרזל"*. גוטליב (#2) says the same
-  ([post](https://x.com/TallyGotliv/status/2105633991231504411)). It is the party arguing its own petition (revisions 198 and 215). His comparison to the three
-  disqualified candidates of his own camp is his.
-- **הציונות הדתית: רוטמן (#5)** ([post](https://x.com/rothmar/status/2105634919456133242), with a screenshot of עמית סגל's Telegram): *"יצחק עמית עושה כאן עסקה אפילה
-  עם אבו-שחאדה… מגיע לעם ישראל לדעת מה הנימוקים שלהם לרמיסת חוקי היסוד של הכנסת"*. An attack on the court by
-  the row's author of the overhaul, which is `judicial-overhaul`, held. His claim that the recommendation is
-  against the law is his. No measure is named.
-- **עמך ישראל: חדאד (#2)** ([post](https://x.com/YosephHaddad/status/2105635500895691229)): disqualify him formally, then *"את סמי צריך לעצור ולהעמיד לדין… שייכלא עד
-  אחרון ימיו"*. Candidate tier (revision 49). It asks for existing law to be enforced against one man and
-  names no new measure.
-- **הדמוקרטים: קריב (#3), twice.** A campaign clip ([post](https://x.com/KarivGilad/status/2105622466194297044)): he left the country for 48 hours to meet
-  *"מנהיגים ממדינות האזור וגם… מנהיגים ומנהיגות פלסטינים"*, and *"חייבת לקום ממשלה שמציגה חזון של חתירה להסכמים
-  מדיניים"*. That is `two-state` and `regional-normalization`, both held. He names nobody he met and no
-  agreement. On an attack on protective-presence activists ([post](https://x.com/KarivGilad/status/2105629435214889448), with footage): the attackers are
-  *"טרוריסטים לכל דבר ועניין"*, and after the election *"נדאג לשינוי ברור במדיניות הממשלה והצבא ביחס לאותם
-  פוגרומסטים"*. That is `anti-settler-violence`, held, with no measure added. The footage shows masked men
-  attacking people in an orchard. Where and when is not stated.
-- **ישר: מרידור (#7) at the 7 October families' sukkah** ([post](https://x.com/meridors/status/2105623786200424553)): *"נחליף את הממשלה ונקים ועדת חקירה
-  ממלכתית"*, which he calls *"אחד הדברים שהגדרנו בתכנית 100 הימים שלנו"*. The commission is revision 99's
-  resolution, documented and untagged. The 100-day plan is the one revision 183 is waiting for. *"שלנו"* may
-  mean ישר's or the four lists', and no such document was found published. The trigger there stands.
-  **Not a lead after all (corrected the same day):** ynet's live blog links an item titled *"איזנקוט: תומך
-  בפסילת יו"ר בל"ד מריצה לכנסת"*. That is ישר's party statement of 22.09, which revision 102 already records
-  under כחול לבן. It scored nothing there, on revision 115's rule.
-- **ישראל תחילה: השכל (#1) at a Druze event in the Golan** ([post](https://x.com/SharrenHaskel/status/2105629300179276224)). The text: the Druze community there is
-  *"קו הגנה ראשון"*, and the party exists *"לשבור את שיטת שני הגושים"*, which is `unity-government`, held, and
-  the row's `unaligned`. The clip adds a fact this page did not have: a Druze candidate in the list's top
-  four, whom she promises a ministry (*"וואהל ייכנס כשר בממשלת ישראל"*; the subtitles spell the name two
-  ways). The row lists no candidates, and the name was not checked against the filed list. A lead for a
-  candidate pass. It moves nothing.
-- **נעם לישראל, twice.** אלון (#4), a teacher and head of a school network, tells teachers she will bring
-  their workload and pay to the Knesset ([post](https://x.com/noamparty/status/2105621967168471110), the party's account). No measure. מעוז (#1), on the priestly
-  blessing at the Western Wall ([post](https://x.com/AVI_MAOZ/status/2105639054712697195)): the state must *"להעלות לראש סדר העדיפויות הלאומי את הזהות והחינוך
-  היהודי"*. Both sit on `education-system-focused` and `single-issue-jewish-identity`, held.
+#### Sources
 
-**2026-10-02 — revision 222 (cross-row). אבו שחאדה withdraws his candidacy and stays בל"ד's chair. The slate
-changes and the row does not. No axis moved, no tag added, `seed.sql` unchanged.**
-([הארץ](https://www.haaretz.co.il/news/elections/2026-10-01/ty-article/000001a0-f92b-d9ab-abfd-ffab80820000), ג'קי חורי and מיכאל האוזר טוב, 01.10.26 23:37, body supplied by the repo owner, and the page's
-own title, time and first paragraph read with `curl`; [ynet](https://www.ynet.co.il/news/elections2026/article/sj00kfs2cge), 01.10.26 23:42, `curl`; [כאן](https://www.kan.org.il/content/kan-news/politic/1105213/), 02.10.26 00:14, read
-through headless Chromium; [N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-5a5a2d3f536f0a1027.htm) live blog, last updated 02.10.26 00:28, the two entries added since revision 219
-read from the page's embedded data. One linked image viewed.)
+Reports, columns and posts not listed here are linked where they are used above. הארץ bodies were
+supplied by the repo owner.
 
-- **The act.** On the evening of 01.10 בל"ד's leadership approved the withdrawal, *"בהתייעצות מלאה עם החבר סמי
-  אבו שחאדה"* (ynet's wording of the statement; N12 reported the decision first, at 23:29, and the official
-  statement at 00:25). He stays chair: *"אבו שחאדה ימשיך לעמוד בראש המפלגה ולהוביל את המאבק הפוליטי להגנה על
-  הייצוג הערבי"*. The stated reason is *"אחריות פוליטית כלפי עמנו וכלפי הרשימה המשותפת"*. The party adds that
-  it decided only after the court said most justices leaned toward upholding the disqualification, so in its
-  words the court disqualified him before any judgment.
-- **There is no judgment, and that is what the withdrawal bought.** Revision 219's recommendation was to
-  withdraw *"באופן שייתר מתן פסק דין מנומק"*. So revision 115's base rate is formally intact: the Supreme
-  Court has still never upheld the committee's disqualification of a candidate. It should no longer be cited
-  without this case beside it, because nine justices said in open court that a majority would have.
-  כאן gives the motive as avoiding a precedent and harsher words from the bench; that is its reporting, not
-  the party's statement.
-- **The slate, re-read today from the filed list** (method in revision 63; the page still shows him at #3,
-  so the committee had not updated it when read). The law lets a candidate resign at any time, and the
-  committee publishes a notice (חוק הבחירות לכנסת, סעיף 87, read on Wikisource). The section does not say what
-  happens to the slots below. If the names below close up, the top of the list becomes ג'בארין, טיבי,
-  ג'טאס (חד"ש), and בל"ד's realistic slots move from #3, #5, #8 to #4, #7, #10: עואודה, כרכבי סבאח, and
-  חסן אלנסאסרה, who was #11. The realistic ten stays 5 / 3 / 2 (revision 67). This is the page's arithmetic
-  on the filed list, not a published list.
-- **The row does not change, on revision 130's rule.** בל"ד is still a party to the list, with its chair
-  outside the Knesset slate. The union rule rests on the components' texts, not on who holds slot 3, so
-  −3 / −3 / −3 and the fifteen tags stay. Revision 129's trigger is closed by a withdrawal and not by a
-  ruling.
-- **The other three cases are not decided.** The same panel heard כסיף, this list and רע"ם on 01.10. None
-  of the four sources has an outcome; ynet says *"לפי כל ההערכות, השופטים יהפכו את ההחלטות"*. Revision 130's
-  decision stands: both Arab rows stay voteable until the court rules. *(Decided on 02.10.26, all three
-  reversed; revision 227.)*
-- **The statement's content, recorded and not scored.** The case raises *"שאלות קשות על גבולות הלגיטימיות
-  הפוליטית הניתנת לאזרחים הערבים"*, and the list will go on working *"להפלת ממשלת נתניהו ובן גביר"*, which fits
-  the row's `opposition`. Through N12: the decision *"אינה נסיגה מעמדות המפלגה ומערכיה"* and he *"לא חזר בו
-  מעמדותיו"*. In court the same day he answered ברק־ארז that he regrets the article (*"כמובן"*, N12). The two
-  are about different things, positions and one article, and the page judges neither.
-- **כאן's three additions are list management.** The other parties on the list promised to *"לפצות"* בל"ד
-  if it ends up with one MK, by rotation or senior posts. בל"ד plans a turnout campaign *"להחליף את מי שפסלו
-  את אבו שחאדה"*. Both are revision 172's tier. כאן also says he had *"עד מחר"* to answer, where N12's text of
-  the statement says *"עד תום יום הדיונים"* (revision 219). Nothing turns on it.
-- **הליכוד at the hearing, through its counsel בומבך.** The party is the petitioner against this list and
-  כסיף (revision 115). הארץ records three justices pressing him. כשר: *"האם נחה דעתה של מפלגת השלטון שאף
-  מפלגה ערבית לא תהיה בכנסת?"* כבוב: *"חמישית מהציבור לא יהיה מיוצג בידי נציגים מהחברה הערבית"*. גרוסקופף:
-  *"אתם מציעים מצב שבו הנבחרים יכולים להיות רק ממפלגות יהודיות"*. בומבך: *"בגלל שאין לציבור הערבי ייצוג נאפשר
-  לתומכי טרור להגיע לכנסת? זה שיקול זר"*. A party arguing its own petition scores nothing (revision 115), and
-  the justices' questions are not party acts.
-- **Reactions, from ynet; the posts themselves were not read.** סמוטריץ': *"יצחק עמית לא רוצה ולא מסוגל
-  לכתוב פסק דין פשוט… אלא מתחנן בפניו שיפרוש"*, the same attack as רוטמן's in revision 219, on `judicial-overhaul`,
-  held. בן גביר: *"הבטחנו - קיימנו!"*, with regret that no judgment was given, which is revisions 198 and 219.
-  איזנקוט posted a video of אבו שחאדה speaking of talks between בל"ד and הליכוד, with condolences to הליכוד
-  on losing *"שותף אמיתי בברית מחל-בל״ד"*. That is a rival's jibe about another row. The video was not viewed.
-  The page has one earlier sighting of the subject: a leaked 2021 recording in which אלמוג כהן says הליכוד
-  talked to the Joint List (revision 142), not recorded as a position. *(Corrected in revision 223: this
-  entry first said the page recorded no such talks.)* ישר's own support for the disqualification is revision 102.
-- **עמך ישראל: חדאד (#2), read first-hand** ([post](https://x.com/YosephHaddad/status/2105762729642578212), 01.10.26 23:52, fxtwitter; the image is a screenshot of a news
-  headline on the withdrawal). He is glad אבו שחאדה will not be in the Knesset, calls the court's offer a
-  *"קומבינה"* because *"היה צריך לשים לו חותמת של פסילה בגין תמיכה בטרור"*, and adds *"המקום שלו זה במאסר לצד
-  המחבלים שהוא תומך בהם"*. It repeats his post in revision 219: a written disqualification, then prosecution.
-  Candidate tier (revision 49), asking for existing law to be applied to one man. No measure is named.
-- **הארץ's lower half is carried over from its earlier reports, and one paragraph is out of date.** It still
-  says the hearing *"יתקיים ביום חמישי הקרוב"*. The committee's 31–4 vote is revision 130, and ג'בארין's
-  attack on גולן is revision 172. Two quotes are new to this page. The יועמ"שית and the State Attorney
-  called his later explanations *"מיתממים, חלקיים"* and said he gave *"לגיטימציה למתקפה הרצחנית של
-  7 באוקטובר"*. That is a move from the hedged opinion of revision 102 to support for disqualifying him, which
-  revisions 193 and 219 recorded as a fact without her words. He replied *"חוק לאבו שאחדה וחוק לבן גביר"*,
-  a claim about how she treated another row's petition (revision 193's line).
-- **The image is the article itself in Hebrew translation**, two pages, the lower numbered 17. The third
-  note reads as revision 144 quoted it from פ"מ 8/26 §42, with the sentence about *"עזה הקטנה והנצורה"* closing
-  a paragraph on Israeli intelligence. It adds nothing.
-
-**2026-10-02 — revision 227 (cross-row). The Supreme Court reverses the committee: רע"ם, this list and כסיף may
-run. אבו שחאדה resigns from the list formally. Both Arab rows stay on the ballot. No axis moved, no tag added,
-`seed.sql` unchanged.**
-([כאן](https://www.kan.org.il/content/kan-news/politic/live-1105232/) live page, updated 13:21, two entries of 12:37 and 12:42, read through headless Chromium after `curl` got a
-Cloudflare challenge; [ישראל היום](https://www.israelhayom.co.il/news/law/article/21537301), אלינור שירקני-קופמן, 02.10.26 12:54, `articleBody` with plain `curl`, found by
-search; [ליברמן's post](https://x.com/AvigdorLiberman/status/2105957860832350604), 12:47, fxtwitter. N12's live blog had nothing after 06:42. The judgment itself was not
-read.)
-
-- **The ruling.** Nine justices under עמית. On רע"ם and on this list the reversal is unanimous. On כסיף it is
-  seven to two. The majority, per ישראל היום: his statements do not reach the strict threshold of the case
-  law, and no *"מסה קריטית"* of evidence formed. מינץ and שטיין would have upheld the disqualification, on the
-  ground of support for armed struggle against the state.
-- **Revision 130's decision is confirmed, and its trigger is closed.** The repo owner kept both rows on the
-  ballot on 24.09 because the court would probably reverse the committee. It did, for both lists and without
-  a dissent. Nothing is left pending on either row: this one stays −3 / −3 / −3 with its fifteen tags, and
-  רע"ם is unchanged.
-- **Revision 115's base rate stands, and should now be cited with two notes.** The Supreme Court has still
-  never upheld the committee's disqualification of a candidate. But a majority of this panel said in open
-  court that it would have upheld אבו שחאדה's (revisions 219 and 222), and two of the nine would have upheld
-  כסיף's. ישראל היום's account of why the court preferred a withdrawal, that a judgment could become a precedent
-  used against Jewish parties later, is the reporter's.
-- **The slate.** אבו שחאדה notified the committee chair, סולברג, that he resigns from the list (כאן, 12:37).
-  That makes revision 222's withdrawal formal under סעיף 87. Its arithmetic for the slots below is unchanged
-  and is still the page's own. The filed list was not re-read today.
-- **ישראל ביתנו: ליברמן names a measure against בל"ד.** *"כל עוד אבו שחאדה נשאר יו״ר בל״ד ונציגי מפלגתו יהיו
-  בכנסת, זהו ייצוג של ארגון טרור בכנסת ישראל. חייבים להוציא את בל״ד מחוץ לחוק."* Outlawing a party is new to
-  this page, and it is in the chairman's own voice. It scores nothing on revision 115's rule: it is an
-  eligibility instrument aimed at one party, not a position on what the state should do. No tag exists for
-  it, and one post would not mint one. **Trigger:** a bill, or the same demand in the party's platform.
-- **The other reactions repeat what their rows hold** (ישראל היום; the posts were not read). עוצמה יהודית
-  released a voice message of בן גביר: *"ברא, ברא, ברא, סאמי אבו שחאדה"*. It is the party cheering its own
-  petition (revisions 198, 215, 219), and the paper notes there was no judgment to cheer. רוטמן (הציונות
-  הדתית #5) calls the ruling *"רוח גבית לטרור"* and the handling of אבו שחאדה *"בריחה מבישה ממתן פסק דין"*. That
-  is revision 219's attack on the court again, on `judicial-overhaul`, held. פורום בוחרים בחיים, which
-  argued for the disqualification of רע"ם, is not a party.
+- **בל"ד's programme** — `altajamoa.org`, Hebrew edition, dated 2018-09-11 (from the pre-merge
+  בל"ד entry, git history; not re-fetched since).
+- **בל"ד's ten points** (rev 103):
+  [ערב 48](https://www.arab48.com/%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9/2026/09/16/%D8%A7%D9%84%D8%AA%D8%AC%D9%85%D8%B9-%D9%8A%D9%82%D8%B1-10-%D9%86%D9%82%D8%A7%D8%B7-%D8%A3%D8%B3%D8%A7%D8%B3-%D9%81%D9%8A-%D8%A7%D9%84%D8%B9%D9%85%D9%84-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A-%D9%88%D8%A7%D9%84%D8%AC%D9%85%D8%A7%D9%87%D9%8A%D8%B1%D9%8A-%D9%81%D9%8A-%D8%A5%D8%B7%D8%A7%D8%B1-%D8%B7%D8%B1%D8%AD%D9%87-%D8%A7%D9%84%D8%AD%D8%B2%D8%A8%D9%8A-%D9%88%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A),
+  *"التجمع يقر 10 نقاط أساس في العمل السياسي والجماهيري"*, published 27.06.2026; and
+  [Adalah's filing](https://www.adalah.org/uploads/uploads/6171120cd2c4f7a4d82bbbe7b50fb263.pdf).
+- **טיבי and the article** (rev 101):
+  [N12, "פגוש את העיתונות"](https://www.mako.co.il/news-israel-elections/2026/Article-1c40e7c140ab0a1027.htm)
+  and [N12](https://www.mako.co.il/news-israel-elections/2026/Article-0104778830bb0a1026.htm),
+  both 19.09.26.
+- **The report on the opinion** (rev 102):
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-09-22/ty-article/.premium/000001a0-c86a-da03-ade3-dc6e454a0000).
+- **The hearing** (rev 219): [ynet](https://www.ynet.co.il/news/blogs/article/skc6ftiqfe) live
+  blog, first published 10:06;
+  [N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-5a5a2d3f536f0a1027.htm) live
+  blog, last modified 15:26, and for rev 222 last updated 02.10.26 00:28.
+- **The withdrawal** (rev 222):
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-01/ty-article/000001a0-f92b-d9ab-abfd-ffab80820000),
+  ג'קי חורי and מיכאל האוזר טוב, 01.10.26 23:37, with the page's own title, time and first
+  paragraph read with `curl`; [ynet](https://www.ynet.co.il/news/elections2026/article/sj00kfs2cge),
+  01.10.26 23:42; [כאן](https://www.kan.org.il/content/kan-news/politic/1105213/), 02.10.26
+  00:14.
+- **The ruling** (rev 227): [כאן](https://www.kan.org.il/content/kan-news/politic/live-1105232/)
+  live page, updated 13:21, two entries of 12:37 and 12:42;
+  [ישראל היום](https://www.israelhayom.co.il/news/law/article/21537301), אלינור שירקני-קופמן,
+  02.10.26 12:54, found by search. N12's live blog had nothing after 06:42.
+- **Read, and scored nothing:** every report, column and post in this entry; and, with nothing
+  else recorded from them, two הארץ pieces of 30.09.26. A
+  [column urging Arab citizens to vote](https://www.haaretz.co.il/opinions/2026-09-30/ty-article-opinion/.premium/000001a0-ee19-d0bd-a3f5-fedb58750000)
+  (rev 202): its one party act is second-hand — per ג'קי חורי's report, itself not read, the heads
+  of the Arab lists intend to call on voters not to boycott, which is campaign machinery — and its
+  verdicts on other rows are opinion (ליברמן as *"גזען שונא ערבים"*, where
+  `excludes-haredi-and-arab-parties`, revision 99, is the classification). An
+  [opinion piece on section 7א](https://www.haaretz.co.il/news/elections/2026-09-30/ty-article/.premium/000001a0-f1ad-d8f2-a5f1-ffbf08ed0000)
+  (rev 212): every party act it cites is already recorded (עוצמה יהודית's petition, revisions 102
+  and 198; הדמוקרטים' support for disqualifying individuals, not lists, revisions 199 and 206),
+  and its claims about rows are the writer's — `kahanist` already sits on עוצמה יהודית (revision
+  198), and the gap between הציונות הדתית's two emigration tags is on the page on its own evidence
+  (revision 92).
+- **Not read:** a third link for rev 219,
+  [כאן](https://www.kan.org.il/content/kan-news/politic/1104945/) (the Cloudflare challenge); the
+  judgment; the videos and reaction posts marked above.
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
