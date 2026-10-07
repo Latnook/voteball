@@ -4486,7 +4486,7 @@ not what it has a policy about.
 #### Tags (30) and what each rests on
 
 **Carried from the original classification (2026-07-16) and never argued separately here:**
-`progressive`, `social-democrat`, `liberal-zionist`. The evidence in this entry is consistent with
+**`progressive`**, **`social-democrat`**, **`liberal-zionist`**. The evidence in this entry is consistent with
 all three; none has been re-tested the way `two-state` was.
 
 **Conflict and territory**
