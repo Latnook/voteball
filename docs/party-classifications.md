@@ -1594,6 +1594,45 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
     four links of rev 242 that are revision 238's.
   - The joint conference of rabbis with הציונות הדתית on 08.10, held without עוצמה יהודית: a
     turnout operation, electoral strategy (rev 254, under עוצמה יהודית).
+- **Read, and scored nothing (rev 257):**
+  - N12's analysis of *"ימין או פלסטין"* (עופר חדד, 08.10.26; the slogan is revs 203 and 243's):
+    שיקלי first on 29.07, נתניהו making it the closing message at the end of September, a
+    coordinated wave of near-identical posts on 3–4.10. Its counter-fact is that נתניהו accepted
+    Trump's 21-point plan in October 2025, whose text, as N12 renders it, allows for a credible path
+    to Palestinian self-determination and statehood
+    ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-78648500f1a11a1027.htm); the
+    plan was not read here). A government accepting a plan is not the party stating a position — rev
+    112's rule, which kept `anti-oslo` off this row, applied in the other direction — so
+    `no-palestinian-state` and `anti-two-state` stay on the party's own words.
+  - N12's conscription survey: enlistment for those who do not study and a continued quota of exempt
+    students — `scholar-exemption-retained`, held — with נתניהו's *"מי שלא לומד תורה - חייב
+    להתגייס"* (May) and *"צריכות להיות סנקציות"* (June)
+    ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+    08.10.26).
+  - ynet on the campaign: strengthen סמוטריץ', hold בן גביר down, grow at וינטר's expense; by its
+    report נתניהו has said the next government will be built on the present coalition and widened
+    ([ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl), 08.10.26). The party did
+    not answer ynet's questionnaire on the state's character
+    ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395)).
+  - Candidate tier: גולדשמידט (#26), interviewed by הארץ — *"קרה אצלי מהפך"* after 7 October, *"מה
+    שנתניהו עשה אחרי מכפר במידה רבה"*, and a denial that he once promoted a bill to publish the
+    names of HIV carriers
+    ([הארץ](https://www.haaretz.co.il/magazine/on-the-line/2026-10-08/ty-article/.highlight/000001a1-1686-daf2-a7a5-dfb69ed20000),
+    08.10.26, body supplied by the repo owner). A candidate's account of himself.
+  - A הארץ column (09.10.26, body supplied by the repo owner): opinion. Its two party facts are
+    relays — the party's lawyer withdrew his petition against the Fly&Vote project at the CEC
+    chair's urging, and a bill led by אופיר כץ (#8) to dismiss academic staff found to support
+    terror passed a preliminary reading in July 2024 and stalled
+    ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-09/ty-article/.highlight/000001a1-1d13-d90c-a7bd-9d171a510000)).
+  - Not entered at all, because no party acts in them: a former Shin Bet officer on what נתניהו knew
+    before 7 October ([כאן](https://www.kan.org.il/content/kan-news/politic/1107735/)); the
+    Palestinian Authority postponing its elections
+    ([כאן](https://www.kan.org.il/content/kan-news/global/1107716/)); ynet's poll and interviews of
+    first-time voters ([ynet](https://www.ynet.co.il/news/elections2026/article/byvn5fp5zl)); a הארץ
+    opinion essay on fear and the two-state argument
+    ([הארץ](https://www.haaretz.co.il/opinions/2026-10-09/ty-article-opinion/.premium/000001a1-1cff-da49-a5e9-1dff85c00000)).
+    The two כאן pages sit behind a browser check and open in headless Firefox, not Chromium or
+    `curl`.
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
@@ -2474,6 +2513,24 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   its paraphrase of בנט and ליברמן, are not scored); a twelfth principles paper, [*ישר! לצעירים*](https://yasharwitheisenkot.com/principles/youth-and-young-adults/)
   (published 2026-09-27 09:33 UTC; every policy line matches the young-people topic page, with a
   ministerial committee on youth, rental-market measures and a personal "launch account"; rev 171).
+- **Read, and scored nothing (rev 257):** the party's answer to ynet's questionnaire on the state's
+  character — recognising the Declaration's values is *"אחד התנאים להקמת ממשלה לאחר הבחירות, אך לא
+  בהכרח באמצעות עיגון חוקתי-משפטי"*, by a reference clause as in Basic Law: Human Dignity and
+  Liberty; a joint Jewish–Druze team to consider *"תיקון הצהרתי-חקיקתי לחוק הלאום"*; *"גם יהודית וגם
+  דמוקרטית"* ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395), published
+  07.10.26 21:00 UTC). It is the only one of the four bloc answers that stops short of
+  constitutional anchoring; `constitutionalist` is held on the party's papers. איזנקוט to ynet
+  (published 08.10.26 21:00 UTC): his four ground rules — a Jewish, democratic and liberal state,
+  the Declaration's values, a duty of army or national service, Hamas as a terror organisation to be
+  destroyed — and *"אני לא מכיר אף מפלגה ערבית שמקבלת את זה"* (`excludes-anti-zionist-parties`,
+  held); without 61 he would still put a government to the vote, and *"אני לא אבקש מהחרדים להצביע לי
+  ואני לא אבקש מהערבים להצביע לי"*; on נתניהו, *"לא יכול להיות שאחרי הכישלון של 7 באוקטובר נמשיך
+  לראות אותו בחיים הפוליטיים בישראל"* — 7 October again, not the indictment, the ground
+  `anti-indicted-pm` was refused on (rev 99); he would sit with וינטר and expects גנץ to withdraw
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920134)). N12's conscription
+  survey restates the 3% one-year deferral, sanctions and compulsory civilian service for Arab youth
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): recorded (revs 21, 86).
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
@@ -3243,6 +3300,20 @@ Party-published unless marked. Statements and press are linked where they are us
   [column](https://www.haaretz.co.il/news/elections/2026-09-30/ty-article/.highlight/000001a0-f32f-d272-adf6-ffef0b850000)
   and the [01.10
   report](https://www.haaretz.co.il/news/politics/2026-10-01/ty-article/.premium/000001a0-f593-dbb2-a9f8-ffdb3c630000).
+- **Read, and scored nothing (rev 257):** the party's answer to ynet — *"מגילת העצמאות תהווה פרק
+  הפתיחה לחוקת ישראל"*, beside a Basic Law: Legislation
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395), published 07.10.26 21:00
+  UTC): `constitutionalist`, held. N12's conscription survey — service for all with no exemptions or
+  quotas, conscription as the party's condition for entering a government, and *"מי שלא משרת את
+  המדינה - לא יקבל שקל מהמדינה כל חייו"*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): held tags. בנט says גולן will not be Justice minister — *"בתחומים רגישים לא שמים אנשים
+  שנויים במחלוקת"*
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-08/ty-article/.premium/000001a1-1cd7-da49-a5e9-1dff29210000),
+  08.10.26, body supplied by the repo owner), two weeks after signing the leaders' pledge not to
+  attack one another (rev 146): a veto on a portfolio, not a position. ynet on the campaign: בן ארי
+  urging voters to look at who holds slots 15 and 16 on איזנקוט's list
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl)).
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -3661,6 +3732,27 @@ All first-party unless marked. Listed so the next pass recognises a document ins
 - **Read, and scored nothing:** גולן's one-line jab at נתניהו's UN speech ([X](https://x.com/YairGolan1/status/2103196559252807840), rev 125); the
   party's בג"ץ petition for a security detail for its chairman ([ynet](https://www.ynet.co.il/news/elections2026/article/b1wyuokqzg), rev 195); אוחנה's relay
   of the רשת ב' interview ([X](https://x.com/AmirOhana/status/2104167840261542109), rev 206); רונן's reply to נתניהו ([X](https://x.com/omrironen24/status/2106453652533813298), rev 236).
+- **Read, and scored nothing (rev 257):** גולן calls the killing of חמינאי a mistake — *"לא בגלל שלא
+  הגיע לו למות, אלא בגלל שזה לא משרת את האינטרסים של מדינת ישראל"* — and says the war *"הרעה את
+  מצבנו"* because נתניהו set an aim that could not be reached; his post afterwards faults the
+  absence of *"מהלך מדיני אזורי שיבטיח את ביטחון ישראל"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/hysibv8sgl), 09.10.26; in February he
+  had called the killing *"צעד דרמטי ומשמעותי"*). A judgment on one operation, argued from the
+  agreement-first line on Iran already recorded under What this row contributes; `security` scores
+  the conflict and the territory. In the same interview he called the haredi population *"טפילית"*,
+  to be turned into *"לאוכלוסייה יצרנית"*: an insult and an aim, with no measure. N12's conscription
+  survey quotes him from July — *"בממשלה שלנו חוק יסוד: לימוד תורה יבוטל, החרדים יתגייסו ונדאג
+  לשוויון אמיתי בנטל"*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): `anti-conscription-exemption`, held. The party to ynet: the Declaration's values as a
+  *"בסיס חוקתי מחייב"* ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395)):
+  `constitutionalist`, held. בנט says גולן will not be Justice minister; the party's CEO answers
+  that portfolios belong to the coalition talks and that the justice system must be in the hands of
+  those who will defend its independence
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-08/ty-article/.premium/000001a1-1cd7-da49-a5e9-1dff29210000),
+  08.10.26, body supplied by the repo owner;
+  [post](https://x.com/Omer_Lubi/status/2108218637169434940), not opened). A partner's veto on a
+  portfolio.
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -4025,6 +4117,16 @@ All first-party unless marked.
   three הארץ items above (revs 90, 99, 102); ynet on ישר and rotation (linked above, rev 99); the
   [חדשות 13](https://13tv.co.il/item/news/politics/politics/abhya-905369461/) report of 24.09
   (rev 135).
+- **Read, and scored nothing (rev 257):** the party's answer to ynet — binding anchoring only
+  *"במסגרת מהלך חוקתי רחב ובהסכמה לאומית רחבה"*, a Basic Law: Legislation first, and no *"עליונות
+  קבועה"* for either the Jewish or the democratic value
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395), published 07.10.26 21:00
+  UTC): `constitutionalist`, held on the same keystone. N12's conscription survey cites the 2024
+  service outline
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): held. איזנקוט on גנץ — *"אני משוכנע שהוא יחליט לפרוש"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920134)): a rival's forecast, and
+  polls are not a field.
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
@@ -5408,6 +5510,17 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   למחנה"*) and מלינובסקי ([post](https://x.com/YuliaMalinovsky/status/2107437894658916839), over a
   headline, *"החיקוי שהצית סערת גזענות"*, stamped *"גזען!"*: *"מדינת ישראל היא מדינה של עלייה וגם
   לאבות המייסדים של המדינה היה מבטא כבד"*).
+- **Read, and scored nothing (rev 257):** the party's answer to ynet — *"המפלגה דורשת כינון חוקה
+  מלאה"*, with a bill of rights that includes *"החופש מכפייה דתית"*, replacing the Basic Laws, and
+  *"החוקה תאושר במשאל עם"* ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395),
+  published 07.10.26 21:00 UTC): `constitutionalist`, held; freedom from religious coercion as a
+  constitutional right names no monopoly and adds nothing to `religiosity`. N12's conscription
+  survey — a duty on everyone at 18, army or civilian, and the sanctions list
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): held tags. N12's campaign analysis describes ליברמן's post setting his plan —
+  dismantling the Palestinian Authority and cancelling Oslo — against נתניהו
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-78648500f1a11a1027.htm),
+  08.10.26): rev 237's plan, held.
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -5903,6 +6016,14 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   **Decided 2026-10-08 by the repo owner: held at +3.** The score records the aspiration its
   leader stated, not the programme its documents carry; `halakhic-state` is the tag that says so.
   **Trigger to re-open:** a 2026 party text on religion and state, in either direction.
+  **Read since, and not that trigger** (rev 257). To ynet's questions on the Declaration of
+  Independence and the Nation-State Law the party answered in legal terms — *"מגילת העצמאות אינה
+  מסמך משפטי, אלא היסטורי"*, and no further anchoring until judicial review is settled — and זהות,
+  running with it, answered *"מדינת ישראל היא מדינה יהודית - נקודה. אין כאן בכלל שני ערכים באותו
+  מדרג"* ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395), published
+  07.10.26 21:00 UTC). One half of the list ranks the Jewish character above the democratic; neither
+  answer names halakha, משפט עברי or a rabbinic body. A text on the state's character, not on
+  religion and state: the decision stands.
 
 #### The `/judaization/` page (revs 31, 33)
 
@@ -6314,6 +6435,17 @@ rewriting its programme would be the thing to catch.
   [הארץ](https://www.haaretz.co.il/news/elections/2026-10-01/ty-article/.premium/000001a0-f69e-de52-afe1-f6de34cb0000)
   on it, 01.10.26 (rev 217); the joint conference of rabbis with הליכוד on 08.10, held without
   עוצמה יהודית — a turnout operation, electoral strategy (rev 254, under עוצמה יהודית).
+- **Read, and scored nothing (rev 257):** N12's conscription survey — סמוטריץ', 2025: *"מי שלומד
+  תורה ממשיך ללמוד תורה ודוחה גיוס"* and *"מי שלא לומד תורה, צריך להתגייס"*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26), the chairman's line beside the rebels `conscription-split` was assigned on; ynet on the
+  campaign — נתניהו has decided to strengthen the party, and told רוטמן (#4) in public *"אתה עושה
+  עבודה נפלאה במאבק בדיקטטורה המשפטית"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl), 08.10.26); a הארץ column's
+  relay that a recording was published of הרב לנדו abusing religious-Zionist soldiers, living and
+  dead
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-09/ty-article/.highlight/000001a1-1d13-d90c-a7bd-9d171a510000),
+  09.10.26, body supplied by the repo owner; the recording was not heard).
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -6438,7 +6570,10 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   exemption. At filing he described the list as *"חילונים, דתיים, מסורתיים, חרדי ששירת בצבא"* (rev
   57): the model stated as identity rather than as a programme. Asked directly by ynet's
   conscription questionnaire, בן גביר answered with the same model — haredi tracks in the police and
-  מג"ב (revision 86, under ביחד).
+  מג"ב (revision 86, under ביחד). N12's survey has the model in his words again — *"מי שלא
+  לומד, יתגייס"*, *"אני לא חושב שכפייה תעזור"*, and economic sanctions would *"להרחיק דווקא את
+  החרדים שרוצים להתגייס"* — with national service for Arab youth
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm), 08.10.26; rev 257).
 - The economy family rests on the evidence under the economic axis; the judicial one is untouched by
   the appointments programme of rev 107.
 
@@ -6704,6 +6839,17 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   party published and has not disowned, not on what it publishes now. **Trigger to re-open:** any
   first-party religion-and-state text; the legal platform promised to ynet is the likeliest
   place.
+  **Read since, and not that trigger** (rev 257). Asked by ynet what should prevail when the state's
+  Jewish and democratic characters collide, the party answered that Israel arose *"קודם כל ולפני
+  הכול כבית הלאומי והריבוני של העם היהודי"* and that *"הדמוקרטיה היא שיטת המשטר המיטבית והראויה
+  לניהול המדינה"*; it opposes binding force for the Declaration of Independence
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395), published 07.10.26 21:00
+  UTC). The answer is national: it names no religious law and no rabbinic body. And הרב יצחק יוסף is
+  campaigning against the party for acting *against* the rabbis on ascending the Temple Mount
+  (ynet's report of statements in circulation;
+  [ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl)). Both read below +3. The
+  question put was national identity, not religion and state, so the decision of 2026-10-08 is not
+  re-opened.
 - **The promised legal platform.** ynet's judicial questionnaire (21.09.26): the party answered only
   that a full legal platform would be published within days — **trigger:** read it when it appears
   (revision 134, under ישר). Rev 107's six measures are a chairman's statement, not that platform.
@@ -6808,7 +6954,7 @@ No `bloc` moves on any row.
 
 **rev 112 (2026-09-22) — `anti-oslo` checked across the far-right rows**, after revision 111 gave it
 to הציונות הדתית. עוצמה יהודית: added. עמך ישראל: not added; its own entry says
-*"annulling-Oslo-type evidence … there is none"*. נעם: not added; Oslo appears nowhere in its entry.
+*"annulling-Oslo-type evidence … there is none"* (granted in rev 257, on וינטר's own words). נעם: not added; Oslo appears nowhere in its entry.
 הליכוד: not added — the February 2026 cabinet measures breach Oslo in practice (control in Areas A
 and B), but a government act is not a stated position to cancel the accords, and this is the party
 that signed Hebron and Wye; **trigger:** a party statement or bill to annul them. אל הדגל: held open
@@ -7317,6 +7463,16 @@ Linked where used above. Not linked above:
     `hardline-on-gaza`, held, and a disqualification stance scores nothing (revision 115's rule).
     Its count for the petitions against this party, 11–10–1, is הארץ's own (the other count is
     under Recorded).
+- **Read, and scored nothing (rev 257):** הרב יצחק יוסף and אשר (יהדות התורה #1) each blame בן גביר,
+  as the minister over the police, for the arrests of yeshiva deserters; הארץ reports that the
+  party's campaign is aimed at ש"ס's voters and that ש"ס's internal figures show them moving
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-07/ty-article/.premium/000001a1-17ed-d199-a5fd-bfff15780000),
+  07.10.26, body supplied by the repo owner). ynet: נתניהו is working to shrink the party without
+  pushing it to the threshold, and the party's statement that הליכוד refused it a surplus agreement
+  *"כחלק מהניסיון להקטין את עוצמה יהודית"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl), 08.10.26; the agreement is
+  rev 254's). איזנקוט names בן גביר at Defence as what he is running against
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920134)). Electoral, all of it.
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -8425,6 +8581,15 @@ housing, is under `economic`.
 - **Read, and scored nothing:** `/המילואימניקים-והכלכלית/`, the joint list's landing page: polls and
   a sign-up form, no policy text (revs 98, 218); the הארץ polling column (rev 91); the eight
   other-row posts of rev 218.
+- **Read, and scored nothing (rev 257):** הנדל calls on וינטר to withdraw his commitment to נתניהו
+  and the haredi parties, sign a surplus agreement and declare that both will sit only in a Zionist
+  government — *"יחד נהיה גוש חוסם לממשלות לא ציוניות ולקואליציות עם מפלגות חרדיות או ערביות"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/hk00uzebszx), 08.10.26):
+  `excludes-haredi-and-arab-parties`, held and restated. N12's conscription survey gives the
+  platform's universal duty and the withdrawal of benefits from those who do not serve
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): held tags. The party did not answer ynet's questionnaire on the state's character
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395)).
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -8908,6 +9073,18 @@ correction. וינטר, at the press conference: *"אנחנו מתכוונים �
   43). To נתניהו's *"אסור להצביע למפלגה שלא עוברת את אחוז החסימה, ואסור להצביע למי שיעביר את הקולות
   לליברמן"* the row answered *"החלק הראשון לא נכון והחלק השני לא יהיה"*; a party denying it will
   help the other side is not a positive statement of where it sits.
+- **Sharper, and still inside the camp** (rev 257). From a clip of an interview N12 was to air on
+  10.10: *"באנו לדרוש, באנו להכריע, ואם לא אז אני אומר לך - שביבי יקפוץ לי"*, *"אני לא עובד אצל
+  אדם"*; on a repeat election, *"לא נלך לעוד בחירות. באנו לעשות את מה שאנחנו דורשים לעשות, למען עם
+  ישראל. ואם לא - אנחנו לא חלק"*; and on a government under איזנקוט, *"ממשלה הזאת, צרה, היא צרה
+  לישראל"* ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-45e57cc1dc021a1026.htm),
+  09.10.26). The condition on joining is restated and the other side is refused again; the
+  recommendation is not withdrawn. הנדל asks him to withdraw it and sign a surplus agreement
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/hk00uzebszx)), and איזנקוט says he could
+  sit with him — *"הוא מקבל את כל העקרונות שלי"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920134)). A rival's request and a
+  rival's reading, neither of them וינטר's words, so neither trigger below is met. **Not read:** the
+  full interview.
 - **Triggers:** וינטר walking back the endorsement in his own words (rev 76); his own statement that
   he would sit with איזנקוט, or a vote (rev 137 — rev 147 went the other way).
 - The platform names neither נתניהו, a bloc, nor who the party would sit with; the home page says
@@ -8936,7 +9113,7 @@ against holders whose whole identity is the movement. (The "Reservists name coll
 Gilad Ach as chair of המילואימניקים - דור הניצחון; whether this is the same movement, and who chairs
 it, was not checked. Its platform is not this row's either way: a candidate is not a position.)
 
-#### Tags (18) and what each rests on
+#### Tags (20) and what each rests on
 
 **`new-party`** is carried from the original classification and never argued here.
 
@@ -8945,6 +9122,19 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
 - **`no-palestinian-state`** — the launch line, verbatim (under `security`). Restated: *"זה הבית
   שלנו ולכן לא תקום פה שום מדינה אחרת חוץ ממדינת ישראל"* (rev 147), and by the #2 as the party's
   principle, *"לא תקום מדינה פלסטינית בשטחי ארץ ישראל"* (rev 240).
+- **`anti-oslo`** and **`anti-two-state`** (rev 257) — both were refused for one stated absence, a
+  statement annulling Oslo. וינטר supplied it at the counter-terrorism conference at Reichman
+  University on 08.10.26, where by ynet's report he tore up the accords on stage: *"אין עם פלסטיני,
+  זה שקר. אין מדינה פלסטינית. כל תכלית הרעיון הוא השמדת מדינת ישראל"*, *"אין משא ומתן על הבית"*, and
+  *"זה הזמן לומר - הסכם אוסלו לא קיים. נגמר החזון להשמדת מדינת ישראל"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/hk00uzebszx)). The chairman naming Oslo
+  and declaring it void is the limb ישראל ביתנו's grant was measured against (rev 148's trigger),
+  and rejecting the framework along with the state is what separates the second tag from
+  `no-palestinian-state`. **It is one speech in one outlet's wording**; N12 reports the same speech
+  with a different line
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-78648500f1a11a1027.htm)). There
+  is no bill and no platform sentence, and the platform still does not contain *"פלסטיני"* (rev 246)
+  — the thinnest grant either tag has.
 - **`sovereignty-annexation`** and **`pro-settlement`** (rev 176, on the repo owner's decision) —
   the ynet answer under `security`. Sovereignty over Judea and Samaria as a whole is the first tag's
   founding shape. Before it, the `pro-settlement` reading that בן ציון's Alon Moreh residency and
@@ -9076,9 +9266,9 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
 - **`security-hawk`** — the revision 30/31 precedent: all five holders are centre/centre-right and
   no far-right row carries it, so a +3 row taking it would erase the distinction the tag exists to
   draw.
-- **`anti-two-state`** — not stated. `no-palestinian-state` is, verbatim; annulling-Oslo-type
-  evidence is what separates the two, and there is none. `anti-oslo` is refused on the same absence
-  (rev 112, under עוצמה יהודית).
+- **`anti-two-state`**, **`anti-oslo`** — refused until rev 257 because annulling-Oslo-type
+  evidence, which is what separates the first from `no-palestinian-state`, did not exist (rev 112,
+  under עוצמה יהודית). Granted then on the chairman's own words; under Tags.
 - **`hard-to-classify-bloc`** — retired in rev 41. It was carried for one stated reason, that וינטר
   had never named נתניהו, and he then named him twice on the record.
 - **`not-economy-focused`** (tag and family) — retired in rev 246. The tag names the absence of an
@@ -9148,6 +9338,13 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   condition on joining on 03.10 (rev 238, the sweep item below), where the law is one on *"הסדרת
   מעמד המשרתים"*; absent from the platform (rev 246). The axis and bloc triggers are under those
   headings.
+  - **Nearer an answer, and not acted on** (rev 257): N12's conscription survey paraphrases him as
+    saying that whoever is defined as *"תורתו אומנותו"* should count as the equal of someone doing
+    national service
+    ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+    08.10.26). If he said it, the quota's members do not serve, which points to
+    `scholar-exemption-retained` and against `anti-conscription-exemption`. It is a paraphrase with
+    no quotation, dated only "last month".
 - **The −2 band text** (rev 41). This is a fourth row satisfying a fourth different subset of the
   band — revisions 20, 21 and 22 each recorded a row clearing it on a different combination — and
   the narrowest yet, one criterion of three. It is the strongest argument that the band should be
@@ -9157,7 +9354,8 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   row: five holders (as of rev 41) sit under a label whose founding case only one of them meets.
 - **A surplus-vote agreement with עוצמה יהודית** was reported as possible (rev 238); if signed, it
   fits `bibi`. By rev 247 (under ישראל ביתנו) הליכוד and הציונות הדתית had signed, leaving עוצמה
-  יהודית alone in the coalition's bloc unless it signs with this row.
+  יהודית alone in the coalition's bloc unless it signs with this row. הנדל offered this row one
+  from outside the bloc on 08.10 (rev 257, under Bloc).
 - **Not read:** the post in which, by the journalist's report, the party says חדאד erred (it did not
   load, rev 240); the text of נתניהו's photo post, and the dates of the two Facebook statements (rev
   131).
@@ -9530,6 +9728,14 @@ Most links are given above, where each source is used; these are the rest.
   ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-25/ty-article/.highlight/000001a0-d48c-db4b-a7a5-d6fead070000),
   rev 137); and, linked above, the two ynet reports of rev 211 and the clips and posts of revs 229
   and 240.
+- **Read, and scored nothing (rev 257):** ynet's report that נתניהו has chosen to grow at this row's
+  expense, unsure both that it will pass the threshold and of its loyalty to the bloc
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl), 08.10.26) — a rival's
+  assessment; וינטר's line that נתניהו says there will be no Palestinian state and legitimises one
+  in the 21-point plan
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-78648500f1a11a1027.htm)) —
+  criticism, and the recommendation stands; the party did not answer ynet's questionnaire on the
+  state's character ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395)).
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
@@ -9781,6 +9987,19 @@ housing-discrimination bill comes out 33–52, matching הארץ's 52–33 (revi
   publication date); the Hebrew-press search on #7–#10 (rev 69). **Never opened:**
   `israelhayom.co.il` (403, tracing the secondary summary) and the JPost article a research pass
   cited for the announcement (404).
+- **Read, and scored nothing (rev 257):** the party's answer to ynet, in ynet's indirect speech — it
+  supports binding legal status for the Declaration of Independence, wants the Nation-State Law
+  amended to state equality for all citizens, and sees no contradiction between Israel being the
+  nation-state of the Jewish people and a democracy with full equality
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395), published 07.10.26 21:00
+  UTC). The same acceptance עבאס has voiced before (under Recorded); no tag marks it. N12's
+  conscription survey — no position on haredi conscription, support for a civilian-service track
+  fitted to Arab society and opposition to making it compulsory, with עבאס's 2025 proposal that
+  young Arabs be able *"להתגייס למשהו"*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): the voluntary initiative `arab-civil-service` was refused on (rev 48). **A lead, not
+  read:** כאן's headline that עבאס told the change bloc the party will not demand recognition of
+  Palestine — it would bear on `pro-two-state`.
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
 
@@ -10393,6 +10612,17 @@ supplied by the repo owner.
 - **Not read:** a third link for rev 219,
   [כאן](https://www.kan.org.il/content/kan-news/politic/1104945/) (the Cloudflare challenge); the
   judgment; the videos and reaction posts marked above.
+- **Read, and scored nothing (rev 257):** the list's answer to ynet — it wants a constitution,
+  *"תומכים בעיגון חוקתי של ערכי היסוד הדמוקרטיים וזכויות האדם והאזרח"*, and *"מתנגדים למתן תוקף
+  משפטי לכל מסמך שאינו מעגן שוויון זכויות אזרחי ולאומי מלא עבור האוכלוסייה הערבית, המהווה מיעוט
+  לאומי ילידי"* ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395), published
+  07.10.26 21:00 UTC): `state-of-all-its-citizens` and `civil-rights-focused`, held.
+  `constitutionalist` is not opened on one sentence to a newspaper; **trigger:** a constitutional
+  plank in the list's own text. N12's conscription survey — against haredi conscription and
+  compulsory service as such, against sanctions, against compulsory civilian service for Arab youth
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26; N12's summary, no quotation): the last is `opposes-arab-conscription`, held, and the
+  first is the vocabulary gap under What this row contributes.
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
@@ -10770,6 +11000,22 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   of his הילולה line, the judges accused *"באטימות ובניתוק מרגשותיהם של המוני יהודים"* ([הארץ](https://www.haaretz.co.il/news/elections/noharim/2026-09-17/ty-article-magazine/000001a0-aeda-df5b-adf2-feff5f220000),
   rev 99); the חדשות 12 investigation into #6 ([mako](https://www.mako.co.il/news-politics/2026_q3/Article-686cfe7d92ab0a1027.htm), *חדשות סוף השבוע*, עמרי מניב, 2026-09-19,
   rev 110).
+- **Read, and scored nothing (rev 257):** הרב יצחק יוסף blames בן גביר for the arrests of yeshiva
+  deserters — *"איתמר בן גביר הוא האשם בזה!"*, *"הוא שר המשטרה – אם הוא לא היה, לא היו מעצרים"*;
+  party people were displeased, מלכיאלי was photographed trying to stop the filming, and הארץ
+  reports a renewed struggle between יוסף and דרעי and internal figures showing voters moving to
+  עוצמה יהודית
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-07/ty-article/.premium/000001a1-17ed-d199-a5fd-bfff15780000),
+  07.10.26, body supplied by the repo owner). ynet adds statements of his in circulation that בן
+  גביר acts against the rabbis on ascending the Temple Mount and must not be voted for
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl), 08.10.26). A fight for the
+  same voters. N12's conscription survey — דרעי's line already quoted under Tags; הרב יוסף, undated:
+  *"אין דבר כזה ללכת לצבא. תקליטו אותי. גם מי שבטלן ולא לומד אסור שילך"*, which goes past the
+  learner `scholar-exemption-retained` is named for and is what the family `conscription-exemption`
+  already says; and the party, April 2026, on economic sanctions: *"עוול בלתי נסלח"*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26). The party did not answer ynet's questionnaire on the state's character
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395)).
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
@@ -11219,6 +11465,22 @@ Every source is linked where it is used above.
     said the number 18 in the cabinet after seeing נתניהו, who then asked to cancel the decision. A
     former Defence Minister's account of two rows; `opposes-hostage-deals` is held on הציונות הדתית
     on its own words.
+- **Read, and scored nothing (rev 257):** two heads, two culprits for the arrests of yeshiva
+  deserters — אשר (#1, דגל התורה) to בן גביר: *"אל תיתן את ידך להגברת המעצרים של לומדי התורה דווקא
+  עכשיו, בתקופת הבחירות"*, blaming the Attorney General; גולדקנופף: *"הרדיפה של לומדי התורה הגיעה
+  לשיא והאחריות לכך מוטלת על ראש הממשלה"*
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-07/ty-article/.premium/000001a1-17ed-d199-a5fd-bfff15780000),
+  07.10.26, body supplied by the repo owner). `two-faction-list`, held. N12's conscription survey —
+  against a duty and against sanctions, *"לא ייתכן שמי שמקדישים את חייהם ללימוד התורה יוגדרו
+  כעבריינים"*, and גולדקנופף in committee in January, *"תפטרו את לומדי התורה מהכול!"*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
+  08.10.26): `scholar-exemption-retained`, held. A הארץ column's relay that a recording was
+  published of הרב לנדו abusing religious-Zionist soldiers, living and dead, and that גולדקנופף
+  backed the rioters in מודיעין
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-09/ty-article/.highlight/000001a1-1d13-d90c-a7bd-9d171a510000),
+  09.10.26, body supplied by the repo owner; the recording was not heard, and whether it is rev
+  245's footage is not established). The party did not answer ynet's questionnaire on the state's
+  character ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14920395)).
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
 
@@ -13119,3 +13381,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-07 | revision 254 — **עוצמה יהודית (cross-row): two הארץ items of 07.10, bodies supplied by the repo owner. Nothing scored.** A report that הליכוד and הציונות הדתית hold a rabbis' conference on 08.10 without בן גביר or his party, which the party's sources read with the surplus-vote agreement of revision 247 as a sign of his exclusion from the next government; both charges it repeats were already on the row, and friction inside a bloc moves no `bloc`. And a column on the disqualification votes that relays three statements by בן גביר at the hearings, one of them on `hardline-on-gaza`, held; a columnist's relay, undated. Written in the current-state format: one item under עוצמה יהודית's sources that scored nothing, and a pointer in each of the other two entries. |
 | 2026-10-07 | revision 255 — **the `religiosity` poles reworded, and every row at either pole tested on its own text. No value changed; `seed.sql` unchanged.** The −3 band no longer turns on "no state religious funding", which no −3 row met; it asks whether any couple can marry and divorce civilly, whether the Rabbinate's monopolies end outright, and whether the establishment loses its protected place. The +3 band asks whether the party's own text makes religious law a source of state power. **−3**: הדמוקרטים and ישראל ביתנו hold on their programmes; הרשימה המשותפת holds by declaration — בל"ד's 2018 programme, recovered from the Wayback Machine, gives the sentence in Hebrew and names no plank. **+3**: נעם holds on its own text. **הציונות הדתית's religion-and-state paper of the 2022 platform, read by OCR for the first time, is headed "שימור הסטטוס-קוו" and reads +2; עוצמה יהודית's site has no religion-and-state programme and its self-description reads +1.** Both are left at +3 for the repo owner to decide. Also: a source that covers several parties is from now on cited under each of them, not hosted under one. |
 | 2026-10-08 | revision 256 — **הציונות הדתית and עוצמה יהודית: the `religiosity` +3 researched, and held by the repo owner's decision. No value changed; `seed.sql` unchanged.** A research run read each party's December 2022 coalition agreement with הליכוד from the scans: both commit to the status quo on religion and state, give rabbinical courts arbitration only by consent, and contain no clause on halakha or משפט עברי — the +2 band. The case for +3 is, for הציונות הדתית, סמוטריץ''s statements of 2019 that the state should be run by Torah law, as reported and since qualified; for עוצמה יהודית, its own principles for the 2019 and 2020 elections — *"נפעל להטמעת המשפט העברי במערכת המשפטית של מדינת ישראל"* — re-read from an archived copy and absent from its current site. The owner kept both at +3 with that in hand; each entry records the evidence both ways and the trigger that would re-open it. Not established: either party's votes in the outgoing Knesset, or בן גביר's own statements on the subject. |
+| 2026-10-09 | revision 257 — **eleven reports and five הארץ items of 07–09.10 (the הארץ bodies supplied by the repo owner),cited under each party they cover. עמך ישראל: `anti-oslo` and `anti-two-state` ADDED (18 → 20 tags; holders 4 → 5 and 7 → 8); no axis moved.** Both tags had been refused that row for one stated absence, a statement annulling Oslo. וינטר tore up the accords at the Reichman counter-terrorism conference on 08.10 and said *"זה הזמן לומר - הסכם אוסלו לא קיים"* (ynet) — the chairman naming Oslo, the limb ישראל ביתנו's grant was measured against. One speech in one outlet's wording, with no bill and no platform sentence: the thinnest grant either tag has. **Nothing else moved.** ynet's questionnaire on the state's character (nine parties answered; הליכוד, ש"ס, יהדות התורה, המילואימניקים והכלכלית and עמך ישראל did not) and N12's conscription survey (fourteen parties) restate held tags row by row. The two +3 `religiosity` rows answered ynet in national and legal terms with no halakha, which reads below +3 and is not the trigger written in revision 256, so that decision is not re-opened. עמך ישראל's `bibi` holds: וינטר sharpens his condition (*"אני לא עובד אצל אדם"*) and refuses a government under איזנקוט again. Four links were not entered because no party acts in them (two כאן reports, a poll of first-time voters, an opinion essay); they are listed under הליכוד. Verified on an already-seeded database; backend suite 271 passed. |
