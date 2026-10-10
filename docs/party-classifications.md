@@ -2948,10 +2948,11 @@ imports, not tenders (rev 105).
   founding text almost exactly (ישראל תחילה: *"גדיעת איומים לפני שהם מתפתחים"*). Rev 49's refusal
   stands for what it read: the August plan's Iran plank is **retaliatory escalation** (*"כל ירי...
   יביא לתקיפות"*) and regime change, not preemption.
-- **`regional-normalization`** — *"נחזק את הסכמי אברהם, נחזיר את ועידת הנגב שיזם שר החוץ
-  יאיר לפיד, ונביא נורמליזציה עם סעודיה, אינדונזיה ומדינות מפתח נוספות"* (the live security plan,
-  read 2026-10-10; rev 49 quoted the August plan's shorter sentence); again in the hitech plan's *"דיפלומטיית חדשנות שתמנף את הסכמי אברהם"*. Its other holder at
-  rev 49 was הדמוקרטים at `security` −1, so it is not a hawk marker.
+- **`regional-normalization`** — *"נחזק את הסכמי אברהם, נחזיר את ועידת הנגב שיזם שר החוץ יאיר לפיד,
+  ונביא נורמליזציה עם סעודיה, אינדונזיה ומדינות מפתח נוספות"* (the live security plan, read
+  2026-10-10; rev 49 quoted the August plan's shorter sentence); again in the hitech plan's
+  *"דיפלומטיית חדשנות שתמנף את הסכמי אברהם"*. Its other holder at rev 49 was הדמוקרטים at `security`
+  −1, so it is not a hawk marker.
 
 **The list**
 
