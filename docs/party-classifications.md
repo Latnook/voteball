@@ -2786,6 +2786,15 @@ confirmed by every plan since; the fusion now shows inside single documents.
   with no offsetting cut named, plus quotas on business (rev 79); hitech a new AI and technology
   ministry and the state as *"הלקוח הראשון"*, with preference for Israeli solutions in government
   tenders — procurement protectionism, recorded and not tagged (rev 105).
+  - **The full education plan is the largest of these, and it carries no price** (rev 261): a
+    ₪12,000 floor for a new teacher's full-time pay, through a grant it calls *"מענק מורה צעירה"*;
+    *"נכפיל את תקציבי הטיפול הרגשי"*; the youth movements' annual budget doubled; the general state
+    schools brought up to the state-religious stream's budget; more than double today's spending on
+    haredi schooling (under `religiosity`); a multi-year plan to close the gap with the OECD in
+    spending per university student; fifteen STEM centres; and a subsidised place for every toddler
+    within eight years (rev 49's plan, restated). No total, no source of funds and no cut is named.
+    On the other side stand per-pupil budgeting, schools that may be run by a network under tender,
+    and a ministry reduced to regulator. The same fusion, weighted to the state.
 - **Not +2:** no privatization and no budget cut anywhere in the cost-of-living document, and
   nothing since withdraws the state — the same fusion that holds המפלגה הכלכלית at +1. **Not 0:**
   that asserts "no economic doctrine, or a genuinely balanced one", and a party with a published
@@ -2872,6 +2881,14 @@ funding". The religion-and-state plan (rev 99) meets two of the three explicitly
   connecting haredi education to the state system and guaranteeing state-haredi frameworks at
   every stage, which it still funds (rev 22, as re-read in rev 253).
   Same shape as ישר and בית ציוני.
+  - **The full plan says so in terms, and funds more** (rev 261): *"הכנסת המוסדות החרדיים אל החינוך
+    הממלכתי לא נועדה לחסוך בהוצאות על הילדים החרדים. להפך"*. Spending on a haredi pupil rises from
+    about ₪15,000 a year to about ₪26,000 once he is in the state-haredi stream, and of the ₪4.5bn a
+    year now paid to institutions that teach no core, *"אנחנו מציעים להכפיל ואף יותר את הסכום הזה"*.
+    The state pays for haredi schooling, and pays more, on its own terms: the −2 band, and further
+    from −3 than the page alone showed. A chapter on the general schools, *"היהדות היא של כולנו"*,
+    adds hours and money for Jewish studies there up to the state-religious level; that is content
+    in schools and not religious authority, and it moves nothing on this axis.
 - **The women's plan** (rev 29) repeals the laws that expanded the rabbinical courts' authority —
   their *expansion*, not their jurisdiction — and the gender-separation-in-academia law, and adds
   legal training for דיינים, measures against get-refusal and עגינות, and representation for women
@@ -3000,10 +3017,17 @@ imports, not tenders (rev 105).
   each stream and 20% by the local authority or school — so the two figures the entry could not
   reconcile were never rivals. Re-read a plan page before re-quoting it.
 - **`state-haredi-education`** — *"נחבר את החינוך החרדי למערכת החינוך הממלכתית"*, with full core
-  studies for every haredi pupil from first to twelfth grade within eight years and *"זמינות מלאה
-  של מסגרות ממלכתיות-חרדיות"* at every stage (rev 253). The numeric target rev 22 quoted, 90% of
-  pupils moved to state-haredi institutions within eight years, is no longer on the page; the
-  tag now rests on the commitment without it.
+  studies for every haredi pupil from first to twelfth grade within eight years and *"זמינות מלאה של
+  מסגרות ממלכתיות-חרדיות"* at every stage (rev 253). The numeric target rev 22 quoted, 90% of pupils
+  moved to state-haredi institutions within eight years, is not on the page. **It is in the full
+  plan, and higher** (rev 261; the page links a 34-page PDF that it summarises): *"היעד הוא הפסקה
+  מוחלטת של מימון ציבורי למוסדות חרדיים שאינם בזרם הממלכתי-חרדי. בלי חריגים ובלי תירוצים"*. The
+  cut-off applies to each year's entrants — *"הפסקת התקצוב תחול על תלמידים חדשים שנכנסים בכל שנה
+  למערכת החינוך החרדית"* — aiming at about 70% of haredi pupils in the state-haredi stream within
+  four years and 100% within eight. Upper-secondary institutions are funded only on the model of
+  yeshiva high schools that sit the matriculation exams, with hesder after them; *"נבטל את המעמד
+  התקציבי המיוחד של רשתות החינוך המפלגתיות"*; and local authorities are obliged by law to offer a
+  state-haredi track *"מהגן ועד הגיוס"*. The figures were read off the rendered page.
 
 **Society**
 
@@ -3035,9 +3059,19 @@ imports, not tenders (rev 105).
   *"מידי הממשלה"* to 6–8 regional coalitions of local authorities (rev 113); planning moved to local
   authorities, permits in three months (rev 164); and נגרי's portfolio, the only first-party
   evidence for it from a named candidate.
+  - **The full education plan goes further than its page** (rev 261): the stated end point is every
+    school's teaching staff employed by its local authority, *"בניהול הרשות עצמה או באמצעות הוצאת
+    מכרז לניהול ע"י רשת חינוך"*, with autonomy earned by results (*"שיטת הרמזור"*), and decisions on
+    reopening schools in an emergency taken by each authority. Its figure for decisions taken at the
+    ministry is about 70%; the page's is 69%.
 
 #### Considered and refused
 
+- **`school-vouchers`** (rev 261) — the full education plan moves every institution to *"תקצוב
+  פר-תלמיד - ולא פר-כיתה"* and hands out two vouchers: a subsidised one for an after-school activity
+  (*"כל ילד וילדה יקבלו שובר מסובסד להשתתפות בחוג"*), and one for daycare for the families of those
+  who serve. Neither is money that follows a pupil to the school his parents choose, which is the
+  tag's meaning on ישראל תחילה and in זהות's platform. A funding formula inside the public system.
 - **`security-hawk`** — removed, pending re-read (see Open questions). Added and removed the same
   day (rev 49) on the directional-tag rule (under Cross-row passes), on grounds that all depended on
   the NULL: all four prior holders were scored, none at NULL or 0; the tag's own standing decision
@@ -3069,11 +3103,18 @@ imports, not tenders (rev 105).
   launch, it is נעם תיבון's headline demand, and the security plan now names it.
 - **`conscription-by-incentive`** — wrong despite the incentive framing: the tag is defined by
   rejecting *both* coercion and sanctions, and this programme is built on sanctions (rev 22).
-- **`religious-pluralism`** — refused three times. The women's plan is representation inside the
+- **`religious-pluralism`** — refused four times. The women's plan is representation inside the
   existing establishment and a limit on its courts (rev 29); the religion-and-state plan recognises
   no non-orthodox conversion track, and granting the tag would collapse "loosen the monopoly" into
   "recognise other streams" (rev 99); the pride plan's civil track is a *civil* alternative to the
   Rabbinate (rev 105). ישר, הדמוקרטים and בית ציוני hold it for recognising non-Orthodox streams.
+  - **The fourth, and the nearest** (rev 261): the full education plan's *"נייצר פלורליזם בחינוך
+    ליהדות"*, with providers of Jewish studies *"ממגוון מסורות, זרמים וגישות"* brought into the
+    general schools, and a complaint that outside bodies have presented Judaism there through one
+    religious outlook. It is the first text of this row that gives other streams anything. What it
+    gives is a place among a school's outside suppliers; the state's recognition of their rabbis,
+    conversions or marriages, which is what the holders hold the tag for, is still absent.
+    **Trigger:** any of those three.
 - **`affirmative-action`** — the 50% target, the hiring goals and the party-funding incentive are
   real instances, but `gender-equality` already carries that exact evidence; tagging both records
   one document twice, rev 21's reason for refusing `anti-corruption` next to `governance-reform`
@@ -3182,6 +3223,11 @@ imports, not tenders (rev 105).
   earning-capacity test as a **precondition** for support and a **priority criterion** for
   placement: the third instance of the finding queued behind the 18-row sweep, and the cleanest,
   since it gates a universal service rather than a benefit (rev 49).
+  - **Restated in the full education plan, with its reason** (rev 261): *"נעגן את הקריטריון של מיצוי
+    כושר השתכרות של שני ההורים"* as the condition for admission and subsidy, on the ground that 55%
+    of the subsidised early-childhood budget goes to the haredi public; and beside it, *"משפחות של
+    משרתי מילואים יהיו זכאיות למעון יום ללא תשלום"*, with priority for those who serve. A work test
+    and a service preference on one service.
 - **The coalition-formation clock.** Three stated coalition conditions: repeal of the exemption laws
   at the swearing-in (rev 115) — the mirror of the pre-swearing-in *precondition* recorded for עמך
   ישראל — the confrontation-line law (rev 134), and the *חוק דרעי* (rev 247, under ישראל ביתנו).
@@ -3386,6 +3432,12 @@ conscription — לפיד: *"שיגייס את 15 אלף החרדים שחסרי
 
 #### Reading this party's sources
 
+- **A plan page can be the digest of a document it links** (rev 261). The education page links
+  `Education-Plan.pdf`, 34 pages, and summarises it: the targets for haredi schooling, the sums per
+  pupil and the staffing end point are in the PDF only, and revs 22 and 253 read the page. Of the
+  twenty-three plan pages on the first page of the index, no other links a PDF of the party's
+  (checked 2026-10-10; the index's second page was not checked). The PDF's text layer drops spaces
+  and reorders numerals, so every figure taken from it was read off the rendered page.
 - **Neither the index, the API nor the sitemap is the corpus.** The `/plans/` index is a paginated
   view — enumerate every page and record the page count (revs 22, 29) — that lists dead pages and
   omits live ones (`kiryat-shmona` is no longer listed and still answers 200): **an index is
@@ -3440,7 +3492,9 @@ Party-published unless marked. Statements and press are linked where they are us
 
 - **Plans** (`be-yahad.org.il/plans/`), by pass — rev 22 (2026-08-17): [יוקר
   המחיה](https://be-yahad.org.il/plans/yokermichya/), [מערכת
-  החינוך](https://be-yahad.org.il/plans/education/), [חוק
+  החינוך](https://be-yahad.org.il/plans/education/) (and the full text the page links, a
+  [34-page PDF](https://be-yahad.org.il/wp-content/uploads/2026/09/Education-Plan.pdf), created 2026-09-11 and uploaded 2026-09-15; supplied by the repo owner and
+  read in full in rev 261), [חוק
   המשרתים](https://be-yahad.org.il/plans/servant-law-new/) (now
   [`meshartim-law`](https://be-yahad.org.il/plans/meshartim-law/), which adds the ₪8.8bn costing —
   abolishing coalition funds, אברך stipends and *"משרדי ממשלה מיותרים"*, with no deficit increase —
@@ -3518,8 +3572,8 @@ Party-published unless marked. Statements and press are linked where they are us
   *"האוטונומיה החרדית"* ([post](https://x.com/VladimirBeliak/status/2108883415629975757)): *"הפסקה
   מוחלטת של תקצוב מוסדות חינוך שאינם מלמדים 100% מלימודי הליבה"*, and *"מי שאינו עובד ואינו משרת -
   לא יקבל שקל מתקציב המדינה"*, which he spells out as *"הנחות בארנונה, קצבאות אברכים וסבסוד מעונות
-  היום"* — `core-curriculum` and `sanctions-on-non-servers`, held, in the plans' terms; his test
-  adds work to service. And a pledge in his own name
+  היום"* — `core-curriculum` and `sanctions-on-non-servers`, held, in the plans' terms; the work
+  test is the early-childhood plan's (rev 49) and not his addition. And a pledge in his own name
   ([post](https://x.com/VladimirBeliak/status/2108905673320792502)): beside *"שבירת מונופול הכשרות
   על פי תוכנית ״ביחד״"*, *"אני מתחייב בכנסת הבאה לקדם דרישה מכל בית חולים ממשלתי או ציבורי במדינת
   ישראל לפתוח מספר סביר של מזנונים ובתי קפה גם בשבת"*. The list's Shabbat position is local option
@@ -3542,9 +3596,26 @@ Party-published unless marked. Statements and press are linked where they are us
   ([post](https://x.com/cohen_meirav/status/2108995061103124957), 10.10.26; 79 seconds, and the
   machine transcript is poor): *"אני מאמינה בחינוך. אבל אני מסכימה עם שריד, שהכל מתחיל בדוגמה
   אישית"* — the country's leaders set the tone, there are fewer school psychologists and counsellors
-  than the OECD norm, and school staff need their authority back. Three directions with no figure,
-  and not compared with the education plan. The list had a representative on the stage in הרצליה
+  than the OECD norm, and school staff need their authority back. Three directions with no
+  figure; all three are in the full education plan's chapter on discipline and care (rev 261). The list had a representative on the stage in הרצליה
   (under הדמוקרטים).
+- **Read (rev 261):** the education plan in full — *הסכם חדש בחינוך: משרד החינוך בממשלת השיקום*, 34
+  pages, [PDF](https://be-yahad.org.il/wp-content/uploads/2026/09/Education-Plan.pdf), the document
+  behind the page read in revs 22 and 253. No axis moved and no tag changed. What it adds is entered
+  under `economic`, `religiosity`, `state-haredi-education`, `municipal-devolution`, Considered and
+  refused, Open questions and Reading this party's sources. Not placed elsewhere: the list *"תתעקש
+  להחזיק בתיק החינוך גם בממשלה הקרובה - וגם באלו שאחריה"*, a portfolio demand (לזימי of הדמוקרטים
+  and מעוז of נעם want the same one); *"נקים מועצה לאומית לחינוך, מוכרת בחוק"*, with the state,
+  state-religious, state-haredi and state-Arab streams represented, fixing the 60% core and red
+  lines for the rest, among them *"שלילת קיומה של ישראל כמדינה יהודית ודמוקרטית"* — the content
+  condition rev 247 noted has no tag; *"הפיצול ההיסטורי של מערכת החינוך לזרמים נפרדים היה טעות
+  עמוקה"*, said and then set aside as not the reality inherited; *"שנת מצפן"*, a twelfth grade given
+  to a state-funded preparatory or service year; phones handed in through eleventh grade, a violent
+  pupil removed for up to three months, an independent measurement authority, inclusion as the
+  default in special education once it is resourced, protections for academic freedom, and tuition
+  subsidy under the servants law for students with more than sixty reserve days in a year
+  (`reservist-focused`, held). For Arab schools it names Hebrew teaching, gap-closing and a seat on
+  the council.
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -13985,3 +14056,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-10 | revision 258 — **two ישר papers, עמך ישראל's security plan, 36 posts and eight reports of 08–10.10. No axis moved, no tag changed, `seed.sql` unchanged.** **ישר:** its thirteenth and fourteenth principles papers, housing and culture (08.10); every measure is word for word in the topic posts read in revision 161, so the corpus is sixteen documents and nothing is scored. Found while comparing: the party has taken its topic pages off the site (26 of 27 return 404), which kills the two links `lgbt-rights` and `gender-equality` cite; the text is still returned by the site's own interface and both tags hold. The same interface returns 104 posts in ten new topics, written on 07.10 and shown on no page, among them the party's first lines of its own on Judea and Samaria; recorded as a lead with a trigger on publication, and scored nothing. **עמך ישראל:** *תכנית 18 הנקודות לביטחון ישראל*, published between 05.10 and 08.10. It is the first party document to say no Palestinian state and to name Judea and Samaria, and it gives eight held tags a written sentence. It does not apply sovereignty, it leaves the Palestinian Authority standing with police weapons, and its *"ולחזור לממש את ההסכמים"* cuts against the `anti-oslo` granted in revision 257 on the chairman's speech. **`anti-oslo` is held on the repo owner's decision (2026-10-10), with the clause recorded beside it and a trigger that would re-open it.** Its point on haredi service (*"בהסכמה ובכבוד"*) is a third signal against `anti-conscription-exemption`, left on its stated trigger. `population-transfer` is refused again at its closest call (*"העברת אוכלוסייה מאזורי הלחימה"*). N12's page on וינטר's clip was read again after its update and is unchanged. **Across the rows:** the protocol affair — אבי גיל's account, הליכוד's statement that the police recommended closing the file, and a police source saying the opposite (N12 twice, ynet, מעריב, walla, ישראל היום, and כאן through headless Chromium) — is a disputed account of a file, with reactions from five lists and no position. איזנקוט's fifteen-minute interview restates the row and confirms he asked for a criminal investigation. ליברמן pledges public transport on Shabbat run by the government, past his platform's local option; לפיד opens a daily pledge with crime measures; בן גביר answers a report on the security prisons with *"המחבלים סובלים"*; פינדרוס defends exempt schools as a right. All of it sits on held tags or has no tag to sit on. Nine clips were transcribed by machine. One post was not entered because no party acts in it (זליכה's from נתניה). A line under עוצמה יהודית that called זאבי הדמוקרטים' candidate is corrected to ביחד. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-10 | revision 259 — **nineteen posts new to the page, three N12 reports and a כאן report of 10.10. No axis moved, no tag changed, `seed.sql` unchanged; one quotation corrected.** **עמך ישראל:** N12 printed וינטר's interview in full. The line rev 257 took from N12's clip page as his answer on a government under איזנקוט — *"צרה לישראל"* — is, in the full text, about נתניהו's government; איזנקוט's is *"סכנה למדינת ישראל"*. The entry is corrected. He repeats the recommendation (*"אני אמרתי שאני ממליץ"*), rules out גולן and the Arab parties, does not rule out the haredi ones (only *"האצבע ה-61"* of גולדקנופף), and runs to the end; נתניהו calls him *"בנט 2"*. `bibi` holds and neither trigger is met. **הרשימה המשותפת:** ג'בארין formally offers a safety net to any government that replaces נתניהו's, with three demands. It turns the "coalition inclusion" gap from a hint into a stated position; no tag is minted on one holder, and a trigger is written. הליכוד answers the same evening with *"ימין או פלסטין"* (אופיר כץ, קרעי, אוחנה); a quotation כץ attributes to רע"ם's חוג'יראת is a lead, its source not found. **Across the rows, all on held tags or with no tag to sit on:** איזנקוט pledges to put every school under the state stream, past his paper's funding condition and with no instrument; ביחד's בליאק restates the plans on haredi funding and pledges, in his own name, cafeterias open on Shabbat in every public hospital, which no plan of the list has (two plans re-read); ליברמן pledges up to 50% more pay for the career army, funded by the platform's child-allowance cut; גנץ says he belongs to no bloc and runs to the end; ש"ס's campaign film on Jewish content in schools, and מעוז's answer; השכל's figures on haredi funding. **הציונות הדתית:** a זהות clip says yeshiva funding will not be touched until a community-funded model can carry it, a transition the faction's platform does not state; recorded in the faction section. A second כאן report on the protocol affair is entered only as the sequel to rev 258's line. Seven clips were transcribed by machine, one checked against its captions. Two links were rev 258's (לזימי, שירי) and one was sent twice. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-10 | revision 260 — **ישראל ביתנו's plan for wounded soldiers, seven posts and two N12 reports of 10.10. No axis moved, no tag changed, `seed.sql` unchanged.** **ישראל ביתנו:** *שליחות מתמשכת*, eleven points drawn up by ישראל בן שטרית (#15), published on the party's site the same day: a fast track to recognition, a caseworker and a personal plan for each of the wounded, waiting-time limits for mental-health care, more posts for the rehabilitation wing, help buying a home, larger prosthetics budgets. No sum and no date. It is spending on those who served and not universal, so `economic` +2's move condition is not met; `reservist-focused` is opened on this row for the first time and refused on this document, with an open question recorded: the row has never been tested for that tag against its economic programme. **הרשימה המשותפת:** ג'בארין's statement of rev 259 is a video in Arabic; three Hebrew captions were read off a rival's clip and fit N12's summary of the demands, and the sentence on a government was not heard, so the entry now says the offer's wording is N12's. **הליכוד:** N12's count of the list's seniors disappearing from the screens and the answers of קרעי and אופיר כץ; N12's transcript of ברוורמן with the stenographer, denied by his side; איזנקוט demands the Attorney General decide before the election. **Also read, nothing scored:** קריב at a rally of four opposition lists in הרצליה, מירב כהן on schools, סמוטריץ''s advertisement against וינטר, קרויזר's podcast announcement. Four clips were transcribed by machine, two looked at frame by frame. One N12 page was blocked as a bot on the first fetch and opened on the second. One link (שירי) is rev 258's, sent a third time. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-10 | revision 261 — **ביחד: the education plan read in full for the first time (a 34-page PDF, link supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** The plan page read in revisions 22 and 253 turns out to be a digest of a PDF it links (created 2026-09-11), and the figures the page lost are in the PDF. **Haredi schooling:** a complete end to public funding outside the state-haredi stream, applied to each year's new entrants, with about 70% of haredi pupils in that stream within four years and 100% within eight (revision 22's page said 90% in eight; revision 253 recorded the target as gone); the party networks lose their special budget status, and local authorities must by law offer a state-haredi track from kindergarten to enlistment. **`religiosity` −2 holds, more firmly:** the plan raises spending per haredi pupil from about ₪15,000 to about ₪26,000 and proposes to more than double the ₪4.5bn now paid to schools that teach no core, so the state funds haredi schooling more, on its terms. **`economic` +1 holds:** a ₪12,000 pay floor for new teachers, doubled budgets for emotional care and youth movements, budget parity for the general state schools and a subsidised place for every toddler within eight years, with no total and no offset; against per-pupil budgeting and schools run by networks under tender. `school-vouchers` is refused (a funding formula inside the public system), and `religious-pluralism` is refused a fourth time at its nearest call (other streams admitted as suppliers of Jewish studies in schools, no state recognition). Two sentences written earlier the same day are corrected in place: the work test בליאק used is the early-childhood plan's, and מירב כהן's three directions are all in this plan. Of twenty-three plan pages checked, only this one links a party PDF. The PDF's text layer reorders numerals; every figure was read off the rendered page. Documentation only: nothing to verify on a database, and the suite was not run. |
