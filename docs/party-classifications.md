@@ -1817,6 +1817,19 @@ single military force between the river and the sea.
   *"לא תהיה מדינה, אלא ישות מתפתחת"*. A long-term *"ישות"* he does not call a state. **Trigger:**
   the word state for the long term, from him or the party — then `no-palestinian-state` is wrong and
   the +1 is re-read against −1, the Zionist two-staters.
+- **Outside the West Bank, held ground is a lever (rev 263).** At the Herzliya conference (uploaded
+  03.07.26): *"רצועות הביטחון שנוצרו בלבנון, בסוריה ובעזה הן אמצעי ומנוף כדי לקדם את האינטרסים
+  הלאומיים של ישראל לא להישאר שם למשך דורות"*; a small part of Israeli society wants to stay, he
+  says, and he advises against it. Withdrawal comes *"רק כשיהיו סידורים ביטחוניים חדים, ברורים, עם
+  פיקוח"*, on the model of the multinational force in Sinai and not of UNIFIL. It is his first
+  statement on this page about Lebanon, Syria and Gaza as territory, and it has the shape of ביחד's
+  Yellow Line sentence (rev 179): ground held conditionally and as leverage, so
+  `territorial-control-gaza` does not arise. It says nothing about Judea and Samaria and moves
+  neither trigger; it is the band's refusal of territorial expansion, said about three other fronts.
+  On Lebanon itself (party podcast, 31.03.26) the war should end with *"שארגון חיזבאללה מפורק מנשקו
+  כארגון חמוש"*, the Lebanese government alone responsible for armed force, a stronger Lebanese army
+  and the moderate Sunni states brought in: the answer rev 258 did not find to כץ's *"לברוח
+  מלבנון"*.
 - **Trigger (rev 69):** any ישר document on the territories, or any statement in the party's name
   by אבו רוקן, who ran the government's civil administration of the territories and is where a
   position would come from. A career administrator is not a policy statement (the refusal applied
@@ -1856,6 +1869,14 @@ the public space devolved to municipalities and communities.
   הציבורי והשבת) were still present.
 - The gender-equality page (rev 161) commits to *"החזרת הסטטוס-קוו שהופר... בכל הנוגע לסמכויות בתי
   הדין הרבניים"*, the law ישראל ביתנו's פורר wants repealed (rev 151). It fits −2.
+- **Aloud, the leader goes further than the education paper (rev 263).** On כאן 11 (19.07.26):
+  *"נדרוש תוך שלוש שנים שכל ילדי ישראל ילמדו בחינוך הממלכתי"*, and *"מי שלא יהיה שם, לא יקבל שקל
+  אחד"*; on the party's podcast (25.06.26), *"100% חינוך ממלכתי לסוגיו, עברי, דתי, חרדי וערבי"*. The
+  paper cuts funding *"באופן משמעותי"* and sets no date. Both go on paying for religious schooling
+  inside the state streams, so it is −2 either way, and this page scores the paper; the pledge of
+  10.10 (rev 259) is the same line a third time. The sentence above about preferring an election is
+  his, on N12 (15.07.26): *"מי שלא מקבל את העיקרון של גיוס צבאי-לאומי-אזרחי, לא יהיה שותף בממשלה גם
+  במחיר של הליכה לבחירות נוספות"*.
 
 #### Families
 
@@ -1896,6 +1917,12 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   #9" (rev 214), he *"מעולם, בשום שלב בקריירה שלו, לא תמך בהקמת מדינה פלסטינית… התבטאותו היחידה
   בנושא היא התנגדות"*, and his *"אין מדינה פלסטינית, ובממשלה שנקים לא תקום מדינה פלסטינית"* (N12,
   22.08). The long-term *"ישות"* is the qualifier recorded against it.
+  - **Candidate tier (rev 263):** כהן (#2), on חדשות 12 (uploaded 13.06.26): *"אני נגד מדינה
+    פלסטינית"*; the most Israel should give, in time, is *"אוטונומיה בלבד"*, and *"אני גם נגד מדינה
+    אחת דו-לאומית"* — both halves of the row's position in one answer, from the candidate ranked
+    second. The question was about sovereignty in Judea and Samaria, and he answered it with
+    autonomy, not with yes or no. His *"אוטונומיה"* sits beside the leader's *"ישות"*; neither calls
+    it a state.
 - **`anti-annexation`** — minted for this row: the vocabulary had only the opposite,
   `sovereignty-annexation`, and the position would otherwise have been invisible. It rests on his
   demographic argument, the registered goals' premise and the questionnaire's sovereignty line (rev
@@ -1911,6 +1938,11 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   ישראל היום (rev 233): *"אנחנו נבטל את תפקיד השר במשרד הביטחון שאחראי על המנהל האזרחי ונחזור להפעיל
   את הכוח המשטרתי בתיאום עם הצבא"*. The administrative-detention measure runs through his record
   (dated under Sources): three dated statements over two years, not a single campaign line.
+  - **A fourth statement, and the first on the party's own channel (rev 263).** On the podcast of
+    31.03.26, as what a responsible prime minister would do now: *"לקחת את הסמכויות מיד מבצלאל
+    סמוטריץ' ואיתמר בן גביר, ולהחזיר אותן לכוח הצבאי עד שיש שינוי יסודי ביהודה ושומרון"*, and to
+    order the Defence Minister *"לבטל את האיסור של הטלת צווים מינהליים"*. Both measures of the JPost
+    interview, six months before it, in a production the party published itself.
   - **Evidence of a different kind from הדמוקרטים'**, who hold it on a written programme (rev 62).
     The grant departs knowingly from the line that waited for writing (`gender-equality`): that
     commitment named no measure; this one names two and has been repeated since 2024, and the
@@ -1918,12 +1950,14 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
     enforcement restored under the IDF command, no defunding or evacuation of outposts — so the tag
     records opposition to the violence backed by a measure, not a position on settlement.
   - **Recorded against it, and not enough to block it:** the party's own ynet answer (28.09), four
-    days after the interview, leaves the measure out, and so do the 36 pages of the site. On
-    15.04.2026 he toured the illegal outpost at שובאל, where residents had beaten an Israeli lawyer
-    in June 2025; he said he was impressed, and his spokesperson declined to comment on the assault.
-    **Trigger for removal:** the party disowning the administrative-orders commitment, or a platform
-    that excludes it. **Unfound either way:** his Knesset votes on the subject, and statements by
-    other ישר candidates.
+    days after the interview, leaves the measure out, and so do the 36 pages of the site. The
+    party's podcast does carry it (rev 263, above), so the omission is the written pages', not the
+    party's. On 15.04.2026 he toured the illegal outpost at שובאל, where residents had beaten an
+    Israeli lawyer in June 2025; he said he was impressed, and his spokesperson declined to comment
+    on the assault. **Trigger for removal:** the party disowning the administrative-orders
+    commitment, or a platform that excludes it. **Unfound either way:** his Knesset votes on the
+    subject. **One other candidate, found in rev 263:** כהן (#2) calls the Hilltop Youth's violence
+    *"גובלת לעיתים בטרור. צריך לטפל בזה ביד קשה"* — a condemnation and a direction, no measure.
 - **`security-hawk`** — his record in uniform, as the rebuttal page cites it (rev 214): the IDF
   strategy he wrote (*"עדיפות לגישת ההכרעה"*, *"תפיסה צבאית התקפית"*), a 2019 call to *"להביא לסוף
   שלטון החמאס ברצועת עזה"*, and operations he initiated as chief of staff (מגן צפוני).
@@ -1949,7 +1983,12 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   - **Membership, not reliance (rev 169):** that sentence says nothing about outside support, where
     ישראל תחילה's site excludes a government *"הנשענת על כוחות אנטי-ציונים"*. Recorded for the
     sweep; not a reason to split the tag on one pair. Rev 180 (under יהדות התורה) reads his words
-    the same way: membership, not abstention.
+    the same way: membership, not abstention. In his own voice the reliance is declined too (rev
+    263): on N12 (15.07.26), asked about a government installed by the Arab lists' abstention, he
+    says he wants none of it (the machine transcript garbles the verb) and that short of 61 *"מה
+    שצריך להנחות זה הרוב הציוני"*; at Herzliya the arithmetic is 58 against 52, with the vote put to
+    every MK. It is the July form of rev 257's line. The party's written statement is still about
+    membership.
 
 **Service and the haredi settlement**
 
@@ -1968,6 +2007,14 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   with no rate for a parent who has not served — a universal child benefit differentiated by service
   status, in a region whose population is partly Arab. If the tag's meaning is ever audited, this is
   its strongest single sentence.
+  - **The party rules out the tag's founding case (rev 263).** הרוש גיטי (#11), who leads the
+    service plan, on the party's podcast (26.02.26), after listing the benefits a non-server would
+    lose: *"אנחנו לחלוטין לא מתכוונים לשלול זכות הצבעה לאף אחד, אנחנו לא מאמינים בזה, זה לא חוקתי,
+    זה לא דמוקרטי"*. The tag's paradigm is הנדל's franchise clause, and ישראל ביתנו holds it on a
+    written one (rev 51); this row holds it on benefits and priority alone. That is the vocabulary
+    problem logged under עמך ישראל — several holders under a label whose founding case one of them
+    meets — now with a first-party sentence. Recorded, not acted on: taking a tag off in the middle
+    of a read is the same mistake as putting one on.
 - **`reservist-focused`** — a costed benefits package, not rhetoric (rev 19's standard): the ₪20B
   above, and a cap, *"תגביל את מספר ימי המילואים בשנה לעד 50 ימים, ובתנאי שלא יעלו על 150 ימי
   מילואים בשלוש שנים"* (reservists paper, rev 210).
@@ -1985,7 +2032,9 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   proposal, the system *"צריכה לעבור רפורמה, אבל אסור להרוס אותה"*, the Attorney General kept and
   backed.
 - **`term-limits`** — *"כהונתו של ראש הממשלה תוגבל לשתי קדנציות"*, in the brochure and the
-  registered goals, the latter adding a cap on the number of ministers.
+  registered goals, the latter adding a cap on the number of ministers. Aloud (party podcast,
+  25.06.26; rev 263): *"קדנציה של ראש ממשלה היא עד שמונה שנים"* and *"הממשלה לא תהיה גדולה מ-24
+  שרים"* — eight years where the brochure says two terms; the tag tests neither number (rev 146).
 - **`governance-reform`**, **`public-service-reform`**, **`statist`** — the first two carry the
   institutional half of the corruption plank (rev 21); the list's composition corroborates the last
   two and states no new position (rev 69).
@@ -2045,30 +2094,39 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   faction is an absorption that needed a filing vehicle. Rev 55 has the discrimination test, the
   base rate that settled it, and the row the finding landed on instead.
 - **`scholar-exemption-retained`** (rev 21) — the 3% one-year deferral is not a retained exemption;
-  see the correction under כחול לבן. Untouched by the list audit (rev 69).
+  see the correction under כחול לבן. Untouched by the list audit (rev 69). **Said aloud, the 3%
+  carries the exemption's own name (rev 263):** הרוש גיטי (#11), on the party's podcast (26.02.26),
+  says up to 3% of each cohort *"יוכלו לקבל מעמד תורתו-אומנותו"*, about 4,700 a year, and not even
+  they in an emergency; איזנקוט, on N12 (15.07.26), has it as places *"ללמוד לתפקידי עילוי"* that
+  the law does not reserve for Torah students, in the same breath as *"לבטל את מוסד הפטור והדיחוי
+  לחרדים ולהקים מינהלת"*. What is scored is the paper's text — a deferral for one year, capped,
+  sized by the defence establishment's needs — and the refusal stands on it; the spoken name is
+  input for rev 86's open question across three rows.
 - **`anti-conscription-exemption`** (rev 86, under ביחד) — refused for this row: a 3% carve-out is a
   deferral mechanism. That pass also flagged an open consistency question about
   `scholar-exemption-retained` across three rows.
 - **`state-commission-of-inquiry`** — refused in revs 15, 20, 21 and 99 (which counts an eighth
   refusal), though this row has the fullest commission document of any party. The
   [מתווה](https://yasharwitheisenkot.com/wp-content/uploads/2026/08/%D7%9E%D7%AA%D7%95%D7%95%D7%94-%D7%99%D7%A9%D7%A8-%D7%9C%D7%95%D7%A2%D7%93%D7%AA-%D7%97%D7%A7%D7%99%D7%A8%D7%94-%D7%9E%D7%9E%D7%9C%D7%9B%D7%AA%D7%99%D7%AA-%D7%9C%D7%98%D7%91%D7%97-%D7%94-7-%D7%91%D7%90%D7%95%D7%A7%D7%98%D7%95%D7%91%D7%A8-%D7%98%D7%99%D7%95%D7%98%D7%94-%D7%9C%D7%A9%D7%99%D7%AA%D7%95%D7%A3-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8.pdf)
-  is a drafted government decision: a commission under **§1 of the Commissions of Inquiry Law
-  1968** (the clause that makes it *ממלכתית*), the **President of the Supreme Court** appointing
-  the chair and all five members, scope back a decade to the end of צוק איתן, sub-committees on
-  intelligence and security doctrine, an interim report within a year, ₪25m plus 25 temporary
-  posts; it covers the political echelon, hostage-deal decision-making including the ground
-  maneuver, the government's own הסברה apparatus, Knesset oversight, and the implementation record
-  of every prior commission back to אגרנט. **The tag does not discriminate:** it sat on 1 of 18
-  rows (אל הדגל), earned from a slogan, *"מי שכשל צריך ללכת הביתה"*, and wanting a commission is
-  close to a universal opposition position, so it records which documents were read. The
-  distinction worth keeping is prose: אל הדגל wants a commission, ישר has drafted the statute. Rev
-  99 nearly granted it on *"ועדת חקירה על פי חוק ועדות חקירה, ואנחנו נעשה את זה בשבועות הראשונים"* —
-  first-party, dated, with a timetable, and **weaker** than the מתווה; the sweep it waited for is
-  done (file-level Open questions) and its answer is not "populate it". The
-  line has since become *"החלטת הממשלה הראשונה שלנו"* under §1 of the 1968 law (rev 238, under עמך ישראל)
-  and, in a 07.10 podcast, within the government's first two weeks (rev 251, under עוצמה יהודית); the tag stays refused in both.
-  Three bereaved candidates in the top 22 (#10, #20 and ניר חג'בי #22 — the front-loading rev 52 recorded on ישראל ביתנו) do not
-  reach it: bereavement is not a position on an inquiry.
+  is a drafted government decision: a commission under **§1 of the Commissions of Inquiry Law 1968**
+  (the clause that makes it *ממלכתית*), the **President of the Supreme Court** appointing the chair
+  and all five members, scope back a decade to the end of צוק איתן, sub-committees on intelligence
+  and security doctrine, an interim report within a year, ₪25m plus 25 temporary posts; it covers
+  the political echelon, hostage-deal decision-making including the ground maneuver, the
+  government's own הסברה apparatus, Knesset oversight, and the implementation record of every prior
+  commission back to אגרנט. **The tag does not discriminate:** it sat on 1 of 18 rows (אל הדגל),
+  earned from a slogan, *"מי שכשל צריך ללכת הביתה"*, and wanting a commission is close to a
+  universal opposition position, so it records which documents were read. The distinction worth
+  keeping is prose: אל הדגל wants a commission, ישר has drafted the statute. Rev 99 nearly granted
+  it on *"ועדת חקירה על פי חוק ועדות חקירה, ואנחנו נעשה את זה בשבועות הראשונים"* — first-party,
+  dated, with a timetable, and **weaker** than the מתווה; the sweep it waited for is done
+  (file-level Open questions) and its answer is not "populate it". The line has since become *"החלטת
+  הממשלה הראשונה שלנו"* under §1 of the 1968 law (rev 238, under עמך ישראל) and, in a 07.10 podcast,
+  within the government's first two weeks (rev 251, under עוצמה יהודית); the tag stays refused in
+  both. Earlier still (כאן 11, 19.07.26; rev 263): *"בשבוע הראשון לכינון הממשלה תוקם ועדת חקירה
+  ממלכתית"*, its scope starting at the end of צוק איתן, *"כולל תקופתי כרמטכ״ל"*. Three bereaved
+  candidates in the top 22 (#10, #20 and ניר חג'בי #22 — the front-loading rev 52 recorded on ישראל
+  ביתנו) do not reach it: bereavement is not a position on an inquiry.
 - **`periphery-development`** — retired in rev 19 and stays retired. This corpus would earn it from
   three documents (a costed 15-billion-shekel regional programme, a forward-referenced periphery
   plan) while other rows held it on nothing: it measures audit depth.
@@ -2091,7 +2149,14 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   לנדו's worldview — and it is still by worldview: he names no party, and nothing in it covers ש"ס
   or הציבור החרדי as haredi lists. **Trigger:** a statement naming יהדות התורה or the haredi lists
   as such. This answers the unverified ישר lead in the coalition-exclusion sweep: ישר did not adopt
-  ישראל ביתנו's line.
+  ישראל ביתנו's line. **Earlier statements, read in rev 263, sit on the same side.** At the Herzliya
+  conference (uploaded 03.07.26) he refused the form itself: *"אני לא אומר כן-לא על מפלגה לא חרדית
+  ולא ערבית. אני אומר שאני אשב עם כל מי שיאמין בשלושה עקרונות"*; on N12 (15.07.26), asked about ש"ס,
+  *"אני לא אלך עם שום מפלגה שלא תקבל את חובת השירות"*. The one sentence that names the haredi
+  parties as such is a candidate's: הרוש גיטי (#11), 26.02.26, *"לבנות ממשלה שאנחנו נצליח לעשות אותה
+  בלי מפלגות חרדיות כמו שהן נמצאות היום"*, introduced with *"אני חושבת"*, about the haredi lists
+  only, and qualified by how they stand today. It is not the trigger: it is neither the leader's nor
+  the party's, and what he said afterwards refuses to name anyone.
 - **`hardline-on-gaza`** (rev 104) — fighting Hamas and conditioning reconstruction on disarmament
   is near-universal Zionist-party doctrine; every holder's evidence is siege or supply measures,
   the line rev 98 drew for המילואימניקים.
@@ -2135,7 +2200,12 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   Hamas to be destroyed (rev 169; **the interview was not read and is a lead for רע"ם's row**). A
   party dating its own principle is interested testimony; there is no text of the clause before 16
   September, and no transcript of the אסייג interview or of the earlier statements. Contested, not
-  settled.
+  settled. **Rev 263 dates it from below.** Six statements on the party's own channel between 26.02
+  and 19.07.26 give three principles and no Hamas clause: הרוש גיטי (26.02), כהן (uploaded 13.06;
+  his interview with אסייג and אוחנה, not מרידור's), מרידור (20.06 and 06.07), and איזנקוט at
+  Herzliya (uploaded 03.07) and on כאן 11 (19.07), *"שלושה עקרונות ברזל שאני לא אתפשר בהם"*. So the
+  clause was not there on 19.07, which fits his own "a month ago" of 16.09 and the columnist's 28
+  July alike. These are machine transcripts; the earliest text of the clause is still 16.09.
 - **The commission מתווה is a draft open for public comment until 2026-10-07**, authored by two
   outside figures — גדי מוזס, a captivity survivor from ניר עוז, and עו"ד גיל אבריאל, formerly the
   National Security Council's legal adviser — and published by the party as its own. Check whether
@@ -2146,9 +2216,13 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   resolve it (rev 39).
 - **Two announced plans are unpublished; an absence there is unwritten, not a position:** the
   periphery plan the north paper cites (*"להרחבה על מנגנון חוזה פיתוח אזורי בתכנית ישר! לחיזוק
-  הפריפריה הגאוגרפית ופיתוח אזורי"* — on no page in the sitemap; the near-miss `inlocation-and-aliya`,
-  titled *ישר! לעליית המיליונים, לשיבה הביתה וIn-location*, is immigration) and a transport plan
-  (*ישר! לתחבורה*) the young-people page cites.
+  הפריפריה הגאוגרפית ופיתוח אזורי"* — on no page in the sitemap; the near-miss
+  `inlocation-and-aliya`, titled *ישר! לעליית המיליונים, לשיבה הביתה וIn-location*, is immigration)
+  and a transport plan (*ישר! לתחבורה*) the young-people page cites. Two more were announced aloud
+  (rev 263): ריף (#15), on חדשות 13 (uploaded 15.07.26), *"אני הולכת לכתוב את מצע העולים, מצע דוברי
+  הרוסית"* — no document carries her name, and the aliyah paper (rev 21) may or may not be it; and
+  איזנקוט, on כאן 11 (19.07.26), a hundred-days plan from a team under יואב הורוביץ, a former
+  director-general of the Prime Minister's Office.
 - **The change bloc's joint *קווי היסוד* or 100-day plan** (rev 183): when published, read it
   against all four rows — the first document the four will have written together on policy. Not
   found as of rev 233; the 26.09 document only set up the team.
@@ -2163,8 +2237,11 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   as its trigger, pointing the other way; that tag has no negation. The procedure behind it (rev
   118): agree *"כללי יסוד ועקרונות לבחירת המועמד לראשות הממשלה"* before the vote, not *"הפוליטיקה
   הישנה, שניכנס לחדר ביום שאחרי, נעשה 'פוילשטיק' ונחליט מי ראש הממשלה"*. Also no rotation with
-  נתניהו (rev 233), no unity government with him — *"אני לא רואה את נתניהו שותף לשום ממשלת אחדות"* (rev 245,
-  under יהדות התורה) — and no transition government (rev 104).
+  נתניהו (rev 233), no unity government with him — *"אני לא רואה את נתניהו שותף לשום ממשלת אחדות"*
+  (rev 245, under יהדות התורה) — and no transition government (rev 104). The rule for who leads is
+  older than the bloc's document (כאן 11, 19.07.26; rev 263): *"מי שצריך לקבל את המנדט להרכיב ממשלה,
+  זה ראש המפלגה הגדולה ביותר במחנה הציוני-ממלכתי"*, which he says he first stated when ישר polled
+  eight seats.
 - **Cabinet-wide disqualification** — the line refused as `anti-indicted-pm`, recorded in prose.
 - **The Kaminitz Law** (the gap queued in rev 44). Seen from a non-Arab row in rev 85: the northern
   Bedouin authority heads put development and budgeting, חוק קמיניץ and חוק הלאום to the party,
@@ -2189,7 +2266,10 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   האורניום המועשר ופיקוח הדוק"*; in Gaza, a local force vetted by the שב"כ under a technocrat
   government with the moderate Sunni states, Hamas disarmed and the strip de-radicalised before
   reconstruction (the doctrine rev 232 found near-universal); targeted killings are right *"בתנאי
-  שהיא נגד איומים מיידיים"*.
+  שהיא נגד איומים מיידיים"*. The Iran line is older than that interview (party podcast, 31.03.26;
+  Herzliya, uploaded 03.07.26; rev 263): the war must end with the enriched uranium out of Iran
+  under tight supervision, the missile programme limited and the arming of proxies banned; then a
+  regional arrangement with the Americans, and *"סוריה בעיניי זו הזדמנות להסכמי ביניים מחודשים"*.
 
 #### Cross-row passes hosted here
 
@@ -2464,6 +2544,20 @@ both and are quoted from the pass.
   from ישראל תחילה, and a Druze candidate named *"וואהל"* on its filed list. Not found is not shown
   absent: committee records and filed lists sit on a site the pass did not reach.
 
+**rev 263 — the party's YouTube channel, on other rows.** Nothing scored on any of them. **ישראל
+ביתנו:** N12's interviewer (15.07.26) puts ליברמן's line to him — not 3%, not a tenth of a percent,
+full enlistment or no government — and איזנקוט does not accept it: *"דוד בן-גוריון אישר תוך כדי
+מלחמה ל-400 עילויים"*. A disagreement between two bloc partners over the 3%, of which בליאק's post
+(rev 259) is ביחד's side; ליברמן's words reach this page through the interviewer. **ש"ס:** he tells
+N12 he has not met a ש"ס MK in a year and will go with no party that rejects the duty to serve; on
+כאן 11 (19.07.26) דרעי *"הוא דמות שלילית מאוד במנהיגות הישראלית"*, and he would be glad to see ארבל
+and others lead the party. A rival's characterisation, and no offer. **כחול לבן:** גנץ, by his
+account, has placed himself outside the camp; מרידור (#7, חדשות 13, uploaded 06.07.26) calls parties
+that would let נתניהו govern again a proxy of הליכוד. Rivals' words (rev 44's tier). **הליכוד:**
+that a 2015 paper from נתניהו's office listed two states as government policy, and that the July
+laws on yeshiva students passed with the Arab lists' help, are his claims about that row's record
+(rev 153's line); they do not move its `no-palestinian-state`.
+
 #### Recorded so it is not mistaken for a finding
 
 - **אל-היב's account is refused in both halves (rev 85).** After a ישר! meeting with the northern
@@ -2497,9 +2591,13 @@ both and are quoted from the pass.
   *"לאסור"* (rev 159).
 - **Rafah, Iran and Khamenei are rival accounts of the war cabinet** (rev 214; revs 207 and 141's
   line). The rebuttal page says איזנקוט voted for the Rafah operation; בן גביר says he opposed it.
-  Neither can be checked here. Its counter-claim that נתניהו signed a ceasefire recognising *"נתיב
-  להקמת מדינה פלסטינית"* is a claim about הליכוד's record (rev 153's line) and does not move that
-  row's `no-palestinian-state`.
+  Neither can be checked here. His own account (party podcast, uploaded 02.07.26; Herzliya, 03.07;
+  rev 263) adds a date and a count: the war cabinet voted on 05.05.2024, *"כל שרי הקבינט הצביעו בעד
+  כולל אותי לכבוש את רפיח"*; and in April 2024, he says, he urged all three tiers of the army's
+  proposed strike on Iran while דרעי argued against. He asks for the protocols to be opened. Still
+  one side's account. Its counter-claim that נתניהו signed a ceasefire recognising *"נתיב להקמת
+  מדינה פלסטינית"* is a claim about הליכוד's record (rev 153's line) and does not move that row's
+  `no-palestinian-state`.
 - **Rev 66 retracted rev 65's block for this row**, which announced the joint filing as new and was
   rendered under הליכוד. Nothing in it was new but the range framing. **Check what the row already
   says, and check where the text lands.**
@@ -2573,6 +2671,17 @@ both and are quoted from the pass.
   סיט אמט…"*): treat absences on it as unwritten.
 - **A narrow crawl proves little:** the rebuttal page was among the 36 pages crawled on 29.09, but
   that search looked only for settler-violence terms (rev 214).
+- **The party's YouTube channel is a source of its own, and nothing on this page had cited it before
+  rev 263.** *ישר! עם איזנקוט* carries the party's podcast, *מדברים ישר!* (ten episodes,
+  26.02–09.07.26), the campaign-launch speech and its candidates' television interviews. The party
+  publishes no subtitles; YouTube's automatic captions exist for every public video. Rev 263
+  transcribed the audio by machine (faster-whisper with the ivrit-ai model), so names and single
+  words can be wrong — *מועשר* came out as *מאושר* — and no finding there hangs on one word. The
+  policy episodes are spoken versions of papers already read (service, post-trauma, the
+  returning-Israelis chapter of the aliyah paper); what the channel adds is the leader's and the
+  candidates' own wording, and dates earlier than the press reports this entry had. A video's upload
+  date is not its air date: the N12 and כאן interviews give 15.07 and 19.07 in their descriptions
+  and were uploaded a day later.
 - **Not retrieved:** the rev 143 article is paywalled; a web search found no N12 transcript of the
   interview, and a forum headline matching the lead quote is not cited as a source.
 
@@ -2697,10 +2806,11 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   את המהלך המתבקש והדחוף ותכפיף את כלל מוסדות החינוך לזרם הממלכתי. כך שכל תלמידי ישראל, מכל מגזר,
   ילמדו מקצועות ליבה, יכירו את ערכי מגילת העצמאות"*, and *"אני מתחייב"*. The pledge puts every
   institution under the state stream; the education paper conditions full public funding on the core
-  and cuts it *"באופן משמעותי"* for those that fail (under `religiosity`). He names no instrument,
-  so the paper's stands: `core-curriculum` and `state-haredi-education`, held, and −2 either way.
-  N12, reporting ג'בארין's offer (under הרשימה המשותפת), reprints his terms for partners, among them
-  *"מפלגות שלא מכירות בחמאס כארגון טרור אשר על מדינת ישראל החובה להשמידו, לא יהיו חלק בממשלה שנקים"*
+  and cuts it *"באופן משמעותי"* for those that fail (under `religiosity`). In that post he names no
+  instrument (he had named one on 19.07, rev 263, under `religiosity`), so the paper's stands:
+  `core-curriculum` and `state-haredi-education`, held, and −2 either way. N12, reporting ג'בארין's
+  offer (under הרשימה המשותפת), reprints his terms for partners, among them *"מפלגות שלא מכירות
+  בחמאס כארגון טרור אשר על מדינת ישראל החובה להשמידו, לא יהיו חלק בממשלה שנקים"*
   ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-bf2378e5bd621a1026.htm),
   10.10.26) — `excludes-anti-zionist-parties`, held; he has not answered the offer, and הליכוד's
   answers to it name him (under הליכוד). וינטר, asked about joining him: *"הממשלה שגדי איזנקוט מציע,
@@ -2718,6 +2828,58 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   for in the sweep. He says ברוורמן *"הודה"*; ברוורמן's side denies the transcript in the same
   report. The list had a representative on the stage in הרצליה (under הדמוקרטים), and הליכוד's posts
   of the evening name him again (under הליכוד).
+- **Read, and scored nothing (rev 263): eighteen videos from the party's YouTube channel** (links
+  supplied by the repo owner; machine transcripts of the audio, five and a half hours; a nineteenth,
+  [gmfEHvdSlIk](https://www.youtube.com/watch?v=gmfEHvdSlIk), is private and was not read). What
+  bears on a value is under the heading it bears on: `religiosity` (three years, then no funding),
+  `security` (the security strips; Lebanon), `no-palestinian-state` and `anti-settler-violence`
+  (כהן; the measure of 31.03), `term-limits`, `service-conditioned-citizenship`, two refusals
+  (`scholar-exemption-retained`, `excludes-haredi-and-arab-parties`), the inquiry's timetable, and
+  Open questions (the fourth principle; announced plans). The rest restates the row.
+  - **The podcast, *מדברים ישר!*:** [1, the service
+    plan](https://www.youtube.com/watch?v=JutB4-TfBLw) (26.02.26, הרוש גיטי #11): the army picks
+    first, a national service administration deals with each person directly, recognised civilian
+    service begins with community policing, the 3%, and personal sanctions — tax credits, daycare
+    subsidy, yeshiva stipend, tuition (the service paper).
+    [2](https://www.youtube.com/watch?v=kvCa9Qxd8bY) (12.03, כהנא #5): Lebanon, against a return to
+    *"קונספציית הסבבים"* — Hezbollah disarmed, the Lebanese state strengthened, and the Dahiya
+    doctrine applied to its bases in Shiite villages; a candidate on a war in progress, on a row
+    that holds `security-hawk`. [3](https://www.youtube.com/watch?v=-RoDANClFBc) (31.03, איזנקוט
+    with אסף אוריון). [4](https://www.youtube.com/watch?v=tWrdfovm8Iw) (15.04, הרוש גיטי with הרב
+    יונתן רייס of the haredi hesder yeshivas; his views are a guest's).
+    [5](https://www.youtube.com/watch?v=3fEREiAAweQ) (20.04; a personal conversation with כהנא, no
+    policy). [6](https://www.youtube.com/watch?v=6UxpphFPTbM) (25.05, יחזקאלי #16: a rehabilitation
+    minister and administrations for the north and the south — the post-trauma paper).
+    [7](https://www.youtube.com/watch?v=l_GD5DS7m60) (25.06, איזנקוט on the ten steps). [1,000
+    days](https://www.youtube.com/watch?v=CF6VQMoELWI) (02.07, איזנקוט on his record in the war
+    cabinet). [8](https://www.youtube.com/watch?v=uXslGS75PlA) (05.07, פרקש-הכהן #3, on the Finance
+    Committee: coalition funds, the public-broadcasting bill, tax benefits for Judea and Samaria
+    passed while the north waited — criticism of the government's priorities — and breaking up
+    concentrated consumer markets, `anti-monopoly`, held).
+    [9](https://www.youtube.com/watch?v=ign_c3kMjVE) (09.07, פרקש-הכהן on returning Israelis: a
+    commissioner, tax benefits for those abroad less than ten years, visas for talent that is not
+    Jewish; the aliyah paper, rev 21).
+  - **The speech and the interviews:** [the campaign
+    launch](https://www.youtube.com/watch?v=AzbeSJB8JUs) (uploaded 01.07.26; nothing beyond the
+    brochure). [Herzliya, with דנה ויס](https://www.youtube.com/watch?v=p6Dkna1rqWs) (03.07).
+    [N12](https://www.youtube.com/watch?v=KTkeUcamFNw) (aired 15.07): the conscription law in four
+    principles — service for all, haredim and Arabs; an administration in place of the exemption and
+    deferral; reward and sanctions; the 3% (`universal-conscription`, `arab-civil-service`,
+    `sanctions-on-non-servers`, held). [כאן 11](https://www.youtube.com/watch?v=zIhct3uS4To) (aired
+    19.07): no tax rise — *"לא צריך להעלות מיסים, צריך להחזיר לשוק העבודה מאות אלפים שלא נמצאים שם"*
+    — and *"הפסקת כל העברת הכספים הקואליציוניים"* (`tax-cutting` and `workforce-integration`, held).
+    [כהן (#2) on חדשות 12](https://www.youtube.com/watch?v=Tn5Usr_8Y_4) (uploaded 13.06): he calls
+    himself *"ימין מתון"*; judicial reform by agreement, with Basic Law: Legislation and the
+    Attorney General kept (`constitutionalist`); public transport on Shabbat for each authority to
+    decide (`municipal-devolution`); no objection to LGBT rights; the death penalty for terrorists
+    *"לא ישים"* (the row does not hold `death-penalty-for-terrorists`); נתניהו unfit after 7
+    October, the ground `anti-indicted-pm` was refused on. מרידור (#7) on [פגוש את
+    העיתונות](https://www.youtube.com/watch?v=owOXfezzzEo) (20.06) and on [חדשות
+    13](https://www.youtube.com/watch?v=ylLEvBacPIg) (06.07): the three principles, the whole
+    cabinet of 7 October unfit, and the party placed on the centre-right — like כהן's, a candidate's
+    self-description, beside a `centrist` this entry carries and has never argued. [ריף (#15) on
+    חדשות 13](https://www.youtube.com/watch?v=SpdA8uLScRo) (15.07): scams against elderly Russian
+    speakers as an item for the first hundred days.
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
@@ -14121,3 +14283,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-10 | revision 260 — **ישראל ביתנו's plan for wounded soldiers, seven posts and two N12 reports of 10.10. No axis moved, no tag changed, `seed.sql` unchanged.** **ישראל ביתנו:** *שליחות מתמשכת*, eleven points drawn up by ישראל בן שטרית (#15), published on the party's site the same day: a fast track to recognition, a caseworker and a personal plan for each of the wounded, waiting-time limits for mental-health care, more posts for the rehabilitation wing, help buying a home, larger prosthetics budgets. No sum and no date. It is spending on those who served and not universal, so `economic` +2's move condition is not met; `reservist-focused` is opened on this row for the first time and refused on this document, with an open question recorded: the row has never been tested for that tag against its economic programme. (The repo owner decided the same day that the row stays without the tag; the entry says so.) **הרשימה המשותפת:** ג'בארין's statement of rev 259 is a video in Arabic; three Hebrew captions were read off a rival's clip and fit N12's summary of the demands, and the sentence on a government was not heard, so the entry now says the offer's wording is N12's. **הליכוד:** N12's count of the list's seniors disappearing from the screens and the answers of קרעי and אופיר כץ; N12's transcript of ברוורמן with the stenographer, denied by his side; איזנקוט demands the Attorney General decide before the election. **Also read, nothing scored:** קריב at a rally of four opposition lists in הרצליה, מירב כהן on schools, סמוטריץ''s advertisement against וינטר, קרויזר's podcast announcement. Four clips were transcribed by machine, two looked at frame by frame. One N12 page was blocked as a bot on the first fetch and opened on the second. One link (שירי) is rev 258's, sent a third time. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-10 | revision 261 — **ביחד: the education plan read in full for the first time (a 34-page PDF, link supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** The plan page read in revisions 22 and 253 turns out to be a digest of a PDF it links (created 2026-09-11), and the figures the page lost are in the PDF. **Haredi schooling:** a complete end to public funding outside the state-haredi stream, applied to each year's new entrants, with about 70% of haredi pupils in that stream within four years and 100% within eight (revision 22's page said 90% in eight; revision 253 recorded the target as gone); the party networks lose their special budget status, and local authorities must by law offer a state-haredi track from kindergarten to enlistment. **`religiosity` −2 holds, more firmly:** the plan raises spending per haredi pupil from about ₪15,000 to about ₪26,000 and proposes to more than double the ₪4.5bn now paid to schools that teach no core, so the state funds haredi schooling more, on its terms. **`economic` +1 holds:** a ₪12,000 pay floor for new teachers, doubled budgets for emotional care and youth movements, budget parity for the general state schools and a subsidised place for every toddler within eight years, with no total and no offset; against per-pupil budgeting and schools run by networks under tender. `school-vouchers` is refused (a funding formula inside the public system), and `religious-pluralism` is refused a fourth time at its nearest call (other streams admitted as suppliers of Jewish studies in schools, no state recognition). Two sentences written earlier the same day are corrected in place: the work test בליאק used is the early-childhood plan's, and מירב כהן's three directions are all in this plan. Of twenty-three plan pages checked, only this one links a party PDF. The PDF's text layer reorders numerals; every figure was read off the rendered page. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-10 | revision 262 — **ביחד: five unread plans, a search for other full-plan PDFs, and a re-check of the plan pages (links supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** The site's own interface lists 31 Hebrew plans, 27 of them live; five created between 24.09 and 06.10 had never been cited: Holocaust survivors, animal welfare, reservists' families, the diaspora and immigration. All five add state spending or a new authority and sit on held tags or on none; `aliyah-absorption` is refused on rev 173's ground, and the diaspora plan's Western Wall line keeps the existing arrangement, so `religious-pluralism` is refused a fifth time. **PDFs:** the site holds nine, and the education plan is the only plan among them, in two editions (August, 23 pages; September, 34); the others are drafts of the קרית שמונה bill, a logo, and a draft Basic Law limiting a prime minister to two terms or eight years, not retroactive, now recorded under `term-limits`. **Changes to pages already read:** the Wayback Machine refused the comparison as bot traffic, so the check was by quotation and by figure; three quotations had drifted and are corrected in place (the transport sentence, the normalisation sentence, and a drafting defect the party has since fixed), and no figure pointed to a new measure. One link the owner sent (a post numbered 10743) is unpublished and could not be read. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-11 | revision 263 — **ישר: eighteen videos from the party's YouTube channel (links supplied by the repo owner; five and a half hours, transcribed by machine; a nineteenth is private). No axis moved, no tag changed, `seed.sql` unchanged.** Ten episodes of the party's podcast (26.02–09.07.26), the campaign-launch speech and seven interviews, none cited here before. Most of it is the papers spoken aloud. **What it adds:** the leader says more than the education paper writes — every child in state education within three years and no funding outside it (כאן 11, 19.07), where the paper cuts funding "significantly" with no date; `religiosity` stays −2 because religious schooling is still paid for inside the state streams. The security strips in Lebanon, Syria and Gaza are leverage and not to be held for generations (Herzliya), which is the band's refusal of territorial expansion on three other fronts and says nothing about Judea and Samaria. `anti-settler-violence` gains a fourth dated statement of its two measures, the first on the party's own channel (31.03), and a first statement from another candidate. כהן (#2) is against a Palestinian state and against a bi-national one. **Recorded against the vocabulary, not acted on:** the party's service-plan lead rules out denying the vote, the founding case of `service-conditioned-citizenship`, which this row holds on benefits alone; and she calls the 3% by the exemption's own name, beside a refused `scholar-exemption-retained`. `excludes-haredi-and-arab-parties` stays refused: in July the leader declined to say yes or no to any haredi or Arab party by name. **An open question narrowed:** six statements up to 19.07 give three coalition principles and no Hamas clause. One unsourced sentence gains its source (the election he would prefer to a compromise), the inquiry's timetable gets an earlier date ("in the first week", 19.07), one earlier sentence of this page is corrected (revision 259's "names no instrument"), and the channel is added to the reading notes. |
