@@ -113,6 +113,12 @@ numerator and denominator.
 
 −3 separationist … +3 theocratic. Nullable.
 
+> **Amended 2026-10-07 (revision 255 of `docs/party-classifications.md`).** The −3 and +3 rows of this
+> table were reworded: no −3 party met "no state religious funding", and two +3 parties had no text
+> behind "halakha as a basis for state law". Both poles are now defined by religious *authority* and
+> tested on each party's own text. The live wording and the test are in "The axes" in that file; the
+> table below is the dated record of what was decided on 2026-07-21.
+
 | Value | Meaning |
 |---|---|
 | **−3** | Disestablishment: break the Rabbinate's monopolies, civil marriage, no state religious funding |
