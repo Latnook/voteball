@@ -12,34 +12,25 @@
 # this repo, and commit the result; the policy and cadence are in docs/security.md.
 FROM nginxinc/nginx-unprivileged:alpine@sha256:b9241c6e7b8e9a862f129d8d4199ab64b10390949a78bdd5603379b32c844083
 
-# CVE-2026-14456 (HIGH): openssl DoS via unbounded memory growth in the QUIC server.
-# libcrypto3/libssl3 3.5.7-r0 -> fixed in 3.5.8-r0.
+# CVE-2026-4775 (HIGH): libtiff code execution or DoS via a signed integer overflow.
+# tiff 4.7.1-r0 -> fixed in 4.7.2-r0. Added 2026-10-11, when it turned the Trivy gate red on the
+# first build after a rebuild (application-ci #1) with no change to this image.
 #
-# CVE-2026-66046 + CVE-2026-76641 (both HIGH): expat DoS. libexpat 2.8.2-r0 -> fixed in 2.8.4-r0.
-# Added 2026-09-02 after these two turned the Trivy gate red on a commit that touched nothing but a
-# logo -- the base image aged into a CVE, which is the normal way this gate fires. Same remedy and
-# same reasoning as the openssl pair above: Alpine v3.24/main already carries 2.8.4-r0, verified
-# with `apk policy libexpat` against the pinned digest, so patch here rather than chase the tag.
+# WHY A PATCH HERE AND NOT A DIGEST BUMP: ./scripts/refresh-base-digests.sh is the prescribed remedy
+# and does not fix this one. Measured 2026-10-11, the tag still resolves to the digest pinned above
+# and still ships 4.7.1-r0, while Alpine v3.24/community already carries 4.7.2-r0 (`apk policy
+# tiff`). nginxinc has not rebuilt on the Alpine fix, so there is no newer base to move to.
 #
-# THE PRESCRIBED REMEDY ABOVE DOES NOT FIX THIS ONE, and that is why this block exists rather than a
-# digest bump. ./scripts/refresh-base-digests.sh re-resolves the tag, and measured 2026-08-27 the tag
-# HAS moved (c3fed643 -> 901e944d) while still shipping 3.5.7-r0: nginxinc rebuilt without picking up
-# the Alpine security update. So refreshing the pin gets a newer base that is equally vulnerable, and
-# the Trivy gate stays red. Alpine v3.24/main already carries 3.5.8-r0, so patch it here instead.
+# This line upgraded libssl3, libcrypto3, libexpat and libuuid until 2026-10-11 (openssl
+# CVE-2026-14456, expat CVE-2026-66046/-76641, seven util-linux CVEs). The pinned base now ships all
+# of them at or past the fixed versions (3.5.9-r0, 2.8.5-r0, 2.42.3-r1, measured the same day), so
+# they were dropped as the old note here instructed; git history has the per-CVE reasoning.
 #
-# libuuid added 2026-09-06: SEVEN HIGH CVEs in util-linux 2.42.1-r0 (CVE-2026-53612/53613/53614,
-# -76642, -78408, -78409, -78410 -- TOCTOU and privilege issues in mount/nsenter). Alpine v3.24/main
-# carries 2.42.3-r1. Note the required version is not uniform: six are fixed in 2.42.3-r0 but
-# CVE-2026-78408 needs 2.42.3-r1, so upgrading to r0 would clear six of seven and leave the gate red.
-# services/backup/Dockerfile ships the same package from a different base and gets the same upgrade.
-#
-# REMOVE THIS BLOCK once nginxinc/nginx-unprivileged:alpine ships libssl3 >= 3.5.8-r0 AND
-# libexpat >= 2.8.4-r0 AND libuuid >= 2.42.3-r1 -- ALL THREE, or removing it re-opens whichever part
-# the base has not caught up on:
-#   docker run --rm --user 0 --entrypoint sh nginxinc/nginx-unprivileged:alpine -c 'apk info -v | grep -E "libssl3|libexpat|libuuid"'
+# REMOVE THIS BLOCK once nginxinc/nginx-unprivileged:alpine ships tiff >= 4.7.2-r0:
+#   docker run --rm --user 0 --entrypoint sh nginxinc/nginx-unprivileged:alpine -c 'apk info -v | grep -E "^tiff-"'
 # Leaving it in place after that costs a layer and silently pins nothing; it is not load-bearing then.
 USER 0
-RUN apk upgrade --no-cache libssl3 libcrypto3 libexpat libuuid
+RUN apk upgrade --no-cache tiff
 USER 101
 COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
 # SEO assets. robots.txt and sitemap.xml carry a literal __SITE_URL__ that nginx rewrites from the
