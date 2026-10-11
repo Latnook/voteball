@@ -1704,6 +1704,21 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   for the campaign
   ([N12](https://www.mako.co.il/news-politics/2026_q4/Article-b71878e5bd621a1026.htm), 10.10.26
   20:05). The list itself says nothing in it; איזנקוט's demand on it is under ישר.
+- **Read, and scored nothing (rev 264):** שיקלי (#14) posts 31 seconds of רוני קובן's interview with
+  בנט, in which בנט is pressed on why he and not לפיד served first and answers that the public is
+  mostly right of centre (machine transcript; the speakers are not always distinguishable), under
+  *"את בנט מעניין רק דבר אחד: הכסא. אפס אידיאולוגיה"*
+  ([post](https://x.com/AmichaiChikli/status/2109145640072613993), 11.10.26). An attack on a rival.
+  **The protocol affair:** the list is still silent; בן גביר speaks on it for the first time (under
+  עוצמה יהודית) and קריב and לזימי answer (under הדמוקרטים). **Not entered, because no party acts in
+  them:** הארץ's report that מנדלבליט testifies for the defence in נתניהו's trial
+  ([הארץ](https://www.haaretz.co.il/news/law/netanyahutrial/2026-10-11/ty-article/.premium/000001a1-2721-d0ca-a7b7-bf23e1f00000),
+  11.10.26; it is the occasion of בן גביר's post), and a writer's memoir in הארץ of hired work for
+  שרה נתניהו in 2012–2017
+  ([הארץ](https://www.haaretz.co.il/magazine/2026-10-08/ty-article-magazine/.highlight/000001a1-160a-d042-a9e9-162ae81c0000),
+  08.10.26); both bodies were supplied by the repo owner. Two more pieces the owner sent on 11.10
+  were already here: the column of 09.10 and the essay on fear (rev 258, above).
+
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
 
@@ -2880,6 +2895,17 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
     self-description, beside a `centrist` this entry carries and has never argued. [ריף (#15) on
     חדשות 13](https://www.youtube.com/watch?v=SpdA8uLScRo) (15.07): scams against elderly Russian
     speakers as an item for the first hundred days.
+- **Read, and scored nothing (rev 264):** כהנא (#5), twice. A 24-second video addressed to נתניהו
+  (machine transcript): the trouble was not that nobody woke him but that *"אתה כבר שנים מרדים את
+  כולם"*, and *"אם אתה תיבחר, זו סכנה אמיתית שתקום מדינה פלסטינית"*
+  ([post](https://x.com/MatanKahana/status/2109145710063190378), 11.10.26). The row attacks הליכוד
+  from the right on statehood; it is `no-palestinian-state`, held, at candidate tier, beside כהן's
+  line (rev 263). And to a commentator who called the list's religious-Zionist members a risk: they
+  joined out of commitment to replacing the government, and *"כולנו שותפים לחזון של מדינה יהודית-
+  דמוקרטית, לאור ערכי מגילת העצמאות"*, to found *"מפלגת שלטון חדשה בישראל"*
+  ([post](https://x.com/MatanKahana/status/2109023356552949995), 10.10.26). Self-description;
+  nothing scored.
+
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
 
@@ -3235,10 +3261,13 @@ imports, not tenders (rev 105).
 - **`municipal-devolution`** — the education plan: *"נעביר את מערכת החינוך ממודל ריכוזי, שבו 69%
   מההחלטות על חיי ילדינו מתקבלות במטה משרד החינוך, למודל שמעניק יותר סמכויות לרשויות המקומיות,
   ולמנהלים ולמנהלות של מוסדות החינוך"*, the ministry confined to *"קביעת מדיניות, יעדים ופיקוח"*
-  (rev 253; the text rev 22 read dissolved the districts and moved 70% of decisions). Later instances: Shabbat transport by local option (revs 60, 99); tourism management moved
-  *"מידי הממשלה"* to 6–8 regional coalitions of local authorities (rev 113); planning moved to local
+  (rev 253; the text rev 22 read dissolved the districts and moved 70% of decisions). Later
+  instances: Shabbat transport by local option (revs 60, 99); tourism management moved *"מידי
+  הממשלה"* to 6–8 regional coalitions of local authorities (rev 113); planning moved to local
   authorities, permits in three months (rev 164); and נגרי's portfolio, the only first-party
-  evidence for it from a named candidate.
+  evidence for it from a named candidate. The transport plan that was live on 05.10 and has since
+  been taken down (rev 264, under Sources) had it a fifth time: *"נקים רשויות תחבורה מטרופוליניות
+  ונעביר סמכויות ותקציבים לרשויות המקומיות"*.
   - **The full education plan goes further than its page** (rev 261): the stated end point is every
     school's teaching staff employed by its local authority, *"בניהול הרשות עצמה או באמצעות הוצאת
     מכרז לניהול ע"י רשת חינוך"*, with autonomy earned by results (*"שיטת הרמזור"*), and decisions on
@@ -3370,8 +3399,11 @@ imports, not tenders (rev 105).
   PA and takes no position on the territory's status; ending routine operation of Orot Rabin units
   1–4; evacuating the Haifa Bay petrochemical industry; restoring *"אפס תוספת סיכון"* for the Gulf
   of Eilat; statutory ecological corridors and river restoration; and a Dead Sea concession that
-  charges for water extraction and obliges rehabilitation. Rev 49's "twelve plans and none
-  environmental" was false when written — a count restated rather than re-derived — and is retired.
+  charges for water extraction and obliges rehabilitation. One measure was added after rev 60 read
+  the page (archive comparison, rev 264; the page was modified on 23.09): shading and cooling of
+  city streets with trees, to a target of *"70% כיסוי צל רציף במדרכות"* on streets suited to
+  walking. Rev 49's "twelve plans and none environmental" was false when written — a count restated
+  rather than re-derived — and is retired.
 - **Animal welfare** (rev 209) — twenty groups, among them תנו לחיות לחיות, אנימלס and חיים וסביבה,
   asked the large parties to commit to an independent animal-protection authority under the
   environment ministry and to write it into the coalition agreements; **ביחד announced its support**
@@ -3637,6 +3669,28 @@ conscription — לפיד: *"שיגייס את 15 אלף החרדים שחסרי
   holds. Three quotations had drifted and are corrected in place; no figure pointed to a measure the
   entry lacks. That is weaker than comparing texts: a reworded sentence with no figure, which this
   entry does not quote, would pass unseen.
+- **The archive comparison, done (rev 264).** The Wayback Machine refuses a script's `http://`
+  requests as bot traffic and answers `https://`; raw copies (the `id_` form) arrive
+  zstd-compressed, which is why a first rerun read them as empty. One index call for
+  `be-yahad.org.il/plans/*` listed 153 copies, 113 of them of plan pages at 31 addresses; 63 were
+  fetched (the earliest, the one nearest each page's first read, the latest) and compared sentence
+  by sentence with one another and with the live text of 10.10. 25 of the 27 live Hebrew pages have
+  a copy; `diaspora` and `aliya`, created on 05–06.10, have none, and for eight pages the earliest
+  copy is later than 23.09, so for those it shows only that nothing changed in October. **Nothing
+  this entry cites was removed from any page.** Most differences are the headings: in late September
+  and early October most plans were retitled from "ביחד נתקן…" to "רק ביחד…". Three pages gained
+  text after they were read: the environment plan (a shading target, entered under Environment, and
+  an opening summary with figures); the early-childhood plan (better conditions for caregivers,
+  pedagogical standards, the local authority as the body that joins up services for infants, and
+  support for infants and staff in evacuated communities; the earning-capacity test still stands in
+  three places, though the FAQ question about it now carries an answer about caregivers' training, a
+  slip on the live page); and the women's plan (an opening summary with figures, its measures
+  unchanged). Two changes predate the first read and were never cited: the reservists' million
+  became a discount on a *"דירה חדשה יחידה"* where it had said a first home (10.08), and the קרית
+  שמונה page lost a heading, its measures intact. The religion page lost a stray sentence about
+  Haifa Bay and transport authorities that belongs to the environment plan. **Post 10743 is the
+  transport plan**, read from the one archived copy and entered under Sources. A reworded sentence
+  still passes unseen wherever no copy exists, which is now two pages.
 - **A plan page can be the digest of a document it links** (rev 261). The education page links
   `Education-Plan.pdf`, 34 pages, and summarises it: the targets for haredi schooling, the sums per
   pupil and the staffing end point are in the PDF only, and revs 22 and 253 read the page. No other plan page links a PDF of the party's, and the site holds no other plan in that form: its media library lists nine PDFs (`/wp-json/wp/v2/media?mime_type=application/pdf`, read 2026-10-10, rev 262) — this plan in two editions, five drafts of the קרית שמונה bill and government decision (January 2026), a draft Basic Law on the prime minister's term (under `term-limits`) and a logo. The earlier edition, 23 pages dated 13.8.26, has the same haredi targets and puts spending per haredi pupil at ₪17,000 rising to ₪27,000, where September's has ₪15,000 and ₪26,000 (the August figures by the text layer only); the special-education chapter is new in September. The PDF's text layer drops spaces
@@ -3841,6 +3895,50 @@ Party-published unless marked. Statements and press are linked where they are us
   Considered and refused. **Immigration:** one address for immigrants, faster recognition of
   degrees, the conversion plank and the pension measure of earlier plans restated, ₪10m for
   immigrant culture; `aliyah-absorption` is under Considered and refused.
+- **Read (rev 264): a transport plan the party published and took down** — *תכנית לאומית לתיקון
+  התחבורה בישראל ושחרור הפקקים*, post 10743, the link the repo owner sent on 10.10 that answered 404
+  (rev 262). The Wayback Machine holds one
+  [copy](https://web.archive.org/web/20261005131320/https://be-yahad.org.il/plans/transport/) of
+  05.10.26, modified that day, at `/plans/transport/`; on 10.10 the address was gone, and on 11.10
+  neither the plans interface nor the site's search lists a transport plan. Why it was withdrawn is
+  not known. Eight steps: about 200 km of new bus lanes and a train every ten minutes between
+  Jerusalem, Tel Aviv, Haifa and Be'er Sheva; a national campaign against road deaths (459 killed in
+  2025) led by the transport minister; the Gush Dan metro and mass transit in three more cities,
+  built at *"קצב של העולם"*, and the rail line completed to קריית שמונה; one cheaper ticket, with
+  the last fare reform repealed (*"יצרה מחדש אפליה במחירי הנסיעה בין נוסעים – נבטל אותה"*);
+  professional appointments only and multi-year budgets for large projects; metropolitan transport
+  authorities, with the ministry a regulator and no longer an operator; smart traffic lights and
+  autonomous transport; and a second international airport, incentives for foreign airlines, and the
+  IMEC rail corridor as a national priority. Execution is *"בידי המגזר העסקי"*. **Not scored:** a
+  page the party has withdrawn is not a platform in force. If it stood it would sit on
+  `municipal-devolution`, held (entered there), and on nothing else: it is public investment
+  delivered by private builders, and **it does not mention Shabbat**, so the row's Shabbat line
+  stays where rev 60 found it, in the environment plan, and in the religion plan. **Trigger:** if
+  the plan returns, read it against this copy.
+- **Read, and scored nothing (rev 264):** בנט to רוני קובן (41 seconds, machine transcript): נתניהו
+  is responsible for 7 October and guilty of it, because for fourteen years he *"החליט שצריך לפטם את
+  חמאס כדי כל פעם לקנות שקט"* ([post](https://x.com/naftalibennett/status/2109160878595539021),
+  11.10.26); הליכוד's use of the same interview is under הליכוד. מירב כהן (#9), twice. In a studio
+  clip (61 seconds, machine transcript): *"אנחנו נגד הפוליטיקאים החרדים, אנחנו בעד הילד החרדי"*, the
+  money is not to go to haredi parties' schools that teach no core, and *"אנחנו נכפיל את התקציבים,
+  אבל נייצר מסגרות ממלכתיות הוגנות"* ([post](https://x.com/cohen_meirav/status/2109146486135230966))
+  — `state-haredi-education` and `core-curriculum`, held; a doubled budget for them is hers, and the
+  education plan was not searched for it. And over a journalist's report of הרב יצחק יוסף (under
+  ש"ס): the coalition depends on the haredim and will give them *"כפייה דתית על כולנו"*
+  ([post](https://x.com/cohen_meirav/status/2109160441330958748)). בן ארי (#4), on הארץ's report
+  about עוצמה יהודית (entered there): *"אפנה עוד היום ליועמשית שתורה על פתיחת חקירה נגד חה"כ קרוייזר
+  ומנהל המפלגה"* ([post](https://x.com/Meravbenari/status/2109151069028688043)), and a one-line post
+  over a video about the campaign against the bereaved
+  ([post](https://x.com/Meravbenari/status/2109136544367853904); the video not watched). בליאק
+  (#16): *"בליכוד רואים ש-״ביחד״ מיום ליום צוברת כח ומומנטום"*
+  ([post](https://x.com/VladimirBeliak/status/2109167862673969397)), and, in reply to בנט on
+  immigration, shorter procedures, language teaching and recognition of professions
+  ([post](https://x.com/VladimirBeliak/status/2109027087357260110), 10.10.26) — the immigration
+  plan's items (rev 262). גינזבורג (#8), over a table that ranks Israel cheapest in the world for
+  mobile data: *"ההוכחה שאפשר לעשות כאן רפורמות מדהימות ולהוריד את יוקר המחיה"*
+  ([post](https://x.com/EitanGinzburg/status/2109170187513573881)). Campaign lines; no measure the
+  plans lack. A הארץ column's relay about this row's coalition line is under הרשימה המשותפת.
+
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
 
@@ -4319,6 +4417,23 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   transcript), and from the stage, *"הממשלה המסוכנת ביותר והגרועה ביותר שמשלה במדינת ישראל"*. A
   rally of four lists of one bloc; `opposition`, held. He does not name the other three lists'
   speakers.
+- **Read, and scored nothing (rev 264):** קריב (#3), over הארץ's headline that a basket of 80 foods
+  rose almost five times faster in 2022–2026 than in the four years before (image viewed): נתניהו is
+  *"שפוט של הטייקונים והמגן הגדול של המונופולים"* and סמוטריץ' cares only for the cost of living in
+  the settlements ([post](https://x.com/KarivGilad/status/2109167675905642629), 11.10.26) — an
+  attack, with no measure in it; and on the protocol affair (under הליכוד), over N12's graphic of
+  the exchange with the stenographer (viewed): *"הגיע הזמן להוריד את הידים שלו מההגה"*
+  ([post](https://x.com/KarivGilad/status/2109010405427175921), 10.10.26). לזימי (#2) on ברוורמן:
+  נתניהו had named him ambassador in London, *"מינוי שנבלם אך מעיד על הכל"*
+  ([post](https://x.com/naamalazimi/status/2109028120137253359)). רדמן (#9), over הארץ's report
+  about עוצמה יהודית (entered there; image viewed): *"בקרוב נחזיר את המשטרה להיות של העם"*
+  ([post](https://x.com/RadmanMoshe/status/2109149647394545930)). פינק (#5) answers a ש"ס campaign
+  video (75 seconds, machine transcript; the ש"ס video was seen only as he replays it): the secular
+  are *"פי מיליון יותר יהודים מכם"*, and the election is for a government that says *"כן ליהדות ולא
+  לקיצוניות הדתית, לא לכפייה הדתית, לא להשתמטות ולא לבטלנות"*
+  ([post](https://x.com/yayafink/status/2109151648031347011)). The row's religion-and-state line in
+  a religious candidate's voice; nothing new.
+
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
 
@@ -4701,6 +4816,17 @@ All first-party unless marked.
   19:29; the statement was not seen, and the page's text breaks off mid-sentence). `unaligned` and
   `unity-government` in the leader's words, seventeen days out, and his answer to איזנקוט's forecast
   that he would withdraw (rev 257). N12 has the list at 0.5%; polls are not a field.
+- **Read, and scored nothing (rev 264):** גנץ, as כאן's running log of the morning gives him:
+  *"ממשלת השינוי הייתה ממשלה צרה שהייתה תלויה במפלגות הערביות ולא יכלה לעשות כלום"*; the present
+  government *"צריכה לסיים את דרכה"*; and *"האם אנחנו צריכים לחזור לניסוי שכשל? אני לא רוצה שנחזור
+  לשם"* ([כאן](https://www.kan.org.il/content/kan-news/politic/live-1107965/), 11.10.26 08:12; read
+  twice through headless Chromium, at 09:34 and 09:53, the broadcast not heard). `unaligned` and
+  `unity-government` again (rev 259). What he refuses is a narrow government that depends on the
+  Arab parties. That is not a refusal to govern with a party on a stated criterion, so the trigger
+  for `excludes-anti-zionist-parties` under Open questions is not met; it is the untagged shape
+  logged under tags that do not exist yet (a named party, rev 90), said here of the Arab parties as
+  a group.
+
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
 
@@ -6159,6 +6285,13 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   no date. Entered under `economic` and under Considered and refused; listed under Sources. ליברמן:
   *"בממשלה הבאה נבנה מערכת שיקום שרואה את האדם ולא רק את אחוזי הנכות"*. The party had a
   representative on the stage in הרצליה (under הדמוקרטים).
+- **Read, and scored nothing (rev 264):** מלינובסקי (#5), over ישראל היום's front page that Qatar
+  sent some 30 million litres of fuel into Gaza with Israel's approval (image viewed; the report not
+  read): *"דלק לחמאס? התחרפנתם לגמרי?!"*, and נתניהו is *"סכנה לביטחון מדינת ישראל"*
+  ([post](https://x.com/YuliaMalinovsky/status/2109159918997532699), 11.10.26). An attack; חדאד
+  posts the same page (under עמך ישראל). A הארץ column's relay about the row's coalition line is
+  under הרשימה המשותפת.
+
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
 
@@ -7968,6 +8101,25 @@ burned-in captions (ליברמן's, איזנקוט's on the inquiry, שפר's se
   matter of `jewish-supremacist`, and because בן גביר's response, attacking the Attorney General for
   fabricating charges out of policy disagreement, on the parallel יעקובי indictment, is where the
   coalition precondition acquires a motive.
+- **#6 קרויזר and #10 ניימן, the party's CEO: a police investigation, not tagged** (rev 264;
+  [הארץ](https://www.haaretz.co.il/news/law/2026-10-11/ty-article/.premium/000001a1-2061-d10a-a5b1-a16d8aeb0000),
+  11.10.26, body supplied by the repo owner). By police sources, about a week and a half earlier
+  detectives of מחוז ש"י chased a car of masked Jews suspected of violence in a Palestinian village,
+  and arrested one of them beside the synagogue of מצפה יריחו during a memorial study evening for
+  ניימן's brother. A crowd blocked the police car; ניימן is said to have led it and to have told the
+  officers *"לא תצאו מפה"* until the detainee was freed. The car's tyres were punctured, its door
+  was opened and the detainee escaped; he has not been caught. Two officers went to hospital, one
+  with a broken nose, and *"המשטרה מחזיקה בראיות המעלות חשד שקרויזר הכה שוטר"*. בן גביר came
+  afterwards and, by the officers' account, stood with those blocking the road and accused one
+  officer of needless violence. Senior officers want both men questioned *"בחשד להפרעה לשוטרים,
+  תקיפתם וסיוע לעצור להימלט"*, and the file is expected to go to the Attorney General. קרויזר:
+  *"הותקפתי על ידי שוטרים גם לאחר שהזדהיתי כחבר כנסת. הטענות המיוחסות לי הן אוסף שקרים חסר בסיס"*;
+  ניימן and בן גביר call the claims libel. The police confirm only that an investigation was opened
+  at the מעלה אדומים station. **An allegation against candidates is not a position of the party**,
+  as for דורפמן above, and all three deny it. It is in prose because the alleged conduct is the pole
+  this entry names opposite `anti-settler-violence` — opposing enforcement (revision 123) — by two
+  candidates inside the realistic range and the minister responsible for the police; no tag records
+  that pole. Answers from ביחד and הדמוקרטים are under those rows.
 - **The Chabad alliance behind #9** (rev 57).
   [Shomrim](https://www.shomrim.news/hebrew/chabad-bengvir) puts Chabad at 2–3 seats with ~1,300
   centres as a ground network, 56% for עוצמה יהודית in כפר חב"ד against 19% דגל התורה and 12% ש"ס,
@@ -8170,6 +8322,27 @@ Linked where used above. Not linked above:
   *"שיחת המזנון"*, a podcast of the party's young leadership, *"על מה שמעבר לפוליטיקה"*
   ([post](https://x.com/Yitzik_kroizer/status/2108997816702165042), 10.10.26). The post states
   nothing. **Not watched:** the [episode](https://youtu.be/AA0EpDXdpCg).
+- **Read, and scored nothing (rev 264):** בן גביר, three times. On the protocol affair (under
+  הליכוד), the row's first words on it: *"אם מישהו זייף זה בוודאי חמור, אבל אני לא חושב שאנשים באים
+  לזייף"*, and *"לא הייתי ממהר להטיח האשמות. יש חקירה, בוא נחכה"*
+  ([כאן](https://www.kan.org.il/content/kan-news/politic/live-1107965/), 11.10.26 07:44, from כאן
+  רשת ב'; the broadcast not heard). To מנדלבליט, on the morning he testifies for the defence in
+  נתניהו's trial
+  ([הארץ](https://www.haaretz.co.il/news/law/netanyahutrial/2026-10-11/ty-article/.premium/000001a1-2721-d0ca-a7b7-bf23e1f00000),
+  body supplied by the repo owner; no party acts in the report): seven questions about the timing of
+  the indictment and the conduct of the investigation, ending with *"העוול הנורא שגרמת לראש הממשלה,
+  למשפחתו, למחנה הימין ולמדינת ישראל כולה"*
+  ([post](https://x.com/itamarbengvir/status/2109161620664357125)) — the row's line on the
+  prosecution (rev 149), no instrument added. And from a visit to a prison where he met prisoners he
+  says tried to kill him (81 seconds, machine transcript, in which he tells one he should hang):
+  *"אני אמשיך לפעול ליישום חוק עונש מוות למחבלים. ועד אז, המדיניות שלי בבתי הכלא תבטיח לכם חיי
+  גיהינום"* ([post](https://x.com/itamarbengvir/status/2109149480452788474)) —
+  `death-penalty-for-terrorists`, held, in the leader's words, and the prison policy of rev 258.
+  דורפמן (#7), on הארץ's prisons investigation again: prisoners now receive *"לא טיפה אחת יותר ממה
+  שחייבים לפי חוק"*, beside a photo of a stocked cell captioned as from before *"עידן בן גביר"*
+  ([post](https://x.com/chanamel1/status/2109018966190633426), 10.10.26; image viewed, its date and
+  place not established).
+
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
 
@@ -10569,6 +10742,17 @@ Most links are given above, where each source is used; these are the rest.
   ([post](https://x.com/bezalelsm/status/2109003046877601814), 10.10.26; under הציונות הדתית). The
   threshold and the pressure to withdraw are under Open questions; he has answered that he runs (rev
   259).
+- **Read, and scored nothing (rev 264):** וינטר, on כאן's running log: *"אנחנו דורשים שתקום פה ועדת
+  חקירה אמיתית ומהר ככל האפשר"*; *"יש מי שלא רוצים שתקום ועדה, ובגלל זה היא לא קמה, גם בקואליציה וגם
+  באופוזיציה"*; and *"יש לנו את הפתרון שהיא תהיה אמיתית ואמינה"*
+  ([כאן](https://www.kan.org.il/content/kan-news/politic/live-1107965/), 11.10.26 08:04; the
+  broadcast not heard). *"אמיתית"*, and again not *"ממלכתית"*: the position under Open questions
+  (revs 99, 246), unchanged sixteen days out. חדאד (#2), over ישראל היום's front page on Qatari fuel
+  entering Gaza with Israel's approval (image viewed; the report not read): *"חייבים כבר אחרי 3 שנים
+  לצאת מהקונספציה ולעבור להכרעה"*, with וינטר as *"שר הביטחון הבא"*
+  ([post](https://x.com/YosephHaddad/status/2109163003274752048)) — the Defence demand already
+  recorded, and criticism of the government's policy from a row this page files in its bloc.
+
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
 
@@ -11492,6 +11676,22 @@ supplied by the repo owner.
   three demands, the plan against crime and the political horizon sit on `civil-rights-focused` and
   `pro-two-state`, held, and the halt to demolitions is the land-planning item under Open questions.
   הליכוד's answers are under הליכוד.
+- **Read, and scored nothing (rev 264):** טיבי (#2) posts 73 seconds of people shouting at soldiers
+  over picked olives and lemons, captioned *"גניבת זיתים בחסות הצבא"*
+  ([post](https://x.com/Ahmad_tibi/status/2109143301362491582), 11.10.26; machine transcript, partly
+  English; where and when it was filmed is not established). A report, no position. **A הארץ column
+  on the Knesset after the election**
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-11/ty-article/.highlight/000001a1-2609-da33-a1bb-ae5fb0e90000),
+  11.10.26, body supplied by the repo owner) is a forecast, and its party facts are relays with no
+  source given: that *"הסיעות הערביות כבר הבטיחו לתמוך בכל מי שיוסכם עליו"* as the candidate to form
+  a government and for Speaker, and that ליברמן and בנט *"פוסלים ממשלה שתישען על קולותיהם של
+  הערבים"* while not ruling out relying on them in the Knesset. The first states as a promise what
+  this entry holds as טיבי's hint (rev 101); the second draws a line between a government and a
+  parliamentary majority that neither ביחד's nor ישראל ביתנו's entry has in the party's own words.
+  Neither is entered as a position. The column also notes that טיבי, as the longest-serving member
+  who is not a minister, would chair the sitting that elects a Speaker if the outgoing one refused
+  to call it.
+
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
 
@@ -11894,6 +12094,12 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   the haredi ones, and names no measure; Jewish content in state education is the +2 band's ground
   and no tag of this row's. מעוז claims the issue for נעם (under נעם). ישראל ביתנו's בן שטרית says
   דרעי has not answered him since 7 October (under ישראל ביתנו).
+- **Read, and scored nothing (rev 264):** a journalist's post, quoted by מירב כהן of ביחד, reports
+  the party's spiritual leader הרב יצחק יוסף on the secular: *"מסכנים, הם משתמטים והם עריקים, בחורי
+  הישיבות מצילים את הדור"* ([post](https://x.com/cohen_meirav/status/2109160441330958748), quoting a
+  post of 10.10.26; the recording was not heard). A relay, and it scores nothing. A party campaign
+  video about who is a Jew was seen only inside פינק's answer to it (under הדמוקרטים).
+
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
@@ -14284,3 +14490,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-10 | revision 261 — **ביחד: the education plan read in full for the first time (a 34-page PDF, link supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** The plan page read in revisions 22 and 253 turns out to be a digest of a PDF it links (created 2026-09-11), and the figures the page lost are in the PDF. **Haredi schooling:** a complete end to public funding outside the state-haredi stream, applied to each year's new entrants, with about 70% of haredi pupils in that stream within four years and 100% within eight (revision 22's page said 90% in eight; revision 253 recorded the target as gone); the party networks lose their special budget status, and local authorities must by law offer a state-haredi track from kindergarten to enlistment. **`religiosity` −2 holds, more firmly:** the plan raises spending per haredi pupil from about ₪15,000 to about ₪26,000 and proposes to more than double the ₪4.5bn now paid to schools that teach no core, so the state funds haredi schooling more, on its terms. **`economic` +1 holds:** a ₪12,000 pay floor for new teachers, doubled budgets for emotional care and youth movements, budget parity for the general state schools and a subsidised place for every toddler within eight years, with no total and no offset; against per-pupil budgeting and schools run by networks under tender. `school-vouchers` is refused (a funding formula inside the public system), and `religious-pluralism` is refused a fourth time at its nearest call (other streams admitted as suppliers of Jewish studies in schools, no state recognition). Two sentences written earlier the same day are corrected in place: the work test בליאק used is the early-childhood plan's, and מירב כהן's three directions are all in this plan. Of twenty-three plan pages checked, only this one links a party PDF. The PDF's text layer reorders numerals; every figure was read off the rendered page. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-10 | revision 262 — **ביחד: five unread plans, a search for other full-plan PDFs, and a re-check of the plan pages (links supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** The site's own interface lists 31 Hebrew plans, 27 of them live; five created between 24.09 and 06.10 had never been cited: Holocaust survivors, animal welfare, reservists' families, the diaspora and immigration. All five add state spending or a new authority and sit on held tags or on none; `aliyah-absorption` is refused on rev 173's ground, and the diaspora plan's Western Wall line keeps the existing arrangement, so `religious-pluralism` is refused a fifth time. **PDFs:** the site holds nine, and the education plan is the only plan among them, in two editions (August, 23 pages; September, 34); the others are drafts of the קרית שמונה bill, a logo, and a draft Basic Law limiting a prime minister to two terms or eight years, not retroactive, now recorded under `term-limits`. **Changes to pages already read:** the Wayback Machine refused the comparison as bot traffic, so the check was by quotation and by figure; three quotations had drifted and are corrected in place (the transport sentence, the normalisation sentence, and a drafting defect the party has since fixed), and no figure pointed to a new measure. One link the owner sent (a post numbered 10743) is unpublished and could not be read. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-11 | revision 263 — **ישר: eighteen videos from the party's YouTube channel (links supplied by the repo owner; five and a half hours, transcribed by machine; a nineteenth is private). No axis moved, no tag changed, `seed.sql` unchanged.** Ten episodes of the party's podcast (26.02–09.07.26), the campaign-launch speech and seven interviews, none cited here before. Most of it is the papers spoken aloud. **What it adds:** the leader says more than the education paper writes — every child in state education within three years and no funding outside it (כאן 11, 19.07), where the paper cuts funding "significantly" with no date; `religiosity` stays −2 because religious schooling is still paid for inside the state streams. The security strips in Lebanon, Syria and Gaza are leverage and not to be held for generations (Herzliya), which is the band's refusal of territorial expansion on three other fronts and says nothing about Judea and Samaria. `anti-settler-violence` gains a fourth dated statement of its two measures, the first on the party's own channel (31.03), and a first statement from another candidate. כהן (#2) is against a Palestinian state and against a bi-national one. **Recorded against the vocabulary, not acted on:** the party's service-plan lead rules out denying the vote, the founding case of `service-conditioned-citizenship`, which this row holds on benefits alone; and she calls the 3% by the exemption's own name, beside a refused `scholar-exemption-retained`. `excludes-haredi-and-arab-parties` stays refused: in July the leader declined to say yes or no to any haredi or Arab party by name. **An open question narrowed:** six statements up to 19.07 give three coalition principles and no Hamas clause. One unsourced sentence gains its source (the election he would prefer to a compromise), the inquiry's timetable gets an earlier date ("in the first week", 19.07), one earlier sentence of this page is corrected (revision 259's "names no instrument"), and the channel is added to the reading notes. |
+| 2026-10-11 | revision 264 — **the archive comparison of ביחד's plan pages, done; and twenty-two posts, a כאן running log and four הארץ pieces of 10–11.10 (links and bodies supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **The comparison** revision 262 could not run: the Wayback Machine refuses a script over `http://` and answers `https://`, and its raw copies arrive compressed. 63 archived copies of 31 plan addresses were compared sentence by sentence with each other and with the live pages. Nothing this page cites was removed from any plan. Most plans were retitled "רק ביחד…" in late September and early October; three pages gained text after they were read (the environment plan a street-shading target, now entered; the early-childhood and women's plans additions that touch no tag); two live pages have no archived copy. **Post 10743**, the link that answered 404 on 10.10, **is a transport plan** that was live on 05.10 and has since been taken down; it was read from the one archived copy and is entered as withdrawn, not scored — it would sit on `municipal-devolution`, held, and it does not mention Shabbat. **The day's sources:** גנץ refuses a return to a narrow government dependent on the Arab parties (not the criterion that would bring `excludes-anti-zionist-parties`); וינטר again demands an inquiry that is "real" and not a state one; בן גביר speaks on the protocol affair for the first time, puts seven questions to מנדלבליט, and restates the death penalty from inside a prison (`death-penalty-for-terrorists`, held). **עוצמה יהודית:** הארץ reports a police investigation in which the party's CEO (#10) and קרויזר (#6) are suspected of helping a suspect in settler violence escape and of assaulting officers; all deny it. Entered in prose as an allegation against candidates, not tagged, beside the דורפמן precedent. The rest are campaign lines under ביחד, הדמוקרטים, ישר, ישראל ביתנו, עמך ישראל, הרשימה המשותפת, ש"ס and הליכוד. Two הארץ pieces in which no party acts are named and not entered, and two the owner re-sent were already in revision 258. Documentation only: nothing to verify on a database, and the suite was not run. |
