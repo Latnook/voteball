@@ -588,6 +588,19 @@ programme (rev 24). The second half is the +2 band's definition, met on both lim
   dissent punished by the leadership is evidence *of* a party line. Against it, גוטליב (since
   departed) refused the exemption bill and הלוי (33 in the primary) wants haredim *and* Arabs
   conscripted — dissent, not the line.
+- **The academia gender-separation law** (rev 274). By
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3556-d193-a3a7-b57e2d6b0000)
+  (13.10.26, body supplied by the repo owner) the Knesset approved it in July 2026. Separation
+  *"מסיבה דתית"*, which a בג"ץ ruling had allowed only for haredim and only in first degrees, is
+  widened to other sectors that want it, to advanced degrees and to tracks that need an internship,
+  and is permitted outside the classroom (libraries, laboratories, cafeterias, the campus at large)
+  in institutions that already separate. Five members of the Council for Higher Education resigned
+  over it in July, and קיש (#10), the Education Minister, means to carry it through the council. It
+  is the coalition's statute, the kind of record this axis already rests on, and it points the same
+  way: one more instance inside +2 and no step toward +3, since it permits a religious practice in
+  state-funded institutions and hands no authority to a religious body. The description is the
+  paper's; the statute and the vote were not read. ביחד's women's plan and ישראל ביתנו's ten points
+  would repeal it.
 - A reporter's summary has הליכוד opposing Shabbat public transport, *"מתוך שמירה על הסטטוס קוו"*
   (rev 244, [ynet](https://www.ynet.co.il/news/elections2026/article/yokra14917099)); no number
   moves on a summary.
@@ -836,6 +849,26 @@ Until rev 24 the row had four tags, because it had never been read against a par
     chair, who found *"שאלות של ממש"* and charged משרד ראש הממשלה ₪500 costs
     ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-17/ty-article/.premium/000001a0-afbe-df5b-adf2-ffffb3820000)).
     A state body's and the PMO's conduct; no statement by the party is quoted in it.
+  - A further sighting (rev 274): who watches the polls. A 73-second video on נתניהו's account
+    ([post](https://x.com/netanyahu/status/2109908331636658383), 13.10.26 07:25 UTC; machine
+    transcript, the clip carries only a fixed title) shows him with the party's counsel בומבך under
+    *"כוח קפלן ו"אחים לנשק" רוצים לפגוע בטוהר הבחירות"*. בומבך says he complained to the CEC, the
+    Attorney General and the police commissioner; that the two groups say *"אנחנו הולכים להפריע
+    לבחירות"*; that a third, הגדעונים, will bring hundreds to demonstrate and disturb the count of
+    the double envelopes; and that from the committee he heard *"חידלון מוחלט"*. נתניהו: *"הם
+    מאשימים אותנו במה שהם מתכננים לעשות לנו"*, and *"אנחנו נשמור על טוהר הבחירות, אנחנו נשלח את
+    המפקחים שלנו. זו הזכות הדמוקרטית שלנו"*. By
+    [הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3536-d610-a5bb-373f929d0000)
+    (13.10.26, body supplied by the repo owner): the party's first complaints, in May and August,
+    were against אחים לנשק's project *"זה הזמן"*, which would send veterans of elite units *"לשמור
+    על הקלפיות"* and which the party said could deter voters; the committee's legal adviser answered
+    in September that anyone who disturbs the vote or blocks a voter's way will be arrested and that
+    no demonstration will be approved on election day; and אחים לנשק sent בומבך a warning letter
+    before legal action, denying any such statement or intent and demanding a retraction. Each side
+    says it is the one guarding the count and that the other's watchers are the threat. Who may
+    observe a count is machinery; it is not who may vote or how the register is kept, so the revised
+    trigger below is not met, and a charge against named organisations is a campaign line. Nothing
+    scored.
   - The first trigger (any row publishing a position on expatriate voting, absentee ballots or the
     voter register) was met by the Elector ruling and it is still a lead: what the rows state is how
     they run a campaign, machinery, not programme, and a tag would record which parties run a good
@@ -1740,6 +1773,181 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   said on entering *"האמת יוצאת לאור"*. The defence asked for seven sittings, the last on 22
   October, five days before the election. The testimony itself is a trial record in which no party
   acts, and is not entered, as for הארץ's report of the same hearing (rev 264).
+- **Read, and scored nothing (rev 267): מנדלבליט's first day on the stand, and the candidates on
+  it.**
+  [הארץ](https://www.haaretz.co.il/news/law/2026-10-11/ty-article-live/000001a1-2974-d695-abad-fbfcc0000000)'s
+  running log of the hearing (יעל פרידסון, 11.10.26, body supplied by the repo owner) is a trial
+  record and is not entered, as in revs 264 and 265. What it gives this row: נתניהו came and said
+  *"האמת יוצאת לאור"*; and סער (#7), אוחנה (#3) and אפי נוה, a former chairman of the Bar
+  Association, sat in the hall, all three described as *"המתמודדים כולם ברשימת הליכוד לכנסת"* — נוה
+  is not in this entry's list, and his slot was not checked. **The candidates' accounts run ahead of
+  the log as supplied.** In it מנדלבליט says the main actions had his approval and that some did not
+  — a wiretap on נתן אשל, which he ordered stopped, and the interrogation exercise used on ניר חפץ,
+  which he calls *"פסול ולא נכון"* and chose to clarify on paper so as not to disrupt the
+  investigation; that his approval to open was oral; that he did not read every testimony behind the
+  315 itemised instances; and, of how he ran it, *"אני לא מוכן שייכנסו עניינים פוליטיים"*. Against
+  that: סעדה (#17), that he *"פעל ממניעים פוליטיים"*
+  ([post](https://x.com/MosheSaada1/status/2109205387593597048)); קרעי (#22), who asks the court to
+  weigh closing the cases at once and to order a criminal investigation of מנדלבליט, ניצן, תירוש, בן
+  ארי, אלשיך, בהרב מיארה *"וכל מי שהיה מעורב"*
+  ([post](https://x.com/shlomo_karhi/status/2109269846454157624); earlier, over a post of his own
+  from 2021, [post](https://x.com/shlomo_karhi/status/2109224832382427533)); שיקלי (#14), *"מערכת
+  המשפט המושחתת שלנו"* ([post](https://x.com/AmichaiChikli/status/2109274618741530626)); ברדוגו
+  (#11), twice ([post](https://x.com/bardugojacob/status/2109256241583378656),
+  [post](https://x.com/bardugojacob/status/2109261897971191814)); and סער at length: the case is
+  *"גרוטסקה של אכיפת חוק"* and what remains is *"הוכחה מובהקת לקיומו של מסע ציד"*
+  ([post](https://x.com/gidonsaar/status/2109252257975763370); a second post on prosecutors who sat
+  in the discussion of the exercise, [post](https://x.com/gidonsaar/status/2109253381013504181), 45
+  seconds; and to ערוץ 14, [post](https://x.com/C14_news/status/2109231058919006593), three minutes,
+  where he cites *"חוק ההגנה מן הצדק"* as a law he wrote; both by machine transcript). Demands of a
+  court and of officials, and readings of a hearing; `judicial-overhaul`, held, and no measure.
+- **Read, and scored nothing (rev 267): the leak from אוריך's phone.**
+  [הארץ](https://www.haaretz.co.il/news/law/2026-10-11/ty-article/.premium/000001a1-2adb-d9fb-ade7-baff6f770000)
+  (11.10.26, body supplied by the repo owner): WhatsApp chats of יונתן אוריך with senior Likud
+  figures, journalists and pollsters were leaked, and הארץ checked the leak and confirmed it. No
+  body is examining the breach, each saying that אוריך *"מוגדר עובד של מפלגת הליכוד ולא עובד משרד
+  ראש הממשלה"* — the employment recorded in rev 152, now given as the reason — and among the leaked
+  details are the user name and password of an e-mail account *"המשמש את מפלגת הליכוד"*. הדמוקרטים'
+  רדמן (#9) posts two of the chats as images: one labelled טופז לוק, on a video in which נתניהו
+  looks, in their words, like a *"זקן מת"*
+  ([post](https://x.com/RadmanMoshe/status/2109298366676971571)), and one labelled עמית סגל and
+  dated 22.09.26, joking about מדן (#15), who lost both legs in the army
+  ([post](https://x.com/RadmanMoshe/status/2109306203012465037)). The images were viewed and are
+  his; they were not checked against the leak. קריב (#3) answers both
+  ([post](https://x.com/KarivGilad/status/2109269984635396185), over an N12 headline;
+  [post](https://x.com/KarivGilad/status/2109307308261941653)). A party employee's conduct and a
+  security failure; no position, and no tag.
+  **The chats themselves** (rev 268).
+  [TheMarker](https://www.haaretz.co.il/tmr/news/politics/2026-10-11/ty-article/.premium/000001a1-2bb5-d275-afe5-2ff7c4e30000)
+  (11.10.26 19:44, body supplied by the repo owner): what pirate sites published as his chats
+  includes an exchange with עמית סגל, חדשות 12's political commentator, in which אוריך sends
+  נתניהו's speech for the campaign launch and סגל corrects a detail, proposes a sentence and a
+  slogan, and praises the road sign shown there (*"אין ישר, רק או ימין או שמאל"*, in the report's
+  words); the headline says *"לכאורה"*. אוריך, through his lawyers: whoever broke in published *"תוך
+  שהוא מוסיף ומשנה את השיחות"*, and anyone who publishes or shares them will be sued personally
+  ([post](https://x.com/jonatanu/status/2109326406958080054), 11.10.26) — against הארץ's check
+  above, which confirmed the leak; both are recorded as stated. סגל on air, as the report gives him:
+  *"יש חילופי מידע וחילופי דעות"*, and chats like these would be found with the other parties'
+  people. By כלכליסט, relayed and not read, אוריך had linked his WhatsApp account to a management
+  service of a company in the UAE. A commentator's advice is not the party's act, and the speech's
+  lines are campaign lines; nothing scored. בנט's charge about אוריך and Qatar is under ביחד.
+  **The interrogation quotes** (rev 269).
+  [N12](https://www.mako.co.il/news-politics/2026_q3/Article-cd0622829d031a1027.htm) (אמנון
+  אברמוביץ', 12.10.26 20:06, marked חשיפה, from that evening's main newscast): quotes it gives as
+  from אוריך's police interrogation in the Qatar case. The interrogator puts to him requests he made
+  of ChatGPT in September 2024, a year into the war: to build a *"תוכנית אסטרטגית לשינוי תודעה
+  עולמית"* about Qatar, and, in the interrogator's words, for more ideas to improve the image of
+  Qatar's prime minister and emir and three messages for *"אזרחי ישראל, קהילות יהודיות בעולם ומובילי
+  דעת קהל בארה"ב, שיוכלו לסייע להלבין את קטאר ולשפר את תדמיתה"*. אוריך had first denied using the
+  office for a pro-Qatar campaign (*"אין לי שום קשר לעניין הזה"*), and after the chats were put to
+  him: *"אני לא זוכר מה שאלתי את הצ'אט. אני שואל אותו בהרבה נושאים. לא פעלתי ולא עשיתי שום דבר לטובת
+  קטאר בישראל, לא מול התקשורת הישראלית, לא מול אזרחי ישראל ולא מול ראש הממשלה"*. That the requests
+  prove his intent is N12's reading; what the page holds is a suspicion put in an interrogation and
+  a denial, and it carries no response to the publication from אוריך, the party or the Prime
+  Minister's office. His answer followed on X, as a
+  [הארץ column](https://www.haaretz.co.il/digital/daily/2026-10-13/ty-article/.premium/000001a1-34fd-dd7e-afbb-f7fd04d20002)
+  relays it (rev 274; 13.10.26, body supplied by the repo owner; his post not read): he does not
+  deny asking, says he *"לא עשה עם התשובה כלום"*, and adds a joke about what else he asks the chat.
+  The rest of the column is the writer's judgment of him, and its second half, on the arrest of כפר
+  סבא's mayor, names no party and is not entered. N12 writes that he is still employed in נתניהו's office; this entry's record
+  (revs 152, 267) is that the state bodies call him a party employee, and both are left as stated.
+  Three earlier N12 reports it links were not read. An adviser's conduct under investigation; no
+  position, and no tag. איזנקוט's and בנט's replies are under ישר and ביחד.
+- **Read, and scored nothing (rev 274): קיש's appointments to the Council for Higher Education.**
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3556-d193-a3a7-b57e2d6b0000)
+  (13.10.26, body supplied by the repo owner): two weeks before the election קיש (#10) is moving to
+  appoint three new members, from a private college and two public ones and none from the research
+  universities, to a council left since the five resignations of July without the number of
+  academic members the law requires. The Attorney General's guidelines bar significant appointments in an
+  election period; his letter to the heads of the institutions says these are not such, since the
+  council's term ends in April 2027 and so *"אין בהם להשפיע על סמכותו ושיקול דעתו של שר החינוך
+  הבא"*. They need the President's approval and a government vote. The universities' heads call it
+  *"מחטף"* and unlawful and have written to him and to the Attorney General. A minister's conduct
+  under a guideline, and a dispute about procedure; what the council is wanted for, the
+  gender-separation law, is under `religiosity`. No position, and no tag.
+- **Read, and scored nothing (rev 267): the day's other posts.** נתניהו against וינטר (under עמך
+  ישראל), and over a clip of ג'בארין that closes *"זהו ימין או פלסטין"* (under הרשימה המשותפת).
+  ביסמוט (#23) posts his ערוץ 13 interview of 10.10
+  ([post](https://x.com/BismuthBoaz/status/2109221611878379665);
+  [post](https://x.com/BismuthBoaz/status/2109238458413613185) corrects a name; 5:49, machine
+  transcript): the conscription bill he steered is *"בדיוק ההפך"* of an evasion law, with 23,000 in
+  three years set against an earlier bill's 1,500 a year; comparing the haredi parties with the Arab
+  ones is *"בושה וחרפה"*; and asked whether נתניהו should sit under איזנקוט if איזנקוט wins more
+  seats, *"התשובה היא שאני לא יודע"*, after *"אנחנו לא שותפים לשום חרמות"*.
+  `scholar-exemption-retained`, held, with his bill among what it rests on; the figures are his.
+  ישראל כ"ץ (#6), as Defence Minister, on Turkey hosting Hamas: *"גם תורו של אל-חייא יגיע"*
+  ([post](https://x.com/Israel_katz/status/2109250565062459890)) — `security-hawk`, held. אוחנה
+  (#3), filmed with a supporter who says *"בוא נסביר להם שה-7.10 זה הכל השמאל"*, answers *"רק
+  הליכוד!"* (ten seconds, in a post קריב quotes; under הדמוקרטים). רגב (#5) at a shiva
+  ([post](https://x.com/regev_miri/status/2109240981094535187)): no content. A ידיעות אחרונות report
+  that the party has a team looking for defectors in the other bloc is known only through פינק's
+  telling (under הדמוקרטים) and was not read.
+- **Read, and scored nothing (rev 268): אוחנה (#3) at ynet's conference**
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/b1mszy9igl), מורן אזולאי, 12.10.26;
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-12/ty-article/000001a1-2f3e-d1b4-a5fb-affeee3b0000),
+  12.10.26 11:58, body supplied by the repo owner). **The Speaker's chair:** if 61 MKs want him
+  replaced that is legitimate, and he rules out refusing to convene the plenum as אדלשטיין did in
+  2020 — *"אנחנו מדינת חוק"*, *"אני לא חושב שזה יגיע לבג"ץ. אנחנו שומרי חוק"*. By הארץ he asked
+  voters *"למנוע את זה"*, because the 61 would include Arab MKs: *"אם על סמך הקולות האלה יחליפו את
+  יו"ר הכנסת, מה נותר להגיד"*; and הארץ recalls that in March 2020, as Justice Minister, when the
+  court asked אדלשטיין whether he would convene, he wrote *"אם הייתי יו"ר הכנסת, הייתי עונה: לא"*.
+  An undertaking by the office-holder, beside a judgment on the Comptroller's election that the
+  Knesset he chairs has still not carried out (the State Comptroller affair, above); no measure.
+  ישר's מרידור names replacing the Speaker as a first move (under ישר), and the vote טיבי said his
+  list would cast is under הרשימה המשותפת. **The next term's courts:** he assumes the Likud, if
+  elected, will bring an override clause to a vote — *"אפילו אהרן ברק הסכים לפסקת התגברות"* — with
+  *"שינוי שיטת בחירת השופטים"*, and *"המילה האחרונה צריכה להיות דווקא בכנסת ולא בבית משפט"*; the
+  lesson he draws from 2023 is *"להגיע להסכמות רחבות"*. `judicial-overhaul`, held, stated for the
+  next term by the list's #3. **Whom the party would sit with:** *"ממשלה לאומית רחבה"* means *"כל
+  רכיבי הקואליציה הנוכחיים עם מפלגות נוספות, או חדשות, או קיימות"*; *"יאיר גולן מחוץ לתחום, גם
+  האנשים שאיתו"*; and of בנט and others, *"כן, בהחלט כן"*. A refusal of one named list, the untagged
+  shape (rev 90); no coalition tag is on this row and none is opened. **The defectors team:** ynet
+  now states as its own disclosure that the party set up a team to find defectors among ישר's
+  candidates — the report rev 267 knew only through פינק's telling; the report itself is still not
+  read — and אוחנה answers *"בליכוד אין עריקים. שאיזנקוט יישאר עם חצי עין פקוחה"*. His words on
+  וינטר are under עמך ישראל and on גולן under הדמוקרטים.
+- **Read, and scored nothing (rev 268): מנדלבליט's second day on the stand.**
+  [הארץ](https://www.haaretz.co.il/news/law/netanyahutrial/2026-10-12/ty-article-live/000001a1-2c38-dbf1-a1f3-fffe9e100000)'s
+  running log (יעל פרידסון, 12.10.26, as updated at 15:19; body supplied by the repo owner) is a
+  trial record and is not entered, as before, and no candidate acts in it. Set against the
+  candidates' accounts of rev 267, the second day gives both halves. He agrees that showing ישועה
+  e-mails from before פילבר's term went beyond his approval (*"אוקיי, אז זה לא בסדר"*), that he gave
+  no approval for a Securities Authority investigator to print the וואלה articles, that nobody
+  investigated the leaks, and that recruiting a state witness against the prime minister behind his
+  back would be grave *"אם היה דבר כזה"*. He holds that in June–July 2017 he had approved no inquiry
+  into the prime minister, that *"שום החלטה שקיבלתי לא נבעה מלחץ"*, that evidence obtained
+  unlawfully is not void for that alone, and, to the defence's word *"קורס"* for case 4000, *"אתה
+  אמרת שהוא קרס"*. The reporter's post on the sitting being stopped after an exchange between the
+  two lawyers ([post](https://x.com/YaelFreidson/status/2109550783750447540); its video not viewed)
+  is in the log. **Commentary on the first day:** הארץ's daily column
+  ([הארץ](https://www.haaretz.co.il/digital/daily/2026-10-11/ty-article/.premium/000001a1-2b52-d618-adfb-bbd2c7610002),
+  יונתן אנגלנדר, 11.10.26 20:28, body supplied by the repo owner) reads the presence of סער, אוחנה
+  and נוה as a show of loyalty and also calls נוה *"מועמד הליכוד לכנסת"* (his slot is still not
+  checked); its item on עוצמה יהודית is under that row. N12's analysts, in the rolling live blog
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-e5da204f54d01a1026.htm), entries
+  of 11.10.26 18:15–19:10, read on 12.10 through headless Chromium): סגל, that מנדלבליט had not read
+  the appendices and that the judges will reach *"הגנה מן הצדק"* before the evidence; פלג, that the
+  defendant wants the trial back on the agenda because the campaign of *"אני נרדף"* works on his
+  voters. Analysts' readings. סגל's entry on the Likud and וינטר is under עמך ישראל.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy:* the party again published no
+  detailed economic platform — `family_evidence` `record`, as Basis says — and N12 reads its line
+  off נתניהו's figures (inflation at 1.5%, reserves of $240bn, the average wage up 6.2%: *"זה באמת
+  נס כלכלי"*). Against them it sets VAT at 18%, frozen income-tax brackets and frozen National
+  Insurance allowances, which are the expanding half `economic` +1 already cites, and coalition
+  funds of about ₪5bn in 2026, sevenfold in four years (N12's figure, not checked). Its commentator
+  says of the import reform that it was softened until *"היא לא באמת השפיעה על הריכוזיות"*, and that
+  ברקת's *"הסל של המדינה"* closed. `economic` +1 rests on the reform's scope and on whom it was
+  passed against, not on its effect on prices, so a commentator's verdict on the effect does not
+  reach it. *Education:* MK קטי שטרית (slot not checked), at 121's conference in July 2026, wants
+  caregivers' training widened, bureaucracy cut and the powers and budgets for supervising early
+  childhood moved to local authorities; N12 adds that נתניהו promised free education from birth to
+  three at the last election and that beyond ₪200m in 2023 nothing followed, and that the party gave
+  no position on differential budgeting or performance pay. One MK at a conference on one field;
+  `municipal-devolution` is not opened on it.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -1752,7 +1960,7 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
 **Basis.** Gadi Eisenkot's party, founded 2025-09-16; co-founders include Matan Kahana (former
 Religious Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief) and Nir Zohar
 (Wix). Scored from the party's own site, `yasharwitheisenkot.com`: the registered goals, the 10-step
-brochure and fourteen principles papers (sixteen documents, rev 258), beside 17 topic pages and 157
+brochure and nineteen principles papers (twenty-one documents, rev 272), beside 17 topic pages and 157
 position posts (revs 160, 161; the topic pages have since been taken off the site, see "Reading this
 party's sources"); on the conflict, where the documents are silent, from the leader's own
 statements. Before the platform existed the row was a placeholder (`new-party` +
@@ -1800,6 +2008,19 @@ both grew again in the rev 21 read and in the north paper (rev 39).
   ₪250M for tourism, ₪225M for informal education and a national-priority law modelled on מנהלת
   תקומה. The housing topic's rent and brokerage rules (rev 161) are interventionist measures inside
   a +1 row.
+- **Three papers of 13.10 add to both halves and carry no shekel figure (rev 272).** The
+  self-employed paper: lighter or waived rules where uniform regulation weighs on small firms
+  (*"צמצום ניכר, הקלות או פטורים"*), one digital address for dealing with the state, and a stronger
+  late-payment law, beside a social safety net for the self-employed *"שתישען על מנגנון
+  מבוסס-הפרשות ולא על סיוע חד-פעמי"* — paid for by their own contributions — a stronger
+  state-guaranteed loan fund, and enforcement of the small-business share of public tenders. Three
+  of its ten items are examinations (נבחן: a pre-set emergency aid procedure, easier opening and
+  accelerated depreciation, an independent small-business authority). The environment paper brings
+  back the tax on single-use plastic *"כחלק ממהלך רחב יותר להפחתת מיסים ישירים והעלאת מס על מוצרים
+  בעלי השפעות שליליות מובהקות"*, the trade the liberalizing bullet above already records, and puts
+  clean-up costs on the polluter. The local-government paper widens municipalities' own income and
+  budget freedom and keeps redistribution, binding standards and *"מימון מלא או מוגבר לשירותים
+  חיוניים"* with the state. The band holds.
 - **Not 0:** *"נבטיח שהעבודה תשתלם תמיד יותר מקצבה"*, with aid redirected from stipends to "משרתי
   מילואים ולמשפחות עובדות ויצרניות" and means-testing *"אחרי מיצוי השתכרות בלבד"* — a directional
   welfare doctrine, where 0 requires none or a genuinely balanced one. The senior-citizens paper,
@@ -1867,6 +2088,13 @@ single military force between the river and the sea.
   כארגון חמוש"*, the Lebanese government alone responsible for armed force, a stronger Lebanese army
   and the moderate Sunni states brought in: the answer rev 258 did not find to כץ's *"לברוח
   מלבנון"*.
+- **One paper now names Judea and Samaria, and it is about rubbish (rev 272).** The environment
+  paper: *"נרחיב את האכיפה כנגד שריפת הפסולת הפיראטית ביו"ש ובכל רחבי הארץ"*. Checked across all
+  nineteen papers, it is the only sentence that names the area. It is enforcement against illegal
+  waste burning and says nothing about a state, sovereignty or settlement, so no trigger moves; it
+  is entered so that a search for יו"ש on this party's site is not mistaken for a finding. The
+  foreign-affairs topic, where the party's own lines on the territories sit, is still unpublished
+  (Open questions).
 - **Trigger (rev 69):** any ישר document on the territories, or any statement in the party's name
   by אבו רוקן, who ran the government's civil administration of the territories and is where a
   position would come from. A career administrator is not a policy statement (the refusal applied
@@ -1904,8 +2132,21 @@ the public space devolved to municipalities and communities.
   for terror victims, Shabbat). It was modified 2026-08-18, two days after rev 21 read it;
   re-checked live in rev 39, and all four cited phrases (מעמד אישי, זוגיות אזרחית, גיור מכבד, המרחב
   הציבורי והשבת) were still present.
-- The gender-equality page (rev 161) commits to *"החזרת הסטטוס-קוו שהופר... בכל הנוגע לסמכויות בתי
-  הדין הרבניים"*, the law ישראל ביתנו's פורר wants repealed (rev 151). It fits −2.
+- The gender-equality page (rev 161; a principles paper since 13.10, rev 272) commits to *"החזרת
+  הסטטוס-קוו שהופר... בכל הנוגע לסמכויות בתי הדין הרבניים"*, the law ישראל ביתנו's פורר wants
+  repealed (rev 151). It fits −2.
+- **The local-government paper is the row's fullest text on religion and it is devolution throughout
+  (rev 272).** Shabbat: *"כל רשות תוכל לעצב את השבת שלה ואת המרחב הציבורי, ולספק שירותי מסחר, דת,
+  פנאי, תרבות ותחבורה בהתאם לאורח החיים של כלל תושביה"* — commerce and transport named for the first
+  time, where the aliyah paper said only "the Shabbat in the public space" — and each such decision
+  needs *"החלטת מועצה ברוב מיוחס, תהליך שיתוף ציבור ואשרור בחוק עזר"*. Religious services: *"נוביל
+  העברת ניהול שירותי הדת מהמועצות הדתיות לרשויות המקומיות"*, and city rabbis chosen *"על ידי מועצת
+  הרשות, בהתאם לייצוג הקהילות השונות"*. The religious councils lose their job; the services stay
+  public, publicly paid and run by an elected body, and the city rabbi stays an office. That is the
+  sentence above — devolving and reforming an establishment is not disestablishing it — with its
+  clearest example, and −2 stands. On Shabbat transport the row now says in its own paper what ynet
+  recorded for הדמוקרטים, ישראל ביתנו and ביחד (rev 244, under הליכוד): local option, here behind a
+  special-majority council vote.
 - **Aloud, the leader goes further than the education paper (rev 263).** On כאן 11 (19.07.26):
   *"נדרוש תוך שלוש שנים שכל ילדי ישראל ילמדו בחינוך הממלכתי"*, and *"מי שלא יהיה שם, לא יקבל שקל
   אחד"*; on the party's podcast (25.06.26), *"100% חינוך ממלכתי לסוגיו, עברי, דתי, חרדי וערבי"*. The
@@ -1940,6 +2181,9 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 - **Do not score an examination as a commitment.** *"נבחן הטלת חובת ביטוח סיעודי לכלל האוכלוסייה"*
   is the page's most universal measure and its verb is נבחן, against נפעל ×8, נקדם ×6 and נבטיח ×2
   on the same page; and a mandatory insurance is a duty on citizens, not a state transfer.
+- **The self-employed paper does not reach it either (rev 272).** Its safety net is to rest on the
+  members' own contributions and is to be arranged *"הדרגתית"*, with no formula, rate or date: a
+  contributory scheme in outline, not a change to a universal entitlement.
 
 #### Tags (32) and what each rests on
 
@@ -2081,13 +2325,23 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 - **`civil-marriage`** — *"נפעל למיסוד זוגיות אזרחית בישראל"*: the weaker formulation (see
   `religiosity`), which rev 21 called the tag's weakest case.
 - **`kashrut-liberalization`** — *"נקדם רפורמות בכשרות ובייבוא מוצרים כשרים"*, in the cost-of-living
-  chapter, framed as competition policy rather than religion policy.
+  chapter, framed as competition policy rather than religion policy. The environment paper has its
+  first named product (rev 272): *"נפעל להסרת חסמים בפני ייבוא של בשר כשר מצונן מחו"ל"*, offered as
+  the way to cut live animal shipments, in the same sentence as *"נחזק את הגידול המקומי"*.
 - **`religious-pluralism`** — *"יהדות מכילה ומכבדת"*, *"גיור מכבד"*, and inclusive treatment by
   state institutions *"בתחנות החיים, מלידה ועד פטירה"*.
 - **`municipal-devolution`** and **`communitarian-devolution`** — *"הרחבת העצמאות של רשויות מקומיות
   וקהילות לעצב את השבת במרחב הציבורי בהתאם לאופיין וערכיהן"*, plus local authorities as a central
   partner running education in their area. The wording names **both** levels, which is why both tags
-  apply, exactly as on בית ציוני.
+  apply, exactly as on בית ציוני. Since 13.10 `municipal-devolution` also rests on a paper of its
+  own, *ישר! לשלטון המקומי* (rev 272): three tiers of authority (national, regional, local) on a
+  subsidiarity rule, the Interior Ministry recast as a ministry for local government and regional
+  development, a standing ministerial committee on devolution, powers handed over by measured
+  capacity and taken back from an authority that fails, wider municipal powers in education *"בכפוף
+  לתכנית הליבה"*, and the Shabbat and religious-services lines quoted under `religiosity`. It keeps
+  *"רשויות מקומיות וקהילות"* for the public space, so the second tag holds on the new text too.
+  Conditional or examined, not scored as commitments: support for a Basic Law on local government
+  *"בתנאי שייעשה בהסכמה רחבה"*, and statutory metropolitan bodies (נבחן).
 
 **Society**
 
@@ -2098,7 +2352,12 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   housing-discrimination law; a civil-partnership track *"לרבות זוגות חד-מיניים"* alongside the
   religious courts, with equal parenthood registration; anti-incitement law; a Director-General's
   circular protecting LGBT pupils and teachers. The same kind of evidence as ביחד's `pride` plan, so
-  the tag does not rest on הארץ's questionnaire summary.
+  the tag does not rest on הארץ's questionnaire summary. **A principles paper since 13.10 (rev
+  272)**, [*ישר! לקהילה הגאה*](https://yasharwitheisenkot.com/principles/lgbtqia/), which ends the
+  dead-link problem of rev 258: every measure is word for word the six posts, and the new
+  introduction adds that the party *"חתומה על 'חוקי שגיא לשוויון'"* (what those bills contain was
+  not checked) and states equality *"ללא הבדל נטייה מינית וזהות מגדרית"* as its reading of the
+  Declaration of Independence.
 - **`gender-equality`** (rev 161) — refused in rev 21 (*"crime policy in a crime paper"*: the
   violence-against-women programme, where הדמוקרטים had a dedicated equality paper) and in rev 69,
   against Eisenkot presenting the list as *"התחייבות המפלגה לשוויון בין גברים לנשים"* with 14 women
@@ -2108,7 +2367,14 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   public boards, *"מניעת הפרדה באקדמיה"*, penalties for excluding women from public space, women on
   religious councils and rabbinical electoral bodies, enforcement against *עגינות וסרבנות גט*, a
   national headquarters against violence against women. Most of it is not about violence, which is
-  rev 23's granting shape.
+  rev 23's granting shape. **A principles paper since 13.10 (rev 272)**,
+  [*ישר! לנשים ושוויון מגדרי*](https://yasharwitheisenkot.com/principles/gender-equality/), every
+  measure word for word the six posts. **One item in the list above is not in the published text:**
+  the pay-gap line reads *"נפעל לצמצום פערי שכר בין נשים לגברים בשוק העבודה"* and names no employer
+  transparency, in the paper as in the posts (rev 258 could not tell whether it had been edited
+  out; the paper settles what the party publishes, not what the page of September said). The tag
+  does not hang on it. The introduction says the Knesset slate is *"50% נשים, 50% גברים"*; rev 69
+  counted 14 women in the top 30, and a list is still not a programme.
 
 **Economy**
 
@@ -2203,6 +2469,9 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   before use, in the party's own voice.
 - **`consumer-protection`** (rev 161) — one enforcement unit for brokers is thinner than the
   holders' programmes.
+- **`deregulation`** (rev 272) — the self-employed paper's *"מסלולים מותאמים שיובילו לצמצום ניכר,
+  הקלות או פטורים היכן שרגולציה אחידה מטילה נטל בלתי מידתי"* is relief for one class of firm after a
+  review, the shape refused for ביחד's small-business plan (revs 49, 60): not across the board.
 - **Sector stays `secular`** — אבו רוקן is Druze, and rev 45's precedent is that a minority slot
   records what a party does, not what it is.
 
@@ -2210,23 +2479,28 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 
 The axis triggers and the `anti-settler-violence` removal trigger are stated where they apply.
 
-- **A lead, not a source: 104 posts the party has written and not published** (rev 258). On
-  07.10.26 its system gained ten topics that no page shows — health, foreign affairs and the
-  diaspora, the periphery, environment and climate, the self-employed, the public service, local
-  government, transport, planning, national infrastructure. Housing and culture were topics of this
-  kind before they became papers on 08.10, so these read as papers in waiting. **Nothing is scored
-  from them.** The foreign-affairs topic would be the party's first text of its own on the
+- **A lead, not a source: 74 posts the party has written and not published** (rev 258, as cut down
+  by rev 272). On 07.10.26 its system gained ten topics that no page showed — health, foreign
+  affairs and the diaspora, the periphery, environment and climate, the self-employed, the public
+  service, local government, transport, planning, national infrastructure. Housing and culture were
+  topics of this kind before they became papers on 08.10, and **three of the ten followed on 13.10
+  (rev 272): environment, the self-employed and local government**, thirty posts, each paper word
+  for word its posts. Seven topics and 74 posts are still shown on no page: health, foreign
+  affairs, the periphery, the public service, transport, planning and national infrastructure.
+  **Nothing is scored from those.** The foreign-affairs topic would be the party's first text of its own on the
   territories, the document limb of the rev 69 trigger: *"נילחם בנחישות באנרכיה, באלימות ובטרור
   היהודי ונשיב את המשילות ואת שלטון החוק ביהודה ושומרון"*, the civil administration's powers over
   land, planning and enforcement returned to the Defence Ministry, and *"נימנע מצעדים חד־צדדיים
   העלולים לסכן את עתידה של ישראל כמדינה יהודית ודמוקרטית בעלת רוב יהודי מוצק ולהטיל עליה אחריות
   למיליוני פלסטינים"*; beside it, peace with Saudi Arabia as the lead item of a wider Abraham
   Accords, an arrangement with Lebanon's government, and a national authority for strategic
-  communication in the Prime Minister's Office. **Trigger:** any of the ten published as a page or
-  a paper. Then `anti-annexation` and `anti-settler-violence` are re-read as resting on a written
-  programme, `regional-normalization` and `hasbara-focused` are considered, and the environment
-  topic is checked against rev 160's "no environment programme". It contains no sentence on a
-  Palestinian state and none on settlements, so on this text neither `security` trigger moves.
+  communication in the Prime Minister's Office. **Trigger:** any of the remaining seven
+  published as a page or a paper. For the foreign-affairs topic, `anti-annexation` and
+  `anti-settler-violence` are then re-read as resting on a written programme, and
+  `regional-normalization` and `hasbara-focused` are considered. It contains no sentence on a
+  Palestinian state and none on settlements, so on this text neither `security` trigger moves. The
+  environment limb was met in rev 272: the row has an environment programme (see Environment,
+  below).
 - **When did the fourth coalition principle appear?** The rev 85 party statement already kept out
   parties *"שאינן מכירות בחמאס כארגון טרור"*, beside three principles (ישראל יהודית ודמוקרטית, קבלת
   ערכי מגילת העצמאות, וחובת שירות לכול); מרידור on אופירה אסייג: *"מפלגה חייבת להכיר בחמאס כארגון
@@ -2295,10 +2569,29 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
 - **An anti-defection charter** (rev 104) — asked *"איך תבטיח שלא יהיו לך סילמנים ושיקלים
   ברשימה?"*, he said candidates will sign an **אמנה**; *"לא יהיה אצלי שום סילמן ולא יהיה שום שיקלי"*
   (rev 233). One holder, oral, no text: rev 15's rule.
-- **Environment** — questionnaire answers, no plan (revs 134, 160). Rev 154 agreed with הארץ that
-  the platform has *"אף אזכור"*; rev 160 corrected it: the agriculture paper names *"שינויי האקלים"*
-  as a threat to food supply and the housing topic promises *"כלים שיאפשרו היערכות מיטבית לשינויי
-  אקלים"* — adaptation inside other programmes.
+- **Environment** — a programme since 13.10.26,
+  [*ישר! לסביבה*](https://yasharwitheisenkot.com/principles/environment-and-climate/) (rev 272);
+  until then questionnaire answers and no plan (revs 134, 160). Rev 154 agreed with הארץ that the
+  platform has *"אף אזכור"*; rev 160 corrected it: the agriculture paper names *"שינויי האקלים"* as
+  a threat to food supply and the housing topic promises *"כלים שיאפשרו היערכות מיטבית לשינויי
+  אקלים"* — adaptation inside other programmes. The paper: a climate law (*"נוביל חקיקת חוק
+  אקלים"*) with emission targets *"ברי-מימוש וגבוהים מהיעדים הקיימים"*; higher renewable-energy
+  targets inside an infrastructure master plan, with micro-grids; a framework waste law; the tax on
+  single-use plastic restored; a contaminated-land law on *"המזהם משלם"*; the marine-areas law and
+  the Gulf of Eilat; a water-resilience plan; biodiversity and invasive species under the
+  environment ministry; animal welfare, with fewer live shipments; a new Dead Sea concession tender
+  with the concession-holder liable for rehabilitation; and the petrochemical industry out of Haifa
+  Bay under the existing government decision. **It names no number**: no target year, no percentage
+  and no budget, where ביחד's law is budgeted and המפלגה הכלכלית has 2050 and a ₪10B fund. Two of
+  its institutions are examinations (נבחן: an independent waste authority, a Dead Sea fund). On
+  Haifa Bay it promises *"עמידה בלוחות הזמנים שנקבעו"*; rev 134 recorded the questionnaire answer as
+  a budget and a shorter timetable, so the paper says less than the answer did. No environment tag
+  exists, so nothing is scored; the row is the fourth with a programme in the sweep queued under
+  the file-level Open questions.
+- **Protections for the self-employed** — the gap rev 60 recorded under ביחד
+  (`self-employed-protections`, not minted). This row's paper (rev 272) has the contributory safety
+  net, arrangements for mourning, hospitalisation and serious illness, and a stronger loan fund;
+  two rows with such a plank and still no tag, and the paper's weight is in its examinations.
 - **Leads in the leader's voice, not scored** (rev 233): on Iran, no regime change but *"הוצאת
   האורניום המועשר ופיקוח הדוק"*; in Gaza, a local force vetted by the שב"כ under a technocrat
   government with the moderate Sunni states, Hamas disarmed and the strip de-radicalised before
@@ -2372,6 +2665,33 @@ consensual reform is the first, not the second.**
 - The three additions are argued on their own rows; ישראל ביתנו's is the tag's strongest instance (a
   whole constitution, ratified by the public and entrenched at 80, where every other holder proposes
   Basic Law: Legislation).
+- **N12's summary of each list on the courts** (rev 268;
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-1b5d451818a21a1026.htm), דביר
+  ג'ברה and אור טרגר, 11.10.26 17:12, for its voter-matching tool). A reporters' summary, drawn
+  largely from statements and votes of 2023–2025. It agrees with the table on the lists both cover,
+  and the table keeps the lists' own words. What it has that the table lacks: **הליכוד**, which
+  refused ynet, is given from record — לוין's 2023 principles, the 2025 change to the selection
+  committee, the 2026 law under which the Attorney General's opinion does not bind the government,
+  and support for splitting the role (`judicial-overhaul`, held; אוחנה on the next term is under
+  הליכוד). **ביחד**: *"לא נמצאה התייחסות מפורשת"* on an override and *"אין התחייבות עדכנית"* on the
+  committee, where the list's own answer to ynet was to repeal the new selection law; the answer
+  stands. **ישראל ביתנו**: against an override and against the committee change; splitting the
+  Attorney General's role is *"ענייני וחשוב"*, and the bill was opposed as aimed at the incumbent.
+  **הדמוקרטים**: against any override mechanism (the video series did not address one), the binding
+  force of legal opinions protected by statute, and Basic Laws passed only by 80 MKs — from what N12
+  calls the party's legal plan; the 80 is not in this page's record of the democracy paper.
+  **Trigger:** that plan's text. **כחול לבן**: an override only *"במקרי קיצון שבהם יש קונצנזוס רחב
+  בכנסת, ולא רוב ארעי של 61"*, and the Attorney General's opinion binding; consistent with rev 108's
+  refusal. **יהדות התורה** and **ש"ס**: record — *"ללא פסקת התגברות אין ממשלה"* from a November 2022
+  meeting with the Vizhnitz rebbe, votes for the committee change (March 2025) and for splitting the
+  role (October 2025), and ש"ס's *"שיכרון הכוח של האקטיביזם השיפוטי"* of July 2026. **עוצמה
+  יהודית**: dismissing the Attorney General as the next government's first step, and Supreme Court
+  appointments by Knesset hearing and special majority — rev 107's measures; N12 cites no legal
+  platform either, and that trigger stays open. **רע"ם**: votes against splitting the role (October
+  2025) and against the non-binding-opinion bill (June 2026); record, and still no answer of its own
+  this cycle. **עמך ישראל**: בן ארי (#4) for a separate prosecutor-general, which is step 04 of its
+  plan. ישר, הציונות הדתית, המילואימניקים והכלכלית and הרשימה המשותפת are as in the table. It omits
+  נעם, ישראל תחילה and הציבור החרדי. No tag moves.
 - **The environment questionnaire** ([ynet, with מגמה ירוקה](https://www.ynet.co.il/environment-science/article/yokra14907119), 23.09.26) is filed on the environment
   sweep item in the file-level Open questions. No tag is created.
 - **The other seven:** [הדמוקרטים/ליברמן and רע"ם](https://www.ynet.co.il/news/elections2026/article/rjh8kyb5gx) (23.09) and [the disqualification
@@ -2669,7 +2989,8 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   2026-10-10). Every `/topic/…` address except `/topic/missions/` returns 404, as does every
   `/position/…` address; `topic-sitemap.xml` lists the goals page alone, and the `/principles/`
   index (now titled *תכניות*) links fourteen papers and nothing else. The whole section went, not
-  one subject, so nothing is read into it. The text is still returned by the site's own interface:
+  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272.)
+  The text is still returned by the site's own interface:
   `https://yasharwitheisenkot.com/api/wp/v2/topic` lists the topics with their ids, and
   `…/api/wp/v2/position?topic=<id>` returns that topic's posts (the text is in `acf.intro_text`).
   The Wayback Machine holds nine of the old topic pages (24.09.26) and neither the LGBT nor the
@@ -2678,7 +2999,15 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
 - **A post that only the interface returns has not been published.** On 07.10.26 the party's system
   gained ten topics and 104 posts (260 in all, 27 topics) that no page on the site shows. They are
   recorded under Open questions as a lead and scored nothing (rev 258). The seventeen topics of rev
-  161 are a different case: those were public pages when they were read.
+  161 are a different case: those were public pages when they were read. Three of the ten became
+  papers on 13.10 and are read as papers (rev 272); the posts of all five topics published that day
+  carry an edit stamp from the same morning, except local government's, and no earlier copy of
+  their text was kept, so what the edit changed is not known.
+- **A paper's own date is when its entry was created, not when it went public** (rev 272).
+  `…/api/wp/v2/principles?_fields=slug,date_gmt,modified_gmt` lists every paper with both dates:
+  the LGBT and local-government papers are dated 07.10 and the self-employed one 08.10, yet the
+  index of 10.10 linked fourteen papers and none of them. The sitemap's `lastmod` (13.10, 07:56 to
+  08:37 UTC) is the date they are first known to be public.
 - **Do not select by filename; read every document before concluding an axis is evidenced.**
   - **`homeland-security` is not evidence for the security axis.** It is *internal* security —
     organised crime, protection rackets, police budgets and independence, digital crime, violence
@@ -2741,6 +3070,8 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   `gender-equality` planks except that the pay-gap line now reads *"נפעל לצמצום פערי שכר בין נשים
   לגברים בשוק העבודה"* with no employer-transparency mechanism (whether that was edited out or was
   this page's gloss could not be checked; no copy of the earlier text survives). Both tags hold.
+  **Both programmes are live again as principles papers since 13.10.26 (rev 272)**, linked under
+  the two tags and below.
   The rebuttal page *ישר! נגד השקר*
   ([yasharwitheisenkot.com/the-poison-machine](https://yasharwitheisenkot.com/the-poison-machine/), `article:modified_time` 2026-09-29, plain `curl`): a
   campaign page, not a programme, answering ten claims it quotes from *"דף המסרים של הליכוד"*,
@@ -2773,6 +3104,21 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   its paraphrase of בנט and ליברמן, are not scored); a twelfth principles paper, [*ישר! לצעירים*](https://yasharwitheisenkot.com/principles/youth-and-young-adults/)
   (published 2026-09-27 09:33 UTC; every policy line matches the young-people topic page, with a
   ministerial committee on youth, rental-market measures and a personal "launch account"; rev 171).
+- **Read, and scored nothing (rev 272):** the fifteenth to nineteenth principles papers, all in the
+  sitemap with a `lastmod` of 13.10.26 (links supplied by the repo owner; browser-shaped `curl`):
+  [*ישר! לקהילה הגאה*](https://yasharwitheisenkot.com/principles/lgbtqia/) ·
+  [*ישר! לביטחון העצמאים והעסקים הקטנים*](https://yasharwitheisenkot.com/principles/self-employed-and-small-businesses/) ·
+  [*ישר! לסביבה*](https://yasharwitheisenkot.com/principles/environment-and-climate/) ·
+  [*ישר! לשלטון המקומי*](https://yasharwitheisenkot.com/principles/local-government/) ·
+  [*ישר! לנשים ושוויון מגדרי*](https://yasharwitheisenkot.com/principles/gender-equality/).
+  Every measure in all five is word for word in the position posts of its topic (6, 10, 10, 10 and
+  6 posts), compared mechanically in both directions; the introductions and diagnoses are new, and
+  the self-employed paper has none. The first and last are the programmes `lgbt-rights` and
+  `gender-equality` were granted on. The other three are topics rev 258 held back as unpublished:
+  what each says is under `economic`, `security`, `religiosity`, `municipal-devolution`,
+  `kashrut-liberalization` and Environment. No axis moved and no tag changed. The youth paper,
+  whose `lastmod` (28.09 06:53 UTC) may postdate rev 171's read, was compared again: all six posts'
+  sentences are still in it.
 - **Read, and scored nothing (rev 258):** the thirteenth and fourteenth principles papers,
   [*ישר! לדיור*](https://yasharwitheisenkot.com/principles/housing/) (published 2026-10-08 08:19
   UTC) and [*ישר! לתרבות ישראלית*](https://yasharwitheisenkot.com/principles/culture/) (08:23 UTC).
@@ -2938,6 +3284,98 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   `anti-monopoly`, held, as directions in a candidate's words; nothing the economics paper lacks.
   Two statements about a government the row's leader might form are under the rows that made them:
   נתניהו's video (under הליכוד) and פינדרוס's probable vote against (under יהדות התורה).
+- **Read, and scored nothing (rev 267):** איזנקוט on the seam line with council heads
+  ([post](https://x.com/gadi_eisenkot/status/2109216467849797690), 11.10.26; 42 seconds, machine
+  transcript): *"עשרות אלפי שוהים בלתי חוקיים בישראל"* are *"מחדל ביטחוני חמור"*, and *"אנחנו הכנו
+  תוכנית מפורטת לסגירת הפרצות בקו התפר"*. No such plan is among the papers this entry has read;
+  **trigger:** its text. `security-hawk`, held. A poster, *"הזהיר מאסון"* beside *"הוביל לאסון"*,
+  with *"זה או ממשלה לא ציונית של נתניהו והמשתמטים או ממשלת גיוס עבור הלוחמים בראשות ישר!"*
+  ([post](https://x.com/gadi_eisenkot/status/2109247198202327372)) — `universal-conscription`, held,
+  and a campaign line. כהנא (#5), over ישראל היום's front page on Qatari fuel: *"היועצים הקטארים
+  בלשכה שלך ממשיכים לתת עבודה"* ([post](https://x.com/MatanKahana/status/2109255010995372052); 16
+  seconds). הליכוד's posts of the day name איזנקוט as the head of the government they run against
+  (under עמך ישראל and הרשימה המשותפת); ביסמוט's answer on נתניהו sitting under him, and מעריב's
+  report that two of עמך ישראל's candidates would have him join, are under those rows.
+- **Read, and scored nothing (rev 268): the largest-party line, three ways.** **איזנקוט at ynet's
+  conference** ([ynet](https://www.ynet.co.il/news/elections2026/article/b1fnywqsgx), מורן אזולאי,
+  12.10.26): *"מועמד הגוש צריך להיות ראש המפלגה הגדולה ביותר"*, as held; asked about finishing
+  largest while another candidate forms the government, *"זה נראה לי לא דמוקרטי"* and *"מי שבונה על
+  זה לא מכיר אותי מספיק טוב"* — his pole of the rotation item, said more sharply, and addressed to
+  בנט and ליברמן by ynet's headline. Also: *"אני לא סומך על ראש ממשלת ישראל"*; that the Likud's
+  mockery of his English and *"הסתרת כל המזרחים ברשימה"* come from one place; and that נתניהו's wife
+  and son are political actors and are to be looked at as such. ynet adds that the day before, at
+  the students' union's conference, he hinted at re-examining זיני as head of the שב"כ — *"זה ייבחן
+  לגופו של עניין בעוד שלושה שבועות"* (ynet's relay; the event was not read). No measure. **N12 on
+  the strategy**
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-65b64636e3d21a1027.htm), דפנה
+  ליאל, 12.10.26 11:22, marked first publication): the party has decided to be the largest
+  *"ובפער"*, also at its bloc partners' expense. מרידור (#7), at a conference on 10.10, on why:
+  איזנקוט must get the mandate before נתניהו, since otherwise *"יו"ר הכנסת לא מתחלף, הכנסת נשלטת
+  עדיין על ידי הממשלה הזאת. הוא יעשה הכול כדי להישאר ממשלת מעבר"*; and *"כשהליכודניקים יראו שיש פער
+  גבוה מהליכוד, הם יעברו"*. The party declined to comment. Strategy, as in rev 137, with replacing
+  the Speaker named as a first move; אוחנה's answer of the same morning is under הליכוד. **A הארץ
+  column on the campaign**
+  ([הארץ](https://www.haaretz.co.il/opinions/2026-10-12/ty-article-opinion/.highlight/000001a1-2b1b-d1b4-a5fb-afdfd0fe0000),
+  רביב דרוקר, 12.10.26, body supplied by the repo owner): the campaign manager, רונן מנליס, runs it
+  on *"קמפיין לא מנצחים, קמפיין מפסידים"*, and the result is *"שקט, כמעט משותק"*. Its facts are the
+  writer's and carry no source: that the party refused to merge with בנט and לפיד, that איזנקוט told
+  them their merger would carry סמוטריץ' over the threshold, and that by *"מחקרי עומק"* haredi
+  evasion and the state of the ministries are what most anger right-wing voters who might cross. A
+  columnist on tactics; no position. גנץ's forecast that this row's leader will govern with the Arab
+  parties is under כחול לבן, and N12's summary of each list on the courts is beside the judicial
+  sweep above.
+- **Read, and scored nothing (rev 269):** איזנקוט on N12's report of אוריך's interrogation in the
+  Qatar case ([N12](https://www.mako.co.il/news-politics/2026_q3/Article-cd0622829d031a1027.htm),
+  12.10.26; the report is under הליכוד), as N12 quotes him, his statement not read at its source:
+  *"בלשכת ראש הממשלה פעל ועודנו פועל סוכן קטארי שהפעיל טרור פסיכולוגי נגד אזרחי ישראל. ראש ממשלה
+  סביר וכשיר היה מודיע הערב על פיטוריו המיידיים של אוריך, מגנה את מעשיו ומרחיק אותו לצמיתות מכל
+  פורום. הריקבון הזה עולה לנו במחיר דמים"*. כהן's (#2) demand of rev 152, now from the party's
+  leader and as a dismissal; *"סוכן קטארי"* is his word for a suspect who denies it. An attack on a
+  rival's office, not a policy; no tag.
+- **Read, and scored nothing (rev 270):** N12 on the bloc's two quarrels
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm), דפנה
+  ליאל, 13.10.26 07:22; the fuller account is under ביחד). איזנקוט, at the newspaper הדור's
+  conference, on בנט's remark that נתניהו could be a minister: *"אני לא מקבל את זה. כל מי שהיה
+  בתפקיד ב-7 באוקטובר לא ראוי לשמש בתפקידי פיקוד והנהגה, כולל שר אוצר"* (N12's relay; the conference
+  not read). The cabinet-wide disqualification of rev 99, here applied to a seat at the cabinet
+  table and to everyone in office that day; it is broader than `anti-indicted-pm`, which was refused
+  on that ground in revs 99, 152 and 245, and is refused again. N12 repeats its report of rev 268
+  that the party aims to be the largest *"ובפער"*, and גנץ's forecast about בנט and ליברמן is
+  addressed to this row's leader (under כחול לבן). A הארץ poll column, relaying a report not read
+  here, gives the campaign's main aim as drawing voters from המילואימניקים והכלכלית (under that
+  row).
+- **Read, and scored nothing (rev 271): two N12 surveys of the lists, on education and on the
+  economy.** *Education*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm), דביר
+  ג'ברה and אור טרגר, 13.10.26 09:40): thirteen lists on early childhood (birth to three), on moving
+  powers to local authorities and schools, on differential budgeting and on teachers' pay by
+  performance — *"נבדקו על ידי עמותת 121"*, from platforms, from the lists' written answers to the
+  association in September 2026 and from what three MKs said at its conference in July 2026. It is
+  the outlet's paraphrase throughout, with no answer quoted, and the answers themselves were not
+  read. The same data sits behind N12's matching tool ([tool](https://political-match.n12.co.il/)):
+  its 49 statements are public, each list's answers are served only as quiz results, and they were
+  not collected. *The economy*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm), אלעד
+  שמחיוף and קרן מרציאנו, 13.10.26 07:50, from the podcast אחד ביום; read through headless
+  Chromium): a commentator's chapter with a few lines on each of nine lists and nothing on כחול לבן,
+  עמך ישראל, המילואימניקים והכלכלית, ש"ס or יהדות התורה. What each says of a row is under that row.
+  **On this row.** Education: a national quality mark for frameworks for birth to three (licensing,
+  safety, minimum training), subsidy widened for working and serving parents, and certification
+  levels for caregivers; powers moved to local authorities and principals with a national core kept,
+  an hours basket replaced by a per-pupil shekel basket with differential additions, and optional
+  employment tracks for teachers built on quality and output and not only seniority.
+  `municipal-devolution` and `core-curriculum`, held; the rest is the +1 band's two halves inside
+  one field, in details this entry had not quoted. The economy: מרידור (#7), whom N12 puts at the
+  party's economic front — cut the deficit by closing unneeded ministries and by a fight against the
+  black economy, move money from what is not a growth engine to infrastructure and innovation, and,
+  on raising taxes, *"אני אבחן את המצב, אני מקווה שלא נצטרך"*. `tax-cutting` rests on the papers'
+  income-tax cut; a candidate who does not rule out a rise has not withdrawn it. **Trigger:** the
+  party saying taxes will rise, or dropping the cut.
+- **Read, and scored nothing (rev 274):** הארץ on the Council for Higher Education
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3556-d193-a3a7-b57e2d6b0000),
+  13.10.26; the report is under הליכוד) says the former MK רועי פולקמן suspended his activity on the
+  council because he is running on this list. Nothing is quoted from him, and his number was not
+  read (the CEC API returned an error on this pass). A candidate's conduct; no position.
 
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
@@ -3118,7 +3556,8 @@ funding". The religion-and-state plan (rev 99) meets two of the three explicitly
     adds hours and money for Jewish studies there up to the state-religious level; that is content
     in schools and not religious authority, and it moves nothing on this axis.
 - **The women's plan** (rev 29) repeals the laws that expanded the rabbinical courts' authority —
-  their *expansion*, not their jurisdiction — and the gender-separation-in-academia law, and adds
+  their *expansion*, not their jurisdiction — and the gender-separation-in-academia law (passed in
+  July 2026; what it does is under הליכוד's `religiosity`, rev 274), and adds
   legal training for דיינים, measures against get-refusal and עגינות, and representation for women
   in the religious councils and the assemblies that elect rabbis. Get-refusal is established
   religiosity evidence (rev 15, on הדמוקרטים).
@@ -3550,7 +3989,9 @@ readable** — it shows what a party declined to say while others answered.
 - **⚠ Open consistency question — what `scholar-exemption-retained` means.** The tag sits on כחול
   לבן, המילואימניקים והכלכלית and המפלגה הכלכלית beside `universal-conscription`, and whether it
   means "a narrow scholar exemption survives" or "the haredi exemption is retained" decides three
-  rows at once. Flagged, not settled unilaterally.
+  rows at once. Flagged, not settled unilaterally. *(Rev 273: a fourth row, עמך ישראל, takes the
+  tag on its service plan's capped Torah track, on the first reading, and loses
+  `anti-conscription-exemption` in the same pass.)*
 - **עמך ישראל — `reservist-focused` refused a second time.** *"לא נהיה שכפ״ץ של גולדקנופף אלא של
   משרתי המילואים"* is the rhetorical form of the position rev 41 refused for having no benefit,
   number or instrument attached.
@@ -3980,6 +4421,91 @@ Party-published unless marked. Statements and press are linked where they are us
   front page ישראל ביתנו's and עמך ישראל's candidates posted, rev 264): *"מי שמצביע לליכוד מצביע
   לקטאר"* ([post](https://x.com/nisanzeevi/status/2109183066505691235)). An attack, on the row's
   Qatar line (rev 123).
+- **Read, and scored nothing (rev 267):** בנט (#1), quoting [ישראל
+  היום](https://www.israelhayom.co.il/news/world-news/middle-east/article/21592534)'s report that
+  Israel let Qatar send Gaza more than $100m of aid through the war (שחר קליימן, 10.10.26; read this
+  time): *"בקרוב נחליף אותם, נגדיר את קטאר כמדינת אויב, ונתקן את ישראל"*, and that it was he who
+  stopped the cash suitcases ([post](https://x.com/naftalibennett/status/2109213835512918527),
+  11.10.26) — the row's Qatar line (revs 49, 123), restated. לפיד (#2), twice over the same front
+  page: *"אם נתניהו ישאר בתפקידו - השבעה באוקטובר יקרה שוב"*
+  ([post](https://x.com/yairlapid/status/2109213075677258128);
+  [post](https://x.com/yairlapid/status/2109231060374401201)). בן ארי (#4): a woman of 40 murdered
+  at home, and by פורום מיכל סלה's count eleven women killed by a partner since the start of 2026
+  ([post](https://x.com/Meravbenari/status/2109207336980041956)) — figures, and no measure; and her
+  letter asking the Attorney General to step in urgently so that an investigation of עוצמה יהודית's
+  קרויזר and ניימן is opened, and to examine בן גביר's conduct — read as an image in a post by the
+  journalist ג'וש בריינר, whose own text has it as questioning under caution
+  ([post](https://x.com/JoshBreiner/status/2109210664145134000); under עוצמה יהודית). מירב כהן (#9)
+  at a school of נצח, a haredi network of 22 schools that sit matriculation: *"ניתן להיות גם חרדי
+  וגם ישראלי"*, and *"אני אעשה הכל, אבל הכל, כדי לתת לרוח הזו לנצח"*
+  ([post](https://x.com/cohen_meirav/status/2109287582978707458)) — `core-curriculum` and
+  `state-haredi-education`, held; no measure. שירי (slot not checked) on נתניהו's morning at the
+  court ([post](https://x.com/naorshiri/status/2109260530372284876); 2:26, machine transcript): an
+  attack.
+- **Read, and scored nothing (rev 268): בנט and לפיד on who sits in the next government.** **בנט
+  (#1) at ynet's conference** ([ynet](https://www.ynet.co.il/news/elections2026/article/s1rvfkcsfx),
+  מורן אזולאי, 12.10.26). *On נתניהו, a statement and its withdrawal:* by ynet he said on 11.10, at
+  the election conference of the newspaper הדור, *"כל עוד יקבל את עקרונות היסוד, אין לי בעיה שנתניהו
+  יהיה שר בממשלה שלנו"*, was attacked by איזנקוט, ליברמן and גולן, and clarified *"לא נשב עם נתניהו
+  בשום קונסטלציה"*; at ynet's conference, *"נתניהו לא יכול להיות דקה נוספת בממשלת ישראל"*. The first
+  statement is ynet's relay and was not read at its source. No tag on this row records a refusal to
+  sit with a person — `anti-indicted-pm` is a law — and `opposition` already says it; the last word
+  is the refusal, and nothing is entered. *On the Arab parties:* that the bloc would rest on them is
+  *"חרטא"*, and *"אנחנו הולכים להקים ממשלה ציונית"*. The launch formula again (Open questions, the
+  tag's item); it names no party and no criterion, so `excludes-anti-zionist-parties` stays off. *On
+  וינטר:* no cooperation in a future government (under עמך ישראל). *Held lines restated:* Qatar to
+  be defined an enemy and thrown out *"מהמערכות שלנו"* and out of Gaza (revs 49, 123), with a charge
+  that אוריך was directly involved in the Qatar affair, which he gives as published the day before
+  (not read; the leak is under הליכוד); and *"אם בארבע השנים הקרובות אנחנו לא מפרקים את המדינה
+  החרדית האנטי-ציונית שקמה בתוך מדינת ישראל, אין לנו מדינה"*, with *"ניקח את הכסף מהמשתמטים ונעביר
+  למשרתים"* (`sanctions-on-non-servers` and `anti-conscription-exemption`, held). ynet sums the
+  service plan as free day care for reservists, payments at half price and ₪1m towards a flat — the
+  plans of revs 22 and 164. His words on דרעי are under ש"ס and on בן גביר under עוצמה יהודית.
+  **לפיד (#2)** ([ynet](https://www.ynet.co.il/news/elections2026/article/sjkxknvx5jzx), מורן אזולאי
+  and יובל קרני, 12.10.26), after the President said he would do all he could to avoid a repeat
+  election: he hopes הרצוג will not push *"עוד ממשלת 'אחדות' מזויפת"*, and *"לא נשתף עם זה פעולה
+  ואני קורא גם לשאר המפלגות במחנה להודיע מראש שלא יהיו חלק מממשלה כזו"* (his post, as ynet quotes
+  it; the post itself not read). A refusal of a unity government with נתניהו, the opposite pole of
+  כחול לבן's `unity-government`; no tag names that pole. גנץ's reply is under כחול לבן. N12's
+  summary of each list on the courts differs from this row's answer to ynet on one point (beside the
+  judicial sweep, under ישר).
+- **Read, and scored nothing (rev 269):** בנט on N12's report of אוריך's interrogation in the Qatar
+  case ([N12](https://www.mako.co.il/news-politics/2026_q3/Article-cd0622829d031a1027.htm),
+  12.10.26; the report is under הליכוד), as N12 quotes him, his statement not read at its source:
+  *"היד שמימנה את הנוח'בות שטבחו בנו - היא היד שמימנה את האדם הקרוב ביותר לראש הממשלה. זו פרשת
+  הבגידה החמורה ביותר בתולדות המדינה"*, in which from the Prime Minister's office, in wartime,
+  people acted *"להלבין את האויב המסוכן ביותר שלנו - קטאר"*. The row's Qatar line (revs 49, 123),
+  restated as an attack and with no measure beyond the ones already recorded; he had tied אוריך to
+  the affair at ynet's conference that morning (rev 268, above). *"בגידה"* is his word, over a
+  report of a suspicion and a denial. Nothing entered.
+- **Read, and scored nothing (rev 270): the bloc's two quarrels, by N12**
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm), דפנה
+  ליאל, 13.10.26 07:22). *נתניהו as a minister:* the statement of 11.10 that rev 268 had from ynet,
+  in N12's wording: *"כל עוד אנחנו נקבל את עקרונות היסוד, אין לי בעיה שנתניהו יהיה שר בממשלה שלנו"*
+  — ynet has *"כל עוד יקבל"*, so the two differ on who is to accept the principles — and the
+  clarification he wrote shortly after: *"מציע לכולם להירגע. אמרתי אלף פעמים שנתניהו נושא באחריות
+  ישירה ואישית לטבח 7 באוקטובר ולכן עליו ללכת הביתה. לא נשב איתו בשום קונסטלציה"*. By N12 he said
+  the remark was meant to show an absurdity, since נתניהו opposes conscription for all, a state
+  commission of inquiry and a constitution. Still a relay: neither the conference nor his post was
+  read. The refusal is the last word, as in rev 268, and no tag records it. The replies are under
+  each row — איזנקוט (ישר), ליברמן (ישראל ביתנו), גולן (הדמוקרטים). *The premiership:* גנץ forecasts
+  that בנט and ליברמן will demand it even if they do not lead in seats (under כחול לבן); by N12's
+  paraphrase, with no quotation, בנט denies outright that there are contacts or coordination between
+  him and ליברמן about it. A denial of coordination, and no new answer on who leads; his pole of the
+  rotation item (under ישר) stands as recorded.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *Education:* public frameworks for birth to
+  three, private day-care centres brought into the subsidy if they meet the ministry's standards,
+  training and retention grants for caregivers, and priority in subsidy for working and serving
+  parents; powers and large budgets moved to local authorities, differential per-pupil budgeting,
+  and teachers' pay raised on a model that rewards achievement. The education and early-childhood
+  plans already read (revs 22, 49); `municipal-devolution` and `workforce-integration`, held. *The
+  economy:* טרנר (#3): *"לא יכול להיות שמשפחה חילונית משלמת 6,000 שקל יותר לחודש ומשפחה חרדית מקבלת
+  4,000 שקל"*; בנט's *"מי שלא יעבוד - לא יקבל שקל מהמדינה"*, the line already recorded; and
+  efficiencies in the public sector through AI. Nothing new to the row.
 
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
@@ -4487,6 +5013,68 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   ([post](https://x.com/naamalazimi/status/2109197075460014316); the quoted 19-second clip was
   transcribed by machine and one frame viewed; לוי's present affiliation was not checked). A
   candidate's record and a personal attack.
+- **Read, and scored nothing (rev 267):** גולן (#1) over ישראל היום's front page on Qatari fuel:
+  נתניהו lets Hamas rebuild, and *"מנהיג אחראי שמבין בביטחון היה משמיד מזמן את שלטון חמאס"*
+  ([post](https://x.com/YairGolan1/status/2109209173044924842), 11.10.26); זר קצנשטיין (#12) repeats
+  him ([post](https://x.com/ZerMoran/status/2109213251020218371)). Hawkish words against the
+  government on a `security` −1 row, as in rev 258, and no measure. זר קצנשטיין on the party's *"מטה
+  לביטחון נשים ונערות"*, launched the week before and to sit under the Public Security Ministry
+  ([post](https://x.com/ZerMoran/status/2109253225824023037); 68 seconds, machine transcript) — the
+  national authority on violence against women that `gender-equality` already rests on, now with a
+  name and a ministry. **Not read:** the launch, or any paper for it. קריב (#3): *"החלפתו של אמיר
+  אוחנה מיד אחרי הבחירות היא צעד הכרחי"*, over ten seconds of אוחנה with a supporter who blames 7
+  October on the left ([post](https://x.com/KarivGilad/status/2109225329940213771); under הליכוד) —
+  a demand about a person, beside טיבי's on a challenger to the Speaker (rev 101, under הרשימה
+  המשותפת); from a new outpost near עקרבה, *"זאת לא ציונות, זאת לאומנות, זאת גזענות"* and *"אנחנו
+  מתכוונים לשים לדבר הזה סוף"* ([post](https://x.com/KarivGilad/status/2109239072866836658); 88
+  seconds, machine transcript) — `anti-settler-violence`, held; and, over ynet's headline that the
+  Attorney General will examine the appointments זיני is advancing before the election, *"גם
+  המינויים של גופמן"* ([post](https://x.com/KarivGilad/status/2109232085559120087)). His two posts
+  and רדמן's two on the אוריך leak are under הליכוד. פינק (#5): by a ידיעות אחרונות report he
+  relays, the Likud has a team looking for defectors in the other bloc and not among this row's
+  candidates ([post](https://x.com/yayafink/status/2109213636900298957); 60 seconds, machine
+  transcript; the report not read), and more coalition MKs came to the trial than to the 7 October
+  events ([post](https://x.com/yayafink/status/2109222640523296917); 53 seconds). רוזין (#8):
+  *"לביבי אין ממשלה בלי המפלגות החרדיות והמתנחליות"*
+  ([post](https://x.com/Michal_Rozin/status/2109250898178281854)). לזימי (#2) on a Jerusalem high
+  school's mock election ([post](https://x.com/naamalazimi/status/2109288458766147701)). Campaign
+  lines.
+- **Read, and scored nothing (rev 268):** this row as others spoke of it on 12.10.26. אוחנה (הליכוד
+  #3), at ynet's conference, puts גולן and *"האנשים שאיתו"* outside any government the Likud forms,
+  calls him a danger to democracy as a police minister, and says that, asked about בנט's proposal to
+  bar haredim from the security cabinet, גולן answered *"למה רק לקבינט? לממשלה"* — *"זה פשיזם"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/b1mszy9igl)). The quotation is אוחנה's
+  telling and was not found at a source; the row's own line is the film's *"ממשלה בלי חרדים"* (rev
+  247), which is about parties in a coalition. ynet lists גולן among those who attacked בנט for
+  saying נתניהו could be a minister (under ביחד). N12's summary of each list on the courts has this
+  row against any override mechanism and for Basic Laws by 80 MKs, from a legal plan not read here
+  (beside the judicial sweep, under ישר; the trigger is stated there).
+- **Read, and scored nothing (rev 270):** גולן on בנט's remark that נתניהו could be a minister, as
+  N12 quotes him
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm),
+  13.10.26; under ביחד), his statement not read at its source: *"נתניהו לא יישב בשום ממשלה כל עוד זה
+  תלוי בדמוקרטים. לא כשר אוצר, לא כשר המים ולא כשר בלי תיק"*. The row holds `anti-indicted-pm`,
+  which is a law about the prime minister; a refusal to sit with him in any post goes past it, and
+  no tag names it.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy:* N12 calls the row's view
+  *"סוציאליסטית-קיינסיאנית"*: לזימי (#2) speaks of *"שיקום וצמיחה"* in place of cuts and of welfare
+  infrastructure on the model of the post-war welfare states, paid for, in N12's paraphrase, by
+  closing the war's fronts and by *"מיסוי ממוקד על רווחי בנקים ותאגידי ענק"*. `economic` −2 as it
+  stands. The paragraph there notes that the papers name no tax; this is the first one named for the
+  row, with no rate, from one candidate as an outlet paraphrases her. `progressive-taxation` has one
+  holder, carried from a predecessor row and not argued, and is not opened on a paraphrase.
+  **Trigger:** the party's own text naming the tax. *Education:* in its answer to 121 (September
+  2026) the party would set the day-care subsidy by earning capacity and a means test and not give
+  it to every child; more subsidised and supervised places and higher pay for their staff; budgeting
+  per pupil by background and powers moved to schools and principals, but no weakening of the
+  ministry and no pay by individual performance assessment. `municipal-devolution`, held. An
+  earning-capacity test is the shape `workforce-integration` names on other rows; this row does not
+  hold it and a paraphrased answer on one subsidy does not open it. פינק's (#5) post on אשר is under
+  יהדות התורה.
 
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
@@ -4880,6 +5468,35 @@ All first-party unless marked.
   for `excludes-anti-zionist-parties` under Open questions is not met; it is the untagged shape
   logged under tags that do not exist yet (a named party, rev 90), said here of the Arab parties as
   a group.
+- **Read, and scored nothing (rev 268):** גנץ at ynet's conference
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/rjg200zcifx), יובל קרני, 12.10.26): he
+  runs to the end — *"אני היחיד שמציג פתרון כלשהו"*, *"ממשלת אחדות ציונית חוצת גושים"*, and by his
+  own checking *"מעל 6 מנדטים"* who want it; and *"אני מעדיף ממשלת גדי-ביבי מאשר ממשלת גדי-טיבי"*.
+  `unaligned` and `unity-government`, as in revs 259 and 264. His forecasts about others are his
+  own: that איזנקוט *"יקים ממשלה עם המפלגות הערביות כי אין לו פתרון אחר"*, and that ליברמן and בנט
+  will demand the premiership whatever their seat count — of ליברמן, that in 2020 *"הוא רצה להקים
+  ממשלה עם הקולות הערביים"* and *"הוא יעשה את זה"*. Nothing is entered on those rows from a rival's
+  forecast. To לפיד's call to refuse a unity government (under ביחד): *"אם לא תוקם ממשלת אחדות
+  בבחירות הקרובות ושני הצדדים לא ישתפו פעולה, נביא עלינו את 7 באוקטובר הבא"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/sjkxknvx5jzx)). ynet also carries an
+  assessment, with no source, that he will withdraw if he is not sure of the threshold, against his
+  own *"עד הסוף"*; polls are not a field. N12's summary of each list on the courts adds an override
+  only by broad consensus and not by 61 (beside the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 270):** N12 gives גנץ's forecast at ynet's conference (rev 268) in
+  his words: *"למה שישלמו את הקנס של ללכת עם מפלגות ערביות אם הם לא ראש הממשלה? בטח שהם ידרשו"*, and
+  *"Read my lips, תראו שזה יקרה"*, framed as a warning to איזנקוט
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm), דפנה
+  ליאל, 13.10.26 07:22). ליברמן's answer is *"לא שופטים אדם בעת מצוקה"*, and the party's reply to
+  it: *"אנחנו דווקא כן שופטים אדם שנחוש להגיע לכיסא גם תמורת מכירת המדינה"*. בנט's denial is under
+  ביחד. A forecast and an exchange of insults; `unaligned` and `unity-government` as they were.
+- **Read, and scored nothing (rev 271):** N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר), from the party's answer to the association 121 in September 2026: birth to
+  three brought into the education system by stages, day care subsidised with priority for couples
+  who serve, less power for the ministry, a change in how teachers are employed with higher pay in
+  the first years and additions for the outstanding; on budgeting, account to be taken of the
+  authority and of the pupil at the edge, with no commitment to budgeting by background. `economic`
+  0 as it reads, balanced. The row is not in N12's economy chapter.
 
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
@@ -5030,8 +5647,9 @@ is headed *"הפרדה בין דת למדינה"*, and its statement is recorded
     freeze on arresting haredi deserters. רוזין named the first two the day before as things the
     coalition *tried* to legislate (revision 245); whether they passed was not checked in that
     pass. For the rabbinical-courts law it had been: revision 166 has the arbitration law at its
-    final reading on 24.03.2026 (under Recorded), so only the academia law is unchecked. The freeze
-    was annulled by the court, by the headlines revision 245 checked.
+    final reading on 24.03.2026 (under Recorded), and the academia law passed in July 2026, by a
+    הארץ report of 13.10.26 (rev 274, under הליכוד's `religiosity`). The freeze was annulled by the
+    court, by the headlines revision 245 checked.
   - The haredi school networks: *"יבוטלו ההסדרים המאפשרים לרשתות החינוך העצמאי ו'אל המעיין' לפעול
     ללא פיקוח ממשלתי מלא"* — direct state supervision, audit by the State Comptroller, and teachers
     paid directly, *"ולא באמצעות עמותות המנכות ממנו כספים"*.
@@ -5335,8 +5953,7 @@ text. This entry never recorded the grant.
   עם האזור ועם הגורמים הרלוונטיים שעמם שוחחתי"*. No Jordanian statement was looked for.
 - **Not checked:** the plan's 12,000 and 60,000 police figures, the half-billion shekels a month to
   prisoners' families, its forecast that the next US president will recognise a Palestinian state,
-  and whether נתניהו approved the PA's elections (rev 237); whether the academia gender-separation
-  law the ten points would repeal passed (rev 247); three of the laws מלינובסקי claims as hers,
+  and whether נתניהו approved the PA's elections (rev 237); three of the laws מלינובסקי claims as hers,
   against the Knesset record, and where her column ran, which one search did not find (rev 225);
   וינטר's answer to the chairman's offer below (rev 247).
 - **`bloc`.** A report that ליברמן is *"בוחן את האפשרות לגבש קואליציה חוצת מחנות"* was refused as a
@@ -6003,7 +6620,8 @@ only the channel's chyron. Two clips in Arabic were read from their Hebrew subti
 - **N12's live blog**
   ([N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-e5da204f54d01a1026.htm),
   05.10.26 21:17–23:10, the channel's analysts on its own poll). Polls are not a field on this
-  page.
+  page. The address rolls: on 12.10.26 it held only four entries of 11.10 (rev 268, under הליכוד
+  and עמך ישראל), so the entries below are no longer at the link.
   - **עמך ישראל is under the threshold** in N12's poll, and כאן's of the same day says the same in
     a headline. גבע: most of its votes return to נתניהו's bloc, which drops one seat. The change
     bloc stays at 54; שרקי: 58 with הנדל and זליכה over the threshold, and 59 with סגלוביץ' of
@@ -6352,6 +6970,45 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   ביחד"*; her caption is *"זה או משתמטים של נתניהו או מתגייסים של אביגדור ליברמן"*
   ([post](https://x.com/talyalankri/status/2109180860981191060), 11.10.26; the repo owner sent the
   link twice). `universal-conscription`, `term-limits` and `constitutionalist`, held.
+- **Read, and scored nothing (rev 267):** ליברמן over a clip of דרעי (under ש"ס): *"בלי האיש הזה,
+  אין לביבי ממשלה. בממשלה הבאה המשוואה תהיה פשוטה: 100% לחיילים ו-0% למשתמטים!"*
+  ([post](https://x.com/AvigdorLiberman/status/2109211917768093940), 11.10.26) — the slogan already
+  recorded. בן שטרית (#2): on סמוטריץ', over an undated clip of him promising that neither Qatar nor
+  Egypt would have a part in Gaza ([post](https://x.com/rpy41447130/status/2109223597759984108);
+  under הציונות הדתית); *"שקלי גזען"*, over 103FM's item on שיקלי refusing to apologise for
+  imitating ליברמן ([post](https://x.com/rpy41447130/status/2109226696050184216)); and six questions
+  on נתניהו and Qatar ([post](https://x.com/rpy41447130/status/2109235164488548453)). מלינובסקי (#5)
+  on יהדות התורה's campaign clip: no state symbol, no mention of the army, no woman, and *"בלעדי
+  האנטי ציוניים האלו אין לו ממשלה"*
+  ([post](https://x.com/YuliaMalinovsky/status/2109235451592679767); the clip is read under יהדות
+  התורה). `anti-clerical` and `excludes-haredi-and-arab-parties`, held.
+- **Read, and scored nothing (rev 268):** things said of this row on 11–12.10.26, none by it. גנץ
+  forecasts that ליברמן will form a government with the Arab parties and demand the premiership,
+  citing 2020 ([ynet](https://www.ynet.co.il/news/elections2026/article/rjg200zcifx); under כחול
+  לבן) — a rival's forecast against a held `excludes-haredi-and-arab-parties`, and not entered. סגל,
+  in N12's live blog, has נתניהו attacking וינטר for fear that *"וינטר הולך ללכת עם ליברמן"* (under
+  עמך ישראל). ynet lists ליברמן among those who attacked בנט's remark on נתניהו as a minister (under
+  ביחד). N12's summary of each list on the courts gives this row's record on the Attorney General's
+  role (beside the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 270):** ליברמן in N12's account of the bloc's two quarrels
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm),
+  13.10.26; under ביחד). On בנט's remark that נתניהו could be a minister, his post as N12 quotes it,
+  the post itself not read: *"אני קורא לחבריי בגוש הציוני להבהיר באופן ברור - יתהפך העולם ולא נשב עם
+  נתניהו"*, and by N12's paraphrase not as minister for regional cooperation either. The row holds
+  `anti-indicted-pm`, which is a law about the prime minister; a refusal to sit with him in any post
+  goes past it, and no tag names it. On גנץ's forecast that he and בנט will demand the premiership
+  (rev 268), he answers only *"לא שופטים אדם בעת מצוקה"*; N12 carries a denial from בנט and none
+  from him. A rival's forecast, and nothing is entered from it.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy:* free market and privatisation —
+  Ashdod port, Haifa airport, and dismantling councils such as מועצת הלול: the platform lines
+  `economic` +2 and `anti-monopoly` rest on. *Education:* more government investment in early
+  childhood and better day care (pay and conditions, training, lower density, the ratio of children
+  to staff, supervision), no universal subsidy, and teachers' pay weighted to innovation, excellence
+  and quality of teaching and not seniority alone. Held text; nothing new.
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -6802,7 +7459,13 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   Maj-Gen (res.) יוסי בכר of קיבוץ בארי *"הסכימו להצטרף לרשימת הציונות הדתית בבחירות הקרובות"*. The
   lists were filed on 2026-09-07/08; check the CEC filing before treating either as a candidate. The
   same read of `list31` settles #4 (מור), #6, #9 and the "top four" line; the 2026-09-01 slate is an
-  announcement, not the filed order. A candidate is not a position either way.
+  announcement, not the filed order. A candidate is not a position either way. **בכר, a month on**
+  (rev 267): the party's director ולד posts a magazine page on him
+  ([post](https://x.com/yehodavald/status/2108503216216256651), 09.10.26; image read, the
+  publication not identified). Its sub-heading calls him a major-general who supported the
+  disengagement, who admits he was part of the conception, and who is now *"חבר במפלגתו של
+  סמוטריץ'"* and a believer in *"הקמת יישובים ישראליים ברצועת עזה"* — `territorial-control-gaza`,
+  held. Membership, on a magazine's word; the filing is still unread.
 - **The party hosts a reserves plan at `miluim.zionutdatit.digital` (rev 71). Nobody has compared
   the 2026-08-14 deck with it** — the ≤30-day target, חוק יסוד המשרתים, the coalition-condition
   quotation and the Q&A line the `sanctions-on-non-servers` refusal turns on. The deck was treated
@@ -7334,6 +7997,50 @@ rewriting its programme would be the thing to catch.
   adds *הכי* before it; the interview was not found). זהות's education page, reread on 11.10.26,
   says *"לשבור את המונופול של משרד החינוך"* and funds the pupil; it does not close the ministry. A
   wish spoken in an interview, beside a platform that cuts the ministries from 31 to 11; not scored.
+- **Read, and scored nothing (rev 267):** סמוטריץ': *"זה רע״ם או הציונות הדתית!"*, over the party's
+  signs hung beside רע"ם's in רמלה ([post](https://x.com/bezalelsm/status/2109214852623249857),
+  11.10.26; two images viewed); and, from a studio, that a government of איזנקוט, ליברמן and גולן
+  *"תסגור את מכינת עלי ותפנה את היישובים והחוות"*, with ten Supreme Court justices, an Attorney
+  General and a State Attorney to be appointed in the next term
+  ([post](https://x.com/bezalelsm/status/2109252464914370864); 22 seconds, machine transcript) —
+  `judicial-overhaul` and `pro-settlement`, held. Six minutes of him answering a supporter who says
+  he does not represent them, posted by ולד
+  ([post](https://x.com/yehodavald/status/2109236569332985957); undated, at Sukkot by its own
+  reference; machine transcript): for reservists it is *"הרבה יותר חשוב שיהיה ניצחון"* than that
+  haredim enlist; as Finance Minister he raised VAT and made permanent consolidation steps of 2.5%
+  of GDP; he lists the government decisions for the south, the north and a ₪450m package for ניר
+  עוז; from the kashrut law, he says, the party took out *"כל תעשיית הג'ובים שש״ס רצתה לעשות"*; of
+  the coalition funds, 80–90% went to rebuilding and to temporary neighbourhoods through the
+  Settlement Division; and *"אני מייצג את המגזר הכי פחות מגזרי שיש במדינת ישראל"*. He names
+  conscription and religious services as the two subjects still to answer, and the clip ends before
+  he does. A record defended; the figures are his. ישראל ביתנו's בן שטרית posts an undated clip of
+  him — *"לא קטאר ולא מצרים לא יהיו מעורבות בעתיד"* of Gaza
+  ([post](https://x.com/rpy41447130/status/2109223597759984108); 39 seconds, machine transcript) —
+  beside ישראל היום's report that Qatari aid went on (under ביחד). סטרוק (#3) represented the
+  government at the memorial for רחבעם זאבי
+  ([post](https://x.com/oritstrock/status/2109283807564071048)): a reminiscence. פייגלין (#2) on
+  מנדלבליט's testimony, *"מערכת כזו יש לפרק מן היסוד"*, over ערוץ 14's graphic *"בוצעו האזנות סתר
+  שלא כחוק בתיקי האלפים"* ([post](https://x.com/moshefeiglin/status/2109225325125058571)) —
+  `judicial-overhaul`, held, and no measure. His *"כלי ריגול פולשניים והאזנות סתר בניגוד מוחלט
+  לחוק"* against the prime minister's family goes beyond הארץ's log of the hearing as supplied,
+  which has one unapproved wiretap, on נתן אשל, stopped on מנדלבליט's order (under הליכוד). He also
+  reposts the four-minute זהות clip of rev 259 under a new caption
+  ([post](https://x.com/moshefeiglin/status/2109309710407233728); the transcript matches). A third
+  post of his, numbered 2109242887187619945, had been deleted by its author before it could be read.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *Education,* *"לפי מצע המפלגה"* — which
+  document N12 means is not said, and this entry holds the 2022 platform and four party plans:
+  reservists' families first in the Labour Ministry's day-care centres; about 80% of decision-making
+  and budget management moved to principals and teachers; outstanding teachers rewarded through
+  personal contracts; more budget for schools in the periphery, not set by pupils' background. The
+  2022 paper's education devolution (rev 17) and the servers' priority, with a figure and the
+  contracts this entry had not quoted. *The economy:* סמוטריץ' calls the criticism of coalition
+  funds *"פופוליזם זול"*; N12 says that instead of fighting the big unions as promised he signed
+  generous agreements with ההסתדרות and directed budgets to Judea and Samaria. A commentator
+  describing the record `economic` 0 is already read from.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -7609,7 +8316,15 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   it too (*"הפרקליטות תונחה להגיש כתבי אישום כנגד מחבלים בבקשה לעונש מוות"*). The two partners agree
   on it, and it distinguishes the pair from הליכוד. Since then: a death-row wing and execution
   facility (party post, 2026-08-18), and בן גביר's account that the noose was for the law and that
-  he changed the rule requiring a panel of lieutenant colonels (rev 149).
+  he changed the rule requiring a panel of lieutenant colonels (rev 149). The first named case (rev
+  274): a [party post](https://www.ozma-yeudit.co.il/%d7%94%d7%a9%d7%a8-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%93%d7%95%d7%a8%d7%a9-%d7%9c%d7%96%d7%a8%d7%96-%d7%90%d7%aa-%d7%94%d7%94%d7%95%d7%a6%d7%90%d7%94-%d7%9c%d7%94%d7%95%d7%a8%d7%92-%d7%a9%d7%9c/)
+  of 13.10.26 has בן גביר write to the Military Advocate General asking why, three weeks on, no
+  indictment has been filed against קדרי סמארה, whom it names as the Hamas man who shot נתנאל
+  שקרון dead near נווה צוף on 20.09, and demanding *"להחיל עליו את חוק עונש מוות למחבלים שחוקקה
+  עוצמה יהודית"*: *"כל עיכוב מהווה פרס לטרור ופוגע בהרתעה של מדינת ישראל"*. The post describes the
+  order made under the law as a mandatory death sentence for a resident of the Palestinian
+  Authority who carries out a murderous attack, *"גם אם התביעה לא ביקשה להטיל עונש זה"*. Held. The
+  law and the order were not read, and that description of them is the party's.
 
 **Economy**
 
@@ -7673,6 +8388,15 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   singleton (revision 15's rule).
 - **Self-description** (rev 57) — *"הרשימה הכי מגוונת בישראל"* and *"שתי נשים בחמישייה הראשונה"* are
   not positions.
+- **`anti-lgbt`** (rev 274, the first time this entry meets it) — a
+  [הארץ opinion column](https://www.haaretz.co.il/gallery/opinion/2026-10-13/ty-article-opinion/.premium/000001a1-3506-d0e6-abed-b76f22800000)
+  writes that בן גביר took part in *"מצעד הבהמות"*, the protest against Jerusalem's pride march,
+  and was filmed kicking a transgender woman at Tel Aviv's march in 2008. Relayed and not checked,
+  and they are the chairman's own acts of eighteen years ago, where the tag's two holders have a
+  programme (נעם) and five roll-call votes that broke from their own side of the house (רע"ם). This
+  row's votes against the ten bills are coalition discipline and carry no signal (rev 165, under
+  רע"ם). **Trigger:** a current party text, bill or ministerial act aimed at LGBT rights or at a
+  pride march.
 
 #### Open questions and triggers
 
@@ -8200,7 +8924,48 @@ burned-in captions (ליברמן's, איזנקוט's on the inquiry, שפר's se
   as for דורפמן above, and all three deny it. It is in prose because the alleged conduct is the pole
   this entry names opposite `anti-settler-violence` — opposing enforcement (revision 123) — by two
   candidates inside the realistic range and the minister responsible for the police; no tag records
-  that pole. Answers from ביחד and הדמוקרטים are under those rows.
+  that pole. Answers from ביחד and הדמוקרטים are under those rows. **The same day, קרויזר filed a
+  complaint with מח"ש against the officers** (rev 266;
+  [הארץ](https://www.haaretz.co.il/news/law/2026-10-11/ty-article/000001a1-2a0b-de05-a9a9-3bef7bb60000),
+  11.10.26, body supplied by the repo owner), about a week and a half after the incident and after
+  the report: *"יצאתי, הזדהיתי כחבר כנסת וניסיתי להרגיע את הרוחות ולסייע לשוטרים"*, the officers
+  *"הפעילו לטענתי כוח בלתי סביר כלפיי וכלפי הנוכחים"*, and *"לא נאפשר לאיש להיות מעל החוק"*. The
+  follow-up adds to the allegation: ניימן is said to have told the officers they could move only if
+  they freed the suspect and handed over the phones seized from his car; the officers reported being
+  punched, the second officer's hand was put in a cast, and the one whose nose was broken gave a
+  statement at once; senior officers fear the file will not be properly investigated because of the
+  men's closeness to the minister, against which one is quoted from closed discussions, *"ניתן גב
+  לשוטרים בכל מצב"*. הארץ notes that בן גביר has called מח"ש the Attorney General's *"המשטרה
+  הפרטית"*, its relay and not checked here. Still an allegation and a denial, now with a
+  counter-complaint; not tagged, and nothing scored. **By his own account the complaint was not
+  taken** (rev 267). At 15:16 on 11.10 קרויזר writes that he left מח"ש after nearly four hours —
+  *"הגיעה חוקרת והודיעה לי שאין מי שיגבה ממני את התלונה"* — and that *"לפי מידע שהגיע אליי, ההנחיה
+  שלא לגבות ממני עדות הגיעה מהיועצת המשפטית לממשלה"*
+  ([post](https://x.com/Yitzik_kroizer/status/2109256875057279078)). His claim, not checked; it does
+  not agree with הארץ's *filed* above, and the difference is left open. He places the incident at a
+  memorial for four fallen friends, among them אביעד ניימן. The same morning ביחד's בן ארי (#4)
+  wrote to the Attorney General asking her to step in urgently so that an investigation of both men
+  is opened, and to examine בן גביר's conduct (under ביחד).
+  **The police hold body-camera footage** (rev 268;
+  [הארץ](https://www.haaretz.co.il/news/law/2026-10-11/ty-article/.premium/000001a1-2ad9-dd15-abff-aedd21980000),
+  יהושע (ג'וש) בריינר, 11.10.26 19:50, body supplied by the repo owner). By police sources a יס"מ
+  officer's camera recorded the dispersal and *"מחזק את החשד"* that קרויזר struck an officer. The
+  inquiry's account: he was among those blocking the car and identified himself as an MK; after the
+  detainee had fled and the tyres were punctured a יס"מ force cleared the crowd, an officer was
+  punched in the face — *"על פי החשד על ידי קרויזר"* — the two fell to the ground, and the officer's
+  nose was broken. ניימן is said to have led the crowd and to have been in a group that pushed an
+  officer and opened the car door. Nobody has been questioned; the file is at the מעלה אדומים
+  station with the national headquarters involved, and is expected to move to להב 433. Against
+  קרויזר's account that the police disturbed the memorial evening, הארץ says footage of the
+  three-hour event shows nothing unusual except police cars outside minutes after his speech. By the
+  officers, בן גביר rebuked one of them afterwards and apparently photographed him. On the complaint
+  the report carries both versions and settles neither — that he *"פנה מוקדם יותר למח"ש"*, his post
+  that they refused to take it, and a statement issued *"לאחר שהגיש את התלונה"* — so the difference
+  of rev 267 stays open. הארץ's daily column of the same evening
+  ([הארץ](https://www.haaretz.co.il/digital/daily/2026-10-11/ty-article/.premium/000001a1-2b52-d618-adfb-bbd2c7610002),
+  יונתן אנגלנדר, 11.10.26 20:28, body supplied by the repo owner) is commentary on the report and
+  adds that the suspect has still not been caught. Still an allegation and a denial; not tagged, and
+  nothing scored.
 - **The Chabad alliance behind #9** (rev 57).
   [Shomrim](https://www.shomrim.news/hebrew/chabad-bengvir) puts Chabad at 2–3 seats with ~1,300
   centres as a ground network, 56% for עוצמה יהודית in כפר חב"ד against 19% דגל התורה and 12% ש"ס,
@@ -8430,6 +9195,47 @@ Linked where used above. Not linked above:
   running log, 11.10.26 09:40, which lists her among הליכוד's seniors; she left that list, rev 53).
   The row's line on the prosecution (rev 149), beside בן גביר's seven questions of the same morning
   (rev 264).
+- **Read, and scored nothing (rev 267):** בן גביר at the memorial for רחבעם זאבי, 25 years after his
+  murder ([post](https://x.com/itamarbengvir/status/2109256914810839165), 11.10.26; image viewed):
+  he says he began in politics in זאבי's מולדת; *"גנדי צדק!"*; and *"כשר הביטחון הבא, אני מתכוון
+  לקדם בכל הכוח את תוכנית ״התנתקות 710״ לעידוד הגירה מרצון מעזה, עם משרד ממשלתי ייעודי, תקציבים
+  וסמכויות"*. All three are recorded: the endorsement of זאבי, whose programme was transfer by his
+  own word for it
+  ([ויקיפדיה](https://he.wikipedia.org/wiki/%D7%A8%D7%97%D7%91%D7%A2%D7%9D_%D7%96%D7%90%D7%91%D7%99),
+  link supplied by the repo owner), is one of the pairings weighed under `population-transfer`,
+  which stays refused on the instrument test; the ministry and the Defence portfolio are revs 45 and
+  107. `voluntary-palestinian-emigration-incentives`, held. גוטליב (#2) sat in the courtroom for
+  מנדלבליט's testimony, by
+  [הארץ](https://www.haaretz.co.il/news/law/2026-10-11/ty-article-live/000001a1-2974-d695-abad-fbfcc0000000)'s
+  log of the hearing (under הליכוד). קרויזר's post on מח"ש is entered above, in the paragraph on the
+  investigation.
+- **Read, and scored nothing (rev 268):** בנט at ynet's conference on the minister: *"בן גביר הוא שר
+  הפרוטקשן של מדינת ישראל"*, *"המדינה נפלה תחת בן גביר. הוא השר הכי חלש שהיה פה"*, and that murders
+  and protection payments doubled in his term
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/s1rvfkcsfx), 12.10.26). A rival's
+  attack, and the figures are his. הארץ's third report on קרויזר and ניימן is entered above, in the
+  paragraph on the investigation. N12's summary of each list on the courts repeats rev 107's
+  measures and cites no legal platform, so that trigger stays open (beside the judicial sweep, under
+  ישר).
+- **Read, and scored nothing (rev 271): the first economic line cited for this row.** N12's economy
+  chapter ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  described under ישר) gives it one sentence: a motto, *"כלכלה חופשית עם חמלה"* — against a general
+  tax rise, for taxing the top deciles and for efficiencies in the army. `economic` 0's paragraph
+  says no pass had cited a text for the economic liberalism the row claims; this is the nearest
+  thing, and it is an outlet's summary that names no document. A free-market motto beside a tax on
+  the top deciles is a balanced line, which is the band's other meaning, so nothing moves.
+  **Trigger:** the document the motto comes from. N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm)) has the
+  row as *"לא הציגה עמדות בתחום החינוך"*, beside rev 74's line on what schools should teach.
+- **Read, and scored nothing (rev 274):** 47 seconds of בן גביר with the internet personality יוחנן
+  טווינה in the Knesset ([repost](https://x.com/yahelfarag555/status/2109323348974919689), 11.10.26;
+  machine transcript, the clip carries only a title; by הארץ, טווינה took his own upload down within
+  a day), and the [הארץ opinion column](https://www.haaretz.co.il/gallery/opinion/2026-10-13/ty-article-opinion/.premium/000001a1-3506-d0e6-abed-b76f22800000)
+  on it (13.10.26, body supplied by the repo owner). בן גביר: *"אני אובססיבי לעם ישראל, אני
+  אובססיבי להילחם באויבים, להרוג מחבלים, לכבוש את עזה"*. `hardline-on-gaza` and
+  `territorial-control-gaza`, held, said as banter. That he reaches young liberal voters this way
+  is the writer's argument; the column's two facts about his record are under Considered and
+  refused. The party's post on the death-penalty law's first case is under that tag.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -9555,6 +10361,24 @@ housing, is under `economic`.
   ש'בגוש השלישי'"* with four seats
   ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-45e57cc1dc021a1026.htm),
   09.10.26): the outlet's label, and `unaligned` is what this row already says.
+- **Read, and scored nothing (rev 270):** הארץ's poll column
+  ([הארץ](https://www.haaretz.co.il/news/elections/sakran/2026-10-13/ty-article/.premium/000001a1-31a8-d9bc-a3fd-f3eb18830000),
+  אמנון הררי, 13.10.26 06:00, body supplied by the repo owner; its two charts viewed). Of three
+  polls in a week, כאן 11's has this list at 3.3% and four seats, חדשות 12's at four seats and חדשות
+  13's under the threshold, and that, with עמך ישראל's figures, is most of why the three give the
+  blocs as 53–50, 49–54 and 55–50. In חדשות 13's poll 8.7% of the list's voters are *"מאוד בטוחים"*
+  and 34.7% not so sure or not sure at all, which the column calls far worse than any other list's.
+  Polls are not a field, and nothing here bears on `unaligned`. The column relays, from a report by
+  מיכאל האוזר טוב not read here, that איזנקוט's main aim is to draw a few voters from this list and
+  bring about its collapse: a rival's strategy, as under ישר.
+- **Read, and scored nothing (rev 271):** N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): centres for early childhood and subsidised day care, *"לפי מדיניות החינוך
+  במצע המפלגה הכלכלית"* — N12 cites one faction's platform for the joint list; a smaller supervisory
+  headquarters at the ministry, more autonomy for principals, differential budgeting; and, in its
+  answer to 121 in September 2026, teachers rewarded by quality, excellence and performance beside
+  seniority. `economic` +1's two halves; `municipal-devolution`, held. The row is not in N12's
+  economy chapter.
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -9938,8 +10762,13 @@ no lineage link to draw either.
 site and platform, [אבני היסוד](https://amchaisrael.co.il/foundations) — eight principles, ten first
 steps and four commitments on execution, with no number in it. Work plans are promised (*"תוכניות
 עבודה מפורטות ייגזרו מן המצע ויפורסמו בנפרד, לרבות עלויות, סדרי עדיפות, לוחות זמנים ומדדי הצלחה"*)
-and three are named, none published: decision and emigration, the status of those who serve, and
-trust in the justice system. A second document followed between 05.10 and 08.10 (rev 258):
+and three are named: decision and emigration, the status of those who serve, and trust in the
+justice system. The second went up on 11.10 as four short videos,
+[תכנית המשרתים](https://amchaisrael.co.il/serving-plan), with the full text promised (*"התכנית
+המלאה תעלה בקרוב"*), and it moved a tag (rev 273, under Service); the other two are unpublished. A
+further document, not one of the three, is the ten-step
+[תכנית ההסברה](https://amchaisrael.co.il/hasbara) (rev 273, under `hasbara-focused`), which holds
+the site's first shekel figure. A second document followed between 05.10 and 08.10 (rev 258):
 [תכנית 18 הנקודות לביטחון ישראל](https://amchaisrael.co.il/security), eighteen numbered points under
 *אמונה*, *הכרעה* and *ריבונות*, with no cost, timetable or measure of success, so it is not one of
 the three promised plans and it meets none of the triggers written against them. Much of the row
@@ -9973,6 +10802,12 @@ national plan for energy, water, transport, communications and ports, state inve
 technologies, and *"כוח עיבוד ריבוני לאומי"*. Trust-busting with targeted state spending is the +1
 band as written. Nothing is privatised and no budget is cut, so it is not +2. **It is the thinnest
 +1 on the page**: four sentences and one first step, where the band's other holders have papers.
+The two plans of rev 273 add spending and one new tax and cost none of it: a pay rise for
+conscripts and junior career soldiers *"בדגש על לוחמים"*, paid for *"על חשבון ההטבות שעד היום היו
+הולכות לאלו שלא משרתים"* and by a *"מס ביטחון"* on those who do not serve; and, in the hasbara
+plan, a ₪250M film fund with tax breaks for foreign productions, the only shekel figure on the
+party's site. State benefits ranked by service *"בלי קשר למצב הסוציו-אקונומי"* is a
+welfare doctrine, and it sits inside the band.
 **Trigger:** the costed work plans.
 
 **`security` +3 — sovereignty over Judea and Samaria.** It rests on the party's own answer to ynet's
@@ -10036,7 +10871,12 @@ correction. וינטר, at the press conference: *"אנחנו מתכוונים �
   ובכבוד"*. *"בצורה משמעותית"* is not everyone, and *"בהסכמה"* sits badly beside the press
   conference's *"בלי פשרות ובלי דחיות"*. The score holds on the platform's *"כל אזרח במדינת ישראל
   ישרת את המדינה"*, a Basic Law, which this point does not withdraw; the strain is recorded on
-  `anti-conscription-exemption` under Service.
+  `anti-conscription-exemption` under Service, and that tag came off in rev 273.
+- **The plan on those who serve keeps a place for Torah study, and the score holds** (rev 273).
+  *"לימוד תורה יוכר כערך יסוד במדינת ישראל, ויהיו לומדים, אבל המספר שלהם יהיה קצוב. רוב החרדים בגיל
+  גיוס ישרתו"*. Most, not all, with the rest in a recognised Torah track (quoted under Service).
+  The −2 rests on `universal-conscription`, which stays: כחול לבן sits at −2 with the same pair of
+  tags, a duty on everyone beside a capped scholars' track.
 
 #### Bloc and sector
 
@@ -10097,6 +10937,29 @@ correction. וינטר, at the press conference: *"אנחנו מתכוונים �
     other camp — the reading taken since rev 32. No coalition-exclusion tag is opened: he refuses
     גולן and the Arab parties and does not refuse the haredi ones, which matches neither tag's
     holders.
+- **Two candidates open a door the chairman keeps shut, in a report of a house meeting** (rev 267).
+  [מעריב](https://www.maariv.co.il/news/politics/article-1374024), marked exclusive (נחום פרי,
+  06.10.26): at a חוג בית that week ערן בן ארי (#4), asked about the party having committed to sit
+  only with נתניהו, corrected the questioner — *"לא אמרנו שנשב רק עם נתניהו, אמרנו שנמליץ על
+  נתניהו"* — and went on, *"אם לא נוכל לשנות את המצב של המשרתים, אנחנו לא נהיה בתוך הממשלה. יש עוד
+  אפשרויות"*. דוידי בן ציון (#7, outside the realistic 6), asked whether they would sit with
+  איזנקוט: *"למה שאיזנקוט לא יצטרף? הלוואי, אדרבא, שתהיה פה ממשלה רחבה, מצוין"*. בן ארי on what the
+  party's strength is for: *"שאיזנקוט יצטרך להחליט אם הוא רוצה להצטרף לממשלה"*; and on the limit,
+  *"אנחנו לא חושבים שאפשר להכניע את האויב עם אנשים משתמטים של יאיר גולן ואנשים שחותמים על מכתב
+  הטייסים... ולכן אנחנו לא נהיה שם איתם"*. The reporter's own sentences go further than the
+  quotations: that the party keeps the right to join another government, including one under another
+  candidate, and that the candidates called a unity government the result they want. **`bibi`
+  holds.** The recommendation is restated in the same breath, and the recommendation is what this
+  field records; in both quoted answers איזנקוט is the one who joins; a government under someone
+  else is the reporter's reading of *"יש עוד אפשרויות"*; and neither speaker is וינטר, who four days
+  later called the government איזנקוט proposes a danger (rev 259). The trigger asks for his own
+  statement or a vote, and this is neither. What it does add: the refusal named at a party event is
+  גולן and the pilots' letter, and not איזנקוט or ליברמן, which is narrower than וינטר's *"לא יהיה"*
+  (rev 238). The report carries no response from the party. נתניהו posted its graphic five days
+  later — *"הצבעה לוינטר תביא לנו ממשלת שמאל של איזנקוט, ליברמן, יאיר גולן והאחים המוסלמים"*
+  ([post](https://x.com/netanyahu/status/2109230829645758975), 11.10.26) — and קרעי (הליכוד #22)
+  called וינטר *"בנט 2"* ([post](https://x.com/shlomo_karhi/status/2109243869368029634)). A rival's
+  reading, as in revs 76, 137 and 257.
 - **Triggers:** וינטר walking back the endorsement in his own words (rev 76); his own statement that
   he would sit with איזנקוט, or a vote (rev 137 — rev 147 went the other way).
 - The platform names neither נתניהו, a bloc, nor who the party would sit with; the home page says
@@ -10228,11 +11091,19 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
 
 **Service**
 
-- **`universal-conscription`** (tag and family) and **`anti-conscription-exemption`** (rev 41) — the
-  press-conference lines under `religiosity`. *"חוק ששם סוף להשתמטות"* is the second tag's content
-  verbatim, and *"לא עוד מאותו דבר. מה שהיה לא יהיה"* removes any reading of it as a negotiating
-  position.
-  - **The mechanism is uncertain.** Rev 41 called a law passed before the swearing-in, explicitly
+- **`universal-conscription`** (tag and family, rev 41) — the press-conference lines under
+  `religiosity`, the platform's Basic Law, and the plan (rev 273): *"כל אזרח בגיל גיוס יהיה חייב
+  להסדיר את המעמד שלו מול המדינה באחד משלושה מסלולים"*. Until rev 273 it was paired with
+  `anti-conscription-exemption`, on *"חוק ששם סוף להשתמטות"*; that tag is now under Considered and
+  refused, and its place is taken by the next bullet.
+  - **The mechanism, as the plan has it (rev 273):** *"אנחנו נדרוש חקיקה של חוק-יסוד המשרתים
+    כמסגרת אחת מחייבת"*, the Defence Ministry and its minister given *"אחריות מלאה"* for carrying
+    it out, and *"כל הדבר הזה יעוגן בהסכם הקואליציוני ובתקציב המדינה. ברזל"*. It is *"הדרישה היחידה
+    שלנו"* the morning after the election. A clause in the coalition agreement is what the press
+    conference ruled out (*"לא הבטחה, לא סעיף בהסכם קואליציוני"*), and the plan does not say the
+    law passes before the swearing-in. So the fourth mechanism rev 41 recorded is no longer the
+    party's stated one; what replaces it is a demand, a coalition clause and a budget line.
+  - **How it got there.** Rev 41 called a law passed before the swearing-in, explicitly
     not a coalition-agreement clause, the strongest form any holder states — a fourth mechanism
     beside the three enforcement models rev 22 catalogued (ביחד sanctions-only, ישר criminal
     penalty, כחול לבן coercion plus fines). The party restated the precondition in writing on 16.09
@@ -10246,11 +11117,33 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
     את מערך המיון למצטיינים, לרבות הפרמטרים לבחינה אובייקטיבית של מכסות לומדי התורה"*, which answers
     rev 147's question about what law he means. The fourth principle: *"תישמר האפשרות למסלולים
     ייחודיים למצוינות תורנית, אך האחריות המשותפת והשירות תהיה הכלל ולא החריג"*. The pre-swearing-in
-    condition is not in the document. **The second tag is now the strained one**: a quota of Torah
-    learners is what ישר was denied it for. The precedents cut both ways: המילואימניקים והכלכלית
-    holds it together with `scholar-exemption-retained` in `seed.sql`.
+    condition is not in the document. Rev 246 called `anti-conscription-exemption` the strained
+    tag on this: a quota of Torah learners is what ישר was denied it for.
   - Rev 238 adds that every haredi yeshiva is to regularise itself with the Defence Ministry under
-    real supervision, with *"יחידות כשרות"* and *"עשרות פלוגות"* for haredim.
+    real supervision, with *"יחידות כשרות"* and *"עשרות פלוגות"* for haredim. The plan gives that
+    its model (rev 273): *"מנגנון ההכרה, הפיקוח והאכיפה על הישיבות הגבוהות הציוניות"*, enlarged and
+    fitted to other populations, with the Defence Ministry setting the criteria and running the
+    supervision.
+- **`scholar-exemption-retained`** (rev 273, in place of `anti-conscription-exemption`) — the
+  party's own plan, [תכנית המשרתים](https://amchaisrael.co.il/serving-plan), four videos on its
+  site, each ending *"עמך ישראל, בראשות עופר וינטר"*. The three tracks by which a citizen settles
+  his status: *"שירות בצה"ל, שירות אזרחי-לאומי או במסגרת תורנית. אבל לא כמו היום – שכונה, רק
+  במסגרות מוכרות ומפוקחות"*; on screen the third is *"מסגרת תורנית למצטיינים"*. Then: *"לימוד תורה
+  יוכר כערך יסוד במדינת ישראל, ויהיו לומדים, אבל המספר שלהם יהיה קצוב"*. A recognised institution
+  is one *"שמאפשר דחייה של שירות או מסלול לומדים מצטיינים"*, and the plan's second stated result is
+  *"הכרה מוסדית בעולם התורה בכפוף לצורכי הביטחון"*.
+  - **Why this tag.** Rev 246 refused it because the platform did not say whether those inside the
+    quota serve. The plan answers: the Torah track stands beside military and civil service as a
+    third way of settling one's status, not as a stage before either. That is כחול לבן's *"רק
+    מצטיינים יקבלו 'פטור'"* in other words, and not ישר's one-year deferral with basic training,
+    for which the tag was declined (revs 21, 86). The plan was the trigger written for exactly
+    this (rev 246), after three signals that leaned the same way (revs 246, 257, 258; Open
+    questions).
+  - **What is not known.** The size of the cap, who sets it (the platform's *"פרמטרים לבחינה
+    אובייקטיבית של מכסות לומדי התורה"*), and whether a learner ever owes service later. The videos
+    do not use the word *פטור*. **Trigger for removal:** the full plan attaching service to the
+    Torah track — basic training, a fixed term, or service after study. That would put the row
+    where ישר is, with neither tag.
 - **`sanctions-on-non-servers`** (rev 239, owner's decision) — the tag's test is a named penalty: a
   fine, a withdrawn entitlement, a criminal charge. Rev 41 refused it because the programme named
   only rewards, graduated by contribution. N12 (rev 238): *"מי שלא משרת את המדינה, לא יהיה זכאי
@@ -10258,11 +11151,18 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   חופשי, פשוט חסום במדינת ישראל. הוא לא יכול לטוס… יש עליו סנקציות כמו שקיים היום"*. The bar on
   flying is one he says exists today, so what he commits to is enforcing it and withholding
   benefits. The platform gives the tag nothing; its service chapter is rewards only, *"מי שייתן יותר
-  – יקבל הרבה יותר"*.
+  – יקבל הרבה יותר"*. **The plan names the penalties in the party's own voice (rev 273)**, so the
+  tag no longer rests on an interview: *"מס ביטחון… זה מס שיוטל על מי שלא הסדיר את מעמדו או מסרב
+  לשרת"*; whoever does not settle his status *"יהיה בתחתית סדר העדיפויות, בלי קשר למצב
+  הסוציו-אקונומי שלו. יהיה חינוך, סל בריאות בסיסי, זכות הצבעה, רישיון נהיגה, וזהו"*; and for
+  institutions, *"בלי הכרה לא יהיו תקציבים"*. A withdrawn entitlement is one of the tag's three
+  named kinds, and a tax levied for not serving is a fine in all but name. The driving licence stays, which המילואימניקים והכלכלית would revoke;
+  the tax has no rate.
 - **`arab-civil-service`** (rev 41) — the tag marks a national-service track for Arab citizens, and
   this is the correct match on the name rev 36 flagged as inviting the wrong one. חדאד: *"תהיה פה
   שותפות בנטל - לא משנה אם מדובר על יהודים או ערבים, חילונים, דתיים או חרדים"*. The platform:
-  *"שירות לאומי משמעותי למי שאינו יכול לשרת בצה״ל"*, *"כל אזרח"*.
+  *"שירות לאומי משמעותי למי שאינו יכול לשרת בצה״ל"*, *"כל אזרח"*. The plan (rev 273): *"כל אזרח
+  בגיל גיוס"*, with *"שירות אזרחי-לאומי"* as the second track; it does not name Arab citizens.
 
 **Institutions and hasbara**
 
@@ -10285,6 +11185,19 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   לזירה הזו כזירת לחימה פעילה"*, naming Qatar, Turkey and Russia (point 13); חדאד, from London the
   next day, calls it *"החזית השמינית"*
   ([post](https://x.com/YosephHaddad/status/2108555262814507295), 09.10.26).
+  **It now has a plan of its own (rev 273)**, [תכנית ההסברה](https://amchaisrael.co.il/hasbara),
+  *"עשרה צעדים למהפכה בהסברה"*, to be led by חדאד, *"מספר 2 במפלגה"*: one national authority for
+  hasbara, public diplomacy and influence (*"שרשרת אחריות אחת וכתובת ממשלתית אחת"*); a 24-hour
+  international channel in Arabic, then Persian and Turkish, *"הניגוד לאל-ג'זירה"*; a national
+  centre monitoring disinformation and influence operations, *"ה-8200 של מלחמת התודעה"*; a
+  messaging war room; a permanent national press office briefing foreign media; a trained reserve
+  of civilian spokespeople, with *"לימודי דיבייט, הסברה ודיפלומטיה ציבורית"* in schools; a standing
+  network of partners abroad; a state legal arm that sues over boycotts, defamation and the
+  pursuit of soldiers abroad; a national centre for the memory of 7 October; and a ₪250M *"Israel
+  on Screen"* fund with tax incentives for foreign productions. The body is an authority here, a
+  ministry in the 01.10 post and a *"מערך"* in the platform; step 01's wording is the post's. Only
+  step 10 carries a figure. Ten institutions against the few clauses the tag was founded on: it is
+  the tag's fullest text on the page.
 
 **Economy and local government** (rev 246, from the platform)
 
@@ -10332,16 +11245,27 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   economic position. נעם kept it on a teacher's salary, which is a figure; הציונות הדתית lost it on
   an economic paper, which is a position. A chapter on markets, monopolies, tax and regulation is a
   position.
+- **`anti-conscription-exemption`** — held from rev 41 to rev 273 on the press conference's *"חוק
+  ששם סוף להשתמטות"*, and taken off when the party's own plan kept a capped Torah track and
+  institutions recognised as allowing *"דחייה של שירות או מסלול לומדים מצטיינים"* (quoted under
+  `scholar-exemption-retained`). ישר was refused this tag for a 3% one-year deferral whose holders
+  still do basic training (rev 86); a track that stands in place of service is more than that. The
+  plan does end the present arrangement — *"לא כמו היום – שכונה"*, a tax on whoever stays outside
+  it — and the tag does not mark that; `sanctions-on-non-servers` does. המילואימניקים והכלכלית
+  still holds both tags, the inconsistency rev 98 recorded on that row, and this row no longer
+  adds a second case of it.
 - **`service-conditioned-citizenship`** (revs 41, 239) — וינטר does say *"מי שישרת, יקבל. מי שיתרום
   יותר, יקבל הרבה יותר. לוחמים ומשרתי מילואים יהיו בראש סדר העדיפויות הלאומי"*. But the tag's
   founding case is Hendel's **franchise** clause (rev 20 recorded that the tag "rests on" it even
   after בית ציוני's own platform declined to restate it), and a graduated benefits ladder is not a
-  claim about citizenship.
+  claim about citizenship. The plan rules the founding case out in so many words (rev 273): the
+  citizen at the bottom of the ladder keeps *"זכות הצבעה"*.
 - **`reservist-focused`** — the rev 13 standard is a costed benefits package. *"בראש סדר העדיפויות
   הלאומי"* is a priority claim with no benefit, number or instrument (rev 41); doubled combat pay is
   one number with no package (rev 239); the platform has rewards by kind of service, tax benefits
   for employers and land, with no figure (rev 246); refused again on the ynet answer of 16.09 (rev
-  86, under ביחד).
+  86, under ביחד); and the plan's *"נעלה משמעותית את שכר המשרתים בסדיר ומשרתי הקבע הזוטרים"* names
+  a funding source and no amount (rev 273). The full plan is the trigger.
 - **`jewish-arab-partnership`** (revs 41, 229) — partnership as this page uses it is shared-society
   equality, and the party commits to *"להעצים את הזהות הערבית-ישראלית במקום הפלסטינית בכל מוסדות
   החינוך הערביים-ישראליים"*. Replacing one national identity with another in the state's Arab
@@ -10350,14 +11274,13 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
 - **`arab-representation`**, **`focuses-on-arab-israeli-civil-issues`** (rev 41, on rev 36's
   distinction) — both record what a party **is**; a right-wing Zionist list running an Arab-society
   campaign through an Arab deputy chairman is still not an Arab party.
-- **`scholar-exemption-retained`** (rev 246) — the platform does not say whether those inside the
-  quota serve. ישר was refused the tag because its selected students still do basic training (revs
-  21 and 86).
 - **`core-curriculum`** (rev 246) — *"נשאף להעניק לכל ילד בישראל לימודי ליבה איכותיים"* is an aim,
   and the funding condition in the same sentence is on something else: *"לא נתקצב בתי ספר שיועברו
   בהם ערכים ו/או תוכניות אנטי ציוניות"*. The tag's test is funding tied to teaching the core.
   **Trigger:** that tie. בנט conditions school funding on content too, and no tag marks the clause
-  (rev 247, under ישראל ביתנו).
+  (rev 247, under ישראל ביתנו). The plan's funding condition is a third kind (rev 273): recognition
+  by the Defence Ministry for service purposes, *"בלי הכרה לא יהיו תקציבים"*, with nothing about
+  what is taught.
 - **`anti-settler-violence`**, and not its opposite (rev 238) — *"יש פשיעה חמורה וצריך לטפל בה
   כפשיעה. אני לא קורא לזה טרור יהודי"*, and *"צריך לטפל בהם בחומרה"*. A goal with no measure (rev
   186's test), and he does not defend the acts.
@@ -10387,15 +11310,21 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   (rev 247, under ישראל ביתנו); נתניהו to press him to withdraw and name him to voters (rev 244,
   under הליכוד). Polls are not a field; at the launch they disagreed (Walla/לזר 6 seats, i24 8 with
   הליכוד −5, a same-day הארץ headline *below* threshold), and rev 76's column reports 4.
-- **The plan on the status of those who serve** is the trigger for both `scholar-exemption-retained`
-  and `anti-conscription-exemption` (rev 246); whether the service law is still a precondition of
-  the swearing-in is recorded, not resolved (rev 147): restated in writing on 16.09 — *"חקיקת חוק זה
+- **The plan on the status of those who serve** was the trigger for both
+  `scholar-exemption-retained` and `anti-conscription-exemption` (rev 246), and **it was met in rev
+  273**: the plan went up as four videos and the two tags changed places (Service; Considered and
+  refused). **What is still open is the full text**, promised on the page: the size of the cap,
+  whether a learner owes service later (the removal trigger on `scholar-exemption-retained`), the
+  rate of the security tax, and any figure for the pay rise (`reservist-focused`). Whether the
+  service law is still a precondition of the swearing-in is answered by the plan as far as it
+  goes, a coalition clause and a budget line (Service), after this history (rev 147): restated in
+  writing on 16.09 — *"חקיקת חוק זה
   לפני השבעת הממשלה מהווה תנאי סף"*
   ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14898966), rev 86) — and as a
   condition on joining on 03.10 (rev 238, the sweep item below), where the law is one on *"הסדרת
   מעמד המשרתים"*; absent from the platform (rev 246). The axis and bloc triggers are under those
   headings.
-  - **Nearer an answer, and not acted on** (rev 257): N12's conscription survey paraphrases him as
+  - **The first signal before the plan** (rev 257): N12's conscription survey paraphrases him as
     saying that whoever is defined as *"תורתו אומנותו"* should count as the equal of someone doing
     national service
     ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
@@ -10404,14 +11333,13 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
     no quotation, dated only "last month".
   - **A third signal the same way** (rev 258): the security plan's *"בצורה משמעותית… בשום שכל,
     בהסכמה ובכבוד"* (point 16, quoted under `religiosity`). It is a security plan and not the plan
-    on those who serve, so the trigger is not met and both tags are left; but the platform's quota,
-    N12's paraphrase and now this all lean one way, and nothing since the press conference of
-    02.09 leans the other. `sanctions-on-non-servers` gets nothing from the plan either.
+    on those who serve, so the trigger was not met then; the platform's quota, N12's paraphrase and
+    this all leaned one way, and nothing since the press conference of 02.09 leaned the other.
   - **A word the other way, with no content** (rev 259): in the full N12 interview he demands *"גיוס
     אמיתי"*, and the party's statement counts *"לא שולבו חרדים בצה״ל"* among the government's
     failures (both under Bloc); in the same interview he declines to rule out the haredi parties and
-    says *"אני מכבד את לומדי התורה"*. A demand with no terms beside a courtesy. The trigger is the
-    plan, and both tags are left.
+    says *"אני מכבד את לומדי התורה"*. A demand with no terms beside a courtesy. The trigger was the
+    plan (rev 273).
 - **The −2 band text** (rev 41). This is a fourth row satisfying a fourth different subset of the
   band — revisions 20, 21 and 22 each recorded a row clearing it on a different combination — and
   the narrowest yet, one criterion of three. It is the strongest argument that the band should be
@@ -10744,7 +11672,10 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   the platform was found. On 2026-10-10 (rev 258) the sitemap lists 35 URLs, `/security` among
   them, all stamped 2026-10-08 21:12 UTC; the page was not in the list of 05.10, so it went up
   between the two builds. It carries no date of its own, the home page links it, and no press
-  report of the plan was found.
+  report of the plan was found. On 2026-10-13 (rev 273) the sitemap lists 41 URLs, `/hasbara` and
+  `/serving-plan` among them, all stamped 13:00 UTC that day; the home page links both and neither
+  carries a date. The four plan videos are files on the site's storage, each stamped 11.10.26 12:40
+  GMT, which is the earliest date the plan can be given.
 - **A domain written off as blocked costs coverage, not effort** (rev 41).
   `services/backend/CLAUDE.md` recorded `davar1.co.il` as returning **403**; it returned **200** on
   the first try with a browser User-Agent plus `Accept`, `Accept-Language` and `Referer` — the same
@@ -10767,12 +11698,22 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   clips were transcribed by machine with ivrit.ai's Hebrew Whisper model; פייגלין's and חדאד's two
   were checked against their burned-in captions in sampled frames, and the 2014 clip שפר quotes has
   none. The two clips posted by the journalist carry his Hebrew captions over Arabic and English
-  audio; the captions were read from frames and the originals were not heard.
+  audio; the captions were read from frames and the originals were not heard. Rev 273: the four
+  plan videos (60 to 95 seconds each) were transcribed by machine and every burned-in caption was
+  then read from frames at 1.5 a second; the quotations follow the captions, which corrected one
+  phrase the model garbled (*"כערך יסוד"*). The track names and the plan's three results are
+  on-screen text, read from frames. The first video's presenter is named on screen, אביב עזרא
+  (#9); the other presenters are not named and are not guessed at.
 
 #### Sources
 
 Most links are given above, where each source is used; these are the rest.
 
+- **The party's two plans of October** (rev 273; links supplied by the repo owner, `curl`):
+  [תכנית המשרתים](https://amchaisrael.co.il/serving-plan), four videos with no written text beyond
+  their titles, files stamped 11.10.26, quoted under Service; and
+  [תכנית ההסברה](https://amchaisrael.co.il/hasbara), ten written steps, undated, listed under
+  `hasbara-focused`. How the videos were read is under "Reading this party's sources".
 - **The launch** (rev 32): same-day reporting; the absences recorded then were verified by keyword
   sweep across five independently fetched sources.
 - **The 2026-09-02 press conference** (rev 41), four independently fetched outlets: [כאן
@@ -10840,6 +11781,58 @@ Most links are given above, where each source is used; these are the rest.
   לצאת מהקונספציה ולעבור להכרעה"*, with וינטר as *"שר הביטחון הבא"*
   ([post](https://x.com/YosephHaddad/status/2109163003274752048)) — the Defence demand already
   recorded, and criticism of the government's policy from a row this page files in its bloc.
+- **Read, and scored nothing (rev 267):** [ישראל
+  היום](https://www.israelhayom.co.il/news/world-news/middle-east/article/21592534)'s report on
+  Qatari aid to Gaza (שחר קליימן, 10.10.26), which rev 264 had only as a front page, now read. It
+  prints the party's response: *"לא הכרענו בעזה, לא הבאנו להגירה מרצון"*, and *"עופר וינטר חייב
+  להיות שר הביטחון הבא של מדינת ישראל"*. The Defence demand, with `hardline-on-gaza` and
+  `voluntary-palestinian-emigration-incentives`, held. מעריב's report of two candidates at a house
+  meeting, and נתניהו's and קרעי's posts on it, are under Bloc.
+- **Read, and scored nothing (rev 268): both camps' leaders on וינטר, 12.10.26.** אוחנה (הליכוד #3)
+  at ynet's conference: the Likud tried to bring him in before the election, *"הוא כנראה מתוך
+  מגלומניה חשב שיביא 20 מנדטים"*; *"הוא אומר שהוא רוצה את נתניהו כרה"מ. גם ליברמן המליץ ב-2019"*;
+  and *"אם הוא רוצה שנתניהו יהיה רה"מ - שיפרוש"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/b1mszy9igl)). בנט (ביחד #1), asked
+  whether he would work with him in a future government, says no: *"הוא ביבי על מלא"*, *"הוא נשבע לו
+  אמונים"*, *"מי שמצביע לווינטר, מצביע לביבי, נקודה"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/s1rvfkcsfx)). The Likud files him as a
+  risk to its bloc and בנט as a member of it; `bibi` stands on his own recommendation, which both
+  cite. סגל, in N12's live blog
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/liveblog-e5da204f54d01a1026.htm),
+  11.10.26 19:05; read on 12.10 through headless Chromium): the campaign's top staff all worked on
+  נתניהו's campaigns, the Likud's professionals said to leave them alone, and נתניהו *"ולדעתי גם
+  משפחתו"* overruled them on the view that *"וינטר הולך ללכת עם ליברמן"*. An analyst's account of a
+  rival's reasoning; not a statement by the party, and neither Bloc trigger. N12's summary of each
+  list on the courts has בן ארי (#4) for a separate prosecutor-general, step 04 of the plan (beside
+  the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 270):** הארץ's poll column
+  ([הארץ](https://www.haaretz.co.il/news/elections/sakran/2026-10-13/ty-article/.premium/000001a1-31a8-d9bc-a3fd-f3eb18830000),
+  אמנון הררי, 13.10.26 06:00, body supplied by the repo owner; its two charts viewed). Of three
+  polls in a week, כאן 11's has this list at 3.3% and four seats, חדשות 12's under the threshold and
+  חדשות 13's at five; in the last, 20.5% of its voters are sure of their vote and 27.3% not so sure
+  or not sure at all. Polls are not a field. Two things in it touch Bloc. The column sums וינטר's
+  media round as declaring himself *"לא בכיס של ביבי"* and at once saying he would sit only in a
+  government נתניהו leads — the columnist's paraphrase, the appearances not read — which is the
+  recommendation `bibi` stands on. And it reads נתניהו's campaign against the list, which marked
+  חדאד (#2) as backing a Palestinian state and the list as bound for גולן and the Arab parties, as
+  meant to strengthen וינטר, as a bridge for coalition supporters who will not vote for the
+  coalition. סגל's account in rev 268 is the opposite, that נתניהו fears וינטר will go with ליברמן.
+  Both are analysts' theories of a rival's motive; neither is a statement by the party, and neither
+  Bloc trigger is met.
+- **Read, and scored nothing (rev 271):** חדאד (#2), over a חדשות 13 clip (31 seconds, not viewed)
+  ([post](https://x.com/YosephHaddad/status/2109939158827332080), 13.10.26 09:27 UTC). Of two
+  students in it, one who speaks of a Palestinian identity and one who says the place was conquered:
+  this is the Arab MKs' view too, *"מבחינתם כל מדינת ישראל כבושה. הם רואים בתל אביב התנחלות"*. To
+  the presenter: not the UN gave the Jews a state but *"הזכות ההיסטורית על האדמות האלה"*; the Arab
+  leadership was offered land for a Palestinian state *"אבל למזלנו הם סירבו"*; and *"המדינה הזו
+  שייכת לכם היהודים ולא צריך להתנצל על זה!"*. `no-palestinian-state`, held, in the voice of the
+  candidate whose 2021 words were the charge of rev 240; what he says of the Arab MKs is a claim
+  about rivals. N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): the platform moves operating powers to local authorities and schools and
+  leaves the core curriculum, regulation and measurement with the ministry (`municipal-devolution`,
+  held), and gives no position on birth to three, differential budgeting or performance pay. The row
+  is not in N12's economy chapter, and `economic`'s trigger, the costed work plans, is not met.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -11121,6 +12114,15 @@ housing-discrimination bill comes out 33–52, matching הארץ's 52–33 (revi
   interview was not found, and whether it is the one אופיר כץ quoted on 10.10 (rev 259, above) is
   not established. Nothing is entered as the party's position on Hamas from it. **Trigger:** the
   interview itself.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). The economy chapter has עבאס warning that under
+  50% of the budgets for fighting crime and violence were used, which keeps Arab society from
+  integrating economically (N12's paraphrase): the row's own subject, for which no tag exists. The
+  education survey: *"לא הציגה עמדות בתחום החינוך"*. `economic` 0 stays unaudited, as its paragraph
+  says.
 
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
@@ -11468,6 +12470,15 @@ The 15 are the union of both predecessor rows' tags, deduped, less the two dropp
     בתים"*, *"לעם הפלסטיני שלנו"* — which fit N12's summary of the demands. The sentence about a
     government is on none of the frames seen, so the offer as quoted above is N12's Hebrew, and what
     a rival chose to cut is not the statement. **Not read:** the full video.
+  - **The sentence about a government, read off a second cut** (rev 267). נתניהו posts twelve
+    seconds of the same video with הליכוד's Hebrew captions
+    ([post](https://x.com/netanyahu/status/2109236589708619969), 11.10.26; the captions read off
+    frames, the Arabic heard through a Hebrew speech model and matching them only roughly): *"אנחנו
+    נשתמש בכל הכלים שלנו, תשמעו טוב, בכל הכלים שלנו כדי להחליף את הממשלה הזו, ואנחנו נהיה רשת
+    ביטחון"*. That is N12's sentence (rev 259) in a rival's translation: replacing the government,
+    and a safety net. נתניהו's text over it says ג'בארין *"מודה שהם יקימו ממשלה עם איזנקוט"*; the
+    clip names no one and offers support from outside, which is what rev 259 recorded. Nothing
+    changes. **Still not read:** the full video.
 - **Compulsory service as such** — the questionnaire answer opposes sanctions on anyone who does
   not enlist, where `opposes-arab-conscription` is Arab-specific; a vocabulary gap, noted not
   minted (rev 86, under ביחד).
@@ -11787,6 +12798,28 @@ supplied by the repo owner.
   Neither is entered as a position. The column also notes that טיבי, as the longest-serving member
   who is not a minister, would chair the sitting that elects a Speaker if the outgoing one refused
   to call it.
+- **Read, and scored nothing (rev 268):** אוחנה, asked at ynet's conference about being replaced as
+  Speaker, says it would be legitimate with 61 and asks voters to prevent it because the 61 would
+  include Arab MKs — *"אם על סמך הקולות האלה יחליפו את יו"ר הכנסת, מה נותר להגיד"*
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-12/ty-article/000001a1-2f3e-d1b4-a5fb-affeee3b0000),
+  12.10.26, body supplied by the repo owner; under הליכוד). It is the vote טיבי said this row would
+  cast (rev 101), named by its target; ישר's מרידור lists replacing the Speaker as a first move
+  (under ישר). Nothing by the row.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy,* in N12's paraphrase and with no
+  document named: VAT cut to 10%, a higher minimum wage and a first flat with no interest on the
+  mortgage, paid for by ending investment in the settlements and in the war. None of the three was
+  in this entry; they are state provision with a cut in a consumption tax, and `economic` −3 rests
+  on חד"ש's self-definition, which they do not touch. *Education,* from the list's answer to 121 in
+  September 2026: birth to three as part of public education, free or subsidised for every child
+  whatever the parents' work or service; powers moved to local authorities beside central
+  supervision; differential budgeting for weak populations and neglected schools; and no pay by
+  performance, with collective agreements kept. `municipal-devolution` is not held here. A
+  paraphrased answer about schools, beside point 9's Arab educational self-administration, does not
+  open it. **Trigger:** the answer itself.
 
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
@@ -12195,6 +13228,32 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   הישיבות מצילים את הדור"* ([post](https://x.com/cohen_meirav/status/2109160441330958748), quoting a
   post of 10.10.26; the recording was not heard). A relay, and it scores nothing. A party campaign
   video about who is a Jew was seen only inside פינק's answer to it (under הדמוקרטים).
+- **A lead (rev 267): דרעי on a five-year plan for the haredi sector.** ליברמן posts 27 seconds of
+  דרעי at a podcast microphone ([post](https://x.com/AvigdorLiberman/status/2109211917768093940),
+  11.10.26; machine transcript, captions read off frames): *"הממשלה הבאה שאנחנו נהיה חברים בה היא
+  תאשר תוכנית חומש למגזר החרדי. תוכנית חומש של עשרות מיליארדים שתסדיר עשרה משרדי ממשלה שנוגעים
+  בציבור שלנו"*. The chairman's words, and a coalition demand with a size on it; but it is a rival's
+  cut, undated, and the interview was not found. No axis moves on it. **Trigger:** the interview, or
+  the plan.
+- **Read, and scored nothing (rev 268):** בנט at ynet's conference, on דרעי: *"עוד פעם הוא אמר שיביא
+  עשרות מיליארדים נוספים לציבור המשתמט. לדרעי אין אלוהים"*
+  ([ynet](https://www.ynet.co.il/news/elections2026/article/s1rvfkcsfx), 12.10.26). A rival's
+  paraphrase, probably of the statement behind the lead above; דרעי's own words are still not found.
+  **Not entered as a position:** an N12 history of the 1996 and 1999 elections
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-1775a97201c21a1027.htm), יאיר
+  שרקי, 12.10.26) has the party neutral between the candidates in 1996 and in ברק's government in
+  1999, הרב עובדיה יוסף ranking *"פיקוח נפש"* above *"אף שעל"*, and דרעי saying after the 1996 vote
+  *"אני בעד שהמפלגות הערביות יהיו בקואליציה"*. Archive from thirty years ago; it says nothing about
+  the 2026 list, and `bibi` is not touched. N12's summary of each list on the courts gives this
+  row's votes (beside the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 271):** N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): MK יוסף טייב (slot not checked), at 121's conference in July 2026, would
+  make education from birth to three part of the education system, with public frameworks built and
+  private centres strengthened, less bureaucracy, higher pay for caregivers, investment in training
+  and supervision, and one official at the ministry responsible for the field; the party gave no
+  position on the survey's other three questions. State provision, on the side `economic` −2 already
+  reads; one MK at a conference. The row is not in N12's economy chapter.
 
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
@@ -12384,6 +13443,16 @@ under ש"ס (rev 167).
   change what the tag means on the row that holds it. **Trigger:** the list's own material or a
   named MK saying the state should not exist or that the list is not Zionist, or declining to disown
   this.
+  **Tested, and not met (rev 271).** אשר (#1), at ynet's conference on 13.10.26: *"עם כל מה שאומר
+  לנדו אני מזדהה. גם אם אני לא מבין, אני יכול לבוא ולשאול"* (in Sources). The list's first candidate
+  declining to disown is the trigger's third limb on its face. It is held off for three reasons.
+  ynet's two sentences do not say which of the rabbi's words he was asked about, and his answer is
+  about the religious-Zionist public — *"אנחנו מכבדים את הדרך שלהם. אל תכפו אותה עלינו"* — which is
+  the other half of the footage, not the state. He disputes the political reading and does not adopt
+  it: *"יש דברים הלכתיים שלקחו לכיוון פוליטי"*, *"חוסר הבנה בסיסי"*. And identifying in advance with
+  whatever the rabbi says, understood or not, is deference to the head of the Council, which is what
+  `rabbinic-authority-led` records; it is not a sentence about the state. **Trigger, narrowed:** the
+  session itself, if he was asked about the state and gave this answer; or the list's own material.
 
 #### Open questions and triggers
 
@@ -12699,6 +13768,30 @@ Every source is linked where it is used above.
   and `scholar-exemption-retained`, held. The claim about the networks is his and was not checked;
   TheMarker's piece of the same morning (under ישראל תחילה) says the ministry counts compliance with
   the core misleadingly.
+- **Read, and scored nothing (rev 267): the party's campaign clip**, seen as reposted by ישראל
+  ביתנו's מלינובסקי ([post](https://x.com/YuliaMalinovsky/status/2109235451592679767), 11.10.26;
+  3:16, a song, the captions read off frames): *"הזכות להיות חרדים!"*, *"על זכותנו לחיות כחרדים"*,
+  *"על חובתנו לשמוע בקול גדולים"*, *"תורה לא תשתכח מישראל"*, and a Yiddish refrain calling to save
+  *"בני הישיבות"* and *"עולם החסידות"*, ending on the ג ballot. The slogan recorded above, sung;
+  `rabbinic-authority-led` and `scholar-exemption-retained`, held. Her count — no flag, no soldier,
+  no woman — matches the frames viewed, about one every two and a half seconds; what a campaign clip
+  leaves out is not a position.
+- **Read, and scored nothing (rev 271): אשר (#1) on הרב לנדו — the nearest call of the pass.**
+  [ynet](https://www.ynet.co.il/news/article/fbx77bjwc) (שילה פריד, 13.10.26 11:30; a two-sentence
+  report from ynet's conference *"האנשים של המדינה"*, the question not given and the session not
+  seen): the rabbi is *"יהודי גדול, גדול הדור שלנו"*; *"יש דברים הלכתיים שלקחו לכיוון פוליטי. אנחנו
+  מלאי הערכה לאנשים בציבור דתי-לאומי, אנחנו מכבדים את הדרך שלהם. אל תכפו אותה עלינו"*; and *"עם כל
+  מה שאומר לנדו אני מזדהה. גם אם אני לא מבין, אני יכול לבוא ולשאול. יש פה חוסר הבנה בסיסי בדברים
+  מסוימים"*. פינק (הדמוקרטים #5) posts ynet's headline as an image (viewed) under his own summary of
+  the footage, *"אפשר בלי מדינה. היה עדיף שלטון של האו"ם או שהערבים ימשלו"* — his wording, not N12's
+  (rev 245) — and *"ממשלה לא ציונית אחת יש במדינה, זו הנוכחית"*
+  ([post](https://x.com/yayafink/status/2109933940601675836), 13.10.26 09:07 UTC). Tested against
+  the `non-zionist` trigger under Considered and refused, and held off there. N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): MK מקלב, who is not on the list, said at 121's conference in July 2026 that
+  there should be no unsupervised day-care centre and that staff should be better trained; the party
+  gave no position on the survey's other questions. Supervision of day care is not the taxation,
+  welfare-floor or market position `economic`'s move condition asks for.
 
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
@@ -13302,6 +14395,18 @@ by the repo owner; headline, byline and time were read with plain `curl`.
   העמידה בחובות לימודי ליבה של בתי הספר החרדיים"*, and בג"ץ has let the haredi system keep its full
   budget for a third year. No measure of hers. `core-curriculum` is not on this row, and two figures
   do not bring it.
+- **Read, and scored nothing (rev 267):** השכל (#1) at the women's conference of שדולת הנשים and
+  ויצו ([post](https://x.com/SharrenHaskel/status/2109222813840064861), 11.10.26; three images
+  viewed): women pay twice — they *"מממנות קצבאות למי שבוחר לא לשרת"* and are *"נדחקות לאחור במרחב
+  הציבורי"*; a mother who works or serves pays thousands for day care while her taxes fund *"מעון
+  מלא למי שבוחר להשתמט"*; and *"יתנו - יקבלו. לא יתנו - לא יקבלו"*.
+  `service-conditioned-citizenship` and `sanctions-on-non-servers`, held, here applied to the
+  day-care subsidy. The exclusion of women is named and no measure is given, so `gender-equality` is
+  not opened. And 43 seconds from a stage
+  ([post](https://x.com/SharrenHaskel/status/2109280809597215212); machine transcript, captions
+  partly read): *"אני לא מאמינה בפוליטיקה פרסונלית, אני מאמינה בפוליטיקה ערכית"*, between a camp for
+  which whatever נתניהו says is holy and a camp for which it is a crime — the row's `unaligned`, in
+  her words.
 
 
 ## Previous parties
@@ -13937,7 +15042,8 @@ bought nothing here, because the defect was never in the pixels being measured.
   matches this page: nothing environmental has turned up in ישר's thirteen documents or ישראל ביתנו's
   platform. *(Corrected by revision 160: "no mention at all" is wrong for ישר. Its agriculture paper names
   climate change as a threat to food supply and funds climate-resilience research and agrivoltaics, and its
-  housing page promises tools for climate adaptation. Still no environment programme.)* **It does not cancel
+  housing page promises tools for climate adaptation. Still no environment programme — until
+  13.10.26, see the revision 272 paragraph below.)* **It does not cancel
   ישר's questionnaire answers** (closing בז"ן with a budget, the waste law):
   a party can answer a questionnaire without a plan, and the two are recorded separately. Placements, which
   are candidate tier and move nothing: ישר's environment candidate גידי זאדא at **#39**; ביחד's יוראי להב
@@ -13956,6 +15062,14 @@ bought nothing here, because the defect was never in the pixels being measured.
   answering. The posters of ten party leaders beside animals are the groups' campaign, not the parties'. Animal
   welfare belongs to this item: המפלגה הכלכלית's programme already carries a live-export ban and cage-free hens.
   **Not minted, for the same reason as the rest of the item.**
+  **A FOURTH PROGRAMME, 2026-10-13 (revision 272).** ישר published
+  [*ישר! לסביבה*](https://yasharwitheisenkot.com/principles/environment-and-climate/) on 13.10.26: a
+  climate law with targets above the present ones, higher renewable targets, a framework waste law,
+  the disposables tax restored, a contaminated-land law, a new Dead Sea concession tender and Haifa
+  Bay cleared under the existing decision. It carries no number at all (no year, percentage or
+  budget), which the other three programmes do; its contents are listed under that row's
+  Environment item. **The sweep's status is now four rows with programmes** (`unaligned` +1,
+  `opposition` −2 and two `opposition` +1), **the rest as before. Still not minted.**
 - **No gun-control tag exists although `gun-rights` does — FIFTH item in the sweep queue (2026-09-08,
   revision 62), and the only queued gap that is proven real by the vocabulary itself.** הדמוקרטים's
   internal-security paper commits to *"נגביר את הפיקוח על רשיונות נשק ומנגנוני זיהוי מסוכנות בקרב
@@ -14634,3 +15748,12 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-11 | revision 263 — **ישר: eighteen videos from the party's YouTube channel (links supplied by the repo owner; five and a half hours, transcribed by machine; a nineteenth is private). No axis moved, no tag changed, `seed.sql` unchanged.** Ten episodes of the party's podcast (26.02–09.07.26), the campaign-launch speech and seven interviews, none cited here before. Most of it is the papers spoken aloud. **What it adds:** the leader says more than the education paper writes — every child in state education within three years and no funding outside it (כאן 11, 19.07), where the paper cuts funding "significantly" with no date; `religiosity` stays −2 because religious schooling is still paid for inside the state streams. The security strips in Lebanon, Syria and Gaza are leverage and not to be held for generations (Herzliya), which is the band's refusal of territorial expansion on three other fronts and says nothing about Judea and Samaria. `anti-settler-violence` gains a fourth dated statement of its two measures, the first on the party's own channel (31.03), and a first statement from another candidate. כהן (#2) is against a Palestinian state and against a bi-national one. **Recorded against the vocabulary, not acted on:** the party's service-plan lead rules out denying the vote, the founding case of `service-conditioned-citizenship`, which this row holds on benefits alone; and she calls the 3% by the exemption's own name, beside a refused `scholar-exemption-retained`. `excludes-haredi-and-arab-parties` stays refused: in July the leader declined to say yes or no to any haredi or Arab party by name. **An open question narrowed:** six statements up to 19.07 give three coalition principles and no Hamas clause. One unsourced sentence gains its source (the election he would prefer to a compromise), the inquiry's timetable gets an earlier date ("in the first week", 19.07), one earlier sentence of this page is corrected (revision 259's "names no instrument"), and the channel is added to the reading notes. |
 | 2026-10-11 | revision 264 — **the archive comparison of ביחד's plan pages, done; and twenty-two posts, a כאן running log and four הארץ pieces of 10–11.10 (links and bodies supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **The comparison** revision 262 could not run: the Wayback Machine refuses a script over `http://` and answers `https://`, and its raw copies arrive compressed. 63 archived copies of 31 plan addresses were compared sentence by sentence with each other and with the live pages. Nothing this page cites was removed from any plan. Most plans were retitled "רק ביחד…" in late September and early October; three pages gained text after they were read (the environment plan a street-shading target, now entered; the early-childhood and women's plans additions that touch no tag); two live pages have no archived copy. **Post 10743**, the link that answered 404 on 10.10, **is a transport plan** that was live on 05.10 and has since been taken down; it was read from the one archived copy and is entered as withdrawn, not scored — it would sit on `municipal-devolution`, held, and it does not mention Shabbat. **The day's sources:** גנץ refuses a return to a narrow government dependent on the Arab parties (not the criterion that would bring `excludes-anti-zionist-parties`); וינטר again demands an inquiry that is "real" and not a state one; בן גביר speaks on the protocol affair for the first time, puts seven questions to מנדלבליט, and restates the death penalty from inside a prison (`death-penalty-for-terrorists`, held). **עוצמה יהודית:** הארץ reports a police investigation in which the party's CEO (#10) and קרויזר (#6) are suspected of helping a suspect in settler violence escape and of assaulting officers; all deny it. Entered in prose as an allegation against candidates, not tagged, beside the דורפמן precedent. The rest are campaign lines under ביחד, הדמוקרטים, ישר, ישראל ביתנו, עמך ישראל, הרשימה המשותפת, ש"ס and הליכוד. Two הארץ pieces in which no party acts are named and not entered, and two the owner re-sent were already in revision 258. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-11 | revision 265 — **ten posts and two N12 pages of 11.10 (links supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **יהדות התורה:** N12's write-up of פינדרוס (#3) on פגוש את העיתונות is the nearest call yet on the row's `bloc`. He answers "אנחנו בגוש לומדי התורה" twice, names no candidate, says the two factions have signed to decide together on the recommendation and the votes, makes the status of Torah students the condition for any government, and would probably vote against a government איזנקוט forms without it. `bibi` holds on the owner's closed decision: the trigger is a recommendation to someone else or a stated willingness to sit under another leader, and this is neither. Entered under Bloc and against the closed open question. **הציונות הדתית:** פייגלין (#2) answers Tucker Carlson in English and retracts nothing — wiping out Gaza would have been the moral course, and now "let them go, but none of them can stay" — which is the faction's platform (`population-transfer`, `territorial-control-gaza`, held); and three seconds of him wishing to close the Education Ministry, heard only inside לזימי's answer, go beyond זהות's page, which breaks the ministry's monopoly and does not close it. Not scored. **רע"ם:** נתניהו's video plays a three-second fragment he attributes to חוג'יראת (#6) calling Hamas a charity; a lead, the interview not found. **הליכוד:** that video; שיקלי against an inquiry headed by השופט עמית and for the parity form; אוחנה and סער at the court for מנדלבליט's testimony, which is not entered. **Also read, nothing scored:** לנקרי (ישראל ביתנו), לפיד and זאבי (ביחד), לזימי twice (הדמוקרטים), מרידור on food prices (ישר), גוטליב's shout at מנדלבליט (עוצמה יהודית), and השכל over a TheMarker piece read only to its paywall (ישראל תחילה). Five clips were transcribed by machine, the English one roughly; three images and frames of four clips were viewed. One link was sent twice. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-11 | revision 266 — **עוצמה יהודית: הארץ's follow-up to the police investigation of revision 264 (body supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** קרויזר (#6) filed a complaint with מח"ש against the officers on the day of the report, about a week and a half after the incident, saying he identified himself as an MK and tried to calm things and that the officers used unreasonable force. The follow-up adds detail to the allegation against him and ניימן (#10): a demand that the suspect be freed and seized phones returned, officers punched, a second injury, and senior officers' fear that the file will not be investigated because of the men's closeness to the minister. Entered in place in the rev 264 paragraph, as an allegation and a denial with a counter-complaint; not tagged. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-11 | revision 267 — **fifty-six posts of 09–11.10 (of fifty-seven sent), two הארץ pieces, and the מעריב and ישראל היום reports two of the posts rest on (links and bodies supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **עמך ישראל:** the closest call. נתניהו posts the graphic of a מעריב exclusive of 06.10 in which two candidates at a house meeting, בן ארי (#4) and בן ציון (#7), say the party promised to recommend נתניהו and not to sit only with him, that "יש עוד אפשרויות", and that they would welcome איזנקוט into a broad government; the line they draw is at גולן. `bibi` holds: the recommendation is restated, in both quoted answers איזנקוט is the one who joins, a government under someone else is the reporter's reading, and neither speaker is וינטר, whose own statement or a vote is the trigger. Entered under Bloc. **הרשימה המשותפת:** a second Likud cut of ג'בארין's Arabic video carries the sentence rev 260 could not see — replace the government, and a safety net; נתניהו's caption turns it into forming a government with איזנקוט, which the clip does not say. **עוצמה יהודית:** קרויזר says מח"ש did not take his complaint after four hours and blames the Attorney General, which does not agree with הארץ's "filed" of rev 266; left open, in that paragraph. בן גביר at the memorial for גנדי restates the emigration ministry and the Defence demand, both recorded. **ש"ס:** a lead — 27 seconds of דרעי, in a clip ליברמן posts, on a five-year plan of tens of billions for the haredi sector in the next government; a rival's cut, undated, the interview not found. **הליכוד:** מנדלבליט's first day of testimony is a trial record and is not entered; the candidates' accounts of it (סעדה, קרעי, שיקלי, ברדוגו, סער) run ahead of הארץ's log as supplied, and קרעי asks for a criminal investigation of six named officials. הארץ names אפי נוה as a candidate on the list; slot not checked. The leak from אוריך's phone, confirmed by הארץ, is conduct of a party employee and no position. ביסמוט defends his conscription bill and does not know whether נתניהו should sit under איזנקוט. **ישר:** איזנקוט says a detailed seam-line plan exists; not among the papers read. **הציונות הדתית:** a magazine page calls יוסי בכר a party member who believes in settling Gaza; six minutes of סמוטריץ' defending his record. **Also read, nothing scored:** בנט, לפיד, בן ארי, מירב כהן and שירי (ביחד); גולן, זר קצנשטיין, קריב, פינק, רוזין, לזימי and רדמן (הדמוקרטים), with the women's-safety headquarters placed under `gender-equality`; בן שטרית and מלינובסקי (ישראל ביתנו); יהדות התורה's campaign song; השכל twice (ישראל תחילה). Nineteen clips were transcribed by machine, two of them read from captions because one is in Arabic and one is sung; 33 images were viewed. One post had been deleted by its author and one reposts a clip of rev 259. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-12 | revision 268 — **six הארץ pieces, five ynet reports from its conference of 12.10, four N12 pages and three posts (links supplied by the repo owner; the הארץ bodies supplied, the rest fetched). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** the nearest call. By ynet בנט said on 11.10 that he had no problem with נתניהו as a minister in his government, was attacked by the bloc's other leaders and withdrew it — "לא נשב עם נתניהו בשום קונסטלציה" — and at ynet's conference called a government resting on the Arab parties "חרטא" and promised a "ממשלה ציונית", which names no party and no criterion, so `excludes-anti-zionist-parties` stays off; לפיד calls on the bloc to refuse a unity government with נתניהו, the pole opposite `unity-government`, which no tag names. **הליכוד:** אוחנה (#3) says replacing him as Speaker with 61 would be legitimate and that he would not refuse to convene the plenum, while asking voters to prevent it because the 61 would include Arab MKs; assumes an override clause in the next term (`judicial-overhaul`, held); and defines the "ממשלה לאומית רחבה" as the present coalition plus others, with בנט possible and גולן out. מנדלבליט's second day is a trial record and is not entered; TheMarker's report of the leaked אוריך–סגל chats and אוריך's statement that the chats were altered are entered in the rev 267 paragraph. **ישר:** איזנקוט restates the largest-party rule and says of another candidate forming the government "מי שבונה על זה לא מכיר אותי מספיק טוב"; N12 has the party campaigning to be the largest by a margin, with מרידור naming the mandate and the Speaker as the reasons; a הארץ column on the campaign's caution is the writer's. **עוצמה יהודית:** הארץ's third report — police hold body-camera footage that by their sources strengthens the suspicion against קרויזר, nobody has been questioned, and the file is to move to להב 433; entered in place, still an allegation and a denial. **Cross-row:** N12's summary of each list on the courts is entered beside the judicial sweep under ישר; it agrees with the sweep, differs from ביחד's own answer on the selection committee, and cites for הדמוקרטים a legal plan with Basic Laws by 80 MKs that this page has not read (trigger: its text). **כחול לבן:** גנץ runs to the end, prefers "גדי-ביבי" to "גדי-טיבי", and forecasts that איזנקוט, ליברמן and בנט will govern with the Arab parties — his forecast, entered on no other row. **עמך ישראל:** אוחנה tells וינטר to quit and בנט refuses to sit with him as "ביבי על מלא"; `bibi` stands. One-line entries under הדמוקרטים, ישראל ביתנו, הרשימה המשותפת and ש"ס; the note that N12's live-blog address rolls is added beside its 05.10 citation. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-12 | revision 269 — **N12's report of quotes from יונתן אוריך's police interrogation in the Qatar case (אמנון אברמוביץ', 12.10.26 20:06; link supplied by the repo owner, fetched). No axis moved, no tag changed, `seed.sql` unchanged.** **הליכוד:** entered in place beside the leak from his phone (revs 267, 268). The interrogator puts to him requests he made of ChatGPT in September 2024 for a "תוכנית אסטרטגית לשינוי תודעה עולמית" about Qatar and for messages to Israelis, Jewish communities and American opinion leaders "שיוכלו לסייע להלבין את קטאר"; he answers that he does not remember what he asked and did nothing for Qatar in Israel. A suspicion put in an interrogation and a denial, about an adviser's conduct; no position and no tag. The page carries no response to the publication. **ישר:** איזנקוט calls him a "סוכן קטארי" still working in the Prime Minister's office and says a fit prime minister would dismiss him that evening — כהן's demand of rev 152, from the leader; an attack, not a policy. **ביחד:** בנט calls it "פרשת הבגידה החמורה ביותר בתולדות המדינה" and Qatar "האויב המסוכן ביותר שלנו" — the row's Qatar line (revs 49, 123) restated, no new measure. Both replies are as N12 quotes them and were not read at their source. |
+| 2026-10-13 | revision 270 — **N12 on the change bloc's two quarrels (דפנה ליאל, 13.10.26 07:22; fetched) and הארץ's poll column (אמנון הררי, 13.10.26; body supplied by the repo owner, two charts viewed). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** בנט's remark of 11.10 that נתניהו could be a minister, which rev 268 had from ynet, is given in N12's wording with the clarification in full — "לא נשב איתו בשום קונסטלציה" — and N12 has him denying any contact or coordination with ליברמן over the premiership; the refusal is the last word and no tag records it. **ישר:** איזנקוט, "כל מי שהיה בתפקיד ב-7 באוקטובר לא ראוי לשמש בתפקידי פיקוד והנהגה, כולל שר אוצר" — rev 99's cabinet-wide disqualification, broader than `anti-indicted-pm`, which is refused a fourth time. **ישראל ביתנו** and **הדמוקרטים:** ליברמן ("יתהפך העולם ולא נשב עם נתניהו") and גולן ("לא כשר אוצר, לא כשר המים ולא כשר בלי תיק") refuse to sit with him in any post; both rows hold `anti-indicted-pm`, a law about the prime minister, and the refusal goes past it with no tag to name it. **כחול לבן:** גנץ's forecast in his words and the party's exchange with ליברמן. **עמך ישראל** and **המילואימניקים והכלכלית:** the column's poll figures (polls are not a field) and, for עמך ישראל, its theory that נתניהו's attacks were meant to strengthen וינטר — the opposite of סגל's in rev 268, and like it not a statement by the party; `bibi` stands. Every quotation is the outlet's relay; no statement was read at its source. |
+| 2026-10-13 | revision 271 — **two N12 surveys of the lists (education, said to be checked by the association 121; and the economy chapter of its podcast project), ynet's report of אשר on הרב לנדו with פינק's post on it, and חדאד's post (links supplied by the repo owner; ynet's report found from the image in פינק's post). No axis moved, no tag changed, `seed.sql` unchanged.** **יהדות התורה:** the nearest call. אשר (#1) says "עם כל מה שאומר לנדו אני מזדהה", which on its face is the third limb of the `non-zionist` trigger (a named MK declining to disown the rabbi's words on the state). Held off: the two-sentence report does not say which words he was asked about and his answer is about the religious-Zionist public, he disputes the political reading, and blanket deference to the rabbi is what `rabbinic-authority-led` already records; the trigger is narrowed to the session itself. **עוצמה יהודית:** the first economic line cited for the row, the motto "כלכלה חופשית עם חמלה" with a tax on the top deciles, in one sentence of an outlet's summary; `economic` 0 stands and the document is the trigger. **ישר:** מרידור does not rule out raising taxes ("אני מקווה שלא נצטרך"); `tax-cutting` rests on the papers and stands. **הדמוקרטים:** a targeted tax on bank and large-corporation profits, the first tax named for the row, as paraphrase; `progressive-taxation` not opened. **הרשימה המשותפת:** VAT to 10%, a higher minimum wage and interest-free first mortgages; a paraphrased answer on schools does not open `municipal-devolution`. The other rows' education and economy lines restate held text and are entered as read. **עמך ישראל:** חדאד, "למזלנו הם סירבו" of the 1947 offer — `no-palestinian-state`, held. Both surveys are paraphrase with no answer quoted; the lists' answers to 121 and the per-list data behind N12's matching tool were not read. A TheMarker follow-up on N12 journalists criticising סגל was read and not entered: no party acts in it. |
+| 2026-10-13 | revision 272 — **ישר: five principles papers published on 13.10 (LGBT, gender equality, the self-employed and small businesses, environment, local government; links supplied by the repo owner, fetched with a browser-shaped `curl`). No axis moved, no tag changed, `seed.sql` unchanged.** The corpus is nineteen papers and twenty-one documents. Every measure in all five is word for word in the position posts of its topic, compared mechanically in both directions; the introductions are new. **Two of the five restore dead links:** the LGBT and gender-equality programmes, whose topic pages went offline (revision 258), are public again as papers, and `lgbt-rights` and `gender-equality` are now cited to them. The LGBT introduction adds that the party has signed the "חוקי שגיא לשוויון". The gender paper confirms that the pay-gap line names no employer transparency, an item this page had listed; the tag does not hang on it. **Three of the five are topics revision 258 held back as written but unpublished**, so that trigger fired for them and each was read against the row. **Local government:** the row's fullest text on religion — each authority shapes its own Shabbat, with commerce and transport named for the first time and a special-majority council vote required; religious services move from the religious councils to the municipalities and city rabbis are chosen by the council. That is devolution of an establishment that stays public, so `religiosity` −2 stands, and `municipal-devolution` now rests on a paper of its own. **Environment:** the row's first environment programme (a climate law, a waste law, the disposables tax, Haifa Bay, the Dead Sea), with no year, percentage or budget anywhere in it; no environment tag exists, and the row becomes the fourth with a programme in the queued sweep. It also holds the only sentence in the nineteen papers that names Judea and Samaria — enforcement against illegal waste burning — which moves no `security` trigger and is entered so it is not mistaken for one. **Self-employed:** a contribution-funded safety net, lighter rules for small firms and three examinations out of ten items; `economic` +1 holds, and `deregulation` and `welfare-state` are refused on the grounds already used for ביחד. Seven of the ten unpublished topics (74 posts) remain unpublished, the foreign-affairs one among them, and stay a lead. The youth paper, modified after it was published, was compared again and is unchanged. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-13 | revision 273 — **עמך ישראל: the service plan and the hasbara plan (`amchaisrael.co.il/serving-plan` and `/hasbara`; links supplied by the repo owner, `curl`; four videos transcribed by machine and checked caption by caption). ONE TAG REPLACED: `anti-conscription-exemption` → `scholar-exemption-retained`. No axis moved; the row still has 20 tags.** **The service plan** is the document revision 246 named as the trigger for both tags. It is four short videos, stamped 11.10, with the full text promised. Every citizen of draft age must settle his status in one of three tracks — the army, civil-national service, or a recognised Torah framework "למצטיינים" — and "לימוד תורה יוכר כערך יסוד במדינת ישראל, ויהיו לומדים, אבל המספר שלהם יהיה קצוב. רוב החרדים בגיל גיוס ישרתו". A Torah track that stands beside service, capped, is the answer to the question revision 246 left open (do those inside the quota serve), and it is כחול לבן's shape and not ישר's one-year deferral with basic training; so `scholar-exemption-retained` is granted and `anti-conscription-exemption`, which ישר was refused for less, comes off. It is the fourth signal in one direction after the platform's quota, N12's paraphrase and the security plan. **Removal trigger:** the full plan attaching service to the Torah track. `universal-conscription` stays and `religiosity` −2 with it (כחול לבן holds the same pair at −2). **Also from the plan:** `sanctions-on-non-servers`, held since revision 239 on an interview, now rests on the party's own text — a "מס ביטחון" on whoever does not settle his status, and a place at the bottom of every state priority "בלי קשר למצב הסוציו-אקונומי", keeping only schooling, the basic health basket, the vote and a driving licence. Keeping the vote rules out the founding case of `service-conditioned-citizenship`, refused again. The pay rise for conscripts has a funding source and no amount, so `reservist-focused` is refused again. The mechanism changes: the plan is to be anchored "בהסכם הקואליציוני ובתקציב המדינה", which is the coalition clause the press conference of 02.09 ruled out, and it does not say the law passes before the swearing-in. **The hasbara plan** is ten written steps to be led by חדאד: a single national authority, a 24-hour channel in Arabic, a monitoring centre, a messaging war room, a press office, a civilian spokespeople's reserve with hasbara studies in schools, a partners' network, a legal arm, a 7 October memorial centre, and a ₪250M film fund — the first shekel figure in any of the party's documents. `hasbara-focused` is held and this is its fullest text on the page. **Verified** by seeding a database with the previous `seed.sql` and applying the new one on top (the row keeps 20 tags, loses the one and gains the other; axes and bloc unchanged), and the backend suite passes (271). |
+| 2026-10-13 | revision 274 — **five הארץ pieces (bodies supplied by the repo owner), the two X clips they link (fxtwitter; machine transcripts, neither clip has running captions) and one post on עוצמה יהודית's site (`curl`). No axis moved, no tag changed, `seed.sql` unchanged.** **הליכוד:** the academia gender-separation law, which this entry had not recorded, is entered under `religiosity`: passed in July 2026, it widens separation on religious grounds beyond haredim and first degrees and beyond the classroom. The coalition's statute, one more instance inside +2. That it passed closes a "not checked" item under ישראל ביתנו, whose ten points would repeal it, as would ביחד's women's plan. קיש's bid to appoint three members to the Council for Higher Education two weeks before the election, against the Attorney General's guidelines, is ministerial conduct. נתניהו's video with the party's counsel בומבך, charging כוח קפלן, אחים לנשק and הגדעונים with planning to disturb the count, is a further sighting on the election-administration lead; who may observe a count is not who may vote, so its trigger is not met. אחים לנשק answered with a warning letter. A column relays אוריך's reply to revision 269's report, which that revision recorded as missing. **עוצמה יהודית:** the party's post names the first case for the death-penalty law and describes its order as a mandatory sentence for a Palestinian Authority resident, `death-penalty-for-terrorists`, held; בן גביר's line to יוחנן טווינה restates held Gaza tags. `anti-lgbt` is refused on its first appearance here: a columnist's two facts about the chairman from 2008 and earlier, unchecked, with a trigger written. **ישר:** פולקמן, a candidate, suspended his activity on the council. **Not entered:** the column's half on the arrest of כפר סבא's mayor names no party, and a הדמוקרטים candidate's personal announcement carries no position. |
