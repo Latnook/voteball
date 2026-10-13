@@ -3152,6 +3152,18 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   פורום. הריקבון הזה עולה לנו במחיר דמים"*. כהן's (#2) demand of rev 152, now from the party's
   leader and as a dismissal; *"סוכן קטארי"* is his word for a suspect who denies it. An attack on a
   rival's office, not a policy; no tag.
+- **Read, and scored nothing (rev 270):** N12 on the bloc's two quarrels
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm), דפנה
+  ליאל, 13.10.26 07:22; the fuller account is under ביחד). איזנקוט, at the newspaper הדור's
+  conference, on בנט's remark that נתניהו could be a minister: *"אני לא מקבל את זה. כל מי שהיה
+  בתפקיד ב-7 באוקטובר לא ראוי לשמש בתפקידי פיקוד והנהגה, כולל שר אוצר"* (N12's relay; the conference
+  not read). The cabinet-wide disqualification of rev 99, here applied to a seat at the cabinet
+  table and to everyone in office that day; it is broader than `anti-indicted-pm`, which was refused
+  on that ground in revs 99, 152 and 245, and is refused again. N12 repeats its report of rev 268
+  that the party aims to be the largest *"ובפער"*, and גנץ's forecast about בנט and ליברמן is
+  addressed to this row's leader (under כחול לבן). A הארץ poll column, relaying a report not read
+  here, gives the campaign's main aim as drawing voters from המילואימניקים והכלכלית (under that
+  row).
 
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
@@ -4251,6 +4263,21 @@ Party-published unless marked. Statements and press are linked where they are us
   restated as an attack and with no measure beyond the ones already recorded; he had tied אוריך to
   the affair at ynet's conference that morning (rev 268, above). *"בגידה"* is his word, over a
   report of a suspicion and a denial. Nothing entered.
+- **Read, and scored nothing (rev 270): the bloc's two quarrels, by N12**
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm), דפנה
+  ליאל, 13.10.26 07:22). *נתניהו as a minister:* the statement of 11.10 that rev 268 had from ynet,
+  in N12's wording: *"כל עוד אנחנו נקבל את עקרונות היסוד, אין לי בעיה שנתניהו יהיה שר בממשלה שלנו"*
+  — ynet has *"כל עוד יקבל"*, so the two differ on who is to accept the principles — and the
+  clarification he wrote shortly after: *"מציע לכולם להירגע. אמרתי אלף פעמים שנתניהו נושא באחריות
+  ישירה ואישית לטבח 7 באוקטובר ולכן עליו ללכת הביתה. לא נשב איתו בשום קונסטלציה"*. By N12 he said
+  the remark was meant to show an absurdity, since נתניהו opposes conscription for all, a state
+  commission of inquiry and a constitution. Still a relay: neither the conference nor his post was
+  read. The refusal is the last word, as in rev 268, and no tag records it. The replies are under
+  each row — איזנקוט (ישר), ליברמן (ישראל ביתנו), גולן (הדמוקרטים). *The premiership:* גנץ forecasts
+  that בנט and ליברמן will demand it even if they do not lead in seats (under כחול לבן); by N12's
+  paraphrase, with no quotation, בנט denies outright that there are contacts or coordination between
+  him and ליברמן about it. A denial of coordination, and no new answer on who leads; his pole of the
+  rotation item (under ישר) stands as recorded.
 
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
@@ -4794,6 +4821,13 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   saying נתניהו could be a minister (under ביחד). N12's summary of each list on the courts has this
   row against any override mechanism and for Basic Laws by 80 MKs, from a legal plan not read here
   (beside the judicial sweep, under ישר; the trigger is stated there).
+- **Read, and scored nothing (rev 270):** גולן on בנט's remark that נתניהו could be a minister, as
+  N12 quotes him
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm),
+  13.10.26; under ביחד), his statement not read at its source: *"נתניהו לא יישב בשום ממשלה כל עוד זה
+  תלוי בדמוקרטים. לא כשר אוצר, לא כשר המים ולא כשר בלי תיק"*. The row holds `anti-indicted-pm`,
+  which is a law about the prime minister; a refusal to sit with him in any post goes past it, and
+  no tag names it.
 
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
@@ -5201,6 +5235,13 @@ All first-party unless marked.
   assessment, with no source, that he will withdraw if he is not sure of the threshold, against his
   own *"עד הסוף"*; polls are not a field. N12's summary of each list on the courts adds an override
   only by broad consensus and not by 61 (beside the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 270):** N12 gives גנץ's forecast at ynet's conference (rev 268) in
+  his words: *"למה שישלמו את הקנס של ללכת עם מפלגות ערביות אם הם לא ראש הממשלה? בטח שהם ידרשו"*, and
+  *"Read my lips, תראו שזה יקרה"*, framed as a warning to איזנקוט
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm), דפנה
+  ליאל, 13.10.26 07:22). ליברמן's answer is *"לא שופטים אדם בעת מצוקה"*, and the party's reply to
+  it: *"אנחנו דווקא כן שופטים אדם שנחוש להגיע לכיסא גם תמורת מכירת המדינה"*. בנט's denial is under
+  ביחד. A forecast and an exchange of insults; `unaligned` and `unity-government` as they were.
 
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
@@ -6694,6 +6735,15 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   עמך ישראל). ynet lists ליברמן among those who attacked בנט's remark on נתניהו as a minister (under
   ביחד). N12's summary of each list on the courts gives this row's record on the Attorney General's
   role (beside the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 270):** ליברמן in N12's account of the bloc's two quarrels
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-22ceab3b05131a1026.htm),
+  13.10.26; under ביחד). On בנט's remark that נתניהו could be a minister, his post as N12 quotes it,
+  the post itself not read: *"אני קורא לחבריי בגוש הציוני להבהיר באופן ברור - יתהפך העולם ולא נשב עם
+  נתניהו"*, and by N12's paraphrase not as minister for regional cooperation either. The row holds
+  `anti-indicted-pm`, which is a law about the prime minister; a refusal to sit with him in any post
+  goes past it, and no tag names it. On גנץ's forecast that he and בנט will demand the premiership
+  (rev 268), he answers only *"לא שופטים אדם בעת מצוקה"*; N12 carries a denial from בנט and none
+  from him. A rival's forecast, and nothing is entered from it.
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -9996,6 +10046,16 @@ housing, is under `economic`.
   ש'בגוש השלישי'"* with four seats
   ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-45e57cc1dc021a1026.htm),
   09.10.26): the outlet's label, and `unaligned` is what this row already says.
+- **Read, and scored nothing (rev 270):** הארץ's poll column
+  ([הארץ](https://www.haaretz.co.il/news/elections/sakran/2026-10-13/ty-article/.premium/000001a1-31a8-d9bc-a3fd-f3eb18830000),
+  אמנון הררי, 13.10.26 06:00, body supplied by the repo owner; its two charts viewed). Of three
+  polls in a week, כאן 11's has this list at 3.3% and four seats, חדשות 12's at four seats and חדשות
+  13's under the threshold, and that, with עמך ישראל's figures, is most of why the three give the
+  blocs as 53–50, 49–54 and 55–50. In חדשות 13's poll 8.7% of the list's voters are *"מאוד בטוחים"*
+  and 34.7% not so sure or not sure at all, which the column calls far worse than any other list's.
+  Polls are not a field, and nothing here bears on `unaligned`. The column relays, from a report by
+  מיכאל האוזר טוב not read here, that איזנקוט's main aim is to draw a few voters from this list and
+  bring about its collapse: a rival's strategy, as under ישר.
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -11328,6 +11388,20 @@ Most links are given above, where each source is used; these are the rest.
   rival's reasoning; not a statement by the party, and neither Bloc trigger. N12's summary of each
   list on the courts has בן ארי (#4) for a separate prosecutor-general, step 04 of the plan (beside
   the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 270):** הארץ's poll column
+  ([הארץ](https://www.haaretz.co.il/news/elections/sakran/2026-10-13/ty-article/.premium/000001a1-31a8-d9bc-a3fd-f3eb18830000),
+  אמנון הררי, 13.10.26 06:00, body supplied by the repo owner; its two charts viewed). Of three
+  polls in a week, כאן 11's has this list at 3.3% and four seats, חדשות 12's under the threshold and
+  חדשות 13's at five; in the last, 20.5% of its voters are sure of their vote and 27.3% not so sure
+  or not sure at all. Polls are not a field. Two things in it touch Bloc. The column sums וינטר's
+  media round as declaring himself *"לא בכיס של ביבי"* and at once saying he would sit only in a
+  government נתניהו leads — the columnist's paraphrase, the appearances not read — which is the
+  recommendation `bibi` stands on. And it reads נתניהו's campaign against the list, which marked
+  חדאד (#2) as backing a Palestinian state and the list as bound for גולן and the Arab parties, as
+  meant to strengthen וינטר, as a bridge for coalition supporters who will not vote for the
+  coalition. סגל's account in rev 268 is the opposite, that נתניהו fears וינטר will go with ליברמן.
+  Both are analysts' theories of a rival's motive; neither is a statement by the party, and neither
+  Bloc trigger is met.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -15180,3 +15254,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-11 | revision 267 — **fifty-six posts of 09–11.10 (of fifty-seven sent), two הארץ pieces, and the מעריב and ישראל היום reports two of the posts rest on (links and bodies supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **עמך ישראל:** the closest call. נתניהו posts the graphic of a מעריב exclusive of 06.10 in which two candidates at a house meeting, בן ארי (#4) and בן ציון (#7), say the party promised to recommend נתניהו and not to sit only with him, that "יש עוד אפשרויות", and that they would welcome איזנקוט into a broad government; the line they draw is at גולן. `bibi` holds: the recommendation is restated, in both quoted answers איזנקוט is the one who joins, a government under someone else is the reporter's reading, and neither speaker is וינטר, whose own statement or a vote is the trigger. Entered under Bloc. **הרשימה המשותפת:** a second Likud cut of ג'בארין's Arabic video carries the sentence rev 260 could not see — replace the government, and a safety net; נתניהו's caption turns it into forming a government with איזנקוט, which the clip does not say. **עוצמה יהודית:** קרויזר says מח"ש did not take his complaint after four hours and blames the Attorney General, which does not agree with הארץ's "filed" of rev 266; left open, in that paragraph. בן גביר at the memorial for גנדי restates the emigration ministry and the Defence demand, both recorded. **ש"ס:** a lead — 27 seconds of דרעי, in a clip ליברמן posts, on a five-year plan of tens of billions for the haredi sector in the next government; a rival's cut, undated, the interview not found. **הליכוד:** מנדלבליט's first day of testimony is a trial record and is not entered; the candidates' accounts of it (סעדה, קרעי, שיקלי, ברדוגו, סער) run ahead of הארץ's log as supplied, and קרעי asks for a criminal investigation of six named officials. הארץ names אפי נוה as a candidate on the list; slot not checked. The leak from אוריך's phone, confirmed by הארץ, is conduct of a party employee and no position. ביסמוט defends his conscription bill and does not know whether נתניהו should sit under איזנקוט. **ישר:** איזנקוט says a detailed seam-line plan exists; not among the papers read. **הציונות הדתית:** a magazine page calls יוסי בכר a party member who believes in settling Gaza; six minutes of סמוטריץ' defending his record. **Also read, nothing scored:** בנט, לפיד, בן ארי, מירב כהן and שירי (ביחד); גולן, זר קצנשטיין, קריב, פינק, רוזין, לזימי and רדמן (הדמוקרטים), with the women's-safety headquarters placed under `gender-equality`; בן שטרית and מלינובסקי (ישראל ביתנו); יהדות התורה's campaign song; השכל twice (ישראל תחילה). Nineteen clips were transcribed by machine, two of them read from captions because one is in Arabic and one is sung; 33 images were viewed. One post had been deleted by its author and one reposts a clip of rev 259. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-12 | revision 268 — **six הארץ pieces, five ynet reports from its conference of 12.10, four N12 pages and three posts (links supplied by the repo owner; the הארץ bodies supplied, the rest fetched). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** the nearest call. By ynet בנט said on 11.10 that he had no problem with נתניהו as a minister in his government, was attacked by the bloc's other leaders and withdrew it — "לא נשב עם נתניהו בשום קונסטלציה" — and at ynet's conference called a government resting on the Arab parties "חרטא" and promised a "ממשלה ציונית", which names no party and no criterion, so `excludes-anti-zionist-parties` stays off; לפיד calls on the bloc to refuse a unity government with נתניהו, the pole opposite `unity-government`, which no tag names. **הליכוד:** אוחנה (#3) says replacing him as Speaker with 61 would be legitimate and that he would not refuse to convene the plenum, while asking voters to prevent it because the 61 would include Arab MKs; assumes an override clause in the next term (`judicial-overhaul`, held); and defines the "ממשלה לאומית רחבה" as the present coalition plus others, with בנט possible and גולן out. מנדלבליט's second day is a trial record and is not entered; TheMarker's report of the leaked אוריך–סגל chats and אוריך's statement that the chats were altered are entered in the rev 267 paragraph. **ישר:** איזנקוט restates the largest-party rule and says of another candidate forming the government "מי שבונה על זה לא מכיר אותי מספיק טוב"; N12 has the party campaigning to be the largest by a margin, with מרידור naming the mandate and the Speaker as the reasons; a הארץ column on the campaign's caution is the writer's. **עוצמה יהודית:** הארץ's third report — police hold body-camera footage that by their sources strengthens the suspicion against קרויזר, nobody has been questioned, and the file is to move to להב 433; entered in place, still an allegation and a denial. **Cross-row:** N12's summary of each list on the courts is entered beside the judicial sweep under ישר; it agrees with the sweep, differs from ביחד's own answer on the selection committee, and cites for הדמוקרטים a legal plan with Basic Laws by 80 MKs that this page has not read (trigger: its text). **כחול לבן:** גנץ runs to the end, prefers "גדי-ביבי" to "גדי-טיבי", and forecasts that איזנקוט, ליברמן and בנט will govern with the Arab parties — his forecast, entered on no other row. **עמך ישראל:** אוחנה tells וינטר to quit and בנט refuses to sit with him as "ביבי על מלא"; `bibi` stands. One-line entries under הדמוקרטים, ישראל ביתנו, הרשימה המשותפת and ש"ס; the note that N12's live-blog address rolls is added beside its 05.10 citation. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-12 | revision 269 — **N12's report of quotes from יונתן אוריך's police interrogation in the Qatar case (אמנון אברמוביץ', 12.10.26 20:06; link supplied by the repo owner, fetched). No axis moved, no tag changed, `seed.sql` unchanged.** **הליכוד:** entered in place beside the leak from his phone (revs 267, 268). The interrogator puts to him requests he made of ChatGPT in September 2024 for a "תוכנית אסטרטגית לשינוי תודעה עולמית" about Qatar and for messages to Israelis, Jewish communities and American opinion leaders "שיוכלו לסייע להלבין את קטאר"; he answers that he does not remember what he asked and did nothing for Qatar in Israel. A suspicion put in an interrogation and a denial, about an adviser's conduct; no position and no tag. The page carries no response to the publication. **ישר:** איזנקוט calls him a "סוכן קטארי" still working in the Prime Minister's office and says a fit prime minister would dismiss him that evening — כהן's demand of rev 152, from the leader; an attack, not a policy. **ביחד:** בנט calls it "פרשת הבגידה החמורה ביותר בתולדות המדינה" and Qatar "האויב המסוכן ביותר שלנו" — the row's Qatar line (revs 49, 123) restated, no new measure. Both replies are as N12 quotes them and were not read at their source. |
+| 2026-10-13 | revision 270 — **N12 on the change bloc's two quarrels (דפנה ליאל, 13.10.26 07:22; fetched) and הארץ's poll column (אמנון הררי, 13.10.26; body supplied by the repo owner, two charts viewed). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** בנט's remark of 11.10 that נתניהו could be a minister, which rev 268 had from ynet, is given in N12's wording with the clarification in full — "לא נשב איתו בשום קונסטלציה" — and N12 has him denying any contact or coordination with ליברמן over the premiership; the refusal is the last word and no tag records it. **ישר:** איזנקוט, "כל מי שהיה בתפקיד ב-7 באוקטובר לא ראוי לשמש בתפקידי פיקוד והנהגה, כולל שר אוצר" — rev 99's cabinet-wide disqualification, broader than `anti-indicted-pm`, which is refused a fourth time. **ישראל ביתנו** and **הדמוקרטים:** ליברמן ("יתהפך העולם ולא נשב עם נתניהו") and גולן ("לא כשר אוצר, לא כשר המים ולא כשר בלי תיק") refuse to sit with him in any post; both rows hold `anti-indicted-pm`, a law about the prime minister, and the refusal goes past it with no tag to name it. **כחול לבן:** גנץ's forecast in his words and the party's exchange with ליברמן. **עמך ישראל** and **המילואימניקים והכלכלית:** the column's poll figures (polls are not a field) and, for עמך ישראל, its theory that נתניהו's attacks were meant to strengthen וינטר — the opposite of סגל's in rev 268, and like it not a statement by the party; `bibi` stands. Every quotation is the outlet's relay; no statement was read at its source. |
