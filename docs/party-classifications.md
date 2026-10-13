@@ -588,6 +588,19 @@ programme (rev 24). The second half is the +2 band's definition, met on both lim
   dissent punished by the leadership is evidence *of* a party line. Against it, גוטליב (since
   departed) refused the exemption bill and הלוי (33 in the primary) wants haredim *and* Arabs
   conscripted — dissent, not the line.
+- **The academia gender-separation law** (rev 274). By
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3556-d193-a3a7-b57e2d6b0000)
+  (13.10.26, body supplied by the repo owner) the Knesset approved it in July 2026. Separation
+  *"מסיבה דתית"*, which a בג"ץ ruling had allowed only for haredim and only in first degrees, is
+  widened to other sectors that want it, to advanced degrees and to tracks that need an internship,
+  and is permitted outside the classroom (libraries, laboratories, cafeterias, the campus at large)
+  in institutions that already separate. Five members of the Council for Higher Education resigned
+  over it in July, and קיש (#10), the Education Minister, means to carry it through the council. It
+  is the coalition's statute, the kind of record this axis already rests on, and it points the same
+  way: one more instance inside +2 and no step toward +3, since it permits a religious practice in
+  state-funded institutions and hands no authority to a religious body. The description is the
+  paper's; the statute and the vote were not read. ביחד's women's plan and ישראל ביתנו's ten points
+  would repeal it.
 - A reporter's summary has הליכוד opposing Shabbat public transport, *"מתוך שמירה על הסטטוס קוו"*
   (rev 244, [ynet](https://www.ynet.co.il/news/elections2026/article/yokra14917099)); no number
   moves on a summary.
@@ -836,6 +849,26 @@ Until rev 24 the row had four tags, because it had never been read against a par
     chair, who found *"שאלות של ממש"* and charged משרד ראש הממשלה ₪500 costs
     ([הארץ](https://www.haaretz.co.il/news/elections/2026-09-17/ty-article/.premium/000001a0-afbe-df5b-adf2-ffffb3820000)).
     A state body's and the PMO's conduct; no statement by the party is quoted in it.
+  - A further sighting (rev 274): who watches the polls. A 73-second video on נתניהו's account
+    ([post](https://x.com/netanyahu/status/2109908331636658383), 13.10.26 07:25 UTC; machine
+    transcript, the clip carries only a fixed title) shows him with the party's counsel בומבך under
+    *"כוח קפלן ו"אחים לנשק" רוצים לפגוע בטוהר הבחירות"*. בומבך says he complained to the CEC, the
+    Attorney General and the police commissioner; that the two groups say *"אנחנו הולכים להפריע
+    לבחירות"*; that a third, הגדעונים, will bring hundreds to demonstrate and disturb the count of
+    the double envelopes; and that from the committee he heard *"חידלון מוחלט"*. נתניהו: *"הם
+    מאשימים אותנו במה שהם מתכננים לעשות לנו"*, and *"אנחנו נשמור על טוהר הבחירות, אנחנו נשלח את
+    המפקחים שלנו. זו הזכות הדמוקרטית שלנו"*. By
+    [הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3536-d610-a5bb-373f929d0000)
+    (13.10.26, body supplied by the repo owner): the party's first complaints, in May and August,
+    were against אחים לנשק's project *"זה הזמן"*, which would send veterans of elite units *"לשמור
+    על הקלפיות"* and which the party said could deter voters; the committee's legal adviser answered
+    in September that anyone who disturbs the vote or blocks a voter's way will be arrested and that
+    no demonstration will be approved on election day; and אחים לנשק sent בומבך a warning letter
+    before legal action, denying any such statement or intent and demanding a retraction. Each side
+    says it is the one guarding the count and that the other's watchers are the threat. Who may
+    observe a count is machinery; it is not who may vote or how the register is kept, so the revised
+    trigger below is not met, and a charge against named organisations is a campaign line. Nothing
+    scored.
   - The first trigger (any row publishing a position on expatriate voting, absentee ballots or the
     voter register) was met by the Elector ruling and it is still a lead: what the rows state is how
     they run a campaign, machinery, not programme, and a tag would record which parties run a good
@@ -1811,10 +1844,27 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   קטאר בישראל, לא מול התקשורת הישראלית, לא מול אזרחי ישראל ולא מול ראש הממשלה"*. That the requests
   prove his intent is N12's reading; what the page holds is a suspicion put in an interrogation and
   a denial, and it carries no response to the publication from אוריך, the party or the Prime
-  Minister's office. N12 writes that he is still employed in נתניהו's office; this entry's record
+  Minister's office. His answer followed on X, as a
+  [הארץ column](https://www.haaretz.co.il/digital/daily/2026-10-13/ty-article/.premium/000001a1-34fd-dd7e-afbb-f7fd04d20002)
+  relays it (rev 274; 13.10.26, body supplied by the repo owner; his post not read): he does not
+  deny asking, says he *"לא עשה עם התשובה כלום"*, and adds a joke about what else he asks the chat.
+  The rest of the column is the writer's judgment of him, and its second half, on the arrest of כפר
+  סבא's mayor, names no party and is not entered. N12 writes that he is still employed in נתניהו's office; this entry's record
   (revs 152, 267) is that the state bodies call him a party employee, and both are left as stated.
   Three earlier N12 reports it links were not read. An adviser's conduct under investigation; no
   position, and no tag. איזנקוט's and בנט's replies are under ישר and ביחד.
+- **Read, and scored nothing (rev 274): קיש's appointments to the Council for Higher Education.**
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3556-d193-a3a7-b57e2d6b0000)
+  (13.10.26, body supplied by the repo owner): two weeks before the election קיש (#10) is moving to
+  appoint three new members, from a private college and two public ones and none from the research
+  universities, to a council left since the five resignations of July without the number of
+  academic members the law requires. The Attorney General's guidelines bar significant appointments in an
+  election period; his letter to the heads of the institutions says these are not such, since the
+  council's term ends in April 2027 and so *"אין בהם להשפיע על סמכותו ושיקול דעתו של שר החינוך
+  הבא"*. They need the President's approval and a government vote. The universities' heads call it
+  *"מחטף"* and unlawful and have written to him and to the Attorney General. A minister's conduct
+  under a guideline, and a dispute about procedure; what the council is wanted for, the
+  gender-separation law, is under `religiosity`. No position, and no tag.
 - **Read, and scored nothing (rev 267): the day's other posts.** נתניהו against וינטר (under עמך
   ישראל), and over a clip of ג'בארין that closes *"זהו ימין או פלסטין"* (under הרשימה המשותפת).
   ביסמוט (#23) posts his ערוץ 13 interview of 10.10
@@ -3321,6 +3371,11 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   on raising taxes, *"אני אבחן את המצב, אני מקווה שלא נצטרך"*. `tax-cutting` rests on the papers'
   income-tax cut; a candidate who does not rule out a rise has not withdrawn it. **Trigger:** the
   party saying taxes will rise, or dropping the cut.
+- **Read, and scored nothing (rev 274):** הארץ on the Council for Higher Education
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3556-d193-a3a7-b57e2d6b0000),
+  13.10.26; the report is under הליכוד) says the former MK רועי פולקמן suspended his activity on the
+  council because he is running on this list. Nothing is quoted from him, and his number was not
+  read (the CEC API returned an error on this pass). A candidate's conduct; no position.
 
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
@@ -3501,7 +3556,8 @@ funding". The religion-and-state plan (rev 99) meets two of the three explicitly
     adds hours and money for Jewish studies there up to the state-religious level; that is content
     in schools and not religious authority, and it moves nothing on this axis.
 - **The women's plan** (rev 29) repeals the laws that expanded the rabbinical courts' authority —
-  their *expansion*, not their jurisdiction — and the gender-separation-in-academia law, and adds
+  their *expansion*, not their jurisdiction — and the gender-separation-in-academia law (passed in
+  July 2026; what it does is under הליכוד's `religiosity`, rev 274), and adds
   legal training for דיינים, measures against get-refusal and עגינות, and representation for women
   in the religious councils and the assemblies that elect rabbis. Get-refusal is established
   religiosity evidence (rev 15, on הדמוקרטים).
@@ -5591,8 +5647,9 @@ is headed *"הפרדה בין דת למדינה"*, and its statement is recorded
     freeze on arresting haredi deserters. רוזין named the first two the day before as things the
     coalition *tried* to legislate (revision 245); whether they passed was not checked in that
     pass. For the rabbinical-courts law it had been: revision 166 has the arbitration law at its
-    final reading on 24.03.2026 (under Recorded), so only the academia law is unchecked. The freeze
-    was annulled by the court, by the headlines revision 245 checked.
+    final reading on 24.03.2026 (under Recorded), and the academia law passed in July 2026, by a
+    הארץ report of 13.10.26 (rev 274, under הליכוד's `religiosity`). The freeze was annulled by the
+    court, by the headlines revision 245 checked.
   - The haredi school networks: *"יבוטלו ההסדרים המאפשרים לרשתות החינוך העצמאי ו'אל המעיין' לפעול
     ללא פיקוח ממשלתי מלא"* — direct state supervision, audit by the State Comptroller, and teachers
     paid directly, *"ולא באמצעות עמותות המנכות ממנו כספים"*.
@@ -5896,8 +5953,7 @@ text. This entry never recorded the grant.
   עם האזור ועם הגורמים הרלוונטיים שעמם שוחחתי"*. No Jordanian statement was looked for.
 - **Not checked:** the plan's 12,000 and 60,000 police figures, the half-billion shekels a month to
   prisoners' families, its forecast that the next US president will recognise a Palestinian state,
-  and whether נתניהו approved the PA's elections (rev 237); whether the academia gender-separation
-  law the ten points would repeal passed (rev 247); three of the laws מלינובסקי claims as hers,
+  and whether נתניהו approved the PA's elections (rev 237); three of the laws מלינובסקי claims as hers,
   against the Knesset record, and where her column ran, which one search did not find (rev 225);
   וינטר's answer to the chairman's offer below (rev 247).
 - **`bloc`.** A report that ליברמן is *"בוחן את האפשרות לגבש קואליציה חוצת מחנות"* was refused as a
@@ -8260,7 +8316,15 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   it too (*"הפרקליטות תונחה להגיש כתבי אישום כנגד מחבלים בבקשה לעונש מוות"*). The two partners agree
   on it, and it distinguishes the pair from הליכוד. Since then: a death-row wing and execution
   facility (party post, 2026-08-18), and בן גביר's account that the noose was for the law and that
-  he changed the rule requiring a panel of lieutenant colonels (rev 149).
+  he changed the rule requiring a panel of lieutenant colonels (rev 149). The first named case (rev
+  274): a [party post](https://www.ozma-yeudit.co.il/%d7%94%d7%a9%d7%a8-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%93%d7%95%d7%a8%d7%a9-%d7%9c%d7%96%d7%a8%d7%96-%d7%90%d7%aa-%d7%94%d7%94%d7%95%d7%a6%d7%90%d7%94-%d7%9c%d7%94%d7%95%d7%a8%d7%92-%d7%a9%d7%9c/)
+  of 13.10.26 has בן גביר write to the Military Advocate General asking why, three weeks on, no
+  indictment has been filed against קדרי סמארה, whom it names as the Hamas man who shot נתנאל
+  שקרון dead near נווה צוף on 20.09, and demanding *"להחיל עליו את חוק עונש מוות למחבלים שחוקקה
+  עוצמה יהודית"*: *"כל עיכוב מהווה פרס לטרור ופוגע בהרתעה של מדינת ישראל"*. The post describes the
+  order made under the law as a mandatory death sentence for a resident of the Palestinian
+  Authority who carries out a murderous attack, *"גם אם התביעה לא ביקשה להטיל עונש זה"*. Held. The
+  law and the order were not read, and that description of them is the party's.
 
 **Economy**
 
@@ -8324,6 +8388,15 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   singleton (revision 15's rule).
 - **Self-description** (rev 57) — *"הרשימה הכי מגוונת בישראל"* and *"שתי נשים בחמישייה הראשונה"* are
   not positions.
+- **`anti-lgbt`** (rev 274, the first time this entry meets it) — a
+  [הארץ opinion column](https://www.haaretz.co.il/gallery/opinion/2026-10-13/ty-article-opinion/.premium/000001a1-3506-d0e6-abed-b76f22800000)
+  writes that בן גביר took part in *"מצעד הבהמות"*, the protest against Jerusalem's pride march,
+  and was filmed kicking a transgender woman at Tel Aviv's march in 2008. Relayed and not checked,
+  and they are the chairman's own acts of eighteen years ago, where the tag's two holders have a
+  programme (נעם) and five roll-call votes that broke from their own side of the house (רע"ם). This
+  row's votes against the ten bills are coalition discipline and carry no signal (rev 165, under
+  רע"ם). **Trigger:** a current party text, bill or ministerial act aimed at LGBT rights or at a
+  pride march.
 
 #### Open questions and triggers
 
@@ -9154,6 +9227,15 @@ Linked where used above. Not linked above:
   **Trigger:** the document the motto comes from. N12's education survey
   ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm)) has the
   row as *"לא הציגה עמדות בתחום החינוך"*, beside rev 74's line on what schools should teach.
+- **Read, and scored nothing (rev 274):** 47 seconds of בן גביר with the internet personality יוחנן
+  טווינה in the Knesset ([repost](https://x.com/yahelfarag555/status/2109323348974919689), 11.10.26;
+  machine transcript, the clip carries only a title; by הארץ, טווינה took his own upload down within
+  a day), and the [הארץ opinion column](https://www.haaretz.co.il/gallery/opinion/2026-10-13/ty-article-opinion/.premium/000001a1-3506-d0e6-abed-b76f22800000)
+  on it (13.10.26, body supplied by the repo owner). בן גביר: *"אני אובססיבי לעם ישראל, אני
+  אובססיבי להילחם באויבים, להרוג מחבלים, לכבוש את עזה"*. `hardline-on-gaza` and
+  `territorial-control-gaza`, held, said as banter. That he reaches young liberal voters this way
+  is the writer's argument; the column's two facts about his record are under Considered and
+  refused. The party's post on the death-penalty law's first case is under that tag.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -15674,3 +15756,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-13 | revision 271 — **two N12 surveys of the lists (education, said to be checked by the association 121; and the economy chapter of its podcast project), ynet's report of אשר on הרב לנדו with פינק's post on it, and חדאד's post (links supplied by the repo owner; ynet's report found from the image in פינק's post). No axis moved, no tag changed, `seed.sql` unchanged.** **יהדות התורה:** the nearest call. אשר (#1) says "עם כל מה שאומר לנדו אני מזדהה", which on its face is the third limb of the `non-zionist` trigger (a named MK declining to disown the rabbi's words on the state). Held off: the two-sentence report does not say which words he was asked about and his answer is about the religious-Zionist public, he disputes the political reading, and blanket deference to the rabbi is what `rabbinic-authority-led` already records; the trigger is narrowed to the session itself. **עוצמה יהודית:** the first economic line cited for the row, the motto "כלכלה חופשית עם חמלה" with a tax on the top deciles, in one sentence of an outlet's summary; `economic` 0 stands and the document is the trigger. **ישר:** מרידור does not rule out raising taxes ("אני מקווה שלא נצטרך"); `tax-cutting` rests on the papers and stands. **הדמוקרטים:** a targeted tax on bank and large-corporation profits, the first tax named for the row, as paraphrase; `progressive-taxation` not opened. **הרשימה המשותפת:** VAT to 10%, a higher minimum wage and interest-free first mortgages; a paraphrased answer on schools does not open `municipal-devolution`. The other rows' education and economy lines restate held text and are entered as read. **עמך ישראל:** חדאד, "למזלנו הם סירבו" of the 1947 offer — `no-palestinian-state`, held. Both surveys are paraphrase with no answer quoted; the lists' answers to 121 and the per-list data behind N12's matching tool were not read. A TheMarker follow-up on N12 journalists criticising סגל was read and not entered: no party acts in it. |
 | 2026-10-13 | revision 272 — **ישר: five principles papers published on 13.10 (LGBT, gender equality, the self-employed and small businesses, environment, local government; links supplied by the repo owner, fetched with a browser-shaped `curl`). No axis moved, no tag changed, `seed.sql` unchanged.** The corpus is nineteen papers and twenty-one documents. Every measure in all five is word for word in the position posts of its topic, compared mechanically in both directions; the introductions are new. **Two of the five restore dead links:** the LGBT and gender-equality programmes, whose topic pages went offline (revision 258), are public again as papers, and `lgbt-rights` and `gender-equality` are now cited to them. The LGBT introduction adds that the party has signed the "חוקי שגיא לשוויון". The gender paper confirms that the pay-gap line names no employer transparency, an item this page had listed; the tag does not hang on it. **Three of the five are topics revision 258 held back as written but unpublished**, so that trigger fired for them and each was read against the row. **Local government:** the row's fullest text on religion — each authority shapes its own Shabbat, with commerce and transport named for the first time and a special-majority council vote required; religious services move from the religious councils to the municipalities and city rabbis are chosen by the council. That is devolution of an establishment that stays public, so `religiosity` −2 stands, and `municipal-devolution` now rests on a paper of its own. **Environment:** the row's first environment programme (a climate law, a waste law, the disposables tax, Haifa Bay, the Dead Sea), with no year, percentage or budget anywhere in it; no environment tag exists, and the row becomes the fourth with a programme in the queued sweep. It also holds the only sentence in the nineteen papers that names Judea and Samaria — enforcement against illegal waste burning — which moves no `security` trigger and is entered so it is not mistaken for one. **Self-employed:** a contribution-funded safety net, lighter rules for small firms and three examinations out of ten items; `economic` +1 holds, and `deregulation` and `welfare-state` are refused on the grounds already used for ביחד. Seven of the ten unpublished topics (74 posts) remain unpublished, the foreign-affairs one among them, and stay a lead. The youth paper, modified after it was published, was compared again and is unchanged. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-13 | revision 273 — **עמך ישראל: the service plan and the hasbara plan (`amchaisrael.co.il/serving-plan` and `/hasbara`; links supplied by the repo owner, `curl`; four videos transcribed by machine and checked caption by caption). ONE TAG REPLACED: `anti-conscription-exemption` → `scholar-exemption-retained`. No axis moved; the row still has 20 tags.** **The service plan** is the document revision 246 named as the trigger for both tags. It is four short videos, stamped 11.10, with the full text promised. Every citizen of draft age must settle his status in one of three tracks — the army, civil-national service, or a recognised Torah framework "למצטיינים" — and "לימוד תורה יוכר כערך יסוד במדינת ישראל, ויהיו לומדים, אבל המספר שלהם יהיה קצוב. רוב החרדים בגיל גיוס ישרתו". A Torah track that stands beside service, capped, is the answer to the question revision 246 left open (do those inside the quota serve), and it is כחול לבן's shape and not ישר's one-year deferral with basic training; so `scholar-exemption-retained` is granted and `anti-conscription-exemption`, which ישר was refused for less, comes off. It is the fourth signal in one direction after the platform's quota, N12's paraphrase and the security plan. **Removal trigger:** the full plan attaching service to the Torah track. `universal-conscription` stays and `religiosity` −2 with it (כחול לבן holds the same pair at −2). **Also from the plan:** `sanctions-on-non-servers`, held since revision 239 on an interview, now rests on the party's own text — a "מס ביטחון" on whoever does not settle his status, and a place at the bottom of every state priority "בלי קשר למצב הסוציו-אקונומי", keeping only schooling, the basic health basket, the vote and a driving licence. Keeping the vote rules out the founding case of `service-conditioned-citizenship`, refused again. The pay rise for conscripts has a funding source and no amount, so `reservist-focused` is refused again. The mechanism changes: the plan is to be anchored "בהסכם הקואליציוני ובתקציב המדינה", which is the coalition clause the press conference of 02.09 ruled out, and it does not say the law passes before the swearing-in. **The hasbara plan** is ten written steps to be led by חדאד: a single national authority, a 24-hour channel in Arabic, a monitoring centre, a messaging war room, a press office, a civilian spokespeople's reserve with hasbara studies in schools, a partners' network, a legal arm, a 7 October memorial centre, and a ₪250M film fund — the first shekel figure in any of the party's documents. `hasbara-focused` is held and this is its fullest text on the page. **Verified** by seeding a database with the previous `seed.sql` and applying the new one on top (the row keeps 20 tags, loses the one and gains the other; axes and bloc unchanged), and the backend suite passes (271). |
+| 2026-10-13 | revision 274 — **five הארץ pieces (bodies supplied by the repo owner), the two X clips they link (fxtwitter; machine transcripts, neither clip has running captions) and one post on עוצמה יהודית's site (`curl`). No axis moved, no tag changed, `seed.sql` unchanged.** **הליכוד:** the academia gender-separation law, which this entry had not recorded, is entered under `religiosity`: passed in July 2026, it widens separation on religious grounds beyond haredim and first degrees and beyond the classroom. The coalition's statute, one more instance inside +2. That it passed closes a "not checked" item under ישראל ביתנו, whose ten points would repeal it, as would ביחד's women's plan. קיש's bid to appoint three members to the Council for Higher Education two weeks before the election, against the Attorney General's guidelines, is ministerial conduct. נתניהו's video with the party's counsel בומבך, charging כוח קפלן, אחים לנשק and הגדעונים with planning to disturb the count, is a further sighting on the election-administration lead; who may observe a count is not who may vote, so its trigger is not met. אחים לנשק answered with a warning letter. A column relays אוריך's reply to revision 269's report, which that revision recorded as missing. **עוצמה יהודית:** the party's post names the first case for the death-penalty law and describes its order as a mandatory sentence for a Palestinian Authority resident, `death-penalty-for-terrorists`, held; בן גביר's line to יוחנן טווינה restates held Gaza tags. `anti-lgbt` is refused on its first appearance here: a columnist's two facts about the chairman from 2008 and earlier, unchecked, with a trigger written. **ישר:** פולקמן, a candidate, suspended his activity on the council. **Not entered:** the column's half on the arrest of כפר סבא's mayor names no party, and a הדמוקרטים candidate's personal announcement carries no position. |
