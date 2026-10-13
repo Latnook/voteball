@@ -1910,7 +1910,7 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
 **Basis.** Gadi Eisenkot's party, founded 2025-09-16; co-founders include Matan Kahana (former
 Religious Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief) and Nir Zohar
 (Wix). Scored from the party's own site, `yasharwitheisenkot.com`: the registered goals, the 10-step
-brochure and fourteen principles papers (sixteen documents, rev 258), beside 17 topic pages and 157
+brochure and nineteen principles papers (twenty-one documents, rev 272), beside 17 topic pages and 157
 position posts (revs 160, 161; the topic pages have since been taken off the site, see "Reading this
 party's sources"); on the conflict, where the documents are silent, from the leader's own
 statements. Before the platform existed the row was a placeholder (`new-party` +
@@ -1958,6 +1958,19 @@ both grew again in the rev 21 read and in the north paper (rev 39).
   ₪250M for tourism, ₪225M for informal education and a national-priority law modelled on מנהלת
   תקומה. The housing topic's rent and brokerage rules (rev 161) are interventionist measures inside
   a +1 row.
+- **Three papers of 13.10 add to both halves and carry no shekel figure (rev 272).** The
+  self-employed paper: lighter or waived rules where uniform regulation weighs on small firms
+  (*"צמצום ניכר, הקלות או פטורים"*), one digital address for dealing with the state, and a stronger
+  late-payment law, beside a social safety net for the self-employed *"שתישען על מנגנון
+  מבוסס-הפרשות ולא על סיוע חד-פעמי"* — paid for by their own contributions — a stronger
+  state-guaranteed loan fund, and enforcement of the small-business share of public tenders. Three
+  of its ten items are examinations (נבחן: a pre-set emergency aid procedure, easier opening and
+  accelerated depreciation, an independent small-business authority). The environment paper brings
+  back the tax on single-use plastic *"כחלק ממהלך רחב יותר להפחתת מיסים ישירים והעלאת מס על מוצרים
+  בעלי השפעות שליליות מובהקות"*, the trade the liberalizing bullet above already records, and puts
+  clean-up costs on the polluter. The local-government paper widens municipalities' own income and
+  budget freedom and keeps redistribution, binding standards and *"מימון מלא או מוגבר לשירותים
+  חיוניים"* with the state. The band holds.
 - **Not 0:** *"נבטיח שהעבודה תשתלם תמיד יותר מקצבה"*, with aid redirected from stipends to "משרתי
   מילואים ולמשפחות עובדות ויצרניות" and means-testing *"אחרי מיצוי השתכרות בלבד"* — a directional
   welfare doctrine, where 0 requires none or a genuinely balanced one. The senior-citizens paper,
@@ -2025,6 +2038,13 @@ single military force between the river and the sea.
   כארגון חמוש"*, the Lebanese government alone responsible for armed force, a stronger Lebanese army
   and the moderate Sunni states brought in: the answer rev 258 did not find to כץ's *"לברוח
   מלבנון"*.
+- **One paper now names Judea and Samaria, and it is about rubbish (rev 272).** The environment
+  paper: *"נרחיב את האכיפה כנגד שריפת הפסולת הפיראטית ביו"ש ובכל רחבי הארץ"*. Checked across all
+  nineteen papers, it is the only sentence that names the area. It is enforcement against illegal
+  waste burning and says nothing about a state, sovereignty or settlement, so no trigger moves; it
+  is entered so that a search for יו"ש on this party's site is not mistaken for a finding. The
+  foreign-affairs topic, where the party's own lines on the territories sit, is still unpublished
+  (Open questions).
 - **Trigger (rev 69):** any ישר document on the territories, or any statement in the party's name
   by אבו רוקן, who ran the government's civil administration of the territories and is where a
   position would come from. A career administrator is not a policy statement (the refusal applied
@@ -2062,8 +2082,21 @@ the public space devolved to municipalities and communities.
   for terror victims, Shabbat). It was modified 2026-08-18, two days after rev 21 read it;
   re-checked live in rev 39, and all four cited phrases (מעמד אישי, זוגיות אזרחית, גיור מכבד, המרחב
   הציבורי והשבת) were still present.
-- The gender-equality page (rev 161) commits to *"החזרת הסטטוס-קוו שהופר... בכל הנוגע לסמכויות בתי
-  הדין הרבניים"*, the law ישראל ביתנו's פורר wants repealed (rev 151). It fits −2.
+- The gender-equality page (rev 161; a principles paper since 13.10, rev 272) commits to *"החזרת
+  הסטטוס-קוו שהופר... בכל הנוגע לסמכויות בתי הדין הרבניים"*, the law ישראל ביתנו's פורר wants
+  repealed (rev 151). It fits −2.
+- **The local-government paper is the row's fullest text on religion and it is devolution throughout
+  (rev 272).** Shabbat: *"כל רשות תוכל לעצב את השבת שלה ואת המרחב הציבורי, ולספק שירותי מסחר, דת,
+  פנאי, תרבות ותחבורה בהתאם לאורח החיים של כלל תושביה"* — commerce and transport named for the first
+  time, where the aliyah paper said only "the Shabbat in the public space" — and each such decision
+  needs *"החלטת מועצה ברוב מיוחס, תהליך שיתוף ציבור ואשרור בחוק עזר"*. Religious services: *"נוביל
+  העברת ניהול שירותי הדת מהמועצות הדתיות לרשויות המקומיות"*, and city rabbis chosen *"על ידי מועצת
+  הרשות, בהתאם לייצוג הקהילות השונות"*. The religious councils lose their job; the services stay
+  public, publicly paid and run by an elected body, and the city rabbi stays an office. That is the
+  sentence above — devolving and reforming an establishment is not disestablishing it — with its
+  clearest example, and −2 stands. On Shabbat transport the row now says in its own paper what ynet
+  recorded for הדמוקרטים, ישראל ביתנו and ביחד (rev 244, under הליכוד): local option, here behind a
+  special-majority council vote.
 - **Aloud, the leader goes further than the education paper (rev 263).** On כאן 11 (19.07.26):
   *"נדרוש תוך שלוש שנים שכל ילדי ישראל ילמדו בחינוך הממלכתי"*, and *"מי שלא יהיה שם, לא יקבל שקל
   אחד"*; on the party's podcast (25.06.26), *"100% חינוך ממלכתי לסוגיו, עברי, דתי, חרדי וערבי"*. The
@@ -2098,6 +2131,9 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 - **Do not score an examination as a commitment.** *"נבחן הטלת חובת ביטוח סיעודי לכלל האוכלוסייה"*
   is the page's most universal measure and its verb is נבחן, against נפעל ×8, נקדם ×6 and נבטיח ×2
   on the same page; and a mandatory insurance is a duty on citizens, not a state transfer.
+- **The self-employed paper does not reach it either (rev 272).** Its safety net is to rest on the
+  members' own contributions and is to be arranged *"הדרגתית"*, with no formula, rate or date: a
+  contributory scheme in outline, not a change to a universal entitlement.
 
 #### Tags (32) and what each rests on
 
@@ -2239,13 +2275,23 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 - **`civil-marriage`** — *"נפעל למיסוד זוגיות אזרחית בישראל"*: the weaker formulation (see
   `religiosity`), which rev 21 called the tag's weakest case.
 - **`kashrut-liberalization`** — *"נקדם רפורמות בכשרות ובייבוא מוצרים כשרים"*, in the cost-of-living
-  chapter, framed as competition policy rather than religion policy.
+  chapter, framed as competition policy rather than religion policy. The environment paper has its
+  first named product (rev 272): *"נפעל להסרת חסמים בפני ייבוא של בשר כשר מצונן מחו"ל"*, offered as
+  the way to cut live animal shipments, in the same sentence as *"נחזק את הגידול המקומי"*.
 - **`religious-pluralism`** — *"יהדות מכילה ומכבדת"*, *"גיור מכבד"*, and inclusive treatment by
   state institutions *"בתחנות החיים, מלידה ועד פטירה"*.
 - **`municipal-devolution`** and **`communitarian-devolution`** — *"הרחבת העצמאות של רשויות מקומיות
   וקהילות לעצב את השבת במרחב הציבורי בהתאם לאופיין וערכיהן"*, plus local authorities as a central
   partner running education in their area. The wording names **both** levels, which is why both tags
-  apply, exactly as on בית ציוני.
+  apply, exactly as on בית ציוני. Since 13.10 `municipal-devolution` also rests on a paper of its
+  own, *ישר! לשלטון המקומי* (rev 272): three tiers of authority (national, regional, local) on a
+  subsidiarity rule, the Interior Ministry recast as a ministry for local government and regional
+  development, a standing ministerial committee on devolution, powers handed over by measured
+  capacity and taken back from an authority that fails, wider municipal powers in education *"בכפוף
+  לתכנית הליבה"*, and the Shabbat and religious-services lines quoted under `religiosity`. It keeps
+  *"רשויות מקומיות וקהילות"* for the public space, so the second tag holds on the new text too.
+  Conditional or examined, not scored as commitments: support for a Basic Law on local government
+  *"בתנאי שייעשה בהסכמה רחבה"*, and statutory metropolitan bodies (נבחן).
 
 **Society**
 
@@ -2256,7 +2302,12 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   housing-discrimination law; a civil-partnership track *"לרבות זוגות חד-מיניים"* alongside the
   religious courts, with equal parenthood registration; anti-incitement law; a Director-General's
   circular protecting LGBT pupils and teachers. The same kind of evidence as ביחד's `pride` plan, so
-  the tag does not rest on הארץ's questionnaire summary.
+  the tag does not rest on הארץ's questionnaire summary. **A principles paper since 13.10 (rev
+  272)**, [*ישר! לקהילה הגאה*](https://yasharwitheisenkot.com/principles/lgbtqia/), which ends the
+  dead-link problem of rev 258: every measure is word for word the six posts, and the new
+  introduction adds that the party *"חתומה על 'חוקי שגיא לשוויון'"* (what those bills contain was
+  not checked) and states equality *"ללא הבדל נטייה מינית וזהות מגדרית"* as its reading of the
+  Declaration of Independence.
 - **`gender-equality`** (rev 161) — refused in rev 21 (*"crime policy in a crime paper"*: the
   violence-against-women programme, where הדמוקרטים had a dedicated equality paper) and in rev 69,
   against Eisenkot presenting the list as *"התחייבות המפלגה לשוויון בין גברים לנשים"* with 14 women
@@ -2266,7 +2317,14 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   public boards, *"מניעת הפרדה באקדמיה"*, penalties for excluding women from public space, women on
   religious councils and rabbinical electoral bodies, enforcement against *עגינות וסרבנות גט*, a
   national headquarters against violence against women. Most of it is not about violence, which is
-  rev 23's granting shape.
+  rev 23's granting shape. **A principles paper since 13.10 (rev 272)**,
+  [*ישר! לנשים ושוויון מגדרי*](https://yasharwitheisenkot.com/principles/gender-equality/), every
+  measure word for word the six posts. **One item in the list above is not in the published text:**
+  the pay-gap line reads *"נפעל לצמצום פערי שכר בין נשים לגברים בשוק העבודה"* and names no employer
+  transparency, in the paper as in the posts (rev 258 could not tell whether it had been edited
+  out; the paper settles what the party publishes, not what the page of September said). The tag
+  does not hang on it. The introduction says the Knesset slate is *"50% נשים, 50% גברים"*; rev 69
+  counted 14 women in the top 30, and a list is still not a programme.
 
 **Economy**
 
@@ -2361,6 +2419,9 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   before use, in the party's own voice.
 - **`consumer-protection`** (rev 161) — one enforcement unit for brokers is thinner than the
   holders' programmes.
+- **`deregulation`** (rev 272) — the self-employed paper's *"מסלולים מותאמים שיובילו לצמצום ניכר,
+  הקלות או פטורים היכן שרגולציה אחידה מטילה נטל בלתי מידתי"* is relief for one class of firm after a
+  review, the shape refused for ביחד's small-business plan (revs 49, 60): not across the board.
 - **Sector stays `secular`** — אבו רוקן is Druze, and rev 45's precedent is that a minority slot
   records what a party does, not what it is.
 
@@ -2368,23 +2429,28 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 
 The axis triggers and the `anti-settler-violence` removal trigger are stated where they apply.
 
-- **A lead, not a source: 104 posts the party has written and not published** (rev 258). On
-  07.10.26 its system gained ten topics that no page shows — health, foreign affairs and the
-  diaspora, the periphery, environment and climate, the self-employed, the public service, local
-  government, transport, planning, national infrastructure. Housing and culture were topics of this
-  kind before they became papers on 08.10, so these read as papers in waiting. **Nothing is scored
-  from them.** The foreign-affairs topic would be the party's first text of its own on the
+- **A lead, not a source: 74 posts the party has written and not published** (rev 258, as cut down
+  by rev 272). On 07.10.26 its system gained ten topics that no page showed — health, foreign
+  affairs and the diaspora, the periphery, environment and climate, the self-employed, the public
+  service, local government, transport, planning, national infrastructure. Housing and culture were
+  topics of this kind before they became papers on 08.10, and **three of the ten followed on 13.10
+  (rev 272): environment, the self-employed and local government**, thirty posts, each paper word
+  for word its posts. Seven topics and 74 posts are still shown on no page: health, foreign
+  affairs, the periphery, the public service, transport, planning and national infrastructure.
+  **Nothing is scored from those.** The foreign-affairs topic would be the party's first text of its own on the
   territories, the document limb of the rev 69 trigger: *"נילחם בנחישות באנרכיה, באלימות ובטרור
   היהודי ונשיב את המשילות ואת שלטון החוק ביהודה ושומרון"*, the civil administration's powers over
   land, planning and enforcement returned to the Defence Ministry, and *"נימנע מצעדים חד־צדדיים
   העלולים לסכן את עתידה של ישראל כמדינה יהודית ודמוקרטית בעלת רוב יהודי מוצק ולהטיל עליה אחריות
   למיליוני פלסטינים"*; beside it, peace with Saudi Arabia as the lead item of a wider Abraham
   Accords, an arrangement with Lebanon's government, and a national authority for strategic
-  communication in the Prime Minister's Office. **Trigger:** any of the ten published as a page or
-  a paper. Then `anti-annexation` and `anti-settler-violence` are re-read as resting on a written
-  programme, `regional-normalization` and `hasbara-focused` are considered, and the environment
-  topic is checked against rev 160's "no environment programme". It contains no sentence on a
-  Palestinian state and none on settlements, so on this text neither `security` trigger moves.
+  communication in the Prime Minister's Office. **Trigger:** any of the remaining seven
+  published as a page or a paper. For the foreign-affairs topic, `anti-annexation` and
+  `anti-settler-violence` are then re-read as resting on a written programme, and
+  `regional-normalization` and `hasbara-focused` are considered. It contains no sentence on a
+  Palestinian state and none on settlements, so on this text neither `security` trigger moves. The
+  environment limb was met in rev 272: the row has an environment programme (see Environment,
+  below).
 - **When did the fourth coalition principle appear?** The rev 85 party statement already kept out
   parties *"שאינן מכירות בחמאס כארגון טרור"*, beside three principles (ישראל יהודית ודמוקרטית, קבלת
   ערכי מגילת העצמאות, וחובת שירות לכול); מרידור on אופירה אסייג: *"מפלגה חייבת להכיר בחמאס כארגון
@@ -2453,10 +2519,29 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
 - **An anti-defection charter** (rev 104) — asked *"איך תבטיח שלא יהיו לך סילמנים ושיקלים
   ברשימה?"*, he said candidates will sign an **אמנה**; *"לא יהיה אצלי שום סילמן ולא יהיה שום שיקלי"*
   (rev 233). One holder, oral, no text: rev 15's rule.
-- **Environment** — questionnaire answers, no plan (revs 134, 160). Rev 154 agreed with הארץ that
-  the platform has *"אף אזכור"*; rev 160 corrected it: the agriculture paper names *"שינויי האקלים"*
-  as a threat to food supply and the housing topic promises *"כלים שיאפשרו היערכות מיטבית לשינויי
-  אקלים"* — adaptation inside other programmes.
+- **Environment** — a programme since 13.10.26,
+  [*ישר! לסביבה*](https://yasharwitheisenkot.com/principles/environment-and-climate/) (rev 272);
+  until then questionnaire answers and no plan (revs 134, 160). Rev 154 agreed with הארץ that the
+  platform has *"אף אזכור"*; rev 160 corrected it: the agriculture paper names *"שינויי האקלים"* as
+  a threat to food supply and the housing topic promises *"כלים שיאפשרו היערכות מיטבית לשינויי
+  אקלים"* — adaptation inside other programmes. The paper: a climate law (*"נוביל חקיקת חוק
+  אקלים"*) with emission targets *"ברי-מימוש וגבוהים מהיעדים הקיימים"*; higher renewable-energy
+  targets inside an infrastructure master plan, with micro-grids; a framework waste law; the tax on
+  single-use plastic restored; a contaminated-land law on *"המזהם משלם"*; the marine-areas law and
+  the Gulf of Eilat; a water-resilience plan; biodiversity and invasive species under the
+  environment ministry; animal welfare, with fewer live shipments; a new Dead Sea concession tender
+  with the concession-holder liable for rehabilitation; and the petrochemical industry out of Haifa
+  Bay under the existing government decision. **It names no number**: no target year, no percentage
+  and no budget, where ביחד's law is budgeted and המפלגה הכלכלית has 2050 and a ₪10B fund. Two of
+  its institutions are examinations (נבחן: an independent waste authority, a Dead Sea fund). On
+  Haifa Bay it promises *"עמידה בלוחות הזמנים שנקבעו"*; rev 134 recorded the questionnaire answer as
+  a budget and a shorter timetable, so the paper says less than the answer did. No environment tag
+  exists, so nothing is scored; the row is the fourth with a programme in the sweep queued under
+  the file-level Open questions.
+- **Protections for the self-employed** — the gap rev 60 recorded under ביחד
+  (`self-employed-protections`, not minted). This row's paper (rev 272) has the contributory safety
+  net, arrangements for mourning, hospitalisation and serious illness, and a stronger loan fund;
+  two rows with such a plank and still no tag, and the paper's weight is in its examinations.
 - **Leads in the leader's voice, not scored** (rev 233): on Iran, no regime change but *"הוצאת
   האורניום המועשר ופיקוח הדוק"*; in Gaza, a local force vetted by the שב"כ under a technocrat
   government with the moderate Sunni states, Hamas disarmed and the strip de-radicalised before
@@ -2854,7 +2939,8 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   2026-10-10). Every `/topic/…` address except `/topic/missions/` returns 404, as does every
   `/position/…` address; `topic-sitemap.xml` lists the goals page alone, and the `/principles/`
   index (now titled *תכניות*) links fourteen papers and nothing else. The whole section went, not
-  one subject, so nothing is read into it. The text is still returned by the site's own interface:
+  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272.)
+  The text is still returned by the site's own interface:
   `https://yasharwitheisenkot.com/api/wp/v2/topic` lists the topics with their ids, and
   `…/api/wp/v2/position?topic=<id>` returns that topic's posts (the text is in `acf.intro_text`).
   The Wayback Machine holds nine of the old topic pages (24.09.26) and neither the LGBT nor the
@@ -2863,7 +2949,15 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
 - **A post that only the interface returns has not been published.** On 07.10.26 the party's system
   gained ten topics and 104 posts (260 in all, 27 topics) that no page on the site shows. They are
   recorded under Open questions as a lead and scored nothing (rev 258). The seventeen topics of rev
-  161 are a different case: those were public pages when they were read.
+  161 are a different case: those were public pages when they were read. Three of the ten became
+  papers on 13.10 and are read as papers (rev 272); the posts of all five topics published that day
+  carry an edit stamp from the same morning, except local government's, and no earlier copy of
+  their text was kept, so what the edit changed is not known.
+- **A paper's own date is when its entry was created, not when it went public** (rev 272).
+  `…/api/wp/v2/principles?_fields=slug,date_gmt,modified_gmt` lists every paper with both dates:
+  the LGBT and local-government papers are dated 07.10 and the self-employed one 08.10, yet the
+  index of 10.10 linked fourteen papers and none of them. The sitemap's `lastmod` (13.10, 07:56 to
+  08:37 UTC) is the date they are first known to be public.
 - **Do not select by filename; read every document before concluding an axis is evidenced.**
   - **`homeland-security` is not evidence for the security axis.** It is *internal* security —
     organised crime, protection rackets, police budgets and independence, digital crime, violence
@@ -2926,6 +3020,8 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   `gender-equality` planks except that the pay-gap line now reads *"נפעל לצמצום פערי שכר בין נשים
   לגברים בשוק העבודה"* with no employer-transparency mechanism (whether that was edited out or was
   this page's gloss could not be checked; no copy of the earlier text survives). Both tags hold.
+  **Both programmes are live again as principles papers since 13.10.26 (rev 272)**, linked under
+  the two tags and below.
   The rebuttal page *ישר! נגד השקר*
   ([yasharwitheisenkot.com/the-poison-machine](https://yasharwitheisenkot.com/the-poison-machine/), `article:modified_time` 2026-09-29, plain `curl`): a
   campaign page, not a programme, answering ten claims it quotes from *"דף המסרים של הליכוד"*,
@@ -2958,6 +3054,21 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   its paraphrase of בנט and ליברמן, are not scored); a twelfth principles paper, [*ישר! לצעירים*](https://yasharwitheisenkot.com/principles/youth-and-young-adults/)
   (published 2026-09-27 09:33 UTC; every policy line matches the young-people topic page, with a
   ministerial committee on youth, rental-market measures and a personal "launch account"; rev 171).
+- **Read, and scored nothing (rev 272):** the fifteenth to nineteenth principles papers, all in the
+  sitemap with a `lastmod` of 13.10.26 (links supplied by the repo owner; browser-shaped `curl`):
+  [*ישר! לקהילה הגאה*](https://yasharwitheisenkot.com/principles/lgbtqia/) ·
+  [*ישר! לביטחון העצמאים והעסקים הקטנים*](https://yasharwitheisenkot.com/principles/self-employed-and-small-businesses/) ·
+  [*ישר! לסביבה*](https://yasharwitheisenkot.com/principles/environment-and-climate/) ·
+  [*ישר! לשלטון המקומי*](https://yasharwitheisenkot.com/principles/local-government/) ·
+  [*ישר! לנשים ושוויון מגדרי*](https://yasharwitheisenkot.com/principles/gender-equality/).
+  Every measure in all five is word for word in the position posts of its topic (6, 10, 10, 10 and
+  6 posts), compared mechanically in both directions; the introductions and diagnoses are new, and
+  the self-employed paper has none. The first and last are the programmes `lgbt-rights` and
+  `gender-equality` were granted on. The other three are topics rev 258 held back as unpublished:
+  what each says is under `economic`, `security`, `religiosity`, `municipal-devolution`,
+  `kashrut-liberalization` and Environment. No axis moved and no tag changed. The youth paper,
+  whose `lastmod` (28.09 06:53 UTC) may postdate rev 171's read, was compared again: all six posts'
+  sentences are still in it.
 - **Read, and scored nothing (rev 258):** the thirteenth and fourteenth principles papers,
   [*ישר! לדיור*](https://yasharwitheisenkot.com/principles/housing/) (published 2026-10-08 08:19
   UTC) and [*ישר! לתרבות ישראלית*](https://yasharwitheisenkot.com/principles/culture/) (08:23 UTC).
@@ -14753,7 +14864,8 @@ bought nothing here, because the defect was never in the pixels being measured.
   matches this page: nothing environmental has turned up in ישר's thirteen documents or ישראל ביתנו's
   platform. *(Corrected by revision 160: "no mention at all" is wrong for ישר. Its agriculture paper names
   climate change as a threat to food supply and funds climate-resilience research and agrivoltaics, and its
-  housing page promises tools for climate adaptation. Still no environment programme.)* **It does not cancel
+  housing page promises tools for climate adaptation. Still no environment programme — until
+  13.10.26, see the revision 272 paragraph below.)* **It does not cancel
   ישר's questionnaire answers** (closing בז"ן with a budget, the waste law):
   a party can answer a questionnaire without a plan, and the two are recorded separately. Placements, which
   are candidate tier and move nothing: ישר's environment candidate גידי זאדא at **#39**; ביחד's יוראי להב
@@ -14772,6 +14884,14 @@ bought nothing here, because the defect was never in the pixels being measured.
   answering. The posters of ten party leaders beside animals are the groups' campaign, not the parties'. Animal
   welfare belongs to this item: המפלגה הכלכלית's programme already carries a live-export ban and cage-free hens.
   **Not minted, for the same reason as the rest of the item.**
+  **A FOURTH PROGRAMME, 2026-10-13 (revision 272).** ישר published
+  [*ישר! לסביבה*](https://yasharwitheisenkot.com/principles/environment-and-climate/) on 13.10.26: a
+  climate law with targets above the present ones, higher renewable targets, a framework waste law,
+  the disposables tax restored, a contaminated-land law, a new Dead Sea concession tender and Haifa
+  Bay cleared under the existing decision. It carries no number at all (no year, percentage or
+  budget), which the other three programmes do; its contents are listed under that row's
+  Environment item. **The sweep's status is now four rows with programmes** (`unaligned` +1,
+  `opposition` −2 and two `opposition` +1), **the rest as before. Still not minted.**
 - **No gun-control tag exists although `gun-rights` does — FIFTH item in the sweep queue (2026-09-08,
   revision 62), and the only queued gap that is proven real by the vocabulary itself.** הדמוקרטים's
   internal-security paper commits to *"נגביר את הפיקוח על רשיונות נשק ומנגנוני זיהוי מסוכנות בקרב
@@ -15456,3 +15576,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-12 | revision 269 — **N12's report of quotes from יונתן אוריך's police interrogation in the Qatar case (אמנון אברמוביץ', 12.10.26 20:06; link supplied by the repo owner, fetched). No axis moved, no tag changed, `seed.sql` unchanged.** **הליכוד:** entered in place beside the leak from his phone (revs 267, 268). The interrogator puts to him requests he made of ChatGPT in September 2024 for a "תוכנית אסטרטגית לשינוי תודעה עולמית" about Qatar and for messages to Israelis, Jewish communities and American opinion leaders "שיוכלו לסייע להלבין את קטאר"; he answers that he does not remember what he asked and did nothing for Qatar in Israel. A suspicion put in an interrogation and a denial, about an adviser's conduct; no position and no tag. The page carries no response to the publication. **ישר:** איזנקוט calls him a "סוכן קטארי" still working in the Prime Minister's office and says a fit prime minister would dismiss him that evening — כהן's demand of rev 152, from the leader; an attack, not a policy. **ביחד:** בנט calls it "פרשת הבגידה החמורה ביותר בתולדות המדינה" and Qatar "האויב המסוכן ביותר שלנו" — the row's Qatar line (revs 49, 123) restated, no new measure. Both replies are as N12 quotes them and were not read at their source. |
 | 2026-10-13 | revision 270 — **N12 on the change bloc's two quarrels (דפנה ליאל, 13.10.26 07:22; fetched) and הארץ's poll column (אמנון הררי, 13.10.26; body supplied by the repo owner, two charts viewed). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** בנט's remark of 11.10 that נתניהו could be a minister, which rev 268 had from ynet, is given in N12's wording with the clarification in full — "לא נשב איתו בשום קונסטלציה" — and N12 has him denying any contact or coordination with ליברמן over the premiership; the refusal is the last word and no tag records it. **ישר:** איזנקוט, "כל מי שהיה בתפקיד ב-7 באוקטובר לא ראוי לשמש בתפקידי פיקוד והנהגה, כולל שר אוצר" — rev 99's cabinet-wide disqualification, broader than `anti-indicted-pm`, which is refused a fourth time. **ישראל ביתנו** and **הדמוקרטים:** ליברמן ("יתהפך העולם ולא נשב עם נתניהו") and גולן ("לא כשר אוצר, לא כשר המים ולא כשר בלי תיק") refuse to sit with him in any post; both rows hold `anti-indicted-pm`, a law about the prime minister, and the refusal goes past it with no tag to name it. **כחול לבן:** גנץ's forecast in his words and the party's exchange with ליברמן. **עמך ישראל** and **המילואימניקים והכלכלית:** the column's poll figures (polls are not a field) and, for עמך ישראל, its theory that נתניהו's attacks were meant to strengthen וינטר — the opposite of סגל's in rev 268, and like it not a statement by the party; `bibi` stands. Every quotation is the outlet's relay; no statement was read at its source. |
 | 2026-10-13 | revision 271 — **two N12 surveys of the lists (education, said to be checked by the association 121; and the economy chapter of its podcast project), ynet's report of אשר on הרב לנדו with פינק's post on it, and חדאד's post (links supplied by the repo owner; ynet's report found from the image in פינק's post). No axis moved, no tag changed, `seed.sql` unchanged.** **יהדות התורה:** the nearest call. אשר (#1) says "עם כל מה שאומר לנדו אני מזדהה", which on its face is the third limb of the `non-zionist` trigger (a named MK declining to disown the rabbi's words on the state). Held off: the two-sentence report does not say which words he was asked about and his answer is about the religious-Zionist public, he disputes the political reading, and blanket deference to the rabbi is what `rabbinic-authority-led` already records; the trigger is narrowed to the session itself. **עוצמה יהודית:** the first economic line cited for the row, the motto "כלכלה חופשית עם חמלה" with a tax on the top deciles, in one sentence of an outlet's summary; `economic` 0 stands and the document is the trigger. **ישר:** מרידור does not rule out raising taxes ("אני מקווה שלא נצטרך"); `tax-cutting` rests on the papers and stands. **הדמוקרטים:** a targeted tax on bank and large-corporation profits, the first tax named for the row, as paraphrase; `progressive-taxation` not opened. **הרשימה המשותפת:** VAT to 10%, a higher minimum wage and interest-free first mortgages; a paraphrased answer on schools does not open `municipal-devolution`. The other rows' education and economy lines restate held text and are entered as read. **עמך ישראל:** חדאד, "למזלנו הם סירבו" of the 1947 offer — `no-palestinian-state`, held. Both surveys are paraphrase with no answer quoted; the lists' answers to 121 and the per-list data behind N12's matching tool were not read. A TheMarker follow-up on N12 journalists criticising סגל was read and not entered: no party acts in it. |
+| 2026-10-13 | revision 272 — **ישר: five principles papers published on 13.10 (LGBT, gender equality, the self-employed and small businesses, environment, local government; links supplied by the repo owner, fetched with a browser-shaped `curl`). No axis moved, no tag changed, `seed.sql` unchanged.** The corpus is nineteen papers and twenty-one documents. Every measure in all five is word for word in the position posts of its topic, compared mechanically in both directions; the introductions are new. **Two of the five restore dead links:** the LGBT and gender-equality programmes, whose topic pages went offline (revision 258), are public again as papers, and `lgbt-rights` and `gender-equality` are now cited to them. The LGBT introduction adds that the party has signed the "חוקי שגיא לשוויון". The gender paper confirms that the pay-gap line names no employer transparency, an item this page had listed; the tag does not hang on it. **Three of the five are topics revision 258 held back as written but unpublished**, so that trigger fired for them and each was read against the row. **Local government:** the row's fullest text on religion — each authority shapes its own Shabbat, with commerce and transport named for the first time and a special-majority council vote required; religious services move from the religious councils to the municipalities and city rabbis are chosen by the council. That is devolution of an establishment that stays public, so `religiosity` −2 stands, and `municipal-devolution` now rests on a paper of its own. **Environment:** the row's first environment programme (a climate law, a waste law, the disposables tax, Haifa Bay, the Dead Sea), with no year, percentage or budget anywhere in it; no environment tag exists, and the row becomes the fourth with a programme in the queued sweep. It also holds the only sentence in the nineteen papers that names Judea and Samaria — enforcement against illegal waste burning — which moves no `security` trigger and is entered so it is not mistaken for one. **Self-employed:** a contribution-funded safety net, lighter rules for small firms and three examinations out of ten items; `economic` +1 holds, and `deregulation` and `welfare-state` are refused on the grounds already used for ביחד. Seven of the ten unpublished topics (74 posts) remain unpublished, the foreign-affairs one among them, and stay a lead. The youth paper, modified after it was published, was compared again and is unchanged. Documentation only: nothing to verify on a database, and the suite was not run. |
