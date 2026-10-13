@@ -3933,7 +3933,9 @@ readable** — it shows what a party declined to say while others answered.
 - **⚠ Open consistency question — what `scholar-exemption-retained` means.** The tag sits on כחול
   לבן, המילואימניקים והכלכלית and המפלגה הכלכלית beside `universal-conscription`, and whether it
   means "a narrow scholar exemption survives" or "the haredi exemption is retained" decides three
-  rows at once. Flagged, not settled unilaterally.
+  rows at once. Flagged, not settled unilaterally. *(Rev 273: a fourth row, עמך ישראל, takes the
+  tag on its service plan's capped Torah track, on the first reading, and loses
+  `anti-conscription-exemption` in the same pass.)*
 - **עמך ישראל — `reservist-focused` refused a second time.** *"לא נהיה שכפ״ץ של גולדקנופף אלא של
   משרתי המילואים"* is the rhetorical form of the position rev 41 refused for having no benefit,
   number or instrument attached.
@@ -10678,8 +10680,13 @@ no lineage link to draw either.
 site and platform, [אבני היסוד](https://amchaisrael.co.il/foundations) — eight principles, ten first
 steps and four commitments on execution, with no number in it. Work plans are promised (*"תוכניות
 עבודה מפורטות ייגזרו מן המצע ויפורסמו בנפרד, לרבות עלויות, סדרי עדיפות, לוחות זמנים ומדדי הצלחה"*)
-and three are named, none published: decision and emigration, the status of those who serve, and
-trust in the justice system. A second document followed between 05.10 and 08.10 (rev 258):
+and three are named: decision and emigration, the status of those who serve, and trust in the
+justice system. The second went up on 11.10 as four short videos,
+[תכנית המשרתים](https://amchaisrael.co.il/serving-plan), with the full text promised (*"התכנית
+המלאה תעלה בקרוב"*), and it moved a tag (rev 273, under Service); the other two are unpublished. A
+further document, not one of the three, is the ten-step
+[תכנית ההסברה](https://amchaisrael.co.il/hasbara) (rev 273, under `hasbara-focused`), which holds
+the site's first shekel figure. A second document followed between 05.10 and 08.10 (rev 258):
 [תכנית 18 הנקודות לביטחון ישראל](https://amchaisrael.co.il/security), eighteen numbered points under
 *אמונה*, *הכרעה* and *ריבונות*, with no cost, timetable or measure of success, so it is not one of
 the three promised plans and it meets none of the triggers written against them. Much of the row
@@ -10713,6 +10720,12 @@ national plan for energy, water, transport, communications and ports, state inve
 technologies, and *"כוח עיבוד ריבוני לאומי"*. Trust-busting with targeted state spending is the +1
 band as written. Nothing is privatised and no budget is cut, so it is not +2. **It is the thinnest
 +1 on the page**: four sentences and one first step, where the band's other holders have papers.
+The two plans of rev 273 add spending and one new tax and cost none of it: a pay rise for
+conscripts and junior career soldiers *"בדגש על לוחמים"*, paid for *"על חשבון ההטבות שעד היום היו
+הולכות לאלו שלא משרתים"* and by a *"מס ביטחון"* on those who do not serve; and, in the hasbara
+plan, a ₪250M film fund with tax breaks for foreign productions, the only shekel figure on the
+party's site. State benefits ranked by service *"בלי קשר למצב הסוציו-אקונומי"* is a
+welfare doctrine, and it sits inside the band.
 **Trigger:** the costed work plans.
 
 **`security` +3 — sovereignty over Judea and Samaria.** It rests on the party's own answer to ynet's
@@ -10776,7 +10789,12 @@ correction. וינטר, at the press conference: *"אנחנו מתכוונים �
   ובכבוד"*. *"בצורה משמעותית"* is not everyone, and *"בהסכמה"* sits badly beside the press
   conference's *"בלי פשרות ובלי דחיות"*. The score holds on the platform's *"כל אזרח במדינת ישראל
   ישרת את המדינה"*, a Basic Law, which this point does not withdraw; the strain is recorded on
-  `anti-conscription-exemption` under Service.
+  `anti-conscription-exemption` under Service, and that tag came off in rev 273.
+- **The plan on those who serve keeps a place for Torah study, and the score holds** (rev 273).
+  *"לימוד תורה יוכר כערך יסוד במדינת ישראל, ויהיו לומדים, אבל המספר שלהם יהיה קצוב. רוב החרדים בגיל
+  גיוס ישרתו"*. Most, not all, with the rest in a recognised Torah track (quoted under Service).
+  The −2 rests on `universal-conscription`, which stays: כחול לבן sits at −2 with the same pair of
+  tags, a duty on everyone beside a capped scholars' track.
 
 #### Bloc and sector
 
@@ -10991,11 +11009,19 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
 
 **Service**
 
-- **`universal-conscription`** (tag and family) and **`anti-conscription-exemption`** (rev 41) — the
-  press-conference lines under `religiosity`. *"חוק ששם סוף להשתמטות"* is the second tag's content
-  verbatim, and *"לא עוד מאותו דבר. מה שהיה לא יהיה"* removes any reading of it as a negotiating
-  position.
-  - **The mechanism is uncertain.** Rev 41 called a law passed before the swearing-in, explicitly
+- **`universal-conscription`** (tag and family, rev 41) — the press-conference lines under
+  `religiosity`, the platform's Basic Law, and the plan (rev 273): *"כל אזרח בגיל גיוס יהיה חייב
+  להסדיר את המעמד שלו מול המדינה באחד משלושה מסלולים"*. Until rev 273 it was paired with
+  `anti-conscription-exemption`, on *"חוק ששם סוף להשתמטות"*; that tag is now under Considered and
+  refused, and its place is taken by the next bullet.
+  - **The mechanism, as the plan has it (rev 273):** *"אנחנו נדרוש חקיקה של חוק-יסוד המשרתים
+    כמסגרת אחת מחייבת"*, the Defence Ministry and its minister given *"אחריות מלאה"* for carrying
+    it out, and *"כל הדבר הזה יעוגן בהסכם הקואליציוני ובתקציב המדינה. ברזל"*. It is *"הדרישה היחידה
+    שלנו"* the morning after the election. A clause in the coalition agreement is what the press
+    conference ruled out (*"לא הבטחה, לא סעיף בהסכם קואליציוני"*), and the plan does not say the
+    law passes before the swearing-in. So the fourth mechanism rev 41 recorded is no longer the
+    party's stated one; what replaces it is a demand, a coalition clause and a budget line.
+  - **How it got there.** Rev 41 called a law passed before the swearing-in, explicitly
     not a coalition-agreement clause, the strongest form any holder states — a fourth mechanism
     beside the three enforcement models rev 22 catalogued (ביחד sanctions-only, ישר criminal
     penalty, כחול לבן coercion plus fines). The party restated the precondition in writing on 16.09
@@ -11009,11 +11035,33 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
     את מערך המיון למצטיינים, לרבות הפרמטרים לבחינה אובייקטיבית של מכסות לומדי התורה"*, which answers
     rev 147's question about what law he means. The fourth principle: *"תישמר האפשרות למסלולים
     ייחודיים למצוינות תורנית, אך האחריות המשותפת והשירות תהיה הכלל ולא החריג"*. The pre-swearing-in
-    condition is not in the document. **The second tag is now the strained one**: a quota of Torah
-    learners is what ישר was denied it for. The precedents cut both ways: המילואימניקים והכלכלית
-    holds it together with `scholar-exemption-retained` in `seed.sql`.
+    condition is not in the document. Rev 246 called `anti-conscription-exemption` the strained
+    tag on this: a quota of Torah learners is what ישר was denied it for.
   - Rev 238 adds that every haredi yeshiva is to regularise itself with the Defence Ministry under
-    real supervision, with *"יחידות כשרות"* and *"עשרות פלוגות"* for haredim.
+    real supervision, with *"יחידות כשרות"* and *"עשרות פלוגות"* for haredim. The plan gives that
+    its model (rev 273): *"מנגנון ההכרה, הפיקוח והאכיפה על הישיבות הגבוהות הציוניות"*, enlarged and
+    fitted to other populations, with the Defence Ministry setting the criteria and running the
+    supervision.
+- **`scholar-exemption-retained`** (rev 273, in place of `anti-conscription-exemption`) — the
+  party's own plan, [תכנית המשרתים](https://amchaisrael.co.il/serving-plan), four videos on its
+  site, each ending *"עמך ישראל, בראשות עופר וינטר"*. The three tracks by which a citizen settles
+  his status: *"שירות בצה"ל, שירות אזרחי-לאומי או במסגרת תורנית. אבל לא כמו היום – שכונה, רק
+  במסגרות מוכרות ומפוקחות"*; on screen the third is *"מסגרת תורנית למצטיינים"*. Then: *"לימוד תורה
+  יוכר כערך יסוד במדינת ישראל, ויהיו לומדים, אבל המספר שלהם יהיה קצוב"*. A recognised institution
+  is one *"שמאפשר דחייה של שירות או מסלול לומדים מצטיינים"*, and the plan's second stated result is
+  *"הכרה מוסדית בעולם התורה בכפוף לצורכי הביטחון"*.
+  - **Why this tag.** Rev 246 refused it because the platform did not say whether those inside the
+    quota serve. The plan answers: the Torah track stands beside military and civil service as a
+    third way of settling one's status, not as a stage before either. That is כחול לבן's *"רק
+    מצטיינים יקבלו 'פטור'"* in other words, and not ישר's one-year deferral with basic training,
+    for which the tag was declined (revs 21, 86). The plan was the trigger written for exactly
+    this (rev 246), after three signals that leaned the same way (revs 246, 257, 258; Open
+    questions).
+  - **What is not known.** The size of the cap, who sets it (the platform's *"פרמטרים לבחינה
+    אובייקטיבית של מכסות לומדי התורה"*), and whether a learner ever owes service later. The videos
+    do not use the word *פטור*. **Trigger for removal:** the full plan attaching service to the
+    Torah track — basic training, a fixed term, or service after study. That would put the row
+    where ישר is, with neither tag.
 - **`sanctions-on-non-servers`** (rev 239, owner's decision) — the tag's test is a named penalty: a
   fine, a withdrawn entitlement, a criminal charge. Rev 41 refused it because the programme named
   only rewards, graduated by contribution. N12 (rev 238): *"מי שלא משרת את המדינה, לא יהיה זכאי
@@ -11021,11 +11069,18 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   חופשי, פשוט חסום במדינת ישראל. הוא לא יכול לטוס… יש עליו סנקציות כמו שקיים היום"*. The bar on
   flying is one he says exists today, so what he commits to is enforcing it and withholding
   benefits. The platform gives the tag nothing; its service chapter is rewards only, *"מי שייתן יותר
-  – יקבל הרבה יותר"*.
+  – יקבל הרבה יותר"*. **The plan names the penalties in the party's own voice (rev 273)**, so the
+  tag no longer rests on an interview: *"מס ביטחון… זה מס שיוטל על מי שלא הסדיר את מעמדו או מסרב
+  לשרת"*; whoever does not settle his status *"יהיה בתחתית סדר העדיפויות, בלי קשר למצב
+  הסוציו-אקונומי שלו. יהיה חינוך, סל בריאות בסיסי, זכות הצבעה, רישיון נהיגה, וזהו"*; and for
+  institutions, *"בלי הכרה לא יהיו תקציבים"*. A withdrawn entitlement is one of the tag's three
+  named kinds, and a tax levied for not serving is a fine in all but name. The driving licence stays, which המילואימניקים והכלכלית would revoke;
+  the tax has no rate.
 - **`arab-civil-service`** (rev 41) — the tag marks a national-service track for Arab citizens, and
   this is the correct match on the name rev 36 flagged as inviting the wrong one. חדאד: *"תהיה פה
   שותפות בנטל - לא משנה אם מדובר על יהודים או ערבים, חילונים, דתיים או חרדים"*. The platform:
-  *"שירות לאומי משמעותי למי שאינו יכול לשרת בצה״ל"*, *"כל אזרח"*.
+  *"שירות לאומי משמעותי למי שאינו יכול לשרת בצה״ל"*, *"כל אזרח"*. The plan (rev 273): *"כל אזרח
+  בגיל גיוס"*, with *"שירות אזרחי-לאומי"* as the second track; it does not name Arab citizens.
 
 **Institutions and hasbara**
 
@@ -11048,6 +11103,19 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   לזירה הזו כזירת לחימה פעילה"*, naming Qatar, Turkey and Russia (point 13); חדאד, from London the
   next day, calls it *"החזית השמינית"*
   ([post](https://x.com/YosephHaddad/status/2108555262814507295), 09.10.26).
+  **It now has a plan of its own (rev 273)**, [תכנית ההסברה](https://amchaisrael.co.il/hasbara),
+  *"עשרה צעדים למהפכה בהסברה"*, to be led by חדאד, *"מספר 2 במפלגה"*: one national authority for
+  hasbara, public diplomacy and influence (*"שרשרת אחריות אחת וכתובת ממשלתית אחת"*); a 24-hour
+  international channel in Arabic, then Persian and Turkish, *"הניגוד לאל-ג'זירה"*; a national
+  centre monitoring disinformation and influence operations, *"ה-8200 של מלחמת התודעה"*; a
+  messaging war room; a permanent national press office briefing foreign media; a trained reserve
+  of civilian spokespeople, with *"לימודי דיבייט, הסברה ודיפלומטיה ציבורית"* in schools; a standing
+  network of partners abroad; a state legal arm that sues over boycotts, defamation and the
+  pursuit of soldiers abroad; a national centre for the memory of 7 October; and a ₪250M *"Israel
+  on Screen"* fund with tax incentives for foreign productions. The body is an authority here, a
+  ministry in the 01.10 post and a *"מערך"* in the platform; step 01's wording is the post's. Only
+  step 10 carries a figure. Ten institutions against the few clauses the tag was founded on: it is
+  the tag's fullest text on the page.
 
 **Economy and local government** (rev 246, from the platform)
 
@@ -11095,16 +11163,27 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   economic position. נעם kept it on a teacher's salary, which is a figure; הציונות הדתית lost it on
   an economic paper, which is a position. A chapter on markets, monopolies, tax and regulation is a
   position.
+- **`anti-conscription-exemption`** — held from rev 41 to rev 273 on the press conference's *"חוק
+  ששם סוף להשתמטות"*, and taken off when the party's own plan kept a capped Torah track and
+  institutions recognised as allowing *"דחייה של שירות או מסלול לומדים מצטיינים"* (quoted under
+  `scholar-exemption-retained`). ישר was refused this tag for a 3% one-year deferral whose holders
+  still do basic training (rev 86); a track that stands in place of service is more than that. The
+  plan does end the present arrangement — *"לא כמו היום – שכונה"*, a tax on whoever stays outside
+  it — and the tag does not mark that; `sanctions-on-non-servers` does. המילואימניקים והכלכלית
+  still holds both tags, the inconsistency rev 98 recorded on that row, and this row no longer
+  adds a second case of it.
 - **`service-conditioned-citizenship`** (revs 41, 239) — וינטר does say *"מי שישרת, יקבל. מי שיתרום
   יותר, יקבל הרבה יותר. לוחמים ומשרתי מילואים יהיו בראש סדר העדיפויות הלאומי"*. But the tag's
   founding case is Hendel's **franchise** clause (rev 20 recorded that the tag "rests on" it even
   after בית ציוני's own platform declined to restate it), and a graduated benefits ladder is not a
-  claim about citizenship.
+  claim about citizenship. The plan rules the founding case out in so many words (rev 273): the
+  citizen at the bottom of the ladder keeps *"זכות הצבעה"*.
 - **`reservist-focused`** — the rev 13 standard is a costed benefits package. *"בראש סדר העדיפויות
   הלאומי"* is a priority claim with no benefit, number or instrument (rev 41); doubled combat pay is
   one number with no package (rev 239); the platform has rewards by kind of service, tax benefits
   for employers and land, with no figure (rev 246); refused again on the ynet answer of 16.09 (rev
-  86, under ביחד).
+  86, under ביחד); and the plan's *"נעלה משמעותית את שכר המשרתים בסדיר ומשרתי הקבע הזוטרים"* names
+  a funding source and no amount (rev 273). The full plan is the trigger.
 - **`jewish-arab-partnership`** (revs 41, 229) — partnership as this page uses it is shared-society
   equality, and the party commits to *"להעצים את הזהות הערבית-ישראלית במקום הפלסטינית בכל מוסדות
   החינוך הערביים-ישראליים"*. Replacing one national identity with another in the state's Arab
@@ -11113,14 +11192,13 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
 - **`arab-representation`**, **`focuses-on-arab-israeli-civil-issues`** (rev 41, on rev 36's
   distinction) — both record what a party **is**; a right-wing Zionist list running an Arab-society
   campaign through an Arab deputy chairman is still not an Arab party.
-- **`scholar-exemption-retained`** (rev 246) — the platform does not say whether those inside the
-  quota serve. ישר was refused the tag because its selected students still do basic training (revs
-  21 and 86).
 - **`core-curriculum`** (rev 246) — *"נשאף להעניק לכל ילד בישראל לימודי ליבה איכותיים"* is an aim,
   and the funding condition in the same sentence is on something else: *"לא נתקצב בתי ספר שיועברו
   בהם ערכים ו/או תוכניות אנטי ציוניות"*. The tag's test is funding tied to teaching the core.
   **Trigger:** that tie. בנט conditions school funding on content too, and no tag marks the clause
-  (rev 247, under ישראל ביתנו).
+  (rev 247, under ישראל ביתנו). The plan's funding condition is a third kind (rev 273): recognition
+  by the Defence Ministry for service purposes, *"בלי הכרה לא יהיו תקציבים"*, with nothing about
+  what is taught.
 - **`anti-settler-violence`**, and not its opposite (rev 238) — *"יש פשיעה חמורה וצריך לטפל בה
   כפשיעה. אני לא קורא לזה טרור יהודי"*, and *"צריך לטפל בהם בחומרה"*. A goal with no measure (rev
   186's test), and he does not defend the acts.
@@ -11150,15 +11228,21 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   (rev 247, under ישראל ביתנו); נתניהו to press him to withdraw and name him to voters (rev 244,
   under הליכוד). Polls are not a field; at the launch they disagreed (Walla/לזר 6 seats, i24 8 with
   הליכוד −5, a same-day הארץ headline *below* threshold), and rev 76's column reports 4.
-- **The plan on the status of those who serve** is the trigger for both `scholar-exemption-retained`
-  and `anti-conscription-exemption` (rev 246); whether the service law is still a precondition of
-  the swearing-in is recorded, not resolved (rev 147): restated in writing on 16.09 — *"חקיקת חוק זה
+- **The plan on the status of those who serve** was the trigger for both
+  `scholar-exemption-retained` and `anti-conscription-exemption` (rev 246), and **it was met in rev
+  273**: the plan went up as four videos and the two tags changed places (Service; Considered and
+  refused). **What is still open is the full text**, promised on the page: the size of the cap,
+  whether a learner owes service later (the removal trigger on `scholar-exemption-retained`), the
+  rate of the security tax, and any figure for the pay rise (`reservist-focused`). Whether the
+  service law is still a precondition of the swearing-in is answered by the plan as far as it
+  goes, a coalition clause and a budget line (Service), after this history (rev 147): restated in
+  writing on 16.09 — *"חקיקת חוק זה
   לפני השבעת הממשלה מהווה תנאי סף"*
   ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14898966), rev 86) — and as a
   condition on joining on 03.10 (rev 238, the sweep item below), where the law is one on *"הסדרת
   מעמד המשרתים"*; absent from the platform (rev 246). The axis and bloc triggers are under those
   headings.
-  - **Nearer an answer, and not acted on** (rev 257): N12's conscription survey paraphrases him as
+  - **The first signal before the plan** (rev 257): N12's conscription survey paraphrases him as
     saying that whoever is defined as *"תורתו אומנותו"* should count as the equal of someone doing
     national service
     ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-4a2f820efe911a1027.htm),
@@ -11167,14 +11251,13 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
     no quotation, dated only "last month".
   - **A third signal the same way** (rev 258): the security plan's *"בצורה משמעותית… בשום שכל,
     בהסכמה ובכבוד"* (point 16, quoted under `religiosity`). It is a security plan and not the plan
-    on those who serve, so the trigger is not met and both tags are left; but the platform's quota,
-    N12's paraphrase and now this all lean one way, and nothing since the press conference of
-    02.09 leans the other. `sanctions-on-non-servers` gets nothing from the plan either.
+    on those who serve, so the trigger was not met then; the platform's quota, N12's paraphrase and
+    this all leaned one way, and nothing since the press conference of 02.09 leaned the other.
   - **A word the other way, with no content** (rev 259): in the full N12 interview he demands *"גיוס
     אמיתי"*, and the party's statement counts *"לא שולבו חרדים בצה״ל"* among the government's
     failures (both under Bloc); in the same interview he declines to rule out the haredi parties and
-    says *"אני מכבד את לומדי התורה"*. A demand with no terms beside a courtesy. The trigger is the
-    plan, and both tags are left.
+    says *"אני מכבד את לומדי התורה"*. A demand with no terms beside a courtesy. The trigger was the
+    plan (rev 273).
 - **The −2 band text** (rev 41). This is a fourth row satisfying a fourth different subset of the
   band — revisions 20, 21 and 22 each recorded a row clearing it on a different combination — and
   the narrowest yet, one criterion of three. It is the strongest argument that the band should be
@@ -11507,7 +11590,10 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   the platform was found. On 2026-10-10 (rev 258) the sitemap lists 35 URLs, `/security` among
   them, all stamped 2026-10-08 21:12 UTC; the page was not in the list of 05.10, so it went up
   between the two builds. It carries no date of its own, the home page links it, and no press
-  report of the plan was found.
+  report of the plan was found. On 2026-10-13 (rev 273) the sitemap lists 41 URLs, `/hasbara` and
+  `/serving-plan` among them, all stamped 13:00 UTC that day; the home page links both and neither
+  carries a date. The four plan videos are files on the site's storage, each stamped 11.10.26 12:40
+  GMT, which is the earliest date the plan can be given.
 - **A domain written off as blocked costs coverage, not effort** (rev 41).
   `services/backend/CLAUDE.md` recorded `davar1.co.il` as returning **403**; it returned **200** on
   the first try with a browser User-Agent plus `Accept`, `Accept-Language` and `Referer` — the same
@@ -11530,12 +11616,22 @@ it, was not checked. Its platform is not this row's either way: a candidate is n
   clips were transcribed by machine with ivrit.ai's Hebrew Whisper model; פייגלין's and חדאד's two
   were checked against their burned-in captions in sampled frames, and the 2014 clip שפר quotes has
   none. The two clips posted by the journalist carry his Hebrew captions over Arabic and English
-  audio; the captions were read from frames and the originals were not heard.
+  audio; the captions were read from frames and the originals were not heard. Rev 273: the four
+  plan videos (60 to 95 seconds each) were transcribed by machine and every burned-in caption was
+  then read from frames at 1.5 a second; the quotations follow the captions, which corrected one
+  phrase the model garbled (*"כערך יסוד"*). The track names and the plan's three results are
+  on-screen text, read from frames. The first video's presenter is named on screen, אביב עזרא
+  (#9); the other presenters are not named and are not guessed at.
 
 #### Sources
 
 Most links are given above, where each source is used; these are the rest.
 
+- **The party's two plans of October** (rev 273; links supplied by the repo owner, `curl`):
+  [תכנית המשרתים](https://amchaisrael.co.il/serving-plan), four videos with no written text beyond
+  their titles, files stamped 11.10.26, quoted under Service; and
+  [תכנית ההסברה](https://amchaisrael.co.il/hasbara), ten written steps, undated, listed under
+  `hasbara-focused`. How the videos were read is under "Reading this party's sources".
 - **The launch** (rev 32): same-day reporting; the absences recorded then were verified by keyword
   sweep across five independently fetched sources.
 - **The 2026-09-02 press conference** (rev 41), four independently fetched outlets: [כאן
@@ -15577,3 +15673,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-13 | revision 270 — **N12 on the change bloc's two quarrels (דפנה ליאל, 13.10.26 07:22; fetched) and הארץ's poll column (אמנון הררי, 13.10.26; body supplied by the repo owner, two charts viewed). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** בנט's remark of 11.10 that נתניהו could be a minister, which rev 268 had from ynet, is given in N12's wording with the clarification in full — "לא נשב איתו בשום קונסטלציה" — and N12 has him denying any contact or coordination with ליברמן over the premiership; the refusal is the last word and no tag records it. **ישר:** איזנקוט, "כל מי שהיה בתפקיד ב-7 באוקטובר לא ראוי לשמש בתפקידי פיקוד והנהגה, כולל שר אוצר" — rev 99's cabinet-wide disqualification, broader than `anti-indicted-pm`, which is refused a fourth time. **ישראל ביתנו** and **הדמוקרטים:** ליברמן ("יתהפך העולם ולא נשב עם נתניהו") and גולן ("לא כשר אוצר, לא כשר המים ולא כשר בלי תיק") refuse to sit with him in any post; both rows hold `anti-indicted-pm`, a law about the prime minister, and the refusal goes past it with no tag to name it. **כחול לבן:** גנץ's forecast in his words and the party's exchange with ליברמן. **עמך ישראל** and **המילואימניקים והכלכלית:** the column's poll figures (polls are not a field) and, for עמך ישראל, its theory that נתניהו's attacks were meant to strengthen וינטר — the opposite of סגל's in rev 268, and like it not a statement by the party; `bibi` stands. Every quotation is the outlet's relay; no statement was read at its source. |
 | 2026-10-13 | revision 271 — **two N12 surveys of the lists (education, said to be checked by the association 121; and the economy chapter of its podcast project), ynet's report of אשר on הרב לנדו with פינק's post on it, and חדאד's post (links supplied by the repo owner; ynet's report found from the image in פינק's post). No axis moved, no tag changed, `seed.sql` unchanged.** **יהדות התורה:** the nearest call. אשר (#1) says "עם כל מה שאומר לנדו אני מזדהה", which on its face is the third limb of the `non-zionist` trigger (a named MK declining to disown the rabbi's words on the state). Held off: the two-sentence report does not say which words he was asked about and his answer is about the religious-Zionist public, he disputes the political reading, and blanket deference to the rabbi is what `rabbinic-authority-led` already records; the trigger is narrowed to the session itself. **עוצמה יהודית:** the first economic line cited for the row, the motto "כלכלה חופשית עם חמלה" with a tax on the top deciles, in one sentence of an outlet's summary; `economic` 0 stands and the document is the trigger. **ישר:** מרידור does not rule out raising taxes ("אני מקווה שלא נצטרך"); `tax-cutting` rests on the papers and stands. **הדמוקרטים:** a targeted tax on bank and large-corporation profits, the first tax named for the row, as paraphrase; `progressive-taxation` not opened. **הרשימה המשותפת:** VAT to 10%, a higher minimum wage and interest-free first mortgages; a paraphrased answer on schools does not open `municipal-devolution`. The other rows' education and economy lines restate held text and are entered as read. **עמך ישראל:** חדאד, "למזלנו הם סירבו" of the 1947 offer — `no-palestinian-state`, held. Both surveys are paraphrase with no answer quoted; the lists' answers to 121 and the per-list data behind N12's matching tool were not read. A TheMarker follow-up on N12 journalists criticising סגל was read and not entered: no party acts in it. |
 | 2026-10-13 | revision 272 — **ישר: five principles papers published on 13.10 (LGBT, gender equality, the self-employed and small businesses, environment, local government; links supplied by the repo owner, fetched with a browser-shaped `curl`). No axis moved, no tag changed, `seed.sql` unchanged.** The corpus is nineteen papers and twenty-one documents. Every measure in all five is word for word in the position posts of its topic, compared mechanically in both directions; the introductions are new. **Two of the five restore dead links:** the LGBT and gender-equality programmes, whose topic pages went offline (revision 258), are public again as papers, and `lgbt-rights` and `gender-equality` are now cited to them. The LGBT introduction adds that the party has signed the "חוקי שגיא לשוויון". The gender paper confirms that the pay-gap line names no employer transparency, an item this page had listed; the tag does not hang on it. **Three of the five are topics revision 258 held back as written but unpublished**, so that trigger fired for them and each was read against the row. **Local government:** the row's fullest text on religion — each authority shapes its own Shabbat, with commerce and transport named for the first time and a special-majority council vote required; religious services move from the religious councils to the municipalities and city rabbis are chosen by the council. That is devolution of an establishment that stays public, so `religiosity` −2 stands, and `municipal-devolution` now rests on a paper of its own. **Environment:** the row's first environment programme (a climate law, a waste law, the disposables tax, Haifa Bay, the Dead Sea), with no year, percentage or budget anywhere in it; no environment tag exists, and the row becomes the fourth with a programme in the queued sweep. It also holds the only sentence in the nineteen papers that names Judea and Samaria — enforcement against illegal waste burning — which moves no `security` trigger and is entered so it is not mistaken for one. **Self-employed:** a contribution-funded safety net, lighter rules for small firms and three examinations out of ten items; `economic` +1 holds, and `deregulation` and `welfare-state` are refused on the grounds already used for ביחד. Seven of the ten unpublished topics (74 posts) remain unpublished, the foreign-affairs one among them, and stay a lead. The youth paper, modified after it was published, was compared again and is unchanged. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-13 | revision 273 — **עמך ישראל: the service plan and the hasbara plan (`amchaisrael.co.il/serving-plan` and `/hasbara`; links supplied by the repo owner, `curl`; four videos transcribed by machine and checked caption by caption). ONE TAG REPLACED: `anti-conscription-exemption` → `scholar-exemption-retained`. No axis moved; the row still has 20 tags.** **The service plan** is the document revision 246 named as the trigger for both tags. It is four short videos, stamped 11.10, with the full text promised. Every citizen of draft age must settle his status in one of three tracks — the army, civil-national service, or a recognised Torah framework "למצטיינים" — and "לימוד תורה יוכר כערך יסוד במדינת ישראל, ויהיו לומדים, אבל המספר שלהם יהיה קצוב. רוב החרדים בגיל גיוס ישרתו". A Torah track that stands beside service, capped, is the answer to the question revision 246 left open (do those inside the quota serve), and it is כחול לבן's shape and not ישר's one-year deferral with basic training; so `scholar-exemption-retained` is granted and `anti-conscription-exemption`, which ישר was refused for less, comes off. It is the fourth signal in one direction after the platform's quota, N12's paraphrase and the security plan. **Removal trigger:** the full plan attaching service to the Torah track. `universal-conscription` stays and `religiosity` −2 with it (כחול לבן holds the same pair at −2). **Also from the plan:** `sanctions-on-non-servers`, held since revision 239 on an interview, now rests on the party's own text — a "מס ביטחון" on whoever does not settle his status, and a place at the bottom of every state priority "בלי קשר למצב הסוציו-אקונומי", keeping only schooling, the basic health basket, the vote and a driving licence. Keeping the vote rules out the founding case of `service-conditioned-citizenship`, refused again. The pay rise for conscripts has a funding source and no amount, so `reservist-focused` is refused again. The mechanism changes: the plan is to be anchored "בהסכם הקואליציוני ובתקציב המדינה", which is the coalition clause the press conference of 02.09 ruled out, and it does not say the law passes before the swearing-in. **The hasbara plan** is ten written steps to be led by חדאד: a single national authority, a 24-hour channel in Arabic, a monitoring centre, a messaging war room, a press office, a civilian spokespeople's reserve with hasbara studies in schools, a partners' network, a legal arm, a 7 October memorial centre, and a ₪250M film fund — the first shekel figure in any of the party's documents. `hasbara-focused` is held and this is its fullest text on the page. **Verified** by seeding a database with the previous `seed.sql` and applying the new one on top (the row keeps 20 tags, loses the one and gains the other; axes and bloc unchanged), and the backend suite passes (271). |
