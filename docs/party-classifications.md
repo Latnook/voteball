@@ -1879,6 +1879,25 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   the appendices and that the judges will reach *"הגנה מן הצדק"* before the evidence; פלג, that the
   defendant wants the trial back on the agenda because the campaign of *"אני נרדף"* works on his
   voters. Analysts' readings. סגל's entry on the Likud and וינטר is under עמך ישראל.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy:* the party again published no
+  detailed economic platform — `family_evidence` `record`, as Basis says — and N12 reads its line
+  off נתניהו's figures (inflation at 1.5%, reserves of $240bn, the average wage up 6.2%: *"זה באמת
+  נס כלכלי"*). Against them it sets VAT at 18%, frozen income-tax brackets and frozen National
+  Insurance allowances, which are the expanding half `economic` +1 already cites, and coalition
+  funds of about ₪5bn in 2026, sevenfold in four years (N12's figure, not checked). Its commentator
+  says of the import reform that it was softened until *"היא לא באמת השפיעה על הריכוזיות"*, and that
+  ברקת's *"הסל של המדינה"* closed. `economic` +1 rests on the reform's scope and on whom it was
+  passed against, not on its effect on prices, so a commentator's verdict on the effect does not
+  reach it. *Education:* MK קטי שטרית (slot not checked), at 121's conference in July 2026, wants
+  caregivers' training widened, bureaucracy cut and the powers and budgets for supervising early
+  childhood moved to local authorities; N12 adds that נתניהו promised free education from birth to
+  three at the last election and that beyond ₪200m in 2023 nothing followed, and that the party gave
+  no position on differential budgeting or performance pay. One MK at a conference on one field;
+  `municipal-devolution` is not opened on it.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -3164,6 +3183,33 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   addressed to this row's leader (under כחול לבן). A הארץ poll column, relaying a report not read
   here, gives the campaign's main aim as drawing voters from המילואימניקים והכלכלית (under that
   row).
+- **Read, and scored nothing (rev 271): two N12 surveys of the lists, on education and on the
+  economy.** *Education*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm), דביר
+  ג'ברה and אור טרגר, 13.10.26 09:40): thirteen lists on early childhood (birth to three), on moving
+  powers to local authorities and schools, on differential budgeting and on teachers' pay by
+  performance — *"נבדקו על ידי עמותת 121"*, from platforms, from the lists' written answers to the
+  association in September 2026 and from what three MKs said at its conference in July 2026. It is
+  the outlet's paraphrase throughout, with no answer quoted, and the answers themselves were not
+  read. The same data sits behind N12's matching tool ([tool](https://political-match.n12.co.il/)):
+  its 49 statements are public, each list's answers are served only as quiz results, and they were
+  not collected. *The economy*
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm), אלעד
+  שמחיוף and קרן מרציאנו, 13.10.26 07:50, from the podcast אחד ביום; read through headless
+  Chromium): a commentator's chapter with a few lines on each of nine lists and nothing on כחול לבן,
+  עמך ישראל, המילואימניקים והכלכלית, ש"ס or יהדות התורה. What each says of a row is under that row.
+  **On this row.** Education: a national quality mark for frameworks for birth to three (licensing,
+  safety, minimum training), subsidy widened for working and serving parents, and certification
+  levels for caregivers; powers moved to local authorities and principals with a national core kept,
+  an hours basket replaced by a per-pupil shekel basket with differential additions, and optional
+  employment tracks for teachers built on quality and output and not only seniority.
+  `municipal-devolution` and `core-curriculum`, held; the rest is the +1 band's two halves inside
+  one field, in details this entry had not quoted. The economy: מרידור (#7), whom N12 puts at the
+  party's economic front — cut the deficit by closing unneeded ministries and by a fight against the
+  black economy, move money from what is not a growth engine to infrastructure and innovation, and,
+  on raising taxes, *"אני אבחן את המצב, אני מקווה שלא נצטרך"*. `tax-cutting` rests on the papers'
+  income-tax cut; a candidate who does not rule out a rise has not withdrawn it. **Trigger:** the
+  party saying taxes will rise, or dropping the cut.
 
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
@@ -4278,6 +4324,19 @@ Party-published unless marked. Statements and press are linked where they are us
   paraphrase, with no quotation, בנט denies outright that there are contacts or coordination between
   him and ליברמן about it. A denial of coordination, and no new answer on who leads; his pole of the
   rotation item (under ישר) stands as recorded.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *Education:* public frameworks for birth to
+  three, private day-care centres brought into the subsidy if they meet the ministry's standards,
+  training and retention grants for caregivers, and priority in subsidy for working and serving
+  parents; powers and large budgets moved to local authorities, differential per-pupil budgeting,
+  and teachers' pay raised on a model that rewards achievement. The education and early-childhood
+  plans already read (revs 22, 49); `municipal-devolution` and `workforce-integration`, held. *The
+  economy:* טרנר (#3): *"לא יכול להיות שמשפחה חילונית משלמת 6,000 שקל יותר לחודש ומשפחה חרדית מקבלת
+  4,000 שקל"*; בנט's *"מי שלא יעבוד - לא יקבל שקל מהמדינה"*, the line already recorded; and
+  efficiencies in the public sector through AI. Nothing new to the row.
 
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
@@ -4828,6 +4887,25 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   תלוי בדמוקרטים. לא כשר אוצר, לא כשר המים ולא כשר בלי תיק"*. The row holds `anti-indicted-pm`,
   which is a law about the prime minister; a refusal to sit with him in any post goes past it, and
   no tag names it.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy:* N12 calls the row's view
+  *"סוציאליסטית-קיינסיאנית"*: לזימי (#2) speaks of *"שיקום וצמיחה"* in place of cuts and of welfare
+  infrastructure on the model of the post-war welfare states, paid for, in N12's paraphrase, by
+  closing the war's fronts and by *"מיסוי ממוקד על רווחי בנקים ותאגידי ענק"*. `economic` −2 as it
+  stands. The paragraph there notes that the papers name no tax; this is the first one named for the
+  row, with no rate, from one candidate as an outlet paraphrases her. `progressive-taxation` has one
+  holder, carried from a predecessor row and not argued, and is not opened on a paraphrase.
+  **Trigger:** the party's own text naming the tax. *Education:* in its answer to 121 (September
+  2026) the party would set the day-care subsidy by earning capacity and a means test and not give
+  it to every child; more subsidised and supervised places and higher pay for their staff; budgeting
+  per pupil by background and powers moved to schools and principals, but no weakening of the
+  ministry and no pay by individual performance assessment. `municipal-devolution`, held. An
+  earning-capacity test is the shape `workforce-integration` names on other rows; this row does not
+  hold it and a paraphrased answer on one subsidy does not open it. פינק's (#5) post on אשר is under
+  יהדות התורה.
 
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
@@ -5242,6 +5320,14 @@ All first-party unless marked.
   ליאל, 13.10.26 07:22). ליברמן's answer is *"לא שופטים אדם בעת מצוקה"*, and the party's reply to
   it: *"אנחנו דווקא כן שופטים אדם שנחוש להגיע לכיסא גם תמורת מכירת המדינה"*. בנט's denial is under
   ביחד. A forecast and an exchange of insults; `unaligned` and `unity-government` as they were.
+- **Read, and scored nothing (rev 271):** N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר), from the party's answer to the association 121 in September 2026: birth to
+  three brought into the education system by stages, day care subsidised with priority for couples
+  who serve, less power for the ministry, a change in how teachers are employed with higher pay in
+  the first years and additions for the outstanding; on budgeting, account to be taken of the
+  authority and of the pupil at the edge, with no commitment to budgeting by background. `economic`
+  0 as it reads, balanced. The row is not in N12's economy chapter.
 
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
@@ -6744,6 +6830,16 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   goes past it, and no tag names it. On גנץ's forecast that he and בנט will demand the premiership
   (rev 268), he answers only *"לא שופטים אדם בעת מצוקה"*; N12 carries a denial from בנט and none
   from him. A rival's forecast, and nothing is entered from it.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy:* free market and privatisation —
+  Ashdod port, Haifa airport, and dismantling councils such as מועצת הלול: the platform lines
+  `economic` +2 and `anti-monopoly` rest on. *Education:* more government investment in early
+  childhood and better day care (pay and conditions, training, lower density, the ratio of children
+  to staff, supervision), no universal subsidy, and teachers' pay weighted to innovation, excellence
+  and quality of teaching and not seniority alone. Held text; nothing new.
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -7762,6 +7858,20 @@ rewriting its programme would be the thing to catch.
   reposts the four-minute זהות clip of rev 259 under a new caption
   ([post](https://x.com/moshefeiglin/status/2109309710407233728); the transcript matches). A third
   post of his, numbered 2109242887187619945, had been deleted by its author before it could be read.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *Education,* *"לפי מצע המפלגה"* — which
+  document N12 means is not said, and this entry holds the 2022 platform and four party plans:
+  reservists' families first in the Labour Ministry's day-care centres; about 80% of decision-making
+  and budget management moved to principals and teachers; outstanding teachers rewarded through
+  personal contracts; more budget for schools in the periphery, not set by pupils' background. The
+  2022 paper's education devolution (rev 17) and the servers' priority, with a figure and the
+  contracts this entry had not quoted. *The economy:* סמוטריץ' calls the criticism of coalition
+  funds *"פופוליזם זול"*; N12 says that instead of fighting the big unions as promised he signed
+  generous agreements with ההסתדרות and directed budgets to Judea and Samaria. A commentator
+  describing the record `economic` 0 is already read from.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -8921,6 +9031,16 @@ Linked where used above. Not linked above:
   paragraph on the investigation. N12's summary of each list on the courts repeats rev 107's
   measures and cites no legal platform, so that trigger stays open (beside the judicial sweep, under
   ישר).
+- **Read, and scored nothing (rev 271): the first economic line cited for this row.** N12's economy
+  chapter ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  described under ישר) gives it one sentence: a motto, *"כלכלה חופשית עם חמלה"* — against a general
+  tax rise, for taxing the top deciles and for efficiencies in the army. `economic` 0's paragraph
+  says no pass had cited a text for the economic liberalism the row claims; this is the nearest
+  thing, and it is an outlet's summary that names no document. A free-market motto beside a tax on
+  the top deciles is a balanced line, which is the band's other meaning, so nothing moves.
+  **Trigger:** the document the motto comes from. N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm)) has the
+  row as *"לא הציגה עמדות בתחום החינוך"*, beside rev 74's line on what schools should teach.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -10056,6 +10176,14 @@ housing, is under `economic`.
   Polls are not a field, and nothing here bears on `unaligned`. The column relays, from a report by
   מיכאל האוזר טוב not read here, that איזנקוט's main aim is to draw a few voters from this list and
   bring about its collapse: a rival's strategy, as under ישר.
+- **Read, and scored nothing (rev 271):** N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): centres for early childhood and subsidised day care, *"לפי מדיניות החינוך
+  במצע המפלגה הכלכלית"* — N12 cites one faction's platform for the joint list; a smaller supervisory
+  headquarters at the ministry, more autonomy for principals, differential budgeting; and, in its
+  answer to 121 in September 2026, teachers rewarded by quality, excellence and performance beside
+  seniority. `economic` +1's two halves; `municipal-devolution`, held. The row is not in N12's
+  economy chapter.
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -11402,6 +11530,20 @@ Most links are given above, where each source is used; these are the rest.
   coalition. סגל's account in rev 268 is the opposite, that נתניהו fears וינטר will go with ליברמן.
   Both are analysts' theories of a rival's motive; neither is a statement by the party, and neither
   Bloc trigger is met.
+- **Read, and scored nothing (rev 271):** חדאד (#2), over a חדשות 13 clip (31 seconds, not viewed)
+  ([post](https://x.com/YosephHaddad/status/2109939158827332080), 13.10.26 09:27 UTC). Of two
+  students in it, one who speaks of a Palestinian identity and one who says the place was conquered:
+  this is the Arab MKs' view too, *"מבחינתם כל מדינת ישראל כבושה. הם רואים בתל אביב התנחלות"*. To
+  the presenter: not the UN gave the Jews a state but *"הזכות ההיסטורית על האדמות האלה"*; the Arab
+  leadership was offered land for a Palestinian state *"אבל למזלנו הם סירבו"*; and *"המדינה הזו
+  שייכת לכם היהודים ולא צריך להתנצל על זה!"*. `no-palestinian-state`, held, in the voice of the
+  candidate whose 2021 words were the charge of rev 240; what he says of the Arab MKs is a claim
+  about rivals. N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): the platform moves operating powers to local authorities and schools and
+  leaves the core curriculum, regulation and measurement with the ministry (`municipal-devolution`,
+  held), and gives no position on birth to three, differential budgeting or performance pay. The row
+  is not in N12's economy chapter, and `economic`'s trigger, the costed work plans, is not met.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -11683,6 +11825,15 @@ housing-discrimination bill comes out 33–52, matching הארץ's 52–33 (revi
   interview was not found, and whether it is the one אופיר כץ quoted on 10.10 (rev 259, above) is
   not established. Nothing is entered as the party's position on Hamas from it. **Trigger:** the
   interview itself.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). The economy chapter has עבאס warning that under
+  50% of the budgets for fighting crime and violence were used, which keeps Arab society from
+  integrating economically (N12's paraphrase): the row's own subject, for which no tag exists. The
+  education survey: *"לא הציגה עמדות בתחום החינוך"*. `economic` 0 stays unaudited, as its paragraph
+  says.
 
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
@@ -12365,6 +12516,21 @@ supplied by the repo owner.
   12.10.26, body supplied by the repo owner; under הליכוד). It is the vote טיבי said this row would
   cast (rev 101), named by its target; ישר's מרידור lists replacing the Speaker as a first move
   (under ישר). Nothing by the row.
+- **Read, and scored nothing (rev 271):** two N12 surveys
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6ed3770598331a1026.htm);
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm); the
+  education survey, said by N12 to have been checked by the association 121, and the economy chapter
+  of its podcast project; both described under ישר). *The economy,* in N12's paraphrase and with no
+  document named: VAT cut to 10%, a higher minimum wage and a first flat with no interest on the
+  mortgage, paid for by ending investment in the settlements and in the war. None of the three was
+  in this entry; they are state provision with a cut in a consumption tax, and `economic` −3 rests
+  on חד"ש's self-definition, which they do not touch. *Education,* from the list's answer to 121 in
+  September 2026: birth to three as part of public education, free or subsidised for every child
+  whatever the parents' work or service; powers moved to local authorities beside central
+  supervision; differential budgeting for weak populations and neglected schools; and no pay by
+  performance, with collective agreements kept. `municipal-devolution` is not held here. A
+  paraphrased answer about schools, beside point 9's Arab educational self-administration, does not
+  open it. **Trigger:** the answer itself.
 
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
@@ -12791,6 +12957,14 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   *"אני בעד שהמפלגות הערביות יהיו בקואליציה"*. Archive from thirty years ago; it says nothing about
   the 2026 list, and `bibi` is not touched. N12's summary of each list on the courts gives this
   row's votes (beside the judicial sweep, under ישר).
+- **Read, and scored nothing (rev 271):** N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): MK יוסף טייב (slot not checked), at 121's conference in July 2026, would
+  make education from birth to three part of the education system, with public frameworks built and
+  private centres strengthened, less bureaucracy, higher pay for caregivers, investment in training
+  and supervision, and one official at the ministry responsible for the field; the party gave no
+  position on the survey's other three questions. State provision, on the side `economic` −2 already
+  reads; one MK at a conference. The row is not in N12's economy chapter.
 
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
@@ -12980,6 +13154,16 @@ under ש"ס (rev 167).
   change what the tag means on the row that holds it. **Trigger:** the list's own material or a
   named MK saying the state should not exist or that the list is not Zionist, or declining to disown
   this.
+  **Tested, and not met (rev 271).** אשר (#1), at ynet's conference on 13.10.26: *"עם כל מה שאומר
+  לנדו אני מזדהה. גם אם אני לא מבין, אני יכול לבוא ולשאול"* (in Sources). The list's first candidate
+  declining to disown is the trigger's third limb on its face. It is held off for three reasons.
+  ynet's two sentences do not say which of the rabbi's words he was asked about, and his answer is
+  about the religious-Zionist public — *"אנחנו מכבדים את הדרך שלהם. אל תכפו אותה עלינו"* — which is
+  the other half of the footage, not the state. He disputes the political reading and does not adopt
+  it: *"יש דברים הלכתיים שלקחו לכיוון פוליטי"*, *"חוסר הבנה בסיסי"*. And identifying in advance with
+  whatever the rabbi says, understood or not, is deference to the head of the Council, which is what
+  `rabbinic-authority-led` records; it is not a sentence about the state. **Trigger, narrowed:** the
+  session itself, if he was asked about the state and gave this answer; or the list's own material.
 
 #### Open questions and triggers
 
@@ -13303,6 +13487,22 @@ Every source is linked where it is used above.
   `rabbinic-authority-led` and `scholar-exemption-retained`, held. Her count — no flag, no soldier,
   no woman — matches the frames viewed, about one every two and a half seconds; what a campaign clip
   leaves out is not a position.
+- **Read, and scored nothing (rev 271): אשר (#1) on הרב לנדו — the nearest call of the pass.**
+  [ynet](https://www.ynet.co.il/news/article/fbx77bjwc) (שילה פריד, 13.10.26 11:30; a two-sentence
+  report from ynet's conference *"האנשים של המדינה"*, the question not given and the session not
+  seen): the rabbi is *"יהודי גדול, גדול הדור שלנו"*; *"יש דברים הלכתיים שלקחו לכיוון פוליטי. אנחנו
+  מלאי הערכה לאנשים בציבור דתי-לאומי, אנחנו מכבדים את הדרך שלהם. אל תכפו אותה עלינו"*; and *"עם כל
+  מה שאומר לנדו אני מזדהה. גם אם אני לא מבין, אני יכול לבוא ולשאול. יש פה חוסר הבנה בסיסי בדברים
+  מסוימים"*. פינק (הדמוקרטים #5) posts ynet's headline as an image (viewed) under his own summary of
+  the footage, *"אפשר בלי מדינה. היה עדיף שלטון של האו"ם או שהערבים ימשלו"* — his wording, not N12's
+  (rev 245) — and *"ממשלה לא ציונית אחת יש במדינה, זו הנוכחית"*
+  ([post](https://x.com/yayafink/status/2109933940601675836), 13.10.26 09:07 UTC). Tested against
+  the `non-zionist` trigger under Considered and refused, and held off there. N12's education survey
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-e06361a0a7031a1026.htm);
+  described under ישר): MK מקלב, who is not on the list, said at 121's conference in July 2026 that
+  there should be no unsupervised day-care centre and that staff should be better trained; the party
+  gave no position on the survey's other questions. Supervision of day care is not the taxation,
+  welfare-floor or market position `economic`'s move condition asks for.
 
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
@@ -15255,3 +15455,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-12 | revision 268 — **six הארץ pieces, five ynet reports from its conference of 12.10, four N12 pages and three posts (links supplied by the repo owner; the הארץ bodies supplied, the rest fetched). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** the nearest call. By ynet בנט said on 11.10 that he had no problem with נתניהו as a minister in his government, was attacked by the bloc's other leaders and withdrew it — "לא נשב עם נתניהו בשום קונסטלציה" — and at ynet's conference called a government resting on the Arab parties "חרטא" and promised a "ממשלה ציונית", which names no party and no criterion, so `excludes-anti-zionist-parties` stays off; לפיד calls on the bloc to refuse a unity government with נתניהו, the pole opposite `unity-government`, which no tag names. **הליכוד:** אוחנה (#3) says replacing him as Speaker with 61 would be legitimate and that he would not refuse to convene the plenum, while asking voters to prevent it because the 61 would include Arab MKs; assumes an override clause in the next term (`judicial-overhaul`, held); and defines the "ממשלה לאומית רחבה" as the present coalition plus others, with בנט possible and גולן out. מנדלבליט's second day is a trial record and is not entered; TheMarker's report of the leaked אוריך–סגל chats and אוריך's statement that the chats were altered are entered in the rev 267 paragraph. **ישר:** איזנקוט restates the largest-party rule and says of another candidate forming the government "מי שבונה על זה לא מכיר אותי מספיק טוב"; N12 has the party campaigning to be the largest by a margin, with מרידור naming the mandate and the Speaker as the reasons; a הארץ column on the campaign's caution is the writer's. **עוצמה יהודית:** הארץ's third report — police hold body-camera footage that by their sources strengthens the suspicion against קרויזר, nobody has been questioned, and the file is to move to להב 433; entered in place, still an allegation and a denial. **Cross-row:** N12's summary of each list on the courts is entered beside the judicial sweep under ישר; it agrees with the sweep, differs from ביחד's own answer on the selection committee, and cites for הדמוקרטים a legal plan with Basic Laws by 80 MKs that this page has not read (trigger: its text). **כחול לבן:** גנץ runs to the end, prefers "גדי-ביבי" to "גדי-טיבי", and forecasts that איזנקוט, ליברמן and בנט will govern with the Arab parties — his forecast, entered on no other row. **עמך ישראל:** אוחנה tells וינטר to quit and בנט refuses to sit with him as "ביבי על מלא"; `bibi` stands. One-line entries under הדמוקרטים, ישראל ביתנו, הרשימה המשותפת and ש"ס; the note that N12's live-blog address rolls is added beside its 05.10 citation. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-12 | revision 269 — **N12's report of quotes from יונתן אוריך's police interrogation in the Qatar case (אמנון אברמוביץ', 12.10.26 20:06; link supplied by the repo owner, fetched). No axis moved, no tag changed, `seed.sql` unchanged.** **הליכוד:** entered in place beside the leak from his phone (revs 267, 268). The interrogator puts to him requests he made of ChatGPT in September 2024 for a "תוכנית אסטרטגית לשינוי תודעה עולמית" about Qatar and for messages to Israelis, Jewish communities and American opinion leaders "שיוכלו לסייע להלבין את קטאר"; he answers that he does not remember what he asked and did nothing for Qatar in Israel. A suspicion put in an interrogation and a denial, about an adviser's conduct; no position and no tag. The page carries no response to the publication. **ישר:** איזנקוט calls him a "סוכן קטארי" still working in the Prime Minister's office and says a fit prime minister would dismiss him that evening — כהן's demand of rev 152, from the leader; an attack, not a policy. **ביחד:** בנט calls it "פרשת הבגידה החמורה ביותר בתולדות המדינה" and Qatar "האויב המסוכן ביותר שלנו" — the row's Qatar line (revs 49, 123) restated, no new measure. Both replies are as N12 quotes them and were not read at their source. |
 | 2026-10-13 | revision 270 — **N12 on the change bloc's two quarrels (דפנה ליאל, 13.10.26 07:22; fetched) and הארץ's poll column (אמנון הררי, 13.10.26; body supplied by the repo owner, two charts viewed). No axis moved, no tag changed, `seed.sql` unchanged.** **ביחד:** בנט's remark of 11.10 that נתניהו could be a minister, which rev 268 had from ynet, is given in N12's wording with the clarification in full — "לא נשב איתו בשום קונסטלציה" — and N12 has him denying any contact or coordination with ליברמן over the premiership; the refusal is the last word and no tag records it. **ישר:** איזנקוט, "כל מי שהיה בתפקיד ב-7 באוקטובר לא ראוי לשמש בתפקידי פיקוד והנהגה, כולל שר אוצר" — rev 99's cabinet-wide disqualification, broader than `anti-indicted-pm`, which is refused a fourth time. **ישראל ביתנו** and **הדמוקרטים:** ליברמן ("יתהפך העולם ולא נשב עם נתניהו") and גולן ("לא כשר אוצר, לא כשר המים ולא כשר בלי תיק") refuse to sit with him in any post; both rows hold `anti-indicted-pm`, a law about the prime minister, and the refusal goes past it with no tag to name it. **כחול לבן:** גנץ's forecast in his words and the party's exchange with ליברמן. **עמך ישראל** and **המילואימניקים והכלכלית:** the column's poll figures (polls are not a field) and, for עמך ישראל, its theory that נתניהו's attacks were meant to strengthen וינטר — the opposite of סגל's in rev 268, and like it not a statement by the party; `bibi` stands. Every quotation is the outlet's relay; no statement was read at its source. |
+| 2026-10-13 | revision 271 — **two N12 surveys of the lists (education, said to be checked by the association 121; and the economy chapter of its podcast project), ynet's report of אשר on הרב לנדו with פינק's post on it, and חדאד's post (links supplied by the repo owner; ynet's report found from the image in פינק's post). No axis moved, no tag changed, `seed.sql` unchanged.** **יהדות התורה:** the nearest call. אשר (#1) says "עם כל מה שאומר לנדו אני מזדהה", which on its face is the third limb of the `non-zionist` trigger (a named MK declining to disown the rabbi's words on the state). Held off: the two-sentence report does not say which words he was asked about and his answer is about the religious-Zionist public, he disputes the political reading, and blanket deference to the rabbi is what `rabbinic-authority-led` already records; the trigger is narrowed to the session itself. **עוצמה יהודית:** the first economic line cited for the row, the motto "כלכלה חופשית עם חמלה" with a tax on the top deciles, in one sentence of an outlet's summary; `economic` 0 stands and the document is the trigger. **ישר:** מרידור does not rule out raising taxes ("אני מקווה שלא נצטרך"); `tax-cutting` rests on the papers and stands. **הדמוקרטים:** a targeted tax on bank and large-corporation profits, the first tax named for the row, as paraphrase; `progressive-taxation` not opened. **הרשימה המשותפת:** VAT to 10%, a higher minimum wage and interest-free first mortgages; a paraphrased answer on schools does not open `municipal-devolution`. The other rows' education and economy lines restate held text and are entered as read. **עמך ישראל:** חדאד, "למזלנו הם סירבו" of the 1947 offer — `no-palestinian-state`, held. Both surveys are paraphrase with no answer quoted; the lists' answers to 121 and the per-list data behind N12's matching tool were not read. A TheMarker follow-up on N12 journalists criticising סגל was read and not entered: no party acts in it. |
