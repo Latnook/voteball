@@ -1485,7 +1485,15 @@ through fxtwitter; nine הארץ bodies supplied by the repo owner, the one on t
   היינו יכולים להציל אם רק היית מתקשר בזמן"*. [N12](https://www.mako.co.il/news-politics/2026_q4/Article-8ca9fd3870931a1026.htm) (14.10.26; rev 282) adds that the claim
   says נתניהו never gave him his personal number and that contact ran through the military
   secretariat, and cites the post נתניהו deleted three weeks after the massacre, that every security
-  chief had judged Hamas deterred. A lawsuit and the chairman's defence in it; who was
+  chief had judged Hamas deterred. To כאן that evening
+  ([שבע עם איילה חסון](https://www.kan.org.il/content/kan-news/politic/1109305/), 14.10.26 19:07, rev
+  284; headless browser): *"אתה יכול לתבוע 30 מיליון, מה זה משנה? זה תרגיל, תעלול פרסומי"*; the red
+  phone is carried by his Shin Bet guards, *"הוא יכול היה להגיע אליי בכל רגע"*; he gave the State
+  Comptroller *"קרוב לאלף מסמכים"* refuting the claim's warnings, read from a Shin Bet assessment of
+  3 October 2023 on preserving the calm in Gaza, and says the warnings shown him *"תמיד החריגו זירה
+  אחת: עזה"*. On כאמל he repeats that the Shin Bet is still looking for whom he met, and *"זה היה רונן
+  בר, צריך לבדוק"* of the 2021 meeting at the residence; on a "deep state", *"זה ברור"*. A lawsuit
+  and the chairman's defence in it; who was
   warned is still not a position, and the inquiry sweep's reading of the row is unchanged.
   נתניהו's own account of כאמל's visit (rev 275), to ערוץ 14 on 13.10 as
   [הארץ](https://www.haaretz.co.il/news/politics/2026-10-14/ty-article/000001a1-370c-d1d8-a5a9-7f5d6a210000) reports it (14.10.26, body supplied by the repo owner): the Egyptian intelligence chief
@@ -1506,6 +1514,14 @@ through fxtwitter; nine הארץ bodies supplied by the repo owner, the one on t
   no
   form, so the row stays "opposed" in the inquiry sweep (rev 226). His 05.10 speech, as reported,
   says nothing on an inquiry (rev 244).
+  To כאן on 14.10 (rev 284, the interview above) he names one: a government inquiry would be seen
+  as biased, a state commission is *"הכול חוץ מממלכתית"* because the Supreme Court's president,
+  *"שיש לו השקפות פוליטיות ברורות"*, appoints it, and he proposed the 9/11 model, half coalition and
+  half opposition — *"האופוזיציה לא הסכימה"*; if he wins he will renew the State Comptroller's
+  examination, which he says בג"ץ halted. That is the politician-appointed commission the sweep
+  already reads as "opposed"; the reading is confirmed, not moved. On his trial in the same
+  interview — *"אני לא חושב, אני יודע"* that the case was sewn up, *"ציד פוליטי"* — `judicial-overhaul`,
+  held.
 - **A claim about other rows, repeated, is still a claim about other rows** (rev 153's line).
   From 5 September, at least twelve times: *"איזנקוט יקים ממשלת שמאל עם יאיר גולן, ליברמן והמפלגות
   הערביות"*, with variants citing טיבי, *"מספר 2 של איזנקוט"* and *"מספר 2 של מנסור עבאס"*
@@ -1889,7 +1905,23 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   WhatsApp groups it fed. A party employee's conduct; no position. N12 writes that he is still employed in נתניהו's office; this entry's record
   (revs 152, 267) is that the state bodies call him a party employee, and both are left as stated.
   Three earlier N12 reports it links were not read. An adviser's conduct under investigation; no
-  position, and no tag. איזנקוט's and בנט's replies are under ישר and ביחד.
+  position, and no tag. **The meetings with Qataris** (rev 284).
+  [N12](https://www.mako.co.il/news-politics/2026_q4/Article-5d0b7cbac3b31a1026.htm) (עופר חדד and
+  עמרי מניב, 14.10.26 19:58, marked חשיפה): in July 2024, nine months into the war, אוריך met עלי
+  אל-תוואדי, close to Qatar's emir, at least twice in Europe, once in Berlin with שרוליק איינהורן and
+  the lobbyist ג'יי פוטליק, whom אוריך has denied ever meeting. Put to him in interrogation on
+  19.05.25, by a former Mossad official's testimony: *"אני בקושי זוכר אחת"*, in *"לונדון, פריז או
+  גרמניה"*. By נתניהו's own testimony, as N12 gives it, אוריך never told him of his business ties with
+  Qatar or of these meetings. אוריך again denies meeting פוטליק and does not address the
+  meetings with אל-תוואדי.
+  [חדשות 13](https://13tv.co.il/item/news/domestic/crime-and-justice/qatar-905397129/) (אביעד גליקמן
+  and ברוך קרא, 14.10.26 19:55; headless browser) puts the Berlin meeting at the Euro final of 2024,
+  Qatari-funded, and relays a הארץ report (not read) that אוריך and איינהורן met Qatari
+  representatives in Europe in 2022 while working on the World Cup branding campaign; אוריך to the
+  police: the offer came to פרספשן through *"האלוף (מיל') פולי מרדכי, ושני בכירים לשעבר במערכת
+  הביטחון"*, and he was told legally there was no problem. Its paragraphs on the Mossad's damage
+  assessment and the expected indictments concern the case, not the party. An adviser's conduct under
+  investigation; no position. איזנקוט's and בנט's replies are under ישר and ביחד.
 - **Read, and scored nothing (rev 274): קיש's appointments to the Council for Higher Education.**
   [הארץ](https://www.haaretz.co.il/news/elections/2026-10-13/ty-article/.premium/000001a1-3556-d193-a3a7-b57e2d6b0000)
   (13.10.26, body supplied by the repo owner): two weeks before the election קיש (#10) is moving to
@@ -15912,3 +15944,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 281 — **עמך ישראל: וינטר on בן ציון's departure (one entry of a כאן live page, headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** He gives the same reason as בן ציון, pressure on him and his wife, and says the list runs *"עד הסוף"*. The slate line now carries the chairman's account beside נתניהו's. |
 | 2026-10-14 | revision 282 — **a ynet report on the President's reported unity-government plan, N12's report on בר's suit, and two ynet pieces that needed no entry (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **הדמוקרטים:** גולן, *"לא אתן יד לממשלת נתניהו, בשום צורה ובשום תירוץ"* — revision 270's refusal restated, of any government with him; no tag names it. The same report paraphrases ישר and ביחד as refusing too, which their entries already hold in their chairmen's and לפיד's words, so neither is entered again; the President's office denies the plan. **הליכוד:** N12 on בר's suit adds two details to revision 279's entry. **Not entered:** ynet on the election committee's preparations (no party acts) and its count of women on the lists, already read in revision 275. |
 | 2026-10-14 | revision 283 — **two N12 reports (`curl`) and עמך ישראל's team page (links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **עמך ישראל:** בן ציון was #8, by both כאן and N12; the team page now lists seventeen candidates without him, and this entry's order of names, which was the launch's, is no longer read as the list's (revision 276 had left #7 against #8 open). To N12 he gives the polls and wasted votes as his reason, a third account beside the pressure he described to party members and נתניהו's; nothing promised him. N12 reports billboards near candidates' homes and envoys offering posts from נתניהו's circle; the party calls it a fear campaign. **נעם:** soundings of הרב טאו's people about withdrawing; the party will run. **הליכוד:** the same report, as campaign conduct, unattributed. **ש"ס:** דרעי makes the yeshiva-status law the condition of any government ש"ס supports or joins, and calls the Attorney General an anarchist; held tags. **יהדות התורה:** אשר, the same condition, *"נקודה"*; held. |
+| 2026-10-14 | revision 284 — **הליכוד: N12's and חדשות 13's reports on אוריך's meetings with Qatari representatives, and נתניהו's interview to כאן (`curl` and headless browser; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** אוריך met עלי אל-תוואדי at least twice in Europe in July 2024, once in Berlin with איינהורן and פוטליק, whom he denies meeting; by נתניהו's testimony he was never told; entered beside revisions 269 and 280 as an adviser's conduct. To כאן נתניהו calls בר's suit a publicity stunt and repeats that the warnings excluded Gaza (who was warned is not a position), and on an inquiry names the half-coalition, half-opposition commission and calls a state commission *"הכול חוץ מממלכתית"*, confirming the sweep's "opposed" reading; the trial lines fit `judicial-overhaul`, held. |
