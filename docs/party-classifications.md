@@ -10856,7 +10856,8 @@ in the Bar Association), ללי דרעי (bereaved mother), סיגל קראונ�
 him to quit were hung outside his home that week, and to friends, *"כל היישוב שלי מלא. אשתי שבורה
 מזה"*, and to the party, *"אשתי והילדים לפני הכול"*. The party blames *"גורמים שפשוט לא מוכנים
 שייכנסו כוחות חדשים ונקיים לפוליטיקה הישראלית"*. נתניהו's [post](https://x.com/netanyahu/status/2110056342765683138) gives a different reason,
-that the run endangers the right's bloc. כאן calls him #8, where this entry's count of the `/team`
+that the run endangers the right's bloc; וינטר's account (rev 281) is בן ציון's: *"הוא ורעייתו
+לא יכולים יותר לעמוד בלחץ"*. כאן calls him #8, where this entry's count of the `/team`
 page puts him seventh; the filed list was not read and the difference is left open — whether his
 name stays on the filed ballot was not checked either), אל"ם במיל' אלי ג'ינו, אביב
 עזרא (chair of the reservists' movement דור הניצחון), פלר חסן-נחום and the economist רונן בודנרו.
@@ -11913,6 +11914,10 @@ Most links are given above, where each source is used; these are the rest.
   sources to miss the threshold, with הנדל and זליכה's list given the better chance; בן ציון's
   departure (under the slate) and בן גביר's refusal are entered above. ynet's poll average puts the row below the
   threshold, with נטעלי שם טוב third ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14923344)). Electoral.
+- **Read, and scored nothing (rev 281):** וינטר, by [כאן](https://www.kan.org.il/content/kan-news/politic/live-1109100/liveid-1109280/) (14.10.26 15:56), to the calls on
+  the list to withdraw: *"אנחנו לא נכנעים. אנחנו רצים עד הסוף בכל הכוח"*; of the signs outside בן
+  ציון's home, *"נחצה קו אדום"*. Staying in the race is not a position, and `bibi` does not rest
+  on it.
 - **Read, and scored nothing (rev 277):** ללי דרעי on רשת ב' ([כאן](https://www.kan.org.il/content/kan-news/politic/1109164/), 14.10.26 09:34): a
   *"קמפיין נבזי"* against the list — calls at all hours, signs in its members' settlements and by
   their children's school transport, AI images and demands to withdraw — *"כי העזנו להציע משהו
@@ -15867,3 +15872,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 278 — **הציונות הדתית: a TheMarker report on a cabinet decision of 14.10 (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** סמוטריץ''s draft adds ₪1.03bn for classified defence procurement and funds it from a future cut, 2027–2029, to the five-year plan for Arab society, which has not yet been approved. Entered under the `sectoral-budgeting` family as the same practice in the other direction — a finance minister choosing which sector pays — beside עוצמה יהודית's diversion of the 550 plan. TheMarker's reading that the cut is declaratory election propaganda is its own; no tag exists for cuts to Arab-society budgets, and one ministerial act is not a programme. |
 | 2026-10-14 | revision 279 — **הליכוד: רונן בר's ₪3m libel suit against נתניהו (הארץ, body supplied by the repo owner; the 28.09 post it rests on, fxtwitter; the statement of claim not read). Nothing scored, `seed.sql` unchanged.** Revision 226 recorded that בר would sue; he filed on 14.10. The claim sets out more than twenty warnings with נתניהו's responses, and נתניהו answers that בר had his red-phone number. The 28.09 post, now linked, carries the *"או ימין, או פלסטין"* line and the foreign-states charge revision 172 recorded. Entered under the pre-7-October thread, which is not a position. |
 | 2026-10-14 | revision 280 — **הליכוד: a הארץ report that the Shin Bet is checking the leak from אוריך's phone (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** The check is limited to the Prime Minister's security; the paper says it was delayed because אוריך is a party employee, the status this entry already records. Entered beside revisions 269, 274 and 275 on him. |
+| 2026-10-14 | revision 281 — **עמך ישראל: וינטר on בן ציון's departure (one entry of a כאן live page, headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** He gives the same reason as בן ציון, pressure on him and his wife, and says the list runs *"עד הסוף"*. The slate line now carries the chairman's account beside נתניהו's. |
