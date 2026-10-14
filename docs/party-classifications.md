@@ -7198,6 +7198,17 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   ₪123m for the Settlement Ministry and ₪286m for haredi education, which the court had frozen; the
   request was refused. The family entry names the practice, and the minister denies it is a separate
   kind of money.
+  The same practice in the other direction (rev 278;
+  [TheMarker](https://www.haaretz.co.il/tmr/news/politics/2026-10-14/ty-article/.premium/000001a1-3912-d610-a5bb-3f3bef130000), 14.10.26, body supplied by the repo owner): the decision סמוטריץ' laid before
+  the cabinet adds ₪1.03bn for the defence establishment's *"הקדמת רכש מסווג"* (₪68m this year from
+  lower interest payments) and funds it not by an across-the-board cut but from a future cut to the
+  five-year plan for Arab society — ₪170m in 2027, ₪342m in 2028, ₪453m in 2029. No new plan has
+  been approved, so the cut falls on money reserved in the baseline on the assumption that one
+  will be; TheMarker calls it declaratory and *"תעמולת בחירות של סמוטריץ'"*, its own reading. The
+  ministry's legal adviser, קופל, wrote that it binds the next government *"במידה מסוימת"* and can
+  still be changed in the 2027 budget. A ministerial act choosing which sector pays, which is what
+  this family records; no family or tag moves. עוצמה יהודית's ₪497m from the 550 plan to the Shin
+  Bet and the police (under its `economic`) is the nearest precedent.
 
 #### Tags (27) and what each rests on
 
@@ -15836,3 +15847,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 276 — **one post by נתניהו (fxtwitter; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** It dates בן ציון's departure from עמך ישראל, which revision 275 had only from an undated column: by 13.10 17:13 UTC נתניהו praised *"החלטתו החשובה לפרוש ממפלגתו של וינטר"* and gave as his reason that וינטר's run endangers the right's bloc. The reason is נתניהו's; no word from בן ציון or the party was read. The post's call on the rest of the list to quit, against a *"ממשלת שמאל של איזנקוט, יאיר גולן, ליברמן, בנט והמפלגות הערביות"*, is entered under הליכוד as one more form of the repeated claim about other rows (rev 153's line), the first to name בנט. |
 | 2026-10-14 | revision 276, continued — **a כאן report of 13.10 on בן ציון's departure (headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** It gives his own reason, which is not נתניהו's: pressure, with signs hung outside his home calling on him to quit (*"אשתי והילדים לפני הכול"*), and the party's statement blaming those who will not let *"כוחות חדשים ונקיים"* into politics. The slate line under עמך ישראל now rests on it and keeps נתניהו's reason beside it as his. כאן numbers him #8 where this entry counts him seventh from the site's team page; the filed list was not read, so the difference is recorded and not settled. חדאד's charge of an *"קמפיין מכוער"* from the right and סמוטריץ''s praise (*"צעד אמיץ ולא קל של אחריות לאומית"*) are electoral, entered under their rows. |
 | 2026-10-14 | revision 277 — **עמך ישראל: ללי דרעי on רשת ב' (כאן, 14.10; headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** She describes the campaign against the list (calls, signs in the members' settlements, AI images, demands to withdraw, her fallen son invoked against her) and does not know who runs it. Conduct of a campaign against the row, entered under its Sources; the report's second half repeats revision 276's. |
+| 2026-10-14 | revision 278 — **הציונות הדתית: a TheMarker report on a cabinet decision of 14.10 (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** סמוטריץ''s draft adds ₪1.03bn for classified defence procurement and funds it from a future cut, 2027–2029, to the five-year plan for Arab society, which has not yet been approved. Entered under the `sectoral-budgeting` family as the same practice in the other direction — a finance minister choosing which sector pays — beside עוצמה יהודית's diversion of the 550 plan. TheMarker's reading that the cut is declaratory election propaganda is its own; no tag exists for cuts to Arab-society budgets, and one ministerial act is not a programme. |
