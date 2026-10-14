@@ -1482,7 +1482,10 @@ through fxtwitter; nine הארץ bodies supplied by the repo owner, the one on t
   לא דירקטיבה של ר' שב"כ. בדמוקרטיה שב"כ לא אחראי לעיצוב אסטרטגיה לאומית"*; it says a warning
   reached the PM's military secretary from 03:03, and calls on him not to plead immunity. נתניהו's
   answer, on X as the paper quotes it (post not read): *"היה לך את מספר הטלפון האדום שלי… כמה חיים
-  היינו יכולים להציל אם רק היית מתקשר בזמן"*. A lawsuit and the chairman's defence in it; who was
+  היינו יכולים להציל אם רק היית מתקשר בזמן"*. [N12](https://www.mako.co.il/news-politics/2026_q4/Article-8ca9fd3870931a1026.htm) (14.10.26; rev 282) adds that the claim
+  says נתניהו never gave him his personal number and that contact ran through the military
+  secretariat, and cites the post נתניהו deleted three weeks after the massacre, that every security
+  chief had judged Hamas deterred. A lawsuit and the chairman's defence in it; who was
   warned is still not a position, and the inquiry sweep's reading of the row is unchanged.
   נתניהו's own account of כאמל's visit (rev 275), to ערוץ 14 on 13.10 as
   [הארץ](https://www.haaretz.co.il/news/politics/2026-10-14/ty-article/000001a1-370c-d1d8-a5a9-7f5d6a210000) reports it (14.10.26, body supplied by the repo owner): the Egyptian intelligence chief
@@ -5115,6 +5118,12 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   earning-capacity test is the shape `workforce-integration` names on other rows; this row does not
   hold it and a paraphrased answer on one subsidy does not open it. פינק's (#5) post on אשר is under
   יהדות התורה.
+- **Read, and scored nothing (rev 282):** גולן on ynet's report that the President plans a unity
+  government of איזנקוט and נתניהו if the vote is undecided ([ynet](https://www.ynet.co.il/news/elections2026/article/bjschpnjml), 14.10.26; the President's
+  office denies it): *"בוז'י והשופרות כבר מכינים את הקרקע ל'אחדות' עם נתניהו"*, and *"לא אתן יד
+  לממשלת נתניהו, בשום צורה ובשום תירוץ"*, with the row as *"הערובה שלכם"* that a vote for it will
+  not return him. The refusal of rev 270 restated, now of any government with him and not only of
+  him in a post; no tag names it.
 - **Read, and scored nothing (rev 275):** a [הארץ column](https://www.haaretz.co.il/news/elections/2026-10-14/ty-article/.premium/000001a1-36cf-d1d8-a5a9-7fdf96580000) (14.10.26, body supplied by the repo
   owner) has the row weakened by votes moving to איזנקוט and, by unnamed politicians, by its support
   for disqualifying אבו שחאדה, which it says drove Arab voters to הרשימה המשותפת. The stance is the
@@ -15873,3 +15882,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 279 — **הליכוד: רונן בר's ₪3m libel suit against נתניהו (הארץ, body supplied by the repo owner; the 28.09 post it rests on, fxtwitter; the statement of claim not read). Nothing scored, `seed.sql` unchanged.** Revision 226 recorded that בר would sue; he filed on 14.10. The claim sets out more than twenty warnings with נתניהו's responses, and נתניהו answers that בר had his red-phone number. The 28.09 post, now linked, carries the *"או ימין, או פלסטין"* line and the foreign-states charge revision 172 recorded. Entered under the pre-7-October thread, which is not a position. |
 | 2026-10-14 | revision 280 — **הליכוד: a הארץ report that the Shin Bet is checking the leak from אוריך's phone (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** The check is limited to the Prime Minister's security; the paper says it was delayed because אוריך is a party employee, the status this entry already records. Entered beside revisions 269, 274 and 275 on him. |
 | 2026-10-14 | revision 281 — **עמך ישראל: וינטר on בן ציון's departure (one entry of a כאן live page, headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** He gives the same reason as בן ציון, pressure on him and his wife, and says the list runs *"עד הסוף"*. The slate line now carries the chairman's account beside נתניהו's. |
+| 2026-10-14 | revision 282 — **a ynet report on the President's reported unity-government plan, N12's report on בר's suit, and two ynet pieces that needed no entry (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **הדמוקרטים:** גולן, *"לא אתן יד לממשלת נתניהו, בשום צורה ובשום תירוץ"* — revision 270's refusal restated, of any government with him; no tag names it. The same report paraphrases ישר and ביחד as refusing too, which their entries already hold in their chairmen's and לפיד's words, so neither is entered again; the President's office denies the plan. **הליכוד:** N12 on בר's suit adds two details to revision 279's entry. **Not entered:** ynet on the election committee's preparations (no party acts) and its count of women on the lists, already read in revision 275. |
