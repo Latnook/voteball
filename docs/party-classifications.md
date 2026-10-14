@@ -1908,6 +1908,11 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   The attackers are unnamed and the balloon has no source; the writer's reading. ynet's count of
   women on the lists has three of the party's 21 expected seats (רגב 5, גואילי 9, עטיה 20;
   [ynet](https://www.ynet.co.il/news/elections2026/article/yokra14923344)). List composition; no position.
+- **Read, and scored nothing (rev 283):** by [N12](https://www.mako.co.il/news-israel-elections/2026/Article-d310f59375731a1027.htm) (14.10.26), people around נתניהו are
+  pressing the bloc's small lists to withdraw for fear they miss the threshold: billboards near
+  עמך ישראל candidates' homes, envoys offering posts, and soundings of הרב טאו's people about נעם,
+  with hints that its people would have no *"אוזן קשבת"* in the next government. Unattributed, and
+  campaign conduct; the call of revision 276 is its public face.
 - **Read, and scored nothing (rev 267): the day's other posts.** נתניהו against וינטר (under עמך
   ישראל), and over a clip of ג'בארין that closes *"זהו ימין או פלסטין"* (under הרשימה המשותפת).
   ביסמוט (#23) posts his ערוץ 13 interview of 10.10
@@ -10722,6 +10727,10 @@ two; `single-issue-jewish-identity` is restated in revs 219 and 243 (under הר�
   ([post](https://x.com/AVI_MAOZ/status/2108987369504243750), 10.10.26). `education-system-focused`
   and `anti-progressive`, held: a claim to the issue with no measure, beside the demand for the
   Education portfolio (rev 244).
+- **Read, and scored nothing (rev 283):** by [N12](https://www.mako.co.il/news-israel-elections/2026/Article-d310f59375731a1027.htm) (14.10.26), נתניהו's circle has sounded
+  out הרב צבי טאו's people about the row withdrawing, with hints of no *"אוזן קשבת"* in the next
+  government; the party and the rabbi's circle say they will run to the end. Unattributed pressure
+  on the row; `bibi` does not rest on it.
 
 ### האחדות — Unity · **withdrew 2026-09-04, removed from the ballot** · was `unaligned` · 1 / 2 / −2 · traditional
 
@@ -10866,11 +10875,16 @@ him to quit were hung outside his home that week, and to friends, *"כל היי�
 מזה"*, and to the party, *"אשתי והילדים לפני הכול"*. The party blames *"גורמים שפשוט לא מוכנים
 שייכנסו כוחות חדשים ונקיים לפוליטיקה הישראלית"*. נתניהו's [post](https://x.com/netanyahu/status/2110056342765683138) gives a different reason,
 that the run endangers the right's bloc; וינטר's account (rev 281) is בן ציון's: *"הוא ורעייתו
-לא יכולים יותר לעמוד בלחץ"*. כאן calls him #8, where this entry's count of the `/team`
-page puts him seventh; the filed list was not read and the difference is left open — whether his
-name stays on the filed ballot was not checked either), אל"ם במיל' אלי ג'ינו, אביב
+לא יכולים יותר לעמוד בלחץ"*. To [N12](https://www.mako.co.il/news-israel-elections/2026/Article-d310f59375731a1027.htm) (14.10.26; rev 283) he gave a third: the polls, and
+not wanting to waste right-wing votes; nothing was promised him by any party, he stays deputy
+council head, and *"אני עדיין מאמין בעופר וינטר שהוא איש ימין אמיתי"*. **He was #8**, by both כאן
+and N12; the order of names in this paragraph is the launch's, not the list's (rev 283) — whether
+his name stays on the filed ballot was not checked), אל"ם במיל' אלי ג'ינו, אביב
 עזרא (chair of the reservists' movement דור הניצחון), פלר חסן-נחום and the economist רונן בודנרו.
-The site's `/team` page lists eleven candidates with חדאד second, on the day of the ישראל היום
+The site's `/team` page now lists seventeen, without בן ציון, in this order: וינטר, חדאד, שם טוב,
+בן ארי, חסן-נחום, דרעי, בודנרו, עזרא, ג'ינו, קראוניק-עטיה, then אריק רובין, עלם איברהים, משה הר
+ציון, לילך אידלברג, משה טולדנו, רז מלכה and דור יצחק לוי (read 14.10.26, rev 283; the filed list
+was not). It had listed eleven candidates with חדאד second on the day of the ישראל היום
 report that he was missing from a graphic; the party called the report false (rev 245, under יהדות
 התורה), and he stays, in his own words, a day later (rev 247, under ישראל ביתנו). The bios are
 biography.
@@ -11027,7 +11041,7 @@ correction. וינטר, at the press conference: *"אנחנו מתכוונים �
   06.10.26): at a חוג בית that week ערן בן ארי (#4), asked about the party having committed to sit
   only with נתניהו, corrected the questioner — *"לא אמרנו שנשב רק עם נתניהו, אמרנו שנמליץ על
   נתניהו"* — and went on, *"אם לא נוכל לשנות את המצב של המשרתים, אנחנו לא נהיה בתוך הממשלה. יש עוד
-  אפשרויות"*. דוידי בן ציון (#7, outside the realistic 6), asked whether they would sit with
+  אפשרויות"*. דוידי בן ציון (#8, outside the realistic 6; he left the list on 13.10, rev 276), asked whether they would sit with
   איזנקוט: *"למה שאיזנקוט לא יצטרף? הלוואי, אדרבא, שתהיה פה ממשלה רחבה, מצוין"*. בן ארי on what the
   party's strength is for: *"שאיזנקוט יצטרך להחליט אם הוא רוצה להצטרף לממשלה"*; and on the limit,
   *"אנחנו לא חושבים שאפשר להכניע את האויב עם אנשים משתמטים של יאיר גולן ואנשים שחותמים על מכתב
@@ -11923,6 +11937,11 @@ Most links are given above, where each source is used; these are the rest.
   sources to miss the threshold, with הנדל and זליכה's list given the better chance; בן ציון's
   departure (under the slate) and בן גביר's refusal are entered above. ynet's poll average puts the row below the
   threshold, with נטעלי שם טוב third ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14923344)). Electoral.
+- **Read, and scored nothing (rev 283):** [N12](https://www.mako.co.il/news-israel-elections/2026/Article-d310f59375731a1027.htm) (14.10.26) on the pressure from נתניהו's circle:
+  billboards near the homes of ללי דרעי, בן ציון and other candidates (*"דודי, תפרוש! לא מסכנים את
+  המדינה"*), and offers of posts carried to candidates by envoys, unnamed. The party: *"קמפיין
+  הפחדה מהנבזיים שנראו במדינה. כל מהותו מניעת כניסת אנשים חדשים לפוליטיקה ושמירה על המונופול
+  והעסקונה"*. A campaign against the row; no position.
 - **Read, and scored nothing (rev 281):** וינטר, by [כאן](https://www.kan.org.il/content/kan-news/politic/live-1109100/liveid-1109280/) (14.10.26 15:56), to the calls on
   the list to withdraw: *"אנחנו לא נכנעים. אנחנו רצים עד הסוף בכל הכוח"*; of the signs outside בן
   ציון's home, *"נחצה קו אדום"*. Staying in the race is not a position, and `bibi` does not rest
@@ -13371,6 +13390,11 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   and supervision, and one official at the ministry responsible for the field; the party gave no
   position on the survey's other three questions. State provision, on the side `economic` −2 already
   reads; one MK at a conference. The row is not in N12's economy chapter.
+- **Read, and scored nothing (rev 283):** דרעי to כיכר השבת, as [N12](https://www.mako.co.il/news-israel-elections/2026/Article-420d8b8ce3931a1027.htm) reports it (14.10.26):
+  *"לא תהיה ממשלה בישראל ששס תומכת או משתתפת בלי שנסדיר את מעמד תלמידי הישיבות"*, the condition of
+  the Holon launch (under Bloc) widened from joining to supporting; the renewed arrests are *"אירוע
+  פוליטי"*, and the Attorney General *"המודחת, אנרכיסטית"*. `scholar-exemption-retained` and
+  `judicial-overhaul`, held; a condition about a law, not a person, so `bibi` reads as it did.
 
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
@@ -13909,6 +13933,10 @@ Every source is linked where it is used above.
   there should be no unsupervised day-care centre and that staff should be better trained; the party
   gave no position on the survey's other questions. Supervision of day care is not the taxation,
   welfare-floor or market position `economic`'s move condition asks for.
+- **Read, and scored nothing (rev 283):** אשר (#1), to כיכר השבת as [N12](https://www.mako.co.il/news-israel-elections/2026/Article-420d8b8ce3931a1027.htm) quotes him (14.10.26;
+  the interview's date not given): *"יהדות התורה לא תיכנס לממשלה שלא תעביר דה פקטו את החוק להסדרת
+  מעמדם של תלמידי הישיבות הנקרא חוק הגיוס, נקודה"*. The coalition condition on the law;
+  `scholar-exemption-retained` and the `conscription-split` family, held.
 
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
@@ -15883,3 +15911,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 280 — **הליכוד: a הארץ report that the Shin Bet is checking the leak from אוריך's phone (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** The check is limited to the Prime Minister's security; the paper says it was delayed because אוריך is a party employee, the status this entry already records. Entered beside revisions 269, 274 and 275 on him. |
 | 2026-10-14 | revision 281 — **עמך ישראל: וינטר on בן ציון's departure (one entry of a כאן live page, headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** He gives the same reason as בן ציון, pressure on him and his wife, and says the list runs *"עד הסוף"*. The slate line now carries the chairman's account beside נתניהו's. |
 | 2026-10-14 | revision 282 — **a ynet report on the President's reported unity-government plan, N12's report on בר's suit, and two ynet pieces that needed no entry (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **הדמוקרטים:** גולן, *"לא אתן יד לממשלת נתניהו, בשום צורה ובשום תירוץ"* — revision 270's refusal restated, of any government with him; no tag names it. The same report paraphrases ישר and ביחד as refusing too, which their entries already hold in their chairmen's and לפיד's words, so neither is entered again; the President's office denies the plan. **הליכוד:** N12 on בר's suit adds two details to revision 279's entry. **Not entered:** ynet on the election committee's preparations (no party acts) and its count of women on the lists, already read in revision 275. |
+| 2026-10-14 | revision 283 — **two N12 reports (`curl`) and עמך ישראל's team page (links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **עמך ישראל:** בן ציון was #8, by both כאן and N12; the team page now lists seventeen candidates without him, and this entry's order of names, which was the launch's, is no longer read as the list's (revision 276 had left #7 against #8 open). To N12 he gives the polls and wasted votes as his reason, a third account beside the pressure he described to party members and נתניהו's; nothing promised him. N12 reports billboards near candidates' homes and envoys offering posts from נתניהו's circle; the party calls it a fear campaign. **נעם:** soundings of הרב טאו's people about withdrawing; the party will run. **הליכוד:** the same report, as campaign conduct, unattributed. **ש"ס:** דרעי makes the yeshiva-status law the condition of any government ש"ס supports or joins, and calls the Attorney General an anarchist; held tags. **יהדות התורה:** אשר, the same condition, *"נקודה"*; held. |
