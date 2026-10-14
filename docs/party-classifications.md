@@ -8070,7 +8070,7 @@ rewriting its programme would be the thing to catch.
   generous agreements with ההסתדרות and directed budgets to Judea and Samaria. A commentator
   describing the record `economic` 0 is already read from.
 - **Read, and scored nothing (rev 276):** סמוטריץ' on בן ציון's departure from עמך ישראל, by
-  [כאן](https://www.kan.org.il/content/kan-news/politic/1109045/) (14.10.26): *"צעד אמיץ ולא קל של אחריות לאומית"*. Electoral.
+  [כאן](https://www.kan.org.il/content/kan-news/politic/1109045/) (13.10.26): *"צעד אמיץ ולא קל של אחריות לאומית"*. Electoral.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -10824,7 +10824,7 @@ read at the realistic range, 6 of 18. The slate: יוסף חדאד at #2 and dep
 commander wounded at Bint Jbeil — then נטעלי שם טוב (news anchor), עו"ד ערן בן ארי (opposition chair
 in the Bar Association), ללי דרעי (bereaved mother), סיגל קראוניק (Be'eri widow), דוידי בן ציון
 (deputy head, Samaria Regional Council; **outside the realistic 6**; he left the list on 13.10.26, by
-[כאן](https://www.kan.org.il/content/kan-news/politic/1109045/) (14.10.26, read through a headless browser; rev 276), citing pressure: signs calling on
+[כאן](https://www.kan.org.il/content/kan-news/politic/1109045/) (13.10.26 20:49, read through a headless browser; rev 276), citing pressure: signs calling on
 him to quit were hung outside his home that week, and to friends, *"כל היישוב שלי מלא. אשתי שבורה
 מזה"*, and to the party, *"אשתי והילדים לפני הכול"*. The party blames *"גורמים שפשוט לא מוכנים
 שייכנסו כוחות חדשים ונקיים לפוליטיקה הישראלית"*. נתניהו's [post](https://x.com/netanyahu/status/2110056342765683138) gives a different reason,
@@ -11885,6 +11885,12 @@ Most links are given above, where each source is used; these are the rest.
   sources to miss the threshold, with הנדל and זליכה's list given the better chance; בן ציון's
   departure (under the slate) and בן גביר's refusal are entered above. ynet's poll average puts the row below the
   threshold, with נטעלי שם טוב third ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14923344)). Electoral.
+- **Read, and scored nothing (rev 277):** ללי דרעי on רשת ב' ([כאן](https://www.kan.org.il/content/kan-news/politic/1109164/), 14.10.26 09:34): a
+  *"קמפיין נבזי"* against the list — calls at all hours, signs in its members' settlements and by
+  their children's school transport, AI images and demands to withdraw — *"כי העזנו להציע משהו
+  חדש"*; she does not know who is behind it, points to the replies under סמוטריץ''s post, and says
+  her son was invoked *"עשרות פעמים"* to call her a traitor to his memory. Her number is not given.
+  Conduct of a campaign against the row; no position. The rest of the report repeats rev 276's.
 - **Read, and scored nothing (rev 276):** חדאד (#2) on בן ציון's departure, by [כאן](https://www.kan.org.il/content/kan-news/politic/1109045/): *"אנחנו
   תחת קמפיין מכוער שממומן בתקציבי עתק ושכל מטרתו לרסק אותנו כאילו אנחנו האויב. וזה עוד בא מימין"*.
   A charge about rivals' campaigning; no position.
@@ -15829,3 +15835,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 275 — **three הארץ pieces (bodies supplied by the repo owner), a ynet report (`curl`) and one entry of a כאן live page (headless browser; links supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **עמך ישראל:** a column reports that דוידי בן ציון (#7, outside the realistic six) has left the list, so the slate and the sector paragraph that cite him say so, and that בן גביר refuses to sign a surplus agreement with וינטר, which answers the open question that the row might sign with עוצמה יהודית; both are the columnist's reports with no statement quoted. A second column relays the second wave of the attack on חדאד (#2): ערוץ 14 on Gaza *"לפלסטינים"* and a charity for Gaza children before 7 October, and חדשות 13 on rebuilding Gaza; a candidate's past, and the page scores what the list says now (rev 240). **הליכוד:** נתניהו to ערוץ 14 that כאמל landed before 7 October but did not meet him, and *"רוצה לראות את הדיפסטייט?"*, with אוחנה (#3) the next morning saying he meant that day only and guessing כאמל met a security chief; who was warned is not a position (revisions 100, 141). אוחנה also calls the report on אוריך a gossip campaign. **עוצמה יהודית:** ynet names קרויזר's (#6) March 2025 law widening gun licences for 18-to-21-year-olds, one more instance under `gun-rights`, held. **הדמוקרטים:** a column's account that supporting אבו שחאדה's disqualification cost it Arab voters restates the recorded stance. **Not entered:** the הארץ report on קיש's council appointments was already read in revision 274 (same link); the opposition column's readings of ישר, ביחד, ישראל ביתנו, רע"ם, הרשימה המשותפת and הנדל and זליכה's list are electoral, as is ynet's per-list count of women, which is list composition; N12's episode of the Sharki history series and its report on the bereaved families' conscription charter carry no party act. |
 | 2026-10-14 | revision 276 — **one post by נתניהו (fxtwitter; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** It dates בן ציון's departure from עמך ישראל, which revision 275 had only from an undated column: by 13.10 17:13 UTC נתניהו praised *"החלטתו החשובה לפרוש ממפלגתו של וינטר"* and gave as his reason that וינטר's run endangers the right's bloc. The reason is נתניהו's; no word from בן ציון or the party was read. The post's call on the rest of the list to quit, against a *"ממשלת שמאל של איזנקוט, יאיר גולן, ליברמן, בנט והמפלגות הערביות"*, is entered under הליכוד as one more form of the repeated claim about other rows (rev 153's line), the first to name בנט. |
 | 2026-10-14 | revision 276, continued — **a כאן report of 13.10 on בן ציון's departure (headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** It gives his own reason, which is not נתניהו's: pressure, with signs hung outside his home calling on him to quit (*"אשתי והילדים לפני הכול"*), and the party's statement blaming those who will not let *"כוחות חדשים ונקיים"* into politics. The slate line under עמך ישראל now rests on it and keeps נתניהו's reason beside it as his. כאן numbers him #8 where this entry counts him seventh from the site's team page; the filed list was not read, so the difference is recorded and not settled. חדאד's charge of an *"קמפיין מכוער"* from the right and סמוטריץ''s praise (*"צעד אמיץ ולא קל של אחריות לאומית"*) are electoral, entered under their rows. |
+| 2026-10-14 | revision 277 — **עמך ישראל: ללי דרעי on רשת ב' (כאן, 14.10; headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** She describes the campaign against the list (calls, signs in the members' settlements, AI images, demands to withdraw, her fallen son invoked against her) and does not know who runs it. Conduct of a campaign against the row, entered under its Sources; the report's second half repeats revision 276's. |
