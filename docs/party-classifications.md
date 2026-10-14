@@ -1877,7 +1877,13 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   The rest of the column is the writer's judgment of him, and its second half, on the arrest of כפר
   סבא's mayor, names no party and is not entered. אוחנה (#3), on רשת ב' (rev 275; [כאן](https://www.kan.org.il/content/kan-news/politic/live-1109100/),
   14.10.26): *"זה קמפיין רכילות צהוב שיש בו עבירות פליליות של חשיפת הפרטים מתוך הנייד שלו"*. A
-  defence of a party employee; no position. N12 writes that he is still employed in נתניהו's office; this entry's record
+  defence of a party employee; no position. The Shin Bet has begun checking the leak from his phone (rev 280;
+  [הארץ](https://www.haaretz.co.il/news/politics/2026-10-14/ty-article/.premium/000001a1-39bb-d57f-abbb-3fbb59b30000), 14.10.26, body supplied by the repo owner), only for anything bearing on the Prime
+  Minister's security, with nothing found so far; the paper says the bodies concerned had passed
+  the matter to one another for three weeks because he is employed by הליכוד and not by the office
+  — the status this entry records from the state bodies. It also repeats its report that he built
+  an AI media-monitoring tool for נתניהו and his wife whose code, left public, exposed the two
+  WhatsApp groups it fed. A party employee's conduct; no position. N12 writes that he is still employed in נתניהו's office; this entry's record
   (revs 152, 267) is that the state bodies call him a party employee, and both are left as stated.
   Three earlier N12 reports it links were not read. An adviser's conduct under investigation; no
   position, and no tag. איזנקוט's and בנט's replies are under ישר and ביחד.
@@ -15860,3 +15866,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 277 — **עמך ישראל: ללי דרעי on רשת ב' (כאן, 14.10; headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** She describes the campaign against the list (calls, signs in the members' settlements, AI images, demands to withdraw, her fallen son invoked against her) and does not know who runs it. Conduct of a campaign against the row, entered under its Sources; the report's second half repeats revision 276's. |
 | 2026-10-14 | revision 278 — **הציונות הדתית: a TheMarker report on a cabinet decision of 14.10 (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** סמוטריץ''s draft adds ₪1.03bn for classified defence procurement and funds it from a future cut, 2027–2029, to the five-year plan for Arab society, which has not yet been approved. Entered under the `sectoral-budgeting` family as the same practice in the other direction — a finance minister choosing which sector pays — beside עוצמה יהודית's diversion of the 550 plan. TheMarker's reading that the cut is declaratory election propaganda is its own; no tag exists for cuts to Arab-society budgets, and one ministerial act is not a programme. |
 | 2026-10-14 | revision 279 — **הליכוד: רונן בר's ₪3m libel suit against נתניהו (הארץ, body supplied by the repo owner; the 28.09 post it rests on, fxtwitter; the statement of claim not read). Nothing scored, `seed.sql` unchanged.** Revision 226 recorded that בר would sue; he filed on 14.10. The claim sets out more than twenty warnings with נתניהו's responses, and נתניהו answers that בר had his red-phone number. The 28.09 post, now linked, carries the *"או ימין, או פלסטין"* line and the foreign-states charge revision 172 recorded. Entered under the pre-7-October thread, which is not a position. |
+| 2026-10-14 | revision 280 — **הליכוד: a הארץ report that the Shin Bet is checking the leak from אוריך's phone (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** The check is limited to the Prime Minister's security; the paper says it was delayed because אוריך is a party employee, the status this entry already records. Entered beside revisions 269, 274 and 275 on him. |
