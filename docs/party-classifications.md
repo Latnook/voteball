@@ -1959,6 +1959,9 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   עמך ישראל candidates' homes, envoys offering posts, and soundings of הרב טאו's people about נעם,
   with hints that its people would have no *"אוזן קשבת"* in the next government. Unattributed, and
   campaign conduct; the call of revision 276 is its public face.
+- **Read, and scored nothing (rev 292):** answering איזנקוט's statement on the Gaza border (under
+  ישר; [כאן](https://www.kan.org.il/content/kan-news/politic/1109509/), 15.10.26): *"איך תמוטט את חמאס בלי לקבל רשות משותפיך מנסור וטיבי?"* An attack, the
+  campaign's line on the Arab lists.
 - **Read, and scored nothing (rev 267): the day's other posts.** נתניהו against וינטר (under עמך
   ישראל), and over a clip of ג'בארין that closes *"זהו ימין או פלסטין"* (under הרשימה המשותפת).
   ביסמוט (#23) posts his ערוץ 13 interview of 10.10
@@ -2596,6 +2599,10 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 - **`hardline-on-gaza`** (rev 104) — fighting Hamas and conditioning reconstruction on disarmament
   is near-universal Zionist-party doctrine; every holder's evidence is siege or supply measures,
   the line rev 98 drew for המילואימניקים.
+  A deadline does not change it (rev 292): from the Gaza border, *"תוך 18 חודשים מכניסתי ללשכת
+  ראש הממשלה, חמאס לא ישלוט יותר ברצועת עזה. נביא להשמדת הזרוע הצבאית של חמאס"*, by the Trump
+  outline or *"בהפעלת יכולות צבאיות ומבצעיות"* — rev 287's either-or with a date on it, and still no
+  siege or supply measure.
 - **`preemptive-security-doctrine`** (rev 214) — on *"הקם להורגך, השכם להורגו"*, the line that earned
   עמך ישראל the tag (rev 201), the rebuttal page says the IDF works *"לפי פקודות ונהלים"*, not
   slogans: neither earned nor contradicted. **Trigger:** a stated doctrine of striking threats
@@ -3317,6 +3324,12 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   השב"ן ומתאמי השירות"* is one more instance at the campaigning pole of the `sectoral-budgeting`
   sweep. A front-line emergency centre in Kiryat Shmona is the north paper's. No axis moved and no
   tag changed.
+- **Read, and scored nothing (rev 292):** איזנקוט's statement on the Gaza border, by
+  [כאן](https://www.kan.org.il/content/kan-news/politic/1109509/) (15.10.26 11:12; headless browser; link supplied by the repo owner). The
+  18-month commitment is under `hardline-on-gaza` in Considered and refused. *"כל עוד בנימין נתניהו
+  בשלטון, חמאס יישאר בשלטון"* is an attack. The state commission, *"זו לא פריווילגיה, זה הכרח וצורך
+  ביטחוני דחוף"*, is the row's held position; the tag is refused for every row. The party's own post
+  of the statement was not looked for.
 - **Read, and scored nothing (rev 258):** the thirteenth and fourteenth principles papers,
   [*ישר! לדיור*](https://yasharwitheisenkot.com/principles/housing/) (published 2026-10-08 08:19
   UTC) and [*ישר! לתרבות ישראלית*](https://yasharwitheisenkot.com/principles/culture/) (08:23 UTC).
@@ -12406,6 +12419,11 @@ Most links are given above, where each source is used; these are the rest.
   the list to withdraw: *"אנחנו לא נכנעים. אנחנו רצים עד הסוף בכל הכוח"*; of the signs outside בן
   ציון's home, *"נחצה קו אדום"*. Staying in the race is not a position, and `bibi` does not rest
   on it.
+- **Read, and scored nothing (rev 292):** the party on איזנקוט's statement on the Gaza border
+  (under ישר; [כאן](https://www.kan.org.il/content/kan-news/politic/1109509/), 15.10.26): *"גדי איזנקוט היה רמטכ"ל הקונספציה שדחף להכלה והסדרה וקרא לעצור
+  את המלחמה לפני שנכנסנו לרפיח"*, and *"לא תהיה ולא יכולה להיות הכרעה בממשלה של גדי איזנקוט ויאיר
+  גולן"*. An attack on a rival's record; refusing a rival's government is what `bibi` already
+  records.
 - **Read, and scored nothing (rev 277):** ללי דרעי on רשת ב' ([כאן](https://www.kan.org.il/content/kan-news/politic/1109164/), 14.10.26 09:34): a
   *"קמפיין נבזי"* against the list — calls at all hours, signs in its members' settlements and by
   their children's school transport, AI images and demands to withdraw — *"כי העזנו להציע משהו
@@ -16476,3 +16494,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-15 | revision 289 — **המילואימניקים והכלכלית: the joint list's own platform page on `milu-kal.co.il` (created 29.09, edited 07.10.26; `curl` and the site's REST API; link supplied by the repo owner), the first text in both factions' name: four principles and three plans, the full platform still to come. No axis moved. `scholar-exemption-retained` REMOVED (38 → 37), on the repo owner's decision:** the plan allows *"פטור מטעמים רפואיים בלבד"* and gives Torah prodigies a deferral with service required, ישר's refused shape; the joint text outranks the union rule's carry from הכלכלית. Cost of living: tariffs and import quotas abolished, food and farm goods included, the milk, egg and honey councils dismantled, VAT to 12% — `free-trade`, `anti-monopoly` and `tax-cutting` on joint text, `agricultural-protectionism` refused at its opposite pole; `economic` +1 holds, and with no welfare or housing text the housing trigger stays open. Service: a driving-licence ban, no public or religious post (*"דיין, רב עיר ומשגיח כשרות"*) and no institutional funding for evaders; no franchise clause, so `service-conditioned-citizenship` now rests on the faction's texts alone. Foreign: *"פירוק הפלסטיניזם"*, no Palestinian state, the end of the claim of return and of UNRWA — the first written holder opposite `right-of-return`, for the sweep — and *"קו המחרשה הוא קו הגבול!"*, a slogan that stays inside +2. `regional-normalization` and `hasbara-focused` refused. The home page sources #6 and #10; #12 remains unsourced. Cross-row: הרשימה המשותפת (`right-of-return`), ישראל ביתנו (rabbis and service), and the tag's definition item. |
 | 2026-10-15 | revision 290 — **הרשימה המשותפת: the list's first joint texts, *התוכנית הכלכלית-חברתית* and *התוכנית למיגור הפשיעה המאורגנת* on `jointlist.org.il` (live by 04.10.26; the Hebrew, English, Arabic and Russian editions match in every figure; the economic plan expanded by 10.10 and 13.10, per Wayback; links supplied by the repo owner). The entry's trigger "revisit all three axes the moment the list publishes jointly" was run: all three held. ONE TAG ADDED, `cost-of-living` (15 → 16), on the repo owner's decision of 2026-10-15.** `economic` −3: nationalisation of privatised companies, a state mortgage bank, rent capped at 20% of net income, a minimum wage of at least 70% of the average and allowances at 25%; the income-tax and VAT cuts sit inside a reform that taxes capital more. `security` −3: by 10.10 the plan names *"הכיבוש של השטחים הפלסטיניים, הסוריים והלבנוניים"*. `religiosity` −3: no joint text; held on בל"ד's declaration. `anti-privatization`, `progressive-taxation` and `affirmative-action` now rest on joint text. `cost-of-living` rests on the rent cap *"כאמצעי עיקרי למאבק ביוקר הדיור"*, VAT to 10% and full indexation, with the framing (redistribution, *"יוקר הדיור"*) recorded against it. Refused: `tax-cutting`, `anti-corruption`, `municipal-devolution`. The crime plan completes rev 44's precondition for an Arab-society crime tag (noted under רע"ם, עוצמה יהודית and כחול לבן); minting stays with the sweep. A general trade-protection line (tariffs on the United States) is filed as a one-holder gap. |
 | 2026-10-15 | revision 291 — **ישר: the twenty-fifth principles paper, *ישר! לבריאות* (entry created 15.10.26 07:50 UTC; browser-shaped `curl`; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** All 67 sentences of the health topic's 8 unpublished posts are in it, so the unpublished lead is down to the foreign-affairs topic (10 posts), the one that would carry the party's first written text on the territories. `economic` +1 holds on both halves: stronger public medicine and a binding service standard on the health funds with a budget sanction, beside shared community clinics that may be private to raise competition between the funds. The removal of sectoral preferences in the supplementary insurance is one more instance for the `sectoral-budgeting` sweep. |
+| 2026-10-15 | revision 292 — **ישר, הליכוד, עמך ישראל: a כאן report of איזנקוט's statement on the Gaza border and two replies (headless browser; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **ישר:** within 18 months of taking office, *"חמאס לא ישלוט יותר ברצועת עזה"*, by the Trump outline or by military means — rev 287's either-or with a deadline, still the near-universal doctrine `hardline-on-gaza` was refused on (rev 104); the state commission restated, refused for every row. **הליכוד** and **עמך ישראל** reply with attacks. |
