@@ -4725,7 +4725,8 @@ pilots' letter).
 **`economic` −2 — social-democratic.** The papers are state-led and distributive, and in each one
 checked for it (economic, Arab-society, north–south, rural, media, culture, disability) no tax rate,
 nationalisation or privatisation is named — which is why it is −2 and not the self-defined communism
-of −3.
+of −3. The north paper of 14.10 is the first to name a tax rate, and its rates are regional
+incentives (under Market-flavoured, below; rev 288).
 
 - Economic paper: a shorter work week, added vacation and sick days, paternity leave, expanded
   subsidised early childhood, restored price controls, public and long-term-rental housing.
@@ -4737,14 +4738,31 @@ of −3.
   לחוקק את חוק ביטוח סיעוד ממלכתי"*, where ישר's paper only examines it (*"נבחן הטלת חובת ביטוח
   סיעודי"*).
 - The old-age pension names its formula: *"נחזיר את הצמדת הקצבה לשכר הממוצע במשק"*. That is the line
-  ישר's aging paper was held short of (rev 39) and ביחד's crossed (rev 29).
+  ישר's aging paper was held short of (rev 39) and ביחד's crossed (rev 29). The paper's `(2)` edition
+  (12.10.26; rev 288) adds the target and the timetable: the basic allowance raised over three years
+  from 2027 to *"שיעור של 25% מהשכר הממוצע במשק"* for those who worked, and income supplement plus rent
+  aid brought to *"גובה שכר המינימום הנהוג במשק"*, keeping *"האופי האוניברסלי שלה"*.
+- **The economic paper's `(1)` edition** (30.09.26, the one the site now links; rev 288) adds three
+  lines of the same shape: *"נעלה את שכר המינימום ואת מס ההכנסה השלילי כדי להגדיל את התמריץ לצאת
+  לשוק העבודה"*, *"נבטל את התקצוב המגזרי המעודד אי-עבודה ואי-גיוס"*, and *"נגדיל את ההוצאה
+  האזרחית לכיוון ממוצע ה-oecd"* (lower case in the paper). A negative income tax is a transfer, so the `progressive-taxation`
+  trigger (a tax named in the party's own text) is not met.
+- **The north paper** (*"תוכנית הדמוקרטים לשיקום, פיתוח וחיזוק צפון הארץ"*, 14.10.26; rev 288): a
+  budget of *"15 מיליארד ש"ח, מעבר לתקציבים שכבר הובטחו"* over at least seven years — the figure
+  above, now with its own law for חבל תנופה, a ministerial committee *"בראשות יו"ר הדמוקרטים, יאיר
+  גולן"* (a portfolio wish), early-childhood and resilience-centre budgets doubled or expanded, and
+  doubled agricultural R&D.
 - The speakers' own description in the economy episode is *"המדינה שמתערבת בשוק החופשי"*. The money
   is about ₪40bn found inside the existing budget by ending coalition funds and funding for schools
   without the core curriculum — no new tax or rate.
 - **Market-flavoured measures that do not move it:** an extra tax-credit point for pensioners and
   employer incentives to keep over-67s working (targeted transfers, and not workfare — they enable
   work, they do not condition support on it); *"נצמצם חסמים רגולטוריים ובירוקרטיים"*, scoped to
-  research; a cut in fuel excise and car taxation.
+  research; a cut in fuel excise and car taxation; and, in the north paper (rev 288), the row's first
+  named tax rates — *"עד 40% השתתפות במענקים, ומס חברות נמוך בגובה 4%"* for northern industry under
+  the capital-investment law, and arnona cut *"בשיעור 45% למגורים ו-39% לעסקים"*, with the local
+  authorities compensated from the state budget. Regional incentives inside a state-led programme,
+  of the kind ישר's north paper carries at +1.
 
 **`security` −1 — Zionist two-stater, and not −2.** The −2 band requires two-state *with an end to
 the occupation*. This party holds a two-state position conditioned on a Jewish majority, full
@@ -4830,7 +4848,9 @@ not what it has a policy about.
 - **`anti-annexation`** — three kinds of evidence: diplomatic (halt annexation, repeal the
   annexation laws, defund illegal outposts); fiscal, *"במקום תקציבי עתק למאחזים ולסיפוח והטבות מס
   למתנחלים, נפנה תקציבים לשינוי מציאות בצפון ובדרום"*; and military, *"נפסיק לרתק כוחות להגנה על
-  מאחזים מבודדים"*.
+  מאחזים מבודדים"*. The north paper adds a second fiscal line (rev 288): *"נדרוש העברה של מוקד
+  העדיפות בתחום תשתיות התחבורה – מאזורי יהודה ושומרון לאזור הצפון, באמצעות הסטת מיליארדי שקלים
+  בכל תקציב בשנים הקרובות"*.
 - **`anti-settler-violence`** — violent settler organisations declared terror organisations; a
   *"תוכנית לאומית למיגור הטרור היהודי"* with מחוז ש"י resourced to lead it; administrative detention
   returned to the שב"כ. The later edition of the security paper says *"הטרור היהודי"* where the
@@ -4904,8 +4924,10 @@ not what it has a policy about.
   disqualifying רע"ם. **It is held with a red line, not as blanket inclusion:** *"אין הנחות לאבו
   שחאדה ואין הנחות לבן גביר – את שניהם צריך לפסול"* — individuals yes, lists no.
 - **`protest-movement-rooted`** — רונן #7, רדמן #9, אביטל #15.
-- **`lgbt-rights`** — the dedicated להט"ב paper (conversion therapy, surrogacy, an LGBT unit at ₪100m
-  a year in the budget base).
+- **`lgbt-rights`** — the dedicated להט"ב paper (conversion therapy, surrogacy, and a national
+  LGBT-rights authority at ₪100m a year in the budget base). Until its `(1)` edition of 30.09.26 the
+  ₪100m went to the existing unit in the Social Equality Ministry; that edition makes it *"רשות לאומית
+  לקידום זכויות להט"ב בעלת סמכויות נרחבות"*, at *"100 מיליון ש"ח בשנה לפחות"* (rev 288).
 - **`gender-equality`** — a programme, not a values statement: a self-binding zipper list, a
   statutory 40% quota for women in the Knesset enforced by docking party funding, 40% in senior
   public-service posts, equality entrenched in a Basic Law, and a national authority on violence
@@ -4944,7 +4966,9 @@ Each refusal names the reason, so the next pass does not reopen it on the same e
   *is*, not that a Jewish-Zionist party has a policy about Arab citizens.
 - **`sectoral-budgeting`** — the tag is for coalition funds; a gap-closing five-year plan is a
   different instrument. The tension is real and recorded: the economic paper opens with *"במקום
-  תקציבים מגזריים, נשקיע בתעסוקה ובשירותים החברתיים"* and the Arab-society paper demands a
+  תקציבים מגזריים למקורבים ולמשתמטים, נשקיע בשירותים חברתיים ובציבור העובד והמשרת"* (its `(1)`
+  edition of 30.09.26, the one the site links; the `(2)` edition read on 2026-08-01 said *"במקום
+  תקציבים מגזריים, נשקיע בתעסוקה ובשירותים החברתיים"*; rev 288) and the Arab-society paper demands a
   תוכנית חומש.
 - **`statist`** — the three holders sit at `economic` 0 or +1, where the axis would otherwise hide
   state expansion. At −2 the axis already records it. The tag is never defined in prose anywhere on
@@ -5057,8 +5081,11 @@ None is created from one row; the rule is membership decided across all rows in 
 #### Reading this party's sources
 
 - **Enumerate from the site's public Supabase `topics` table** — the rows `yes.democrats.org.il`
-  loads client-side. It listed 25 topics on 2026-09-28 with their PDFs (the transport topic has
-  none), and bounds the corpus the way a sitemap does elsewhere. The S3 bucket itself refuses
+  loads client-side. It listed 25 topics on 2026-09-28 with their PDFs (the transport topic had
+  none then), and bounds the corpus the way a sitemap does elsewhere. On 2026-10-15 it listed 26
+  (rev 288): the 26th, *שיקום ופיתוח הצפון*, was created 14.10.26 10:46 UTC, the transport topic
+  now links a PDF, and every row carries an `updated_at` of 14.10.26 10:51 UTC — a bulk touch, so
+  that stamp does not by itself mean a paper changed; read each PDF's `Last-Modified`. The S3 bucket itself refuses
   `ListObjectsV2`, and no page on `democrats.org.il` links the topic PDFs.
 - **Probe for a second edition before reading a paper** (rev 62): try `(1)` and `(2)` suffixes, with
   and without the `+` separator, and compare bytes. Five papers existed in two substantively
@@ -5068,7 +5095,12 @@ None is created from one row; the rule is membership decided across all rows in 
   counterparts are the `(1)` forms. **The unsuffixed מדיני ביטחוני is the three-page edition the
   `security` argument cites.** Sizes recorded for later papers, to detect a silent revision:
   conscription 96,656 bytes; senior citizens 99,952; media 94,520; culture 111,089; disability
-  92,270; health 113,103.
+  92,270; health 113,103. **On 2026-10-15 the site linked other editions of four papers** (rev 288):
+  כלכלי חברתי `(1)` (95,714, Last-Modified 30.09), להטב `(1)` (97,981, 30.09), אזרחים ותיקים `(2)`
+  (121,974, 12.10) and תוכנית עלייה וקליטה `(1)` (116,995, 12.10); the unsuffixed מצע סביבה was
+  replaced in place (127,694, 13.10; one sentence added against the Wayback copy of 05.09, an
+  independent national authority for animals). New: the north paper 121,702, transport 102,145.
+  The other nineteen sizes and dates match what was read.
 - **Papers are revised after publication.** The 2026-09-28 audit found four changed since they were
   read (crime, education, economic, LGBT).
 - **Use `pdftotext`, not WebFetch** — the PDFs are Illustrator exports with no usable text layer for
@@ -5106,7 +5138,23 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   09-23: [תקשורת](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%A7%D7%A9%D7%95%D7%A8%D7%AA.pdf), [תרבות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%A8%D7%91%D7%95%D7%AA.pdf), [אנשים עם מוגבלות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%90%D7%A0%D7%A9%D7%99%D7%9D+%D7%A2%D7%9D+%D7%9E%D7%95%D7%92%D7%91%D7%9C%D7%95%D7%AA.pdf);
   09-24: [בריאות](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA.pdf);
   09-28: [עלייה וקליטה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%A2%D7%9C%D7%99%D7%99%D7%94+%D7%95%D7%A7%D7%9C%D7%99%D7%98%D7%94.pdf) ([Russian edition](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%A8%D7%95%D7%A1%D7%99%D7%AA_%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%A2%D7%9C%D7%99%D7%99%D7%94+%D7%95%D7%A7%D7%9C%D7%99%D7%98%D7%94.pdf); topic pages in [Hebrew](https://yes.democrats.org.il/topics/aliyah) and
-  [Russian](https://yes.democrats.org.il/topics/aliyah_ru)) and the [transport topic](https://yes.democrats.org.il/topics/transportation), which has no PDF.
+  [Russian](https://yes.democrats.org.il/topics/aliyah_ru)) and the [transport topic](https://yes.democrats.org.il/topics/transportation), which had no PDF then;
+  10-15 (rev 288): [שיקום ופיתוח הצפון](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%A9%D7%99%D7%A7%D7%95%D7%9D+%D7%95%D7%A4%D7%99%D7%AA%D7%95%D7%97+%D7%94%D7%A6%D7%A4%D7%95%D7%9F.pdf) (6 pp, created 14.10.26), [תחבורה](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94.pdf) (2 pp, created 29.09.26), and the editions now linked:
+  [כלכלי־חברתי (1)](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9B%D7%9C%D7%9B%D7%9C%D7%99+%D7%97%D7%91%D7%A8%D7%AA%D7%99+%281%29.pdf), [להט"ב (1)](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%9C%D7%94%D7%98%D7%91+%281%29.pdf), [אזרחים ותיקים (2)](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%90%D7%96%D7%A8%D7%97%D7%99%D7%9D+%D7%95%D7%AA%D7%99%D7%A7%D7%99%D7%9D+%282%29.pdf), [עלייה וקליטה (1)](https://democrats-media.s3.us-east-1.amazonaws.com/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA+%D7%A2%D7%9C%D7%99%D7%99%D7%94+%D7%95%D7%A7%D7%9C%D7%99%D7%98%D7%94+%281%29.pdf),
+  with the 26 topic cards themselves (read from the table; nineteen summarise papers already read,
+  unchanged).
+- **Read, and scored nothing (rev 288):** the transport paper — a bus fleet and drivers, the Gush Dan
+  metro by 2040, *"נשלים את חקיקת חוק רשויות התחבורה המטרופוליניות"*, road deaths halved in five
+  years, *"נקדם הפעלת תחבורה ציבורית גם בשבת, שתחבר את ערי ישראל"* with arrangements inside a
+  locality set *"בשיח עם הרשויות המקומיות"*, and a second airport in the Negev; and the north paper's
+  Shabbat and local-powers lines — Shabbat lines restored and helped *"כצעדי ביניים עד החלת תחבורה
+  ציבורית בימי מנוחה בכל רחבי הארץ"*, transport powers to the authorities *"על בסיס מודל הגולן"*.
+  `municipal-devolution` and the `religiosity` −3 planks, held. Its Lebanon lines (*"לא נאפשר חזרה
+  למציאות של רצועת ביטחון בתוך שטח מדינת ישראל"*) are about the northern border, not the
+  Palestinian question, so they are not the third document of the `security` −1 trigger. Bilingual
+  schools and joint Jewish–Arab–Druze industrial zones: `jewish-arab-partnership`, held. The
+  environment paper's new animal authority, the aliyah paper's two-word edits, and the Arabic and
+  Russian cards (faithful to the Hebrew): nothing.
 - **Seen and deliberately not read as sources:** the [August 2026 booklet](https://democrats.org.il/wp-content/uploads/2026/08/plan-8-26-he.pdf) (a re-package) and
   the [party constitution](https://democrats.org.il/wp-content/uploads/2025/10/constitution_240725.pdf) (organisational, not policy).
 - **Video series *"מה המצע"*** (2026-06-01 to 09-16): [מדיני-בטחוני](https://www.youtube.com/watch?v=PFG9YIvxvkU), [כלכלי חברתי](https://www.youtube.com/watch?v=i5_mOP0nIi0),
@@ -15673,6 +15721,9 @@ bought nothing here, because the defect was never in the pixels being measured.
   *Revision 157 (2026-09-27): the two poles in one story. סמוטריץ' refuses, in a court filing, to accept that
   coalition funds exist as a category; הדמוקרטים' לזימי petitions against them as election bribery.*
   *Revision 286 (2026-10-15): כחול לבן's economic plan, *"קיצוץ רוב הכספים הקואליציוניים"*.*
+  *Revision 288 (2026-10-15): the founding instance in a revised edition. הדמוקרטים' economic paper,
+  `(1)` of 30.09, now opens *"במקום תקציבים מגזריים למקורבים ולמשתמטים"* and adds *"נבטל את התקצוב
+  המגזרי המעודד אי-עבודה ואי-גיוס"*.*
   *Revision 285 (2026-10-15): two more rows at the campaigning pole, in their own documents.
   ישראל ביתנו would put the ~₪24bn of coalition money of *"ממשלת המשתמטים"* into the army's force
   build-up; ישר's planning paper abolishes every sectoral funding mechanism *"לאלתר"* and its
@@ -16234,3 +16285,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-15 | revision 285 — **five ישר papers, עוצמה יהודית's rewritten IDF ethics code and ישראל ביתנו's missile-corps plan (`curl`; links supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **ישר:** the twentieth to twenty-fourth principles papers (public service, periphery, transport, planning, infrastructure) carry every sentence of the 56 unpublished posts of their five topics, so the unpublished lead is down to health and foreign affairs (18 posts), and both announced plans are out. `economic` +1 holds on both halves again; `governance-reform` and `public-service-reform` now rest on a paper of their own; the metropolitan authorities move from examined to committed under `municipal-devolution`. **The agriculture paper was edited on 14.10**: against the Wayback copy of 27.09 one sentence changed, *"לתמיכה ישירה בחקלאים"* → *"לתמיכה בחקלאות"*, and the two sentences of the entry that said *direct* farm support are corrected. Two reading traps recorded: a sixth rural התיישבות and `ריבונות` as digital and infrastructure sovereignty. **עוצמה יהודית:** purity of arms replaced by *"צדקת הנשק"*, *"הבא להורגך השכם להורגו"*, the ban on harming the uninvolved dropped and *"המשפט העברי"* named among the army's sources of values — the full text of the military-personnel gap item (ה), still two rows at one pole; the religiosity question records it as the first current mention of משפט עברי, an ethics code and not state law, and the owner's +3 stands. **ישראל ביתנו:** a missile corps beside the air force, funded from the ~₪24bn of coalition money; force structure, held. The `sectoral-budgeting` sweep gains ישראל ביתנו and ישר at the campaigning pole. |
 | 2026-10-15 | revision 286 — **כחול לבן: five one-page papers of 29.09–07.10.26 (principles, an economic-social plan, internal security, foreign policy and the diaspora, the judicial booklet re-set) and the September education programme, `34534.pdf`, read from the rendered page; six links sent again and checked unchanged (browser-shaped `curl`; links supplied by the repo owner). No axis moved. NINE TAGS ADDED (18 → 27), on the repo owner's decision of 2026-10-15:** `civil-marriage` (*"נאפשר רישום נישואים אזרחיים בישראל"*), `regional-normalization`, `anti-monopoly`, `free-trade`, `cost-of-living`, `workforce-integration`, `municipal-devolution`, `religious-pluralism` and `excludes-anti-zionist-parties` (rev 102's trigger: the principles page's *"רק מממשלה ציונית"* read with the 2025 booklet's Jewish-and-democratic definition of the partners). Four were already supported by the 2025 booklet and missed. **`economic` held at 0 on the repo owner's decision**: the economic plan has both halves of the +1 band and no costing; the trigger is a costed version. `religiosity` −2 holds: registration of civil marriage names no divorce and the Rabbinate stays. Rewritten because overturned: "no civil marriage" (here and in the axis table), Arab-society crime as "a summary, not a quotation" (now the party's own chapter, Decision 549), and state-haredi education "replacing" the private networks (the September edition expands it instead). Refused: `gender-equality` (violence policy in a crime paper), `hasbara-focused`, `communitarian-devolution`. The gun-control and `sectoral-budgeting` sweep items each gain this row. `seed.sql` verified on an already-seeded database; backend suite 271 passed. |
 | 2026-10-15 | revision 287 — **three entries of a כאן live page and three כאן reports of 14.10 (headless Chromium via the `playwright` library; a plain `--dump-dom` got Cloudflare's challenge twice; links supplied by the repo owner). No axis moved. ONE TAG ADDED, `excludes-anti-zionist-parties` on ביחד (27 → 28), on the repo owner's decision of 2026-10-15:** בנט on רשת ב', *"מי שלא מקבל את מדינת ישראל כמדינה יהודית ודמוקרטית - לא יהיה בממשלה"* — a statement about coalition partners on ישר's criterion, the trigger rev 115 set; the broadcaster's write-up, the audio not heard. **ישר:** איזנקוט would be sworn in on 58–59 and widen with *"קולות ציוניים ממלכתיים"*, opposed a Palestinian state *"לכל אורך התקופה"*, and the 20-point agreement binds his government; all held; the ambassador's meeting, by a source, is not a position. **הליכוד:** לוין would push the 2023 reform again (`judicial-overhaul`, held); כאן's unnamed sources put two businessmen, not כאמל, on the plane of 26.09.2023, against the premise of נתניהו's account (rev 275). **הרשימה המשותפת:** טיבי, no coalition needed at once and no caretaker נתניהו; held. |
+| 2026-10-15 | revision 288 — **הדמוקרטים: the site's 26 topic pages (read from its public Supabase table), a new north paper, the transport PDF and four revised editions (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** *תוכנית הדמוקרטים לשיקום, פיתוח וחיזוק צפון הארץ* (14.10) is new: ₪15bn over seven years, the row's first named tax rates (4% corporate tax and 40% grants for northern industry, arnona cut 45%/39%) — regional incentives, held at −2 — and transport money moved *"מאזורי יהודה ושומרון לאזור הצפון"* (`anti-annexation`, held). The transport topic now has a PDF (Shabbat transport, metropolitan authorities; held). Revised: the economic paper's `(1)` edition raises the minimum wage and the negative income tax and civil spending toward the OECD mean, and its opening line changed, so the `sectoral-budgeting` refusal's quotation is updated; the LGBT unit is now a national authority at ₪100m a year; the senior-citizens paper sets 25% of the average wage from 2027; aliyah and environment trivially. The other nineteen cards summarise papers already read, unchanged. |
