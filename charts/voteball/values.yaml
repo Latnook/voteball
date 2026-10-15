@@ -13,7 +13,7 @@ image:
   # recovers the rollback target with `git log -p` over this file, so its history IS the rollback
   # mechanism. Written by scripts/sync-values-from-tf.sh and application-cd. A git SHA of a public
   # repo leaks nothing.
-  tag: "e85fff5"
+  tag: "9b4d1b9"
   pullPolicy: IfNotPresent
 
   # Digest pins, written by application-cd's Promote stage and by deploy.sh step 9 -- resolved from
@@ -30,10 +30,10 @@ image:
   # and this map's entries sit at four, which is why the script's line matcher cannot see them --
   # by construction rather than by exclusion list.
   digests:
-    backend: "sha256:9442e00016cb057c0ca81088c12e997a7ee15e6c8f7ff85e491f73a4a7071697"
-    worker: "sha256:3062eb0a3cd10d90790d27e2bd4745d1947887c3a09d4a802272525eb8c5d2df"
-    nginx: "sha256:15746416d683b5cf48ede3a194a9012e225481931602f0e0536d3a127abd3aba"
-    backup: "sha256:366e2271a833b75b2ce1205f60f1d3ded73758ca69caac2f1460b535a7b2602d"
+    backend: "sha256:c7687286a30a893149410a97b5662d2b01c5bfb039539feec9e1f3fd0b0566cd"
+    worker: "sha256:2f48297834344c9b3fa11eb6fae9faab67c1ea66baadd928a3bc490fac8ecac9"
+    nginx: "sha256:fdfd5cf85a1411ae1212828e02f402b37ea4562127788d845790171d060a2d76"
+    backup: "sha256:222a3e6323ac0b073efd2aafec11e91a8ee41fddcaeaa75a99fca983f614185f"
 
 # The two PUBLIC subnet CIDRs from terraform/main.tf. Used by the frontend ingress policy to admit the
 # ALB's network interfaces and nothing else.
