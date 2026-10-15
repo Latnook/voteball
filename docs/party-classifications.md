@@ -2040,7 +2040,7 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
 **Basis.** Gadi Eisenkot's party, founded 2025-09-16; co-founders include Matan Kahana (former
 Religious Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief) and Nir Zohar
 (Wix). Scored from the party's own site, `yasharwitheisenkot.com`: the registered goals, the 10-step
-brochure and nineteen principles papers (twenty-one documents, rev 272), beside 17 topic pages and 157
+brochure and twenty-four principles papers (twenty-six documents, rev 285), beside 17 topic pages and 157
 position posts (revs 160, 161; the topic pages have since been taken off the site, see "Reading this
 party's sources"); on the conflict, where the documents are silent, from the leader's own
 statements. Before the platform existed the row was a placeholder (`new-party` +
@@ -2081,7 +2081,7 @@ both grew again in the rev 21 read and in the north paper (rev 39).
   transmission network.
 - **Expanding:** ₪20B over three years for reservists, a 15% rise for every conscript, 100% degree
   funding for combatants, dedicated land allocation, post-trauma rehabilitation authorities under a
-  dedicated minister, direct farm subsidies, a million olim in the first decade and two million by
+  dedicated minister, farm support (no longer called *direct* since 14.10, rev 285), a million olim in the first decade and two million by
   2048; direct financing of building protection and neighbourhood rehabilitation *"היכן שכוחות השוק
   אינם מספיקים"*, a tax on land not brought to construction, mass rail/metro investment; for the
   north, ₪15B over five years (₪6B of it fortification), ₪3B of education funding over a decade,
@@ -2101,13 +2101,29 @@ both grew again in the rev 21 read and in the north paper (rev 39).
   clean-up costs on the polluter. The local-government paper widens municipalities' own income and
   budget freedom and keeps redistribution, binding standards and *"מימון מלא או מוגבר לשירותים
   חיוניים"* with the state. The band holds.
+- **Five papers of 14.10 add to both halves again, and carry two figures (rev 285).** Expanding: a
+  national programme for the periphery run through multi-year regional development contracts and
+  *"מנועי צמיחה"*, urban renewal subsidised in the periphery *"במקומות שבהם היא לא משתלמת כלכלית
+  ליזמים"*, *"נגדיל את התמיכה בחקלאות"*, wider tracks under the capital-investment law, a share of
+  the income from national infrastructure kept for the region it sits in; in transport,
+  *"השקעת ענק בתשתיות"* against an investment gap the paper puts at over ₪250bn, the metro and light
+  rail accelerated, and multi-year funding *"חוצי מחזורי ממשלה"*; in infrastructure, a national
+  master plan, a waste authority, the wealth fund's money put into long-term infrastructure, and
+  critical infrastructure kept in Israeli ownership by law. Liberalizing: a cap on ministers in
+  Basic Law: The Government and small ministries closed (*"צפוי לחסוך מאות מיליוני שקלים בשנה"*),
+  regulation mapped with AI and the redundant part repealed, every new rule given a review date,
+  licensing where *"אי-מענה במועד ייחשב כאישור"*, the electricity sector decentralised with
+  storage and micro-grids, the electricity and gas authorities examined for a merger, incentives for
+  gas drilling and private investment, and congestion pricing examined *"באחריות ובהדרגה"*. Both
+  halves large and specific: the band's definition, again.
 - **Not 0:** *"נבטיח שהעבודה תשתלם תמיד יותר מקצבה"*, with aid redirected from stipends to "משרתי
   מילואים ולמשפחות עובדות ויצרניות" and means-testing *"אחרי מיצוי השתכרות בלבד"* — a directional
   welfare doctrine, where 0 requires none or a genuinely balanced one. The senior-citizens paper,
   the corpus's first purely expansionary document, does not move the axis: the band covers
   "subsidies, targeted spending".
-- **Not +2:** agriculture — "ייצור מזון מקומי הוא חלק בלתי נפרד מהחוסן הלאומי", direct support to
-  farmers, legislated `ענף אסטרטגי חיוני` status, state management of water and reservoirs,
+- **Not +2:** agriculture — "ייצור מזון מקומי הוא חלק בלתי נפרד מהחוסן הלאומי", support for farming
+  (*"לתמיכה ישירה בחקלאים"* in the paper until it was edited on 14.10.26, *"לתמיכה בחקלאות"* since;
+  the one sentence changed against the Wayback copy of 27.09, rev 285), legislated `ענף אסטרטגי חיוני` status, state management of water and reservoirs,
   production targets for essential goods. +2 requires withdrawing the state; this moves it in.
 
 **`security` +1 — no Palestinian state, with an explicit refusal of territorial expansion.** The
@@ -2398,7 +2414,17 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   שרים"* — eight years where the brochure says two terms; the tag tests neither number (rev 146).
 - **`governance-reform`**, **`public-service-reform`**, **`statist`** — the first two carry the
   institutional half of the corruption plank (rev 21); the list's composition corroborates the last
-  two and states no new position (rev 69).
+  two and states no new position (rev 69). **Since 14.10 the first two have a paper of their own**,
+  [*ישר! לשירות הציבורי*](https://yasharwitheisenkot.com/principles/government-and-public-service/)
+  (rev 285): appointments *"לפי כשירות, ניסיון והישגים - בשקיפות ובהליך תחרותי"*, with senior posts
+  sorted into a defined number of trust posts at the minister's discretion and professional posts
+  filled by competition, *"במקום מאבק בינארי של 'הכל או כלום'"*, and a senior-appointments
+  committee able to block a tainted appointment; the gatekeepers' professional independence put in
+  law (the Attorney General, the State Comptroller, the ministries' legal advisers, the Civil
+  Service Commission), with a duty to propose a lawful route, *"גישת 'איך כן'"*; whistle-blower
+  protection, cooling-off periods and published ministers' diaries. The transport and planning
+  papers repeat *"נשים סוף לעידן המינויים הפוליטיים"* for their own ministries. Held, now on a written
+  programme.
 
 **Religion and state**
 
@@ -2421,7 +2447,12 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
   לתכנית הליבה"*, and the Shabbat and religious-services lines quoted under `religiosity`. It keeps
   *"רשויות מקומיות וקהילות"* for the public space, so the second tag holds on the new text too.
   Conditional or examined, not scored as commitments: support for a Basic Law on local government
-  *"בתנאי שייעשה בהסכמה רחבה"*, and statutory metropolitan bodies (נבחן).
+  *"בתנאי שייעשה בהסכמה רחבה"*. Statutory metropolitan bodies were examined there (נבחן) and are a
+  commitment in the transport paper of 14.10 (rev 285): *"נשלים את חקיקת חוק הרשויות המטרופוליניות
+  במהירות"*, handing them bus-network planning, priority lanes, terminals and traffic lights, with
+  national policy and fares kept by the Transport Ministry. The periphery paper turns the Interior
+  Ministry into the local-government ministry again, now absorbing the Negev and Galilee ministry,
+  and moves the informal-education budget to the authorities. More of the tag; held.
 
 **Society**
 
@@ -2559,14 +2590,15 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 
 The axis triggers and the `anti-settler-violence` removal trigger are stated where they apply.
 
-- **A lead, not a source: 74 posts the party has written and not published** (rev 258, as cut down
-  by rev 272). On 07.10.26 its system gained ten topics that no page showed — health, foreign
-  affairs and the diaspora, the periphery, environment and climate, the self-employed, the public
-  service, local government, transport, planning, national infrastructure. Housing and culture were
-  topics of this kind before they became papers on 08.10, and **three of the ten followed on 13.10
-  (rev 272): environment, the self-employed and local government**, thirty posts, each paper word
-  for word its posts. Seven topics and 74 posts are still shown on no page: health, foreign
-  affairs, the periphery, the public service, transport, planning and national infrastructure.
+- **A lead, not a source: 18 posts the party has written and not published** (rev 258, as cut down
+  by revs 272 and 285). On 07.10.26 its system gained ten topics that no page showed — health,
+  foreign affairs and the diaspora, the periphery, environment and climate, the self-employed, the
+  public service, local government, transport, planning, national infrastructure. Housing and culture
+  were topics of this kind before they became papers on 08.10, **three of the ten followed on 13.10
+  (rev 272): environment, the self-employed and local government**, and **five more on 14.10 (rev
+  285): the public service, the periphery, transport, planning and national infrastructure**, 56
+  posts; each paper is word for word its posts, every post sentence found in its paper. Two topics
+  and 18 posts are still shown on no page: health (8) and foreign affairs (10).
   **Nothing is scored from those.** The foreign-affairs topic would be the party's first text of its own on the
   territories, the document limb of the rev 69 trigger: *"נילחם בנחישות באנרכיה, באלימות ובטרור
   היהודי ונשיב את המשילות ואת שלטון החוק ביהודה ושומרון"*, the civil administration's powers over
@@ -2574,7 +2606,7 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   העלולים לסכן את עתידה של ישראל כמדינה יהודית ודמוקרטית בעלת רוב יהודי מוצק ולהטיל עליה אחריות
   למיליוני פלסטינים"*; beside it, peace with Saudi Arabia as the lead item of a wider Abraham
   Accords, an arrangement with Lebanon's government, and a national authority for strategic
-  communication in the Prime Minister's Office. **Trigger:** any of the remaining seven
+  communication in the Prime Minister's Office. **Trigger:** either of the remaining two
   published as a page or a paper. For the foreign-affairs topic, `anti-annexation` and
   `anti-settler-violence` are then re-read as resting on a written programme, and
   `regional-normalization` and `hasbara-focused` are considered. It contains no sentence on a
@@ -2605,11 +2637,14 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   usage "national priority areas" often includes Judea and Samaria, but unstated is not stated. The
   north paper's *"חוק עדיפות לאומית לקו העימות הצפוני"* is the first named region and does not
   resolve it (rev 39).
-- **Two announced plans are unpublished; an absence there is unwritten, not a position:** the
+- **Two announced plans were unpublished until 14.10.26, and both now are** (rev 285): the
   periphery plan the north paper cites (*"להרחבה על מנגנון חוזה פיתוח אזורי בתכנית ישר! לחיזוק
-  הפריפריה הגאוגרפית ופיתוח אזורי"* — on no page in the sitemap; the near-miss
-  `inlocation-and-aliya`, titled *ישר! לעליית המיליונים, לשיבה הביתה וIn-location*, is immigration)
-  and a transport plan (*ישר! לתחבורה*) the young-people page cites. Two more were announced aloud
+  הפריפריה הגאוגרפית ופיתוח אזורי"*), now
+  [that paper](https://yasharwitheisenkot.com/principles/peripheral-and-regional-development/), whose
+  multi-year regional development contracts are the mechanism the north paper pointed to; and the
+  transport plan the young-people page cites, now
+  [*ישר! לתחבורה ובטיחות בדרכים*](https://yasharwitheisenkot.com/principles/transportation-and-road-safety/).
+  Two more were announced aloud
   (rev 263): ריף (#15), on חדשות 13 (uploaded 15.07.26), *"אני הולכת לכתוב את מצע העולים, מצע דוברי
   הרוסית"* — no document carries her name, and the aliyah paper (rev 21) may or may not be it; and
   איזנקוט, on כאן 11 (19.07.26), a hundred-days plan from a team under יואב הורוביץ, a former
@@ -3069,7 +3104,7 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   2026-10-10). Every `/topic/…` address except `/topic/missions/` returns 404, as does every
   `/position/…` address; `topic-sitemap.xml` lists the goals page alone, and the `/principles/`
   index (now titled *תכניות*) links fourteen papers and nothing else. The whole section went, not
-  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272.)
+  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272, and twenty-four since 14.10, rev 285.)
   The text is still returned by the site's own interface:
   `https://yasharwitheisenkot.com/api/wp/v2/topic` lists the topics with their ids, and
   `…/api/wp/v2/position?topic=<id>` returns that topic's posts (the text is in `acf.intro_text`).
@@ -3105,6 +3140,8 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   ערבות הדדית"*, the fourth) it is **not** the West Bank and must not be read as `pro-settlement`.
   The housing paper has the fifth (rev 258): its last chapter, *"המרחב הכפרי וההתיישבות"*, is about
   *"יישובים, מושבים וקיבוצים"* growing to take in the next generation, and names no region.
+  The periphery paper has the sixth (rev 285): *"שמירה על השטחים הפתוחים ועל אופי ההתיישבות"*, of
+  the same villages, moshavim and kibbutzim, in the same sentence as the housing paper's.
   In the leader's rev 104 sentence and the rev 177 questionnaire (the question was about Judea and
   Samaria, and the same answer covers outposts and Area C) it is.
 - **Read the hit, not the count** (rev 39). A word-level check for
@@ -3113,6 +3150,14 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   sole hit for עזה. That list of several hundred localities can produce apparent evidence for
   religion, Gaza and the territories at once. Run a search first on a term known to be there
   (*המרה* found all three LGBT pages, rev 160).
+- **`ריבונות` is a second homograph** (rev 285). The infrastructure paper uses it nine times and the
+  planning paper once, and every one is *ריבונות דיגיטלית* or *ריבונות תשתיתית* — critical infrastructure in Israeli hands and
+  a law against being cut off from the internet and cloud services. None is about territory, so a
+  count of the word across this party's papers proves nothing about the `security` axis.
+- **A paper can change after it is read, by a word** (rev 285). The agriculture paper, read in rev
+  21, carries a `modified_gmt` of 14.10.26 12:52 UTC; against the Wayback copy of 27.09.26 one
+  sentence differs, *"לתמיכה ישירה בחקלאים"* → *"לתמיכה בחקלאות"* (under `economic`). The re-read
+  trigger below is how it was caught.
 - **The economics page still carried Hebrew lorem ipsum** in its body at rev 21 (*"לורם איפסום דולור
   סיט אמט…"*): treat absences on it as unwritten.
 - **A narrow crawl proves little:** the rebuttal page was among the 36 pages crawled on 29.09, but
@@ -3199,6 +3244,31 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   `kashrut-liberalization` and Environment. No axis moved and no tag changed. The youth paper,
   whose `lastmod` (28.09 06:53 UTC) may postdate rev 171's read, was compared again: all six posts'
   sentences are still in it.
+- **Read, and scored nothing (rev 285):** the twentieth to twenty-fourth principles papers, entries
+  created on 14.10.26 between 20:10 and 20:24 UTC except the public-service one (created 07.10,
+  edited 14.10 11:39 UTC) (links supplied by the repo owner; browser-shaped `curl`):
+  [*ישר! לשירות הציבורי*](https://yasharwitheisenkot.com/principles/government-and-public-service/) ·
+  [*ישר! לחיזוק הפריפריה הגיאוגרפית ופיתוח אזורי*](https://yasharwitheisenkot.com/principles/peripheral-and-regional-development/) ·
+  [*ישר! לתחבורה ובטיחות בדרכים*](https://yasharwitheisenkot.com/principles/transportation-and-road-safety/) ·
+  [*ישר! לתכנון מרחב החיים*](https://yasharwitheisenkot.com/principles/urban-and-environmental-planning/) ·
+  [*ישר! לתשתיות*](https://yasharwitheisenkot.com/principles/infrastructure/).
+  Every sentence of the posts of the five topics (10, 10, 14, 10 and 12 posts; 286 sentences in
+  all) is in its paper, compared mechanically; what the papers add is introductions, diagnoses and
+  the pillar cards. What each says is under `economic`, `governance-reform`, `municipal-devolution`,
+  Open questions and the reading notes. Beside them, recorded as instances of held tags and of
+  sweep items, not as new positions: transport fares that give *"עדיפות לציבור התורם והמשרת"* and a
+  diagnosis that the outgoing government favoured *"הציבור המשתמט"*, and the planning paper's
+  *"מנגנונים וכספים הקיימים היום במשרדים השונים אשר עובדים לפי מגזריות או העדפה פוליטית – יבוטלו
+  לאלתר"* in favour of *"הציבור
+  העובד והמשרת"* (`service-conditioned-citizenship`, held); the infrastructure paper's charge that
+  the Knesset committee over the wealth fund *"הפכה למסלול נוסף לכספים קואליציוניים ומגזריים"* (the
+  opposite pole of the `sectoral-budgeting` sweep item, under Open questions at the foot of the
+  page); and full fortification within 0–9 km of the northern border, 2035 pulled to 2030, and IDF
+  units moved to the Negev — מיגון and basing, not doctrine, the north paper's trap. Its one
+  regional item, Israel *"כחוליה מרכזית במסדרון IMEC"* with a rail section to Jordan and technology
+  alliances *"ובראשן ארה"ב"*, is infrastructure, not the unpublished foreign-affairs topic, so the
+  `regional-normalization` trigger stays where it is. No axis moved and no tag changed. The
+  agriculture paper, re-read on its 14.10 edit stamp, is under `economic`.
 - **Read, and scored nothing (rev 258):** the thirteenth and fourteenth principles papers,
   [*ישר! לדיור*](https://yasharwitheisenkot.com/principles/housing/) (published 2026-10-08 08:19
   UTC) and [*ישר! לתרבות ישראלית*](https://yasharwitheisenkot.com/principles/culture/) (08:23 UTC).
@@ -7100,6 +7170,18 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   childhood and better day care (pay and conditions, training, lower density, the ratio of children
   to staff, supervision), no universal subsidy, and teachers' pay weighted to innovation, excellence
   and quality of teaching and not seniority alone. Held text; nothing new.
+- **Read, and scored nothing (rev 285):** *"חיל טילים לצד חיל האוויר: התוכנית של ליברמן לחיזוק
+  ביטחון ישראל"* ([its
+  site](https://beytenu.org.il/%d7%97%d7%99%d7%9c-%d7%98%d7%99%d7%9c%d7%99%d7%9d-%d7%9c%d7%a6%d7%93-%d7%97%d7%99%d7%9c-%d7%94%d7%90%d7%95%d7%95%d7%99%d7%a8-%d7%94%d7%aa%d7%95%d7%9b%d7%a0%d7%99%d7%aa-%d7%a9%d7%9c-%d7%9c%d7%99%d7%91/),
+  published 14.10.26 13:56 UTC; link supplied by the repo owner). In his own voice: *"בממשלה הבאה
+  אפעל מיד להקמת חיל טילים ישראלי"*, beside the air force, *"שיכלול מאות אלפי טילים וחימושים"* —
+  ballistic and cruise missiles, jet drones and *"יכולות לפגיעה במטרות במעגל השלישי"* — on the
+  argument that an air strike on Iran leans on American aircraft, munitions and refuelling. Paid for
+  by *"כ-24 מיליארד שקל בכספים קואליציוניים"* of *"ממשלת המשתמטים"*, *"זו לא שאלה של כסף, אלא של סדרי
+  עדיפויות"*, and dated to a surface-to-surface programme he says he started as Defence Minister in
+  2018. Force structure, not a position on statehood or territory; it sits with the platform's
+  defence budget of ₪95bn under `security`, and the funding is rev 259's coalition-funds line
+  (an instance for the `sectoral-budgeting` sweep, under Open questions at the foot of the page).
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -7695,6 +7777,8 @@ extended again (rev 33).
   *"קרנות זרות"*, and *"צבא יבשה מסיבי, חותר למגע וקטלני"*. עוצמה יהודית's programme (revision 107)
   demands *"שינוי הקוד האתי הפרוגרסיבי של אסא כשר"* the same week. Two rows is where the page starts
   to take a gap seriously, but both sit in the same bloc at the same pole. Filed with both texts.
+  עוצמה יהודית has since published its rewrite in full (revision 285, under that row's Military
+  personnel item): purity of arms replaced by *"צדקת הנשק"*. Same pole, so still no tag.
 - **American aid** (זהות's site) — *"עצמאות אסטרטגית: ידידות אמת היא בין שווים, לא בין נותן
   תכתיבים"*, with the goal *"גמילה הדרגתית ועצמאות"*. A singleton, and the exact opposite of ישראל
   ביתנו's plank to extend the ₪-denominated MOU past 2028. Worth a comparator before a tag; recorded
@@ -8572,6 +8656,13 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
   [ynet](https://www.ynet.co.il/news/elections2026/article/sya36erizl)). Both read below +3. The
   question put was national identity, not religion and state, so the decision of 2026-10-08 is not
   re-opened.
+  **The nearest current text, and it reads toward the score** (rev 285): the rewritten IDF code
+  (under Military personnel) names *"המשפט העברי"* among the army's sources of values, beside the
+  Bible, Jewish morality and the nation's tradition, and calls it *"צבא יהודי"*. It is the first text
+  the party has published since 2019–2020 that names משפט עברי at all. It is a source of an ethics
+  code, not of state law, and no rabbinic body is given a say, so on its words it still falls short
+  of the +3 band's own-text test, and the test was not what the owner's decision rested on. It does
+  not argue for moving the row down. Nothing re-opened.
 - **The promised legal platform.** ynet's judicial questionnaire (21.09.26): the party answered only
   that a full legal platform would be published within days — **trigger:** read it when it appears
   (revision 134, under ישר). Rev 107's six measures are a chairman's statement, not that platform.
@@ -8631,6 +8722,21 @@ reasoning).
   חינם לחיילים בנגב ובגליל"*; **(ה)** removing אסא כשר's ethics code (*"הקוד האתי הפרוגרסיבי של אסא
   כשר"* in rev 107's programme); **(ו)** opening the elite units, 8200 included, *"לכלל
   האוכלוסייה"*.
+  **(ה) now has its text** (rev 285): *"תוכנית בן גביר למשרד הביטחון – שינויים דרמטיים בקוד האתי:
+  טוהר הנשק out צדקת הנשק in"* ([party
+  post](https://www.ozma-yeudit.co.il/%d7%aa%d7%95%d7%9b%d7%a0%d7%99%d7%aa-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%9c%d7%9e%d7%a9%d7%a8%d7%93-%d7%94%d7%91%d7%99%d7%98%d7%97%d7%95%d7%9f-%d7%a9%d7%99%d7%a0%d7%95%d7%99%d7%99%d7%9d-%d7%93/),
+  `article:published_time` 2026-10-15T06:07Z), a rewritten רוח צה"ל presented as his plan for the
+  Defence Ministry. The IDF's purpose is first *"ניצחון והכרעת אויבי מדינת ישראל ועם ישראל"*; the
+  army is *"צבא יהודי, ממלכתי"*; its sources of values are *"ערכי מוסר יהודיים המבוססים על התנ"ך,
+  המוסר היהודי, המשפט העברי ומסורת העם"*. Purity of arms is abolished and replaced by *"צדקת
+  הנשק"*, whose rule is *"הבא להורגך השכם להורגו"*; by the post's own account the code loses *"רק
+  במידה הנדרשת"*, *"הפירוט האוסר על פגיעה ב״בלתי מעורבים״ ובשבויים"* and every mention of *"ערכי
+  מוסר אוניברסליים"*. *"כבוד האדם"* stays, with value *"שאינו מותנה במוצא, בדת, בלאום"*. What the post
+  says the current code contains is the party's description; the code itself was not re-read. The
+  fullest text this gap has: a programme, from the chairman, in the party's own channel, beside
+  זהות's *"לשרוף במדורה גדולה"* on הציונות הדתית's row (revision 111). Still two rows at one pole and
+  no tag; it is not `hardline-on-gaza`, which is about Gaza, and the axis it would bear on is
+  already at +3. Its religion clause is under `religiosity` in Open questions.
 - **A ministry's budget execution** (revs 77, 80) — two non-execution items in eight days, on
   different lines, counterparties and mechanisms. No dimension exists, and minting one from two
   press reports about one minister would describe a person. Filed with the `governance-reform` note.
@@ -9350,6 +9456,9 @@ Linked where used above. Not linked above:
   statement quoted, and the row already stands outside the bloc's agreements (rev 254). It is
   entered under עמך ישראל. ynet counts two women in the expected eight, גוטליב (#2) and סון הר-מלך
   (#5) ([ynet](https://www.ynet.co.il/news/elections2026/article/yokra14923344)); קרויזר's licensing law from the same report is under `gun-rights`.
+- **Read, and scored nothing (rev 285):** the party's post on the rewritten IDF ethics code (link
+  supplied by the repo owner; plain `curl`), entered under Military personnel and under the
+  `religiosity` question.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -15392,6 +15501,11 @@ bought nothing here, because the defect was never in the pixels being measured.
   against the instrument. Same asymmetry as the gun-control gap. **Resolution: sweep all 18 rows.**
   *Revision 157 (2026-09-27): the two poles in one story. סמוטריץ' refuses, in a court filing, to accept that
   coalition funds exist as a category; הדמוקרטים' לזימי petitions against them as election bribery.*
+  *Revision 285 (2026-10-15): two more rows at the campaigning pole, in their own documents.
+  ישראל ביתנו would put the ~₪24bn of coalition money of *"ממשלת המשתמטים"* into the army's force
+  build-up; ישר's planning paper abolishes every sectoral funding mechanism *"לאלתר"* and its
+  infrastructure paper says the wealth fund's Knesset committee became *"מסלול נוסף לכספים
+  קואליציוניים ומגזריים"*. Instances for the sweep; nothing is minted from them.*
 - **Two exclusion tags with different criteria and overlapping membership (2026-09-19, revision 99).**
   `excludes-anti-zionist-parties` (ישראל תחילה, ישר) turns on recognition of Israel as a Jewish and
   democratic state; `excludes-haredi-and-arab-parties` (בית ציוני - המילואימניקים, and now
@@ -15945,3 +16059,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-14 | revision 282 — **a ynet report on the President's reported unity-government plan, N12's report on בר's suit, and two ynet pieces that needed no entry (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **הדמוקרטים:** גולן, *"לא אתן יד לממשלת נתניהו, בשום צורה ובשום תירוץ"* — revision 270's refusal restated, of any government with him; no tag names it. The same report paraphrases ישר and ביחד as refusing too, which their entries already hold in their chairmen's and לפיד's words, so neither is entered again; the President's office denies the plan. **הליכוד:** N12 on בר's suit adds two details to revision 279's entry. **Not entered:** ynet on the election committee's preparations (no party acts) and its count of women on the lists, already read in revision 275. |
 | 2026-10-14 | revision 283 — **two N12 reports (`curl`) and עמך ישראל's team page (links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **עמך ישראל:** בן ציון was #8, by both כאן and N12; the team page now lists seventeen candidates without him, and this entry's order of names, which was the launch's, is no longer read as the list's (revision 276 had left #7 against #8 open). To N12 he gives the polls and wasted votes as his reason, a third account beside the pressure he described to party members and נתניהו's; nothing promised him. N12 reports billboards near candidates' homes and envoys offering posts from נתניהו's circle; the party calls it a fear campaign. **נעם:** soundings of הרב טאו's people about withdrawing; the party will run. **הליכוד:** the same report, as campaign conduct, unattributed. **ש"ס:** דרעי makes the yeshiva-status law the condition of any government ש"ס supports or joins, and calls the Attorney General an anarchist; held tags. **יהדות התורה:** אשר, the same condition, *"נקודה"*; held. |
 | 2026-10-14 | revision 284 — **הליכוד: N12's and חדשות 13's reports on אוריך's meetings with Qatari representatives, and נתניהו's interview to כאן (`curl` and headless browser; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** אוריך met עלי אל-תוואדי at least twice in Europe in July 2024, once in Berlin with איינהורן and פוטליק, whom he denies meeting; by נתניהו's testimony he was never told; entered beside revisions 269 and 280 as an adviser's conduct. To כאן נתניהו calls בר's suit a publicity stunt and repeats that the warnings excluded Gaza (who was warned is not a position), and on an inquiry names the half-coalition, half-opposition commission and calls a state commission *"הכול חוץ מממלכתית"*, confirming the sweep's "opposed" reading; the trial lines fit `judicial-overhaul`, held. |
+| 2026-10-15 | revision 285 — **five ישר papers, עוצמה יהודית's rewritten IDF ethics code and ישראל ביתנו's missile-corps plan (`curl`; links supplied by the repo owner). No axis moved, no tag changed, `seed.sql` unchanged.** **ישר:** the twentieth to twenty-fourth principles papers (public service, periphery, transport, planning, infrastructure) carry every sentence of the 56 unpublished posts of their five topics, so the unpublished lead is down to health and foreign affairs (18 posts), and both announced plans are out. `economic` +1 holds on both halves again; `governance-reform` and `public-service-reform` now rest on a paper of their own; the metropolitan authorities move from examined to committed under `municipal-devolution`. **The agriculture paper was edited on 14.10**: against the Wayback copy of 27.09 one sentence changed, *"לתמיכה ישירה בחקלאים"* → *"לתמיכה בחקלאות"*, and the two sentences of the entry that said *direct* farm support are corrected. Two reading traps recorded: a sixth rural התיישבות and `ריבונות` as digital and infrastructure sovereignty. **עוצמה יהודית:** purity of arms replaced by *"צדקת הנשק"*, *"הבא להורגך השכם להורגו"*, the ban on harming the uninvolved dropped and *"המשפט העברי"* named among the army's sources of values — the full text of the military-personnel gap item (ה), still two rows at one pole; the religiosity question records it as the first current mention of משפט עברי, an ethics code and not state law, and the owner's +3 stands. **ישראל ביתנו:** a missile corps beside the air force, funded from the ~₪24bn of coalition money; force structure, held. The `sectoral-budgeting` sweep gains ישראל ביתנו and ישר at the campaigning pole. |
