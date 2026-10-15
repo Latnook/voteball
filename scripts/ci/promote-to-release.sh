@@ -52,15 +52,39 @@ git rev-parse --verify --quiet "${SOURCE_SHA}^{commit}" >/dev/null \
 
 git fetch --quiet "$REMOTE" "$RELEASE_BRANCH" 2>/dev/null || true
 
+# WHY A THROWAWAY WORKTREE AND NOT THE CALLER'S CHECKOUT (2026-10-15). In Jenkins the caller's
+# checkout is a disposable workspace, but deploy.sh step 9 calls this from a person's own clone, and
+# switching THAT to release went wrong both ways on the same day:
+#   * a tracked file with uncommitted edits made `git checkout -B release` abort, so the deploy came
+#     up with no promotion and no ArgoCD Applications;
+#   * when the checkout did go through, `read-tree -u --reset` overwrote an uncommitted edit to a file
+#     that is identical on both branches (terraform/.terraform.lock.hcl) without a word, and left the
+#     clone on release.
+# Building the commit in its own worktree touches nothing of the caller's -- not HEAD, not the branch,
+# not a single file, committed or not -- and it also stops this script from switching the branch its
+# own file is being read from while bash is still reading it. The worktree shares the repository's
+# objects and refs, so the push below updates the caller's ${REMOTE}/${RELEASE_BRANCH} too.
+wt_base="$(mktemp -d "${TMPDIR:-/tmp}/promote-release.XXXXXX")"
+wt="$wt_base/wt"
+repo_dir="$(pwd)"
+cleanup() {
+  git -C "$repo_dir" worktree remove --force "$wt" >/dev/null 2>&1 || true
+  rm -rf "$wt_base"
+  git -C "$repo_dir" worktree prune >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
 if git rev-parse --verify --quiet "${REMOTE}/${RELEASE_BRANCH}" >/dev/null; then
-  git checkout -q -B "$RELEASE_BRANCH" "${REMOTE}/${RELEASE_BRANCH}"
+  git worktree add --quiet --detach "$wt" "${REMOTE}/${RELEASE_BRANCH}"
+  cd "$wt"
   # Index + working tree := the promoted tree, HEAD still on release. This is the whole trick.
   git read-tree -u --reset "$SOURCE_SHA"
 else
   # First ever release commit: branch straight off the promoted commit, so release and master share
   # history rather than release being an orphan nobody can diff against.
   echo "promote-to-release: ${REMOTE}/${RELEASE_BRANCH} does not exist yet -- creating it from $SOURCE_SHA"
-  git checkout -q -B "$RELEASE_BRANCH" "$SOURCE_SHA"
+  git worktree add --quiet --detach "$wt" "$SOURCE_SHA"
+  cd "$wt"
 fi
 
 [ -f "$VALUES_FILE" ] || { echo "promote-to-release: $VALUES_FILE is missing from $SOURCE_SHA" >&2; exit 1; }
@@ -132,7 +156,9 @@ git -c user.name="${GIT_AUTHOR_NAME:-jenkins}" \
     commit -q -m "release: $(git rev-parse --short "$SOURCE_SHA") (image tag $TAG)"
 
 if [ "${PROMOTE_NO_PUSH:-0}" != "1" ]; then
-  git push -q "$REMOTE" "HEAD:${RELEASE_BRANCH}"
+  # Full ref name: HEAD is detached in the worktree, and a short name cannot create a branch the
+  # remote does not have yet (the first-ever promotion).
+  git push -q "$REMOTE" "HEAD:refs/heads/${RELEASE_BRANCH}"
 fi
 
 git rev-parse HEAD
