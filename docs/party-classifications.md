@@ -5671,7 +5671,8 @@ Minting belongs to a sweep, not to one row's pass (revision 15).
   information sharing *"לזיהוי מסוכנות"* (the gun-control sweep item, at the foot of the page), and
   police independence, *"השר יתווה מדיניות כללית בלבד"* (`governance-reform`, held). The debt now spans
   עוצמה יהודית (as record, revisions 80/89), the two Arab rows it was queued behind, and this one:
-  **no longer plausibly a single-corpus problem.**
+  **no longer plausibly a single-corpus problem.** Since rev 290 הרשימה המשותפת has a joint crime
+  plan, so the precondition rev 44 set is met and the tag waits on the sweep.
 - **Periphery, in prose.** *עולים צפונה* is drafted as a bill and is the most explicit periphery
   programme any party has published: **half a million more Israelis in the Negev and Galilee within
   five years, and half of all Israeli citizens living there by 2048**, with a costed Kiryat Shmona
@@ -8823,6 +8824,9 @@ citation is access (*"יודע לפתוח דלתות, לעזור לאנשים ו
 - **The Arab-society crime debt of revision 44 is not paid** (rev 80): no tag covers crime and
   personal security in Arab society, the Decision 549 reporting is about non-execution, which is not
   a position on that dimension, and the debt waits on the הרשימה המשותפת and הדמוקרטים corpora.
+  Both are now read: הרשימה המשותפת's joint crime plan in rev 290, under that row, which also
+  rejects *"עוד כוח, עוד תחנות משטרה, עוד יחידות מיוחדות"* — the opposite pole on method to the
+  internal-policing item below. The debt waits on the sweep alone.
 - **The education line** (rev 74): עמיחי אליהו wants to change the education system so that people
   will give "soul and spirit" — no curriculum, budget or institution named. Recorded so a later
   platform text can be checked against it.
@@ -12582,7 +12586,8 @@ whole substantive content — crime, health, welfare, planning — is this tag's
   read for holders; it joins the Kaminitz-Law gap already queued behind a pass over the two
   Arab-list rows. **Rev 44 covered one of those two rows, not both.** On Kaminitz the other row has
   since been read (rev 103, under הרשימה המשותפת); **this row is the open half** — see the page's
-  Open questions.
+  Open questions. On crime the precondition is now met: הרשימה המשותפת has a joint crime plan (rev
+  290, under that row) beside הדמוקרטים' paper, so minting waits only on the sweep.
 - **Leads filed for this row under other entries:** what סגלוביץ' said about sitting in an איזנקוט
   government (rev 153, under הליכוד); an עבאס interview on רשת ב' (rev 169, under ישר); the
   Hamas-question interviews (rev 228, under ישראל תחילה; corrected by rev 233, under ישר).
@@ -12710,8 +12715,11 @@ housing-discrimination bill comes out 33–52, matching הארץ's 52–33 (revi
 > something moves. The pass-by-pass text it replaced is in git history, each pass has a row under
 > Change history, and "(rev N)" marks the revision a point comes from.
 
-**Basis.** `family_evidence` is `record`: there is no joint platform to read, so every value is
-carried from a component's text (next section). The filed list is CEC list 35
+**Basis.** `family_evidence` is `record`. The list has published two joint plans,
+*התוכנית הכלכלית-חברתית* and *התוכנית למיגור הפשיעה המאורגנת* (`jointlist.org.il`, live by 04.10.26;
+rev 290), and no full platform. Security and economic now have joint text beside the components';
+religiosity still rests on בל"ד's alone (next section); `family_evidence` stays `record` because
+only `welfare-state` gains joint text. The filed list is CEC list 35
 ([`gov.il/he/pages/hareshima-hameshutefet_list35`](https://www.gov.il/he/pages/hareshima-hameshutefet_list35)),
 120 names, read at its realistic range of **10** (rev 67).
 
@@ -12754,10 +12762,12 @@ carried from a component's text (next section). The filed list is CEC list 35
   differ only in degree, with direction not in dispute. The filing confirms all three components
   are parties to the list, so carrying axes from each describes the thing rather than averaging
   over it (rev 67); and the rule rests on the components' texts, not on who holds slot 3 (rev 222).
-- **The cost, recorded rather than hidden: the list has published no joint platform.** It has
-  answered jointly in questionnaires (revs 86, 134 and 238, under Open questions). Security and
-  religiosity rest on בל"ד's programme alone, dated 2018-09-11. **Revisit all three axes the
-  moment the list publishes jointly.**
+- **The cost, recorded rather than hidden: the list has published no joint platform, and since
+  04.10 it has two joint plans** (rev 290). It has also answered jointly in questionnaires (revs
+  86, 134 and 238, under Open questions). Religiosity rests on בל"ד's programme alone, dated
+  2018-09-11, and security rests on it with the joint economic plan beside it. **The trigger
+  "revisit all three axes the moment the list publishes jointly" was run on the two plans in rev
+  290: all three held** (under each axis).
 - **בל"ד's ten points of June 2026 do not replace the 2018 text** (rev 103; the opinion's §33,
   which cites the affidavit, is where rev 102 learned of them). Its **political bureau** adopted
   them on the day of its list conference as *"نقاط أساس في العمل السياسي والجماهيري"* — working
@@ -12782,6 +12792,17 @@ communist, and it chairs the list. בל"ד's −2 was social-democratic, held ap
 to keep the two lists distinguishable to a voter choosing between them; that distinction no longer
 exists to preserve. Point 5 of the ten points is consistent with it (rev 103).
 
+**The joint plan reads at the pole, not below it** (rev 290). *"הלאמת החברות והשירותים שכבר
+הופרטו"*; public housing *"לכל חסרי הדיור"*, with rent capped so that it *"לא יעלה על 20% מההכנסה נטו
+של המשפחה"* and a *"בנק משכנתאות ממלכתי"* with *"ביטול הריבית על המשכנתאות לצעירים ולרוכשי דירה
+ראשונה"*; a minimum wage of *"לא פחות מ- 70% מהשכר הממוצע במשק"*; and a basic allowance of *"25%
+מהשכר הממוצע במשק"*. Nationalisation goes past the social-democratic −2. The −3 still rests on
+חד"ש's self-definition: the plan never calls itself communist or socialist, and nothing in it
+contradicts the word. Its tax cuts (*"פטור ממס הכנסה לשכירים ועצמאיים המשתכרים עד לשכר הממוצע
+במשק"*, VAT to 10%) sit inside *"רפורמה במיסוי שתאלץ את בעלי ההון, את התאגידים הפיננסיים ואת החברות
+הגדולות לשלם מס אמת"*. Rev 271's N12 paraphrase (VAT 10%, a higher minimum wage, an interest-free
+first flat) now has its document.
+
 **`security` −3 — full withdrawal, right of return, dismantling settlements.** Up from חד"ש-תע"ל's
 −2, carried from בל"ד: complete withdrawal from the post-1967 territories, a Palestinian state with
 East Jerusalem as its capital, right of return under UNGA 194, dismantling the settlements,
@@ -12791,6 +12812,13 @@ of the axis. **Held through the ten points because the new text is vaguer, not d
 1967 and East Jerusalem and a refugee solution *"agreed upon"* under 194, so the direction is the
 same and nothing is withdrawn. **A priorities list that omits a programme's detail does not retract
 it**; had it named a *different* endpoint, the axis would move.
+
+**The joint text names the occupied territories** (rev 290): *"קיצוץ עמוק בהוצאות הצבאיות והפסקת
+מימון המלחמה בעזה, ההתנחלויות והכיבוש של השטחים הפלסטיניים, הסוריים והלבנוניים"*. The edition
+archived on 04.10 said only *"המלחמה, ההתנחלויות והכיבוש"*; by 10.10 the territories were named, the
+Golan among them. The war figure, *"400-500 מיליארד ש״ח בשנה"*, is the party's and was not checked.
+The plan states no Palestinian state, no right of return and no Jerusalem clause, so the pole still
+rests on בל"ד's 2018 programme; the joint text agrees with it, and there is no band above it.
 
 **`religiosity` −3 — disestablishment.** Carried from בל"ד, the only component that has published
 on religion and state at all: *"המשטר במדינה יושתת על הפרדה מוחלטת של דת ממדינה, תוך הבטחת חופש
@@ -12813,14 +12841,31 @@ scored.
 `arab-representation`, `jewish-arab-partnership`, `welfare-state` — the union of the two
 predecessor rows' families.
 
-#### Tags (15) and what each rests on
+#### Tags (16) and what each rests on
 
-The 15 are the union of both predecessor rows' tags, deduped, less the two dropped at the merge.
+15 are the union of both predecessor rows' tags, deduped, less the two dropped at the merge;
+`cost-of-living` was added in rev 290.
 
-**Carried from the predecessor rows; not argued in this entry:** **`arab-nationalist`**,
-**`anti-privatization`**, **`progressive-taxation`**, **`affirmative-action`**; and
+**Carried from the predecessor rows; not argued in this entry:** **`arab-nationalist`**; and
 **`communist`**, from חד"ש-תע"ל's row, whose matching text is חד"ש's self-definition under
 `economic`.
+
+**On the joint economic plan (rev 290)** — carried from the predecessor rows until then:
+
+- **`anti-privatization`** — *"נדרוש את ביטול כל תוכניות ההפרטה של החברות הממשלתיות ושל השירותים
+  החברתיים, הלאמת החברות והשירותים שכבר הופרטו"*, and the repeal of *"חוק ההסדרים הלא דמוקרטי"*.
+- **`progressive-taxation`** — section 8, *"Tax The Rich"*: *"הגדלת המס על הרווחים הפיננסיים, כולל
+  רווחי בורסה, ל-30%"*, and the employers' parallel tax restored *"עד ל-5% מהשכר ברוטו של העובד"*.
+- **`affirmative-action`** — *"מימוש תוכנית החומש לאוכלוסייה הערבית"*, Arab localities recognised
+  *"כאזורי פיתוח"*, and budgets equalised *"ובכלל זה בין יישובים יהודיים וערביים"*.
+- **`cost-of-living`** (rev 290, on the repo owner's decision of 2026-10-15) — rent capped at 20% of
+  net income *"כאמצעי עיקרי למאבק ביוקר הדיור"*, VAT cut to 10% as a tax *"הפוגע בשכבות המוחלשות"*,
+  and full indexation, *"תוספת יוקר של 100% בהתאם לעליית מדד המחירים"*: cost-of-living measures in
+  substance, as price controls were on הדמוקרטים' row. **Recorded against it:** the plan is framed
+  as redistribution and never uses *"יוקר המחיה"*; the phrase it uses is *"יוקר הדיור"*, so on its
+  narrowest wording it is a housing-cost line.
+- The `welfare-state` family gains section 10: *"העלאת הקצבה הבסיסית, לרבות קצבת הזקנה, ל-25%
+  מהשכר הממוצע במשק"*.
 
 - **`palestinian-nationalist`** — restated by the list's one-word reply (rev 203, under הליכוד).
 - **`civil-rights-focused`** — טיבי's post is read on it (rev 244, under הליכוד).
@@ -12881,6 +12926,16 @@ The 15 are the union of both predecessor rows' tags, deduped, less the two dropp
 - **`anti-indicted-pm`** — not added (rev 245, under יהדות התורה): at the list's Hebrew campaign
   launch ג'בארין said a law barring a criminal defendant from forming a government could pass
   with the list's support. **Trigger:** the list's platform or a bill it signs.
+- **`tax-cutting`** (rev 290; the closest call) — VAT to 10% and no income tax below the average
+  wage are real cuts, but the same section raises the take on capital: 30% on financial profits,
+  corporate benefits ended, the employers' parallel tax restored, *"ביטול כל ההקלות שניתנו למעסיקים
+  בתשלום דמי הביטוח הלאומי"*. The tag records a lighter burden; this moves it from wages to capital,
+  which `progressive-taxation` records.
+- **`anti-corruption`** (rev 290) — *"מאבק בלתי מתפשר בשחיתות הציבורית והכלכלית"* is near-universal
+  rhetoric (rev 21's test), and the measures beside it (tender regulation, forfeiture, an authority
+  against organised crime) are about organised crime.
+- **`municipal-devolution`** (rev 290) — the crime plan gives Arab local authorities *"את הכלים,
+  התקציבים וההגנה הדרושים"*: capacity, not powers moved. Rev 271's trigger stays unmet.
 
 #### The disqualification case and אבו שחאדה's article: nothing scored
 
@@ -12989,7 +13044,9 @@ The 15 are the union of both predecessor rows' tags, deduped, less the two dropp
 
 #### Open questions and triggers
 
-- **The three axes**, the moment the list publishes jointly.
+- ~~**The three axes**, the moment the list publishes jointly~~ — **run in rev 290** on the two
+  joint plans, all three held. **Re-open** on a full joint platform, the only document that could
+  speak for religiosity.
 - **The land-planning sweep item** (the page's Open questions) deferred a tag until *"a pass over
   the two Arab-list rows' own platforms"*. Points 6 and 8 carry it on this side (rev 103) —
   demolition-order freezes, recognition of unrecognised villages, and jurisdiction boundaries —
@@ -13017,6 +13074,19 @@ The 15 are the union of both predecessor rows' tags, deduped, less the two dropp
 
 #### What this row contributes to tags that do not exist yet
 
+- **Trade protection** (rev 290): *"הגנה על הייצור המקומי מפני יבוא במחירי היצף, והטלת מכסים על
+  ארצות הברית בדומה למכסים שארצות הברית הטילה על ישראל"*, beside *"קודמים לאינטרסים ולתכתיבים של
+  תאגידים בינלאומיים, ארצות הברית, קרן המטבע הבינלאומית והבנק העולמי"*. `free-trade` has six holders
+  and no tag at the opposite pole except the sector-specific `agricultural-protectionism` — the
+  gun-control asymmetry again. One holder, so not filed; the anti-US-dictates line is also a lead
+  for the foreign-relations sweep's American-aid item.
+- **Arab-society crime: the method's opposite pole** (rev 290). The crime plan rejects *"גישה
+  לוחמתית"*, which it says *"מזינה את ההסלמה באלימות, ואת ההפיכה של המאפיה למיליציה"*, and *"עוד
+  כוח, עוד תחנות משטרה, עוד יחידות מיוחדות"*, against עוצמה יהודית's internal-policing item; it still
+  strengthens investigation and prosecution (*"נקים רשות למאבק בפשיעה המאורגנת"*), so it is not
+  against enforcement. With this plan read, rev 44's precondition for the crime tag (both Arab-list
+  and הדמוקרטים corpora) is met; minting stays with the sweep. Its *"הנשק הבלתי חוקי"* is about illegal
+  weapons, not licensing, so it is not a second holder at the gun-control item's pole.
 - **Two one-holder dimensions, noted and not filed** (rev 103, on rev 94's rule that one holder
   is not a dimension): Arab educational **self-administration** (point 9), institutional autonomy
   which no other row's text proposes; and equal treatment of prisoners *regardless of offence*
@@ -13406,6 +13476,17 @@ supplied by the repo owner.
   performance, with collective agreements kept. `municipal-devolution` is not held here. A
   paraphrased answer about schools, beside point 9's Arab educational self-administration, does not
   open it. **Trigger:** the answer itself.
+- **Read in rev 290** (links supplied by the repo owner; browser-shaped `curl`; Wayback captures
+  of 04.10, 10.10 and 13.10 for the economic plan): the joint
+  [economic plan](https://jointlist.org.il/he/economic-plan/) ([English](https://jointlist.org.il/en/economic-plan/))
+  and [crime plan](https://jointlist.org.il/he/crime-plan/) ([English](https://jointlist.org.il/en/crime-plan/)).
+  The Hebrew page pairs Hebrew with Arabic and the English one English with Russian; every figure
+  and paragraph count matches across them, and the English keeps *"increasingly extreme
+  ethnocratic regime"* and *"occupation of the Palestinian, Syrian, and Lebanese territories"*. Both
+  plans were live by 04.10.26 17:22 UTC; the economic plan was expanded by 10.10 and 13.10, and the
+  crime plan could not be dated. The crime plan places organised crime *"בתוך מציאות של משטר
+  אתנוקרטי הולך ומקצין"* and ends on *"שוויון אזרחי מלא"* (`state-of-all-its-citizens` and
+  `civil-rights-focused`, held).
 
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
@@ -16379,3 +16460,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-15 | revision 287 — **three entries of a כאן live page and three כאן reports of 14.10 (headless Chromium via the `playwright` library; a plain `--dump-dom` got Cloudflare's challenge twice; links supplied by the repo owner). No axis moved. ONE TAG ADDED, `excludes-anti-zionist-parties` on ביחד (27 → 28), on the repo owner's decision of 2026-10-15:** בנט on רשת ב', *"מי שלא מקבל את מדינת ישראל כמדינה יהודית ודמוקרטית - לא יהיה בממשלה"* — a statement about coalition partners on ישר's criterion, the trigger rev 115 set; the broadcaster's write-up, the audio not heard. **ישר:** איזנקוט would be sworn in on 58–59 and widen with *"קולות ציוניים ממלכתיים"*, opposed a Palestinian state *"לכל אורך התקופה"*, and the 20-point agreement binds his government; all held; the ambassador's meeting, by a source, is not a position. **הליכוד:** לוין would push the 2023 reform again (`judicial-overhaul`, held); כאן's unnamed sources put two businessmen, not כאמל, on the plane of 26.09.2023, against the premise of נתניהו's account (rev 275). **הרשימה המשותפת:** טיבי, no coalition needed at once and no caretaker נתניהו; held. |
 | 2026-10-15 | revision 288 — **הדמוקרטים: the site's 26 topic pages (read from its public Supabase table), a new north paper, the transport PDF and four revised editions (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** *תוכנית הדמוקרטים לשיקום, פיתוח וחיזוק צפון הארץ* (14.10) is new: ₪15bn over seven years, the row's first named tax rates (4% corporate tax and 40% grants for northern industry, arnona cut 45%/39%) — regional incentives, held at −2 — and transport money moved *"מאזורי יהודה ושומרון לאזור הצפון"* (`anti-annexation`, held). The transport topic now has a PDF (Shabbat transport, metropolitan authorities; held). Revised: the economic paper's `(1)` edition raises the minimum wage and the negative income tax and civil spending toward the OECD mean, and its opening line changed, so the `sectoral-budgeting` refusal's quotation is updated; the LGBT unit is now a national authority at ₪100m a year; the senior-citizens paper sets 25% of the average wage from 2027; aliyah and environment trivially. The other nineteen cards summarise papers already read, unchanged. |
 | 2026-10-15 | revision 289 — **המילואימניקים והכלכלית: the joint list's own platform page on `milu-kal.co.il` (created 29.09, edited 07.10.26; `curl` and the site's REST API; link supplied by the repo owner), the first text in both factions' name: four principles and three plans, the full platform still to come. No axis moved. `scholar-exemption-retained` REMOVED (38 → 37), on the repo owner's decision:** the plan allows *"פטור מטעמים רפואיים בלבד"* and gives Torah prodigies a deferral with service required, ישר's refused shape; the joint text outranks the union rule's carry from הכלכלית. Cost of living: tariffs and import quotas abolished, food and farm goods included, the milk, egg and honey councils dismantled, VAT to 12% — `free-trade`, `anti-monopoly` and `tax-cutting` on joint text, `agricultural-protectionism` refused at its opposite pole; `economic` +1 holds, and with no welfare or housing text the housing trigger stays open. Service: a driving-licence ban, no public or religious post (*"דיין, רב עיר ומשגיח כשרות"*) and no institutional funding for evaders; no franchise clause, so `service-conditioned-citizenship` now rests on the faction's texts alone. Foreign: *"פירוק הפלסטיניזם"*, no Palestinian state, the end of the claim of return and of UNRWA — the first written holder opposite `right-of-return`, for the sweep — and *"קו המחרשה הוא קו הגבול!"*, a slogan that stays inside +2. `regional-normalization` and `hasbara-focused` refused. The home page sources #6 and #10; #12 remains unsourced. Cross-row: הרשימה המשותפת (`right-of-return`), ישראל ביתנו (rabbis and service), and the tag's definition item. |
+| 2026-10-15 | revision 290 — **הרשימה המשותפת: the list's first joint texts, *התוכנית הכלכלית-חברתית* and *התוכנית למיגור הפשיעה המאורגנת* on `jointlist.org.il` (live by 04.10.26; the Hebrew, English, Arabic and Russian editions match in every figure; the economic plan expanded by 10.10 and 13.10, per Wayback; links supplied by the repo owner). The entry's trigger "revisit all three axes the moment the list publishes jointly" was run: all three held. ONE TAG ADDED, `cost-of-living` (15 → 16), on the repo owner's decision of 2026-10-15.** `economic` −3: nationalisation of privatised companies, a state mortgage bank, rent capped at 20% of net income, a minimum wage of at least 70% of the average and allowances at 25%; the income-tax and VAT cuts sit inside a reform that taxes capital more. `security` −3: by 10.10 the plan names *"הכיבוש של השטחים הפלסטיניים, הסוריים והלבנוניים"*. `religiosity` −3: no joint text; held on בל"ד's declaration. `anti-privatization`, `progressive-taxation` and `affirmative-action` now rest on joint text. `cost-of-living` rests on the rent cap *"כאמצעי עיקרי למאבק ביוקר הדיור"*, VAT to 10% and full indexation, with the framing (redistribution, *"יוקר הדיור"*) recorded against it. Refused: `tax-cutting`, `anti-corruption`, `municipal-devolution`. The crime plan completes rev 44's precondition for an Arab-society crime tag (noted under רע"ם, עוצמה יהודית and כחול לבן); minting stays with the sweep. A general trade-protection line (tariffs on the United States) is filed as a one-holder gap. |
