@@ -2054,7 +2054,7 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
 **Basis.** Gadi Eisenkot's party, founded 2025-09-16; co-founders include Matan Kahana (former
 Religious Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief) and Nir Zohar
 (Wix). Scored from the party's own site, `yasharwitheisenkot.com`: the registered goals, the 10-step
-brochure and twenty-four principles papers (twenty-six documents, rev 285), beside 17 topic pages and 157
+brochure and twenty-five principles papers (twenty-seven documents, rev 291), beside 17 topic pages and 157
 position posts (revs 160, 161; the topic pages have since been taken off the site, see "Reading this
 party's sources"); on the conflict, where the documents are silent, from the leader's own
 statements. Before the platform existed the row was a placeholder (`new-party` +
@@ -2612,15 +2612,16 @@ below, not separately. **Not `welfare-state`**, refused twice, the second time n
 
 The axis triggers and the `anti-settler-violence` removal trigger are stated where they apply.
 
-- **A lead, not a source: 18 posts the party has written and not published** (rev 258, as cut down
-  by revs 272 and 285). On 07.10.26 its system gained ten topics that no page showed — health,
+- **A lead, not a source: 10 posts the party has written and not published** (rev 258, as cut down
+  by revs 272, 285 and 291). On 07.10.26 its system gained ten topics that no page showed — health,
   foreign affairs and the diaspora, the periphery, environment and climate, the self-employed, the
   public service, local government, transport, planning, national infrastructure. Housing and culture
   were topics of this kind before they became papers on 08.10, **three of the ten followed on 13.10
   (rev 272): environment, the self-employed and local government**, and **five more on 14.10 (rev
   285): the public service, the periphery, transport, planning and national infrastructure**, 56
-  posts; each paper is word for word its posts, every post sentence found in its paper. Two topics
-  and 18 posts are still shown on no page: health (8) and foreign affairs (10).
+  posts; each paper is word for word its posts, every post sentence found in its paper. Health
+  followed on 15.10 (rev 291), all 67 sentences of its 8 posts in the paper. One topic and 10 posts
+  are still shown on no page: foreign affairs.
   **Nothing is scored from those.** The foreign-affairs topic would be the party's first text of its own on the
   territories, the document limb of the rev 69 trigger: *"נילחם בנחישות באנרכיה, באלימות ובטרור
   היהודי ונשיב את המשילות ואת שלטון החוק ביהודה ושומרון"*, the civil administration's powers over
@@ -2628,7 +2629,7 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   העלולים לסכן את עתידה של ישראל כמדינה יהודית ודמוקרטית בעלת רוב יהודי מוצק ולהטיל עליה אחריות
   למיליוני פלסטינים"*; beside it, peace with Saudi Arabia as the lead item of a wider Abraham
   Accords, an arrangement with Lebanon's government, and a national authority for strategic
-  communication in the Prime Minister's Office. **Trigger:** either of the remaining two
+  communication in the Prime Minister's Office. **Trigger:** the foreign-affairs topic
   published as a page or a paper. For the foreign-affairs topic, `anti-annexation` and
   `anti-settler-violence` are then re-read as resting on a written programme, and
   `regional-normalization` and `hasbara-focused` are considered. It contains no sentence on a
@@ -3126,7 +3127,7 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   2026-10-10). Every `/topic/…` address except `/topic/missions/` returns 404, as does every
   `/position/…` address; `topic-sitemap.xml` lists the goals page alone, and the `/principles/`
   index (now titled *תכניות*) links fourteen papers and nothing else. The whole section went, not
-  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272, and twenty-four since 14.10, rev 285.)
+  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272, twenty-four since 14.10, rev 285, and twenty-five since 15.10, rev 291.)
   The text is still returned by the site's own interface:
   `https://yasharwitheisenkot.com/api/wp/v2/topic` lists the topics with their ids, and
   `…/api/wp/v2/position?topic=<id>` returns that topic's posts (the text is in `acf.intro_text`).
@@ -3303,6 +3304,19 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   refused on (rev 104). By a source *"המעורה בנושא"*, Ambassador האקבי met him
   ([כאן](https://www.kan.org.il/content/kan-news/politic/1109354/), 14.10.26) and the West Bank,
   settler violence and Gaza came up; the party did not comment. A meeting is not a position.
+- **Read, and scored nothing (rev 291):** the twenty-fifth principles paper,
+  [*ישר! לבריאות*](https://yasharwitheisenkot.com/principles/healthcare/) (entry created 15.10.26
+  07:50 UTC; link supplied by the repo owner; browser-shaped `curl`), every sentence of the 8 posts
+  of the health topic in it. Both halves of `economic` +1 again: on one side *"חיזוק הרפואה
+  הציבורית"*, a binding service standard on the health funds *"לרבות סנקציה תקציבית"*, the national
+  plan to double medical students carried on, more hospital posts, an examined duty of long-term-care
+  insurance for everyone (*"נבחן"*); on the other, shared community clinics that *"יוכלו להיות
+  ציבוריות... או פרטיות"* to raise *"התחרות בין הקופות"*, regulatory barriers to new technology
+  removed, and outcome-based pricing. The sugary-drinks tax returns, the trade the liberalizing
+  bullet already records. *"נפעל לביטול העדפות והטבות בעלות אופי מגזרי ופוליטי... ובפרט במנגנוני
+  השב"ן ומתאמי השירות"* is one more instance at the campaigning pole of the `sectoral-budgeting`
+  sweep. A front-line emergency centre in Kiryat Shmona is the north paper's. No axis moved and no
+  tag changed.
 - **Read, and scored nothing (rev 258):** the thirteenth and fourteenth principles papers,
   [*ישר! לדיור*](https://yasharwitheisenkot.com/principles/housing/) (published 2026-10-08 08:19
   UTC) and [*ישר! לתרבות ישראלית*](https://yasharwitheisenkot.com/principles/culture/) (08:23 UTC).
@@ -16461,3 +16475,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-15 | revision 288 — **הדמוקרטים: the site's 26 topic pages (read from its public Supabase table), a new north paper, the transport PDF and four revised editions (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** *תוכנית הדמוקרטים לשיקום, פיתוח וחיזוק צפון הארץ* (14.10) is new: ₪15bn over seven years, the row's first named tax rates (4% corporate tax and 40% grants for northern industry, arnona cut 45%/39%) — regional incentives, held at −2 — and transport money moved *"מאזורי יהודה ושומרון לאזור הצפון"* (`anti-annexation`, held). The transport topic now has a PDF (Shabbat transport, metropolitan authorities; held). Revised: the economic paper's `(1)` edition raises the minimum wage and the negative income tax and civil spending toward the OECD mean, and its opening line changed, so the `sectoral-budgeting` refusal's quotation is updated; the LGBT unit is now a national authority at ₪100m a year; the senior-citizens paper sets 25% of the average wage from 2027; aliyah and environment trivially. The other nineteen cards summarise papers already read, unchanged. |
 | 2026-10-15 | revision 289 — **המילואימניקים והכלכלית: the joint list's own platform page on `milu-kal.co.il` (created 29.09, edited 07.10.26; `curl` and the site's REST API; link supplied by the repo owner), the first text in both factions' name: four principles and three plans, the full platform still to come. No axis moved. `scholar-exemption-retained` REMOVED (38 → 37), on the repo owner's decision:** the plan allows *"פטור מטעמים רפואיים בלבד"* and gives Torah prodigies a deferral with service required, ישר's refused shape; the joint text outranks the union rule's carry from הכלכלית. Cost of living: tariffs and import quotas abolished, food and farm goods included, the milk, egg and honey councils dismantled, VAT to 12% — `free-trade`, `anti-monopoly` and `tax-cutting` on joint text, `agricultural-protectionism` refused at its opposite pole; `economic` +1 holds, and with no welfare or housing text the housing trigger stays open. Service: a driving-licence ban, no public or religious post (*"דיין, רב עיר ומשגיח כשרות"*) and no institutional funding for evaders; no franchise clause, so `service-conditioned-citizenship` now rests on the faction's texts alone. Foreign: *"פירוק הפלסטיניזם"*, no Palestinian state, the end of the claim of return and of UNRWA — the first written holder opposite `right-of-return`, for the sweep — and *"קו המחרשה הוא קו הגבול!"*, a slogan that stays inside +2. `regional-normalization` and `hasbara-focused` refused. The home page sources #6 and #10; #12 remains unsourced. Cross-row: הרשימה המשותפת (`right-of-return`), ישראל ביתנו (rabbis and service), and the tag's definition item. |
 | 2026-10-15 | revision 290 — **הרשימה המשותפת: the list's first joint texts, *התוכנית הכלכלית-חברתית* and *התוכנית למיגור הפשיעה המאורגנת* on `jointlist.org.il` (live by 04.10.26; the Hebrew, English, Arabic and Russian editions match in every figure; the economic plan expanded by 10.10 and 13.10, per Wayback; links supplied by the repo owner). The entry's trigger "revisit all three axes the moment the list publishes jointly" was run: all three held. ONE TAG ADDED, `cost-of-living` (15 → 16), on the repo owner's decision of 2026-10-15.** `economic` −3: nationalisation of privatised companies, a state mortgage bank, rent capped at 20% of net income, a minimum wage of at least 70% of the average and allowances at 25%; the income-tax and VAT cuts sit inside a reform that taxes capital more. `security` −3: by 10.10 the plan names *"הכיבוש של השטחים הפלסטיניים, הסוריים והלבנוניים"*. `religiosity` −3: no joint text; held on בל"ד's declaration. `anti-privatization`, `progressive-taxation` and `affirmative-action` now rest on joint text. `cost-of-living` rests on the rent cap *"כאמצעי עיקרי למאבק ביוקר הדיור"*, VAT to 10% and full indexation, with the framing (redistribution, *"יוקר הדיור"*) recorded against it. Refused: `tax-cutting`, `anti-corruption`, `municipal-devolution`. The crime plan completes rev 44's precondition for an Arab-society crime tag (noted under רע"ם, עוצמה יהודית and כחול לבן); minting stays with the sweep. A general trade-protection line (tariffs on the United States) is filed as a one-holder gap. |
+| 2026-10-15 | revision 291 — **ישר: the twenty-fifth principles paper, *ישר! לבריאות* (entry created 15.10.26 07:50 UTC; browser-shaped `curl`; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** All 67 sentences of the health topic's 8 unpublished posts are in it, so the unpublished lead is down to the foreign-affairs topic (10 posts), the one that would carry the party's first written text on the territories. `economic` +1 holds on both halves: stronger public medicine and a binding service standard on the health funds with a budget sanction, beside shared community clinics that may be private to raise competition between the funds. The removal of sectoral preferences in the supplementary insurance is one more instance for the `sectoral-budgeting` sweep. |
