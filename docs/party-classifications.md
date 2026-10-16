@@ -3611,6 +3611,18 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   directorates for the north, the south and the country, a funded national mental-health programme,
   young people in civilian service as supplementary staff and AI for reporting — the health paper of
   rev 291; `economic` +1 and `municipal-devolution`, held.
+- **Read, and scored nothing (rev 296):** איזנקוט's answer to ליברמן ([post](https://x.com/gadi_eisenkot/status/2111049813898744167), 16.10.26 11:01 UTC,
+  fxtwitter; reported by [הארץ](https://www.haaretz.co.il/news/elections/2026-10-16/ty-article/.premium/000001a1-43db-ddcc-a3fd-cbfb14160000), 16.10.26, body supplied by the repo owner): the aim is *"הכרעה ברורה של למעלה מ-61 מנדטים ציוניים של
+  שינוי"*; *"עם ישראל לא יסלח לפוליטיקאים שלא יתעלו לגודל השעה, בגלל כיסא ואינטרסים אישיים, וימנעו
+  את החלפת ממשלת ה-7.10"*; *"עליי, כפי שהוכחתי כל חיי, אפשר לסמוך"*. As הארץ notes, it does not say
+  he will not sit with נתניהו; on 09.10.26 he did — *"אני לא רואה שום מצב שאני יושב תחת הממשלה שלו"*,
+  and no rotation (rev 258) — and nothing here withdraws it. ליברמן's charge (under ישראל ביתנו) that
+  he seeks a government with נתניהו, גולדקנופף and דרעי and holds a minority government as leverage
+  for the first rotation is a rival's inference; the 58–59 arithmetic is rev 287's and on the record,
+  the 61 is a target. ליברמן also has him calling ש"ס *"מפלגה עם מרכיבים ציוניים רחבים מאוד"*,
+  undated and not traced to a source; not entered. His reading of the 3% as an exemption that will
+  not be abolished is the dispute already recorded; `scholar-exemption-retained` stays refused
+  (rev 21).
 
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
@@ -5933,6 +5945,10 @@ All first-party unless marked.
   עמותת 121 it backed local operation, lighter caseloads and a dedicated budget even at the expense
   of other health areas. `municipal-devolution`, held. ynet ([ynet](https://www.ynet.co.il/news/elections2026/article/r1arrkcjfl), דן אורן, 15.10.26 13:39, `articleBody` with `curl`): תמנו שטה (#2), no portfolio
   named.
+- **Read, and scored nothing (rev 296):** גנץ on ליברמן's post (under ישראל ביתנו), as הארץ quotes
+  his X post ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-16/ty-article/.premium/000001a1-43db-ddcc-a3fd-cbfb14160000), 16.10.26, body supplied by the repo owner; the post itself not read): *"30 שנה בפוליטיקה הישראלית, וליברמן לא עשה 10% ממה
+  שגדי איזנקוט ואני עשינו למען מדינת ישראל"* and *"ההתקפות שלך לא יסתירו את המבוי הסתום שאליו אתה
+  מוביל את ישראל"*. A personal attack; no position.
 - **Read in rev 286** (links supplied by the repo owner; browser-shaped `curl`, the education PDF
   read from the rendered page): [*עקרונות כחול לבן*](https://kachollavan.org.il/wp-content/uploads/2026/10/Ekronot-Memshalti_Atar_03.pdf)
   (created 29.09.26) · [*תכנית כלכלית-חברתית*](https://kachollavan.org.il/wp-content/uploads/2026/10/Calcali_Atar_02.pdf)
@@ -7512,6 +7528,22 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   and a fund *"בדומה למודל קנ"ט"* to compensate farmers and victims of protection money — the
   internal-policing vocabulary hole, not minted. *"התיישבות"* here is the Negev and Galilee, not
   the territories, so it is no corroboration of `pro-settlement`, which rests on rev 52.
+- **Read, and scored nothing (rev 296):** ליברמן on איזנקוט ([post](https://x.com/AvigdorLiberman/status/2111011463758246265), 16.10.26 08:28 UTC,
+  fxtwitter; reported by [הארץ](https://www.haaretz.co.il/news/elections/2026-10-16/ty-article/.premium/000001a1-43db-ddcc-a3fd-cbfb14160000), 16.10.26, body supplied by the repo owner), headed *"גדי איזנקוט - בני גנץ 2"*: ישר's *"המפלגה הגדולה"*
+  campaign takes votes inside the bloc, against the leaders' understanding of 26.9, and *"המסקנה שלי
+  מההתנהלות של איזנקוט היא שהוא חותר להקמת ממשלה עם נתניהו, גולדקנופף ודרעי, ומשאיר את האפשרות של
+  ממשלת מיעוט על השולחן כאמצעי לחץ על נתניהו כדי להיות ראשון ברוטציה"*. A rival's inference, and
+  nothing is entered from it on ישר's row (under ישר). For this row: *"גיוס לכולם וחוקה לישראל אינם
+  סיסמת בחירות מבחינתנו"*, with the 2019 refusal to join a coalition over the draft law
+  (`universal-conscription`, `anti-conscription-exemption`, `constitutionalist`, held); against
+  ישר's 3% deferral, *"הפטור מגיוס לצה"ל לא יבוטל"* — the bloc partners' dispute over the 3%, already
+  recorded under ישר; and on the Arab lists, *"ישראל ביתנו לא תשב בקואליציה שתלויה ברע"ם או במשותפת -
+  לא בתמיכה ישירה ולא בתמיכה עקיפה"*: reliance excluded as well as membership,
+  `excludes-haredi-and-arab-parties` at its strongest, held — the opposite of ישר's reliance left open
+  (rev 293). The quotes he attaches to כסיף and חוג'יראת are his and are not entered on those rows.
+  His remedy is *"ארבע מפלגות הגוש"* winning a solid majority — הארץ names them as ישראל ביתנו, ישר,
+  ביחד and הדמוקרטים — so he still counts ישר inside the bloc while accusing it; `bloc` stays
+  `opposition`. גנץ's reply is under כחול לבן.
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -16655,3 +16687,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-15 | revision 293 — **fifteen rows: ynet's round-up of the lists' number twos, N12's mental-health survey, two N12 reports by עמית סגל (one needed headless Chromium, as did the survey), ליברמן's post (fxtwitter), and two הארץ pieces, a news report and a מוסף profile of זליכה (bodies supplied by the repo owner; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **ישראל ביתנו:** *"לא נתמוך בשום ממשלת מיעוט, גם לא בממשלת מיעוט לתקופת מעבר"*, with רע"ם, the Joint List, ש"ס and יהדות התורה excluded by name and Likud a partner only without נתניהו — held tags; the minority-government refusal fits no tag and is recorded because ישר's 58–59 route (rev 287) would need this row. **ישר:** איזנקוט does not answer it; הארץ restates its August account of his private talk, *"יתמכו, יימנעו או ייעדרו. זה עניינן"* — reliance open, membership closed, rev 169's reading. **המילואימניקים והכלכלית:** וילף (#3) would complete נתניהו's 61 for a narrow government *"כל עוד כל מרכיבי הלגו שלה הם מרכיבים ציוניים"*, against הנדל's refusal; `anti-netanyahu` and `unaligned` held (a personal accession, not a faction), the sentence under `bloc` qualified and a trigger filed. זליכה's airport-tender plan is `anti-monopoly`, held. **יהדות התורה:** the reporter writes that גולדקנופף intends to abstain on an איזנקוט government — rev 180's story a third time, no named statement; `bibi` holds. **הדמוקרטים:** גולן refuses a unity *"קומבינה"*, held. The number twos: פייגלין would close five ministries (`economic` 0 holds), גוטליב's Justice aims (`judicial-overhaul`, held), חדאד's hasbara ministry (`hasbara-focused`, held). The mental-health survey moves nothing on any row; the Joint List's answer runs against `municipal-devolution`, refused in rev 290. |
 | 2026-10-16 | revision 294 — **ישראל ביתנו: N12's report of the change bloc's reaction to rev 293's refusal of a minority government (`curl`; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** Unnamed bloc figures call the statement uncoordinated and a bid to raise ליברמן's price, up to the premiership; the reporter reads it as a pitch to right-wing voters. Anonymous and analytic; `opposition` holds. |
 | 2026-10-16 | revision 295 — **ישראל ביתנו: the party's Negev and Galilee page, *"מפלגת ישראל ביתנו פועלת למען חיזוק הנגב והגליל!"* (published 15.10.26 20:57 UTC; `curl`; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** Nearly all of it is rev 163's משילות plan. New: a רמ"י and planning reform (`governance-reform`, held), penal and court measures against agricultural crime, and a קנ"ט-style fund for farmers and protection-money victims — the internal-policing hole, not minted. Negev–Galilee settlement does not corroborate `pro-settlement`. Also restores the change-history table, split by a blank line before rev 294's row. |
+| 2026-10-16 | revision 296 — **ישראל ביתנו, ישר, כחול לבן: ליברמן's post calling איזנקוט *"בני גנץ 2"*, איזנקוט's reply (both via fxtwitter) and הארץ's report with גנץ's response (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** ליברמן charges that איזנקוט seeks a government with נתניהו and holds a minority government as leverage — a rival's inference, not entered on ישר's row. For his own row he excludes reliance on רע"ם or the Joint List *"לא בתמיכה ישירה ולא בתמיכה עקיפה"* (`excludes-haredi-and-arab-parties`, held) and still counts ישר among the bloc's four. איזנקוט aims for 61+ and does not repeat his refusal to sit with נתניהו; the 09.10.26 refusal (rev 258) stands. גנץ: a personal attack, no position. |
