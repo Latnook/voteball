@@ -7820,7 +7820,7 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   this family records; no family or tag moves. עוצמה יהודית's ₪497m from the 550 plan to the Shin
   Bet and the police (under its `economic`) is the nearest precedent.
 
-#### Tags (27) and what each rests on
+#### Tags (28) and what each rests on
 
 **Among the row's original tags and never argued here:** **`ultranationalist`**, **`far-right`**.
 
@@ -7834,6 +7834,18 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   fuel cut (rev 188), a minister whose party's paper promises deficit reduction and a broad
   universal tax cut overruling his professionals on a narrow, temporary cut to one tax, timed to the
   election. *"כלכלת בחירות"* is the professionals' concern as כאן reports it, not a finding.
+- **`school-vouchers`** (rev 301) — the party's education plan, *"בוחרים חינוך"* ([`/hinuch/`](https://zionutdatit.org.il/hinuch/),
+  modified 16.10.26 06:57 UTC, `curl`): *"ביטול אזורי הרישום ומתן אפשרות לכל הורה לבחור את בית הספר
+  המתאים ביותר לילדיו. התקציב יעבור לבית הספר בהתאם למספר התלמידים שבחרו בו"*, with a differential
+  for the periphery. That is the tag's written test, money that follows a pupil to the school the
+  parents choose (rev 261's refusal for ביחד), and its founding case on ישראל תחילה adds the same
+  companions: about 80% of decisions moved to principals and staff, hiring included, and teachers on
+  personal contracts paid by results. It had been in the 2022 paper (rev 17) and in זהות's platform
+  (under `communitarian-devolution`), and is now the party's own 2026 plan. Unlike ישראל תחילה's
+  ₪60,000 personal voucher, the money goes to the school by head-count and the ministry keeps core
+  studies, which here include *"תנ"ך, מסורת ישראל, חגי ישראל"*. Second holder; a platform tag on a
+  `record` row, so `claims-economically-liberal` still carries the gap — a finance minister, not
+  this party, ran education.
 
 **Territory and settlement**
 
@@ -7973,7 +7985,7 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
 - **`jewish-law-parallel-jurisdiction`** and **`communitarian-devolution`** (carried from זהות) —
   the two that carry the shape of the faction's position: משפט עברי as a parallel state
   jurisdiction, and the citizen's religious life as a private and communal matter (faction section).
-  The school voucher falls under the second.
+  The school voucher fell under the second until rev 301 gave it `school-vouchers` (under Economy).
 
 **Service**
 
@@ -8074,7 +8086,15 @@ tracks and incentives, no individual sanctions) — see Open questions. **Not `m
   orientation. Tagging thin evidence is how a tag set stops meaning anything.
 - **Nothing for dismantling the Authority** (rev 250): it has no tag and is recorded in prose, as
   for ישראל ביתנו (revision 237).
-- **No school-choice tag**: none exists in the vocabulary and one holder does not make one.
+- **No school-choice tag** was the call before ישראל תחילה brought `school-vouchers` (rev 70); the
+  party's 2026 plan earns it here (rev 301, under Economy).
+- **`core-curriculum`** (rev 301) — the plan has the ministry *"קביעת לימודי ליבה"* for all, but no
+  funding condition; the tag's test is the condition (ביחד, *"מימון ציבורי יינתן רק למוסדות המלמדים
+  100% לימודי ליבה"*). **`public-service-reform`** — the plan lets any teacher bargain alone or
+  through a body other than the representative unions, and asks full financial transparency of the
+  Ottoman associations; with the 2022 paper's end of tenure and ban on political strikes this row
+  has the material, but the tag's founding case is כחול לבן's צו 8 booklet, a civil-service
+  programme, and one sector's contracts are not that. For the vocabulary sweep.
 
 #### Open questions and triggers
 
@@ -8530,7 +8550,7 @@ rewriting its programme would be the thing to catch.
 - **Party site:** the thirteen `zionutdatit.org.il/hityashvut/` pages (read 2026-07-27, rev 9);
   `/victory/` (rev 31); `/judaization/` and its four images (revs 31, 33), with `web.archive.org`
   CDX for the absent snapshot; [*משחררים את החסימה — תכנית רוטמן להמשך תיקון מערכת
-  המשפט*](https://zionutdatit.org.il/mishpat/) (rev 162).
+  המשפט*](https://zionutdatit.org.il/mishpat/) (rev 162); [*בוחרים חינוך*](https://zionutdatit.org.il/hinuch/) (rev 301).
 - **Reserves deck:** *מילואימניקים הביתה*, as circulated (not compared with the party-hosted plan),
   including its Q&A section, and [Maariv](https://www.maariv.co.il/news/politics/article-1355768),
   both 2026-08-13/14.
@@ -16892,3 +16912,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-18 | revision 298 — **הליכוד, עוצמה יהודית, הציונות הדתית, עמך ישראל, המילואימניקים והכלכלית: הארץ's report of נתניהו's briefing and בן גביר's statement (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו: *"אין ספק שנעשה את אותה קואליציה"*, with סמוטריץ', keeping Defence and National Security for הליכוד if the results allow — `bibi` in his words. בן גביר says the prime minister's office told EU states he will be left out and that הליכוד wants his list at five seats (rev 75's charge, now his own); הליכוד calls it *"ירי בתוך הנגמ"ש"*; `bibi` holds. The protest at settler attacks as *"ניפוח גדול"* disputes scale, not enforcement, so rev 123's refusal stands. The *"געוואלד"* campaign against וינטר's and הנדל's lists is הארץ's description. |
 | 2026-10-18 | revision 299 — **הליכוד: a הארץ column on ינון מגל's *"קוף"* line and Trump's endorsement (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו's condemnation and the endorsement were entered in rev 297. The column adds only its own reporting — a twelve-hour debate in נתניהו's headquarters over whether to respond, and no response to מגל's earlier attack on bereaved families — which is not a position. |
 | 2026-10-18 | revision 300 — **הציבור החרדי, הליכוד, הציונות הדתית, עוצמה יהודית: two N12 reports (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו and סמוטריץ' press לייטנר to withdraw so the bloc's votes are not lost below the threshold; לייטנר: *"אסור לנו לפרוש"*. The withdrawal trigger is not met, `on_ballot` holds, and the pressure fits `bibi`. The second report repeats rev 298's בן גביר charge and הליכוד reply word for word. |
+| 2026-10-18 | revision 301 — **הציונות הדתית: the party's education plan, *"בוחרים חינוך"* (`zionutdatit.org.il/hinuch/`, modified 16.10.26; `curl`; link supplied by the repo owner). +`school-vouchers` (27 → 28 tags; the tag's holders 1 → 2), no axis moved.** Registration zones abolished, the budget following the pupil to the school the parents choose, about 80% of decisions to principals and staff, teachers on personal contracts with pay by results — the tag's test as rev 261 wrote it, and its founding case on ישראל תחילה. The row's line saying no such tag exists predated it and is corrected. `economic` 0 holds: a platform promise on a `record` row, whose gap `claims-economically-liberal` carries. `core-curriculum` refused (core studies set, no funding condition) and `public-service-reform` left for the vocabulary sweep (teachers outside the representative unions; the founding case is a civil-service programme). Upcoming table only. |
