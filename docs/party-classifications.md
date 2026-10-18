@@ -2093,6 +2093,11 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   attack on bereaved families who wrote against him — unnamed sourcing and a reporter's reading, no
   position. ברדוגו is *"משוריין"*, slot 11 already recorded (rev 99). The 18–21 seat polling is the
   columnist's summary.
+- **Read, and scored nothing (rev 300):** N12 reports that נתניהו, with סמוטריץ', spends long hours
+  trying to persuade לייטנר to withdraw הציבור החרדי, offering him *"הצעות אחרות"*, to stop votes
+  being lost below the threshold ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-91d0273991051a1027.htm), עמית סגל, 18.10.26 21:11, `articleBody` with `curl`). The bloc's leader pressing a `bibi` row, rev 244's
+  pattern; the outcome is under הציבור החרדי. N12's report of בן גביר's charge and הליכוד's reply
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-a28a3c75fbf41a1027.htm), דפנה ליאל, 18.10.26 19:05, `articleBody` with `curl`) matches rev 298's הארץ text word for word.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -8702,6 +8707,8 @@ rewriting its programme would be the thing to catch.
   embrace סמוטריץ' *"כדי לנסות להבטיח שיעבור את אחוז החסימה"*, the reporter's reading.
 - **Read, and scored nothing (rev 298):** נתניהו names סמוטריץ' in the coalition he says he will
   rebuild, *"עבדנו היטב יחד, גם עם סמוטריץ'"* ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/000001a1-4f9e-da52-a3f1-4fde6c660000), 18.10.26, body supplied by the repo owner; under הליכוד). `bibi`, held.
+- **Read, and scored nothing (rev 300):** סמוטריץ' joins נתניהו in pressing לייטנר to withdraw
+  הציבור החרדי ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-91d0273991051a1027.htm), עמית סגל, 18.10.26 21:11, `articleBody` with `curl`; under הליכוד and הציבור החרדי). Work for the bloc's count; `bibi`, held.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -9970,6 +9977,8 @@ Linked where used above. Not linked above:
   questioning under the investigation paragraph.
 - **Read, and scored nothing (rev 298):** בן גביר's statement on the prime minister's office and the
   EU, נתניהו's *"אותה קואליציה"* and הליכוד's reply ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/000001a1-4f9e-da52-a3f1-4fde6c660000), 18.10.26, body supplied by the repo owner); entered under Bloc and sector.
+- **Read, and scored nothing (rev 300):** N12's report of the same statement and reply ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-a28a3c75fbf41a1027.htm), דפנה ליאל, 18.10.26 19:05, `articleBody` with `curl`)
+  matches הארץ's quotes; its account of last month's exchange, *"מספיק עם הבלוף"*, is rev 88's.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -15108,7 +15117,11 @@ interviews on both limbs (rev 72):
   this row was created; it runs as its own list (לייטנר #1, rev 247) and עמך ישראל as its own.
   **Still open:** the row's CEC list has never been read here — list number, slots, the two women
   (rev 100), whether any outside component is on it. **Remaining trigger:** a withdrawal, which
-  moves `on_ballot`, not an axis.
+  moves `on_ballot`, not an axis. **Pressed and refused (rev 300):** N12 (עמית סגל, 18.10.26)
+  reports נתניהו and סמוטריץ' spending long hours trying to persuade לייטנר to withdraw, with offers
+  other than a seat, and *"התקדמות במגעים"*; לייטנר's reply: *"אין לנו את הפריווילגיה לפרוש. אסור
+  לנו לפרוש. יש לנו ציבור עצום שמצפה שנייצג אותו"*. The trigger is not met and `on_ballot` holds.
+  The pressure itself fits `bibi`: the bloc's leader counts this list's votes as the bloc's.
 - The economic-chapter trigger under `economic`.
 - `municipal-devolution` is held with no clause recorded in this entry or elsewhere on the page;
   find the platform clause or re-examine the tag.
@@ -15143,7 +15156,7 @@ interviews on both limbs (rev 72):
   that talk *"is said to be aimed partly at"* this row, while כאן, 06.10.26 (rev 247, under ישראל
   ביתנו) sets the same talk against *"the new haredi lists"*: a rival's framing, electoral strategy;
   כאן on the night in מודיעין, 06.10.26, `kan.org.il/content/kan-news/local/1106432/` (rev 247,
-  under ישראל ביתנו).
+  under ישראל ביתנו); [N12](https://www.mako.co.il/news-israel-elections/2026/Article-91d0273991051a1027.htm), עמית סגל, 18.10.26 21:11, `articleBody` with `curl` (rev 300, entered under Open questions).
 
 ### ישראל תחילה — Israel First · `unaligned` · +2 / +2 / −2 · secular
 
@@ -16878,3 +16891,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-18 | revision 297 — **cross-row: six הארץ pieces (bodies supplied by the repo owner), two N12 reports and a ynet report (`curl`), a כאן report (headless browser), a post (fxtwitter), and ביחד's hitech plan (links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **The surplus-vote deadline passed:** עוצמה יהודית and עמך ישראל signed nothing — *"וינטר הוא 'בנט 2'"*, says an unnamed עוצמה יהודית source — and rev 238's open question under עמך ישראל is closed; IDI's אסף שפירא confirms the reading of the method in rev 247. **המילואימניקים והכלכלית:** הנדל and זליכה's first joint text on נתניהו's bloc calls it *"לגוש החרדי של נתניהו"* and accepts no narrow government of his, so the `anti-netanyahu` trigger is not met. **יהדות התורה:** a profile of אשר quotes הרב לנדו's May letter, *"המושג 'גוש' אינו קיים מבחינתנו יותר"* — a withdrawal with no other bloc named, so `bibi` holds on the owner's decision; core studies on request leave `opposes-core-curriculum` held. **עוצמה יהודית:** קרויזר questioned under caution, both men deny it; בן גביר backs ינון מגל. **ינון מגל's *"קוף"* line:** condemnations from נתניהו, ישר, הדמוקרטים and ישראל ביתנו, no position. **הליכוד:** Trump's endorsement, and נתניהו's ₪450bn defence addition and Iran regime-change aim (held tags); replies from איזנקוט (a national security strategy within 150 days) and בנט (the Qatar line). **הדמוקרטים:** the party prepares activists to press bloc MKs against a unity government. **רע"ם** disowns pride-flag posters and states its aim to sit in a change government. **ביחד**'s hitech plan is live in Hebrew again, unchanged in substance. |
 | 2026-10-18 | revision 298 — **הליכוד, עוצמה יהודית, הציונות הדתית, עמך ישראל, המילואימניקים והכלכלית: הארץ's report of נתניהו's briefing and בן גביר's statement (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו: *"אין ספק שנעשה את אותה קואליציה"*, with סמוטריץ', keeping Defence and National Security for הליכוד if the results allow — `bibi` in his words. בן גביר says the prime minister's office told EU states he will be left out and that הליכוד wants his list at five seats (rev 75's charge, now his own); הליכוד calls it *"ירי בתוך הנגמ"ש"*; `bibi` holds. The protest at settler attacks as *"ניפוח גדול"* disputes scale, not enforcement, so rev 123's refusal stands. The *"געוואלד"* campaign against וינטר's and הנדל's lists is הארץ's description. |
 | 2026-10-18 | revision 299 — **הליכוד: a הארץ column on ינון מגל's *"קוף"* line and Trump's endorsement (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו's condemnation and the endorsement were entered in rev 297. The column adds only its own reporting — a twelve-hour debate in נתניהו's headquarters over whether to respond, and no response to מגל's earlier attack on bereaved families — which is not a position. |
+| 2026-10-18 | revision 300 — **הציבור החרדי, הליכוד, הציונות הדתית, עוצמה יהודית: two N12 reports (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו and סמוטריץ' press לייטנר to withdraw so the bloc's votes are not lost below the threshold; לייטנר: *"אסור לנו לפרוש"*. The withdrawal trigger is not met, `on_ballot` holds, and the pressure fits `bibi`. The second report repeats rev 298's בן גביר charge and הליכוד reply word for word. |
