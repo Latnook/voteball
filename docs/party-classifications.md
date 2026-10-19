@@ -5559,6 +5559,30 @@ realistic range, the footing for `two-faction-list`) does not apply (revs 63, 65
 4 רועי קונקול · 5 עו"ד רתם אבידר צאליק · 6 אלון שוסטר. גנץ, תמנו־שטה and שוסטר sat in the
 outgoing Knesset.
 
+**Withdrew on 19.10.26, eight days before the election: `on_ballot` TRUE → FALSE (rev 304, the
+repo owner's decision).** גנץ: *"לא אתמודד בבחירות הקרובות. אמשיך להיאבק למען אחדות. זה הפתרון
+היחיד שימנע אסון נוסף וישמור על ישראל מול כל האתגרים מבית ומחוץ"*, with a statement to the press
+due at 20:00. כאן's summary is that he *"החליט כי מפלגתו לא תתמודד בבחירות לכנסת"*
+([כאן](https://www.kan.org.il/content/kan-news/politic/1110678/), שחר גליק, 19.10.26 15:44,
+headless browser; the same statement in [mako](https://www.mako.co.il/news-israel-elections/2026/Article-02450f1362451a1026.htm), דפנה ליאל, 15:44, `articleBody`
+with `curl`, [ynet](https://www.ynet.co.il/news/elections2026/article/syy00ec73zl), יובל קרני,
+15:49, `articleBody` with `curl`, and [הארץ](https://www.haaretz.co.il/news/elections/2026-10-19/ty-article/000001a1-5430-dac9-a7e3-74b33de40000), נעה שפיגל, 15:43, body supplied by the
+repo owner). Every outlet gives the polls as the reason: under the threshold in all of them, at
+about one percent. A week earlier, at ynet's conference, he had said *"לא משנה מה קורה... אני רץ
+עד הסוף"*. ynet reports, from closed conversations, that שוסטר (#6) argued against running to the
+end, *"אסור לנו לשרוף קולות סתם"*. Revision 59 (אל הדגל) governs, as the open question of rev
+135 said it would: the flag, not a deletion, so the row, its three values, its 27 tags and both
+families stay, no tag loses a holder (`hard-to-classify-bloc`, which this row holds alone, keeps
+it) and the votes already cast for it survive. **Everything else in this entry stays live and
+correct**; it describes what the party stood for, not whether it is running. Not verified: whether
+the list was formally withdrawn at the CEC, whose deadline is not stated in any of the four
+reports. Nobody names a party to vote for instead; the evening statement may, and a recommendation
+would be recorded here without moving any value. Also from הארץ, so it is not mistaken for a finding
+about the row: the pollster שלמה פילבר's post on X that גנץ had *"פעמיים עבר בהפתעה"* the
+threshold rests on no poll filed with the CEC, as the law requires within ninety days of the vote,
+and the party echoed it in a campaign SMS (*"מוקדם להספיד את כחול לבן"*). A campaign's use of a
+claim; no position.
+
 #### The three axes
 
 **`economic` 0 — balanced.** "Free economy combined with social justice": imports and competition
@@ -5834,15 +5858,13 @@ each bullet below says which.
   criterion, the tag follows on that statement, not on the vote (rev 102). **Met in rev 286** by the
   principles page read with the 2025 booklet; see Tags.
 - **`economic` +1:** a costed version of the economic plan of 07.10 (rev 286; under `economic`).
-- **Withdrawal** (rev 135). A חדשות 13 "first publication", citing unnamed bloc sources, says the
-  change-bloc leaders are preparing to offer גנץ *"פרישה בכבוד"* because every poll has the row
-  under the threshold (its own poll of 16.09: under one percent). Anonymous reporting about other
-  parties' intentions, not scored. If כחול לבן actually withdraws, the governing precedent is
-  revision 59 (אל הדגל: `on_ballot` → FALSE, row and tags kept), which prefers the flag to revision
-  42's delete (האחדות) for every later withdrawal. Either way it is the repo owner's decision.
+- **Withdrawal: met in rev 304.** Rev 135 logged a חדשות 13 report, citing unnamed bloc sources,
+  that the change-bloc leaders were preparing to offer גנץ *"פרישה בכבוד"*, and named revision 59
+  (אל הדגל) as the governing precedent if the party withdrew. It withdrew on 19.10.26, and the repo
+  owner took the flag: `on_ballot` FALSE, row and tags kept (see Basis).
 - **Below the threshold** (rev 90): *"מדשדש זמן רב מתחת לאחוז החסימה בסקרים"*. This page scores
-  positions, not seats (as revision 88 for עמך ישראל); it matters for `on_ballot` and lineage
-  handling, not for any tag.
+  positions, not seats (as revision 88 for עמך ישראל); it mattered for `on_ballot`, which it moved
+  in rev 304, and not for any tag.
 
 #### What this row contributes to tags that do not exist yet
 
@@ -17015,3 +17037,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-18 | revision 301 — **הציונות הדתית: the party's education plan, *"בוחרים חינוך"* (`zionutdatit.org.il/hinuch/`, modified 16.10.26; `curl`; link supplied by the repo owner). +`school-vouchers` (27 → 28 tags; the tag's holders 1 → 2), no axis moved.** Registration zones abolished, the budget following the pupil to the school the parents choose, about 80% of decisions to principals and staff, teachers on personal contracts with pay by results — the tag's test as rev 261 wrote it, and its founding case on ישראל תחילה. The row's line saying no such tag exists predated it and is corrected. `economic` 0 holds: a platform promise on a `record` row, whose gap `claims-economically-liberal` carries. `core-curriculum` refused (core studies set, no funding condition) and `public-service-reform` left for the vocabulary sweep (teachers outside the representative unions; the founding case is a civil-service programme). Upcoming table only. |
 | 2026-10-19 | revision 302 — **יהדות התורה, הציבור החרדי, ש"ס, הליכוד: an N12 interview with אשר (`curl`) and three הארץ pieces (bodies supplied by the repo owner; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **יהדות התורה:** אשר (#1): *"גוש אחד שהוא הגוש שלנו - גוש התורה"*, *"אנחנו עומדים בצד"* on the recommendation, and *"לא יודע"* on sitting with איזנקוט. He declines the bloc's name, as פינדרוס did, and names nobody, so `bibi` holds on the owner's decision. Asked about הרב לנדו's Zionism line, he disputes the reading and neither adopts nor disowns it, so `non-zionist` stays refused. The draft-law answers restate held tags. **הציבור החרדי:** at the party's rally לייטנר attacks *"שלטון העסקנים"*, which `anti-haredi-establishment` gets as the first argument in the row's own entry. הארץ names the women at #3 and #4, נחומי יפה and זיוה גלנץ. A post-election movement running lists in local elections is not `municipal-devolution`'s missing clause. **ש"ס:** הרב יצחק יוסף presses rabbis who withhold support, the reporter's account. **הליכוד:** the head of the pedagogical secretariat retires under קיש, ministerial conduct. **Not entered:** הארץ's column on Trump's endorsement and the two X posts it cites (סטיין, וורד). The endorsement is rev 297's, and the column adds commentators, not a party act. |
 | 2026-10-19 | revision 303 — **הדמוקרטים, הליכוד, הציונות הדתית: three כאן pages (headless browser; links and two live-page entries supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **הדמוקרטים:** גולן answers Trump's endorsement: the people decide, *"לא טראמפ"*; the haredi *"השתמטות ההמונית"* and a government that *"לא סוגרת חזיתות"* repeat `anti-conscription-exemption` and `security` −1. **הליכוד:** סער makes Iran *"שאלת הבחירות"* and quotes Trump as *"רק נתניהו ישלים את המשימה באיראן"*, words not in the post rev 297 read. כאן reports that רגב, סמוטריץ' and נתניהו (holding the interior powers) have for months not withdrawn ארנונה and public-transport discounts from haredi evaders, against בג"ץ's April decision and the professional opinion: consistent with `conscription-exemption` on הליכוד and with the refused `sanctions-on-non-servers` on הציונות הדתית, and weaker than the legislation those rest on. כאן's count of 110,000 evaders, about 80% haredi, with enforcement frozen, names no party; it corroborates the הארץ claim rev 224 left unverified, and that sentence is updated in place. |
+| 2026-10-19 | revision 304 — **כחול לבן withdrew eight days before the election: `on_ballot` TRUE → FALSE, the repo owner's decision. No axis, bloc, sector, tag or family moved; `seed.sql` changes only the flag.** Four reports of the same afternoon (כאן, headless browser; mako and ynet, `curl`; הארץ, body supplied by the repo owner; links supplied by the repo owner): גנץ, *"לא אתמודד בבחירות הקרובות. אמשיך להיאבק למען אחדות"*; כאן, *"מפלגתו לא תתמודד"*. The reason every outlet gives is the polls, about one percent. Revision 59 (אל הדגל) governs, as rev 135's open question said: the flag, not a delete, so the row, its 27 tags and its votes survive, and `hard-to-classify-bloc`, held by this row alone, keeps its holder. The off-ballot set is now three rows (המפלגה הכלכלית, אל הדגל, כחול לבן) and `test_withdrawn_party_is_absent_from_the_ballot_but_present_in_options` pins it. The formal CEC withdrawal and the content of the evening statement are not verified. Not a finding: פילבר's unfiled "poll" that the party echoed by SMS (הארץ). Live only after the next `release` promotion; the cluster is down. |
