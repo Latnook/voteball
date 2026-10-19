@@ -561,10 +561,10 @@ if [ "${SKIP_ARGOCD:-0}" != "1" ]; then
       echo "  ./scripts/render-argocd-app.sh | kubectl apply -f -" >&2
       SKIP_ARGOCD=1
     fi
-    # promote-to-release.sh leaves the checkout ON the release branch. Everything after this point
-    # (and anyone reading the repo afterwards) expects master, and leaving a deploy script having
-    # silently switched branches is its own small trap.
-    git checkout -q master 2>/dev/null || true
+    # No switch back to master here any more: since 2026-10-15 promote-to-release.sh builds the
+    # release commit in its own throwaway worktree and never touches this checkout -- its branch,
+    # HEAD or uncommitted files. Until then it checked out release in place, which aborted this step
+    # on a dirty tree and, when it did not abort, silently overwrote uncommitted edits.
   fi
 fi
 

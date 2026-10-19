@@ -8,7 +8,7 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-SUT="$ROOT/scripts/ci/promote-to-release.sh"
+SUT="${PROMOTE_SUT:-$ROOT/scripts/ci/promote-to-release.sh}"   # override only to mutation-test this file
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
@@ -18,6 +18,11 @@ fail() { echo "FAIL: $*" >&2; exit 1; }
 ok()   { echo "  ok: $*"; pass=$((pass+1)); }
 
 VALUES_REL="charts/voteball/values.yaml"
+
+# The script builds each release commit in its own throwaway worktree and leaves this checkout
+# alone (2026-10-15), so every result is read from the pushed branch, never from the working tree.
+rel_values() { git show "origin/release:$VALUES_REL"; }
+on_release() { git cat-file -e "origin/release:$1" 2>/dev/null; }   # on_release <path>
 
 write_values() {   # write_values <tag>
   mkdir -p charts/voteball
@@ -60,12 +65,12 @@ grep -q "does not exist yet" <<<"$out" || fail "expected the create-branch path,
 git rev-parse --verify -q origin/release >/dev/null || fail "release was not pushed to the remote"
 ok "the first promotion creates release and pushes it"
 
-grep -q '^  tag: "bbbbbbb"$' "$VALUES_REL" || fail "the tag was not rewritten; file: $(cat "$VALUES_REL")"
+grep -q '^  tag: "bbbbbbb"$' <<<"$(rel_values)" || fail "the tag was not rewritten; file: $(rel_values)"
 ok "the image tag is rewritten and stays quoted"
 
 # The first release commit must descend from the promoted master commit, not be an orphan -- an
 # orphan branch cannot be diffed against master, which is half the point of this design.
-git merge-base --is-ancestor "$src" HEAD || fail "the first release commit does not descend from master"
+git merge-base --is-ancestor "$src" origin/release || fail "the first release commit does not descend from master"
 ok "release shares history with master rather than being an orphan"
 
 # ---- 2. digests are written into the digests block, and only there ------------------------------
@@ -73,21 +78,21 @@ setup
 src="$(git rev-parse HEAD)"
 D="backend=sha256:aaa worker=sha256:bbb nginx=sha256:ccc backup=sha256:ddd"
 out="$(SOURCE_SHA="$src" TAG="ccccccc" DIGESTS="$D" bash "$SUT" 2>&1)" || fail "promotion with digests failed: $out"
-grep -q '^    backend: "sha256:aaa"$' "$VALUES_REL" || fail "backend digest missing: $(cat "$VALUES_REL")"
-grep -q '^    backup: "sha256:ddd"$'  "$VALUES_REL" || fail "backup digest missing"
+grep -q '^    backend: "sha256:aaa"$' <<<"$(rel_values)" || fail "backend digest missing: $(rel_values)"
+grep -q '^    backup: "sha256:ddd"$'  <<<"$(rel_values)" || fail "backup digest missing"
 ok "all four digests land inside the digests: block"
 
 # `backup:` is also a TOP-LEVEL key in this file, carrying roleArn. A rewrite that pattern-matched a
 # bare key name instead of tracking the digests block would corrupt it.
-grep -q '^backup:$' "$VALUES_REL" || fail "the top-level backup: section was destroyed by the rewrite"
-grep -q '^  roleArn: "arn:aws:iam::1:role/backup"$' "$VALUES_REL" || fail "backup.roleArn was corrupted"
+grep -q '^backup:$' <<<"$(rel_values)" || fail "the top-level backup: section was destroyed by the rewrite"
+grep -q '^  roleArn: "arn:aws:iam::1:role/backup"$' <<<"$(rel_values)" || fail "backup.roleArn was corrupted"
 ok "an identically-named key OUTSIDE the digests block is left alone"
 
 # ---- 3. the release tree equals the master tree, plus the pins ----------------------------------
 setup
 src="$(git rev-parse HEAD)"
 SOURCE_SHA="$src" TAG="ddddddd" bash "$SUT" >/dev/null 2>&1 || fail "promotion failed"
-diff_files="$(git diff --name-only "$src" HEAD)"
+diff_files="$(git diff --name-only "$src" origin/release)"
 [ "$diff_files" = "$VALUES_REL" ] || fail "release should differ from master ONLY in values.yaml, got: $diff_files"
 ok "release differs from the promoted master commit in values.yaml and nothing else"
 
@@ -100,9 +105,9 @@ git add -A && git commit -q -m "feat: v2"
 git push -q origin master
 src2="$(git rev-parse HEAD)"
 out="$(SOURCE_SHA="$src2" TAG="eeeeeee" bash "$SUT" 2>&1)" || fail "second promotion failed: $out"
-grep -q 'print("v2")' app.py || fail "release did not pick up master's new content"
-[ -f newthing.txt ] || fail "release did not pick up a file added on master"
-grep -q '^  tag: "eeeeeee"$' "$VALUES_REL" || fail "the second promotion did not rewrite the tag"
+grep -q 'print("v2")' <<<"$(git show origin/release:app.py)" || fail "release did not pick up master's new content"
+on_release newthing.txt || fail "release did not pick up a file added on master"
+grep -q '^  tag: "eeeeeee"$' <<<"$(rel_values)" || fail "the second promotion did not rewrite the tag"
 ok "a later promotion takes master's new content with no merge conflict"
 
 # ---- 5. DELETIONS propagate -- the case `git checkout <sha> -- .` gets wrong --------------------
@@ -112,11 +117,11 @@ git commit -q -m "chore: drop newthing"
 git push -q origin master
 src3="$(git rev-parse HEAD)"
 SOURCE_SHA="$src3" TAG="fffffff" bash "$SUT" >/dev/null 2>&1 || fail "third promotion failed"
-[ -f newthing.txt ] && fail "a file deleted on master is still present on release (read-tree regressed to checkout -- .)"
+on_release newthing.txt && fail "a file deleted on master is still present on release (read-tree regressed to checkout -- .)"
 ok "a file deleted on master disappears from release"
 
 # ---- 6. history is append-only, so --force is never needed --------------------------------------
-count="$(git rev-list --count HEAD)"
+count="$(git rev-list --count origin/release)"
 [ "$count" -ge 4 ] || fail "expected release history to accumulate, got $count commits"
 git merge-base --is-ancestor "$(git rev-parse origin/release~1)" origin/release \
   || fail "release history is not append-only -- a force push would be required"
@@ -139,9 +144,9 @@ src="$(git rev-parse HEAD)"
 printf 'backend\tsha256:deadbeef\n' > image-digests.tsv     # untracked, exactly as CI leaves it
 printf 'scratch\n' > some-other-artifact.log
 SOURCE_SHA="$src" TAG="1111111" bash "$SUT" >/dev/null 2>&1 || fail "promotion failed with untracked files present"
-git ls-tree --name-only HEAD | grep -q 'image-digests.tsv' \
+grep -q 'image-digests.tsv' <<<"$(git ls-tree --name-only origin/release)" \
   && fail "an untracked build artifact was committed to the release branch (git add -A regressed)"
-git ls-tree --name-only HEAD | grep -q 'some-other-artifact.log' \
+grep -q 'some-other-artifact.log' <<<"$(git ls-tree --name-only origin/release)" \
   && fail "an untracked file was committed to the release branch (git add -A regressed)"
 ok "untracked workspace artifacts are NOT committed to the release branch"
 
@@ -149,7 +154,7 @@ ok "untracked workspace artifacts are NOT committed to the release branch"
 # the actual failure CD #2 hit.
 SOURCE_SHA="$src" TAG="2222222" bash "$SUT" >/dev/null 2>&1 \
   || fail "a second promotion with untracked files present failed -- this is the CD #2 checkout abort"
-grep -q '^  tag: "2222222"$' "$VALUES_REL" || fail "the second promotion did not rewrite the tag"
+grep -q '^  tag: "2222222"$' <<<"$(rel_values)" || fail "the second promotion did not rewrite the tag"
 ok "a repeat promotion still works with untracked artifacts in the workspace"
 
 rm -f image-digests.tsv some-other-artifact.log
@@ -212,15 +217,15 @@ tip="$(git rev-parse HEAD)"
 [ "$built" != "$tip" ] || fail "the fixture did not actually advance master"
 
 SOURCE_SHA="$built" TAG="3333333" bash "$SUT" >/dev/null 2>&1 || fail "promoting the built commit failed"
-[ -f charts/voteball/racer.yaml ] && \
+on_release charts/voteball/racer.yaml && \
   fail "release carries the CHART of a commit whose images were never built -- promote used the branch tip, not the source commit"
-[ -f later.py ] && fail "release carries the tree of the branch tip rather than the promoted commit"
-git diff --quiet "$built" HEAD -- app.py || fail "release content does not match the promoted commit"
+on_release later.py && fail "release carries the tree of the branch tip rather than the promoted commit"
+git diff --quiet "$built" origin/release -- app.py || fail "release content does not match the promoted commit"
 ok "promotion takes the tree of the PASSED commit, not the branch tip, when master has moved on"
 
 # ...and the commit message must name the commit that was promoted, not the tip. `release: <tip>
 # (image tag <built>)` is the exact live signature of the defect.
-subject="$(git log -1 --format=%s)"
+subject="$(git log -1 --format=%s origin/release)"
 [ "$subject" = "release: $(git rev-parse --short "$built") (image tag 3333333)" ] \
   || fail "the release commit names the wrong source commit: $subject"
 ok "the release commit message names the promoted commit, not the workspace tip"
@@ -237,6 +242,37 @@ git fetch -q origin release
 [ "$(git rev-parse origin/release)" = "$before" ] \
   || fail "a refused promotion still moved the release branch"
 ok "an empty or unset SOURCE_SHA refuses to promote and leaves release untouched"
+
+# ---- 9c. THE CALLER'S CHECKOUT IS NEVER TOUCHED (2026-10-15) --------------------------------------
+# deploy.sh step 9 runs this in a person's own clone. On 2026-10-15 an uncommitted edit to a tracked
+# file aborted the old `git checkout -B release` mid-deploy, and on the retry the old
+# `read-tree -u --reset` silently overwrote an uncommitted edit to a file that is the same on both
+# branches, and left the clone on release. The script now builds the commit in its own worktree, so a
+# dirty tree must neither stop it nor be changed by it, and nothing it creates may be left behind.
+setup
+src="$(git rev-parse HEAD)"
+SOURCE_SHA="$src" TAG="5555555" bash "$SUT" >/dev/null 2>&1 || fail "the setup promotion failed"
+git checkout -q master 2>/dev/null || true          # the old script leaves us on release; the new one never moves
+printf 'print("uncommitted edit")\n' > app.py         # tracked, and identical on master and release
+printf 'scratch\n' > untracked-notes.txt
+branch_before="$(git rev-parse --abbrev-ref HEAD)"; head_before="$(git rev-parse HEAD)"
+status_before="$(git status --porcelain)"
+out="$(SOURCE_SHA="$src" TAG="6666666" bash "$SUT" 2>&1)" \
+  || fail "a promotion with uncommitted edits in the caller's checkout failed: $out"
+grep -q '^  tag: "6666666"$' <<<"$(rel_values)" || fail "the promotion from a dirty checkout did not reach release"
+ok "a dirty working tree does not stop a promotion"
+[ "$(git rev-parse --abbrev-ref HEAD)" = "$branch_before" ] \
+  || fail "the caller's checkout was switched to '$(git rev-parse --abbrev-ref HEAD)'"
+[ "$(git rev-parse HEAD)" = "$head_before" ] || fail "the caller's HEAD moved"
+grep -q 'uncommitted edit' app.py || fail "the caller's uncommitted edit to a tracked file was overwritten"
+[ "$(git status --porcelain)" = "$status_before" ] || fail "the caller's working tree changed: $(git status --porcelain)"
+ok "the caller's branch, HEAD and uncommitted edits are left exactly as they were"
+grep -q 'uncommitted edit' <<<"$(git show origin/release:app.py)" \
+  && fail "an uncommitted edit leaked into the release commit"
+ok "an uncommitted edit in the caller's checkout never reaches release"
+[ "$(git worktree list | wc -l)" -eq 1 ] || fail "a worktree was left behind: $(git worktree list)"
+ok "the throwaway worktree is removed afterwards"
+rm -f untracked-notes.txt; git checkout -q -- app.py
 
 # ---- 10. THE PIPELINE SIDE of the same defect -----------------------------------------------------
 # The script above has always taken SOURCE_SHA as an input and has always refused a bad one. The bug

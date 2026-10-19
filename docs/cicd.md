@@ -590,12 +590,21 @@ SOURCE_SHA="$SOURCE_SHA" TAG="$TAG" DIGESTS="$IMAGE_DIGESTS" \
 which does, in `scripts/ci/promote-to-release.sh`:
 
 ```bash
-git checkout -B release origin/release
+git worktree add --detach "$wt" origin/release   # a throwaway checkout; the caller's is never touched
+cd "$wt"
 git read-tree -u --reset "$SOURCE_SHA"      # tree := the promoted master commit, HEAD stays on release
 # rewrite image.tag and the four image.digests entries in charts/voteball/values.yaml
 git commit -m "release: <short-sha> (image tag $TAG)"
-git push origin HEAD:release
+git push origin HEAD:refs/heads/release     # then the worktree is removed
 ```
+
+**Why a worktree (2026-10-15).** Until then the script checked out `release` in the caller's own
+clone. In Jenkins that clone is a disposable workspace, but `deploy.sh` step 9 runs the script in a
+person's checkout, where it failed both ways on the same day: an uncommitted edit to a tracked file
+aborted the checkout, leaving the cluster with no promotion and no ArgoCD Applications, and on the
+retry the reset silently overwrote an uncommitted edit and left the clone on `release`.
+`test-promote-to-release.sh` case 9c pins that a dirty checkout neither stops a promotion nor is
+changed by it.
 
 **Why a release branch (2026-08-23).** ArgoCD used to watch `master`, which made `master` both the
 branch humans push to and the branch that deploys. Two Task 4 review findings shared that one root

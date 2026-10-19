@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-10-13 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
+# Generated 2026-10-15 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -64,7 +64,7 @@ joda-time-api:2.15.0-208.v6b_084e7a_d9f0
 jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
-junit:1438.v6a_ccb_4b_11004
+junit:1442.vb_b_a_467df2767
 kubernetes:4560.vc25b_83890c34
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
@@ -72,7 +72,7 @@ mailer:534.v1b_36f5864073
 metrics:4.2.37-494.v06f9a_939d33a_
 mina-sshd-api-common:2.19.0-192.v2b_a_7b_2c1dc71
 mina-sshd-api-core:2.19.0-192.v2b_a_7b_2c1dc71
-okhttp-api:5.3.2-200.vedb_720a_cf1f8
+okhttp-api:5.3.2-223.v0f4017f8d05a_
 pipeline-build-step:601.v6d4c6d1a_9dc7
 pipeline-graph-analysis:254.v0f63a_a_447dca_
 pipeline-groovy-lib:822.vc95f70dea_db_7
@@ -85,11 +85,11 @@ pipeline-rest-api:2.41
 pipeline-stage-step:345.va_96187909426
 pipeline-stage-tags-metadata:2.2293.v6e7193cec599
 plain-credentials:199.v9f8e1f741799
-plugin-util-api:7.1341.v039f146993d9
+plugin-util-api:7.1403.vd380b_c42e90c
 prism-api:1.30.0-741.v034eb_0b_0a_a_fa_
 prometheus:860.v532442b_44e9a_
 scm-api:728.vc30dcf7a_0df5
-script-security:1433.v17c58a_e45cc1
+script-security:1436.v1082791135e4
 snakeyaml-api:2.7-152.vc672728cf536
 snakeyaml-engine-api:3.2-18.v885ed7ff698f
 ssh-agent:433.v9e73d67c3f74
