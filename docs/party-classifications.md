@@ -5574,10 +5574,23 @@ end, *"אסור לנו לשרוף קולות סתם"*. Revision 59 (אל הדג�
 135 said it would: the flag, not a deletion, so the row, its three values, its 27 tags and both
 families stay, no tag loses a holder (`hard-to-classify-bloc`, which this row holds alone, keeps
 it) and the votes already cast for it survive. **Everything else in this entry stays live and
-correct**; it describes what the party stood for, not whether it is running. Not verified: whether
-the list was formally withdrawn at the CEC, whose deadline is not stated in any of the four
-reports. Nobody names a party to vote for instead; the evening statement may, and a recommendation
-would be recorded here without moving any value. Also from הארץ, so it is not mistaken for a finding
+correct**; it describes what the party stood for, not whether it is running. **The list is not
+formally off the ballot** (rev 306): by הארץ's evening update the party's slips *"יונחו בקלפיות ביום
+הבחירות, אלא אם יודיעו כל חברי המפלגה על פרישתם"*. The flag records the party's withdrawal from the
+race, which is what the voting form asks about, not the CEC's slips. **The evening statement names
+no party to vote for** (rev 306;
+[כאן](https://www.kan.org.il/content/kan-news/politic/1110777/), יערה שפירא, 19.10.26 20:12,
+headless browser; the same statement added to the mako and הארץ reports above, mako's `articleBody`
+with `curl`, הארץ's body supplied by the repo owner). It repeats the platform: *"הצורך בממשלת אחדות
+ציונית וחוצת גושים גדול מכל אדם או מפלגה"*, and to the party leaders *"אל תיכנעו למחנאות הישנה"*.
+That fits `unaligned` and `excludes-anti-zionist-parties` as they stand. By הארץ he did not back
+the איזנקוט bloc and asked voters to think *"מי יכול לחבר את העם"*, and a party source says nothing
+was promised in return and he supports no candidate. So no recommendation is recorded. Three
+claims that score nothing: הארץ's source says he left before the soldiers' polling stations opened
+so that no votes would be wasted, and that תמנו־שטה pressed him to go, as well as שוסטר (ynet's,
+above). כאן's political desk reports that the party sees the withdrawal as preparing a run in a
+2027 election if this one ends with no government, and that he told the candidates to *"לשמור על
+קשר"*. Also from הארץ, so it is not mistaken for a finding
 about the row: the pollster שלמה פילבר's post on X that גנץ had *"פעמיים עבר בהפתעה"* the
 threshold rests on no poll filed with the CEC, as the law requires within ninety days of the vote,
 and the party echoed it in a campaign SMS (*"מוקדם להספיד את כחול לבן"*). A campaign's use of a
@@ -6118,6 +6131,10 @@ All first-party unless marked.
   names no list to vote for, so no recommendation is recorded — and two claims not checked here: the
   actor ליאור אשכנזי's podcast forecast that he would quit a week before the vote, and that the
   billboard campaign was paid *"על חשבון משלם המסים"* (party financing, no position).
+- **Read, and scored nothing (rev 306):** the evening statement, in [כאן](https://www.kan.org.il/content/kan-news/politic/1110777/)
+  (יערה שפירא, 19.10.26 20:12, headless browser) and in the evening updates of the mako and הארץ
+  reports already cited under Basis, where what it says is entered, with הארץ's line on the ballot
+  slips.
 
 
 ### ישראל ביתנו — Yisrael Beiteinu · `opposition` · 2 / 2 / −3 · secular
@@ -8800,6 +8817,11 @@ rewriting its programme would be the thing to catch.
   `sanctions-on-non-servers` because only the preference for servers is written down (Considered and
   refused); a sanction its leader has not applied is consistent with that refusal, and
   `conscription-split` holds.
+- **Read, and scored nothing (rev 306):** the party's statement on גנץ's withdrawal, by הארץ
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-19/ty-article/000001a1-5430-dac9-a7e3-74b33de40000), נעה שפיגל, 19.10.26, evening update, body supplied by the repo owner):
+  it *"נובעת מאחריותו שלא לאבד קולות לגוש השמאל"*. It also called on וינטר and *"יתר רסיסי
+  המפלגות"* of the right to withdraw rather than *"לזרוק קולות לפח"*. Threshold arithmetic inside
+  its own bloc (entered under עמך ישראל); `bibi` holds.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -11342,6 +11364,14 @@ housing, is under `economic`.
 - **Read, and scored nothing (rev 298):** by הארץ ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/000001a1-4f9e-da52-a3f1-4fde6c660000), 18.10.26, body supplied by the repo owner), נתניהו runs a *"געוואלד"* campaign to
   push this list and וינטר's below the threshold — the reporter's description, nothing of the list's;
   `unaligned`, held.
+- **Read, and scored nothing (rev 306):** הנדל on גנץ's withdrawal, by הארץ
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-19/ty-article/000001a1-5430-dac9-a7e3-74b33de40000), נעה שפיגל, 19.10.26, evening update, body supplied by the repo owner):
+  *"אני קורא למצביעי הגוש השלישי להצטרף אלינו"*. The list's chairman places it in a third bloc.
+  That is `unaligned` in his own words, and כאן's political desk says the same in its own voice,
+  *"לא מזוהה עם אף גוש"*
+  ([כאן](https://www.kan.org.il/content/kan-news/politic/1110777/), 19.10.26 20:12, headless
+  browser). It says nothing about a narrow נתניהו government, so the `anti-netanyahu` trigger under
+  Open questions is untouched.
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -12872,6 +12902,12 @@ Most links are given above, where each source is used; these are the rest.
 - **Read, and scored nothing (rev 298):** by הארץ ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/000001a1-4f9e-da52-a3f1-4fde6c660000), 18.10.26, body supplied by the repo owner), נתניהו runs a *"געוואלד"* campaign to
   push this list and הנדל's below the threshold — the reporter's description, and rev 244's pattern
   of the bloc's leader pressing a `bibi` row; `bloc` records what the list says, and `bibi` holds.
+- **Read, and scored nothing (rev 306):** after גנץ's withdrawal, by הארץ
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-19/ty-article/000001a1-5430-dac9-a7e3-74b33de40000), נעה שפיגל, 19.10.26, evening update, body supplied by the repo owner),
+  הציונות הדתית called on וינטר to withdraw too: *"בימין יש חוסר אחריות מוחלט מצד וינטר ויתר רסיסי
+  המפלגות שלא מתקרבות לאחוז החסימה"*. The list answered that the withdrawal *"ממחישה את החשיבות של
+  עמך ישראל בציבוריות הישראלית"*. It does not withdraw, so `on_ballot` TRUE holds. A partner in the
+  bloc pressing the row is the same pattern as נתניהו's above, and `bibi` holds.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -14538,6 +14574,18 @@ faction split. Closed in the page's Open questions.
   words what פינדרוס said: he declines the bloc's name and names nobody. *"לא יודע"* neither refuses
   the alternative nor states willingness to sit under him, so the trigger above is not met, and
   `bibi` holds on the owner's decision.
+- **שטארק (#6, בעלזא): *"איך אנחנו מחרימים את בנט?"* (rev 306).**
+  [כאן](https://www.kan.org.il/content/kan-news/politic/1110769/) (דניאל גרובייס, 19.10.26 20:07,
+  headless browser) aired recordings of closed remarks, undated: the list *"אינה מחויבת לגוש"*,
+  *"נשלחנו לדאוג לציבור שלנו - לא לנתניהו ולא לאף אחד"*, *"הקרבנו את עצמנו למען נתניהו"*, and the
+  Belzer Rebbe *"יודע שהוא נוכל"*. **This is the nearest call yet, and `bibi` holds on the owner's
+  decision.** It is the first voice from the list to name an opposition leader, and what it says is
+  that he should not be boycotted. That is short of the trigger, which asks for a recommendation or
+  a stated willingness to sit under him. It is also the weakest kind of source on this list: a
+  leaked recording of #6, from the smallest of the three registrations, and the other two
+  registrations have not adopted it. His official response that evening covers only the draft and
+  neither confirms nor withdraws the bloc lines. The Rebbe's judgement of נתניהו is reported by a
+  candidate; the Rebbe is not on the list.
 
 #### Families
 
@@ -15012,6 +15060,17 @@ Every source is linked where it is used above.
   reads as a signal not to campaign; הרב הירש's household complains he is shown as second to הרב
   לנדו; and אשר courts working haredim. These are reporters' readings of friction inside the list;
   the Gur half is what `two-faction-list` records. No position.
+- **Read, and scored nothing past Bloc (rev 306):** שטארק's recordings, in
+  [כאן](https://www.kan.org.il/content/kan-news/politic/1110769/) (דניאל גרובייס, 19.10.26 20:07,
+  headless browser; the bloc lines are under Bloc). He quotes the Belzer Rebbe: *"בחור שלומד אסור
+  לו ללכת לצבא. וכל שכן בחור שלא לומד, בטוח שאסור לו ללכת לצבא"*. That reaches past the scholar
+  exemption, but it is a rabbi quoted in a leaked recording, the kind of evidence rev 245 refused
+  for `non-zionist`. His official statement keeps to the scholars, the yeshiva students who are
+  *"עריקים... אך ורק בגלל לימוד תורה"*. So `scholar-exemption-retained` and the `conscription-split`
+  family hold. He also says the list voted against dissolving the government on the eve of *שאגת
+  הארי*; that is his account and was not checked. The same page carries אשר's recorded talk to
+  activists about turnout, the one he gave earlier this month (*"חילול השם"* if the demographic
+  growth does not show at the ballot box). A campaign worry; no position.
 
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
@@ -17045,3 +17104,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-19 | revision 303 — **הדמוקרטים, הליכוד, הציונות הדתית: three כאן pages (headless browser; links and two live-page entries supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **הדמוקרטים:** גולן answers Trump's endorsement: the people decide, *"לא טראמפ"*; the haredi *"השתמטות ההמונית"* and a government that *"לא סוגרת חזיתות"* repeat `anti-conscription-exemption` and `security` −1. **הליכוד:** סער makes Iran *"שאלת הבחירות"* and quotes Trump as *"רק נתניהו ישלים את המשימה באיראן"*, words not in the post rev 297 read. כאן reports that רגב, סמוטריץ' and נתניהו (holding the interior powers) have for months not withdrawn ארנונה and public-transport discounts from haredi evaders, against בג"ץ's April decision and the professional opinion: consistent with `conscription-exemption` on הליכוד and with the refused `sanctions-on-non-servers` on הציונות הדתית, and weaker than the legislation those rest on. כאן's count of 110,000 evaders, about 80% haredi, with enforcement frozen, names no party; it corroborates the הארץ claim rev 224 left unverified, and that sentence is updated in place. |
 | 2026-10-19 | revision 304 — **כחול לבן withdrew eight days before the election: `on_ballot` TRUE → FALSE, the repo owner's decision. No axis, bloc, sector, tag or family moved; `seed.sql` changes only the flag.** Four reports of the same afternoon (כאן, headless browser; mako and ynet, `curl`; הארץ, body supplied by the repo owner; links supplied by the repo owner): גנץ, *"לא אתמודד בבחירות הקרובות. אמשיך להיאבק למען אחדות"*; כאן, *"מפלגתו לא תתמודד"*. The reason every outlet gives is the polls, about one percent. Revision 59 (אל הדגל) governs, as rev 135's open question said: the flag, not a delete, so the row, its 27 tags and its votes survive, and `hard-to-classify-bloc`, held by this row alone, keeps its holder. The off-ballot set is now three rows (המפלגה הכלכלית, אל הדגל, כחול לבן) and `test_withdrawn_party_is_absent_from_the_ballot_but_present_in_options` pins it. The formal CEC withdrawal and the content of the evening statement are not verified. Not a finding: פילבר's unfiled "poll" that the party echoed by SMS (הארץ). Live only after the next `release` promotion; the cluster is down. |
 | 2026-10-19 | revision 305 — **כחול לבן: a הארץ newsletter column on the withdrawal (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** The withdrawal is rev 304's; the column names no list to vote for, so no recommendation is recorded. Its two other claims, ליאור אשכנזי's forecast and a taxpayer-funded billboard campaign, are the columnist's and unchecked. The same newsletter's items on ינון מגל's *"קוף"* line (entered in revs 297 and 299; מגל is no candidate) and on the riots in France name no party and get no entry. |
+| 2026-10-19 | revision 306 — **כחול לבן, יהדות התורה, המילואימניקים והכלכלית, הציונות הדתית, עמך ישראל: two כאן pages (headless browser) and the evening updates of the mako (`curl`) and הארץ (body supplied by the repo owner) withdrawal reports; links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **כחול לבן:** the evening statement names no party to vote for. It asks for *"ממשלת אחדות ציונית וחוצת גושים"*, which fits `unaligned` as it stands, and a party source says he supports no candidate. By הארץ the list's slips stay in the polling stations unless every candidate withdraws. So rev 304's open point is answered: the list is not formally off the ballot, and the flag records that the party withdrew from the race. כאן reports the party reads the withdrawal as preparing a 2027 run. **יהדות התורה:** in leaked recordings שטארק (#6, בעלזא) says the list *"אינה מחויבת לגוש"* and asks *"איך אנחנו מחרימים את בנט?"*. It is the nearest call on `bibi` yet and short of its trigger, which needs a recommendation or a stated willingness to sit under another leader. `bibi` holds on the owner's decision. The Belzer Rebbe's line that non-learners must not enlist either is a rabbi quoted in a leak, so `scholar-exemption-retained` holds. **המילואימניקים והכלכלית:** הנדל calls on *"מצביעי הגוש השלישי"* to join the list, which is `unaligned` in his own words; the `anti-netanyahu` trigger is untouched. **הציונות הדתית / עמך ישראל:** הציונות הדתית calls on וינטר to withdraw too, and the list refuses. `on_ballot` and `bibi` hold on both rows. **Not entered:** the thanks from איזנקוט, גולן and לפיד, and the career history in הארץ and mako. Neither carries a position. |
