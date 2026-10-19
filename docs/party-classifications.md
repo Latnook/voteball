@@ -2098,6 +2098,15 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   being lost below the threshold ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-91d0273991051a1027.htm), עמית סגל, 18.10.26 21:11, `articleBody` with `curl`). The bloc's leader pressing a `bibi` row, rev 244's
   pattern; the outcome is under הציבור החרדי. N12's report of בן גביר's charge and הליכוד's reply
   ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-a28a3c75fbf41a1027.htm), דפנה ליאל, 18.10.26 19:05, `articleBody` with `curl`) matches rev 298's הארץ text word for word.
+- **Read, and scored nothing (rev 302): the head of the pedagogical secretariat retires under קיש.**
+  [הארץ](https://www.haaretz.co.il/news/education/2026-10-19/ty-article/.premium/000001a1-52de-da52-a3f1-5ede03510000)
+  (19.10.26, body supplied by the repo owner): ד"ר טלי יניב, whom קיש (#10) appointed in 2023, will
+  retire at the end of December, timed, by הארץ, so that the next minister and not he names her
+  successor; she had weighed leaving after he moved the science and technology subjects from her
+  secretariat to the science and innovation administration last year, against professional
+  objections. הארץ lists a dozen senior departures since he took office, many over *"מעורבות
+  פוליטית"* of his bureau, and sets the move beside Israel's fall in PISA 2025. A minister's conduct
+  of his ministry, as rev 274 read his council appointments; no position, and no tag.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -14343,6 +14352,11 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   budget.
 - **Read, and scored nothing (rev 297):** the surplus-vote agreement with יהדות התורה, expected in rev
   238, is on הארץ's list of signed pairs ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/.premium/000001a1-48cf-ddef-a5b7-dcffca5a0000), 18.10.26, body supplied by the repo owner). Arithmetic inside a bloc.
+- **Read, and scored nothing (rev 302):** by הארץ's report on the haredi lists
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-19/ty-article-magazine/.premium/000001a1-506e-da52-a3f1-5e7efcfb0000), 19.10.26, body supplied by the repo owner; under הציבור החרדי),
+  the party is pressing every rabbi to declare support, and הרב יצחק יוסף has been sent against those
+  who will not, הרב אייל עמרמי of *"כאייל תערוג"* among them. The reporter's account, with no words of
+  the rabbi's quoted; campaign discipline, which `rabbinic-authority-led` already records.
 
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
@@ -14452,6 +14466,16 @@ faction split. Closed in the page's Open questions.
   candidate must pay, with a probable vote against the one alternative named. It reads both ways,
   since *"הפתרונות שיציעו"* is open to whoever offers one. The recommendation after 27.10 settles
   it.
+- **אשר (#1): *"גוש התורה"* (rev 302).**
+  [N12](https://www.mako.co.il/news-israel-elections/2026/Article-89a5273991051a1027.htm) (אלי
+  הירשמן, 19.10.26 06:20, an interview; `articleBody` with `curl`). Whom the list recommends:
+  *"נגמר הזמן שאנחנו שחקנים בשולחן השחמט הזה. אנחנו עומדים בצד"*. Whether it signs for נתניהו again
+  short of 61: *"אנחנו לא מדברים כרגע במושג של גושים, אלא רק על גוש אחד שהוא הגוש שלנו - גוש
+  התורה"*, and entry to a government only once the draft law is settled, *"לפני שמקימים ממשלה"*.
+  Whether it could sit with איזנקוט: *"לא יודע"*. The list's first candidate now says in his own
+  words what פינדרוס said: he declines the bloc's name and names nobody. *"לא יודע"* neither refuses
+  the alternative nor states willingness to sit under him, so the trigger above is not met, and
+  `bibi` holds on the owner's decision.
 
 #### Families
 
@@ -14546,6 +14570,12 @@ under ש"ס (rev 167).
   whatever the rabbi says, understood or not, is deference to the head of the Council, which is what
   `rabbinic-authority-led` records; it is not a sentence about the state. **Trigger, narrowed:** the
   session itself, if he was asked about the state and gave this answer; or the list's own material.
+  **Tested again, and not met (rev 302).** N12 asks אשר about the rabbi's words as *"הציונות הביאה את
+  שנאת הערבים"* and the religious-Zionist soldiers killed *"בגלל תורה מעוותת"* (in Sources). The
+  question this time is known, and it is about Zionism, not about whether the state should exist.
+  He does not adopt the words and does not disown them: *"לוקחים חצאי מילים"*, *"אתם לא מבינים את
+  דעת תורה"*, a halakhic lesson *"הופכים אותו להכרזה"*. That disputes the reading, the same position
+  as rev 271's, so the narrowed trigger stands as written.
 
 #### Open questions and triggers
 
@@ -14905,6 +14935,21 @@ Every source is linked where it is used above.
   to have driven the deposition of גפני and מקלב and to direct him (a rival's account). The profile
   quotes הרב לנדו's May letter, entered under Bloc. The surplus-vote agreement with ש"ס is on הארץ's
   list of signed pairs ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/.premium/000001a1-48cf-ddef-a5b7-dcffca5a0000), 18.10.26, body supplied by the repo owner); arithmetic inside a bloc.
+- **Read, and scored nothing (rev 302):** אשר (#1) to N12
+  ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-89a5273991051a1027.htm), אלי
+  הירשמן, 19.10.26 06:20, `articleBody` with `curl`; the bloc answers are under Bloc, the rabbi's
+  under `non-zionist`). The draft law is his first task, built on the definition of *"תורתו
+  אומנותו"*; a young man who does not learn *"ישאל את אבא שלו… ישאל את הרב שלו"*, and *"אם… יעברו על
+  החוק, זו בעיה שלו"*. The arrests *"רק דבר אחד - על כל מעצר או שניים תהיה הפגנה"*, and financial
+  sanctions will not move *"קהילה שהיא לא ליברלית"*. `scholar-exemption-retained` and the
+  `conscription-split` family, held; rev 283's coalition condition, restated. On the violent
+  protests, *"לא להעז ללכת לשם"*, the rabbis' line. בנט's ₪30bn plan is *"בושה"*, and a vote for
+  הציבור החרדי *"לתת מתנה לאלה שרוצים ברעתנו"*: replies to rivals. הארץ's report on the haredi lists
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-19/ty-article-magazine/.premium/000001a1-506e-da52-a3f1-5e7efcfb0000), 19.10.26, body supplied by the repo owner; under הציבור החרדי):
+  the Gerrer Rebbe's instruction to vote for the list omits *"לפעול ולהפעיל"*, which the reporter
+  reads as a signal not to campaign; הרב הירש's household complains he is shown as second to הרב
+  לנדו; and אשר courts working haredim. These are reporters' readings of friction inside the list;
+  the Gur half is what `two-faction-list` records. No position.
 
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
@@ -14923,7 +14968,8 @@ produced a wrong `bloc`. New party, added 2026-09-14; registered 2026-07-05 unde
 of its council's ׳דרך׳ faction, which ran independently in the 2024 municipal elections and took two
 seats; Rachmastrivka hasidut, yeshiva-educated, then a software/DevOps career. Ten public figures on
 the מי אנחנו page, including ד״ר נחומי יפה of Tel Aviv University, who researches the haredi
-community. List: לייטנר #1 (rev 247); women at #3 and #4 by הארץ's survey (rev 100); the CEC list
+community. List: לייטנר #1 (rev 247); women at #3 and #4 by הארץ's survey (rev 100), named by הארץ
+as נחומי יפה (#3) and זיוה גלנץ (#4), both speaking at the party's rally (rev 302); the CEC list
 itself not read here. `sector: haredi` is the party's own name and self-description. Self-reported
 potential is ~6 seats, about three from outside haredi society (כיכר: 5–6, and 1.5% in polls a week
 after launch).
@@ -15089,12 +15135,19 @@ interviews on both limbs (rev 72):
   and a ועד רבנים whose letter is promised — logged as corroboration, not new evidence (the "A
   second document agreeing with the first" rule in `services/backend/CLAUDE.md`). Hold the page's
   flat claim against the chairman's own limit (ערוץ 7): *"רבנים שחששו יש רבים, ולכן במקום 150 רבנים
-  אנחנו רואים רשימה מצומצמת יותר"*.
-- **`anti-haredi-establishment`** — not argued in this entry's own passes. Argued in rev 247 (under
-  ישראל ביתנו): לייטנר (#1), in כאן 06.10.26, on the crowd that stopped a deserter's arrest in
+  אנחנו רואים רשימה מצומצמת יותר"*. הארץ notes that the rally (rev 302) made no demand to vote by
+  the rabbis' instruction alone. That is a reporter's observation of what went unsaid, not a
+  position against the page's claim, and the tag holds.
+- **`anti-haredi-establishment`** — argued in this entry only from rev 302 (end of this bullet).
+  Before that, argued in rev 247 (under ישראל ביתנו): לייטנר (#1), in כאן 06.10.26, on the crowd that stopped a deserter's arrest in
   מודיעין — *"בריוני הפלג הירושלמי האלימים… מקומם של פראי האדם האלה - מאחורי סורג ובריח. ללא קשר לכך
   שמעצרים לא מועילים למאמצי גיוס החרדים - דרעי, אשר וגולדקנופף חייבים לגנות"*; the only haredi list
   heard in the report. Rev 100 (under הליכוד) reads the women at #3 and #4 as pointing the same way.
+  **Now in the party's own forum (rev 302):** לייטנר at its rally in בנייני האומה, 17.10.26 (הארץ,
+  in Sources): the party speaks for the part of haredi society *"שנמאס לו משלטון העסקנים הבריונים,
+  היהירים והמנותקים"*, and a vote for ש"ס or יהדות התורה *"נועד לשמר את מערך העסקנות, המינויים
+  והג'ובים של בני משפחה"*. This is the chairman's own case against the two parties' leaderships,
+  which the tag names.
 
 #### Considered and refused
 
@@ -15144,7 +15197,9 @@ interviews on both limbs (rev 72):
   The pressure itself fits `bibi`: the bloc's leader counts this list's votes as the bloc's.
 - The economic-chapter trigger under `economic`.
 - `municipal-devolution` is held with no clause recorded in this entry or elsewhere on the page;
-  find the platform clause or re-examine the tag.
+  find the platform clause or re-examine the tag. The national movement announced at the rally
+  (rev 302), which will run lists of working haredim in local elections, does not fill this gap:
+  running in local elections is not giving power to local authorities.
 
 #### Reading this party's sources
 
@@ -15177,6 +15232,17 @@ interviews on both limbs (rev 72):
   ביתנו) sets the same talk against *"the new haredi lists"*: a rival's framing, electoral strategy;
   כאן on the night in מודיעין, 06.10.26, `kan.org.il/content/kan-news/local/1106432/` (rev 247,
   under ישראל ביתנו); [N12](https://www.mako.co.il/news-israel-elections/2026/Article-91d0273991051a1027.htm), עמית סגל, 18.10.26 21:11, `articleBody` with `curl` (rev 300, entered under Open questions).
+- **Read, and scored nothing (rev 302): the rally in בנייני האומה, 17.10.26.**
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-19/ty-article-magazine/.premium/000001a1-506e-da52-a3f1-5e7efcfb0000)
+  (19.10.26, body supplied by the repo owner). About a thousand men and women attended, and most of
+  those the reporter surveyed had voted for the haredi parties all their lives. A huge Israeli
+  flag stood on the stage. לייטנר's attack on the *"עסקנים"* is entered under
+  `anti-haredi-establishment`, the two women under Basis, and the absence of a voting instruction
+  under `rabbinic-authority-led`. The national movement the party will launch after the election,
+  running working-haredi lists in local elections, is organisation, not a programme. The vote
+  estimates (about 15,000 by figures in the haredi parties, 50,000 by the party's own people) are
+  campaign arithmetic. אשר's reply, that a vote for this list is *"לתת מתנה לאלה שרוצים ברעתנו"*
+  (N12, 19.10.26, under יהדות התורה), is a rival's attack.
 
 ### ישראל תחילה — Israel First · `unaligned` · +2 / +2 / −2 · secular
 
@@ -16913,3 +16979,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-18 | revision 299 — **הליכוד: a הארץ column on ינון מגל's *"קוף"* line and Trump's endorsement (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו's condemnation and the endorsement were entered in rev 297. The column adds only its own reporting — a twelve-hour debate in נתניהו's headquarters over whether to respond, and no response to מגל's earlier attack on bereaved families — which is not a position. |
 | 2026-10-18 | revision 300 — **הציבור החרדי, הליכוד, הציונות הדתית, עוצמה יהודית: two N12 reports (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו and סמוטריץ' press לייטנר to withdraw so the bloc's votes are not lost below the threshold; לייטנר: *"אסור לנו לפרוש"*. The withdrawal trigger is not met, `on_ballot` holds, and the pressure fits `bibi`. The second report repeats rev 298's בן גביר charge and הליכוד reply word for word. |
 | 2026-10-18 | revision 301 — **הציונות הדתית: the party's education plan, *"בוחרים חינוך"* (`zionutdatit.org.il/hinuch/`, modified 16.10.26; `curl`; link supplied by the repo owner). +`school-vouchers` (27 → 28 tags; the tag's holders 1 → 2), no axis moved.** Registration zones abolished, the budget following the pupil to the school the parents choose, about 80% of decisions to principals and staff, teachers on personal contracts with pay by results — the tag's test as rev 261 wrote it, and its founding case on ישראל תחילה. The row's line saying no such tag exists predated it and is corrected. `economic` 0 holds: a platform promise on a `record` row, whose gap `claims-economically-liberal` carries. `core-curriculum` refused (core studies set, no funding condition) and `public-service-reform` left for the vocabulary sweep (teachers outside the representative unions; the founding case is a civil-service programme). Upcoming table only. |
+| 2026-10-19 | revision 302 — **יהדות התורה, הציבור החרדי, ש"ס, הליכוד: an N12 interview with אשר (`curl`) and three הארץ pieces (bodies supplied by the repo owner; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **יהדות התורה:** אשר (#1): *"גוש אחד שהוא הגוש שלנו - גוש התורה"*, *"אנחנו עומדים בצד"* on the recommendation, and *"לא יודע"* on sitting with איזנקוט. He declines the bloc's name, as פינדרוס did, and names nobody, so `bibi` holds on the owner's decision. Asked about הרב לנדו's Zionism line, he disputes the reading and neither adopts nor disowns it, so `non-zionist` stays refused. The draft-law answers restate held tags. **הציבור החרדי:** at the party's rally לייטנר attacks *"שלטון העסקנים"*, which `anti-haredi-establishment` gets as the first argument in the row's own entry. הארץ names the women at #3 and #4, נחומי יפה and זיוה גלנץ. A post-election movement running lists in local elections is not `municipal-devolution`'s missing clause. **ש"ס:** הרב יצחק יוסף presses rabbis who withhold support, the reporter's account. **הליכוד:** the head of the pedagogical secretariat retires under קיש, ministerial conduct. **Not entered:** הארץ's column on Trump's endorsement and the two X posts it cites (סטיין, וורד). The endorsement is rev 297's, and the column adds commentators, not a party act. |
