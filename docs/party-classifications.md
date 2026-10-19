@@ -578,8 +578,12 @@ programme (rev 24). The second half is the +2 band's definition, met on both lim
   struck down by בג"ץ at the start of September 2026** (recorded under ישראל ביתנו). The evidence
   for the axis, and for `scholar-exemption-retained`, is that the party legislated it, not that it
   is in force. What rev 224 leaves unverified is only a הארץ column's report that the army has
-  stopped arresting haredi deserters except at the airport despite the ruling on *"חוק ההקפאה"*;
-  that bears on the conscription tags of several rows, as enforcement by the army and not as any
+  stopped arresting haredi deserters except at the airport despite the ruling on *"חוק ההקפאה"*.
+  כאן reports the same freeze ([כאן](https://www.kan.org.il/content/kan-news/politic/1110470/), רועי ינובסקי, 18.10.26 20:44, headless browser; rev 303):
+  110,000 now defined as evaders, about 80% haredi by the army's estimate, and besides the airport
+  arrests 14 haredi and 13 other evaders held in random arrests, with an operation planned for
+  October cancelled when the police and the army could not agree. No party acts in the report. All
+  of this bears on the conscription tags of several rows, as enforcement by the army and not as any
   party's stated policy.
 - **Why the number moved: the reading of the rule, not the evidence.** Decision 5 holds that the
   axis records direction and tags record motive; "for coalition reasons rather than from conviction"
@@ -2107,6 +2111,21 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   objections. הארץ lists a dozen senior departures since he took office, many over *"מעורבות
   פוליטית"* of his bureau, and sets the move beside Israel's fall in PISA 2025. A minister's conduct
   of his ministry, as rev 274 read his council appointments; no position, and no tag.
+- **Read, and scored nothing (rev 303):** סער (#7) on כאן's *"הבוקר הזה"* ([כאן](https://www.kan.org.il/content/kan-news/politic/live-1110512/), קרן אוזן,
+  19.10.26 07:21, live page, headless browser; the page gives its entries no URLs of their own): the
+  confrontation with Iran is the election's central question, so Trump's support matters, *"הנשיא
+  טראמפ אומר לאזרחי ישראל במילים מפורשות, 'רק נתניהו ישלים את המשימה באיראן'"*, and *"על זה
+  הבחירות. זאת שאלת הבחירות"*. The words he puts in Trump's mouth are not in the post rev 297 read,
+  which says *"America will have to do this work ourselves"*; it is סער's paraphrase. A campaign
+  frame with no measure; `security-hawk` and `preemptive-security-doctrine`, held. The government
+  and the evaders' benefits ([כאן](https://www.kan.org.il/content/kan-news/economic/1110504/), ליאל קייזר, 19.10.26 07:43, headless browser): for months it has
+  not withdrawn the ארנונה and public-transport discounts from haredi evaders, though בג"ץ told it in
+  April to consider doing so and the professional opinion sent to רגב (#5, Transport) and סמוטריץ'
+  (Finance) found no professional bar. On ארנונה the government says it cannot act without an
+  interior minister; נתניהו took the ministry's powers himself and has not acted on this one. כאן's
+  account, with no minister quoted. Ministers not applying a sanction is consistent with
+  `conscription-exemption`, held, and weaker than the legislation it rests on (rev 224); not new
+  evidence. The evaders' count it cites is under the religiosity axis.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -5510,6 +5529,14 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   [`develop_north_israel`](https://yes.democrats.org.il/topics/develop_north_israel) (link supplied by
   the repo owner) renders client-side; its paper is rev 288's *שיקום ופיתוח הצפון*, `Last-Modified`
   still 14.10.26 10:44 UTC.
+- **Read, and scored nothing (rev 303):** גולן on כאן's *"הבוקר הזה"* ([כאן](https://www.kan.org.il/content/kan-news/politic/live-1110512/), קרן אוזן, 19.10.26
+  07:34, live page, headless browser), answering Trump's endorsement of נתניהו (rev 297, under
+  הליכוד): *"מי שיחליט מי ינצח בבחירות זה העם בישראל ולא הנשיא טראמפ"*; Trump did not see *"את
+  ההשתמטות ההמונית של חרדים בזמן מלחמה"* (`anti-conscription-exemption`, held); this is *"ממשלה
+  שרוצה מלחמת נצח ולא סוגרת חזיתות"*, the closing of fronts N12 paraphrased for the row in rev 271,
+  now in his words (`security` −1, held); and נתניהו *"מסכן את יחסינו עם בת הברית הגדולה ביותר
+  שלנו"*. Blame for 7 October and *"שוד הקופה הציבורית"* are attacks, and the second is the
+  near-universal rhetoric rev 21's test keeps out of `anti-corruption`.
 
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
@@ -8738,6 +8765,13 @@ rewriting its programme would be the thing to catch.
   rebuild, *"עבדנו היטב יחד, גם עם סמוטריץ'"* ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/000001a1-4f9e-da52-a3f1-4fde6c660000), 18.10.26, body supplied by the repo owner; under הליכוד). `bibi`, held.
 - **Read, and scored nothing (rev 300):** סמוטריץ' joins נתניהו in pressing לייטנר to withdraw
   הציבור החרדי ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-91d0273991051a1027.htm), עמית סגל, 18.10.26 21:11, `articleBody` with `curl`; under הליכוד and הציבור החרדי). Work for the bloc's count; `bibi`, held.
+- **Read, and scored nothing (rev 303):** by כאן ([כאן](https://www.kan.org.il/content/kan-news/economic/1110504/), ליאל קייזר, 19.10.26 07:43, headless
+  browser; under הליכוד), סמוטריץ' as finance minister, with רגב, received months ago a professional
+  opinion finding no bar to withdrawing public-transport discounts from haredi evaders, and nothing
+  has been done. כאן's account, with no word of his quoted. The row was refused
+  `sanctions-on-non-servers` because only the preference for servers is written down (Considered and
+  refused); a sanction its leader has not applied is consistent with that refusal, and
+  `conscription-split` holds.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -16980,3 +17014,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-18 | revision 300 — **הציבור החרדי, הליכוד, הציונות הדתית, עוצמה יהודית: two N12 reports (`curl`; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו and סמוטריץ' press לייטנר to withdraw so the bloc's votes are not lost below the threshold; לייטנר: *"אסור לנו לפרוש"*. The withdrawal trigger is not met, `on_ballot` holds, and the pressure fits `bibi`. The second report repeats rev 298's בן גביר charge and הליכוד reply word for word. |
 | 2026-10-18 | revision 301 — **הציונות הדתית: the party's education plan, *"בוחרים חינוך"* (`zionutdatit.org.il/hinuch/`, modified 16.10.26; `curl`; link supplied by the repo owner). +`school-vouchers` (27 → 28 tags; the tag's holders 1 → 2), no axis moved.** Registration zones abolished, the budget following the pupil to the school the parents choose, about 80% of decisions to principals and staff, teachers on personal contracts with pay by results — the tag's test as rev 261 wrote it, and its founding case on ישראל תחילה. The row's line saying no such tag exists predated it and is corrected. `economic` 0 holds: a platform promise on a `record` row, whose gap `claims-economically-liberal` carries. `core-curriculum` refused (core studies set, no funding condition) and `public-service-reform` left for the vocabulary sweep (teachers outside the representative unions; the founding case is a civil-service programme). Upcoming table only. |
 | 2026-10-19 | revision 302 — **יהדות התורה, הציבור החרדי, ש"ס, הליכוד: an N12 interview with אשר (`curl`) and three הארץ pieces (bodies supplied by the repo owner; links supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **יהדות התורה:** אשר (#1): *"גוש אחד שהוא הגוש שלנו - גוש התורה"*, *"אנחנו עומדים בצד"* on the recommendation, and *"לא יודע"* on sitting with איזנקוט. He declines the bloc's name, as פינדרוס did, and names nobody, so `bibi` holds on the owner's decision. Asked about הרב לנדו's Zionism line, he disputes the reading and neither adopts nor disowns it, so `non-zionist` stays refused. The draft-law answers restate held tags. **הציבור החרדי:** at the party's rally לייטנר attacks *"שלטון העסקנים"*, which `anti-haredi-establishment` gets as the first argument in the row's own entry. הארץ names the women at #3 and #4, נחומי יפה and זיוה גלנץ. A post-election movement running lists in local elections is not `municipal-devolution`'s missing clause. **ש"ס:** הרב יצחק יוסף presses rabbis who withhold support, the reporter's account. **הליכוד:** the head of the pedagogical secretariat retires under קיש, ministerial conduct. **Not entered:** הארץ's column on Trump's endorsement and the two X posts it cites (סטיין, וורד). The endorsement is rev 297's, and the column adds commentators, not a party act. |
+| 2026-10-19 | revision 303 — **הדמוקרטים, הליכוד, הציונות הדתית: three כאן pages (headless browser; links and two live-page entries supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** **הדמוקרטים:** גולן answers Trump's endorsement: the people decide, *"לא טראמפ"*; the haredi *"השתמטות ההמונית"* and a government that *"לא סוגרת חזיתות"* repeat `anti-conscription-exemption` and `security` −1. **הליכוד:** סער makes Iran *"שאלת הבחירות"* and quotes Trump as *"רק נתניהו ישלים את המשימה באיראן"*, words not in the post rev 297 read. כאן reports that רגב, סמוטריץ' and נתניהו (holding the interior powers) have for months not withdrawn ארנונה and public-transport discounts from haredi evaders, against בג"ץ's April decision and the professional opinion: consistent with `conscription-exemption` on הליכוד and with the refused `sanctions-on-non-servers` on הציונות הדתית, and weaker than the legislation those rest on. כאן's count of 110,000 evaders, about 80% haredi, with enforcement frozen, names no party; it corroborates the הארץ claim rev 224 left unverified, and that sentence is updated in place. |
