@@ -2197,6 +2197,12 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   `articleBody` with `curl`; the posts were classified by the AI model Claude): 647 posts, a quarter
   of them attacks on the rival bloc and 2% on policy, and *"ימין או פלסטין"* (revs 203, 243) eleven
   times on X. Counts of tone, not positions.
+- **Read, and scored nothing (rev 309):** נתניהו and סמוטריץ' met הרב אלי סדן, head of the עלי
+  pre-military academy, on 20.10
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-20/ty-article/.premium/000001a1-59d1-d9b7-abf3-fbd50e3a0000),
+  20.10.26, body supplied by the repo owner). וינטר, once his student there, says the meeting was
+  meant to press him to withdraw (under עמך ישראל). Neither leader is quoted. Pressure inside the
+  bloc, and no position.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -9021,6 +9027,13 @@ rewriting its programme would be the thing to catch.
   opposes a new authority as the main answer; ח"כ מיכל וולדיגר, at עמותת 121's conference in July
   2026, asked to move from disability percentages to rehabilitation, with a personal track back to
   life and work for each casualty. No tag measures it.
+- **Read, and scored nothing (rev 309):** נתניהו and סמוטריץ' met הרב אלי סדן, head of the עלי
+  pre-military academy, on 20.10
+  ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-20/ty-article/.premium/000001a1-59d1-d9b7-abf3-fbd50e3a0000),
+  20.10.26, body supplied by the repo owner). וינטר, once his student there, says the meeting was
+  meant to press him to withdraw (under עמך ישראל). Neither leader is quoted. It follows the party's
+  call of the day before that he withdraw (rev 306). Pressure inside the bloc, and no position; `bibi`
+  holds.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -10291,6 +10304,11 @@ Linked where used above. Not linked above:
   EU, נתניהו's *"אותה קואליציה"* and הליכוד's reply ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/000001a1-4f9e-da52-a3f1-4fde6c660000), 18.10.26, body supplied by the repo owner); entered under Bloc and sector.
 - **Read, and scored nothing (rev 300):** N12's report of the same statement and reply ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-a28a3c75fbf41a1027.htm), דפנה ליאל, 18.10.26 19:05, `articleBody` with `curl`)
   matches הארץ's quotes; its account of last month's exchange, *"מספיק עם הבלוף"*, is rev 88's.
+- **Read, and scored nothing (rev 309):** by
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-20/ty-article/.premium/000001a1-59d1-d9b7-abf3-fbd50e3a0000)
+  (20.10.26, body supplied by the repo owner), בן גביר wrote on X *"וינטר זה בנט 2, לכן עוצמה יהודית
+  לא תחתום איתו הסכם עודפים"* (the post was not read). That is the refusal of rev 297, which an
+  unnamed source gave, now under his name. Arithmetic inside the bloc; `bibi` holds.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -11578,6 +11596,11 @@ housing, is under `economic`.
   and resilience, without abolishing the existing wings, and, in its answer to עמותת 121, care by
   functional need through flexible eligibility separate from permanent recognition of disability. No
   tag measures it.
+- **Read, and scored nothing (rev 309):** וינטר's reply to the list's refusal of a surplus agreement
+  (rev 297), by
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-20/ty-article/.premium/000001a1-59d1-d9b7-abf3-fbd50e3a0000)
+  (20.10.26, body supplied by the repo owner): *"קול לזליכה הוא קול ליאיר גולן"*. An attack from a
+  rival; `unaligned` holds.
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -13128,6 +13151,18 @@ Most links are given above, where each source is used; these are the rest.
   `articleBody` with `curl`; the posts were classified by the AI model Claude): 18% of וינטר's
   Instagram posts attack his own bloc, נתניהו and the government included, and נתניהו and סמוטריץ'
   wrote ten of the fourteen posts against him. Tone, not a position.
+- **Read, and scored nothing (rev 309): the meeting at עלי, and the list stays in.**
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-20/ty-article/.premium/000001a1-59d1-d9b7-abf3-fbd50e3a0000)
+  (20.10.26, body supplied by the repo owner): נתניהו and סמוטריץ' met הרב אלי סדן, head of the עלי
+  academy, where וינטר studied under him. וינטר says the meeting was meant to press him to withdraw:
+  *"אנחנו הולכים עד הסוף בכל הכוח"*, and *"באנו להציג אלטרנטיבה של מנהיגות אחרת לימין. מנהיגות שלוקחת
+  אחריות, מנהיגות שיודעת להגיד כשלתי, טעיתי"*. He does not withdraw, so `on_ballot` TRUE holds, as it
+  did after rev 306's call. The report recalls his August wording of the recommendation, *"אנחנו במחנה
+  הימין, מנהיג מחנה הימין הוא נתניהו ורק עליו נמליץ"*. That is not quoted elsewhere on this page, but
+  it is the recommendation that rev 41 resolved `bibi` on, and `bibi` holds. It names בן גביר as the
+  author, on X, of *"וינטר זה בנט 2"*, which rev 297 had from an unnamed source (under עוצמה יהודית).
+  It quotes his answer to המילואימניקים והכלכלית's refusal, *"קול לזליכה הוא קול ליאיר גולן"*, an
+  attack on a rival. The polls (below the threshold in most, four seats on חדשות 13) are not entered.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -17356,3 +17391,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-19 | revision 306 — **כחול לבן, יהדות התורה, המילואימניקים והכלכלית, הציונות הדתית, עמך ישראל: two כאן pages (headless browser) and the evening updates of the mako (`curl`) and הארץ (body supplied by the repo owner) withdrawal reports; links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **כחול לבן:** the evening statement names no party to vote for. It asks for *"ממשלת אחדות ציונית וחוצת גושים"*, which fits `unaligned` as it stands, and a party source says he supports no candidate. By הארץ the list's slips stay in the polling stations unless every candidate withdraws. So rev 304's open point is answered: the list is not formally off the ballot, and the flag records that the party withdrew from the race. כאן reports the party reads the withdrawal as preparing a 2027 run. **יהדות התורה:** in leaked recordings שטארק (#6, בעלזא) says the list *"אינה מחויבת לגוש"* and asks *"איך אנחנו מחרימים את בנט?"*. It is the nearest call on `bibi` yet and short of its trigger, which needs a recommendation or a stated willingness to sit under another leader. `bibi` holds on the owner's decision. The Belzer Rebbe's line that non-learners must not enlist either is a rabbi quoted in a leak, so `scholar-exemption-retained` holds. **המילואימניקים והכלכלית:** הנדל calls on *"מצביעי הגוש השלישי"* to join the list, which is `unaligned` in his own words; the `anti-netanyahu` trigger is untouched. **הציונות הדתית / עמך ישראל:** הציונות הדתית calls on וינטר to withdraw too, and the list refuses. `on_ballot` and `bibi` hold on both rows. **Not entered:** the thanks from איזנקוט, גולן and לפיד, and the career history in הארץ and mako. Neither carries a position. |
 | 2026-10-20 | revision 307 — **הליכוד, ביחד, הדמוקרטים, ישראל ביתנו, ש"ס: two הארץ pages (a report and a newsletter column, bodies supplied by the repo owner) and three X posts linked from them (fxtwitter); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** on קול ברמה נתניהו calls the arrests of yeshiva students *"לא מקובל"* and *"ניסיון מכוון לפגוע בתהליך"*, with *"מי שלא לומד שיילך להתגייס"*: `conscription-exemption` now in his own words beside the legislation it rests on, and `scholar-exemption-retained`, held. The כאן interview of the day before (23,000 in three and a half years; *"שיילך לכלא"*) and N12's report on the protests are known only through הארץ. **ביחד / ישראל ביתנו:** לפיד's *"דיל המגעיל"* and ליברמן's *"בן ערובה של המשתמטים"* are attacks; `anti-conscription-exemption`, held. ליברמן's *"חיה ותן לחיות"* Shabbat post states tolerance with no measure, and the −3 rests on the platform. **הדמוקרטים:** a column credits גולן with *"לסילוק הדת מהמרחב הציבורי"*, undated and not found by a search; recorded as a lead, and nothing moves below −3. **ש"ס:** the column describes the *"מדינה יהודית או מדינה ככל הגויים"* clips, a campaign frame aimed at הדמוקרטים, and `religiosity` +2 holds. **Not entered:** the column's history of מרצ, שינוי and יש עתיד (1992–2019) and יעלון's 2019 post, archive with no bearing on any 2026 list beyond the one line under ביחד; לפיד's naming of גולדקנופף, a rival's claim about יהדות התורה; and the Attorney General's instruction to resume arrests, in which no party acts. |
 | 2026-10-20 | revision 308 — **הליכוד, ישר, ביחד, הדמוקרטים, ישראל ביתנו, הציונות הדתית, המילואימניקים והכלכלית, עמך ישראל, ש"ס, יהדות התורה: three הארץ pages (bodies supplied by the repo owner), five N12 pages (`curl`, two of them only with a link-preview user agent), four ynet pages (`curl`; one link carried a stray trailing letter and was read at `hjia4q4hfe`) and three כאן pages (headless browser); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **The Attorney General law (הארץ):** ישר and הדמוקרטים will repeal the July law under which the Attorney General's opinion no longer binds the government, הדמוקרטים before anything else by unnamed party sources. ביחד, asked twice, has *"אין תגובה ספציפית לחוק"* and will discuss specific laws after the election. ישראל ביתנו will not say, and instead offers a constitution drafted within half a year and put to a referendum. `constitutionalist` is held on all four, and no tag on any row lists the overhaul laws one by one. **הליכוד:** N12's full account of the קול ברמה interview: the draft law next term, *"היה חסר לנו רק קול אחד"*, and no commitment to pass it before a government is formed (*"מי יודע?"*). The party's own clarification now carries the 23,000 and the prison line, so `conscription-exemption` and `scholar-exemption-retained` are held, and the exemption is for those who learn. אוחנה (#3) says *"צריך לעצור עריקים"* the same day, which differs from his leader on enforcement but not on the exemption. Also read: קיש cancelling the מיצ"ב tests and cutting off ראמ"ה, against the reviewer he appointed; פייק ריפורטר tracing unsigned Russian text messages against ליברמן to the party, which ישראל ביתנו took to the police and the Central Elections Committee; and the hostage families' letter against *"החזרנו את כל החטופים"*. None is a position. **Conscription reactions:** בנט's ₪30bn from evaders is a campaign figure, not matched here to the plans (₪8.8bn, ₪11bn). His claim that נתניהו promised legislation before the government is formed is contradicted by the same report. ליברמן adds *"בלי פטורים ובלי קומבינות"*, איזנקוט offers *"ממשלת גיוס ציונית"*, עמך ישראל calls the pre-government exemption *"התנהלות המופקרת"*, and ש"ס and אשר condemn the arrests. All tags held. **יהדות התורה:** ynet's glossary says the list's heads do not rule out a change-bloc coalition in return for legislation and budgets. That is a reporter's summary, and the `bibi` trigger is untouched. **N12's rehabilitation survey:** seven lists' positions on a national rehabilitation authority, entered under each, with no tag measuring them. **Not entered:** N12's turnout poll, in which no party acts; ynet's glossary of the day after beyond the two lines above; and לפיד's quarrel with איזנקוט over the "largest party" campaign, which concerns strategy. ynet's AI count of the leaders' posts is entered only where a post states a position or a slogan. |
+| 2026-10-20 | revision 309 — **עמך ישראל, הליכוד, הציונות הדתית, עוצמה יהודית, המילואימניקים והכלכלית: one הארץ report (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו and סמוטריץ' met הרב אלי סדן, וינטר's teacher at the עלי academy. וינטר says the meeting was meant to press him to withdraw, and that *"אנחנו הולכים עד הסוף בכל הכוח"*, so `on_ballot` TRUE holds. The report recalls his August *"מנהיג מחנה הימין הוא נתניהו ורק עליו נמליץ"*, which is the recommendation `bibi` rests on (rev 41), so `bibi` holds. *"וינטר זה בנט 2"*, which rev 297 had from an unnamed source, is now בן גביר's own X post, as הארץ reports it (the post itself was not read). וינטר's *"קול לזליכה הוא קול ליאיר גולן"* answers המילואימניקים והכלכלית's refusal of rev 297, and is an attack on a rival. **Not entered:** the polls. |
