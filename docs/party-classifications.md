@@ -2225,6 +2225,15 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   הרב אלי סדן's home so that סדן would persuade וינטר, and Likud now wants סדן to publish a statement
   aimed at וינטר's voters (under עמך ישראל). Pressure inside the bloc, as in revs 300 and 309; no
   position.
+- **Read, and scored nothing (rev 312): who runs the campaign.** [TheMarker](https://www.haaretz.co.il/tmr/news/elections/2026-10-21/ty-article/.highlight/000001a1-5981-d30c-a7b3-dbab4d5e0000) (a column signed א"ב, 21.10.26, body supplied by the repo owner). By activists and
+  unnamed party sources: צביקה ברוט, mayor of בת ים, is campaign manager on paper, אביחי בוארון runs
+  the field on paper, and an operative, יוסי דרוק, sets the tone; most ministers and MKs are kept out
+  of sight, and נתניהו campaigns alone. The municipal campaign runs videos of him with local and
+  community leaders. A poll shown to the leadership gives 22–24 seats, and a second source puts the
+  realistic target at 24–25. The column also reports the State Attorney's statement to the High
+  Court this week that the Prime Minister's Office has had no permanent director-general for a year
+  and eight months and no acting one for seven. Campaign and government conduct, on rev 242's rule;
+  the activist's *"החרם ייגמר"* is unnamed and not entered.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -3830,6 +3839,14 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   rehabilitation directorates for the north, the south and the whole country as one address, wider
   support for bereaved families and siblings, and, in its answer to עמותת 121, help for anyone who
   needs it whatever their legal status. No tag measures it.
+- **Read, and scored nothing (rev 312): איזנקוט on ערוץ 9, and *"או ישר! או קטאר"*.** [TheMarker](https://www.haaretz.co.il/tmr/news/elections/2026-10-21/ty-article/.highlight/000001a1-5981-d30c-a7b3-dbab4d5e0000) (a column signed א"ב, 21.10.26, body supplied by the repo owner)
+  reports a 36-minute recorded interview on the Russian-language channel's Saturday-night magazine,
+  part of the *"המפלגה הגדולה"* campaign; the interview itself was not read. Against ליברמן's
+  account of a 2016 plan to destroy Hamas that נתניהו and he rejected (rev 296, under ישראל ביתנו):
+  *"הוא כתב מכתב, לא תוכנית"*, and *"נפגשתי אז איתו. הצגתי לו מה אנחנו עושים"*. A dispute over
+  2016, not a position. His [post](https://x.com/gadi_eisenkot/status/2112235482327183871) (19.10.26
+  17:32 UTC, fxtwitter; its video not watched): *"הצביעו ׳דרך׳ בבחירות האלו - זה או ישר! או
+  קטאר."* A slogan against הליכוד on the Qatar affair, of the kind already recorded here.
 
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
@@ -5038,6 +5055,10 @@ Party-published unless marked. Statements and press are linked where they are us
   איזנקוט's "largest party" campaign *"עלול להפסיד לנו את הבחירות"*
   ([ynet](https://www.ynet.co.il/news/elections2026/article/skda6fn2fl), מורן אזולאי, 20.10.26,
   `curl`), a quarrel about strategy.
+- **Read, and scored nothing (rev 312):** [TheMarker](https://www.haaretz.co.il/tmr/news/elections/2026-10-21/ty-article/.highlight/000001a1-5981-d30c-a7b3-dbab4d5e0000) (a column signed א"ב, 21.10.26, body supplied by the repo owner): the campaign has narrowed its message to
+  *"ברית משרתים"*, and the column describes posts from former נתניהו voters who now back בנט. The
+  slogan is the columnist's report of the message, not a text read here; `universal-conscription`
+  and `sanctions-on-non-servers`, held. The polls (14 seats) are not entered.
 
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
@@ -7967,6 +7988,10 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   `anti-clerical`, `sanctions-on-non-servers` and `pro-settlement`, held. He quotes ליברמן's 2018
   resignation line, *"קניית שקט לטווח קצר במחיר פגיעה בביטחון הלאומי לטווח הארוך"*, a past
   statement that `hardline-on-gaza` already covers. An endorsement by a non-candidate.
+- **Read, and scored nothing (rev 312):** [TheMarker](https://www.haaretz.co.il/tmr/news/elections/2026-10-21/ty-article/.highlight/000001a1-5981-d30c-a7b3-dbab4d5e0000) (a column signed א"ב, 21.10.26, body supplied by the repo owner) reads ליברמן's *"גנץ 2"* post (rev 296) as
+  panic at falling polls, and asks what his refusal of a minority government (rev 293) would mean
+  if the Arab MKs left the chamber at the vote. A columnist's questions; the party is not quoted
+  beyond what revs 293 and 296 hold. איזנקוט's answer on the 2016 letter is under ישר.
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -17472,3 +17497,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-20 | revision 309 — **עמך ישראל, הליכוד, הציונות הדתית, עוצמה יהודית, המילואימניקים והכלכלית: one הארץ report (body supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** נתניהו and סמוטריץ' met הרב אלי סדן, וינטר's teacher at the עלי academy. וינטר says the meeting was meant to press him to withdraw, and that *"אנחנו הולכים עד הסוף בכל הכוח"*, so `on_ballot` TRUE holds. The report recalls his August *"מנהיג מחנה הימין הוא נתניהו ורק עליו נמליץ"*, which is the recommendation `bibi` rests on (rev 41), so `bibi` holds. *"וינטר זה בנט 2"*, which rev 297 had from an unnamed source, is now בן גביר's own X post, as הארץ reports it (the post itself was not read). וינטר's *"קול לזליכה הוא קול ליאיר גולן"* answers המילואימניקים והכלכלית's refusal of rev 297, and is an attack on a rival. **Not entered:** the polls. |
 | 2026-10-21 | revision 310 — **הליכוד, עמך ישראל, הרשימה המשותפת, הדמוקרטים: one הארץ report (body supplied by the repo owner), two N12 pages and an N12 live page (`curl`) and two כאן pages (headless browser); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** the CEC chair finds that נתניהו used the IDF Spokesperson's footage in propaganda without paying, against section 2א, and fines הליכוד ₪1,500 and ₪6,000; nothing scored, on rev 242's rule. A petition against his speech at an officers' course is a lead. **עמך ישראל:** N12's report of the meeting at עלי matches rev 309's and adds וינטר's longer message against his bloc's campaign; בן ציון, no longer a candidate, adds the threshold to his reasons and will not tell וינטר to withdraw. `bibi` and `on_ballot` TRUE hold. **הרשימה המשותפת:** by unnamed sources the list would back replacing the Speaker and *"חוק הנאשם"* in return for a temporary order on demolitions, and the change bloc did not rule it out; `anti-indicted-pm`'s trigger, a platform or a signed bill, is not met. **הדמוקרטים:** כאן recalls גולן's September *"מפלגה ערבית יכולה להיות בממשלה"*, the inclusive pole the row holds. **Not entered:** the N12 report on the Russian text messages against ליברמן, read at the same URL in rev 308; and N12's live page of commentary, in which no party states a position. |
 | 2026-10-21 | revision 311 — **הציבור החרדי, עמך ישראל, הליכוד, ישראל ביתנו: an N12 report and a ynet op-ed (`curl`); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הציבור החרדי:** נתניהו phoned לייטנר himself; the offers are policy (haredi hesder yeshivas, an agreed enlistment framework, core studies), all held; לייטנר does not feel he has *"הזכות הערכית לפרוש"* and says the chance passed when the lists closed. **עמך ישראל:** סדן is persuaded וינטר should withdraw but doubts his influence, and Likud wants a statement from him; N12 dates נתניהו's visit to 19.10, הארץ's meeting to 20.10, unresolved. `on_ballot` TRUE holds on both rows. **הליכוד:** the same pressure, no position. **ישראל ביתנו:** צחי הנגבי, on no list, will vote for ליברמן; his portrait of the party is a third party's, and the tags it matches are held. **Not entered:** N12's live commentary page of 20.10 (`liveblog-22b9236ea1a51a1026`), in which only commentators speak; the קול ברמה interview it discusses is revs 307–308's. ynet's analysis of the leaders' posts (`hkggb8xhge`) and its report of לפיד's warning (`skda6fn2fl`) were read in rev 308, and N12's report of the meeting at עלי (`Article-a2f3d53cea951a1027`) in rev 310. |
+| 2026-10-21 | revision 312 — **הליכוד, ישר, ביחד, ישראל ביתנו: a TheMarker column (body supplied by the repo owner) and איזנקוט's post on X (fxtwitter); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** by activists and unnamed sources, ברוט manages the campaign on paper, בוארון the field and דרוק in practice; ministers kept out of sight; an internal poll of 22–24 seats; the PMO with no director-general. Campaign and government conduct, on rev 242's rule. **ישר:** on ערוץ 9 איזנקוט answers ליברמן's 2016 story, *"הוא כתב מכתב, לא תוכנית"*; his post *"זה או ישר! או קטאר"* is a slogan. **ביחד:** the message narrowed to *"ברית משרתים"*, the columnist's report; conscription tags held. **ישראל ביתנו:** commentary on revs 293 and 296, nothing new from the party. |
