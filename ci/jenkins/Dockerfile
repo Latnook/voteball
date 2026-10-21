@@ -42,16 +42,32 @@ COPY --chown=jenkins:jenkins plugins.lock.txt /usr/share/jenkins/ref/plugins.loc
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.lock.txt --verbose \
  && jenkins-plugin-cli --list
 
+# EVERY BAKED PLUGIN IS RENAMED *.jpi.override (2026-10-21), so the entrypoint copies it over
+# JENKINS_HOME on every boot instead of deciding by version. JENKINS_HOME is an EFS volume that
+# survives restarts, so the entrypoint finds last image's plugins already there and copies a baked
+# one only if its versionLT() says the image's is newer -- and that comparison is wrong for some
+# real version pairs. Observed on the 2026-10-21 bump: "9.11.1-226.vff833a_e4c58e" sorted OLDER
+# than "9.11-224.v369c884f7a_a_b_" (it compares 1 against 224), so the cluster booted the new image
+# still loading the old asm-api, with nothing in the Jenkins log -- only a SKIPPED line in
+# $JENKINS_HOME/copy_reference_file.log. With the suffix the lock is what runs, downgrades included,
+# which is what plugins.lock.txt already claims. PLUGINS_FORCE_UPGRADE does not cover this case: it
+# only applies to a plugin someone upgraded by hand through the UI. The log keeps printing
+# "SKIPPED ... is older than installed" for a forced plugin, then copies it anyway -- check the
+# installed .jpi's manifest, not that log (docs/maintenance.md).
+RUN cd /usr/share/jenkins/ref/plugins \
+ && for f in *.jpi; do mv "$f" "$f.override"; done
+
 # JCasC is NOT baked into this image, deliberately (decided 2026-07-30). The Helm release supplies
-# ci/jenkins/jenkins.yaml through controller.JCasC.configScripts, so a second copy here would be a
+# ci/jenkins/jenkins.yaml through a Terraform-managed ConfigMap, so a second copy here would be a
 # second source of truth that can disagree with it whenever the image and the chart are built from
 # different commits.
 #
-# It would also not work. `persistence.enabled: false` mounts an emptyDir over /var/jenkins_home, so
-# anything COPYed under that path is MASKED in the cluster while still being visible to `docker run`
-# -- local testing passes and the cluster silently disagrees. The plugins above survive only because
+# It would also not work. JENKINS_HOME (/var/jenkins_home) is a volume mounted over the image's
+# directory -- an emptyDir until 2026-08-04, an EFS PersistentVolumeClaim since -- so anything COPYed
+# under that path is MASKED in the cluster while still being visible to `docker run`: local testing
+# passes and the cluster silently disagrees. The plugins above survive only because
 # jenkins-plugin-cli writes them to /usr/share/jenkins/ref/, which the entrypoint copies INTO
-# JENKINS_HOME at boot.
+# JENKINS_HOME at boot (see the .override note above for why that copy is forced).
 
 # Skip the setup wizard: JCasC owns this configuration, and the wizard would leave the 94-plugin
 # "install suggested" set the plugins.txt header exists to replace.
