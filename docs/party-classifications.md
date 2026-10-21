@@ -2239,6 +2239,22 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   החרדי). The pressure of rev 311, now in person; no position. The same page has the mayor of קריית
   שמונה, who declared for נתניהו the day before, praising קק"ל; he is on no list, and it is not
   entered.
+- **Read, and scored nothing (rev 316): זוהר (#12) against sanctions on the haredim.** [ynet](https://www.ynet.co.il/news/elections2026/article/hyr5u11u3fx) (21.10.26 10:25 UTC, `articleBody` with `curl`): on רשת ב'
+  the Culture minister opposes the enforcement and the personal sanctions against haredim liable for
+  service, *"אני תמיד נגד פגיעה אישית בציבור החרדי, כי זו בעיניי רדיפה אחרי ציבור יהודי שלומד תורה"*,
+  likens it to the Inquisition of the expulsion from Spain, and says *"לגייס חרדים בלי הסכמת ההנהגה
+  הרוחנית זה לא יצלח"*; beside it, *"כל צעיר חרדי שלא הולך ללמוד תורה מהבוקר עד הערב ילך לצבא. לא
+  לאפשר רשימות פיקטיביות ולא לאפשר השתמטות"*. His leader's line of rev 307, against the arrests and for
+  service by those who do not learn, in a candidate's voice: `conscription-exemption` and
+  `scholar-exemption-retained`, held. The comparison is rhetoric, not a measure. The rest of the
+  article repeats rev 308's קול ברמה quotations.
+- **Read, and scored nothing (rev 316): the pressure on the small lists.** [N12](https://www.mako.co.il/news-israel-elections/2026/Article-1b08149e18f51a1026.htm) (עמית סגל, דפנה ליאל and יאיר שרקי, 21.10.26 21:25, `articleBody` with `curl`) and
+  [כאן](https://www.kan.org.il/content/kan-news/politic/1111556/) (יערה שפירא and דניאל גרובייס, 21.10.26 20:04, updated 23:24, headless browser): by Likud's own scenario 200–220 thousand of the bloc's votes could be lost below the
+  threshold. נתניהו negotiates with לייטנר himself and, by Likud seniors to כאן, has offered him a
+  post (under הציבור החרדי); סמוטריץ' offered וינטר a ministry (under עמך ישראל and הציונות הדתית);
+  N12 lists a campaign against וינטר without saying who runs it, and has הרב טאו refusing to meet
+  נתניהו (under נעם לישראל). Pressure inside the bloc, as in revs 311 and 315; no position. N12's line
+  on blows exchanged between Likud and בן גביר is commentary and not entered.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -9163,6 +9179,13 @@ rewriting its programme would be the thing to catch.
   meant to press him to withdraw (under עמך ישראל). Neither leader is quoted. It follows the party's
   call of the day before that he withdraw (rev 306). Pressure inside the bloc, and no position; `bibi`
   holds.
+- **Read, and scored nothing (rev 316):** סמוטריץ' to וינטר ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-21/ty-article/.premium/000001a1-5f79-da49-abe9-5ff9d1af0000) (21.10.26, body supplied by the repo owner); [כאן](https://www.kan.org.il/content/kan-news/politic/1111556/) (יערה שפירא and דניאל גרובייס, 21.10.26 20:04, updated 23:24, headless browser)):
+  withdraw, in return for a ministry in the next government, by הארץ the post in the Defence Ministry
+  he holds now and by כאן one from the party's quota. *"כולנו זוכרים את בחירות 1992 – אנשים טובים
+  ומלאי כוונות טובות שפיצלו את המחנה, זרקו קולות לפח והביאו עלינו את הסכמי אוסלו"*, and *"ברוב מוחלט
+  של הסקרים אתה לא עובר את אחוז החסימה"*. Rev 306's call with a price attached; וינטר refused (under
+  עמך ישראל). Oslo here is an argument about wasted votes; `anti-oslo`, held. N12's line on clashes
+  between the haredi parties and סמוטריץ' ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-1b08149e18f51a1026.htm)) is commentary and not entered.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -12011,6 +12034,10 @@ two; `single-issue-jewish-identity` is restated in revs 219 and 243 (under הר�
   out הרב צבי טאו's people about the row withdrawing, with hints of no *"אוזן קשבת"* in the next
   government; the party and the rabbi's circle say they will run to the end. Unattributed pressure
   on the row; `bibi` does not rest on it.
+- **Read, and scored nothing (rev 316):** by [N12](https://www.mako.co.il/news-israel-elections/2026/Article-1b08149e18f51a1026.htm) (עמית סגל, דפנה ליאל and יאיר שרקי, 21.10.26 21:25, `articleBody` with `curl`), הרב צבי טאו refuses even to meet נתניהו or to
+  answer his calls, with tens of thousands of votes at stake. Rev 283's pressure to withdraw, now
+  refused contact; it is N12's report, not the party's or the rabbi's words, and it concerns
+  withdrawal, not whom the list recommends. `bibi` and `on_ballot` TRUE hold.
 
 ### האחדות — Unity · **withdrew 2026-09-04, removed from the ballot** · was `unaligned` · 1 / 2 / −2 · traditional
 
@@ -13323,6 +13350,21 @@ Most links are given above, where each source is used; these are the rest.
   to 20.10; not resolved here. סדן told him he is persuaded וינטר should withdraw but that his
   influence on him is small, and Likud now aims for a statement from סדן that would reach וינטר's
   voters. וינטר, by the report, intends to run to the end. `on_ballot` TRUE and `bibi` hold.
+- **Read, and scored nothing (rev 316): סמוטריץ' offers a ministry, and וינטר refuses.**
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-21/ty-article/.premium/000001a1-5f79-da49-abe9-5ff9d1af0000) (21.10.26, body supplied by the repo owner): סמוטריץ' called on וינטר to withdraw, in return for the post of minister in the Defence
+  Ministry that he holds now, in the next government if one is formed, and recalled 1992 and Oslo
+  (under הציונות הדתית). וינטר's statement that evening: *"לא נכנעתי בעבר, אני לא נכנע היום, ולא אכנע
+  בעתיד על הערכים ועל הדברים שעליהם יצאנו להילחם"*, and *"התבלבלתם. לא באנו בשביל ג'וב, כפי שהורגלתם.
+  באנו כדי לשנות"*. The rest of the report is rev 309's. By [כאן](https://www.kan.org.il/content/kan-news/politic/1111556/) (יערה שפירא and דניאל גרובייס, 21.10.26 20:04, updated 23:24, headless browser) the offer was a ministry from הציונות
+  הדתית's quota, the party says no post will persuade him, and חדאד (#2) on רשת ב': *"אני רואה את זה
+  כשוחד פוליטי"*. [N12](https://www.mako.co.il/news-israel-elections/2026/Article-1b08149e18f51a1026.htm) (עמית סגל, דפנה ליאל and יאיר שרקי, 21.10.26 21:25, `articleBody` with `curl`) gives his conditions: *"לא יהיה פה צ'ק פתוח. יתנו - יקבלו, לא יתנו - לא
+  יקבלו"*, and, by its paraphrase, a law for those who serve in the IDF and a policy of decision and
+  voluntary emigration in Gaza; he rules out a government with גולן and says his list could make
+  possible a right-wing government that does not depend on the haredi parties. Those are rev 259's
+  conditions, its refusal of גולן and its line against the haredi 61st finger, restated: `bibi`,
+  `sanctions-on-non-servers` and `voluntary-palestinian-emigration-incentives`, held. N12 also lists
+  the campaign against him: appeals to his rabbis, a letter from bereaved families asking him to
+  withdraw, and protests outside candidates' homes. He does not withdraw; `on_ballot` TRUE holds.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -14903,6 +14945,11 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   ([ynet](https://www.ynet.co.il/news/elections2026/article/hkggb8xhge), סער הס, 20.10.26,
   `articleBody` with `curl`; the posts were classified by the AI model Claude): דרעי wrote 42 posts,
   with *"מדינה יהודית"* as the main slogan (the clips of rev 307).
+- **Read, and scored nothing (rev 316):** by [כאן](https://www.kan.org.il/content/kan-news/politic/1111556/) (יערה שפירא and דניאל גרובייס, 21.10.26 20:04, updated 23:24, headless browser), לייטנר
+  conditions his withdrawal on guarantees that ש"ס and יהדות התורה will not block his appointment after
+  the election (under הציבור החרדי), and the haredi parties will not join in; an unnamed source in
+  them: *"נתניהו יכול להבטיח כרצונו, אנחנו נעמוד על עקרונותינו בהסכם הקואליציוני"*. Unnamed and not
+  assigned to either list; no position.
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
@@ -15532,6 +15579,11 @@ Every source is linked where it is used above.
   17.10 ([ynet](https://www.ynet.co.il/news/elections2026/article/hkggb8xhge), סער הס, 20.10.26,
   `articleBody` with `curl`; the posts were classified by the AI model Claude), אשר wrote three posts
   in the month, one against שרן השכל and two against בג"ץ.
+- **Read, and scored nothing (rev 316):** by [כאן](https://www.kan.org.il/content/kan-news/politic/1111556/) (יערה שפירא and דניאל גרובייס, 21.10.26 20:04, updated 23:24, headless browser), לייטנר
+  conditions his withdrawal on guarantees that ש"ס and יהדות התורה will not block his appointment after
+  the election (under הציבור החרדי), and the haredi parties will not join in; an unnamed source in
+  them: *"נתניהו יכול להבטיח כרצונו, אנחנו נעמוד על עקרונותינו בהסכם הקואליציוני"*. Unnamed and not
+  assigned to either list; no position.
 
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
@@ -15787,6 +15839,17 @@ interviews on both limbs (rev 72):
   met on the night of 20.10, and נתניהו asked him to withdraw. לייטנר answered that there is nothing
   to discuss as long as the haredi parties refuse to commit to the measures and reforms for the
   haredi public that, he says, נתניהו promised. Still no withdrawal; `on_ballot` holds.
+  **Offered a post (rev 316):** by Likud seniors to [כאן](https://www.kan.org.il/content/kan-news/politic/1111556/) (יערה שפירא and דניאל גרובייס, 21.10.26 20:04, updated 23:24, headless browser), נתניהו offered לייטנר the post of coordinator
+  for haredi integration into the labour market, with powers to open state-haredi schools, for
+  withdrawing. לייטנר's precondition is a guarantee that ש"ס and יהדות התורה will not block it after
+  the election, which נתניהו has not obtained, and his offer that he and סמוטריץ' commit to it was not
+  enough. Rev 311 reported policy; this is a post, and its content is `workforce-integration` and
+  `state-haredi-education`, both held. By [N12](https://www.mako.co.il/news-israel-elections/2026/Article-1b08149e18f51a1026.htm) (עמית סגל, דפנה ליאל and יאיר שרקי, 21.10.26 21:25, `articleBody` with `curl`), the negotiation raised a demand to change the
+  surplus-agreement law so that signing with a list that misses the threshold does not lose the votes,
+  a demand N12 says is *"נשקלת בחיוב"*, and נתניהו's circle expects a withdrawal by the end of the
+  week. The party to כאן: *"הפרסומים בדבר המגעים - שקריים. נרוץ עד הסוף"*, and officially to N12 that
+  it runs to the end; by כאן it means to field candidates in local elections. Still no withdrawal;
+  `on_ballot` holds.
 - The economic-chapter trigger under `economic`.
 - `municipal-devolution` is held with no clause recorded in this entry or elsewhere on the page;
   find the platform clause or re-examine the tag. The national movement announced at the rally
@@ -15837,6 +15900,7 @@ interviews on both limbs (rev 72):
   (N12, 19.10.26, under יהדות התורה), is a rival's attack.
 - **Read, and scored nothing (rev 311):** [N12](https://www.mako.co.il/news-israel-elections/2026/Article-51f2538ed0b51a1027.htm) (עמית סגל and דפנה ליאל, 21.10.26 07:55,
   `articleBody` with `curl`), entered under Open questions.
+- **Read, and scored nothing (rev 316):** [כאן](https://www.kan.org.il/content/kan-news/politic/1111556/) and [N12](https://www.mako.co.il/news-israel-elections/2026/Article-1b08149e18f51a1026.htm), entered under Open questions.
 
 ### ישראל תחילה — Israel First · `unaligned` · +2 / +2 / −2 · secular
 
@@ -17587,3 +17651,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-21 | revision 313 — **עוצמה יהודית: one party post (plain `curl`); link supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** The National Security ministry has finished preparing 25 new local policing units, adding to the 102 authorities that already have one; the Prime Minister's signature and the Knesset committee's approval are still needed. בן גביר: *"יותר כוחות ברחובות, יותר סמכויות לאנשי האכיפה ואפס סובלנות לעבריינות"*. Ministerial administration, not doctrine; the standby squads and the weapons reform are `gun-rights`, held. Entered for the internal-security sweep of rev 98, where it is the opposite pole on method to הרשימה המשותפת's plan (rev 290). |
 | 2026-10-21 | revision 314 — **ביחד, הדמוקרטים, ישראל ביתנו: one הארץ report (body supplied by the repo owner) and גולן's post on X (fxtwitter); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **ביחד:** by a post of בנט's on X that הארץ reports (not read at its source), the list will support repealing the judicial-selection law, the Attorney General law, the law placing מח"ש under the Justice minister and the media law, and will legislate *"חוק יסוד מגילת העצמאות"* and *"חוק יסוד החקיקה"* (Jewish and democratic). It answers rev 308's *"אין תגובה ספציפית לחוק"*, whose sentence is amended; the Basic Laws are rev 164's *ממגילה לחוקה* with names. `constitutionalist`, held; no tag lists the overhaul laws one by one. **הדמוקרטים:** גולן welcomes it and asks בנט to commit not to sit with נתניהו, הליכוד or any party of the present coalition, past rev 270's refusal of נתניהו in any post; no tag names it. **ישראל ביתנו:** now the only list of איזנקוט's bloc not committed to repealing the Attorney General law; the paper repeats the party's rev 308 answer. |
 | 2026-10-21 | revision 315 — **ישר, ישראל ביתנו, הרשימה המשותפת, ביחד, הדמוקרטים, הליכוד, הציבור החרדי: an N12 live page and an N12 article (`curl`); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **ישר:** on 103FM, as N12 gives it, איזנקוט: *"חד-משמעית - לא אשב תחת נתניהו, גם לא ברוטציה"*, and he would resign within the hour; N12 calls it his first explicit commitment, but rev 258 had the refusal and no rotation, so what is new is the wording and the pledge. `opposition`, held. He met ליברמן, and their joint statement puts turnout first. **ישראל ביתנו:** ליברמן will replace the Speaker as soon as the Knesset is sworn in and then pass *"חוק הנאשם"* in three readings; `anti-indicted-pm`, held. **הרשימה המשותפת:** טיבי (#2) declared he will advance the law, as N12 paraphrases him, the first named voice behind rev 310's unnamed sources; the trigger, a platform or a signed bill, is not met, and its sentence under Considered and refused is amended. **ביחד:** בנט on אוריך (rev 269's charge), on trusting נתניהו (*"אפס"*) and against the big-party campaign; nothing scored. **הדמוקרטים:** גולן on the Financial Times report of a strike on Iran that Trump stopped, an attack on motive; `security` −1, held. **הליכוד / הציבור החרדי:** נתניהו met לייטנר on 20.10 and asked him to withdraw; לייטנר will not discuss it while the haredi parties refuse to commit to the reforms. `on_ballot` holds. **Not entered:** the CBS figures on eligible voters, IDF soldiers' voting, the mayor of קריית שמונה (on no list), and the article's legal analysis. |
+| 2026-10-21 | revision 316 — **עמך ישראל, הציונות הדתית, הליכוד, הציבור החרדי, נעם לישראל, ש"ס, יהדות התורה: one הארץ report (body supplied by the repo owner), an N12 report and a ynet report (`curl`) and a כאן report (headless browser); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **עמך ישראל / הציונות הדתית:** סמוטריץ' offers וינטר a ministry for withdrawing (by הארץ the Defence Ministry post he holds, by כאן one from his quota), recalling 1992 and Oslo; וינטר: *"לא באנו בשביל ג'וב"*, and חדאד (#2) calls it *"שוחד פוליטי"*. To N12 וינטר restates rev 259's conditions, *"לא יהיה פה צ'ק פתוח"*, the refusal of גולן and a government that does not depend on the haredi parties; `bibi` and `on_ballot` TRUE hold. **הליכוד:** זוהר (#12) opposes personal sanctions on the haredim, likening them to the Inquisition, and wants service from those who do not learn; `conscription-exemption` and `scholar-exemption-retained`, held. **הציבור החרדי:** by כאן, נתניהו offered לייטנר a post for haredi employment with powers to open state-haredi schools (`workforce-integration`, `state-haredi-education`, held); לייטנר wants guarantees from ש"ס and יהדות התורה, which an unnamed haredi source refuses (entered under both); by N12, a demand to change the surplus-agreement law. The party calls the reports false; `on_ballot` holds. **נעם לישראל:** by N12, הרב טאו will not meet נתניהו; `bibi` holds. **Not entered:** N12's commentary on clashes between Likud and בן גביר and between the haredi parties and סמוטריץ'; the rest of the הארץ report, which is rev 309's. |
