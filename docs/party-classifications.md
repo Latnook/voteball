@@ -4104,7 +4104,8 @@ imports, not tenders (rev 105).
 
 - **`constitutionalist`** — *ממגילה לחוקה* (rev 164): the Declaration of Independence as the opening
   chapter of a constitution, beside a Basic Law: Legislation, signed by בנט, לפיד and the
-  candidates. The tag now rests on a party page, where it had leaned on גינזבורג's words (rev 136).
+  candidates. בנט named the two on X as *"חוק יסוד מגילת העצמאות"* and *"חוק יסוד החקיקה"*, the second
+  establishing the state as Jewish and democratic (rev 314, as הארץ reports it). The tag now rests on a party page, where it had leaned on גינזבורג's words (rev 136).
   Also the pride plan's equality *"בחוקי היסוד"*, and the hitech plan's *"יציבות משטרית ודמוקרטית
   מעוגנת בחוקה"* and *"אי־פגיעה במערכת המשפט"*, framed as investor protection (*"כיפת ברזל כלכלית
   למשקיעים"*) (rev 105). The list's judicial-questionnaire answer is recorded under ישר (rev 134).
@@ -5025,7 +5026,8 @@ Party-published unless marked. Statements and press are linked where they are us
   called antisemitic and יעלון disowned ([כאן](https://x.com/kann_news/status/1158287533102567426),
   05.08.19, fxtwitter, *"זה לא הסגנון שלי ושל גנץ"*). Archive from before this list existed; it
   says nothing about ביחד's plans, which the row is scored from.
-- **Read, and scored nothing (rev 308): no commitment on the Attorney General law.**
+- **Read, and scored nothing (rev 308): no commitment on the Attorney General law** (given the next
+  day, rev 314).
   [הארץ](https://www.haaretz.co.il/news/elections/2026-10-20/ty-article/.premium/000001a1-58e6-df3c-adbf-d8f75db20000)
   (20.10.26, body supplied by the repo owner): the party will repeal *"את כלל חוקי הביזה, ההשתמטות
   והפילוג שהממשלה העבירה"* and the new judicial-selection law, but on the July law that ends the
@@ -5033,7 +5035,8 @@ Party-published unless marked. Statements and press are linked where they are us
   לחוקים ספציפיים, נדון בכך אחרי הבחירות. נחוקק חוק יסוד שיקבע את כללי המשחק, ונציב מבוא לחוקה על פי
   תוכנה של מגילת העצמאות"*. That is the rev 134 answer and rev 164's *ממגילה לחוקה*;
   `constitutionalist`, held. No tag on the row lists the overhaul laws one by one, so the silence
-  moves nothing. ישר and הדמוקרטים, asked the same question, said they would repeal it (under each).
+  moved nothing. ישר and הדמוקרטים, asked the same question, said they would repeal it (under each).
+  The next day בנט committed to repealing it (rev 314).
 - **Read, and scored nothing (rev 308): בנט on the קול ברמה interview** (under הליכוד). In
   [N12](https://www.mako.co.il/news-israel-elections/2026/Article-d33e271b1f751a1026.htm) (דפנה ליאל
   and דביר ג'ברה, 20.10.26 09:29, `articleBody` with `curl`): *"דיל ביבי דרעי נחשף וכעת זה רשמי –
@@ -5059,6 +5062,18 @@ Party-published unless marked. Statements and press are linked where they are us
   *"ברית משרתים"*, and the column describes posts from former נתניהו voters who now back בנט. The
   slogan is the columnist's report of the message, not a text read here; `universal-conscription`
   and `sanctions-on-non-servers`, held. The polls (14 seats) are not entered.
+- **Read, and scored nothing (rev 314): בנט commits to repealing four overhaul laws.**
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-21/ty-article/.premium/000001a1-5e6e-d7ce-a9a1-dfef8b580000)
+  (21.10.26, body supplied by the repo owner) reports a post of בנט's on X, not read at its source,
+  published after the paper's report of rev 308: ביחד will support repealing the law politicising
+  judicial selection, the law weakening the Attorney General, the law placing מח"ש under the Justice
+  minister and the media law. It will also legislate *"חוק יסוד מגילת העצמאות"*, giving the
+  Declaration the status of the constitution's opening chapter, and *"חוק יסוד החקיקה"*, establishing
+  the state as Jewish and democratic. That answers rev 308's *"אין תגובה ספציפית לחוק"*, and the two
+  Basic Laws are rev 164's *ממגילה לחוקה* with names. `constitutionalist`, held; no tag on the row
+  lists the overhaul laws one by one, so the commitment moves nothing, as the silence did not. גולן
+  welcomes it and asks for more (under הדמוקרטים); ישראל ביתנו is now the only list of the bloc not
+  committed (under ישראל ביתנו).
 
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
@@ -5748,6 +5763,15 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   itself was not read. It is the inclusive pole the row already holds under Coalition inclusion
   (rev 130), in his words. The same report recalls פורר's line on רע"ם, which is rev 151's (under
   ישראל ביתנו).
+- **Read, and scored nothing (rev 314): גולן welcomes בנט's commitment and asks for a boycott.**
+  [גולן on X](https://x.com/YairGolan1/status/2112876838347534523) (21.10.26 12:01 UTC, fxtwitter;
+  linked from [הארץ](https://www.haaretz.co.il/news/elections/2026-10-21/ty-article/.premium/000001a1-5e6e-d7ce-a9a1-dfef8b580000),
+  under ביחד): *"שמח שחברי בנט הצטרף להתחייבות שלנו לבטל את חוקי ההפיכה המשטרית ולבצר את
+  הדמוקרטיה"*, and *"יש עוד צעד אחד: להתחייב לא לשבת עם נתניהו, הליכוד ואף אחת ממפלגות קואליציית
+  הטבח וההשתמטות"*. The commitment to repeal is rev 308's, now in his words; `constitutionalist`,
+  held. The boycott goes past rev 270's refusal to seat נתניהו in any post, to every party of the
+  present coalition. It is a demand on a rival about forming a coalition, and no tag names it;
+  `opposition`, held.
 
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
@@ -7992,6 +8016,13 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   panic at falling polls, and asks what his refusal of a minority government (rev 293) would mean
   if the Arab MKs left the chamber at the vote. A columnist's questions; the party is not quoted
   beyond what revs 293 and 296 hold. איזנקוט's answer on the 2016 letter is under ישר.
+- **Read, and scored nothing (rev 314): the only list of the bloc not committed.**
+  [הארץ](https://www.haaretz.co.il/news/elections/2026-10-21/ty-article/.premium/000001a1-5e6e-d7ce-a9a1-dfef8b580000)
+  (21.10.26, body supplied by the repo owner): after בנט's commitment (under ביחד), the paper calls
+  ישראל ביתנו the only list of איזנקוט's bloc that has not committed to repealing the Attorney General
+  law, and repeats the party's answer of rev 308 nearly word for word: *"רפורמה יסודית"*, a
+  professional team that brings a full constitution within half a year, and a referendum law. Nothing
+  new from the party; `constitutionalist`, held.
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -17510,3 +17541,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-21 | revision 311 — **הציבור החרדי, עמך ישראל, הליכוד, ישראל ביתנו: an N12 report and a ynet op-ed (`curl`); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הציבור החרדי:** נתניהו phoned לייטנר himself; the offers are policy (haredi hesder yeshivas, an agreed enlistment framework, core studies), all held; לייטנר does not feel he has *"הזכות הערכית לפרוש"* and says the chance passed when the lists closed. **עמך ישראל:** סדן is persuaded וינטר should withdraw but doubts his influence, and Likud wants a statement from him; N12 dates נתניהו's visit to 19.10, הארץ's meeting to 20.10, unresolved. `on_ballot` TRUE holds on both rows. **הליכוד:** the same pressure, no position. **ישראל ביתנו:** צחי הנגבי, on no list, will vote for ליברמן; his portrait of the party is a third party's, and the tags it matches are held. **Not entered:** N12's live commentary page of 20.10 (`liveblog-22b9236ea1a51a1026`), in which only commentators speak; the קול ברמה interview it discusses is revs 307–308's. ynet's analysis of the leaders' posts (`hkggb8xhge`) and its report of לפיד's warning (`skda6fn2fl`) were read in rev 308, and N12's report of the meeting at עלי (`Article-a2f3d53cea951a1027`) in rev 310. |
 | 2026-10-21 | revision 312 — **הליכוד, ישר, ביחד, ישראל ביתנו: a TheMarker column (body supplied by the repo owner) and איזנקוט's post on X (fxtwitter); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** by activists and unnamed sources, ברוט manages the campaign on paper, בוארון the field and דרוק in practice; ministers kept out of sight; an internal poll of 22–24 seats; the PMO with no director-general. Campaign and government conduct, on rev 242's rule. **ישר:** on ערוץ 9 איזנקוט answers ליברמן's 2016 story, *"הוא כתב מכתב, לא תוכנית"*; his post *"זה או ישר! או קטאר"* is a slogan. **ביחד:** the message narrowed to *"ברית משרתים"*, the columnist's report; conscription tags held. **ישראל ביתנו:** commentary on revs 293 and 296, nothing new from the party. |
 | 2026-10-21 | revision 313 — **עוצמה יהודית: one party post (plain `curl`); link supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** The National Security ministry has finished preparing 25 new local policing units, adding to the 102 authorities that already have one; the Prime Minister's signature and the Knesset committee's approval are still needed. בן גביר: *"יותר כוחות ברחובות, יותר סמכויות לאנשי האכיפה ואפס סובלנות לעבריינות"*. Ministerial administration, not doctrine; the standby squads and the weapons reform are `gun-rights`, held. Entered for the internal-security sweep of rev 98, where it is the opposite pole on method to הרשימה המשותפת's plan (rev 290). |
+| 2026-10-21 | revision 314 — **ביחד, הדמוקרטים, ישראל ביתנו: one הארץ report (body supplied by the repo owner) and גולן's post on X (fxtwitter); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **ביחד:** by a post of בנט's on X that הארץ reports (not read at its source), the list will support repealing the judicial-selection law, the Attorney General law, the law placing מח"ש under the Justice minister and the media law, and will legislate *"חוק יסוד מגילת העצמאות"* and *"חוק יסוד החקיקה"* (Jewish and democratic). It answers rev 308's *"אין תגובה ספציפית לחוק"*, whose sentence is amended; the Basic Laws are rev 164's *ממגילה לחוקה* with names. `constitutionalist`, held; no tag lists the overhaul laws one by one. **הדמוקרטים:** גולן welcomes it and asks בנט to commit not to sit with נתניהו, הליכוד or any party of the present coalition, past rev 270's refusal of נתניהו in any post; no tag names it. **ישראל ביתנו:** now the only list of איזנקוט's bloc not committed to repealing the Attorney General law; the paper repeats the party's rev 308 answer. |
