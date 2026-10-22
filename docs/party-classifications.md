@@ -2277,7 +2277,7 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
 **Basis.** Gadi Eisenkot's party, founded 2025-09-16; co-founders include Matan Kahana (former
 Religious Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief) and Nir Zohar
 (Wix). Scored from the party's own site, `yasharwitheisenkot.com`: the registered goals, the 10-step
-brochure and twenty-five principles papers (twenty-seven documents, rev 291), beside 17 topic pages and 157
+brochure and twenty-six principles papers (twenty-eight documents, rev 320), beside 17 topic pages and 157
 position posts (revs 160, 161; the topic pages have since been taken off the site, see "Reading this
 party's sources"); on the conflict, where the documents are silent, from the leader's own
 statements. Before the platform existed the row was a placeholder (`new-party` +
@@ -2848,7 +2848,19 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   285): the public service, the periphery, transport, planning and national infrastructure**, 56
   posts; each paper is word for word its posts, every post sentence found in its paper. Health
   followed on 15.10 (rev 291), all 67 sentences of its 8 posts in the paper. One topic and 10 posts
-  are still shown on no page: foreign affairs.
+  are still shown on no page: foreign affairs. **Four more topics were added after rev 291** (31
+  topics, 294 posts, checked 22.10.26, rev 320): Ethiopian Israelis (12 posts, 15.10), which became
+  the twenty-sixth paper on 22.10; and three still shown on no page — bereaved siblings (3 posts,
+  18.10), education (11 posts, 21.10, the topic named *"חינוך אלטשולר"* after the candidate named for
+  Education, rev 244) and welfare (8 posts, 22.10). Where they would bear if published: the
+  education posts restate the funding condition under `religiosity` (*"נתנה תקצוב למסודות החינוך
+  בעמידה מלאה בלימודי הליבה הלאומית"*, the state-haredi stream anchored in law) and add *"נקדם
+  תכנית חומש כך שבסופה – ככלל תלמידי ישראל יהיו חלק מהחינוך הממלכתי"*, which keeps religious
+  streams state-funded inside the state system and so is the −2 ground, not a move toward −3; the
+  welfare posts are workfare with a service clause, *"הזכות לחיים בכבוד באה עם מחויבות הדדית...
+  להשתלב בתעסוקה ובשירות"* (`service-conditioned-citizenship`, held), beside a *"חוקת רווחה"*
+  replacing the welfare-services law and a matching-funding review for weak authorities, both
+  halves of `economic` +1 again.
   **Nothing is scored from those.** The foreign-affairs topic would be the party's first text of its own on the
   territories, the document limb of the rev 69 trigger: *"נילחם בנחישות באנרכיה, באלימות ובטרור
   היהודי ונשיב את המשילות ואת שלטון החוק ביהודה ושומרון"*, the civil administration's powers over
@@ -3354,7 +3366,7 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   2026-10-10). Every `/topic/…` address except `/topic/missions/` returns 404, as does every
   `/position/…` address; `topic-sitemap.xml` lists the goals page alone, and the `/principles/`
   index (now titled *תכניות*) links fourteen papers and nothing else. The whole section went, not
-  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272, twenty-four since 14.10, rev 285, and twenty-five since 15.10, rev 291.)
+  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272, twenty-four since 14.10, rev 285, twenty-five since 15.10, rev 291, and twenty-six since 22.10, rev 320.)
   The text is still returned by the site's own interface:
   `https://yasharwitheisenkot.com/api/wp/v2/topic` lists the topics with their ids, and
   `…/api/wp/v2/position?topic=<id>` returns that topic's posts (the text is in `acf.intro_text`).
@@ -3544,6 +3556,33 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   השב"ן ומתאמי השירות"* is one more instance at the campaigning pole of the `sectoral-budgeting`
   sweep. A front-line emergency centre in Kiryat Shmona is the north paper's. No axis moved and no
   tag changed.
+- **Read, and scored nothing (rev 320):** the twenty-sixth principles paper,
+  [*ישר! לקהילת יוצאי אתיופיה*](https://yasharwitheisenkot.com/principles/beta-israel-and-ethiopian-jews/)
+  (published 22.10.26 06:40 UTC; link supplied by the repo owner; plain `curl`), every sentence of
+  the 12 posts of its topic (created 15.10) in it, compared mechanically; the only differences are
+  dashes. `religiosity` −2 holds, and the paper's one religion-and-state item points away from −3:
+  *"נפעל למציאת פתרונות להכרה ממלכתית במעמד הקייסים... מבוסס תפיסת יהדות מכילה ומכבדת"* is the
+  phrase `religious-pluralism` rests on, used a second time, and state recognition for a religious
+  leadership outside the Rabbinate widens the establishment rather than withdrawing it. *"נפעל
+  למציאת פתרונות"* is a search, not a measure. Both halves of `economic` +1 again: on one side *"המכשול
+  המרכזי אינו היעדר משאבים אלא אופן הניהול"*, a map of every existing programme against its results,
+  published data on the pre-academic preparatory programmes with *"תחרות ביניהן"*, small-business
+  credit *"לפי קריטריונים כלכליים ענייניים"*; on the other, budgeted five-year plans toward an
+  eight-year national target, full tuition and living scholarships to age 30, a state-subsidised
+  first year of employment (*"מודל תב"ת"*), a per-pupil payment for 5-unit maths, English and
+  science in the community's towns, and the dedicated housing aid *"שנקבעו בעבר ולא מומשו"*. No
+  shekel figure anywhere. *"מי שמשרת, עובד ותורם זכאי למדינה שמסירה מדרכו חסמים"* is the
+  `service-conditioned-citizenship` doctrine (held). The policing section (a community–police
+  reform, quarterly publication of stop, arrest and case-opening data, diversion from criminal
+  proceedings, legal aid for victims of discrimination made permanent) is the `homeland-security`
+  trap, not the `security` axis. The anti-racism section enforces the anti-discrimination law and
+  strengthens the government anti-racism unit; it names nothing on admissions, so
+  `anti-discrimination-in-admissions` does not arise. *"נשלים את העלייה שהוגדרה בהחלטות הממשלה"*,
+  first-degree relatives first, names no group; `aliyah-absorption` is refused on rev 173's ground.
+  For the `sectoral-budgeting` sweep: dedicated budgets for one community, from a row that campaigns
+  against allocations of *"אופי מגזרי ופוליטי"*; the paper ties them to a measured gap target, and
+  whether that distinction holds is the sweep's question, not this row's. No axis moved and no tag
+  changed.
 - **Read, and scored nothing (rev 292):** איזנקוט's statement on the Gaza border, by
   [כאן](https://www.kan.org.il/content/kan-news/politic/1109509/) (15.10.26 11:12; headless browser; link supplied by the repo owner). The
   18-month commitment is under `hardline-on-gaza` in Considered and refused. *"כל עוד בנימין נתניהו
@@ -17744,3 +17783,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-21 | revision 317 — **עמך ישראל, הציונות הדתית, הליכוד: one כאן report (headless browser); link supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** The afternoon report that rev 316's כאן piece updates. **הציונות הדתית:** סמוטריץ' would give up one of the party's ministries for וינטר, who as a non-MK would be appointed at the swearing-in without being bound to the party's votes, *"ערכים... שאנחנו שותפים בהם בכל ליבנו"*. **עמך ישראל:** party sources, *"עם ישראל מאס בפוליטיקה של הג'ובים"* and *"מי שלא, שיצביע למפלגה החדשה היחידה בימין"*, rev 259's statement again; `bibi` and `on_ballot` TRUE hold. **הליכוד:** נתניהו joined the call to withdraw, unquoted. **Not entered:** כאן's poll (3.1%) and בן ציון's departure, rev 276's. |
 | 2026-10-21 | revision 318 — **הציונות הדתית: a party PDF (`pdftotext`) and the full plan it links (Google Docs text export), plus the party's sitemap; link supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** וולדיגר (#8)'s *"חמלה בבריאות הנפש"*, written as a basis for coalition agreements: a national mental-health headquarters, expanded HMO and public treatment, crisis services, rehabilitation by need, regulation of psychotherapy, two law amendments and ₪8.75bn over five years on top of base budgets. `economic` 0 holds: a costed public-service expansion fits the record the number is read from, and repeats the 2022 רווחה paper's programme (rev 17) and the rev 293 answer with a price. No mental-health tag exists, and one domain's plan does not open `welfare-state`. The only other page changed on the site that day is the candidates' questionnaires (`/moamadim/`); nothing in it is new. |
 | 2026-10-22 | revision 319 — **ש"ס, הדמוקרטים, הליכוד, ביחד, ישר, ישראל ביתנו: a הארץ report (opening paragraph supplied by the repo owner), an X post (fxtwitter), an N12 report and two ynet reports (`curl`), and, found by a search, two more ynet reports and a ערוץ 7 report quoting the video (`curl`); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **ש"ס:** דרעי's campaign video: in the next government, tefillin and a tallit from the Education Ministry for every boy of 13, and a duty on schools to set aside a place of prayer, as the answer to גולן; the first measure under the *"מדינה יהודית"* frame of revs 259, 307 and 308. `religiosity` +2 holds: state funding and presence for religion in schools is the +2 band's ground, with no claim on the law of the state; no tag is opened on a pledge. **הדמוקרטים:** גולן: *"תפילין מבחירה. גיוס כחובה"*, `universal-conscription` held; דרעי's *"למחוק את הדת מהמרחב הציבורי"* is the rev 307 lead seen a second time, a rival's quotation, still unsourced, and its trigger stands. **הליכוד:** כץ (#6) charges every attack before or during the election to לפיד, בנט and גולן in advance; an attack, `security` +3 held. **ביחד / ישר / הדמוקרטים:** the answers, לפיד's *"אין סיבה לתקוף... לפני הבחירות"* (timing and motive, as rev 315 read גולן), איזנקוט's *"ההנהגה רקובה ומסוכנת"* and גולן's *"אסור לשבת"*; nothing scored. **ישר / ישראל ביתנו:** ynet on the meeting of rev 315 adds the four-list wording; ליברמן's 76% turnout post and *"סוף עידן נתניהו"*. **Not entered:** the ynet report on זוהר, rev 316's. |
+| 2026-10-22 | revision 320 — **ישר: the twenty-sixth principles paper, [*ישר! לקהילת יוצאי אתיופיה*](https://yasharwitheisenkot.com/principles/beta-israel-and-ethiopian-jews/) (published 22.10.26 06:40 UTC; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** Word for word the 12 posts of a topic created 15.10. The Kessim item (*"הכרה ממלכתית במעמד הקייסים"*, *"יהדות מכילה ומכבדת"*) is a second use of the `religious-pluralism` phrase and widens the establishment, so `religiosity` −2 holds and the item points away from −3. `economic` +1 has both halves again (management over money, published data and competition; scholarships, a subsidised first year of work, budgeted five-year plans), with no figure. `service-conditioned-citizenship` held; policing is the `homeland-security` trap; `anti-discrimination-in-admissions` does not arise; `aliyah-absorption` refused on rev 173's ground; dedicated community budgets noted for the `sectoral-budgeting` sweep. **The site's interface now has 31 topics and 294 posts:** besides this one, three topics added since rev 291 are shown on no page (bereaved siblings, education, welfare) and are recorded under Open questions as leads, scored nothing. Documentation only: nothing to verify on a database, and the suite was not run. |
