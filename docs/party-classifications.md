@@ -3586,7 +3586,7 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   [*ישר! לרווחה ולאנשים עם מוגבלויות*](https://yasharwitheisenkot.com/principles/welfare-and-social-services/)
   (published 22.10.26 11:41 UTC, modified 14:42; the 8 posts of 22.10) is labelled a draft and asks
   for comment (*"לתגובה לטיוטת התכנית"*), as the commission מתווה was. Both halves of `economic` +1
-  again: a *"חוקת רווחה"* replacing the welfare-services law, *"שתעגן את הזכות לחיים בכבוד"*, one
+  again: a *"חוקת רווחה"* replacing the welfare-services law, *"היא תעגן את הזכות לחיים בכבוד"*, one
   body over the ministry, National Insurance and the authorities, equal service in every authority,
   more money and posts for weak welfare departments and a review of matching funding; beside
   workfare (*"התמיכה הסוציאלית של המדינה תהיה מוכוונת לשילוב בתעסוקה, ולא רק להבטחת קיום"*), a
@@ -3603,7 +3603,7 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   package, and a list of entitlements on the model of IDF orphans and bereaved parents (degree
   funding, therapy sessions to age 40, housing loans, arnona discounts, carer's leave and protection
   from dismissal). Grants and tax-credit points are *"בחינת"* and *"נבחן"*, no figure anywhere. It is
-  the N12 survey's *"bereaved families and siblings"* (rev 314) as a paper, and it points to the
+  the N12 survey's *"bereaved families and siblings"* (rev 308) as a paper, and it points to the
   post-traumatic-stress paper for the full package. Neither paper bears on `security` or
   `religiosity`. No axis moved and no tag changed.
 - **Read, and scored nothing (rev 292):** איזנקוט's statement on the Gaza border, by
