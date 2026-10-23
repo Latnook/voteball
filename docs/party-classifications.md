@@ -2277,7 +2277,7 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
 **Basis.** Gadi Eisenkot's party, founded 2025-09-16; co-founders include Matan Kahana (former
 Religious Affairs Minister), Manuel Trachtenberg, Yoram Cohen (former Shin Bet chief) and Nir Zohar
 (Wix). Scored from the party's own site, `yasharwitheisenkot.com`: the registered goals, the 10-step
-brochure and twenty-six principles papers (twenty-eight documents, rev 320), beside 17 topic pages and 157
+brochure and twenty-eight principles papers (thirty documents, rev 322), beside 17 topic pages and 157
 position posts (revs 160, 161; the topic pages have since been taken off the site, see "Reading this
 party's sources"); on the conflict, where the documents are silent, from the leader's own
 statements. Before the platform existed the row was a placeholder (`new-party` +
@@ -2850,18 +2850,15 @@ The axis triggers and the `anti-settler-violence` removal trigger are stated whe
   followed on 15.10 (rev 291), all 67 sentences of its 8 posts in the paper. One topic and 10 posts
   are still shown on no page: foreign affairs. **Four more topics were added after rev 291** (31
   topics, 294 posts, checked 22.10.26, rev 320): Ethiopian Israelis (12 posts, 15.10), which became
-  the twenty-sixth paper on 22.10; and three still shown on no page — bereaved siblings (3 posts,
-  18.10), education (11 posts, 21.10, the topic named *"חינוך אלטשולר"* after the candidate named for
-  Education, rev 244) and welfare (8 posts, 22.10). Where they would bear if published: the
-  education posts restate the funding condition under `religiosity` (*"נתנה תקצוב למסודות החינוך
+  the twenty-sixth paper on 22.10; bereaved siblings (3 posts, 18.10) and welfare (8 posts, 22.10),
+  which became the twenty-seventh and twenty-eighth later the same day (rev 322, under Sources); and
+  education (11 posts, 21.10, the topic named *"חינוך אלטשולר"* after the candidate named for
+  Education, rev 244), still shown on no page (the index's `education/` is the June paper). Where it
+  would bear if published: the education posts restate the funding condition under `religiosity` (*"נתנה תקצוב למסודות החינוך
   בעמידה מלאה בלימודי הליבה הלאומית"*, the state-haredi stream anchored in law) and add *"נקדם
   תכנית חומש כך שבסופה – ככלל תלמידי ישראל יהיו חלק מהחינוך הממלכתי"*, which keeps religious
-  streams state-funded inside the state system and so is the −2 ground, not a move toward −3; the
-  welfare posts are workfare with a service clause, *"הזכות לחיים בכבוד באה עם מחויבות הדדית...
-  להשתלב בתעסוקה ובשירות"* (`service-conditioned-citizenship`, held), beside a *"חוקת רווחה"*
-  replacing the welfare-services law and a matching-funding review for weak authorities, both
-  halves of `economic` +1 again.
-  **Nothing is scored from those.** The foreign-affairs topic would be the party's first text of its own on the
+  streams state-funded inside the state system and so is the −2 ground, not a move toward −3.
+  **Nothing is scored from it.** The foreign-affairs topic would be the party's first text of its own on the
   territories, the document limb of the rev 69 trigger: *"נילחם בנחישות באנרכיה, באלימות ובטרור
   היהודי ונשיב את המשילות ואת שלטון החוק ביהודה ושומרון"*, the civil administration's powers over
   land, planning and enforcement returned to the Defence Ministry, and *"נימנע מצעדים חד־צדדיים
@@ -3366,7 +3363,7 @@ laws on yeshiva students passed with the Arab lists' help, are his claims about 
   2026-10-10). Every `/topic/…` address except `/topic/missions/` returns 404, as does every
   `/position/…` address; `topic-sitemap.xml` lists the goals page alone, and the `/principles/`
   index (now titled *תכניות*) links fourteen papers and nothing else. The whole section went, not
-  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272, twenty-four since 14.10, rev 285, twenty-five since 15.10, rev 291, and twenty-six since 22.10, rev 320.)
+  one subject, so nothing is read into it. (The index links nineteen papers since 13.10, rev 272, twenty-four since 14.10, rev 285, twenty-five since 15.10, rev 291, twenty-six since 22.10, rev 320, and twenty-eight later that day, rev 322.)
   The text is still returned by the site's own interface:
   `https://yasharwitheisenkot.com/api/wp/v2/topic` lists the topics with their ids, and
   `…/api/wp/v2/position?topic=<id>` returns that topic's posts (the text is in `acf.intro_text`).
@@ -3583,6 +3580,32 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   against allocations of *"אופי מגזרי ופוליטי"*; the paper ties them to a measured gap target, and
   whether that distinction holds is the sweep's question, not this row's. No axis moved and no tag
   changed.
+- **Read, and scored nothing (rev 322):** the twenty-seventh and twenty-eighth principles papers
+  (links supplied by the repo owner; plain `curl`), each compared mechanically with its topic's posts;
+  every post sentence is in its paper, the only differences dashes and spacing.
+  [*ישר! לרווחה ולאנשים עם מוגבלויות*](https://yasharwitheisenkot.com/principles/welfare-and-social-services/)
+  (published 22.10.26 11:41 UTC, modified 14:42; the 8 posts of 22.10) is labelled a draft and asks
+  for comment (*"לתגובה לטיוטת התכנית"*), as the commission מתווה was. Both halves of `economic` +1
+  again: a *"חוקת רווחה"* replacing the welfare-services law, *"שתעגן את הזכות לחיים בכבוד"*, one
+  body over the ministry, National Insurance and the authorities, equal service in every authority,
+  more money and posts for weak welfare departments and a review of matching funding; beside
+  workfare (*"התמיכה הסוציאלית של המדינה תהיה מוכוונת לשילוב בתעסוקה, ולא רק להבטחת קיום"*), a
+  graded disregard review, devolution to the authorities, a one-stop shop and digitisation. **Not
+  `welfare-state`** (rev 39): the welfare law sets goals and principles of eligibility and names no
+  formula, baseline or allowance, and the nursing-care line is the aging paper's *"נבחן הטלת חובת
+  ביטוח סיעודי"* again, an examination. *"הזכות לחיים בכבוד באה עם מחויבות הדדית... להשתלב בתעסוקה
+  ובשירות"* is `service-conditioned-citizenship` (held). Wider support for orphans outside military and
+  terror bereavement, a ministerial committee on disability under the Welfare minister, and the
+  regulations of the disability-services law completed: no tag measures them.
+  [*ישר! לתמיכה באחים והאחיות השכולים*](https://yasharwitheisenkot.com/principles/bereaved-siblings/)
+  (published 22.10.26 17:02 UTC; the 3 posts of 18.10): siblings of fallen soldiers and of terror
+  victims recognised in law, a representative organisation, a professional committee to set the
+  package, and a list of entitlements on the model of IDF orphans and bereaved parents (degree
+  funding, therapy sessions to age 40, housing loans, arnona discounts, carer's leave and protection
+  from dismissal). Grants and tax-credit points are *"בחינת"* and *"נבחן"*, no figure anywhere. It is
+  the N12 survey's *"bereaved families and siblings"* (rev 314) as a paper, and it points to the
+  post-traumatic-stress paper for the full package. Neither paper bears on `security` or
+  `religiosity`. No axis moved and no tag changed.
 - **Read, and scored nothing (rev 292):** איזנקוט's statement on the Gaza border, by
   [כאן](https://www.kan.org.il/content/kan-news/politic/1109509/) (15.10.26 11:12; headless browser; link supplied by the repo owner). The
   18-month commitment is under `hardline-on-gaza` in Considered and refused. *"כל עוד בנימין נתניהו
@@ -10586,6 +10609,25 @@ Linked where used above. Not linked above:
   administration, not doctrine. The *"אלף כיתות כוננות"* and the weapons reform are `gun-rights`,
   held. For the internal-security sweep (rev 98) it is the "more force" pole on method that
   הרשימה המשותפת's plan rejects (rev 290). Nothing minted.
+- **Read, and scored nothing (rev 322): the Negev demolitions letter and 11 more localities armed.**
+  Two party posts of 22.10.26 (links supplied by the repo owner; plain `curl`). **The
+  [letter](https://www.ozma-yeudit.co.il/%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%9c%d7%99%d7%95%d7%a2%d7%9e%d7%a9%d7%99%d7%aa-%d7%91%d7%9e%d7%a9%d7%9a-%d7%a9%d7%a0%d7%99%d7%9d-%d7%90%d7%a4%d7%a9%d7%a8%d7%aa%d7%9d-%d7%94/)
+  (14:36 UTC):** the יועמ"שית instructed בן גביר to stay away from demolitions in the Negev, and he
+  answers *"הנחייתך היא בלתי חוקית ונעדרת סמכות"* and that he will keep taking part, *"ואמשיך להוביל
+  את רפורמת המשילות והחזרת קרקעות מדינה לידי"*, to back the police, not to act operationally; she and
+  her predecessors *"אפשרתם הפקרות"*. The figure is a first-party claim of a different unit from the
+  one under Considered and refused: *"יותר מ-19 אלף מבנים בלתי חוקיים בנגב"* in his tenure, where
+  that entry's 10,000 counts the whole country since the start of 2025. The land-enforcement tag stays
+  declined on its reason (no second row to discriminate against); the clash with the יועמ"שית is the
+  dismissal demand of `judicial-overhaul`, held. **The
+  [licensing post](https://www.ozma-yeudit.co.il/%d7%94%d7%a9%d7%a8-%d7%91%d7%9f-%d7%92%d7%91%d7%99%d7%a8-%d7%90%d7%99%d7%a9%d7%a8-%d7%96%d7%9b%d7%90%d7%95%d7%aa-%d7%9c%d7%a0%d7%a9%d7%a7-%d7%9c%d7%99%d7%99%d7%a9%d7%95%d7%91%d7%99%d7%9d-%d7%97%d7%93/)
+  (14:51 UTC):** 11 localities in Samaria made eligible for weapons licences, among them חומש, שירה,
+  חוות יאיר and חוות גלעד; *"אנחנו ממשיכים את מהפכת הנשק ומרחיבים את הרפורמה הזאת גם ליישובים
+  החדשים שהקמנו בשומרון"*, and *"תושבי השומרון הם השכפ״ץ הביטחוני לתושבי גוש דן"*. One more instance of
+  `gun-rights` (held; the 2026 count of 126 localities is not updated from it, since the post gives no
+  running total), and arming farm outposts and the re-founded חומש is `pro-settlement` (held, rev
+  189's farm-outpost reading). יוסי דגן, head of the Samaria regional council, is quoted; he is not on
+  this list.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -17795,3 +17837,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-22 | revision 319 — **ש"ס, הדמוקרטים, הליכוד, ביחד, ישר, ישראל ביתנו: a הארץ report (opening paragraph supplied by the repo owner), an X post (fxtwitter), an N12 report and two ynet reports (`curl`), and, found by a search, two more ynet reports and a ערוץ 7 report quoting the video (`curl`); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **ש"ס:** דרעי's campaign video: in the next government, tefillin and a tallit from the Education Ministry for every boy of 13, and a duty on schools to set aside a place of prayer, as the answer to גולן; the first measure under the *"מדינה יהודית"* frame of revs 259, 307 and 308. `religiosity` +2 holds: state funding and presence for religion in schools is the +2 band's ground, with no claim on the law of the state; no tag is opened on a pledge. **הדמוקרטים:** גולן: *"תפילין מבחירה. גיוס כחובה"*, `universal-conscription` held; דרעי's *"למחוק את הדת מהמרחב הציבורי"* is the rev 307 lead seen a second time, a rival's quotation, still unsourced, and its trigger stands. **הליכוד:** כץ (#6) charges every attack before or during the election to לפיד, בנט and גולן in advance; an attack, `security` +3 held. **ביחד / ישר / הדמוקרטים:** the answers, לפיד's *"אין סיבה לתקוף... לפני הבחירות"* (timing and motive, as rev 315 read גולן), איזנקוט's *"ההנהגה רקובה ומסוכנת"* and גולן's *"אסור לשבת"*; nothing scored. **ישר / ישראל ביתנו:** ynet on the meeting of rev 315 adds the four-list wording; ליברמן's 76% turnout post and *"סוף עידן נתניהו"*. **Not entered:** the ynet report on זוהר, rev 316's. |
 | 2026-10-22 | revision 320 — **ישר: the twenty-sixth principles paper, [*ישר! לקהילת יוצאי אתיופיה*](https://yasharwitheisenkot.com/principles/beta-israel-and-ethiopian-jews/) (published 22.10.26 06:40 UTC; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** Word for word the 12 posts of a topic created 15.10. The Kessim item (*"הכרה ממלכתית במעמד הקייסים"*, *"יהדות מכילה ומכבדת"*) is a second use of the `religious-pluralism` phrase and widens the establishment, so `religiosity` −2 holds and the item points away from −3. `economic` +1 has both halves again (management over money, published data and competition; scholarships, a subsidised first year of work, budgeted five-year plans), with no figure. `service-conditioned-citizenship` held; policing is the `homeland-security` trap; `anti-discrimination-in-admissions` does not arise; `aliyah-absorption` refused on rev 173's ground; dedicated community budgets noted for the `sectoral-budgeting` sweep. **The site's interface now has 31 topics and 294 posts:** besides this one, three topics added since rev 291 are shown on no page (bereaved siblings, education, welfare) and are recorded under Open questions as leads, scored nothing. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-23 | revision 321 — **הדמוקרטים: one כאן live-page item (headless browser); link supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** גולן: some parties of the bloc *"שלא בטוח שניתן לסמוך עליהם"* may join פורום קהלת, *"לנוכח פרסומים בימים האחרונים"* on the bloc's commitment to repealing the overhaul laws, and the answer is *"דמוקרטים גדולים וחזקים"*. No party or publication named; the commitments on record are revs 308 and 314. `constitutionalist`, held; קהלת as the line is לזימי's of rev 258. A charge against unnamed partners scores no row. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-23 | revision 322 — **ישר, עוצמה יהודית: two ישר principles papers and two עוצמה יהודית posts (plain `curl`); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **ישר:** the welfare paper (a draft open for comment) and the bereaved-siblings paper, the twenty-seventh and twenty-eighth, each word for word its posts. Welfare: a *"חוקת רווחה"*, one coordinating body, more for weak authorities beside workfare and devolution, both halves of `economic` +1; not `welfare-state` (no formula, and nursing insurance is still *"נבחן"*); `service-conditioned-citizenship` held. Bereaved siblings: recognition in law and entitlements on the IDF-orphans model, grants only examined, no figure. Education alone of rev 320's three leads is still shown on no page. **עוצמה יהודית:** בן גביר calls the יועמ"שית's instruction to keep away from Negev demolitions *"בלתי חוקית"* and claims 19,000+ Negev structures demolished in his tenure; the land-enforcement tag stays declined, `judicial-overhaul` held. 11 Samaria localities, farm outposts and חומש among them, made eligible for weapons licences: `gun-rights` and `pro-settlement`, held. A fifth link, on 25 local policing units, is rev 313's. Documentation only: nothing to verify on a database, and the suite was not run. |
