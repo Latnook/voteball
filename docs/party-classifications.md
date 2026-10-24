@@ -2299,6 +2299,11 @@ Haaretz, Ben-Dror Yemini and Agam Labs are named above without URLs.
   23.10.26 20:40, `articleBody` with `curl`): נתניהו's circle approached הרב בניהו שמואלי to press
   וינטר to withdraw, and was refused (under עמך ישראל). Pressure inside the bloc, as in revs 309–317;
   no position.
+- **Read, and scored nothing (rev 324): the north and south.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): no position stated on a full
+  income-tax exemption for the confrontation line, and N12 cites the government's multi-year plans
+  instead, among them a target of 100,000 more residents by 2036 in the localities near the Lebanese
+  border. A government's record read as the party's, which `family_evidence` `record` already says;
+  no tag measures it, and `economic` 1 holds.
 
 
 ### ישר — Yashar · `opposition` · +1 / +1 / −2 · secular
@@ -4018,6 +4023,20 @@ First-party unless marked; the reports behind cross-row passes are linked in tha
   דיאלנא"* (*"one of ours"* in Moroccan Arabic), a conference for kippa-wearers in גבעת שמואל, and
   almost no money or polling-station staff for liberal cities. Campaign strategy (הליכוד's half is
   under that row); nothing scored.
+- **Read, and scored nothing (rev 324): N12's north-and-south survey.** [N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm) (דביר ג'ברה and אור טרגר,
+  22.10.26 17:10, `articleBody` with `curl`): the lists' positions on rebuilding the north and south,
+  said to be checked by עמותת 121 from platforms, the Knesset record and the lists' answers to 121, all
+  in N12's paraphrase. No answer is quoted, and neither the answers nor the data behind N12's *מאצ'
+  פוליטי* tool were read; each row's line is under that row. Every list that states a position
+  refuses a full income-tax exemption for the confrontation line except ביחד. For this one: the
+  settlement tax credit's ceiling raised to 25% in fence-adjacent towns and 20% in other
+  fence-adjacent localities, and by four percentage points elsewhere; rehabilitation and
+  infrastructure, protected buildings with urban renewal, protection for farmers, a fast rail network
+  with public transport to match; and subsidised daycare for working and serving families up to nine
+  kilometres from the border, the north paper's 0–9 km strip (rev 39). This page does not record the
+  two ceilings, and they were not checked against the north paper. `economic` +1,
+  `agricultural-protectionism` and `service-conditioned-citizenship`, held; periphery programmes stay
+  prose (`periphery-development`, retired).
 
 
 ### ביחד — Together · `opposition` · 1 / +2 / −2 · secular
@@ -5264,6 +5283,14 @@ Party-published unless marked. Statements and press are linked where they are us
   voters *"שלא מצאו בית"* on the right. By the party's figures about 20% of supporters who joined in two
   months came from Likud strongholds. Campaigning in a place is not a position on it; `security` +2
   and the row's tags, held.
+- **Read, and scored nothing (rev 324): חוק קרית שמונה, again.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): a national rehabilitation
+  zone in קריית שמונה, מטולה and שלומי, a full income-tax exemption for individuals on up to ₪1m a
+  year for a limited period, benefits for businesses, and a ₪400,000 housing loan for graduates and
+  those in needed professions that becomes a grant after seven years' residence. The exemption is the
+  law rev 49 read (four years, by הוראת שעה); the loan is not on this page, and the law's text was not
+  re-read for it. The survey gives the three-town law, not rev 105's plan widening it to a 12 km
+  confrontation zone (rev 134). The tax-cut decision above holds on its instrument, and `economic` 1
+  holds.
 
 
 ### הדמוקרטים — The Democrats · `opposition` · −2 / −1 / −3 · secular
@@ -5989,6 +6016,11 @@ All first-party unless marked. Listed so the next pass recognises a document ins
   read here is the publication he answers. `constitutionalist`, held; קהלת as the line is לזימי's
   of rev 258, now the leader's. A charge against unnamed partners scores no row, and the call for a
   larger list is a vote appeal.
+- **Read, and scored nothing (rev 324): the north and south.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): the largest existing tax credit
+  for confrontation-line residents in the north and arnona benefits like the Gaza envelope's, with no
+  full income-tax exemption; and, by the platform, jobs, education and higher education, health,
+  transport, culture and housing to make both regions attractive to families. Rev 288's north paper,
+  in summary; `economic` −2 holds.
 
 
 ### כחול לבן — Blue and White · `unaligned` · 0 / 2 / −2 · secular
@@ -8253,6 +8285,11 @@ First-party unless marked. Links to other rows' material are inline under Cross-
   נתניהו"*, in which נתניהו is *"בן ערובה בידי המשתמטים ובידי קומץ אנרכיסטים שפוגעים במפעל
   ההתיישבות"*. Turnout and an attack; a phrase is not a measure, and `anti-settler-violence` is not
   opened on it. The Speaker and *"חוק הנאשם"* post is rev 315's, above.
+- **Read, and scored nothing (rev 324): the north and south.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): in its answer to עמותת 121 the
+  party does not back a full income-tax exemption for the confrontation line and says other benefits
+  are due, without naming them. N12 adds פורר (#4) in June 2025, before the campaign, calling for the
+  state to subsidise development costs in the Negev and Galilee in full and for significant
+  incentives to move from the centre. The party's own answer names no measure; `economic` 2 holds.
 
 
 ### הציונות הדתית — Religious Zionist Party · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -9398,6 +9435,13 @@ rewriting its programme would be the thing to catch.
   before a plan for about 2,000 observers in Arab localities (under הליכוד; the announcement itself
   was not read), and by [ynet](https://www.ynet.co.il/news/elections2026/article/s1lqwrw3zx) (מורן אזולאי, 22.10.26 20:23 UTC, `articleBody` with `curl`) the
   two share the election-day war room. Campaign conduct; nothing scored.
+- **Read, and scored nothing (rev 324): a million more Jewish residents.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): a tax and
+  incentive environment for businesses and entrepreneurs in the Negev and Galilee, no commitment to a
+  full exemption for the confrontation line, a target of a million more Jewish residents, priority
+  and benefits for reservists and serving families, affordable housing, development subsidies and
+  grants for doctors, teachers and professionals who move there. The אדם pillar of *מייהדים את הנגב
+  והגליל* (revs 31 and 33), in summary; `reservist-focused`, held. The Judaization note under הרשימה
+  המשותפת keeps one holder, this row; that row's answer in the same survey is its opposite.
 
 
 ### עוצמה יהודית — Otzma Yehudit · `bibi` · 0 / 3 / 3 · religious_zionist
@@ -10703,6 +10747,11 @@ Linked where used above. Not linked above:
   running total), and arming farm outposts and the re-founded חומש is `pro-settlement` (held, rev
   189's farm-outpost reading). יוסי דגן, head of the Samaria regional council, is quoted; he is not on
   this list.
+- **Read, and scored nothing (rev 324): the north and south.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): wider tax benefits for the
+  confrontation line, with no full exemption; וסרלאוף (#3), the minister, in the Finance Committee for
+  the benefits the localities need, with שלומי as the case of tax benefits drawing residents; and a
+  share in the government's plans for the north and south and for *"הצמיחה הדמוגרפית"* there. A
+  minister's record, no measure; `economic` 0 holds.
 
 
 ### המפלגה הכלכלית — The Economic Party · `unaligned` · 1 / +2 / −2 · secular
@@ -11995,6 +12044,10 @@ housing, is under `economic`.
   [הארץ](https://www.haaretz.co.il/news/elections/2026-10-20/ty-article/.premium/000001a1-59d1-d9b7-abf3-fbd50e3a0000)
   (20.10.26, body supplied by the repo owner): *"קול לזליכה הוא קול ליאיר גולן"*. An attack from a
   rival; `unaligned` holds.
+- **Read, and scored nothing (rev 324): the north and south.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): significant, targeted tax
+  benefits for confrontation-line residents, against a full and blanket income-tax exemption, and a
+  commitment to strengthen settlement in the Negev and Galilee with no incentive or target named. No
+  measure; `economic` 1 holds.
 
 ### נעם לישראל — Noam for Israel · `bibi` · NULL / 3 / 3 · religious_zionist
 
@@ -13613,6 +13666,9 @@ Most links are given above, where each source is used; these are the rest.
   נגיד לו 'אמן' לכל דבר כמו סמוטריץ' ובן גביר, וכנראה שזה גם מה שמפריע לו איתנו"*, rev 316's *"לא
   יהיה פה צ'ק פתוח"* again; `bibi` and `on_ballot` TRUE hold. The internal polls N12 says נתניהו and
   סמוטריץ' received, with growing fear that וינטר misses the threshold, are not entered.
+- **Read, and scored nothing (rev 324):** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): *"המפלגה לא הציגה עמדה"* on a
+  confrontation-line tax exemption or on drawing new population to the Negev and Galilee. Nothing
+  to score.
 
 
 ### רע"ם — Ra'am · `opposition` · 0 / −2 / NULL · arab
@@ -13919,6 +13975,9 @@ housing-discrimination bill comes out 33–52, matching הארץ's 52–33 (revi
   trigger is not touched. The surplus-vote agreement with הרשימה המשותפת, expected in rev 238, is on
   הארץ's list of signed pairs ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-18/ty-article/.premium/000001a1-48cf-ddef-a5b7-dcffca5a0000), 18.10.26, body supplied by the repo owner); IDI's אסף שפירא notes the two did not sign in 2022,
   *"מסיבות פוליטיות"*.
+- **Read, and scored nothing (rev 324):** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): *"המפלגה לא הציגה עמדה"* on a
+  confrontation-line tax exemption or on drawing new population to the Negev and Galilee. Nothing
+  to score.
 
 
 ### הרשימה המשותפת — The Joint List · `opposition` · −3 / −3 / −3 · arab
@@ -14726,6 +14785,14 @@ supplied by the repo owner.
   its source. It names, for the first time, someone on the list behind what rev 310 had from unnamed
   sources, and it is still not the platform or a bill the list signs, so `anti-indicted-pm`'s trigger
   (rev 245) is not met.
+- **Read, and scored nothing (rev 324): against drawing new population.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): tax benefits for
+  the periphery on condition that they are given without discrimination against the Arab population,
+  and no full exemption for the confrontation line; and, in its answer to עמותת 121, opposition to a
+  policy aimed at bringing new population to the Negev and Galilee, the state to strengthen the
+  populations already there. `economic` −3 and the row's tags, held. The second line is the other side
+  of the Judaization note above, whose one holder is הציונות הדתית's *מייהדים* (whose million more
+  Jewish residents appear in the same survey); it is N12's paraphrase of an answer not read, and does
+  not name Jewish settlement. The note keeps one holder, and no dimension is opened.
 
 
 ### ש"ס — Shas · `bibi` · −2 / 1 / 2 · haredi
@@ -15213,6 +15280,10 @@ tag moved. Its ש"ס item is under `scholar-exemption-retained`. The rest:
   and presence, the +2 band's own ground; the prayer space is for those who want it, and nothing in it
   makes halakha a source of state law, which is the +3 question. Jewish content in state education is
   no tag of this row's (rev 259), and one campaign pledge does not open one.
+- **Read, and scored nothing (rev 324): the north and south.** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): wider tax benefits for the
+  north, with no full exemption; אזולאי (#2), in the Finance Committee in May 2026, for widening them
+  to every threatened locality and raising their rates; no position on drawing new population to the
+  Negev and Galilee. An MK in committee, no measure; `economic` −2 holds.
 
 ### יהדות התורה — United Torah Judaism · `bibi` · −2 / 1 / 2 · haredi
 
@@ -15847,6 +15918,8 @@ Every source is linked where it is used above.
   the election (under הציבור החרדי), and the haredi parties will not join in; an unnamed source in
   them: *"נתניהו יכול להבטיח כרצונו, אנחנו נעמוד על עקרונותינו בהסכם הקואליציוני"*. Unnamed and not
   assigned to either list; no position.
+- **Read, and scored nothing (rev 324):** N12's north-and-south survey ([N12](https://www.mako.co.il/news-israel-elections/2026/Article-6042809145261a1027.htm), 22.10.26, described under ישר): *"לא הציגה עמדה"* on a confrontation-line tax
+  exemption or on drawing new population to the Negev and Galilee. Nothing to score.
 
 
 ### הציבור החרדי — Haredi Public · `bibi` · −2 / NULL / +1 · haredi
@@ -17922,3 +17995,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-23 | revision 321 — **הדמוקרטים: one כאן live-page item (headless browser); link supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** גולן: some parties of the bloc *"שלא בטוח שניתן לסמוך עליהם"* may join פורום קהלת, *"לנוכח פרסומים בימים האחרונים"* on the bloc's commitment to repealing the overhaul laws, and the answer is *"דמוקרטים גדולים וחזקים"*. No party or publication named; the commitments on record are revs 308 and 314. `constitutionalist`, held; קהלת as the line is לזימי's of rev 258. A charge against unnamed partners scores no row. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-23 | revision 322 — **ישר, עוצמה יהודית: two ישר principles papers and two עוצמה יהודית posts (plain `curl`); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **ישר:** the welfare paper (a draft open for comment) and the bereaved-siblings paper, the twenty-seventh and twenty-eighth, each word for word its posts. Welfare: a *"חוקת רווחה"*, one coordinating body, more for weak authorities beside workfare and devolution, both halves of `economic` +1; not `welfare-state` (no formula, and nursing insurance is still *"נבחן"*); `service-conditioned-citizenship` held. Bereaved siblings: recognition in law and entitlements on the IDF-orphans model, grants only examined, no figure. Education alone of rev 320's three leads is still shown on no page. **עוצמה יהודית:** בן גביר calls the יועמ"שית's instruction to keep away from Negev demolitions *"בלתי חוקית"* and claims 19,000+ Negev structures demolished in his tenure; the land-enforcement tag stays declined, `judicial-overhaul` held. 11 Samaria localities, farm outposts and חומש among them, made eligible for weapons licences: `gun-rights` and `pro-settlement`, held. A fifth link, on 25 local policing units, is rev 313's. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-23 | revision 323 — **הליכוד, ישר, ביחד, הציונות הדתית, עמך ישראל: two N12 reports and two ynet reports (`curl`), a TheMarker column (body supplied by the repo owner) and the 62-second clip it rests on (machine transcript); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** on ערוץ 10 נתניהו says American aid will end, banking sanctions may come, and he has asked for a plan for an economy that gets around them; the blockchain line is the interviewer's, and the column's *"מטבעות קריפטו"* is not his word in the clip. No measure, no tag. By N12, Likud is preparing claims of fraud at Arab polling stations, with no evidence shown; with הציונות הדתית it announced about 2,000 observers there and shares an election-day war room. A second rabbi of וינטר's refused to press him. **ישר:** ynet reports drafts of the hundred-days plan (inquiry, term limits, conscription and sanctions, no money for schools outside the state system, repeal of the overhaul laws, an incapacity law, 24 ministries); every item matches a tag the row holds, and `state-commission-of-inquiry` stays refused. Campaign maps for ישר and ביחד, nothing scored. **עמך ישראל:** *"לא נגיד לו 'אמן' לכל דבר"*; `bibi` holds. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-24 | revision 324 — **thirteen rows: N12's survey of the lists on rebuilding the north and south, said to be checked by עמותת 121 (`articleBody` with `curl`; link supplied by the repo owner). Nothing scored, `seed.sql` unchanged.** Paraphrase throughout, no answer quoted; the answers to 121 were not read. Every list that states a position refuses a full income-tax exemption for the confrontation line except ביחד. **ביחד:** חוק קרית שמונה again (rev 49), with a ₪400,000 housing loan that becomes a grant, new to the page. **ישר:** tax-credit ceilings of 25% and 20% on the fence, not checked against the north paper; the 0–9 km daycare is rev 39's. **הציונות הדתית:** a million more Jewish residents, the אדם pillar (revs 31, 33). **הרשימה המשותפת:** against drawing new population to the Negev and Galilee, the opposite of that pillar, in paraphrase of an unread answer; the Judaization note keeps one holder and no dimension is opened. **הליכוד, עוצמה יהודית, ש"ס, ישראל ביתנו:** a government record, two MKs in the Finance Committee and a 2025 call by פורר; no measure. **הדמוקרטים, המילואימניקים והכלכלית:** held text restated. **יהדות התורה, רע"ם, עמך ישראל:** no position. Documentation only: nothing to verify on a database, and the suite was not run. |
