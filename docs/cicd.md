@@ -225,6 +225,17 @@ validate` (stages 2-7, on `voteball-test`), `Build, scan and push` (8-10, on `vo
 only group that allocates the heavy pod) and `Publish and trigger` (11-12, back on `voteball-test`).
 The twelve stages themselves are unchanged in name, order and condition.
 
+**Each of the two later groups opens with a `Pin to tested commit` stage** (added 2026-10-24, not
+numbered below because it does no pipeline work of its own). A group with its own `agent` clones the
+repository afresh, and in a *Pipeline script from SCM* job that clone takes the branch tip **at that
+moment**, not the commit the first group tested. So a push landing mid-build used to be built,
+scanned and pushed under the tested commit's tag without ever having been tested: on 2026-10-24
+`application-ci` tested `1b344c8`, re-cloned `8016ba5` in the build group, and tagged the images
+`1b344c8`. That time it was harmless — the only difference was a file no image copies — but in general it
+defeats the test gate. The pin stage checks out `GIT_COMMIT_SHA` (resolved in stage 6) and fails
+rather than build anything else. `test-ci-guards.sh` fails if an agent-owning group is added
+without one.
+
 ### 1. Trigger — GitHub webhook
 
 A push to `master` sends a webhook to `https://jenkins.<app_domain>/github-webhook/`. Jenkins verifies
@@ -373,8 +384,8 @@ versions, are suppressed — the Dockerfiles pin through `requirements.txt`, whi
 
 ### 5. Tests (new)
 
-The 314 tests in `services/{backend,worker}/tests/` (266 backend + 48 worker, verified locally on
-2026-08-24 via `python -m pytest -q` in each service — count them the same way rather than trusting
+The 319 tests in `services/{backend,worker}/tests/` (271 backend + 48 worker, read off the
+2026-10-24 `application-ci` console log's `N passed` lines — count them the same way rather than trusting
 this number, it drifts every time a test is added), run against a **real** Postgres — both
 `conftest.py` files `DROP TABLE ... CASCADE` and call `init_db()`, and were never sqlite-compatible.
 The `postgres` container in the CI pod template (`postgres:17-alpine`, the same major as RDS, `DB_SSLMODE=disable`) provides

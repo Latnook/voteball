@@ -424,6 +424,24 @@ pipeline {
                 expression { env.NO_CHANGELOG == 'true' } }   // G3, G3c
       } }
       stages {
+      stage('Pin to tested commit') {
+        steps {
+          // RE-CHECKOUT, FOUND 2026-10-24. A stage with its own `agent` clones the repo afresh, and
+          // in a Pipeline-from-SCM job that clone resolves */master to whatever the tip is NOW, not
+          // to the commit 'Resolve tag and account' tested and named. A push that lands mid-build
+          // therefore gets built and pushed under the tested commit's tag, without having been
+          // tested itself: application-ci tested 1b344c8, re-cloned 8016ba5 here, and tagged the
+          // images 1b344c8. Harmless that time (the only difference was a file no image copies),
+          // but it defeats the test gate in general. Check out the resolved SHA, and fail rather
+          // than build anything else.
+          sh '''
+            set -eu
+            : "${GIT_COMMIT_SHA:?GIT_COMMIT_SHA is empty -- Resolve tag and account must run first}"
+            git checkout -f -q "$GIT_COMMIT_SHA"
+            test "$(git rev-parse HEAD)" = "$GIT_COMMIT_SHA"
+          '''
+        }
+      }
       stage('Build images') {
         when { allOf {
           expression { env.ALREADY_BUILT != 'present' }
@@ -645,6 +663,18 @@ pipeline {
         expression { env.CHARTS_CHANGED == 'true' }
       } }
       stages {
+      stage('Pin to tested commit') {
+        steps {
+          // Same re-checkout trap as the identically named stage under 'Build, scan and push': this
+          // agent's clone is of the CURRENT tip, and the stages below run scripts/ci/* out of it.
+          sh '''
+            set -eu
+            : "${GIT_COMMIT_SHA:?GIT_COMMIT_SHA is empty -- Resolve tag and account must run first}"
+            git checkout -f -q "$GIT_COMMIT_SHA"
+            test "$(git rev-parse HEAD)" = "$GIT_COMMIT_SHA"
+          '''
+        }
+      }
 
       // Traceability. The brief requires that a CD build can identify the CI build, the git commit,
       // the image and the digest that produced it. The digest is the part that matters: a tag is a
