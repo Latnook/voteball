@@ -302,6 +302,17 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   silently drops it (`scripts/register-github-ci.sh` records this), so this page's old "signed `200`,
   unsigned `400`" test could not tell a working webhook from a broken one. On 2026-10-01 the first
   push after the 2.580.1 upgrade started `application-ci` within 20 seconds.
+
+  **Then check the versions the controller actually LOADED, not the ones the image carries** —
+  compare each `$JENKINS_HOME/plugins/<name>.jpi` manifest's `Plugin-Version` against the lock.
+  `JENKINS_HOME` is an EFS volume that outlives the pod, so the entrypoint finds the previous image's
+  plugins already there and decides by version whether to overwrite them, and its comparison is
+  wrong for some real pairs: on 2026-10-21 it ranked asm-api `9.11.1-226…` older than `9.11-224…`,
+  and the new image booted cleanly while still running the old plugin. The Dockerfile now renames
+  every baked plugin `*.jpi.override`, which forces the copy;
+  `scripts/tests/test-jenkins-plugin-lock.sh` fails if that rename is removed. Do not use
+  `copy_reference_file.log` to check: it still prints `SKIPPED … is older than installed` for a
+  forced plugin it then copies.
   **The controller runs Java 25 since 2026-10-01** (`jenkins/jenkins:2.580.1-jdk25`). Jenkins ends
   Java 21 support on or after 2027-09-30 and nags about it in the UI from a year out; Java 25 has
   been supported since LTS 2.541.1. Proven before it reached the cluster by booting the built image

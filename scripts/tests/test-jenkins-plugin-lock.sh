@@ -53,6 +53,13 @@ grep -qE 'jenkins-plugin-cli --plugin-file [^ ]*plugins\.lock\.txt' "$DOCKERFILE
   || fail "$DOCKERFILE must install from plugins.lock.txt. Installing plugins.txt re-resolves 'latest compatible' at build time, which is the whole problem the lock exists to solve."
 ok "the Dockerfile installs from plugins.lock.txt"
 
+# ...and forces those plugins over the persistent JENKINS_HOME. Without the .override suffix the
+# entrypoint compares versions and its comparison gets some real pairs wrong -- the 2026-10-21 bump
+# booted the new image still running the old asm-api, silently.
+grep -qE 'mv "\$f" "\$f\.override"' "$DOCKERFILE" \
+  || fail "$DOCKERFILE must rename the baked plugins to *.jpi.override. Without it the entrypoint keeps whatever version is already on the EFS-backed JENKINS_HOME whenever its versionLT() misjudges the pair, so a lock bump can deploy without taking effect."
+ok "the Dockerfile forces the baked plugins over JENKINS_HOME (.override)"
+
 # ---- 3. the lock records which base it was generated against ------------------------------------
 grep -q "^# Generated .* against ${base}$" "$LOCK" \
   || fail "$LOCK was not generated against the base the Dockerfile now pins ($base). Run ./scripts/jenkins/lock-plugins.sh and commit the result with the FROM change."
