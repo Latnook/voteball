@@ -11,6 +11,21 @@
 # not respond by unpinning. Run ./scripts/refresh-base-digests.sh, which re-resolves every base in
 # this repo, and commit the result; the policy and cadence are in docs/security.md.
 FROM nginxinc/nginx-unprivileged:alpine@sha256:b5047b9b76845eac124358373c6852377c52e4b05834a47647e955dd91cb8f1e
+
+# CVE-2026-111497 (HIGH): out-of-bounds write in the Brotli decoder. brotli-libs 1.2.0-r1 -> fixed in
+# 1.2.1-r0. Added 2026-10-24, when it turned the Trivy gate red with no change to this image.
+#
+# WHY A PATCH HERE AND NOT A DIGEST BUMP: ./scripts/refresh-base-digests.sh is the prescribed remedy
+# and does not fix this one. Measured 2026-10-24, the tag still resolves to the digest pinned above
+# and still ships 1.2.0-r1, while Alpine v3.24/main already carries 1.2.1-r0 (`apk policy
+# brotli-libs`). nginxinc has not rebuilt on the Alpine fix, so there is no newer base to move to.
+#
+# REMOVE THIS BLOCK once nginxinc/nginx-unprivileged:alpine ships brotli-libs >= 1.2.1-r0:
+#   docker run --rm --user 0 --entrypoint sh nginxinc/nginx-unprivileged:alpine -c 'apk info -v | grep -E "^brotli-"'
+# Leaving it in place after that costs a layer and silently pins nothing; it is not load-bearing then.
+USER 0
+RUN apk upgrade --no-cache brotli-libs
+USER 101
 COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
 # SEO assets. robots.txt and sitemap.xml carry a literal __SITE_URL__ that nginx rewrites from the
 # request Host (see nginx.conf); og-card.png is the 1200x630 link-preview image.

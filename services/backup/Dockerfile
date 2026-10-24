@@ -9,7 +9,7 @@
 # "quietly running a base nobody has looked at in four months" into a build that stops and asks. Do
 # not respond by unpinning. Run ./scripts/refresh-base-digests.sh, which re-resolves every base in
 # this repo, and commit the result; the policy and cadence are in docs/security.md.
-FROM postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+FROM postgres:17-alpine@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb
 # Unpinned deliberately -- see the hadolint --ignore DL3018 comment in Jenkinsfile-ci for why a
 # pinned Alpine package version is a time bomb, not a reproducibility win, in this project.
 # The apk upgrade is CVE-2026-14456 (HIGH, openssl DoS via unbounded memory growth in the QUIC
