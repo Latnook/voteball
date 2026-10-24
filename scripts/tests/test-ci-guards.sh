@@ -225,4 +225,22 @@ if [ -f "$JY" ]; then
   pass=$((pass+1))
 fi
 
+# Every agent after the first re-clones the repo, and that clone is of the branch tip at THAT moment,
+# not the commit the first agent tested and tagged (2026-10-24: tested 1b344c8, built 8016ba5, tagged
+# 1b344c8). Each later agent's first child stage must check out GIT_COMMIT_SHA. A new agent-owning
+# stage added without one is exactly this regression.
+JCI="Jenkinsfile-ci"
+later_agents="$(grep -cE "^[[:space:]]+agent \{ label '" "$JCI")"
+later_agents=$((later_agents - 1))
+unpinned="$(awk '
+  /^[[:space:]]+agent \{ label / { n++; if (n > 1) want = 1; next }
+  want && /stage\(/ { if ($0 !~ /stage\(.Pin to tested commit.\)/) bad++; want = 0 }
+  END { print bad + 0 }' "$JCI")"
+[ "$later_agents" -ge 1 ] || fail "expected Jenkinsfile-ci to allocate more than one agent; the pin check below has nothing to check."
+[ "$unpinned" = "0" ] || \
+  fail "$unpinned agent-owning stage(s) in Jenkinsfile-ci do not start with 'Pin to tested commit'. Without it, a push that lands mid-build is built and shipped under the tested commit's tag."
+grep -q 'git checkout -f -q "\$GIT_COMMIT_SHA"' "$JCI" || \
+  fail "'Pin to tested commit' no longer checks out \$GIT_COMMIT_SHA."
+pass=$((pass+1))
+
 echo "PASS: $pass assertions"

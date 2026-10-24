@@ -256,14 +256,16 @@ flowchart TD
         validate --> obsval["Observability Validation<br/>helm template + promtool<br/>alert-rule labels, ServiceMonitor ports,<br/>no colliding metric labels"]
         obsval --> scripttests["Script tests<br/>run-ci-suite.sh -- the pipeline's own guards<br/>run TWICE: jnlp (git) + python container"]
         scripttests --> lint["Lint / Static Analysis<br/>ruff + hadolint"]
-        lint --> tests["Tests<br/>314 pytest (266 backend + 48 worker)<br/>Postgres sidecar"]
+        lint --> tests["Tests<br/>319 pytest (271 backend + 48 worker)<br/>Postgres sidecar"]
         tests --> resolve["Resolve tag and account"]
         resolve --> built{"Already built?<br/>tag in ECR?"}
-        built -->|"no"| build["Build images<br/>rootless BuildKit x4"]
+        built -->|"no"| pinb["Pin to tested commit<br/>new agent: checkout GIT_COMMIT_SHA"]
+        pinb --> build["Build images<br/>rootless BuildKit x4"]
         build --> scan["Trivy scan<br/>fail on HIGH/CRITICAL<br/>all four images block"]
         scan --> push["Push to ECR<br/>skopeo, tag = commit SHA"]
-        built -->|"yes"| meta
-        push --> meta["Publish Metadata<br/>image-metadata.json + digest"]
+        built -->|"yes"| pinp
+        push --> pinp["Pin to tested commit<br/>new agent: checkout GIT_COMMIT_SHA"]
+        pinp --> meta["Publish Metadata<br/>image-metadata.json + digest"]
         meta --> chartonly{"Chart-only change?<br/>charts/** and not services/**"}
         chartonly -->|"yes"| relTag["read the tag already on release<br/>current-release-tag.sh"]
         relTag --> trigger
