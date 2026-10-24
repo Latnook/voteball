@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-10-21 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
+# Generated 2026-10-24 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -48,7 +48,7 @@ git:5.11.0
 git-client:6.6.1
 github:1.47.0
 github-api:1.330-492.v3941a_032db_2a_
-gson-api:2.14.0-201.v8eefe5515533
+gson-api:2.15.0-212.v085f60a_8093b_
 instance-identity:203.v15e81a_1b_7a_38
 ionicons-api:94.vcc3065403257
 jackson2-api:2.22.3-447.v6a_93ce7d2c82
@@ -87,7 +87,7 @@ pipeline-stage-tags-metadata:2.2293.v6e7193cec599
 plain-credentials:199.v9f8e1f741799
 plugin-util-api:7.1403.vd380b_c42e90c
 prism-api:1.30.0-741.v034eb_0b_0a_a_fa_
-prometheus:860.v532442b_44e9a_
+prometheus:868.v6d6068d136cc
 scm-api:728.vc30dcf7a_0df5
 script-security:1436.v1082791135e4
 snakeyaml-api:2.7-152.vc672728cf536
@@ -101,7 +101,7 @@ token-macro:477.vd4f0dc3cb_cf1
 variant:70.va_d9f17f859e0
 woodstox-core-api:7.3.0-16.v017f30ed004c
 workflow-aggregator:608.v67378e9d3db_1
-workflow-api:1413.v2ff1a_5e720fa_
+workflow-api:1429.v7a_1b_efb_a_f7c5
 workflow-basic-steps:1098.v808b_fd7f8cf4
 workflow-cps:4395.v738456a_5da_6b_
 workflow-durable-task-step:1479.v56e587f413a_7
