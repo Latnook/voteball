@@ -14,7 +14,10 @@
 terraform/voteball.tfvars
 terraform/terraform.tfstate*
 terraform/.terraform.tfstate.lock.info
+# Any saved plan (`terraform plan -out=...`, e.g. jenkins-<sha>.tfplan). Plans hold sensitive values in
+# plain text, and an untracked one also trips build-push-ecr.sh's dirty-tree guard.
 terraform/tfplan
+terraform/*.tfplan
 terraform/.terraform/
 # Written by scripts/find-latest-snapshot.sh before each apply; machine-specific, never committed.
 terraform/snapshot.auto.tfvars
