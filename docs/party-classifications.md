@@ -296,6 +296,30 @@ three other rows.** Recorded because this page's rule against inferring from abs
 nothing to follow and is therefore easy to treat as ceremony; here it would have produced a wrong
 number in a table meant to scope every future list audit.
 
+**The count against the ranges, 2026-10-29.** The count of the 26th Knesset vote ended on the
+evening of 29.10.26 ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-29/ty-article/000001a1-88d4-def7-adad-8afc90b10000), body supplied by the repo owner; the committee's own results site answers
+this page's machine with a 404, and the official publication is due by 4.11.26, so these are the
+completed count, not the certified result). 5,704,141 voted, 25,789 ballots were disqualified;
+opposition 67, `bibi` 53.
+
+| seats | rows | range |
+|---|---|---|
+| **27** | הליכוד | 25 — **exceeded by two** |
+| **21** | ישר | 30 |
+| **12** | ביחד | 20 |
+| **11** | הרשימה המשותפת | 10 — **exceeded by one** |
+| **8** | הדמוקרטים, רע"ם | 13, 10 |
+| **7** | עוצמה יהודית, ישראל ביתנו, יהדות התורה | 10 |
+| **6** | ש"ס, הציונות הדתית | 10 |
+| **0** | המילואימניקים והכלכלית (154,585 votes, about 2.72%), עמך ישראל (95,288, 1.68%), and every row the paper does not list | 6 |
+
+306,679 votes went to lists under the threshold. **Two ranges were too small**, and the ceiling was
+meant never to be: הליכוד's #26 גולדשמידט and #27 תדמור, and the Joint List's eleventh slot, are now
+seats a reading could have set aside as outside the range. Both names on הליכוד's side were already
+read on that row (revs 63, 100) and nothing turned on the cut. Who holds the Joint List's eleventh
+seat depends on how the slots close up after אבו שחאדה's withdrawal, which that row records as
+unresolved; it is not resolved here.
+
 **A joint filing has a MEASURE, and it is the junior partner's share of the realistic range.**
 Every CEC list attributes each slot to a registered party (`מטעם מפלגת …`). Reading that field inside
 the range across the eleven lists filed by 2026-09-08 produces a clean separation, and it is the
@@ -18292,3 +18316,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-28 | revision 330 — **six rows: the day after the vote, at 85.6% counted (הליכוד 26, ישר 21; המילואימניקים והכלכלית and עמך ישראל under the threshold): ynet's live page and an ynet report (`curl`), two N12 reports (`curl`; a third answered with a Radware block page and was not read) and three הארץ reports (bodies supplied by the repo owner); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** the party's post that the election was *"נגנבו"* by the Arab parties, with *"מאות עדויות וראיות"* sent to the police; no tag measures it. נתניהו: *"הרוב הציוני חייב להתעשת ולהתלכד"*. **ישר:** איזנקוט to the security chiefs, *"יש לעמוד איתן"*; the minority-government plan restated by two papers, `excludes-anti-zionist-parties` held on rev 169's reading. **הדמוקרטים:** גולן, *"ממשלת שינוי בשותפות עם אזרחי ישראל הערבים"*; `jewish-arab-partnership`, held. **הרשימה המשותפת:** ג'בארין and טיבי offer to help oust נתניהו; held. **יהדות התורה:** אשר's office relays נתניהו's message that he will keep the coalition parties; the list commits to nothing, and `bibi` holds on the owner's decision. **ש"ס:** an unnamed source, the party stays in the bloc. Seven sources with no party acting were not entered: N12 on the President, the war-hit cities and the double envelopes, the President's post on X, and הארץ's column, its count of the next Knesset's make-up and its account of the mandate procedure. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-28 | revision 331 — **הרשימה המשותפת: light-theme logo → the Wikimedia Commons vector; no axis moved, no tag added.** Link supplied by the repo owner. Same artwork as the self-hosted `/logos/joint-list-2026-light.png` (teal wordmark, the four stripes), now a vector on transparency instead of a crop of an fbcdn JPEG, so it is sharp at any size; the teal is the file's own `#06aacd`, slightly brighter than the JPEG's. `logo_url` repointed and the PNG deleted. Dark mode is unchanged — `DARK_VARIANT_LOGOS` still serves the teal tile `joint-list-2026.png`. `test-logo-assets.sh` green |
 | 2026-10-29 | revision 332 — **two rows: הארץ's count of נתניהו's election-day posts (body supplied by the repo owner), his post on X (fxtwitter); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** 72 of 146 posts against the vote in Arab society, *"גונבים את הבחירות"*, the keys-to-עבאס video; 775 complaints and a paid monitoring apparatus; a campaign device, no tag. **עוצמה יהודית:** בן גביר's sponsored ad in כפר קאסם, *"אל תתנו להם לנצח!!"*; no tag. Not entered, no party acting: יאיר נתניהו's 160 posts (not a candidate; his linked post is media with no text), ערוץ 14's headlines and פילבר's exit poll, עמית סגל and מוטי קסטל, the Telegram and WhatsApp groups, and the Negev arrests over paying for רע"ם votes (the police acting, not the party; the calls to disqualify its ballots are unnamed). The Instagram reel was not opened; its line is quoted from הארץ. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-29 | revision 333 — **the completed count, recorded in Conventions beside the realistic ranges: הליכוד 27, ישר 21, ביחד 12, הרשימה המשותפת 11, הדמוקרטים and רע"ם 8, עוצמה יהודית, ישראל ביתנו and יהדות התורה 7, ש"ס and הציונות הדתית 6; opposition 67, `bibi` 53. Nothing scored, `seed.sql` unchanged.** One הארץ report (body supplied by the repo owner); the committee's results site was given by the repo owner and answers this page's machine (a Romanian IP) with a 404 through `curl` and a headless browser, so the official figures were not read; their publication is due by 4.11.26. המילואימניקים והכלכלית (154,585, about 2.72%) and עמך ישראל (95,288, 1.68%) are under the threshold. Two rows ran past their range, הליכוד (27 of 25) and הרשימה המשותפת (11 of 10); the Likud names at #26 and #27 were already read, and the Joint List's eleventh seat waits on the unresolved close-up after אבו שחאדה's withdrawal. Results, not positions. Documentation only: nothing to verify on a database, and the suite was not run. |
