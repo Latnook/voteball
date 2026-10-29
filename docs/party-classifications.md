@@ -296,29 +296,44 @@ three other rows.** Recorded because this page's rule against inferring from abs
 nothing to follow and is therefore easy to treat as ceremony; here it would have produced a wrong
 number in a table meant to scope every future list audit.
 
-**The count against the ranges, 2026-10-29.** The count of the 26th Knesset vote ended on the
-evening of 29.10.26 ([הארץ](https://www.haaretz.co.il/news/elections/2026-10-29/ty-article/000001a1-88d4-def7-adad-8afc90b10000), body supplied by the repo owner; the committee's own results site answers
-this page's machine with a 404, and the official publication is due by 4.11.26, so these are the
-completed count, not the certified result). 5,704,141 voted, 25,789 ballots were disqualified;
-opposition 67, `bibi` 53.
+**The count against the ranges, 2026-10-29.** The count of the 26th Knesset vote, from the
+committee's own [results page](https://votes26.bechirot.gov.il/) (*"תוצאות נכון ל- 29/10/2026
+19:58"*, 12,899 polling stations; the page answers this machine's requests with a 404 from an Israeli
+IP as well, so its text was supplied by the repo owner). It gives votes, not seats; the seats are
+[הארץ](https://www.haaretz.co.il/news/elections/2026-10-29/ty-article/000001a1-88d4-def7-adad-8afc90b10000)'s (body supplied by the repo owner). The certified result is due by 4.11.26. 7,331,981 eligible,
+5,704,141 voted (77.8%), 5,678,352 valid and 25,789 disqualified; the threshold, 3.25% of the valid
+vote, is 184,546. Opposition 67, `bibi` 53.
 
-| seats | rows | range |
-|---|---|---|
-| **27** | הליכוד | 25 — **exceeded by two** |
-| **21** | ישר | 30 |
-| **12** | ביחד | 20 |
-| **11** | הרשימה המשותפת | 10 — **exceeded by one** |
-| **8** | הדמוקרטים, רע"ם | 13, 10 |
-| **7** | עוצמה יהודית, ישראל ביתנו, יהדות התורה | 10 |
-| **6** | ש"ס, הציונות הדתית | 10 |
-| **0** | המילואימניקים והכלכלית (154,585 votes, about 2.72%), עמך ישראל (95,288, 1.68%), and every row the paper does not list | 6 |
+| seats | row | votes | % | range |
+|---|---|---|---|---|
+| **27** | הליכוד | 1,164,494 | 20.51 | 25 — **exceeded by two** |
+| **21** | ישר | 911,796 | 16.06 | 30 |
+| **12** | ביחד | 530,253 | 9.34 | 20 |
+| **11** | הרשימה המשותפת | 499,878 | 8.80 | 10 — **exceeded by one** |
+| **8** | הדמוקרטים | 365,733 | 6.44 | 13 |
+| **7** | ישראל ביתנו | 336,838 | 5.93 | 10 |
+| **8** | רע"ם | 336,275 | 5.92 | 10 |
+| **7** | עוצמה יהודית | 325,650 | 5.73 | 10 |
+| **7** | יהדות התורה | 312,241 | 5.50 | 10 |
+| **6** | ש"ס | 298,881 | 5.26 | 10 |
+| **6** | הציונות הדתית | 289,181 | 5.09 | 10 |
+| **0** | המילואימניקים והכלכלית | 154,585 | 2.72 | 6 |
+| **0** | עמך ישראל | 95,288 | 1.68 | 6 |
+| **0** | הציבור החרדי | 10,563 | 0.19 | — |
+| **0** | נעם לישראל | 9,876 | 0.17 | 6 |
+| **0** | ישראל תחילה | 953 | 0.02 | — |
+| **0** | כחול לבן | 43 | 0.00 | 6 |
 
-306,679 votes went to lists under the threshold. **Two ranges were too small**, and the ceiling was
-meant never to be: הליכוד's #26 גולדשמידט and #27 תדמור, and the Joint List's eleventh slot, are now
-seats a reading could have set aside as outside the range. Both names on הליכוד's side were already
-read on that row (revs 63, 100) and nothing turned on the cut. Who holds the Joint List's eleventh
-seat depends on how the slots close up after אבו שחאדה's withdrawal, which that row records as
-unresolved; it is not resolved here.
+306,679 votes went to the 26 lists under the threshold. **רע"ם has eight seats on fewer votes than
+ישראל ביתנו's seven** (563 fewer), and ש"ס six where a straight division of the 120 gives each seven:
+the page's arithmetic, not the committee's, finds that a surplus agreement with רע"ם in it produces
+הארץ's split whoever the partner was, and the agreements themselves were not read. כחול לבן's 43
+votes come after its withdrawal (rev 304); `on_ballot` FALSE stands. **Two ranges were too small**,
+and the ceiling was meant never to be: הליכוד's #26 גולדשמידט and #27 תדמור, and the Joint List's
+eleventh slot, are now seats a reading could have set aside as outside the range. Both names on
+הליכוד's side were already read on that row (revs 63, 100) and nothing turned on the cut. Who holds
+the Joint List's eleventh seat depends on how the slots close up after אבו שחאדה's withdrawal, which
+that row records as unresolved; it is not resolved here.
 
 **A joint filing has a MEASURE, and it is the junior partner's share of the realistic range.**
 Every CEC list attributes each slot to a registered party (`מטעם מפלגת …`). Reading that field inside
@@ -18317,3 +18332,4 @@ time is in git history — `git log -S'revision N' -- docs/party-classifications
 | 2026-10-28 | revision 331 — **הרשימה המשותפת: light-theme logo → the Wikimedia Commons vector; no axis moved, no tag added.** Link supplied by the repo owner. Same artwork as the self-hosted `/logos/joint-list-2026-light.png` (teal wordmark, the four stripes), now a vector on transparency instead of a crop of an fbcdn JPEG, so it is sharp at any size; the teal is the file's own `#06aacd`, slightly brighter than the JPEG's. `logo_url` repointed and the PNG deleted. Dark mode is unchanged — `DARK_VARIANT_LOGOS` still serves the teal tile `joint-list-2026.png`. `test-logo-assets.sh` green |
 | 2026-10-29 | revision 332 — **two rows: הארץ's count of נתניהו's election-day posts (body supplied by the repo owner), his post on X (fxtwitter); links supplied by the repo owner. Nothing scored, `seed.sql` unchanged.** **הליכוד:** 72 of 146 posts against the vote in Arab society, *"גונבים את הבחירות"*, the keys-to-עבאס video; 775 complaints and a paid monitoring apparatus; a campaign device, no tag. **עוצמה יהודית:** בן גביר's sponsored ad in כפר קאסם, *"אל תתנו להם לנצח!!"*; no tag. Not entered, no party acting: יאיר נתניהו's 160 posts (not a candidate; his linked post is media with no text), ערוץ 14's headlines and פילבר's exit poll, עמית סגל and מוטי קסטל, the Telegram and WhatsApp groups, and the Negev arrests over paying for רע"ם votes (the police acting, not the party; the calls to disqualify its ballots are unnamed). The Instagram reel was not opened; its line is quoted from הארץ. Documentation only: nothing to verify on a database, and the suite was not run. |
 | 2026-10-29 | revision 333 — **the completed count, recorded in Conventions beside the realistic ranges: הליכוד 27, ישר 21, ביחד 12, הרשימה המשותפת 11, הדמוקרטים and רע"ם 8, עוצמה יהודית, ישראל ביתנו and יהדות התורה 7, ש"ס and הציונות הדתית 6; opposition 67, `bibi` 53. Nothing scored, `seed.sql` unchanged.** One הארץ report (body supplied by the repo owner); the committee's results site was given by the repo owner and answers this page's machine (a Romanian IP) with a 404 through `curl` and a headless browser, so the official figures were not read; their publication is due by 4.11.26. המילואימניקים והכלכלית (154,585, about 2.72%) and עמך ישראל (95,288, 1.68%) are under the threshold. Two rows ran past their range, הליכוד (27 of 25) and הרשימה המשותפת (11 of 10); the Likud names at #26 and #27 were already read, and the Joint List's eleventh seat waits on the unresolved close-up after אבו שחאדה's withdrawal. Results, not positions. Documentation only: nothing to verify on a database, and the suite was not run. |
+| 2026-10-29 | revision 334 — **revision 333's count re-read against the committee's own results page (text supplied by the repo owner; the page still answers this machine with a 404 from an Israeli IP). Every vote total agrees with הארץ; the table in Conventions now carries votes and percentages for every row, the threshold (184,546) and turnout (77.8%). Nothing scored, `seed.sql` unchanged.** The page gives no seats, so הארץ's stay. רע"ם's eighth seat on 563 fewer votes than ישראל ביתנו's seven is what any surplus agreement including רע"ם produces (the page's own arithmetic; the agreements were not read). כחול לבן drew 43 votes after withdrawing; `on_ballot` FALSE stands. Results, not positions. Documentation only: nothing to verify on a database, and the suite was not run. |
