@@ -139,7 +139,7 @@ resource "helm_release" "jenkins_support" {
 # could drift apart silently -- a maintainer bumping only `version` would get a successful apply
 # that installs nothing new.
 locals {
-  jenkins_chart_version = "5.9.64" # verified via `helm search repo jenkins/jenkins --versions` on 2026-10-01 (chart app v2.568.3; the controller actually runs ci/jenkins/Dockerfile's base, 2.580.1)
+  jenkins_chart_version = "5.9.64" # verified via `helm search repo jenkins/jenkins --versions` on 2026-10-01 (chart app v2.568.3; the controller actually runs ci/jenkins/Dockerfile's base, 2.580.2)
 }
 
 # ---- Jenkins itself ----

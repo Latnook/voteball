@@ -134,7 +134,7 @@ has drifted:
 | external-dns | 1.23.0 (app v0.23.0) | 2026-10-01 |
 | metrics-server | 3.14.0 | 2026-10-01 |
 | Node Termination Handler | 0.21.0 | 2026-10-01 |
-| Jenkins | 5.9.64 (controller image: Jenkins 2.580.1 on Java 25, see below) | 2026-10-01 |
+| Jenkins | 5.9.64 (controller image: Jenkins 2.580.2 on Java 25, see below) | 2026-10-01 |
 | ECK operator | 3.5.0 | 2026-10-01 |
 
 **kube-prometheus-stack: helm does NOT upgrade its CRDs.** They live in `charts/crds/crds/`, which
@@ -313,7 +313,12 @@ EC2 host needed, but two things still age on their own schedule and nothing aler
   `scripts/tests/test-jenkins-plugin-lock.sh` fails if that rename is removed. Do not use
   `copy_reference_file.log` to check: it still prints `SKIPPED … is older than installed` for a
   forced plugin it then copies.
-  **The controller runs Java 25 since 2026-10-01** (`jenkins/jenkins:2.580.1-jdk25`). Jenkins ends
+  **A published Jenkins security advisory does not wait for the quarterly pass.** 2.580.2 went in on
+  2026-11-02, ahead of schedule, because 2.580.1 was affected by the 2026-10-28 advisory (15 core
+  vulnerabilities, 13 rated high).
+
+  **The controller runs Java 25 since 2026-10-01** (`jenkins/jenkins:2.580.2-jdk25` today; the move
+  itself happened on 2.580.1). Jenkins ends
   Java 21 support on or after 2027-09-30 and nags about it in the UI from a year out; Java 25 has
   been supported since LTS 2.541.1. Proven before it reached the cluster by booting the built image
   locally against the real `ci/jenkins/jenkins.yaml` with dummy secrets: all plugins active, both

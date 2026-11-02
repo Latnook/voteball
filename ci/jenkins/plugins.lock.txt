@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-10-24 against jenkins/jenkins:2.580.1-jdk25@sha256:42fc298cdafa2683dddde9a7ccdce4058f771b1ec56c2423dbfca82f010a455f
+# Generated 2026-11-02 against jenkins/jenkins:2.580.2-jdk25@sha256:415ab90d4e3b25148f7191bc04f455a20817d6c4c3b0a98f6c6b0da4877f7081
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -32,11 +32,11 @@ bootstrap5-api:5.3.8-1048.va_c299057e35c
 bouncycastle-api:2.30.1.86.2-310.v4655f6742752
 branch-api:2.1303.v9f3b_95dc329d
 caffeine-api:3.3.1-214.v18eb_56b_34920
-checks-api:422.vc7e8b_51488c6
-cloudbees-folder:6.1106.v3a_d9a_6d2465e
+checks-api:434.va_a_3dd79d7723
+cloudbees-folder:6.1107.v31f8955765c8
 commons-lang3-api:3.21.0-122.v6a_ea_4fd34049
 commons-text-api:1.15.0-218.va_61573470393
-configuration-as-code:2136.veb_3a_554550b_f
+configuration-as-code:2144.ve8c697101488
 credentials:1514.vb_01eb_014e7d4
 credentials-binding:728.v902a_273b_8947
 dark-theme:652.vea_da_dfea_e769
@@ -51,7 +51,7 @@ github-api:1.330-492.v3941a_032db_2a_
 gson-api:2.15.0-212.v085f60a_8093b_
 instance-identity:203.v15e81a_1b_7a_38
 ionicons-api:94.vcc3065403257
-jackson2-api:2.22.3-447.v6a_93ce7d2c82
+jackson2-api:2.22.4-449.v4ee9f4ec4123
 jackson3-api:3.2.4-103.vf5a_b_3f4ea_cec
 jackson-annotations2-api:2.22-19.v10a_a_582ea_26e
 jakarta-activation-api:2.1.4-1
@@ -60,11 +60,11 @@ jakarta-xml-bind-api:4.0.9-19.v2b_a_5b_44d9a_1c
 javax-activation-api:1.2.0-8
 jaxb:2.3.9-143.v5979df3304e6
 job-dsl:3732.v9a_c49a_61a_313
-joda-time-api:2.15.0-208.v6b_084e7a_d9f0
+joda-time-api:2.15.1-211.ve499f52b_da_33
 jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
-junit:1442.vb_b_a_467df2767
+junit:1456.vdb_4425ca_0d4d
 kubernetes:4560.vc25b_83890c34
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
@@ -102,11 +102,11 @@ variant:70.va_d9f17f859e0
 woodstox-core-api:7.3.0-16.v017f30ed004c
 workflow-aggregator:608.v67378e9d3db_1
 workflow-api:1429.v7a_1b_efb_a_f7c5
-workflow-basic-steps:1098.v808b_fd7f8cf4
-workflow-cps:4395.v738456a_5da_6b_
+workflow-basic-steps:1129.v60e3c7e6654d
+workflow-cps:4400.v300cf4f6cef5
 workflow-durable-task-step:1479.v56e587f413a_7
-workflow-job:1609.v8926e7962024
+workflow-job:1622.vc41c189cb_e5f
 workflow-multibranch:842.v3a_b_59b_57b_e6e
 workflow-scm-step:487.v41313a_96b_65d
 workflow-step-api:724.v538c2362b_dfb_
-workflow-support:1015.v785e5a_b_b_8b_22
+workflow-support:1028.vc22910142650
