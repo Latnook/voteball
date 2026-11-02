@@ -23,8 +23,13 @@ FROM nginxinc/nginx-unprivileged:alpine@sha256:b5047b9b76845eac124358373c6852377
 # REMOVE THIS BLOCK once nginxinc/nginx-unprivileged:alpine ships brotli-libs >= 1.2.1-r0:
 #   docker run --rm --user 0 --entrypoint sh nginxinc/nginx-unprivileged:alpine -c 'apk info -v | grep -E "^brotli-"'
 # Leaving it in place after that costs a layer and silently pins nothing; it is not load-bearing then.
+#
+# CVE-2026-92392 (HIGH): use-after-free in curl's HTTP/2 upload. curl and libcurl 8.22.0-r0 -> fixed
+# in 8.23.0-r0. Added 2026-11-02, for the same reason and with the same measurement: the tag still
+# resolves to the digest above and ships 8.22.0-r0, while Alpine v3.24 already carries 8.23.0-r0.
+# REMOVE both names once the base ships curl >= 8.23.0-r0 (same check, grep -E "^(lib)?curl-").
 USER 0
-RUN apk upgrade --no-cache brotli-libs
+RUN apk upgrade --no-cache brotli-libs curl libcurl
 USER 101
 COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
 # SEO assets. robots.txt and sitemap.xml carry a literal __SITE_URL__ that nginx rewrites from the
