@@ -139,21 +139,19 @@ const DARK_VARIANT_LOGOS = new Map([
 //   python3 -c "from PIL import Image; im=Image.open('/tmp/c.png'); b=im.split()[3].getbbox(); \
 //               print(max(b[2]-b[0], b[3]-b[1]) / 256)"
 //
-// Brighton's crest spans 0.715 of its 2084x2084 canvas (alpha bbox 300,310 -> 1783,1774) while every
-// other Premier League crest spans 1.000, which is the whole reason it looked small. The file is a
-// PNG wrapped in <svg><image>, so the padding is baked into the raster and no viewBox change to the
-// upstream URL can reach it; scaling at render time is the cheapest fix that keeps Wikimedia as the
-// source of truth. If a padded crest is ever self-hosted pre-cropped instead, remove its entry here
-// or the two corrections multiply.
+// A factor only holds while the upstream file does. Brighton's crest spanned 0.715 of its canvas and
+// carried 1.4 here until Wikimedia replaced that padded PNG-in-SVG with a true vector spanning 1.000
+// (measured 2026-11-02), at which point the same factor made it too big. Re-measure when a listed
+// logo suddenly looks wrong. If a padded crest is ever self-hosted pre-cropped instead, remove its
+// entry here or the two corrections multiply.
 const PADDED_CRESTS = new Map([
-  ['Brighton & Hove Albion', 1.4],
-  // The first PARTY here, and the reason the factor has to be measured rather than eyeballed: every
+  // A PARTY, and the reason the factor has to be measured rather than eyeballed: every
   // other party wordmark in the grid spans 1.000 of its own canvas (Shas 0.984 and El HaDegel 0.937
   // are the only ones under it), so ביחד's file at 0.906 wide x 0.781 tall would have been the one
   // logo rendering visibly smaller than all fourteen of its neighbours. .logo-wide is far wider than
   // it is tall and this wordmark is wider still (3.11:1 file, 3.61:1 artwork), so object-fit fits it
   // by WIDTH -- which is why the horizontal span is the one that decides the factor here and the
-  // vertical padding rides along. Same formula as Brighton's, same way of measuring it.
+  // vertical padding rides along. Same formula, same way of measuring it, as described above.
   ['Together', 1.1],
 ]);
 
