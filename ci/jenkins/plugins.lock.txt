@@ -22,7 +22,7 @@
 # lock-plugins.sh header says how, and scripts/tests/test-jenkins-plugin-lock.sh fails the build if
 # this file drifts from plugins.txt's declared set.
 #
-# Generated 2026-11-02 against jenkins/jenkins:2.580.2-jdk25@sha256:415ab90d4e3b25148f7191bc04f455a20817d6c4c3b0a98f6c6b0da4877f7081
+# Generated 2026-11-08 against jenkins/jenkins:2.580.2-jdk25@sha256:415ab90d4e3b25148f7191bc04f455a20817d6c4c3b0a98f6c6b0da4877f7081
 #
 antisamy-markup-formatter:173.v680e3a_b_69ff3
 apache-httpcomponents-client-4-api:4.5.14-269.vfa_2321039a_83
@@ -32,11 +32,11 @@ bootstrap5-api:5.3.8-1048.va_c299057e35c
 bouncycastle-api:2.30.1.86.2-310.v4655f6742752
 branch-api:2.1303.v9f3b_95dc329d
 caffeine-api:3.3.1-214.v18eb_56b_34920
-checks-api:434.va_a_3dd79d7723
+checks-api:438.v9fcc0f0e2013
 cloudbees-folder:6.1107.v31f8955765c8
 commons-lang3-api:3.21.0-122.v6a_ea_4fd34049
 commons-text-api:1.15.0-218.va_61573470393
-configuration-as-code:2144.ve8c697101488
+configuration-as-code:2147.v8a_8d38668c72
 credentials:1514.vb_01eb_014e7d4
 credentials-binding:728.v902a_273b_8947
 dark-theme:652.vea_da_dfea_e769
@@ -64,14 +64,14 @@ joda-time-api:2.15.1-211.ve499f52b_da_33
 jquery3-api:3.7.1-687.v68d468e40b_30
 json-api:20260814-226.v20f9685d642c
 json-path-api:3.0.0-218.vcd4dd1355de2
-junit:1456.vdb_4425ca_0d4d
+junit:1458.v38661c0638e2
 kubernetes:4560.vc25b_83890c34
 kubernetes-client-api:7.3.1-256.v788a_0b_787114
 kubernetes-credentials:207.v492f58828b_ed
 mailer:534.v1b_36f5864073
 metrics:4.2.37-494.v06f9a_939d33a_
-mina-sshd-api-common:2.19.0-192.v2b_a_7b_2c1dc71
-mina-sshd-api-core:2.19.0-192.v2b_a_7b_2c1dc71
+mina-sshd-api-common:2.20.1-199.v8ce76b_c93542
+mina-sshd-api-core:2.20.1-199.v8ce76b_c93542
 okhttp-api:5.5.0-242.v1482d48d3ea_3
 pipeline-build-step:601.v6d4c6d1a_9dc7
 pipeline-graph-analysis:254.v0f63a_a_447dca_
@@ -103,7 +103,7 @@ woodstox-core-api:7.3.0-16.v017f30ed004c
 workflow-aggregator:608.v67378e9d3db_1
 workflow-api:1429.v7a_1b_efb_a_f7c5
 workflow-basic-steps:1129.v60e3c7e6654d
-workflow-cps:4400.v300cf4f6cef5
+workflow-cps:4403.v471713a_cea_19
 workflow-durable-task-step:1479.v56e587f413a_7
 workflow-job:1622.vc41c189cb_e5f
 workflow-multibranch:842.v3a_b_59b_57b_e6e
