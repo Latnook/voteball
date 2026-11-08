@@ -151,6 +151,9 @@ GIT_GROUP=(
   # hardening (security headers, strict CSP, ALB TLS policy, seccomp). bash + grep/awk only --
   # confirmed with python3, git, helm, aws, terraform, docker all shimmed to exit 127.
   test-hardening.sh
+  # Greps scripts/** and both Jenkinsfiles for `producer | grep -q` (a pipefail race that reports a
+  # match as a miss). bash + grep + find only; here for the same reason as test-hardening.sh.
+  test-no-pipe-to-grep-q.sh
 )
 
 # Excluded, each for a tool no container in the build pod carries. These still run by hand.

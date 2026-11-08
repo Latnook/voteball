@@ -79,7 +79,7 @@ check() {
       code="$(printf '%s' "$out" | awk 'NR==1{print $1; exit}')"
       # An empty $want means "200 is enough" -- used for the HTML root, which has no JSON key to
       # match on.
-      if [ "$code" = "200" ] && { [ -z "$want" ] || printf '%s' "$out" | grep -q "$want"; }; then
+      if [ "$code" = "200" ] && { [ -z "$want" ] || grep -q -- "$want" <<<"$out"; }; then
         echo "smoke: OK   ${path} (${description})"
         return 0
       fi

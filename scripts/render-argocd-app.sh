@@ -123,7 +123,7 @@ RENDERED="$(sed \
 # Fail closed on any placeholder the template gained that this script does not know about. Without
 # this, a new ${...} would reach kubectl verbatim: ArgoCD would accept the Application and then behave
 # as though the field were misconfigured, which points at ArgoCD rather than at this script.
-if printf '%s' "$RENDERED" | grep -q '\${'; then
+if grep -q '\${' <<<"$RENDERED"; then
   echo "ERROR: unsubstituted placeholder left in the rendered manifest:" >&2
   printf '%s' "$RENDERED" | grep -n '\${' >&2
   echo "       Teach scripts/render-argocd-app.sh about it before applying." >&2

@@ -65,7 +65,7 @@ if [ "${FORCE_ROTATE:-0}" != "1" ]; then
   if [ "$aws_rc" -ne 0 ]; then
     # ResourceNotFoundException is a legitimate "not seeded yet" -- every other failure is unknown
     # state, and unknown state must not fall through to the branch that rotates credentials.
-    if printf '%s' "$EXISTING" | grep -q 'ResourceNotFoundException'; then
+    if grep -q 'ResourceNotFoundException' <<<"$EXISTING"; then
       echo "${SECRET_ID} does not exist yet -- seeding."
     else
       echo "ERROR: could not read ${SECRET_ID} to decide whether it is already seeded." >&2

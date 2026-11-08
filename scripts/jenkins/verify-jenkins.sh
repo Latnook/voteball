@@ -75,20 +75,20 @@ done
 
 # The security claim, asserted rather than documented: CD may not write to the app namespace.
 if kubectl auth can-i patch deployments \
-     --as=system:serviceaccount:ci:jenkins-cd-agent -n devops-app 2>/dev/null | grep -q '^yes'; then
+     --as=system:serviceaccount:ci:jenkins-cd-agent -n devops-app 2>/dev/null | grep '^yes' >/dev/null; then
   bad "jenkins-cd-agent CAN patch deployments in devops-app -- it must be read-only"
 else
   ok "jenkins-cd-agent cannot write to devops-app (ArgoCD is the only applier)"
 fi
 kubectl auth can-i list pods \
-  --as=system:serviceaccount:ci:jenkins-cd-agent -n devops-app 2>/dev/null | grep -q '^yes' \
+  --as=system:serviceaccount:ci:jenkins-cd-agent -n devops-app 2>/dev/null | grep '^yes' >/dev/null \
   && ok "jenkins-cd-agent can read devops-app for evidence and diagnostics" \
   || bad "jenkins-cd-agent cannot read devops-app"
 
 echo
 echo "=== helm list -n ci ==="
 helm list -n ci
-helm list -n ci -q | grep -qx jenkins && ok "the jenkins release is installed" || bad "no jenkins release"
+helm list -n ci -q | grep -x jenkins >/dev/null && ok "the jenkins release is installed" || bad "no jenkins release"
 
 echo
 echo "=== Jenkins API: job list and numExecutors (needs JENKINS_ADMIN_USER/JENKINS_ADMIN_PASSWORD) ==="

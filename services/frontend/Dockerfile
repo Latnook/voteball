@@ -28,8 +28,15 @@ FROM nginxinc/nginx-unprivileged:alpine@sha256:b5047b9b76845eac124358373c6852377
 # in 8.23.0-r0. Added 2026-11-02, for the same reason and with the same measurement: the tag still
 # resolves to the digest above and ships 8.22.0-r0, while Alpine v3.24 already carries 8.23.0-r0.
 # REMOVE both names once the base ships curl >= 8.23.0-r0 (same check, grep -E "^(lib)?curl-").
+#
+# Added 2026-11-08, same measurement again (the base digest is still the newest for the tag):
+#   CVE-2026-113351, -115506, -117610, -118370 (HIGH, DoS): libexpat 2.9.0-r0 -> fixed in 2.10.0-r0.
+#   CVE-2026-107891 (HIGH, code execution via regcomp): musl, musl-utils 1.2.6-r2 -> fixed in 1.2.6-r3.
+#   CVE-2026-85091 (HIGH, heap overflow in gz_vacate): zlib 1.3.2-r0 -> fixed in 1.3.2-r1. Alpine
+#   v3.24 now carries 1.4-r0, so that is what the upgrade installs.
+# REMOVE each once the base ships it (grep -E "^(libexpat|musl|musl-utils|zlib)-").
 USER 0
-RUN apk upgrade --no-cache brotli-libs curl libcurl
+RUN apk upgrade --no-cache brotli-libs curl libcurl libexpat musl musl-utils zlib
 USER 101
 COPY index.html results.html admin.html vote.js results.js admin.js analytics.js style.css i18n.js theme.js logos.js /usr/share/nginx/html/
 # SEO assets. robots.txt and sitemap.xml carry a literal __SITE_URL__ that nginx rewrites from the
