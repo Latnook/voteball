@@ -8,7 +8,7 @@
 # "quietly running a base nobody has looked at in four months" into a build that stops and asks. Do
 # not respond by unpinning. Run ./scripts/refresh-base-digests.sh, which re-resolves every base in
 # this repo, and commit the result; the policy and cadence are in docs/security.md.
-FROM python:3.12-slim@sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30
+FROM python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
 # Debian security updates, before anything else. The base image lags the security feed by design, and
 # CI's Trivy gate is blocking on CRITICAL,HIGH with --ignore-unfixed -- which means a base-package CVE
 # starts failing every build the moment Debian publishes a FIX for it, with no change to this repo.
