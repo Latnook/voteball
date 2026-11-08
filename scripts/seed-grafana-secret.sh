@@ -70,7 +70,7 @@ if [ "${FORCE_ROTATE:-0}" != "1" ]; then
   if [ "$aws_rc" -ne 0 ]; then
     # ResourceNotFoundException means the billed apply hasn't created the container yet -- a
     # legitimate "not ready", never treated as "seed away". Every other failure is unknown state.
-    if printf '%s' "$EXISTING" | grep -q 'ResourceNotFoundException'; then
+    if grep -q 'ResourceNotFoundException' <<<"$EXISTING"; then
       echo "ERROR: ${SECRET_ID} does not exist yet." >&2
       echo "Run 'terraform apply -var-file=voteball.tfvars' first -- it creates the empty" >&2
       echo "container (with a placeholder value) that this script fills in." >&2

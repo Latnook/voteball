@@ -246,7 +246,16 @@ it is worth grepping for before writing anything that shells out:
   miss** once the producer writes more than one pipe chunk — grep exits at the match, the
   producer's next write dies of SIGPIPE (141). `changed-paths.sh` answered "nothing changed" for
   every large commit this way, and `test-aws-pager-guard.sh` flaked only in CI (2026-09-17).
-  Capture into a variable, or drop `-q` and redirect to `/dev/null`.
+  Capture into a variable, or drop `-q` and redirect to `/dev/null`. **bash's own
+  `printf '%s\n' "$var"` is a multi-chunk producer** — one `write(2)` per line (strace, 2026-11-08) —
+  so `printf … | grep -q` races too; use a here-string, `grep -q pat <<<"$var"`. That race failed
+  `application-ci` on 2026-11-08 with *"pod label 'app: backup' is selected by NO egress
+  NetworkPolicy"* on a chart that had passed `validate-repo.sh` 17 minutes earlier, and the rule
+  above was found broken in **seven** operational scripts at once (including `smoke-test.sh`, where a
+  false miss triggers a rollback). Written down and broken seven times, so it is now a test:
+  `scripts/tests/test-no-pipe-to-grep-q.sh` fails on the pattern anywhere in `scripts/**` or the
+  Jenkinsfiles. **`scripts/tests/` itself is not yet scanned** — it still holds ~49 sites, which make
+  tests flaky rather than deploys wrong.
 - **A status interpolated into a message that asserts success.** `scripts/drills/`'s first version
   printed `application-ci triggered (HTTP $code)` — and on 2026-08-24 that line read
   `application-ci triggered (HTTP 403)`, because a Jenkins CSRF crumb is bound to the session that

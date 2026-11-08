@@ -134,7 +134,7 @@ $(strip_comments "$wf" | grep -oE '\bapp: [a-z0-9][a-z0-9-]*' | awk '{print $2}'
     }' | sort -u)"
 
   for lbl in $workload_labels; do
-    printf '%s\n' "$egress_labels" | grep -qx "$lbl" || \
+    grep -qx -- "$lbl" <<<"$egress_labels" || \
       note "pod label 'app: $lbl' is selected by NO egress NetworkPolicy in $NP -- that pod will resolve DNS and then have every TCP connection silently dropped (see the comment in $0). Add it to a policy there."
   done
 fi

@@ -79,11 +79,11 @@ resolve_publicly() {
   if command -v dig >/dev/null 2>&1; then
     local ns
     ns="$(dig +short NS "${HOST#*.}" 2>/dev/null | grep -m1 '\.$' || true)"
-    [ -n "$ns" ] && dig +short A "$HOST" "@${ns}" 2>/dev/null | grep -qE '^[0-9]+\.' && return 0
-    dig +short A "$HOST" @1.1.1.1 2>/dev/null | grep -qE '^[0-9]+\.' && return 0
+    [ -n "$ns" ] && dig +short A "$HOST" "@${ns}" 2>/dev/null | grep -E '^[0-9]+\.' >/dev/null && return 0
+    dig +short A "$HOST" @1.1.1.1 2>/dev/null | grep -E '^[0-9]+\.' >/dev/null && return 0
     return 1
   fi
-  getent ahostsv4 "$HOST" | awk 'NR==1{print $1}' | grep -q .
+  getent ahostsv4 "$HOST" | awk 'NR==1{print $1}' | grep . >/dev/null
 }
 
 restart_coredns() {
